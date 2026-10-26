@@ -272,6 +272,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+      pull-requests: write
       actions: write
     steps:
       - uses: actions/checkout@v4
@@ -400,7 +401,14 @@ jobs:
           git add -- company-learning/platform-release-roadmap.json
           git diff --cached --quiet && { echo 'OWNER_HANDOFF_POLICY_UNCHANGED'; exit 1; }
           git commit -m 'vibe2: release verified owner scope to existing F0-F9'
-          git push origin HEAD:main
-          echo 'OWNER_DIRECT_HANDOFF_POLICY=PERSISTED'
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'OWNER_DIRECT_HANDOFF_F0_F9_WAKE=DISPATCHED'
+          # A verified publication cannot override the central main-write guard.
+          # Queue state is already durable; the owner hold is released only by
+          # the canonical policy PR after mandatory checks, never by this job.
+          policy_branch="owner/horror-verified-handoff-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$policy_branch"
+          git push origin "HEAD:refs/heads/$policy_branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$policy_branch" \
+            --title "vibe2: verified horror owner handoff to existing F0-F9" \
+            --body "Exact private publication was verified for main revision $GITHUB_SHA in run $GITHUB_RUN_ID. This PR proposes only the existing central owner-scope policy handoff. Merge solely after mandatory security, central-policy and regression gates. Owner F0-F9 remains held until the validated policy reaches main.")"
+          echo "OWNER_DIRECT_HANDOFF_POLICY=PR_PENDING_VERIFIED_MERGE:$pr_url"
+          echo 'OWNER_DIRECT_HANDOFF_F0_F9_WAKE=AFTER_VALIDATED_POLICY_PR_MAIN_MERGE'
