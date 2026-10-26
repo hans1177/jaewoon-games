@@ -141,7 +141,11 @@ jobs:
           test -s /tmp/horror-owner-direct/horror-escape-room.rbxlx
           cp "$backup" "$project"
           trap - EXIT
-          git diff --exit-code
+          # 검증 범위는 실제 Rojo 게임 입력 소스/공용 귀신 원본으로 제한한다.
+          # 별도 게임의 추적 중인 음원 복원/변환은 현재 Roblox 원본 변경이 아니다.
+          # 정적·보안·원본 SHA 및 전용 패키지 검증은 그대로 유지한다.
+          git diff --exit-code -- "$project" roblox-games/horror-escape-room assets/roblox/world-ghosts
+          echo 'OWNER_DIRECT_ACTUAL_ROJO_SOURCE_UNCHANGED=PASS'
           sha256sum /tmp/horror-owner-direct/horror-escape-room.rbxlx | tee /tmp/horror-owner-direct/package.sha256
           echo "OWNER_DIRECT_PLACE=/tmp/horror-owner-direct/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
           echo "OWNER_DIRECT_PACKAGE_SHA256=$(awk '{print $1}' /tmp/horror-owner-direct/package.sha256)" >> "$GITHUB_ENV"
@@ -268,6 +272,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+      pull-requests: write
       actions: write
     steps:
       - uses: actions/checkout@v4
@@ -396,7 +401,14 @@ jobs:
           git add -- company-learning/platform-release-roadmap.json
           git diff --cached --quiet && { echo 'OWNER_HANDOFF_POLICY_UNCHANGED'; exit 1; }
           git commit -m 'vibe2: release verified owner scope to existing F0-F9'
-          git push origin HEAD:main
-          echo 'OWNER_DIRECT_HANDOFF_POLICY=PERSISTED'
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'OWNER_DIRECT_HANDOFF_F0_F9_WAKE=DISPATCHED'
+          # A verified publication cannot override the central main-write guard.
+          # Queue state is already durable; the owner hold is released only by
+          # the canonical policy PR after mandatory checks, never by this job.
+          policy_branch="owner/horror-verified-handoff-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$policy_branch"
+          git push origin "HEAD:refs/heads/$policy_branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$policy_branch" \
+            --title "vibe2: verified horror owner handoff to existing F0-F9" \
+            --body "Exact private publication was verified for main revision $GITHUB_SHA in run $GITHUB_RUN_ID. This PR proposes only the existing central owner-scope policy handoff. Merge solely after mandatory security, central-policy and regression gates. Owner F0-F9 remains held until the validated policy reaches main.")"
+          echo "OWNER_DIRECT_HANDOFF_POLICY=PR_PENDING_VERIFIED_MERGE:$pr_url"
+          echo 'OWNER_DIRECT_HANDOFF_F0_F9_WAKE=AFTER_VALIDATED_POLICY_PR_MAIN_MERGE'

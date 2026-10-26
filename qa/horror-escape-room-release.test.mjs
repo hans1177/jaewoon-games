@@ -961,10 +961,20 @@ test('첫 화면은 현재 캐릭터 접지와 저택 장면 수신을 확인하
 });
 
 
+test('owner package source integrity verifies actual Rojo inputs and ignores unrelated tracked audio',()=>{
+ assert.match(ownerWorkflow,/git diff --exit-code -- "\$project" roblox-games\/horror-escape-room assets\/roblox\/world-ghosts/);
+ assert.doesNotMatch(ownerWorkflow,/^\s+git diff --exit-code\s*$/m);
+ assert.match(ownerWorkflow,/cp "\$backup" "\$project"\n\s+trap - EXIT\n[\s\S]*?git diff --exit-code --/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_ACTUAL_ROJO_SOURCE_UNCHANGED=PASS/);
+ assert.match(ownerWorkflow,/sha256sum \/tmp\/horror-owner-direct\/horror-escape-room\.rbxlx/);
+ assert.match(ownerWorkflow,/ROBLOX_OPEN_CLOUD_API_KEY/);
+ assert.match(ownerWorkflow,/Ensure canonical owner universe remains private/);
+});
+
 test('verified owner-only publication saves queue and policy before resuming F0-F9',()=>{
  const source=ownerWorkflow;
  assert.match(source,/  owner-verified-resume:\n    needs: owner-direct-publish/);
- assert.match(source,/  owner-verified-resume:[\s\S]*?permissions:\n      contents: write\n      actions: write/);
+ assert.match(source,/  owner-verified-resume:[\s\S]*?permissions:\n      contents: write\n      pull-requests: write\n      actions: write/);
  assert.match(source,/OWNER_DIRECT_HANDOFF=NO_ACTIVE_OWNER_SCOPE/);
  assert.match(source,/test "\$\(git rev-parse origin\/main\)" = "\$GITHUB_SHA"/);
  assert.match(source,/company-security-steward\.mjs[\s\S]*?verdict!=="PASS"/);
@@ -977,10 +987,13 @@ test('verified owner-only publication saves queue and policy before resuming F0-
  assert.match(source,/UNRELATED_OWNER_HOLD_LOST/);
  assert.match(source,/storage-unpack[\s\S]*?packVibeQueueStorage\(queuePath\)/);
  const queuePush=source.indexOf('push origin HEAD:vibe2-unreal-core');
- const policyPush=source.indexOf('push origin HEAD:main');
- const runnerWake=source.indexOf('gh workflow run vibe2-24h-runner.yml');
- assert.ok(queuePush>0&&policyPush>queuePush&&runnerWake>policyPush,
-   'Persist lossless queue, then central policy, then wake existing F0-F9');
+ const policyBranch=source.indexOf('git push origin "HEAD:refs/heads/$policy_branch"');
+ const policyPr=source.indexOf('gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$policy_branch"');
+ assert.ok(queuePush>0&&policyBranch>queuePush&&policyPr>policyBranch,
+   'Persist lossless queue, then propose a gated central policy PR');
+ assert.equal(source.includes(['git','push','origin','HEAD:main'].join(' ')),false);
+ assert.match(source,/OWNER_DIRECT_HANDOFF_POLICY=PR_PENDING_VERIFIED_MERGE/);
+ assert.match(source,/OWNER_DIRECT_HANDOFF_F0_F9_WAKE=AFTER_VALIDATED_POLICY_PR_MAIN_MERGE/);
  const ownerJobs=source.slice(0,source.indexOf('  owner-verified-resume:'));
  assert.doesNotMatch(ownerJobs,/contents: write/,'publisher must remain read-only');
  assert.ok(!source.slice(0,source.indexOf('\npermissions:')).includes(
