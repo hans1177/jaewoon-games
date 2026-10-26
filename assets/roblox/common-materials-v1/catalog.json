@@ -278,6 +278,24 @@
       ]
     },
     {
+      "atomId": "TOY_PLASTIC",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "SATIN",
+        "GLOSSY",
+        "MATTE",
+        "DARK"
+      ],
+      "visualStyle": "TOY_BRICK",
+      "sourceType": "NATIVE_COLOR_ONLY",
+      "originalAssetsUnchanged": true,
+      "gameSpecificOptIn": true,
+      "requiresNativeMeshForStuds": true,
+      "renderingVerification": "PENDING",
+      "gameplayAuthority": false
+    },
+    {
       "atomId": "STYLE_VARIANT",
       "source": "RobloxCommonMaterials.luau",
       "factory": "Apply",
@@ -285,7 +303,8 @@
         "FANTASY",
         "INDUSTRIAL",
         "COZY",
-        "HORROR"
+        "HORROR",
+        "TOY_BRICK"
       ]
     }
   ],
@@ -343,9 +362,10 @@
       "WET_DRY",
       "DAMAGE",
       "WEATHERING",
+      "TOY_PLASTIC",
       "STYLE_VARIANT"
     ],
-    "currentAssetCount": 25,
+    "currentAssetCount": 26,
     "missingComponentCandidates": [],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
@@ -360,7 +380,8 @@
       "CORROSION",
       "DAMAGE",
       "WEATHERING",
-      "STYLE_VARIANT"
+      "STYLE_VARIANT",
+      "TOY_PLASTIC"
     ]
   },
   "internalAssetStandard": {
@@ -376,7 +397,7 @@
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
   },
-  "title": "Roblox 회사 공용 재질 25종 v5",
+  "title": "Roblox 회사 공용 재질 26종 v5",
   "seedCompositionContract": {
     "version": 1,
     "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
@@ -403,5 +424,25 @@
   },
   "pbrSourceManifest": "manifest.json",
   "pbrSourceCount": 21,
-  "nativePbrBindingRequired": true
+  "nativePbrBindingRequired": true,
+  "toyBrickStyle": {
+    "styleId": "TOY_BRICK",
+    "baseAtom": "TOY_PLASTIC",
+    "optInByGame": true,
+    "styleConfigField": "VisualStyle.MaterialStyle",
+    "nativeMaterial": "SmoothPlastic",
+    "extraPartCreationForbidden": true,
+    "noSyntheticStudGeometry": true,
+    "usesVerifiedCC0MeshesWithoutGeometryRewrite": true,
+    "preserveOriginalModelTextures": true,
+    "preserveCollidersAndPhysics": true,
+    "sourceReviewOnly": true,
+    "productionVerified": false,
+    "runtimeVerified": false,
+    "appliedGameSources": [
+      "roblox-games/cozy-island/server/Game.server.luau",
+      "roblox-games/cozy-island/client/MaterialPresentation.client.luau"
+    ],
+    "allGamesUseExistingBootstrapCopyOnRegeneration": true
+  }
 }
