@@ -72,6 +72,17 @@ test('검증되지 않은 조립 곰은 출시 월드에 등장하거나 CC0 통
  assert.match(cozyServer,/spawnMob\("RAIDER"/);
 });
 
+test('포근섬 SKILL 자산은 서버 확정 전투 타격에 실제 파티클로 반영하고 정리한다',()=>{
+  assert.match(cozyClient,/hasStudioAssetAtom\("SKILL","IMPACT_SMALL"\)/);
+  assert.match(cozyClient,/value:find\("\^HIT:"\)/);
+  assert.match(cozyClient,/local impact=Instance\.new\("Attachment"\)/);
+  assert.match(cozyClient,/local sparks=Instance\.new\("ParticleEmitter"\)/);
+  assert.match(cozyClient,/sparks\.Parent=impact/);
+  assert.match(cozyClient,/sparks:Emit\(9\)/);
+  assert.match(cozyClient,/task\.delay\(\.7,function\(\)if impact\.Parent then impact:Destroy\(\)end end\)/);
+  assert.doesNotMatch(cozyServer,/spawnVillageBear\(/);
+});
+
 test('포근섬은 주민 자동생산과 5거점 정복 루프를 유지한다',()=>{
  assert.match(cozyServer,/AutomationTickSeconds/);
  assert.match(cozyServer,/WoodWorkers/);
