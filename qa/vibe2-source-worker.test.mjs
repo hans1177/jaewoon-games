@@ -333,6 +333,7 @@ test('no-model Roblox gameplay engine refuses guessed actions unsafe dispatchers
     NATIVE_ACTION_CONFIG.replace('return table.freeze(Config)','return anotherConfig'),
     NATIVE_ACTION_CONFIG.replace('local Config = {','local Config = {\n Nested = {').replace('return table.freeze(Config)','}\nreturn table.freeze(Config)'),
     NATIVE_ACTION_CONFIG.replace('local Config = {','local Config = other\nlocal ActionsHolder = {'),
+    NATIVE_ACTION_CONFIG.replace('local Config = {','local Config = {}\nlocal Other = {'),
     NATIVE_ACTION_CONFIG.replace('return table.freeze(Config)','local alias = Config\nreturn table.freeze(Config)')
   ])assert.equal(generate(NATIVE_ACTION_SOURCE,cfg),null,'unverified configuration cannot authorize a gameplay action');
   assert.equal(generate(NATIVE_ACTION_SOURCE,NATIVE_ACTION_CONFIG,'web'),null);

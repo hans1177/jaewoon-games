@@ -1767,10 +1767,15 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           &&!/\bConfig\s*\.\s*Actions\b/.test(configCode)){
           const actionTable=actionTables[0],start=actionTable.index+actionTable[0].indexOf('{')+1;
           const configStart=configTables[0].index+configTables[0][0].lastIndexOf('{')+1;
+          let configEnd=-1,depth=1;
+          for(let at=configStart;at<configCode.length;at++){
+            if(configCode[at]==='{')depth++;
+            else if(configCode[at]==='}'&&--depth===0){configEnd=at;break;}
+          }
           const actionBody=configSource.slice(start,start+actionTable[1].length);
           const approved=new Map(),existing=new Map();
           const prefix=configCode.slice(configStart,actionTable.index);
-          let valid=actionTable.index>configStart
+          let valid=actionTable.index>configStart&&actionTable.index<configEnd
             &&[...prefix.matchAll(/\{/g)].length===[...prefix.matchAll(/\}/g)].length;
           const actionLines=actionBody.split('\n'),actionCodeLines=executableText(actionBody,'luau').split('\n');
           for(let index=0;index<actionLines.length;index++){
