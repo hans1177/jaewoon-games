@@ -2660,12 +2660,12 @@ test('company-common UI current catalog preserves prior atoms and expands reusab
   assert.match(source,new RegExp('atomCount = '+catalog.atoms.length+'\\b'));
   // 공용 UI 204종은 서로 다른 파일 204개가 아니라 하나의 공용 Luau 모듈이 공개하는 팩토리다.
   // 목록 선언만 존재하는 유령 모듈, 중복 팩토리, 외부 권한 획득을 정적 계약에서 차단한다.
-  const exportedFactories=[...source.matchAll(/^function RobloxCommonUI\\.([A-Za-z][A-Za-z0-9_]*)\\(/gm)]
+  const exportedFactories=[...source.matchAll(/^function RobloxCommonUI\.([A-Za-z][A-Za-z0-9_]*)\(/gm)]
     .map(match=>match[1]);
   const exportedSet=new Set(exportedFactories);
   assert.equal(exportedFactories.length,exportedSet.size,'PUBLIC_UI_FUNCTION_COLLISION');
   assert.equal(catalog.atoms.length,204,'COMPANY_COMMON_UI_CATALOG_DRIFT');
-  const auditAtomsBlock=source.match(/atoms = table\\.freeze\\(\\{([\\s\\S]*?)\\}\\)/);
+  const auditAtomsBlock=source.match(/atoms = table\.freeze\(\{([\s\S]*?)\}\)/);
   assert.ok(auditAtomsBlock,'COMPANY_COMMON_UI_AUDIT_ATOMS_REQUIRED');
   const auditIds=[...auditAtomsBlock[1].matchAll(/"([A-Z][A-Z0-9_]*)"/g)]
     .map(match=>match[1]);
@@ -2689,8 +2689,8 @@ test('company-common UI current catalog preserves prior atoms and expands reusab
     const consumer=path.join(gamesDir,gameFolder.name,'shared','RobloxCommonUI.luau');
     if(!fs.existsSync(consumer))continue;
     const gameSource=fs.readFileSync(consumer,'utf8');
-    if(!/atomCount = 204\\b/.test(gameSource))continue;
-    const gameFactories=new Set([...gameSource.matchAll(/^function RobloxCommonUI\\.([A-Za-z][A-Za-z0-9_]*)\\(/gm)]
+    if(!/atomCount = 204\b/.test(gameSource))continue;
+    const gameFactories=new Set([...gameSource.matchAll(/^function RobloxCommonUI\.([A-Za-z][A-Za-z0-9_]*)\(/gm)]
       .map(match=>match[1]));
     for(const row of catalog.atoms)
       assert.ok(gameFactories.has(row.factory),gameFolder.name+':MISSING_COMPANY_UI_FACTORY:'+row.factory);
