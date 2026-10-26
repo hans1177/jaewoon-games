@@ -672,7 +672,8 @@ export function createVibeGraphicsProduction({
       problems.push('APPROVED_NATIVE_BODY_PLAN_RIG_MISSING');
     if(auth.approved!==true||!clean(auth.sourceAssetId)||!clean(auth.sourceHash)||auth.licenseVerified!==true)
       problems.push('APPROVED_MODEL_LICENSE_AND_HASH_MISSING');
-    if(motionPlatform==='ROBLOX'&&auth.placeAccessVerified!==true)
+    // 동시 네이티브 제작(SHARED)에도 Roblox Place 개별 사용 권한은 필수.
+    if(platforms.includes('ROBLOX')&&auth.placeAccessVerified!==true)
       problems.push('ROBLOX_PLACE_USE_PERMISSION_MISSING');
     const expectedParts=[...new Set([...motions,...patterns].flatMap(row=>
       (row.jointTracks||[]).map(track=>track.part)))];
