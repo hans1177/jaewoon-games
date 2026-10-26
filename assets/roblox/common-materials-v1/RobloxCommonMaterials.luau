@@ -403,9 +403,11 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
    preserveBaseMaterial=not toy,
    materialVariant=source and ("Vibe_"..materialName.."_"..source) or nil})
  if studRequested then
-  local previous=part.TopSurface
+  -- 반복 빌드업에서도 최초 표면 정보를 보존하며 네이티브 스터드만 표현한다.
+  if part.TopSurface~=Enum.SurfaceType.Studs then
+   part:SetAttribute("PreviousTopSurfaceName",part.TopSurface.Name)
+  end
   part.TopSurface=Enum.SurfaceType.Studs
-  part:SetAttribute("PreviousTopSurfaceName",previous.Name)
   part:SetAttribute("NativeStudsApplied",true)
   part:SetAttribute("ToyStudRuntimeVerified",false)
  end
