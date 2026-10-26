@@ -5,28 +5,29 @@
 local RobloxCommonUI = {}
 
 local DEFAULT_THEME = table.freeze({
-  Panel = Color3.fromRGB(31, 36, 43),
-  PanelRaised = Color3.fromRGB(44, 51, 61),
-  PanelInset = Color3.fromRGB(21, 25, 30),
-  Border = Color3.fromRGB(95, 109, 127),
-  BorderBright = Color3.fromRGB(145, 158, 176),
-  Text = Color3.fromRGB(240, 243, 247),
-  MutedText = Color3.fromRGB(173, 181, 192),
-  Primary = Color3.fromRGB(76, 120, 183),
-  PrimaryTop = Color3.fromRGB(102, 146, 207),
-  PrimaryBottom = Color3.fromRGB(52, 91, 151),
-  Accent = Color3.fromRGB(108, 174, 225),
-  Positive = Color3.fromRGB(91, 181, 120),
-  Warning = Color3.fromRGB(224, 170, 69),
-  Danger = Color3.fromRGB(214, 82, 76),
-  Map = Color3.fromRGB(20, 29, 35),
-  MapGrid = Color3.fromRGB(72, 89, 98),
-  HealthGood = Color3.fromRGB(91, 181, 91),
-  HealthWarn = Color3.fromRGB(220, 159, 54),
-  HealthCritical = Color3.fromRGB(210, 76, 69),
-  HealthTrack = Color3.fromRGB(55, 62, 69),
-  Shadow = Color3.fromRGB(8, 10, 13),
-  Corner = 14,
+  -- 밝은 로블록스 시뮬레이터풍: 자체 팔레트만 사용하고 외부 게임 아트는 복제하지 않는다.
+  Panel = Color3.fromRGB(248, 251, 255),
+  PanelRaised = Color3.fromRGB(255, 255, 255),
+  PanelInset = Color3.fromRGB(228, 241, 255),
+  Border = Color3.fromRGB(45, 64, 111),
+  BorderBright = Color3.fromRGB(96, 130, 196),
+  Text = Color3.fromRGB(35, 50, 91),
+  MutedText = Color3.fromRGB(99, 115, 157),
+  Primary = Color3.fromRGB(50, 133, 247),
+  PrimaryTop = Color3.fromRGB(100, 203, 255),
+  PrimaryBottom = Color3.fromRGB(34, 104, 222),
+  Accent = Color3.fromRGB(255, 188, 62),
+  Positive = Color3.fromRGB(48, 196, 126),
+  Warning = Color3.fromRGB(255, 174, 45),
+  Danger = Color3.fromRGB(242, 82, 120),
+  Map = Color3.fromRGB(32, 54, 83),
+  MapGrid = Color3.fromRGB(112, 148, 190),
+  HealthGood = Color3.fromRGB(54, 209, 113),
+  HealthWarn = Color3.fromRGB(255, 178, 56),
+  HealthCritical = Color3.fromRGB(247, 87, 112),
+  HealthTrack = Color3.fromRGB(100, 127, 167),
+  Shadow = Color3.fromRGB(24, 46, 104),
+  Corner = 17,
   TouchHeight = 48,
 })
 
@@ -106,8 +107,8 @@ function RobloxCommonUI.CreatePanel(options)
   tag(frame, "FRAME_PANEL")
 
   corner(frame, tonumber(options.cornerRadius) or theme.Corner)
-  stroke(frame, theme.Border, 1.5, 0.08)
-  gradient(frame, theme.PanelRaised, theme.Panel, 90)
+  stroke(frame, theme.Border, 2.3, 0)
+  gradient(frame, theme.PanelRaised, theme.PanelInset, 90)
 
   -- Optional licensed, already-bound texture. Never invent a Roblox asset ID.
   if typeof(options.surfaceTexture) == "string" and options.surfaceTexture ~= "" then
@@ -130,7 +131,7 @@ function RobloxCommonUI.CreatePanel(options)
   shadow.Position = UDim2.new(0.5, 0, 0.5, 5)
   shadow.Size = UDim2.new(1, 4, 1, 4)
   shadow.BackgroundColor3 = theme.Shadow
-  shadow.BackgroundTransparency = 0.46
+  shadow.BackgroundTransparency = 0.60
   shadow.BorderSizePixel = 0
   shadow.ZIndex = math.max(0, frame.ZIndex - 1)
   shadow.Parent = frame
@@ -146,7 +147,18 @@ function RobloxCommonUI.CreatePanel(options)
   inner.ZIndex = frame.ZIndex + 1
   inner.Parent = frame
   corner(inner, math.max(6, (tonumber(options.cornerRadius) or theme.Corner) - 4))
-  stroke(inner, theme.BorderBright, 1, 0.72)
+  stroke(inner, theme.BorderBright, 1, 0.65)
+
+  local topAccent = Instance.new("Frame")
+  topAccent.Name = "CandyTopAccent"
+  topAccent.Position = UDim2.fromOffset(14, 3)
+  topAccent.Size = UDim2.new(1, -28, 0, 4)
+  topAccent.BackgroundColor3 = theme.PrimaryTop
+  topAccent.BorderSizePixel = 0
+  topAccent.ZIndex = inner.ZIndex + 1
+  topAccent.Parent = frame
+  corner(topAccent, 4)
+  gradient(topAccent, theme.PrimaryTop, theme.Accent, 0)
 
   frame:SetAttribute("PresentationRole", "COMMON_READABLE_PANEL")
   frame:SetAttribute("TouchSafe", true)
@@ -164,7 +176,9 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   button.BorderSizePixel = 0
   button.AutoButtonColor = false
   button.Text = tostring(options.text or "확인")
-  button.TextColor3 = theme.Text
+  button.TextColor3 = Color3.fromRGB(255, 255, 255)
+  button.TextStrokeColor3 = theme.PrimaryBottom
+  button.TextStrokeTransparency = 0.64
   button.TextSize = tonumber(options.textSize) or 16
   button.TextWrapped = true
   button.Font = options.font or Enum.Font.GothamBold
@@ -172,7 +186,7 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   tag(button, "BUTTON_PRIMARY")
 
   corner(button, tonumber(options.cornerRadius) or 12)
-  local outline = stroke(button, theme.BorderBright, 1.4, 0.06)
+  local outline = stroke(button, theme.Border, 2.5, 0)
   gradient(button, theme.PrimaryTop, theme.PrimaryBottom, 90)
   sizeConstraint(button, tonumber(options.minWidth) or 112, tonumber(options.minHeight) or theme.TouchHeight)
 
@@ -186,6 +200,17 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   sheen.ZIndex = button.ZIndex + 1
   sheen.Parent = button
   corner(sheen, 2)
+  local depthEdge = Instance.new("Frame")
+  depthEdge.Name = "ButtonDepthEdge"
+  depthEdge.AnchorPoint = Vector2.new(0, 1)
+  depthEdge.Position = UDim2.new(0, 8, 1, -3)
+  depthEdge.Size = UDim2.new(1, -16, 0, 4)
+  depthEdge.BackgroundColor3 = theme.PrimaryBottom
+  depthEdge.BackgroundTransparency = 0.18
+  depthEdge.BorderSizePixel = 0
+  depthEdge.ZIndex = button.ZIndex + 1
+  depthEdge.Parent = button
+  corner(depthEdge, 4)
 
   local scale = Instance.new("UIScale")
   scale.Scale = 1
@@ -289,8 +314,22 @@ function RobloxCommonUI.CreateInventorySlot(options)
   tag(button, "INVENTORY_SLOT")
 
   corner(button, tonumber(options.cornerRadius) or 10)
-  local outline = stroke(button, theme.Border, 1.3, 0.08)
+  local outline = stroke(button, theme.Border, 2.2, 0.04)
+  outline.Name = "RarityOutline"
+  gradient(button, theme.PanelRaised, theme.PanelInset, 90)
   sizeConstraint(button, 52, 52)
+
+  local spotlight = Instance.new("Frame")
+  spotlight.Name = "ItemSpotlight"
+  spotlight.AnchorPoint = Vector2.new(0.5, 0.5)
+  spotlight.Position = UDim2.fromScale(0.5, 0.5)
+  spotlight.Size = UDim2.new(1, -20, 1, -20)
+  spotlight.BackgroundColor3 = theme.PrimaryTop
+  spotlight.BackgroundTransparency = 0.78
+  spotlight.BorderSizePixel = 0
+  spotlight.Visible = options.image ~= nil or options.glyph ~= nil
+  spotlight.Parent = button
+  corner(spotlight, 100)
 
   local icon = Instance.new("ImageLabel")
   icon.Name = "Icon"
@@ -310,7 +349,9 @@ function RobloxCommonUI.CreateInventorySlot(options)
   glyph.BackgroundTransparency = 1
   glyph.Text = tostring(options.glyph or "?")
   glyph.TextColor3 = theme.Text
-  glyph.TextSize = 26
+  glyph.TextStrokeColor3 = theme.PanelRaised
+  glyph.TextStrokeTransparency = 0.3
+  glyph.TextSize = 27
   glyph.Font = Enum.Font.GothamBold
   glyph.TextScaled = false
   glyph.Visible = icon.Image == "" and options.glyph ~= nil
@@ -325,13 +366,16 @@ function RobloxCommonUI.CreateInventorySlot(options)
   quantity.AnchorPoint = Vector2.new(1, 1)
   quantity.Position = UDim2.new(1, -5, 1, -4)
   quantity.Size = UDim2.fromOffset(34, 18)
-  quantity.BackgroundTransparency = 1
+  quantity.BackgroundColor3 = theme.Border
+  quantity.BackgroundTransparency = 0.06
   quantity.Text = tostring(options.quantityText or "")
-  quantity.TextColor3 = theme.Text
+  quantity.TextColor3 = Color3.fromRGB(255, 255, 255)
   quantity.TextSize = tonumber(options.textSize) or 12
   quantity.Font = options.font or Enum.Font.GothamBold
   quantity.TextXAlignment = Enum.TextXAlignment.Right
   quantity.Parent = button
+  corner(quantity, 7)
+  quantity.Visible = quantity.Text ~= ""
 
   local stateBadge = Instance.new("TextLabel")
   stateBadge.Name = "StateBadge"
@@ -339,7 +383,7 @@ function RobloxCommonUI.CreateInventorySlot(options)
   stateBadge.Position = UDim2.fromOffset(4, 4)
   stateBadge.BackgroundColor3 = theme.Positive
   stateBadge.BackgroundTransparency = 0.08
-  stateBadge.TextColor3 = theme.Text
+  stateBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
   stateBadge.TextSize = 10
   stateBadge.Font = Enum.Font.GothamBold
   stateBadge.Text = options.locked == true and "잠김" or options.equipped == true and "장착" or ""
@@ -349,13 +393,27 @@ function RobloxCommonUI.CreateInventorySlot(options)
 
   local rarityRail = Instance.new("Frame")
   rarityRail.Name = "RarityRail"
-  rarityRail.Size = UDim2.new(1, -12, 0, 3)
-  rarityRail.Position = UDim2.new(0, 6, 1, -5)
+  rarityRail.Size = UDim2.new(1, -14, 0, 5)
+  rarityRail.Position = UDim2.new(0, 7, 1, -7)
   rarityRail.BackgroundColor3 = typeof(options.rarityColor) == "Color3" and options.rarityColor or theme.Accent
   rarityRail.BorderSizePixel = 0
   rarityRail.Visible = options.rarityColor ~= nil
   rarityRail.Parent = button
-  corner(rarityRail, 2)
+  corner(rarityRail, 3)
+
+  local sparkle = Instance.new("TextLabel")
+  sparkle.Name = "RaritySparkle"
+  sparkle.Position = UDim2.new(1, -26, 0, 1)
+  sparkle.Size = UDim2.fromOffset(23, 24)
+  sparkle.BackgroundTransparency = 1
+  sparkle.Text = "✦"
+  sparkle.TextColor3 = theme.Accent
+  sparkle.TextStrokeColor3 = theme.Border
+  sparkle.TextStrokeTransparency = 0.55
+  sparkle.TextSize = 20
+  sparkle.Font = Enum.Font.GothamBold
+  sparkle.Visible = false
+  sparkle.Parent = button
 
   local selected = Instance.new("Frame")
   selected.Name = "SelectedRing"
@@ -426,15 +484,32 @@ function RobloxCommonUI.UpdateInventorySlot(slot, item, options)
   end
   local rail = slot:FindFirstChild("RarityRail")
   local rarity = string.upper(tostring(item.rarity or ""))
+  local rarityColor = typeof(item.rarityColor) == "Color3" and item.rarityColor or INVENTORY_TIER_COLORS[rarity]
   if rail then
-    local color = typeof(item.rarityColor) == "Color3" and item.rarityColor or INVENTORY_TIER_COLORS[rarity]
-    rail.Visible = color ~= nil
-    rail.BackgroundColor3 = color or theme.Border
+    rail.Visible = rarityColor ~= nil
+    rail.BackgroundColor3 = rarityColor or theme.Border
+  end
+  local outline = slot:FindFirstChild("RarityOutline")
+  if outline and outline:IsA("UIStroke") then
+    outline.Color = rarityColor or theme.Border
+    outline.Thickness = options.selected == true and 3 or 2.2
+  end
+  local spotlight = slot:FindFirstChild("ItemSpotlight")
+  if spotlight then
+    spotlight.BackgroundColor3 = rarityColor or theme.PrimaryTop
+    spotlight.Visible = item.id ~= nil
+  end
+  local sparkle = slot:FindFirstChild("RaritySparkle")
+  if sparkle then
+    sparkle.Visible = rarity == "EPIC" or rarity == "LEGENDARY" or rarity == "MYTHIC"
+      or rarity == "영웅" or rarity == "전설" or rarity == "신화"
+    sparkle.TextColor3 = rarityColor or theme.Accent
   end
   local quantity = slot:FindFirstChild("Quantity")
   if quantity then
     local amount = item.quantity or item.count
     quantity.Text = amount == nil and "" or tostring(amount)
+    quantity.Visible = quantity.Text ~= ""
   end
   local highlight = slot:FindFirstChild("SelectedRing")
   if highlight then highlight.Visible = options.selected == true or item.selected == true end
@@ -848,7 +923,8 @@ function RobloxCommonUI.CreateIconButton(options)
   button.Selectable = true
   tag(button, "ICON_BUTTON")
   corner(button, tonumber(options.cornerRadius) or 12)
-  local outline = stroke(button, options.selected == true and theme.Accent or theme.Border, options.selected == true and 2.4 or 1.2, 0.10)
+  local outline = stroke(button, options.selected == true and theme.Accent or theme.Border, options.selected == true and 3 or 2.2, 0)
+  gradient(button, theme.PanelRaised, theme.PanelInset, 90)
   sizeConstraint(button, 48, 48)
   button.Active = options.locked ~= true
   button.AutoButtonColor = options.locked ~= true
@@ -1704,8 +1780,17 @@ local function surfaceShell(options, atomId, role)
   chrome.BorderSizePixel = 0
   chrome.Parent = root
   corner(chrome, theme.Corner)
-  stroke(chrome, theme.Border, 1.5, 0.08)
-  gradient(chrome, theme.PanelRaised, theme.Panel, 90)
+  stroke(chrome, theme.Border, 3, 0)
+  gradient(chrome, theme.PanelRaised, theme.PanelInset, 90)
+  local headerStripe = Instance.new("Frame")
+  headerStripe.Name = "HeaderColorStripe"
+  headerStripe.Position = UDim2.fromOffset(15, 3)
+  headerStripe.Size = UDim2.new(1, -30, 0, 6)
+  headerStripe.BackgroundColor3 = theme.Accent
+  headerStripe.BorderSizePixel = 0
+  headerStripe.Parent = chrome
+  corner(headerStripe, 6)
+  gradient(headerStripe, theme.PrimaryTop, theme.Accent, 0)
 
   local header = Instance.new("Frame")
   header.Name = "Header"
@@ -1714,8 +1799,23 @@ local function surfaceShell(options, atomId, role)
   header.BackgroundTransparency = 1
   header.Parent = chrome
 
-  local title = commonText(header, "Title", options.title or role, UDim2.fromOffset(0,0), UDim2.new(1,-8,0,34), theme.Text, tonumber(options.titleSize) or 24, true)
-  local subtitle = commonText(header, "Subtitle", options.subtitle or "", UDim2.fromOffset(0,32), UDim2.new(1,-8,0,24), theme.MutedText, 13, false)
+  local emblem = Instance.new("TextLabel")
+  emblem.Name = "HeaderEmblem"
+  emblem.Position = UDim2.fromOffset(0, 1)
+  emblem.Size = UDim2.fromOffset(37, 37)
+  emblem.BackgroundColor3 = theme.Primary
+  emblem.BorderSizePixel = 0
+  emblem.Text = "✦"
+  emblem.TextColor3 = Color3.fromRGB(255, 255, 255)
+  emblem.TextSize = 22
+  emblem.Font = Enum.Font.GothamBold
+  emblem.Parent = header
+  corner(emblem, 11)
+  stroke(emblem, theme.Border, 1.5, 0)
+  gradient(emblem, theme.PrimaryTop, theme.PrimaryBottom, 90)
+  local title = commonText(header, "Title", options.title or role, UDim2.fromOffset(46,0), UDim2.new(1,-54,0,34), theme.Text, tonumber(options.titleSize) or 24, true)
+  title.TextTruncate = Enum.TextTruncate.AtEnd
+  local subtitle = commonText(header, "Subtitle", options.subtitle or "", UDim2.fromOffset(46,32), UDim2.new(1,-54,0,24), theme.MutedText, 13, false)
 
   local body = Instance.new("Frame")
   body.Name = "Body"
@@ -2002,7 +2102,16 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   detail.BorderSizePixel = 0
   detail.Parent = body
   corner(detail, 10)
-  stroke(detail, theme.Border, 1.2, 0.16)
+  stroke(detail, theme.Border, 2, 0.03)
+  gradient(detail, theme.PanelRaised, theme.PanelInset, 90)
+  local detailStripe = Instance.new("Frame")
+  detailStripe.Name = "SelectedItemRarityStripe"
+  detailStripe.Position = UDim2.fromOffset(7, 7)
+  detailStripe.Size = UDim2.fromOffset(4, 40)
+  detailStripe.BackgroundColor3 = theme.Accent
+  detailStripe.BorderSizePixel = 0
+  detailStripe.Parent = detail
+  corner(detailStripe, 3)
   local detailTitle = Instance.new("TextLabel")
   detailTitle.Name = "SelectedItemName"
   detailTitle.BackgroundTransparency = 1
@@ -2225,6 +2334,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     detailMeta.TextColor3=selectedRow
       and (typeof(selectedRow.rarityColor)=="Color3"and selectedRow.rarityColor
         or INVENTORY_TIER_COLORS[selectedRarity]or theme.Accent) or theme.Accent
+    detailStripe.BackgroundColor3=detailMeta.TextColor3
     detail:SetAttribute("BoundSelectedItemId",selectedId~=nil and tostring(selectedId) or "")
     root:SetAttribute("BoundItemCount",#rows)
     root:SetAttribute("BoundVisibleItemCount",#shown)
