@@ -379,6 +379,127 @@ test('no-model Roblox gameplay generated server action preserves costs cooldown 
   assert.match(execFileSync(runtime,[script],{encoding:'utf8',timeout:15000}),/GAMEPLAY_CONTRACT_CAUSAL_REPLAY=PASS/);
 });
 
+// [의미 추적] 함수 이름 대신 실제 승인 행동 ID와 상태 쓰기 경로를 사용한다.
+const OPAQUE_ACTION_CONFIG=[
+  'local Config = {',
+  '  Actions = {',
+  '    { Id = "opaque-scout-3", Label = "정찰, 현재 상태 확인", Kind = "OBJECTIVE", Order = 1 },',
+  '    { Id = "opaque-attack-7", Label = "공격, 비용을 보존", Kind = "COMBAT", Order = 2 },',
+  '  },',
+  '  RemoteName = "GameAction",',
+  '  RateLimitSeconds = 0.18,',
+  '}',
+  'return table.freeze(Config)',''
+].join('\n');
+const OPAQUE_ACTION_SOURCE=[
+  NATIVE_ACTION_SOURCE.slice(0,NATIVE_ACTION_SOURCE.indexOf('local function scout')),
+  'local function writeValue(player, key, value)',
+  '  player:SetAttribute(key, math.floor(value))',
+  'end',
+  'local function scopeHandler3(player)',
+  '  player:SetAttribute("Scouts", player:GetAttribute("Scouts") + 1)',
+  '  player:SetAttribute("LastApprovedScope", "opaque-scout-3")',
+  'end',
+  'local function scopeHandler7(player)',
+  '  if player:GetAttribute("Gold") < 3 then return end',
+  '  writeValue(player, "Gold", player:GetAttribute("Gold") - 3)',
+  '  player:SetAttribute("Damage", player:GetAttribute("Damage") + 7)',
+  '  player:SetAttribute("LastApprovedScope", "opaque-attack-7")',
+  'end',
+  'local handlers = {',
+  '  ["opaque-scout-3"] = scopeHandler3,',
+  '}',
+  NATIVE_ACTION_SOURCE.slice(NATIVE_ACTION_SOURCE.indexOf('remote.OnServerEvent'))
+].join('\n');
+
+test('no-model Roblox gameplay engine traces opaque action identity and direct and helper state writes',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-opaque-actions-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau';
+  fs.writeFileSync(path.join(root,file),OPAQUE_ACTION_SOURCE);fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),OPAQUE_ACTION_CONFIG);
+  const order={target:'roblox',goal:'전투 행동 누락 복구'};
+  const raw=deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file]});
+  assert.equal(raw.semanticGrounding.bindings.length,1);
+  const binding=raw.semanticGrounding.bindings[0];
+  assert.equal(binding.function,'scopeHandler7');
+  assert.equal(binding.actionId,'opaque-attack-7');
+  assert.equal(binding.identityEvidence,'EXISTING_LAST_APPROVED_SCOPE');
+  assert.ok(binding.stateWrites.some(row=>row.attribute==='Gold'&&row.via==='writeValue'));
+  assert.ok(binding.stateWrites.some(row=>row.attribute==='Damage'&&row.via==='DIRECT_PLAYER_ATTRIBUTE'));
+  assert.ok(binding.stateWrites.every(row=>row.attribute!=='LastApprovedScope'));
+  const patched=OPAQUE_ACTION_SOURCE.replace(raw.edits[0].find,raw.edits[0].replace);
+  assert.equal(patched,OPAQUE_ACTION_SOURCE.replace('  ["opaque-scout-3"] = scopeHandler3,','  ["opaque-scout-3"] = scopeHandler3,\n  ["opaque-attack-7"] = scopeHandler7,'));
+  fs.writeFileSync(path.join(root,file),patched);
+  assert.equal(deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file]}),null);
+});
+
+test('no-model Roblox gameplay engine refuses opaque marker-only functions and ambiguous or executable action data',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-opaque-refuse-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau';
+  const generate=(source,config=OPAQUE_ACTION_CONFIG)=>{
+    fs.writeFileSync(path.join(root,file),source);fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),config);
+    return deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'전투 행동 누락 복구'},sourceRoot:root,responsibleFiles:[file]});
+  };
+  const markerOnly=OPAQUE_ACTION_SOURCE
+    .replace('  writeValue(player, "Gold", player:GetAttribute("Gold") - 3)\n','')
+    .replace('  player:SetAttribute("Damage", player:GetAttribute("Damage") + 7)\n','');
+  for(const source of [
+    markerOnly,
+    markerOnly.replace('  player:SetAttribute("LastApprovedScope", "opaque-attack-7")','  player:SetAttribute("ActionSequence", 1)\n  player:SetAttribute("LastApprovedScope", "opaque-attack-7")'),
+    OPAQUE_ACTION_SOURCE.replace('  player:SetAttribute("LastApprovedScope", "opaque-attack-7")','  -- player:SetAttribute("LastApprovedScope", "opaque-attack-7")'),
+    OPAQUE_ACTION_SOURCE.replace('"LastApprovedScope", "opaque-attack-7"','"LastApprovedScope", "not-approved"'),
+    OPAQUE_ACTION_SOURCE.replace('local handlers = {','local function anotherHandler(player)\n  player:SetAttribute("Gold", 10)\n  player:SetAttribute("LastApprovedScope", "opaque-attack-7")\nend\nlocal handlers = {'),
+    OPAQUE_ACTION_SOURCE.replace('local function scopeHandler7(player)','local function scopeHandler7(player, target)')
+  ])assert.equal(generate(source),null,'a marker, comment, duplicate identity or guessed parameter cannot prove gameplay');
+  for(const config of [
+    OPAQUE_ACTION_CONFIG.replace('Id = "opaque-attack-7"','Id = "opaque-scout-3"'),
+    OPAQUE_ACTION_CONFIG.replace('Id = "opaque-attack-7"','Id = "opaque-attack-7", Id = "another-id"'),
+    OPAQUE_ACTION_CONFIG.replace('Label = "공격, 비용을 보존"','Label = makeLabel()'),
+    OPAQUE_ACTION_CONFIG.replace('Order = 2','Order = { count = 2 }'),
+    OPAQUE_ACTION_CONFIG.replace('Id = "opaque-attack-7"','Id = approvedId')
+  ])assert.equal(generate(OPAQUE_ACTION_SOURCE,config),null,'the configuration must remain literal data, never executable authority');
+});
+
+test('no-model Roblox gameplay generated server action follows opaque IDs and original state writes in isolated Luau',t=>{
+  const compiler=process.env.VIBE2_TEST_LUAU_COMPILER;
+  if(!compiler){t.skip('isolated Luau executor is provided by existing practice CI');return;}
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-opaque-luau-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau';
+  fs.writeFileSync(path.join(root,file),OPAQUE_ACTION_SOURCE);fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),OPAQUE_ACTION_CONFIG);
+  const raw=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'전투 행동 누락 복구'},sourceRoot:root,responsibleFiles:[file],
+    candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot:root,target:'roblox',luauCompiler:compiler})});
+  const patched=OPAQUE_ACTION_SOURCE.replace(raw.edits[0].find,raw.edits[0].replace);
+  const harness=[
+    'local now = 1; local os = {clock = function() return now end}',
+    'local callback = nil',
+    'local channel = {OnServerEvent = {Connect = function(_, fn) callback = fn end}}',
+    'local module = {}',
+    'local shared = {WaitForChild = function(_, name) assert(name == "GameConfig"); return module end}',
+    'local storage = {WaitForChild = function(_, name) if name == "Shared" then return shared end; assert(name == "GameAction"); return channel end}',
+    'local game = {GetService = function(_, name) assert(name == "ReplicatedStorage"); return storage end}',
+    'local require = function(value) assert(value == module); return (function()',OPAQUE_ACTION_CONFIG,'end)() end',
+    patched,
+    'local data = {Gold = 10, Damage = 0, Scouts = 0}',
+    'local player = {GetAttribute = function(_, key) return data[key] end, SetAttribute = function(_, key, value) data[key] = value end}',
+    'callback(player, "opaque-attack-7"); assert(data.Gold == 7 and data.Damage == 7 and data.LastApprovedScope == "opaque-attack-7")',
+    'callback(player, "opaque-attack-7"); assert(data.Gold == 7 and data.Damage == 7)',
+    'now += 1; callback(player, "scopeHandler7"); assert(data.Gold == 7 and data.Damage == 7)',
+    'callback(player, "opaque-scout-3"); assert(data.Scouts == 1)',
+    'now += 1; data.Gold = 2; callback(player, "opaque-attack-7"); assert(data.Gold == 2 and data.Damage == 7)',
+    'now += 1; data.Gold = 8; callback(player, "opaque-attack-7"); assert(data.Gold == 5 and data.Damage == 14)',
+    'print("OPAQUE_ACTION_CAUSAL_REPLAY=PASS")'
+  ].join('\n');
+  const script=path.join(root,'opaque.luau');fs.writeFileSync(script,harness);
+  execFileSync(compiler,['--null',script],{encoding:'utf8',timeout:15000});
+  const runtime=path.join(path.dirname(compiler),process.platform==='win32'?'luau.exe':'luau');
+  assert.match(execFileSync(runtime,[script],{encoding:'utf8',timeout:15000}),/OPAQUE_ACTION_CAUSAL_REPLAY=PASS/);
+});
+
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]

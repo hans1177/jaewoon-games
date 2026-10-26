@@ -1752,7 +1752,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         &&!/\bConfig\s*\.\s*Actions\s*(?:=|(?:\.[A-Za-z_]\w*|\[[^\]\n]*\])\s*=)/.test(code)){
         const configSource=fs.readFileSync(configFile,'utf8');
         const configCode=executableText(configSource,'luau');
-        const actionTables=[...configCode.matchAll(/\bActions\s*=\s*\{([^{}]*)\}/g)];
+        const actionTables=[...configCode.matchAll(/\bActions\s*=\s*\{/g)];
         const configTables=[...configCode.matchAll(/^local\s+Config\s*=\s*\{/gm)];
         const table=tables[0],tableBodyStart=table.index+table[0].indexOf('{')+1;
         const dispatcher=/remote\.OnServerEvent:Connect\(function\(player, (actionId|action)\)\n  if typeof\(\1\) ~= "string" then return end\n  local handler = handlers\[\1\]\n  if typeof\(handler\) ~= "function" then return end\n  local now = os\.clock\(\)\n  local previous = lastAction\[player\] or 0\n  if now - previous < Config\.RateLimitSeconds then return end\n  lastAction\[player\] = now\n  handler\(player\)\n(?:  broadcastMultiplayerSync\(player\)\n)?end\)/g;
@@ -1772,15 +1772,36 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             if(configCode[at]==='{')depth++;
             else if(configCode[at]==='}'&&--depth===0){configEnd=at;break;}
           }
-          const actionBody=configSource.slice(start,start+actionTable[1].length);
+          let actionEnd=-1;depth=1;
+          for(let at=start;at<configCode.length;at++){
+            if(configCode[at]==='{')depth++;
+            else if(configCode[at]==='}'&&--depth===0){actionEnd=at;break;}
+          }
+          const actionBody=configSource.slice(start,actionEnd);
+          const recordActions=/^\s*\{/.test(executableText(actionBody,'luau'));
           const approved=new Map(),existing=new Map();
           const prefix=configCode.slice(configStart,actionTable.index);
-          let valid=actionTable.index>configStart&&actionTable.index<configEnd
+          let valid=actionTable.index>configStart&&actionEnd>start&&actionEnd<configEnd
             &&[...prefix.matchAll(/\{/g)].length===[...prefix.matchAll(/\}/g)].length;
           const actionLines=actionBody.split('\n'),actionCodeLines=executableText(actionBody,'luau').split('\n');
           for(let index=0;index<actionLines.length;index++){
             const line=actionLines[index];
             if(!line.trim()||/^\s*--[^[]/.test(line))continue;
+            if(recordActions){
+              // 승인 목록은 실행하지 않는다. 리터럴 레코드의 유일한 Id만 읽는다.
+              const record=/^\s*\{([^{}]*)\}\s*,\s*(?:--[^\n]*)?$/.exec(line);
+              if(!record||!actionCodeLines[index].trim()){valid=false;break;}
+              const fields=new Map();let offset=0;
+              const field=/\s*([A-Za-z_][A-Za-z_0-9]*)\s*=\s*("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[+-]?\d+(?:\.\d+)?|true|false|nil)\s*(?:,\s*|$)/gy;
+              while(offset<record[1].length&&record[1].slice(offset).trim()){
+                field.lastIndex=offset;const item=field.exec(record[1]);
+                if(!item||fields.has(item[1])){valid=false;break;}
+                fields.set(item[1],item[2]);offset=field.lastIndex;
+              }
+              const id=/^(["'])([A-Za-z_][A-Za-z_0-9-]*)\1$/.exec(fields.get('Id')||'')?.[2];
+              if(!valid||!id||approved.has(id)){valid=false;break;}
+              approved.set(id,id);continue;
+            }
             const row=/^\s*([A-Za-z_][A-Za-z_0-9]*)\s*=\s*(["'])([A-Za-z_][A-Za-z_0-9-]*)\2\s*,\s*(?:--[^\n]*)?$/.exec(line);
             if(!row||!actionCodeLines[index].trim()||approved.has(row[1])||[...approved.values()].includes(row[3])){valid=false;break;}
             approved.set(row[1],row[3]);
@@ -1790,9 +1811,12 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           for(let index=0;index<bodyLines.length;index++){
             const line=bodyLines[index];
             if(!line.trim()||/^\s*--[^[]/.test(line))continue;
-            const row=/^\s*\[Config\.Actions\.([A-Za-z_][A-Za-z_0-9]*)\]\s*=\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*(?:--[^\n]*)?$/.exec(line);
-            if(!row||!bodyCodeLines[index].trim()||!approved.has(row[1])||existing.has(row[1])){valid=false;break;}
-            existing.set(row[1],row[2]);
+            const row=recordActions
+              ?/^\s*\[(["'])([A-Za-z_][A-Za-z_0-9-]*)\1\]\s*=\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*(?:--[^\n]*)?$/.exec(line)
+              :/^\s*\[Config\.Actions\.([A-Za-z_][A-Za-z_0-9]*)\]\s*=\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*(?:--[^\n]*)?$/.exec(line);
+            const key=recordActions?row?.[2]:row?.[1],name=recordActions?row?.[3]:row?.[2];
+            if(!row||!bodyCodeLines[index].trim()||!approved.has(key)||existing.has(key)){valid=false;break;}
+            existing.set(key,name);
           }
           const functions=inspectSourceFunctions(source,{language:'luau'}),additions=[],bindings=[];
           const outer=code.split('');
@@ -1813,7 +1837,12 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           }
           for(const [key,id] of approved){
             if(existing.has(key))continue;
-            const matches=functions.filter(fn=>fn.name.toLowerCase()===key.toLowerCase());
+            const matches=functions.filter(fn=>{
+              if(!recordActions)return fn.name.toLowerCase()===key.toLowerCase();
+              const markers=[...fn.body.matchAll(/\bplayer:SetAttribute\(\s*(["'])LastApprovedScope\1\s*,\s*(["'])([A-Za-z_][A-Za-z_0-9-]*)\2\s*\)/g)]
+                .filter(row=>fn.code.slice(row.index,row.index+6)==='player'&&!/\bfunction\b/.test(fn.code.slice(0,row.index)));
+              return markers.length===1&&markers[0][3]===id;
+            });
             if(matches.length!==1)continue;
             const fn=matches[0],name=fn.name;
             if(!new RegExp('^local\\s+function\\s+'+name+'\\(player\\)').test(source.slice(fn.start,fn.end))
@@ -1821,7 +1850,33 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
               ||[...code.matchAll(new RegExp('\\bfunction\\s+'+name+'\\s*\\(','g'))].length!==1
               ||new RegExp('\\b'+name+'\\s*=(?!=)').test(code)
               ||/(?:save|load|admin|delete|shutdown|initialize|reset)/i.test(name))continue;
-            additions.push('  [Config.Actions.'+key+'] = '+name+',');bindings.push({actionKey:key,actionId:id,function:name});
+            const stateWrites=[];
+            if(recordActions){
+              // 행동 ID 마커만으로는 게임 로직 증거가 아니다. 실제 상태 쓰기까지 추적한다.
+              for(const row of fn.body.matchAll(/\bplayer:SetAttribute\(\s*(["'])([A-Za-z_][A-Za-z_0-9]*)\1\s*,/g)){
+                if(fn.code.slice(row.index,row.index+6)==='player')stateWrites.push({attribute:row[2],function:name,via:'DIRECT_PLAYER_ATTRIBUTE'});
+              }
+              for(const helper of functions){
+                const signature=/^local\s+function\s+([A-Za-z_][A-Za-z_0-9]*)\(player,\s*([A-Za-z_][A-Za-z_0-9]*),\s*([A-Za-z_][A-Za-z_0-9]*)\)/.exec(source.slice(helper.start,helper.end));
+                if(!signature||helper.end>fn.start||!topLevel.has(helper.start)
+                  ||functions.some(parent=>parent!==helper&&parent.start<helper.start&&parent.end>helper.start)
+                  ||[...code.matchAll(new RegExp('\\bfunction\\s+'+helper.name+'\\s*\\(','g'))].length!==1
+                  ||new RegExp('\\b'+helper.name+'\\s*=(?!=)').test(code)
+                  ||!new RegExp('\\bplayer:SetAttribute\\(\\s*'+signature[2]+'\\s*,').test(helper.code))continue;
+                const call=new RegExp('\\b'+helper.name+'\\(\\s*player,\\s*(["\\x27])([A-Za-z_][A-Za-z_0-9]*)\\1\\s*,','g');
+                for(const row of fn.body.matchAll(call))if(fn.code.slice(row.index,row.index+helper.name.length)===helper.name){
+                  stateWrites.push({attribute:row[2],function:name,via:helper.name});
+                }
+              }
+              const gameplayWrites=stateWrites.filter(row=>!['LastApprovedScope','LastLearningPattern','ActionSequence','LearningOperator'].includes(row.attribute)
+                &&!/^Verified/.test(row.attribute));
+              if(!gameplayWrites.length)continue;
+              additions.push('  ['+JSON.stringify(id)+'] = '+name+',');
+              bindings.push({actionKey:key,actionId:id,function:name,identityEvidence:'EXISTING_LAST_APPROVED_SCOPE',
+                stateWrites:[...new Map(gameplayWrites.map(row=>[row.attribute+'|'+row.via,row])).values()]});
+            }else{
+              additions.push('  [Config.Actions.'+key+'] = '+name+',');bindings.push({actionKey:key,actionId:id,function:name});
+            }
           }
           if(valid&&approved.size&&existing.size&&additions.length){
             if(topLevel.has(table.index)){
