@@ -1621,6 +1621,10 @@ test('shared Roblox UI renders live inventory icon fallback, equipped badges, se
   assert.match(inventory,/OwnsSaveAuthority",false/);
   assert.match(inventory,/OwnsRemoteAuthority",false/);
   assert.doesNotMatch(inventory,/FireServer\(|UpdateAsync\(|SetAsync\(/,'inventory panel must not own game economy, remotes or persistence');
+  const actionMenu=section('AdaptActionMenu');
+  assert.match(actionMenu,/RobloxCommonUI.CreateIconButton\(\{name="GameActionsMenu"/);
+  assert.match(actionMenu,/menu.Activated:Connect\(function\(\)setOpen\(true\)end\)/);
+  assert.match(actionMenu,/gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets/);
   const generator=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   assert.match(generator,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
   assert.match(generator,/clientSource\(\{profile,learning,studioAssets,studioAssetFamilyStatus\}\)/);
