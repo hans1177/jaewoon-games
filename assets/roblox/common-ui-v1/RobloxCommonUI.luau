@@ -299,7 +299,22 @@ function RobloxCommonUI.CreateInventorySlot(options)
   icon.BackgroundTransparency = 1
   icon.Image = tostring(options.image or "")
   icon.ScaleType = Enum.ScaleType.Fit
+  icon.Visible = icon.Image ~= ""
   icon.Parent = button
+  -- 승인된 이미지가 없으면 플레이어가 읽을 수 있는 원형 글리프를 보여준다.
+  -- 게임 자산 ID를 추측하거나 공백 아이콘을 최종 이미지로 남기지 않는다.
+  local glyph = Instance.new("TextLabel")
+  glyph.Name = "FallbackGlyph"
+  glyph.Size = UDim2.new(1, -16, 1, -16)
+  glyph.Position = UDim2.fromOffset(8, 8)
+  glyph.BackgroundTransparency = 1
+  glyph.Text = tostring(options.glyph or "?")
+  glyph.TextColor3 = theme.Text
+  glyph.TextSize = 26
+  glyph.Font = Enum.Font.GothamBold
+  glyph.TextScaled = false
+  glyph.Visible = icon.Image == ""
+  glyph.Parent = button
 
   local quantity = Instance.new("TextLabel")
   quantity.Name = "Quantity"
@@ -313,6 +328,30 @@ function RobloxCommonUI.CreateInventorySlot(options)
   quantity.Font = options.font or Enum.Font.GothamBold
   quantity.TextXAlignment = Enum.TextXAlignment.Right
   quantity.Parent = button
+
+  local stateBadge = Instance.new("TextLabel")
+  stateBadge.Name = "StateBadge"
+  stateBadge.Size = UDim2.new(1, -8, 0, 17)
+  stateBadge.Position = UDim2.fromOffset(4, 4)
+  stateBadge.BackgroundColor3 = theme.Positive
+  stateBadge.BackgroundTransparency = 0.08
+  stateBadge.TextColor3 = theme.Text
+  stateBadge.TextSize = 10
+  stateBadge.Font = Enum.Font.GothamBold
+  stateBadge.Text = options.locked == true and "잠김" or options.equipped == true and "장착" or ""
+  stateBadge.Visible = stateBadge.Text ~= ""
+  stateBadge.Parent = button
+  corner(stateBadge, 4)
+
+  local rarityRail = Instance.new("Frame")
+  rarityRail.Name = "RarityRail"
+  rarityRail.Size = UDim2.new(1, -12, 0, 3)
+  rarityRail.Position = UDim2.new(0, 6, 1, -5)
+  rarityRail.BackgroundColor3 = typeof(options.rarityColor) == "Color3" and options.rarityColor or theme.Accent
+  rarityRail.BorderSizePixel = 0
+  rarityRail.Visible = options.rarityColor ~= nil
+  rarityRail.Parent = button
+  corner(rarityRail, 2)
 
   local selected = Instance.new("Frame")
   selected.Name = "SelectedRing"
@@ -720,6 +759,23 @@ function RobloxCommonUI.CreateIconButton(options)
   button.BorderSizePixel = 0
   button.Image = tostring(options.image or "")
   button.ScaleType = Enum.ScaleType.Fit
+  local missingImage = button.Image == ""
+  -- 외부 ID 없이도 확실히 보이는 상태 아이콘. 실제 이미지가 연결되면 자동으로 숨긴다.
+  local fallback = Instance.new("TextLabel")
+  fallback.Name = "FallbackGlyph"
+  fallback.Size = UDim2.new(1, -14, 1, -14)
+  fallback.Position = UDim2.fromOffset(7, 7)
+  fallback.BackgroundTransparency = 1
+  fallback.Text = tostring(options.shortLabel or options.label or "?")
+  fallback.TextColor3 = theme.Text
+  fallback.TextScaled = true
+  fallback.Font = Enum.Font.GothamBold
+  fallback.Visible = missingImage
+  fallback.Parent = button
+  local fallbackSize = Instance.new("UITextSizeConstraint")
+  fallbackSize.MaxTextSize = 22
+  fallbackSize.MinTextSize = 11
+  fallbackSize.Parent = fallback
   button.Selectable = true
   tag(button, "ICON_BUTTON")
   corner(button, tonumber(options.cornerRadius) or 12)
@@ -734,6 +790,7 @@ function RobloxCommonUI.CreateIconButton(options)
 
   button.MouseButton1Down:Connect(function() outline.Transparency = 0 end)
   button.MouseButton1Up:Connect(function() outline.Transparency = 0.10 end)
+  button:SetAttribute("IconFallbackActive", missingImage)
   button:SetAttribute("PresentationRole", "ICON_ACTION")
   button:SetAttribute("OwnsGameplayAction", false)
   button:SetAttribute("OwnsRemoteAuthority", false)
@@ -1866,6 +1923,18 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     size=UDim2.new(1,-8,0,160),theme=theme
   })
   grid.Parent=scroll
+  local emptyMessage = Instance.new("TextLabel")
+  emptyMessage.Name = "InventoryEmptyMessage"
+  emptyMessage.Size = UDim2.new(1, -24, 0, 74)
+  emptyMessage.Position = UDim2.fromOffset(12, 18)
+  emptyMessage.BackgroundTransparency = 1
+  emptyMessage.TextColor3 = theme.MutedText
+  emptyMessage.Font = Enum.Font.GothamMedium
+  emptyMessage.TextSize = 14
+  emptyMessage.TextWrapped = true
+  emptyMessage.Text = "보유 아이템이 없어"
+  emptyMessage.Visible = false
+  emptyMessage.Parent = scroll
   -- 기존 실제 게임 소유 목록은 그대로 유지하고, 화면에서 보이는 결과만 분류한다.
   local rows,shown,filterNames={},{},{}
   local selectedId=nil
@@ -1944,6 +2013,13 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     end)
   end
   refresh=function()
+    if selectedId ~= nil then
+      local exists = false
+      for _,item in ipairs(rows) do
+        if item.id == selectedId then exists = true; break end
+      end
+      if not exists then selectedId = nil end
+    end
     updateFilters()
     shown={}
     local query=string.lower(tostring(search.Text or ""))
@@ -1986,12 +2062,37 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       local icon=slot:FindFirstChild("Icon")
       local quantity=slot:FindFirstChild("Quantity")
       local highlight=slot:FindFirstChild("SelectedRing")
-      if icon then icon.Image=tostring(row.image or "")end
+      if icon then
+        icon.Image=tostring(row.image or "")
+        icon.Visible=icon.Image~=""
+      end
+      local glyph=slot:FindFirstChild("FallbackGlyph")
+      if glyph then
+        local label=tostring(row.glyph or row.name or row.title or row.id or "?")
+        local nextCodepoint=utf8.offset(label,2)
+        glyph.Text=string.sub(label,1,nextCodepoint and nextCodepoint-1 or #label)
+        glyph.Visible=not icon or icon.Image==""
+      end
+      local stateBadge=slot:FindFirstChild("StateBadge")
+      if stateBadge then
+        stateBadge.Text=row.locked==true and "잠김" or row.equipped==true and "장착" or ""
+        stateBadge.Visible=stateBadge.Text~=""
+        stateBadge.BackgroundColor3=row.locked==true and theme.Danger or theme.Positive
+      end
+      local rarityRail=slot:FindFirstChild("RarityRail")
+      if rarityRail then
+        rarityRail.Visible=typeof(row.rarityColor)=="Color3"
+        if rarityRail.Visible then rarityRail.BackgroundColor3=row.rarityColor end
+      end
+      slot:SetAttribute("ItemLocked",row.locked==true)
+      slot:SetAttribute("ItemEquipped",row.equipped==true)
       if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
       if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
       slot.Active=row.id~=nil and row.locked~=true
     end
     for i=#shown+1,#slots do slots[i].Visible=false end
+    emptyMessage.Visible=#shown==0
+    emptyMessage.Text=#rows==0 and "보유 아이템이 없어" or "조건에 맞는 아이템이 없어"
     root:SetAttribute("BoundItemCount",#rows)
     root:SetAttribute("BoundVisibleItemCount",#shown)
     root:SetAttribute("CurrentInventoryFilter",currentFilter)
@@ -2020,7 +2121,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   root:SetAttribute("OwnsSaveAuthority",false)
   root:SetAttribute("OwnsRemoteAuthority",false)
   return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,
-    slots=slots,Sync=sync}
+    slots=slots,emptyMessage=emptyMessage,Sync=sync}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
