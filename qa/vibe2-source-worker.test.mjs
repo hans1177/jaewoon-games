@@ -9963,7 +9963,7 @@ test('community 50 scoped coding recipes are individually reachable without copy
 test('Roblox maker 100 production recipe selection stays distinct, scoped and source-bound',()=>{
   const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   const start=worker.indexOf('  const makerCapabilityRecipes=[');
-  const end=worker.indexOf('  const makerRequest=',start);
+  const end=worker.indexOf('  const famousRobloxMakerRecipes=[',start);
   assert.ok(start>=0&&end>start,'must live inside existing source worker');
   const block=worker.slice(start,end);
   const entries=[...block.matchAll(/^\s{4}(\["[A-Z0-9_]+","[^"]+","[^"]+"\]),?$/gm)].map(row=>JSON.parse(row[1]));
@@ -9992,8 +9992,8 @@ test('Roblox maker 100 production recipe selection stays distinct, scoped and so
   assert.doesNotMatch(build('스터드 바닥','web'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
   assert.doesNotMatch(build('스터드 바닥','unity'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
   const broad=build(entries.map(row=>row[1].split('|')[0]).join(' '));
-  assert.equal((broad.match(/^(?:TOY|WORLD|CHARACTER|MOTION|UI|VFX|BUILD|AUDIO|MOBILE|VERIFY)_[A-Z_]+: /gm)||[]).length,8,
-    'existing prompt budget must limit production selection to eight per task');
+  assert.equal((broad.match(/^(?:TOY|WORLD|CHARACTER|MOTION|UI|VFX|BUILD|AUDIO|MOBILE|VERIFY|SOCIAL|GROWTH|CONTEST|SURVIVAL|ARENA|HORROR|OBBY|TYCOON|TRADE|DISCOVERY)_[A-Z_]+: /gm)||[]).length,8,
+    'shared production selection must remain bounded to eight per task');
   assert.ok(!broad.includes('https://raw.githubusercontent.com/'));
 });
 
