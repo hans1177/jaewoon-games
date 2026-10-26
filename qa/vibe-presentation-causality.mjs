@@ -2,7 +2,7 @@
 // 역할: Presentation Event의 결정성, 인과관계, 권한 격리, motion/VFX/audio/UI 실행 계약을 회귀 검사
 import assert from 'node:assert/strict';
 import {createVibePresentationEvent,compileVibePresentationEvents,routeVibePresentationEvent,createVibeAudioUIExecution,executeVibeAudioUIEvent} from '../assets/vibe-presentation-director.js';
-import {createVibeMotionEffectExecution,createVibeMotionProfile,planVibeMotionEffectsAutopilot,executeVibeMotionEngineEvent} from '../assets/vibe-motion-effects-director.js';
+import {createVibeMotionEffectExecution,createVibeMotionProfile,planVibeMotionEffectsAutopilot,executeVibeMotionEngineEvent,createVibeCreatureRigPlayback} from '../assets/vibe-motion-effects-director.js';
 import {createCommonCareerMotionLoadout,resolveCommonMotionGenre} from '../assets/vibe-motion-director.js';
 
 const base={sourceId:'player',targetId:'enemy-1',causeId:'cause_attack_1',timestamp:120,sequence:2,importance:'normal',payload:{animation:'attack',vfx:'slash',audio:'swing',camera:'shake',ui:'hit',damage:999,hp:0,reward:999}};
@@ -236,5 +236,73 @@ assert.ok(wildPlan.creatureActions.length>2);
 assert.ok(wildPlan.creatureActions.some(row=>row.group==='attacks'));
 assert.ok(wildPlan.creatureActions.every(row=>row.bodyPlan&&row.jointTracks.length>=2&&row.actualNativeRigBindingRequired===true));
 assert.ok(wildPlan.creatureActions.every(row=>row.runtimeVerified===false&&row.gameplayAuthority===false));
+
+
+// 종족별 60 관절 모션·정예 보스 50패턴이 기존 이벤트 연출 큐로 실제 전달되는지 확인.
+for(const [speciesId,tier] of [['WOLF','NORMAL'],['SPIDER','ELITE'],['WYVERN','BOSS'],['GHOST','BOSS']]){
+  const creaturePlan=planVibeMotionEffectsAutopilot({speciesId,monsterTier:tier,genre:'ACTION_RPG',platform:'ROBLOX'});
+  const motion60=creaturePlan.creatureActions.filter(row=>row.source==='DETAILED_BODY_PLAN_60');
+  const tierPatterns=creaturePlan.creatureActions.filter(row=>row.source==='ELITE_BOSS_PRESENTATION_50');
+  assert.equal(motion60.length,60,speciesId+':'+tier);
+  assert.equal(tierPatterns.length,tier==='NORMAL'?0:50,speciesId+':'+tier);
+  assert.ok(motion60.every(row=>row.jointTracks.length===3&&row.actualNativeRigBindingRequired));
+  assert.ok(tierPatterns.every(row=>row.steps.length===3&&row.nativeAssetVerified===false));
+  assert.equal(creaturePlan.runtimeVerified,false);
+}
+const wolfMotionPlan=planVibeMotionEffectsAutopilot({speciesId:'WOLF',monsterTier:'ELITE',platform:'WEB'});
+const wolfMotion=wolfMotionPlan.creatureActions.find(row=>row.source==='DETAILED_BODY_PLAN_60'&&row.group==='attacks');
+const wolfDeath=wolfMotionPlan.creatureActions.find(row=>row.source==='DETAILED_BODY_PLAN_60'&&row.group==='deaths');
+const nativeMap=Object.fromEntries([...new Set(wolfMotionPlan.creatureActions
+  .flatMap(row=>row.jointTracks.map(track=>track.part)))].map(part=>[part,{nativeBone:part}]));
+const verifiedRig={bodyPlan:'QUADRUPED_CANINE',joints:nativeMap,assetAuthorization:{
+  approved:true,sourceAssetId:'user-approved-cc0-wolf-mesh',
+  sourceHash:'existing-project-original-hash',licenseVerified:true
+}};
+const output=[];
+assert.equal(createVibeCreatureRigPlayback({speciesId:'WOLF'}).ready,false);
+assert.equal(createVibeCreatureRigPlayback({
+  speciesId:'WOLF',rig:{...verifiedRig,assetAuthorization:null},applyJointPose:()=>{}
+}).reason,'approved-real-rig-provenance-or-place-access-missing');
+assert.equal(createVibeCreatureRigPlayback({
+  speciesId:'WOLF',rig:{...verifiedRig,bodyPlan:'HEXAPOD_INSECT'},applyJointPose:()=>{}
+}).reason,'native-rig-body-plan-mismatch');
+assert.equal(createVibeCreatureRigPlayback({
+  speciesId:'WOLF',rig:{...verifiedRig,joints:{FORELEGS:nativeMap.FORELEGS}},applyJointPose:()=>{}
+}).reason,'articulated-rig-channels-missing');
+assert.equal(createVibeCreatureRigPlayback({
+  speciesId:'WOLF',platform:'ROBLOX',rig:verifiedRig,applyJointPose:()=>{}
+}).reason,'approved-real-rig-provenance-or-place-access-missing');
+const playback=createVibeCreatureRigPlayback({
+  speciesId:'WOLF',platform:'WEB',rig:verifiedRig,
+  applyJointPose:(bone,angles,metadata)=>output.push({bone,angles,metadata})
+});
+assert.equal(playback.ready,true);
+assert.equal(playback.runtimeVerified,false,'binding does not certify native playback');
+assert.equal(playback.supportedMotionIds.length,60);
+const swing=createVibePresentationEvent('attack',{sourceId:'wolf',causeId:'confirmed-swing'});
+assert.equal(playback.play(swing,wolfDeath.id).reason,'creature-motion-event-group-mismatch');
+assert.equal(playback.play({...swing,authority:'gameplay'},wolfMotion.id).accepted,false);
+assert.equal(playback.play(swing,'UNDECLARED_ACTION').accepted,false);
+assert.equal(playback.play(swing,wolfMotion.id,{durationSeconds:0}).accepted,false);
+assert.equal(playback.play(swing,wolfMotion.id,{durationSeconds:1}).accepted,true);
+assert.equal(playback.tick(-1).applied,false);
+const firstPose=playback.tick(.125);
+assert.equal(firstPose.applied,true);
+assert.equal(firstPose.jointCount,3);
+assert.equal(output.length,3);
+assert.ok(output.every(row=>Number.isFinite(row.angles[0])
+  &&row.metadata.authority==='presentation-only'&&row.metadata.causeId==='confirmed-swing'));
+for(let i=0;i<7;i++)playback.tick(.125);
+assert.equal(playback.tick(.1).reason,'no-accepted-motion');
+const defeated=createVibePresentationEvent('death',{sourceId:'wolf',causeId:'confirmed-defeat'});
+assert.equal(playback.play(defeated,wolfDeath.id,{durationSeconds:.4}).accepted,true);
+const settled=playback.tick(.25);
+assert.equal(settled.applied,true);
+const finalDeath=playback.tick(.15);
+assert.equal(finalDeath.holdsDeathPose,true);
+assert.ok(output.slice(-3).some(row=>row.angles.some(angle=>Math.abs(angle)>.01)));
+assert.equal(playback.tick(.01).holdsDeathPose,true);
+playback.stop();
+assert.equal(playback.tick(.1).applied,false);
 
 console.log('vibe-presentation-causality: ok');
