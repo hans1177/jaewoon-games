@@ -24,7 +24,8 @@ test('V5 authored identity core is promoted during detailed design, without a ne
   const persist=designRuntime.indexOf('DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES');
   const verify=designRuntime.indexOf('s.authorRole==="GAME_DESIGNER_AI"');
   const dispatch=designRuntime.indexOf('gh workflow run company-design-promotion-sync.yml');
-  assert.ok(persist>=0&&verify>persist&&dispatch>verify);
+  // Validate the authored digest before committing the checkpoint; dispatch only after persistence.
+  assert.ok(verify>=0&&persist>verify&&dispatch>persist);
   assert.match(designRuntime,/s\.contentDigest===digest/);
   assert.match(designRuntime,/s\.fingerprint===cp\.fingerprint/);
   assert.match(designRuntime,/cp\.designerSeed\?\.contentDigest===digest/);
