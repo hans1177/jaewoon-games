@@ -446,7 +446,9 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     const byRule=new Map(systems.map(row=>[row.id,row]));
     const graph=new Map(systems.map(row=>[row.id,[]]));
     const edges=list(design.systemInterconnections);
-    let connected=edges.length>=5&&systems.length>=((seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5)?4:5);
+    // 현재 V5 디자이너가 작성한 네 역할은 옛 접수 스케치의 버전 1에 의해 c 역할을 다시 강제하지 않는다.
+    // 필수 상태 전달 5개, A↔B 왕복, 모든 실제 역할 연결 검사는 그대로 유지한다.
+    let connected=edges.length>=5&&systems.length>=(ownerV5Grammar?4:5);
     for(const edge of edges){
       const from=byRule.get(edge.fromId),to=byRule.get(edge.toId),keys=list(edge.stateKeys);
       if(!from||!to||!keys.length||keys.some(key=>!list(from.stateOutputs).includes(key)||!list(to.stateInputs).includes(key)))connected=false;
@@ -459,7 +461,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!connected||!main||!a||!b||!reaches(a,b)||!reaches(b,a)||systems.some(row=>!reaches(main,row.id)&&!reaches(row.id,main))){
       reject('DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED','SYSTEM_INTERCONNECTION_DESIGN',['systemInterconnections'],
         {edgeCount:edges.length,connected},
-        (seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5)
+        ownerV5Grammar
           ?'기존 규칙의 실제 상태 입출력으로 MAIN/A/B/@를 연결하고 C 소재와 주·보조 장르가 A/B 선택에 영향을 주는 인과를 증명한다. 기존 c 시스템이 없으면 만들지 않는다. 임시 보상·가짜 상태를 추가하지 않는다.'
           :'기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.');
     }
