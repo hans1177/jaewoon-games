@@ -66,9 +66,11 @@ notice.TextColor3=Color3.fromRGB(252,226,137)
 -- 군단 지휘와 경제 패널: 모바일에서는 버튼으로 펼쳐 화면을 확보한다.
 local controlPanel=panel(gui,UDim2.fromOffset(218,346),UDim2.fromOffset(8,133))
 controlPanel.Visible=false
+local mapPanel
 local controlToggle=button(gui,"군단 · 경제",UDim2.fromOffset(137,38),0,function()
  controlPanel.Visible=not controlPanel.Visible
  if controlPanel.Visible then menu.Visible=false end
+ if mapPanel then mapPanel.Visible=false end
  dock.Visible=false
 end)
 controlToggle.Position=UDim2.new(1,-255,0,10)
@@ -77,8 +79,62 @@ local buildToggle=button(gui,"건설 · 슬롯",UDim2.fromOffset(116,36),1,funct
  dock.Visible=not dock.Visible
  menu.Visible=false
  controlPanel.Visible=false
+ if mapPanel then mapPanel.Visible=false end
 end)
 buildToggle.Position=UDim2.new(1,-128,0,10)
+
+-- Noob Army Tycoon과 같은 규모의 전장은 현재 위치가 읽히는 지도가 필요하다.
+-- 화면에 계속 떠 있는 패널 대신 버튼을 눌렀을 때만 펼친다.
+local mapToggle=button(gui,"지도 · 이동",UDim2.fromOffset(112,35),2,function()
+ mapPanel.Visible=not mapPanel.Visible
+ if mapPanel.Visible then
+  dock.Visible=false;menu.Visible=false;controlPanel.Visible=false
+ end
+end)
+mapToggle.Position=UDim2.new(1,-120,0,55)
+mapPanel=panel(gui,UDim2.fromOffset(190,273),UDim2.new(1,-198,0,98))
+mapPanel.Visible=false
+label(mapPanel,"동물 군단 섬 지도",UDim2.new(1,-12,0,26),UDim2.fromOffset(8,4))
+local mapSurface=Instance.new("Frame")
+mapSurface.Name="섬 전체 지도"
+mapSurface.Size=UDim2.new(1,-16,0,125);mapSurface.Position=UDim2.fromOffset(8,30)
+mapSurface.BackgroundColor3=Color3.fromRGB(43,82,90)
+mapSurface.BorderSizePixel=0;mapSurface.Parent=mapPanel
+local oceanEdge=Instance.new("UICorner");oceanEdge.CornerRadius=UDim.new(0,8);oceanEdge.Parent=mapSurface
+local road=Instance.new("Frame")
+road.Name="군단 진격로";road.AnchorPoint=Vector2.new(.5,.5)
+road.Position=UDim2.fromScale(.5,.5);road.Size=UDim2.fromScale(.045,.76)
+road.BorderSizePixel=0;road.BackgroundColor3=Color3.fromRGB(207,184,139);road.Parent=mapSurface
+local function mapPin(txt,x,z,color)
+ local pin=Instance.new("TextLabel")
+ pin.Name="지도 "..txt
+ pin.AnchorPoint=Vector2.new(.5,.5);pin.Size=UDim2.fromOffset(37,19)
+ pin.BackgroundColor3=color;pin.BackgroundTransparency=.08
+ pin.Text=txt;pin.TextSize=11;pin.TextColor3=Color3.fromRGB(255,255,255)
+ pin.Font=Enum.Font.GothamBold;pin.BorderSizePixel=0
+ pin.Position=UDim2.fromScale(.5+x/C.World.IslandWidth,1-(z+C.World.IslandLength*.5)/C.World.IslandLength)
+ pin.Parent=mapSurface
+ local radius=Instance.new("UICorner");radius.CornerRadius=UDim.new(0,7);radius.Parent=pin
+ return pin
+end
+mapPin("기지",0,C.World.PlayerSpawnZ,Color3.fromRGB(48,140,100))
+local pointOne=mapPin("거점1",0,C.World.CaptureZ[1],Color3.fromRGB(117,115,96))
+local pointTwo=mapPin("거점2",0,C.World.CaptureZ[2],Color3.fromRGB(117,115,96))
+mapPin("적진",0,C.World.EnemyGateZ,Color3.fromRGB(183,83,72))
+local playerPin=mapPin("나",0,C.World.PlayerSpawnZ+42,Color3.fromRGB(69,139,221))
+playerPin.ZIndex=3
+local mapTravelHome=button(mapPanel,"내 기지 이동",UDim2.new(1,-16,0,30),4,function()
+ remote:FireServer("TRAVEL","BASE");mapPanel.Visible=false
+end)
+mapTravelHome.Position=UDim2.fromOffset(8,164)
+local mapTravelFront=button(mapPanel,"중앙 전선 이동",UDim2.new(1,-16,0,30),5,function()
+ remote:FireServer("TRAVEL","FRONT");mapPanel.Visible=false
+end)
+mapTravelFront.Position=UDim2.fromOffset(8,199)
+local mapTravelFar=button(mapPanel,"전방 거점 이동",UDim2.new(1,-16,0,30),6,function()
+ remote:FireServer("TRAVEL","FORWARD");mapPanel.Visible=false
+end)
+mapTravelFar.Position=UDim2.fromOffset(8,234)
 
 label(controlPanel,"전선 사령부 · 군단 성장",UDim2.new(1,-12,0,28),UDim2.fromOffset(8,5))
 local economyInfo=label(controlPanel,"자원 정보 불러오는 중",UDim2.new(1,-12,0,65),UDim2.fromOffset(8,35))
@@ -117,6 +173,27 @@ local function renderEconomy(e)
 end
 local hasState=false
 local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={},Economy={}}
+local function updateMap()
+ local e=current.Economy
+ local colors={ALLY=Color3.fromRGB(61,161,103),ENEMY=Color3.fromRGB(189,84,77),NEUTRAL=Color3.fromRGB(117,115,96)}
+ if type(e)=="table" and type(e.CaptureOwners)=="table" then
+  pointOne.BackgroundColor3=colors[e.CaptureOwners[1]] or colors.NEUTRAL
+  pointTwo.BackgroundColor3=colors[e.CaptureOwners[2]] or colors.NEUTRAL
+ end
+ local arenaX=p:GetAttribute("ArenaX")
+ local character=p.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ if type(arenaX)~="number" or not root then return end
+ local x=math.clamp(.5+(root.Position.X-arenaX)/C.World.IslandWidth,.08,.92)
+ local z=math.clamp(1-(root.Position.Z+C.World.IslandLength*.5)/C.World.IslandLength,.08,.92)
+ playerPin.Position=UDim2.fromScale(x,z)
+end
+task.spawn(function()
+ while gui.Parent do
+  if mapPanel.Visible then updateMap() end
+  task.wait(.33)
+ end
+end)
 local function updateStatus()
  status.Text=string.format("스테이지 %d · 골드 %d\n우리 성문 %d  |  적 성문 %d",
   current.Stage or 1,current.Gold or 0,math.ceil(current.HomeHP or 500),math.ceil(current.EnemyHP or 380))
@@ -129,7 +206,7 @@ end
 p:GetAttributeChangedSignal("SaveStatus"):Connect(updateSaveNotice)
 local chosen=1
 local function redrawMenu(index)
- chosen=index;menu.Visible=true;dock.Visible=false;controlPanel.Visible=false
+ chosen=index;menu.Visible=true;dock.Visible=false;controlPanel.Visible=false;mapPanel.Visible=false
  for _,x in ipairs(choices:GetChildren()) do if x:IsA("GuiObject") then x:Destroy() end end
  local b=current.Buildings[index]
  if b and b.Kind~="" and C.ById[b.Kind] then
@@ -176,6 +253,7 @@ remote.OnClientEvent:Connect(function(action,data)
   current.Economy=data
   updateStatus()
   renderEconomy(data)
+  updateMap()
   return
  end
  if action=="OPEN_SLOT" and type(data)=="table" then
@@ -191,6 +269,7 @@ remote.OnClientEvent:Connect(function(action,data)
  if data.Message and data.Message~="" then notice.Text=data.Message end
  updateSaveNotice()
  refresh()
+ updateMap()
 end)
 for _,k in ipairs({"Gold","HomeHP","EnemyHP","Stage"}) do
  p:GetAttributeChangedSignal(k):Connect(function()
@@ -252,12 +331,18 @@ local function resizeHud()
  controlPanel.Position=UDim2.fromOffset(8,compact and 115 or 79)
  controlToggle.Size=compact and UDim2.fromOffset(98,34) or UDim2.fromOffset(114,36)
  buildToggle.Size=compact and UDim2.fromOffset(98,34) or UDim2.fromOffset(112,36)
+ mapToggle.Size=compact and UDim2.fromOffset(96,32) or UDim2.fromOffset(112,35)
+ mapPanel.Size=compact and UDim2.fromOffset(174,273) or UDim2.fromOffset(190,273)
  if compact then
   controlToggle.Position=UDim2.fromOffset(8,74)
   buildToggle.Position=UDim2.fromOffset(113,74)
+  mapToggle.Position=UDim2.fromOffset(218,74)
+  mapPanel.Position=UDim2.new(1,-181,0,114)
  else
   controlToggle.Position=UDim2.new(1,-251,0,10)
   buildToggle.Position=UDim2.new(1,-127,0,10)
+  mapToggle.Position=UDim2.new(1,-120,0,55)
+  mapPanel.Position=UDim2.new(1,-198,0,98)
  end
  dock.Size=compact and UDim2.fromOffset(157,214) or (narrow and UDim2.fromOffset(165,223) or UDim2.fromOffset(181,239))
  dock.Position=compact and UDim2.new(1,-164,0,115) or UDim2.new(1,narrow and -172 or -189,0,54)
