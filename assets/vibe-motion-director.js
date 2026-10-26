@@ -1592,7 +1592,7 @@ function monsterAttackMotif(name=''){
   if(/SLAM|SMASH|BREAK|CRUSH|STOMP|BURST/.test(id))return 'SLAM';
   return 'STRIKE';
 }
-function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
+function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter,{holdEnd=false}={}){
   const frame=(phase,angle)=>Object.freeze({
     phase:Number(phase.toFixed(5)),
     rotation:Object.freeze(angle.map(v=>Number(v.toFixed(5))))
@@ -1602,10 +1602,11 @@ function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
     part:upper(part),
     frames:Object.freeze([
       frame(0,[0,0,0]),frame(wind,poseBefore),
-      frame(contact,poseAfter),frame(Math.min(.95,contact+.18),settle),
-      frame(1,[0,0,0])
+      frame(contact,poseAfter),frame(Math.min(.95,contact+.18),holdEnd?poseAfter.map(v=>v*.85):settle),
+      frame(1,holdEnd?poseAfter.map(v=>v*.8):[0,0,0])
     ]),
-    rigJointBindingRequired:true,semanticChannelsOnly:true
+    interpolation:'CUBIC_EASE_WITH_ZERO_ENDPOINT_VELOCITY',
+    holdsFinalPose:holdEnd,rigJointBindingRequired:true,semanticChannelsOnly:true
   });
 }
 // 자체 제작 공유 몬스터는 영구 제거했다. 검증된 CC0 원본 연결 전까지 공백을 유지한다.
@@ -1762,6 +1763,53 @@ export function createCommonMonsterActionLoadout({
       });
     })
   ));
+  // 네발 전용 60동작: 전·후지 지지, 관절 반동, 상황별 피격과 사망 잔류 자세.
+  // 원본 관절 의미 레시피이며, 실제 모션 에셋/보간 구현은 리그별 네이티브 연결이 필요하다.
+  const quadrupedQuota=Object.freeze({
+    locomotion:12,attacks:15,defense:6,reactions:7,acting:7,deaths:6,skill:4,signature:3
+  });
+  const quadruped60=/^QUADRUPED_/.test(species.bodyPlan)
+    ?Object.freeze(Object.entries(quadrupedQuota).flatMap(([group,count])=>{
+      const roles=profile.groups[group];
+      if(!roles?.length)throw Error('QUADRUPED_ACTION_GROUP_MISSING:'+id+':'+group);
+      return Array.from({length:count},(_,index)=>{
+        const role=roles[index%roles.length],variant=Math.floor(index/roles.length);
+        const side=index%2===0?1:-1,level=1+variant*.09;
+        const dying=group==='deaths',moving=group==='locomotion';
+        const phaseTimes=dying?[0,.12,.30,.52,.76,1]
+          :moving?[0,.14,.30,.55,.77,1]:[0,.12,.34,.58,.80,1];
+        const before=kinematic.coil.map((v,axis)=>(v+(.04+variant*.013)*(axis===0?side:1))*level);
+        const after=kinematic.hit.map((v,axis)=>(v+(.05+variant*.01)*(axis===1?side:1))*level*(dying?1.45:1));
+        const fore=monsterPoseFrames('FORELEGS',phaseTimes[2],phaseTimes[3],before,after,{holdEnd:dying});
+        const hind=monsterPoseFrames('HINDLEGS',phaseTimes[2],phaseTimes[3],
+          before.map(v=>-v*.7),after.map(v=>-v*(dying?.82:.48)),{holdEnd:dying});
+        const spinePart=species.specialParts.find(part=>/SPINE|NECK|SHOULDERS|TAIL/.test(part))||kinematic.counterPart;
+        const expression=monsterPoseFrames(spinePart,phaseTimes[2],phaseTimes[3],
+          before.map(v=>v*.35),after.map(v=>v*(dying?1.1:.48)),{holdEnd:dying});
+        return Object.freeze({
+          id:id+'_Q60_'+upper(group)+'_'+String(index+1).padStart(2,'0'),
+          sourceMotionId:role,group,variation:variant,bodyPlan:species.bodyPlan,
+          poseKeyTimes:freezeList(phaseTimes),jointTracks:Object.freeze([fore,hind,expression]),
+          semanticLegChannels:freezeList(['FRONT_LEFT','FRONT_RIGHT','HIND_LEFT','HIND_RIGHT']),
+          diagonalGaitPhase:freezeList(moving?[0,.5,.5,0]:[0,0,0,0]),
+          supportContactRequired:true,groundProbeAndFootLockRequired:true,
+          deathStage:dying?['STAGGER','FRONT_COLLAPSE','LEFT_COLLAPSE','RIGHT_COLLAPSE','REAR_COLLAPSE','SETTLE'][index]:null,
+          deathEndPoseHeld:dying,headNeckSpineFollowThrough:true,
+          gazeEarsTailFacialChannelsOnlyWhenAnatomyExists:true,
+          interpolation:'CUBIC_EASE_WITH_POSE_VELOCITY_MATCH',
+          handoffToExistingHitDeathAndMoveEvents:true,rootAndHitboxUnchanged:true,
+          sourceType:'SHARED_SEMANTIC_JOINT_CURVES_REQUIRES_NATIVE_RIG_ADAPTATION',
+          runtimeVerified:false,productionVerified:false,gameplayAuthority:false
+        });
+      });
+    }))
+    :Object.freeze([]);
+  const bipedSync=['HUMANOID_UNDEAD','BOSS_BIPED'].includes(species.bodyPlan)
+    ?createDuelCombatMotionLoadout({
+      weaponFamily:'UNARMED',platform:platformId,actorClass:'HUMANOID_NPC',
+      bodyPlan:species.bodyPlan
+    })
+    :null;
   // 장르별 요청 슬롯만 투영한다. 다른 장르로 전용된 원본 동작은 삭제하지 않는다.
   const requestedGroups=COMMON_GENRE_MOTION_CONTEXTS[requestedGenre];
   const semanticOrigin=new Set([...species.locomotion,...species.attacks,...species.defense,
@@ -1796,7 +1844,7 @@ export function createCommonMonsterActionLoadout({
     presentationTier:motionTier,tierPoseIdentity:tierProfile.poseIdentity,
     speciesHierarchy:freezeList(['BODY_PLAN:'+species.bodyPlan,'SPECIES:'+id,'PRESENTATION_TIER:'+motionTier]),
     genreGroups:requestedGroups,roleRequests,
-    choreography,expressiveChoreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
+    choreography,expressiveChoreography,quadruped60,bipedSync,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
     platformNativeAdaptationRequired:true,runtimeVerified:false,productionVerified:false,
@@ -3751,7 +3799,9 @@ export function createRobloxCharacterMotionPlan({
     archetype,
     recentMotionIds
   });
-  const humanoid=normalizedActor!=='CREATURE'||/HUMANOID|BIPED|R15|R6/.test(upper(bodyPlan)+' '+upper(rigProfile));
+  const humanoid=/HUMANOID|BIPED|R15|R6/.test(upper(bodyPlan)+' '+upper(rigProfile))
+    && !/QUADRUPED|CENTAUR|ARACHNID|HEXAPOD|SERPENT/.test(upper(bodyPlan));
+  const limbCount=studio.limbCount||procedural.limbCount||(/QUADRUPED/.test(upper(bodyPlan))?4:2);
   const requiredStates=humanoid
     ?['IDLE','WALK','JOG','RUN','START','STOP','TURN','ATTACK','HIT','DEATH']
     :['IDLE_ACTING','BODY_PLAN_LOCOMOTION','TURN','ATTACK','HIT','DEATH'];
@@ -3763,6 +3813,8 @@ export function createRobloxCharacterMotionPlan({
       ?['MOTOR6D_OR_BONES','HUMANOID_OR_ANIMATION_CONTROLLER','ANIMATOR']
       :['BODY_PLAN_SPECIFIC_ARTICULATED_JOINT_CHAIN','ANIMATOR']),
     requiredStates:Object.freeze(requiredStates),
+    bipedActionSync:humanoid?createDuelCombatMotionLoadout({weaponFamily:studio.weaponFamily||context.weaponFamily||'UNARMED',actorClass:normalizedActor,bodyPlan:/HUMANOID|BIPED/.test(upper(bodyPlan))?bodyPlan:'HUMANOID',platform:'ROBLOX'}):null,
+    fourLegMotionRetargetRequired:/QUADRUPED/.test(upper(bodyPlan)),
     studioProduction:STUDIO_MOTION_PRODUCTION,
     motionSource:source,
     blend:createRobloxMotionBlendProfile(blend),
@@ -3771,7 +3823,7 @@ export function createRobloxCharacterMotionPlan({
       weaponFamily:studio.weaponFamily||context.weaponFamily||'UNARMED',
       weightClass:studio.weightClass||context.weightClass||'STANDARD',
       combat:studio.combat!==false,mobile:studio.mobile!==false,
-      limbCount:studio.limbCount||procedural.limbCount||2
+      limbCount
     }),
     procedural:createProceduralMotionProfile({
       footIk:procedural.footIk!==false,
@@ -3788,7 +3840,7 @@ export function createRobloxCharacterMotionPlan({
       contactCorrection:procedural.contactCorrection!==false,
       aimOffset:procedural.aimOffset!==false,
       slopeAdaptation:procedural.slopeAdaptation!==false,
-      limbCount:studio.limbCount||procedural.limbCount||2,
+      limbCount,
       platformBudget:procedural.platformBudget||'MOBILE'
     }),
     runtimeScenario:Object.freeze(['IDLE_5_SECONDS','WALK_10_SECONDS','TURN_LEFT_RIGHT','RUN_AND_STOP','ATTACK_THREE_TIMES_WHEN_COMBATANT','HIT_REACTION_WHEN_DAMAGEABLE','DEATH_WHEN_MORTAL','RESPAWN_WHEN_SUPPORTED']),
