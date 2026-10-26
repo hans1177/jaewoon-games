@@ -498,7 +498,11 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.ok(publisher.includes('sourceTreeShas[id]=treeSha'), 'per-game source SHA is retained in the publication manifest');
   assert.ok(publisher.includes('m.sourceTreeShas?.[id]'), 'missing per-game tree hashes must fail live verification');
 
-  assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
+  // Current Pages publisher copies all game roots in bounded async workers.
+  // Verify full paths and propagation of actual copy failures (not a no-op shortcut).
+  assert.match(publisher,/await fs\.promises\.cp\(root,path\.join\(site,root\),\{recursive:true\}\)/);
+  assert.match(publisher,/for\(const result of gameCopyResults\)if\(result\.status==='rejected'\)throw result\.reason/);
+  assert.match(publisher,/PAGES_GAME_COPY_PARALLELISM=8/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
   // 새 공식 홈 리다이렉트는 존재 여부뿐 아니라 내용이 비어 있지 않아야 한다.
   assert.match(publisher,/test -s "\$site\/index\.html"/);
@@ -888,7 +892,11 @@ test('exact F9 publication excludes release classification and catalog scoring f
   assert.equal(steps.includes('RELEASE_CLASSIFICATION'),false);
   assert.equal(owner.publicationScoreGate,false);
   assert.equal(owner.publicationClassificationGate,false);
-  assert.match(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION/);
+  const exactF9Sequence=policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|');
+  // The canonical locked dispatch step is exact artifact publication, with no
+  // release grade/classification conditions. Keep the owner-locked order intact.
+  assert.match(exactF9Sequence,/(?:^|\|)DISPATCH_EXACT_F9_ARTIFACT(?:\||$)/);
+  assert.doesNotMatch(exactF9Sequence,/RELEASE_CLASSIFICATION|ONLY_IF_RELEASED|PUBLISH_IF_SCORED/);
   assert.doesNotMatch(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/ONLY_IF_RELEASED/);
   const inspect=releaseWorkflow.slice(releaseWorkflow.indexOf('  inspect:'),releaseWorkflow.indexOf('  web-release:'));
   assert.match(inspect,/game-not-in-canonical-catalog/);
