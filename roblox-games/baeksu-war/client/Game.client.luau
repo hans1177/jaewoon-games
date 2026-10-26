@@ -13,8 +13,10 @@ gui.Name="BaeksuHUD";gui.ResetOnSpawn=false;gui.Parent=p:WaitForChild("PlayerGui
 -- UI: 모든 소환/전투는 자동. 슬롯 구매·건설·업그레이드 버튼만 제공.
 local function panel(parent,size,pos)
  local f=Instance.new("Frame");f.Size=size;f.Position=pos;f.BackgroundColor3=Color3.fromRGB(32,42,50)
- f.BackgroundTransparency=.06;f.BorderSizePixel=0;f.Parent=parent
- local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,10);c.Parent=f
+ f.BackgroundTransparency=.04;f.BorderSizePixel=0;f.Parent=parent
+ local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,12);c.Parent=f
+ local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(130,170,154);border.Thickness=1;border.Transparency=.43;border.Parent=f
+ local gradient=Instance.new("UIGradient");gradient.Color=ColorSequence.new(Color3.fromRGB(44,66,64),Color3.fromRGB(29,38,49));gradient.Rotation=90;gradient.Parent=f
  return f
 end
 local function label(parent,txt,size,pos)
@@ -28,11 +30,12 @@ local function button(parent,txt,size,order,fn)
  b.BackgroundColor3=Color3.fromRGB(67,111,109);b.Text=txt;b.TextSize=13;b.TextWrapped=true
  b.TextColor3=Color3.new(1,1,1);b.Font=Enum.Font.GothamBold;b.Parent=parent
  local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,8);c.Parent=b
+ local stroke=Instance.new("UIStroke");stroke.Color=Color3.fromRGB(156,215,177);stroke.Transparency=.6;stroke.Parent=b
  b.Activated:Connect(fn)
  return b
 end
 local top=panel(gui,UDim2.new(1,-14,0,74),UDim2.fromOffset(7,6))
-local title=label(top,"백수대전쟁 · 3D 자동 공성전",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
+local title=label(top,"백수대전쟁 Ⅱ · 생물 군단 공성전",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
 title.TextSize=17
 local status=label(top,"불러오는 중",UDim2.new(1,-12,0,40),UDim2.fromOffset(8,27))
 local dock=panel(gui,UDim2.fromOffset(208,295),UDim2.new(1,-216,.52,-125))
@@ -56,9 +59,15 @@ choices.Position=UDim2.fromOffset(6,41);choices.BackgroundTransparency=1;choices
 choices.ScrollBarThickness=3;choices.AutomaticCanvasSize=Enum.AutomaticSize.Y;choices.CanvasSize=UDim2.new()
 choices.Parent=menu
 local cl=Instance.new("UIListLayout");cl.SortOrder=Enum.SortOrder.LayoutOrder;cl.Padding=UDim.new(0,5);cl.Parent=choices
-local notice=label(gui,"슬롯을 터치해 건물을 지어.",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
+local notice=label(gui,"건물을 지어 병력을 모으고, 성문을 돌파해!",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
 notice.TextColor3=Color3.fromRGB(252,226,137)
 local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={}}
+local function updateSaveNotice()
+ if p:GetAttribute("SaveStatus")=="SESSION_ONLY" then
+  notice.Text="비공개 테스트 · 임시 세션 (저장 연결 확인 필요)"
+ end
+end
+p:GetAttributeChangedSignal("SaveStatus"):Connect(updateSaveNotice)
 local chosen=1
 local function redrawMenu(index)
  chosen=index;menu.Visible=true;dock.Visible=false
@@ -99,6 +108,7 @@ remote.OnClientEvent:Connect(function(action,data)
  if action~="STATE" or type(data)~="table" then return end
  current=data
  if data.Message and data.Message~="" then notice.Text=data.Message end
+ updateSaveNotice()
  refresh()
 end)
 for _,k in ipairs({"Gold","HomeHP","EnemyHP","Stage"}) do
@@ -113,8 +123,8 @@ Run:BindToRenderStep("BaeksuWarCamera",Enum.RenderPriority.Camera.Value+1,functi
  local cam=workspace.CurrentCamera
  local x=p:GetAttribute("ArenaX")
  if not cam or type(x)~="number" then return end
- cam.CameraType=Enum.CameraType.Scriptable;cam.FieldOfView=65
- cam.CFrame=CFrame.lookAt(Vector3.new(x+52,82,-41),Vector3.new(x,0,-1))
+ cam.CameraType=Enum.CameraType.Scriptable;cam.FieldOfView=63
+ cam.CFrame=CFrame.lookAt(Vector3.new(x+57,78,-21),Vector3.new(x,2,-22))
  local narrow=cam.ViewportSize.X<700 or (Input.TouchEnabled and cam.ViewportSize.X<950)
  if narrow~=lastNarrow then
   lastNarrow=narrow
