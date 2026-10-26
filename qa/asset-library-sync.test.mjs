@@ -865,7 +865,7 @@ test('native inventory and toy world detail primitives stay source-bound',()=>{
   const inventory=between('CreateInventoryFullScreen','CreateEquipmentFullScreen');
   for(const [block,name] of [[slot,'slot'],[icon,'icon']]){
     assert.match(block,/IconFallback/,'native asset-free glyph: '+name);
-    assert.match(block,/Icon.*Image/,'existing image binding: '+name);
+    assert.match(block,/\.Image\s*=/,'existing image binding: '+name);
   }
   for(const key of ['RarityBadge','EquippedBadge','LockedBadge','SelectedRing','OwnsInventoryAuthority']){
     assert.ok(slot.includes(key),'missing read-only item state '+key);
