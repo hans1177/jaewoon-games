@@ -179,7 +179,13 @@ test('no-model Roblox generated button executes its original callback in isolate
   const file='client/Main.client.luau';
   const source='local score = 0\nlocal function attack()\n  score += 2\nend\nlocal attackButton = Instance.new("TextButton")\nattackButton.Parent = hud\n';
   fs.writeFileSync(path.join(root,file),source);
-  const raw=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,responsibleFiles:[file]});
+  const broken='client/Broken.client.luau';
+  fs.writeFileSync(path.join(root,broken),'local button = Instance.new("TextButton")\nbutton.MouseButton1Click:Connect(function() end))\n');
+  const raw=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,
+    responsibleFiles:[broken,file],candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot:root,target:'roblox',luauCompiler:compiler})});
+  assert.equal(raw.deterministicSelection.attempts[0].status,'REJECTED','the real Luau compiler must reject the broken first source');
+  assert.equal(raw.deterministicSelection.attempts[1].status,'VALIDATED');
+  assert.equal(raw.normalizedCandidate.edits[0].path,file);
   const patched=source.replace(raw.edits[0].find,raw.edits[0].replace);
   const harness=[
     'local callback = nil',
