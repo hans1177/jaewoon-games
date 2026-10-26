@@ -1490,18 +1490,8 @@ local function bindAuthoredCombatMotion(model)
   pose("UpperArmL",CFrame.Angles(math.rad(-wave*amp*.62),0,math.rad(-5)))
   pose("UpperArmR",CFrame.Angles(math.rad(wave*amp*.62),0,math.rad(5)))
   if state=="attack"then
-   local anticipating=info.attackStage=="anticipation"
-   local u=math.clamp((tonumber(time)or 0)/(anticipating and .28 or .7),0,1)
-   local amount=anticipating and u*u*(3-2*u)or math.exp(-u*5)*(1-u)
-   local direction=anticipating and -1 or 1
-   pose("Spine",CFrame.Angles(math.rad(-15*amount*direction),0,math.rad(8*amount*direction)))
-   pose("Chest",CFrame.Angles(math.rad(-10*amount*direction),0,math.rad(-7*amount*direction)))
-   pose("Head",CFrame.Angles(math.rad(9*amount*direction),0,math.rad(-7*amount)))
-   pose("UpperArmL",CFrame.Angles(math.rad(-78*amount*direction),math.rad(-8*amount),math.rad(-14*amount)))
-   pose("UpperArmR",CFrame.Angles(math.rad(-92*amount*direction),math.rad(9*amount),math.rad(14*amount)))
-   pose("ForearmL",CFrame.Angles(math.rad(-28*amount),0,0))
-   pose("ForearmR",CFrame.Angles(math.rad(-36*amount),0,0))
-   pose("Jaw",CFrame.new(0,-.035*amount,0)*CFrame.Angles(math.rad(9*amount),0,0))
+   CommonMotion.SampleUnarmedChain(time,info.attackCombo,targets,info.attackStage,false)
+   -- Legs keep their measured locomotion pose during a running punch.
   end
   for name in pairs(bones)do
    local hair=tonumber(name:match("^Hair(%d+)_"))
@@ -1510,7 +1500,7 @@ local function bindAuthoredCombatMotion(model)
     pose(name,CFrame.Angles(math.rad(math.sin(phase-.4)*move*3+math.sin(t*1.3)*.8),0,math.rad(-lean*2)))
    end
   end
-  blend.Step(targets,dt,state=="attack"and 1.6 or 1)
+  blend.Step(targets,dt,state=="attack"and 3.5 or 1)
  end
  return{step=step,reset=blend.Reset,destroy=blend.Destroy,kind="AUTHORED_BONE_BLEND_MOTION"}
 end
@@ -1628,7 +1618,16 @@ local function markCombatSkinAttack(userId,origin,duration,stage)
    end
   end
  end
- if row then row.attackStart=os.clock();row.attackUntil=row.attackStart+(duration or .7);row.attackStage=stage or "impact" end
+ if row then
+  local now=os.clock()
+  local confirming=stage~="anticipation"and row.attackStage=="anticipation"and now-(row.attackStart or 0)<.65
+  if not confirming then
+   row.attackCombo=now-(row.lastAttackAt or 0)<2.4 and((row.attackCombo or 0)%11+1)or 1
+   row.lastAttackAt=now
+  end
+  local _,chainDuration=CommonMotion.SampleUnarmedChain(0,row.attackCombo,{},"anticipation",false)
+  row.attackStart=now;row.attackUntil=now+(stage=="anticipation"and(duration or .28)or math.max(duration or .7,chainDuration+.12));row.attackStage=stage or "impact"
+ end
 end
 
 RunService.RenderStepped:Connect(function(dt)
@@ -1671,16 +1670,15 @@ RunService.RenderStepped:Connect(function(dt)
    local pose=CFrame.new(0,math.sin(row.phase*2)*.025*row.moveBlend,0)
      *CFrame.Angles(math.rad(-2*row.moveBlend-4*row.runBlend),0,math.rad(row.turnLean*3))
    if state=="attack"then
-    local amount=math.exp(-math.clamp(time/.7,0,1)*5)
-    local direction=row.attackStage=="anticipation"and -1 or 1
-    pose=CFrame.new(0,.04*amount,-.34*amount*direction)*CFrame.Angles(math.rad(-7*amount*direction),0,0)
+    -- Keep the feet and collision root aligned; torso rotation supplies the punch.
+    pose=CFrame.Angles(math.rad(-2*row.moveBlend),0,math.rad(row.turnLean*2))
    end
    row.visualPose=row.visualPose:Lerp(pose,alpha)
    local visualOffset=-groundOffset+(row.authored and(row.pivotToBottom or 0)or 0)
    row.model:PivotTo(rr.CFrame*CFrame.new(0,visualOffset,0)*row.visualPose)
    local info=row.motionInfo
    info.clock=now-row.createdAt;info.phase=row.phase;info.moveBlend=row.moveBlend
-   info.runBlend=row.runBlend;info.turnLean=row.turnLean;info.attackStage=row.attackStage
+   info.runBlend=row.runBlend;info.turnLean=row.turnLean;info.attackStage=row.attackStage;info.attackCombo=row.attackCombo
    pcall(function()row.motion.step(time,state,dt,info)end)
    hideCombatSkinSource(row)
   end

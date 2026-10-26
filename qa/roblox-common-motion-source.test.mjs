@@ -477,6 +477,46 @@ assert(math.abs(bone.Transform[11]-1.2)<1e-8,'POSE_MUST_NOT_ACCUMULATE')
 blend.Reset();assert(bone.Transform[11]==.2 and motor.Transform[11]==.2,'REST_POSE_LOST')
 blend.Destroy();blend.Step({Spine=CFrame.new(0,10,0)},1)
 assert(bone.Transform[11]==.2,'DESTROYED_CONTROLLER_CHANGED_JOINT')
+-- Contact is reached within 100ms; recovery returns exactly to locomotion.
+local signatures={}
+assert(#motion.DescribeUnarmedActions()==30,'UNARMED_ACTION_COUNT')
+for combo=1,30 do
+ local target={ThighL=CFrame.new(0,.3,0)}
+ local _,duration,contact=motion.SampleUnarmedAction(0,combo,target,'impact')
+ assert(contact==1 and duration<=.49,'UNARMED_CONTACT_TIMING')
+ if combo<=12 then assert(target.ThighL[11]==.3,'PUNCH_REPLACED_LOCOMOTION_LEGS')end
+ signatures[combo]=target.UpperArmL[5]+target.UpperArmR[5]*10
+ for _,name in ipairs({'Spine','Chest','Head','ForearmL','ForearmR'})do
+  assert(target[name]~=nil,'UNARMED_ARTICULATION_MISSING')
+ end
+ motion.SampleUnarmedAction(duration+1,combo,target)
+ for _,name in ipairs({'Spine','Chest','Head','UpperArmL','UpperArmR','ForearmL','ForearmR'})do
+  for i=1,12 do assert(math.abs(target[name][i]-CFrame.identity[i])<1e-8,'UNARMED_RECOVERY_DRIFT')end
+ end
+ local _,_,anticipation=motion.SampleUnarmedAction(10,combo,{},'anticipation')
+ assert(anticipation==0,'ANTICIPATION_INVENTED_CONTACT')
+end
+assert(signatures[1]~=signatures[2] and signatures[2]~=signatures[3],'UNARMED_COMBO_IDENTICAL')
+for route=1,11 do
+ local _,total=motion.SampleUnarmedChain(0,route,{},nil,true)
+ local seen={}
+ for step=0,math.ceil((total+.13)*240)do
+  local t=step/240
+  local target,_,id,index=motion.SampleUnarmedChain(t,route,{},nil,true)
+  seen[index]=true
+  for _,pose in pairs(target)do for i=1,12 do assert(pose[i]==pose[i],'CHAIN_NONFINITE')end end
+  if t>total+.12 then for _,name in ipairs({'Spine','UpperArmL','UpperArmR'})do
+   for i=1,12 do assert(math.abs(target[name][i]-CFrame.identity[i])<1e-8,'CHAIN_RECOVERY')end
+  end end
+ end
+ assert(seen[1] and seen[2] and seen[3],'CHAIN_MISSING_LINK')
+ for step=0,math.ceil(total*120)do
+  local _,_,id=motion.SampleUnarmedChain(step/120,route,{},nil,false)
+  -- Final diagnostic ID may retain the source route; active poses must never mime a solo throw.
+  if step/120<total then assert(motion.DescribeUnarmedActions()[id].kind~='THROW','UNPAIRED_THROW')end
+ end
+end
+
 print('JOINT_POSE_BLEND_PASS')
 `;
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'joint-pose-'));
