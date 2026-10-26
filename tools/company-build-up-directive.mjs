@@ -2524,6 +2524,7 @@ export function directivePrompt(d={}){
       version:d.experienceBuildUpContract?.version,
       platform:d.experienceBuildUpContract?.platform,
       attention:d.experienceBuildUpContract?.attention,
+      runtimeSurface:d.experienceBuildUpContract?.platformProfile?.runtimeSurface,
       weakestTracks:d.experienceBuildUpContract?.weakestTracks,
       loop:d.experienceBuildUpContract?.loop,
       rules:['EXACT_REMOTE_CANDIDATE_EVIDENCE','INPUT_TO_STATE_TO_PLAYER_FEEDBACK','NO_SOURCE_OR_THUMBNAIL_PASS',
