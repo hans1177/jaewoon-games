@@ -511,9 +511,18 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   // The GITHUB_TOKEN push saves history but cannot initiate a Pages build.
   // Official deployment uploads the retained gh-pages tree without Git metadata.
-  assert.ok(publisher.includes('shopt -s dotglob nullglob'),'include hidden published entries in the official Pages artifact');
-  assert.ok(publisher.includes('[[ "${entry##*/}" == .git ]] || published_entries+=("$entry")'),'exclude only Git metadata from retained tree');
-  assert.ok(publisher.includes('cp -a --reflink=auto -- "${published_entries[@]}" "$artifact/"'),'copy exact published entries into the Pages artifact');
+  // The current Pages job publishes the gh-pages commit first, then uploads
+  // that exact retained directory without a second 854MB copy. Dotfiles are
+  // preserved because only .git is explicitly removed after the remote push.
+  assert.ok(publisher.includes('artifact="$retained"'),'artifact must reuse exactly the published snapshot');
+  assert.ok(publisher.includes('rm -rf -- "$artifact/.git"'),'only Git metadata may be removed');
+  assert.ok(publisher.includes('PAGES_SINGLE_SNAPSHOT_ZERO_COPY=PASS'),'single snapshot must be verified');
+  assert.ok(publisher.indexOf('git -C "$site" push origin HEAD:gh-pages')<
+    publisher.indexOf('rm -rf -- "$artifact/.git"'),
+    'published commit must exist before local Git metadata removal');
+  assert.ok(publisher.includes('test -s "$artifact/index.html"'),'published homepage cannot be empty');
+  assert.ok(publisher.includes('test -f "$artifact/web-games/publish-manifest.json"'),
+    'retained artifact must contain exact source manifest');
   assert.ok(publisher.includes('test ! -e "$artifact/.git"'),'Git metadata must be excluded from official Pages artifact');
   assert.ok(publisher.includes('test -d "$retained/.git"'),'retained history must remain intact before staging');
   assert.ok(publisher.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='));
