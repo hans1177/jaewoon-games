@@ -153,7 +153,7 @@ test('every existing player-facing BUILD_UP check has exact remote proof require
   assert.ok(checks.CHARACTER_RENDER.includes('REGISTERED_ASSET_AND_ORIGINAL_HASH'));
   assert.ok(proof.evidenceRules.some(x=>x.includes('로컬 수동 검수는 요구하지 않는다')));
   const prompt=directivePrompt(d);
-  assert.match(prompt,/inspectionRemoteChecks=RECOVERY_SAVE:/);
+  assert.match(prompt,/inspectionRemoteMatrix=.*RECOVERY_SAVE:/);
   assert.match(prompt,/inspectionEvidence=EXACT_GAME_SOURCE_TREE_ARTIFACT_VERSION/);
   assert.ok(d.acceptanceEvidence.includes('ROBLOX_EXPERIENCE_BUILD_UP_REQUIRES_EXACT_REMOTE_EVIDENCE_NO_LOCAL_MANUAL_INSPECTION'));
 });
