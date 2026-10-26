@@ -195,6 +195,27 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   button.TextSize = tonumber(options.textSize) or 16
   button.TextWrapped = true
   button.Font = options.font or Enum.Font.GothamBold
+  -- 명시한 메뉴 역할만 제작 이미지와 연결한다. 실제 아이템의 정체는 바꾸지 않는다.
+  local atlasIndex = ICON_ATLAS_KEYS[string.upper(tostring(options.iconKey or ""))]
+  if atlasIndex ~= nil and ICON_ATLAS_IMAGE ~= "" then
+    local art = Instance.new("ImageLabel")
+    art.Name = "ActionIcon"
+    art.BackgroundTransparency = 1
+    art.AnchorPoint = Vector2.new(0,0.5)
+    art.Position = UDim2.new(0,8,0.5,0)
+    art.Size = UDim2.fromOffset(30,30)
+    art.Image = ICON_ATLAS_IMAGE
+    art.ScaleType = Enum.ScaleType.Fit
+    local x,y = atlasIndex%4,math.floor(atlasIndex/4)
+    local left,top = math.floor(x*ICON_ATLAS_SIZE/4),math.floor(y*ICON_ATLAS_SIZE/4)
+    art.ImageRectOffset = Vector2.new(left,top)
+    art.ImageRectSize = Vector2.new(math.floor((x+1)*ICON_ATLAS_SIZE/4)-left,math.floor((y+1)*ICON_ATLAS_SIZE/4)-top)
+    art.Parent = button
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0,40)
+    padding.PaddingRight = UDim.new(0,6)
+    padding.Parent = button
+  end
   button.Selectable = true
   tag(button, "BUTTON_PRIMARY")
 

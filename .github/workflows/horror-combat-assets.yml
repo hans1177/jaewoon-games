@@ -47,7 +47,7 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-ui-v1/icons.png assets/roblox/common-ui-v1/panel.png | grep -q .; then
+          if [ "$UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-ui-v1/icons.png assets/roblox/common-ui-v1/panel.png roblox-games/daechung-rpg/shared/RPGMenu.luau | grep -q .; then
             node tools/horror-combat-assets.mjs --shared-ui-only
           else
             node tools/horror-combat-assets.mjs --include-shared-materials --include-shared-models
@@ -72,7 +72,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-horror-combat-assets'
           git config user.email 'actions@users.noreply.github.com'
-          for binding_path in assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/horror-escape-room/shared/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
+          for binding_path in roblox-games/daechung-rpg/shared/RPGMenu.luau assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/horror-escape-room/shared/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
             if test -f "$binding_path"; then git add -- "$binding_path"; fi
           done
           if git diff --cached --quiet; then
