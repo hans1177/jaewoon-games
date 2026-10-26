@@ -783,8 +783,24 @@ function RobloxCommonUI.CreateIconButton(options)
   button.Selectable = true
   tag(button, "ICON_BUTTON")
   corner(button, tonumber(options.cornerRadius) or 12)
-  local outline = stroke(button, theme.Border, 1.2, 0.10)
+  local outline = stroke(button, options.selected == true and theme.Accent or theme.Border, options.selected == true and 2.4 or 1.2, 0.10)
   sizeConstraint(button, 48, 48)
+  local glyph = Instance.new("TextLabel")
+  glyph.Name = "IconFallback"
+  glyph.BackgroundTransparency = 1
+  glyph.Position = UDim2.fromOffset(6, 4)
+  glyph.Size = UDim2.new(1, -12, 1, -8)
+  glyph.Text = tostring(options.glyph or "◆")
+  glyph.TextColor3 = options.locked == true and theme.MutedText or theme.Accent
+  glyph.Font = Enum.Font.GothamBold
+  glyph.TextScaled = true
+  glyph.Visible = button.Image == ""
+  glyph.Parent = button
+  button:SetAttribute("IconHasVerifiedImage", button.Image ~= "")
+  button:SetAttribute("IconSelected", options.selected == true)
+  button:SetAttribute("IconLocked", options.locked == true)
+  button.Active = options.locked ~= true
+  button.AutoButtonColor = options.locked ~= true
 
   local badge = commonText(button, "Badge", options.badgeText or "", UDim2.new(1, -23, 0, 3), UDim2.fromOffset(20, 18), theme.Text, 10, true)
   badge.TextXAlignment = Enum.TextXAlignment.Center
