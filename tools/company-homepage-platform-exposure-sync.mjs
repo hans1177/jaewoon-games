@@ -71,13 +71,16 @@ export function robloxFloorProgress(item={}){
     :/F9|FINAL_REVIEW|RELEASE_REGRESSION/.test(step)?'F9'
     :/F[1-8]/.test(step)?step.match(/F[1-8]/)[0]
     :step;
-  const failedAt=iso(item.robloxSourceBootstrapFailedAt)
-    ||iso(item.robloxBuildPreflightFailedAt)||iso(item.robloxBuildFailedAt)
-    ||iso(item.robloxRuntimeFailedAt)||iso(item.robloxQualityBuildUpEvidence?.testedAt);
+  const failureObservations=[
+    item.robloxSourceBootstrapFailedAt,item.robloxBuildPreflightFailedAt,
+    item.robloxBuildFailedAt,item.robloxRuntimeFailedAt,
+    item.robloxQualityBuildUpEvidence?.testedAt
+  ].map(iso).filter(Boolean).sort((a,b)=>Date.parse(b)-Date.parse(a));
+  const failedAt=failureObservations[0]||null;
   const reportedFailure=clean(item.robloxFailureSignature||item.robloxFailureStage);
   const failureBlocked=Boolean(reportedFailure)
-    &&(/FAILED|REPAIR_REQUIRED|SOURCE_BIND/.test(reportedFailure)
-      ||step==='ROBLOX_F0_SOURCE_PREFLIGHT'&&!f0);
+    &&(/FAILED|REPAIR_REQUIRED|SOURCE_BIND|binding-required/i.test(reportedFailure)
+      ||((step==='ROBLOX_F0_SOURCE_PREFLIGHT'||step==='TARGET_PLATFORM_SOURCE_BIND')&&!!failedAt&&!f0));
   const observations=[
     f0,candidate,
     bool(item.robloxBuildOrPackagePassed)?iso(item.robloxBuildPassedAt):null,
