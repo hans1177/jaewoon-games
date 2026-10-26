@@ -202993,7 +202993,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-26T17:52:54.238Z"
+      "updatedAt": "2026-10-26T17:57:31.768Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203214,7 +203214,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-26T17:52:54.259Z"
+      "updatedAt": "2026-10-26T17:57:31.790Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -238207,7 +238207,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-26T17:52:54.389Z"
+      "updatedAt": "2026-10-26T17:57:31.917Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238395,7 +238395,7 @@
     {
       "id": "recovery-badfe2010c32b72c63fd",
       "status": "dispatched",
-      "priority": "high",
+      "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "recovery-recovery-14e80275e875a40a2953",
       "gameId": "fantasy-survival",
@@ -238416,7 +238416,7 @@
       ],
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "source-mutation-required-before-revalidation",
-      "blastRadius": "single-task",
+      "blastRadius": "shared-worker-contract:2",
       "checkpoint": "2026-10-25T08:39:25.195Z",
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-10-25T08:39:25.195Z",
@@ -239582,7 +239582,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-26T17:52:54.454Z"
+      "updatedAt": "2026-10-26T17:57:31.744Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -241188,7 +241188,8 @@
         "actions-run:40365780137",
         "system-ai-handoff-to-reservation:system-ai:40368895366:1",
         "actions-run:40368895366",
-        "system-ai-handoff-to-reservation:system-ai:40371627876:1"
+        "system-ai-handoff-to-reservation:system-ai:40371627876:1",
+        "actions-run:40371627876"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -241206,7 +241207,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-26T17:52:54.350Z"
+      "updatedAt": "2026-10-26T17:57:31.891Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -242602,7 +242603,8 @@
         "actions-run:40365780137",
         "system-ai-handoff-to-reservation:system-ai:40368895366:1",
         "actions-run:40368895366",
-        "system-ai-handoff-to-reservation:system-ai:40371627876:1"
+        "system-ai-handoff-to-reservation:system-ai:40371627876:1",
+        "actions-run:40371627876"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -242620,7 +242622,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-26T17:52:54.307Z"
+      "updatedAt": "2026-10-26T17:57:31.847Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -244632,7 +244634,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-26T17:52:54.409Z"
+      "updatedAt": "2026-10-26T17:57:31.946Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -245741,7 +245743,15 @@
         "actions-run:40311346809",
         "system-ai-handoff-to-reservation:system-ai:40319319405:1",
         "actions-run:40319319405",
-        "system-ai-handoff-to-reservation:system-ai:40371627876:1"
+        "system-ai-handoff-to-reservation:system-ai:40371627876:1",
+        "actions-run:40371627876",
+        "external-ai-raw-output-sha256:133bd62bf8a7b1a34d9b3777c74fefafbde32303c4a6d2679dce1038b1db05b2",
+        "selected-strategy:direct-shell-jq-fix",
+        "system-ai-critic-decision-sha256:d0e3ce1c1ad6ca4a38bce4a0c8b46a73ab1d35971736933e716e79d1dce964ef",
+        "system-ai-applied-answer-sha256:5645c341c9f46900b1c73c05ff71c48159fdba02e9c739f747444a70cbaa99d0",
+        "repair-strategy-fingerprint:921ac071f8e188ae0b6168b06ada029f4e10b3a4c9f6704489189e53e9c55ff1",
+        "failed-strategy-fingerprint:921ac071f8e188ae0b6168b06ada029f4e10b3a4c9f6704489189e53e9c55ff1",
+        "model-output-sha256:133bd62bf8a7b1a34d9b3777c74fefafbde32303c4a6d2679dce1038b1db05b2"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -245759,7 +245769,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-26T17:52:54.432Z"
+      "updatedAt": "2026-10-26T17:57:31.971Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
@@ -248223,7 +248233,7 @@
     {
       "id": "recovery-8bd08839aa19a340c99c",
       "status": "dispatched",
-      "priority": "critical",
+      "priority": "high",
       "sourceQueue": "system-ai",
       "sourceTaskId": "recovery-recovery-d125e3cbc61b39ee3f05",
       "gameId": "fantasy-survival",
@@ -248242,7 +248252,7 @@
       ],
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "failureSignature": "FAIL",
-      "blastRadius": "shared-worker-contract:2",
+      "blastRadius": "single-task",
       "checkpoint": "2026-10-25T08:06:43.375Z",
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-10-25T08:06:43.375Z",
@@ -248317,7 +248327,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-25T08:09:24.576Z",
-      "updatedAt": "2026-10-26T17:52:54.214Z"
+      "updatedAt": "2026-10-26T17:57:32.010Z"
     },
     {
       "id": "recovery-a8e7c5b2447563afc90e",
