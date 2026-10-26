@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-26T06:42:16.049Z",
+  "updatedAt": "2026-10-26T10:47:03.920Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -293,14 +293,14 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "INTERNAL_RELEASE_READY",
+          "technicalReady": true,
+          "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
           "internalReleaseReady": true,
           "releaseReadiness": {
             "version": 1,
             "ready": true,
             "homepageReady": true,
-            "technicalReady": false,
+            "technicalReady": true,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": true,
@@ -315,11 +315,11 @@
               "noRuntimeErrors": false
             },
             "blockers": [],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "b349e981b895d499797b1b76dbe888ecbe2a0eba",
+            "artifactIdentity": "sha256:25ecc4e011e91f0e9483b4501b30ed6d38e5af88b7980bcc511342c25f39a07b",
             "verifiedAt": null
           },
-          "internalReleasePublished": false,
+          "internalReleasePublished": true,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -361,9 +361,9 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 0
+            "candidateVersionNumber": 126
           },
-          "perpetualBuildupActive": false,
+          "perpetualBuildupActive": true,
           "testerTickets": {
             "openBlocking": [
               "bug-b021616100dca0c3a206",
@@ -381,7 +381,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": false
+          "rebuildRequired": true
         },
         {
           "platform": "UNITY",
