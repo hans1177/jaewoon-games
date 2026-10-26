@@ -35,6 +35,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # 오래된 push 작업이 뒤늦게 실행되어 최신 게임을 덮어쓰지 못하게 한다.
+      - name: Reject outdated baeksu-war preview source
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ -z "$latest" ] || [ "$latest" != "$GITHUB_SHA" ]; then
+            echo "BAEKSU_STALE_PREVIEW_REJECTED: source=$GITHUB_SHA latest=$latest"
+            exit 1
+          fi
       # 4차 비공개 게시(40343077784 / Place v5)에서 실제 업로드 및 전용 Universe 허가가
       # 입증된 모델 12개를 재사용한다. 매 push마다 재업로드하면 시작 지연과 잘못된 ID를 유발한다.
       - name: Verify pinned CC0 original meshes and approved universe permission receipts
@@ -80,6 +90,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          latest="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ -z "$latest" ] || [ "$latest" != "$GITHUB_SHA" ]; then
+            echo "BAEKSU_PRE_PUBLISH_STALE_REVISION: source=$GITHUB_SHA latest=$latest"
+            exit 1
+          fi
           node tools/company-roblox-dedicated-experience.mjs \
             --game-id=baeksu-war \
             --game-name='백수대전쟁 [비공개 선배포]' \
