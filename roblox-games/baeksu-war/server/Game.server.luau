@@ -6,6 +6,7 @@ local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local Run=game:GetService("RunService")
 local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
+local VisualKit=require(RS:WaitForChild("Shared"):WaitForChild("VisualKit"))
 local remote=RS:FindFirstChild(C.Remote) or Instance.new("RemoteEvent")
 remote.Name=C.Remote;remote.Parent=RS
 local store
@@ -80,6 +81,7 @@ local function createGate(a,enemy)
  block(parent,"정문 상단",Vector3.new(46,5,8),CFrame.new(a.X,19,z),stone,Enum.Material.Slate)
  local door=block(parent,enemy and "적 정문" or "아군 정문",Vector3.new(21,14,4),CFrame.new(a.X,7,z),tone,Enum.Material.WoodPlanks)
  tag(door,enemy and "적 성문" or "우리 성문")
+ VisualKit.DecorateGate(parent,a.X,z,enemy)
 end
 local function drawBuilding(a,index)
  if a.Visuals[index] then a.Visuals[index]:Destroy() end
@@ -89,9 +91,7 @@ local function drawBuilding(a,index)
  local b=a.Buildings[index]
  if not b then tag(pad,"슬롯 "..index.." · 비어있음");return end
  local u=C.ById[b.Kind]
- block(m,"집",Vector3.new(8,5+b.Level*.34,7),CFrame.new(pos.X,4+b.Level*.16,pos.Z),u.Color,Enum.Material.WoodPlanks)
- block(m,"지붕",Vector3.new(10,2,9),CFrame.new(pos.X,7+b.Level*.34,pos.Z),Color3.fromRGB(85,77,88),Enum.Material.Slate)
- block(m,"입구",Vector3.new(2,3,.8),CFrame.new(pos.X,3,pos.Z+3.8),Color3.fromRGB(40,48,52))
+ VisualKit.BuildHome(m,pos,u,b.Level)
  tag(pad,u.Home.." Lv."..b.Level)
 end
 local function spawn(a,kind,team,level)
@@ -103,28 +103,11 @@ local function spawn(a,kind,team,level)
  local x=((a.Serial*7)%19)-9
  local z=team=="ALLY" and -31 or 36
  local stat=C.Stats(u,level)
- local h=2.1+level*.2
- if u.Shape=="GOLEM" then h*=1.7 end
  local m=Instance.new("Model");m.Name=(team=="ENEMY" and "적 " or "")..u.Name.." Lv."..level;m.Parent=a.Folder
  local cf=CFrame.new(a.X+x,2.5,z)
- local color=team=="ALLY" and u.Color or u.Color:Lerp(Color3.fromRGB(190,65,61),.5)
- local body=block(m,"몸",Vector3.new(3,h,3),cf,color,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ local body=VisualKit.BuildCreature(m,cf,u,level,team)
+ if not body then m:Destroy();return end
  m.PrimaryPart=body
- local dark=color:Lerp(Color3.fromRGB(38,42,39),.4)
- if u.Shape=="BIRD" or u.Shape=="DRAGON" then
-  block(m,"날개 좌",Vector3.new(3,1,2),cf*CFrame.new(-2.2,0,0),dark)
-  block(m,"날개 우",Vector3.new(3,1,2),cf*CFrame.new(2.2,0,0),dark)
- elseif u.Shape=="ANT" or u.Shape=="BUG" then
-  block(m,"배",Vector3.new(2.5,2,3),cf*CFrame.new(0,-.3,-2),dark,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- elseif u.Shape=="WOLF" then
-  block(m,"주둥이",Vector3.new(2,1,2),cf*CFrame.new(0,0,1.8),dark)
- elseif u.Shape=="TURTLE" then
-  block(m,"등껍질",Vector3.new(4,1.8,4),cf*CFrame.new(0,1,0),dark,Enum.Material.Slate,Enum.PartType.Ball)
- elseif u.Shape=="GOLEM" then
-  block(m,"어깨",Vector3.new(6,1.5,2),cf*CFrame.new(0,1,0),dark,Enum.Material.Slate)
- else body.Transparency=.15;body.Material=Enum.Material.Glass end
- if level>=5 then block(m,"진화석",Vector3.new(1,1,1),cf*CFrame.new(0,h*.55+.3,0),Color3.fromRGB(255,223,91),Enum.Material.Neon) end
- if level>=10 then block(m,"왕관",Vector3.new(3,1,3),cf*CFrame.new(0,h*.55+1.1,0),Color3.fromRGB(250,198,66),Enum.Material.Metal) end
  table.insert(a.Units,{Model=m,Team=team,Kind=kind,HP=stat.HP,Damage=stat.Damage,Speed=stat.Speed,Range=stat.Range,X=x,Z=z,Last=0})
 end
 local function clearUnits(a)
@@ -165,6 +148,7 @@ local function makeArena(player,data,loaded)
  end
  block(a.Folder,"집중 전장",Vector3.new(50,1,140),CFrame.new(x,-.5,-3),Color3.fromRGB(112,154,107),Enum.Material.Grass)
  block(a.Folder,"진격로",Vector3.new(24,.2,100),CFrame.new(x,.08,0),Color3.fromRGB(171,151,119),Enum.Material.Ground)
+ VisualKit.BuildWorld(a.Folder,x)
  a.BuildYard=block(a.Folder,"집중 전장",Vector3.new(50,1,25),CFrame.new(x,-.5,-60),Color3.fromRGB(131,169,116),Enum.Material.Grass)
  resizeBuildYard(a)
  createGate(a,false);createGate(a,true)
@@ -244,6 +228,9 @@ local function tickArena(a,dt,now)
  if a.EnemyTimer<=0 then
   a.EnemyTimer=math.max(1.3,3.6-a.Stage*.09)
   local kinds={"ant","sparrow","beetle","wolf","turtle"}
+  if a.Stage>=3 then table.insert(kinds,"slime") end
+  if a.Stage>=5 then table.insert(kinds,"golem") end
+  if a.Stage>=8 then table.insert(kinds,"dragon") end
   spawn(a,kinds[1+(math.floor(a.Serial/3)+a.Stage-1)%#kinds],"ENEMY",math.min(10,1+math.floor((a.Stage-1)/2)))
  end
  local byTeam={ALLY={},ENEMY={}}
@@ -264,6 +251,7 @@ local function tickArena(a,dt,now)
    if target and distance<u.Range+2 then
     if now-u.Last>=.85 then
      u.Last=now;target.HP-=u.Damage
+     VisualKit.HitSpark(a.Folder,Vector3.new(a.X+target.X,2.5,target.Z),u.Team)
      if target.HP<=0 then kill(a,target,u.Team=="ALLY") end
     end
    else

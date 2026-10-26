@@ -1,4 +1,4 @@
-name: Owner Baeksu War One-shot Private Preview
+name: Owner Baeksu War Versioned Private Preview
 run-name: 백수대전쟁 비공개 선배포 · ${{ github.sha }}
 
 on:
@@ -44,7 +44,7 @@ jobs:
           chmod +x /tmp/owner-baeksu-rojo/rojo
           /tmp/owner-baeksu-rojo/rojo build roblox-games/baeksu-war/default.project.json -o /tmp/owner-baeksu-war-private-preview.rbxlx
           test -s /tmp/owner-baeksu-war-private-preview.rbxlx
-      - name: Publish isolated private preview with official Roblox API
+      - name: Update existing baeksu-war private place using official Roblox API
         shell: bash
         run: |
           set -euo pipefail
@@ -52,12 +52,14 @@ jobs:
             --game-id=baeksu-war \
             --game-name='백수대전쟁 [비공개 선배포]' \
             --place-file=/tmp/owner-baeksu-war-private-preview.rbxlx \
+            --reuse-universe-id=10773115989 \
+            --reuse-place-id=120481433333785 \
             --source-revision="$GITHUB_SHA" \
             --output=/tmp/owner-baeksu-war-preview-receipt.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const p=JSON.parse(fs.readFileSync('/tmp/owner-baeksu-war-preview-receipt.json','utf8'));
-          if(p.gameId!=='baeksu-war'||p.private!==true||p.published!==true||!Number.isInteger(Number(p.versionNumber))||Number(p.versionNumber)<1)throw new Error('PRIVATE_PREVIEW_NOT_PUBLISHED');
+          if(p.gameId!=='baeksu-war'||p.private!==true||p.published!==true||p.reusedTarget!==true||String(p.universeId)!=='10773115989'||String(p.placeId)!=='120481433333785'||!Number.isInteger(Number(p.versionNumber))||Number(p.versionNumber)<2)throw new Error('PRIVATE_PREVIEW_EXISTING_TARGET_NOT_PUBLISHED');
           if(!/^[1-9][0-9]*$/.test(String(p.placeId||'')))throw new Error('PRIVATE_PREVIEW_PLACE_ID_MISSING');
           const url='https://www.roblox.com/games/'+p.placeId+'/';
           console.log('BAEKSU_WAR_PRIVATE_PREVIEW_URL='+url);
