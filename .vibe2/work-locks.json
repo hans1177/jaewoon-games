@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-bsw6c4",
+      "worker": "vibe2",
+      "taskId": "tower-choice-rpg-existing-web-assessment-v1",
+      "gameId": "tower-choice-rpg",
+      "files": [
+        "web-games/tower-choice-rpg/index.html"
+      ],
+      "baseSha": "dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
+      "runId": "40316413156",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-26T11:50:57.128Z",
+      "expiresAt": "2026-10-26T12:35:57.128Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:tower-choice-rpg-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
