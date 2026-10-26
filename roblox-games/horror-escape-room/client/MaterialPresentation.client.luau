@@ -23,20 +23,22 @@ local function flush()
    head+=1
    pending[part]=nil
    if part:IsDescendantOf(workspace)then
-    if part:GetAttribute("PreserveAuthoredMaterial")~=true and part.Transparency<1 then
+    if part.Transparency<1 then
      local background=backgroundNames[part.Name] or string.match(part.Name,"^RunPath%d+$")
        or string.match(part.Name,"^EmptyEstatePlot_%d+$")
      if background and part:IsA("Part")and part.Shape==Enum.PartType.Block and part.Anchored
        and part.CanCollide and part.CFrame.UpVector.Y>.95 and part.Size.Y<=math.min(part.Size.X,part.Size.Z)*.25 then
       part:SetAttribute("SurfaceRole","TOY_STUDDED")
+      part:SetAttribute("RefreshToySurface",true)
       part:SetAttribute("SurfaceStudsEnabled",true)
       part:SetAttribute("PreserveAuthoredTint",true)
-     elseif part.Name~="HumanoidRootPart"and part.Transparency==0 and part:GetAttribute("SurfaceRole")==nil and part.MaterialVariant==""
-       and (part.Material==Enum.Material.Plastic or part.Material==Enum.Material.SmoothPlastic)then
+     elseif part.Name~="HumanoidRootPart"and part.Material~=Enum.Material.Neon
+       and part.Material~=Enum.Material.ForceField then
       local owner=part.Parent
       while owner and owner~=workspace do
        if owner:IsA("Model")and(owner:FindFirstChildOfClass("Humanoid")or owner:FindFirstChildOfClass("AnimationController"))then
         part:SetAttribute("SurfaceRole","TOY_PLASTIC")
+        part:SetAttribute("RefreshToySurface",true)
         part:SetAttribute("PreserveAuthoredTint",true)
         break
        end

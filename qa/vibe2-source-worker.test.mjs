@@ -10074,6 +10074,7 @@ test('Roblox source-grounded UI icon inventory world craft improves native outpu
   assert.match(all,/Do not scatter generic Parts|do not scatter generic Parts/i);
   assert.match(all,/never duplicate RemoteEvents or inventory tables/);
   assert.match(all,/Rendering and native Studio screenshots remain UNVERIFIED/);
+  assert.match(all,/OWNER_EXISTING_GAME_VISUAL_BUILD_UP:/);
   const materialOnly=create('재질 텍스처 PBR 최적화');
   assert.match(materialOnly,/ROBLOX_NATIVE_MATERIAL_CRAFT:/);
   assert.match(materialOnly,/ROBLOX_NATIVE_MOBILE_BUDGET:/);
