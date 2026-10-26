@@ -5348,7 +5348,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
  title.Parent=hud;status.Parent=hud;if healthTrack then healthTrack.Parent=hud end
  if multiplayerStatus then multiplayerStatus.Parent=hud end
- local menu=RobloxCommonUI.CreatePrimaryButton({name="GameActionsMenu",text="메뉴",minWidth=52,minHeight=52})
+ local menu=RobloxCommonUI.CreateIconButton({name="GameActionsMenu",shortLabel="메뉴",size=UDim2.fromOffset(72,52)})
  menu.Parent=gui
  local close=RobloxCommonUI.CreatePrimaryButton({name="CloseActionsMenu",text="닫기",minWidth=52,minHeight=52})
  close.Parent=root
@@ -5368,7 +5368,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
   if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8)end
   if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
-  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
+  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(72,52)
   if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
