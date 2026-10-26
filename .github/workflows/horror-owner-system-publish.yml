@@ -141,7 +141,11 @@ jobs:
           test -s /tmp/horror-owner-direct/horror-escape-room.rbxlx
           cp "$backup" "$project"
           trap - EXIT
-          git diff --exit-code
+          # 검증 범위는 실제 Rojo 게임 입력 소스/공용 귀신 원본으로 제한한다.
+          # 별도 게임의 추적 중인 음원 복원/변환은 현재 Roblox 원본 변경이 아니다.
+          # 정적·보안·원본 SHA 및 전용 패키지 검증은 그대로 유지한다.
+          git diff --exit-code -- "$project" roblox-games/horror-escape-room assets/roblox/world-ghosts
+          echo 'OWNER_DIRECT_ACTUAL_ROJO_SOURCE_UNCHANGED=PASS'
           sha256sum /tmp/horror-owner-direct/horror-escape-room.rbxlx | tee /tmp/horror-owner-direct/package.sha256
           echo "OWNER_DIRECT_PLACE=/tmp/horror-owner-direct/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
           echo "OWNER_DIRECT_PACKAGE_SHA256=$(awk '{print $1}' /tmp/horror-owner-direct/package.sha256)" >> "$GITHUB_ENV"
