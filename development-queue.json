@@ -57,7 +57,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -83,13 +83,13 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-26T14:45:13.292Z",
+      "updatedAt": "2026-10-26T15:00:07.236Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceBootstrapFailedAt": "2026-10-26T14:39:20.160Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-26T15:00:07.236Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -228,8 +228,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -255,7 +255,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-26T14:46:53.476Z",
+      "updatedAt": "2026-10-26T15:00:07.236Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -264,12 +264,12 @@
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "aa250beb9bae6a90eea87d368308327fbbda924c",
-      "robloxBuildArtifactIdentity": "sha256:de175f158d6a00cbc85c464212da2ab092fe77df97c331e0ece804cd0b3e2988",
-      "robloxBuildPassedAt": "2026-10-26T14:46:53.476Z",
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-26T14:46:53.476Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -321,296 +321,10 @@
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-26T14:46:53.476Z",
-      "robloxFoundationF0Evidence": {
-        "version": 5,
-        "gameId": "horror-escape-room",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-26T14:46:49.732Z",
-        "sourcePath": "roblox-games/horror-escape-room",
-        "sourceRevision": "aa250beb9bae6a90eea87d368308327fbbda924c",
-        "artifactIdentity": "sha256:de175f158d6a00cbc85c464212da2ab092fe77df97c331e0ece804cd0b3e2988",
-        "rebuiltArtifactIdentity": "sha256:de175f158d6a00cbc85c464212da2ab092fe77df97c331e0ece804cd0b3e2988",
-        "artifactRunId": 40341640551,
-        "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
-        "assetSelectionFingerprint": "9f14a0a0efda7a4f30280ad12648094f40497fcac20ad7579ee6c54c483e16a2",
-        "observedAssetSelectionFingerprint": "9f14a0a0efda7a4f30280ad12648094f40497fcac20ad7579ee6c54c483e16a2",
-        "assetLibraryVersion": 145,
-        "observedAssetLibraryVersion": 145,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "COMPETITIVE",
-        "saveExists": true,
-        "multiplayerApplicable": true,
-        "sourcePreflightPassed": true,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "horror-escape-room",
-          "pass": true,
-          "blockers": [],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "PROGRESSION",
-            "TYCOON",
-            "INFECTION",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": true,
-            "SESSION_FLOW": true,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "COMBAT": true,
-            "ENEMY_AI": true,
-            "PROGRESSION": true,
-            "TYCOON": true,
-            "INFECTION": true,
-            "SAVE": true,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": true
-          },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "A 시작: RouteState·RiskState를 확인한 뒤 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "TYCOON"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 인간4/몬스터4 배정, 빈자리 AI 충원 → 인간은 고유 도구·대시·정화로 생존/반격 → 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염 → 감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격 → 인간 정화 공격은 몬스터를 라운드에서 제거 → 한 진영이 0명이 되면 즉시 승패 → 240초까지 양팀이 남으면 무승부한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "INFECTION"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 도시 시설과 자원 흐름의 운영의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "TYCOON"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "과학·기술·격투 스포츠 시뮬레이션×드라마: 심판의 저울: 증거와 주장한 책임이 일치함의 성립",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "도시 시설과 자원 흐름의 운영 × 과학·기술",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "TYCOON"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "name": "인간4/몬스터4 배정, 빈자리 AI 충원 × 격투 스포츠",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "INFECTION"
-              ],
-              "pass": true
-            },
-            {
-              "index": 3,
-              "name": "심판의 저울: 증거와 주장한 책임이 일치함의 성립",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON",
-                "INFECTION"
-              ],
-              "pass": true
-            }
-          ],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 8,
-            "meshConstructionCount": 0,
-            "likelyPrimitiveHeavy": true,
-            "genericScopeHandlerCount": 0,
-            "meaningfulGameplayFunctionCount": 20
-          },
-          "studioQualitySheet": {
-            "Core": "PLAYABLE",
-            "Content": "PLAYABLE",
-            "World": "POLISHED",
-            "Combat": "PLAYABLE",
-            "AI": "PLAYABLE",
-            "Progression": "PLAYABLE",
-            "UI": "POLISHED",
-            "Graphics": "POLISHED",
-            "Motion": "POLISHED",
-            "Audio": "POLISHED",
-            "Mobile": "POLISHED",
-            "Performance": "PLAYABLE",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": true,
-              "signalCount": 5,
-              "pass": true
-            },
-            "combatFeel": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": false
-            },
-            "worldTopology": {
-              "applicable": true,
-              "signalCount": 5,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 5,
-              "pass": true
-            },
-            "midLateGame": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": true
-            },
-            "systemConnections": {
-              "rows": [
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
-              "pass": true
-            },
-            "placeholder": {
-              "pass": false,
-              "primitiveConstructionCount": 8,
-              "meshConstructionCount": 0,
-              "likelyPrimitiveHeavy": true,
-              "genericScopeHandlerCount": 0,
-              "meaningfulGameplayFunctionCount": 20
-            },
-            "criticalGaps": [
-              "COMBAT_FEEL_CHAIN",
-              "PRIMARY_PLACEHOLDER_DEBT"
-            ],
-            "f9SourceQualityReady": false
-          },
-          "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "ca19e85d58059845054ea720e8f5111f92ca1ec3c956907e5fc05f88c7b2bd64",
-          "antiSkeletonPassed": true,
-          "designGenre": "Survival",
-          "sourceGenre": "Survival",
-          "designPlayMode": "COMPETITIVE",
-          "sourcePlayMode": "COMPETITIVE"
-        },
-        "studioQualitySheet": {
-          "Core": "PLAYABLE",
-          "Content": "PLAYABLE",
-          "World": "POLISHED",
-          "Combat": "PLAYABLE",
-          "AI": "PLAYABLE",
-          "Progression": "PLAYABLE",
-          "UI": "POLISHED",
-          "Graphics": "POLISHED",
-          "Motion": "POLISHED",
-          "Audio": "POLISHED",
-          "Mobile": "POLISHED",
-          "Performance": "PLAYABLE",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": true,
-          "f0SourceIntegrity": true
-        },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Evidence": null,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "horror-escape-room",
@@ -948,7 +662,7 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxSourceCommit": "aa250beb9bae6a90eea87d368308327fbbda924c",
+      "robloxSourceCommit": "9cf2fa5925a906ac0750199d59483998e86069d5",
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "0340a484546eede7a6c54e9c60440f750150620b",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
@@ -993,10 +707,10 @@
         "workflowRunId": 40250013982,
         "testedAt": "2026-10-26T00:36:00.324Z"
       },
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1007,19 +721,19 @@
         "capturedAt": "2026-10-26T01:41:51.341Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapPassedAt": "2026-10-26T14:39:20.160Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-26T15:00:07.236Z",
       "robloxBuildFailedAt": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxInternalReleasePublished": false,
       "robloxPublicRelease": false,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "b349e981b895d499797b1b76dbe888ecbe2a0eba",
-        "newSourceRevision": "aa250beb9bae6a90eea87d368308327fbbda924c",
-        "invalidatedAt": "2026-10-26T14:39:20.160Z"
+        "previousSourceRevision": "aa250beb9bae6a90eea87d368308327fbbda924c",
+        "newSourceRevision": "9cf2fa5925a906ac0750199d59483998e86069d5",
+        "invalidatedAt": "2026-10-26T15:00:07.236Z"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
@@ -1134,8 +848,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -1161,7 +875,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-26T14:55:09.021Z",
+      "updatedAt": "2026-10-26T15:00:07.236Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1169,25 +883,25 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
       "robloxSourceBootstrapFailedAt": null,
       "robloxRuntimePassed": false,
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleasePublished": false,
       "robloxPublicReleaseReady": false,
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-build-package-revalidation-pending"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "12e281ca6dddd463794acd890b702e32563b5286",
-      "robloxBuildArtifactIdentity": "sha256:db1026f01ece781d6b548b8835eefbf2165ec0c14d299dbba2bd7011d8b31023",
-      "robloxBuildPassedAt": "2026-10-26T14:55:09.021Z",
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-26T14:55:09.021Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -1239,278 +953,9 @@
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-26T14:55:09.021Z",
-      "robloxFoundationF0Evidence": {
-        "version": 5,
-        "gameId": "cozy-island",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-26T14:55:06.488Z",
-        "sourcePath": "roblox-games/cozy-island",
-        "sourceRevision": "12e281ca6dddd463794acd890b702e32563b5286",
-        "artifactIdentity": "sha256:db1026f01ece781d6b548b8835eefbf2165ec0c14d299dbba2bd7011d8b31023",
-        "rebuiltArtifactIdentity": "sha256:db1026f01ece781d6b548b8835eefbf2165ec0c14d299dbba2bd7011d8b31023",
-        "artifactRunId": 40342725605,
-        "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
-        "assetSelectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
-        "observedAssetSelectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
-        "assetLibraryVersion": 145,
-        "observedAssetLibraryVersion": 145,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "COOP",
-        "saveExists": true,
-        "multiplayerApplicable": true,
-        "sourcePreflightPassed": true,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "cozy-island",
-          "pass": true,
-          "blockers": [],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "GATHERING",
-            "PROGRESSION",
-            "TYCOON",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER",
-            "SESSION_FLOW"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": true,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "GATHERING": true,
-            "PROGRESSION": true,
-            "TYCOON": true,
-            "SAVE": true,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": true,
-            "SESSION_FLOW": true
-          },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "A 시작: RouteState·RiskState를 확인한 뒤 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "TYCOON"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 도시 시설과 자원 흐름의 운영의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "TYCOON"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "전쟁·군사·수학 시뮬레이션×모험: 조립 공정: 앞 공정의 출력이 다음 요구를 충족함의 성립",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "GATHERING",
-                "TYCOON"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "도시 시설과 자원 흐름의 운영 × 전쟁·군사",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "TYCOON"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "name": "직접 채집 × 수학",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "GATHERING"
-              ],
-              "pass": true
-            },
-            {
-              "index": 3,
-              "name": "조립 공정: 앞 공정의 출력이 다음 요구를 충족함의 성립",
-              "capabilities": [
-                "WORLD",
-                "TYCOON"
-              ],
-              "pass": true
-            }
-          ],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 2,
-            "meshConstructionCount": 0,
-            "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 0,
-            "meaningfulGameplayFunctionCount": 8
-          },
-          "studioQualitySheet": {
-            "Core": "PLAYABLE",
-            "Content": "PLAYABLE",
-            "World": "POLISHED",
-            "Combat": "N/A",
-            "AI": "N/A",
-            "Progression": "PLAYABLE",
-            "UI": "POLISHED",
-            "Graphics": "POLISHED",
-            "Motion": "POLISHED",
-            "Audio": "PLAYABLE",
-            "Mobile": "POLISHED",
-            "Performance": "PLAYABLE",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": false,
-              "signalCount": 2,
-              "pass": true
-            },
-            "combatFeel": {
-              "applicable": false,
-              "signalCount": 4,
-              "pass": true
-            },
-            "worldTopology": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 5,
-              "pass": true
-            },
-            "midLateGame": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": true
-            },
-            "systemConnections": {
-              "rows": [
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
-              "pass": true
-            },
-            "placeholder": {
-              "pass": true,
-              "primitiveConstructionCount": 2,
-              "meshConstructionCount": 0,
-              "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 0,
-              "meaningfulGameplayFunctionCount": 8
-            },
-            "criticalGaps": [],
-            "f9SourceQualityReady": true
-          },
-          "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "b85ce1658dbfbce9cede2bc2f44c4f1542a6ca4879eec49b58d2850b6fb5f3be",
-          "antiSkeletonPassed": true,
-          "designGenre": "Simulation",
-          "sourceGenre": "Simulation",
-          "designPlayMode": "COOP",
-          "sourcePlayMode": "COOP"
-        },
-        "studioQualitySheet": {
-          "Core": "PLAYABLE",
-          "Content": "PLAYABLE",
-          "World": "POLISHED",
-          "Combat": "N/A",
-          "AI": "N/A",
-          "Progression": "PLAYABLE",
-          "UI": "POLISHED",
-          "Graphics": "POLISHED",
-          "Motion": "POLISHED",
-          "Audio": "PLAYABLE",
-          "Mobile": "POLISHED",
-          "Performance": "PLAYABLE",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": true,
-          "f0SourceIntegrity": true
-        },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Evidence": null,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "cozy-island",
@@ -1805,7 +1250,7 @@
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxReleasePublishedAt": null,
-      "robloxSourceCommit": "12e281ca6dddd463794acd890b702e32563b5286",
+      "robloxSourceCommit": "9cf2fa5925a906ac0750199d59483998e86069d5",
       "robloxQualityBuildUpRequired": false,
       "robloxQualityBuildUpSourceRevision": null,
       "robloxQualityFailureClass": null,
@@ -1842,7 +1287,7 @@
         "authority": "owner-dedicated-roblox-experience-bootstrap"
       },
       "robloxDedicatedExperiencePublished": false,
-      "robloxSourceBootstrapPassedAt": "2026-10-26T14:46:59.073Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-26T15:00:07.236Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -2347,12 +1792,16 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxBuildFailedAt": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxEvidenceInvalidatedBySourceChange": null,
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "12e281ca6dddd463794acd890b702e32563b5286",
+        "newSourceRevision": "9cf2fa5925a906ac0750199d59483998e86069d5",
+        "invalidatedAt": "2026-10-26T15:00:07.236Z"
+      },
       "robloxRuntimeRetryCount": 0,
       "robloxEvidenceInvalidatedByF0Restart": {
         "sourceRevision": "12e281ca6dddd463794acd890b702e32563b5286",
@@ -7390,7 +6839,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-26T14:57:49.563Z",
+  "updatedAt": "2026-10-26T15:00:07.236Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
