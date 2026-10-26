@@ -13,6 +13,8 @@ on:
     branches: [main]
     paths:
       - 'tools/company-platform-exposure-control.mjs'
+      - 'tools/company-homepage-platform-exposure-sync.mjs'
+      - 'company.html'
       - 'company-learning/platform-release-roadmap.json'
       - '.github/workflows/company-platform-exposure-sync.yml'
       - 'qa/company-platform-exposure-control.test.mjs'
@@ -45,6 +47,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/company-platform-exposure-control.mjs
+          node --check tools/company-homepage-platform-exposure-sync.mjs
           node --test qa/company-platform-exposure-control.test.mjs
 
       - name: Build exact company-runtime platform exposure snapshot
