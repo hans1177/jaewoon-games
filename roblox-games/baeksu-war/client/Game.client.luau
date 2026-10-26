@@ -35,7 +35,7 @@ local function button(parent,txt,size,order,fn)
  return b
 end
 local top=panel(gui,UDim2.new(1,-14,0,74),UDim2.fromOffset(7,6))
-local title=label(top,"백수대전쟁 Ⅲ · 자유 시점 군단 타이쿤",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
+local title=label(top,"백수대전쟁 IV · 자유 시점 군단 타이쿤",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
 title.TextSize=17
 local status=label(top,"불러오는 중",UDim2.new(1,-12,0,40),UDim2.fromOffset(8,27))
 local dock=panel(gui,UDim2.fromOffset(208,295),UDim2.new(1,-216,.52,-125))
@@ -59,7 +59,7 @@ choices.Position=UDim2.fromOffset(6,41);choices.BackgroundTransparency=1;choices
 choices.ScrollBarThickness=3;choices.AutomaticCanvasSize=Enum.AutomaticSize.Y;choices.CanvasSize=UDim2.new()
 choices.Parent=menu
 local cl=Instance.new("UIListLayout");cl.SortOrder=Enum.SortOrder.LayoutOrder;cl.Padding=UDim.new(0,5);cl.Parent=choices
-local notice=label(gui,"마우스나 손가락으로 시점을 돌려 기지를 탐험해! 슬롯 근처에서 건설 가능",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
+local notice=label(gui,"회전·줌으로 전장을 둘러보고 땅의 슬롯을 눌러 건설해!",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
 notice.TextColor3=Color3.fromRGB(252,226,137)
 local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={}}
 local function updateSaveNotice()
@@ -128,16 +128,18 @@ remote:FireServer("SYNC")
 -- Scriptable/매 프레임 CFrame 덮어쓰기를 제거해 PC 우클릭, 휠, 모바일 드래그/핀치 및
 -- 캐릭터 이동을 Roblox 기본 CameraModule이 처리하도록 한다.
 p.CameraMode=Enum.CameraMode.Classic
-p.CameraMinZoomDistance=5
-p.CameraMaxZoomDistance=70
+p.CameraMinZoomDistance=6
+p.CameraMaxZoomDistance=80
 local function followCharacter(character)
  local humanoid=character:WaitForChild("Humanoid",10)
  if not humanoid then return end
+ -- 직접 움직이는 캐릭터가 시점의 기준이며, 화면을 강제로 고정하지 않는다.
+ humanoid.CameraOffset=Vector3.new(0,2.2,0)
  local camera=workspace.CurrentCamera
  if camera then
   camera.CameraType=Enum.CameraType.Custom
   camera.CameraSubject=humanoid
-  camera.FieldOfView=70
+  camera.FieldOfView=72
  end
 end
 p.CharacterAdded:Connect(followCharacter)
@@ -147,16 +149,68 @@ workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 end)
 
 -- 자유 카메라와 별개로 UI 폭만 화면 크기에 맞춘다. 시점에는 개입하지 않는다.
-local lastNarrow=nil
+-- ===== 카메라·모바일 HUD =====
+-- Roblox 기본 카메라가 PC 마우스/휠과 모바일 드래그/핀치를 처리한다.
+-- 조작 UI는 화면 크기에 맞추되 시점 회전·이동을 가로막지 않는다.
+local lastWidth=0
 local function resizeHud()
  local camera=workspace.CurrentCamera
  if not camera then return end
- local narrow=camera.ViewportSize.X<700 or (Input.TouchEnabled and camera.ViewportSize.X<950)
- if narrow==lastNarrow then return end
- lastNarrow=narrow
- dock.Size=narrow and UDim2.fromOffset(160,254) or UDim2.fromOffset(208,295)
- dock.Position=narrow and UDim2.new(1,-165,.52,-108) or UDim2.new(1,-216,.52,-125)
- menu.Size=narrow and UDim2.fromOffset(181,255) or UDim2.fromOffset(228,306)
- menu.Position=narrow and UDim2.new(0,5,.52,-110) or UDim2.new(0,8,.52,-135)
+ local width=camera.ViewportSize.X
+ if math.abs(width-lastWidth)<2 then return end
+ lastWidth=width
+ local narrow=width<680 or (Input.TouchEnabled and width<950)
+ local compact=width<440
+ title.TextSize=compact and 14 or 17
+ dock.Size=compact and UDim2.fromOffset(143,231) or (narrow and UDim2.fromOffset(161,254) or UDim2.fromOffset(208,295))
+ dock.Position=compact and UDim2.new(1,-148,.37,-50) or (narrow and UDim2.new(1,-166,.52,-108) or UDim2.new(1,-216,.52,-125))
+ menu.Size=compact and UDim2.fromOffset(187,246) or (narrow and UDim2.fromOffset(192,270) or UDim2.fromOffset(228,306))
+ menu.Position=compact and UDim2.new(0,5,.39,-55) or (narrow and UDim2.new(0,5,.52,-116) or UDim2.new(0,8,.52,-135))
+ notice.TextSize=compact and 12 or 14
 end
 Run:BindToRenderStep("BaeksuWarResponsiveHUD",Enum.RenderPriority.Last.Value,resizeHud)
+
+-- ===== 전장 건축 인터랙션 =====
+-- UI 슬롯 외에 3D Terrain 위의 실제 건축 슬롯을 눌러 같은 건설 메뉴를 연다.
+-- 추가 Parts/투명 감지 파츠/임의 모델 없이 기존 슬롯 좌표를 그대로 재사용한다.
+local function openWorldSlot(screenPosition)
+ local camera=workspace.CurrentCamera
+ local arenaX=p:GetAttribute("ArenaX")
+ if not camera or type(arenaX)~="number" then return end
+ local ray=camera:ViewportPointToRay(screenPosition.X,screenPosition.Y)
+ local filter=RaycastParams.new()
+ filter.FilterType=Enum.RaycastFilterType.Exclude
+ if p.Character then filter.FilterDescendantsInstances={p.Character} end
+ local hit=workspace:Raycast(ray.Origin,ray.Direction*500,filter)
+ if not hit then return end
+ local at=hit.Position
+ local row=math.floor((-60-at.Z)/13+.5)
+ local col=math.floor((at.X-arenaX+14)/14+.5)
+ if row<0 or col<0 or col>2 then return end
+ local index=row*3+col+1
+ if index>(current.Unlocked or 0) then return end
+ local expectedX=arenaX+(col-1)*14
+ local expectedZ=-60-row*13
+ if math.abs(at.X-expectedX)>5 or math.abs(at.Z-expectedZ)>5 then return end
+ redrawMenu(index)
+end
+local touchStart={}
+Input.InputBegan:Connect(function(input,processed)
+ if processed then return end
+ if input.UserInputType==Enum.UserInputType.Touch then
+  touchStart[input]=Vector2.new(input.Position.X,input.Position.Y)
+ end
+end)
+Input.InputEnded:Connect(function(input,processed)
+ local kind=input.UserInputType
+ if kind==Enum.UserInputType.Touch then
+  local first=touchStart[input]
+  touchStart[input]=nil
+  if processed or not first then return end
+  local last=Vector2.new(input.Position.X,input.Position.Y)
+  if (last-first).Magnitude>13 then return end
+  openWorldSlot(last)
+ elseif kind==Enum.UserInputType.MouseButton1 and not processed then
+  openWorldSlot(Vector2.new(input.Position.X,input.Position.Y))
+ end
+end)
