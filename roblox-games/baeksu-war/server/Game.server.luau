@@ -17,6 +17,108 @@ pcall(function()store=DSS:GetDataStore(C.SaveKey)end)
 local arenas,lastRequest={},{}
 local nextArena=0
 local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspace
+-- 기존 8종/10단계/저장키를 유지하며 경제·지휘·전선점령만 확장한다.
+local COMMANDS={PUSH=true,RALLY=true,DEFEND=true}
+local MISSIONS={
+ {Title="적 병력 5마리 처치",Reward=90},
+ {Title="서식지 2개 건설",Reward=140},
+ {Title="전초 거점 1곳 점령",Reward=180},
+ {Title="3스테이지 진입",Reward=230},
+ {Title="군단 연구 2단계 달성",Reward=360},
+}
+local function workerCost(n)return math.floor(75*1.65^n) end
+local function labCost(n)return math.floor(125*1.7^n) end
+local function techCost(n)return math.floor(65*2.05^n) end
+local function buildingCount(a)
+ local n=0
+ for _,b in pairs(a.Buildings) do if b then n+=1 end end
+ return n
+end
+local function questReady(a)
+ if a.Mission==1 then return a.Kills>=5 end
+ if a.Mission==2 then return buildingCount(a)>=2 end
+ if a.Mission==3 then return a.CapturedEver>=1 end
+ if a.Mission==4 then return a.Stage>=3 end
+ if a.Mission==5 then return a.Tech>=2 end
+ return false
+end
+local function ownedPoints(a)
+ local n=0
+ for _,point in ipairs(a.Points) do if point.Owner=="ALLY" then n+=1 end end
+ return n
+end
+local function economy(a)
+ local owned=ownedPoints(a)
+ local income=math.floor(3+a.Workers*2.5+owned*(2+a.Workers*.8))
+ return {
+  Gold=a.Gold,Workers=a.Workers,Lab=a.Lab,Research=a.Research,Tech=a.Tech,
+  Command=a.Command,Points=owned,Kills=a.Kills,Mission=a.Mission,
+  MissionTitle=MISSIONS[a.Mission] and MISSIONS[a.Mission].Title or "모든 임무 완료",
+  MissionReward=MISSIONS[a.Mission] and MISSIONS[a.Mission].Reward or 0,
+  CanClaim=questReady(a),WorkerCost=a.Workers<8 and workerCost(a.Workers) or 0,
+  LabCost=a.Lab<5 and labCost(a.Lab) or 0,
+  TechCost=a.Tech<5 and techCost(a.Tech) or 0,PassiveGold=income
+ }
+end
+local function drawCaptureMarker(a,point,index)
+ -- 월드 공간 UI만 사용한다. 새 Part/임의 건물/원통형 장식은 만들지 않는다.
+ local marker=Instance.new("Attachment")
+ marker.Name="전초 거점 "..index
+ marker.Parent=terrain
+ marker.WorldPosition=Vector3.new(a.X,4,point.Z)
+ local board=Instance.new("BillboardGui")
+ board.Name="전선 점령 현황";board.AlwaysOnTop=true
+ board.Size=UDim2.fromOffset(195,66);board.MaxDistance=135
+ board.StudsOffsetWorldSpace=Vector3.new(0,3,0);board.Adornee=marker;board.Parent=marker
+ local text=Instance.new("TextLabel")
+ text.Name="상태";text.Size=UDim2.fromScale(1,1)
+ text.BackgroundColor3=Color3.fromRGB(27,36,42)
+ text.BackgroundTransparency=.22;text.TextColor3=Color3.fromRGB(255,230,174)
+ text.TextScaled=false;text.TextSize=17;text.TextWrapped=true
+ text.Font=Enum.Font.GothamBold;text.Parent=board
+ local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,9);corner.Parent=text
+ point.Marker=marker;point.Label=text;point.Index=index
+end
+local function captureState(point)
+ local state=point.Owner=="ALLY" and "우리 군단" or point.Owner=="ENEMY" and "적 군단" or "중립"
+ return "전초 거점 "..point.Index.." · "..state.."\n"..math.floor(math.abs(point.Progress)).."% 점령도"
+end
+local function tickCapture(a,dt)
+ local changed=false
+ for _,point in ipairs(a.Points) do
+  local ally,enemy=0,0
+  for _,u in ipairs(a.Units) do
+   if u.HP>0 and math.abs(u.Z-point.Z)<9 and math.abs(u.X)<17 then
+    if u.Team=="ALLY" then ally+=1 else enemy+=1 end
+   end
+  end
+  local pressure=math.clamp(ally-enemy,-5,5)
+  if pressure~=0 then
+   point.Progress=math.clamp(point.Progress+pressure*18*dt,-100,100)
+  end
+  local previous=point.Owner
+  if point.Progress>=100 then point.Owner="ALLY"
+  elseif point.Progress<=-100 then point.Owner="ENEMY"
+  elseif math.abs(point.Progress)<5 then point.Owner="NEUTRAL" end
+  if previous~=point.Owner then
+   changed=true
+   if point.Owner=="ALLY" then
+    if not point.Credited then
+     point.Credited=true
+     a.CapturedEver=math.min(2,a.CapturedEver+1)
+     a.Gold+=45
+    end
+   end
+  end
+  if point.Label then
+   local display=captureState(point)
+   if point.Label.Text~=display then point.Label.Text=display end
+   point.Label.TextColor3=point.Owner=="ALLY" and Color3.fromRGB(151,255,189)
+    or point.Owner=="ENEMY" and Color3.fromRGB(255,159,153) or Color3.fromRGB(255,230,174)
+  end
+ end
+ if changed then a.Player:SetAttribute("CapturedPoints",ownedPoints(a)) end
+end
 -- ===== 배경/지형 =====
 -- Terrain만 사용하며, 캐릭터·건물·소품을 도형 파츠로 새로 제작하지 않는다.
 local function terrainBlock(cf,size,material)
@@ -96,11 +198,11 @@ local function send(a,msg)
   local b=a.Buildings[i]
   slots[i]=b and {Kind=b.Kind,Level=b.Level} or {Kind="",Level=0}
  end
- remote:FireClient(p,"STATE",{Gold=a.Gold,Stage=a.Stage,HomeHP=a.HomeHP,EnemyHP=a.EnemyHP,Unlocked=a.Unlocked,Buildings=slots,Message=msg or ""})
+ remote:FireClient(p,"STATE",{Gold=a.Gold,Stage=a.Stage,HomeHP=a.HomeHP,EnemyHP=a.EnemyHP,Unlocked=a.Unlocked,Buildings=slots,Economy=economy(a),Message=msg or ""})
 end
 local function save(a)
  if not a.Loaded or a.SessionOnly or not store then return false end
- local data={Version=1,Gold=math.floor(a.Gold),Stage=a.Stage,Unlocked=a.Unlocked,Buildings={}}
+ local data={Version=1,Gold=math.floor(a.Gold),Stage=a.Stage,Unlocked=a.Unlocked,Buildings={},Workers=a.Workers,Lab=a.Lab,Research=math.floor(a.Research),Tech=a.Tech,Mission=a.Mission,Kills=a.Kills,CapturedEver=a.CapturedEver,Command=a.Command}
  for i,b in pairs(a.Buildings) do data.Buildings[tostring(i)]={Kind=b.Kind,Level=b.Level} end
  local ok,result=pcall(function()
   return store:UpdateAsync("p:"..a.Player.UserId,function(previous)
@@ -134,6 +236,10 @@ local function spawn(a,kind,team,level)
  local x=((a.Serial*7)%19)-9
  local z=team=="ALLY" and -31 or 36
  local stat=C.Stats(u,level)
+ if team=="ALLY" and a.Tech>0 then
+  stat.HP=math.floor(stat.HP*(1+a.Tech*.06))
+  stat.Damage=math.floor(stat.Damage*(1+a.Tech*.06))
+ end
  local m=Instance.new("Model");m.Name=(team=="ENEMY" and "적 " or "")..u.Name.." Lv."..level;m.Parent=a.Folder
  local cf=CFrame.new(a.X+x,0,z)
  local body,visual=VisualKit.BuildCreature(m,cf,u,level,team)
@@ -162,12 +268,23 @@ end
 local function makeArena(player,data,loaded)
  nextArena+=1
  local x=(nextArena-1)*180
- local a={Player=player,X=x,Folder=Instance.new("Folder"),Buildings={},Visuals={},Units={},Gold=C.StartGold,Stage=1,Unlocked=C.StartSlots,Serial=0,Loaded=true,SessionOnly=not loaded}
+ local a={Player=player,X=x,Folder=Instance.new("Folder"),Buildings={},Visuals={},Units={},Gold=C.StartGold,Stage=1,Unlocked=C.StartSlots,Serial=0,Loaded=true,SessionOnly=not loaded,
+  Workers=0,Lab=0,Research=0,Tech=0,Mission=1,Kills=0,CapturedEver=0,Command="PUSH",
+  Points={{Z=-6,Progress=0,Owner="NEUTRAL"},{Z=16,Progress=0,Owner="NEUTRAL"}}}
  a.Folder.Name="Arena_"..player.UserId;a.Folder.Parent=root;arenas[player]=a
  if type(data)=="table" then
   a.Gold=math.max(0,math.floor(tonumber(data.Gold) or a.Gold))
   a.Stage=math.clamp(math.floor(tonumber(data.Stage) or 1),1,9999)
   a.Unlocked=math.max(C.StartSlots,math.floor(tonumber(data.Unlocked) or C.StartSlots))
+  -- V1 저장본과 호환: 확장 필드는 없어도 기본값으로 정상 진입한다.
+  a.Workers=math.clamp(math.floor(tonumber(data.Workers) or 0),0,8)
+  a.Lab=math.clamp(math.floor(tonumber(data.Lab) or 0),0,5)
+  a.Research=math.clamp(math.floor(tonumber(data.Research) or 0),0,100000000)
+  a.Tech=math.clamp(math.floor(tonumber(data.Tech) or 0),0,5)
+  a.Mission=math.clamp(math.floor(tonumber(data.Mission) or 1),1,#MISSIONS+1)
+  a.Kills=math.clamp(math.floor(tonumber(data.Kills) or 0),0,100000000)
+  a.CapturedEver=math.clamp(math.floor(tonumber(data.CapturedEver) or 0),0,2)
+  a.Command=COMMANDS[data.Command] and data.Command or "PUSH"
   if type(data.Buildings)=="table" then
    for i=1,a.Unlocked do
     local item=data.Buildings[tostring(i)] or data.Buildings[i]
@@ -179,6 +296,7 @@ local function makeArena(player,data,loaded)
   end
  end
  buildArenaTerrain(x)
+ for i,point in ipairs(a.Points) do drawCaptureMarker(a,point,i) end
  VisualKit.BuildWorld(a.Folder,x)
  resizeBuildYard(a)
  createGate(a,false);createGate(a,true)
@@ -202,8 +320,31 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
  local now=os.clock()
  if now-(lastRequest[p] or 0)<.15 then return end
  lastRequest[p]=now
- -- DataStore가 끊기면 이 서버 세션에서만 플레이하도록 허용한다. 미확인 기존 저장본은 덮어쓰지 않는다.
- if action=="BUY_SLOT" then
+ -- 클라이언트는 명령만 보내며 비용/조건/전투 결과는 서버에서 검증한다.
+ if action=="SET_COMMAND" then
+  if type(index)~="string" or not COMMANDS[index] then return end
+  a.Command=index
+  local names={PUSH="전면 진격",RALLY="전선 집결",DEFEND="본진 방어"}
+  send(a,"군단 지휘: "..names[index])
+ elseif action=="HIRE_WORKER" then
+  if a.Workers>=8 or a.Gold<workerCost(a.Workers) then send(a,"일꾼 고용 조건 부족");return end
+  a.Gold-=workerCost(a.Workers);a.Workers+=1
+  send(a,"일꾼 "..a.Workers.."명 · 자동 골드 생산 증가")
+ elseif action=="UPGRADE_LAB" then
+  if a.Lab>=5 or a.Gold<labCost(a.Lab) then send(a,"연구소 증설 조건 부족");return end
+  a.Gold-=labCost(a.Lab);a.Lab+=1
+  send(a,"연구소 "..a.Lab.."단계 · 연구 생산 증가")
+ elseif action=="RESEARCH" then
+  if a.Tech>=5 or a.Research<techCost(a.Tech) then send(a,"연구 포인트 부족");return end
+  a.Research-=techCost(a.Tech);a.Tech+=1
+  send(a,"군단 훈련 연구 "..a.Tech.."단계 완료 · 공격력과 체력 상승")
+ elseif action=="CLAIM_MISSION" then
+  if not questReady(a) or a.Mission>#MISSIONS then return end
+  local reward=MISSIONS[a.Mission].Reward
+  a.Gold+=reward;a.Mission+=1
+  send(a,"임무 완료 보상 +"..reward.."G")
+ -- 기존 집 슬롯/건설/10단계 성장 루프는 변경하지 않는다.
+ elseif action=="BUY_SLOT" then
   local i=a.Unlocked+1
   local cost=C.SlotCost(i)
   if cost~=cost or cost==math.huge or a.Gold<cost then send(a,"슬롯 구매 골드 부족");return end
@@ -234,7 +375,10 @@ end)
 local function kill(a,u,ally)
  if u.Dead then return end
  u.Dead=true;u.HP=0;u.Model:Destroy()
- if u.Team=="ENEMY" and ally then a.Gold+=9+math.floor(a.Stage*.8) end
+ if u.Team=="ENEMY" and ally then
+  a.Gold+=9+math.floor(a.Stage*.8)
+  a.Kills+=1
+ end
 end
 local function finish(a,win)
  if a.Transition then return end
@@ -263,6 +407,7 @@ local function tickArena(a,dt,now)
   if a.Stage>=8 then table.insert(kinds,"dragon") end
   spawn(a,kinds[1+(math.floor(a.Serial/3)+a.Stage-1)%#kinds],"ENEMY",math.min(10,1+math.floor((a.Stage-1)/2)))
  end
+ tickCapture(a,dt)
  local byTeam={ALLY={},ENEMY={}}
  for _,u in ipairs(a.Units) do
   if u.HP>0 and byTeam[u.Team] then table.insert(byTeam[u.Team],u) end
@@ -286,7 +431,22 @@ local function tickArena(a,dt,now)
     end
    else
     local direction=u.Team=="ALLY" and 1 or -1
-    u.Z+=direction*u.Speed*dt
+    -- ATTACK=공성, RALLY=중앙 전선, DEFEND=본진. 기존 적 AI는 유지한다.
+    local goal=direction==1 and 42 or -37
+    if u.Team=="ALLY" then
+     if a.Command=="RALLY" then goal=15
+     elseif a.Command=="DEFEND" then goal=-24 end
+    end
+    local advance=direction==-1 or u.Z<goal
+    -- 진형을 유지하면서도 근처 적은 추적해 방어한다.
+    if u.Team=="ALLY" and not advance and target and distance<18 then advance=true end
+    if advance then
+     local step=direction*u.Speed*dt
+     if u.Team=="ALLY" and a.Command~="PUSH" and (not target or distance>=18) then
+      step=math.min(step,math.max(0,goal-u.Z))
+     end
+     u.Z+=step
+    end
     if target and distance<13 then u.X+=math.clamp(target.X-u.X,-u.Speed*dt*.3,u.Speed*dt*.3) end
     VisualKit.PoseCreature(u.Visual,a.X+u.X,u.Z,direction==1 and 0 or math.pi)
     if direction==1 and u.Z>40 then a.EnemyHP-=u.Damage;kill(a,u,false)
@@ -308,9 +468,15 @@ Run.Heartbeat:Connect(function(dt)
 end)
 task.spawn(function()
  while true do
-  task.wait(1)
+  task.wait(2)
   for p,a in pairs(arenas) do
    if p.Parent and not a.Transition then
+    local owned=ownedPoints(a)
+    a.Gold+=math.floor(3+a.Workers*2.5+owned*(2+a.Workers*.8))
+    a.Research+=1+a.Lab*2+owned
+    remote:FireClient(p,"ECONOMY",economy(a))
+    p:SetAttribute("Research",a.Research)
+    p:SetAttribute("CapturedPoints",owned)
     p:SetAttribute("Gold",a.Gold)
     p:SetAttribute("HomeHP",math.max(0,math.ceil(a.HomeHP)))
     p:SetAttribute("EnemyHP",math.max(0,math.ceil(a.EnemyHP)))
