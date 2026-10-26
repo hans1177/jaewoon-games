@@ -418,6 +418,31 @@ export function buildFlowAssetRequirements({architecture={},genre='',baseline={}
   }
   for(const row of systemBlueprint.requiredSystems||[])for(const [family,subfamily] of SYSTEM_ASSET_ROLE_MAP[row.id]||[])add(family,subfamily,{systemRoles:[row.id],phases:systemPhases.get(row.id)||[],reason:'CONCEPT_SYSTEM_REQUIRED',required:true});
   for(const row of systemBlueprint.expansionSystems||[])for(const [family,subfamily] of SYSTEM_ASSET_ROLE_MAP[row.id]||[])add(family,subfamily,{systemRoles:[row.id],phases:systemPhases.get(row.id)||[],reason:'CONCEPT_SYSTEM_EXPANSION',required:false});
+  // F0 흐름: 실제 기획에 등장하는 생물·정예·보스만 기존 MOTION/CREATURE 자산 요구로 자동 연결한다.
+  // 종족/리그의 자산 ID를 임의로 고정하지 않으며 F0~F9 원래 품질·게시 관문을 그대로 둔다.
+  const content=baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline;
+  const actorLists=[
+    ...(Array.isArray(content?.monsters)?content.monsters:[]),
+    ...(Array.isArray(content?.enemies)?content.enemies:[]),
+    ...(Array.isArray(content?.creatures)?content.creatures:[]),
+    ...(Array.isArray(content?.actors)?content.actors:[]),
+    ...(Array.isArray(content?.world?.monsters)?content.world.monsters:[])
+  ];
+  const creatureActors=actorLists.filter(row=>typeof row==='string'
+    ||(row&&typeof row==='object'&&(
+      clean(row.speciesId||row.species)
+      ||/MONSTER|CREATURE|ENEMY|BOSS|ELITE/.test(clean(row.role||row.actorType).toUpperCase())
+    )));
+  if(creatureActors.length||clean(content?.featuredSpeciesId)){
+    add('CREATURE','SPECIES',{reason:'DECLARED_CREATURE_PRESENT',required:true});
+    add('MOTION','COMBAT',{reason:'CREATURE_MOTION_AUTO_PROJECTION_60',required:true});
+    add('MOTION','ACTING',{reason:'CREATURE_ACTING_DEATH_EXPRESSIONS',required:true});
+    const hasTier=creatureActors.some(row=>typeof row==='object'&&(
+      row.isBoss===true||row.boss===true||row.isElite===true||row.elite===true
+      ||['ELITE','BOSS'].includes(clean(row.tier||row.monsterTier||row.presentationTier).toUpperCase())
+    ))||['ELITE','BOSS'].includes(clean(content?.featuredMonsterTier).toUpperCase());
+    if(hasTier)add('CREATURE','SIGNATURE',{reason:'DECLARED_ELITE_BOSS_FIFTY_PATTERN_BINDING',required:true});
+  }
   const semantic=(genre+' '+baselineText(baseline)).toUpperCase();
   if(/COMBAT|FIGHT|ATTACK|BATTLE|전투|공격|디펜스|DEFEN/.test(semantic)){
     add('MOTION','COMBAT',{reason:'SEMANTIC_COMBAT'});
