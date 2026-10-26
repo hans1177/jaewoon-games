@@ -1565,3 +1565,21 @@ test('Roblox exact-SHA scheduler keeps oldest active run even when GitHub report
   assert.equal(decideOwner('queued','queued',{differentSha:true}),String(newer));
   assert.equal(decideOwner('queued','queued',{title:'Roblox runtime · island-village',currentGame:'island-village'}),String(older));
 });
+
+
+test('new Roblox game creation connects native styled UI without inventing inventory or gameplay',()=>{
+  const compiled=compileRobloxSource({gameId:'new-visual-build',gameName:'New Game',baseline,playbooks:verifiedRobloxPlaybooks()});
+  assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+  const client=compiled.result.clientCode;
+  for(const token of ['rootCorner = Instance.new("UICorner")','rootStroke = Instance.new("UIStroke")',
+    'titleSize = Instance.new("UITextSizeConstraint")','statusCorner = Instance.new("UICorner")',
+    'buttonCorner = Instance.new("UICorner")','buttonStroke = Instance.new("UIStroke")',
+    'buttonTextSize = Instance.new("UITextSizeConstraint")','button.Activated:Connect(function() remote:FireServer(action.Id) end)'])
+    assert.ok(client.includes(token),'new-game client must render native style and preserve existing action: '+token);
+  assert.match(client,/buttonTextSize.MaxTextSize = 22/);
+  assert.match(client,/buttonStroke.Parent = button/);
+  assert.match(client,/rootStroke.Parent = root/);
+  assert.doesNotMatch(client,/Instance\.new\("ImageLabel"\)/,'do not make blank icons without licensed assets');
+  assert.doesNotMatch(client,/Instance\.new\("Inventory"\)/,'do not create gameplay inventory absent from the approved seed');
+  assert.ok(compiled.result.implementationNotes.some(x=>x.includes('new-game Roblox creation renders bounded UICorner')));
+});
