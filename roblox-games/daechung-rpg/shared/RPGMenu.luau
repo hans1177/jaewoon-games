@@ -68,7 +68,7 @@ function Menu.install(config,gui,player,options)
  make("UIGradient",panel,"WoodGrain",{Rotation=87,Color=ColorSequence.new(Color3.fromRGB(135,103,64),Color3.fromRGB(66,44,30))})
  -- 등록된 소유 원목 9-Slice 이미지만 적용한다. 미등록이면 원목 그라데이션으로 표시.
  local uiArt=config.CivilizationUIArt or {}
- local generatedPanelImage="" -- NATIVE_RPG_PANEL_IMAGE
+ local generatedPanelImage="rbxassetid://95109079330124" -- NATIVE_RPG_PANEL_IMAGE
  if generatedPanelImage~=""then
   make("ImageLabel",panel,"AdventureNineSlice",{BackgroundTransparency=1,Image=generatedPanelImage,ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(128,128,1126,1126),SliceScale=.18,Size=UDim2.fromScale(1,1),ZIndex=panel.ZIndex})
  elseif typeof(uiArt.Wood)=="string" and uiArt.Wood~=""then

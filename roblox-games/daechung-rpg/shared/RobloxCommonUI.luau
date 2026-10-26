@@ -6,7 +6,7 @@
 local TweenService = game:GetService("TweenService")
 local RobloxCommonUI = {}
 -- 자산: 오너가 제작 승인한 이미지 시트. 등록 성공 전에는 ID를 추측하지 않는다.
-local ICON_ATLAS_IMAGE = "" -- NATIVE_UI_ATLAS_IMAGE
+local ICON_ATLAS_IMAGE = "rbxassetid://124574675459046" -- NATIVE_UI_ATLAS_IMAGE
 local ICON_ATLAS_SIZE = 1254
 local ICON_ATLAS_KEYS = table.freeze({
   INVENTORY = 0,
@@ -29,7 +29,7 @@ local ICON_ATLAS_KEYS = table.freeze({
 
 
 local DEFAULT_THEME = table.freeze({
-  PanelTexture = "", -- NATIVE_UI_PANEL_IMAGE
+  PanelTexture = "rbxassetid://95109079330124", -- NATIVE_UI_PANEL_IMAGE
   Panel = Color3.fromRGB(31, 36, 43),
   PanelRaised = Color3.fromRGB(44, 51, 61),
   PanelInset = Color3.fromRGB(21, 25, 30),
