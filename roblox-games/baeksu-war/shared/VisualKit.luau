@@ -70,7 +70,26 @@ function Kit.Preload()
  if #failed>0 then warn("백수대전쟁 원본 모델 미적재: "..table.concat(failed,",")) end
  return Kit.Ready()
 end
-local function meshClone(key,parent,cf,size,team)
+-- 검증된 CC0 메시의 재질을 Roblox에서 재구성한다.
+-- 원본 메시를 바꾸지 않고 외형 톤만 보정한다. TextureID가 있는 경우 색 보정을 약하게 준다.
+local function finishMeshMaterials(mesh,creatureColor,team)
+ local shade=creatureColor
+ local name=mesh.Name:lower()
+ if name:find("eye") or name:find("pupil") then
+  shade=Color3.fromRGB(26,35,43)
+ elseif name:find("horn") or name:find("tooth") or name:find("teeth") or name:find("claw") then
+  shade=Color3.fromRGB(226,218,195)
+ elseif name:find("shell") or name:find("armor") then
+  shade=creatureColor:Lerp(Color3.fromRGB(24,47,46),.32)
+ elseif name:find("wing") or name:find("feather") or name:find("tail") then
+  shade=creatureColor:Lerp(Color3.fromRGB(238,208,161),.2)
+ end
+ local textured=mesh:IsA("MeshPart") and mesh.TextureID~="" or mesh:FindFirstChildWhichIsA("SurfaceAppearance")~=nil
+ mesh.Color=textured and mesh.Color:Lerp(shade,.3) or shade
+ if not textured then mesh.Material=Enum.Material.SmoothPlastic end
+ if team=="ENEMY" then mesh.Color=mesh.Color:Lerp(Color3.fromRGB(190,74,71),.14) end
+end
+local function meshClone(key,parent,cf,size,team,creatureColor)
  local source=templates[key]
  if not source then return nil end
  local root=source:Clone()
@@ -81,7 +100,8 @@ local function meshClone(key,parent,cf,size,team)
   if inst:IsA("BasePart") then
    inst.Anchored=true;inst.CanCollide=false;inst.CanTouch=false
    inst.CastShadow=true
-   if team=="ENEMY" then inst.Color=inst.Color:Lerp(Color3.fromRGB(198,95,92),.18) end
+   if creatureColor then finishMeshMaterials(inst,creatureColor,team)
+   elseif team=="ENEMY" then inst.Color=inst.Color:Lerp(Color3.fromRGB(198,95,92),.18) end
   end
  end
  -- 임포터에서 가져온 실물 메시의 Pivot을 보존하고 실제 크기만 조절한다.
@@ -95,7 +115,7 @@ local function meshClone(key,parent,cf,size,team)
  return root,root:FindFirstChildWhichIsA("BasePart",true)
 end
 function Kit.BuildCreature(folder,cf,unit,level,team)
- local actor,root=meshClone(unit.Id,folder,cf,Vector3.new(3.5,3.8,4),team)
+ local actor,root=meshClone(unit.Id,folder,cf,Vector3.new(3.1,3.5,3.6),team,unit.Color)
  if not actor or not root then return nil end
  local scale=1+math.min(level-1,9)*.055
  actor:ScaleTo(actor:GetScale()*scale)
@@ -130,7 +150,7 @@ function Kit.BuildHome(folder,pos,unit,level)
  return home
 end
 function Kit.DecorateGate(folder,x,z,enemy)
- local model=meshClone("gate",folder,CFrame.new(x,0,z),Vector3.new(50,25,12),enemy and "ENEMY" or "ALLY")
+ local model=meshClone("gate",folder,CFrame.new(x,0,z),Vector3.new(11,8,6),enemy and "ENEMY" or "ALLY")
  if model then seatOnGround(model,x,z) end
  return model
 end
@@ -140,7 +160,7 @@ function Kit.BuildWorld(folder,x)
    for _,side in ipairs({-1,1}) do
     local xx=x+side*29
     local z=i*9
-    local tree=meshClone("tree",folder,CFrame.new(xx,.3,z),Vector3.new(9,14,9))
+    local tree=meshClone("tree",folder,CFrame.new(xx,.3,z),Vector3.new(6,9,6))
     if tree then seatOnGround(tree,xx,z) end
    end
   end
@@ -148,7 +168,7 @@ function Kit.BuildWorld(folder,x)
  for _,side in ipairs({-1,1}) do
   for _,z in ipairs({-23,-6,13,30}) do
    local xx=x+side*23
-   local rock=meshClone("rock",folder,CFrame.new(xx,.4,z),Vector3.new(5,4,5))
+   local rock=meshClone("rock",folder,CFrame.new(xx,.4,z),Vector3.new(3.8,3.2,3.8))
    if rock then seatOnGround(rock,xx,z) end
   end
  end
