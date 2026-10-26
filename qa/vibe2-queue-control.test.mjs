@@ -150,6 +150,61 @@ test('free AI quota exhaustion waits for provider retry window without using gam
 });
 
 
+// [무모델] 기존 소스의 결정론적 후보가 없을 때만 실패를 안전 대기시킨다.
+test('model-free Roblox source misses defer without consuming retries or blocking independent work',()=>{
+  const first={id:'no-model-roblox',gameId:'island-a',target:'roblox',department:'development',type:'implementation',
+    goal:'repair exact existing source',sourceRoot:'roblox-games/island-a',responsibleFiles:['server/Game.server.luau'],
+    status:'running',retries:3,maxRetries:3,reservationId:'no-model-lease',
+    reservationRunId:'4077',reservedAt:new Date().toISOString(),evidence:[]};
+  const second={...first,id:'independent-native',gameId:'island-b',sourceRoot:'roblox-games/island-b',
+    status:'queued',retries:0,reservationId:null,reservationRunId:null,reservedAt:null};
+  const result={taskId:first.id,reservationId:first.reservationId,variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'NO_MODEL_SOURCE_REPAIR_UNAVAILABLE',
+      message:'ROBLOX_NO_MODEL_SOURCE_REPAIR_UNAVAILABLE: verified responsible-source edit required'}};
+  const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[first,second]}),[result]);
+  const task=settled.queue.tasks.find(x=>x.id===first.id);
+  assert.equal(settled.applied[0].outcome,'DEFERRED_NO_MODEL');
+  assert.equal(task.status,'blocked');
+  assert.equal(task.blocker,'SOURCE_MODEL_UNAVAILABLE');
+  assert.equal(task.lastOutcome,'MODEL_FREE_SOURCE_NOT_APPLICABLE');
+  assert.equal(task.retries,3,'absence of an external model must not exhaust game retries');
+  assert.equal(task.reservationId,null);
+  assert.equal(task.neuronExpectedVariants,0);
+  assert.ok(task.evidence.includes('model-free-deterministic-unavailable:v1'));
+  assert.equal(task.evidence.filter(x=>x.startsWith('source-no-model-retry-at:')).length,1);
+  const retryAt=Date.parse(settled.applied[0].retryAt);
+  assert.ok(retryAt>Date.now());
+  assert.equal(recoverStaleRunningReservations(settled.queue,{nowMs:retryAt-1000}).recovered,0);
+  const selected=reserveVibeTaskBatch(settled.queue,{maxConcurrentTasks:1,lane:'game-primary'});
+  assert.deepEqual(selected.tasks.map(t=>t.id),['independent-native']);
+  const recovered=recoverStaleRunningReservations(settled.queue,{nowMs:retryAt+1000});
+  assert.equal(recovered.queue.tasks.find(x=>x.id===first.id).status,'queued');
+  assert.equal(recovered.queue.tasks.find(x=>x.id===first.id).retries,3);
+  assert.equal(recovered.queue.tasks.find(x=>x.id===first.id).blocker,null);
+  assert.notEqual(recovered.queue.tasks.find(x=>x.id===first.id).status,'done');
+});
+
+test('missing model credentials defer exact source mutation but leave other queued tasks runnable',()=>{
+  const target={id:'missing-model-web',gameId:'browser-game',target:'web',department:'development',type:'implementation',
+    goal:'existing file repair',sourceRoot:'web-games/browser-game',responsibleFiles:['index.html'],
+    status:'running',retries:1,maxRetries:2,reservationId:'web-model-lease',reservationRunId:'4078',
+    reservedAt:new Date().toISOString(),evidence:[]};
+  const result={taskId:target.id,reservationId:target.reservationId,variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',
+    message:'GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'}};
+  const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[target]}),[result]);
+  assert.equal(settled.applied[0].outcome,'DEFERRED_NO_MODEL');
+  assert.equal(settled.queue.tasks[0].status,'blocked');
+  assert.equal(settled.queue.tasks[0].retries,1);
+  assert.equal(settled.queue.tasks[0].blocker,'SOURCE_MODEL_UNAVAILABLE');
+  const replay={...settled.queue.tasks[0],status:'running',reservationId:'web-model-lease-2'};
+  const repeat=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[replay]}),
+    [{...result,reservationId:'web-model-lease-2'}]);
+  assert.equal(repeat.queue.tasks[0].evidence.filter(x=>x.startsWith('source-no-model-retry-at:')).length,1,
+    'the periodic retry marker must be deduplicated instead of growing queue storage');
+});
+
 // 웹 상시 두 게임: 실제 예약·완료·대기 복구를 거쳐 서로 다른 게임을 유지한다.
 test('canonical web target fills two distinct games and refills a released game without cancelling native work',()=>{
   const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}}};
