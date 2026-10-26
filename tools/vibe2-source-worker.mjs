@@ -1753,19 +1753,25 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         const configSource=fs.readFileSync(configFile,'utf8');
         const configCode=executableText(configSource,'luau');
         const actionTables=[...configCode.matchAll(/\bActions\s*=\s*\{([^{}]*)\}/g)];
+        const configTables=[...configCode.matchAll(/^local\s+Config\s*=\s*\{/gm)];
         const table=tables[0],tableBodyStart=table.index+table[0].indexOf('{')+1;
         const dispatcher=/remote\.OnServerEvent:Connect\(function\(player, (actionId|action)\)\n  if typeof\(\1\) ~= "string" then return end\n  local handler = handlers\[\1\]\n  if typeof\(handler\) ~= "function" then return end\n  local now = os\.clock\(\)\n  local previous = lastAction\[player\] or 0\n  if now - previous < Config\.RateLimitSeconds then return end\n  lastAction\[player\] = now\n  handler\(player\)\n(?:  broadcastMultiplayerSync\(player\)\n)?end\)/g;
         const dispatchers=[...source.matchAll(dispatcher)].filter(row=>code.slice(row.index,row.index+6)==='remote');
-        if(configSource.length<=1000000&&actionTables.length===1&&dispatchers.length===1
+        if(configSource.length<=1000000&&actionTables.length===1&&configTables.length===1&&dispatchers.length===1
           &&dispatchers[0].index>table.index+table[0].length
           &&source.indexOf(storageBinding)<source.indexOf(sharedBinding)&&source.indexOf(sharedBinding)<source.indexOf(configBinding)
           &&source.indexOf(configBinding)<table.index
-          &&/return\s+table\.freeze\(Config\)\s*$/.test(configSource)
+          &&/return\s+table\.freeze\(Config\)\s*$/.test(configCode)
+          &&[...configCode.matchAll(/\bConfig\b/g)].length===2
           &&[...configCode.matchAll(/\bActions\s*=/g)].length===1
           &&!/\bConfig\s*\.\s*Actions\b/.test(configCode)){
           const actionTable=actionTables[0],start=actionTable.index+actionTable[0].indexOf('{')+1;
+          const configStart=configTables[0].index+configTables[0][0].lastIndexOf('{')+1;
           const actionBody=configSource.slice(start,start+actionTable[1].length);
-          const approved=new Map(),existing=new Map();let valid=true;
+          const approved=new Map(),existing=new Map();
+          const prefix=configCode.slice(configStart,actionTable.index);
+          let valid=actionTable.index>configStart
+            &&[...prefix.matchAll(/\{/g)].length===[...prefix.matchAll(/\}/g)].length;
           const actionLines=actionBody.split('\n'),actionCodeLines=executableText(actionBody,'luau').split('\n');
           for(let index=0;index<actionLines.length;index++){
             const line=actionLines[index];
