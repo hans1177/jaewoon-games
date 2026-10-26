@@ -1233,6 +1233,130 @@ function RobloxCommonMotion.BindJointPose(joints, options)
  return controller
 end
 
+-- Fast unarmed presentation for an existing articulated humanoid. One action per
+-- attack event may drive a linked visual chain; damage stays with the server.
+-- No root motion, physics impulse or private update loop.
+-- Canonical joint deltas; callers map only joints present in their approved rig.
+local unarmedKeys={"Spine","Chest","Head","UpperArmL","UpperArmR","ForearmL","ForearmR","HandL","HandR"}
+local function actionFrame(x,y,z)return CFrame.Angles(math.rad(x),math.rad(y),math.rad(z))end
+local unarmedGuard={
+ Spine=actionFrame(-3,-8,0),Chest=actionFrame(0,-6,0),Head=actionFrame(2,9,0),
+ UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-31,12,18),
+ ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-88,0,0),
+ HandL=actionFrame(0,0,-4),HandR=actionFrame(0,0,4),
+}
+local unarmedActions={
+ {id="JAB_LEFT",kind="HAND",pose={Spine=actionFrame(0.9,9.9,-2),Chest=actionFrame(-3,18,-4),Head=actionFrame(3,-10.8,1.2),UpperArmL=actionFrame(-86,-8,-6),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-12,0,0),ForearmR=actionFrame(-88,0,0)}},
+ {id="CROSS_RIGHT",kind="HAND",pose={Spine=actionFrame(1.2,-16.5,2.5),Chest=actionFrame(-4,-30,5),Head=actionFrame(3,18,-1.5),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-96,6,7),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-9,0,0)}},
+ {id="HOOK_LEFT",kind="HAND",pose={Spine=actionFrame(0.9,20.9,-3.5),Chest=actionFrame(-3,38,-7),Head=actionFrame(3,-22.8,2.1),UpperArmL=actionFrame(-76,28,-45),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-76,0,0),ForearmR=actionFrame(-88,0,0)}},
+ {id="HOOK_RIGHT",kind="HAND",pose={Spine=actionFrame(0.9,-20.9,3.5),Chest=actionFrame(-3,-38,7),Head=actionFrame(3,22.8,-2.1),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-76,-28,45),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-76,0,0)}},
+ {id="UPPERCUT_LEFT",kind="HAND",pose={Spine=actionFrame(3.6,13.75,-4),Chest=actionFrame(-12,25,-8),Head=actionFrame(3,-15,2.4),UpperArmL=actionFrame(-110,4,-20),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-92,0,0),ForearmR=actionFrame(-88,0,0)}},
+ {id="UPPERCUT_RIGHT",kind="HAND",pose={Spine=actionFrame(3.6,-13.75,4),Chest=actionFrame(-12,-25,8),Head=actionFrame(3,15,-2.4),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-110,-4,20),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-92,0,0)}},
+ {id="BACKFIST_LEFT",kind="HAND",pose={Spine=actionFrame(0.6,-13.75,-2.5),Chest=actionFrame(-2,-25,-5),Head=actionFrame(3,15,1.5),UpperArmL=actionFrame(-73,-36,-55),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-22,0,0),ForearmR=actionFrame(-88,0,0)}},
+ {id="BACKFIST_RIGHT",kind="HAND",pose={Spine=actionFrame(0.6,13.75,2.5),Chest=actionFrame(-2,25,5),Head=actionFrame(3,-15,-1.5),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-73,36,55),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-22,0,0)}},
+ {id="HAMMER_LEFT",kind="HAND",pose={Spine=actionFrame(-3.6,8.8,-3.5),Chest=actionFrame(12,16,-7),Head=actionFrame(3,-9.6,2.1),UpperArmL=actionFrame(-112,-5,-12),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-35,0,0),ForearmR=actionFrame(-88,0,0)}},
+ {id="HAMMER_RIGHT",kind="HAND",pose={Spine=actionFrame(-3.6,-8.8,3.5),Chest=actionFrame(12,-16,7),Head=actionFrame(3,9.6,-2.1),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-112,5,12),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-35,0,0)}},
+ {id="ELBOW_LEFT",kind="HAND",pose={Spine=actionFrame(1.5,23.65,-5),Chest=actionFrame(-5,43,-10),Head=actionFrame(3,-25.8,3),UpperArmL=actionFrame(-68,37,-62),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-125,0,0),ForearmR=actionFrame(-88,0,0)}},
+ {id="ELBOW_RIGHT",kind="HAND",pose={Spine=actionFrame(1.5,-23.65,5),Chest=actionFrame(-5,-43,10),Head=actionFrame(3,25.8,-3),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-68,-37,62),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-125,0,0)}},
+ {id="KNEE_LEFT",kind="KNEE",pose={Spine=actionFrame(3.6,6.6,-3),Chest=actionFrame(-12,12,-6),Head=actionFrame(3,-7.2,1.8),UpperArmL=actionFrame(-46,0,-22),UpperArmR=actionFrame(-48,0,22),ForearmL=actionFrame(-80,0,0),ForearmR=actionFrame(-80,0,0),ThighL=actionFrame(-85,0,-7),ShinL=actionFrame(115,0,0),FootL=actionFrame(-25,0,0)}},
+ {id="KNEE_RIGHT",kind="KNEE",pose={Spine=actionFrame(3.6,-6.6,3),Chest=actionFrame(-12,-12,6),Head=actionFrame(3,7.2,-1.8),UpperArmL=actionFrame(-48,0,-22),UpperArmR=actionFrame(-46,0,22),ForearmL=actionFrame(-80,0,0),ForearmR=actionFrame(-80,0,0),ThighR=actionFrame(-85,0,7),ShinR=actionFrame(115,0,0),FootR=actionFrame(-25,0,0)}},
+ {id="DIAGONAL_KNEE_LEFT",kind="KNEE",pose={Spine=actionFrame(2.4,15.4,-6),Chest=actionFrame(-8,28,-12),Head=actionFrame(3,-16.8,3.6),UpperArmL=actionFrame(-64,0,-25),UpperArmR=actionFrame(-52,0,25),ForearmL=actionFrame(-95,0,0),ForearmR=actionFrame(-95,0,0),ThighL=actionFrame(-72,24,-22),ShinL=actionFrame(122,0,0),FootL=actionFrame(-18,0,0)}},
+ {id="DIAGONAL_KNEE_RIGHT",kind="KNEE",pose={Spine=actionFrame(2.4,-15.4,6),Chest=actionFrame(-8,-28,12),Head=actionFrame(3,16.8,-3.6),UpperArmL=actionFrame(-52,0,-25),UpperArmR=actionFrame(-64,0,25),ForearmL=actionFrame(-95,0,0),ForearmR=actionFrame(-95,0,0),ThighR=actionFrame(-72,-24,22),ShinR=actionFrame(122,0,0),FootR=actionFrame(-18,0,0)}},
+ {id="FRONT_KICK_L",kind="KICK",pose={Spine=actionFrame(5.1,4.4,-2.5),Chest=actionFrame(-17,8,-5),Head=actionFrame(3,-4.8,1.5),UpperArmL=actionFrame(-52,0,-28),UpperArmR=actionFrame(-52,0,28),ForearmL=actionFrame(-76,0,0),ForearmR=actionFrame(-76,0,0),ThighL=actionFrame(-92,0,-5),ShinL=actionFrame(10,0,0),FootL=actionFrame(12,0,0)}},
+ {id="SIDE_KICK_L",kind="KICK",pose={Spine=actionFrame(2.4,15.4,9),Chest=actionFrame(-8,28,18),Head=actionFrame(3,-16.8,-5.4),UpperArmL=actionFrame(-45,8,-38),UpperArmR=actionFrame(-45,-8,38),ForearmL=actionFrame(-65,0,0),ForearmR=actionFrame(-65,0,0),ThighL=actionFrame(-38,32,-68),ShinL=actionFrame(12,0,0),FootL=actionFrame(0,0,15)}},
+ {id="ROUND_KICK_L",kind="KICK",pose={Spine=actionFrame(2.7,25.3,7.5),Chest=actionFrame(-9,46,15),Head=actionFrame(3,-27.6,-4.5),UpperArmL=actionFrame(-34,8,-48),UpperArmR=actionFrame(-34,-8,48),ForearmL=actionFrame(-55,0,0),ForearmR=actionFrame(-55,0,0),ThighL=actionFrame(-62,36,-45),ShinL=actionFrame(18,0,0),FootL=actionFrame(-18,0,-10)}},
+ {id="LOW_KICK_L",kind="KICK",pose={Spine=actionFrame(-1.8,12.1,5),Chest=actionFrame(6,22,10),Head=actionFrame(3,-13.2,-3),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-88,0,0),ThighL=actionFrame(-30,20,-22),ShinL=actionFrame(8,0,0),FootL=actionFrame(-22,0,0)}},
+ {id="FRONT_KICK_R",kind="KICK",pose={Spine=actionFrame(5.1,-4.4,2.5),Chest=actionFrame(-17,-8,5),Head=actionFrame(3,4.8,-1.5),UpperArmL=actionFrame(-52,0,-28),UpperArmR=actionFrame(-52,0,28),ForearmL=actionFrame(-76,0,0),ForearmR=actionFrame(-76,0,0),ThighR=actionFrame(-92,0,5),ShinR=actionFrame(10,0,0),FootR=actionFrame(12,0,0)}},
+ {id="SIDE_KICK_R",kind="KICK",pose={Spine=actionFrame(2.4,-15.4,-9),Chest=actionFrame(-8,-28,-18),Head=actionFrame(3,16.8,5.4),UpperArmL=actionFrame(-45,8,-38),UpperArmR=actionFrame(-45,-8,38),ForearmL=actionFrame(-65,0,0),ForearmR=actionFrame(-65,0,0),ThighR=actionFrame(-38,-32,68),ShinR=actionFrame(12,0,0),FootR=actionFrame(0,0,-15)}},
+ {id="ROUND_KICK_R",kind="KICK",pose={Spine=actionFrame(2.7,-25.3,-7.5),Chest=actionFrame(-9,-46,-15),Head=actionFrame(3,27.6,4.5),UpperArmL=actionFrame(-34,8,-48),UpperArmR=actionFrame(-34,-8,48),ForearmL=actionFrame(-55,0,0),ForearmR=actionFrame(-55,0,0),ThighR=actionFrame(-62,-36,45),ShinR=actionFrame(18,0,0),FootR=actionFrame(-18,0,10)}},
+ {id="LOW_KICK_R",kind="KICK",pose={Spine=actionFrame(-1.8,-12.1,-5),Chest=actionFrame(6,-22,-10),Head=actionFrame(3,13.2,3),UpperArmL=actionFrame(-38,-12,-18),UpperArmR=actionFrame(-31,12,18),ForearmL=actionFrame(-78,0,0),ForearmR=actionFrame(-88,0,0),ThighR=actionFrame(-30,-20,22),ShinR=actionFrame(8,0,0),FootR=actionFrame(-22,0,0)}},
+ {id="SHOULDER_THROW_LEFT",kind="THROW",pose={Spine=actionFrame(-12.6,34.1,-12.5),Chest=actionFrame(42,62,-25),Head=actionFrame(3,-37.2,7.5),UpperArmL=actionFrame(-126,32,-28),UpperArmR=actionFrame(-114,-18,28),ForearmL=actionFrame(-110,0,0),ForearmR=actionFrame(-95,0,0),ThighL=actionFrame(-28,18,-12),ShinL=actionFrame(32,0,0)}},
+ {id="SHOULDER_THROW_RIGHT",kind="THROW",pose={Spine=actionFrame(-12.6,-34.1,12.5),Chest=actionFrame(42,-62,25),Head=actionFrame(3,37.2,-7.5),UpperArmL=actionFrame(-114,18,-28),UpperArmR=actionFrame(-126,-32,28),ForearmL=actionFrame(-95,0,0),ForearmR=actionFrame(-110,0,0),ThighR=actionFrame(-28,-18,12),ShinR=actionFrame(32,0,0)}},
+ {id="HIP_THROW_LEFT",kind="THROW",pose={Spine=actionFrame(-8.4,41.8,-10),Chest=actionFrame(28,76,-20),Head=actionFrame(3,-45.6,6),UpperArmL=actionFrame(-90,42,-38),UpperArmR=actionFrame(-80,12,18),ForearmL=actionFrame(-95,0,0),ForearmR=actionFrame(-115,0,0),ThighL=actionFrame(-38,26,-18),ShinL=actionFrame(42,0,0)}},
+ {id="HIP_THROW_RIGHT",kind="THROW",pose={Spine=actionFrame(-8.4,-41.8,10),Chest=actionFrame(28,-76,20),Head=actionFrame(3,45.6,-6),UpperArmL=actionFrame(-80,-12,-18),UpperArmR=actionFrame(-90,-42,38),ForearmL=actionFrame(-115,0,0),ForearmR=actionFrame(-95,0,0),ThighR=actionFrame(-38,-26,18),ShinR=actionFrame(42,0,0)}},
+ {id="LEG_REAP_LEFT",kind="THROW",pose={Spine=actionFrame(-7.2,26.4,-9),Chest=actionFrame(24,48,-18),Head=actionFrame(3,-28.8,5.4),UpperArmL=actionFrame(-72,28,-35),UpperArmR=actionFrame(-75,-12,20),ForearmL=actionFrame(-110,0,0),ForearmR=actionFrame(-105,0,0),ThighL=actionFrame(28,22,-28),ShinL=actionFrame(25,0,0),FootL=actionFrame(-12,0,0)}},
+ {id="LEG_REAP_RIGHT",kind="THROW",pose={Spine=actionFrame(-7.2,-26.4,9),Chest=actionFrame(24,-48,18),Head=actionFrame(3,28.8,-5.4),UpperArmL=actionFrame(-75,12,-20),UpperArmR=actionFrame(-72,-28,35),ForearmL=actionFrame(-105,0,0),ForearmR=actionFrame(-110,0,0),ThighR=actionFrame(28,-22,28),ShinR=actionFrame(25,0,0),FootR=actionFrame(-12,0,0)}},
+}
+-- Eleven authored three-action routes cover all thirty actions. They keep a shared
+-- guard at the seams instead of resetting to the bind pose between each strike.
+local unarmedChains={{1,2,17},{3,4,18},{5,6,13},{7,8,14},{9,10,19},
+ {11,12,20},{15,16,21},{22,23,24},{1,25,26},{2,27,28},{3,29,30}}
+local function actionTiming(action)
+ if action.kind=="THROW"then return .12,.23,.29,.49 end
+ if action.kind=="KICK"or action.kind=="KNEE"then return .065,.13,.18,.34 end
+ return .045,.095,.14,.265
+end
+function RobloxCommonMotion.DescribeUnarmedActions()
+ local out={}
+ for i,action in ipairs(unarmedActions)do
+  local ready,impact,recoil,duration=actionTiming(action)
+  out[i]=table.freeze({id=action.id,kind=action.kind,duration=duration,contact=impact,
+   pairedTargetRequired=action.kind=="THROW",gameplayMovementAuthority=false})
+ end
+ return table.freeze(out)
+end
+function RobloxCommonMotion.SampleUnarmedAction(elapsed,combo,targets,stage)
+ targets=targets or {}
+ local index=math.clamp(math.floor(tonumber(combo)or 1),1,#unarmedActions)
+ local action=unarmedActions[index]
+ local ready,impact,recoil,duration=actionTiming(action)
+ local t=math.max(0,tonumber(elapsed)or 0)
+ if stage=="impact"then t+=impact
+ elseif stage=="anticipation"then t=math.min(t,ready)end
+ local extension,weight=0,1
+ if t<ready then extension=-.16*math.sin(t/ready*math.pi*.5)
+ elseif t<impact then
+  local u=(t-ready)/(impact-ready);extension=-.16+1.16*u*u*(3-2*u)
+ elseif t<recoil then extension=1-.22*(t-impact)/(recoil-impact)
+ else
+  local u=math.clamp((t-recoil)/(duration-recoil),0,1)
+  extension=.78*(1-u)
+  weight=stage=="chain"and 1 or 1-u*u*(3-2*u)
+ end
+ for _,name in ipairs(unarmedKeys)do
+  local guard=unarmedGuard[name]
+  local contact=action.pose[name]or guard
+  local pose=guard:Lerp(contact,math.clamp(extension,0,1))
+  if extension<0 then pose=guard*actionFrame(0,-extension*(index%2==0 and -16 or 16),0)end
+  targets[name]=CFrame.identity:Lerp(pose,weight)
+ end
+ -- Only kicking/reaping actions override these joints; punching retains gait.
+ for name,contact in pairs(action.pose)do
+  if not unarmedGuard[name]then
+   local gait=targets[name]or CFrame.identity
+   targets[name]=gait:Lerp(contact,math.clamp(extension,0,1)*weight)
+  end
+ end
+ return targets,duration,math.clamp(extension,0,1)*weight
+end
+function RobloxCommonMotion.SampleUnarmedChain(elapsed,chain,targets,stage,allowPairedThrows)
+ targets=targets or {}
+ local route=unarmedChains[(math.max(1,math.floor(tonumber(chain)or 1))-1)%#unarmedChains+1]
+ local t=math.max(0,tonumber(elapsed)or 0)
+ local total=0
+ for _,id in ipairs(route)do local _,_,_,d=actionTiming(unarmedActions[id]);total+=d end
+ local firstImpact=select(2,actionTiming(unarmedActions[route[1]]))
+ if stage=="impact"then t+=firstImpact
+ elseif stage=="anticipation"then t=math.min(t,select(1,actionTiming(unarmedActions[route[1]])))end
+ local cursor=0
+ for i,id in ipairs(route)do
+  local _,_,_,duration=actionTiming(unarmedActions[id])
+  if t<cursor+duration then
+   -- Throws need a paired victim. Solo attacks substitute an articulated elbow,
+   -- never mime grabbing an absent target or teleport a gameplay root.
+   local actual=unarmedActions[id].kind=="THROW"and not allowPairedThrows and(i%2==0 and 11 or 12)or id
+   local _,_,_,actualDuration=actionTiming(unarmedActions[actual])
+   RobloxCommonMotion.SampleUnarmedAction((t-cursor)/duration*actualDuration,actual,targets,"chain")
+   return targets,total,actual,i
+  end
+  cursor+=duration
+ end
+ -- Fade the shared guard once after the entire chain, not after each contact.
+ local fade=math.clamp((t-total)/.12,0,1)
+ for _,name in ipairs(unarmedKeys)do targets[name]=unarmedGuard[name]:Lerp(CFrame.identity,fade*fade*(3-2*fade))end
+ return targets,total,route[#route],#route
+end
+
 function RobloxCommonMotion.CreateSequence(atomId)
 	local id, row = resolve(atomId)
 	local builder = BUILDERS[row.mode]
@@ -1302,7 +1426,7 @@ function RobloxCommonMotion.Audit()
 	end
 	table.sort(ids)
 	return table.freeze({
-		version = 5,
+		version = 7,
 		packId = "roblox-common-motion-v1",
 		atoms = table.freeze(ids),
 		atomCount = #ids,
@@ -1315,6 +1439,9 @@ function RobloxCommonMotion.Audit()
 		gameplayMovementAuthority = false,
 		persistentAnimationUploadRequiredForProduction = true,
 		callerOwnedJointPoseBlending = true,
+		unarmedActionSampler = true,
+		unarmedComboCount = 30,
+		unarmedChainCount = 11,
 		poseControllerJointTypes = table.freeze({"Bone","Motor6D"}),
 		productionVerified = false,
 		runtimeVerificationRequired = true,
