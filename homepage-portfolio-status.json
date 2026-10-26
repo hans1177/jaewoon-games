@@ -4,11 +4,11 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-10-24T09:32:32.761Z",
+  "generatedAt": "2026-10-26T00:51:38.003Z",
   "counts": {
     "ACCELERATE": 0,
-    "CONTINUE": 0,
-    "FOCUSED_REPAIR": 46,
+    "CONTINUE": 1,
+    "FOCUSED_REPAIR": 37,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
@@ -25,25 +25,7 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "bug-defense",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
       "gameId": "cat-step",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "chess-battle",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -97,15 +79,6 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "egg-heist",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
       "gameId": "exorcist-office",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
@@ -151,34 +124,7 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "human-go",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
       "gameId": "human-go-temp",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "insect-survival",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "island-village",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -205,7 +151,7 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "monster-adventure",
+      "gameId": "mini-empire",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -358,34 +304,7 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "survival",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "survival2",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
       "gameId": "tekken",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "territory-war",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -425,6 +344,15 @@
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "restaurant-tycoon",
+      "decision": "CONTINUE",
+      "label": "정상개발",
+      "priorityRank": 2,
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
