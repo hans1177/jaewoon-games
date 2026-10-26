@@ -237,6 +237,8 @@
       "newSchedulerCreated": false,
       "duplicateWakeSignalsCoalesced": true,
       "concurrencyGroup": "vibe2-main-push-game-primary-wake",
+      "concurrencyScope": "SAME_MAIN_REVISION_ONLY",
+      "newMainWaitsForOlderWorkerCohort": false,
       "activeWakeCancellationForbidden": true,
       "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
       "sharedQueueWriteMode": "EXISTING_OPTIMISTIC_RESERVE_ONLY",

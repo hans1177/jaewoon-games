@@ -1,8 +1,8 @@
 {
-  "version": 595,
+  "version": 596,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-10-25",
+  "recordedAt": "2026-10-26",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -8089,9 +8089,10 @@
       "qualitySecurityReleaseGatesUnchanged": true,
       "duplicateWakeSignalsCoalesced": true,
       "concurrencyGroup": "vibe2-main-push-game-primary-wake",
-      "concurrencyScope": "MAIN_PUSH_WAKE_ONLY",
+      "concurrencyScope": "MAIN_PUSH_SAME_SOURCE_REVISION_ONLY",
       "activeWakeCancellationForbidden": true,
-      "pendingWakePolicy": "KEEP_ACTIVE_AND_ONLY_NEWEST_PENDING_WAKE",
+      "pendingWakePolicy": "KEEP_ACTIVE_AND_ONLY_NEWEST_PENDING_WAKE_PER_SOURCE_REVISION",
+      "newMainWaitsForOlderWorkerCohort": false,
       "repositoryDispatchAndCallableRunsRemainRunScoped": true,
       "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
       "staleQueuedWakeMayCancel": true,

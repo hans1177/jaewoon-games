@@ -162,6 +162,9 @@ test('stale main push wake rebases to latest main before expensive reserve work 
   assert.equal(wake.usesExistingReservePath,true);
   assert.equal(wake.duplicateWakeSignalsCoalesced,true);
   assert.equal(wake.concurrencyGroup,'vibe2-main-push-game-primary-wake');
+  assert.equal(wake.concurrencyScope,'SAME_MAIN_REVISION_ONLY');
+  assert.equal(wake.newMainWaitsForOlderWorkerCohort,false);
+  assert.ok(core.includes("format('{0}-{1}', 'vibe2-main-push-game-primary-wake', github.sha)"));
   assert.equal(wake.staleUnstartedWakeDrain,'.github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE');
   assert.match(core,/GAME_PRIMARY_MAIN_PUSH_WAKE/);
   assert.match(core,/cancel-in-progress: false/);
