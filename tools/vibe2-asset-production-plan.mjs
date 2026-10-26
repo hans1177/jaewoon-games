@@ -6894,11 +6894,13 @@ export function assetProductionGuidance(plan={}){
         gameId:plan.familyAssetOptimization.gameId,
         fingerprint:plan.familyAssetOptimization.selectionFingerprint,
         tasks:plan.familyAssetOptimization.familyTasks.filter(row=>row.requested).map(row=>({
-          family:row.family,status:row.status,assetIds:row.selectedAssetIds,
+          family:row.family,status:row.status,assetIdCount:row.selectedAssetIds.length,
+          assetIdsPreview:row.selectedAssetIds.slice(0,8),
           axes:row.optimizationAxes,executionOrder:row.executionOrder,
-          blockers:row.missingSourceOrBinding,evidenceRequired:row.evidenceRequired
+          blockedRequirementCount:row.missingSourceOrBinding.length,
+          blockersPreview:row.missingSourceOrBinding.slice(0,8),evidenceRequired:row.evidenceRequired
         }))
-      })+'. F0 및 모든 기존 BUILD_UP에서 12개 자산 계열을 평가하되 게임에서 요구하지 않은 자산을 억지 생성하지 않는다. 등록된 자산은 선택→실제 최적화→게임 소비처 소스 적용→기기별 FPS/메모리/로딩 실측과 동일 리비전 회귀 검증 순서로 기존 책임 모듈에서 실행한다. 블록된 자산은 기존 ASSET_DEVELOPMENT에서 출처·라이선스·원본 해시·플랫폼 권한과 리그 호환을 먼저 복구한다. 자산명·계획·추정 수치로 PASS 승격 금지. 실제 QA 실패 때 해당 게임의 마지막 검증 체크포인트 복구→원인 책임 소스 수정→재실행·재측정하되 F0~F9 순서, 기존 게임플레이/세이브/서버 권한을 보존한다. 기존 미승인 자산을 기본 Part·임시 모델로 대체하지 않고 새 파이프라인이나 큐를 만들지 않는다.':'',
+      })+'. F0 및 모든 기존 BUILD_UP에서 12개 자산 계열을 평가하되 게임에서 요구하지 않은 자산을 억지 생성하지 않는다. 추가 자산 ID와 막힘 상세는 기존 plan.familyAssetOptimization.familyTasks 전체에서 읽고 계획에 담긴 모든 요청 대상에 동일한 순서를 적용한다. 등록된 자산은 선택→실제 최적화→게임 소비처 소스 적용→기기별 FPS/메모리/로딩 실측과 동일 리비전 회귀 검증 순서로 기존 책임 모듈에서 실행한다. 블록된 자산은 기존 ASSET_DEVELOPMENT에서 출처·라이선스·원본 해시·플랫폼 권한과 리그 호환을 먼저 복구한다. 자산명·계획·추정 수치로 PASS 승격 금지. 실제 QA 실패 때 해당 게임의 마지막 검증 체크포인트 복구→원인 책임 소스 수정→재실행·재측정하되 F0~F9 순서, 기존 게임플레이/세이브/서버 권한을 보존한다. 기존 미승인 자산을 기본 Part·임시 모델로 대체하지 않고 새 파이프라인이나 큐를 만들지 않는다.':'',
 
     plan.libraryCc0Replacement?.enabled===true?'[ALL PLATFORM LIBRARY CC0 REPLACEMENT] '+JSON.stringify(plan.libraryCc0Replacement)+'. 모든 플랫폼·게임의 모델·크리처·모션·장비·건물·환경·재질·VFX·UI·오디오는 등록 라이브러리의 검증된 CC0 원본과 계보가 연결된 게임별 파생으로 교체한다. 기존 실제 사용 바인딩부터 조사하고 실루엣·역할·리그·접점·스타일·성능에 맞는 원본을 선택한다. 공용 원본은 보존하고 엔진별 네이티브 파생을 기존 책임 함수에 직접 연결한다. 상업 이용 가능·회사 소유·플랫폼 기본 제공·CC0 이름표만으로 출처 검증을 대신하지 않는다. 부족한 자산은 기존 공급 요구로 연결하고 자체 제작 fallback으로 채우지 않는다. 실행 증거가 없는 교체는 GAP로 유지하고 같은 빌드의 모바일·전후 화면·모션·저장·판정 회귀를 통과한 뒤 기존 소비처 없는 구형 자산만 제거한다. 기존 플랫폼 보류·권한·F0~F9는 유지하며 보류 플랫폼 교체는 미완료로 추적한다. 엔진·소프트웨어 코드의 원래 라이선스를 CC0로 재표기하지 않는다.':'',
     (plan.assetSupplySummary?.directActorOriginalCandidateCount||0)>0
