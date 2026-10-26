@@ -723,6 +723,16 @@ export const HERO_STANDARD_RIG_MOTION_PACK=Object.freeze({
   ])
 });
 
+// 파일 내 공용 모션: 실제 클립 생성 없이 이족 리그에서 재사용할 30개 동작 역할.
+export const SHARED_BIPED_COMBAT_30=freezeList([
+  'HERO_IDLE_RELAXED','HERO_IDLE_ALERT','HERO_WALK_FORWARD','HERO_RUN','HERO_SPRINT',
+  'HERO_START','HERO_STOP','HERO_TURN_90','HERO_TURN_180','HERO_BACKWARD',
+  'HERO_JUMP_START','HERO_JUMP_AIR','HERO_LAND','HERO_DODGE_LEFT','HERO_DODGE_RIGHT',
+  'HERO_DODGE_BACK','HERO_DASH','HERO_CROUCH','HERO_ATTACK_1','HERO_ATTACK_2',
+  'HERO_ATTACK_3','HERO_ATTACK_4','HERO_HEAVY_ATTACK_1','HERO_HEAVY_ATTACK_2',
+  'HERO_GUARD','HERO_PARRY','HERO_HIT_FRONT','HERO_HIT_BACK','HERO_GET_UP','HERO_DEATH_FRONT'
+]);
+
 export const HERO_SURVIVAL_WEAPON_FAMILIES=freezeList([
   'ONE_HAND_SWORD','SPEAR','AXE','HAMMER','DAGGER','BOW'
 ]);
@@ -1105,7 +1115,9 @@ export const MOTION_MUTATION_FORBIDDEN=Object.freeze([
 export function createDuelCombatMotionLoadout({
   weaponFamily='UNARMED',
   martialStyle='MMA_HYBRID',
-  platform='ROBLOX'
+  platform='ROBLOX',
+  bodyPlan='HUMANOID',
+  actorClass='PLAYER'
 }={}){
   const aliases=Object.freeze({
     SWORD:'ONE_HAND_SWORD',
@@ -1118,6 +1130,8 @@ export function createDuelCombatMotionLoadout({
     WAND:'STAFF_OR_WAND',
     SHIELD:'SHIELD_SWORD'
   });
+  if(!['HUMANOID','HUMANOID_UNDEAD','BOSS_BIPED','BIPED','R15','R6'].includes(upper(bodyPlan)))
+    throw Error('BIPED_COMBAT_RIG_REQUIRED:'+upper(bodyPlan));
   const requested=upper(weaponFamily)||'UNARMED';
   const resolvedWeapon=aliases[requested]||requested;
   const weaponPack=WEAPON_COMBAT_MOTION_PACKS[resolvedWeapon]||WEAPON_COMBAT_MOTION_PACKS.UNARMED;
@@ -1140,6 +1154,32 @@ export function createDuelCombatMotionLoadout({
     recovery:DUEL_RECOVERY_MOTIONS
   });
   const motionIds=freezeList(unique(Object.values(groups).flat()));
+  // 기존 무기 동작을 30가지의 서로 다른 연계로 결합한다.
+  // 각 단계의 판정·취소·타격 시각은 게임플레이가 소유하며, 이것은 모션 편집·선택 정보다.
+  const patterns=Object.freeze([
+    ['lightCombo','lightCombo','heavy'],['footwork','lightCombo','heavy'],
+    ['defense','lightCombo','lightCombo'],['gapCloser','lightCombo','finisher'],
+    ['aerial','lightCombo','heavy'],['lightCombo','heavy','finisher']
+  ]);
+  const weaponChains=Object.freeze(Array.from({length:30},(_,slot)=>{
+    const pattern=patterns[Math.floor(slot/5)],variation=slot%5;
+    const steps=pattern.map((group,index)=>{
+      const options=groups[group].length?groups[group]:groups.lightCombo;
+      return Object.freeze({
+        group,motionId:options[(variation+index*2+Math.floor(slot/5))%options.length],
+        sourceClipRequired:true,rigAndContactCompatibilityRequired:true
+      });
+    });
+    return Object.freeze({
+      id:resolvedWeapon+'_CHAIN_'+String(slot+1).padStart(2,'0'),
+      weaponFamily:resolvedWeapon,steps:Object.freeze(steps),
+      blend:Object.freeze({crossFadeSeconds:.12,poseVelocityMatching:true,footPlantAware:true,
+        gripContinuity:true,inertialRecovery:true}),
+      contactMarkerUnchanged:true,comboGameplayWindowUnchanged:true,
+      runtimeVerified:false,productionVerified:false,gameplayAuthority:false
+    });
+  }));
+
   return Object.freeze({
     target:DUEL_COMBAT_MOTION_TARGET,
     platform:upper(platform),
@@ -1147,6 +1187,12 @@ export function createDuelCombatMotionLoadout({
     martialStyle:styleKey,
     groups,
     motionIds,
+    actorClass:upper(actorClass),bodyPlan:upper(bodyPlan),
+    sharedBaseMotions:SHARED_BIPED_COMBAT_30,
+    weaponChains,composableMotionSlotCount:SHARED_BIPED_COMBAT_30.length+weaponChains.length,
+    bipedNpcSharesCharacterActionRoles:true,
+    roleReuseRequiresCompatibleArticulatedRig:true,
+    motionPlansRequireNativeClipAndRuntimeEvidence:true,
     requiredRoles:DUEL_COMBAT_REQUIRED_ROLES,
     comboGrammar:Object.freeze(['NEUTRAL','STARTUP','ACTIVE_CONTACT','RECOVERY','LINK_OR_END']),
     referencePolicy:'MATCH_RESPONSIVE_DUEL_FEEL_WITH_ORIGINAL_OR_LICENSE_VERIFIED_MOTION',
