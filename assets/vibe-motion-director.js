@@ -1593,20 +1593,36 @@ function monsterAttackMotif(name=''){
   if(/SLAM|SMASH|BREAK|CRUSH|STOMP|BURST/.test(id))return 'SLAM';
   return 'STRIKE';
 }
-function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter,{holdEnd=false}={}){
+function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter,{holdEnd=false,detail=false,followDelay=0,collapseSide=0}={}){
+  // 메인: 실제 공격 접촉 프레임은 건드리지 않고, 앞뒤 관절은 단계별 준비·반동으로 잇는다.
+  // 고정된 포즈 키를 샘플링한 설계 원본이며 네이티브 Animator 보간·접지 검증은 별도로 필요하다.
   const frame=(phase,angle)=>Object.freeze({
     phase:Number(phase.toFixed(5)),
     rotation:Object.freeze(angle.map(v=>Number(v.toFixed(5))))
   });
+  const windTime=clamp(wind+followDelay,0,contact-.06);
   const settle=poseAfter.map(v=>-v*.12);
-  return Object.freeze({
-    part:upper(part),
-    frames:Object.freeze([
+  const collapse=poseAfter.map((v,axis)=>v*.8+(axis===2?collapseSide*.075:0));
+  const frames=detail
+    ?[
+      frame(0,[0,0,0]),
+      frame(windTime*.53,poseBefore.map(v=>v*.42)),
+      frame(windTime,poseBefore),
+      frame(contact,poseAfter),
+      frame(Math.min(.95,contact+.105),holdEnd?poseAfter.map(v=>v*.94):poseAfter.map(v=>v*.24)),
+      frame(Math.min(.97,contact+.21),holdEnd?poseAfter.map(v=>v*.84):settle),
+      frame(1,holdEnd?collapse:[0,0,0])
+    ]
+    :[
       frame(0,[0,0,0]),frame(wind,poseBefore),
       frame(contact,poseAfter),frame(Math.min(.95,contact+.18),holdEnd?poseAfter.map(v=>v*.85):settle),
       frame(1,holdEnd?poseAfter.map(v=>v*.8):[0,0,0])
-    ]),
+    ];
+  return Object.freeze({
+    part:upper(part),frames:Object.freeze(frames),
     interpolation:'CUBIC_EASE_WITH_ZERO_ENDPOINT_VELOCITY',
+    poseAndVelocityContinuityRequired:true,
+    contactAtFixedPhase:contact,
     holdsFinalPose:holdEnd,rigJointBindingRequired:true,semanticChannelsOnly:true
   });
 }
@@ -1775,18 +1791,24 @@ export function createCommonMonsterActionLoadout({
       if(!roles?.length)throw Error('QUADRUPED_ACTION_GROUP_MISSING:'+id+':'+group);
       return Array.from({length:count},(_,index)=>{
         const role=roles[index%roles.length],variant=Math.floor(index/roles.length);
-        const side=index%2===0?1:-1,level=1+variant*.09;
-        const dying=group==='deaths',moving=group==='locomotion';
+        const side=index%2===0?1:-1,dying=group==='deaths',moving=group==='locomotion';
+        const slot=Object.entries(quadrupedQuota).filter(([key])=>Object.keys(quadrupedQuota).indexOf(key)<Object.keys(quadrupedQuota).indexOf(group))
+          .reduce((sum,[,amount])=>sum+amount,0)+index+1;
+        const weight={locomotion:.72,attacks:1.12,defense:.76,reactions:.95,acting:.48,deaths:1.16,skill:1.04,signature:1.17}[group];
+        const level=weight*(1+variant*.065+slot*.0017),lean=side*(.03+slot*.0013);
         const phaseTimes=dying?[0,.12,.30,.52,.76,1]
           :moving?[0,.14,.30,.55,.77,1]:[0,.12,.34,.58,.80,1];
-        const before=kinematic.coil.map((v,axis)=>(v+(.04+variant*.013)*(axis===0?side:1))*level);
-        const after=kinematic.hit.map((v,axis)=>(v+(.05+variant*.01)*(axis===1?side:1))*level*(dying?1.45:1));
-        const fore=monsterPoseFrames('FORELEGS',phaseTimes[2],phaseTimes[3],before,after,{holdEnd:dying});
+        const before=kinematic.coil.map((v,axis)=>(v+(axis===0?lean:axis===1?-.025*side:.012*slot/60))*level);
+        const after=kinematic.hit.map((v,axis)=>(v+(axis===1?lean:axis===2?.018*side:.009*slot/60))*level*(dying?1.3:1));
+        const fore=monsterPoseFrames('FORELEGS',phaseTimes[2],phaseTimes[3],before,after,
+          {holdEnd:dying,detail:true,collapseSide:dying?side:0});
         const hind=monsterPoseFrames('HINDLEGS',phaseTimes[2],phaseTimes[3],
-          before.map(v=>-v*.7),after.map(v=>-v*(dying ? .82 : .48)),{holdEnd:dying});
+          before.map(v=>-v*.7),after.map(v=>-v*(dying?.82:.48)),
+          {holdEnd:dying,detail:true,followDelay:.018,collapseSide:dying?-side:0});
         const spinePart=species.specialParts.find(part=>/SPINE|NECK|SHOULDERS|TAIL/.test(part))||kinematic.counterPart;
         const expression=monsterPoseFrames(spinePart,phaseTimes[2],phaseTimes[3],
-          before.map(v=>v*.35),after.map(v=>v*(dying?1.1:.48)),{holdEnd:dying});
+          before.map(v=>v*.35),after.map(v=>v*(dying?1.1:.48)),
+          {holdEnd:dying,detail:true,followDelay:.035,collapseSide:dying?side:0});
         return Object.freeze({
           id:id+'_Q60_'+upper(group)+'_'+String(index+1).padStart(2,'0'),
           sourceMotionId:role,group,variation:variant,bodyPlan:species.bodyPlan,
@@ -1830,23 +1852,32 @@ export function createCommonMonsterActionLoadout({
       const originParts=species.specialParts;
       // 관절·변형 체인은 등록된 실제 종족 부위만 사용. 다른 체형의 팔다리는 생성하지 않는다.
       const leadPart=kinematic.supportPart,followingPart=kinematic.counterPart;
-      const expressivePart=originParts.find(part=>/WINGS|ANTENNAE|ELYTRA|TAIL|NECK|HEAD|CORE|SPINNERETS|ABDOMEN|VEIL|LOBES|FINS|TENTACLES|FORMATION/.test(part))
+      const expressivePart=originParts.find(part=>part!==leadPart&&part!==followingPart
+        &&/WINGS|ANTENNAE|ELYTRA|TAIL|NECK|HEAD|CORE|SPINNERETS|ABDOMEN|VEIL|LOBES|FINS|TENTACLES|FORMATION/.test(part))
         ||originParts.find(part=>part!==leadPart&&part!==followingPart)||leadPart;
       return Array.from({length:count},(_,index)=>{
         const sourceMotionId=roles[index%roles.length],variation=Math.floor(index/roles.length);
-        const side=index%2===0?1:-1,amplitude=1+variation*.08;
+        const side=index%2===0?1:-1;
+        const slot=Object.entries(quadrupedQuota).filter(([key])=>Object.keys(quadrupedQuota).indexOf(key)<Object.keys(quadrupedQuota).indexOf(group))
+          .reduce((sum,[,amount])=>sum+amount,0)+index+1;
+        const emphasis={locomotion:.7,attacks:1.08,defense:.75,reactions:.92,acting:.42,deaths:1.19,skill:1.06,signature:1.13}[group];
+        const amplitude=emphasis*(1+variation*.062+slot*.0019);
         const timing=isDeath?[0,.11,.32,.56,.78,1]
           :isLocomotion?[0,.16,.34,.56,.81,1]:[0,.13,.32,.57,.83,1];
         const phaseSign=nonHumanoidKind==='SERPENT'||nonHumanoidKind==='TENTACLE'?-1:1;
-        const coil=kinematic.coil.map((value,axis)=>(value+side*(axis===0?.07:.025))*amplitude);
-        const release=kinematic.hit.map((value,axis)=>(value+phaseSign*side*(axis===1?.075:.03))*amplitude*(isDeath?1.2:1));
+        const coil=kinematic.coil.map((value,axis)=>(value+side*(axis===0?.07+slot*.0009:.02)) *amplitude);
+        const release=kinematic.hit.map((value,axis)=>
+          (value+phaseSign*side*(axis===1?.065+slot*.0008:axis===2?.025:.016))*amplitude*(isDeath?1.19:1));
         const tracks=Object.freeze([
-          monsterPoseFrames(leadPart,timing[2],timing[3],coil,release,{holdEnd:isDeath}),
+          monsterPoseFrames(leadPart,timing[2],timing[3],coil,release,
+            {holdEnd:isDeath,detail:true,collapseSide:isDeath?side:0}),
           monsterPoseFrames(followingPart,timing[2],timing[3],
             coil.map(v=>-v*kinematic.counterWeight*.68),
-            release.map(v=>-v*kinematic.counterWeight*.54),{holdEnd:isDeath}),
+            release.map(v=>-v*kinematic.counterWeight*.54),
+            {holdEnd:isDeath,detail:true,followDelay:.019,collapseSide:isDeath?-side:0}),
           monsterPoseFrames(expressivePart,timing[2],timing[3],
-            coil.map(v=>v*.36),release.map(v=>v*(isDeath?.78:.43)),{holdEnd:isDeath})
+            coil.map(v=>v*.36),release.map(v=>v*(isDeath?.78:.43)),
+            {holdEnd:isDeath,detail:true,followDelay:.038,collapseSide:isDeath?side:0})
         ]);
         const isArthropod=nonHumanoidKind==='ARTHROPOD';
         const isMagic=nonHumanoidKind.includes('MAGIC');
@@ -1925,6 +1956,7 @@ export function createCommonMonsterActionLoadout({
         const leadPart=compatiblePart||(anatomyHint&&species.specialParts.find(part=>anatomyHint.test(part)))
           ||kinematic.supportPart;
         const other=kinematic.counterPart===leadPart?kinematic.supportPart:kinematic.counterPart;
+        const accent=species.specialParts.find(part=>part!==leadPart&&part!==other)||null;
         const wind=motionTier==='BOSS'?.37:.34,contact=motionTier==='BOSS'?.62:.57;
         const bias=(styleIndex-2)*.045,tierIntensity=motionTier==='BOSS'?1.15:1.06;
         const prep=kinematic.coil.map((value,axis)=>(value+(axis===0?bias:-bias*.45))*tierIntensity);
@@ -1935,10 +1967,12 @@ export function createCommonMonsterActionLoadout({
           contactLimb:lead,contactRigPart:leadPart,counterPart:other,
           poseKeyTimes:freezeList([0,.12,wind,contact,.83,1]),
           jointTracks:Object.freeze([
-            monsterPoseFrames(leadPart,wind,contact,prep,strike),
+            monsterPoseFrames(leadPart,wind,contact,prep,strike,{detail:true}),
             monsterPoseFrames(other,wind,contact,
               prep.map(v=>-v*kinematic.counterWeight),
-              strike.map(v=>-v*kinematic.counterWeight*.72))
+              strike.map(v=>-v*kinematic.counterWeight*.72),{detail:true,followDelay:.022}),
+            ...(accent?[monsterPoseFrames(accent,wind,contact,
+              prep.map(v=>v*.26),strike.map(v=>v*.39),{detail:true,followDelay:.044})]:[])
           ]),
           telegraphFromExistingActingOrSignature:true,
           variantPurpose:freezeList(['COUNTERBALANCE','GUARD_SHIFT','DISTANCE_READ',
