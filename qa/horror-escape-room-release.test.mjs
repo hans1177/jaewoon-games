@@ -543,6 +543,29 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
  assert.match(client,/if role=="MONSTER"then\s+objectiveLine\.Text="인간을 찾아 감염"/);
 });
 
+test('생존 추격 네이티브 연출이 실제 서버 에너지/위험 상태와 연결된다',()=>{
+ assert.match(config,/Genre\s*=\s*"Survival"/);
+ assert.match(config,/CoreKind\s*=\s*"SURVIVAL"/);
+ assert.match(config,/SemanticVariant\s*=\s*"SURVIVAL_RISK"/);
+ assert.doesNotMatch(config,/CoreKind\s*=\s*"OBJECTIVE"/);
+ assert.doesNotMatch(config,/Variant\s*=\s*"OBJECTIVE_GOAL"/);
+ assert.match(client,/local verifiedLearningSemanticVariant = "SURVIVAL_RISK"/);
+ assert.match(client,/if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then/);
+ assert.match(client,/verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT"/);
+ assert.match(server,/function Runtime\.energyOf\(p\)/);
+ assert.match(server,/function Runtime\.setEnergy\(p,value\)/);
+ assert.match(client,/local energyRatio=math\.clamp\(energy\/maxEnergy,0,1\)/);
+ assert.match(client,/local lowEnergy=p:GetAttribute\("RoundState"\)=="RUNNING" and energyRatio<\.3/);
+ assert.match(client,/energyFill\.BackgroundColor3=lowEnergy/);
+ assert.match(client,/energyLabel\.TextColor3=lowEnergy/);
+ assert.match(client,/local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 7/);
+ assert.match(config,/NativeBindingVersion = 6/);
+ // 소비자 데이터 / 판정 / 저장 구조는 직접 바꾸지 않는다.
+ assert.match(config,/TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4/);
+ assert.match(config,/RoundSeconds=240/);
+ assert.match(config,/SaveEnabled=true/);
+});
+
 test('verified learning 바인딩은 임시 LoadingScreen 대신 지속 ScreenGui를 사용한다',()=>{
  assert.match(robloxBootstrapTool,/Instance\.new\(\s*["']ScreenGui["']\s*\)/);
  assert.ok(robloxBootstrapTool.includes('ScreenGui')&&robloxBootstrapTool.includes('||output.match'));
