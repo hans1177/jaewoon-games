@@ -663,7 +663,7 @@ local function beginEnemyAttack(e,target,now)
 end
 
 -- Native library character binding. Preserve R15 animation when separate limb meshes exist.
--- If the GLB is a single combined mesh, display the source as a fitted full-body cosmetic instead.
+-- A combined GLB without R15 limb mapping is not a verified animated character.
 local function bindSharedPlayerVisual(character,classId)
  local assetId=Style.SharedPlayerModels and (Style.SharedPlayerModels[classId] or Style.SharedPlayerModels.NONE)
  local rootPart=character:FindFirstChild("HumanoidRootPart")
@@ -693,54 +693,26 @@ local function bindSharedPlayerVisual(character,classId)
  for _,name in ipairs({"Head","UpperTorso","LowerTorso","LeftUpperArm","RightUpperArm","LeftUpperLeg","RightUpperLeg"})do
   if matched[name]then rigParts+=1 end
  end
- if rigParts>=7 then
-  for name,mesh in pairs(matched)do
-   local limb=character:FindFirstChild(name)
-   if limb and limb:IsA("BasePart")then
-    local visual=mesh:Clone();visual.Name="Library_"..name
-    visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
-    visual.CFrame=limb.CFrame;visual.Parent=folder
-    local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=visual;weld.Parent=visual
-   end
-  end
-  character:SetAttribute("SharedPlayerVisualState","R15_LIMB_BOUND")
- else
-  local native=Instance.new("Model");native.Name="LibraryFullBody";native.Parent=folder
-  for _,mesh in ipairs(parts)do
-   local cloned=mesh:Clone();cloned.Anchored=true;cloned.CanCollide=false;cloned.CanTouch=false;cloned.CanQuery=false;cloned.Parent=native
-  end
-  -- Source model may have an unusual object hierarchy or absolute import scale.
-  local ok,reason=pcall(function()
-   local _,bounds=native:GetBoundingBox()
-   if bounds.Y<.001 then error("EMPTY_BOUNDS")end
-   native:ScaleTo(math.clamp(5.3/bounds.Y,.025,50))
-   local _,scaled=native:GetBoundingBox()
-   local target=rootPart.Position+Vector3.new(0,.5,0)
-   local cf=native:GetPivot()
-   native:PivotTo(cf+target-scaled.Position)
-   local visualRoot=Instance.new("Part")
-   visualRoot.Name="LibraryVisualRoot";visualRoot.Size=Vector3.new(.2,.2,.2);visualRoot.Transparency=1
-   visualRoot.Anchored=false;visualRoot.Massless=true;visualRoot.CanCollide=false;visualRoot.CanTouch=false;visualRoot.CanQuery=false
-   visualRoot.CFrame=rootPart.CFrame;visualRoot.Parent=folder
-   local animatedPivot=Instance.new("Motor6D");animatedPivot.Name="NativePoseMotor"
-   animatedPivot.Part0=rootPart;animatedPivot.Part1=visualRoot
-   animatedPivot.C0=CFrame.identity;animatedPivot.C1=CFrame.identity
-   animatedPivot.Parent=visualRoot
-   for _,visual in ipairs(native:GetDescendants())do
-    if visual:IsA("BasePart")then
-     visual.Anchored=false;visual.Massless=true
-     local join=Instance.new("WeldConstraint");join.Part0=visualRoot;join.Part1=visual;join.Parent=visual
-    end
-   end
-  end)
-  if not ok then
-   folder:Destroy()
-   character:SetAttribute("SharedPlayerVisualState","BIND_FAILED")
-   character:SetAttribute("SharedPlayerVisualFailure",tostring(reason):sub(1,140))
-   return
-  end
-  character:SetAttribute("SharedPlayerVisualState","FULL_MESH_BOUND")
+ if rigParts<7 then
+  -- A combined GLB cannot follow R15 joints merely by welding to the root.
+  -- Preserve the animated default avatar until an articulated native CC0 rig
+  -- is genuinely retargeted and runtime verified; do not hide working limbs.
+  folder:Destroy()
+  character:SetAttribute("SharedPlayerVisualState","RIG_RETARGET_REQUIRED")
+  character:SetAttribute("SharedPlayerVisualFailure","ARTICULATED_R15_LIMBS_UNAVAILABLE")
+  character:SetAttribute("SharedPlayerVisualAssetId",tostring(assetId))
+  return
  end
+ for name,mesh in pairs(matched)do
+  local limb=character:FindFirstChild(name)
+  if limb and limb:IsA("BasePart")then
+   local visual=mesh:Clone();visual.Name="Library_"..name
+   visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+   visual.CFrame=limb.CFrame;visual.Parent=folder
+   local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=visual;weld.Parent=visual
+  end
+ end
+ character:SetAttribute("SharedPlayerVisualState","R15_LIMB_BOUND")
  for _,part in ipairs(character:GetChildren())do
   if part:IsA("BasePart") and part.Name~="HumanoidRootPart" then
    part.Transparency=1
