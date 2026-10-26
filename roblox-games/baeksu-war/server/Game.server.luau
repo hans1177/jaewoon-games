@@ -9,6 +9,7 @@ local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
 local VisualKit=require(RS:WaitForChild("Shared"):WaitForChild("VisualKit"))
 VisualKit.Preload()
 local terrain=workspace.Terrain
+local Lighting=game:GetService("Lighting")
 local remote=RS:FindFirstChild(C.Remote) or Instance.new("RemoteEvent")
 remote.Name=C.Remote;remote.Parent=RS
 local store
@@ -16,11 +17,61 @@ pcall(function()store=DSS:GetDataStore(C.SaveKey)end)
 local arenas,lastRequest={},{}
 local nextArena=0
 local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspace
--- 월드는 Terrain으로 구성하고 모든 캐릭터·건물은 실제 GLB 메시를 사용한다.
--- Part 블록과 파츠 기반 대체 외형을 절대 생성하지 않는다.
+-- ===== 배경/지형 =====
+-- Terrain만 사용하며, 캐릭터·건물·소품을 도형 파츠로 새로 제작하지 않는다.
 local function terrainBlock(cf,size,material)
  terrain:FillBlock(cf,size,material)
 end
+local function buildArenaTerrain(x)
+ -- 각 사용자 전장은 좌우 180 스터드 간격으로 격리한다.
+ -- 병력 AI, 성문 좌표, 건물 슬롯, 저장 데이터에는 영향을 주지 않는 시각 지형이다.
+ terrainBlock(CFrame.new(x,-8,-7),Vector3.new(156,15,274),Enum.Material.Rock)
+ terrainBlock(CFrame.new(x,-2,-7),Vector3.new(154,5,272),Enum.Material.Grass)
+ -- 기지와 공성전 연결 도로: 자연 흙길 + 거친 석재 입구. 밟을 수 있는 Terrain이다.
+ terrainBlock(CFrame.new(x,-.6,-1),Vector3.new(30,2,112),Enum.Material.Ground)
+ terrainBlock(CFrame.new(x,-.48,-1),Vector3.new(19,1.7,112),Enum.Material.Sand)
+ for _,z in ipairs({-45,40}) do
+  terrainBlock(CFrame.new(x,-.42,z),Vector3.new(30,1.8,9),Enum.Material.Cobblestone)
+ end
+ -- 양옆 강줄기는 이동로 밖에만 놓아 기존 전투/건설을 방해하지 않는다.
+ for _,side in ipairs({-1,1}) do
+  local riverX=x+side*80
+  terrainBlock(CFrame.new(riverX,-2.6,-8),Vector3.new(11,5,215),Enum.Material.Air)
+  terrainBlock(CFrame.new(riverX,-3.15,-8),Vector3.new(10,3,215),Enum.Material.Water)
+  for i=0,7 do
+   local z=-112+i*31
+   local ridgeX=x+side*(59+math.sin(i*1.9+side)*4)
+   local radius=10+(i%3)*2
+   terrain:FillBall(Vector3.new(ridgeX,-4,z),radius,Enum.Material.Rock)
+   terrain:FillBall(Vector3.new(ridgeX-side*3,-4,z),radius*.79,Enum.Material.Grass)
+  end
+ end
+ -- 앞뒤 골짜기 경계. 실제 GLB 소품은 기존 VisualKit만 담당한다.
+ for i=0,7 do
+  local xx=x-64+i*18
+  terrain:FillBall(Vector3.new(xx,-9,117),10+(i%3)*2,Enum.Material.Grass)
+  terrain:FillBall(Vector3.new(xx,-9,-131),11+(i%2)*2,Enum.Material.Grass)
+ end
+end
+-- 장소의 환경 설정은 별도 파츠/자산을 생성하지 않는다.
+Lighting.ClockTime=14
+Lighting.Brightness=2.3
+Lighting.GlobalShadows=true
+Lighting.OutdoorAmbient=Color3.fromRGB(149,158,158)
+Lighting.EnvironmentDiffuseScale=.65
+Lighting.EnvironmentSpecularScale=.4
+local atmosphere=Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
+atmosphere.Density=.24
+atmosphere.Offset=.1
+atmosphere.Haze=.8
+atmosphere.Color=Color3.fromRGB(214,234,247)
+atmosphere.Decay=Color3.fromRGB(151,179,163)
+atmosphere.Parent=Lighting
+local clouds=terrain:FindFirstChildOfClass("Clouds") or Instance.new("Clouds")
+clouds.Cover=.31
+clouds.Density=.35
+clouds.Color=Color3.fromRGB(251,250,246)
+clouds.Parent=terrain
 local function slotPosition(a,i)
  return Vector3.new(a.X+((i-1)%3-1)*14,1,-60-math.floor((i-1)/3)*13)
 end
@@ -126,8 +177,7 @@ local function makeArena(player,data,loaded)
    end
   end
  end
- terrainBlock(CFrame.new(x,-2.5,-3),Vector3.new(52,5,140),Enum.Material.Grass)
- terrainBlock(CFrame.new(x,-.95,0),Vector3.new(24,2.3,100),Enum.Material.Ground)
+ buildArenaTerrain(x)
  VisualKit.BuildWorld(a.Folder,x)
  resizeBuildYard(a)
  createGate(a,false);createGate(a,true)
