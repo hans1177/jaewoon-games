@@ -3400,7 +3400,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
-  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','inspectionContract=','inspectionIndex=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest='];
+  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','inspectionContract=','inspectionIndex=','inspectionRemoteMatrix=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest=','inspectionRemoteChecks='];
   const keepPrefixes=focusedRobloxVisual?[
     ...inspectionPrefixes,
     'robloxProduction','gameProduction',
@@ -8524,5 +8524,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
+
 
 
