@@ -190,7 +190,7 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
   if type(kind)~="string" or not C.ById[kind] or a.Buildings[index] then return end
   local u=C.ById[kind]
   if a.Gold<u.Cost then send(a,"건설 골드 부족");return end
-  a.Gold-=u.Cost;a.Buildings[index]={Kind=kind,Level=1,Timer=0}
+  a.Gold-=u.Cost;a.Buildings[index]={Kind=kind,Level=1,Timer=C.Stats(u,1).Interval}
   drawBuilding(a,index);spawn(a,kind,"ALLY",1)
   send(a,u.Home.." 즉시 완성 · 자동 출격")
  elseif action=="UPGRADE" then
@@ -199,7 +199,7 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
   if not b or b.Level>=C.MaxLevel then return end
   local cost=C.UpgradeCost(C.ById[b.Kind],b.Level)
   if a.Gold<cost then send(a,"업그레이드 골드 부족");return end
-  a.Gold-=cost;b.Level+=1;b.Timer=0
+  a.Gold-=cost;b.Level+=1;b.Timer=C.Stats(C.ById[b.Kind],b.Level).Interval
   drawBuilding(a,index)
   for i=1,C.Stats(C.ById[b.Kind],b.Level).Count do spawn(a,b.Kind,"ALLY",b.Level) end
   send(a,C.ById[b.Kind].Name.." Lv."..b.Level.." 진화!")
