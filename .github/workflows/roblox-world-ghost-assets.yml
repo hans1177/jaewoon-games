@@ -109,6 +109,11 @@ jobs:
           VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
           VIBE2_ROJO_BINARY: /tmp/ghost-tools/rojo/rojo
         run: node assets/roblox/world-ghosts/build-native.mjs
+      # [공용 CC0 원본 검사] QA가 실물 바이너리 해시를 확인하도록 15개 LFS 원본만 복원한다.
+      - name: Hydrate manifest-pinned CC0 Blender sources
+        run: |
+          set -euo pipefail
+          git lfs pull --include="assets/external/simple-rpg/priority-v1/*.blend,assets/external/simple-rpg/wildlife/*.blend" --exclude=""
       - name: Verify regenerated packages
         env:
           VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
