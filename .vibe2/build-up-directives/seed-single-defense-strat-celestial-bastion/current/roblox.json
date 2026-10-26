@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g41-4b67147b862a",
-  "directiveFingerprint": "4b67147b862a8fc461f76f7a7f41158091cd41518a36c5f6e42ee84666d15947",
-  "previousDirectiveFingerprint": "f854d18b88f3e2ae11898601536b3e35b08b85d33f6f583e0f5f1292225a585f",
-  "forbiddenRepeatFingerprint": "f854d18b88f3e2ae11898601536b3e35b08b85d33f6f583e0f5f1292225a585f",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g42-57924fad6e8a",
+  "directiveFingerprint": "57924fad6e8a24d4a643b18a30426c895d8eeb629c49c07e93a8b57fa2e23e99",
+  "previousDirectiveFingerprint": "4b67147b862a8fc461f76f7a7f41158091cd41518a36c5f6e42ee84666d15947",
+  "forbiddenRepeatFingerprint": "4b67147b862a8fc461f76f7a7f41158091cd41518a36c5f6e42ee84666d15947",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 41,
+  "generation": 42,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+  "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
   "designFingerprint": "a1bc5913d05e9591926b9ee23dbaeb79fd9df2fb8cf1e691a34d10de0f3ee342",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+        "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "a1bc5913d05e9591926b9ee23dbaeb79fd9df2fb8cf1e691a34d10de0f3ee342",
-    "sourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+    "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+    "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4450,8 +4450,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 250,
-      "progression": 528,
+      "combat": 252,
+      "progression": 541,
       "ai": 66,
       "save": 102,
       "multiplayer": 39,
@@ -4463,12 +4463,12 @@
       "audio": 4,
       "audioDynamics": 16,
       "ui": 869,
-      "uiFlow": 1123,
+      "uiFlow": 1125,
       "entryFlow": 16,
       "loadingFlow": 0,
       "input": 121,
       "map": 265,
-      "landmark": 109,
+      "landmark": 113,
       "interaction": 257,
       "inventory": 241,
       "equipment": 65,
@@ -4495,7 +4495,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 282
+        "score": 280
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -4904,20 +4904,18 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 40,
-    "previousSourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
-    "currentSourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+    "previousGeneration": 41,
+    "previousSourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+    "currentSourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
-    "blockers": [
-      "roblox-build-package-pending"
-    ],
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -6063,7 +6061,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 405250,
+        "sourceBytes": 405163,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6096,8 +6094,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 7,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=2.",
+    "themeDepth": 8,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6105,7 +6103,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 8,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
       },
@@ -6116,7 +6114,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6150,7 +6148,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 74,
+        "score": 56,
         "gapDomains": []
       },
       {
@@ -6264,11 +6262,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 41,
-    "previousGeneration": 40,
+    "generation": 42,
+    "previousGeneration": 41,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
-    "priorSourceFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
+    "sourceFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
+    "priorSourceFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6287,7 +6285,7 @@
     "version": 1,
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+    "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7132,6 +7130,68 @@
     "passed": false
   },
   "visualBuildUpDirective": {
+    "primitiveReplacement": {
+      "enabled": true,
+      "trigger": "F0_AND_EVERY_BUILD_UP",
+      "action": "REPLACE_VISIBLE_PRIMITIVES_WITH_VERIFIED_CC0_DERIVATIVES",
+      "preservePrimitiveAppearance": false,
+      "visiblePrimitiveFallbackAllowed": false,
+      "selectionMode": "NEAREST_SIMILAR_COMPATIBLE_CC0",
+      "exactVisualMatchRequired": false,
+      "waitForExactAssetForbidden": true,
+      "adaptation": [
+        "SCALE",
+        "COLOR",
+        "MATERIAL",
+        "RIG_COMPATIBLE_MOTION"
+      ],
+      "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
+      "sourceFiles": [
+        {
+          "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "sites": [
+            {
+              "line": 159,
+              "source": "local part = Instance.new(\"Part\")"
+            },
+            {
+              "line": 493,
+              "source": "local body = Instance.new(\"Part\")"
+            },
+            {
+              "line": 534,
+              "source": "local body = Instance.new(\"Part\")"
+            }
+          ],
+          "classification": "REVIEW_VISIBLE_PRIMITIVE_OR_GAMEPLAY_SUPPORT"
+        },
+        {
+          "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "sites": [
+            {
+              "line": 321,
+              "source": "local trim = Instance.new(\"Part\")"
+            }
+          ],
+          "classification": "REVIEW_VISIBLE_PRIMITIVE_OR_GAMEPLAY_SUPPORT"
+        }
+      ],
+      "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
+      "protectedSupports": [
+        "INVISIBLE_COLLISION",
+        "HITBOX",
+        "RIG_ROOT",
+        "SPAWN",
+        "GAMEPLAY_TRIGGER"
+      ],
+      "preserve": [
+        "SAVE",
+        "BALANCE",
+        "SERVER_AUTHORITY",
+        "ANIMATION_EVENT_TIMING"
+      ],
+      "runtimeVerified": false
+    },
     "artDirection": {
       "identity": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
       "visualPurpose": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 플레이 판단과 천상의 보루가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
@@ -7186,7 +7246,7 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+    "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8020,11 +8080,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "407fc925fb345515df62e7ffe87d2ebadd8447a1179a6f115b96675f90a271e3",
+      "sourceTreeFingerprint": "863bd420cb9d6c1ba6201f568b46996f964a656b2b9f9d00ac40eae697efba78",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8079,7 +8139,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 42,
+    "nextGeneration": 43,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8141,5 +8201,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T05:22:15.579Z"
+  "generatedAt": "2026-10-26T04:03:27.157Z"
 }

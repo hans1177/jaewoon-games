@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g48-aa2698ce0e29",
-  "directiveFingerprint": "aa2698ce0e29f11f7eef4d4bdaaba53b49b925cf52991fb3a0194d719e6d22f9",
-  "previousDirectiveFingerprint": "7f152bc9a9f71f0f7987d4ed9117900e684d23e7d525f31cad1ef07ebb6c8f96",
-  "forbiddenRepeatFingerprint": "7f152bc9a9f71f0f7987d4ed9117900e684d23e7d525f31cad1ef07ebb6c8f96",
+  "directiveId": "line-defense-build-up-g49-cf32d6844b8d",
+  "directiveFingerprint": "cf32d6844b8df244bf275c486f41452594a9ffd96b661f455b0ba8c704c65c0d",
+  "previousDirectiveFingerprint": "aa2698ce0e29f11f7eef4d4bdaaba53b49b925cf52991fb3a0194d719e6d22f9",
+  "forbiddenRepeatFingerprint": "aa2698ce0e29f11f7eef4d4bdaaba53b49b925cf52991fb3a0194d719e6d22f9",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 48,
+  "generation": 49,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+  "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
   "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+        "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
-    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4468,7 +4468,7 @@
     ],
     "signals": {
       "combat": 291,
-      "progression": 577,
+      "progression": 598,
       "ai": 75,
       "save": 93,
       "multiplayer": 40,
@@ -4512,11 +4512,11 @@
       },
       {
         "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 281
+        "score": 301
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "score": 168
+        "score": 169
       },
       {
         "file": "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
@@ -4921,62 +4921,18 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 47,
-    "previousSourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
-    "currentSourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+    "previousGeneration": 48,
+    "previousSourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+    "currentSourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "d059d567335300e2448ad193d244e98e99c60d50",
-      "artifactIdentity": null,
-      "staticContract": {
-        "pass": false,
-        "blockers": [
-          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-          "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
-        ]
-      },
-      "runtimeVerified": false,
-      "productionVerified": false,
-      "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 40169661399,
-      "testedAt": "2026-10-25T07:09:09.390Z",
-      "repairSurfaces": [
-        "SOURCE_CONTRACT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        }
-      ]
-    },
-    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-verified-external-learning-required",
-    "blockers": [
-      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
-    ],
+    "studioQualityFailure": null,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -6122,7 +6078,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 405137,
+        "sourceBytes": 405255,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6155,14 +6111,14 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "QUEST_STORY_PROGRESSION_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=2.",
+    "themeDepth": 2,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=QUEST_STORY_PROGRESSION_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=1.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 9,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
-        "QUEST_STORY_PROGRESSION_CHAIN": 1,
+        "QUEST_STORY_PROGRESSION_CHAIN": 2,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 10,
         "MID_LATE_ENDGAME_COMPLETION": 0,
@@ -6172,7 +6128,6 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6182,6 +6137,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN"
       ],
       "requiredThemes": [
@@ -6207,7 +6163,7 @@
     "scoredThemes": [
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 16,
+        "score": 158,
         "gapDomains": []
       },
       {
@@ -6216,13 +6172,13 @@
         "gapDomains": []
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 14,
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": -128,
         "gapDomains": []
       },
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -128,
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": -146,
         "gapDomains": []
       },
       {
@@ -6321,11 +6277,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 48,
-    "previousGeneration": 47,
+    "generation": 49,
+    "previousGeneration": 48,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
-    "priorSourceFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "sourceFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "priorSourceFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6344,7 +6300,7 @@
     "version": 1,
     "gameId": "line-defense",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7196,6 +7152,68 @@
     "passed": false
   },
   "visualBuildUpDirective": {
+    "primitiveReplacement": {
+      "enabled": true,
+      "trigger": "F0_AND_EVERY_BUILD_UP",
+      "action": "REPLACE_VISIBLE_PRIMITIVES_WITH_VERIFIED_CC0_DERIVATIVES",
+      "preservePrimitiveAppearance": false,
+      "visiblePrimitiveFallbackAllowed": false,
+      "selectionMode": "NEAREST_SIMILAR_COMPATIBLE_CC0",
+      "exactVisualMatchRequired": false,
+      "waitForExactAssetForbidden": true,
+      "adaptation": [
+        "SCALE",
+        "COLOR",
+        "MATERIAL",
+        "RIG_COMPATIBLE_MOTION"
+      ],
+      "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+      "sourceFiles": [
+        {
+          "file": "roblox-games/line-defense/server/Game.server.luau",
+          "sites": [
+            {
+              "line": 127,
+              "source": "part = Instance.new(\"Part\")"
+            },
+            {
+              "line": 453,
+              "source": "local body = Instance.new(\"Part\")"
+            },
+            {
+              "line": 506,
+              "source": "local body = Instance.new(\"Part\")"
+            }
+          ],
+          "classification": "REVIEW_VISIBLE_PRIMITIVE_OR_GAMEPLAY_SUPPORT"
+        },
+        {
+          "file": "roblox-games/line-defense/client/Game.client.luau",
+          "sites": [
+            {
+              "line": 327,
+              "source": "local trim = Instance.new(\"Part\")"
+            }
+          ],
+          "classification": "REVIEW_VISIBLE_PRIMITIVE_OR_GAMEPLAY_SUPPORT"
+        }
+      ],
+      "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
+      "protectedSupports": [
+        "INVISIBLE_COLLISION",
+        "HITBOX",
+        "RIG_ROOT",
+        "SPAWN",
+        "GAMEPLAY_TRIGGER"
+      ],
+      "preserve": [
+        "SAVE",
+        "BALANCE",
+        "SERVER_AUTHORITY",
+        "ANIMATION_EVENT_TIMING"
+      ],
+      "runtimeVerified": false
+    },
     "artDirection": {
       "identity": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
       "visualPurpose": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 플레이 판단과 골목 군단 대전가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
@@ -7250,7 +7268,7 @@
     "gameId": "line-defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8079,16 +8097,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+      "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-verified-external-learning-required"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8099,8 +8117,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8143,7 +8161,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 49,
+    "nextGeneration": 50,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8205,5 +8223,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T03:56:13.924Z"
+  "generatedAt": "2026-10-26T04:03:27.438Z"
 }

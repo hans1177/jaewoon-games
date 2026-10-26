@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "tower-choice-rpg-build-up-g17-15d06502eded",
-  "directiveFingerprint": "15d06502eded394bfa808ae87eac70a8109bac61b691852877937c3128c750b5",
-  "previousDirectiveFingerprint": "2a8c864a0f98b7a875e14d98c47ef1f4ebfd5244395157338214d4db0a48b44e",
-  "forbiddenRepeatFingerprint": "2a8c864a0f98b7a875e14d98c47ef1f4ebfd5244395157338214d4db0a48b44e",
+  "directiveId": "tower-choice-rpg-build-up-g18-ce5bda74680e",
+  "directiveFingerprint": "ce5bda74680e7688f59647d09de0866278cf7dd51b45991c03366234622397a4",
+  "previousDirectiveFingerprint": "15d06502eded394bfa808ae87eac70a8109bac61b691852877937c3128c750b5",
+  "forbiddenRepeatFingerprint": "15d06502eded394bfa808ae87eac70a8109bac61b691852877937c3128c750b5",
   "gameId": "tower-choice-rpg",
   "gameName": "10층 탑 RPG",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/tower-choice-rpg",
-  "sourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+  "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
   "designFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+        "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
-    "sourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+    "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+    "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4535,8 +4535,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 178,
-      "progression": 544,
+      "combat": 176,
+      "progression": 567,
       "ai": 62,
       "save": 119,
       "multiplayer": 42,
@@ -4546,12 +4546,12 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 28,
+      "audioDynamics": 30,
       "ui": 897,
       "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 153,
+      "input": 155,
       "map": 287,
       "landmark": 40,
       "interaction": 286,
@@ -4576,7 +4576,7 @@
       },
       {
         "file": "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-        "score": 513
+        "score": 533
       },
       {
         "file": "roblox-games/tower-choice-rpg/server/Game.server.luau",
@@ -4584,7 +4584,7 @@
       },
       {
         "file": "roblox-games/tower-choice-rpg/client/Game.client.luau",
-        "score": 163
+        "score": 164
       },
       {
         "file": "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
@@ -4989,20 +4989,18 @@
   "previousVersionDelta": {
     "previousGoal": "10층 탑 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 10층 탑 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 16,
-    "previousSourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
-    "currentSourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+    "previousGeneration": 17,
+    "previousSourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+    "currentSourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
-    "blockers": [
-      "roblox-build-package-pending"
-    ],
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -6148,7 +6146,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 429024,
+        "sourceBytes": 429133,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6181,13 +6179,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 6,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 5,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 6,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6203,7 +6201,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -6241,7 +6239,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 114,
+        "score": 96,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6355,11 +6353,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 17,
-    "previousGeneration": 16,
+    "generation": 18,
+    "previousGeneration": 17,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
-    "priorSourceFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
+    "sourceFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
+    "priorSourceFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6378,7 +6376,7 @@
     "version": 1,
     "gameId": "tower-choice-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+    "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7229,6 +7227,39 @@
     "passed": false
   },
   "visualBuildUpDirective": {
+    "primitiveReplacement": {
+      "enabled": true,
+      "trigger": "F0_AND_EVERY_BUILD_UP",
+      "action": "REPLACE_VISIBLE_PRIMITIVES_WITH_VERIFIED_CC0_DERIVATIVES",
+      "preservePrimitiveAppearance": false,
+      "visiblePrimitiveFallbackAllowed": false,
+      "selectionMode": "NEAREST_SIMILAR_COMPATIBLE_CC0",
+      "exactVisualMatchRequired": false,
+      "waitForExactAssetForbidden": true,
+      "adaptation": [
+        "SCALE",
+        "COLOR",
+        "MATERIAL",
+        "RIG_COMPATIBLE_MOTION"
+      ],
+      "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
+      "sourceFiles": [],
+      "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
+      "protectedSupports": [
+        "INVISIBLE_COLLISION",
+        "HITBOX",
+        "RIG_ROOT",
+        "SPAWN",
+        "GAMEPLAY_TRIGGER"
+      ],
+      "preserve": [
+        "SAVE",
+        "BALANCE",
+        "SERVER_AUTHORITY",
+        "ANIMATION_EVENT_TIMING"
+      ],
+      "runtimeVerified": false
+    },
     "artDirection": {
       "identity": "10층 탑 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 10층 탑 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.",
       "visualPurpose": "10층 탑 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 10층 탑 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 플레이 판단과 10층 탑 RPG가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
@@ -7283,7 +7314,7 @@
     "gameId": "tower-choice-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+    "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8117,11 +8148,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "51f90336ecae8123d9c6d73a12142e96eccbe2b595b9aa94be0810832be45b7f",
+      "sourceTreeFingerprint": "efb0da183ae956a66854c11b9cf08a6d06474c8b319ab092d5d8ee5192ae97d2",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8176,7 +8207,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8238,5 +8269,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T09:29:01.012Z"
+  "generatedAt": "2026-10-26T04:03:28.236Z"
 }
