@@ -5354,6 +5354,70 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     ?{...motionTeaching,example:{contract:'Use the source-hash-bound example in INTERNAL MOTION COACHING; adapt its principles to the target rig, never its identity or duration.',reference:boundMotionReference}}
     :motionTeaching;
   const craftGoal=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' ');
+  // [커뮤니티 Roblox 코딩 50종] 공개 Luau 사례에서 확인한 제작 책임과 실패 경계를 기존 소스 코딩 프롬프트에 선택 반영한다.
+  // 외부 라이브러리는 가져오지 않으며, 실제 작업 목표가 일치한 항목만 최대 6개 사용한다. 학습 또는 QA PASS 증거가 아니다.
+  const communityRobloxCapabilities=[
+    ["LIFE_EXISTING_CHARACTER","existing character|기존 캐릭터","On CharacterAdded, also bind an already present LocalPlayer.Character through the original idempotent callback; never create a second character."],
+    ["LIFE_RESPAWN_REBIND","respawn|리스폰|재스폰","On respawn, disconnect character-owned connections and rebind the new Humanoid and root; never retain destroyed character references."],
+    ["LIFE_EXISTING_PLAYERS","existing players|기존 플레이어|접속한 플레이어","Pair PlayerAdded with GetPlayers bootstrap and PlayerRemoving teardown; guard against duplicate player registration."],
+    ["LIFE_TAGGED_STREAMING","tagged instances|태그 객체|컬렉션 태그","Use CollectionService initial GetTagged plus instance-added and removed signals; attach once per live instance and clean on removal."],
+    ["LIFE_COMPONENT_CLEANUP","maid cleanup|trove cleanup|연결 정리|이벤트 누수","Reuse the existing Maid/Trove/Janitor or disconnect registry; script.Destroying must release owned connections, tasks and effects."],
+    ["INPUT_TOUCH_ACTIVATION","touch activate|터치 버튼|모바일 버튼","Use GuiButton.Activated for device-agnostic clicks; preserve the existing callback and server authorization."],
+    ["INPUT_GAMEPAD_FOCUS","gamepad focus|패드 포커스|게임패드 선택","Wire selection/focus using the existing GuiService navigation; preserve keyboard/touch behavior and avoid trapping focus."],
+    ["INPUT_DEVICE_SWITCH","device switch|입력장치 변경|기기 전환","React to LastInputTypeChanged instead of assuming TouchEnabled means a phone; do not remap existing actions."],
+    ["INPUT_CONTEXT_ACTION","context action|액션 바인딩|키 바인딩","Bind ContextActionService actions to the existing callback, use touch buttons only where intended, and unbind at teardown."],
+    ["INPUT_HOLD_CANCEL","hold cancel|길게 누르기|터치 유지","Track Begin, Change and End or Cancel for held input; end actions on focus loss without duplicating gameplay requests."],
+    ["UI_SAFE_INSETS","safe area|안전 영역|노치 화면","Respect device safe insets, screen orientation and top-bar boundaries using existing layout containers; never obscure the primary action."],
+    ["UI_TEXT_CONSTRAINT","text constraint|긴 텍스트|텍스트 잘림","Choose TextScaled with UITextSizeConstraint or stable TextSize; test long localized text and avoid clipping buttons."],
+    ["UI_SCROLL_CANVAS","scroll canvas|스크롤 목록|자동 스크롤","Pair list or grid layout with axis-correct AutomaticCanvasSize only when no manual canvas sizing is intentionally present."],
+    ["UI_SELECTION_NAVIGATION","selection navigation|선택 이동|패드 메뉴","Preserve touch controls while enabling sensible gamepad selection order and a deterministic escape or back path."],
+    ["UI_TOAST_LIFETIME","toast lifetime|알림 스택|토스트 알림","Bound concurrent toast instances, cancel prior animation on replacement and destroy expired UI in the original notification owner."],
+    ["CAMERA_REPLACEMENT","camera replacement|카메라 교체","Track workspace.CurrentCamera replacements, rebind viewport events and disconnect old camera signals; never override game camera style."],
+    ["CAMERA_RESTORE","camera restore|카메라 복귀|시점 복구","Snapshot prior CameraType, Subject and control only for an owned cutscene; restore the latest valid character on cancel or respawn."],
+    ["CAMERA_OCCLUSION","camera occlusion|카메라 가림|벽 카메라","Use non-authoritative raycasts for camera obstruction; exclude the local character and smooth visual distance only."],
+    ["CAMERA_SHAKE","camera shake|카메라 흔들림|화면 흔들림","Use an existing shake pipeline with bounded amplitude and cancellation; never write effects into authoritative movement or hit state."],
+    ["CAMERA_VIEWPORT","viewport update|뷰포트 변경|화면 크기 변경","Run the existing pure viewport layout renderer once at startup and whenever the active camera ViewportSize changes."],
+    ["NET_REMOTE_TYPES","remote arguments|원격 인자|리모트 인자","Validate every RemoteEvent argument type and shape on the server; reject unexpected instances, enormous tables and invalid numbers."],
+    ["NET_RATE_LIMIT","remote rate limit|원격 제한|호출 제한","Rate-limit each player/action at the existing server owner; retain exact cooldowns and prune player keys on departure."],
+    ["NET_OWNERSHIP","remote ownership|소유권 검증|아이템 소유권","Validate inventory, instance ownership, interaction distance and permissions on the server before applying any remote request."],
+    ["NET_SERVER_AUTH","server authority|서버 권한|서버 판정","Keep rewards, combat damage, world changes and inventory writes server-authoritative; client intent is not verified state."],
+    ["NET_STATE_SYNC","state snapshot|상태 동기화|재접속 동기화","Send an initial authoritative state snapshot then bounded deltas to subscribed clients; handle late join and out-of-order revisions."],
+    ["DATA_SESSION_LOCK","session locking|세션 잠금|중복 접속 저장","Reuse canonical player session ownership and timeout; do not introduce a second profile store or change existing save keys."],
+    ["DATA_ATOMIC_UPDATE","atomic update|원자 저장|저장 충돌","Use existing UpdateAsync merge/version contracts instead of blind SetAsync overwrites for shared state; never invent a new schema."],
+    ["DATA_WRITE_BUDGET","save budget|저장 예산|저장 폭증","Throttle redundant writes and bound retries with backoff; keep dirty-state durability and report failures without claiming save success."],
+    ["DATA_MIGRATION","schema migration|저장 마이그레이션|구버전 저장","Migrate older profiles before stamping the new version, preserve missing fields and nested defaults, and make migrations repeat-safe."],
+    ["DATA_SHUTDOWN","shutdown save|종료 저장|나갈때 저장","Reuse PlayerRemoving and BindToClose save/flush with bounded deadlines and idempotent final writes; never mark failed saves successful."],
+    ["NPC_REPATH","npc repath|길찾기 갱신|경로 재계산","Recalculate an NPC path only when blocked or materially stale; limit path requests while keeping original destination/aggro logic."],
+    ["NPC_TARGET_LIFETIME","npc target lost|대상 사라짐|타겟 무효","Validate target Humanoid and live root before steering or attacks; invalidate stale targets after respawn or character removal."],
+    ["NPC_SPAWN_OWNER","npc spawn lifecycle|몹 소환 정리|NPC 생성 삭제","Spawn NPCs only through the existing encounter owner and cleanup on despawn; preserve counts, waves, rewards and drop tables."],
+    ["NPC_DAMAGE_AUTHORITY","npc damage authority|몬스터 피해 판정|피해 서버 판정","Apply hit detection, invulnerability and damage through the original authoritative combat function; never duplicate an attack."],
+    ["NPC_ATTACK_COOLDOWN","npc cooldown|적 공격 간격|공격 주기","Guard repeated hit callbacks with the original per-attacker cooldown and range constraints; keep exact owner-defined timings."],
+    ["INTERACT_PROMPT_DISTANCE","proximity prompt validation|프롬프트 거리|상호작용 거리","Validate ProximityPrompt activation distance and eligibility on the server; disable client-only reward authority."],
+    ["INTERACT_CLICK_TARGET","click detector validation|클릭 감지|클릭 디텍터","Verify ClickDetector instance and player reach before modifying state; reuse the current interaction handler."],
+    ["INTERACT_BUILD_GRID","grid placement|건축 격자|건물 배치","Snap visual placement using existing world grid and reject overlaps server-side; preserve cost, permissions and save IDs."],
+    ["INTERACT_COLLISION_GROUP","collision group|충돌 그룹|물리 그룹","Reuse PhysicsService collision groups for an identified existing collision issue; never globally disable gameplay-critical contacts."],
+    ["INTERACT_TOOL_EQUIP","tool equip lifecycle|도구 장착|장비 장착","Handle tool equipped/unequipped/destroyed transitions with one owner, release inputs on unequip, and keep inventory keys unchanged."],
+    ["FX_EFFECT_POOL","effect pooling|이펙트 풀|파티클 풀","Reuse bounded pools for short-lived VFX, reset reused objects and release after completion; effects must not change hit results."],
+    ["FX_ANIMATION_TRACK","animation track cleanup|애니메이션 정리|모션 중복","Stop and release old AnimationTracks on character replace/equip change while keeping authored priorities and action timing."],
+    ["FX_SOUND_OWNERSHIP","sound distance|소리 거리|음향 감쇠","Respect the original Sound parent, rolloff and playback owner; cap concurrent temporary sounds and clean destroyed emitters."],
+    ["FX_HUD_INITIAL","initial hud|HUD 초기 표시|체력 UI","Run a pure HUD render before attribute/property change events so values appear immediately; never call FireServer from the renderer."],
+    ["FX_TWEEN_CANCEL","tween cancellation|트윈 취소|UI 애니메이션 취소","Cancel an existing active Tween before replacing it and release completed connections; preserve UI state and input availability."],
+    ["PERF_STREAMING_LIFETIME","streaming enabled|스트리밍 누락|지형 스트리밍","Treat streamed Instances as transient; rebind streamed-in objects and release streamed-out references without altering world logic."],
+    ["PERF_FRAME_WORK","frame budget|프레임 성능|프레임 부하","Move only non-authoritative visual work off hot per-frame loops; measure and cap work while preserving combat simulation rate."],
+    ["PERF_RAYCAST_FILTER","raycast budget|레이캐스트 최적화|레이캐스트 필터","Cache safe raycast filters only while their referenced instances remain valid; bound cosmetic raycasts, preserve hit tests."],
+    ["PERF_RESOURCE_LIFETIME","memory leak|메모리 누수|메모리 관리","Avoid permanent references to departed players, connections, temporary instances and coroutines; reuse existing cleanup owner."],
+    ["PERF_RUNTIME_QA","multiplayer regression|멀티 테스트|모바일 QA","Check real mobile touch, gamepad, respawn, late-join, save/load and 2-player event paths; static/Luau checks do not prove live release."],
+  ];
+  const communityRobloxGoal=craftGoal.toLowerCase();
+  const communityRobloxSelected=clean(order.target).toLowerCase()==='roblox'
+    ?communityRobloxCapabilities.filter(([,keywords])=>keywords.split('|').some(term=>communityRobloxGoal.includes(term.toLowerCase()))).slice(0,6)
+    :[];
+  const communityRobloxCodeBlock=communityRobloxSelected.length?[
+    '[COMMUNITY ROBLOX SOURCE CODING PRACTICES]',
+    ...communityRobloxSelected.map(([id,,guide])=>id+': '+guide),
+    'Apply only when the existing owned source proves the referenced contract. Prefer editing responsible functions; no wrappers, new save keys, balance changes, copied libraries or runtime PASS claims. Use the canonical F0-F9 and real mobile tests.',
+    '[END COMMUNITY ROBLOX SOURCE CODING PRACTICES]'
+  ].join('\n'):'';
   // 검증된 시각 코딩 패턴: 기존 canonical ingest 결과만 사용한다.
   // 원본 코드 저장·새 학습 체인·미검증 패턴의 성공 승격은 금지한다.
   const visualSignals=[
@@ -5726,6 +5790,7 @@ productionRequestBlock,
 learningContract.block,
 visualCodePatternBlock,
 robloxSourceCoaching?.block||'',
+communityRobloxCodeBlock,
 ordinaryWeb3dEngineGuidance(order,context),
 unityWeb3dCodingBlock,
 explorationGuidance(exploration),
