@@ -60,6 +60,33 @@ test('Roblox-only source changes exclude only explicit web or Unity tests and pr
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('Roblox source with native regression companions retains scoped native QA and runs every changed test',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-companion-qa-'));
+  try{
+    fs.mkdirSync(path.join(root,'qa'),{recursive:true});
+    const scripts={
+      'native.test.mjs':"const p='roblox-games/alpha/server/Game.server.luau';",
+      'web.test.mjs':"const p='web-games/alpha/game.js';",
+      'shared.test.mjs':"test('save and security always checked',()=>{});",
+      'primary-three.test.mjs':"const p='roblox-games/alpha/shared/GameConfig.luau';"
+    };
+    for(const [name,body] of Object.entries(scripts))fs.writeFileSync(path.join(root,'qa',name),body);
+    const g={gameId:'alpha',sources:{ROBLOX:'roblox-games/alpha',WEB:'web-games/alpha'},
+      qa:['qa/native.test.mjs','qa/web.test.mjs','qa/shared.test.mjs']};
+    const changed=['roblox-games/alpha/server/Game.server.luau','qa/native.test.mjs','qa/primary-three.test.mjs'];
+    const selected=chooseGameQa({games:[g],changedFiles:changed,repoRoot:root});
+    assert.equal(selected.length,1);
+    assert.equal(selected[0].nativeOnlyQaScope,true);
+    assert.deepEqual(selected[0].excludedOtherPlatformTests,['qa/web.test.mjs']);
+    assert.deepEqual(selected[0].tests,['qa/native.test.mjs','qa/primary-three.test.mjs','qa/shared.test.mjs']);
+    const withWebTest=chooseGameQa({games:[g],changedFiles:['roblox-games/alpha/server/Game.server.luau','qa/web.test.mjs'],repoRoot:root});
+    assert.equal(withWebTest[0].nativeOnlyQaScope,false,'changing web-only QA alongside Roblox must retain full QA');
+    assert.equal(withWebTest[0].tests.length,3);
+    const withoutSource=chooseGameQa({games:[g],changedFiles:['qa/native.test.mjs'],repoRoot:root});
+    assert.equal(withoutSource[0].nativeOnlyQaScope,false,'QA-only PR is never labeled Roblox-source-only');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('missing game QA is reported missing, not passed',()=>{
   const selected=chooseGameQa({games,gameId:'untested'});
   const report=runGameQa({selected});
