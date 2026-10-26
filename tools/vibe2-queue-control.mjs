@@ -507,16 +507,19 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
         }
       }
     }
-    // 외부 무료 API 제한은 소스 오류가 아니다. 정확한 재시도 시각까지 작업을 대기시킨다.
-    if (task.status === 'blocked' && clean(task.blocker) === 'EXTERNAL_AI_QUOTA_COOLDOWN') {
+    // [무모델·할당량] 실제 게임 소스가 아닌 외부 모델 공급 장애만 유한 대기한다.
+    // 대기 해제 후에도 동일한 기존 F0~F9·서버 판정·QA 검증을 반드시 통과해야 한다.
+    if(task.status==='blocked'&&['EXTERNAL_AI_QUOTA_COOLDOWN','SOURCE_MODEL_UNAVAILABLE'].includes(clean(task.blocker))){
+      const noModel=clean(task.blocker)==='SOURCE_MODEL_UNAVAILABLE';
       const evidence=Array.isArray(task.evidence)?task.evidence:[];
-      const marker=evidence.findLast(value=>clean(value).startsWith('external-ai-quota-retry-at:'));
-      const readyAt=Date.parse(clean(marker).slice('external-ai-quota-retry-at:'.length));
+      const prefix=noModel?'source-no-model-retry-at:':'external-ai-quota-retry-at:';
+      const marker=evidence.findLast(value=>clean(value).startsWith(prefix));
+      const readyAt=Date.parse(clean(marker).slice(prefix.length));
       if(!Number.isFinite(readyAt)||Number(nowMs)<readyAt)return task;
       recovered+=1;
       return {...task,...clearedReservation(),status:'queued',blocker:null,
-        lastOutcome:'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
-        evidence:[...new Set([...evidence,'external-ai-quota-wait-resumed:v1'])]};
+        lastOutcome:noModel?'MODEL_FREE_SOURCE_RECHECK':'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
+        evidence:[...new Set([...evidence,noModel?'source-no-model-retry-resumed:v1':'external-ai-quota-wait-resumed:v1'])]};
     }
     if (task.status !== 'running') return task;
     if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
