@@ -755,7 +755,7 @@ jobs:
           checkpoint_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-checkpoint.json"
           progress_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-progress.json"
           worktree="/tmp/design-checkpoint-${{ matrix.target.game_id }}"
-          promotion_dispatch_marker="/tmp/design-minimum-promotion-${{ matrix.target.game_id }}-${{ matrix.target.date }}"
+          promotion_dispatch_marker="minimumPromotionDispatchedDigest"
           last_checkpoint_sync_key=''
           checkpoint_sync_key() {
             node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,cp.designerSeed?.contentDigest||'',p.percent??'',cp.lastSuccessfulModelCallAt||'',Object.values(cp.modelHealth||{}).reduce((sum,row)=>sum+Number(row?.calls||0),0),cp.lastError||''].join('|'))" "$checkpoint_path" "$progress_path"
@@ -773,15 +773,55 @@ jobs:
             rm -f /tmp/design-seed.json
             [ -f "$seed_path" ] && cp "$seed_path" /tmp/design-seed.json || true
             [ -f "$progress_path" ] && cp "$progress_path" /tmp/design-progress.json || true
+            # Verify signed-by-contract design content before writing a durable dispatch marker.
+            local authored_digest=""
+            if [ -f "$seed_path" ]; then
+              authored_digest="$(node -e '
+                const fs=require("fs"),crypto=require("crypto");
+                const s=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
+                const cp=JSON.parse(fs.readFileSync(process.argv[2],"utf8"));
+                const digest=crypto.createHash("sha256").update(JSON.stringify(s.content||{})).digest("hex");
+                if(s.authorRole==="GAME_DESIGNER_AI"&&s.sourceStage==="identity-core"&&s.status==="AUTHORED_CANDIDATE"
+                  &&s.contentDigest===digest&&s.engineDigest===cp.engineDigest&&s.fingerprint===cp.fingerprint
+                  &&cp.designerSeed?.contentDigest===digest&&cp.designerSeed?.authorModel===s.authorModel)
+                  process.stdout.write(digest);
+              ' "$seed_path" "$checkpoint_path")"
+            fi
             local pushed=0
+            local promotion_dispatch_needed=0
             for attempt in $(seq 1 24); do
               git fetch origin "$COMPANY_RUNTIME_BRANCH"
               git worktree remove -f "$worktree" >/dev/null 2>&1 || true
               rm -rf "$worktree"
               git worktree add --detach --no-checkout "$worktree" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
               git -C "$worktree" read-tree HEAD
+              # --no-checkout keeps remote files out of the worktree; read the Git tree.
+              previous_promotion_digest="$(node -e '
+                const {execFileSync}=require("child_process");
+                try {
+                  const raw=execFileSync("git",["-C",process.argv[1],"show","HEAD:"+process.argv[2]],{encoding:"utf8",stdio:["ignore","pipe","ignore"]});
+                  const cp=JSON.parse(raw),digest=String(cp[process.argv[3]]||"");
+                  if(/^[a-f0-9]{64}$/.test(digest))process.stdout.write(digest);
+                } catch {}
+              ' "$worktree" "$checkpoint_path" "$promotion_dispatch_marker")"
+              promotion_dispatch_needed=0
+              if [ -n "$authored_digest" ] && [ "$previous_promotion_digest" != "$authored_digest" ]; then
+                promotion_dispatch_needed=1
+              fi
               mkdir -p "$worktree/$(dirname "$checkpoint_path")"
               cp /tmp/design-checkpoint.json "$worktree/$checkpoint_path"
+              # Preserve the same verified digest through subsequent checkpoint writes.
+              if [ -n "$authored_digest" ] || [ -n "$previous_promotion_digest" ]; then
+                node -e '
+                  const fs=require("fs");
+                  const file=process.argv[1],previous=process.argv[2],authored=process.argv[3],field=process.argv[4];
+                  const cp=JSON.parse(fs.readFileSync(file,"utf8")),digest=authored||previous;
+                  if(digest&&cp[field]!==digest){
+                    cp[field]=digest;
+                    fs.writeFileSync(file,JSON.stringify(cp,null,2)+"\n");
+                  }
+                ' "$worktree/$checkpoint_path" "$previous_promotion_digest" "$authored_digest" "$promotion_dispatch_marker"
+              fi
               if [ -f /tmp/design-progress.json ]; then cp /tmp/design-progress.json "$worktree/$progress_path"; fi
               git -C "$worktree" config user.name 'jaewoon-seed-design-checkpoint'
               git -C "$worktree" config user.email 'seed-design-checkpoint@users.noreply.github.com'
@@ -810,28 +850,15 @@ jobs:
             echo "DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES|$sync_key"
             echo 'DESIGN_PROGRESS_RUNTIME_PERSIST=YES'
             echo 'PUBLIC_MAIN_WRITE=NO'
-            # 모델이 작성한 기본설계의 증거가 company-runtime에 저장되자마자 기존 승격기를 실행한다.
-            # 전체 정밀 설계가 진행 중이어도 기본설계 유효성을 별도 결정론적 게이트에서 판정한다.
-            if [ -f "$seed_path" ]; then
-              local authored_digest
-              authored_digest="$(node -e '
-                const fs=require("fs"),crypto=require("crypto");
-                const s=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
-                const cp=JSON.parse(fs.readFileSync(process.argv[2],"utf8"));
-                const digest=crypto.createHash("sha256").update(JSON.stringify(s.content||{})).digest("hex");
-                if(s.authorRole==="GAME_DESIGNER_AI"&&s.sourceStage==="identity-core"&&s.status==="AUTHORED_CANDIDATE"
-                  &&s.contentDigest===digest&&s.engineDigest===cp.engineDigest&&s.fingerprint===cp.fingerprint
-                  &&cp.designerSeed?.contentDigest===digest&&cp.designerSeed?.authorModel===s.authorModel)
-                  process.stdout.write(digest);
-              ' "$seed_path" "$checkpoint_path")"
-              if [ -n "$authored_digest" ] && { [ ! -f "$promotion_dispatch_marker" ] || [ "$(cat "$promotion_dispatch_marker")" != "$authored_digest" ]; }; then
-                printf '%s' "$authored_digest" > "$promotion_dispatch_marker"
-                if gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main; then
-                  echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=YES|$authored_digest"
-                else
-                  echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=ERROR|fallback=EXISTING_WORKFLOW_COMPLETION"
-                fi
+            # Only the worker whose checkpoint commit records a new digest dispatches.
+            if [ "$promotion_dispatch_needed" = 1 ]; then
+              if gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+                echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=YES|$authored_digest"
+              else
+                echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=ERROR|fallback=EXISTING_WORKFLOW_COMPLETION"
               fi
+            else
+              echo 'DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=SKIPPED_ALREADY_RECORDED_OR_NOT_AUTHORED'
             fi
           }
           pipeline_pid=0
@@ -997,6 +1024,7 @@ jobs:
           game_path="design/$GAME_ID"
           worktree="/tmp/minimum-design-persist-$GAME_ID-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           pushed=0
+          early_design_new_commit=0
           for attempt in $(seq 1 24); do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$worktree" 2>/dev/null || true
@@ -1010,15 +1038,19 @@ jobs:
             git -C "$worktree" add -- "$game_path"
             if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$worktree" commit -m "runtime: minimum dual-platform design $GAME_ID $DESIGN_DATE"
-            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; early_design_new_commit=1; break; fi
             sleep "$((1 + RANDOM % 5))"
           done
           git worktree remove --force "$worktree" 2>/dev/null || true
           git worktree prune
           test "$pushed" = 1
-          gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+          if [ "$early_design_new_commit" = 1 ]; then
+            gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'EARLY_NATIVE_PROMOTION_DISPATCH=YES'
+          else
+            echo 'EARLY_NATIVE_PROMOTION_DISPATCH=SKIPPED_ALREADY_PERSISTED'
+          fi
           echo 'MINIMUM_DESIGN_CONTRACT=PASS'
-          echo 'EARLY_NATIVE_PROMOTION_DISPATCH=YES'
           echo 'STRICT_REVIEW_CONTINUES_IN_PARALLEL=YES'
 
       - name: Apply strict 30-minute design review
@@ -1067,6 +1099,7 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));const deterministic=roadmap?.developmentLifecycleMachine?.deterministicGateAuthority?.enabled===true&&roadmap?.developmentLifecycleMachine?.deterministicGateAuthority?.aiMayDecidePassFail===false;if(!deterministic&&(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true))throw new Error('legacy five department lead contract failed');if(deterministic&&status?.baselineGate?.evidence?.deterministicDesignGate?.pass!==true)throw new Error('deterministic design evidence missing');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
       - name: Persist validated design evidence to company runtime branch
+        id: persisted_design
         if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true'
         shell: bash
         run: |
@@ -1076,11 +1109,12 @@ jobs:
           cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json || seed_changed=1
           if [ "$seed_changed" = 1 ]; then cp game-seed-state.json "/tmp/seed-design-candidate-${{ matrix.target.game_id }}.json"; fi
           git add -- "$game_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true
-          git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; exit 0; }
+          git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; echo 'runtime_changed=false' >> "$GITHUB_OUTPUT"; exit 0; }
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
           generated_commit="$(git rev-parse HEAD)"
           runtime_worktree="/tmp/seed-design-persist-${{ matrix.target.game_id }}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           pushed=0
+          persisted_design_new_commit=0
           for attempt in $(seq 1 24); do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$runtime_worktree" 2>/dev/null || true
@@ -1115,18 +1149,23 @@ jobs:
             if [ "$seed_changed" = 1 ]; then git -C "$runtime_worktree" add -- game-seed-state.json; fi
             if git -C "$runtime_worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$runtime_worktree" commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
-            if git -C "$runtime_worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            if git -C "$runtime_worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; persisted_design_new_commit=1; break; fi
             sleep "$((1 + RANDOM % 5))"
           done
           git worktree remove --force "$runtime_worktree" 2>/dev/null || true
           git worktree prune
           test "$pushed" = 1
           echo 'SEED_DESIGN_RUNTIME_PERSIST_WORKTREE=ISOLATED'
-          echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
+          echo "runtime_changed=$persisted_design_new_commit" >> "$GITHUB_OUTPUT"
+          if [ "$persisted_design_new_commit" = 1 ]; then
+            echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
+          else
+            echo 'SEED_DESIGN_RUNTIME_CHANGE=NO_ALREADY_PERSISTED'
+          fi
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Dispatch per-game promotion reconciliation on own strict PASS
-        if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true' && steps.persisted_design.outputs.runtime_changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.target.game_id }}

@@ -192,6 +192,44 @@ test('design control and per-game jobs use the available full runner pool',()=>{
   assert.match(finish,/gh workflow run company-seed-design-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
 });
 
+test('authored minimum design promotion is deduped durably across independent runners',()=>{
+  const worker=designRuntime.slice(
+    designRuntime.indexOf('          persist_design_checkpoint() {'),
+    designRuntime.indexOf('          pipeline_pid=0')
+  );
+  assert.match(designRuntime,/promotion_dispatch_marker="minimumPromotionDispatchedDigest"/);
+  assert.doesNotMatch(worker,/\/tmp\/design-minimum-promotion-/);
+  assert.match(worker,/previous_promotion_digest=.*node -e/);
+  assert.match(worker,/execFileSync\("git",\["-C",process\.argv\[1\],"show","HEAD:"\+process\.argv\[2\]/);
+  assert.match(worker,/\^\[a-f0-9\]\{64\}\$/);
+  assert.match(worker,/cp\[field\]=digest/);
+  assert.match(worker,/promotion_dispatch_needed=0/);
+  assert.match(worker,/\[ "\$previous_promotion_digest" != "\$authored_digest" \]/);
+  const persisted=worker.indexOf('git -C "$worktree" push origin');
+  const dispatched=worker.indexOf('if [ "$promotion_dispatch_needed" = 1 ]');
+  assert.ok(persisted>0&&dispatched>persisted,'new digest must be durably committed before early dispatch');
+  assert.match(worker,/DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=SKIPPED_ALREADY_RECORDED_OR_NOT_AUTHORED/);
+  assert.match(worker,/fallback=EXISTING_WORKFLOW_COMPLETION/);
+});
+
+test('minimum and strict-design promotion emit only after a new runtime commit',()=>{
+  const minimum=designRuntime.slice(designRuntime.indexOf('- name: Persist minimum dual-platform design before strict review'),designRuntime.indexOf('- name: Apply strict 30-minute design review'));
+  assert.match(minimum,/early_design_new_commit=0/);
+  assert.match(minimum,/then pushed=1; early_design_new_commit=1; break;/);
+  assert.match(minimum,/if \[ "\$early_design_new_commit" = 1 \]; then/);
+  assert.match(minimum,/EARLY_NATIVE_PROMOTION_DISPATCH=SKIPPED_ALREADY_PERSISTED/);
+  const persist=designRuntime.slice(designRuntime.indexOf('- name: Persist validated design evidence to company runtime branch'),designRuntime.indexOf('- name: Dispatch per-game promotion reconciliation on own strict PASS'));
+  assert.match(persist,/id: persisted_design/);
+  assert.match(persist,/runtime_changed=false/);
+  assert.match(persist,/persisted_design_new_commit=0/);
+  assert.match(persist,/then pushed=1; persisted_design_new_commit=1; break;/);
+  assert.match(persist,/runtime_changed=\$persisted_design_new_commit/);
+  assert.match(persist,/SEED_DESIGN_RUNTIME_CHANGE=NO_ALREADY_PERSISTED/);
+  const dispatch=designRuntime.slice(designRuntime.indexOf('- name: Dispatch per-game promotion reconciliation on own strict PASS'));
+  assert.match(dispatch,/steps\.persisted_design\.outputs\.runtime_changed == 'true'/);
+  assert.match(dispatch,/STRICT_DESIGN_READY_FOR_PROMOTION|review\?\.verdict==='PASS'/);
+});
+
 test('semantic promotion changes wake the existing scheduler but timestamp-only writes do not',()=>{
   const persist=promotion.slice(promotion.indexOf('- name: Persist promoted state to company runtime branch'),promotion.indexOf('- name: Verify exact promoted runtime design handoff for Vibe'));
   const dispatch=promotion.slice(promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill'));
