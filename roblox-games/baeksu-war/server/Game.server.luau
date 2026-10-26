@@ -19,6 +19,12 @@ local nextArena=0
 local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspace
 -- 기존 8종/10단계/저장키를 유지하며 경제·지휘·전선점령만 확장한다.
 local COMMANDS={PUSH=true,RALLY=true,DEFEND=true}
+-- 이동 목적지는 서버가 지정한다. 사용자가 임의 월드 좌표를 보낼 수 없다.
+local TRAVEL_TARGETS={
+ BASE={X=0,Z=C.World.PlayerSpawnZ,Name="동물 군단 기지"},
+ FRONT={X=45,Z=C.World.CaptureZ[1]-22,Name="중앙 전선"},
+ FORWARD={X=45,Z=C.World.CaptureZ[2]-22,Name="전방 거점"},
+}
 local MISSIONS={
  {Title="적 병력 5마리 처치",Reward=90},
  {Title="서식지 2개 건설",Reward=140},
@@ -57,7 +63,8 @@ local function economy(a)
   MissionReward=MISSIONS[a.Mission] and MISSIONS[a.Mission].Reward or 0,
   CanClaim=questReady(a),WorkerCost=a.Workers<8 and workerCost(a.Workers) or 0,
   LabCost=a.Lab<5 and labCost(a.Lab) or 0,
-  TechCost=a.Tech<5 and techCost(a.Tech) or 0,PassiveGold=income
+  TechCost=a.Tech<5 and techCost(a.Tech) or 0,PassiveGold=income,
+  CaptureOwners={a.Points[1].Owner,a.Points[2].Owner}
  }
 end
 local function drawCaptureMarker(a,point,index)
@@ -65,6 +72,7 @@ local function drawCaptureMarker(a,point,index)
  local marker=Instance.new("Attachment")
  marker.Name="전초 거점 "..index
  marker.Parent=terrain
+ table.insert(a.CaptureMarkers,marker)
  marker.WorldPosition=Vector3.new(a.X+(index==1 and -15 or 15),2.5,point.Z)
  local board=Instance.new("BillboardGui")
  board.Name="전선 점령 현황";board.AlwaysOnTop=true
@@ -211,6 +219,13 @@ local function resizeBuildYard(a)
  local backZ=furthestZ-12
  terrainBlock(CFrame.new(a.X,-.9,(nearZ+backZ)/2),
   Vector3.new(75,5,nearZ-backZ),Enum.Material.Grass)
+ -- 실제 건설 위치가 읽히는 돌 포장 패드. Terrain이고 Parts가 아니다.
+ for i=1,math.min(a.Unlocked,36) do
+  local px=a.X+((i-1)%3-1)*18
+  local pz=C.World.BuildZ-math.floor((i-1)/3)*19
+  terrainBlock(CFrame.new(px,1.75,pz),Vector3.new(15,1.5,15),Enum.Material.Ground)
+  terrainBlock(CFrame.new(px,2.15,pz),Vector3.new(12,1,12),Enum.Material.Cobblestone)
+ end
 end
 local function send(a,msg)
  if not a.Player.Parent then return end
@@ -301,7 +316,7 @@ end
 local function makeArena(player,data,loaded)
  nextArena+=1
  local x=(nextArena-1)*C.World.ArenaGap
- local a={Player=player,X=x,Folder=Instance.new("Folder"),Buildings={},Visuals={},Units={},Gold=C.StartGold,Stage=1,Unlocked=C.StartSlots,Serial=0,Loaded=true,SessionOnly=not loaded,
+ local a={Player=player,X=x,Folder=Instance.new("Folder"),Buildings={},Visuals={},Units={},CaptureMarkers={},Gold=C.StartGold,Stage=1,Unlocked=C.StartSlots,Serial=0,Loaded=true,SessionOnly=not loaded,
   Workers=0,Lab=0,Research=0,Tech=0,Mission=1,Kills=0,CapturedEver=0,Command="PUSH",
   Points={{Z=C.World.CaptureZ[1],Progress=0,Owner="NEUTRAL"},{Z=C.World.CaptureZ[2],Progress=0,Owner="NEUTRAL"}}}
  a.Folder.Name="Arena_"..player.UserId;a.Folder.Parent=root;arenas[player]=a
@@ -353,7 +368,17 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
  if now-(lastRequest[p] or 0)<.15 then return end
  lastRequest[p]=now
  -- 클라이언트는 명령만 보내며 비용/조건/전투 결과는 서버에서 검증한다.
- if action=="SET_COMMAND" then
+ if action=="TRAVEL" then
+  local destination=type(index)=="string" and TRAVEL_TARGETS[index] or nil
+  if not destination or now-(a.LastTravel or -100)<3 then return end
+  local character=p.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local hrp=character and character:FindFirstChild("HumanoidRootPart")
+  if not humanoid or humanoid.Health<=0 or not hrp then return end
+  a.LastTravel=now
+  character:PivotTo(CFrame.new(a.X+destination.X,9,destination.Z))
+  send(a,destination.Name.."으로 이동했어.")
+ elseif action=="SET_COMMAND" then
   if type(index)~="string" or not COMMANDS[index] then return end
   a.Command=index
   local names={PUSH="전면 진격",RALLY="전선 집결",DEFEND="본진 방어"}
@@ -552,7 +577,13 @@ Players.PlayerAdded:Connect(function(p)
  end
 end)
 Players.PlayerRemoving:Connect(function(p)
- local a=arenas[p];if a then save(a);a.Folder:Destroy();arenas[p]=nil end
+ local a=arenas[p]
+ if a then
+  save(a)
+  for _,marker in ipairs(a.CaptureMarkers) do marker:Destroy() end
+  a.Folder:Destroy()
+  arenas[p]=nil
+ end
  lastRequest[p]=nil
 end)
 game:BindToClose(function()for _,a in pairs(arenas) do save(a) end end)
