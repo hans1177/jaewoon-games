@@ -5510,6 +5510,18 @@ export function buildVibeAssetProductionPlan({
   });
   // 원형 교체는 기존 자동 바인딩 작업과 같은 라이브러리 스냅샷을 사용한다.
   // 후보 선택은 역할 적합성 검토용이며 다운로드·게시·실행 완료를 뜻하지 않는다.
+  const optimization=task.buildUpDirective?.visualBuildUpDirective?.nativeOptimization;
+  const brickRequested=/레고\s*재질|브릭\s*장난감|브릭\s*스타일|lego|brick[\s_-]*(?:toy|style|material)/i.test(request);
+  const nativeOptimizationWork=resolvedTarget==='roblox'&&optimization?.enabled===true?freeze({
+    ...optimization,
+    materialStyle:brickRequested?'BRICK_TOY':'CURRENT_GAME_STYLE',
+    brickRequestRecognized:brickRequested,
+    materialApplication:brickRequested?'EXISTING_MESH_SURFACE_NO_EXTRA_PARTS':'SHARED_GAME_STYLE_MATERIALS',
+    libraryVersion:allGameDynamicLibraryBinding.libraryVersion,
+    libraryFingerprint:allGameDynamicLibraryBinding.fingerprint,
+    repairOwner:'EXISTING_GAME_SOURCE_WORKER',
+    sameBuildMobileMotionPhysicsQaRequired:true,runtimeVerified:false
+  }):null;
   const primitiveReplacement=task.buildUpDirective?.visualBuildUpDirective?.primitiveReplacement;
   const primitiveReplacementWork=resolvedTarget==='roblox'&&primitiveReplacement?.enabled===true?freeze({
     ...primitiveReplacement,
@@ -6103,7 +6115,7 @@ export function buildVibeAssetProductionPlan({
     flowAssetRequirements,
     assetSupplySummary,
     detailedAssetCandidateReview,
-    automaticAssetBindingWork:freeze({...automaticAssetBindingWork,primitiveReplacement:primitiveReplacementWork}),
+    automaticAssetBindingWork:freeze({...automaticAssetBindingWork,primitiveReplacement:primitiveReplacementWork,nativeOptimization:nativeOptimizationWork}),
     externalCustomization,
     genreMenuRecommendations,
     registrySync:freeze({
@@ -6692,6 +6704,9 @@ export function assetProductionGuidance(plan={}){
           }))})+
         '. 최신 승인된 게임 설계와 공용 자산 원장을 기반으로, 기존 GRAPHICS_PRODUCTION·ASSET_DEVELOPMENT·BUILD_UP 책임 코드에만 원본 보존형 파생/재질/지형/배치/경로/최적화 후보를 연결한다. FastNoiseLite/WFC/A*는 외부 알고리즘의 참고 문헌이며 검증된 실제 코드·라이선스 없이 실행된 것으로 처리하지 않는다. Blender/Material Maker/glTF Transform은 설치·실행·출력물 해시·라이선스·실제 플랫폼 바인딩을 각각 확인하기 전에는 후보일 뿐이다. 먼저 현재 게임에 맞는 라이브러리 자산을 재사용하고 중복 원본 제작을 막는다. 실제 원본 파일과 승인된 3D 설계, 라이선스, 동일 게임의 styleBible, 게임 엔진 성능 조건을 만족해야 한다. 개발은 로블록스와 일반 웹만 허용하며 유니티 웹·안드로이드는 개발 대상으로 잡지 않는다. 검증 실패 시 기존 체크포인트 복구만 사용한다. 그래픽 품질/게임 실행/CI/학습 PASS를 추정하거나 우회하지 않으며 게임 규칙·밸런스·저장·서버 권한을 변경하지 않는다.'
       : '',
+    plan.automaticAssetBindingWork?.nativeOptimization?.enabled
+      ?'[ROBLOX AUTOMATIC BUILD UP OPTIMIZATION] '+JSON.stringify(plan.automaticAssetBindingWork.nativeOptimization)+
+       '. 기존 외형·리깅·물리·충돌 구현을 보존하는 제한 없이 현재 책임 소스에서 네 축을 함께 재구성·최적화한다. materialStyle=BRICK_TOY면 레고 재질·브릭 장난감 요청을 실제 서버·클라이언트 공용 재질 선택에 연결하고 기존 메시 표면에 적용한다. 돌기·장식용 파츠는 생성하지 않는다. 리그 교체 시 행동·그립·발 접촉·충돌체 연결을 다시 바인딩하고 판정과 서버 권한·저장 이관을 확인한다. 적용하지 못한 축은 정확한 GAP로 남기며 소스 계획·키워드 인식·정적 검사만으로 실제 최적화 완료를 선언하지 않는다.':'' ,
     plan.automaticAssetBindingWork?.enabled
       ?'[VIBE AUTOMATIC GAME ASSET BINDING] '+JSON.stringify(plan.automaticAssetBindingWork)+
        '. 기존 BUILD_UP에서 매 회차 실제 게임 소스 소비와 현재 내부 라이브러리 선택을 자동 대조한다. NATIVE_SOURCE_BINDING_REQUIRED는 현재 게임 책임 함수에만 역할·권리·플랫폼 호환 내부 자산을 직접 연결하고, SOURCE_BOUND_RUNTIME_QA_REQUIRED는 중복 재제작하지 않고 실제 엔진·모바일 표시 증거를 확인한다. SOURCE_ASSET_REQUIRED와 AUTHORING_REQUIRED는 기존 ASSET_DEVELOPMENT에서 원본·파생 제작으로 해결한다. 현재 적용된 게임 규칙, 저장, 멀티 권한은 유지한다. 변경 성공은 소스 해시/QA/런타임 검증까지 확인한 뒤 기존 학습 모터에만 전달하며 미확인 결과는 긍정 학습이나 완료 판정에 넣지 않는다. 기존 GRAPHICS_PRODUCTION·BUILD_UP 단계, 기존 권한 범위만 사용하고 별도 큐나 파이프라인을 만들지 않는다.'

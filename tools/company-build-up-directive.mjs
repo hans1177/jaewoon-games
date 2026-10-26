@@ -1842,6 +1842,21 @@ function buildVisualDirective({gameId,design,source,focus,platform}){
   const second=secondaryDesignAnchor(design);
   const placeholderHeavy=Number(source?.signals?.primitive||0)>8;
   return{
+    // 빌드업 공통 최적화: 게임별 책임 소스에서 네 축을 함께 처리한다.
+    nativeOptimization:clean(platform).toUpperCase()==='ROBLOX'?{
+      enabled:true,trigger:'F0_AND_EVERY_BUILD_UP',
+      axes:['RIGGING','MATERIALS','PHYSICS','COLLISION'],
+      preserveExistingImplementation:false,
+      existingModelRigAndCollisionGeometryReplacementAllowed:true,
+      rigging:['REMOVE_UNUSED_JOINTS_ONLY_AFTER_BINDING_AUDIT','REUSE_OR_RETARGET_COMPATIBLE_MOTION','CACHE_JOINT_AND_BONE_LOOKUPS','DISTANCE_BASED_PRESENTATION_UPDATES'],
+      materials:['REUSE_SHARED_MATERIALS','LIMIT_MATERIAL_VARIANTS','PRESERVE_CC0_PROVENANCE','NO_DECORATIVE_STUD_PARTS'],
+      physics:['ANCHOR_STATIC_WORLD','MASSLESS_NONCOLLIDING_VISUALS','NO_REDUNDANT_CONSTRAINTS','SERVER_OWNED_GAMEPLAY'],
+      collision:['SIMPLE_GAMEPLAY_COLLIDERS','ROLE_BASED_COLLISION_GROUPS','DISABLE_UNUSED_TOUCH_AND_QUERY','VERIFY_GROUND_AND_INTERACTION_QUERIES'],
+      mobile:['NO_EXTRA_DECORATION_PARTS','NO_PER_FRAME_DESCENDANT_SCANS','BOUNDED_EFFECTS_AND_CONNECTIONS'],
+      sourceTreeFingerprint:source?.sourceTreeFingerprint||null,
+      evidence:['EXACT_BUILD_MOTION','GROUND_CONTACT','HIT_AND_INTERACTION','MOBILE_FRAME_AND_PART_BUDGET'],
+      runtimeVerified:false
+    }:null,
     primitiveReplacement:clean(platform).toUpperCase()==='ROBLOX'?{
       enabled:true,trigger:'F0_AND_EVERY_BUILD_UP',
       action:'REPLACE_VISIBLE_PRIMITIVES_WITH_VERIFIED_CC0_DERIVATIVES',
@@ -1851,6 +1866,7 @@ function buildVisualDirective({gameId,design,source,focus,platform}){
       sourceTreeFingerprint:source?.sourceTreeFingerprint||null,
       sourceFiles:source?.primitiveSourceFiles||[],
       missingAssetAction:'EXISTING_ASSET_DEVELOPMENT_GAP',
+      supportGeometryReplacementAllowed:true,
       protectedSupports:['INVISIBLE_COLLISION','HITBOX','RIG_ROOT','SPAWN','GAMEPLAY_TRIGGER'],
       preserve:['SAVE','BALANCE','SERVER_AUTHORITY','ANIMATION_EVENT_TIMING'],
       runtimeVerified:false
@@ -2449,6 +2465,9 @@ export function directivePrompt(d={}){
     domainPriority,
     'VISUAL:',
     visual,
+    d.visualBuildUpDirective?.nativeOptimization?.enabled
+      ?'ROBLOX_BUILD_UP_OPTIMIZATION: '+JSON.stringify(d.visualBuildUpDirective.nativeOptimization)+
+       ' F0와 매 빌드업에서 리깅·재질·물리·충돌을 함께 최적화한다. 기존 모델·리그·충돌 형상을 보존할 의무는 없으며 기존 책임 함수를 직접 재구성하거나 CC0 모델로 교체할 수 있다. 사용 중인 관절·애니메이션 바인딩을 확인한 뒤 불필요한 연결을 제거하고, 리그가 바뀌면 기존 행동을 호환 리타기팅한다. 정적 월드 고정, 시각 메시의 질량·충돌 제외, 간단한 판정체와 역할별 충돌 그룹, 불필요한 터치·쿼리 제거를 함께 적용한다. 채집·공격·이동·상호작용에 필요한 쿼리와 지면 접촉은 실제로 재검증한다. 브릭 재질은 기존 메시의 표면으로 표현하며 모바일 장식 파츠나 돌기 파츠를 늘리지 않는다. 서버 판정과 저장 이관을 생략하거나 소스 마커로 실행 통과를 주장하지 않는다.':'' ,
     d.visualBuildUpDirective?.primitiveReplacement?.enabled
       ?'ROBLOX_CC0_PRIMITIVE_REPLACEMENT: '+JSON.stringify(d.visualBuildUpDirective.primitiveReplacement)+
        ' F0부터 발견한 책임 파일의 실제 보이는 원형 파츠를 CC0 파생 자산으로 교체한다. 기존 외형 보존은 불필요하다. 비슷한 CC0 자산이면 우선 사용하고 정확히 같은 모델·종류·스타일을 기다리지 않는다. 크기·색·재질을 맞추고 움직임을 호환 연결한다. 기존 생성 함수를 직접 수정하고 원형 표시·재생성 fallback을 제거한다. 숨은 충돌체·판정·리그 루트·스폰·트리거는 보이는 원형과 구분해 기능을 유지한다. 대체 자산이 없으면 기존 자산 공급 GAP로 연결하며 원형 유지나 새 파츠 조립을 교체 완료로 처리하지 않는다. 책임 범위 밖 파일은 기존 후속 BUILD_UP에 남기고 모든 대상이 같은 빌드 실행 검증을 통과하기 전에는 전체 완료를 주장하지 않는다.':'' ,

@@ -5083,6 +5083,12 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
   ].join('\n'):'';
   const precisionProduction=order.assetProduction?.precisionProduction;
   const assetImplementationBlock=order.assetProduction?[
+    ...(order.assetProduction.automaticAssetBindingWork?.nativeOptimization?.enabled?[
+      '[ROBLOX BUILD UP OPTIMIZATION BEGIN]',
+      JSON.stringify(order.assetProduction.automaticAssetBindingWork.nativeOptimization),
+      'Implement rigging, material, physics and collision optimization together in existing responsible server/client functions. Existing model/rig/collider structure may be replaced. Apply BRICK_TOY only to existing mesh surfaces; no decorative stud parts. Inspect rig bindings before removal and verify retargeted motion, ground, interaction and server-owned hits. Source-only plans never prove runtime optimization.',
+      '[ROBLOX BUILD UP OPTIMIZATION END]'
+    ]:[]),
     '[ASSET IMPLEMENTATION CONTRACT BEGIN]',
     JSON.stringify({
       flowAssetRequirements:order.assetProduction.flowAssetRequirements,
@@ -6632,10 +6638,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       const block=String(prompt).slice(start,finish+end.length);
       if(!attemptPrompt.includes(block))attemptPrompt+='\n'+block;
     }
-    for(const label of ['PRODUCTION REQUEST CONTRACT','ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','RUNTIME VISUAL REPAIR','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
+    for(const label of ['ROBLOX BUILD UP OPTIMIZATION','PRODUCTION REQUEST CONTRACT','ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','PRECISION PRODUCTION CHAIN','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','RUNTIME VISUAL REPAIR','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=['PRODUCTION REQUEST CONTRACT','ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','RUNTIME VISUAL REPAIR','PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=['ROBLOX BUILD UP OPTIMIZATION','PRODUCTION REQUEST CONTRACT','ASSET IMPLEMENTATION CONTRACT','APPLY USABLE ASSETS FIRST','RUNTIME VISUAL REPAIR','PRECISION PRODUCTION CHAIN','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }

@@ -3,7 +3,7 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair,retryDelayMs} from '../tools/vibe2-gemini-free-rotation.mjs';
-import {requestLocalModel,generateCandidateWithRecovery} from '../tools/vibe2-source-worker.mjs';
+import {requestLocalModel,generateCandidateWithRecovery,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import os from 'node:os';
 import path from 'node:path';
 import {requestPracticeModel} from '../tools/vibe2-learning-practice-worker.mjs';
@@ -351,7 +351,11 @@ test('final model request stays bounded after a megabyte asset reference is reat
   const contract='[ASSET IMPLEMENTATION CONTRACT BEGIN]\n'+JSON.stringify({
     source:'assets/common/ui.js',catalog:'reference '.repeat(140000),runtimeVerified:false
   })+'\nNever invent assets or runtime evidence.\n[ASSET IMPLEMENTATION CONTRACT END]';
-  const prompt=source+contract;
+  const optimization={enabled:true,axes:['RIGGING','MATERIALS','PHYSICS','COLLISION'],materialStyle:'BRICK_TOY',preserveExistingImplementation:false};
+  const handoff=buildPrompt({target:'roblox',assetProduction:{automaticAssetBindingWork:{nativeOptimization:optimization}}},{files:[]},[]);
+  const nativeBlock=handoff.match(/\[ROBLOX BUILD UP OPTIMIZATION BEGIN\][\s\S]*?\[ROBLOX BUILD UP OPTIMIZATION END\]/)?.[0];
+  assert.ok(nativeBlock);
+  const prompt=source+nativeBlock+'\n'+contract;
   await withExternalFixture(async()=>{
     let sent='';
     globalThis.fetch=async(url,options)=>{
@@ -364,6 +368,7 @@ test('final model request stays bounded after a megabyte asset reference is reat
     assert.match(sent,/Allowed edit paths: ui.js/);
     assert.match(sent,/const x=1;/);
     assert.match(sent,/READ_ONLY_REFERENCE_EXCERPT/);
+    assert.ok(sent.includes(nativeBlock),'joint native optimization contract survives final request compaction');
     assert.match(sent,/originalSha256=[a-f0-9]{64}/);
     assert.match(sent,/Missing facts remain unresolved/);
     assert.match(sent,/Never invent assets or runtime evidence/);

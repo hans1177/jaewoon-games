@@ -2126,6 +2126,14 @@ root.Transparency = 1
     designRecord:{content:{identity:'동료와 탐험',genre:'RPG',coreLoop:['탐험','전투']}}});
   const directive=make('ROBLOX'),replacement=directive.visualBuildUpDirective.primitiveReplacement;
   assert.equal(replacement.trigger,'F0_AND_EVERY_BUILD_UP');
+  const optimization=directive.visualBuildUpDirective.nativeOptimization;
+  assert.deepEqual(optimization.axes,['RIGGING','MATERIALS','PHYSICS','COLLISION']);
+  assert.equal(optimization.preserveExistingImplementation,false);
+  assert.equal(optimization.existingModelRigAndCollisionGeometryReplacementAllowed,true);
+  assert.ok(optimization.mobile.includes('NO_EXTRA_DECORATION_PARTS'));
+  assert.equal(optimization.runtimeVerified,false);
+  assert.match(directivePrompt(directive),/ROBLOX_BUILD_UP_OPTIMIZATION/);
+  assert.equal(make('WEB').visualBuildUpDirective.nativeOptimization,null);
   assert.equal(replacement.sourceFiles[0].file,relative);
   assert.equal(replacement.exactVisualMatchRequired,false);
   assert.equal(replacement.visiblePrimitiveFallbackAllowed,false);

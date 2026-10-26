@@ -5416,3 +5416,26 @@ test('Roblox primitive replacement reaches the existing binding worker with simi
   assert.equal(work.runtimeVerified,false);
   assert.match(assetProductionGuidance(plan),/비슷한 자산이면 우선 적용/);
 });
+
+// 브릭 요청 인식은 별도 제작/게시 경로가 아니라 기존 자산 바인딩 작업으로 전달한다.
+test('Roblox buildup optimizes all native axes and recognizes brick requests without decoration parts',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-native-optimization-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+ fs.copyFileSync('company-learning/platform-release-roadmap.json',path.join(root,'company-learning/platform-release-roadmap.json'));
+ fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:779,assets:[]}));
+ for(const [target,goal,expected] of [['roblox','레고 재질 적용','BRICK_TOY'],['roblox','브릭 장난감 최적화','BRICK_TOY'],['roblox','brick toy materials','BRICK_TOY'],['roblox','일반 리깅 최적화','CURRENT_GAME_STYLE'],['web','레고 재질 적용',null]]){
+  const plan=buildVibeAssetProductionPlan({target,repoRoot:root,manifest:{assets:[]},task:{gameId:'demo',goal,
+   buildUpDirective:{visualBuildUpDirective:{nativeOptimization:{enabled:true,trigger:'F0_AND_EVERY_BUILD_UP',
+    axes:['RIGGING','MATERIALS','PHYSICS','COLLISION'],preserveExistingImplementation:false,
+    mobile:['NO_EXTRA_DECORATION_PARTS']}}}}});
+  const work=plan.automaticAssetBindingWork.nativeOptimization;
+  if(expected===null){assert.equal(work,null);continue;}
+  assert.equal(work.materialStyle,expected);
+  assert.equal(work.preserveExistingImplementation,false);
+  assert.equal(work.sameBuildMobileMotionPhysicsQaRequired,true);
+  assert.equal(work.runtimeVerified,false);
+  assert.ok(work.mobile.includes('NO_EXTRA_DECORATION_PARTS'));
+  assert.match(assetProductionGuidance(plan),/ROBLOX AUTOMATIC BUILD UP OPTIMIZATION/);
+ }
+});
