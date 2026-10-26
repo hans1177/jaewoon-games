@@ -7,6 +7,22 @@ import {buildGameDevelopmentMap} from './game-development-sync.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const clean=s=>String(s??'').trim().replaceAll('\\','/').replace(/^\.\//,'');
+// Route a Roblox-only game edit away from tests that explicitly exercise only
+// another platform's source. Mixed-platform, shared, missing and ambiguous
+// tests stay in scope: no Roblox coverage is silently dropped.
+export function testRelevantToRobloxChange({gameId='',testPath='',repoRoot=ROOT}={}){
+  const id=clean(gameId),relative=clean(testPath);
+  const absolute=path.resolve(repoRoot,relative);
+  if(!absolute.startsWith(path.resolve(repoRoot)+path.sep)||!fs.existsSync(absolute))return true;
+  const body=fs.readFileSync(absolute,'utf8');
+  const native=body.includes('roblox-games/'+id+'/')
+    ||body.includes('assets/roblox/')||body.includes('roblox-source-bootstrap.json');
+  if(native)return true;
+  const other=body.includes('web-games/'+id+'/')
+    ||body.includes('unity-games/'+id+'/');
+  // Tests with no explicit platform-specific source stay mandatory.
+  return !other;
+}
 export function chooseGameQa({games=[],changedFiles=[],gameId='',all=false}={}){
   const changes=new Set(changedFiles.map(clean).filter(Boolean));
   if(gameId&&!games.some(x=>x.gameId===gameId))throw new Error('GAME_NOT_FOUND:'+gameId);
@@ -20,12 +36,22 @@ export function chooseGameQa({games=[],changedFiles=[],gameId='',all=false}={}){
       if(p.startsWith('assets/roblox/actors/native/'+g.gameId+'/'))return true;
     }
     return false;
-  }).map(g=>({
+  }).map(g=>{
+    const nativeRoot=clean(g.sources?.ROBLOX||'');
+    const nativeOnly=!gameId&&!all&&nativeRoot&&changes.size>0
+      &&[...changes].every(p=>p.startsWith(nativeRoot+'/'));
+    const tests=nativeOnly
+      ?g.qa.filter(testPath=>testRelevantToRobloxChange({gameId:g.gameId,testPath}))
+      :g.qa;
+    return {
     gameId:g.gameId,
-    tests:[...g.qa].sort(),
+    tests:[...tests].sort(),
+    excludedOtherPlatformTests:nativeOnly?g.qa.filter(testPath=>!tests.includes(testPath)).sort():[],
+    nativeOnlyQaScope:Boolean(nativeOnly),
     selectionSource:gameId?'EXPLICIT_GAME':all?'ALL_GAMES':'CHANGED_GAME_FILES',
     previousValidationEvidenceReused:false
-  }));
+  };
+  });
 }
 export function runGameQa({selected=[],repoRoot=ROOT,execute=false,timeoutMs=120000}={}){
   const results=[];
