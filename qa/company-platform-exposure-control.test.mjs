@@ -262,8 +262,8 @@ test('Roblox floor timestamps are evidence-only, preserve failed and pending sta
 test('company dashboard shows Seoul time and distinct Roblox floor evidence',()=>{
   const html=fs.readFileSync('company.html','utf8');
   assert.match(html,/Roblox F0~F9 반복개발 현황/);
-  assert.match(html,/timeZone:'Asia\\/Seoul'/);
+  assert.ok(html.includes("timeZone:'Asia/Seoul'"));
   assert.match(html,/robloxFloorList/);
   assert.match(html,/완료 회차/);
-  assert.match(html,/\/homepage-platform-exposure\\.json/);
+  assert.ok(html.includes('/homepage-platform-exposure.json'));
 });
