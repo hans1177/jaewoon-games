@@ -1,0 +1,1702 @@
+{
+  "contractVersion": 4,
+  "gameId": "tower-choice-rpg",
+  "date": "2026-10-26",
+  "seedId": "OWNER-ALL-DESIGN-RESET-TOWER-CHOICE-RPG-20260917",
+  "fingerprint": "df483b8171754d5d24cfde147f6ced715cdcd703bb0bb116fd446696daf0a06c",
+  "policyDigest": "86e864a8ae2f0a7c4a148a9326a82efb15c114d69960b47a3bc661732d9162cf",
+  "engineDigest": "2b756570adb02b543a4df13cacafedd4acf56cbb69afb40c35f4a74c1173e146",
+  "ownerDesignEventId": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+  "designTopicMode": null,
+  "status": "IN_PROGRESS",
+  "completedPhases": [],
+  "phases": {},
+  "tasks": {
+    "designer_draft_slices::identity-core": {
+      "identity": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립. MAIN은 A(전투와 획득 장비의 조합 운용 × 철학·사상)와 독립적인 B(Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 모험 × 보조 무협)의 판정 차이, @(심판의 저울: 증거와 주장한 책임이 일치함의 성립)가 여는 새 WorldAccessState를 합성한 결과다.",
+      "creativeGrammar": {
+        "mainIdentity": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립. A의 전투와 획득 장비의 조합 운용 선택과 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 대응을 왕복하고, C의 메인 모험·보조 무협 장르 판정과 @(심판의 저울: 증거와 주장한 책임이 일치함의 성립) 발견 조건이 목표·길·세계 반응을 바꾼다.",
+        "a": {
+          "system": "전투와 획득 장비의 조합 운용",
+          "material": "철학·사상",
+          "materialDomain": "철학·사상",
+          "stateChange": "A는 철학·사상을 대규모 세계 규칙으로 창작한다. MAIN의 RouteState·RiskState를 읽어 전투와 획득 장비의 조합 운용 실행 조건을 판정하고, 존재의 동일성: 바뀐 부분과 유지된 관계를 비교한다. 동일성의 기준을 직접 정함일 때 대상의 권한과 교체 방식이 달라진다 결과로 RiskState·ResourceState를 갱신해 B와 세계의 다음 선택을 바꾼다. 조건 미충족·취소 시 이전 상태를 보존한다.",
+          "gameGenre": "역할수행",
+          "gameRole": "PRIMARY",
+          "referenceGame": {
+            "gameGenre": "역할수행",
+            "name": "디아블로",
+            "systemFamily": "전투와 획득 장비의 조합 운용",
+            "playerChoice": "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다",
+            "source": "중앙 기본설계 참고게임 예시"
+          }
+        },
+        "b": {
+          "system": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "material": "축제 문화",
+          "materialDomain": "사회·문화→축제 문화",
+          "stateChange": "B는 A의 하위 주제가 아니라 축제 문화에서 독자적으로 만든 세부 사건·대상 규칙이다. 독립적으로 정한 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 행동은 A가 출력한 RiskState·ResourceState를 조건으로 읽는다. 가면 의식: 가면의 역할을 맡거나 본래 신분을 드러낸다. 의식의 역할과 행동 조건이 맞음일 때 평소 닫힌 교류와 부탁이 열린다 대응 성공 시 RouteState·RiskState를 A로 돌려보내 세계 규칙까지 바꾼다. 조건 미충족 시 상태를 보존한다.",
+          "existingSystemReference": {
+            "scope": "B_EXISTING_GAME_SYSTEMS",
+            "systemFamily": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+            "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+            "source": "OWNER-ALL-DESIGN-RESET-TOWER-CHOICE-RPG-20260917"
+          },
+          "gameGenreRepresentative": "액션",
+          "gameGenre": "플랫폼 액션",
+          "gameRole": "SUPPORTING",
+          "materialPath": [
+            "사회·문화",
+            "축제 문화"
+          ],
+          "supportingReason": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.는 전투와 획득 장비의 조합 운용의 결과를 읽는 보조 판단이다. 결과가 중심 전투와 획득 장비의 조합 운용의 다음 경로와 위험으로 돌아온다."
+        },
+        "abCausality": "A(전투와 획득 장비의 조합 운용)는 RouteState·RiskState를 읽어 실행 여부를 판정하고 ResourceState를 B에 보낸다. B(Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.)는 RiskState·ResourceState를 읽어 행동을 선택하고 RouteState·RiskState를 A에 반환한다. 실패나 취소 때는 상태를 보존하고 다른 선택을 한다.",
+        "abEvolution": {
+          "aChangesB": "전투와 획득 장비의 조합 운용 성공으로 RiskState·ResourceState가 바뀐 때만 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 대응이 열리고, 실패 시 기존 값과 이전 선택을 보존한다.",
+          "bChangesA": "B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 성공 결과인 RouteState·RiskState에 따라 A의 전투와 획득 장비의 조합 운용 재진입 경로와 위험·선택 비용이 달라진다. 불가능한 선택은 이전 상태로 복구한다.",
+          "lateGameChange": "후반에는 철학·사상와 축제 문화의 상반된 조건을 역이용해 같은 장소도 서로 다른 경로와 결말로 해결한다."
+        },
+        "materialFusion": {
+          "contrast": "철학·사상의 원인 규칙과 축제 문화의 반작용을 전투와 획득 장비의 조합 운용·Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 서로 다른 선택에 결합한다.",
+          "causalBridge": "A에서 전투와 획득 장비의 조합 운용를 선택해 RiskState·ResourceState를 바꾸고, 그 값을 읽는 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 대응을 실행한다. B의 RouteState·RiskState 출력은 다시 A의 접근 가능성과 다음 선택을 바꾼다. 실패 시 마지막 유효 상태로 돌아가 대안을 고른다.",
+          "removalConsequence": "철학·사상를 제거하면 A의 선행 조건이 사라지고 축제 문화를 제거하면 B의 결과가 A에 돌아오는 대가와 학습이 사라진다."
+        },
+        "storyCausalChain": {
+          "cause": "철학·사상의 원칙을 지키는 인물과 축제 문화의 책임을 지려는 인물이 목표를 놓고 충돌한다. A의 RiskState·ResourceState가 B의 축제 문화 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다.",
+          "characterConflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+          "playerChoice": "행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 또는 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다. 중 무엇을 우선할지 판단한다.",
+          "worldChange": "철학·사상의 흔적이 남은 지역은 축제 문화의 선택에 따라 새로운 출입·보상 조건을 갖는다. 심판의 저울와 암호문가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다.",
+          "nextEvent": "관계의 갈등이 플레이어의 실제 선택을 통해 해결되거나 심화되고, 그 결과가 다음 사건의 원인이 된다. 다음 사건은 직전 세계·관계 상태를 읽고 발생한다."
+        },
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "모험",
+            "gameplayEffect": "모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "무협",
+            "gameplayEffect": "무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다."
+          }
+        ],
+        "cGenreInterlock": "모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 보조 장르가 없으면 같은 대상의 관찰·책임·행동 판단이 사라져 A의 다음 선택이 달라진다.",
+        "cWorldAndGameplayEffect": "A의 RiskState·ResourceState가 B의 축제 문화 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다. 심판의 저울와 암호문가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. A에서 전투와 획득 장비의 조합 운용를 선택해 RiskState·ResourceState를 바꾸고, 그 값을 읽는 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 대응을 실행한다. B의 RouteState·RiskState 출력은 다시 A의 접근 가능성과 다음 선택을 바꾼다. 실패 시 마지막 유효 상태로 돌아가 대안을 고른다.",
+        "delveDiscoveries": [
+          {
+            "clue": "심판의 저울의 행위와 책임의 심판: 성립 조건을 바꿔 비교할 흔적은 증거와 주장한 책임이 일치함 조건에서 나타난다.",
+            "discovery": "심판의 저울의 성립 조건을 바꿔 비교 실험으로 증거와 주장한 책임이 일치함 조건과 심판받는 인물의 다음 임무가 달라진다 결과의 연결을 발견한다.",
+            "newChoice": "심판의 저울: 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 다음 A 진입 전에 선택하거나 다른 접근을 유지한다. 심판받는 인물의 다음 임무가 달라진다 결과를 다음 선택에 활용한다.",
+            "sourceDId": "D_1",
+            "experiment": "심판의 저울에서 성립 조건을 바꿔 비교한다. 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동 전후의 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험을 다른 지역에서 비교한다.",
+            "nextQuestion": "심판의 저울에서 거짓 책임 전가가 동료의 출입을 막는다 위험이 실제로 발생하면 증거와 주장한 책임이 일치함 조건이 어떻게 달라지는지 다음 방문에서 시험한다."
+          },
+          {
+            "clue": "암호문의 정보의 은폐와 해석: 성립 조건을 바꿔 비교할 흔적은 독립된 단서가 같은 의미를 지지함 조건에서 나타난다.",
+            "discovery": "암호문의 성립 조건을 바꿔 비교 실험으로 독립된 단서가 같은 의미를 지지함 조건과 다음 대응과 기만 경로를 선택한다 결과의 연결을 발견한다.",
+            "newChoice": "암호문: 전달 경로와 해독 단서를 비교한다 행동을 다음 A 진입 전에 선택하거나 다른 접근을 유지한다. 다음 대응과 기만 경로를 선택한다 결과를 다음 선택에 활용한다.",
+            "sourceDId": "D_2",
+            "experiment": "암호문에서 성립 조건을 바꿔 비교한다. 전달 경로와 해독 단서를 비교한다 행동 전후의 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험을 다른 지역에서 비교한다.",
+            "nextQuestion": "암호문에서 잘못 해독하면 상대의 유인에 걸린다 위험이 실제로 발생하면 독립된 단서가 같은 의미를 지지함 조건이 어떻게 달라지는지 다음 방문에서 시험한다."
+          },
+          {
+            "clue": "심판의 저울의 행위와 책임의 심판: 위험을 감수한 대안과 비교할 흔적은 증거와 주장한 책임이 일치함 조건에서 나타난다.",
+            "discovery": "심판의 저울의 위험을 감수한 대안과 비교 실험으로 증거와 주장한 책임이 일치함 조건과 심판받는 인물의 다음 임무가 달라진다 결과의 연결을 발견한다.",
+            "newChoice": "심판의 저울: 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 B 대응 이후 적용하거나 위험을 피해 다른 조건을 준비한다. 심판받는 인물의 다음 임무가 달라진다 결과를 다음 선택에 활용한다.",
+            "sourceDId": "D_1",
+            "experiment": "심판의 저울에서 위험을 감수한 대안과 비교한다. 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동 전후의 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험을 다른 지역에서 비교한다.",
+            "nextQuestion": "심판의 저울에서 거짓 책임 전가가 동료의 출입을 막는다 위험이 실제로 발생하면 증거와 주장한 책임이 일치함 조건이 어떻게 달라지는지 다음 방문에서 시험한다."
+          },
+          {
+            "clue": "암호문의 정보의 은폐와 해석: 위험을 감수한 대안과 비교할 흔적은 독립된 단서가 같은 의미를 지지함 조건에서 나타난다.",
+            "discovery": "암호문의 위험을 감수한 대안과 비교 실험으로 독립된 단서가 같은 의미를 지지함 조건과 다음 대응과 기만 경로를 선택한다 결과의 연결을 발견한다.",
+            "newChoice": "암호문: 전달 경로와 해독 단서를 비교한다 행동을 B 대응 이후 적용하거나 위험을 피해 다른 조건을 준비한다. 다음 대응과 기만 경로를 선택한다 결과를 다음 선택에 활용한다.",
+            "sourceDId": "D_2",
+            "experiment": "암호문에서 위험을 감수한 대안과 비교한다. 전달 경로와 해독 단서를 비교한다 행동 전후의 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험을 다른 지역에서 비교한다.",
+            "nextQuestion": "암호문에서 잘못 해독하면 상대의 유인에 걸린다 위험이 실제로 발생하면 독립된 단서가 같은 의미를 지지함 조건이 어떻게 달라지는지 다음 방문에서 시험한다."
+          }
+        ],
+        "delveGrowthRule": "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다. 초기 서로 다른 사례 최소 4개는 출발점이며 총개수 상한은 없다. 이름·번호·수치만 바꾼 반복은 새 사례가 아니다. @는 C의 작품 주·보조 장르와 D의 창작 세계·존재·장소·사건·문화·규칙에서 나온 연관 콘텐츠를 A의 참고 시스템과 B의 기존 시스템에 복합적으로 연결해 새로 창작한다. 각 사례에 D 출처, 관찰한 차이, 실제 입력과 조건, 성공·실패·취소·복구, 달라지는 행동과 결과를 작성한다.",
+        "finalGameIdentity": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립 복합장르. A와 B의 인과 변화, C의 주·보조 장르, @(심판의 저울: 증거와 주장한 책임이 일치함의 성립) 발견에서 MAIN이 최종 확정된다. A(전투와 획득 장비의 조합 운용)·B(Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.)가 인과 상태를 교환하고 C(모험×무협)가 목표와 대응법을 바꾸며 @(심판의 저울: 증거와 주장한 책임이 일치함의 성립)의 발견 결과가 다음 행동을 여는 복합 장르다. D의 심판의 저울·암호문 특징과 발견한 행동·결과가 다음 반복 목표를 만든다.",
+        "standardVersion": 2,
+        "materialHierarchyVersion": 2,
+        "existingGameSystemRole": "B_EXISTING_GAME_SYSTEMS",
+        "dCreations": [
+          {
+            "id": "D_1",
+            "materialPath": [
+              "신화",
+              "이집트 신화",
+              "심판의 저울"
+            ],
+            "pathReason": "신화→이집트 신화→심판의 저울의 실제 분류 연결을 사용한다. 소재 특징은 행위와 책임의 심판이며 행동·조건·결과는 게임용 창작 해석이다.",
+            "sourceFeature": "행위와 책임의 심판",
+            "action": "남긴 행위의 증거를 제시하거나 책임을 나눈다",
+            "condition": "증거와 주장한 책임이 일치함",
+            "consequence": "심판받는 인물의 다음 임무가 달라진다",
+            "risk": "거짓 책임 전가가 동료의 출입을 막는다",
+            "genreRoles": [
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "linkedElements": [
+              "A",
+              "B"
+            ],
+            "creation": "철학·사상의 첫 선택 공간의 심판의 저울는 행위와 책임의 심판를 세계의 지속 규칙으로 만든 창작이다. 플레이어가 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 고른다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다.",
+            "gameplayEffect": "A의 전투와 획득 장비의 조합 운용에서 증거와 주장한 책임이 일치함 조건을 확인한 뒤 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정한다. 성공하면 심판받는 인물의 다음 임무가 달라진다 결과가 A의 다음 선택에 돌아온다. 위험: 거짓 책임 전가가 동료의 출입을 막는다. 실패·취소 때 기존 상태와 다른 선택을 보존한다."
+          },
+          {
+            "id": "D_2",
+            "materialPath": [
+              "전쟁·군사",
+              "정보전",
+              "암호문"
+            ],
+            "pathReason": "전쟁·군사→정보전→암호문의 실제 분류 연결을 사용한다. 소재 특징은 정보의 은폐와 해석이며 행동·조건·결과는 게임용 창작 해석이다.",
+            "sourceFeature": "정보의 은폐와 해석",
+            "action": "전달 경로와 해독 단서를 비교한다",
+            "condition": "독립된 단서가 같은 의미를 지지함",
+            "consequence": "다음 대응과 기만 경로를 선택한다",
+            "risk": "잘못 해독하면 상대의 유인에 걸린다",
+            "genreRoles": [
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "linkedElements": [
+              "A",
+              "B"
+            ],
+            "creation": "축제 문화의 되돌림 공간의 암호문는 정보의 은폐와 해석를 세계의 지속 규칙으로 만든 창작이다. 플레이어가 전달 경로와 해독 단서를 비교한다 행동을 고른다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다.",
+            "gameplayEffect": "A의 전투와 획득 장비의 조합 운용에서 독립된 단서가 같은 의미를 지지함 조건을 확인한 뒤 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.에서 전달 경로와 해독 단서를 비교한다 행동을 판정한다. 성공하면 다음 대응과 기만 경로를 선택한다 결과가 A의 다음 선택에 돌아온다. 위험: 잘못 해독하면 상대의 유인에 걸린다. 실패·취소 때 기존 상태와 다른 선택을 보존한다."
+          }
+        ],
+        "fiveWOneH": [
+          {
+            "element": "MAIN",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "MAIN 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "MAIN 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "MAIN 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "when": "첫 진입과 매 반복 목표를 고를 때 WorldAccessState·IntentState를 확인한다.",
+            "where": "철학·사상의 첫 선택 공간에서 출발해 축제 문화의 되돌림 공간을 거쳐 돌아온다.",
+            "what": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립. A의 전투와 획득 장비의 조합 운용 선택과 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 대응을 왕복하고, C의 메인 모험·보조 무협 장르 판정과 @(심판의 저울: 증거와 주장한 책임이 일치함의 성립) 발견 조건이 목표·길·세계 반응을 바꾼다.",
+            "how": "A 시작: RouteState·RiskState를 확인한 뒤 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다. → B 대응: A의 ResourceState·RiskState를 확인한 뒤 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a → A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 전투와 획득 장비의 조합 운용의 새 선택을 실행하거나 @ 발견 조건을 시험한다.. A 시작: RouteState·RiskState를 확인한 뒤 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다. 이후 다음 행동의 위험과 보상을 직접 선택한다.",
+            "why": "반복 목적: 철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립. MAIN은 A(전투와 획득 장비의 조합 운용 × 철학·사상)의 대규모 창작 규칙과 독립적인 B(Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화)의 세부 사건 규칙, C(메인 모험 × 보조 무협; 심판의 저울·암호문 반작용), @(심판의 저울: 증거와 주장한 책임이 일치함의 성립: 심판받는 인물의 다음 임무가 달라진다 결과를 A의 전투와 획득 장비의 조합 운용와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.에 연결해 연관 콘텐츠를 연구·창작·개발한다. 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 달라진 조건에 적용하고 그 결과를 다음 @의 대상으로 삼는다. 실패·취소 시 마지막 유효 상태를 보존한다.)를 연결한 결과로 결정된다. A→B→A 이 선택이 다음 세계 접근 조건과 철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립 복합장르. A와 B의 인과 변화, C의 주·보조 장르, @(심판의 저울: 증거와 주장한 책임이 일치함의 성립) 발견에서 MAIN이 최종 확정된다. A(전투와 획득 장비의 조합 운용)·B(Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.)가 인과 상태를 교환하고 C(모험×무협)가 목표와 대응법을 바꾸며 @(심판의 저울: 증거와 주장한 책임이 일치함의 성립)의 발견 결과가 다음 행동을 여는 복합 장르다. D의 심판의 저울·암호문 특징과 발견한 행동·결과가 다음 반복 목표를 만든다.의 경험을 만든다.",
+            "result": "RouteState·WorldAccessState를 출력한다. 전투와 획득 장비의 조합 운용 × 철학·사상이 RouteState를 읽고 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 심판의 저울: 증거와 주장한 책임이 일치함의 성립이 RouteState를 읽고 심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next prog 조건 미충족·취소 시 기존 상태를 유지하고 다른 선택을 고른다.",
+            "linkedElements": [
+              "MAIN"
+            ],
+            "ruleIds": [
+              "VIBE_MAIN"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "A",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "A 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "A 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "A 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "when": "RouteState·RiskState 입력이 확정되고 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.의 선행 조건을 만족할 때.",
+            "where": "철학·사상의 첫 선택 공간: 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.를 시작하는 출발 위치와 복귀 동선을 제공한다.",
+            "what": "전투와 획득 장비의 조합 운용에 철학·사상 소재를 결합한다. 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.",
+            "how": "입력과 판정: 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. A는 철학·사상을 대규모 세계 규칙으로 창작한다. MAIN의 RouteState·RiskState를 읽어 전투와 획득 장비의 조합 운용 실행 조건을 판정하고, 존재의 동일성: 바뀐 부분과 유지된 관계를 비교한다. 동일성의 기준을 직접 정함일 때 대상의 권한과 교체 방식이 달라진다 결과로 RiskState·ResourceState를 갱신해 B와 세계의 다음 선택을 바꾼다. 조건 미충족·취소 시 이전 상태를 보존한다.",
+            "why": "A는 철학·사상을 대규모 세계 규칙으로 창작한다. MAIN의 RouteState·RiskState를 읽어 전투와 획득 장비의 조합 운용 실행 조건을 판정하고, 존재의 동일성: 바뀐 부분과 유지된 관계를 비교한다. 동일성의 기준을 직접 정함일 때 대상의 권한과 교체 방식이 달라진다 결과로 RiskState·ResourceState를 갱신해 B와 세계의 다음 선택을 바꾼다. 조건 미충족·취소 시 이전 상태를 보존한다. A의 결정을 다음 B의 조건으로 전달하는 이유: 전투와 획득 장비의 조합 운용 성공으로 RiskState·ResourceState가 바뀐 때만 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 대응이 열리고, 실패 시 기존 값과 이전 선택을 보존한다.",
+            "result": "RiskState·ResourceState를 출력한다. Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화이 RiskState·ResourceState를 읽고 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 심판의 저울: 증거와 주장한 책임이 일치함의 성립이 RiskState를 읽고 심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next prog 조건 미충족·취소 시 기존 상태를 유지하고 다른 선택을 고른다.",
+            "linkedElements": [
+              "A",
+              "B"
+            ],
+            "ruleIds": [
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN"
+            ]
+          },
+          {
+            "element": "B",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "B 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "B 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "B 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "when": "RiskState·ResourceState 입력이 확정되고 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.의 선행 조건을 만족할 때.",
+            "where": "축제 문화의 되돌림 공간: 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.의 결과가 이전 구역의 통로를 열거나 닫는다.",
+            "what": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.에 축제 문화 소재를 결합한다. 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를",
+            "how": "입력과 판정: 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다. B는 A의 하위 주제가 아니라 축제 문화에서 독자적으로 만든 세부 사건·대상 규칙이다. 독립적으로 정한 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 행동은 A가 출력한 RiskState·ResourceState를 조건으로 읽는다. 가면 의식: 가면의 역할을 맡거나 본래 신분을 드러낸다. 의식의 역할과 행동 조건이 맞음일 때 평소 닫힌 교류와 부탁이 열린다 대응 성공 시 RouteState·RiskState를 A로 돌려보내 세계 규칙까지 바꾼다. 조건 미충족 시 상태를 보존한다.",
+            "why": "B는 A의 하위 주제가 아니라 축제 문화에서 독자적으로 만든 세부 사건·대상 규칙이다. 독립적으로 정한 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 행동은 A가 출력한 RiskState·ResourceState를 조건으로 읽는다. 가면 의식: 가면의 역할을 맡거나 본래 신분을 드러낸다. 의식의 역할과 행동 조건이 맞음일 때 평소 닫힌 교류와 부탁이 열린다 대응 성공 시 RouteState·RiskState를 A로 돌려보내 세계 규칙까지 바꾼다. 조건 미충족 시 상태를 보존한다. B의 결정을 다음 A의 조건으로 전달하는 이유: B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 성공 결과인 RouteState·RiskState에 따라 A의 전투와 획득 장비의 조합 운용 재진입 경로와 위험·선택 비용이 달라진다. 불가능한 선택은 이전 상태로 복구한다.",
+            "result": "RouteState·RiskState를 출력한다. 전투와 획득 장비의 조합 운용 × 철학·사상이 RouteState·RiskState를 읽고 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 심판의 저울: 증거와 주장한 책임이 일치함의 성립이 RouteState·RiskState를 읽고 심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next prog 조건 미충족·취소 시 기존 상태를 유지하고 다른 선택을 고른다.",
+            "linkedElements": [
+              "B",
+              "A"
+            ],
+            "ruleIds": [
+              "VIBE_B",
+              "VIBE_A"
+            ],
+            "regionIds": [
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "C",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "C 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "C 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "C 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "when": "A의 선택 결과를 B가 읽거나 B의 결과가 A로 돌아올 때: 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 보조 장르가 없으면 같은 대상의 관찰·책임·행동 판단이 사라져 A의 다음 선택이 달라진다.",
+            "where": "철학·사상의 첫 선택 공간 및 축제 문화의 되돌림 공간에서 같은 선택의 세계 반응을 비교한다.",
+            "what": "C 작품 장르: 모험 + 무협. A의 RiskState·ResourceState가 B의 축제 문화 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다. 심판의 저울와 암호문가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. A에서 전투와 획득 장비의 조합 운용를 선택해 RiskState·ResourceState를 바꾸고, 그 값을 읽는 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 대응을 실행한다. B의 RouteState·RiskState 출력은 다시 A의 접근 가능성과 다음 선택을 바꾼다. 실패 시 마지막 유효 상태로 돌아가 대안을 고른다.",
+            "how": "모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다.",
+            "why": "모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 보조 장르가 없으면 같은 대상의 관찰·책임·행동 판단이 사라져 A의 다음 선택이 달라진다. 인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+            "result": "철학·사상의 흔적이 남은 지역은 축제 문화의 선택에 따라 새로운 출입·보상 조건을 갖는다. 심판의 저울와 암호문가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. A/B 출력 RiskState·ResourceState·RouteState에 이 반응을 적용한다. 다음 선택: 관계의 갈등이 플레이어의 실제 선택을 통해 해결되거나 심화되고, 그 결과가 다음 사건의 원인이 된다. 다음 사건은 직전 세계·관계 상태를 읽고 발생한다. 조건 미충족·취소 시 세계 상태를 유지하고 다른 접근을 고른다.",
+            "linkedElements": [
+              "A",
+              "B",
+              "C"
+            ],
+            "ruleIds": [
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "D",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "D 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "D 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "D 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "creationId": "D_1",
+            "when": "증거와 주장한 책임이 일치함 조건을 만족하고 A의 결과가 B의 판단에 전달될 때 실행한다.",
+            "where": "철학·사상의 첫 선택 공간에서 심판의 저울의 행위와 책임의 심판와 A·B의 행동 조건을 확인한다.",
+            "what": "철학·사상의 첫 선택 공간의 심판의 저울는 행위와 책임의 심판를 세계의 지속 규칙으로 만든 창작이다. 플레이어가 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 고른다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다.",
+            "how": "A의 전투와 획득 장비의 조합 운용에서 증거와 주장한 책임이 일치함 조건을 확인한 뒤 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정한다. 성공하면 심판받는 인물의 다음 임무가 달라진다 결과가 A의 다음 선택에 돌아온다. 위험: 거짓 책임 전가가 동료의 출입을 막는다. 실패·취소 때 기존 상태와 다른 선택을 보존한다.",
+            "why": "신화→이집트 신화→심판의 저울의 실제 분류 연결을 사용한다. 소재 특징은 행위와 책임의 심판이며 행동·조건·결과는 게임용 창작 해석이다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 보조 장르가 없으면 같은 대상의 관찰·책임·행동 판단이 사라져 A의 다음 선택이 달라진다.",
+            "result": "남긴 행위의 증거를 제시하거나 책임을 나눈다 행동의 심판받는 인물의 다음 임무가 달라진다 결과를 다음 A 선택에 반영한다. 거짓 책임 전가가 동료의 출입을 막는다 위험과 달라진 조건은 해당 D의 @ 콘텐츠 연구·창작·개발로 전달한다.",
+            "linkedElements": [
+              "A",
+              "B"
+            ],
+            "ruleIds": [
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "D",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "D 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "D 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "D 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "creationId": "D_2",
+            "when": "독립된 단서가 같은 의미를 지지함 조건을 만족하고 A의 결과가 B의 판단에 전달될 때 실행한다.",
+            "where": "축제 문화의 되돌림 공간에서 암호문의 정보의 은폐와 해석와 A·B의 행동 조건을 확인한다.",
+            "what": "축제 문화의 되돌림 공간의 암호문는 정보의 은폐와 해석를 세계의 지속 규칙으로 만든 창작이다. 플레이어가 전달 경로와 해독 단서를 비교한다 행동을 고른다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다.",
+            "how": "A의 전투와 획득 장비의 조합 운용에서 독립된 단서가 같은 의미를 지지함 조건을 확인한 뒤 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.에서 전달 경로와 해독 단서를 비교한다 행동을 판정한다. 성공하면 다음 대응과 기만 경로를 선택한다 결과가 A의 다음 선택에 돌아온다. 위험: 잘못 해독하면 상대의 유인에 걸린다. 실패·취소 때 기존 상태와 다른 선택을 보존한다.",
+            "why": "전쟁·군사→정보전→암호문의 실제 분류 연결을 사용한다. 소재 특징은 정보의 은폐와 해석이며 행동·조건·결과는 게임용 창작 해석이다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 보조 장르가 없으면 같은 대상의 관찰·책임·행동 판단이 사라져 A의 다음 선택이 달라진다.",
+            "result": "전달 경로와 해독 단서를 비교한다 행동의 다음 대응과 기만 경로를 선택한다 결과를 다음 A 선택에 반영한다. 잘못 해독하면 상대의 유인에 걸린다 위험과 달라진 조건은 해당 D의 @ 콘텐츠 연구·창작·개발로 전달한다.",
+            "linkedElements": [
+              "A",
+              "B"
+            ],
+            "ruleIds": [
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "DELVE",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "DELVE 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "DELVE 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "DELVE 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "discoveryIndex": 0,
+            "when": "발견 조건: 심판의 저울의 행위와 책임의 심판: 성립 조건을 바꿔 비교할 흔적은 증거와 주장한 책임이 일치함 조건에서 나타난다.",
+            "where": "철학·사상의 첫 선택 공간에서 단서를 관찰하고 축제 문화의 되돌림 공간의 반응과 비교한다.",
+            "what": "심판의 저울의 성립 조건을 바꿔 비교 실험으로 증거와 주장한 책임이 일치함 조건과 심판받는 인물의 다음 임무가 달라진다 결과의 연결을 발견한다.",
+            "how": "단서 관찰: 심판의 저울의 행위와 책임의 심판: 성립 조건을 바꿔 비교할 흔적은 증거와 주장한 책임이 일치함 조건에서 나타난다. 비교 실험: 심판의 저울에서 성립 조건을 바꿔 비교한다. 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동 전후의 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험을 다른 지역에서 비교한다.",
+            "why": "학습할 인과: 심판의 저울의 성립 조건을 바꿔 비교 실험으로 증거와 주장한 책임이 일치함 조건과 심판받는 인물의 다음 임무가 달라진다 결과의 연결을 발견한다. A·B·C를 함께 바꾸어야 이 해결법을 확인할 수 있다.",
+            "result": "열리는 선택: 심판의 저울: 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 다음 A 진입 전에 선택하거나 다른 접근을 유지한다. 심판받는 인물의 다음 임무가 달라진다 결과를 다음 선택에 활용한다. 발견 조건을 만족하지 못하면 원래 경로를 유지하고 단서를 다시 비교한다.",
+            "linkedElements": [
+              "A",
+              "B",
+              "C"
+            ],
+            "ruleIds": [
+              "VIBE_DELVE",
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "DELVE",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "DELVE 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "DELVE 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "DELVE 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "discoveryIndex": 1,
+            "when": "발견 조건: 암호문의 정보의 은폐와 해석: 성립 조건을 바꿔 비교할 흔적은 독립된 단서가 같은 의미를 지지함 조건에서 나타난다.",
+            "where": "축제 문화의 되돌림 공간에서 단서를 관찰하고 철학·사상의 첫 선택 공간의 반응과 비교한다.",
+            "what": "암호문의 성립 조건을 바꿔 비교 실험으로 독립된 단서가 같은 의미를 지지함 조건과 다음 대응과 기만 경로를 선택한다 결과의 연결을 발견한다.",
+            "how": "단서 관찰: 암호문의 정보의 은폐와 해석: 성립 조건을 바꿔 비교할 흔적은 독립된 단서가 같은 의미를 지지함 조건에서 나타난다. 비교 실험: 암호문에서 성립 조건을 바꿔 비교한다. 전달 경로와 해독 단서를 비교한다 행동 전후의 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험을 다른 지역에서 비교한다.",
+            "why": "학습할 인과: 암호문의 성립 조건을 바꿔 비교 실험으로 독립된 단서가 같은 의미를 지지함 조건과 다음 대응과 기만 경로를 선택한다 결과의 연결을 발견한다. A·B·C를 함께 바꾸어야 이 해결법을 확인할 수 있다.",
+            "result": "열리는 선택: 암호문: 전달 경로와 해독 단서를 비교한다 행동을 다음 A 진입 전에 선택하거나 다른 접근을 유지한다. 다음 대응과 기만 경로를 선택한다 결과를 다음 선택에 활용한다. 발견 조건을 만족하지 못하면 원래 경로를 유지하고 단서를 다시 비교한다.",
+            "linkedElements": [
+              "A",
+              "B",
+              "C"
+            ],
+            "ruleIds": [
+              "VIBE_DELVE",
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "DELVE",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "DELVE 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "DELVE 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "DELVE 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "discoveryIndex": 2,
+            "when": "발견 조건: 심판의 저울의 행위와 책임의 심판: 위험을 감수한 대안과 비교할 흔적은 증거와 주장한 책임이 일치함 조건에서 나타난다.",
+            "where": "철학·사상의 첫 선택 공간에서 단서를 관찰하고 축제 문화의 되돌림 공간의 반응과 비교한다.",
+            "what": "심판의 저울의 위험을 감수한 대안과 비교 실험으로 증거와 주장한 책임이 일치함 조건과 심판받는 인물의 다음 임무가 달라진다 결과의 연결을 발견한다.",
+            "how": "단서 관찰: 심판의 저울의 행위와 책임의 심판: 위험을 감수한 대안과 비교할 흔적은 증거와 주장한 책임이 일치함 조건에서 나타난다. 비교 실험: 심판의 저울에서 위험을 감수한 대안과 비교한다. 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동 전후의 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험을 다른 지역에서 비교한다.",
+            "why": "학습할 인과: 심판의 저울의 위험을 감수한 대안과 비교 실험으로 증거와 주장한 책임이 일치함 조건과 심판받는 인물의 다음 임무가 달라진다 결과의 연결을 발견한다. A·B·C를 함께 바꾸어야 이 해결법을 확인할 수 있다.",
+            "result": "열리는 선택: 심판의 저울: 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 B 대응 이후 적용하거나 위험을 피해 다른 조건을 준비한다. 심판받는 인물의 다음 임무가 달라진다 결과를 다음 선택에 활용한다. 발견 조건을 만족하지 못하면 원래 경로를 유지하고 단서를 다시 비교한다.",
+            "linkedElements": [
+              "A",
+              "B",
+              "C"
+            ],
+            "ruleIds": [
+              "VIBE_DELVE",
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          },
+          {
+            "element": "DELVE",
+            "who": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 생존자이자 인과 선택의 책임자",
+            "failure": "DELVE 판정 실패 시 출력 상태를 확정하지 않고 마지막 유효 선택으로 돌아간다.",
+            "cancel": "DELVE 입력 취소 시 소비와 진행 변경을 확정하지 않고 다른 선택을 고른다.",
+            "recovery": "DELVE 재진입 시 마지막 유효 상태를 읽고 선행 조건을 다시 확인한다.",
+            "discoveryIndex": 3,
+            "when": "발견 조건: 암호문의 정보의 은폐와 해석: 위험을 감수한 대안과 비교할 흔적은 독립된 단서가 같은 의미를 지지함 조건에서 나타난다.",
+            "where": "축제 문화의 되돌림 공간에서 단서를 관찰하고 철학·사상의 첫 선택 공간의 반응과 비교한다.",
+            "what": "암호문의 위험을 감수한 대안과 비교 실험으로 독립된 단서가 같은 의미를 지지함 조건과 다음 대응과 기만 경로를 선택한다 결과의 연결을 발견한다.",
+            "how": "단서 관찰: 암호문의 정보의 은폐와 해석: 위험을 감수한 대안과 비교할 흔적은 독립된 단서가 같은 의미를 지지함 조건에서 나타난다. 비교 실험: 암호문에서 위험을 감수한 대안과 비교한다. 전달 경로와 해독 단서를 비교한다 행동 전후의 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험을 다른 지역에서 비교한다.",
+            "why": "학습할 인과: 암호문의 위험을 감수한 대안과 비교 실험으로 독립된 단서가 같은 의미를 지지함 조건과 다음 대응과 기만 경로를 선택한다 결과의 연결을 발견한다. A·B·C를 함께 바꾸어야 이 해결법을 확인할 수 있다.",
+            "result": "열리는 선택: 암호문: 전달 경로와 해독 단서를 비교한다 행동을 B 대응 이후 적용하거나 위험을 피해 다른 조건을 준비한다. 다음 대응과 기만 경로를 선택한다 결과를 다음 선택에 활용한다. 발견 조건을 만족하지 못하면 원래 경로를 유지하고 단서를 다시 비교한다.",
+            "linkedElements": [
+              "A",
+              "B",
+              "C"
+            ],
+            "ruleIds": [
+              "VIBE_DELVE",
+              "VIBE_A",
+              "VIBE_B"
+            ],
+            "regionIds": [
+              "VIBE_ORIGIN",
+              "VIBE_REVISIT"
+            ]
+          }
+        ]
+      },
+      "playerFantasy": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 플레이어는 A 시작: RouteState·RiskState를 확인한 뒤 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.을 결정하고 두 소재가 만드는 반작용을 책임진다.",
+      "coreFun": "전투와 획득 장비의 조합 운용의 결과를 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.로 전환하고 달라진 조건을 다시 활용한다. A(전투와 획득 장비의 조합 운용)는 RouteState·RiskState를 읽어 실행 여부를 판정하고 ResourceState를 B에 보낸다. B(Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.)는 RiskState·ResourceState를 읽어 행동을 선택하고 RouteState·RiskState를 A에 반환한다. 실패나 취소 때는 상태를 보존하고 다른 선택을 한다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 선택한다 결과와 잘못 해독하면 상대의 유인에 걸린다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 보조 장르가 없으면 같은 대상의 관찰·책임·행동 판단이 사라져 A의 다음 선택이 달라진다.",
+      "coreLoop": [
+        "A 시작: RouteState·RiskState를 확인한 뒤 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+        "B 대응: A의 ResourceState·RiskState를 확인한 뒤 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a",
+        "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 전투와 획득 장비의 조합 운용의 새 선택을 실행하거나 @ 발견 조건을 시험한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "VIBE_MAIN",
+          "grammarRole": "MAIN",
+          "name": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립",
+          "purpose": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립. MAIN은 A(전투와 획득 장비의 조합 운용 × 철학·사상)의 대규모 창작 규칙과 독립적인 B(Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화)의 세부 사건 규칙, C(메인 모험 × 보조 무협; 심판의 저울·암호문 반작용), @(심판의 저울: 증거와 주장한 책임이 일치함의 성립: 심판받는 인물의 다음 임무가 달라진다 결과를 A의 전투와 획득 장비의 조합 운용와 B의 Fight through an escalating horde in a short real-time survival ",
+          "playerChoice": "A 시작: RouteState·RiskState를 확인한 뒤 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다. 이후 다음 행동의 위험과 보상을 직접 선택한다.",
+          "stateInputs": [
+            "WorldAccessState",
+            "IntentState"
+          ],
+          "stateOutputs": [
+            "RouteState",
+            "WorldAccessState"
+          ]
+        },
+        {
+          "id": "VIBE_A",
+          "grammarRole": "A",
+          "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
+          "purpose": "A는 철학·사상을 대규모 세계 규칙으로 창작한다. MAIN의 RouteState·RiskState를 읽어 전투와 획득 장비의 조합 운용 실행 조건을 판정하고, 존재의 동일성: 바뀐 부분과 유지된 관계를 비교한다. 동일성의 기준을 직접 정함일 때 대상의 권한과 교체 방식이 달라진다 결과로 RiskState·ResourceState를 갱신해 B와 세계의 다음 선택을 바꾼다. 조건 미충족·취소 시 이전 상태를 보존한다.",
+          "playerChoice": "행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.",
+          "stateInputs": [
+            "RouteState",
+            "RiskState"
+          ],
+          "stateOutputs": [
+            "RiskState",
+            "ResourceState"
+          ]
+        },
+        {
+          "id": "VIBE_B",
+          "grammarRole": "B",
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화",
+          "purpose": "B는 A의 하위 주제가 아니라 축제 문화에서 독자적으로 만든 세부 사건·대상 규칙이다. 독립적으로 정한 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. 행동은 A가 출력한 RiskState·ResourceState를 조건으로 읽는다. 가면 의식: 가면의 역할을 맡거나 본래 신분을 드러낸다. 의식의 역할과 행동 조건이 맞음일 때 평소 닫힌 교류와 부탁이 열린다 대응 성공 시 RouteState·RiskState를 A로 돌려보내 세계 규칙까지 바꾼다. 조건 미충족 시 상태를 보존한다.",
+          "playerChoice": "행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를",
+          "stateInputs": [
+            "RiskState",
+            "ResourceState"
+          ],
+          "stateOutputs": [
+            "RouteState",
+            "RiskState"
+          ]
+        },
+        {
+          "id": "VIBE_DELVE",
+          "grammarRole": "DELVE",
+          "name": "심판의 저울: 증거와 주장한 책임이 일치함의 성립",
+          "purpose": "남긴 행위의 증거를 제시하거나 책임을 나눈다 행동에서 증거와 주장한 책임이 일치함 조건에 따른 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험의 관계를 발견한다. 모험: 모험: 심판의 저울의 행위와 책임의 심판를 작품의 경험·정보·갈등·선택에 연결한다. 증거와 주장한 책임이 일치함 조건에서 남긴 행위의 증거를 제시하거나 책임을 나눈다 행동을 판정하며 심판받는 인물의 다음 임무가 달라진다 결과와 거짓 책임 전가가 동료의 출입을 막는다 위험이 A의 중심 행동과 B의 보조 판단을 바꾼다. 무협: 무협: 암호문의 정보의 은폐와 해석를 작품의 경험·정보·갈등·선택에 연결한다. 독립된 단서가 같은 의미를 지지함 조건에서 전달 경로와 해독 단서를 비교한다 행동을 판정하며 다음 대응과 기만 경로를 ",
+          "playerChoice": "심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next prog",
+          "stateInputs": [
+            "RouteState",
+            "RiskState"
+          ],
+          "stateOutputs": [
+            "WorldAccessState",
+            "IntentState"
+          ]
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromId": "VIBE_MAIN",
+          "toId": "VIBE_A",
+          "stateKeys": [
+            "RouteState"
+          ],
+          "fromSystem": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립",
+          "toSystem": "전투와 획득 장비의 조합 운용 × 철학·사상",
+          "trigger": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 선택: A 시작: RouteState·RiskState를 확인한 뒤 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 기존 선행조건을 만족해 RouteState 출력이 확정됐을 때 전투와 획득 장비의 조합 운용 × 철학·사상이 같은 키를 읽는",
+          "stateChange": "VIBE_MAIN 출력 RouteState → VIBE_A 입력. 후속 선택: 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
+        },
+        {
+          "fromId": "VIBE_A",
+          "toId": "VIBE_B",
+          "stateKeys": [
+            "RiskState",
+            "ResourceState"
+          ],
+          "fromSystem": "전투와 획득 장비의 조합 운용 × 철학·사상",
+          "toSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화",
+          "trigger": "전투와 획득 장비의 조합 운용 × 철학·사상의 선택: 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 기존 선행조건을 만족해 RiskState·ResourceState 출력이 확정됐을 때 Fight through an escalating horde in a short real-time survival run while positioning ",
+          "stateChange": "VIBE_A 출력 RiskState·ResourceState → VIBE_B 입력. 후속 선택: 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a b"
+        },
+        {
+          "fromId": "VIBE_B",
+          "toId": "VIBE_A",
+          "stateKeys": [
+            "RouteState",
+            "RiskState"
+          ],
+          "fromSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화",
+          "toSystem": "전투와 획득 장비의 조합 운용 × 철학·사상",
+          "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화의 선택: 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choos",
+          "stateChange": "VIBE_B 출력 RouteState·RiskState → VIBE_A 입력. 후속 선택: 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
+        },
+        {
+          "fromId": "VIBE_B",
+          "toId": "VIBE_DELVE",
+          "stateKeys": [
+            "RouteState",
+            "RiskState"
+          ],
+          "fromSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화",
+          "toSystem": "심판의 저울: 증거와 주장한 책임이 일치함의 성립",
+          "trigger": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화의 선택: 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choos",
+          "stateChange": "VIBE_B 출력 RouteState·RiskState → VIBE_DELVE 입력. 후속 선택: 심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Com"
+        },
+        {
+          "fromId": "VIBE_DELVE",
+          "toId": "VIBE_MAIN",
+          "stateKeys": [
+            "WorldAccessState",
+            "IntentState"
+          ],
+          "fromSystem": "심판의 저울: 증거와 주장한 책임이 일치함의 성립",
+          "toSystem": "철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립",
+          "trigger": "심판의 저울: 증거와 주장한 책임이 일치함의 성립의 선택: 심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons",
+          "stateChange": "VIBE_DELVE 출력 WorldAccessState·IntentState → VIBE_MAIN 입력. 후속 선택: A 시작: RouteState·RiskState를 확인한 뒤 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
+        },
+        {
+          "fromId": "VIBE_A",
+          "toId": "VIBE_DELVE",
+          "stateKeys": [
+            "RiskState"
+          ],
+          "fromSystem": "전투와 획득 장비의 조합 운용 × 철학·사상",
+          "toSystem": "심판의 저울: 증거와 주장한 책임이 일치함의 성립",
+          "trigger": "전투와 획득 장비의 조합 운용 × 철학·사상의 선택: 행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 기존 선행조건을 만족해 RiskState 출력이 확정됐을 때 심판의 저울: 증거와 주장한 책임이 일치함의 성립이 같은 키를 읽는다.",
+          "stateChange": "VIBE_A 출력 RiskState → VIBE_DELVE 입력. 후속 선택: 심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrad"
+        }
+      ],
+      "progressionDirection": "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 전투와 획득 장비의 조합 운용의 새로운 지역에서 이전 인과 선택을 다시 해석한다. Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 새 상대는 기존 상태를 증폭하거나 반전한다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "전투와 획득 장비의 조합 운용 × 철학·사상의 변화가 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화에서 새로운 선택을 열고 다음 A의 경로에 영향을 준다.",
+        "resourceFlow": "현재 게임의 실제 획득원과 소비처를 소스에 연결한 후 선택 비용을 검증한다. 임의 보상이나 저장값을 추가하지 않는다.",
+        "balanceRules": "한쪽 선택이 언제나 이득이 되지 않도록 위험·정보·기회비용을 함께 비교하고 기존 원본 수치는 바꾸지 않는다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
+          "newGameplay": "전투와 획득 장비의 조합 운용의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "기존 첫 진입 조건을 만족하고 철학·사상·축제 문화 역할수행×무협: 심판의 저울: 증거와 주장한 책임이 일치함의 성립의 목표를 확인한 뒤 전투와 획득 장비의 조합 운용 × 철학·사상의 접근 가능한 선택을 제시한다.",
+          "playerChoice": "행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 전투와 획득 장비의 조합 운용 × 철학·사상의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
+        },
+        {
+          "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
+          "newGameplay": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
+        },
+        {
+          "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
+          "newGameplay": "심판의 저울과 암호문의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "심판의 저울의 행위와 책임의 심판를 A의 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다와 B의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.로 시험한다. 증거와 주장한 책임이 일치함 조건의 차이를 비교한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 전투와 획득 장비의 조합 운용 × 철학·사상의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
+        },
+        {
+          "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
+          "newGameplay": "@의 각 발견 결과에서 다음 A→B→A 조건과 C의 새 해석을 파생한다. 동일 상태값이나 번호만 바꾼 발견은 제외하고 기존 숙련과 다음 숙련의 새 행동·판정·결과를 확인해 상한 없이 이어 간다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "행동: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.와 행동: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.한다. 선택: A가 ",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "전투와 획득 장비의 조합 운용 × 철학·사상의 위험을 읽지 못해 유효 행동과 진입 경로가 막힌다.",
+          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. × 축제 문화의 반작용을 잘못 선택해 목표 접근 조건이 사라진다."
+        ],
+        "retryFlow": "직전 유효 목표 상태를 다시 확인하고 얻은 정보를 이용해 다른 경로·시스템 선택으로 재시도한다. 기존 저장 정책을 보존한다.",
+        "riskPressure": "초반에는 A의 선택 위험을, 중반에는 B의 반작용을, 후반에는 C 장르의 정보·관계 제약을 함께 판단하게 한다.",
+        "recoveryRules": "진행이 막히면 이전 안전 구역과 재선택 가능한 행동을 제공하며 저장·보상 손실 수치는 원본 규칙만 따른다."
+      }
+    }
+  },
+  "modelHealth": {},
+  "slowPhases": {},
+  "currentPhase": "DESIGNER_DRAFT",
+  "createdAt": "2026-10-26T00:16:49.495Z",
+  "updatedAt": "2026-10-26T00:16:49.588Z",
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 145,
+    "sha256": "482c558ee118d805d029f9a042b9c47760093037278b4635d89dd330f6b08cea",
+    "inventoryCount": 160,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "external-tinytreats-fence-corner-v1": {
+        "family": "BUILDING",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-fence-corner-v1",
+          "sourceModel": "assets/shared/homely-house/fence_corner.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "FENCE",
+        "sourcePath": "/assets/shared/homely-house/fence_corner.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "external-tinytreats-cobblestones-v1": {
+        "family": "ENVIRONMENT",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-cobblestones-v1",
+          "sourceModel": "assets/shared/homely-house/cobblestones.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "COBBLESTONES",
+        "sourcePath": "/assets/shared/homely-house/cobblestones.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "external-tinytreats-bench-a-v1": {
+        "family": "PROP",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-bench-a-v1",
+          "sourceModel": "assets/shared/homely-house/bench_A.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "BENCH",
+        "sourcePath": "/assets/shared/homely-house/bench_A.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "tycoon-arrowBlue_left": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "role": "CONTROL_ICON",
+        "sourcePath": "assets/shared/tycoon/arrowBlue_left.png",
+        "platform": "SHARED_UI",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "UNVERIFIED",
+        "productionVerified": false
+      }
+    }
+  },
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "1e6ac8206a57c9d766e5140288939bd90ae8d8dd3b6f4bc45783b2f37ebffd8a"
+  },
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "effectiveDesignerModel": "vibe-native:standard-design-v1",
+  "effectiveDesignerProvider": "VIBE_NATIVE_FUNCTION",
+  "failedPhase": "designer_draft",
+  "failedTask": "content-rules",
+  "lastError": "schema maxLength mismatch: root.contentVarietyPlan.abilities[1].trigger",
+  "designerSeed": {
+    "file": "design/tower-choice-rpg/2026-10-26/design-seed.json",
+    "contentDigest": "b672cc37686567a06503f52cd80c8765271e08b20cec0ef76bffdde7c676a27b",
+    "authorModel": "vibe-native:standard-design-v1",
+    "status": "AUTHORED_CANDIDATE"
+  }
+}
