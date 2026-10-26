@@ -10071,7 +10071,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-25T23:44:13.268Z",
+      "updatedAt": "2026-10-26T00:33:38.922Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -25529,9 +25529,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:daechung-rpg",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -25540,7 +25540,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX"
@@ -25548,18 +25548,28 @@
       "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/daechung-rpg/2026-10-26/design-revised.json",
+        "date": "2026-10-26"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_ROBLOX_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/daechung-rpg"
+        },
+        "designBaselineSource": "design/daechung-rpg/2026-10-26/design-revised.json",
+        "designDate": "2026-10-26",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-25T14:04:58.247Z"
+        "promotedAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-25T13:47:26.303Z",
+      "updatedAt": "2026-10-26T00:33:38.922Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -25592,7 +25602,13 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "시뮬레이션 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-26T00:27:31.455Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-26T00:27:31.455Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-10-26/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      }
     },
     {
       "version": 3,
@@ -35235,7 +35251,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-25T23:44:13.268Z",
+      "updatedAt": "2026-10-26T00:33:38.922Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -38615,9 +38631,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-HORROR-BASIC-GRAMMAR-20261025-1",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -38641,7 +38657,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-25T23:59:47.129Z",
+      "updatedAt": "2026-10-26T00:33:38.922Z",
       "ROBLOX_GENRE": "Survival",
       "ROBLOX_SUBGENRE": null,
       "ROBLOX_GENRE_LABEL_KO": "서바이벌",
@@ -38658,7 +38674,42 @@
         "evidencePath": "design/horror-escape-room/2026-10-25/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-26T00:21:04.850Z"
+      "strictDesignReviewUpdatedAt": "2026-10-26T00:21:04.850Z",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+        "date": "2026-10-25"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_ROBLOX_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/horror-escape-room"
+        },
+        "designBaselineSource": "design/horror-escape-room/2026-10-25/design-revised.json",
+        "designDate": "2026-10-25",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-26T00:33:38.922Z"
+      }
     },
     {
       "version": 2,
@@ -103769,7 +103820,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-25T23:44:13.268Z",
+  "updatedAt": "2026-10-26T00:33:38.922Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -103925,5 +103976,6 @@
       "zombie-survival",
       "forgotten-continent"
     ]
-  }
+  },
+  "policyAuthority": "company-learning/platform-release-roadmap.json"
 }
