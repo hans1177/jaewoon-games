@@ -411,6 +411,58 @@ test('game worker acquisition instructions cannot retain create-new fallback',()
 });
 
 // 기존 그래픽 제작 루트가 CC0 직업·격투·생물 모션을 직접 받아 쓰고 미검증 상태를 유지한다.
+test('graphics floor automatically routes registered creature 60 and elite boss 50 without false native approval',()=>{
+  const rigParts=['FORELEGS','HINDLEGS','SPINE','NECK','TAIL','JAWS'];
+  const present=Object.fromEntries(rigParts.map(name=>[name,{realJointId:name}]));
+  const plan=createVibeGraphicsProduction({
+    gameId:'vibe-floor-motion-auto',request:'몬스터 자동개발 모션 디테일 업그레이드',
+    target:'roblox',game:{
+      genre:'ACTION_RPG',featuredSpeciesId:'WOLF',
+      monsters:[
+        {speciesId:'WOLF',tier:'ELITE'},
+        {speciesId:'SPIDER',tier:'BOSS'},
+        {speciesId:'WYVERN',tier:'NORMAL'},
+        {speciesId:'WOLF',tier:'ELITE'},
+        {speciesId:'INVENTED_MONSTER',tier:'BOSS'}
+      ]
+    }
+  });
+  assert.equal(plan.creatureMotionFloor.length,4);
+  assert.equal(plan.creatureMotionFloorSummary.registeredCount,4);
+  assert.equal(plan.creatureMotionFloorSummary.pendingNativeRigCount,4);
+  assert.ok(plan.creatureMotionFloorSummary.unresolvedSpeciesOrTiers.includes('INVENTED_MONSTER'));
+  assert.deepEqual(plan.creatureMotionFloor.map(row=>[row.speciesId,row.tier,row.detailMotionCount,row.tierPatternCount]),
+    [['WOLF','NORMAL',60,0],['WOLF','ELITE',60,50],['SPIDER','BOSS',60,50],['WYVERN','NORMAL',60,0]]);
+  assert.ok(plan.creatureMotionFloor.every(row=>row.status==='BLOCKED_AWAITING_VALID_NATIVE_RIG'
+    &&row.runtimeVerified===false&&row.gameplayAuthority===false));
+  assert.equal(plan.motionEffects.creatureActions.filter(row=>row.source==='DETAILED_BODY_PLAN_60').length,60);
+  const ready=createVibeGraphicsProduction({
+    gameId:'native-evidence-probe',target:'roblox',request:'모션 연결',
+    game:{genre:'ACTION_RPG',monsters:[{speciesId:'WOLF',tier:'ELITE'}],
+      creatureRigBindings:{'WOLF:ELITE':{
+        bodyPlan:'QUADRUPED_CANINE',joints:present,
+        assetAuthorization:{approved:true,sourceAssetId:'previously-approved-wolf',
+          sourceHash:'known-wolf-content-sha',licenseVerified:true,placeAccessVerified:true}
+      }}
+    }
+  });
+  // 등록값이 모두 충족돼도 물리적 렌더·네이티브 게시 증명은 아님.
+  assert.equal(ready.creatureMotionFloor[0].status,'READY_FOR_NATIVE_BINDING_UNVERIFIED');
+  assert.equal(ready.creatureMotionFloor[0].runtimeVerified,false);
+  assert.equal(ready.creatureMotionFloorSummary.readyToBindUnverifiedCount,1);
+  assert.equal(ready.creatureMotionFloorSummary.automaticNativeRuntimePromotion,false);
+  const cannotPublish=createVibeGraphicsProduction({
+    gameId:'unsupported',target:'roblox',request:'몬스터 자동 연출',
+    game:{genre:'ACTION_RPG',monsters:[{speciesId:'WOLF',tier:'ELITE'}],
+      creatureRigBindings:{WOLF:{
+        bodyPlan:'QUADRUPED_CANINE',joints:present,
+        assetAuthorization:{approved:true,sourceAssetId:'wolf',sourceHash:'hash',licenseVerified:true}
+      }}
+    }
+  });
+  assert.ok(cannotPublish.creatureMotionFloor[0].blockers.includes('ROBLOX_PLACE_USE_PERMISSION_MISSING'));
+});
+
 test('graphics production wires existing CC0 duel and creature choreography for web and Roblox',()=>{
   for(const target of ['web','roblox']){
     const plan=createVibeGraphicsProduction({

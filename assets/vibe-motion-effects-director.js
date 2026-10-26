@@ -133,7 +133,25 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
     gameplayMutationAllowed:false,runtimeVerified:false,forbid:FORBID
   });
 }
-export function executeVibeMotionEffectEvent(event,handlers={},options={}){const execution=createVibeMotionEffectExecution(event,options);if(!execution.accepted)return execution;const results=[];for(const command of execution.commands){const handler=handlers[command.channel];if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}))}return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)})}
+export function executeVibeMotionEffectEvent(event,handlers={},options={}){
+  const execution=createVibeMotionEffectExecution(event,options);
+  if(!execution.accepted)return execution;
+  const results=[];
+  for(const command of execution.commands){
+    const handler=handlers[command.channel];
+    if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}));
+  }
+  // 바이브 플로어가 실제 승인된 rig adapter를 제공한 경우에만 확인된 원인 이벤트를 관절 포즈에 자동 투영.
+  // 다른 몬스터의 이벤트/카메라/AI 권한을 획득하지 않도록 actorId와 sourceId를 반드시 일치시킨다.
+  const playback=options.creatureRigPlayback;
+  if(execution.commands.some(command=>command.channel==='animation')
+    &&playback?.ready===true&&playback.actorId&&playback.actorId===event?.sourceId
+    &&typeof playback.playEvent==='function'){
+    const applied=playback.playEvent(event,{durationSeconds:options.creatureMotionDurationSeconds||1});
+    results.push(Object.freeze({channel:'animation',kind:'approved-creature-rig-auto-play',result:applied}));
+  }
+  return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)});
+}
 // 계획: 기존 직업 모션 원본의 실제 스킬 슬롯을 그대로 이펙트 담당 단계에 전달한다.
 export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request='',genre='ACTION_RPG',careerId='',speciesId='',monsterTier='NORMAL',platform='SHARED',weaponFamily=''}={}){
   const audit=auditVibeMotionEffects(graph),tasks=[];
@@ -206,7 +224,7 @@ export function createVibeMotionEngineBridge({engine=null,reducedMotion=false,lo
 // 이벤트는 게임 측에서 확정된 연출 명령만 받아들이며, 이동/피격 판정/HP를 소유하지 않는다.
 // rig.joints는 실제 Native Bone/Motor6D/Animator 부위 바인딩이어야 한다. 임시 파츠 생성 금지.
 export function createVibeCreatureRigPlayback({
-  speciesId='',tier='NORMAL',platform='WEB',rig=null,applyJointPose=null
+  speciesId='',tier='NORMAL',platform='WEB',rig=null,applyJointPose=null,actorId=''
 }={}){
   let creature;
   try{creature=createCommonMonsterActionLoadout({speciesId,tier,platform});}
@@ -257,6 +275,7 @@ export function createVibeCreatureRigPlayback({
   let active=null;
   const playback={
     ready:true,bodyPlan:creature.bodyPlan,speciesId:creature.id,tier:creature.presentationTier,
+    actorId:String(actorId||rig.actorId||'').trim(),
     supportedMotionIds:Object.freeze([...byId.keys()]),
     requiredJointParts:Object.freeze(required),
     authority:'presentation-only',gameplayMutationAllowed:false,
@@ -275,6 +294,25 @@ export function createVibeCreatureRigPlayback({
       active={motion,elapsed:0,duration,causeId:event.causeId};
       return Object.freeze({accepted:true,motionId:motion.id,causeId:event.causeId,
         gameplayMutationAllowed:false,runtimeVerified:false});
+    },
+    // 종과 신체 구성만으로 자동 선택. 명령의 종류는 기존 서버 확인 이벤트가 결정한다.
+    playEvent(event,{durationSeconds=1}={}){
+      if(!event||event.authority!=='presentation-only'||event.gameplayMutationAllowed!==false
+        ||!event.causeId||!event.presentationEventId)
+        return Object.freeze({accepted:false,reason:'confirmed-presentation-event-required'});
+      if(playback.actorId&&event.sourceId!==playback.actorId)
+        return Object.freeze({accepted:false,reason:'creature-event-actor-mismatch'});
+      const allowed=eventGroups[event.eventType]||[];
+      const group=event.eventType==='boss'?'signature':allowed[0];
+      const options=motions.filter(motion=>motion.group===group);
+      if(!options.length)return Object.freeze({accepted:false,reason:'no-approved-motion-for-event'});
+      const eventKey=String(event.sourceId||'')+'|'+String(event.causeId)+'|'+String(event.eventType);
+      let hash=2166136261;
+      for(const character of eventKey){
+        hash^=character.charCodeAt(0);
+        hash=Math.imul(hash,16777619);
+      }
+      return playback.play(event,options[(hash>>>0)%options.length].id,{durationSeconds});
     },
     tick(dtSeconds){
       if(!active)return Object.freeze({applied:false,reason:'no-accepted-motion'});

@@ -536,6 +536,28 @@ test('flow architecture carries award-caliber growth rules and execution-time as
   assert.ok(flow.assetFlow.requirements.some(row=>row.family==='UI'&&row.subfamily==='HUD'));
 });
 
+test('F0 flow automatically requests creature articulated combat acting and elite boss signature from declared species',()=>{
+  const baseline={content:{
+    identity:'숲의 늑대와 곤충 정예를 상대하는 전투 성장 게임',
+    monsters:[{speciesId:'WOLF',tier:'NORMAL'}, {speciesId:'SPIDER',tier:'ELITE'}, {speciesId:'WYVERN',isBoss:true}],
+    coreLoop:['explore','avoid','fight','recover']
+  }};
+  const flow=buildGameFlowArchitecture({gameId:'motion-floor',genre:'ACTION_SURVIVAL_ROGUELITE',baseline,inventory});
+  for(const key of ['CREATURE:SPECIES','MOTION:COMBAT','MOTION:ACTING','CREATURE:SIGNATURE']){
+    const [family,subfamily]=key.split(':');
+    const requirement=flow.assetFlow.requirements.find(row=>row.family===family&&row.subfamily===subfamily);
+    assert.ok(requirement,key);
+    assert.equal(requirement.assetIdPinned,false);
+    assert.equal(requirement.gameplayAuthority,false);
+    assert.equal(requirement.saveAuthority,false);
+    assert.equal(requirement.resolution,'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME');
+  }
+  assert.equal(evaluateGameFlowArchitecture(flow).pass,true);
+  const peaceful=buildGameFlowArchitecture({gameId:'motion-floor-peaceful',genre:'ROLEPLAY_LIFE_AVATAR',
+    baseline:{content:{identity:'평화로운 농장',coreLoop:['plant','harvest','sell']}}});
+  assert.equal(peaceful.assetFlow.requirements.some(row=>row.reason==='DECLARED_CREATURE_PRESENT'),false);
+});
+
 test('patch plan converts flow asset roles into existing selector apply adapt and verification work',()=>{
   const baseline={content:{identity:'Flow-bound RPG',coreFun:'Explore fight and grow',coreLoop:['explore region','fight threat','choose reward','unlock route']}};
   const gameplaySketch=deriveGameplaySketch({gameId:'flow-asset-plan',genre:'STORY_COMPLETE_RPG',baseline,inventory});
