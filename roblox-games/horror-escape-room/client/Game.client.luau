@@ -19,6 +19,7 @@ local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 local CommonVFX=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonVFX"))
+local CommonMotion=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonMotion"))
 local GhostSkinFactory=nil
 local GhostSkinMotion=nil
 local ghostSkinModulesLoading=false
@@ -1454,64 +1455,64 @@ local function styleAuthoredCombatModel(model,formId)
  end
 end
 local function bindAuthoredCombatMotion(model)
- local bones={}
- local base={}
- for _,d in ipairs(model:GetDescendants())do
-  if d:IsA("Bone")then bones[d.Name]=d;base[d]=d.Transform end
- end
- local function resetBone(name)
-  local bone=bones[name]
-  if bone then bone.Transform=base[bone]or CFrame.new()end
- end
- local function pose(name,cf)
-  local bone=bones[name]
-  if bone then bone.Transform=(base[bone]or CFrame.new())*cf end
- end
- local important={"Hips","Spine","Chest","Head","UpperArmL","UpperArmR","ForearmL","ForearmR","HandL","HandR","ThighL","ThighR","ShinL","ShinR","FootL","FootR","Jaw","LidL","LidR"}
- local function reset()
-  for _,name in ipairs(important)do resetBone(name)end
-  for name in pairs(bones)do
-   if string.sub(name,1,4)=="Hair"or string.sub(name,1,3)=="Hem"or string.sub(name,1,3)=="Tie"then resetBone(name)end
+ local bones,targets,responses={},{},{}
+ for _,bone in ipairs(model:GetDescendants())do
+  if bone:IsA("Bone")then
+   bones[bone.Name]=bone;targets[bone.Name]=CFrame.identity
+   responses[bone.Name]=bone.Name:match("^Hair")and 7 or bone.Name:match("^Hem")and 8
+     or bone.Name=="Head"and 11 or bone.Name=="Chest"and 14 or 22
   end
  end
- local function step(time,state)
-  reset()
-  local t=tonumber(time)or 0
-  local phase=t*(state=="chase"and 13 or state=="walk"and 8.5 or 2.1)
-  local breath=math.sin(t*2.2)
-  pose("Spine",CFrame.Angles(math.rad(breath*1.8),0,math.rad(math.sin(t*1.45)*1.2)))
-  pose("Chest",CFrame.Angles(math.rad(-breath*1.2),0,math.rad(-math.sin(t*1.45)*.8)))
-  pose("Head",CFrame.Angles(math.rad(-2+breath*.7),math.rad(math.sin(t*.8)*2),math.rad(math.sin(t*1.15)*2.2)))
-  if state=="walk"or state=="chase"then
-   local amp=state=="chase"and 33 or 18
-   local knee=state=="chase"and 24 or 13
-   pose("ThighL",CFrame.Angles(math.rad(math.sin(phase)*amp),0,0))
-   pose("ThighR",CFrame.Angles(math.rad(-math.sin(phase)*amp),0,0))
-   pose("ShinL",CFrame.Angles(math.rad(math.max(0,-math.sin(phase))*knee),0,0))
-   pose("ShinR",CFrame.Angles(math.rad(math.max(0,math.sin(phase))*knee),0,0))
-   pose("UpperArmL",CFrame.Angles(math.rad(-math.sin(phase)*amp*.62),0,math.rad(-5)))
-   pose("UpperArmR",CFrame.Angles(math.rad(math.sin(phase)*amp*.62),0,math.rad(5)))
-   pose("Chest",CFrame.Angles(math.rad(state=="chase"and 8 or 3),0,math.rad(math.sin(phase)*2.4)))
-  elseif state=="attack"then
-   local u=math.clamp(t/.7,0,1)
-   local hit=math.sin(u*math.pi)
-   pose("Spine",CFrame.Angles(math.rad(-15*hit),0,math.rad(8*hit)))
-   pose("Chest",CFrame.Angles(math.rad(-10*hit),0,math.rad(-7*hit)))
-   pose("Head",CFrame.Angles(math.rad(9*hit),0,math.rad(-9*hit)))
-   pose("UpperArmL",CFrame.Angles(math.rad(-78*hit),math.rad(-8),math.rad(-14)))
-   pose("UpperArmR",CFrame.Angles(math.rad(-92*hit),math.rad(9),math.rad(14)))
-   pose("ForearmL",CFrame.Angles(math.rad(-28*hit),0,0))
-   pose("ForearmR",CFrame.Angles(math.rad(-36*hit),0,0))
-   pose("Jaw",CFrame.new(0,-.035*hit,0)*CFrame.Angles(math.rad(9*hit),0,0))
+ local blend=CommonMotion.BindJointPose(bones,{response=18,responseByJoint=responses})
+ local function pose(name,cf)if bones[name]then targets[name]=cf end end
+ local function step(time,state,dt,info)
+  info=info or {}
+  for name in pairs(targets)do targets[name]=CFrame.identity end
+  local t=tonumber(info.clock)or tonumber(time)or 0
+  local phase=tonumber(info.phase)or t*2.1
+  local move=math.clamp(tonumber(info.moveBlend)or 0,0,1)
+  local run=math.clamp(tonumber(info.runBlend)or 0,0,1)
+  local lean=math.clamp(tonumber(info.turnLean)or 0,-1,1)
+  local breath=math.sin(t*2.2+math.sin(t*.41)*.1)
+  pose("Spine",CFrame.Angles(math.rad(breath*1.8),math.rad(-lean*3),math.rad(math.sin(t*1.45)*1.2-lean*4)))
+  pose("Chest",CFrame.Angles(math.rad(-breath*1.2),math.rad(-lean*2),math.rad(-math.sin(t*1.45)*.8-lean*2)))
+  pose("Head",CFrame.Angles(math.rad(-2+breath*.7),math.rad(math.sin(t*.8)*2+lean*5),math.rad(math.sin(t*1.15)*1.4)))
+  local wave=math.sin(phase)
+  local amp=(18+run*17)*move
+  local knee=(14+run*12)*move
+  pose("Hips",CFrame.new(0,math.cos(phase*2)*.025*move,0)*CFrame.Angles(0,math.rad(-wave*3*move),math.rad(lean*2)))
+  pose("ThighL",CFrame.Angles(math.rad(wave*amp),0,0))
+  pose("ThighR",CFrame.Angles(math.rad(-wave*amp),0,0))
+  pose("ShinL",CFrame.Angles(math.rad(math.max(0,-wave)*knee),0,0))
+  pose("ShinR",CFrame.Angles(math.rad(math.max(0,wave)*knee),0,0))
+  pose("FootL",CFrame.Angles(math.rad(-wave*amp*.22-math.max(0,-wave)*knee*.35),0,0))
+  pose("FootR",CFrame.Angles(math.rad(wave*amp*.22-math.max(0,wave)*knee*.35),0,0))
+  pose("UpperArmL",CFrame.Angles(math.rad(-wave*amp*.62),0,math.rad(-5)))
+  pose("UpperArmR",CFrame.Angles(math.rad(wave*amp*.62),0,math.rad(5)))
+  if state=="attack"then
+   local anticipating=info.attackStage=="anticipation"
+   local u=math.clamp((tonumber(time)or 0)/(anticipating and .28 or .7),0,1)
+   local amount=anticipating and u*u*(3-2*u)or math.exp(-u*5)*(1-u)
+   local direction=anticipating and -1 or 1
+   pose("Spine",CFrame.Angles(math.rad(-15*amount*direction),0,math.rad(8*amount*direction)))
+   pose("Chest",CFrame.Angles(math.rad(-10*amount*direction),0,math.rad(-7*amount*direction)))
+   pose("Head",CFrame.Angles(math.rad(9*amount*direction),0,math.rad(-7*amount)))
+   pose("UpperArmL",CFrame.Angles(math.rad(-78*amount*direction),math.rad(-8*amount),math.rad(-14*amount)))
+   pose("UpperArmR",CFrame.Angles(math.rad(-92*amount*direction),math.rad(9*amount),math.rad(14*amount)))
+   pose("ForearmL",CFrame.Angles(math.rad(-28*amount),0,0))
+   pose("ForearmR",CFrame.Angles(math.rad(-36*amount),0,0))
+   pose("Jaw",CFrame.new(0,-.035*amount,0)*CFrame.Angles(math.rad(9*amount),0,0))
   end
   for name in pairs(bones)do
-   local hairIndex=tonumber(string.match(name,"^Hair(%d+)_"))
-   if hairIndex then
-    pose(name,CFrame.Angles(math.rad(math.sin(t*3.1-hairIndex*.18)*3.8),math.rad(math.sin(t*2.2+hairIndex*.11)*2.1),0))
+   local hair=tonumber(name:match("^Hair(%d+)_"))
+   if hair then pose(name,CFrame.Angles(math.rad(math.sin(t*3.1-hair*.18)*3.8+lean*3),math.rad(math.sin(t*2.2+hair*.11)*2.1),0))
+   elseif name:match("^Hem")or name:match("^Tie")then
+    pose(name,CFrame.Angles(math.rad(math.sin(phase-.4)*move*3+math.sin(t*1.3)*.8),0,math.rad(-lean*2)))
    end
   end
+  blend.Step(targets,dt,state=="attack"and 1.6 or 1)
  end
- return{step=step,reset=reset,destroy=reset,kind="AUTHORED_BONE_MOTION"}
+ return{step=step,reset=blend.Reset,destroy=blend.Destroy,kind="AUTHORED_BONE_BLEND_MOTION"}
 end
 local function restoreCombatSkinSource(row)
  for part,value in pairs(row.hiddenParts or{})do
@@ -1578,7 +1579,7 @@ local function ensureCombatSkin(source,rootPart,skinId,formId)
    p:SetAttribute("CombatAuthoredVisualFallback","ORIGINAL_ROLE_COSTUME")
    return nil
   end
-  row={source=source,root=rootPart,skinId=skinId,formId=formId,quality=quality,authored=authored,model=model,motion=motion,pivotToBottom=pivotToBottom,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
+  row={source=source,root=rootPart,skinId=skinId,formId=formId,quality=quality,authored=authored,model=model,motion=motion,pivotToBottom=pivotToBottom,createdAt=os.clock(),lastPos=rootPart.Position,lastLook=rootPart.CFrame.LookVector,speed=0,phase=0,moveBlend=0,runBlend=0,turnLean=0,motionInfo={},visualPose=CFrame.identity,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
   combatSkins[source]=row
  end
  row.root=rootPart
@@ -1613,7 +1614,7 @@ local function refreshCombatSkins()
  end
  for source in pairs(combatSkins)do if not active[source]then destroyCombatSkin(source)end end
 end
-local function markCombatSkinAttack(userId,origin,duration)
+local function markCombatSkinAttack(userId,origin,duration,stage)
  local row=nil
  if tonumber(userId)and tonumber(userId)>0 then
   local player=Players:GetPlayerByUserId(tonumber(userId))
@@ -1627,7 +1628,7 @@ local function markCombatSkinAttack(userId,origin,duration)
    end
   end
  end
- if row then row.attackStart=os.clock();row.attackUntil=row.attackStart+(duration or .7)end
+ if row then row.attackStart=os.clock();row.attackUntil=row.attackStart+(duration or .7);row.attackStage=stage or "impact" end
 end
 
 RunService.RenderStepped:Connect(function(dt)
@@ -1646,25 +1647,41 @@ RunService.RenderStepped:Connect(function(dt)
     groundOffset=math.max(rr.Size.Y*.5,groundOffset)
    end
    local last=row.lastPos or rr.Position
-   local velocity=(rr.Position-last).Magnitude/math.max(dt,1/120)
+   local delta=rr.Position-last
+   local distance=Vector3.new(delta.X,0,delta.Z).Magnitude
+   local elapsed=math.max(dt,1/240)
+   local measured=distance/elapsed
+   if distance>12 then measured=0;distance=0 end
    row.lastPos=rr.Position
+   local alpha=1-math.exp(-12*math.min(dt,.15))
+   row.speed+=(measured-row.speed)*alpha
+   row.moveBlend+=(math.clamp(row.speed/4,0,1)-row.moveBlend)*alpha
+   row.runBlend+=(math.clamp((row.speed-7)/9,0,1)-row.runBlend)*alpha
+   row.phase=(row.phase+row.speed*math.min(dt,.15)*(math.pi*2/5.6))%(math.pi*2)
+   local look=rr.CFrame.LookVector
+   local lastLook=row.lastLook or look
+   local turn=math.clamp(math.atan2(lastLook:Cross(look).Y,lastLook:Dot(look))/elapsed*.09,-1,1)
+   row.turnLean+=(turn-row.turnLean)*(1-math.exp(-8*math.min(dt,.15)))
+   row.lastLook=look
    local state,time
    if now<(row.attackUntil or 0)then state="attack";time=now-(row.attackStart or now)
-   elseif velocity>11 then state="chase";time=now-row.createdAt
-   elseif velocity>1 then state="walk";time=now-row.createdAt
+   elseif row.runBlend>.35 then state="chase";time=now-row.createdAt
+   elseif row.moveBlend>.08 then state="walk";time=now-row.createdAt
    else state="idle";time=now-row.createdAt end
-   local pose=CFrame.new()
+   local pose=CFrame.new(0,math.sin(row.phase*2)*.025*row.moveBlend,0)
+     *CFrame.Angles(math.rad(-2*row.moveBlend-4*row.runBlend),0,math.rad(row.turnLean*3))
    if state=="attack"then
-    local pulse=math.sin(math.clamp(time/.58,0,1)*math.pi)
-    pose=CFrame.new(0,.08*pulse,-.72*pulse)*CFrame.Angles(math.rad(-10*pulse),0,0)
-   elseif state=="chase"then
-    pose=CFrame.new(0,math.sin(now*13)*.055,0)*CFrame.Angles(math.rad(-6),0,math.rad(math.sin(now*6)*2))
-   elseif state=="walk"then
-    pose=CFrame.new(0,math.sin(now*9)*.035,0)*CFrame.Angles(math.rad(-2),0,math.rad(math.sin(now*4.5)*1.2))
+    local amount=math.exp(-math.clamp(time/.7,0,1)*5)
+    local direction=row.attackStage=="anticipation"and -1 or 1
+    pose=CFrame.new(0,.04*amount,-.34*amount*direction)*CFrame.Angles(math.rad(-7*amount*direction),0,0)
    end
+   row.visualPose=row.visualPose:Lerp(pose,alpha)
    local visualOffset=-groundOffset+(row.authored and(row.pivotToBottom or 0)or 0)
-   row.model:PivotTo(rr.CFrame*CFrame.new(0,visualOffset,0)*pose)
-   pcall(function()row.motion.step(time,state)end)
+   row.model:PivotTo(rr.CFrame*CFrame.new(0,visualOffset,0)*row.visualPose)
+   local info=row.motionInfo
+   info.clock=now-row.createdAt;info.phase=row.phase;info.moveBlend=row.moveBlend
+   info.runBlend=row.runBlend;info.turnLean=row.turnLean;info.attackStage=row.attackStage
+   pcall(function()row.motion.step(time,state,dt,info)end)
    hideCombatSkinSource(row)
   end
  end
@@ -2715,7 +2732,7 @@ end)
 
 local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(111,45,49))
 infectButton.Size=UDim2.fromOffset(116,72);infectButton.Position=UDim2.fromOffset(42,6);infectButton.ZIndex=31
-infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
+infectButton.Activated:Connect(function()markCombatSkinAttack(p.UserId,nil,.28,"anticipation");setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(72,55,77))
 abilityButton.Size=UDim2.fromOffset(150,76);abilityButton.Position=UDim2.fromOffset(166,4);abilityButton.ZIndex=32

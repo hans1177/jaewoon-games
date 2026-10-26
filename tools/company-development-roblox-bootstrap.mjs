@@ -1631,6 +1631,7 @@ function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
   fs.copyFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),path.join(root,'shared','RobloxCommonUI.luau'));
   fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',import.meta.url),path.join(root,'shared','RobloxCommonMaterials.luau'));
   fs.copyFileSync(new URL('../assets/roblox/common-vfx-v1/RobloxCommonVFX.luau',import.meta.url),path.join(root,'shared','RobloxCommonVFX.luau'));
+  fs.copyFileSync(new URL('../assets/roblox/common-motion-v1/RobloxCommonMotion.luau',import.meta.url),path.join(root,'shared','RobloxCommonMotion.luau'));
   fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/MaterialPresentation.client.luau',import.meta.url),path.join(root,'client','MaterialPresentation.client.luau'));
   fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),sharedConfig.endsWith('\n')?sharedConfig:`${sharedConfig}\n`,'utf8');
   fs.writeFileSync(path.join(root,'server','Game.server.luau'),serverCode.endsWith('\n')?serverCode:`${serverCode}\n`,'utf8');
@@ -1731,7 +1732,7 @@ async function main(){
     sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
     saveRequired:built.validation.saveRequired,approvedScopeCount:built.actions.length,
     robloxBuildProfile:built.profile,robloxPlatformProfile:built.platformProfile,minimumDesignContractRequired:true,genreImplementationRequired:true,multiplayerImplementationRequired:built.profile.multiplayerRequired,
-    generatedFiles:['shared/GameConfig.luau','shared/RobloxCommonUI.luau','shared/RobloxCommonMaterials.luau','shared/RobloxCommonVFX.luau','server/Game.server.luau','client/Game.client.luau','client/MaterialPresentation.client.luau','default.project.json'],
+    generatedFiles:['shared/GameConfig.luau','shared/RobloxCommonUI.luau','shared/RobloxCommonMaterials.luau','shared/RobloxCommonVFX.luau','shared/RobloxCommonMotion.luau','server/Game.server.luau','client/Game.client.luau','client/MaterialPresentation.client.luau','default.project.json'],
     generationMode:built.generationMode,model,modelUsed:built.modelUsed,modelAttempts:built.attempts,modelContractFailures:built.failures,
     vibe3LearningApplied:built.learning.applied,robloxPlaybookChecklist:built.learning.checklist,recombinationRecipeId:built.learning.recipeId,
     verifiedExternalLearningFirst:built.learning.verifiedExternalLearningFirst===true,
