@@ -299,7 +299,67 @@ function RobloxCommonUI.CreateInventorySlot(options)
   icon.BackgroundTransparency = 1
   icon.Image = tostring(options.image or "")
   icon.ScaleType = Enum.ScaleType.Fit
+  icon.Visible = icon.Image ~= ""
   icon.Parent = button
+
+  -- Image-less items still have a native, readable pictogram: never invent asset IDs.
+  local glyph = Instance.new("TextLabel")
+  glyph.Name = "IconFallback"
+  glyph.Position = UDim2.fromOffset(10, 7)
+  glyph.Size = UDim2.new(1, -20, 1, -14)
+  glyph.BackgroundTransparency = 1
+  glyph.Text = tostring(options.fallbackGlyph or "◆")
+  glyph.TextColor3 = theme.Accent
+  glyph.TextScaled = true
+  glyph.Font = Enum.Font.GothamBold
+  glyph.Visible = icon.Image == ""
+  glyph.Parent = button
+
+  local rarity = Instance.new("TextLabel")
+  rarity.Name = "RarityBadge"
+  rarity.Position = UDim2.fromOffset(3, 3)
+  rarity.Size = UDim2.new(0.75, -6, 0, 17)
+  rarity.BackgroundColor3 = theme.Warning
+  rarity.BackgroundTransparency = 0.07
+  rarity.TextColor3 = theme.Text
+  rarity.TextSize = 10
+  rarity.Font = Enum.Font.GothamBold
+  rarity.TextTruncate = Enum.TextTruncate.AtEnd
+  rarity.Text = tostring(options.rarity or "")
+  rarity.Visible = rarity.Text ~= ""
+  rarity.ZIndex = button.ZIndex + 3
+  rarity.Parent = button
+  corner(rarity, 5)
+
+  local equipped = Instance.new("TextLabel")
+  equipped.Name = "EquippedBadge"
+  equipped.AnchorPoint = Vector2.new(0, 1)
+  equipped.Position = UDim2.new(0, 3, 1, -3)
+  equipped.Size = UDim2.new(0.66, -4, 0, 17)
+  equipped.BackgroundColor3 = theme.Positive
+  equipped.TextColor3 = theme.Text
+  equipped.Text = "장착"
+  equipped.Font = Enum.Font.GothamBold
+  equipped.TextSize = 10
+  equipped.Visible = options.equipped == true
+  equipped.ZIndex = button.ZIndex + 3
+  equipped.Parent = button
+  corner(equipped, 5)
+
+  local locked = Instance.new("TextLabel")
+  locked.Name = "LockedBadge"
+  locked.Size = UDim2.new(1, -8, 0, 22)
+  locked.Position = UDim2.new(0, 4, 0.5, -11)
+  locked.BackgroundColor3 = theme.PanelInset
+  locked.BackgroundTransparency = 0.1
+  locked.TextColor3 = theme.MutedText
+  locked.TextSize = 12
+  locked.Font = Enum.Font.GothamBold
+  locked.Text = "잠김"
+  locked.Visible = options.locked == true
+  locked.ZIndex = button.ZIndex + 4
+  locked.Parent = button
+  corner(locked, 6)
 
   local quantity = Instance.new("TextLabel")
   quantity.Name = "Quantity"
@@ -1860,6 +1920,59 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   scroll.ScrollingDirection=Enum.ScrollingDirection.Y
   scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
   scroll.Active=true;scroll.Parent=body
+  local detail = Instance.new("Frame")
+  detail.Name = "SelectedItemDetail"
+  detail.BackgroundColor3 = theme.PanelInset
+  detail.BorderSizePixel = 0
+  detail.Parent = body
+  corner(detail, 10)
+  stroke(detail, theme.Border, 1.2, 0.16)
+  local detailTitle = Instance.new("TextLabel")
+  detailTitle.Name = "SelectedItemName"
+  detailTitle.BackgroundTransparency = 1
+  detailTitle.Position = UDim2.fromOffset(10, 7)
+  detailTitle.Size = UDim2.new(1, -20, 0, 25)
+  detailTitle.Text = "아이템을 선택하세요"
+  detailTitle.TextColor3 = theme.Text
+  detailTitle.TextSize = 15
+  detailTitle.Font = Enum.Font.GothamBold
+  detailTitle.TextXAlignment = Enum.TextXAlignment.Left
+  detailTitle.TextTruncate = Enum.TextTruncate.AtEnd
+  detailTitle.Parent = detail
+  local detailMeta = Instance.new("TextLabel")
+  detailMeta.Name = "SelectedItemMeta"
+  detailMeta.BackgroundTransparency = 1
+  detailMeta.Position = UDim2.fromOffset(10, 34)
+  detailMeta.Size = UDim2.new(1, -20, 0, 23)
+  detailMeta.Text = ""
+  detailMeta.TextColor3 = theme.Accent
+  detailMeta.TextSize = 12
+  detailMeta.TextXAlignment = Enum.TextXAlignment.Left
+  detailMeta.TextTruncate = Enum.TextTruncate.AtEnd
+  detailMeta.Parent = detail
+  local detailDescription = Instance.new("TextLabel")
+  detailDescription.Name = "SelectedItemDescription"
+  detailDescription.BackgroundTransparency = 1
+  detailDescription.Position = UDim2.fromOffset(10, 60)
+  detailDescription.Size = UDim2.new(1, -20, 1, -68)
+  detailDescription.Text = ""
+  detailDescription.TextColor3 = theme.MutedText
+  detailDescription.TextSize = 12
+  detailDescription.TextWrapped = true
+  detailDescription.TextXAlignment = Enum.TextXAlignment.Left
+  detailDescription.TextYAlignment = Enum.TextYAlignment.Top
+  detailDescription.Parent = detail
+  local empty = Instance.new("TextLabel")
+  empty.Name = "InventoryEmptyState"
+  empty.BackgroundTransparency = 1
+  empty.Size = UDim2.new(1, -12, 0, 68)
+  empty.Position = UDim2.fromOffset(6, 12)
+  empty.TextColor3 = theme.MutedText
+  empty.TextSize = 16
+  empty.TextWrapped = true
+  empty.Text = "보유 아이템 없음"
+  empty.Visible = false
+  empty.Parent = scroll
   local grid,cellLayout,slots=RobloxCommonUI.CreateInventoryGrid({
     name="FullInventoryGrid",columns=options.columns or 6,
     slotCount=options.slotCount or (options.items and #options.items or 1),
@@ -1888,13 +2001,15 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       sort.AnchorPoint=Vector2.new(0,0)
       sort.Position=UDim2.fromOffset(0,56);sort.Size=UDim2.new(1,0,0,48)
       filters.Position=UDim2.fromOffset(0,112)
-      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-172)
+      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-280)
+      detail.Position=UDim2.new(0,0,1,-100);detail.Size=UDim2.new(1,0,0,100)
     else
       search.Size=UDim2.new(0.42,0,0,48)
       sort.AnchorPoint=Vector2.new(1,0)
       sort.Position=UDim2.new(1,0,0,0);sort.Size=UDim2.fromOffset(170,48)
       filters.Position=UDim2.fromOffset(0,58)
-      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(1,0,1,-116)
+      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(0.69,-8,1,-116)
+      detail.Position=UDim2.new(0.69,0,0,116);detail.Size=UDim2.new(0.31,0,1,-116)
     end
     root:SetAttribute("MobileStackedLayout",compact)
     resizeGrid()
@@ -1986,12 +2101,43 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       local icon=slot:FindFirstChild("Icon")
       local quantity=slot:FindFirstChild("Quantity")
       local highlight=slot:FindFirstChild("SelectedRing")
-      if icon then icon.Image=tostring(row.image or "")end
+      local image=tostring(row.image or "")
+      if icon then icon.Image=image;icon.Visible=image~=""end
+      local glyph=slot:FindFirstChild("IconFallback")
+      if glyph then
+        glyph.Visible=image==""
+        glyph.Text=tostring(row.glyph or "◆")
+      end
       if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
       if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
+      local rarity=slot:FindFirstChild("RarityBadge")
+      if rarity then
+        rarity.Text=tostring(row.rarity or "")
+        rarity.Visible=rarity.Text~=""
+        local tier=string.upper(rarity.Text)
+        rarity.BackgroundColor3=(tier=="EPIC"or tier=="전설")and theme.Primary
+          or (tier=="RARE"or tier=="희귀")and theme.Accent or theme.Warning
+      end
+      local equipped=slot:FindFirstChild("EquippedBadge")
+      if equipped then equipped.Visible=row.equipped==true end
+      local locked=slot:FindFirstChild("LockedBadge")
+      if locked then locked.Visible=row.locked==true end
       slot.Active=row.id~=nil and row.locked~=true
     end
     for i=#shown+1,#slots do slots[i].Visible=false end
+    empty.Visible=#shown==0
+    empty.Text=#rows==0 and "보유 아이템 없음" or "검색·필터 결과 없음"
+    local selectedRow=nil
+    for _,row in ipairs(rows)do
+      if selectedId~=nil and row.id==selectedId then selectedRow=row;break end
+    end
+    if not selectedRow then selectedId=nil end
+    detailTitle.Text=selectedRow and tostring(selectedRow.name or selectedRow.title or selectedRow.id or "아이템") or "아이템을 선택하세요"
+    detailMeta.Text=selectedRow and
+      (tostring(selectedRow.category or "아이템").." · "..tostring(selectedRow.rarity or "일반").." · "..tostring(selectedRow.quantity or selectedRow.count or 1)
+        ..(selectedRow.equipped==true and " · 장착 중" or "")..(selectedRow.locked==true and " · 잠김" or "")) or ""
+    detailDescription.Text=selectedRow and tostring(selectedRow.description or "") or ""
+    detail:SetAttribute("BoundSelectedItemId",selectedId~=nil and tostring(selectedId) or "")
     root:SetAttribute("BoundItemCount",#rows)
     root:SetAttribute("BoundVisibleItemCount",#shown)
     root:SetAttribute("CurrentInventoryFilter",currentFilter)
@@ -2020,7 +2166,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   root:SetAttribute("OwnsSaveAuthority",false)
   root:SetAttribute("OwnsRemoteAuthority",false)
   return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,
-    slots=slots,Sync=sync}
+    detail=detail,empty=empty,slots=slots,Sync=sync}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
