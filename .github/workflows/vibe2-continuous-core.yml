@@ -1330,11 +1330,31 @@ jobs:
               break
             fi
             git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
-            if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
-              state_persisted=1
-              state_write='YES'
-              break
-            fi
+            # 독립 상태 파일의 저장 때문에 이미 검증한 예약을 전부 재계산하지 않는다.
+            # 실제 큐·예약·학습 입력 변경은 아래 허용 목록에 없으므로 기존 재계산으로 복귀한다.
+            while true; do
+              if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
+                state_persisted=1
+                state_write='YES'
+                break
+              fi
+              reserve_parent="$(git -C "$control_root" rev-parse HEAD^)"
+              if ! git -C "$control_root" fetch origin vibe2-unreal-core --quiet --depth=1 --no-tags; then break; fi
+              reserve_remote="$(git -C "$control_root" rev-parse origin/vibe2-unreal-core)"
+              [ "$reserve_remote" != "$reserve_parent" ] || break
+              git -C "$control_root" diff --name-only "$reserve_parent" "$reserve_remote" > /tmp/vibe2-reserve-remote-paths.txt
+              if grep -Ev '^\.vibe2/(system-ai-queue|recovery-queue)\.json$' /tmp/vibe2-reserve-remote-paths.txt | grep -q .; then
+                echo 'VIBE2_CONTROL_DISJOINT_REPLAY=REPLAN_RELEVANT_STATE_CHANGED'
+                break
+              fi
+              # 이 두 파일은 예약의 읽기/쓰기 대상이 아니다. 다른 워커 결과는 그대로 보존한다.
+              if ! git -C "$control_root" rebase --onto "$reserve_remote" "$reserve_parent"; then
+                git -C "$control_root" rebase --abort
+                break
+              fi
+              echo 'VIBE2_CONTROL_DISJOINT_REPLAY=REUSED_VALIDATED_RESERVATION'
+            done
+            if [ "$state_persisted" = 1 ]; then break; fi
 
             echo "VIBE2_CONTROL_OPTIMISTIC_RETRY=$state_attempt"
             # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.

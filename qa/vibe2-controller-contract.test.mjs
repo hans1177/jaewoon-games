@@ -670,7 +670,8 @@ test('24H safety-net push ignores QA-only and descriptive document churn',()=>{
     "'unity-games/**'",
     "'roblox-games/**'"
   ]) assert.ok(pushBlock.includes(required),required);
-  assert.equal(pushBlock.includes("'qa/"),false);
+  const qaWakePaths=[...pushBlock.matchAll(/- '([^']+)'/g)].map(match=>match[1]).filter(file=>file.startsWith('qa/'));
+  assert.deepEqual(qaWakePaths,['qa/company-web-contract-adapter.test.mjs']);
   assert.equal(pushBlock.includes("'company-learning/company-log-map.json'"),false);
   assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
   assert.equal(pushBlock.includes("'VIBE2.md'"),false);
@@ -1618,7 +1619,8 @@ test('continuous planners overlay company-runtime design evidence before autonom
 
   assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main fetch origin [^\n]*company-runtime[^\n]*--quiet/);
   assert.match(safetyNetWorkflow,/for runtime_design_path in design game-seed-state\.json/);
-  assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main checkout origin\/company-runtime -- "\$runtime_design_path"/);
+  assert.match(safetyNetWorkflow,/runtime_design_sha="\$\(git -C \/tmp\/vibe2-main rev-parse origin\/company-runtime\)"/);
+  assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main checkout "\$runtime_design_sha" -- "\$runtime_design_path"/);
   assert.match(safetyNetWorkflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
 });
 
@@ -1926,4 +1928,44 @@ test('canonical Vibe reserve and fan-in fetch bounded latest state without chang
   assert.match(core,/VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
   assert.match(core,/git reset --hard origin\/vibe2-unreal-core/);
   assert.match(core,/storage-unpack/);assert.match(core,/storage-pack/);
+});
+
+// 예약 저장 충돌: 독립 조직 상태만 병합하며 실제 예약 변경은 기존 재계산으로 돌린다.
+test('reserve replays disjoint state writes but never reuses a reservation after queue changes',t=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('            while true; do\n              if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then');
+  const end=workflow.indexOf('            if [ "$state_persisted" = 1 ]; then break; fi',start);
+  assert.ok(start>0&&end>start);
+  const block=workflow.slice(start,end).split('\n').map(line=>line.replace(/^ {12}/,'')).join('\n');
+  for(const remotePath of ['system-ai-queue.json','recovery-queue.json','queue.json']){
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-reserve-replay-'));
+    t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+    const remote=path.join(root,'remote.git'),owner=path.join(root,'owner'),scheduler=path.join(root,'scheduler');
+    const git=(cwd,...args)=>execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+    execFileSync('git',['init','--bare',remote],{stdio:'ignore'});
+    execFileSync('git',['clone',remote,owner],{stdio:'ignore'});
+    for(const dir of [owner]){git(dir,'config','user.name','test');git(dir,'config','user.email','test@example.org');}
+    fs.mkdirSync(path.join(owner,'.vibe2'));
+    for(const file of ['queue.json','system-ai-queue.json','recovery-queue.json'])fs.writeFileSync(path.join(owner,'.vibe2',file),'initial\n');
+    git(owner,'add','.');git(owner,'commit','-m','initial');git(owner,'push','origin','HEAD:refs/heads/vibe2-unreal-core');
+    execFileSync('git',['clone','--branch','vibe2-unreal-core',remote,scheduler],{stdio:'ignore'});
+    git(scheduler,'config','user.name','test');git(scheduler,'config','user.email','test@example.org');
+    fs.writeFileSync(path.join(scheduler,'.vibe2/queue.json'),'reserved\n');
+    git(scheduler,'add','.');git(scheduler,'commit','-m','reservation');
+    fs.writeFileSync(path.join(owner,'.vibe2',remotePath),'other-worker\n');
+    git(owner,'add','.');git(owner,'commit','-m','concurrent worker');git(owner,'push','origin','HEAD:refs/heads/vibe2-unreal-core');
+    const output=execFileSync('bash',['-c','set -eu\ncontrol_root="$1"\nstate_persisted=0\n'+block+'\necho PERSISTED=$state_persisted\n','reserve-test',scheduler],
+      {encoding:'utf8',stdio:['ignore','pipe','pipe']});
+    if(remotePath==='queue.json'){
+      assert.match(output,/REPLAN_RELEVANT_STATE_CHANGED/);
+      assert.match(output,/PERSISTED=0/);
+      assert.equal(git(owner,'show','origin/vibe2-unreal-core:.vibe2/queue.json'),'other-worker');
+    }else{
+      assert.match(output,/REUSED_VALIDATED_RESERVATION/);
+      assert.match(output,/PERSISTED=1/);
+      git(owner,'fetch','origin','vibe2-unreal-core');
+      assert.equal(git(owner,'show','FETCH_HEAD:.vibe2/queue.json'),'reserved');
+      assert.equal(git(owner,'show','FETCH_HEAD:.vibe2/'+remotePath),'other-worker');
+    }
+  }
 });
