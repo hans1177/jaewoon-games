@@ -612,12 +612,92 @@ export function createVibeGraphicsProduction({
   const requestedCareer=clean(game?.careerId||game?.heroCareerId||characters.find(row=>row?.careerId)?.careerId).toUpperCase();
   const requestedSpecies=clean(game?.featuredSpeciesId||world?.featuredSpeciesId||'').toUpperCase();
   const motionPlatform=platforms.length===1?platforms[0]:'SHARED';
+  // 기존 GRAPHICS_PRODUCTION/F0~F9 책임 단계에서 종별 60·정예/보스 50 모션을 자동 찾아 연결한다.
+  // 공용 엔진에 없는 종을 임의 생성하지 않고, 게임에 실제 등록된 종/등급만 적용 후보로 삼는다.
+  const registeredCreatures=[
+    ...(Array.isArray(game?.monsters)?game.monsters:[]),
+    ...(Array.isArray(game?.enemies)?game.enemies:[]),
+    ...(Array.isArray(game?.creatures)?game.creatures:[]),
+    ...(Array.isArray(world?.monsters)?world.monsters:[]),
+    ...(Array.isArray(world?.creatures)?world.creatures:[])
+  ];
+  const sourceCreatureRows=[
+    ...(requestedSpecies?[{speciesId:requestedSpecies,tier:game?.featuredMonsterTier||world?.featuredMonsterTier||'NORMAL'}]:[]),
+    ...registeredCreatures
+  ];
+  const floorCreatures=new Map(),unresolvedCreatureIds=[];
+  for(const source of sourceCreatureRows){
+    const speciesId=clean(typeof source==='string'?source:source?.speciesId||source?.species).toUpperCase();
+    if(!speciesId)continue;
+    if(!COMMON_MONSTER_ACTION_SPECIES[speciesId]){
+      if(!unresolvedCreatureIds.includes(speciesId))unresolvedCreatureIds.push(speciesId);
+      continue;
+    }
+    const tierHint=clean(typeof source==='string'?'':source?.tier||source?.monsterTier||source?.presentationTier)
+      .toUpperCase();
+    const tier=tierHint||((source?.isBoss===true||source?.boss===true)?'BOSS'
+      :(source?.isElite===true||source?.elite===true)?'ELITE':'NORMAL');
+    if(!['NORMAL','ELITE','BOSS'].includes(tier)){
+      unresolvedCreatureIds.push(speciesId+':INVALID_TIER:'+tier);
+      continue;
+    }
+    const key=speciesId+':'+tier;
+    if(!floorCreatures.has(key))floorCreatures.set(key,{speciesId,tier,source});
+  }
+  const primaryCreature=[...floorCreatures.values()][0]||null;
   const motionEffects=motionGenre?planVibeMotionEffectsAutopilot({
     graph,request,genre:motionGenre,platform:motionPlatform,
     careerId:COMMON_CAREER_MOTION_HIERARCHY[requestedCareer]?requestedCareer:'',
-    speciesId:COMMON_MONSTER_ACTION_SPECIES[requestedSpecies]?requestedSpecies:'',
+    speciesId:primaryCreature?.speciesId||'',
+    monsterTier:primaryCreature?.tier||'NORMAL',
     mobile:true
   }):null;
+  // 자동 묶음: 각 승인된 몬스터에 대해 60개의 종별 곡선과 50개의 정예/보스 안무를
+  // 제작 실행 단계에 전달하되, 실제 리그/라이선스/Place 증거가 없으면 반드시 차단한다.
+  const creatureMotionFloor=Object.freeze([...floorCreatures.values()].map(({speciesId,tier,source})=>{
+    const motion=motionGenre?planVibeMotionEffectsAutopilot({
+      graph,request,genre:motionGenre,platform:motionPlatform,speciesId,monsterTier:tier,mobile:true
+    }):null;
+    const motions=motion?.creatureActions.filter(row=>row.source==='DETAILED_BODY_PLAN_60')||[];
+    const patterns=motion?.creatureActions.filter(row=>row.source==='ELITE_BOSS_PRESENTATION_50')||[];
+    const nativeRig=source?.nativeRig||source?.rig||game?.creatureRigBindings?.[speciesId+':'+tier]
+      ||game?.creatureRigBindings?.[speciesId]||null;
+    const auth=nativeRig?.assetAuthorization||{};
+    const problems=[];
+    if(!nativeRig||nativeRig.bodyPlan!==COMMON_MONSTER_ACTION_SPECIES[speciesId].bodyPlan)
+      problems.push('APPROVED_NATIVE_BODY_PLAN_RIG_MISSING');
+    if(auth.approved!==true||!clean(auth.sourceAssetId)||!clean(auth.sourceHash)||auth.licenseVerified!==true)
+      problems.push('APPROVED_MODEL_LICENSE_AND_HASH_MISSING');
+    if(motionPlatform==='ROBLOX'&&auth.placeAccessVerified!==true)
+      problems.push('ROBLOX_PLACE_USE_PERMISSION_MISSING');
+    const expectedParts=[...new Set([...motions,...patterns].flatMap(row=>
+      (row.jointTracks||[]).map(track=>track.part)))];
+    if(motions.length!==60||patterns.length!==(tier==='NORMAL'?0:50))
+      problems.push('SEMANTIC_MOTION_COVERAGE_MISSING');
+    if(!nativeRig?.joints||expectedParts.some(part=>nativeRig.joints[part]==null))
+      problems.push('EXISTING_NATIVE_JOINT_BINDINGS_MISSING');
+    return Object.freeze({
+      speciesId,tier,bodyPlan:COMMON_MONSTER_ACTION_SPECIES[speciesId].bodyPlan,
+      detailMotionCount:motions.length,tierPatternCount:patterns.length,
+      requiredNativeJointParts:Object.freeze(expectedParts),
+      status:problems.length?'BLOCKED_AWAITING_VALID_NATIVE_RIG':'READY_FOR_NATIVE_BINDING_UNVERIFIED',
+      blockers:Object.freeze(problems),
+      engineSource:'assets/vibe-motion-effects-director.js',
+      nativePlaybackFactory:'createVibeCreatureRigPlayback',
+      nativeGameEventConnectionRequired:true,
+      bindOnlyToExistingApprovedNativeJoints:true,
+      productionVerified:false,runtimeVerified:false,gameplayAuthority:false
+    });
+  }));
+  const creatureMotionFloorSummary=Object.freeze({
+    registeredCount:floorCreatures.size,
+    pendingNativeRigCount:creatureMotionFloor.filter(row=>row.blockers.length).length,
+    readyToBindUnverifiedCount:creatureMotionFloor.filter(row=>!row.blockers.length).length,
+    unresolvedSpeciesOrTiers:Object.freeze(unresolvedCreatureIds),
+    appliesToGraphicsProductionAndExistingF0F9:true,
+    automaticNativeRuntimePromotion:false,
+    unverifiedMustNotPublish:true
+  });
   const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
   const mapDetail=mapDetailInput&&typeof mapDetailInput==='object'?createVibeMapDetailReconstruction(mapDetailInput):null;
   const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
@@ -699,6 +779,7 @@ export function createVibeGraphicsProduction({
     visualWork,
     presentation,
     motionEffects,
+    creatureMotionFloor,creatureMotionFloorSummary,
     characterIdentity,
     mapDetail,
     referenceImageStudies,
