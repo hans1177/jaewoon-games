@@ -6644,6 +6644,30 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       if(focusedReplaceOnly)focusedReplaceOnly.spec.blueprintFields=blueprintFields;
       attemptPrompt+='\nBLUEPRINT OUTPUT CONTRACT: '+(allowFullRewrite?'Include single-line JSON headers before the content marker: '+blueprintFields.map(key=>key==='spatialBlueprint'?'SPATIAL_BLUEPRINT:{...}':'INTERFACE_BLUEPRINT:{...}').join(' ; '):'Return the required '+(focusedReplaceOnly?'replace':'edits')+' plus top-level '+blueprintFields.join(', ')+'. This extends any earlier one-key output instruction. Author the task-local blueprint before the source edit.')+' Never claim runtime verification; keep every source binding current.';
     }
+    // 실제 전송 직전에도 큰 자산 참고 자료가 초기 압축을 되돌리지 못하게 한다.
+    // 원본 작업 주문·검증 계약은 보존하고 모델 참고 문맥만 명시적 발췌로 전달한다.
+    // 수정 경로·정확 소스 앵커·검증된 학습·단일 모션 작업 계약은 이 대상에 포함하지 않는다.
+    if(sourceCandidatePressureInitial){
+      for(const label of ['ASSET IMPLEMENTATION CONTRACT','IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW']){
+        const begin='['+label+' BEGIN]',end='['+label+' END]';
+        let cursor=0;
+        while(cursor<attemptPrompt.length){
+          const start=attemptPrompt.indexOf(begin,cursor),finish=attemptPrompt.indexOf(end,start);
+          if(start<0||finish<0)break;
+          const block=attemptPrompt.slice(start,finish+end.length);
+          cursor=finish+end.length;
+          if(Buffer.byteLength(block,'utf8')<=16000)continue;
+          const excerpt=boundedLargeExcerpt(block.slice(begin.length,-end.length),1600).content;
+          const reference=[begin,'READ_ONLY_REFERENCE_EXCERPT; full contract remains in the original task work order.',
+            'originalSha256='+crypto.createHash('sha256').update(block).digest('hex'),
+            'Excerpted JSON is not a complete manifest. Use only exact source/API bindings present in the supplied context. Missing facts remain unresolved; never invent an asset, API, permission, or runtime pass.',
+            excerpt,end].join('\n');
+          attemptPrompt=attemptPrompt.slice(0,start)+reference+attemptPrompt.slice(finish+end.length);
+          cursor=start+reference.length;
+          console.log('VIBE2_FINAL_REQUEST_REFERENCE_COMPACTED='+label+':'+Buffer.byteLength(block,'utf8')+'->'+Buffer.byteLength(reference,'utf8'));
+        }
+      }
+    }
     const focusedBaseContextWindow=robloxRebuildFocused
       ?JSON_CONTEXT_WINDOW
       :(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW);

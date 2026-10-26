@@ -3,7 +3,9 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair,retryDelayMs} from '../tools/vibe2-gemini-free-rotation.mjs';
-import {requestLocalModel} from '../tools/vibe2-source-worker.mjs';
+import {requestLocalModel,generateCandidateWithRecovery} from '../tools/vibe2-source-worker.mjs';
+import os from 'node:os';
+import path from 'node:path';
 import {requestPracticeModel} from '../tools/vibe2-learning-practice-worker.mjs';
 
 function fixtureResponse(text){return{ok:true,json:async()=>({candidates:[{content:{parts:[{text}]}}]})};}
@@ -339,3 +341,33 @@ for(const provider of ['GROQ','OPENROUTER']){
     });
   });
 }
+
+// 초기 압축 뒤 자산 계약을 재첨부해 요청이 다시 수 MB로 커지던 실제 전송 경계 회귀.
+test('final model request stays bounded after a megabyte asset reference is reattached',async t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-request-boundary-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.writeFileSync(path.join(root,'ui.js'),'const x=1;');
+  const source='Engine: web\nAllowed edit paths: ui.js\n=== FILE ui.js [EDITABLE] ===\nconst x=1;\n';
+  const contract='[ASSET IMPLEMENTATION CONTRACT BEGIN]\n'+JSON.stringify({
+    source:'assets/common/ui.js',catalog:'reference '.repeat(140000),runtimeVerified:false
+  })+'\nNever invent assets or runtime evidence.\n[ASSET IMPLEMENTATION CONTRACT END]';
+  const prompt=source+contract;
+  await withExternalFixture(async()=>{
+    let sent='';
+    globalThis.fetch=async(url,options)=>{
+      sent=JSON.parse(options.body).contents[0].parts[0].text;
+      return fixtureResponse(JSON.stringify({edits:[{path:'ui.js',find:'const x=1;',replace:'const x=2;'}]}));
+    };
+    const result=await generateCandidateWithRecovery({prompt,target:'web',sourceRoot:root,
+      sourceRootRelative:'web-games/demo',responsibleFiles:['ui.js'],allowFullRewrite:false});
+    assert.ok(Buffer.byteLength(sent,'utf8')<128000);
+    assert.match(sent,/Allowed edit paths: ui.js/);
+    assert.match(sent,/const x=1;/);
+    assert.match(sent,/READ_ONLY_REFERENCE_EXCERPT/);
+    assert.match(sent,/originalSha256=[a-f0-9]{64}/);
+    assert.match(sent,/Missing facts remain unresolved/);
+    assert.match(sent,/Never invent assets or runtime evidence/);
+    assert.equal(result.candidate.edits[0].path,'ui.js');
+    assert.ok(prompt.includes(contract),'original work order remains unchanged');
+  });
+});
