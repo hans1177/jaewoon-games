@@ -55,7 +55,7 @@ if(!creator){
 // 공용 원본도 이 기존 네이티브 등록 경로를 사용한다. 원본 파일은 수정하지 않는다.
 const registryPath='company-asset-library.json';
 const registry=process.argv.includes('--include-shared-models')?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
-const candidates=process.argv.includes('--shared-ui-only')?[]:[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
+const candidates=(process.argv.includes('--shared-ui-only')||process.argv.includes('--shared-vfx-only'))?[]:[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
 const failures=[];
 for(const asset of registry?.assets||[]){
  if(asset.companyCommonBase!==true||!['CC0-1.0','project-original'].includes(asset.license))continue;
@@ -270,4 +270,49 @@ if(process.argv.includes('--shared-ui-only')){
   }
   console.log('UI_ART_NATIVE_IMPORTED='+field+':'+assetId);
  }
+}
+
+// 공용 이펙트도 같은 네이티브 자산 등록 경로를 사용한다. 원본 CC0 해시와 사용 권한을 보존한다.
+if(process.argv.includes('--shared-vfx-only')){
+ const catalogPath='assets/roblox/common-vfx-v1/catalog.json';
+ const catalog=JSON.parse(fs.readFileSync(catalogPath,'utf8'));
+ const universes=['10767445796','10767445741','10767445769'];
+ const seen=new Set();
+ for(const art of catalog.nativeSprites||[]){
+  if(!['spark','ring','slash','smoke','light'].includes(art.key)||seen.has(art.key)||art.license!=='CC0-1.0'
+   ||art.path!=='assets/roblox/common-vfx-v1/sources/'+art.key+'.png'
+   ||art.sourceArchive!=='assets/external/simple-rpg/icons-vfx-npc/particles.zip')throw Error('VFX_SOURCE_CONTRACT_INVALID');
+  seen.add(art.key);
+  const archive=fs.readFileSync(art.sourceArchive),bytes=fs.readFileSync(art.path);
+  if(crypto.createHash('sha256').update(archive).digest('hex')!==art.sourceArchiveSha256
+   ||crypto.createHash('sha256').update(bytes).digest('hex')!==art.sha256
+   ||art.sha256!==art.sourceSha256||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))throw Error('VFX_SOURCE_HASH_MISMATCH');
+  let assetId=art.assetId;
+  if(!/^[1-9]\d*$/.test(String(assetId||''))||art.importedSourceHash!==art.sha256){
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Image',displayName:'Vibe CC0 '+art.key,description:'Kenney CC0 particle source; native game-specific tint and envelope adaptation. '+art.sha256,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'image/png'}),art.key+'.png');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(op.path||''))throw Error('VFX_IMPORT_OPERATION_INVALID');
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   if(!op.done||op.error||!(/^[1-9]\d*$/.test(String(op.response?.assetId||''))))throw Error('VFX_IMPORT_FAILED:'+art.key);
+   assetId=String(op.response.assetId);art.assetId=assetId;art.importedSourceHash=art.sha256;art.importedRevision=process.env.GITHUB_SHA;
+   fs.writeFileSync(catalogPath,JSON.stringify(catalog,null,2)+'\n');
+  }
+  for(const universe of universes){
+   const grants=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+    method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+    body:JSON.stringify({subjectType:'Universe',subjectId:universe,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})
+   });
+   if(grants.errors?.length)throw Error('VFX_PERMISSION_FAILED:'+art.key+':'+universe);
+  }
+  art.importVerified=true;art.authorizedUniverseIds=universes;art.runtimeVerified=false;
+  fs.writeFileSync(catalogPath,JSON.stringify(catalog,null,2)+'\n');
+  console.log('VFX_NATIVE_IMPORTED='+art.key+':'+assetId);
+ }
+ if(seen.size!==5)throw Error('VFX_REQUIRED_SPRITES_MISSING');
 }
