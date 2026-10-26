@@ -461,6 +461,18 @@ test('graphics floor automatically routes registered creature 60 and elite boss 
     }
   });
   assert.ok(cannotPublish.creatureMotionFloor[0].blockers.includes('ROBLOX_PLACE_USE_PERMISSION_MISSING'));
+  const dual=createVibeGraphicsProduction({
+    gameId:'dual-native-auth',request:'두 네이티브 몬스터 모션 연결',
+    target:'dual-native',game:{genre:'ACTION_RPG',monsters:[{speciesId:'WOLF',tier:'ELITE'}],
+      creatureRigBindings:{WOLF:{
+        bodyPlan:'QUADRUPED_CANINE',joints:present,
+        assetAuthorization:{approved:true,sourceAssetId:'wolf',sourceHash:'hash',licenseVerified:true}
+      }}
+    }
+  });
+  assert.ok(dual.platforms.includes('ROBLOX'));
+  assert.ok(dual.creatureMotionFloor[0].blockers.includes('ROBLOX_PLACE_USE_PERMISSION_MISSING'));
+  assert.equal(dual.creatureMotionFloor[0].runtimeVerified,false);
 });
 
 test('graphics production wires existing CC0 duel and creature choreography for web and Roblox',()=>{
