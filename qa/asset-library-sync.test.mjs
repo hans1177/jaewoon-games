@@ -865,9 +865,28 @@ test('common Roblox UI inspector and toy material detail stays game-state bound'
  const inv=ui.slice(begin,end);
  for(const name of ['SelectedItemDetail','SelectedItemName','SelectedItemMeta','SelectedItemDescription','BoundSelectedItemId','InventoryEmptyMessage','BoundVisibleItemCount'])assert.ok(inv.includes(name),name);
  assert.ok(inv.includes('options.onSelect(current.id,current)'));
- assert.ok(inv.includes('slot.Active=row.id~=nil and row.locked~=true'));
+ assert.ok(inv.includes('RobloxCommonUI.UpdateInventorySlot(slot,row,{theme=theme,selected='));
  for(const name of ['FallbackGlyph','IconSelected','IconLocked'])assert.ok(ui.includes(name),name);
  for(const name of ['TOY_PLASTIC','TOY_STUDDED','SurfaceStudsEnabled','SurfacePaletteVariant','PreserveAuthoredTint','preservePhysics=true','atomCount = 27'])assert.ok(mats.includes(name),name);
- assert.ok(worker.includes('RobloxCommonUI.CreateInventoryFullScreen and the returned Sync(items)'));
- assert.ok(worker.includes('SurfaceStudsEnabled=true is only valid for Part.TopSurface'));
+ assert.ok(worker.includes('RobloxCommonUI.CreateInventoryFullScreen and its returned Sync(items) controller'));
+ assert.ok(worker.includes('SurfaceStudsEnabled=true is only valid on authored anchored block Part.TopSurface'));
+});
+
+
+test('Roblox inventory rarity filtering and native stud reapplication remain presentation-only',()=>{
+ const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const mats=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
+ const inventory=ui.slice(ui.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)'),ui.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)'));
+ for(const needle of ['rarityFilter="희귀도: "..rarity','currentFilter=="장착 중"and row.equipped==true',
+   'tostring(row.description or "")','string.find(searchable,query,1,true)',
+   'rarityRank[string.upper','InventorySortByRarity','detailMeta.TextColor3','UpdateInventorySlot(slot,row'])
+  assert.ok(inventory.includes(needle),'shared inventory display contract missing: '+needle);
+ assert.match(inventory,/root:SetAttribute\("OwnsInventoryAuthority",false\)/);
+ assert.match(inventory,/root:SetAttribute\("OwnsSaveAuthority",false\)/);
+ assert.doesNotMatch(inventory,/FireServer\(|UpdateAsync\(|SetAsync\(/);
+ const authored=mats.slice(mats.indexOf('function RobloxCommonMaterials.ApplyAuthoredSurface('));
+ assert.ok(authored.includes('if part.TopSurface~=Enum.SurfaceType.Studs then'));
+ assert.ok(authored.includes('PreviousTopSurfaceName",part.TopSurface.Name'));
+ assert.ok(authored.includes('and part:IsA("Part") and part.Shape==Enum.PartType.Block and part.Anchored'));
+ assert.ok(authored.includes('preservePhysics=true'));
 });
