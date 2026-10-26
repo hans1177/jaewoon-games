@@ -1134,8 +1134,9 @@ export function createDuelCombatMotionLoadout({
     throw Error('BIPED_COMBAT_RIG_REQUIRED:'+upper(bodyPlan));
   const requested=upper(weaponFamily)||'UNARMED';
   const resolvedWeapon=aliases[requested]||requested;
-  const weaponPack=WEAPON_COMBAT_MOTION_PACKS[resolvedWeapon]||WEAPON_COMBAT_MOTION_PACKS.UNARMED;
-  const styleKey=resolvedWeapon==='UNARMED'
+  const activeWeapon=WEAPON_COMBAT_MOTION_PACKS[resolvedWeapon]?resolvedWeapon:'UNARMED';
+  const weaponPack=WEAPON_COMBAT_MOTION_PACKS[activeWeapon];
+  const styleKey=activeWeapon==='UNARMED'
     ?(UNARMED_MARTIAL_ARTS_STYLES[upper(martialStyle)]?upper(martialStyle):'MMA_HYBRID')
     :null;
   const martialPack=styleKey?UNARMED_MARTIAL_ARTS_STYLES[styleKey]:null;
@@ -1171,8 +1172,8 @@ export function createDuelCombatMotionLoadout({
       });
     });
     return Object.freeze({
-      id:resolvedWeapon+'_CHAIN_'+String(slot+1).padStart(2,'0'),
-      weaponFamily:resolvedWeapon,steps:Object.freeze(steps),
+      id:activeWeapon+'_CHAIN_'+String(slot+1).padStart(2,'0'),
+      weaponFamily:activeWeapon,steps:Object.freeze(steps),
       blend:Object.freeze({crossFadeSeconds:.12,poseVelocityMatching:true,footPlantAware:true,
         gripContinuity:true,inertialRecovery:true}),
       contactMarkerUnchanged:true,comboGameplayWindowUnchanged:true,
@@ -1183,7 +1184,7 @@ export function createDuelCombatMotionLoadout({
   return Object.freeze({
     target:DUEL_COMBAT_MOTION_TARGET,
     platform:upper(platform),
-    weaponFamily:WEAPON_COMBAT_MOTION_PACKS[resolvedWeapon]?resolvedWeapon:'UNARMED',
+    weaponFamily:activeWeapon,
     martialStyle:styleKey,
     groups,
     motionIds,
@@ -1782,7 +1783,7 @@ export function createCommonMonsterActionLoadout({
         const after=kinematic.hit.map((v,axis)=>(v+(.05+variant*.01)*(axis===1?side:1))*level*(dying?1.45:1));
         const fore=monsterPoseFrames('FORELEGS',phaseTimes[2],phaseTimes[3],before,after,{holdEnd:dying});
         const hind=monsterPoseFrames('HINDLEGS',phaseTimes[2],phaseTimes[3],
-          before.map(v=>-v*.7),after.map(v=>-v*(dying?.82:.48)),{holdEnd:dying});
+          before.map(v=>-v*.7),after.map(v=>-v*(dying ? .82 : .48)),{holdEnd:dying});
         const spinePart=species.specialParts.find(part=>/SPINE|NECK|SHOULDERS|TAIL/.test(part))||kinematic.counterPart;
         const expression=monsterPoseFrames(spinePart,phaseTimes[2],phaseTimes[3],
           before.map(v=>v*.35),after.map(v=>v*(dying?1.1:.48)),{holdEnd:dying});
