@@ -221,6 +221,17 @@ local PRESETS = table.freeze({
       MINERAL_STAIN = table.freeze({material = Enum.Material.Rock, color = Color3.fromRGB(127, 111, 92), reflectance = 0.00}),
     }),
   }),
+  -- [브릭 장난감 재질] 상표/텍스처를 복제하지 않은 공용 플라스틱 표면.
+  -- 연결 돌기와 조립 구조는 별도 CC0 메시에서 처리하고 파츠를 추가하지 않는다.
+  TOY_PLASTIC = table.freeze({
+    defaultVariant = "SATIN",
+    variants = table.freeze({
+      SATIN = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(215, 103, 73), reflectance = 0.035}),
+      GLOSSY = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(232, 180, 75), reflectance = 0.085}),
+      MATTE = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(95, 159, 127), reflectance = 0.015}),
+      DARK = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(59, 71, 91), reflectance = 0.025}),
+    }),
+  }),
   STYLE_VARIANT = table.freeze({
     defaultVariant = "FANTASY",
     variants = table.freeze({
@@ -228,6 +239,7 @@ local PRESETS = table.freeze({
       INDUSTRIAL = table.freeze({material = Enum.Material.DiamondPlate, color = Color3.fromRGB(95, 101, 106), reflectance = 0.06}),
       COZY = table.freeze({material = Enum.Material.WoodPlanks, color = Color3.fromRGB(154, 112, 76), reflectance = 0.00}),
       HORROR = table.freeze({material = Enum.Material.Slate, color = Color3.fromRGB(61, 57, 62), reflectance = 0.00}),
+      TOY_BRICK = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(216, 126, 82), reflectance = 0.04}),
     }),
   })
 
@@ -358,24 +370,35 @@ end
 local ROLE_MATERIALS={Wood="WOOD",WoodPlanks="WOOD",Slate="STONE",Rock="STONE",Limestone="STONE",Cobblestone="STONE",Concrete="STONE",Marble="STONE",Brick="BRICK",Metal="METAL",CorrodedMetal="CORROSION",DiamondPlate="METAL",Fabric="FABRIC",Ground="GROUND",Grass="MOSS",LeafyGrass="MOSS",Mud="MUD",Sand="SAND",Sandstone="SAND",Snow="SNOW",Ice="ICE",Glacier="ICE",Asphalt="ASPHALT",Pavement="ASPHALT"}
 local PBR_SOURCES={Wood="Wood062",WoodPlanks="WoodFloor051",Slate="Rock035",Rock="Rock030",Limestone="Rock030",Cobblestone="Rock035",Concrete="Concrete034",Marble="Marble012",Brick="Bricks059",Metal="Metal046A",CorrodedMetal="Metal032",DiamondPlate="MetalPlates006",Fabric="Fabric026",Ground="Ground037",Grass="Grass001",LeafyGrass="Grass001",Mud="Ground054"}
 function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
- if not part:IsA("BasePart") or part.Transparency>=1 or part:GetAttribute("PreserveAuthoredMaterial")==true then return false end
- if part:IsA("MeshPart") and (part:FindFirstChildOfClass("SurfaceAppearance") or part.TextureID~="")then return false end
- if part.MaterialVariant~=""then return false end
- local materialName=part.Material.Name
- local atom=part:GetAttribute("SurfaceRole") or ROLE_MATERIALS[materialName]
- if not atom or not PRESETS[atom]then return false end
- local source=PBR_SOURCES[materialName]
- if style=="HORROR"then
-  if materialName=="WoodPlanks"then source="Wood062"elseif materialName=="Concrete"then source="Concrete046"elseif materialName=="Brick"then source="Bricks079"end
- elseif style=="COZY" and materialName=="Fabric"then source="Fabric030"end
+ -- [기존 자산 일괄 전환] 모든 Roblox 게임의 기존 월드 파츠도 TOY_BRICK으로 통일한다.
+ -- 게임 규칙, 충돌, 리그, 위치, 저장 구조는 바꾸지 않는다. 원본 CC0 파일은 수정하지 않는다.
+ if not part:IsA("BasePart") or part.Transparency>=1 then return false end
+ if part:GetAttribute("MaterialStyle")=="TOY_BRICK" then return false end
+
  local name=string.lower(part.Name)
- if atom=="FABRIC" and (name:find("boot",1,true) or name:find("pouch",1,true) or name:find("belt",1,true))then atom="LEATHER_LIKE";source=style=="HORROR"and"Leather026"or"Leather008"end
- local transparency=part.Transparency
- RobloxCommonMaterials.Apply(part,atom,{tint=part.Color,tintStrength=1,preservePhysics=true,preserveBaseMaterial=true,
-   materialVariant=source and("Vibe_"..materialName.."_"..source)or nil})
- part.Transparency=transparency
- part:SetAttribute("MaterialSourceId",source)
- part:SetAttribute("MaterialStyle",style)
+ local oldMaterial=part.Material.Name
+ local mesh=part:IsA("MeshPart")
+ local importedTexture=mesh and (part.TextureID~="" or part:FindFirstChildOfClass("SurfaceAppearance")~=nil)
+ local variant=(name:find("metal",1,true) or name:find("iron",1,true) or name:find("stone",1,true)
+   or oldMaterial=="Metal" or oldMaterial=="Rock" or oldMaterial=="Slate") and "DARK"
+   or (name:find("grass",1,true) or name:find("leaf",1,true) or name:find("crop",1,true)
+   or oldMaterial=="Grass") and "MATTE" or "SATIN"
+ local color=part.Color
+ -- 기존 MaterialVariant가 장난감 표면을 가리지 않도록 기존 책임 함수에서 직접 정리한다.
+ if part.MaterialVariant~="" then part.MaterialVariant="" end
+ RobloxCommonMaterials.Apply(part,"TOY_PLASTIC",{
+   variant=variant,tint=color,tintStrength=0.80,preservePhysics=true
+ })
+ part:SetAttribute("MaterialStyle","TOY_BRICK")
+ part:SetAttribute("MaterialSourceId","NATIVE_TOY_PLASTIC")
+ part:SetAttribute("ToyBrickExistingAssetConversion",true)
+ part:SetAttribute("ToyBrickGeometryState",
+   part:IsA("Part") and (part.Shape==Enum.PartType.Ball or part.Shape==Enum.PartType.Cylinder)
+     and "ROUND_PRIMITIVE_CC0_REPLACEMENT_REQUIRED"
+     or mesh and "EXISTING_MESH_PRESERVED" or "EXISTING_PART_CC0_REVIEW_REQUIRED")
+ part:SetAttribute("ToyBrickSurfaceReview",
+   importedTexture and "IMPORTED_ATLAS_REQUIRES_VISUAL_DERIVATIVE_QA"
+     or "NATIVE_PLASTIC_APPLIED_RUNTIME_QA_PENDING")
  return true
 end
 
@@ -385,11 +408,12 @@ function RobloxCommonMaterials.Audit()
     packId = "roblox-common-materials-v1",
     atoms = table.freeze({
       "WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL", "BRICK", "ICE", "ASPHALT",
-      "SKIN", "BONE", "WATER", "MUD", "SAND", "SNOW", "MOSS", "EMISSIVE", "CORROSION", "DIRT", "WET_DRY", "DAMAGE", "WEATHERING", "STYLE_VARIANT"
+      "SKIN", "BONE", "WATER", "MUD", "SAND", "SNOW", "MOSS", "EMISSIVE", "CORROSION", "DIRT", "WET_DRY", "DAMAGE", "WEATHERING", "TOY_PLASTIC", "STYLE_VARIANT"
     }),
-    atomCount = 25,
+    atomCount = 26,
     companyCommonBase = true,
-    compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+    compatibleGameScope = "ALL_EXISTING_ROBLOX_GAMES",
+    mandatoryForExistingRenderedParts = true,
     gameplayAuthority = false,
     physicalPropertiesPreservedByDefault = true,
     collisionMutationAllowed = false,
