@@ -113,9 +113,13 @@ export function classifyDevelopmentImpact({platform='COMMON',responsibleFiles=[]
   if(categories.includes('GRAPHICS'))requiredQa.push('VISUAL_BINDING_QA');
   if(target==='ROBLOX'&&categories.includes('MAP'))requiredQa.push('ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE');
 
+  // [기존 책임 영역] 로컬 Studio 수동 검수 대신 원격 F0~F9의 정확한
+  // 소스·아티팩트·관찰 증거를 요구한다. 관찰이 불가능하면 PASS가 아니라 UNVERIFIED다.
   const conditionalQa=[];
-  if(categories.some(name=>['GRAPHICS','UI'].includes(name)))conditionalQa.push('STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE');
-  if(categories.includes('MULTIPLAYER_SERVER'))conditionalQa.push('STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED');
+  if(categories.some(name=>['GRAPHICS','UI'].includes(name)))
+    conditionalQa.push('EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED');
+  if(categories.includes('MULTIPLAYER_SERVER'))
+    conditionalQa.push('EXACT_SOURCE_SERVER_AUTHORITY_F7_QA_NO_FAKE_MULTI_CLIENT_PASS');
 
   return Object.freeze({
     version:1,
