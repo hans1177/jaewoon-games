@@ -5646,3 +5646,23 @@ test('Roblox native CC0 selector uses only an exact registered GLB blob and stil
    'a mismatching Git LFS original must not be auto-hydrated');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('Roblox CC0 actor on-demand hydration shares the original worker without touching Web or relaxing import QA',()=>{
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ const code=fs.readFileSync(path.join(root,'tools/vibe2-source-worker.mjs'),'utf8');
+ const start=code.indexOf("const directActorSource=e=>target==='roblox'");
+ const end=code.indexOf('const singleMotionPreflight=',start);
+ assert.ok(start>=0&&end>start);
+ const worker=code.slice(start,end);
+ assert.match(worker,/directActorSource\(row\?\.externalAcquisition\)/);
+ assert.match(worker,/!clean\(e\?\.localSourcePath\)\.split\('\/'\)\.includes\('\.\.'\)/);
+ assert.match(worker,/git'.*'rev-parse'.*'HEAD:'\+rel/);
+ assert.match(worker,/ROBLOX_ACTOR_SOURCE_GIT_BLOB_MISMATCH/);
+ assert.match(worker,/git'.*'restore'.*'--source=HEAD'/);
+ assert.match(worker,/git'.*'lfs'.*'pull'/);
+ assert.match(worker,/!directActorSource\(entry\)\)\{/);
+ assert.match(worker,/acquisitionState:directActorSource\(e\)/);
+ assert.match(worker,/NATIVE_IMPORT_AND_STYLE_ADAPT_REQUIRED/);
+ assert.doesNotMatch(worker,/robloxRuntimePassed\s*:\s*true|productionVerified\s*:\s*true/);
+});
