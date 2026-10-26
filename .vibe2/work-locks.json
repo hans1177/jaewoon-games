@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-u8ln9l",
+      "worker": "vibe2",
+      "taskId": "tekken-existing-web-assessment-v1",
+      "gameId": "tekken",
+      "files": [
+        "web-games/tekken/index.html"
+      ],
+      "baseSha": "9aa0a63e22a4fa5f3f09dce3c0abc8aa180ab1e8",
+      "runId": "40266836592",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-26T04:48:36.651Z",
+      "expiresAt": "2026-10-26T05:33:36.651Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:tekken-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
