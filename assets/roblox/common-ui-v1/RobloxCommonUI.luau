@@ -274,6 +274,23 @@ function RobloxCommonUI.CreateHealthBar(options)
 end
 
 
+local function iconFirstGlyph(value)
+  local label = tostring(value or "")
+  if label == "" then return "■" end
+  local ok, offset = pcall(utf8.offset, label, 2)
+  if not ok then return "■" end
+  return string.sub(label, 1, offset and offset - 1 or #label)
+end
+
+local ITEM_RARITY_COLOR = table.freeze({
+  COMMON = Color3.fromRGB(128, 143, 156),
+  UNCOMMON = Color3.fromRGB(85, 192, 126),
+  RARE = Color3.fromRGB(81, 154, 249),
+  EPIC = Color3.fromRGB(174, 115, 247),
+  LEGENDARY = Color3.fromRGB(249, 185, 76),
+  MYTHIC = Color3.fromRGB(247, 98, 136),
+})
+
 function RobloxCommonUI.CreateInventorySlot(options)
   options = options or {}
   local theme = cloneTheme(options.theme)
@@ -301,6 +318,43 @@ function RobloxCommonUI.CreateInventorySlot(options)
   icon.ScaleType = Enum.ScaleType.Fit
   icon.Visible = icon.Image ~= ""
   icon.Parent = button
+
+  local fallback = Instance.new("TextLabel")
+  fallback.Name = "IconFallback"
+  fallback.Size = UDim2.new(1, -16, 1, -18)
+  fallback.Position = UDim2.fromOffset(8, 8)
+  fallback.BackgroundTransparency = 1
+  fallback.Text = iconFirstGlyph(options.fallbackText or options.itemName or options.label)
+  fallback.TextColor3 = theme.Text
+  fallback.TextScaled = true
+  fallback.Font = Enum.Font.GothamBold
+  fallback.Visible = icon.Image == ""
+  fallback.Parent = button
+  local fallbackBound = Instance.new("UITextSizeConstraint")
+  fallbackBound.MinTextSize = 12
+  fallbackBound.MaxTextSize = 28
+  fallbackBound.Parent = fallback
+  local rarityStripe = Instance.new("Frame")
+  rarityStripe.Name = "RarityStripe"
+  rarityStripe.Size = UDim2.new(1, -20, 0, 4)
+  rarityStripe.Position = UDim2.fromOffset(10, 3)
+  rarityStripe.BackgroundColor3 = theme.Border
+  rarityStripe.BorderSizePixel = 0
+  rarityStripe.Visible = false
+  rarityStripe.Parent = button
+  corner(rarityStripe, 2)
+  local stateBadge = Instance.new("TextLabel")
+  stateBadge.Name = "ItemStateBadge"
+  stateBadge.AnchorPoint = Vector2.new(1, 0)
+  stateBadge.Position = UDim2.new(1, -3, 0, 8)
+  stateBadge.Size = UDim2.fromOffset(37, 16)
+  stateBadge.BackgroundColor3 = theme.Positive
+  stateBadge.TextColor3 = theme.PanelInset
+  stateBadge.TextSize = 10
+  stateBadge.Font = Enum.Font.GothamBold
+  stateBadge.Visible = false
+  stateBadge.Parent = button
+  corner(stateBadge, 4)
 
   -- Image-less items still have a native, readable pictogram: never invent asset IDs.
   local glyph = Instance.new("TextLabel")
@@ -393,7 +447,51 @@ function RobloxCommonUI.CreateInventorySlot(options)
   button:SetAttribute("PresentationRole", "INVENTORY_SLOT")
   button:SetAttribute("OwnsInventoryAuthority", false)
   button:SetAttribute("OwnsEquipAuthority", false)
+button:SetAttribute("NoInventedIconAsset", true)
+  button:SetAttribute("PresentationOnlyRarity", true)
   return button, icon, quantity, selected
+end
+
+-- A game-owned item record is the only source of actual ownership/equip/rarity.
+function RobloxCommonUI.UpdateInventorySlot(slot, item, options)
+  assert(slot and slot:IsA("GuiButton"), "COMMON_INVENTORY_SLOT_REQUIRED")
+  options = options or {}
+  item = type(item) == "table" and item or {}
+  local theme = cloneTheme(options.theme)
+  local image = tostring(item.image or item.icon or "")
+  local icon = slot:FindFirstChild("Icon")
+  local fallback = slot:FindFirstChild("IconFallback")
+  local quantity = slot:FindFirstChild("Quantity")
+  local selectedRing = slot:FindFirstChild("SelectedRing")
+  local stripe = slot:FindFirstChild("RarityStripe")
+  local badge = slot:FindFirstChild("ItemStateBadge")
+  if icon then icon.Image = image; icon.Visible = image ~= "" end
+  if fallback then
+    fallback.Text = iconFirstGlyph(item.name or item.title or item.id)
+    fallback.Visible = image == ""
+  end
+  if quantity then
+    local count = item.quantity or item.count
+    quantity.Text = count == nil and "" or tostring(count)
+  end
+  local rarity = string.upper(tostring(item.rarity or ""))
+  if stripe then
+    stripe.Visible = ITEM_RARITY_COLOR[rarity] ~= nil
+    stripe.BackgroundColor3 = ITEM_RARITY_COLOR[rarity] or theme.Border
+  end
+  if badge then
+    badge.Visible = item.equipped == true or item.locked == true
+    badge.Text = item.locked == true and "잠김" or "장착"
+    badge.BackgroundColor3 = item.locked == true and theme.Warning or theme.Positive
+  end
+  if selectedRing then selectedRing.Visible = options.selected == true or item.selected == true end
+  slot.Active = item.id ~= nil and item.locked ~= true
+  slot:SetAttribute("BoundItemId", tostring(item.id or ""))
+  slot:SetAttribute("BoundFromGameState", true)
+  slot:SetAttribute("EquippedVisual", item.equipped == true)
+  slot:SetAttribute("LockedVisual", item.locked == true)
+  slot:SetAttribute("RarityVisual", rarity)
+  return slot
 end
 
 function RobloxCommonUI.CreateTooltip(options)
@@ -785,6 +883,22 @@ function RobloxCommonUI.CreateIconButton(options)
   corner(button, tonumber(options.cornerRadius) or 12)
   local outline = stroke(button, options.selected == true and theme.Accent or theme.Border, options.selected == true and 2.4 or 1.2, 0.10)
   sizeConstraint(button, 48, 48)
+
+  local glyph = Instance.new("TextLabel")
+  glyph.Name = "IconGlyphFallback"
+  glyph.Size = UDim2.new(1, -12, 1, -12)
+  glyph.Position = UDim2.fromOffset(6, 6)
+  glyph.BackgroundTransparency = 1
+  glyph.TextColor3 = theme.Text
+  glyph.Font = Enum.Font.GothamBold
+  glyph.TextScaled = true
+  glyph.Text = iconFirstGlyph(options.glyph or options.label or options.name)
+  glyph.Visible = button.Image == ""
+  glyph.Parent = button
+  local glyphBound = Instance.new("UITextSizeConstraint")
+  glyphBound.MinTextSize = 12
+  glyphBound.MaxTextSize = 27
+  glyphBound.Parent = glyph
   local glyph = Instance.new("TextLabel")
   glyph.Name = "IconFallback"
   glyph.BackgroundTransparency = 1
@@ -810,6 +924,7 @@ function RobloxCommonUI.CreateIconButton(options)
 
   button.MouseButton1Down:Connect(function() outline.Transparency = 0 end)
   button.MouseButton1Up:Connect(function() outline.Transparency = 0.10 end)
+  button:SetAttribute("NoInventedIconAsset", true)
   button:SetAttribute("PresentationRole", "ICON_ACTION")
   button:SetAttribute("OwnsGameplayAction", false)
   button:SetAttribute("OwnsRemoteAuthority", false)
