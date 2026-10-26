@@ -1283,7 +1283,7 @@ function assetSupplyCandidateAllowed(asset={},target=''){
   if(internalAssetHardBlockReason(asset))return false;
   return internalAssetPlatformApplicationMode(asset,target)!=='NOT_SUPPORTED';
 }
-export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null,sharedOriginalArchives=[],repoRoot=process.cwd()}={}){
+export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null,sharedOriginalArchives=[],actorOriginalSources=[],repoRoot=process.cwd()}={}){
   const id=clean(gameId);
   const assets=Array.isArray(registry?.assets)?registry.assets:[];
   const requiredFamilies=requiredAssetFamilies({request,requirements});
@@ -1312,14 +1312,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     // 음악·효과음·UI·이미지·VFX도 3D와 동일한 검증 원본 취득 대상이다.
     // ZIP/BLEND 원본 확보는 게임 적용이나 네이티브 QA PASS를 뜻하지 않는다.
     const seenSourceHashes=new Set();
-    for(const row of Array.isArray(sharedOriginalArchives)?sharedOriginalArchives:[]){
+    for(const row of [...(Array.isArray(sharedOriginalArchives)?sharedOriginalArchives:[]),...(Array.isArray(actorOriginalSources)?actorOriginalSources:[])]){
       const relative=clean(row?.sourcePath).replaceAll('\\','/');
       const declaredHash=clean(row?.sha256).toLowerCase();
       const declaredBytes=Number(row?.bytes);
       const license=clean(row?.licenseDeclared).toUpperCase();
       if(row?.sourceOnly!==true||row?.gameApplied!==false||license!=='CC0-1.0')continue;
-      if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(relative)||relative.includes('..'))continue;
-      if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
+      const directActor=row?.sourceType==='ROBLOX_ACTOR_3D'
+        &&/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.(?:fbx|glb)$/i.test(relative)
+        &&/^[a-f0-9]{40}$/i.test(clean(row.repositoryGitBlobSha));
+      const archive=/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(relative);
+      if((!directActor&&!archive)||relative.split('/').includes('..'))continue;
+      if(!/^[0-9a-f]{64}$/.test(declaredHash)||(archive&&(!Number.isSafeInteger(declaredBytes)||declaredBytes<512))||seenSourceHashes.has(declaredHash))continue;
       if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
       const localFile=path.resolve(repoRoot,relative);
       const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
@@ -1341,9 +1345,19 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         role==='png'||role.includes('ui')||role.includes('icon')?'UI':
         role==='audio'||role==='sfx'?'AUDIO':'PROP');
       if(sourceFamily!==family)continue;
-      const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/,''),role].join(' ').replace(/[-_]+/g,' ');
+      const terms=[clean(row.displayName).replace(/([a-z])([A-Z])/g,'$1 $2'),name.replace(/\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/,''),role,...(Array.isArray(row.roles)?row.roles:[])]
+        .join(' ').toLowerCase().replace(/[-_]+/g,' ');
       const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
-      if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
+      // When no identical actor is available, a same-family mesh is only a visual
+      // proxy candidate: never infer its species, rig, behavior or game binding.
+      const visualProxy=directActor&&roles.length>0&&!roles.every(value=>value==='generic')
+        &&matchedRoles.length===0&&['CHARACTER','CREATURE'].includes(family);
+      // A partially matching compound role (e.g. arctic_wolf -> wolf)
+      // outranks unrelated same-family visual proxies.
+      const sourceTokens=new Set(terms.split(/\s+/).filter(Boolean));
+      const sharedRoleTokens=directActor?new Set(roles.flatMap(value=>value.split('_'))
+        .filter(value=>value.length>=3&&sourceTokens.has(value))):new Set();
+      if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length&&!visualProxy)continue;
       // All families can hydrate exact, manifest-pinned CC0 source bytes.
       // Damaged binaries still fail closed; only absent bytes or an exact
       // original LFS pointer may be recovered on demand.
@@ -1351,7 +1365,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       try{
         const info=fs.statSync(localFile);
         if(!info.isFile()){corrupt=true;}
-        else if(info.size===declaredBytes){
+        else if(directActor?info.size>256:info.size===declaredBytes){
           localReady=sharedArchiveSha256(localFile,info)===declaredHash;
           corrupt=!localReady;
         }else if(info.size<=256){
@@ -1370,14 +1384,21 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
       seenSourceHashes.add(declaredHash);
       candidates.push(freeze({
-        sourceId:'shared-original-'+declaredHash.slice(0,16),sourceName:clean(row.file),family,
+        sourceId:(directActor?'actor-original-':'shared-original-')+declaredHash.slice(0,16),
+        sourceName:directActor?clean(row.displayName):clean(row.file),family,
         license,sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
         licenseSnapshotDate:null,downloadUrl:null,sourcePath:relative,sourceHash:declaredHash,
-        archiveBytes:declaredBytes,downloaded:localReady,
-        acquisitionState:localReady?'ACQUIRED_ORIGINAL_FILES':'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED',
-        matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
+        archiveBytes:directActor?null:declaredBytes,downloaded:localReady,
+        acquisitionState:directActor?(localReady?'NATIVE_IMPORT_AND_STYLE_ADAPT_REQUIRED':'SOURCE_BYTES_REQUIRED')
+          :(localReady?'ACQUIRED_ORIGINAL_FILES':'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED'),
+        sourceType:directActor?'ROBLOX_ACTOR_3D':'SHARED_ORIGINAL_ARCHIVE',
+        sourceModelId:directActor?clean(row.sourceModelId):null,
+        sourceFormat:directActor?clean(row.sourceFormat):null,
+        repositoryGitBlobSha:directActor?clean(row.repositoryGitBlobSha):null,
+        matchedRoles:freezeList(matchedRoles),visualProxy,roleCompatibilityRequiresSourceInspection:true,
         categoryMatchVerified:true,runtimeVerified:false,rawRedistributionAllowed:false,
-        sourceHashMustBeReverified:true,roleScore:100+matchedRoles.length*10+nameFit,
+        sourceHashMustBeReverified:true,
+        roleScore:visualProxy?(10+sharedRoleTokens.size*25+nameFit):(directActor?200:100)+matchedRoles.length*10+nameFit,
         spatial3dSourceRequired:spatialFamilies.has(family)
       }));
     }
@@ -1624,10 +1645,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     // 같은 family의 다른 몬스터/장비를 정확한 역할의 확보 원본인 것처럼 선택하지 않는다.
     // 가족 단위 최초 수급은 기존 source inspection 정책을 유지한다.
     const missingRole=reason==='CURRENT_GAME_MISSING_ROLE_CC0_SOURCE'?clean(roles[0]):'';
-    const externalCandidates=externalSourceCandidatesFor(family,roles).filter(row=>
-      !missingRole||row.matchedRoles.includes(missingRole));
+    const candidates=externalSourceCandidatesFor(family,roles);
+    const exactCandidates=missingRole?candidates.filter(row=>row.matchedRoles.includes(missingRole)):[];
+    // Similar CC0 shape is an automatic source-selection fallback, not a native
+    // swap or a verified replacement of game rules/species/animation.
+    const externalCandidates=missingRole?(exactCandidates.length?exactCandidates:candidates.filter(row=>row.visualProxy===true)):candidates;
     if(!externalCandidates.length)return false;
-    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
+    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length&&externalCandidates[0].visualProxy!==true)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
@@ -1638,17 +1662,25 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           gameSourceComparisonRequired:true,
           downloadedOriginalPreferred:true,
           automaticReplacementAuthorized:false,
+          automaticSourceSelectionAuthorized:true,
+          similarCC0VisualProxy:selected.visualProxy===true,
+          substituteGameIdentityOrGameplayForbidden:true,
           replacementRequiresMeasuredSourceRoleIdentityQualityAndRuntimePass:true,
           roleEvidence:freeze({requestedRoles:freezeList(roles),matchedRoles:selected.matchedRoles,
-            verifiedRoleMatch:false,requiresActualSourceInspection:true}),
+            verifiedRoleMatch:false,visualProxy:selected.visualProxy===true,
+            requiresActualSourceInspection:true}),
           externalAcquisition:freeze({
             sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
+            sourceType:selected.sourceType||null,sourceModelId:selected.sourceModelId||null,
+            sourceFormat:selected.sourceFormat||null,visualProxy:selected.visualProxy===true,
+            repositoryGitBlobSha:selected.repositoryGitBlobSha||null,
             downloadUrl:selected.downloadUrl,localSourcePath:selected.sourcePath||null,
             sourceHash:selected.sourceHash||null,archiveBytes:selected.archiveBytes||null,
             downloaded:selected.downloaded===true,
             license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
             licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
             candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,
+          directSourceAutoUseAfterNativeQaOnly:true,visualProxyRequiresGameSpecificDerivation:true,
             sourceHashRequired:true,rightsRevalidationRequired:true,downloadFileIntegrityRequired:true,
             archiveScriptExecutionForbidden:true,sourceFileMustBeReal3d:spatialFamilies.has(family),
             staticMeshQaRequired:spatialFamilies.has(family),nativePlatformConversionRequired:true
@@ -1837,6 +1869,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
     selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
+    similarCc0VisualProxyCandidateCount:actions.filter(row=>row.similarCC0VisualProxy===true).length,
+    directActorOriginalCandidateCount:actions.filter(row=>row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D').length,
     externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
@@ -4774,6 +4808,29 @@ export function buildVibeAssetProductionPlan({
       });
     }
   }
+  // Auto-discover every registered 3D actor original during the existing F0-F9
+  // asset planning pass. Keep source-only candidates separate from runtime assets.
+  const actorOriginalSources=[];
+  const actorIndex=readJson(path.join(repoRoot,'assets/roblox/actors/manifest.json'),null)?.sourceLibraryIndex;
+  for(const row of Array.isArray(actorIndex?.source3dAssets)?actorIndex.source3dAssets:[]){
+    const sourcePath=clean(row?.sourcePath).replaceAll('\\','/');
+    const sha256=clean(row?.sourceSha256).toLowerCase();
+    if(!/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.(?:fbx|glb)$/i.test(sourcePath)
+      ||sourcePath.split('/').includes('..')||!/^[0-9a-f]{64}$/.test(sha256)
+      ||!/^[0-9a-f]{40}$/i.test(clean(row?.repositoryGitBlobSha)))continue;
+    if(!['CHARACTER','CREATURE','PROP'].includes(clean(row?.category).toUpperCase())
+      ||clean(row?.license)!=='CC0-1.0'||row?.gameApplied!==false||row?.gameRuntimeVerified!==false
+      ||!/^https:\/\//.test(clean(row?.licenseEvidenceUrl)))continue;
+    actorOriginalSources.push(freeze({
+      file:path.basename(sourcePath),sourcePath,sha256,
+      sourceUrl:clean(row.licenseEvidenceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
+      licenseDeclared:'CC0-1.0',sourceOnly:true,gameApplied:false,
+      family:clean(row.category).toUpperCase(),roles:freezeList(row.roles),
+      displayName:clean(row.displayName),sourceModelId:clean(row.id),
+      sourceFormat:clean(row.sourceFormat),repositoryGitBlobSha:clean(row.repositoryGitBlobSha),
+      sourceType:'ROBLOX_ACTOR_3D'
+    }));
+  }
   const currentGameId=clean(task.gameId);
   const persistedCompanyRegistry=readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({
@@ -5232,6 +5289,7 @@ export function buildVibeAssetProductionPlan({
     requirements:flowAssetRequirements,
     registry:librarySync.sourceConsumerRegistry||companyRegistry,
     sharedOriginalArchives,
+    actorOriginalSources,
     repoRoot,
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
@@ -6679,6 +6737,12 @@ export function assetProductionGuidance(plan={}){
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
     plan.libraryCc0Replacement?.enabled===true?'[ALL PLATFORM LIBRARY CC0 REPLACEMENT] '+JSON.stringify(plan.libraryCc0Replacement)+'. 모든 플랫폼·게임의 모델·크리처·모션·장비·건물·환경·재질·VFX·UI·오디오는 등록 라이브러리의 검증된 CC0 원본과 계보가 연결된 게임별 파생으로 교체한다. 기존 실제 사용 바인딩부터 조사하고 실루엣·역할·리그·접점·스타일·성능에 맞는 원본을 선택한다. 공용 원본은 보존하고 엔진별 네이티브 파생을 기존 책임 함수에 직접 연결한다. 상업 이용 가능·회사 소유·플랫폼 기본 제공·CC0 이름표만으로 출처 검증을 대신하지 않는다. 부족한 자산은 기존 공급 요구로 연결하고 자체 제작 fallback으로 채우지 않는다. 실행 증거가 없는 교체는 GAP로 유지하고 같은 빌드의 모바일·전후 화면·모션·저장·판정 회귀를 통과한 뒤 기존 소비처 없는 구형 자산만 제거한다. 기존 플랫폼 보류·권한·F0~F9는 유지하며 보류 플랫폼 교체는 미완료로 추적한다. 엔진·소프트웨어 코드의 원래 라이선스를 CC0로 재표기하지 않는다.':'',
+    (plan.assetSupplySummary?.directActorOriginalCandidateCount||0)>0
+      ?'[CC0 ACTOR F0-F9 AUTOMATIC VISUAL SOURCING] '+JSON.stringify({
+        candidates:plan.assetSupplySummary.nextActions.filter(row=>row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D'),
+        approximateVisualCandidates:plan.assetSupplySummary.similarCc0VisualProxyCandidateCount,
+        automaticSourceSelection:true,gameSourceReplacementVerified:false
+      })+'. 기존 게임의 현재 보이는 캐릭터·NPC·몬스터·동물 외형은 비슷한 동급 CC0 원본을 우선 골라 기존 소스 작업자로 리그·모션·충돌·재질·스케일을 게임별 파생으로 맞춰 교체한다. 이름/종이 다르면 외형 후보일 뿐 게임 객체 정체성·능력치·행동을 바꾸지 않는다. FBX/GLB 원본 해시·라이선스·원본-파생 계보를 확인하고 로블록스 업로드·Universe 권한·실제 게임 바인딩·모바일 런타임 QA가 통과한 경우에만 교체 완료로 기록한다. 소스 후보 계획만으로 교체/배포 PASS를 기록하지 않는다.':'',
     plan.webActionMotionReplacement?.enabled===true?'[WEB CC0 ACTION MOTION OWNER DIRECTIVE] '+JSON.stringify(plan.webActionMotionReplacement)+'. 현재 개발 중 웹 게임의 기존 액션 모션은 출처·CC0 라이선스·SHA256이 검증된 모션 라이브러리 클립으로 교체한다. 현재 책임 파일과 승인된 행동 범위 안에서 기존 리그·정체성·게임 판정 시점을 보존하며 실제 클립과 상태를 연결한다. 호환 불가 종·리그는 정확한 GAP로 남기고 인간 모션을 강제 적용하지 않는다. 클립 LoopOnce/LoopRepeat, 연속 공격 재시작, 전환·피격·사망·모바일 입력을 같은 빌드에서 확인한다. 자체 제작 대체 모션이나 소스 마커만으로 교체 완료를 주장하지 않는다. 현재 책임 범위를 넘는 교체는 기존 BUILD_UP 다음 작업으로 연결한다.':'',
     '[PRACTICE ONLY / DELETE AFTER EXERCISE] 바이브 자체 제작물은 연습만 허용한다. 게임 사용·라이브러리 승격·재사용 금지. 연습 종료 후 기존 책임 작업에서 연습 파일·미리보기·원장 등록을 영구 삭제하고 삭제 경로 증거만 남긴다. 기존 게임 소비처가 있는 공유 파일은 안전한 CC0 교체 검증 전 삭제하지 않는다.',
     '[CC0 ORIGINAL / ACTIVE GAME ONLY] 게임 에셋은 출처·라이선스·원본 해시가 확인된 CC0 원본을 이 게임에 맞게 수정해서 사용한다. 자체 제작 저품질 에셋은 단순 제외하지 말고 CC0 파생으로 실제 교체·실행 검증한 뒤 영구 삭제한다. 현재 승인된 개발 게임과 책임 파일만 처리하고 개발하지 않는 게임·보류 게임은 교체하지 않는다. 모든 라이브러리와 공유 파일의 바이브 자체 제작물은 품질과 관계없이 영구 제거 대상이다. 소비처를 확인해 실제 사용 연결을 검증된 CC0 파생 자산으로 교체한 뒤 원본 파일과 원장 등록을 삭제한다. 외부 CC0 원본과 게임 실행 로직은 보존한다. CC0 원본·수정 이력·삭제 경로·게임 연결 변경과 실제 런타임 증거 없이 완료를 주장하지 않는다. 자체 제작 fallback·옛 에셋 재생성·새 우회 파이프라인 금지. 게임 판정·저장·밸런스·기존 F0~F9 순서를 보존한다.',
