@@ -50,14 +50,15 @@ local function save(a)
  if not a.Loaded or not store then return false end
  local data={Version=1,Gold=math.floor(a.Gold),Stage=a.Stage,Unlocked=a.Unlocked,Buildings={}}
  for i,b in pairs(a.Buildings) do data.Buildings[tostring(i)]={Kind=b.Kind,Level=b.Level} end
- local ok=pcall(function()
-  store:UpdateAsync("p:"..a.Player.UserId,function(previous)
+ local ok,result=pcall(function()
+  return store:UpdateAsync("p:"..a.Player.UserId,function(previous)
    if type(previous)=="table" and (tonumber(previous.Version) or 1)>1 then return nil end
    return data
   end)
  end)
- a.Player:SetAttribute("SaveStatus",ok and "SAVED" or "SAVE_FAILED")
- return ok
+ local saved=ok and result~=nil
+ a.Player:SetAttribute("SaveStatus",saved and "SAVED" or "SAVE_FAILED")
+ return saved
 end
 local function createGate(a,enemy)
  local z=enemy and 45 or -40
@@ -205,8 +206,8 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
  end
 end)
 local function kill(a,u,ally)
- if u.HP<=0 then return end
- u.HP=0;u.Model:Destroy()
+ if u.Dead then return end
+ u.Dead=true;u.HP=0;u.Model:Destroy()
  if u.Team=="ENEMY" and ally then a.Gold+=9+math.floor(a.Stage*.8) end
 end
 local function finish(a,win)
@@ -233,11 +234,16 @@ local function tickArena(a,dt,now)
   local kinds={"ant","sparrow","beetle","wolf","turtle"}
   spawn(a,kinds[1+(math.floor(a.Serial/3)+a.Stage-1)%#kinds],"ENEMY",math.min(10,1+math.floor((a.Stage-1)/2)))
  end
+ local byTeam={ALLY={},ENEMY={}}
+ for _,u in ipairs(a.Units) do
+  if u.HP>0 and byTeam[u.Team] then table.insert(byTeam[u.Team],u) end
+ end
  for _,u in ipairs(a.Units) do
   if u.HP>0 then
    local target,best=nil,math.huge
-   for _,v in ipairs(a.Units) do
-    if v.HP>0 and v.Team~=u.Team then
+   local opponents=byTeam[u.Team=="ALLY" and "ENEMY" or "ALLY"]
+   for _,v in ipairs(opponents) do
+    if v.HP>0 then
      local d=(u.X-v.X)^2+(u.Z-v.Z)^2
      if d<best then target=v;best=d end
     end
@@ -246,13 +252,13 @@ local function tickArena(a,dt,now)
    if target and distance<u.Range+2 then
     if now-u.Last>=.85 then
      u.Last=now;target.HP-=u.Damage
-     if target.HP<=0 then target.HP=1;kill(a,target,u.Team=="ALLY") end
+     if target.HP<=0 then kill(a,target,u.Team=="ALLY") end
     end
    else
     local direction=u.Team=="ALLY" and 1 or -1
     u.Z+=direction*u.Speed*dt
     if target and distance<13 then u.X+=math.clamp(target.X-u.X,-u.Speed*dt*.3,u.Speed*dt*.3) end
-    u.Model:PivotTo(CFrame.new(a.X+u.X,2.5,u.Z)*CFrame.Angles(0,direction==1 and 0 or math.pi,0))
+    u.Model:PivotTo(CFrame.new(a.X+u.X,2.5+math.sin(now*5+u.X)*.08,u.Z)*CFrame.Angles(0,direction==1 and 0 or math.pi,0))
     if direction==1 and u.Z>40 then a.EnemyHP-=u.Damage;kill(a,u,false)
     elseif direction==-1 and u.Z< -35 then a.HomeHP-=u.Damage;kill(a,u,false) end
    end
