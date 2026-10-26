@@ -1308,6 +1308,17 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   };
   const externalSourceCandidatesFor=(family,roles=[])=>{
     const candidates=[];
+    // [로블록스 원본 등록] 원본 파일과 Git blob이 정확히 일치하는 Cloud 자산만 재사용한다.
+    // 등록된 자산 번호는 다른 Universe의 사용 권한이나 게임 적용 성공을 뜻하지 않는다.
+    const registeredRobloxModels=new Map(
+      (platform==='ROBLOX'?readJson(path.join(repoRoot,'assets/roblox/common-registered-external-assets-v1.json'),{})?.registeredAssets||[]:[])
+        .filter(row=>row.family==='actor'&&clean(row.license)==='CC0-1.0'
+          &&clean(row.sourceVerification)==='git-blob-sha'
+          &&/^[1-9][0-9]*$/.test(String(row.assetId))
+          &&/^[0-9a-f]{40}$/i.test(clean(row.gitBlobSha))
+          &&clean(row.originalPath).startsWith('assets/roblox/actors/sources/'))
+        .map(row=>[clean(row.originalPath)+'|'+clean(row.gitBlobSha).toLowerCase(),String(row.assetId)])
+    );
     // [공용 원본 직접 연결] 게임에서 요구한 모든 에셋 family를 공급한다.
     // 음악·효과음·UI·이미지·VFX도 3D와 동일한 검증 원본 취득 대상이다.
     // ZIP/BLEND 원본 확보는 게임 적용이나 네이티브 QA PASS를 뜻하지 않는다.
@@ -1327,6 +1338,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
       const localFile=path.resolve(repoRoot,relative);
       const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
+      const registeredRobloxAssetId=directActor
+        ?registeredRobloxModels.get(relative+'|'+clean(row.repositoryGitBlobSha).toLowerCase())||null:null;
       const sourceFamily=clean(row.family).toUpperCase()||(
         /^(?:music|bgm|audio|sound|sfx)$/.test(role)||/^(?:music|bgm|sound|audio)$/.test(role.split('-')[0])||/sfx|sound|audio|music|bgm|soundtrack|ambience|\.(?:mp3|ogg|wav|flac|aac|m4a)$/.test(name)?'AUDIO':
         /^(?:vfx|particle|particles|effect|effects)$/.test(role)||/particle|visual-effect|vfx/.test(name)?'VFX':
@@ -1394,6 +1407,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         sourceType:directActor?'ROBLOX_ACTOR_3D':'SHARED_ORIGINAL_ARCHIVE',
         sourceModelId:directActor?clean(row.sourceModelId):null,
         sourceFormat:directActor?clean(row.sourceFormat):null,
+        registeredRobloxAssetId,universeUseGrantRequired:Boolean(registeredRobloxAssetId),
         repositoryGitBlobSha:directActor?clean(row.repositoryGitBlobSha):null,
         matchedRoles:freezeList(matchedRoles),visualProxy,roleCompatibilityRequiresSourceInspection:true,
         categoryMatchVerified:true,runtimeVerified:false,rawRedistributionAllowed:false,
@@ -1674,6 +1688,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
             sourceType:selected.sourceType||null,sourceModelId:selected.sourceModelId||null,
             sourceFormat:selected.sourceFormat||null,visualProxy:selected.visualProxy===true,
             repositoryGitBlobSha:selected.repositoryGitBlobSha||null,
+            registeredRobloxAssetId:selected.registeredRobloxAssetId||null,
+            universeUseGrantRequired:selected.universeUseGrantRequired===true,
             downloadUrl:selected.downloadUrl,localSourcePath:selected.sourcePath||null,
             sourceHash:selected.sourceHash||null,archiveBytes:selected.archiveBytes||null,
             downloaded:selected.downloaded===true,
