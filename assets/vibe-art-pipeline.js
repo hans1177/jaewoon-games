@@ -619,7 +619,11 @@ export function createVibeGraphicsProduction({
     ...(Array.isArray(game?.enemies)?game.enemies:[]),
     ...(Array.isArray(game?.creatures)?game.creatures:[]),
     ...(Array.isArray(world?.monsters)?world.monsters:[]),
-    ...(Array.isArray(world?.creatures)?world.creatures:[])
+    ...(Array.isArray(world?.creatures)?world.creatures:[]),
+    ...(Array.isArray(game?.enemySpecies)?game.enemySpecies:[]),
+    ...(Array.isArray(world?.enemySpecies)?world.enemySpecies:[]),
+    ...characters.filter(row=>row&&/MONSTER|CREATURE|ENEMY|BOSS|ELITE/.test(clean(row.role||row.actorClass).toUpperCase())
+      &&clean(row.speciesId||row.species))
   ];
   const sourceCreatureRows=[
     ...(requestedSpecies?[{speciesId:requestedSpecies,tier:game?.featuredMonsterTier||world?.featuredMonsterTier||'NORMAL'}]:[]),
