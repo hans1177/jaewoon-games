@@ -1182,7 +1182,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-26T09:39:31.970Z",
+      "updatedAt": "2026-10-26T09:39:49.449Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1197,14 +1197,14 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-asset-binding-failed",
+      "robloxFailureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-f0-restart-build-package-pending"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
+      "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
       "robloxBuildPreflightPassed": false,
@@ -1912,7 +1912,7 @@
         "authority": "owner-dedicated-roblox-experience-bootstrap"
       },
       "robloxDedicatedExperiencePublished": false,
-      "robloxSourceBootstrapPassedAt": "2026-10-26T09:36:12.469Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-26T09:39:49.449Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -2416,18 +2416,21 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxBuildFailedAt": "2026-10-26T09:39:31.970Z",
+      "robloxBuildFailedAt": null,
       "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxEvidenceInvalidatedBySourceChange": {
+      "robloxEvidenceInvalidatedBySourceChange": null,
+      "robloxRuntimeRetryCount": 0,
+      "robloxEvidenceInvalidatedByF0Restart": {
+        "sourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
         "previousSourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
-        "newSourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
-        "invalidatedAt": "2026-10-26T09:36:12.469Z"
-      },
-      "robloxRuntimeRetryCount": 0
+        "previousArtifactIdentity": null,
+        "restartedAt": "2026-10-26T09:39:49.449Z",
+        "authority": "canonical-main-f0-restart"
+      }
     },
     {
       "gameId": "fantasy-survival",
@@ -7433,7 +7436,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-26T09:39:39.904Z",
+  "updatedAt": "2026-10-26T09:39:49.449Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
