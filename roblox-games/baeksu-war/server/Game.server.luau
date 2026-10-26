@@ -135,11 +135,12 @@ local function spawn(a,kind,team,level)
  local z=team=="ALLY" and -31 or 36
  local stat=C.Stats(u,level)
  local m=Instance.new("Model");m.Name=(team=="ENEMY" and "적 " or "")..u.Name.." Lv."..level;m.Parent=a.Folder
- local cf=CFrame.new(a.X+x,2.5,z)
- local body=VisualKit.BuildCreature(m,cf,u,level,team)
- if not body then m:Destroy();return end
- m.PrimaryPart=body
- table.insert(a.Units,{Model=m,Team=team,Kind=kind,HP=stat.HP,Damage=stat.Damage,Speed=stat.Speed,Range=stat.Range,X=x,Z=z,Last=0})
+ local cf=CFrame.new(a.X+x,0,z)
+ local body,visual=VisualKit.BuildCreature(m,cf,u,level,team)
+ if not body or not visual then m:Destroy();return end
+ -- 임의 메시의 첫 MeshPart를 전체 유닛의 이동 Pivot으로 지정하지 않는다.
+ -- 전투 판정은 기존 X/Z 좌표를 그대로 쓰고, 외형만 Terrain 발 높이로 이동한다.
+ table.insert(a.Units,{Model=m,Visual=visual,Team=team,Kind=kind,HP=stat.HP,Damage=stat.Damage,Speed=stat.Speed,Range=stat.Range,X=x,Z=z,Last=0})
 end
 local function clearUnits(a)
  for _,u in ipairs(a.Units) do if u.Model then u.Model:Destroy() end end
@@ -287,7 +288,7 @@ local function tickArena(a,dt,now)
     local direction=u.Team=="ALLY" and 1 or -1
     u.Z+=direction*u.Speed*dt
     if target and distance<13 then u.X+=math.clamp(target.X-u.X,-u.Speed*dt*.3,u.Speed*dt*.3) end
-    u.Model:PivotTo(CFrame.new(a.X+u.X,2.5+math.sin(now*5+u.X)*.08,u.Z)*CFrame.Angles(0,direction==1 and 0 or math.pi,0))
+    VisualKit.PoseCreature(u.Visual,a.X+u.X,u.Z,direction==1 and 0 or math.pi)
     if direction==1 and u.Z>40 then a.EnemyHP-=u.Damage;kill(a,u,false)
     elseif direction==-1 and u.Z< -35 then a.HomeHP-=u.Damage;kill(a,u,false) end
    end
