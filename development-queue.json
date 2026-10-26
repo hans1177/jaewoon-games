@@ -1182,7 +1182,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-26T09:36:12.469Z",
+      "updatedAt": "2026-10-26T09:39:31.970Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1197,14 +1197,14 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
       "robloxBuildPreflightPassed": false,
@@ -1241,42 +1241,644 @@
       "robloxReleasePublishedAt": null,
       "robloxSourceCommit": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "0340a484546eede7a6c54e9c60440f750150620b",
-      "robloxQualityFailureClass": "SOURCE_CONTRACT",
+      "robloxQualityBuildUpSourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
+      "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "cozy-island",
-        "sourceRevision": "0340a484546eede7a6c54e9c60440f750150620b",
-        "sourceTreeSha": "005c3212e2ece777d9895f59691ca98c9ddc35d6",
+        "sourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
         "artifactIdentity": null,
-        "authority": "roblox-source-static-contract-failure",
-        "staticContract": {
+        "authority": "roblox-package-asset-binding-failure",
+        "workflowRunId": 40300417194,
+        "testedAt": "2026-10-26T09:39:31.970Z",
+        "qualityFailureKinds": [
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:SKILL"
+        ],
+        "assetThreshold": {
           "pass": false,
           "blockers": [
-            "CONFIG_GENRE_PROFILE_REQUIRED"
-          ]
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:SKILL"
+          ],
+          "requiredFamilies": [
+            "CHARACTER",
+            "CREATURE",
+            "BUILDING",
+            "ENVIRONMENT",
+            "WEAPON",
+            "SKILL",
+            "MATERIAL",
+            "AUDIO",
+            "VFX",
+            "UI",
+            "MOTION",
+            "PROP"
+          ],
+          "familyCoverageCount": 12,
+          "requiredFamilyCount": 12,
+          "selectedAtomCount": 360,
+          "libraryVersion": 145,
+          "selectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
+          "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
+          "buildUpAssetSourceUsageLibraryVersion": 145,
+          "selectedSourceContentHashes": [
+            {
+              "source": "company-asset-library.json#baseMaterialLibrary",
+              "sha256": "89d1a975e5b1b6fc99d34ad033502980e7f63692739de3d6f649f3be03181f8c"
+            }
+          ],
+          "allFamiliesAutoSelected": true,
+          "primitiveOnlyOrColorOnlyForbidden": true,
+          "visibleAssetBindingPass": true,
+          "sourceBindingTracePass": true,
+          "familyBindingPassCount": 8,
+          "appliedFamilyCount": 9,
+          "notApplicableFamilyCount": 3,
+          "resolvedFamilyCount": 11,
+          "allFamiliesResolved": false,
+          "familyResults": [
+            {
+              "family": "CHARACTER",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": [],
+              "responsibleFiles": []
+            },
+            {
+              "family": "CREATURE",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "server/BattleVisual.luau",
+                "shared/SurvivalWildlife.luau"
+              ]
+            },
+            {
+              "family": "BUILDING",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": [],
+              "responsibleFiles": []
+            },
+            {
+              "family": "ENVIRONMENT",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "client/Game.client.luau",
+                "server/Game.server.luau",
+                "shared/VisualStyle.luau"
+              ]
+            },
+            {
+              "family": "WEAPON",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": [],
+              "responsibleFiles": []
+            },
+            {
+              "family": "SKILL",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": [],
+              "responsibleFiles": [
+                "server/Game.server.luau"
+              ]
+            },
+            {
+              "family": "MATERIAL",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "client/Game.client.luau",
+                "server/BattleVisual.luau",
+                "server/Game.server.luau",
+                "shared/RobloxCommonMaterials.luau",
+                "shared/VisualStyle.luau",
+                "shared/WildlifeCatalog.luau",
+                "shared/WildlifeFactory.luau"
+              ]
+            },
+            {
+              "family": "AUDIO",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "client/Game.client.luau"
+              ]
+            },
+            {
+              "family": "VFX",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "client/Game.client.luau",
+                "server/BattleVisual.luau",
+                "server/Game.server.luau"
+              ]
+            },
+            {
+              "family": "UI",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "client/Game.client.luau",
+                "server/BattleVisual.luau",
+                "server/Game.server.luau",
+                "shared/QACamera.luau",
+                "shared/RobloxCommonUI.luau",
+                "shared/SurvivalWildlife.luau",
+                "shared/WildlifeAnimator.luau",
+                "shared/WildlifeFactory.luau"
+              ]
+            },
+            {
+              "family": "MOTION",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "client/Game.client.luau",
+                "server/BattleVisual.luau",
+                "server/Game.server.luau",
+                "shared/WildlifeAnimator.luau",
+                "shared/WildlifeFactory.luau"
+              ]
+            },
+            {
+              "family": "PROP",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ],
+              "responsibleFiles": [
+                "client/Game.client.luau",
+                "shared/WildlifeFactory.luau"
+              ]
+            }
+          ],
+          "selectedFamilies": {
+            "CHARACTER": [
+              "TORSO_CLOTH",
+              "SHOULDER_LIGHT",
+              "BACK_CAPE",
+              "HAND_GLOVE",
+              "FOOT_BOOT",
+              "FOOT_SHOE",
+              "TORSO_LEATHER",
+              "TORSO_PLATE",
+              "TORSO_ROBE",
+              "SHOULDER_HEAVY",
+              "BACK_PACK",
+              "ACCESSORY_POUCH",
+              "ACCESSORY_CHARM",
+              "BODY_STANDARD",
+              "BODY_SMALL",
+              "BODY_HEAVY",
+              "BODY_SLENDER",
+              "HEAD_ROUND",
+              "HEAD_ANGULAR",
+              "HEAD_BROAD",
+              "HEAD_LONG",
+              "FACE_NEUTRAL",
+              "FACE_HEROIC",
+              "FACE_ROUGH",
+              "FACE_CUTE",
+              "HAIR_SHORT",
+              "HAIR_LONG",
+              "HAIR_TIED",
+              "HAIR_SPIKED",
+              "HAND_BARE"
+            ],
+            "CREATURE": [
+              "HEAD_CANINE",
+              "JAW_LONG",
+              "CLAW",
+              "FIN",
+              "TENTACLE",
+              "ROOT_LIMB",
+              "CRYSTAL_CORE",
+              "MECH_PLATE",
+              "HEAD_FELINE",
+              "HEAD_REPTILE",
+              "HEAD_INSECT",
+              "HEAD_SKULL",
+              "HEAD_DEMON",
+              "HEAD_GOLEM",
+              "JAW_SHORT",
+              "MANDIBLE",
+              "BEAK",
+              "HORN_SHORT",
+              "HORN_LONG",
+              "HORN_CURVED",
+              "ANTLER",
+              "ANTENNA",
+              "EAR_POINTED",
+              "EAR_ROUND",
+              "EYE_PAIR",
+              "EYE_CLUSTER",
+              "WING_FEATHER",
+              "WING_LEATHER",
+              "WING_INSECT",
+              "TAIL_SHORT",
+              "TAIL_LONG",
+              "TAIL_BLADE",
+              "TAIL_STINGER",
+              "PAW",
+              "HOOF",
+              "TALON",
+              "CARAPACE",
+              "FUR_PATCH",
+              "SCALE_PLATE"
+            ],
+            "BUILDING": [
+              "FOUNDATION_RECT",
+              "WALL_SOLID",
+              "DOOR_SINGLE",
+              "ROOF_GABLE",
+              "INTERIOR_WALL",
+              "SOCKET_WALL",
+              "SOCKET_FLOOR",
+              "SOCKET_CEILING",
+              "FOUNDATION_SQUARE",
+              "FOUNDATION_ROUND",
+              "WALL_WINDOW",
+              "WALL_ARCH",
+              "CORNER_INNER",
+              "CORNER_OUTER",
+              "DOOR_DOUBLE",
+              "DOOR_GATE",
+              "WINDOW_SMALL",
+              "WINDOW_LARGE",
+              "ROOF_FLAT",
+              "ROOF_HIP",
+              "ROOF_DOME",
+              "STAIR_STRAIGHT",
+              "STAIR_CORNER",
+              "STAIR_SPIRAL",
+              "BALCONY",
+              "PILLAR",
+              "FENCE",
+              "SIGN",
+              "FLOOR_TILE",
+              "CEILING"
+            ],
+            "ENVIRONMENT": [
+              "TREE_TRUNK_THICK",
+              "TREE_CROWN_ROUND",
+              "ROCK_MEDIUM",
+              "ROAD_DIRT",
+              "ROAD_STONE",
+              "ROAD_SNOW",
+              "PATH_NARROW",
+              "BRIDGE_WOOD",
+              "BRIDGE_STONE",
+              "WATER_SHALLOW",
+              "WATER_DEEP",
+              "RUIN_WALL",
+              "RUIN_PILLAR",
+              "LANDMARK_TOWER",
+              "LANDMARK_SHRINE",
+              "LANDMARK_TREE",
+              "FOG_LAYER",
+              "SKY_LAYER",
+              "TERRAIN_FLAT",
+              "TERRAIN_SLOPE",
+              "TERRAIN_RIDGE",
+              "TERRAIN_VALLEY",
+              "CLIFF_LOW",
+              "CLIFF_HIGH",
+              "ROCK_SMALL",
+              "ROCK_LARGE",
+              "TREE_TRUNK_THIN",
+              "TREE_CROWN_TALL",
+              "TREE_CROWN_SPARSE",
+              "GRASS_PATCH",
+              "BUSH",
+              "FLOWER_PATCH",
+              "MUSHROOM_PATCH",
+              "DEAD_BRANCH",
+              "LOG",
+              "STUMP"
+            ],
+            "WEAPON": [
+              "BLADE_LONG",
+              "GUARD_CROSS",
+              "GRIP_LONG",
+              "HAMMER_HEAD",
+              "MACE_HEAD",
+              "BOW_LIMB",
+              "BOW_GRIP",
+              "CROSSBOW_BODY",
+              "FIREARM_RECEIVER",
+              "FIREARM_BARREL",
+              "FIREARM_STOCK",
+              "STAFF_SHAFT",
+              "WAND_SHAFT",
+              "MAGIC_CORE",
+              "SHIELD_ROUND",
+              "SHIELD_KITE",
+              "SHIELD_TOWER",
+              "THROWN_BLADE",
+              "THROWN_ORB",
+              "BLADE_SHORT",
+              "BLADE_CURVED",
+              "BLADE_HEAVY",
+              "BLADE_DOUBLE",
+              "GUARD_ROUND",
+              "GUARD_WIDE",
+              "GRIP_SHORT",
+              "POMMEL_SIMPLE",
+              "POMMEL_ORNATE",
+              "SPEAR_HEAD",
+              "AXE_HEAD"
+            ],
+            "SKILL": [
+              "CAST_HAND",
+              "TELEGRAPH_CIRCLE",
+              "IMPACT_SMALL",
+              "CAST_CHANNEL",
+              "TELEGRAPH_CONE",
+              "TELEGRAPH_LINE",
+              "PROJECTILE_ORB",
+              "PROJECTILE_BOLT",
+              "PROJECTILE_WAVE",
+              "PROJECTILE_ARC",
+              "IMPACT_HEAVY",
+              "IMPACT_AOE",
+              "AURA_BODY",
+              "AURA_WEAPON",
+              "STATUS_RING",
+              "STATUS_MARK",
+              "REACTION_LIGHT",
+              "REACTION_HEAVY",
+              "CAMERA_KICK",
+              "CAMERA_SHAKE",
+              "CAST_WEAPON",
+              "CAST_GROUND"
+            ],
+            "MATERIAL": [
+              "WOOD",
+              "STONE",
+              "METAL",
+              "CLOTH",
+              "MOD_FROSTED",
+              "MOD_RUSTED",
+              "MOD_CRACKED",
+              "MOD_GLOWING",
+              "MOD_POISONED",
+              "LEATHER",
+              "SKIN",
+              "FUR",
+              "SCALE",
+              "ICE",
+              "LAVA",
+              "CRYSTAL",
+              "SLIME",
+              "BONE",
+              "MOD_CLEAN",
+              "MOD_WORN",
+              "MOD_DIRTY",
+              "MOD_WET",
+              "MOD_BURNT"
+            ],
+            "AUDIO": [
+              "ENV_WIND",
+              "ENV_WATER",
+              "UI_CONFIRM",
+              "ATTACK_SWING_LIGHT",
+              "FOOTSTEP_WET",
+              "CREATURE_SMALL",
+              "CREATURE_HEAVY",
+              "CREATURE_HISS",
+              "CREATURE_ROAR",
+              "ATTACK_SWING_HEAVY",
+              "HIT_FLESH",
+              "HIT_ARMOR",
+              "HIT_STONE",
+              "WEAPON_METAL",
+              "WEAPON_WOOD",
+              "ENV_FOREST",
+              "ENV_CAVE",
+              "UI_CANCEL",
+              "UI_WARNING",
+              "MAGIC_CAST",
+              "MAGIC_IMPACT",
+              "BOSS_STINGER",
+              "BUILDING_DOOR",
+              "BUILDING_BREAK",
+              "WEATHER_RAIN",
+              "WEATHER_SNOW",
+              "WEATHER_STORM",
+              "FOOTSTEP_SOFT",
+              "FOOTSTEP_HARD"
+            ],
+            "VFX": [
+              "IMPACT_FLASH",
+              "TRAIL_SHORT",
+              "SHAPE_BURST",
+              "WEATHER_FOG",
+              "DESTRUCTION_WOOD",
+              "DESTRUCTION_STONE",
+              "DESTRUCTION_METAL",
+              "SHAPE_ORB",
+              "SHAPE_RING",
+              "SHAPE_CONE",
+              "SHAPE_LINE",
+              "SHAPE_SHOCKWAVE",
+              "TRAIL_LONG",
+              "ELEMENT_FIRE",
+              "ELEMENT_ICE",
+              "ELEMENT_ELECTRIC",
+              "ELEMENT_POISON",
+              "ELEMENT_MAGIC",
+              "ELEMENT_DUST",
+              "ELEMENT_WATER",
+              "IMPACT_SPARK",
+              "IMPACT_DEBRIS",
+              "STATUS_GLOW",
+              "STATUS_SMOKE",
+              "WEATHER_RAIN",
+              "WEATHER_SNOW"
+            ],
+            "UI": [
+              "FRAME_PANEL",
+              "BUTTON_PRIMARY",
+              "BAR_HEALTH",
+              "ICON_ITEM",
+              "ICON_SKILL",
+              "ICON_STATUS",
+              "BAR_MANA",
+              "BAR_PROGRESS",
+              "SLOT_INVENTORY",
+              "SLOT_EQUIPMENT",
+              "SLOT_SKILL",
+              "HUD_OBJECTIVE",
+              "HUD_CURRENCY",
+              "HUD_WAVE",
+              "MAP_FRAME",
+              "MINIMAP_FRAME",
+              "MARKER_PLAYER",
+              "MARKER_ENEMY",
+              "MARKER_QUEST",
+              "TOUCH_JOYSTICK",
+              "TOUCH_ACTION",
+              "TOUCH_DODGE",
+              "FRAME_MODAL",
+              "FRAME_TOOLTIP",
+              "BUTTON_SECONDARY",
+              "BUTTON_ICON"
+            ],
+            "MOTION": [
+              "IDLE_RELAXED",
+              "WALK",
+              "JOG",
+              "RUN",
+              "START",
+              "STOP",
+              "TURN_90",
+              "JUMP_START",
+              "LAND",
+              "HIT_FRONT",
+              "DEATH_FRONT",
+              "HIT_BACK",
+              "HIT_LEFT",
+              "HIT_RIGHT",
+              "KNOCKDOWN",
+              "GETUP",
+              "DEATH_SIDE",
+              "DEATH_BACK",
+              "CAST_PREPARE",
+              "CAST_RELEASE",
+              "RECOVERY",
+              "TAUNT",
+              "LOOK_AROUND",
+              "IDLE_ALERT",
+              "SPRINT",
+              "STRAFE_L",
+              "STRAFE_R",
+              "BACKSTEP",
+              "TURN_45",
+              "TURN_180",
+              "JUMP_AIR",
+              "DODGE_L",
+              "DODGE_R",
+              "ATTACK_LIGHT_1",
+              "ATTACK_LIGHT_2",
+              "ATTACK_LIGHT_3",
+              "ATTACK_HEAVY",
+              "BLOCK",
+              "PARRY"
+            ],
+            "PROP": [
+              "CHEST",
+              "CRATE",
+              "LAMP",
+              "WORKBENCH",
+              "BARREL",
+              "SACK",
+              "CART",
+              "ANVIL",
+              "FURNACE",
+              "COOKING_POT",
+              "RESOURCE_WOOD",
+              "RESOURCE_STONE",
+              "RESOURCE_ORE",
+              "RESOURCE_HERB",
+              "SIGNPOST",
+              "TORCH",
+              "ROPE",
+              "CHAIN",
+              "BANNER",
+              "RUG",
+              "BOTTLE",
+              "BOOK",
+              "WEAPON_RACK",
+              "ARMOR_STAND",
+              "CHAIR",
+              "TABLE",
+              "BED",
+              "SHELF",
+              "BENCH",
+              "LANTERN"
+            ]
+          },
+          "runtimeVerified": false,
+          "productionVerified": false,
+          "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
+          "authority": "roblox-package-universal-asset-threshold"
         },
+        "sourceTreeSha": "50a03513b46c6b55e137c86aafe8dc16477941da",
         "assetRepairContext": {
           "libraryFingerprint": "76d1db6abb7b922fcebf760109bf1de2d65de4442d384f88213c7693e45e0177",
           "baselineFingerprint": "eabbb66a578e191b0c7901fdcddbb80b71a7af42e275e3de15118d788aa91a75",
           "validatorFingerprint": "b9335a6e0b17a108964d77b1f655d5ad440d9fe9739067f8de22c6afd3bdde61"
         },
-        "qualityFailureKinds": [
-          "CONFIG_GENRE_PROFILE_REQUIRED"
-        ],
         "repairSurfaces": [
-          "SOURCE_CONTRACT"
+          "INTERNAL_ASSET_SOURCE_BINDING"
         ],
+        "assetRepairPolicy": {
+          "mode": "GAME_SOURCE_BINDINGS_ONLY",
+          "preserveInternalAssetLibrary": true,
+          "preserveAssetFiles": true,
+          "allowAssetLibraryWrites": false,
+          "requireActualNativeConsumption": true
+        },
         "qualityFailureDetails": [
           {
-            "id": "CONFIG_GENRE_PROFILE_REQUIRED",
-            "repairSurface": "SOURCE_CONTRACT",
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:SKILL",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
             "priority": "P0",
-            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 145,
+              "selectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
+              "familyResult": {
+                "family": "SKILL",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": [],
+                "responsibleFiles": [
+                  "server/Game.server.luau"
+                ]
+              }
+            }
           }
-        ],
-        "workflowRunId": 40247611383,
-        "testedAt": "2026-10-26T00:07:07.131Z"
+        ]
       },
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1814,7 +2416,7 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-26T09:39:31.970Z",
       "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxFastMvpPublished": false,
@@ -1824,7 +2426,8 @@
         "previousSourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
         "newSourceRevision": "27e9b6307122f54c7d96e05c81f637e3f29c2e60",
         "invalidatedAt": "2026-10-26T09:36:12.469Z"
-      }
+      },
+      "robloxRuntimeRetryCount": 0
     },
     {
       "gameId": "fantasy-survival",
@@ -6830,7 +7433,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-26T09:36:47.936Z",
+  "updatedAt": "2026-10-26T09:39:31.970Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -6896,5 +7499,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
