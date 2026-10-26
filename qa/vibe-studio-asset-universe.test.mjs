@@ -2749,7 +2749,7 @@ test('generic creature torso requirement can choose company-common base',()=>{
   assert.equal(loadout.selections[0].assetId,'common-biped-torso');
 });
 
-test('company-common materials v5 preserves old atoms and expands to twenty-five',()=>{
+test('company-common materials preserve twenty-five original atoms and add opt-in native toy variants',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-materials-v1');
@@ -2766,11 +2766,16 @@ test('company-common materials v5 preserves old atoms and expands to twenty-five
   }
 
   const materialRefs=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
-  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement','SmoothPlastic','Grass']);
+  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement','SmoothPlastic','Plastic','Grass']);
   assert.equal(materialRefs.length>0,true);
   assert.equal(materialRefs.every(value=>allowed.has(value)),true);
 
-  assert.ok(source.includes('atomCount = 25'));
+  assert.ok(source.includes('atomCount = 27'));
+  for(const atomId of ['TOY_PLASTIC','TOY_STUDDED'])assert.ok(source.includes(atomId+' = table.freeze'),atomId+':native-additive-preset');
+  assert.ok(source.includes('SurfaceStudsEnabled'));
+  assert.ok(source.includes('SurfacePaletteVariant'));
+  assert.ok(source.includes('PreserveAuthoredTint'));
+  assert.equal(quality.sourceAssetCount,25,'original provenance count remains unchanged');
   assert.ok(source.includes('part.CustomPhysicalProperties = physicalBefore'));
   assert.equal(/\.(CanCollide|CanTouch|CanQuery)\s*=/.test(source),false);
   assert.equal(quality.staticAuthoringChecklist.score,100);
