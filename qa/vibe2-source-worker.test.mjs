@@ -7,10 +7,57 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract,selectWeb3dEngine} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
+
+// [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
+test('no-model Roblox generates touch controls from exact existing native action callbacks',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-touch-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'));
+  const file=path.join(root,'client/Main.client.luau');
+  const source=[
+    'local CAS = game:GetService("ContextActionService")',
+    'local function attack(_, state)',
+    '  if state == Enum.UserInputState.Begin then remote:FireServer("attack") end',
+    '  return Enum.ContextActionResult.Sink',
+    'end',
+    'CAS:BindAction("Attack", attack, false, Enum.KeyCode.F, Enum.KeyCode.ButtonX)',
+    'CAS:BindAction("Interact", attack, false, Enum.KeyCode.E)',
+    ''
+  ].join('\n');
+  const generate=(text,order={target:'roblox',goal:'모바일 터치 조작 생성'},files=['client/Main.client.luau'])=>{
+    fs.writeFileSync(file,text);
+    return deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:files});
+  };
+  const candidate=generate(source);
+  assert.equal(candidate.deterministicRobloxNativeRepair,'EXISTING_ACTION_NATIVE_TOUCH_BUTTONS');
+  assert.equal(candidate.edits.length,2);
+  let result=source;
+  for(const edit of candidate.edits){
+    assert.equal(result.split(edit.find).length,2);
+    result=result.replace(edit.find,edit.replace);
+  }
+  assert.equal(result,source.replaceAll(', false,',', true,'));
+  assert.equal(generate(result),null,'a second generation must not invent another action');
+  assert.deepEqual(candidate.newFiles,[]);
+  assert.equal(fs.readFileSync(file,'utf8'),result,'candidate generation itself never writes gameplay');
+  assert.equal(generate(source,{target:'web',goal:'mobile touch'}),null);
+  assert.equal(generate(source,{target:'roblox',goal:'save stability'}),null);
+  assert.equal(generate(source,undefined,['../client/Main.client.luau']),null);
+  for(const text of [
+    '--[=[\n'+source+'\n]=]',
+    'local example = [==[\n'+source+'\n]==]',
+    source.replace('local function attack','local function other'),
+    source.replace('ContextActionService','UserInputService'),
+    source+'\nCAS = otherService',
+    source+'\nattack = otherCallback',
+    source+'\nCAS:UnbindAction("Attack")\nCAS:UnbindAction("Interact")',
+    source.replaceAll('CAS:BindAction','-- CAS:BindAction')
+  ])assert.equal(generate(text),null,'unproven or ambiguous action must remain unavailable');
+});
 
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
@@ -9236,3 +9283,4 @@ test('Roblox native candidate can edit more than eight approved files without br
   assert.throws(()=>normalizeCandidate({...candidate,edits:[{path:files[0],find:'same',replace:'same'}]},
     {target:'roblox',responsibleFiles:files,sourceRootRelative:'roblox-games/test'}),/변경 없는 edit/);
 });
+

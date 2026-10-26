@@ -1910,6 +1910,38 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       }
     }
     if(inputWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
+      // [무모델 조작 생성] 이미 등록된 네이티브 액션의 터치 버튼만 엔진이 생성한다.
+      // 콜백·키·서버 요청은 그대로 재사용하며 문자열/주석 속 예시는 실행 근거가 아니다.
+      const executable=source.replace(/--\[(=*)\[[\s\S]*?\]\1\]|\[(=*)\[[\s\S]*?\]\2\]|--[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,
+        value=>value.replace(/[^\n]/g,' '));
+      const touchWork=/(?:mobile|touch|모바일|터치)/i.test(intent);
+      if(touchWork){
+        const edits=[];
+        const binding=/^([A-Za-z_][A-Za-z_0-9]*):BindAction\(\s*(["'])([A-Za-z_][A-Za-z_0-9]*)\2\s*,\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*false\s*,\s*Enum\.KeyCode\.[A-Za-z_0-9]+(?:\s*,\s*Enum\.KeyCode\.[A-Za-z_0-9]+)*\s*\)/gm;
+        for(const match of source.matchAll(binding)){
+          const [statement,service,,action,callback]=match;
+          if(executable.slice(match.index,match.index+service.length)!==service)continue;
+          const declaration=new RegExp('^local\\s+'+service+'\\s*=\\s*game:GetService\\(\\s*["\\x27]ContextActionService["\\x27]\\s*\\)','gm');
+          const declarations=[...source.matchAll(declaration)].filter(row=>executable.slice(row.index,row.index+5)==='local');
+          if(declarations.length!==1||declarations[0].index>=match.index)continue;
+          const callbacks=[...executable.matchAll(new RegExp('^local\\s+function\\s+'+callback+'\\s*\\(','gm'))];
+          if(callbacks.length!==1||callbacks[0].index>=match.index)continue;
+          // 다른 바인딩이나 재대입이 있으면 수명/범위가 모호하므로 자동 생성하지 않는다.
+          if(new RegExp('\\b'+callback+'\\s*=(?!=)').test(executable)
+            ||[...executable.matchAll(new RegExp('\\b'+service+'\\s*=(?!=)','g'))].length!==1)continue;
+          const actionUses=[...source.matchAll(new RegExp('\\b'+service+':(?:BindAction|BindActionAtPriority|UnbindAction)\\(\\s*["\\x27]'+action+'["\\x27]','g'))]
+            .filter(row=>executable.slice(row.index,row.index+service.length)===service);
+          if(actionUses.length!==1||source.split(statement).length!==2)continue;
+          edits.push({path:relative,find:statement,replace:statement.replace(/,\s*false\s*,/,', true,')});
+          // 기존 엔진 기본 버튼 배치를 넘겨 화면을 가리지 않는다.
+          if(edits.length===3)break;
+        }
+        if(edits.length)return {
+          summary:'Roblox source-grounded native touch action generation',
+          expectedEffect:'Generate native mobile controls from existing named action callbacks without changing keyboard, controller, server authority or saves',
+          edits,newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'EXISTING_ACTION_NATIVE_TOUCH_BUTTONS'
+        };
+      }
       // 실행 라인에 시작하는 실제 연결만 교체하고 문자열·주석·리터럴은 건드리지 않는다.
       for(const match of source.matchAll(/^[ \t]*([A-Za-z_][A-Za-z_0-9]*)\.MouseButton1Click:Connect\(/gm)){
         const variable=match[1],statement=match[0];
@@ -8163,7 +8195,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     deterministicRobloxBuildUp:generation.deterministicRobloxBuildUp===true,
     deterministicRobloxBuildStage:Number(generation.deterministicRobloxBuildStage||0),
     deterministicWebInput:generation.deterministicWebInput===true,
-    sourceModelCallRequired:![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
+    deterministicRobloxNativeRepair:clean(generation.deterministicRobloxNativeRepair)||null,
+    sourceModelCallRequired:!generation.deterministicRobloxNativeRepair&&![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };
@@ -8280,4 +8313,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
+
 
