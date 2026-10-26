@@ -101,23 +101,13 @@ end
 
 -- stance를 swing보다 길게 유지해서 발이 바닥 위에서 미끄러지는 인상을 줄인다.
 local function stanceSample(radians)
-	local p = phase01(radians)
-	if p < 0.58 then
-		local u = smoother(p / 0.58)
-		return {
-			x = 0.34 + (-0.34 - 0.34) * u,
-			y = 0,
-			stance = 1,
-			swing = 0,
-		}
-	end
-	local u = smoother((p - 0.58) / 0.42)
-	return {
-		x = -0.34 + (0.34 + 0.34) * u,
-		y = math.sin(math.pi * u),
-		stance = 0,
-		swing = 1,
-	}
+ local p=phase01(radians)
+ if p<.58 then
+  local u=smoother(p/.58)
+  return .34-.68*u,0,1
+ end
+ local u=smoother((p-.58)/.42)
+ return -.34+.68*u,math.sin(math.pi*u),0
 end
 
 local function gaitTuning(gait)
@@ -142,17 +132,17 @@ local function gaitTuning(gait)
 end
 
 local function applyLeg(targets, prefix, phase, amplitude, lift, turnLean, side)
-	local sample = stanceSample(phase)
-	local swing = sample.x * amplitude
-	local knee = (0.16 + sample.y * 0.72) * amplitude
+	local x,y,stance = stanceSample(phase)
+	local swing = x * amplitude
+	local knee = (0.16 + y * 0.72) * amplitude
 	local ankle = -swing * 0.30 + knee * 0.24
-	local yLift = sample.y * lift
+	local yLift = y * lift
 
 	set(targets, prefix .. "Hip", pose(0, yLift * 0.11, 0, swing, 0, side * turnLean * 5.2))
 	set(targets, prefix .. "Knee", pitch(-knee))
-	set(targets, prefix .. "Ankle", pose(0, yLift * 0.13, -sample.stance * 0.025, ankle, 0, 0))
+	set(targets, prefix .. "Ankle", pose(0, yLift * 0.13, amplitude>0 and -stance*0.025 or 0, ankle, 0, 0))
 
-	return sample
+	return stance
 end
 
 local function addBreathing(controller, targets, moving)
@@ -198,7 +188,7 @@ local function locomotionTargets(controller, targets, dt, requestedSpeed)
 		controller.phase += dt * 0.28
 	end
 
-	local amplitude = math.clamp(normalized * 1.15, 0.22, 1)
+	local amplitude = moving and math.clamp(normalized * 1.15, 0.22, 1) or 0
 	local stride = strideDeg * speedFactor * amplitude * (1 + controller.locomotionBlend * 0.12)
 	local lift = cfg.footLift * amplitude * (1 + controller.locomotionBlend * 0.30)
 	local kneeScale = kneeDeg / math.max(1, strideDeg)
@@ -207,12 +197,8 @@ local function locomotionTargets(controller, targets, dt, requestedSpeed)
 	local br = applyLeg(targets, "BR", controller.phase + 0.04, stride, lift, controller.turnLean, 1)
 	local fr = applyLeg(targets, "FR", controller.phase + math.pi, stride, lift, controller.turnLean, 1)
 	local bl = applyLeg(targets, "BL", controller.phase + math.pi + 0.04, stride, lift, controller.turnLean, -1)
-	controller.footPlant = {
-		FL = fl.stance,
-		FR = fr.stance,
-		BL = bl.stance,
-		BR = br.stance,
-	}
+	local plant=controller.footPlant
+	plant.FL=moving and fl or 1;plant.FR=moving and fr or 1;plant.BL=moving and bl or 1;plant.BR=moving and br or 1
 
 	local doublePhase = controller.phase * 2
 	local suspension = math.sin(doublePhase)
@@ -352,8 +338,10 @@ local function updateLag(controller, dt)
 	local root = controller.model.PrimaryPart
 	local currentLook = root and root.CFrame.LookVector or Vector3.zAxis
 	local lastLook = controller.lastLook
-	local cross = lastLook:Cross(currentLook).Y
-	local turnTarget = math.clamp(cross * 18, -1, 1)
+	local previous=controller.previousLook or currentLook
+	local angle=math.atan2(previous:Cross(currentLook).Y,previous:Dot(currentLook))
+	local turnTarget=math.clamp(angle/math.max(dt,1/240)*.09,-1,1)
+	controller.previousLook=currentLook
 	controller.turnLean, controller.turnLeanVelocity = springNumber(controller.turnLean, turnTarget, controller.turnLeanVelocity, 1.8, dt)
 	controller.spineLag, controller.spineLagVelocity = springNumber(controller.spineLag, controller.turnLean, controller.spineLagVelocity, 1.05, dt)
 	controller.headLag, controller.headLagVelocity = springNumber(controller.headLag, controller.spineLag, controller.headLagVelocity, 0.78, dt)
@@ -373,9 +361,17 @@ local function step(controller, dt)
 	local root = controller.model.PrimaryPart
 	local velocity = root and root.AssemblyLinearVelocity or Vector3.zero
 	local measuredSpeed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude
+	-- PivotTo/앵커 이동도 실제 평면 이동량으로 보행을 구동한다. 순간이동은 걸음으로 계산하지 않는다.
+	if root then
+		local delta=root.Position-(controller.lastRootPosition or root.Position)
+		controller.lastRootPosition=root.Position
+		local displaced=Vector3.new(delta.X,0,delta.Z).Magnitude/math.max(dt,1/240)
+		if displaced<=controller.nominalRunSpeed*4 then measuredSpeed=math.max(measuredSpeed,displaced)end
+	end
 	local requestedSpeed = controller.manualSpeed ~= nil and controller.manualSpeed or measuredSpeed
 
-	local targets = zeroTargets(controller.joints)
+	local targets = controller.targets
+	for name in pairs(targets)do targets[name]=CFrame.identity end
 	locomotionTargets(controller, targets, dt, requestedSpeed)
 
 	local state = controller.state
@@ -404,6 +400,9 @@ local function step(controller, dt)
 		joint.Transform = joint.Transform:Lerp(target, alpha)
 	end
 
+	controller.auditTime=(controller.auditTime or 0)+dt
+	if controller.auditTime>=.1 then
+		controller.auditTime=0
 	controller.model:SetAttribute("WildlifeSpeedBlend", controller.speed)
 	controller.model:SetAttribute("WildlifeRunBlend", controller.locomotionBlend)
 	controller.model:SetAttribute("WildlifeTurnLean", controller.turnLean)
@@ -411,6 +410,7 @@ local function step(controller, dt)
 	controller.model:SetAttribute("WildlifeFootPlantFR", controller.footPlant.FR or 0)
 	controller.model:SetAttribute("WildlifeFootPlantBL", controller.footPlant.BL or 0)
 	controller.model:SetAttribute("WildlifeFootPlantBR", controller.footPlant.BR or 0)
+	end
 end
 
 local Controller = {}
@@ -435,7 +435,8 @@ function Controller:SetState(state, options)
 end
 
 function Controller:SetSpeed(speed)
-	self.manualSpeed = speed == nil and nil or math.max(0, tonumber(speed) or 0)
+	if speed==nil then self.manualSpeed=nil;return end
+	self.manualSpeed=math.max(0,tonumber(speed)or 0)
 end
 
 function Controller:Destroy()
@@ -481,6 +482,8 @@ function Animator.bind(model, options)
 		footPlant = { FL = 1, FR = 0, BL = 0, BR = 1 },
 		connection = nil,
 	}, Controller)
+	controller.targets=zeroTargets(controller.joints)
+	controller.lastRootPosition=model.PrimaryPart.Position
 
 	model:SetAttribute("WildlifeMotionDriver", "CHARACTER_ANIMATION_SPRING_GAIT_V3")
 	model:SetAttribute("WildlifeMotionDimensionality", "FULL_3D")
@@ -490,7 +493,7 @@ function Animator.bind(model, options)
 
 	local signal = RunService:IsClient() and RunService.RenderStepped or RunService.Heartbeat
 	controller.connection = signal:Connect(function(dt)
-		step(controller, math.min(dt, 1 / 20))
+		step(controller, math.min(dt, .15))
 	end)
 
 	return controller

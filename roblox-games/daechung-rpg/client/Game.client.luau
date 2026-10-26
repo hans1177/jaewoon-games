@@ -790,25 +790,56 @@ end
 local jointEpoch=setmetatable({}, {__mode="k"})
 local function poseRig(rig,kind)
  if not rig then return false end
- local torso=rig:FindFirstChild("UpperTorso") or rig:FindFirstChild("Torso")
+ local torso=rig:FindFirstChild("UpperTorso")or rig:FindFirstChild("Torso")
  if not torso then return false end
- local right=torso:FindFirstChild("RightShoulder") or torso:FindFirstChild("Right Shoulder")
- local left=torso:FindFirstChild("LeftShoulder") or torso:FindFirstChild("Left Shoulder")
+ local right=torso:FindFirstChild("RightShoulder")or torso:FindFirstChild("Right Shoulder")
+ local left=torso:FindFirstChild("LeftShoulder")or torso:FindFirstChild("Left Shoulder")
  local waist=torso:FindFirstChild("Waist")
- if not right or not left or not right:IsA("Motor6D") or not left:IsA("Motor6D") then return false end
- local epoch=(jointEpoch[rig] or 0)+1;jointEpoch[rig]=epoch
- local pitch=kind=="PARRY_PERFECT" and -1.25 or kind=="DODGE_LEFT" and .5 or kind=="CAST_RELEASE" and -1.65 or kind=="LIGHT_ATTACK_2" and -.75 or kind=="LIGHT_ATTACK_3" and -1.6 or -1.1
- local twist=kind=="DODGE_LEFT" and -.5 or kind=="LIGHT_ATTACK_2" and -.55 or kind=="LIGHT_ATTACK_3" and 1.0 or kind=="HEAVY_ATTACK_1" and .55 or .28
- local duration=kind=="DODGE_LEFT" and .42 or kind=="LIGHT_ATTACK_3" and .48 or kind=="HEAVY_ATTACK_1" and .52 or .32
- local motors={{right,right.C0,right.C0*CFrame.Angles(pitch,0,twist)},{left,left.C0,left.C0*CFrame.Angles(-pitch*.55,0,-twist)}}
- if waist and waist:IsA("Motor6D") then table.insert(motors,{waist,waist.C0,waist.C0*CFrame.Angles(0,twist*.6,0)})end
- for _,m in ipairs(motors)do TweenService:Create(m[1],TweenInfo.new(kind=="PARRY_PERFECT" and .05 or .09,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{C0=m[3]}):Play()end
- task.delay(duration,function()
-  if jointEpoch[rig]~=epoch or not rig.Parent then return end
-  for _,m in ipairs(motors)do
-   if m[1].Parent then TweenService:Create(m[1],TweenInfo.new(.17,Enum.EasingStyle.Quad),{C0=m[2]}):Play()end
+ if not right or not left or not right:IsA("Motor6D")or not left:IsA("Motor6D")then return false end
+ local row=jointEpoch[rig]
+ if not row then
+  row={token=0,base={},tweens={}}
+  jointEpoch[rig]=row
+  rig.Destroying:Connect(function()
+   row.token+=1
+   for _,tween in ipairs(row.tweens)do tween:Cancel()end
+   table.clear(row.tweens);table.clear(row.base);jointEpoch[rig]=nil
+  end)
+ end
+ row.token+=1
+ local token=row.token
+ for _,tween in ipairs(row.tweens)do tween:Cancel()end
+ table.clear(row.tweens)
+ local pitch=kind=="PARRY_PERFECT"and -1.25 or kind=="DODGE_LEFT"and .5 or kind=="CAST_RELEASE"and -1.65
+  or kind=="LIGHT_ATTACK_2"and -.75 or kind=="LIGHT_ATTACK_3"and -1.6 or -1.1
+ local twist=kind=="DODGE_LEFT"and -.5 or kind=="LIGHT_ATTACK_2"and -.55 or kind=="LIGHT_ATTACK_3"and 1
+  or kind=="HEAVY_ATTACK_1"and .55 or .28
+ local duration=kind=="DODGE_LEFT"and .42 or kind=="LIGHT_ATTACK_3"and .48 or kind=="HEAVY_ATTACK_1"and .52 or .32
+ local motors={{right,pitch,twist},{left,-pitch*.55,-twist}}
+ if waist and waist:IsA("Motor6D")then motors[#motors+1]={waist,0,twist*.6}end
+ for _,entry in ipairs(motors)do
+  local motor=entry[1]
+  if not row.base[motor]then row.base[motor]=motor.C0 end
+ end
+ -- 이전 동작 중간값을 새 기준 자세로 누적하지 않고, 준비·타격·반동·복귀를 이어 준다.
+ local function stage(amount,seconds)
+  if row.token~=token or not rig.Parent then return end
+  for _,tween in ipairs(row.tweens)do tween:Cancel()end
+  table.clear(row.tweens)
+  for _,entry in ipairs(motors)do
+   local motor=entry[1]
+   if motor.Parent then
+    local target=row.base[motor]*CFrame.Angles(entry[2]*amount,0,entry[3]*amount)
+    local tween=TweenService:Create(motor,TweenInfo.new(seconds,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{C0=target})
+    row.tweens[#row.tweens+1]=tween;tween:Play()
+   end
   end
- end)
+ end
+ local ready=kind=="PARRY_PERFECT"and .015 or .06
+ stage(kind=="PARRY_PERFECT"and .8 or -.18,ready)
+ task.delay(ready,function()stage(1,.075)end)
+ task.delay(ready+.075,function()stage(.72,.10)end)
+ task.delay(duration,function()stage(0,.17)end)
  return true
 end
 local previewTracks={}

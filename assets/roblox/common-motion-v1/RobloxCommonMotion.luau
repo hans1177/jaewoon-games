@@ -1190,6 +1190,49 @@ local function resolve(atomId)
 	return id, row
 end
 
+-- 메인: 호출자가 소유한 Bone/Motor6D 자세를 프레임률과 무관하게 블렌딩한다.
+-- 자체 반복 루프·루트 이동·피해 판정·애니메이션 자산 등록은 만들지 않는다.
+function RobloxCommonMotion.BindJointPose(joints, options)
+ options=options or {}
+ local rows={}
+ local closed=false
+ for name,joint in pairs(joints or {})do
+  if typeof(joint)=="Instance"and(joint:IsA("Bone")or joint:IsA("Motor6D"))then
+   rows[#rows+1]={name=name,joint=joint,base=joint.Transform,pose=CFrame.identity,
+    response=math.max(1,tonumber((options.responseByJoint or {})[name])or tonumber(options.response)or 18)}
+  end
+ end
+ local controller={jointCount=#rows}
+ function controller.Step(targets,dt,responseScale)
+  if closed then return end
+  local elapsed=math.clamp(tonumber(dt)or 1/60,0,.15)
+  local response=math.clamp(tonumber(responseScale)or 1,.1,4)
+  for _,row in ipairs(rows)do
+   if row.joint.Parent then
+    local target=targets and targets[row.name]
+    if typeof(target)~="CFrame"then target=CFrame.identity end
+    local alpha=1-math.exp(-row.response*response*elapsed)
+    row.pose=row.pose:Lerp(target,alpha)
+    row.joint.Transform=row.base*row.pose
+   end
+  end
+ end
+ function controller.Reset()
+  if closed then return end
+  for _,row in ipairs(rows)do
+   row.pose=CFrame.identity
+   if row.joint.Parent then row.joint.Transform=row.base end
+  end
+ end
+ function controller.Destroy(restore)
+  if closed then return end
+  if restore~=false then controller.Reset()end
+  closed=true
+  table.clear(rows)
+ end
+ return controller
+end
+
 function RobloxCommonMotion.CreateSequence(atomId)
 	local id, row = resolve(atomId)
 	local builder = BUILDERS[row.mode]
@@ -1271,6 +1314,8 @@ function RobloxCommonMotion.Audit()
 		rootMotionOwned = false,
 		gameplayMovementAuthority = false,
 		persistentAnimationUploadRequiredForProduction = true,
+		callerOwnedJointPoseBlending = true,
+		poseControllerJointTypes = table.freeze({"Bone","Motor6D"}),
 		productionVerified = false,
 		runtimeVerificationRequired = true,
 	})

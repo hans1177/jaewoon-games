@@ -442,3 +442,48 @@ test('authored R15 poses preserve timing, root authority, loop seams and action 
     }
   }
 });
+
+// 실제 공용 관절 블렌더를 실행해 프레임률·원본 자세·반복 갱신·정리를 검증한다.
+test('caller-owned joint pose blending is frame independent and restores original transforms',{skip:!binary&&'Native Luau executor required; visual runtime remains separate'},()=>{
+ const source=fs.readFileSync(new URL('../assets/roblox/common-motion-v1/RobloxCommonMotion.luau',import.meta.url),'utf8');
+ const exercise=String.raw`
+CFrame.identity=CFrame.new()
+mt.__index={Lerp=function(self,target,alpha)
+ local out={};for i=1,12 do out[i]=self[i]+(target[i]-self[i])*alpha end;return setmetatable(out,mt)
+end}
+local function typeof(value)
+ if getmetatable(value)==mt then return 'CFrame' end
+ if type(value)=='table' and value.jointType then return 'Instance' end
+ return type(value)
+end
+`+'\nlocal motion=(function()\n'+source+'\nend)()\n'+String.raw`
+local function joint(kind)
+ local node={jointType=kind,Parent=true,Transform=CFrame.new(0,.2,0)}
+ function node:IsA(class)return class==self.jointType end
+ return node
+end
+local function sample(fps)
+ local node=joint('Bone')
+ local blend=motion.BindJointPose({Spine=node},{response=12})
+ for _=1,fps do blend.Step({Spine=CFrame.new(0,1,0)},1/fps)end
+ return node.Transform[11]
+end
+assert(math.abs(sample(30)-sample(60))<1e-8,'FRAME_RATE_DRIFT')
+local bone,motor=joint('Bone'),joint('Motor6D')
+local blend=motion.BindJointPose({Spine=bone,Arm=motor,Invalid={}}, {response=15})
+assert(blend.jointCount==2,'REAL_JOINTS_ONLY')
+for _=1,180 do blend.Step({Spine=CFrame.new(0,1,0),Arm=CFrame.new(0,.5,0)},1/60)end
+assert(math.abs(bone.Transform[11]-1.2)<1e-8,'POSE_MUST_NOT_ACCUMULATE')
+blend.Reset();assert(bone.Transform[11]==.2 and motor.Transform[11]==.2,'REST_POSE_LOST')
+blend.Destroy();blend.Step({Spine=CFrame.new(0,10,0)},1)
+assert(bone.Transform[11]==.2,'DESTROYED_CONTROLLER_CHANGED_JOINT')
+print('JOINT_POSE_BLEND_PASS')
+`;
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'joint-pose-'));
+ try{
+  const file=path.join(dir,'pose.luau');fs.writeFileSync(file,mock+exercise);
+  const result=spawnSync(binary,[file],{encoding:'utf8',timeout:15000,maxBuffer:1024*1024});
+  assert.equal(result.status,0,result.error?.message||result.stderr||result.stdout);
+  assert.match(result.stdout,/JOINT_POSE_BLEND_PASS/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
