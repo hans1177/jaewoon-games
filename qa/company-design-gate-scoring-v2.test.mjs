@@ -529,7 +529,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       design,seed,fields:Object.keys(design),
       multiplayerRequired:true,requirePlayableContract:true,sourceText
     });
-    assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
+    assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure '+JSON.stringify(feedback.map(item=>({code:item.code,fields:item.fields,evidence:item.evidence}))));
     const details=design.creativeGrammar.fiveWOneH;
     assert.equal(details.length,4+design.creativeGrammar.dCreations.length+design.creativeGrammar.delveDiscoveries.length);
     assert.equal(design.creativeGrammar.standardVersion,basicDesignMethod.version);
@@ -658,4 +658,58 @@ for(const item of [
   for(let index=0;index<300&&!consumed;index++){const p=computeVibeSeedProposal({...target,requestId:`extension-${index}`,basicDesignMethod:expanded,discoveryCount:12});consumed=p.basicDesignSelection.dSources.some(row=>row.materialPath[2]==='새 경계 대상');}
   assert.ok(consumed,'new canonical source must be consumed without a code-list change');
   console.log('DESIGN_MATERIAL_HIERARCHY_FEATURE_AND_COVERAGE_TEST=PASS');
+}
+
+
+// 메인: 기존 게임 원본 참조가 자유 주제 설계를 강제하지 않는지 회귀 검사한다.
+// 생성된 행동 설명은 기존 엄격 스키마의 400자 상한 안에서 작성해야 한다.
+{
+  const generator=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  assert.ok(generator.includes('const freeTopicMode=ownerFreeTopic&&(!nativeGameVerified||seed.REPLACE_EXISTING_GAME_IDENTITY===true);'));
+  assert.ok(generator.includes('const nativeGameVerified=/\\bGameId\\s*=/.test(nativeConfig)'));
+  assert.ok(generator.includes("sourceKingdomGenre?'KINGDOM'"));
+  const seedComposer=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  assert.ok(seedComposer.includes("const freeTopicMode=target.designTopicMode==='VIBE_FREE_TOPIC';"));
+  assert.ok(!seedComposer.includes("||Boolean(bReference)"));
+  assert.ok(generator.includes('const nativeConfigPath=`roblox-games/${gameId}/shared/GameConfig.luau`;'));
+  assert.ok(generator.includes("typeof fs!=='undefined'&&fs.existsSync(nativeConfigPath)"));
+  assert.ok(generator.includes('category:authoredCategory,platform:seed.INITIAL_TARGET_PLATFORM'));
+  assert.ok(generator.includes("?sourceRpgGenre?'RPG':sourceKingdomGenre?'KINGDOM':seed.GAME_CATEGORY"));
+  assert.ok(!generator.includes('const freeTopicMode=ownerFreeTopic||Boolean(bSystemReference);'));
+  assert.ok(generator.includes('trigger:shorten(`\${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,400)'));
+  assert.ok(generator.includes('trigger:shorten(`\${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,400)'));
+  assert.ok(generator.includes("assertSchemaValue(value,schema,label='root')"));
+  assert.ok(generator.includes("'parryEvent.OnServerEvent:Connect'"));
+  assert.ok(generator.includes("'dodgeEvent.OnServerEvent:Connect'"));
+  assert.ok(generator.includes("'syncInventoryEvent:FireClient'"));
+  assert.ok(generator.includes('const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE||sourceGroundedCombat;'));
+  assert.ok(generator.includes('const sourceGroundedCombat=nativeCombatVerified?{'));
+  assert.ok(generator.includes('}:null;'));
+  console.log('DESIGN_EXISTING_GAME_IDENTITY_AND_TRIGGER_LIMIT=PASS');
+}
+
+
+// 메인: 원본 RPG/왕국 게임에 B 기존 시스템을 붙여도 MAIN 정체성이 바뀌지 않는다.
+{
+  const method=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+    .continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
+  for(const [category,gameName,system] of [
+    ['RPG','대충알피지','패링·회피·인벤토리 연동 전투'],
+    ['KINGDOM','포근섬','직접 채집']
+  ]){
+    const design=computeVibeSeedProposal({
+      requestId:'source-game-'+category,category,gameName,platform:'ROBLOX',materials:[],
+      designTopicMode:'ORIGINAL_CONTEXT',basicDesignMethod:method,
+      bSystemReference:{
+        scope:'B_EXISTING_GAME_SYSTEMS',systemFamily:system,
+        playerChoice:'기존 상태를 확인하고 다음 행동을 선택한다.',
+        source:'roblox-games/source-game/server/Game.server.luau'
+      }
+    });
+    assert.equal(design.gameName,gameName,'원본 이름 유지: '+category);
+    assert.equal(design.gameplaySketch.novelGameGrammar.existingGameSystemRole,'B_EXISTING_GAME_SYSTEMS');
+    assert.equal(design.gameplaySketch.novelGameGrammar.existingSystemReference.systemFamily,system);
+    assert.ok(design.referenceGames.length>0,'대표 참고 게임 근거 필수: '+category);
+  }
+  console.log('DESIGN_NATIVE_RPG_KINGDOM_IDENTITY_CONTRACT=PASS');
 }
