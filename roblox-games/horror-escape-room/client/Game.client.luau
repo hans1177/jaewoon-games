@@ -18,6 +18,7 @@ local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
+local CommonVFX=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonVFX"))
 local GhostSkinFactory=nil
 local GhostSkinMotion=nil
 local ghostSkinModulesLoading=false
@@ -3452,29 +3453,11 @@ function combatEffects.monsterEffectProfile(ability)
  return formInfo or{},profile
 end
 
-function combatEffects.abilityVfxPart(name,size,cframe,color,shape)
- local part=Instance.new("Part")
- part.Name=name
- part.Size=size
- part.CFrame=cframe
- part.Color=color
- part.Material=Enum.Material.Neon
- part.Anchored=true
- part.CanCollide=false
- part.CanTouch=false
- part.CanQuery=false
- part.CastShadow=false
- part.Transparency=.12
- if shape then part.Shape=shape end
- part.Parent=workspace
- return part
-end
-
+-- 표시: 기존 확정된 액션 이벤트의 색·범위·수명만 공용 이미지 렌더러로 전달한다.
 function combatEffects.abilityPulse(name,pos,color,startSize,endSize,duration)
- local part=combatEffects.abilityVfxPart(name,startSize,CFrame.new(pos),color,Enum.PartType.Ball)
- TweenService:Create(part,TweenInfo.new(duration,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=endSize,Transparency=1}):Play()
- Debris:AddItem(part,duration+.1)
- return part
+ return CommonVFX.CreateImpactFlash({name=name,cframe=CFrame.new(pos),color=color,accent=color,
+  startSize=math.max(startSize.X,startSize.Y,startSize.Z),endSize=math.max(endSize.X,endSize.Y,endSize.Z),
+  duration=duration,hideRing=true,count=4})
 end
 
 function combatEffects.abilityStreak(name,origin,look,color,offset,length,width,duration)
@@ -3482,51 +3465,25 @@ function combatEffects.abilityStreak(name,origin,look,color,offset,length,width,
  if flat.Magnitude<.01 then flat=Vector3.new(0,0,-1)else flat=flat.Unit end
  local right=flat:Cross(Vector3.yAxis)
  local pos=origin+right*(offset or 0)+Vector3.new(0,1.7,0)+flat*((length or 9)*.5)
- local part=combatEffects.abilityVfxPart(name,Vector3.new(width or .22,width or .22,length or 9),CFrame.lookAt(pos,pos+flat),color)
- TweenService:Create(part,TweenInfo.new(duration or .34,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Transparency=1,Size=Vector3.new((width or .22)*.35,(width or .22)*.35,(length or 9)*1.25)}):Play()
- Debris:AddItem(part,(duration or .34)+.1)
- return part
+ local rotation=0
+ local camera=workspace.CurrentCamera
+ if camera then
+  local direction=camera.CFrame:VectorToObjectSpace(flat)
+  rotation=math.deg(math.atan2(-direction.Y,direction.X))
+ end
+ return CommonVFX.CreateShapeBurst({name=name,cframe=CFrame.new(pos),color=color,accent=color,
+  textureKey="slash",startSize=math.max(.5,(length or 9)*.5),endSize=length or 9,
+  rotation=rotation,duration=duration or .34,hideRing=true,count=0})
 end
 
 function combatEffects.abilityRing(name,pos,color,startDiameter,endDiameter,duration)
- local part=combatEffects.abilityVfxPart(name,Vector3.new(.16,startDiameter,startDiameter),CFrame.new(pos)*CFrame.Angles(0,0,math.rad(90)),color,Enum.PartType.Cylinder)
- part.Transparency=.05
- local light=Instance.new("PointLight");light.Color=color;light.Range=10;light.Brightness=2.5;light.Parent=part
- TweenService:Create(part,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=Vector3.new(.05,endDiameter,endDiameter),Transparency=1}):Play()
- TweenService:Create(light,TweenInfo.new(duration),{Brightness=0,Range=endDiameter*.5}):Play()
- Debris:AddItem(part,duration+.08)
- return part
+ return CommonVFX.CreateImpactFlash({name=name,cframe=CFrame.new(pos),color=color,accent=color,
+  startDiameter=startDiameter,endDiameter=endDiameter,duration=duration,hideFlash=true,count=0,critical=true})
 end
 
 function combatEffects.abilitySparkBurst(name,pos,color,count,speed,duration)
- local anchor=combatEffects.abilityVfxPart(name,Vector3.new(.18,.18,.18),CFrame.new(pos),color,Enum.PartType.Ball)
- anchor.Transparency=1
- local emitter=Instance.new("ParticleEmitter")
- emitter.Name=name.."Emitter"
- emitter.Texture="rbxasset://textures/particles/sparkles_main.dds"
- emitter.Rate=0
- emitter.Color=ColorSequence.new(color,Color3.new(1,1,1))
- emitter.LightEmission=1
- emitter.Lifetime=NumberRange.new(duration*.55,duration)
- emitter.Speed=NumberRange.new(speed*.55,speed)
- emitter.SpreadAngle=Vector2.new(180,180)
- emitter.Drag=2.5
- emitter.Acceleration=Vector3.new(0,-8,0)
- emitter.Size=NumberSequence.new({
-  NumberSequenceKeypoint.new(0,.44),
-  NumberSequenceKeypoint.new(.35,.22),
-  NumberSequenceKeypoint.new(1,0),
- })
- emitter.Transparency=NumberSequence.new({
-  NumberSequenceKeypoint.new(0,.02),
-  NumberSequenceKeypoint.new(.7,.18),
-  NumberSequenceKeypoint.new(1,1),
- })
- emitter.Parent=anchor
- emitter:Emit(count)
- local light=Instance.new("PointLight");light.Color=color;light.Range=14;light.Brightness=4.2;light.Parent=anchor
- TweenService:Create(light,TweenInfo.new(duration*.7),{Brightness=0,Range=4}):Play()
- Debris:AddItem(anchor,duration+.2)
+ return CommonVFX.CreateShapeBurst({name=name,cframe=CFrame.new(pos),color=color,accent=color,
+  count=count,speed=speed,duration=duration,particlesOnly=true})
 end
 
 function combatEffects.playMonsterAbilityEffect(snapshot)
@@ -3586,13 +3543,8 @@ function combatEffects.playMonsterAbilityEffect(snapshot)
   local radius=tonumber(profile.Radius)or 22
   combatEffects.abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.8,1.6,radius*1.8),.7)
   combatEffects.abilityRing("CurseRing",origin+Vector3.new(0,.22,0),accent,3,radius*2,.7)
-  for i=1,12 do
-   local a=(i/12)*math.pi*2
-   local pos=origin+Vector3.new(math.cos(a)*4,.5,math.sin(a)*4)
-   local grain=combatEffects.abilityVfxPart("CurseSand",Vector3.new(.45,.45,.45),CFrame.new(pos),i%2==0 and color or accent,Enum.PartType.Ball)
-   TweenService:Create(grain,TweenInfo.new(.7,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=CFrame.new(origin+Vector3.new(math.cos(a)*radius,2+((i%3)*.4),math.sin(a)*radius)),Transparency=1}):Play()
-   Debris:AddItem(grain,.8)
-  end
+  CommonVFX.CreateShapeBurst({name="CurseSand",cframe=CFrame.new(origin+Vector3.new(0,.5,0)),
+   color=color,accent=accent,count=12,distance=radius,duration=.7,particlesOnly=true,mist=true})
  elseif ability=="SHADOW_STEP"then
   local target=typeof(snapshot.Target)=="Vector3"and snapshot.Target or(origin+look*(tonumber(profile.Distance)or 18))
   combatEffects.abilityPulse("ShadowGateOrigin",origin+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
