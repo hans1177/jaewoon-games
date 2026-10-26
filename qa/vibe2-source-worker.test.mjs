@@ -59,6 +59,154 @@ test('no-model Roblox generates touch controls from exact existing native action
   ])assert.equal(generate(text),null,'unproven or ambiguous action must remain unavailable');
 });
 
+test('no-model Roblox engine rejects one candidate then validates a different existing function without writing sources',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-native-engine-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'));
+  const make=(name)=>[
+    'local score = 0',
+    'local function '+name+'()',
+    '  score += 2',
+    'end',
+    'local '+name+'Button = Instance.new("TextButton")',
+    name+'Button.Parent = hud',''
+  ].join('\n');
+  const first=make('attack'),second=make('interact');
+  fs.writeFileSync(path.join(root,'client/First.client.luau'),first);
+  fs.writeFileSync(path.join(root,'client/Second.client.luau'),second);
+  const files=['client/First.client.luau','client/Second.client.luau'];
+  const seen=[];
+  const selected=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'모바일 버튼 연결'},sourceRoot:root,
+    responsibleFiles:[...files,files[0]],sourceRootRelative:'roblox-games/demo',candidateValidator:candidate=>{
+      const file=candidate.edits[0].path;seen.push(file);
+      if(file===files[0])throw new Error('ROBLOX_TEST_REPRODUCED_FAILURE');
+      return {pass:true,runtimeVerified:false};
+    }});
+  assert.deepEqual(seen,files);
+  assert.equal(selected.deterministicRobloxNativeRepair,'EXISTING_FUNCTION_GUI_BINDING');
+  assert.equal(selected.deterministicSelection.candidateCount,2);
+  assert.deepEqual(selected.deterministicSelection.attempts.map(row=>row.status),['REJECTED','VALIDATED']);
+  assert.equal(selected.deterministicSelection.attempts[0].reasonCode,'ROBLOX_TEST_REPRODUCED_FAILURE');
+  assert.match(selected.deterministicSelection.attempts[1].sources[0].sha256,/^[a-f0-9]{64}$/);
+  assert.equal(selected.deterministicSelection.runtimeVerified,false);
+  assert.equal(fs.readFileSync(path.join(root,files[0]),'utf8'),first);
+  assert.equal(fs.readFileSync(path.join(root,files[1]),'utf8'),second);
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,
+    responsibleFiles:files,candidateValidator:()=>({pass:false})}),error=>{
+      assert.equal(error.vibe2DeterministicSelection.status,'ALL_CANDIDATES_REJECTED');
+      assert.equal(error.vibe2DeterministicSelection.selectedFingerprint,null);
+      assert.equal(error.vibe2DeterministicSelection.attempts.length,2);
+      return true;
+    });
+  let clock=0;t.mock.method(Date,'now',()=>clock);
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,
+    responsibleFiles:files,candidateValidator:()=>{
+      clock+=1000000;throw new Error('REJECT_WITHIN_EXISTING_TIME_BUDGET');
+    }}),error=>{
+      assert.equal(error.vibe2DeterministicSelection.status,'VALIDATION_BUDGET_EXHAUSTED');
+      assert.equal(error.vibe2DeterministicSelection.attempts.length,1);
+      assert.equal(error.vibe2DeterministicSelection.selectedFingerprint,null);
+      return true;
+    });
+});
+
+test('no-model Roblox engine refuses ambiguous function bindings and duplicate handler generation',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-native-binding-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.mkdirSync(path.join(root,'client'));
+  const file='client/Main.client.luau';
+  const source='local function attack()\n  remote:FireServer("attack")\nend\nlocal attackButton = Instance.new("ImageButton")\nattackButton.Parent = hud\n';
+  const generate=text=>{
+    fs.writeFileSync(path.join(root,file),text);
+    return deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,responsibleFiles:[file]});
+  };
+  const raw=generate(source);
+  assert.equal(raw.deterministicSelection.status,'SOURCE_GROUNDED_UNVALIDATED');
+  const patched=source.replace(raw.edits[0].find,raw.edits[0].replace);
+  assert.equal(patched,source.replace('attackButton.Parent = hud','attackButton.Parent = hud\nattackButton.Activated:Connect(attack)'));
+  assert.equal(generate(patched),null);
+  for(const text of [
+    source.replace('attack()','attack(target)'),
+    source.replace('attack()','different()'),
+    'if allowed then\n'+source+'end',
+    '--[=[\n'+source+'\n]=]',
+    'local example = `\n'+source+'\n`',
+    '--[[\n'+source,
+    'local function outer()\n'+source+'end\n',
+    source+'attack = other\n',
+    source+'local alias = attackButton\n',
+    source+'CommonUI.Bind(attackButton)\n',
+    source+'attackButton.Activated:Connect(other)\n',
+    source+'local function attack() end\n',
+    source.replace('local function attack()\n  remote:FireServer("attack")\nend\n','')+'local function attack() end\n'
+  ])assert.equal(generate(text),null,'the engine must not guess a callback or duplicate existing binding');
+  assert.equal(generate('local button = Instance.new("TextButton")\n--[[\nbutton.MouseButton1Click:Connect(function() end)\n]]'),null);
+});
+
+test('no-model Roblox engine detects source drift and continues only on untouched responsible files',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-native-drift-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.mkdirSync(path.join(root,'client'));
+  const files=['client/A.client.luau','client/B.client.luau','client/C.client.luau'];
+  const source='local button = Instance.new("TextButton")\nbutton.MouseButton1Click:Connect(function() end)\n';
+  for(const file of files)fs.writeFileSync(path.join(root,file),source);
+  let calls=0;
+  const result=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,
+    responsibleFiles:files,candidateValidator:()=>{
+      calls++;
+      if(calls===1){fs.appendFileSync(path.join(root,files[1]),'-- another worker changed this file\n');throw new Error('FIRST_REJECTED');}
+      return {pass:true};
+    }});
+  assert.equal(calls,2,'a stale candidate must never reach the validator');
+  assert.deepEqual(result.deterministicSelection.attempts.map(row=>row.status),['REJECTED','REJECTED','VALIDATED']);
+  assert.equal(result.deterministicSelection.attempts[1].reasonCode,'DETERMINISTIC_SOURCE_REVISION_CHANGED');
+  assert.equal(result.normalizedCandidate.edits[0].path,files[2]);
+  fs.writeFileSync(path.join(root,files[0]),source);
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,
+    responsibleFiles:[files[0]],candidateValidator:()=>{
+      fs.appendFileSync(path.join(root,files[0]),'-- concurrent write during validation\n');
+      return {pass:true};
+    }}),error=>{
+      assert.equal(error.vibe2DeterministicSelection.attempts[0].reasonCode,'DETERMINISTIC_SOURCE_REVISION_CHANGED');
+      assert.equal(error.vibe2DeterministicSelection.selectedFingerprint,null);
+      return true;
+    });
+});
+
+test('no-model Roblox generated button executes its original callback in isolated Luau',t=>{
+  const compiler=process.env.VIBE2_TEST_LUAU_COMPILER;
+  if(!compiler){t.skip('isolated Luau executor is provided by the existing practice CI job');return;}
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-native-luau-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.mkdirSync(path.join(root,'client'));
+  const file='client/Main.client.luau';
+  const source='local score = 0\nlocal function attack()\n  score += 2\nend\nlocal attackButton = Instance.new("TextButton")\nattackButton.Parent = hud\n';
+  fs.writeFileSync(path.join(root,file),source);
+  const broken='client/Broken.client.luau';
+  fs.writeFileSync(path.join(root,broken),'local button = Instance.new("TextButton")\nbutton.MouseButton1Click:Connect(function() end))\n');
+  const raw=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,
+    responsibleFiles:[broken,file],candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot:root,target:'roblox',luauCompiler:compiler})});
+  assert.equal(raw.deterministicSelection.attempts[0].status,'REJECTED','the real Luau compiler must reject the broken first source');
+  assert.equal(raw.deterministicSelection.attempts[1].status,'VALIDATED');
+  assert.equal(raw.normalizedCandidate.edits[0].path,file);
+  const patched=source.replace(raw.edits[0].find,raw.edits[0].replace);
+  const harness=[
+    'local callback = nil',
+    'local hud = {}',
+    'local Instance = {new = function(className)',
+    '  assert(className == "TextButton")',
+    '  return {Activated = {Connect = function(_, fn) assert(callback == nil); callback = fn end}}',
+    'end}',
+    patched,
+    'assert(score == 0)',
+    'assert(type(callback) == "function")',
+    'callback(); assert(score == 2)',
+    'callback(); assert(score == 4)',
+    'print("SOURCE_CALLBACK_CAUSAL_REPLAY=PASS")'
+  ].join('\n');
+  const script=path.join(root,'causal.luau');fs.writeFileSync(script,harness);
+  execFileSync(compiler,['--null',script],{encoding:'utf8',timeout:15000});
+  const runtime=path.join(path.dirname(compiler),process.platform==='win32'?'luau.exe':'luau');
+  assert.match(execFileSync(runtime,[script],{encoding:'utf8',timeout:15000}),/SOURCE_CALLBACK_CAUSAL_REPLAY=PASS/);
+});
+
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
