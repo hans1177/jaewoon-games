@@ -1,6 +1,6 @@
 {
   "version": 33,
-  "updatedAt": "2026-10-25",
+  "updatedAt": "2026-10-27",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -321,7 +321,7 @@
         "playMode": "COOP",
         "playModeLabel": "협동",
         "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-10-26T16:58:01.612Z",
+        "updatedAt": "2026-10-26T16:59:25.910Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -464,7 +464,7 @@
             "playMode": "COOP",
             "playModeLabel": "협동",
             "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-10-26T16:58:01.612Z",
+            "updatedAt": "2026-10-26T16:59:25.910Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -608,8 +608,8 @@
         "playMode": "COMPETITIVE",
         "playModeLabel": "경쟁",
         "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-10-26T16:54:05.127Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-26T16:59:25.910Z",
+        "status": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -775,8 +775,8 @@
             "playMode": "COMPETITIVE",
             "playModeLabel": "경쟁",
             "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-            "updatedAt": "2026-10-26T16:54:05.127Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-26T16:59:25.910Z",
+            "status": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -11060,6 +11060,42 @@
       "webPublishedSourceTreeSha": "5aec9e0d823e892f64c5ecb3d7d3a7977c0af8f3",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
+    },
+    {
+      "id": "baeksu-war",
+      "name": "백수대전쟁",
+      "description": "생물집 8종을 건설하고 자동 진격하는 군단으로 성문을 공략하는 Roblox 전략 타이쿤. 기존 3개 무료 슬롯, 10단계 진화와 저장 진행을 보존한다.",
+      "genre": [
+        "전략",
+        "타이쿤",
+        "자동 전투"
+      ],
+      "image": "",
+      "featured": false,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "hasWebArchive": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_EXISTING_ROBLOX_SOURCE_INTAKE_PENDING_MINIMUM_DESIGN",
+      "productionTarget": "ROBLOX",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_CONTINUOUS_DEVELOPMENT_20261027",
+      "ownerExistingGame": true,
+      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "robloxProjectPath": "roblox-games/baeksu-war",
+      "homepageStage": "개발확정 · Roblox 최소설계 검증 대기",
+      "sourceIntake": {
+        "kind": "EXISTING_ROJO_PROJECT",
+        "designVerified": false,
+        "runtimeVerified": false,
+        "externalReleaseApproved": false
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
