@@ -147,6 +147,11 @@ test('공용 브릭 재질은 선택형이며 실제 메시·물리·원본 모�
   assert.match(common,/TOY_PLASTIC = table\.freeze/);
   assert.match(common,/if style=="TOY_BRICK"then/);
   assert.match(common,/if part:IsA\("MeshPart"\) or part:GetAttribute\("MaterialStyle"\)=="TOY_BRICK"then return false end/);
+  assert.match(common,/authoredMaterial==Enum\.Material\.Glass or authoredMaterial==Enum\.Material\.Neon/);
+  assert.match(common,/part\.Transparency>0\.15/);
+  assert.match(common,/part:GetAttribute\("SurfaceRole"\)=="WATER"/);
+  assert.match(common,/name:find\("water",1,true\)/);
+  assert.match(common,/part:GetAttribute\("PreserveLiquidSurface"\)==true/);
   assert.match(common,/RobloxCommonMaterials\.Apply\(part,"TOY_PLASTIC",\{variant=variant,tint=authoredColor,tintStrength=1,preservePhysics=true\}\)/);
   assert.match(common,/part:SetAttribute\("ToyBrickGeometryState","CC0_MESH_AND_STUD_TOPOLOGY_INDEPENDENT_QA_REQUIRED"\)/);
   assert.match(common,/if preservePhysics and physicalBefore then[\s\S]*?part\.CustomPhysicalProperties = physicalBefore/);

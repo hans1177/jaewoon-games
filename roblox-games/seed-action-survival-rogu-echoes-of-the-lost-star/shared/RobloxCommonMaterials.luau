@@ -377,7 +377,16 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  -- 실제 CC0 MeshPart의 아틀라스/리깅/UV/텍스처는 유지한다. 노멀맵이 없는 돌기를 가짜로 생성하지 않는다.
  if style=="TOY_BRICK"then
   if part:IsA("MeshPart") or part:GetAttribute("MaterialStyle")=="TOY_BRICK"then return false end
+  -- 반투명 액체/창문/방출 광원은 플라스틱으로 바꾸면 실제 게임 플레이 판독성을 망친다.
+  -- 불특정 CC0 메시 및 이미 바인딩한 원본 PBR은 그대로 보호한다.
+  local authoredMaterial=part.Material
   local name=string.lower(part.Name)
+  if authoredMaterial==Enum.Material.Glass or authoredMaterial==Enum.Material.Neon
+    or authoredMaterial==Enum.Material.Ice or authoredMaterial==Enum.Material.Glacier
+    or part.Transparency>0.15 or part:GetAttribute("PreserveLiquidSurface")==true
+    or part:GetAttribute("SurfaceRole")=="WATER"
+    or name:find("water",1,true) or name:find("ocean",1,true)
+    or name:find("sea",1,true) then return false end
   local variant=(name:find("metal",1,true)or name:find("iron",1,true)or name:find("stone",1,true))
    and "DARK" or (name:find("grass",1,true)or name:find("leaf",1,true)or name:find("crop",1,true))
    and "MATTE" or "SATIN"
