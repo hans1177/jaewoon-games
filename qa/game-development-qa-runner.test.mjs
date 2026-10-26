@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {chooseGameQa,runGameQa} from '../tools/game-development-qa-runner.mjs';
+import {chooseGameQa,runGameQa,testRelevantToRobloxChange} from '../tools/game-development-qa-runner.mjs';
 
 const games=[
  {gameId:'alpha',sources:{WEB:'web-games/alpha',ROBLOX:'roblox-games/alpha'},
@@ -31,6 +31,62 @@ test('exact game scope and all-game scope are explicit; nonexistent game is neve
   assert.throws(()=>chooseGameQa({games,gameId:'missing'}),/GAME_NOT_FOUND/);
   assert.deepEqual(chooseGameQa({games,changedFiles:['game-catalog.json']}),[]);
 });
+test('Roblox-only source changes exclude only explicit web or Unity tests and preserve every native or mixed test',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-platform-qa-scope-'));
+  try{
+    const specs={
+      'web.test.mjs':"const file='web-games/alpha/client.js';",
+      'unity.test.mjs':"const file='unity-games/alpha/Assets/World.cs';",
+      'native.test.mjs':"const file='roblox-games/alpha/server/Game.server.luau';",
+      'mixed.test.mjs':"const x='roblox-games/alpha/client/Game.client.luau';const y='web-games/alpha/client.js';",
+      'shared.test.mjs':"test('preserve shared save and security contract',()=>{})"
+    };
+    fs.mkdirSync(path.join(root,'qa'),{recursive:true});
+    for(const [name,body] of Object.entries(specs))fs.writeFileSync(path.join(root,'qa',name),body);
+    const g={gameId:'alpha',sources:{ROBLOX:'roblox-games/alpha',WEB:'web-games/alpha',UNITY:'unity-games/alpha'},qa:Object.keys(specs).map(name=>'qa/'+name)};
+    const native=chooseGameQa({games:[g],changedFiles:['roblox-games/alpha/shared/GameConfig.luau'],repoRoot:root});
+    assert.equal(native.length,1);
+    assert.equal(native[0].nativeOnlyQaScope,true);
+    assert.deepEqual(native[0].excludedOtherPlatformTests,['qa/unity.test.mjs','qa/web.test.mjs']);
+    assert.deepEqual(native[0].tests,['qa/mixed.test.mjs','qa/native.test.mjs','qa/shared.test.mjs']);
+    assert.equal(testRelevantToRobloxChange({gameId:'alpha',testPath:'qa/native.test.mjs',repoRoot:root}),true);
+    assert.equal(testRelevantToRobloxChange({gameId:'alpha',testPath:'qa/missing.test.mjs',repoRoot:root}),true,'missing QA must fail in the actual test runner, never vanish');
+    const mixed=chooseGameQa({games:[g],changedFiles:['web-games/alpha/main.js','roblox-games/alpha/server/Game.server.luau'],repoRoot:root});
+    assert.equal(mixed[0].nativeOnlyQaScope,false);
+    assert.equal(mixed[0].tests.length,5);
+    assert.equal(chooseGameQa({games:[g],gameId:'alpha',repoRoot:root})[0].tests.length,5);
+    assert.equal(chooseGameQa({games:[g],all:true,repoRoot:root})[0].tests.length,5);
+    assert.deepEqual(chooseGameQa({games:[g],changedFiles:['web-games/alpha/main.js'],repoRoot:root})[0].tests.sort(),g.qa.sort());
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Roblox source with native regression companions retains scoped native QA and runs every changed test',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-companion-qa-'));
+  try{
+    fs.mkdirSync(path.join(root,'qa'),{recursive:true});
+    const scripts={
+      'native.test.mjs':"const p='roblox-games/alpha/server/Game.server.luau';",
+      'web.test.mjs':"const p='web-games/alpha/game.js';",
+      'shared.test.mjs':"test('save and security always checked',()=>{});",
+      'primary-three.test.mjs':"const p='roblox-games/alpha/shared/GameConfig.luau';"
+    };
+    for(const [name,body] of Object.entries(scripts))fs.writeFileSync(path.join(root,'qa',name),body);
+    const g={gameId:'alpha',sources:{ROBLOX:'roblox-games/alpha',WEB:'web-games/alpha'},
+      qa:['qa/native.test.mjs','qa/web.test.mjs','qa/shared.test.mjs']};
+    const changed=['roblox-games/alpha/server/Game.server.luau','qa/native.test.mjs','qa/primary-three.test.mjs'];
+    const selected=chooseGameQa({games:[g],changedFiles:changed,repoRoot:root});
+    assert.equal(selected.length,1);
+    assert.equal(selected[0].nativeOnlyQaScope,true);
+    assert.deepEqual(selected[0].excludedOtherPlatformTests,['qa/web.test.mjs']);
+    assert.deepEqual(selected[0].tests,['qa/native.test.mjs','qa/primary-three.test.mjs','qa/shared.test.mjs']);
+    const withWebTest=chooseGameQa({games:[g],changedFiles:['roblox-games/alpha/server/Game.server.luau','qa/web.test.mjs'],repoRoot:root});
+    assert.equal(withWebTest[0].nativeOnlyQaScope,false,'changing web-only QA alongside Roblox must retain full QA');
+    assert.equal(withWebTest[0].tests.length,3);
+    const withoutSource=chooseGameQa({games:[g],changedFiles:['qa/native.test.mjs'],repoRoot:root});
+    assert.equal(withoutSource[0].nativeOnlyQaScope,false,'QA-only PR is never labeled Roblox-source-only');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('missing game QA is reported missing, not passed',()=>{
   const selected=chooseGameQa({games,gameId:'untested'});
   const report=runGameQa({selected});

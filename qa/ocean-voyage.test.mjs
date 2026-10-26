@@ -75,7 +75,9 @@ test('dock upgrades are paid, non-destructive and fleet bounded',()=>{
  assert.equal(next.ok,true);assert.equal(next.state.fleet,2);assert.equal(s.fleet,1);
  assert.equal(next.state.coins,100);
  assert.equal(buyUpgrade(next.state,'ship').ok,false);
- const away=newGame();away.ship.x=48;assert.equal(buyUpgrade(away,'provisions').ok,false);
+ const away=newGame();away.ship.x=PORTS[0].x+750;away.ship.z=PORTS[0].z+750;
+ assert.equal(canDock(away),null,'outside every current real harbor radius');
+ assert.equal(buyUpgrade(away,'provisions').ok,false,'offshore buying stays blocked');
 });
 test('A star route targets exact harbor and auto navigation makes progress',()=>{
  const start=newGame();
