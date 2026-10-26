@@ -42,7 +42,7 @@ on:
       - 'tools/company-shared-context.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
-    - cron: '0 16 * * *' # 01:00 KST fallback; event chain remains primary
+    - cron: '17 * * * *' # hourly watchdog for stranded design checkpoints; existing event chain remains primary
 
 permissions:
   contents: write
