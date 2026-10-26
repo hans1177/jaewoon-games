@@ -132,6 +132,7 @@ jobs:
           NODE
 
       - name: Persist promoted state to company runtime branch
+        id: persist
         shell: bash
         run: |
           set -euo pipefail
@@ -139,6 +140,7 @@ jobs:
           git config user.email 'design-promotion@users.noreply.github.com'
           persisted=0
           attempt=0
+          refill_required=false
           # 메인: 실제 상태 충돌만 최신 상태로 다시 계산한다. 실행 시간은 기존 12분 제한을 따른다.
           while true; do
             attempt=$((attempt+1))
@@ -170,6 +172,15 @@ jobs:
 
             git add -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json homepage-platform-exposure.json
             git diff --cached --check
+            # 타임스탬프만 바뀐 동기화는 24H 계획기와 네이티브 개발을 중복 깨우지 않는다.
+            # 실제 개발 대기열 내용 또는 검증 설계가 바뀌면 기존 즉시 재진입 경로를 유지한다.
+            refill_required=false
+            queue_diff="$(git diff --cached --unified=0 -- development-queue.json)"
+            queue_semantic_diff="$(printf '%s\n' "$queue_diff" | grep -E '^[+-][^+-]' | grep -Ev '^[+-][[:space:]]*"updatedAt":' || true)"
+            design_changes="$(git diff --cached --name-only -- design)"
+            if [ -n "$queue_semantic_diff" ] || [ -n "$design_changes" ]; then
+              refill_required=true
+            fi
             if git diff --cached --quiet; then
               echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
               persisted=1
@@ -197,6 +208,8 @@ jobs:
             exit 1
           fi
           echo 'PUBLIC_MAIN_WRITE=NO'
+          echo "refill_required=$refill_required" >> "${GITHUB_OUTPUT:-/dev/null}"
+          echo "DESIGN_PROMOTION_SEMANTIC_REFILL=$refill_required"
 
       - name: Verify exact promoted runtime design handoff for Vibe
         shell: bash
@@ -214,6 +227,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${{ steps.persist.outputs.refill_required }}" != 'true' ]; then
+            echo 'VIBE2_PROMOTION_REFILL=SKIPPED_NO_SEMANTIC_DESIGN_OR_QUEUE_CHANGE'
+            echo 'NATIVE_DEVELOPMENT_DISPATCH=SKIPPED_NO_SEMANTIC_PROMOTION'
+            exit 0
+          fi
           gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f trigger_source=DESIGN_PROMOTION
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'ROBLOX_ONLY_DISPATCH=CENTRAL_EXACT_FANOUT'
