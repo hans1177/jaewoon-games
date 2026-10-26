@@ -109899,11 +109899,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_33821ad2e00c47629823d9e9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10448",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7d5f1c6e517c352d81ec9a0e21e1c8bb8fcceeac",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10448,
+        "baseBranch": "main",
+        "headBranch": "owner/vibe-motion-runtime-binding-20261027",
+        "baseSha": "7d5f1c6e517c352d81ec9a0e21e1c8bb8fcceeac",
+        "headSha": "f5a3cb5738e8c6cdc41726eeb686f37f65e82469",
+        "mergeCommitSha": "c23fe6bdd7d910ef6a7574609b950b7910b9ad27",
+        "mergedAt": "2026-10-26T16:53:29Z",
+        "authorLogin": "hans1177",
+        "titleHash": "948cb29c3fcba918c6d3cb72825bef017896b9bfa55c45e0bac99b6155988c5b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/vibe-motion-runtime-binding-20261027",
+        "candidateSha": "f5a3cb5738e8c6cdc41726eeb686f37f65e82469"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 203,
+        "deletedLineCount": 9,
+        "changedFiles": [
+          "assets/vibe-motion-director.js",
+          "assets/vibe-motion-effects-director.js",
+          "qa/vibe-motion-director.test.mjs",
+          "qa/vibe-presentation-causality.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/vibe-motion-director.js",
+          "assets/vibe-motion-effects-director.js",
+          "qa/vibe-motion-director.test.mjs",
+          "qa/vibe-presentation-causality.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10448",
+        "merge-commit:c23fe6bdd7d910ef6a7574609b950b7910b9ad27",
+        "base-main:7d5f1c6e517c352d81ec9a0e21e1c8bb8fcceeac"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 866
+    "total": 867
   }
 }
