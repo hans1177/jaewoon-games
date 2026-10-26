@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -97161,39 +97159,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_2e7376734d9c91529149d2c6",
-          "taskId": "daechung-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_c77e9012adc1458e5f026af9",
-            "capability_ctrace_8384b04814b6ef675cd54829"
-          ],
-          "evidence": [
-            "base-main:7dbe69552b0dab92567b8097f5ef81bb37547d22",
-            "actions-run:40043424394",
-            "reservation-id:40043424394:1",
-            "capability-application-sample:44c4fcc49711bd015161"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_49e2a2055ccb61d577f91417",
           "taskId": "daechung-rpg-existing-web-assessment-v1",
           "workKey": null,
@@ -99270,6 +99235,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e291540f8cb3e23027a7dc92",
+          "taskId": "daechung-rpg-web-library-cc0-replacement-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_c77e9012adc1458e5f026af9",
+            "capability_ctrace_8384b04814b6ef675cd54829"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:0e5146f6119e3fa29bf8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -99452,39 +99450,6 @@
       "confirmations": 27,
       "confidence": 0.9643,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_eb9b3c0d3ddb97cc1cbd43ec",
-          "taskId": "daechung-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_c77e9012adc1458e5f026af9",
-            "capability_ctrace_8384b04814b6ef675cd54829"
-          ],
-          "evidence": [
-            "base-main:7dbe69552b0dab92567b8097f5ef81bb37547d22",
-            "actions-run:40043424394",
-            "reservation-id:40043424394:1",
-            "capability-application-sample:44c4fcc49711bd015161"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_f175a69e96ee424c632c0d17",
@@ -101563,6 +101528,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bdee32d993e77ee4be2b226b",
+          "taskId": "daechung-rpg-web-library-cc0-replacement-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_c77e9012adc1458e5f026af9",
+            "capability_ctrace_8384b04814b6ef675cd54829"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:0e5146f6119e3fa29bf8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -101738,39 +101736,6 @@
       "confirmations": 25,
       "confidence": 0.9615,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_9ad805a982eb4bd47def20f7",
-          "taskId": "daechung-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_c77e9012adc1458e5f026af9",
-            "capability_ctrace_8384b04814b6ef675cd54829"
-          ],
-          "evidence": [
-            "base-main:7dbe69552b0dab92567b8097f5ef81bb37547d22",
-            "actions-run:40043424394",
-            "reservation-id:40043424394:1",
-            "capability-application-sample:44c4fcc49711bd015161"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_41c81ef2cc133e5737e181fc",
@@ -103843,6 +103808,39 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:e734b03faa3607b87cde"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ed57d3e243d9437587532cf2",
+          "taskId": "daechung-rpg-web-library-cc0-replacement-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_c77e9012adc1458e5f026af9",
+            "capability_ctrace_8384b04814b6ef675cd54829"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:0e5146f6119e3fa29bf8"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -165933,72 +165931,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_22c14cc0524106dca47d23b9",
-          "taskId": "defense-web-startup-spatial-repair-v2",
-          "workKey": null,
-          "gameId": "defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:cf4ae8bc4df949b273eef4f7b336f92a58ae6ad8",
-            "actions-run:40319203557",
-            "reservation-id:40319203557:1",
-            "capability-application-sample:b4fdc1ed9278ae701b7e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_c1b701bd33d71998f72e1cdf",
-          "taskId": "fantasy-survival-web-library-cc0-replacement-v1",
-          "workKey": null,
-          "gameId": "fantasy-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_d88b3fb6a7ce0fd1b13cc918",
-            "capability_ctrace_7ca73b83002c115cfd34f506",
-            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
-            "capability_ctrace_363cfebe4daa49dc2935b54a",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
-          ],
-          "evidence": [
-            "base-main:cf4ae8bc4df949b273eef4f7b336f92a58ae6ad8",
-            "actions-run:40319203557",
-            "reservation-id:40319203557:1",
-            "capability-application-sample:a9455dd1e27d83fc6b47"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_d0c35ece04d57e61eb0486ec",
           "taskId": "kingshot-ad-existing-web-assessment-v1",
           "workKey": null,
@@ -168042,6 +167974,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e6d3c0659e590b42db04e9c4",
+          "taskId": "party-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "party-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:d944f24fdf11694d74ad"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3772c9a2814a69be71009bc4",
+          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "tower-choice-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:41bde1c84099860b2acd"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [
@@ -168358,39 +168356,6 @@
       "confirmations": 11,
       "confidence": 0.9167,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_6b36830d8d29dd556bd3f77a",
-          "taskId": "daechung-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_c77e9012adc1458e5f026af9",
-            "capability_ctrace_8384b04814b6ef675cd54829"
-          ],
-          "evidence": [
-            "base-main:7dbe69552b0dab92567b8097f5ef81bb37547d22",
-            "actions-run:40043424394",
-            "reservation-id:40043424394:1",
-            "capability-application-sample:44c4fcc49711bd015161"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_d4242d2550d73f6cd659de06",
@@ -170463,6 +170428,39 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:e734b03faa3607b87cde"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e92f089c7f47a5e5ec05b3d9",
+          "taskId": "daechung-rpg-web-library-cc0-replacement-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_c77e9012adc1458e5f026af9",
+            "capability_ctrace_8384b04814b6ef675cd54829"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:0e5146f6119e3fa29bf8"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172965,72 +172963,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_33825fb02df6fb37eea2a43f",
-          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "tower-choice-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:84b1b3a8adb246ab5c16"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_a4361a84b41aa9e2c779a84d",
-          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "tower-choice-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:74949dd14c2fdc3d9707"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8c50afe6010acf5043cd6006",
           "taskId": "zombie-survival-web-startup-spatial-repair-v1",
           "workKey": null,
@@ -175068,6 +175000,72 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:a461766a64050ca6b0d4"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_062df822cce7a5be757587f4",
+          "taskId": "party-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "party-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:d944f24fdf11694d74ad"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_64d4d5fcdcb8de8a60261af7",
+          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "tower-choice-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:41bde1c84099860b2acd"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -187170,39 +187168,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_8df69af8c95cf85a6c8ce10e",
-          "taskId": "daechung-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884",
-            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
-            "capability_ctrace_c77e9012adc1458e5f026af9",
-            "capability_ctrace_8384b04814b6ef675cd54829"
-          ],
-          "evidence": [
-            "base-main:7dbe69552b0dab92567b8097f5ef81bb37547d22",
-            "actions-run:40043424394",
-            "reservation-id:40043424394:1",
-            "capability-application-sample:44c4fcc49711bd015161"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_d247b983094b40055f633f79",
           "taskId": "daechung-rpg-existing-web-assessment-v1",
           "workKey": null,
@@ -189279,6 +189244,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7b65531f491a9936096cb3ec",
+          "taskId": "daechung-rpg-web-library-cc0-replacement-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_c77e9012adc1458e5f026af9",
+            "capability_ctrace_8384b04814b6ef675cd54829"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:0e5146f6119e3fa29bf8"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -189466,72 +189464,6 @@
       "confirmations": 18,
       "confidence": 0.9474,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_65d9f163fe2db9a061273a15",
-          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "tower-choice-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:f8b0f31fcf94a6d722d7"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_96770c0a2f31a1b4cf39a6e7",
-          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "tower-choice-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:84b1b3a8adb246ab5c16"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_bddc34c3545a9bb3cba4a8cf",
@@ -191571,6 +191503,72 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:a461766a64050ca6b0d4"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bfe91f9dee5b646c7a2fec00",
+          "taskId": "party-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "party-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:d944f24fdf11694d74ad"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0fc0ca8606520167e3729c06",
+          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "tower-choice-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:41bde1c84099860b2acd"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196519,72 +196517,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_ce2be077bfb58478c4ef7ff2",
-          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "tower-choice-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:f8b0f31fcf94a6d722d7"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_783fe83ef9ac136f3be6484b",
-          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "tower-choice-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:84b1b3a8adb246ab5c16"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_41eff0cf04c1c13ba6ab5db8",
           "taskId": "tower-choice-rpg-existing-web-assessment-v1",
           "workKey": null,
@@ -198622,6 +198554,72 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:a461766a64050ca6b0d4"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_97805fe67a1b2204e33e0f74",
+          "taskId": "party-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "party-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:d944f24fdf11694d74ad"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_21c269e23d6607789fdcc4bd",
+          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "tower-choice-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:41bde1c84099860b2acd"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201465,72 +201463,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_5e0489ff85286771a845ce97",
-          "taskId": "human-go-temp-web-startup-spatial-repair-v1",
-          "workKey": null,
-          "gameId": "human-go-temp",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:a6c81bb8d6b4f30d5224"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_bdeb1d7d8adf491b08b80262",
-          "taskId": "party-rpg-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "party-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:dddbc8d3e45a00f9d52bdc82a5afe1e572d8af84",
-            "actions-run:40316413156",
-            "reservation-id:40316413156:1",
-            "capability-application-sample:32bf4afc12ca47fe87bd"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_a8be367d0f304c014a103922",
           "taskId": "party-rpg-existing-web-assessment-v1",
           "workKey": null,
@@ -203568,6 +203500,72 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:a461766a64050ca6b0d4"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_939011dd6255abce502f9c49",
+          "taskId": "party-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "party-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:d944f24fdf11694d74ad"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5017feb193ea82e8e0e2eed5",
+          "taskId": "tower-choice-rpg-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "tower-choice-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:41bde1c84099860b2acd"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -303396,39 +303394,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_544ee21014e6d2b19a979b29",
-          "taskId": "tekken-studio-evolution-roblox-usability-v2",
-          "workKey": null,
-          "gameId": "tekken",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9762e303c086b70c5150f698b35b08a602c96e92",
-            "actions-run:40314734438",
-            "reservation-id:40314734438:1",
-            "capability-application-sample:3ea13f585db1850a9833"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5f5beb754ce4393cb724fe17",
           "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -305499,6 +305464,39 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:b13398f7f3cef8773b43"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_914a5e79a775513e6af642f3",
+          "taskId": "realistic-builder-studio-evolution-roblox-stability-v3",
+          "workKey": null,
+          "gameId": "realistic-builder",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:065709f1e45edd11ff09"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -312448,39 +312446,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4dc68c39abd458b5235048fe",
-          "taskId": "tekken-studio-evolution-roblox-usability-v2",
-          "workKey": null,
-          "gameId": "tekken",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9762e303c086b70c5150f698b35b08a602c96e92",
-            "actions-run:40314734438",
-            "reservation-id:40314734438:1",
-            "capability-application-sample:3ea13f585db1850a9833"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_be06542502dd3b1a361708b7",
           "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -314551,6 +314516,39 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:b13398f7f3cef8773b43"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a735de8f750f6685e4886675",
+          "taskId": "realistic-builder-studio-evolution-roblox-stability-v3",
+          "workKey": null,
+          "gameId": "realistic-builder",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:065709f1e45edd11ff09"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -335348,39 +335346,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_6973bb60c1859d913ec9af88",
-          "taskId": "tekken-studio-evolution-roblox-usability-v2",
-          "workKey": null,
-          "gameId": "tekken",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9762e303c086b70c5150f698b35b08a602c96e92",
-            "actions-run:40314734438",
-            "reservation-id:40314734438:1",
-            "capability-application-sample:3ea13f585db1850a9833"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_3121e94ed517f443d4a3f578",
           "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -337451,6 +337416,39 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:b13398f7f3cef8773b43"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_83c1b062c99a8888b2e51157",
+          "taskId": "realistic-builder-studio-evolution-roblox-stability-v3",
+          "workKey": null,
+          "gameId": "realistic-builder",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:065709f1e45edd11ff09"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -341028,39 +341026,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_bb6bfb0cb819d7fffa7c51c7",
-          "taskId": "tekken-studio-evolution-roblox-usability-v2",
-          "workKey": null,
-          "gameId": "tekken",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9762e303c086b70c5150f698b35b08a602c96e92",
-            "actions-run:40314734438",
-            "reservation-id:40314734438:1",
-            "capability-application-sample:3ea13f585db1850a9833"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_40ab4a512a7d4ad893639628",
           "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -343131,6 +343096,39 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:b13398f7f3cef8773b43"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_db08844328715e9df753ee98",
+          "taskId": "realistic-builder-studio-evolution-roblox-stability-v3",
+          "workKey": null,
+          "gameId": "realistic-builder",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:065709f1e45edd11ff09"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -405466,39 +405464,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_ba55de2720ddc54064700af0",
-          "taskId": "tekken-studio-evolution-roblox-usability-v2",
-          "workKey": null,
-          "gameId": "tekken",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9762e303c086b70c5150f698b35b08a602c96e92",
-            "actions-run:40314734438",
-            "reservation-id:40314734438:1",
-            "capability-application-sample:3ea13f585db1850a9833"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_fd379d240d8b0c55127104a0",
           "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -407569,6 +407534,39 @@
             "actions-run:40328071360",
             "reservation-id:40328071360:1",
             "capability-application-sample:b13398f7f3cef8773b43"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a1d7cab8f9e67962f58a904b",
+          "taskId": "realistic-builder-studio-evolution-roblox-stability-v3",
+          "workKey": null,
+          "gameId": "realistic-builder",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:137f503b1ad9abbeaef6c10a847352978f9cccf8",
+            "actions-run:40332558480",
+            "reservation-id:40332558480:1",
+            "capability-application-sample:065709f1e45edd11ff09"
           ],
           "observedAt": null,
           "rawCodeStored": false,
