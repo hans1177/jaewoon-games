@@ -1583,3 +1583,44 @@ test('new Roblox game creation connects native styled UI without inventing inven
   assert.doesNotMatch(client,/Instance\.new\("Inventory"\)/,'do not create gameplay inventory absent from the approved seed');
   assert.ok(compiled.result.implementationNotes.some(x=>x.includes('new-game Roblox creation renders bounded UICorner')));
 });
+
+
+test('shared Roblox UI renders live inventory icon fallback, equipped badges, search empty state and authority-safe filters',()=>{
+  const ui=fs.readFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),'utf8');
+  const section=name=>{
+    const begin=ui.indexOf('function RobloxCommonUI.'+name+'(');
+    const end=ui.indexOf('\nfunction RobloxCommonUI.',begin+1);
+    assert.ok(begin>=0&&end>begin,'missing shared UI owner: '+name);
+    return ui.slice(begin,end);
+  };
+  const slot=section('CreateInventorySlot');
+  const icon=section('CreateIconButton');
+  const inventory=section('CreateInventoryFullScreen');
+  for(const src of [slot,icon]) {
+    assert.match(src,/FallbackGlyph/);
+    assert.match(src,/GetPropertyChangedSignal\("Image"\)/);
+    assert.match(src,/\.Visible = .*Image (?:==|~=) ""/);
+    assert.doesNotMatch(src,/rbxassetid:\/\//i);
+  }
+  assert.match(slot,/StateBadge/);
+  assert.match(slot,/RarityRail/);
+  assert.match(slot,/options\.locked == true/);
+  assert.match(slot,/options\.equipped == true/);
+  assert.match(slot,/typeof\(options\.rarityColor\) == "Color3"/);
+  assert.match(inventory,/InventoryEmptyMessage/);
+  assert.match(inventory,/#rows==0 and "보유 아이템이 없어" or "조건에 맞는 아이템이 없어"/);
+  assert.match(inventory,/selectedId = nil/);
+  assert.match(inventory,/GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+  assert.match(inventory,/row\.locked==true and "잠김" or row\.equipped==true and "장착"/);
+  assert.match(inventory,/row\.rarityColor/);
+  assert.match(inventory,/utf8\.offset\(label,2\)/,'Korean glyph uses a real UTF8 codepoint');
+  assert.match(inventory,/BoundVisibleItemCount/);
+  assert.match(inventory,/OwnsInventoryAuthority",false/);
+  assert.match(inventory,/OwnsSaveAuthority",false/);
+  assert.match(inventory,/OwnsRemoteAuthority",false/);
+  assert.doesNotMatch(inventory,/FireServer\(|UpdateAsync\(|SetAsync\(/,'inventory panel must not own game economy, remotes or persistence');
+  const generator=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(generator,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
+  assert.match(generator,/clientSource\(\{profile,learning,studioAssets,studioAssetFamilyStatus\}\)/);
+  assert.match(generator,/CommonUI\.CreatePrimaryButton/);
+});
