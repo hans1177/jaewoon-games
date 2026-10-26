@@ -2,8 +2,6 @@
 -- 역할: 모든 Roblox 게임에서 재사용하는 회사 공용 VFX 베이스 27종
 -- 원칙: 시각 표현만 소유한다. 데미지/히트박스/쿨다운/이동/네트워크 권한은 게임 코드가 소유한다.
 
-local TweenService = game:GetService("TweenService")
-local Debris = game:GetService("Debris")
 
 local RobloxCommonVFX = {}
 
@@ -36,62 +34,147 @@ local function tag(instance, atomId)
   instance:SetAttribute("OwnsCooldownAuthority", false)
 end
 
-local function visualPart(name, size, color, shape)
-  local part = Instance.new("Part")
-  part.Name = name
-  part.Anchored = true
-  part.CanCollide = false
-  part.CanTouch = false
-  part.CanQuery = false
-  part.CastShadow = false
-  part.Material = Enum.Material.Neon
-  part.Color = color
-  part.Size = size
-  part.Transparency = 0.10
-  if shape == "BALL" then
-    part.Shape = Enum.PartType.Ball
-  elseif shape == "CYLINDER" then
-    part.Shape = Enum.PartType.Cylinder
+-- 유틸: 화면 밖의 장식 효과를 제한하고 이미지 방출기를 재사용한다.
+local MOBILE = game:GetService("UserInputService").TouchEnabled
+local EFFECT_LIMIT = MOBILE and 18 or 30
+local EFFECT_POOL = {}
+local SPRITES = table.freeze({
+  spark = "rbxassetid://71424868248182", ring = "rbxassetid://106065022086888", slash = "rbxassetid://138705392750932",
+  smoke = "rbxassetid://71208441396858", light = "rbxassetid://120799643869835",
+})
+
+local function createCombatPulse(atomId, options, profile)
+  options = options or {}
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local critical = options.critical == true or profile.role == "ATTACK_TELEGRAPH_PRESENTATION" or profile.role == "BOSS"
+  local camera = workspace.CurrentCamera
+  local maxDistance = tonumber(options.maxDistance) or (MOBILE and 130 or 210)
+  if not critical and camera and (camera.CFrame.Position-cframe.Position).Magnitude > maxDistance then return nil end
+  local node = nil
+  for i = #EFFECT_POOL, 1, -1 do
+    local candidate = EFFECT_POOL[i]
+    if candidate.destroyed then table.remove(EFFECT_POOL,i)
+    elseif not candidate.active then node = candidate; break end
   end
-  return part
+  if not node and #EFFECT_POOL >= EFFECT_LIMIT then
+    if not critical then return nil end
+    -- 위험 예고는 장식 효과보다 먼저 표시한다.
+    for _,candidate in ipairs(EFFECT_POOL) do
+      if not candidate.critical then
+        node = candidate
+        for _,emitter in ipairs(node.emitters) do emitter:Clear() end
+        break
+      end
+    end
+    if not node and #EFFECT_POOL >= EFFECT_LIMIT+6 then return nil end
+  end
+  if not node then
+    local folder = Instance.new("Folder")
+    -- 이 Part는 보이지 않는 렌더 좌표다. 구체·원통·파편 모델은 생성하지 않는다.
+    local anchor = Instance.new("Part")
+    anchor.Name = "ParticleOrigin"
+    anchor.Size = Vector3.new(0.05,0.05,0.05)
+    anchor.Transparency = 1
+    anchor.Anchored = true
+    anchor.CanCollide = false; anchor.CanTouch = false; anchor.CanQuery = false
+    anchor.CastShadow = false; anchor.Parent = folder
+    local attachment = Instance.new("Attachment")
+    attachment.Parent = anchor
+    local emitters = {}
+    for _,name in ipairs({"Flash","Ring","Sparks","Mist"}) do
+      local emitter = Instance.new("ParticleEmitter")
+      emitter.Name = name; emitter.Enabled = false; emitter.Rate = 0
+      -- CC0 원본의 검정 배경은 네이티브 가산 합성으로 숨긴다.
+      emitter.LightEmission = 1; emitter.LightInfluence = 0
+      emitter.VelocityInheritance = 0; emitter.LockedToPart = false
+      emitter.ZOffset = 0; emitter.EmissionDirection = Enum.NormalId.Top
+      emitter.Parent = attachment
+      table.insert(emitters,emitter)
+    end
+    node = {folder=folder,anchor=anchor,emitters=emitters,active=false,token=0,destroyed=false}
+    folder.Destroying:Connect(function() node.destroyed=true;node.active=false;node.token+=1 end)
+    table.insert(EFFECT_POOL,node)
+  end
+  node.token += 1
+  local token = node.token
+  node.active = true; node.critical = critical
+  local folder,anchor = node.folder,node.anchor
+  folder.Name = tostring(options.name or ("Common"..atomId))
+  tag(folder,atomId)
+  folder:SetAttribute("PresentationRole",profile.role)
+  folder:SetAttribute("OwnsParryTimingAuthority",false)
+  folder:SetAttribute("OwnsBlockAuthority",false)
+  folder:SetAttribute("OwnsStunAuthority",false)
+  folder:SetAttribute("OwnsStaminaAuthority",false)
+  folder:SetAttribute("ImageParticleRenderer",true)
+  folder:SetAttribute("PooledEffect",true)
+  anchor.CFrame = cframe
+  folder.Parent = options.parent or workspace
+  local duration = clamp(options.duration or profile.duration,0.08,1.2)
+  local scale = clamp(options.scale or 1,0.25,4)
+  local color = typeof(options.color)=="Color3" and options.color or profile.color
+  local accent = typeof(options.accent)=="Color3" and options.accent or profile.accent
+  local reduced = options.reducedMotion==true
+  local count = math.floor(clamp(options.count or profile.shards or 6,0,MOBILE and 12 or 24))
+  local ringStart = clamp(options.startDiameter or profile.ringSize or 2,0.1,100)*scale
+  local ringEnd = clamp(options.endDiameter or ringStart*(profile.expand or 2.5),0.1,140)
+  local flashStart = clamp(options.startSize or profile.coreSize or 0.5,0.1,60)*scale
+  local flashEnd = clamp(options.endSize or flashStart*(profile.coreExpand or 3),0.1,100)
+  local flash,ring,sparks,mist = table.unpack(node.emitters)
+  for _,emitter in ipairs(node.emitters) do
+    emitter:Clear();emitter.Acceleration=Vector3.zero;emitter.Drag=0
+    emitter.RotSpeed=NumberRange.new(0);emitter.SpreadAngle=Vector2.zero
+    emitter.Color=ColorSequence.new(color,accent)
+    emitter.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.08),NumberSequenceKeypoint.new(.4,.18),NumberSequenceKeypoint.new(1,1)})
+  end
+  flash.Texture = options.textureKey=="slash" and SPRITES.slash or SPRITES.light
+  flash.Orientation = Enum.ParticleOrientation.FacingCamera
+  flash.Speed = NumberRange.new(0);flash.Lifetime=NumberRange.new(duration*.8)
+  flash.Rotation=NumberRange.new(tonumber(options.rotation)or 0)
+  flash.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,flashStart),NumberSequenceKeypoint.new(.18,reduced and flashStart or flashEnd*.7),NumberSequenceKeypoint.new(1,reduced and flashStart or flashEnd)})
+  if options.hideFlash~=true and options.particlesOnly~=true then flash:Emit(1)end
+  ring.Texture=SPRITES.ring;ring.Orientation=Enum.ParticleOrientation.VelocityPerpendicular
+  ring.Speed=NumberRange.new(.01);ring.Lifetime=NumberRange.new(duration)
+  ring.Rotation=NumberRange.new(0);ring.Color=ColorSequence.new(accent)
+  ring.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,ringStart),NumberSequenceKeypoint.new(1,reduced and ringStart or ringEnd)})
+  if options.hideRing~=true and options.particlesOnly~=true then ring:Emit(1)end
+  sparks.Texture=SPRITES.spark;sparks.Orientation=Enum.ParticleOrientation.FacingCamera
+  sparks.Lifetime=NumberRange.new(duration*.55,duration)
+  local distance=clamp(options.distance or profile.distance or 3,0,40)*scale
+  local speed=clamp(options.speed or distance/math.max(.08,duration),0,65)
+  sparks.Speed=NumberRange.new(reduced and 0 or speed*.5,reduced and 0 or speed)
+  sparks.SpreadAngle=Vector2.new(180,180);sparks.Drag=2
+  sparks.Rotation=NumberRange.new(0,360);sparks.RotSpeed=NumberRange.new(-90,90)
+  sparks.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.42*scale),NumberSequenceKeypoint.new(1,0)})
+  if count>0 then sparks:Emit(count)end
+  mist.Texture=SPRITES.smoke;mist.Orientation=Enum.ParticleOrientation.FacingCamera
+  mist.Lifetime=NumberRange.new(duration*.9,duration*1.2)
+  mist.Speed=NumberRange.new(.3,1.3);mist.Drag=1
+  mist.Rotation=NumberRange.new(0,360);mist.RotSpeed=NumberRange.new(-25,25)
+  mist.Color=ColorSequence.new(accent)
+  mist.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.9*scale),NumberSequenceKeypoint.new(1,3.5*scale)})
+  mist.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.75),NumberSequenceKeypoint.new(1,1)})
+  if options.mist==true then mist:Emit(MOBILE and 2 or 4)end
+  folder:SetAttribute("DisplayedParticleCount",count+(options.hideFlash~=true and options.particlesOnly~=true and 1 or 0)+(options.hideRing~=true and options.particlesOnly~=true and 1 or 0))
+  task.delay(duration*1.3+.15,function()
+    if node.destroyed or node.token~=token then return end
+    for _,emitter in ipairs(node.emitters)do emitter:Clear()end
+    node.active=false;node.critical=false
+    -- 투명 좌표도 쉬는 동안 씬에서 제외한다. 다음 요청에서 같은 개체를 재사용한다.
+    node.folder.Parent=nil
+  end)
+  return folder
 end
 
+script.Destroying:Connect(function()
+  for _,node in ipairs(EFFECT_POOL)do if not node.destroyed then node.folder:Destroy()end end
+  table.clear(EFFECT_POOL)
+end)
+
 function RobloxCommonVFX.CreateImpactFlash(options)
-  options = options or {}
-  local parent = options.parent or workspace
-  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
-  local duration = clamp(options.duration or DEFAULT.Duration, 0.08, 0.80)
-  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
-  local accent = typeof(options.accent) == "Color3" and options.accent or DEFAULT.Accent
-  local scale = clamp(options.scale or 1, 0.25, 4)
-
-  local folder = Instance.new("Folder")
-  folder.Name = "CommonImpactFlash"
-  tag(folder, "IMPACT_FLASH")
-  folder.Parent = parent
-
-  local core = visualPart("Core", Vector3.new(0.65, 0.65, 0.65) * scale, color, "BALL")
-  core.CFrame = cframe
-  core.Parent = folder
-  tag(core, "IMPACT_FLASH")
-
-  local ring = visualPart("Ring", Vector3.new(0.12, 2.4, 2.4) * scale, accent, "CYLINDER")
-  ring.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
-  ring.Transparency = 0.22
-  ring.Parent = folder
-  tag(ring, "IMPACT_FLASH")
-
-  TweenService:Create(core, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-    Size = core.Size * 3.2,
-    Transparency = 1,
-  }):Play()
-  TweenService:Create(ring, TweenInfo.new(duration * 1.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-    Size = Vector3.new(ring.Size.X, ring.Size.Y * 2.8, ring.Size.Z * 2.8),
-    Transparency = 1,
-  }):Play()
-
-  Debris:AddItem(folder, duration * 1.25 + 0.08)
-  return folder
+  return createCombatPulse("IMPACT_FLASH",options,{
+    role="IMPACT_CONFIRMATION",duration=.34,ringSize=2.4,expand=2.8,coreSize=.65,coreExpand=3.2,
+    shards=6,distance=3.2,color=DEFAULT.Color,accent=DEFAULT.Accent})
 end
 
 function RobloxCommonVFX.AttachShortTrail(hostPart, options)
@@ -127,7 +210,8 @@ function RobloxCommonVFX.AttachShortTrail(hostPart, options)
   trail.Lifetime = lifetime
   trail.MinLength = 0.05
   trail.FaceCamera = true
-  trail.LightEmission = 0.75
+  trail.Texture = SPRITES.light
+  trail.LightEmission = 1
   trail.LightInfluence = 0
   trail.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, color:Lerp(Color3.new(1,1,1), 0.18)),
@@ -161,113 +245,9 @@ function RobloxCommonVFX.AttachShortTrail(hostPart, options)
 end
 
 function RobloxCommonVFX.CreateShapeBurst(options)
-  options = options or {}
-  local parent = options.parent or workspace
-  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
-  local duration = clamp(options.duration or 0.42, 0.12, 0.90)
-  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Accent
-  local accent = typeof(options.accent) == "Color3" and options.accent or DEFAULT.Color
-  local count = math.floor(clamp(options.count or DEFAULT.BurstCount, 4, 12))
-  local distance = clamp(options.distance or DEFAULT.BurstDistance, 1.5, 8.0)
-  local scale = clamp(options.scale or 1, 0.25, 3.0)
-
-  local folder = Instance.new("Folder")
-  folder.Name = "CommonShapeBurst"
-  tag(folder, "SHAPE_BURST")
-  folder.Parent = parent
-
-  for i = 1, count do
-    local angle = (i - 1) * math.pi * 2 / count
-    local dir = Vector3.new(math.cos(angle), 0.18 + (i % 2) * 0.14, math.sin(angle)).Unit
-    local shard = visualPart(
-      "Shard_" .. tostring(i),
-      Vector3.new(0.18, 0.18, 1.2) * scale,
-      i % 2 == 0 and accent or color
-    )
-    shard.CFrame = cframe * CFrame.lookAt(Vector3.zero, dir)
-    shard.Parent = folder
-    tag(shard, "SHAPE_BURST")
-
-    local targetPosition = cframe.Position + dir * distance * (0.82 + (i % 3) * 0.10)
-    local targetCFrame = CFrame.lookAt(targetPosition, targetPosition + dir)
-    TweenService:Create(shard, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-      CFrame = targetCFrame,
-      Size = Vector3.new(0.05, 0.05, 0.38) * scale,
-      Transparency = 1,
-    }):Play()
-  end
-
-  local center = visualPart("Center", Vector3.new(0.5, 0.5, 0.5) * scale, accent, "BALL")
-  center.CFrame = cframe
-  center.Parent = folder
-  tag(center, "SHAPE_BURST")
-  TweenService:Create(center, TweenInfo.new(duration * 0.65, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-    Size = center.Size * 2.2,
-    Transparency = 1,
-  }):Play()
-
-  Debris:AddItem(folder, duration + 0.12)
-  return folder
-end
-
-
-local function createCombatPulse(atomId,options,profile)
-  options=options or {}
-  local parent=options.parent or workspace
-  local cframe=typeof(options.cframe)=="CFrame" and options.cframe or CFrame.new()
-  local duration=clamp(options.duration or profile.duration,0.08,1.20)
-  local scale=clamp(options.scale or 1,0.25,4)
-  local color=typeof(options.color)=="Color3" and options.color or profile.color
-  local accent=typeof(options.accent)=="Color3" and options.accent or profile.accent
-
-  local folder=Instance.new("Folder")
-  folder.Name="Common"..atomId
-  tag(folder,atomId)
-  folder:SetAttribute("PresentationRole",profile.role)
-  folder:SetAttribute("OwnsParryTimingAuthority",false)
-  folder:SetAttribute("OwnsBlockAuthority",false)
-  folder:SetAttribute("OwnsStunAuthority",false)
-  folder:SetAttribute("OwnsStaminaAuthority",false)
-  folder.Parent=parent
-
-  local ring=visualPart("Ring",Vector3.new(0.10,profile.ringSize,profile.ringSize)*scale,accent,"CYLINDER")
-  ring.CFrame=cframe*CFrame.Angles(0,0,math.rad(90))
-  ring.Transparency=profile.ringTransparency or 0.18
-  ring.Parent=folder
-  tag(ring,atomId)
-  TweenService:Create(ring,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
-    Size=Vector3.new(ring.Size.X,ring.Size.Y*profile.expand,ring.Size.Z*profile.expand),
-    Transparency=1,
-  }):Play()
-
-  local core=visualPart("Core",Vector3.new(profile.coreSize,profile.coreSize,profile.coreSize)*scale,color,"BALL")
-  core.CFrame=cframe
-  core.Transparency=profile.coreTransparency or 0.05
-  core.Parent=folder
-  tag(core,atomId)
-  TweenService:Create(core,TweenInfo.new(duration*0.72,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-    Size=core.Size*(profile.coreExpand or 2.2),
-    Transparency=1,
-  }):Play()
-
-  local shardCount=math.floor(clamp(profile.shards or 6,0,12))
-  for i=1,shardCount do
-    local angle=(i-1)*math.pi*2/math.max(1,shardCount)
-    local dir=Vector3.new(math.cos(angle),profile.vertical or 0.08,math.sin(angle)).Unit
-    local shard=visualPart("Shard"..i,Vector3.new(0.10,0.10,profile.shardLength or 0.85)*scale,i%2==0 and accent or color)
-    shard.CFrame=cframe*CFrame.lookAt(Vector3.zero,dir)
-    shard.Parent=folder
-    tag(shard,atomId)
-    local pos=cframe.Position+dir*(profile.distance or 2.8)*scale
-    TweenService:Create(shard,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
-      CFrame=CFrame.lookAt(pos,pos+dir),
-      Size=Vector3.new(0.04,0.04,0.24)*scale,
-      Transparency=1,
-    }):Play()
-  end
-
-  Debris:AddItem(folder,duration+0.15)
-  return folder
+  return createCombatPulse("SHAPE_BURST",options,{
+    role="BURST_FEEDBACK",duration=.42,ringSize=1.8,expand=2.6,coreSize=.5,coreExpand=2.2,
+    shards=DEFAULT.BurstCount,distance=DEFAULT.BurstDistance,color=DEFAULT.Accent,accent=DEFAULT.Color})
 end
 
 function RobloxCommonVFX.CreateBlockImpact(options)
@@ -505,7 +485,7 @@ end
 
 function RobloxCommonVFX.Audit()
   return table.freeze({
-    version = 3,
+    version = 4,
     packId = "roblox-common-vfx-v1",
     atoms = table.freeze({
       "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST", "BLOCK_IMPACT", "PARRY_PERFECT_FLASH", "GUARD_BREAK_BURST", "ATTACK_TELEGRAPH_PULSE", "COUNTER_READY_PULSE",
@@ -523,6 +503,9 @@ function RobloxCommonVFX.Audit()
     productionVerified = false,
     runtimeVerificationRequired = true,
     mobileBurstCap = 12,
+    nativeImageSpriteCount = 5,
+    pooledEffectCap = EFFECT_LIMIT + 6,
+    visiblePrimitiveGeometry = false,
     mobileDensityVariantAvailable = true,
   })
 end

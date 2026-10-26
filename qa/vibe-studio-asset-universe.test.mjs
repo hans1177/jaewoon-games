@@ -4943,3 +4943,32 @@ test('existing Roblox native importer preserves common masters, deduplicates con
  for(const asset of result.assets.slice(3))assert.equal(asset.robloxAssetId,undefined);
  assert.ok(writes.every(p=>!p.endsWith('.glb')));assert.equal(permissions.length,10);
 });
+
+// 실제 등록된 CC0 이미지와 네이티브 가산 합성 경로를 함께 검사한다.
+test('common VFX image particles bind native receipts and preserve bounded cosmetic ownership',()=>{
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ const dir=path.join(root,'assets/roblox/common-vfx-v1');
+ const source=fs.readFileSync(path.join(dir,'RobloxCommonVFX.luau'),'utf8');
+ const catalog=JSON.parse(fs.readFileSync(path.join(dir,'catalog.json'),'utf8'));
+ assert.equal(catalog.nativeSprites.length,5);
+ for(const art of catalog.nativeSprites){
+  assert.equal(art.license,'CC0-1.0');
+  assert.equal(createHash('sha256').update(fs.readFileSync(path.join(root,art.path))).digest('hex'),art.sha256);
+  assert.equal(createHash('sha256').update(fs.readFileSync(path.join(root,art.sourceArchive))).digest('hex'),art.sourceArchiveSha256);
+  assert.equal(art.importVerified,true);
+  assert.equal(art.importedSourceHash,art.sha256);
+  assert.equal(art.runtimeVerified,false);
+  assert.match(source,new RegExp('rbxassetid://'+art.assetId));
+ }
+ assert.doesNotMatch(source,/__VFX_|Enum\.PartType\.(?:Ball|Cylinder)|local function visualPart/);
+ assert.match(source,/anchor\.Transparency = 1/);
+ assert.match(source,/emitter\.LightEmission = 1/);
+ assert.match(source,/node\.token~=token/);
+ assert.match(source,/node\.folder\.Parent=nil/);
+ assert.match(source,/EFFECT_LIMIT\+6/);
+ const client=fs.readFileSync(path.join(root,'roblox-games/horror-escape-room/client/Game.client.luau'),'utf8');
+ assert.match(client,/CommonVFX\.CreateImpactFlash/);
+ assert.match(client,/CommonVFX\.CreateShapeBurst/);
+ assert.doesNotMatch(client,/combatEffects\.abilityVfxPart/);
+ assert.doesNotMatch(source,/FireServer|FireAllClients|TakeDamage/);
+});
