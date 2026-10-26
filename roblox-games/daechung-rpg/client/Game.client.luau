@@ -792,9 +792,9 @@ local function poseRig(rig,kind)
  if not rig then return false end
  local torso=rig:FindFirstChild("UpperTorso")or rig:FindFirstChild("Torso")
  if not torso then return false end
- local right=torso:FindFirstChild("RightShoulder")or torso:FindFirstChild("Right Shoulder")
- local left=torso:FindFirstChild("LeftShoulder")or torso:FindFirstChild("Left Shoulder")
- local waist=torso:FindFirstChild("Waist")
+ local right=rig:FindFirstChild("RightShoulder",true)or torso:FindFirstChild("Right Shoulder")
+ local left=rig:FindFirstChild("LeftShoulder",true)or torso:FindFirstChild("Left Shoulder")
+ local waist=rig:FindFirstChild("Waist",true)
  if not right or not left or not right:IsA("Motor6D")or not left:IsA("Motor6D")then return false end
  local row=jointEpoch[rig]
  if not row then
@@ -807,6 +807,7 @@ local function poseRig(rig,kind)
   end)
  end
  row.token+=1
+ row.weaponCombo=nil
  local token=row.token
  for _,tween in ipairs(row.tweens)do tween:Cancel()end
  table.clear(row.tweens)
@@ -817,6 +818,11 @@ local function poseRig(rig,kind)
  local duration=kind=="DODGE_LEFT"and .42 or kind=="LIGHT_ATTACK_3"and .48 or kind=="HEAVY_ATTACK_1"and .52 or .32
  local motors={{right,pitch,twist},{left,-pitch*.55,-twist}}
  if waist and waist:IsA("Motor6D")then motors[#motors+1]={waist,0,twist*.6}end
+ -- Include joints previously owned by a weapon/kick so an interrupted combo
+ -- restores elbows, wrists and knees through the same staged pose owner.
+ for motor in pairs(row.base)do
+  if motor~=right and motor~=left and motor~=waist then motors[#motors+1]={motor,0,0}end
+ end
  for _,entry in ipairs(motors)do
   local motor=entry[1]
   if not row.base[motor]then row.base[motor]=motor.C0 end
@@ -864,6 +870,100 @@ end
 -- Imported GLB assets lacking R15 joints still have a visual pose motor.
 -- This moves only appearance; authoritative collision and combat hitboxes stay unchanged.
 local RunService=game:GetService("RunService")
+-- A single caller-owned update drives the currently equipped weapon's actual
+-- R15 joints. Original C0 is captured once, never from the middle of a new hit.
+local equippedComboCache={}
+local function equippedMotionId(character)
+ local tool=character:FindFirstChildOfClass("Tool")
+ if tool then return tool:GetAttribute("WeaponMotionProfile")or tool.Name,tool end
+ return character:GetAttribute("EquippedWeaponVisual"),nil
+end
+local function startEquippedCombatMotion(character)
+ if not(commonMotion and commonMotion.CreateCombatCombo and commonMotion.MapCombatPoseToR15)then return false end
+ local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+ if not humanoid or humanoid.RigType~=Enum.HumanoidRigType.R15 then return false end
+ local equipment,equippedTool=equippedMotionId(character)
+ local profileId=commonMotion.ResolveWeaponProfile(equipment)
+ if not profileId then return false end
+ local row=jointEpoch[character]
+ if not row then
+  row={token=0,base={},tweens={}}
+  jointEpoch[character]=row
+  character.Destroying:Connect(function()
+   row.token+=1;row.weaponCombo=nil
+   for _,tween in ipairs(row.tweens)do tween:Cancel()end
+   table.clear(row.tweens);table.clear(row.base);jointEpoch[character]=nil
+  end)
+ end
+ if row.weaponCombo and row.weaponEquipment==equipment and row.weaponTool==equippedTool and not row.weaponReleasing
+  and os.clock()-row.weaponStarted<row.weaponCombo.duration then
+  -- Bound one queued continuation; rapid input must not restart the first cut.
+  row.weaponQueued=true;return true
+ end
+ local motors={}
+ for _,node in ipairs(character:GetDescendants())do
+  if node:IsA("Motor6D")and node.Part0 and node.Part1 then
+   local name=node.Name
+   if name=="Waist"or name=="Neck"or name:match("Shoulder$")or name:match("Elbow$")or name:match("Wrist$")
+    or name:match("Hip$")or name:match("Knee$")or name:match("Ankle$")then motors[name]=node end
+  end
+ end
+ if not(motors.RightShoulder and motors.LeftShoulder and motors.RightElbow and motors.LeftElbow and motors.Waist)then
+  for motor,base in pairs(row.base)do if motor.Parent then motor.C0=base end end
+  row.weaponCombo=nil
+  character:SetAttribute("WeaponMotionState","COMPATIBLE_JOINTS_REQUIRED");return false
+ end
+ row.token+=1
+ for _,tween in ipairs(row.tweens)do tween:Cancel()end
+ table.clear(row.tweens)
+ local combo=equippedComboCache[profileId]
+ if not combo then combo=commonMotion.CreateCombatCombo(profileId);equippedComboCache[profileId]=combo end
+ row.poses=row.poses or {};table.clear(row.poses)
+ for _,motor in pairs(motors)do
+  if not row.base[motor]then row.base[motor]=motor.C0 end
+  -- Keep the actual current pose when a new input interrupts recovery.
+  row.poses[motor]=row.base[motor]:ToObjectSpace(motor.C0)
+ end
+ row.weaponCombo=combo;row.weaponStarted=os.clock();row.weaponMotors=motors
+ row.weaponTargets=row.weaponTargets or {};row.r15Targets=row.r15Targets or {}
+ row.weaponEquipment=equipment;row.weaponTool=equippedTool;row.weaponReleasing=false;row.weaponQueued=false
+ character:SetAttribute("WeaponMotionProfile",profileId)
+ character:SetAttribute("WeaponMotionState","PLAYING_COMBO")
+ return true
+end
+local function stepEquippedCombatMotion(dt)
+ local character=p.Character
+ local row=character and jointEpoch[character]
+ if not(row and row.weaponCombo)then return end
+ local humanoid=character:FindFirstChildOfClass("Humanoid")
+ local equipment,equippedTool=equippedMotionId(character)
+ local invalid=not humanoid or humanoid.Health<=0 or equipment~=row.weaponEquipment or equippedTool~=row.weaponTool
+ if invalid and not row.weaponReleasing then row.weaponReleasing=true;row.weaponReleaseAt=os.clock()end
+ table.clear(row.weaponTargets);table.clear(row.r15Targets)
+ local elapsed=os.clock()-row.weaponStarted
+ if elapsed>=row.weaponCombo.duration and row.weaponQueued and not invalid then
+  row.weaponQueued=false;row.weaponStarted=os.clock();elapsed=0
+ end
+ local _,_,finished=commonMotion.SampleCombatCombo(row.weaponCombo,elapsed,row.weaponTargets)
+ commonMotion.MapCombatPoseToR15(row.weaponTargets,row.r15Targets)
+ local alpha=1-math.exp(-32*math.clamp(dt or 1/60,0,.15))
+ local settled=true
+ for name,motor in pairs(row.weaponMotors)do
+  if motor.Parent then
+   local target=not row.weaponReleasing and row.r15Targets[name]or CFrame.identity
+   target=target or CFrame.identity
+   local pose=(row.poses[motor]or CFrame.identity):Lerp(target,alpha)
+   row.poses[motor]=pose;motor.C0=row.base[motor]*pose
+   if not finished or os.clock()-row.weaponStarted<row.weaponCombo.duration+.4 then settled=false end
+  end
+ end
+ local released=row.weaponReleasing and os.clock()-row.weaponReleaseAt>.18
+ if settled or released then
+  for motor,base in pairs(row.base)do if motor.Parent then motor.C0=base end end
+  row.weaponCombo=nil;table.clear(row.poses)
+  character:SetAttribute("WeaponMotionState",invalid and "CANCELLED"or "IDLE")
+ end
+end
 local nativePoseMotors=setmetatable({}, {__mode="k"})
 local function trackNativePose(inst)
  if inst:IsA("Motor6D") and (inst.Name=="NativePoseMotor" or inst.Name=="ActorLimbMotor") then nativePoseMotors[inst]={base=inst.C0,role=inst:GetAttribute("LimbRole")} end
@@ -872,7 +972,8 @@ for _,desc in ipairs(workspace:GetDescendants())do trackNativePose(desc)end
 workspace.DescendantAdded:Connect(trackNativePose)
 workspace.DescendantRemoving:Connect(function(inst)nativePoseMotors[inst]=nil end)
 local lastNativePose=0
-RunService.Heartbeat:Connect(function()
+RunService.Heartbeat:Connect(function(dt)
+ stepEquippedCombatMotion(dt)
  local now=os.clock()
  if now-lastNativePose<.07 then return end
  lastNativePose=now
@@ -959,6 +1060,10 @@ local function playCombatAnimation(skillCast)
  end
  local atom=skillCast and "CAST_RELEASE" or localComboIndex==2 and "LIGHT_ATTACK_2" or localComboIndex==3 and "LIGHT_ATTACK_3"
    or ((tonumber(p:GetAttribute("WeaponTier"))or 1)>=4 and "HEAVY_ATTACK_1" or "LIGHT_ATTACK_1")
+ -- Equipped melee types use their own articulated route instead of all sharing
+ -- the same Roblox sword-slash track. Skills retain their existing cast path.
+ if not skillCast and startEquippedCombatMotion(character)then stopCombatTrack(.05);return end
+ if skillCast and jointEpoch[character]and jointEpoch[character].weaponCombo then poseRig(character,"CAST_RELEASE");stopCombatTrack(.05);return end
  local animator=humanoid:FindFirstChildOfClass("Animator")
  if not animator then animator=Instance.new("Animator");animator.Parent=humanoid end
  local key=skillCast and "LUNGE" or localComboIndex==3 and "FINISH" or "SLASH"

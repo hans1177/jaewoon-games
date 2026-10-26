@@ -517,13 +517,120 @@ for route=1,11 do
  end
 end
 
+
+-- Exercise actual equipped-weapon curves, custom composition and native axes.
+mt.__index.Inverse=function(self)
+ local out={self[1],self[4],self[7],self[2],self[5],self[8],self[3],self[6],self[9],0,0,0}
+ for i=1,3 do for k=1,3 do out[9+i]=out[9+i]-out[(i-1)*3+k]*self[9+k]end end
+ return setmetatable(out,mt)
+end
+local profiles=motion.DescribeWeaponProfiles()
+local weaponActions=motion.DescribeWeaponActions()
+assert(#weaponActions==30 and motion.Audit().composableCombatActionCount==60,'COMBAT_VOCABULARY_COUNT')
+local profileCount=0
+local routes={}
+local coverage={}
+for id,profile in pairs(profiles)do
+ profileCount+=1
+ local combo=motion.CreateCombatCombo(id)
+ assert(#combo.steps==3 and combo.duration>0,'WEAPON_ROUTE_EMPTY')
+ local route=table.concat(profile.route,',')
+ assert(not routes[route],'WEAPON_PROFILES_SHARE_IDENTICAL_ROUTE');routes[route]=true
+ for index,step in ipairs(combo.steps)do
+  coverage[step.id]=true
+  assert(step.ready>0 and step.ready<step.contact and step.contact<step.recoil and step.recoil<step.duration,'WEAPON_EVENT_ORDER')
+  local sample=motion.SampleCombatCombo(combo,step.start+step.contact,{})
+  assert(sample.UpperArmL and sample.ForearmR and sample.Chest,'WEAPON_JOINTS_MISSING')
+  if index>1 then
+   local before=motion.SampleCombatCombo(combo,step.start-.000001,{})
+   local after=motion.SampleCombatCombo(combo,step.start+.000001,{})
+   for name,pose in pairs(after)do if before[name]then
+    for i=1,12 do assert(math.abs(pose[i]-before[name][i])<.0001,'COMBO_SEAM_POP')end
+   end end
+  end
+ end
+ local final,_,done=motion.SampleCombatCombo(combo,combo.duration+1,{})
+ assert(done,'WEAPON_COMBO_NEVER_FINISHES')
+ for _,pose in pairs(final)do for i=1,12 do assert(math.abs(pose[i]-CFrame.identity[i])<1e-8,'WEAPON_REST_DRIFT')end end
+end
+assert(profileCount==30,'WEAPON_PROFILE_COUNT')
+for _,action in ipairs(weaponActions)do
+ assert(coverage[action.id],'WEAPON_ACTION_UNREACHABLE')
+ local id=next(profiles)
+ for name,profile in pairs(profiles)do if profile.family==action.family then id=name;break end end
+ assert(#motion.CreateCombatCombo(id,{action.id}).steps==1,'WEAPON_ACTION_NOT_SELECTABLE')
+end
+for _,action in ipairs(motion.DescribeUnarmedActions())do
+ local options={pairedTarget=action.kind=='THROW'}
+ assert(#motion.CreateCombatCombo('UNARMED',{'U:'..action.id},options).steps==1,'UNARMED_ACTION_NOT_SELECTABLE')
+end
+local mixed=motion.CreateCombatCombo('IronSword',{'W:BLADE_SLASH_R','U:KNEE_LEFT','W:BLADE_THRUST'})
+assert(#mixed.steps==3 and mixed.profileId=='SWORD','MIXED_COMBO_FAILED')
+assert(not pcall(function()motion.CreateCombatCombo('SWORD',{'W:FIREARM_RECOIL'})end),'INCOMPATIBLE_RANGED_ACTION_ACCEPTED')
+assert(not pcall(function()motion.CreateCombatCombo('GREATSWORD',{'U:JAB_LEFT'})end),'OCCUPIED_HAND_ACCEPTED')
+assert(not pcall(function()motion.CreateCombatCombo('SWORD',{'U:HIP_THROW_LEFT'},{pairedTarget=true})end),'EQUIPPED_THROW_ACCEPTED')
+assert(not pcall(function()motion.CreateCombatCombo('UNARMED',{'U:HIP_THROW_LEFT'})end),'UNPAIRED_THROW_ACCEPTED')
+assert(not pcall(function()motion.CreateCombatCombo('UNRECOGNIZED_WEAPON')end),'UNKNOWN_WEAPON_SILENT_FALLBACK')
+local map=motion.MapCombatPoseToR15({ForearmL=CFrame.Angles(-.8,0,0),ShinR=CFrame.Angles(.7,0,0)}, {})
+assert(map.LeftElbow[8]>0 and map.RightKnee[8]<0,'R15_FLEXION_AXIS_REVERSED')
+assert(map.RootJoint==nil,'COMBAT_MAPPING_MOVED_GAMEPLAY_ROOT')
 print('JOINT_POSE_BLEND_PASS')
+
+`;
+ const consumer=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
+ const driver=consumer.slice(consumer.indexOf('local equippedComboCache={}'),consumer.indexOf('local nativePoseMotors='));
+ assert.ok(driver.includes('stepEquippedCombatMotion'));
+ const driverExercise=String.raw`
+local clock=100
+local os={clock=function()return clock end}
+local commonMotion=motion
+local jointEpoch={}
+mt.__index.ToObjectSpace=function(self,other)return self:Inverse()*other end
+local motors={}
+local original={}
+for _,name in ipairs({'Waist','Neck','LeftShoulder','RightShoulder','LeftElbow','RightElbow','LeftWrist','RightWrist','LeftHip','RightHip','LeftKnee','RightKnee','LeftAnkle','RightAnkle'})do
+ local motor={Name=name,Part0={},Part1={},Parent=true,C0=CFrame.new(.1,.2,.3)}
+ function motor:IsA(class)return class=='Motor6D'end
+ motors[#motors+1]=motor;original[motor]=motor.C0
+end
+local humanoid={Health=100,RigType=Enum.HumanoidRigType.R15}
+local rig={attributes={EquippedWeaponVisual='IronSword'},Destroying={Connect=function()end}}
+function rig:FindFirstChildOfClass(class)return class=='Humanoid'and humanoid or nil end
+function rig:GetAttribute(name)return self.attributes[name]end
+function rig:SetAttribute(name,value)self.attributes[name]=value end
+function rig:GetDescendants()return motors end
+local p={Character=rig}
+`+driver+String.raw`
+assert(startEquippedCombatMotion(rig),'LIVE_WEAPON_ROUTE_NOT_BOUND')
+local row=jointEpoch[rig]
+local started=row.weaponStarted
+clock+=.1;stepEquippedCombatMotion(.1)
+assert(startEquippedCombatMotion(rig) and row.weaponQueued,'REPEATED_ATTACK_NOT_QUEUED')
+assert(row.weaponStarted==started,'REPEATED_ATTACK_RESTARTED_FIRST_CUT')
+clock=started+row.weaponCombo.duration+.001;stepEquippedCombatMotion(1/60)
+assert(not row.weaponQueued and row.weaponStarted==clock,'QUEUED_CHAIN_DID_NOT_CONTINUE')
+rig.attributes.EquippedWeaponVisual='UnknownRemovedWeapon'
+clock+=.02;stepEquippedCombatMotion(.02)
+clock+=.2;stepEquippedCombatMotion(.1)
+assert(row.weaponCombo==nil and rig.attributes.WeaponMotionState=='CANCELLED','UNEQUIP_DID_NOT_RELEASE')
+for motor,base in pairs(original)do for i=1,12 do assert(math.abs(motor.C0[i]-base[i])<1e-8,'LIVE_WEAPON_BASELINE_DRIFT')end end
+print('LIVE_WEAPON_CHAIN_PASS')
 `;
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'joint-pose-'));
  try{
-  const file=path.join(dir,'pose.luau');fs.writeFileSync(file,mock+exercise);
+  const file=path.join(dir,'pose.luau');fs.writeFileSync(file,mock+exercise+driverExercise);
   const result=spawnSync(binary,[file],{encoding:'utf8',timeout:15000,maxBuffer:1024*1024});
   assert.equal(result.status,0,result.error?.message||result.stderr||result.stdout);
   assert.match(result.stdout,/JOINT_POSE_BLEND_PASS/);
+  assert.match(result.stdout,/LIVE_WEAPON_CHAIN_PASS/);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+const combatCompiler=process.env.VIBE2_LUAU_COMPILER;
+test('deployed combat module and R15 consumer compile as complete Luau sources',{skip:!combatCompiler&&'Existing deployment CI supplies the native Luau compiler'},()=>{
+ for(const relative of ['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau','roblox-games/daechung-rpg/client/Game.client.luau']){
+  const file=new URL('../'+relative,import.meta.url);
+  const result=spawnSync(combatCompiler,['--null',file.pathname],{encoding:'utf8',timeout:15000,maxBuffer:1024*1024});
+  assert.equal(result.status,0,relative+': '+(result.error?.message||result.stderr||result.stdout));
+ }
 });
