@@ -34,11 +34,13 @@ local function button(parent,txt,size,order,fn)
  b.Activated:Connect(fn)
  return b
 end
-local top=panel(gui,UDim2.new(1,-14,0,74),UDim2.fromOffset(7,6))
+local top=panel(gui,UDim2.fromOffset(364,62),UDim2.fromOffset(7,6))
 local title=label(top,"백수대전쟁 · 군단전선 타이쿤",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
-title.TextSize=17
-local status=label(top,"불러오는 중",UDim2.new(1,-12,0,40),UDim2.fromOffset(8,27))
-local dock=panel(gui,UDim2.fromOffset(208,295),UDim2.new(1,-216,.52,-125))
+title.TextSize=15
+local status=label(top,"불러오는 중",UDim2.new(1,-12,0,34),UDim2.fromOffset(8,25))
+status.TextSize=12
+local dock=panel(gui,UDim2.fromOffset(174,226),UDim2.new(1,-182,0,60))
+dock.Visible=false
 label(dock,"건물 슬롯",UDim2.new(1,-8,0,28),UDim2.fromOffset(8,4))
 local list=Instance.new("ScrollingFrame");list.Size=UDim2.new(1,-14,1,-90)
 list.Position=UDim2.fromOffset(7,32);list.BackgroundTransparency=1;list.BorderSizePixel=0
@@ -67,9 +69,17 @@ controlPanel.Visible=false
 local controlToggle=button(gui,"군단 · 경제",UDim2.fromOffset(137,38),0,function()
  controlPanel.Visible=not controlPanel.Visible
  if controlPanel.Visible then menu.Visible=false end
- dock.Visible=not controlPanel.Visible
+ dock.Visible=false
 end)
-controlToggle.Position=UDim2.fromOffset(8,87)
+controlToggle.Position=UDim2.new(1,-255,0,10)
+-- 전장 가시성을 위해 건축 메뉴는 기본적으로 접는다.
+local buildToggle=button(gui,"건설 · 슬롯",UDim2.fromOffset(116,36),1,function()
+ dock.Visible=not dock.Visible
+ menu.Visible=false
+ controlPanel.Visible=false
+end)
+buildToggle.Position=UDim2.new(1,-128,0,10)
+
 label(controlPanel,"전선 사령부 · 군단 성장",UDim2.new(1,-12,0,28),UDim2.fromOffset(8,5))
 local economyInfo=label(controlPanel,"자원 정보 불러오는 중",UDim2.new(1,-12,0,65),UDim2.fromOffset(8,35))
 economyInfo.TextSize=12
@@ -184,6 +194,7 @@ remote.OnClientEvent:Connect(function(action,data)
 end)
 for _,k in ipairs({"Gold","HomeHP","EnemyHP","Stage"}) do
  p:GetAttributeChangedSignal(k):Connect(function()
+  local v=p:GetAttribute(k)
   if type(v)=="number" then current[k]=v;updateStatus() end
  end)
 end
@@ -199,7 +210,7 @@ end)
 -- Scriptable/매 프레임 CFrame 덮어쓰기를 제거해 PC 우클릭, 휠, 모바일 드래그/핀치 및
 -- 캐릭터 이동을 Roblox 기본 CameraModule이 처리하도록 한다.
 p.CameraMode=Enum.CameraMode.Classic
-p.CameraMinZoomDistance=6
+p.CameraMinZoomDistance=11
 p.CameraMaxZoomDistance=80
 local function followCharacter(character)
  local humanoid=character:WaitForChild("Humanoid",10)
@@ -230,16 +241,29 @@ local function resizeHud()
  local width=camera.ViewportSize.X
  if math.abs(width-lastWidth)<2 then return end
  lastWidth=width
- local narrow=width<680 or (Input.TouchEnabled and width<950)
- local compact=width<440
- title.TextSize=compact and 14 or 17
- controlPanel.Size=compact and UDim2.fromOffset(185,320) or UDim2.fromOffset(218,346)
- controlToggle.Size=compact and UDim2.fromOffset(118,36) or UDim2.fromOffset(137,38)
- dock.Size=compact and UDim2.fromOffset(143,231) or (narrow and UDim2.fromOffset(161,254) or UDim2.fromOffset(208,295))
- dock.Position=compact and UDim2.new(1,-148,.37,-50) or (narrow and UDim2.new(1,-166,.52,-108) or UDim2.new(1,-216,.52,-125))
- menu.Size=compact and UDim2.fromOffset(187,246) or (narrow and UDim2.fromOffset(192,270) or UDim2.fromOffset(228,306))
- menu.Position=compact and UDim2.new(0,5,.39,-55) or (narrow and UDim2.new(0,5,.52,-116) or UDim2.new(0,8,.52,-135))
- notice.TextSize=compact and 12 or 14
+ local narrow=width<690 or (Input.TouchEnabled and width<1000)
+ local compact=width<490
+ -- 오버레이가 전투장 대부분을 가리지 않도록 크기를 제한한다.
+ local topWidth=compact and math.min(width-14,300) or (narrow and 314 or 364)
+ top.Size=UDim2.fromOffset(topWidth,compact and 60 or 62)
+ title.TextSize=compact and 13 or 15
+ status.TextSize=compact and 11 or 12
+ controlPanel.Size=compact and UDim2.fromOffset(176,292) or UDim2.fromOffset(205,318)
+ controlPanel.Position=UDim2.fromOffset(8,compact and 115 or 79)
+ controlToggle.Size=compact and UDim2.fromOffset(98,34) or UDim2.fromOffset(114,36)
+ buildToggle.Size=compact and UDim2.fromOffset(98,34) or UDim2.fromOffset(112,36)
+ if compact then
+  controlToggle.Position=UDim2.fromOffset(8,74)
+  buildToggle.Position=UDim2.fromOffset(113,74)
+ else
+  controlToggle.Position=UDim2.new(1,-251,0,10)
+  buildToggle.Position=UDim2.new(1,-127,0,10)
+ end
+ dock.Size=compact and UDim2.fromOffset(157,214) or (narrow and UDim2.fromOffset(165,223) or UDim2.fromOffset(181,239))
+ dock.Position=compact and UDim2.new(1,-164,0,115) or UDim2.new(1,narrow and -172 or -189,0,54)
+ menu.Size=compact and UDim2.fromOffset(186,238) or (narrow and UDim2.fromOffset(192,262) or UDim2.fromOffset(221,286))
+ menu.Position=compact and UDim2.fromOffset(5,115) or UDim2.fromOffset(8,74)
+ notice.TextSize=compact and 11 or 12
 end
 Run:BindToRenderStep("BaeksuWarResponsiveHUD",Enum.RenderPriority.Last.Value,resizeHud)
 
@@ -268,9 +292,13 @@ local function openWorldSlot(screenPosition)
  redrawMenu(index)
 end
 local touchStart={}
+local activeTouches=0
+local pinchGesture=false
 Input.InputBegan:Connect(function(input,processed)
  if processed then return end
  if input.UserInputType==Enum.UserInputType.Touch then
+  activeTouches+=1
+  if activeTouches>1 then pinchGesture=true end
   touchStart[input]=Vector2.new(input.Position.X,input.Position.Y)
  end
 end)
@@ -279,7 +307,10 @@ Input.InputEnded:Connect(function(input,processed)
  if kind==Enum.UserInputType.Touch then
   local first=touchStart[input]
   touchStart[input]=nil
-  if processed or not first then return end
+  activeTouches=math.max(0,activeTouches-1)
+  local cancelled=pinchGesture
+  if activeTouches==0 then pinchGesture=false end
+  if processed or not first or cancelled then return end
   local last=Vector2.new(input.Position.X,input.Position.Y)
   if (last-first).Magnitude>13 then return end
   openWorldSlot(last)
