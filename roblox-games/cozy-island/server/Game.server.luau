@@ -608,6 +608,10 @@ end)
     return item
    end
    local wood=Color3.fromRGB(128,93,65)
+   -- 경계 연결: 기존 마을 바닥과 남쪽 신규 지형 사이의 짧은 물 틈을 실제 다리로 덮는다.
+   -- 시작 지점, 원정 거점, 저장 데이터는 바꾸지 않는다.
+   sceneryPart("VillageToGrandIslandBridge",Vector3.new(20,1.2,62),
+    Vector3.new(0,topY+.55,115),wood,Enum.Material.WoodPlanks,true)
    -- 부두에서 노을 등대까지 도보 연결
    for z=145,1235,37 do
     sceneryPart("IslandTrail",Vector3.new(16,.65,39),Vector3.new(0,topY+.56,z),
@@ -684,15 +688,20 @@ end)
     end
    end
    -- 바위산 폭포: 충돌 없는 외형 장식
+   -- 바위 속으로 파묻히지 않도록 산 외측 호수 수면 방향으로 폭포를 배치한다.
    local falls=sceneryPart("CrystalWaterfall",Vector3.new(9,60,30),
-    Vector3.new(309,topY+31,775),Color3.fromRGB(143,221,247),Enum.Material.Glass,false)
+    Vector3.new(259,topY+31,775),Color3.fromRGB(143,221,247),Enum.Material.Glass,false)
    falls.Transparency=.35
    local mist=sceneryPart("WaterfallMist",Vector3.new(18,2,30),
-    Vector3.new(303,topY+1,775),Color3.fromRGB(224,246,249),Enum.Material.Glass,false)
+    Vector3.new(255,topY+1,775),Color3.fromRGB(224,246,249),Enum.Material.Glass,false)
    mist.Transparency=.6
-   -- 바람 전망대와 남쪽 해안의 노을 등대
+   -- 바람 전망대는 실제 바위산 정상보다 높게 배치하고 모바일에서도 올라갈 수 있도록
+   -- 시작 위치가 평지에 닿는 하나의 경사 진입로를 연결한다.
+   local slope=sceneryPart("WindLookoutRamp",Vector3.new(20,2,140),
+    Vector3.new(-318,topY+40,935),Color3.fromRGB(163,147,116),Enum.Material.WoodPlanks,true)
+   slope.Orientation=Vector3.new(-34,0,0)
    local lookout=sceneryPart("WindLookout",Vector3.new(31,3,31),
-    Vector3.new(-318,topY+49,990),Color3.fromRGB(159,152,140),Enum.Material.Slate,true)
+    Vector3.new(-318,topY+78,990),Color3.fromRGB(159,152,140),Enum.Material.Slate,true)
    label(lookout,"바람 전망대",Color3.fromRGB(224,243,237),145)
    sceneryPart("SunsetLighthouse",Vector3.new(18,58,18),
     Vector3.new(0,topY+29,1200),Color3.fromRGB(228,223,205),Enum.Material.Brick,true)
