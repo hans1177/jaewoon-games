@@ -5120,6 +5120,14 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
             automaticReplacementAuthorized:row.automaticReplacementAuthorized===true,
             sourceCompatibilityAndRightsRequired:row.sourceCompatibilityAndRightsRequired===true,
             selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
+            // Keep the exact indexed CC0 actor provenance visible to the existing native import owner.
+            sourceType:row.externalAcquisition?.sourceType||null,
+            sourceModelId:row.externalAcquisition?.sourceModelId||null,
+            sourceFormat:row.externalAcquisition?.sourceFormat||null,
+            repositoryGitBlobSha:row.externalAcquisition?.repositoryGitBlobSha||null,
+            similarCc0VisualProxy:row.similarCC0VisualProxy===true,
+            automaticSourceSelectionAuthorized:row.automaticSourceSelectionAuthorized===true,
+            nativeImportAndRigQaRequired:row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D',
             sourcePage:row.externalAcquisition?.sourceUrl||null,
             directDownload:row.externalAcquisition?.downloadUrl||null,
             acquisitionState:row.externalAcquisition?.acquisitionState||null,
@@ -5146,8 +5154,15 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
             nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'
               &&!row.externalAcquisition?.downloadUrl
               &&!(row.externalAcquisition?.downloaded===true
-                &&row.externalAcquisition?.acquisitionState==='ACQUIRED_ORIGINAL_FILES'
-                &&row.externalAcquisition?.localSourcePath&&row.externalAcquisition?.sourceHash)
+                &&row.externalAcquisition?.localSourcePath&&row.externalAcquisition?.sourceHash
+                &&(row.externalAcquisition?.acquisitionState==='ACQUIRED_ORIGINAL_FILES'
+                  // Direct actor originals are already SHA-checked by the F0 selector.
+                  // They still require Roblox native import, rig QA and real consumer binding.
+                  ||order.target==='roblox'
+                    &&row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D'
+                    &&row.externalAcquisition?.acquisitionState==='NATIVE_IMPORT_AND_STYLE_ADAPT_REQUIRED'
+                    &&/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.(?:fbx|glb)$/i.test(row.externalAcquisition?.localSourcePath)
+                    &&/^[a-f0-9]{40}$/i.test(row.externalAcquisition?.repositoryGitBlobSha)))
               ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
                 &&!(row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
                   &&row.automaticReplacementAuthorized===true
