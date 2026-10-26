@@ -211,6 +211,177 @@ export const WEAPON_COMBAT_MOTION_PACKS=Object.freeze({
     aerial:['FIREARM_JUMP_SHOT','FIREARM_FALLING_SHOT'],
     defense:['FIREARM_EVADE_LEFT','FIREARM_EVADE_RIGHT','FIREARM_COUNTER_SHOT'],
     finisher:['FIREARM_FINISHER_SHOT']
+  }),
+  // 무기별 실제 리그 클립이 아닌 동작 의미·접촉 부위 원본 슬롯.
+  RAPIER:freezeCombatPack({
+    stance:['RAPIER_DUEL_POINT','RAPIER_ALERT_READY'],
+    footwork:['RAPIER_ADVANCE','RAPIER_RETREAT','RAPIER_PIVOT'],
+    lightCombo:['RAPIER_FEINT_STAB','RAPIER_STRAIGHT_THRUST','RAPIER_WRIST_CUT'],
+    heavy:['RAPIER_PIERCING_LUNGE','RAPIER_PRECISION_FLECHE'],
+    gapCloser:['RAPIER_ENTRY_FEINT_STAB','RAPIER_ENTRY_STRAIGHT_THRUST'],
+    aerial:['RAPIER_AIR_STRAIGHT_THRUST','RAPIER_FALLING_PIERCING_LUNGE'],
+    defense:['RAPIER_POINT_DEFLECT','RAPIER_DUEL_PARRY','RAPIER_EVADE'],
+    finisher:['RAPIER_CHAIN_ENDER','RAPIER_FINISHER']
+  }),
+  SABER:freezeCombatPack({
+    stance:['SABER_CURVED_GUARD','SABER_ALERT_READY'],
+    footwork:['SABER_ADVANCE','SABER_RETREAT','SABER_PIVOT'],
+    lightCombo:['SABER_DRAW_CUT','SABER_RISING_SLASH','SABER_REVERSE_SLASH'],
+    heavy:['SABER_HEAVY_CRESCENT','SABER_FALLING_CRESCENT'],
+    gapCloser:['SABER_ENTRY_DRAW_CUT','SABER_ENTRY_RISING_SLASH'],
+    aerial:['SABER_AIR_RISING_SLASH','SABER_FALLING_HEAVY_CRESCENT'],
+    defense:['SABER_BLADE_DEFLECT','SABER_SABER_PARRY','SABER_EVADE'],
+    finisher:['SABER_CHAIN_ENDER','SABER_FINISHER']
+  }),
+  SCYTHE:freezeCombatPack({
+    stance:['SCYTHE_HOOK_GUARD','SCYTHE_ALERT_READY'],
+    footwork:['SCYTHE_ADVANCE','SCYTHE_RETREAT','SCYTHE_PIVOT'],
+    lightCombo:['SCYTHE_HOOK_SWEEP','SCYTHE_REVERSE_REAP','SCYTHE_HAFT_STRIKE'],
+    heavy:['SCYTHE_WIDE_REAP','SCYTHE_OVERHEAD_REAP'],
+    gapCloser:['SCYTHE_ENTRY_HOOK_SWEEP','SCYTHE_ENTRY_REVERSE_REAP'],
+    aerial:['SCYTHE_AIR_REVERSE_REAP','SCYTHE_FALLING_WIDE_REAP'],
+    defense:['SCYTHE_HAFT_BRACE','SCYTHE_HOOK_DEFLECT','SCYTHE_EVADE'],
+    finisher:['SCYTHE_CHAIN_ENDER','SCYTHE_FINISHER']
+  }),
+  HALBERD:freezeCombatPack({
+    stance:['HALBERD_POLE_GUARD','HALBERD_ALERT_READY'],
+    footwork:['HALBERD_ADVANCE','HALBERD_RETREAT','HALBERD_PIVOT'],
+    lightCombo:['HALBERD_AXE_HEAD_CUT','HALBERD_SHAFT_THRUST','HALBERD_REVERSE_HOOK'],
+    heavy:['HALBERD_POLE_CLEAVE','HALBERD_HEAD_DROP'],
+    gapCloser:['HALBERD_ENTRY_AXE_HEAD_CUT','HALBERD_ENTRY_SHAFT_THRUST'],
+    aerial:['HALBERD_AIR_SHAFT_THRUST','HALBERD_FALLING_POLE_CLEAVE'],
+    defense:['HALBERD_SHAFT_BLOCK','HALBERD_HOOK_PARRY','HALBERD_EVADE'],
+    finisher:['HALBERD_CHAIN_ENDER','HALBERD_FINISHER']
+  }),
+  LANCE:freezeCombatPack({
+    stance:['LANCE_COUCHED_GUARD','LANCE_ALERT_READY'],
+    footwork:['LANCE_ADVANCE','LANCE_RETREAT','LANCE_PIVOT'],
+    lightCombo:['LANCE_LEVEL_THRUST','LANCE_RECOVERY_THRUST','LANCE_SHAFT_CHECK'],
+    heavy:['LANCE_COUCHED_CHARGE','LANCE_HEAVY_PIERCE'],
+    gapCloser:['LANCE_ENTRY_LEVEL_THRUST','LANCE_ENTRY_RECOVERY_THRUST'],
+    aerial:['LANCE_AIR_RECOVERY_THRUST','LANCE_FALLING_COUCHED_CHARGE'],
+    defense:['LANCE_SHAFT_BRACE','LANCE_SHAFT_DEFLECT','LANCE_EVADE'],
+    finisher:['LANCE_CHAIN_ENDER','LANCE_FINISHER']
+  }),
+  TRIDENT:freezeCombatPack({
+    stance:['TRIDENT_THREE_PRONG_READY','TRIDENT_ALERT_READY'],
+    footwork:['TRIDENT_ADVANCE','TRIDENT_RETREAT','TRIDENT_PIVOT'],
+    lightCombo:['TRIDENT_LINE_THRUST','TRIDENT_PRONG_SWEEP','TRIDENT_SHAFT_STRIKE'],
+    heavy:['TRIDENT_HEAVY_PRONG_STAB','TRIDENT_VAULT_STRIKE'],
+    gapCloser:['TRIDENT_ENTRY_LINE_THRUST','TRIDENT_ENTRY_PRONG_SWEEP'],
+    aerial:['TRIDENT_AIR_PRONG_SWEEP','TRIDENT_FALLING_HEAVY_PRONG_STAB'],
+    defense:['TRIDENT_PRONG_GUARD','TRIDENT_SHAFT_DEFLECT','TRIDENT_EVADE'],
+    finisher:['TRIDENT_CHAIN_ENDER','TRIDENT_FINISHER']
+  }),
+  FLAIL:freezeCombatPack({
+    stance:['FLAIL_CHAIN_READY','FLAIL_ALERT_READY'],
+    footwork:['FLAIL_ADVANCE','FLAIL_RETREAT','FLAIL_PIVOT'],
+    lightCombo:['FLAIL_ORBIT_STRIKE','FLAIL_SIDE_SWING','FLAIL_REVERSE_WRAP'],
+    heavy:['FLAIL_HEAVY_CHAIN_CRUSH','FLAIL_OVERHEAD_ORBIT'],
+    gapCloser:['FLAIL_ENTRY_ORBIT_STRIKE','FLAIL_ENTRY_SIDE_SWING'],
+    aerial:['FLAIL_AIR_SIDE_SWING','FLAIL_FALLING_HEAVY_CHAIN_CRUSH'],
+    defense:['FLAIL_CHAIN_BRACE','FLAIL_HEAD_REDIRECT','FLAIL_EVADE'],
+    finisher:['FLAIL_CHAIN_ENDER','FLAIL_FINISHER']
+  }),
+  MACE:freezeCombatPack({
+    stance:['MACE_BLUNT_READY','MACE_ALERT_READY'],
+    footwork:['MACE_ADVANCE','MACE_RETREAT','MACE_PIVOT'],
+    lightCombo:['MACE_SIDE_CRUSH','MACE_BACKHAND_CRUSH','MACE_BODY_CHECK'],
+    heavy:['MACE_OVERHEAD_CRUSH','MACE_HEAVY_BASH'],
+    gapCloser:['MACE_ENTRY_SIDE_CRUSH','MACE_ENTRY_BACKHAND_CRUSH'],
+    aerial:['MACE_AIR_BACKHAND_CRUSH','MACE_FALLING_OVERHEAD_CRUSH'],
+    defense:['MACE_HAFT_BLOCK','MACE_MACE_COUNTER','MACE_EVADE'],
+    finisher:['MACE_CHAIN_ENDER','MACE_FINISHER']
+  }),
+  WHIP:freezeCombatPack({
+    stance:['WHIP_COIL_READY','WHIP_ALERT_READY'],
+    footwork:['WHIP_ADVANCE','WHIP_RETREAT','WHIP_PIVOT'],
+    lightCombo:['WHIP_FRONT_CRACK','WHIP_SIDE_CRACK','WHIP_RETRACT_STRIKE'],
+    heavy:['WHIP_HEAVY_LASH','WHIP_WIDE_LASH'],
+    gapCloser:['WHIP_ENTRY_FRONT_CRACK','WHIP_ENTRY_SIDE_CRACK'],
+    aerial:['WHIP_AIR_SIDE_CRACK','WHIP_FALLING_HEAVY_LASH'],
+    defense:['WHIP_DISTANCE_EVADE','WHIP_WHIP_DEFLECT','WHIP_EVADE'],
+    finisher:['WHIP_CHAIN_ENDER','WHIP_FINISHER']
+  }),
+  CHAIN_BLADE:freezeCombatPack({
+    stance:['CHAIN_BLADE_CHAIN_GUARD','CHAIN_BLADE_ALERT_READY'],
+    footwork:['CHAIN_BLADE_ADVANCE','CHAIN_BLADE_RETREAT','CHAIN_BLADE_PIVOT'],
+    lightCombo:['CHAIN_BLADE_CHAIN_CUT','CHAIN_BLADE_EXTEND_SLASH','CHAIN_BLADE_REEL_CUT'],
+    heavy:['CHAIN_BLADE_CHAIN_WIDE_SWEEP','CHAIN_BLADE_HOOKED_BLADE_DROP'],
+    gapCloser:['CHAIN_BLADE_ENTRY_CHAIN_CUT','CHAIN_BLADE_ENTRY_EXTEND_SLASH'],
+    aerial:['CHAIN_BLADE_AIR_EXTEND_SLASH','CHAIN_BLADE_FALLING_CHAIN_WIDE_SWEEP'],
+    defense:['CHAIN_BLADE_CHAIN_RECOVER','CHAIN_BLADE_CHAIN_DEFLECT','CHAIN_BLADE_EVADE'],
+    finisher:['CHAIN_BLADE_CHAIN_ENDER','CHAIN_BLADE_FINISHER']
+  }),
+  TONFA:freezeCombatPack({
+    stance:['TONFA_CLOSE_BRACE','TONFA_ALERT_READY'],
+    footwork:['TONFA_ADVANCE','TONFA_RETREAT','TONFA_PIVOT'],
+    lightCombo:['TONFA_FOREARM_STRIKE','TONFA_HANDLE_PUNCH','TONFA_SPIN_RETURN'],
+    heavy:['TONFA_DOUBLE_ARM_SWEEP','TONFA_HEAVY_TONFA_BASH'],
+    gapCloser:['TONFA_ENTRY_FOREARM_STRIKE','TONFA_ENTRY_HANDLE_PUNCH'],
+    aerial:['TONFA_AIR_HANDLE_PUNCH','TONFA_FALLING_DOUBLE_ARM_SWEEP'],
+    defense:['TONFA_FOREARM_GUARD','TONFA_TONFA_COUNTER','TONFA_EVADE'],
+    finisher:['TONFA_CHAIN_ENDER','TONFA_FINISHER']
+  }),
+  NUNCHAKU:freezeCombatPack({
+    stance:['NUNCHAKU_ROTATING_READY','NUNCHAKU_ALERT_READY'],
+    footwork:['NUNCHAKU_ADVANCE','NUNCHAKU_RETREAT','NUNCHAKU_PIVOT'],
+    lightCombo:['NUNCHAKU_SIDE_FLURRY','NUNCHAKU_OVER_SHOULDER','NUNCHAKU_CROSS_BODY_STRIKE'],
+    heavy:['NUNCHAKU_HEAVY_ROTATION','NUNCHAKU_DOUBLE_HAND_FINISH'],
+    gapCloser:['NUNCHAKU_ENTRY_SIDE_FLURRY','NUNCHAKU_ENTRY_OVER_SHOULDER'],
+    aerial:['NUNCHAKU_AIR_OVER_SHOULDER','NUNCHAKU_FALLING_HEAVY_ROTATION'],
+    defense:['NUNCHAKU_CHAIN_RECOVERY','NUNCHAKU_HANDLE_DEFLECT','NUNCHAKU_EVADE'],
+    finisher:['NUNCHAKU_CHAIN_ENDER','NUNCHAKU_FINISHER']
+  }),
+  GAUNTLETS:freezeCombatPack({
+    stance:['GAUNTLETS_ARMORED_FISTS','GAUNTLETS_ALERT_READY'],
+    footwork:['GAUNTLETS_ADVANCE','GAUNTLETS_RETREAT','GAUNTLETS_PIVOT'],
+    lightCombo:['GAUNTLETS_METAL_JAB','GAUNTLETS_DOUBLE_PUNCH','GAUNTLETS_ELBOW_SMASH'],
+    heavy:['GAUNTLETS_HAMMER_FIST','GAUNTLETS_RISING_FIST'],
+    gapCloser:['GAUNTLETS_ENTRY_METAL_JAB','GAUNTLETS_ENTRY_DOUBLE_PUNCH'],
+    aerial:['GAUNTLETS_AIR_DOUBLE_PUNCH','GAUNTLETS_FALLING_HAMMER_FIST'],
+    defense:['GAUNTLETS_FOREARM_GUARD','GAUNTLETS_PUNCH_COUNTER','GAUNTLETS_EVADE'],
+    finisher:['GAUNTLETS_CHAIN_ENDER','GAUNTLETS_FINISHER']
+  }),
+  CROSSBOW:freezeCombatPack({
+    stance:['CROSSBOW_BOLT_READY','CROSSBOW_ALERT_READY'],
+    footwork:['CROSSBOW_ADVANCE','CROSSBOW_RETREAT','CROSSBOW_PIVOT'],
+    lightCombo:['CROSSBOW_SNAP_AIM','CROSSBOW_QUICK_BOLT','CROSSBOW_STOCK_CHECK'],
+    heavy:['CROSSBOW_AIMED_BOLT','CROSSBOW_POWER_BOLT'],
+    gapCloser:['CROSSBOW_ENTRY_SNAP_AIM','CROSSBOW_ENTRY_QUICK_BOLT'],
+    aerial:['CROSSBOW_AIR_QUICK_BOLT','CROSSBOW_FALLING_AIMED_BOLT'],
+    defense:['CROSSBOW_STOCK_COVER','CROSSBOW_BACKSTEP_AIM','CROSSBOW_EVADE'],
+    finisher:['CROSSBOW_CHAIN_ENDER','CROSSBOW_FINISHER']
+  }),
+  PISTOL:freezeCombatPack({
+    stance:['PISTOL_ONE_HAND_AIM','PISTOL_ALERT_READY'],
+    footwork:['PISTOL_ADVANCE','PISTOL_RETREAT','PISTOL_PIVOT'],
+    lightCombo:['PISTOL_QUICK_TRIGGER','PISTOL_DOUBLE_SHOT','PISTOL_CLOSE_CHECK'],
+    heavy:['PISTOL_FOCUSED_SHOT','PISTOL_HEAVY_RECOIL'],
+    gapCloser:['PISTOL_ENTRY_QUICK_TRIGGER','PISTOL_ENTRY_DOUBLE_SHOT'],
+    aerial:['PISTOL_AIR_DOUBLE_SHOT','PISTOL_FALLING_FOCUSED_SHOT'],
+    defense:['PISTOL_COVER_AIM','PISTOL_COUNTER_SHOT','PISTOL_EVADE'],
+    finisher:['PISTOL_CHAIN_ENDER','PISTOL_FINISHER']
+  }),
+  RIFLE:freezeCombatPack({
+    stance:['RIFLE_SHOULDER_AIM','RIFLE_ALERT_READY'],
+    footwork:['RIFLE_ADVANCE','RIFLE_RETREAT','RIFLE_PIVOT'],
+    lightCombo:['RIFLE_SINGLE_SHOT','RIFLE_TWO_SHOT','RIFLE_BUTTSTOCK_CHECK'],
+    heavy:['RIFLE_PRECISION_SHOT','RIFLE_CONTROLLED_BURST'],
+    gapCloser:['RIFLE_ENTRY_SINGLE_SHOT','RIFLE_ENTRY_TWO_SHOT'],
+    aerial:['RIFLE_AIR_TWO_SHOT','RIFLE_FALLING_PRECISION_SHOT'],
+    defense:['RIFLE_SHOULDER_BRACE','RIFLE_COVER_FIRE','RIFLE_EVADE'],
+    finisher:['RIFLE_CHAIN_ENDER','RIFLE_FINISHER']
+  }),
+  SHOTGUN:freezeCombatPack({
+    stance:['SHOTGUN_BRACED_AIM','SHOTGUN_ALERT_READY'],
+    footwork:['SHOTGUN_ADVANCE','SHOTGUN_RETREAT','SHOTGUN_PIVOT'],
+    lightCombo:['SHOTGUN_SNAP_SHOT','SHOTGUN_PUMP_SHOT','SHOTGUN_STOCK_CHECK'],
+    heavy:['SHOTGUN_CLOSE_SPREAD_SHOT','SHOTGUN_HEAVY_RECOIL_SHOT'],
+    gapCloser:['SHOTGUN_ENTRY_SNAP_SHOT','SHOTGUN_ENTRY_PUMP_SHOT'],
+    aerial:['SHOTGUN_AIR_PUMP_SHOT','SHOTGUN_FALLING_CLOSE_SPREAD_SHOT'],
+    defense:['SHOTGUN_STOCK_BRACE','SHOTGUN_BACKSTEP_SHOT','SHOTGUN_EVADE'],
+    finisher:['SHOTGUN_CHAIN_ENDER','SHOTGUN_FINISHER']
   })
 });
 
@@ -427,7 +598,24 @@ export const DUEL_COMBAT_WEAPON_MECHANICS=Object.freeze({
   STAFF_OR_WAND:Object.freeze({stance:'CENTERLINE_CAST_OR_STAFF',grip:'STAFF_TWO_HAND_OR_WAND_ONE_HAND',pelvisYaw:12,torsoCounterYaw:8,leadFootPlant:true,contact:'STAFF_END_OR_CAST_HAND',arc:'THRUST_SWEEP_CAST'}),
   SHIELD_SWORD:Object.freeze({stance:'SHIELD_LEAD',grip:'SHIELD_PLUS_ONE_HAND_SWORD',pelvisYaw:12,torsoCounterYaw:6,leadFootPlant:true,contact:'SHIELD_FACE_OR_BLADE',arc:'COVERED_SHORT_ARC'}),
   BOW:Object.freeze({stance:'SIDE_ON_RANGED',grip:'BOW_AND_DRAW_HAND',pelvisYaw:8,torsoCounterYaw:4,leadFootPlant:true,contact:'STRING_RELEASE',arc:'DRAW_RELEASE_RECOIL'}),
-  FIREARM:Object.freeze({stance:'SQUARE_OR_BLaded_AIM',grip:'TWO_HAND_AIM',pelvisYaw:6,torsoCounterYaw:4,leadFootPlant:true,contact:'TRIGGER_RECOIL',arc:'AIM_RECOIL_RECOVER'})
+  FIREARM:Object.freeze({stance:'SQUARE_OR_BLaded_AIM',grip:'TWO_HAND_AIM',pelvisYaw:6,torsoCounterYaw:4,leadFootPlant:true,contact:'TRIGGER_RECOIL',arc:'AIM_RECOIL_RECOVER'}),
+  RAPIER:Object.freeze({stance:'RAPIER_READY',grip:'ONE_HAND_POINT',pelvisYaw:13,torsoCounterYaw:7,leadFootPlant:true,contact:'TIP_PIERCE',arc:'LINEAR_FEINT_THRUST'}),
+  SABER:Object.freeze({stance:'SABER_READY',grip:'ONE_HAND_CURVE',pelvisYaw:17,torsoCounterYaw:10,leadFootPlant:true,contact:'CURVED_EDGE',arc:'FLOWING_SWEEP'}),
+  SCYTHE:Object.freeze({stance:'SCYTHE_READY',grip:'TWO_HAND_REACH',pelvisYaw:21,torsoCounterYaw:12,leadFootPlant:true,contact:'INNER_BLADE',arc:'HOOK_PULL_ARC'}),
+  HALBERD:Object.freeze({stance:'HALBERD_READY',grip:'TWO_HAND_POLE',pelvisYaw:20,torsoCounterYaw:12,leadFootPlant:true,contact:'BLADE_SPIKE',arc:'CHOP_HOOK_THRUST'}),
+  LANCE:Object.freeze({stance:'LANCE_READY',grip:'TWO_HAND_LINE',pelvisYaw:11,torsoCounterYaw:6,leadFootPlant:true,contact:'LANCE_TIP',arc:'COMMITTED_LINEAR_THRUST'}),
+  TRIDENT:Object.freeze({stance:'TRIDENT_READY',grip:'TWO_HAND_SPACED',pelvisYaw:13,torsoCounterYaw:7,leadFootPlant:true,contact:'TRIDENT_PRONGS',arc:'FORK_CONTROL_THRUST'}),
+  FLAIL:Object.freeze({stance:'FLAIL_READY',grip:'ONE_HAND_CHAIN',pelvisYaw:18,torsoCounterYaw:10,leadFootPlant:true,contact:'FLAIL_HEAD',arc:'MOMENTUM_ORBIT'}),
+  MACE:Object.freeze({stance:'MACE_READY',grip:'ONE_HAND_BLUNT',pelvisYaw:20,torsoCounterYaw:12,leadFootPlant:true,contact:'MACE_HEAD',arc:'SHORT_MASS_ARC'}),
+  WHIP:Object.freeze({stance:'WHIP_READY',grip:'ONE_HAND_FLEXIBLE',pelvisYaw:13,torsoCounterYaw:7,leadFootPlant:true,contact:'WHIP_TIP',arc:'FLEXIBLE_LINE_RELEASE'}),
+  CHAIN_BLADE:Object.freeze({stance:'CHAIN_BLADE_READY',grip:'FLEXIBLE_BLADE',pelvisYaw:19,torsoCounterYaw:11,leadFootPlant:true,contact:'CHAIN_EDGE',arc:'EXTEND_REEL_CUT'}),
+  TONFA:Object.freeze({stance:'TONFA_READY',grip:'DUAL_FOREARM',pelvisYaw:16,torsoCounterYaw:9,leadFootPlant:true,contact:'TONFA_END',arc:'ROTATING_SHORT_ARC'}),
+  NUNCHAKU:Object.freeze({stance:'NUNCHAKU_READY',grip:'DUAL_CHAIN_HANDLES',pelvisYaw:19,torsoCounterYaw:11,leadFootPlant:true,contact:'NUNCHAKU_HANDLE',arc:'CONTROLLED_CHAIN_ROTATION'}),
+  GAUNTLETS:Object.freeze({stance:'GAUNTLETS_READY',grip:'CLOSED_FIST_PAIR',pelvisYaw:18,torsoCounterYaw:10,leadFootPlant:true,contact:'FIST_KNUCKLES',arc:'CLOSE_BODY_CHAIN'}),
+  CROSSBOW:Object.freeze({stance:'CROSSBOW_READY',grip:'TWO_HAND_CROSSBOW',pelvisYaw:7,torsoCounterYaw:4,leadFootPlant:true,contact:'BOLT_RELEASE',arc:'LOAD_AIM_RELEASE'}),
+  PISTOL:Object.freeze({stance:'PISTOL_READY',grip:'ONE_HAND_FIREARM',pelvisYaw:5,torsoCounterYaw:3,leadFootPlant:true,contact:'MUZZLE_FLASH',arc:'WRIST_RECOIL_RESET'}),
+  RIFLE:Object.freeze({stance:'RIFLE_READY',grip:'TWO_HAND_SHOULDER',pelvisYaw:7,torsoCounterYaw:4,leadFootPlant:true,contact:'MUZZLE_RECOIL',arc:'SHOULDER_RECOIL_RESET'}),
+  SHOTGUN:Object.freeze({stance:'SHOTGUN_READY',grip:'TWO_HAND_HEAVY_FIREARM',pelvisYaw:7,torsoCounterYaw:4,leadFootPlant:true,contact:'MUZZLE_RECOIL',arc:'HEAVY_SHOULDER_RESET'})
 });
 
 export const UNARMED_MARTIAL_MECHANICS=Object.freeze({
@@ -534,6 +722,16 @@ export const HERO_STANDARD_RIG_MOTION_PACK=Object.freeze({
     'HERO_DEATH_FRONT','HERO_DEATH_BACK','HERO_GET_UP','HERO_SPAWN'
   ])
 });
+
+// 파일 내 공용 모션: 실제 클립 생성 없이 이족 리그에서 재사용할 30개 동작 역할.
+export const SHARED_BIPED_COMBAT_30=freezeList([
+  'HERO_IDLE_RELAXED','HERO_IDLE_ALERT','HERO_WALK_FORWARD','HERO_RUN','HERO_SPRINT',
+  'HERO_START','HERO_STOP','HERO_TURN_90','HERO_TURN_180','HERO_BACKWARD',
+  'HERO_JUMP_START','HERO_JUMP_AIR','HERO_LAND','HERO_DODGE_LEFT','HERO_DODGE_RIGHT',
+  'HERO_DODGE_BACK','HERO_DASH','HERO_CROUCH','HERO_ATTACK_1','HERO_ATTACK_2',
+  'HERO_ATTACK_3','HERO_ATTACK_4','HERO_HEAVY_ATTACK_1','HERO_HEAVY_ATTACK_2',
+  'HERO_GUARD','HERO_PARRY','HERO_HIT_FRONT','HERO_HIT_BACK','HERO_GET_UP','HERO_DEATH_FRONT'
+]);
 
 export const HERO_SURVIVAL_WEAPON_FAMILIES=freezeList([
   'ONE_HAND_SWORD','SPEAR','AXE','HAMMER','DAGGER','BOW'
@@ -917,7 +1115,9 @@ export const MOTION_MUTATION_FORBIDDEN=Object.freeze([
 export function createDuelCombatMotionLoadout({
   weaponFamily='UNARMED',
   martialStyle='MMA_HYBRID',
-  platform='ROBLOX'
+  platform='ROBLOX',
+  bodyPlan='HUMANOID',
+  actorClass='PLAYER'
 }={}){
   const aliases=Object.freeze({
     SWORD:'ONE_HAND_SWORD',
@@ -930,10 +1130,13 @@ export function createDuelCombatMotionLoadout({
     WAND:'STAFF_OR_WAND',
     SHIELD:'SHIELD_SWORD'
   });
+  if(!['HUMANOID','HUMANOID_UNDEAD','BOSS_BIPED','BIPED','R15','R6'].includes(upper(bodyPlan)))
+    throw Error('BIPED_COMBAT_RIG_REQUIRED:'+upper(bodyPlan));
   const requested=upper(weaponFamily)||'UNARMED';
   const resolvedWeapon=aliases[requested]||requested;
-  const weaponPack=WEAPON_COMBAT_MOTION_PACKS[resolvedWeapon]||WEAPON_COMBAT_MOTION_PACKS.UNARMED;
-  const styleKey=resolvedWeapon==='UNARMED'
+  const activeWeapon=WEAPON_COMBAT_MOTION_PACKS[resolvedWeapon]?resolvedWeapon:'UNARMED';
+  const weaponPack=WEAPON_COMBAT_MOTION_PACKS[activeWeapon];
+  const styleKey=activeWeapon==='UNARMED'
     ?(UNARMED_MARTIAL_ARTS_STYLES[upper(martialStyle)]?upper(martialStyle):'MMA_HYBRID')
     :null;
   const martialPack=styleKey?UNARMED_MARTIAL_ARTS_STYLES[styleKey]:null;
@@ -952,13 +1155,45 @@ export function createDuelCombatMotionLoadout({
     recovery:DUEL_RECOVERY_MOTIONS
   });
   const motionIds=freezeList(unique(Object.values(groups).flat()));
+  // 기존 무기 동작을 30가지의 서로 다른 연계로 결합한다.
+  // 각 단계의 판정·취소·타격 시각은 게임플레이가 소유하며, 이것은 모션 편집·선택 정보다.
+  const patterns=Object.freeze([
+    ['lightCombo','lightCombo','heavy'],['footwork','lightCombo','heavy'],
+    ['defense','lightCombo','lightCombo'],['gapCloser','lightCombo','finisher'],
+    ['aerial','lightCombo','heavy'],['lightCombo','heavy','finisher']
+  ]);
+  const weaponChains=Object.freeze(Array.from({length:30},(_,slot)=>{
+    const pattern=patterns[Math.floor(slot/5)],variation=slot%5;
+    const steps=pattern.map((group,index)=>{
+      const options=groups[group].length?groups[group]:groups.lightCombo;
+      return Object.freeze({
+        group,motionId:options[(variation+index*2+Math.floor(slot/5))%options.length],
+        sourceClipRequired:true,rigAndContactCompatibilityRequired:true
+      });
+    });
+    return Object.freeze({
+      id:activeWeapon+'_CHAIN_'+String(slot+1).padStart(2,'0'),
+      weaponFamily:activeWeapon,steps:Object.freeze(steps),
+      blend:Object.freeze({crossFadeSeconds:.12,poseVelocityMatching:true,footPlantAware:true,
+        gripContinuity:true,inertialRecovery:true}),
+      contactMarkerUnchanged:true,comboGameplayWindowUnchanged:true,
+      runtimeVerified:false,productionVerified:false,gameplayAuthority:false
+    });
+  }));
+
   return Object.freeze({
     target:DUEL_COMBAT_MOTION_TARGET,
     platform:upper(platform),
-    weaponFamily:WEAPON_COMBAT_MOTION_PACKS[resolvedWeapon]?resolvedWeapon:'UNARMED',
+    weaponFamily:activeWeapon,
     martialStyle:styleKey,
     groups,
     motionIds,
+    actorClass:upper(actorClass),bodyPlan:upper(bodyPlan),
+    sharedBaseMotions:SHARED_BIPED_COMBAT_30,
+    weaponChains,composableMotionSlotCount:SHARED_BIPED_COMBAT_30.length+weaponChains.length,
+    bipedNpcSharesCharacterActionRoles:true,
+    roleReuseRequiresCompatibleArticulatedRig:true,
+    motionPlansRequireNativeClipAndRuntimeEvidence:true,
     requiredRoles:DUEL_COMBAT_REQUIRED_ROLES,
     comboGrammar:Object.freeze(['NEUTRAL','STARTUP','ACTIVE_CONTACT','RECOVERY','LINK_OR_END']),
     referencePolicy:'MATCH_RESPONSIVE_DUEL_FEEL_WITH_ORIGINAL_OR_LICENSE_VERIFIED_MOTION',
@@ -1358,7 +1593,7 @@ function monsterAttackMotif(name=''){
   if(/SLAM|SMASH|BREAK|CRUSH|STOMP|BURST/.test(id))return 'SLAM';
   return 'STRIKE';
 }
-function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
+function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter,{holdEnd=false}={}){
   const frame=(phase,angle)=>Object.freeze({
     phase:Number(phase.toFixed(5)),
     rotation:Object.freeze(angle.map(v=>Number(v.toFixed(5))))
@@ -1368,10 +1603,11 @@ function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
     part:upper(part),
     frames:Object.freeze([
       frame(0,[0,0,0]),frame(wind,poseBefore),
-      frame(contact,poseAfter),frame(Math.min(.95,contact+.18),settle),
-      frame(1,[0,0,0])
+      frame(contact,poseAfter),frame(Math.min(.95,contact+.18),holdEnd?poseAfter.map(v=>v*.85):settle),
+      frame(1,holdEnd?poseAfter.map(v=>v*.8):[0,0,0])
     ]),
-    rigJointBindingRequired:true,semanticChannelsOnly:true
+    interpolation:'CUBIC_EASE_WITH_ZERO_ENDPOINT_VELOCITY',
+    holdsFinalPose:holdEnd,rigJointBindingRequired:true,semanticChannelsOnly:true
   });
 }
 // 자체 제작 공유 몬스터는 영구 제거했다. 검증된 CC0 원본 연결 전까지 공백을 유지한다.
@@ -1528,6 +1764,53 @@ export function createCommonMonsterActionLoadout({
       });
     })
   ));
+  // 네발 전용 60동작: 전·후지 지지, 관절 반동, 상황별 피격과 사망 잔류 자세.
+  // 원본 관절 의미 레시피이며, 실제 모션 에셋/보간 구현은 리그별 네이티브 연결이 필요하다.
+  const quadrupedQuota=Object.freeze({
+    locomotion:12,attacks:15,defense:6,reactions:7,acting:7,deaths:6,skill:4,signature:3
+  });
+  const quadruped60=/^QUADRUPED_/.test(species.bodyPlan)
+    ?Object.freeze(Object.entries(quadrupedQuota).flatMap(([group,count])=>{
+      const roles=profile.groups[group];
+      if(!roles?.length)throw Error('QUADRUPED_ACTION_GROUP_MISSING:'+id+':'+group);
+      return Array.from({length:count},(_,index)=>{
+        const role=roles[index%roles.length],variant=Math.floor(index/roles.length);
+        const side=index%2===0?1:-1,level=1+variant*.09;
+        const dying=group==='deaths',moving=group==='locomotion';
+        const phaseTimes=dying?[0,.12,.30,.52,.76,1]
+          :moving?[0,.14,.30,.55,.77,1]:[0,.12,.34,.58,.80,1];
+        const before=kinematic.coil.map((v,axis)=>(v+(.04+variant*.013)*(axis===0?side:1))*level);
+        const after=kinematic.hit.map((v,axis)=>(v+(.05+variant*.01)*(axis===1?side:1))*level*(dying?1.45:1));
+        const fore=monsterPoseFrames('FORELEGS',phaseTimes[2],phaseTimes[3],before,after,{holdEnd:dying});
+        const hind=monsterPoseFrames('HINDLEGS',phaseTimes[2],phaseTimes[3],
+          before.map(v=>-v*.7),after.map(v=>-v*(dying ? .82 : .48)),{holdEnd:dying});
+        const spinePart=species.specialParts.find(part=>/SPINE|NECK|SHOULDERS|TAIL/.test(part))||kinematic.counterPart;
+        const expression=monsterPoseFrames(spinePart,phaseTimes[2],phaseTimes[3],
+          before.map(v=>v*.35),after.map(v=>v*(dying?1.1:.48)),{holdEnd:dying});
+        return Object.freeze({
+          id:id+'_Q60_'+upper(group)+'_'+String(index+1).padStart(2,'0'),
+          sourceMotionId:role,group,variation:variant,bodyPlan:species.bodyPlan,
+          poseKeyTimes:freezeList(phaseTimes),jointTracks:Object.freeze([fore,hind,expression]),
+          semanticLegChannels:freezeList(['FRONT_LEFT','FRONT_RIGHT','HIND_LEFT','HIND_RIGHT']),
+          diagonalGaitPhase:freezeList(moving?[0,.5,.5,0]:[0,0,0,0]),
+          supportContactRequired:true,groundProbeAndFootLockRequired:true,
+          deathStage:dying?['STAGGER','FRONT_COLLAPSE','LEFT_COLLAPSE','RIGHT_COLLAPSE','REAR_COLLAPSE','SETTLE'][index]:null,
+          deathEndPoseHeld:dying,headNeckSpineFollowThrough:true,
+          gazeEarsTailFacialChannelsOnlyWhenAnatomyExists:true,
+          interpolation:'CUBIC_EASE_WITH_POSE_VELOCITY_MATCH',
+          handoffToExistingHitDeathAndMoveEvents:true,rootAndHitboxUnchanged:true,
+          sourceType:'SHARED_SEMANTIC_JOINT_CURVES_REQUIRES_NATIVE_RIG_ADAPTATION',
+          runtimeVerified:false,productionVerified:false,gameplayAuthority:false
+        });
+      });
+    }))
+    :Object.freeze([]);
+  const bipedSync=['HUMANOID_UNDEAD','BOSS_BIPED'].includes(species.bodyPlan)
+    ?createDuelCombatMotionLoadout({
+      weaponFamily:'UNARMED',platform:platformId,actorClass:'HUMANOID_NPC',
+      bodyPlan:species.bodyPlan
+    })
+    :null;
   // 장르별 요청 슬롯만 투영한다. 다른 장르로 전용된 원본 동작은 삭제하지 않는다.
   const requestedGroups=COMMON_GENRE_MOTION_CONTEXTS[requestedGenre];
   const semanticOrigin=new Set([...species.locomotion,...species.attacks,...species.defense,
@@ -1562,7 +1845,7 @@ export function createCommonMonsterActionLoadout({
     presentationTier:motionTier,tierPoseIdentity:tierProfile.poseIdentity,
     speciesHierarchy:freezeList(['BODY_PLAN:'+species.bodyPlan,'SPECIES:'+id,'PRESENTATION_TIER:'+motionTier]),
     genreGroups:requestedGroups,roleRequests,
-    choreography,expressiveChoreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
+    choreography,expressiveChoreography,quadruped60,bipedSync,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
     platformNativeAdaptationRequired:true,runtimeVerified:false,productionVerified:false,
@@ -3517,7 +3800,9 @@ export function createRobloxCharacterMotionPlan({
     archetype,
     recentMotionIds
   });
-  const humanoid=normalizedActor!=='CREATURE'||/HUMANOID|BIPED|R15|R6/.test(upper(bodyPlan)+' '+upper(rigProfile));
+  const humanoid=/HUMANOID|BIPED|R15|R6/.test(upper(bodyPlan)+' '+upper(rigProfile))
+    && !/QUADRUPED|CENTAUR|ARACHNID|HEXAPOD|SERPENT/.test(upper(bodyPlan));
+  const limbCount=studio.limbCount||procedural.limbCount||(/QUADRUPED/.test(upper(bodyPlan))?4:2);
   const requiredStates=humanoid
     ?['IDLE','WALK','JOG','RUN','START','STOP','TURN','ATTACK','HIT','DEATH']
     :['IDLE_ACTING','BODY_PLAN_LOCOMOTION','TURN','ATTACK','HIT','DEATH'];
@@ -3529,6 +3814,8 @@ export function createRobloxCharacterMotionPlan({
       ?['MOTOR6D_OR_BONES','HUMANOID_OR_ANIMATION_CONTROLLER','ANIMATOR']
       :['BODY_PLAN_SPECIFIC_ARTICULATED_JOINT_CHAIN','ANIMATOR']),
     requiredStates:Object.freeze(requiredStates),
+    bipedActionSync:humanoid?createDuelCombatMotionLoadout({weaponFamily:studio.weaponFamily||context.weaponFamily||'UNARMED',actorClass:normalizedActor,bodyPlan:/HUMANOID|BIPED/.test(upper(bodyPlan))?bodyPlan:'HUMANOID',platform:'ROBLOX'}):null,
+    fourLegMotionRetargetRequired:/QUADRUPED/.test(upper(bodyPlan)),
     studioProduction:STUDIO_MOTION_PRODUCTION,
     motionSource:source,
     blend:createRobloxMotionBlendProfile(blend),
@@ -3537,7 +3824,7 @@ export function createRobloxCharacterMotionPlan({
       weaponFamily:studio.weaponFamily||context.weaponFamily||'UNARMED',
       weightClass:studio.weightClass||context.weightClass||'STANDARD',
       combat:studio.combat!==false,mobile:studio.mobile!==false,
-      limbCount:studio.limbCount||procedural.limbCount||2
+      limbCount
     }),
     procedural:createProceduralMotionProfile({
       footIk:procedural.footIk!==false,
@@ -3554,7 +3841,7 @@ export function createRobloxCharacterMotionPlan({
       contactCorrection:procedural.contactCorrection!==false,
       aimOffset:procedural.aimOffset!==false,
       slopeAdaptation:procedural.slopeAdaptation!==false,
-      limbCount:studio.limbCount||procedural.limbCount||2,
+      limbCount,
       platformBudget:procedural.platformBudget||'MOBILE'
     }),
     runtimeScenario:Object.freeze(['IDLE_5_SECONDS','WALK_10_SECONDS','TURN_LEFT_RIGHT','RUN_AND_STOP','ATTACK_THREE_TIMES_WHEN_COMBATANT','HIT_REACTION_WHEN_DAMAGEABLE','DEATH_WHEN_MORTAL','RESPAWN_WHEN_SUPPORTED']),
