@@ -4775,7 +4775,50 @@ export function buildVibeAssetProductionPlan({
   const targetResolution=resolveAssetProductionTarget({target,task,repoRoot});
   const resolvedTarget=targetResolution.target;
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
-  const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
+  // [기존 F0~F9 자산 선택] 로블록스에서 실제 소비되는 역할이 명시된
+  // 원본 소스만 읽는다. 매 빌드업의 일반 요청에도 CC0 원본 수급을 누락하지 않는다.
+  // 게임 ID/소스 루트가 맞지 않으면 다른 게임을 추측하거나 수정하지 않는다.
+  const sourceActorRequirements=[];
+  const gameId=clean(task.gameId);
+  const declaredRoot=clean(task.sourceRoot||task.ownerSourceRoot||task.projectPath).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
+  if(resolvedTarget==='roblox'&&/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId)
+    &&(!declaredRoot||declaredRoot==='roblox-games/'+gameId)){
+    const root=path.join(repoRoot,'roblox-games',gameId);
+    const roles=new Set();
+    const add=(family,name)=>{
+      const role=clean(name).replace(/([a-z])([A-Z])/g,'$1_$2').toLowerCase();
+      if(!/^[a-z][a-z0-9_]{1,50}$/.test(role)||['none','generic','default','test'].includes(role))return;
+      const identity=family+':'+role;
+      if(roles.has(identity)||sourceActorRequirements.filter(row=>row.family===family).length>=4)return;
+      roles.add(identity);
+      sourceActorRequirements.push({family,role,required:true,
+        source:'CURRENT_ROBLOX_VISIBLE_CONSUMER_F0_F9',runtimeVerified:false});
+    };
+    for(const relative of ['shared/VisualStyle.luau','server/Game.server.luau']){
+      const filename=path.join(root,relative);
+      let text='';
+      try{
+        const stat=fs.statSync(filename);
+        if(!stat.isFile()||stat.size>600000)continue;
+        text=fs.readFileSync(filename,'utf8');
+      }catch{continue;}
+      if(relative.startsWith('shared/')){
+        for(const match of text.matchAll(/\b(?:Shared)?NpcModels\s*=\s*\{([^}]{1,2200})\}/g)){
+          for(const entry of match[1].matchAll(/\b([A-Za-z][A-Za-z0-9_]*)\s*=\s*\d{6,}/g))add('CHARACTER',entry[1]);
+        }
+      }else{
+        // Spawn calls in the actual game source are stronger role evidence than
+        // dialogue text or design plans. Never infer HP, species or game rules.
+        for(const match of text.matchAll(/\b(?:spawnMob|spawnEnemy|spawnCreature|Wildlife\.Spawn)\s*\(\s*["']([A-Za-z][A-Za-z0-9_]*)["']/g))add('CREATURE',match[1]);
+      }
+    }
+  }
+  const explicitRequirements=Array.isArray(task.assetRequirements)?task.assetRequirements:[];
+  const explicitKeys=new Set(explicitRequirements.map(row=>clean(row?.family).toUpperCase()+':'+clean(row?.role).toLowerCase().replace(/[\\s-]+/g,'_')));
+  const flowAssetRequirements=normalizeFlowAssetRequirements([
+    ...explicitRequirements,
+    ...sourceActorRequirements.filter(row=>!explicitKeys.has(row.family+':'+row.role))
+  ]);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   // [공용 에셋 자동 성장] 기존 원본 매니페스트에 새 검증 원본이 추가되면
@@ -6170,6 +6213,7 @@ export function buildVibeAssetProductionPlan({
     productionProfile:selector.production||null,
     commercialDistillation,
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
+    sourceActorRequirements:freezeList(sourceActorRequirements.map(row=>freeze({...row}))),
     flowAssetRequirements,
     assetSupplySummary,
     detailedAssetCandidateReview,
