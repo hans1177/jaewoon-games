@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'roblox-games/baeksu-war/**'
+      - 'tools/baeksu-war-author-meshes.py'
+      - 'tools/baeksu-war-upload-meshes.mjs'
       - '.github/workflows/owner-baeksu-war-private-preview.yml'
   workflow_dispatch:
 
@@ -24,6 +26,7 @@ jobs:
       ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
       ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
       ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+      ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,16 +35,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      # Owner explicitly prohibited assistant-invented meshes as well as primitive Part visuals.
-      # Publishing must fail closed until an owner-approved existing real model manifest is bound.
-      - name: Enforce owner-approved real-model provenance before publish
+      # 4차 오너 지시: 라이브러리 자산을 우선 재사용하고 없는 종류는 검증된 CC0 원본 다운로드를 허용.
+      # 자체 임의 생성물/Part/GLB 도형 합성은 계속 차단한다.
+      - name: Verify and convert 12 real CC0 models
         shell: bash
         run: |
           set -euo pipefail
-          echo 'OWNER_ASSET_POLICY_BLOCKED: assistant-generated GLB meshes and primitive Parts are forbidden.'
-          echo 'Use licensed owner-approved existing real models with exact SHA256 and per-Universe grants.'
-          echo 'Previous Roblox published version is preserved; no unapproved V3 overwrite.'
-          exit 1
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends blender
+          blender --background --disable-autoexec --python tools/baeksu-war-author-meshes.py -- /tmp/baeksu-art
+          test "$(find /tmp/baeksu-art -maxdepth 1 -name '*.glb' -type f | wc -l)" -eq 12
+          test -s /tmp/baeksu-art/provenance.json
+      - name: Upload proven CC0 meshes and grant the existing universe
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/baeksu-war-upload-meshes.mjs /tmp/baeksu-art /tmp/baeksu-art-upload.json
+          test -s /tmp/baeksu-art-upload.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const receipt=JSON.parse(fs.readFileSync('/tmp/baeksu-art-upload.json','utf8'));
+          const roles=['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
+          if(receipt.version!==4||String(receipt.universeId)!=='10773115989'||roles.some(r=>!Number.isSafeInteger(receipt.models?.[r]?.assetId)||receipt.models[r].assetId<1||receipt.models[r].license!=='CC0-1.0'||String(receipt.models[r].universeId)!=='10773115989'))throw Error('CC0_ASSET_GRANTS_NOT_VERIFIED');
+          if(roles.some(r=>!new RegExp('\\\\b'+r+'=[1-9]\\\\d*').test(fs.readFileSync('roblox-games/baeksu-war/shared/VisualAssetIds.luau','utf8'))))throw Error('CC0_MODEL_ID_BINDING_INCOMPLETE');
+          console.log('BAEKSU_WAR_REAL_CC0_12=VERIFIED_FOR_PREVIEW_BUILD');
+          NODE
       - name: Build only baeksu-war Roblox place
         shell: bash
         run: |
@@ -87,5 +105,8 @@ jobs:
         if: always()
         with:
           name: baeksu-war-private-preview-receipt
-          path: /tmp/owner-baeksu-war-preview-receipt.json
+          path: |
+            /tmp/owner-baeksu-war-preview-receipt.json
+            /tmp/baeksu-art-upload.json
+            /tmp/baeksu-art/provenance.json
           if-no-files-found: ignore
