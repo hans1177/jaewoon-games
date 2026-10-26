@@ -8,29 +8,89 @@ local Input=game:GetService("UserInputService")
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
 local remote=RS:WaitForChild(C.Remote)
+-- 회사 보유 공용 게임창/버튼/아이콘 라이브러리(동일 저장소 자산)를 실물 UI에 사용한다.
+local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
+local Icons=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonIcons"))
+local theme=CommonUI.CreateTheme({
+ Panel=Color3.fromRGB(24,34,41),PanelRaised=Color3.fromRGB(41,59,66),
+ PanelInset=Color3.fromRGB(14,25,33),Border=Color3.fromRGB(88,119,125),
+ BorderBright=Color3.fromRGB(169,197,173),Text=Color3.fromRGB(249,243,222),
+ MutedText=Color3.fromRGB(180,199,199),Accent=Color3.fromRGB(229,185,95),
+ Primary=Color3.fromRGB(61,110,98),PrimaryTop=Color3.fromRGB(84,144,113),
+ PrimaryBottom=Color3.fromRGB(40,76,75),Positive=Color3.fromRGB(83,173,126),
+ Warning=Color3.fromRGB(225,180,96),HealthGood=Color3.fromRGB(93,184,125),
+ HealthWarn=Color3.fromRGB(217,155,67),HealthCritical=Color3.fromRGB(218,92,79),
+ HealthTrack=Color3.fromRGB(45,54,57),Shadow=Color3.fromRGB(5,11,15),Corner=15,TouchHeight=44,
+})
 local gui=Instance.new("ScreenGui")
-gui.Name="BaeksuHUD";gui.ResetOnSpawn=false;gui.Parent=p:WaitForChild("PlayerGui")
+gui.Name="BaeksuHUD";gui.ResetOnSpawn=false;gui.DisplayOrder=12
+gui.ZIndexBehavior=Enum.ZIndexBehavior.Global
+gui.Parent=p:WaitForChild("PlayerGui")
+local modalLayer=Instance.new("Frame")
+modalLayer.Name="게임 시스템 창";modalLayer.BackgroundTransparency=1
+modalLayer.Size=UDim2.fromScale(1,1);modalLayer.ZIndex=15
+modalLayer.Visible=false;modalLayer.Parent=gui
+local backdrop=Instance.new("TextButton")
+backdrop.Name="창 바깥 터치해서 닫기";backdrop.Size=UDim2.fromScale(1,1)
+backdrop.Text="";backdrop.BorderSizePixel=0
+backdrop.BackgroundColor3=Color3.fromRGB(3,12,18)
+backdrop.BackgroundTransparency=.38;backdrop.AutoButtonColor=false
+backdrop.ZIndex=15;backdrop.Parent=modalLayer
+local setWindow
 -- UI: 모든 소환/전투는 자동. 슬롯 구매·건설·업그레이드 버튼만 제공.
+-- 공용 라이브러리에서 창과 버튼을 만들고 게임 테마·ZIndex만 설정한다.
 local function panel(parent,size,pos)
- local f=Instance.new("Frame");f.Size=size;f.Position=pos;f.BackgroundColor3=Color3.fromRGB(32,42,50)
- f.BackgroundTransparency=.04;f.BorderSizePixel=0;f.Parent=parent
- local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,12);c.Parent=f
- local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(130,170,154);border.Thickness=1;border.Transparency=.43;border.Parent=f
- local gradient=Instance.new("UIGradient");gradient.Color=ColorSequence.new(Color3.fromRGB(44,66,64),Color3.fromRGB(29,38,49));gradient.Rotation=90;gradient.Parent=f
+ local f=CommonUI.CreatePanel({name="군단 게임창",size=size,theme=theme,cornerRadius=16})
+ f.Position=pos;f.Parent=parent
+ local shift=parent==modalLayer and 21 or 2
+ for _,child in ipairs(f:GetDescendants()) do
+  if child:IsA("GuiObject") then child.ZIndex+=shift end
+ end
+ f.ZIndex=shift+1
  return f
 end
 local function label(parent,txt,size,pos)
- local l=Instance.new("TextLabel");l.Size=size;l.Position=pos;l.BackgroundTransparency=1
- l.Text=txt;l.TextColor3=Color3.fromRGB(246,240,216);l.TextSize=14
- l.TextWrapped=true;l.Font=Enum.Font.GothamBold;l.TextXAlignment=Enum.TextXAlignment.Left;l.Parent=parent
+ local l=Instance.new("TextLabel")
+ l.Size=size;l.Position=pos;l.BackgroundTransparency=1;l.Text=txt
+ l.TextColor3=theme.Text;l.TextSize=15;l.TextWrapped=true
+ l.Font=Enum.Font.GothamBold;l.TextXAlignment=Enum.TextXAlignment.Left
+ l.TextYAlignment=Enum.TextYAlignment.Center
+ l.ZIndex=parent:IsA("GuiObject") and parent.ZIndex+4 or 4
+ l.Parent=parent
  return l
 end
+local function iconFor(txt)
+ if txt:find("지도") or txt:find("이동") then return "MINIMAP" end
+ if txt:find("건설") or txt:find("슬롯") or txt:find("집") then return "CRAFT" end
+ if txt:find("군단") or txt:find("진격") or txt:find("집결") or txt:find("방어") then return "PARTY" end
+ if txt:find("연구") then return "EQUIPMENT" end
+ if txt:find("임무") then return "QUEST" end
+ if txt:find("일꾼") then return "CHARACTER" end
+ return nil
+end
 local function button(parent,txt,size,order,fn)
- local b=Instance.new("TextButton");b.Name=txt;b.Size=size;b.LayoutOrder=order
- b.BackgroundColor3=Color3.fromRGB(67,111,109);b.Text=txt;b.TextSize=13;b.TextWrapped=true
- b.TextColor3=Color3.new(1,1,1);b.Font=Enum.Font.GothamBold;b.Parent=parent
- local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,8);c.Parent=b
- local stroke=Instance.new("UIStroke");stroke.Color=Color3.fromRGB(156,215,177);stroke.Transparency=.6;stroke.Parent=b
+ local b=CommonUI.CreatePrimaryButton({
+  name="액션 "..tostring(order),text=txt,size=size,
+  minWidth=44,minHeight=44,textSize=14,theme=theme,
+ })
+ b.LayoutOrder=order;b.Position=UDim2.new()
+ local base=parent:IsA("GuiObject") and parent.ZIndex+4 or 4
+ for _,child in ipairs(b:GetDescendants()) do
+  if child:IsA("GuiObject") then child.ZIndex+=base end
+ end
+ b.ZIndex=base
+ local icon=iconFor(txt)
+ if icon and size.X.Offset~=0 and size.X.Offset>=90 or icon and size.X.Scale>0 then
+  local art=Icons.Create(icon,{size=UDim2.fromOffset(23,23),color=theme.Text,accentColor=theme.Accent})
+  art.Position=UDim2.fromOffset(8,10);art.ZIndex=b.ZIndex+2
+  for _,node in ipairs(art:GetDescendants()) do
+   if node:IsA("GuiObject") then node.ZIndex=art.ZIndex+1 end
+  end
+  art.Parent=b;b.TextXAlignment=Enum.TextXAlignment.Right
+  local padding=Instance.new("UIPadding");padding.PaddingRight=UDim.new(0,10)
+  padding.Parent=b
+ end
+ b.Parent=parent
  b.Activated:Connect(fn)
  return b
 end
@@ -39,7 +99,7 @@ local title=label(top,"백수대전쟁 · 군단전선 타이쿤",UDim2.new(1,-1
 title.TextSize=15
 local status=label(top,"불러오는 중",UDim2.new(1,-12,0,34),UDim2.fromOffset(8,25))
 status.TextSize=12
-local dock=panel(gui,UDim2.fromOffset(174,226),UDim2.new(1,-182,0,60))
+local dock=panel(modalLayer,UDim2.fromOffset(174,226),UDim2.new(1,-182,0,60))
 dock.Visible=false
 label(dock,"건물 슬롯",UDim2.new(1,-8,0,28),UDim2.fromOffset(8,4))
 local list=Instance.new("ScrollingFrame");list.Size=UDim2.new(1,-14,1,-90)
@@ -50,12 +110,11 @@ local ll=Instance.new("UIListLayout");ll.SortOrder=Enum.SortOrder.LayoutOrder;ll
 local buy=Instance.new("TextButton");buy.Size=UDim2.new(1,-14,0,43);buy.Position=UDim2.new(0,7,1,-49)
 buy.TextSize=13;buy.TextColor3=Color3.new(1,1,1);buy.BackgroundColor3=Color3.fromRGB(111,89,51)
 buy.Font=Enum.Font.GothamBold;buy.Text="전장 준비 중";buy.Parent=dock
-local menu=panel(gui,UDim2.fromOffset(228,306),UDim2.new(0,8,.52,-135))
+local menu=panel(modalLayer,UDim2.fromOffset(228,306),UDim2.new(0,8,.52,-135))
 menu.Visible=false
 local caption=label(menu,"집 선택",UDim2.new(1,-48,0,33),UDim2.fromOffset(8,5))
-local close=Instance.new("TextButton");close.Text="닫기";close.Size=UDim2.fromOffset(42,30)
-close.Position=UDim2.new(1,-47,0,5);close.Parent=menu
-close.Activated:Connect(function()menu.Visible=false;dock.Visible=true end)
+local close=button(menu,"뒤로",UDim2.fromOffset(69,44),0,function()setWindow("BUILD")end)
+close.Position=UDim2.new(1,-76,0,7)
 local choices=Instance.new("ScrollingFrame");choices.Size=UDim2.new(1,-12,1,-48)
 choices.Position=UDim2.fromOffset(6,41);choices.BackgroundTransparency=1;choices.BorderSizePixel=0
 choices.ScrollBarThickness=3;choices.AutomaticCanvasSize=Enum.AutomaticSize.Y;choices.CanvasSize=UDim2.new()
@@ -64,36 +123,35 @@ local cl=Instance.new("UIListLayout");cl.SortOrder=Enum.SortOrder.LayoutOrder;cl
 local notice=label(gui,"섬 전체 1000×1280 · 기지에서 전선까지 직접 탐험! 건물 슬롯을 눌러 건설해.",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
 notice.TextColor3=Color3.fromRGB(252,226,137)
 -- 군단 지휘와 경제 패널: 모바일에서는 버튼으로 펼쳐 화면을 확보한다.
-local controlPanel=panel(gui,UDim2.fromOffset(218,346),UDim2.fromOffset(8,133))
+local controlPanel=panel(modalLayer,UDim2.fromOffset(218,346),UDim2.fromOffset(8,133))
 controlPanel.Visible=false
 local mapPanel
-local controlToggle=button(gui,"군단 · 경제",UDim2.fromOffset(137,38),0,function()
- controlPanel.Visible=not controlPanel.Visible
- if controlPanel.Visible then menu.Visible=false end
- if mapPanel then mapPanel.Visible=false end
- dock.Visible=false
-end)
+local controlToggle=button(gui,"군단 · 경제",UDim2.fromOffset(137,46),0,function()setWindow("COMMAND")end)
 controlToggle.Position=UDim2.new(1,-255,0,10)
 -- 전장 가시성을 위해 건축 메뉴는 기본적으로 접는다.
-local buildToggle=button(gui,"건설 · 슬롯",UDim2.fromOffset(116,36),1,function()
- dock.Visible=not dock.Visible
- menu.Visible=false
- controlPanel.Visible=false
- if mapPanel then mapPanel.Visible=false end
-end)
+local buildToggle=button(gui,"건설 · 슬롯",UDim2.fromOffset(116,46),1,function()setWindow("BUILD")end)
 buildToggle.Position=UDim2.new(1,-128,0,10)
 
 -- Noob Army Tycoon과 같은 규모의 전장은 현재 위치가 읽히는 지도가 필요하다.
 -- 화면에 계속 떠 있는 패널 대신 버튼을 눌렀을 때만 펼친다.
-local mapToggle=button(gui,"지도 · 이동",UDim2.fromOffset(112,35),2,function()
- mapPanel.Visible=not mapPanel.Visible
- if mapPanel.Visible then
-  dock.Visible=false;menu.Visible=false;controlPanel.Visible=false
- end
-end)
+local mapToggle=button(gui,"지도 · 이동",UDim2.fromOffset(112,46),2,function()setWindow("MAP")end)
 mapToggle.Position=UDim2.new(1,-120,0,55)
-mapPanel=panel(gui,UDim2.fromOffset(190,273),UDim2.new(1,-198,0,98))
+mapPanel=panel(modalLayer,UDim2.fromOffset(190,273),UDim2.new(1,-198,0,98))
 mapPanel.Visible=false
+local modalExit=button(modalLayer,"닫기  ×",UDim2.fromOffset(101,44),10,function()setWindow(nil)end)
+modalExit.ZIndex=48
+-- 패널 간 상태는 단일 창 전환기로 제어. 지도/건설/군단 메뉴 중 하나만 보인다.
+setWindow=function(kind)
+ local active=(kind=="BUILD" and dock.Visible or kind=="SLOT" and menu.Visible
+  or kind=="COMMAND" and controlPanel.Visible or kind=="MAP" and mapPanel.Visible)
+ if active then kind=nil end
+ dock.Visible=kind=="BUILD";menu.Visible=kind=="SLOT"
+ controlPanel.Visible=kind=="COMMAND";mapPanel.Visible=kind=="MAP"
+ modalLayer.Visible=kind~=nil
+ gui:SetAttribute("OpenedSystemWindow",kind or "")
+end
+backdrop.Activated:Connect(function()setWindow(nil)end)
+
 label(mapPanel,"동물 군단 섬 지도",UDim2.new(1,-12,0,26),UDim2.fromOffset(8,4))
 local mapSurface=Instance.new("Frame")
 mapSurface.Name="섬 전체 지도"
@@ -124,15 +182,15 @@ mapPin("적진",0,C.World.EnemyGateZ,Color3.fromRGB(183,83,72))
 local playerPin=mapPin("나",0,C.World.PlayerSpawnZ+42,Color3.fromRGB(69,139,221))
 playerPin.ZIndex=3
 local mapTravelHome=button(mapPanel,"내 기지 이동",UDim2.new(1,-16,0,30),4,function()
- remote:FireServer("TRAVEL","BASE");mapPanel.Visible=false
+ remote:FireServer("TRAVEL","BASE");setWindow(nil)
 end)
 mapTravelHome.Position=UDim2.fromOffset(8,164)
 local mapTravelFront=button(mapPanel,"중앙 전선 이동",UDim2.new(1,-16,0,30),5,function()
- remote:FireServer("TRAVEL","FRONT");mapPanel.Visible=false
+ remote:FireServer("TRAVEL","FRONT");setWindow(nil)
 end)
 mapTravelFront.Position=UDim2.fromOffset(8,199)
 local mapTravelFar=button(mapPanel,"전방 거점 이동",UDim2.new(1,-16,0,30),6,function()
- remote:FireServer("TRAVEL","FORWARD");mapPanel.Visible=false
+ remote:FireServer("TRAVEL","FORWARD");setWindow(nil)
 end)
 mapTravelFar.Position=UDim2.fromOffset(8,234)
 
@@ -206,7 +264,7 @@ end
 p:GetAttributeChangedSignal("SaveStatus"):Connect(updateSaveNotice)
 local chosen=1
 local function redrawMenu(index)
- chosen=index;menu.Visible=true;dock.Visible=false;controlPanel.Visible=false;mapPanel.Visible=false
+ chosen=index;setWindow("SLOT")
  for _,x in ipairs(choices:GetChildren()) do if x:IsA("GuiObject") then x:Destroy() end end
  local b=current.Buildings[index]
  if b and b.Kind~="" and C.ById[b.Kind] then
