@@ -858,6 +858,11 @@ QACamera.install(C,gui,function()
  return{
   {label="cozy-home-overview",position=Vector3.new(0,145,170),lookAt=Vector3.new(0,4,0)},
   {label="cozy-home-ground",position=Vector3.new(0,24,98),lookAt=Vector3.new(0,5,0)},
+  -- 거대 시작섬 QA: 기존 촬영지점은 유지하고 추가 경관만 확인한다.
+  {label="cozy-grand-start-island",position=Vector3.new(0,930,1060),lookAt=Vector3.new(0,6,715)},
+  {label="cozy-ancient-forest",position=Vector3.new(-375,140,640),lookAt=Vector3.new(-265,14,550)},
+  {label="cozy-moon-lake",position=Vector3.new(365,165,920),lookAt=Vector3.new(225,4,780)},
+  {label="cozy-sunset-lighthouse",position=Vector3.new(110,178,1340),lookAt=Vector3.new(0,52,1200)},
   {label="cozy-east-regions",position=Vector3.new(270,135,5),lookAt=Vector3.new(170,5,0)},
   {label="cozy-west-regions",position=Vector3.new(-270,135,5),lookAt=Vector3.new(-170,5,0)},
   {label="cozy-volcano",position=Vector3.new(0,145,-350),lookAt=Vector3.new(0,12,-232)},
