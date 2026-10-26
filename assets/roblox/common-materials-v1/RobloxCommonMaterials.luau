@@ -385,7 +385,8 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  if not atom or not PRESETS[atom]then return false end
  -- An explicit toy-stud surface is cosmetic, and only a standard Part supports native studs.
  local studRequested=atom=="TOY_STUDDED" and part:GetAttribute("SurfaceStudsEnabled")==true
- if atom=="TOY_STUDDED" and not part:IsA("Part") then return false end
+   and part:IsA("Part") and part.Shape==Enum.PartType.Block and part.Anchored
+ if atom=="TOY_STUDDED" and not studRequested then return false end
  local source=PBR_SOURCES[materialName]
  if style=="HORROR"then
   if materialName=="WoodPlanks"then source="Wood062"elseif materialName=="Concrete"then source="Concrete046"elseif materialName=="Brick"then source="Bricks079"end
@@ -402,8 +403,11 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
    preserveBaseMaterial=not toy,
    materialVariant=source and ("Vibe_"..materialName.."_"..source) or nil})
  if studRequested then
+  local previous=part.TopSurface
   part.TopSurface=Enum.SurfaceType.Studs
+  part:SetAttribute("PreviousTopSurfaceName",previous.Name)
   part:SetAttribute("NativeStudsApplied",true)
+  part:SetAttribute("ToyStudRuntimeVerified",false)
  end
  part.Transparency=transparency
  part:SetAttribute("MaterialSourceId",source)

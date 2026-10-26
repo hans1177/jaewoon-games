@@ -379,6 +379,71 @@ function RobloxCommonUI.CreateInventorySlot(options)
   return button, icon, quantity, selected
 end
 
+-- Shared presentation-only binding for real game-owned inventory records.
+-- Called when searching, filtering, sorting, selecting, or receiving fresh snapshots.
+local INVENTORY_TIER_COLORS = table.freeze({
+  COMMON = Color3.fromRGB(129, 145, 159),
+  UNCOMMON = Color3.fromRGB(86, 194, 125),
+  RARE = Color3.fromRGB(83, 152, 241),
+  EPIC = Color3.fromRGB(167, 113, 234),
+  LEGENDARY = Color3.fromRGB(246, 187, 64),
+  MYTHIC = Color3.fromRGB(239, 98, 133),
+  ["일반"] = Color3.fromRGB(129, 145, 159),
+  ["고급"] = Color3.fromRGB(86, 194, 125),
+  ["희귀"] = Color3.fromRGB(83, 152, 241),
+  ["영웅"] = Color3.fromRGB(167, 113, 234),
+  ["전설"] = Color3.fromRGB(246, 187, 64),
+  ["신화"] = Color3.fromRGB(239, 98, 133),
+})
+
+function RobloxCommonUI.UpdateInventorySlot(slot, item, options)
+  assert(slot and slot:IsA("GuiButton"), "COMMON_INVENTORY_SLOT_REQUIRED")
+  item = type(item) == "table" and item or {}
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local image = tostring(item.image or item.icon or "")
+  slot:SetAttribute("BoundItemId", tostring(item.id or ""))
+  slot:SetAttribute("BoundFromGameState", true)
+  slot:SetAttribute("ItemLocked", item.locked == true)
+  slot:SetAttribute("ItemEquipped", item.equipped == true)
+  local icon = slot:FindFirstChild("Icon")
+  if icon then
+    icon.Image = image
+    icon.Visible = image ~= ""
+  end
+  local glyph = slot:FindFirstChild("FallbackGlyph")
+  if glyph then
+    local label = tostring(item.glyph or item.name or item.title or item.id or "?")
+    local ok, offset = pcall(utf8.offset, label, 2)
+    glyph.Text = ok and string.sub(label, 1, offset and offset - 1 or #label) or "?"
+    glyph.Visible = image == ""
+  end
+  local badge = slot:FindFirstChild("StateBadge")
+  if badge then
+    badge.Text = item.locked == true and "잠김" or item.equipped == true and "장착" or ""
+    badge.Visible = badge.Text ~= ""
+    badge.BackgroundColor3 = item.locked == true and theme.Danger or theme.Positive
+  end
+  local rail = slot:FindFirstChild("RarityRail")
+  local rarity = string.upper(tostring(item.rarity or ""))
+  if rail then
+    local color = typeof(item.rarityColor) == "Color3" and item.rarityColor or INVENTORY_TIER_COLORS[rarity]
+    rail.Visible = color ~= nil
+    rail.BackgroundColor3 = color or theme.Border
+  end
+  local quantity = slot:FindFirstChild("Quantity")
+  if quantity then
+    local amount = item.quantity or item.count
+    quantity.Text = amount == nil and "" or tostring(amount)
+  end
+  local highlight = slot:FindFirstChild("SelectedRing")
+  if highlight then highlight.Visible = options.selected == true or item.selected == true end
+  slot.Active = item.id ~= nil and item.locked ~= true
+  slot:SetAttribute("RarityVisual", rarity)
+  slot:SetAttribute("OwnsEquipAuthority", false)
+  return slot
+end
+
 function RobloxCommonUI.CreateTooltip(options)
   options = options or {}
   local theme = cloneTheme(options.theme)
@@ -2115,38 +2180,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       end
       slot.Visible=true
       slot.Name="Slot"..i;slot.LayoutOrder=i
-      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
-      slot:SetAttribute("BoundFromGameState",true)
-      local icon=slot:FindFirstChild("Icon")
-      local quantity=slot:FindFirstChild("Quantity")
-      local highlight=slot:FindFirstChild("SelectedRing")
-      if icon then
-        icon.Image=tostring(row.image or "")
-        icon.Visible=icon.Image~=""
-      end
-      local glyph=slot:FindFirstChild("FallbackGlyph")
-      if glyph then
-        local label=tostring(row.glyph or row.name or row.title or row.id or "?")
-        local nextCodepoint=utf8.offset(label,2)
-        glyph.Text=string.sub(label,1,nextCodepoint and nextCodepoint-1 or #label)
-        glyph.Visible=not icon or icon.Image==""
-      end
-      local stateBadge=slot:FindFirstChild("StateBadge")
-      if stateBadge then
-        stateBadge.Text=row.locked==true and "잠김" or row.equipped==true and "장착" or ""
-        stateBadge.Visible=stateBadge.Text~=""
-        stateBadge.BackgroundColor3=row.locked==true and theme.Danger or theme.Positive
-      end
-      local rarityRail=slot:FindFirstChild("RarityRail")
-      if rarityRail then
-        rarityRail.Visible=typeof(row.rarityColor)=="Color3"
-        if rarityRail.Visible then rarityRail.BackgroundColor3=row.rarityColor end
-      end
-      slot:SetAttribute("ItemLocked",row.locked==true)
-      slot:SetAttribute("ItemEquipped",row.equipped==true)
-      if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
-      if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
-      slot.Active=row.id~=nil and row.locked~=true
+      RobloxCommonUI.UpdateInventorySlot(slot,row,{theme=theme,selected=selectedId~=nil and selectedId==row.id})
     end
     for i=#shown+1,#slots do slots[i].Visible=false end
     emptyMessage.Visible=#shown==0
