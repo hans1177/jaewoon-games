@@ -378,11 +378,16 @@ end
 local ROLE_MATERIALS={Wood="WOOD",WoodPlanks="WOOD",Slate="STONE",Rock="STONE",Limestone="STONE",Cobblestone="STONE",Concrete="STONE",Marble="STONE",Brick="BRICK",Metal="METAL",CorrodedMetal="CORROSION",DiamondPlate="METAL",Fabric="FABRIC",Ground="GROUND",Grass="MOSS",LeafyGrass="MOSS",Mud="MUD",Sand="SAND",Sandstone="SAND",Snow="SNOW",Ice="ICE",Glacier="ICE",Asphalt="ASPHALT",Pavement="ASPHALT"}
 local PBR_SOURCES={Wood="Wood062",WoodPlanks="WoodFloor051",Slate="Rock035",Rock="Rock030",Limestone="Rock030",Cobblestone="Rock035",Concrete="Concrete034",Marble="Marble012",Brick="Bricks059",Metal="Metal046A",CorrodedMetal="Metal032",DiamondPlate="MetalPlates006",Fabric="Fabric026",Ground="Ground037",Grass="Grass001",LeafyGrass="Grass001",Mud="Ground054"}
 function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
- if not part:IsA("BasePart") or part.Transparency>=1 or part:GetAttribute("PreserveAuthoredMaterial")==true then return false end
- if part:IsA("MeshPart") and (part:FindFirstChildOfClass("SurfaceAppearance") or part.TextureID~="")then return false end
- local mesh=part:FindFirstChildOfClass("SpecialMesh")
- if mesh and mesh.TextureId~=""then return false end
+ if not part:IsA("BasePart") or part.Transparency>=1 then return false end
  local explicitRole=part:GetAttribute("SurfaceRole")
+ local refreshToy=part:GetAttribute("RefreshToySurface")==true
+   and(explicitRole=="TOY_PLASTIC"or explicitRole=="TOY_STUDDED")
+ if part:GetAttribute("PreserveAuthoredMaterial")==true and not refreshToy then return false end
+ local appearance=part:FindFirstChildOfClass("SurfaceAppearance")
+ if part:IsA("MeshPart")and(appearance or part.TextureID~="")and not refreshToy then return false end
+ local mesh=part:FindFirstChildOfClass("SpecialMesh")
+ if mesh and mesh.TextureId~=""and not refreshToy then return false end
+
  local toyRequested=explicitRole=="TOY_PLASTIC" or explicitRole=="TOY_STUDDED"
  if part.MaterialVariant~=""and not toyRequested then return false end
  local materialName=part.Material.Name
@@ -392,6 +397,12 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  local studRequested=atom=="TOY_STUDDED" and part:GetAttribute("SurfaceStudsEnabled")==true
    and part:IsA("Part") and part.Shape==Enum.PartType.Block and part.Anchored
  if atom=="TOY_STUDDED" and not studRequested then return false end
+ -- 기존 게임도 명시한 새 토이 스타일로 갱신한다. 종·UV·색상 맵과 리그는 그대로 재사용한다.
+ if refreshToy and part:IsA("MeshPart")and appearance then
+  local colorMap=tostring(appearance.ColorMap or "")
+  if colorMap~=""then part.TextureID=colorMap end
+  appearance:Destroy()
+ end
  local source=PBR_SOURCES[materialName]
  if style=="HORROR"then
   if materialName=="WoodPlanks"then source="Wood062"elseif materialName=="Concrete"then source="Concrete046"elseif materialName=="Brick"then source="Bricks079"end

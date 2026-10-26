@@ -100,6 +100,11 @@ local actor=part('Torso','Plastic');actor:SetAttribute('SurfaceRole','TOY_PLASTI
 assert(M.ApplyAuthoredSurface(actor,'FANTASY'));assert(actor.Material.Name=='SmoothPlastic')
 local unsupported=part('AuthoredGround','Grass','MeshPart');unsupported:SetAttribute('SurfaceRole','TOY_STUDDED');unsupported:SetAttribute('SurfaceStudsEnabled',true)
 assert(not M.ApplyAuthoredSurface(unsupported,'COZY'))
+local upgraded=part('ExistingKnight','Metal','MeshPart');upgraded:SetAttribute('PreserveAuthoredMaterial',true);upgraded:SetAttribute('RefreshToySurface',true);upgraded:SetAttribute('SurfaceRole','TOY_PLASTIC');upgraded:SetAttribute('PreserveAuthoredTint',true)
+upgraded.surface={ColorMap='rbxassetid://existing-approved-colormap',Destroy=function()upgraded.surface=nil end}
+assert(M.ApplyAuthoredSurface(upgraded,'FANTASY'));assert(upgraded.surface==nil)
+assert(upgraded.TextureID=='rbxassetid://existing-approved-colormap' and upgraded.Material.Name=='SmoothPlastic')
+assert(upgraded.CustomPhysicalProperties.Density==2 and upgraded.Transparency==.27)
 print('MATERIAL_BEHAVIOR_PASS')
 `;
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'material-qa-'));
