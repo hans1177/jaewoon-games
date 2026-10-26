@@ -1717,7 +1717,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   const saveWork=/(?:save|persist|datastore|shutdown|stability|regression|저장|종료|복구|안정)/i.test(intent);
   const actionWork=/(?:gameplay|combat|craft|quest|action|dispatch|implementation|게임|전투|공격|제작|퀘스트|행동|구현)/i.test(intent)
     &&/(?:missing|unbound|restore|dispatch|connect|implement|누락|연결|복구|구현|미동작)/i.test(intent);
-  if(!inputWork&&!saveWork&&!actionWork)return null;
+  const runtimeWork=/(?:runtime|spawn|respawn|character|stream|lifecycle|camera|hud|scroll|viewport|cleanup|스폰|리스폰|캐릭터|초기|스트리밍|카메라|화면|스크롤|런타임|누수|종료.*정리)/i.test(intent);
+  if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork)return null;
   let root;
   try{root=fs.realpathSync(sourceRoot);}catch{return null;}
   const candidates=[],sourceHashes=new Map();
@@ -1729,6 +1730,139 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     const source=fs.readFileSync(file,'utf8');
     if(source.length>1000000)continue;
     sourceHashes.set(relative,crypto.createHash('sha256').update(source).digest('hex'));
+    if(runtimeWork&&/(?:^|\/)(?:server|client)(?:\/|$)|\.(?:server|client)\.luau$/i.test(relative)){
+      // [실행 연결 10종] 기존 함수·입력·화면 값을 재사용하고 새 게임 규칙은 만들지 않는다.
+      const code=executableText(source,'luau'),functions=inspectSourceFunctions(source,{language:'luau'});
+      const outer=code.split('');
+      for(const fn of functions)for(let at=fn.start;at<fn.end;at++)if(outer[at]!=='\n')outer[at]=' ';
+      const points=[...new Set([...functions.map(fn=>fn.start),...[...code.matchAll(/^[A-Za-z_][^\n]*/gm)].map(row=>row.index)])].sort((a,b)=>a-b);
+      const tokens=[...outer.join('').matchAll(/\b(?:function|if|elseif|for|while|do|repeat|until|end)\b/g)];
+      const topLevel=new Set(),stack=[];let index=0,pendingDo=0;
+      for(const point of points){
+        while(index<tokens.length&&tokens[index].index<point){
+          const word=tokens[index++][0];
+          if(word==='elseif')continue;
+          if(word==='for'||word==='while'){stack.push(word);pendingDo++;}
+          else if(word==='do'){if(pendingDo)pendingDo--;else stack.push(word);}
+          else if(word==='function'||word==='if'||word==='repeat')stack.push(word);
+          else stack.pop();
+        }
+        if(!stack.length)topLevel.add(point);
+      }
+      const contracts=new Map(),services=new Map(),uiObjects=new Map();
+      for(const row of source.matchAll(/^local\s+([A-Za-z_][A-Za-z_0-9]*)\s*=\s*game:GetService\((["'])([A-Za-z_][A-Za-z_0-9]*)\2\)/gm)){
+        if(topLevel.has(row.index)&&code.slice(row.index,row.index+5)==='local'
+          &&[...code.matchAll(new RegExp('\\b'+row[1]+'\\s*=(?!=)','g'))].length===1)services.set(row[1],row[3]);
+      }
+      for(const row of source.matchAll(/^local\s+([A-Za-z_][A-Za-z_0-9]*)\s*=\s*Instance\.new\((["'])(Frame|TextLabel|TextButton|ImageLabel|ImageButton|ScrollingFrame|UIListLayout)\2\)/gm)){
+        if(topLevel.has(row.index)&&code.slice(row.index,row.index+5)==='local'
+          &&[...code.matchAll(new RegExp('\\b'+row[1]+'\\s*=(?!=)','g'))].length===1)uiObjects.set(row[1],{className:row[3],at:row.index});
+      }
+      for(const fn of functions){
+        const header=/^local\s+function\s+([A-Za-z_][A-Za-z_0-9]*)\(\s*([A-Za-z_][A-Za-z_0-9]*)?\s*\)/.exec(source.slice(fn.start,fn.end));
+        if(!header||!topLevel.has(fn.start)||functions.some(parent=>parent!==fn&&parent.start<fn.start&&parent.end>fn.start)
+          ||[...code.matchAll(new RegExp('\\bfunction\\s+'+fn.name+'\\s*\\(','g'))].length!==1
+          ||new RegExp('\\b'+fn.name+'\\s*=(?!=)').test(code))continue;
+        const actor=header[2]||null;
+        if(actor&&new RegExp('\\b'+actor+'\\s*=(?!=)').test(fn.code))continue;
+        const guard=actor?new RegExp('^\\s*if\\s+([A-Za-z_][A-Za-z_0-9]*)\\[\\s*'+actor+'\\s*\\]\\s+then\\s+return\\s+end\\s*\\n\\s*\\1\\[\\s*'+actor+'\\s*\\]\\s*=\\s*true\\b').exec(fn.code):null;
+        const registry=guard?.[1];
+        const declarations=registry?[...code.matchAll(new RegExp('^local\\s+'+registry+'\\s*=\\s*\\{\\}','gm'))]:[];
+        const idempotent=Boolean(registry&&declarations.length===1&&topLevel.has(declarations[0].index)&&declarations[0].index<fn.start
+          &&[...code.matchAll(new RegExp('\\b'+registry+'\\s*=(?!=)','g'))].length===1
+          &&[...fn.code.matchAll(new RegExp('\\b'+registry+'\\[\\s*'+actor+'\\s*\\]\\s*=','g'))].length===1
+          &&!new RegExp('table\\.clear\\(\\s*'+registry+'\\s*\\)').test(fn.code));
+        contracts.set(fn.name,{fn,actor,idempotent});
+      }
+      const bindings=[
+        ...[...source.matchAll(/^([A-Za-z_][A-Za-z_0-9]*)\.(CharacterAdded|PlayerAdded|ChildAdded|DescendantAdded):Connect\(([A-Za-z_][A-Za-z_0-9]*)\)/gm)]
+          .map(row=>({row,receiver:row[1],event:row[2],callback:row[3]})),
+        ...[...source.matchAll(/^([A-Za-z_][A-Za-z_0-9]*):GetInstanceAddedSignal\((["'])([A-Za-z_][A-Za-z_0-9-]*)\2\):Connect\(([A-Za-z_][A-Za-z_0-9]*)\)/gm)]
+          .map(row=>({row,receiver:row[1],event:'Tagged',tag:row[3],callback:row[4]}))
+      ];
+      for(const binding of bindings){
+        const {row,receiver,event,callback,tag}=binding,contract=contracts.get(callback);
+        if(!contract?.idempotent||contract.fn.end>row.index||!topLevel.has(row.index)||code.slice(row.index,row.index+receiver.length)!==receiver
+          ||[...code.matchAll(new RegExp('\\b'+receiver+'\\s*=(?!=)','g'))].length!==1
+          ||source.split(row[0]).length!==2)continue;
+        let bootstrap='',kind='';
+        const playerDeclaration=new RegExp('^local\\s+'+receiver+'\\s*=\\s*([A-Za-z_][A-Za-z_0-9]*)\\.LocalPlayer\\b','m').exec(code);
+        if(event==='CharacterAdded'&&!new RegExp('\\b'+receiver+'\\.Character\\b').test(code)
+          &&playerDeclaration&&services.get(playerDeclaration[1])==='Players'){
+          bootstrap='if '+receiver+'.Character then task.defer('+callback+', '+receiver+'.Character) end';kind='INITIAL_CHARACTER_BINDING';
+        }else if(event==='PlayerAdded'&&!code.includes(receiver+':GetPlayers(')
+          &&services.get(receiver)==='Players'){
+          bootstrap='for _, player in ipairs('+receiver+':GetPlayers()) do task.defer('+callback+', player) end';kind='INITIAL_PLAYER_BINDING';
+        }else if(event==='Tagged'&&!code.includes(receiver+':GetTagged(')
+          &&services.get(receiver)==='CollectionService'){
+          bootstrap='for _, instance in ipairs('+receiver+':GetTagged('+JSON.stringify(tag)+')) do task.defer('+callback+', instance) end';kind='INITIAL_TAGGED_BINDING';
+        }else if(['ChildAdded','DescendantAdded'].includes(event)){
+          const method=event==='ChildAdded'?'GetChildren':'GetDescendants';
+          if(!code.includes(receiver+':'+method+'(')){
+            bootstrap='for _, instance in ipairs('+receiver+':'+method+'()) do task.defer('+callback+', instance) end';
+            kind=event==='ChildAdded'?'INITIAL_CHILD_BINDING':'INITIAL_DESCENDANT_BINDING';
+          }
+        }
+        if(bootstrap)candidates.push({summary:'Roblox existing-instance lifecycle bootstrap',expectedEffect:'Bind existing instances through the original idempotent handler before later native events',
+          edits:[{path:relative,find:row[0],replace:row[0]+'\n'+bootstrap}],newFiles:[],replaceFiles:[],tests:[],
+          deterministicRobloxNativeRepair:kind,semanticGrounding:{callback,existingIdempotenceGuard:true,runtimeVerified:false}});
+      }
+      for(const row of source.matchAll(/^local\s+([A-Za-z_][A-Za-z_0-9]*)\s*=\s*workspace\.CurrentCamera\b/gm)){
+        const camera=row[1],connection=camera+'ChangedConnection';
+        if(!topLevel.has(row.index)||code.slice(row.index,row.index+5)!=='local'||source.split(row[0]).length!==2
+          ||code.includes(connection)||[...code.matchAll(new RegExp('\\b'+camera+'\\s*=(?!=)','g'))].length!==1
+          ||/workspace:GetPropertyChangedSignal\(\s*["']CurrentCamera["']/.test(source))continue;
+        const replacement=row[0]+'\nlocal '+connection+' = workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()\n'
+          +'  if workspace.CurrentCamera then '+camera+' = workspace.CurrentCamera end\nend)\n'
+          +'script.Destroying:Connect(function() '+connection+':Disconnect() end)';
+        candidates.push({summary:'Roblox native camera reference lifetime repair',expectedEffect:'Follow replacement cameras while retaining the original camera settings and disconnecting on script destruction',
+          edits:[{path:relative,find:row[0],replace:replacement}],newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'CAMERA_REFERENCE_REFRESH'});
+      }
+      for(const row of source.matchAll(/^([A-Za-z_][A-Za-z_0-9]*):Get(Property|Attribute)ChangedSignal\((["'])([A-Za-z_][A-Za-z_0-9]*)\3\):Connect\(([A-Za-z_][A-Za-z_0-9]*)\)/gm)){
+        const receiver=row[1],property=row[4],callback=row[5],contract=contracts.get(callback);
+        if(!contract||contract.actor||contract.fn.end>row.index||!topLevel.has(row.index)||code.slice(row.index,row.index+receiver.length)!==receiver
+          ||[...code.matchAll(new RegExp('\\b'+callback+'\\b','g'))].length!==2||source.split(row[0]).length!==2
+          ||(row[2]==='Property'&&property!=='ViewportSize'))continue;
+        const fn=contract.fn;
+        const assignments=[...fn.code.matchAll(/\b([A-Za-z_][A-Za-z_0-9]*(?:\.[A-Za-z_][A-Za-z_0-9]*)?)\s*(?:[+\-*/%]|\.\.)?=(?!=)/g)];
+        const pureAssignments=assignments.length>0&&assignments.every(item=>{
+          const [object,field]=item[1].split('.');
+          if(!field)return /\blocal\s*$/.test(fn.code.slice(Math.max(0,item.index-10),item.index));
+          const ui=uiObjects.get(object);
+          return ui&&ui.at<fn.start&&ui.className!=='UIListLayout'&&['Text','Size','Position','Visible','CanvasSize'].includes(field)
+            &&(field!=='Text'||['TextLabel','TextButton'].includes(ui.className))
+            &&(field!=='CanvasSize'||ui.className==='ScrollingFrame');
+        });
+        const calls=[...fn.code.matchAll(/\b([A-Za-z_][A-Za-z_0-9]*(?:[.:][A-Za-z_][A-Za-z_0-9]*)*)\s*\(/g)].map(item=>item[1]);
+        if(!pureAssignments||/\bfunction\b/.test(fn.code)||!calls.every(call=>/^(?:tostring|math\.(?:clamp|min|max|floor|ceil)|string\.format|UDim2\.(?:new|fromScale|fromOffset)|Vector2\.new|Color3\.fromRGB|[A-Za-z_][A-Za-z_0-9]*:GetAttribute)$/.test(call)))continue;
+        candidates.push({summary:'Roblox existing presentation initial render',expectedEffect:'Render the original UI state once before later native change signals, without submitting gameplay actions',
+          edits:[{path:relative,find:row[0],replace:row[0]+'\ntask.defer('+callback+')'}],newFiles:[],replaceFiles:[],tests:[],
+          deterministicRobloxNativeRepair:row[2]==='Property'?'INITIAL_VIEWPORT_RENDER':'INITIAL_ATTRIBUTE_HUD_RENDER'});
+      }
+      for(const row of source.matchAll(/^([A-Za-z_][A-Za-z_0-9]*)\.CanvasSize\s*=\s*UDim2\.new\(\)/gm)){
+        const list=row[1];
+        if(!topLevel.has(row.index)||code.slice(row.index,row.index+list.length)!==list||source.split(row[0]).length!==2
+          ||new RegExp('\\b'+list+'\\.AutomaticCanvasSize\\b').test(code)
+          ||uiObjects.get(list)?.className!=='ScrollingFrame')continue;
+        const layouts=[...source.matchAll(/^local\s+([A-Za-z_][A-Za-z_0-9]*)\s*=\s*Instance\.new\((["'])UIListLayout\2\)/gm)]
+          .filter(item=>topLevel.has(item.index)&&code.slice(item.index,item.index+5)==='local');
+        if(!layouts.some(item=>new RegExp('\\b'+item[1]+'\\.FillDirection\\s*=\\s*Enum\\.FillDirection\\.Vertical\\b').test(code)
+          &&new RegExp('\\b'+item[1]+'\\.Parent\\s*=\\s*'+list+'\\b').test(code)))continue;
+        candidates.push({summary:'Roblox vertical scrolling content recovery',expectedEffect:'Use the existing vertical layout to size a previously zero-sized scroll canvas without changing menu actions',
+          edits:[{path:relative,find:row[0],replace:row[0]+'\n'+list+'.AutomaticCanvasSize = Enum.AutomaticSize.Y'}],newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'VERTICAL_SCROLL_CANVAS'});
+      }
+      const emptyCleanup='script.Destroying:Connect(function() end)',cleanupAt=source.indexOf(emptyCleanup);
+      if(cleanupAt>=0&&topLevel.has(cleanupAt)&&source.split(emptyCleanup).length===2){
+        const connections=[...source.matchAll(/^local\s+([A-Za-z_][A-Za-z_0-9]*)\s*=\s*[A-Za-z_][A-Za-z_0-9.]*(?::[A-Za-z_][A-Za-z_0-9]*\([^\n]*\))?:Connect\(([A-Za-z_][A-Za-z_0-9]*)\)/gm)]
+          .filter(row=>topLevel.has(row.index)&&code.slice(row.index,row.index+5)==='local'&&contracts.has(row[2])
+            &&contracts.get(row[2]).fn.end<row.index&&row.index<cleanupAt
+            &&[...code.matchAll(new RegExp('\\b'+row[1]+'\\s*=(?!=)','g'))].length===1
+            &&!new RegExp('\\b'+row[1]+':Disconnect\\(').test(code));
+        if(connections.length)candidates.push({summary:'Roblox existing connection teardown completion',expectedEffect:'Disconnect the script-owned native signal connections in the existing empty destruction hook',
+          edits:[{path:relative,find:emptyCleanup,replace:'script.Destroying:Connect(function()\n'+connections.map(row=>'  if '+row[1]+'.Connected then '+row[1]+':Disconnect() end').join('\n')+'\nend)'}],
+          newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'SCRIPT_CONNECTION_TEARDOWN'});
+      }
+    }
     if(actionWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
       // [게임 코딩 엔진] 승인된 행동 사전 + 실제 서버 함수 + 기존 권한 경로를 교차 분석한다.
       // 함수 본문이나 규칙을 추측하지 않고 누락된 디스패치 항목만 원래 테이블에 생성한다.
