@@ -5161,7 +5161,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
                   ||order.target==='roblox'
                     &&row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D'
                     &&row.externalAcquisition?.acquisitionState==='NATIVE_IMPORT_AND_STYLE_ADAPT_REQUIRED'
-                    &&/^assets\\/roblox\\/actors\\/sources\\/[a-z0-9-]+\\/[a-zA-Z0-9_.\\/-]+\\.(?:fbx|glb)$/i.test(row.externalAcquisition?.localSourcePath)
+                    &&/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.(?:fbx|glb)$/i.test(row.externalAcquisition?.localSourcePath)
                     &&/^[a-f0-9]{40}$/i.test(row.externalAcquisition?.repositoryGitBlobSha)))
               ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
                 &&!(row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
