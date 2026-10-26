@@ -109417,11 +109417,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_aba20dec4248bc444e9ca9fb",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10431",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "047db7ec1aa578b17edb4c21d81bad7dc9b025d5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10431,
+        "baseBranch": "main",
+        "headBranch": "owner/weapon-combo-60-20261027",
+        "baseSha": "047db7ec1aa578b17edb4c21d81bad7dc9b025d5",
+        "headSha": "80ad4be9c5b46cae083a4501a6466e63866d8470",
+        "mergeCommitSha": "e968dbcfd451b6d1696a30691205485fbf79ef6c",
+        "mergedAt": "2026-10-26T16:01:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "af17505718fdb769dd2940211022ad4a4118f9c446ffb2216ed192a4db500e9f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/weapon-combo-60-20261027",
+        "candidateSha": "80ad4be9c5b46cae083a4501a6466e63866d8470"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 1216,
+        "deletedLineCount": 10,
+        "changedFiles": [
+          "assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+          "assets/roblox/common-motion-v1/catalog.json",
+          "qa/roblox-common-motion-source.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+          "assets/roblox/common-motion-v1/catalog.json",
+          "qa/roblox-common-motion-source.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10431",
+        "merge-commit:e968dbcfd451b6d1696a30691205485fbf79ef6c",
+        "base-main:047db7ec1aa578b17edb4c21d81bad7dc9b025d5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 862
+    "total": 863
   }
 }
