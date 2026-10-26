@@ -3,7 +3,7 @@ local Config={
   Platform = "ROBLOX",
   MobileFirst = true,
   GameId="cozy-island",GameName="포근섬: 작은 왕국 키우기",GameNameKorean="포근섬: 작은 왕국 키우기",GameNameEnglish="Cozy Island: Build a Tiny Kingdom",SaveEnabled=true,TargetSessionMinutes={20,30},
-  Genre = "Strategy",
+  Genre = "Simulation",
   PlayMode = "COOP",
   MultiplayerRequired = true,
   SoloPlayable=true,CoopRequired=true,CompetitiveRequired=false,MinimumParticipants=2,
