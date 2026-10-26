@@ -166,6 +166,19 @@ setWindow=function(kind)
  gui:SetAttribute("OpenedSystemWindow",kind or "")
 end
 backdrop.Activated:Connect(function()setWindow(nil)end)
+-- 키보드/패드에서도 동일한 게임창을 제어한다. 채팅·기본 Roblox 입력을 가로채지 않는다.
+Input.InputBegan:Connect(function(input,processed)
+ if Input:GetFocusedTextBox() then return end
+ local key=input.KeyCode
+ if modalLayer.Visible and (key==Enum.KeyCode.Escape or key==Enum.KeyCode.ButtonB) then
+  setWindow(nil)
+  return
+ end
+ if processed then return end
+ if key==Enum.KeyCode.B then setWindow("BUILD")
+ elseif key==Enum.KeyCode.V then setWindow("COMMAND")
+ elseif key==Enum.KeyCode.M then setWindow("MAP") end
+end)
 
 label(mapPanel,"동물 군단 섬 지도",UDim2.new(1,-12,0,26),UDim2.fromOffset(8,4))
 local mapSurface=Instance.new("Frame")
@@ -432,7 +445,7 @@ local function resizeHud()
  end
  local w=math.max(260,math.min(width-24,compact and 480 or 620))
  local h=math.max(235,math.min(height-36,550))
- slotGrid.CellSize=UDim2.new(width<470 and .5 or .333,-10,0,81)
+ slotGrid.CellSize=UDim2.new(width<470 and .5 or .333,width<470 and -22 or -18,0,81)
  local windows={dock,menu,controlPanel,mapPanel}
  for _,window in ipairs(windows) do
   window.AnchorPoint=Vector2.new(.5,.5)
