@@ -91,7 +91,12 @@ test('Roblox BUILD_UP gives motion UI inventory audio VFX camera extra native at
   assert.equal(experience.robloxExtra.audio.ownerDisabledCategoriesPreserved,true);
   assert.equal(experience.robloxExtra.audio.spatialWorldAudioUsesRolloffWhenApplicable,true);
   assert.equal(experience.robloxExtra.audio.bgmRegionStateCombatTransitionsRequiredWhenMultipleContextsExist,true);
-  assert.equal(experience.robloxExtra.runtimeEvidence.officialStudioMcpRequired,true);
+  assert.equal(experience.robloxExtra.runtimeEvidence.officialStudioMcpRequired,false);
+  assert.equal(experience.robloxExtra.runtimeEvidence.localManualInspectionRequired,false);
+  assert.equal(experience.robloxExtra.runtimeEvidence.existingF0F9AndIndependentQaRequired,true);
+  assert.equal(experience.robloxExtra.runtimeEvidence.exactPrivateCandidateRemoteEvidenceRequired,true);
+  assert.equal(experience.robloxExtra.runtimeEvidence.exactPublishedPlaceVersionQaRequired,true);
+  assert.equal(experience.robloxExtra.runtimeEvidence.cloudThumbnailMetadataCannotProveRenderedScene,true);
   assert.equal(experience.robloxExtra.runtimeEvidence.sourceMarkersAloneCannotPass,true);
   assert.ok(experience.weakestTracks.includes('MOTION_AND_ACTING'));
   assert.ok(experience.weakestTracks.includes('AUDIO_MUSIC_AND_FEEDBACK'));
@@ -105,9 +110,64 @@ test('Roblox BUILD_UP gives motion UI inventory audio VFX camera extra native at
   assert.ok(['FIX_NOW','BUILD_UP_NOW'].includes(inventoryRow.priority));
   const prompt=directivePrompt(directive);
   assert.match(prompt,/EXPERIENCE_BUILD_UP:/);
-  assert.match(prompt,/OFFICIAL_ROBLOX_STUDIO_MCP|officialStudioMcpRequired/i);
+  assert.match(prompt,/EXACT_REMOTE_ROBLOX_CANDIDATE_F0_F9/);
+  assert.match(prompt,/LOCAL_MANUAL_INSPECTION_NOT_REQUIRED/);
+  assert.doesNotMatch(prompt,/officialStudioMcpRequired\\":true/);
   assert.match(prompt,/SoundService/i);
   assert.match(prompt,/44px/i);
+});
+
+test('every existing player-facing BUILD_UP check has exact remote proof requirements without local manual review',()=>{
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'test-game',platform:'ROBLOX',designRecord:design,sourceObservation:sourceObservation()
+  });
+  const proof=d.playerFacingInspectionContract;
+  assert.equal(proof.validationMode,'REMOTE_AUTOMATED_EXISTING_F0_F9_AND_INDEPENDENT_QA');
+  assert.equal(proof.executionBoundary,'EXISTING_BUILD_UP_AND_F0_F9_ONLY');
+  assert.equal(proof.localManualInspectionRequired,false);
+  assert.equal(proof.exactCandidateBindingRequired,true);
+  assert.equal(proof.postPublishVersionMatchRequired,true);
+  assert.equal(proof.neverTreatSourceOrThumbnailAsRuntimePass,true);
+  assert.equal(proof.negativeAndRecoveryScenariosRequired,true);
+  assert.equal(proof.evidenceState,'UNVERIFIED');
+  assert.equal(proof.cases.length,15);
+  const requiredFields=['sourceRevision','sourceTreeFingerprint','artifactIdentity','candidateVersion',
+    'captureReferenceAndSha256','remoteRunId','runtimeOrQaStage','failureSignature','negativeCaseResult','retestResult'];
+  for(const field of requiredFields)assert.ok(proof.requiredEvidenceFields.includes(field),field);
+  for(const row of proof.cases){
+    assert.equal(row.localManualInspectionRequired,false,row.id);
+    assert.equal(row.remoteProofState,'UNVERIFIED',row.id);
+    assert.equal(row.evidenceState,'UNVERIFIED',row.id);
+    assert.equal(row.proofOrigin,'EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9',row.id);
+    assert.equal(row.missingEvidenceAction,'KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA',row.id);
+    assert.equal(new Set(row.remoteAssertions).size,row.remoteAssertions.length,row.id);
+    assert.ok(row.remoteAssertions.length>=3,row.id);
+    assert.ok(row.remoteAssertions.every(x=>/^[A-Z0-9_]+$/.test(x)),row.id);
+  }
+  const checks=Object.fromEntries(proof.cases.map(row=>[row.id,row.remoteAssertions]));
+  assert.ok(checks.RECOVERY_SAVE.includes('SAVE_EXIT_REJOIN_RESTORE'));
+  assert.ok(checks.ACTION_IMPACT.includes('AUTHORITATIVE_HIT_EVENT_ORDER'));
+  assert.ok(checks.NAVIGATION_BLOCKERS.includes('PORTAL_DOOR_ROUTE_REACHABILITY'));
+  assert.ok(checks.MULTIPLAYER_CONSISTENCY.includes('EXACT_SOURCE_F7_SERVER_AUTHORITY_CONTRACT'));
+  assert.ok(checks.MOBILE_PERFORMANCE.includes('MEMORY_AND_MOBILE_VIEWPORT'));
+  assert.ok(checks.CHARACTER_RENDER.includes('REGISTERED_ASSET_AND_ORIGINAL_HASH'));
+  assert.ok(proof.evidenceRules.some(x=>x.includes('로컬 수동 검수는 요구하지 않는다')));
+  const prompt=directivePrompt(d);
+  assert.match(prompt,/inspectionRemoteChecks=RECOVERY_SAVE:/);
+  assert.match(prompt,/inspectionEvidence=EXACT_GAME_SOURCE_TREE_ARTIFACT_VERSION/);
+  assert.ok(d.acceptanceEvidence.includes('ROBLOX_EXPERIENCE_BUILD_UP_REQUIRES_EXACT_REMOTE_EVIDENCE_NO_LOCAL_MANUAL_INSPECTION'));
+});
+
+test('remote proof planning does not fabricate actual QA or require Studio for Web or Unity',()=>{
+  for(const platform of ['WEB','UNITY']){
+    const d=buildGameSpecificBuildUpDirective({
+      gameId:'test-game',platform,designRecord:design,sourceObservation:sourceObservation()
+    });
+    assert.equal(d.playerFacingInspectionContract.localManualInspectionRequired,false);
+    assert.equal(d.playerFacingInspectionContract.postPublishVersionMatchRequired,false);
+    assert.equal(d.playerFacingInspectionContract.cases.every(row=>row.evidenceState==='UNVERIFIED'),true);
+    assert.ok(d.playerFacingInspectionContract.cases.every(row=>row.remoteAssertions.length>=3));
+  }
 });
 
 test('Web and Unity keep one common buildup loop but use native evidence profiles',()=>{
