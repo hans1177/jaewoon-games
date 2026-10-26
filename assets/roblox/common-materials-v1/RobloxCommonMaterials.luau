@@ -324,6 +324,7 @@ function RobloxCommonMaterials.Apply(part, atomId, options)
   local physicalBefore = preservePhysics and clonePhysicalProperties(part.CurrentPhysicalProperties) or nil
 
   local originalMaterial = part.Material
+  if options.clearMaterialVariant == true then part.MaterialVariant = "" end
   part.Material = options.preserveBaseMaterial and originalMaterial or preset.material
 
   local baseColor = preset.color
@@ -379,7 +380,11 @@ local PBR_SOURCES={Wood="Wood062",WoodPlanks="WoodFloor051",Slate="Rock035",Rock
 function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  if not part:IsA("BasePart") or part.Transparency>=1 or part:GetAttribute("PreserveAuthoredMaterial")==true then return false end
  if part:IsA("MeshPart") and (part:FindFirstChildOfClass("SurfaceAppearance") or part.TextureID~="")then return false end
- if part.MaterialVariant~=""then return false end
+ local mesh=part:FindFirstChildOfClass("SpecialMesh")
+ if mesh and mesh.TextureId~=""then return false end
+ local explicitRole=part:GetAttribute("SurfaceRole")
+ local toyRequested=explicitRole=="TOY_PLASTIC" or explicitRole=="TOY_STUDDED"
+ if part.MaterialVariant~=""and not toyRequested then return false end
  local materialName=part.Material.Name
  local atom=part:GetAttribute("SurfaceRole") or ROLE_MATERIALS[materialName]
  if not atom or not PRESETS[atom]then return false end
@@ -400,7 +405,7 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  RobloxCommonMaterials.Apply(part,atom,{
    variant=toy and part:GetAttribute("SurfacePaletteVariant") or nil,
    tint=preserveTint and part.Color or nil,tintStrength=1,preservePhysics=true,
-   preserveBaseMaterial=not toy,
+   preserveBaseMaterial=not toy,clearMaterialVariant=toy,
    materialVariant=source and ("Vibe_"..materialName.."_"..source) or nil})
  if studRequested then
   -- 반복 빌드업에서도 최초 표면 정보를 보존하며 네이티브 스터드만 표현한다.

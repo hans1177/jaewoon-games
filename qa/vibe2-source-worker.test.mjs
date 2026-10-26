@@ -10074,6 +10074,13 @@ test('Roblox source-grounded UI icon inventory world craft improves native outpu
   assert.match(all,/Do not scatter generic Parts|do not scatter generic Parts/i);
   assert.match(all,/never duplicate RemoteEvents or inventory tables/);
   assert.match(all,/Rendering and native Studio screenshots remain UNVERIFIED/);
+  const materialOnly=create('재질 텍스처 PBR 최적화');
+  assert.match(materialOnly,/ROBLOX_NATIVE_MATERIAL_CRAFT:/);
+  assert.match(materialOnly,/ROBLOX_NATIVE_MOBILE_BUDGET:/);
+  assert.doesNotMatch(materialOnly,/ROBLOX_NATIVE_MOTION_CRAFT:|ROBLOX_NATIVE_ACTION_CRAFT:/);
+  assert.match(create('걷기 모션 전환'),/ROBLOX_NATIVE_MOTION_CRAFT:/);
+  assert.match(create('공격 타격 동기화'),/ROBLOX_NATIVE_ACTION_CRAFT:/);
+  assert.doesNotMatch(create('재질 텍스처 PBR 최적화','web'),/ROBLOX_NATIVE_MATERIAL_CRAFT:/);
   const inventoryOnly=create('인벤창 개선');
   assert.match(inventoryOnly,/INVENTORY_WINDOW_CRAFT:/);
   assert.match(inventoryOnly,/UI_LAYOUT_CRAFT:/);
