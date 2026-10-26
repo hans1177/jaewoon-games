@@ -797,3 +797,59 @@ test('web source consumer recognizes loaded model file tables but rejects mere c
   assert.equal(unused.sourceConsumerBindings.length,0,'unconsumed file table is not an applied asset');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+// [원본 라이브러리] 로컬 바이너리·출처·LFS 실체를 확인한다. 카탈로그는 런타임 증거가 아니다.
+test('로블록스 CC0 캐릭터 86종과 공용 원본 111개는 실제 바이너리·해시로만 확인한다',async()=>{
+ const {createHash}=await import('node:crypto');
+ const actor=JSON.parse(fs.readFileSync('assets/roblox/actors/manifest.json','utf8'));
+ const common=JSON.parse(fs.readFileSync('assets/asset-manifest.json','utf8'));
+ const index=actor.sourceLibraryIndex;
+ const rows=index.source3dAssets;
+ assert.equal(rows.length,86);
+ assert.deepEqual(index.byCategory,{CHARACTER:48,CREATURE:35,PROP:3});
+ assert.equal(index.archiveOnlyPacks.length,1);
+ assert.equal(index.archiveOnlyPacks[0].individualCharactersIndexed,false);
+ assert.equal(common.sharedOriginalArchives.packs.length,111);
+ assert.equal(common.robloxOriginalAssetLibrary.originalActor3dSources,rows.length);
+ assert.equal(common.robloxOriginalAssetLibrary.sharedDownloadedOriginalArchives,111);
+ assert.equal(index.gameApplied,false);
+ assert.equal(index.runtimeVerified,false);
+ assert.equal(common.robloxOriginalAssetLibrary.runtimeVerified,false);
+ assert.equal(common.robloxOriginalAssetLibrary.unverifiedArchiveImportForbidden,true);
+ const hashFile=async(file,algorithm)=>{
+  const hash=createHash(algorithm);
+  for await(const chunk of fs.createReadStream(file))hash.update(chunk);
+  return hash.digest('hex');
+ };
+ const seen=new Set();
+ for(const row of rows){
+  assert.equal(seen.has(row.sourcePath),false,'DUPLICATE_CC0_ORIGINAL: '+row.sourcePath);
+  seen.add(row.sourcePath);
+  assert.match(row.sourcePath,/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/.+\.(fbx|glb)$/i);
+  assert.equal(row.license,'CC0-1.0');
+  assert.match(row.licenseEvidenceUrl,/^https:\/\//);
+  assert.ok(row.roles.length>0);
+  assert.equal(row.gameApplied,false);
+  assert.equal(row.gameRuntimeVerified,false);
+  const stat=fs.lstatSync(row.sourcePath);
+  assert.ok(stat.isFile()&&!stat.isSymbolicLink()&&stat.size>256,'CC0_ORIGINAL_NOT_MATERIALIZED: '+row.sourcePath);
+  assert.equal(await hashFile(row.sourcePath,'sha256'),row.sourceSha256,'CC0_ORIGINAL_HASH_DRIFT: '+row.sourcePath);
+  const blob=createHash('sha1').update(Buffer.from('blob '+stat.size+'\0'));
+  for await(const chunk of fs.createReadStream(row.sourcePath))blob.update(chunk);
+  assert.equal(blob.digest('hex'),row.repositoryGitBlobSha,'CC0_GIT_BLOB_DRIFT: '+row.sourcePath);
+ }
+ const archives=new Set();
+ for(const pack of common.sharedOriginalArchives.packs){
+  assert.equal(archives.has(pack.sourcePath),false,'DUPLICATE_CC0_ARCHIVE: '+pack.sourcePath);
+  archives.add(pack.sourcePath);
+  assert.match(pack.sourcePath,/^assets\/external\/simple-rpg\//);
+  const stat=fs.lstatSync(pack.sourcePath);
+  assert.ok(stat.isFile()&&!stat.isSymbolicLink(),'CC0_ARCHIVE_MISSING: '+pack.sourcePath);
+  assert.equal(stat.size,pack.bytes,'CC0_ARCHIVE_SIZE_OR_LFS_POINTER: '+pack.sourcePath);
+  assert.equal(await hashFile(pack.sourcePath,'sha256'),pack.sha256,'CC0_ARCHIVE_HASH_DRIFT: '+pack.sourcePath);
+  assert.equal(pack.sourceOnly,true);
+  assert.equal(pack.gameApplied,false);
+  assert.match(pack.licenseEvidenceUrl,/^https:\/\//);
+ }
+});
