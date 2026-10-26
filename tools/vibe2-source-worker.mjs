@@ -5646,7 +5646,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     const weighted=[...makerCapabilityRecipes,...famousRobloxMakerRecipes].map(([id,keywords,guide])=>{
       const hits=keywords.split('|').map(key=>key.toLowerCase().trim()).filter(key=>{
         if(!key)return false;
-        if(!/^[a-z0-9]/.test(key))return makerRequest.includes(key);
+        if(!/^[a-z0-9]/.test(key)||/[^\x00-\x7f]/.test(key))return makerRequest.includes(key);
         const escaped=key.replace(/[^a-z0-9 ]/g,'').replace(/ +/g,'[\\s-]+');
         return new RegExp('(^|[^a-z0-9])'+escaped+'(?=$|[^a-z0-9])','i').test(makerRequest);
       });
