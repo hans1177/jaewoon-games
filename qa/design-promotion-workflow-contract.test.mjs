@@ -255,7 +255,17 @@ test('promotion recalculates beyond three concurrent writes and stops on non-con
     fs.writeFileSync(path.join(root,'git'),`#!/bin/sh
 case "$1" in
   rev-parse) cat "$TEST_ROOT/revision" ;;
-  diff) case "$*" in *--quiet*) exit 1 ;; esac ;;
+  diff) case "$*" in
+    *--quiet*) exit 1 ;;
+    *--unified=0*)
+      if [ "$TEST_QUEUE_DIFF" = semantic ]; then
+        echo '-    "currentStep": "BLOCKED"'
+        echo '+    "currentStep": "READY"'
+      elif [ "$TEST_QUEUE_DIFF" = timestamp ]; then
+        echo '-    "updatedAt": "before"'
+        echo '+    "updatedAt": "after"'
+      fi ;;
+  esac ;;
   push)
     count=$(cat "$TEST_ROOT/pushes"); count=$((count+1)); echo "$count" > "$TEST_ROOT/pushes"
     if [ "$TEST_MODE" = permanent ]; then exit 1; fi
@@ -271,15 +281,18 @@ cat "$TEST_ROOT/revision" >> "$TEST_ROOT/calculations"
 [ "$1" -ge 2 ] && [ "$1" -le 11 ] || exit 1
 echo "$1" >> "$TEST_ROOT/delays"
 `,{mode:0o755});
-    for(const mode of ['conflict','permanent']){
+    for(const mode of ['conflict','permanent','semantic','timestamp']){
       fs.writeFileSync(path.join(root,'pushes'),'0');
       fs.writeFileSync(path.join(root,'revision'),'revision-0\n');
       fs.writeFileSync(path.join(root,'calculations'),'');
       fs.writeFileSync(path.join(root,'delays'),'');
+      const output=path.join(root,'github-output');
+      fs.writeFileSync(output,'');
       const result=spawnSync('bash',['-euo','pipefail','-c',script],{
         cwd:root,encoding:'utf8',timeout:10000,
         env:{...process.env,PATH:root+path.delimiter+process.env.PATH,TEST_ROOT:root,TEST_MODE:mode,
-          COMPANY_RUNTIME_BRANCH:'company-runtime',COMPANY_VERIFIED_POLICY_PATH:path.join(root,'policy.json')}
+          COMPANY_RUNTIME_BRANCH:'company-runtime',COMPANY_VERIFIED_POLICY_PATH:path.join(root,'policy.json'),
+          GITHUB_OUTPUT:output,TEST_QUEUE_DIFF:mode==='semantic'?'semantic':mode==='timestamp'?'timestamp':''}
       });
       assert.ifError(result.error);
       if(mode==='conflict'){
@@ -289,11 +302,15 @@ echo "$1" >> "$TEST_ROOT/delays"
         assert.deepEqual(calculations,Array.from({length:5},(_,i)=>Array(3).fill('revision-'+i)).flat());
         assert.equal(fs.readFileSync(path.join(root,'delays'),'utf8').trim().split('\n').length,4);
         assert.match(result.stdout,/DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED/);
-      }else{
+        assert.equal(fs.readFileSync(output,'utf8').trim(),'refill_required=false');
+      }else if(mode==='permanent'){
         assert.equal(result.status,1);
         assert.equal(fs.readFileSync(path.join(root,'pushes'),'utf8').trim(),'1');
         assert.equal(fs.readFileSync(path.join(root,'delays'),'utf8'),'');
         assert.match(result.stderr,/FAILED_WITHOUT_STATE_CONFLICT/);
+      }else{
+        assert.equal(result.status,0,result.stdout+result.stderr);
+        assert.equal(fs.readFileSync(output,'utf8').trim(),`refill_required=${mode==='semantic'?'true':'false'}`);
       }
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
