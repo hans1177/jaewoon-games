@@ -2227,33 +2227,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       end
       slot.Visible=true
       slot.Name="Slot"..i;slot.LayoutOrder=i
-      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
-      slot:SetAttribute("BoundFromGameState",true)
-      local icon=slot:FindFirstChild("Icon")
-      local quantity=slot:FindFirstChild("Quantity")
-      local highlight=slot:FindFirstChild("SelectedRing")
-      local image=tostring(row.image or "")
-      if icon then icon.Image=image;icon.Visible=image~=""end
-      local glyph=slot:FindFirstChild("IconFallback")
-      if glyph then
-        glyph.Visible=image==""
-        glyph.Text=tostring(row.glyph or "◆")
-      end
-      if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
-      if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
-      local rarity=slot:FindFirstChild("RarityBadge")
-      if rarity then
-        rarity.Text=tostring(row.rarity or "")
-        rarity.Visible=rarity.Text~=""
-        local tier=string.upper(rarity.Text)
-        rarity.BackgroundColor3=(tier=="EPIC"or tier=="전설")and theme.Primary
-          or (tier=="RARE"or tier=="희귀")and theme.Accent or theme.Warning
-      end
-      local equipped=slot:FindFirstChild("EquippedBadge")
-      if equipped then equipped.Visible=row.equipped==true end
-      local locked=slot:FindFirstChild("LockedBadge")
-      if locked then locked.Visible=row.locked==true end
-      slot.Active=row.id~=nil and row.locked~=true
+      RobloxCommonUI.UpdateInventorySlot(slot, row, {theme=theme, selected=selectedId~=nil and selectedId==row.id})
     end
     for i=#shown+1,#slots do slots[i].Visible=false end
     empty.Visible=#shown==0
@@ -2263,6 +2237,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       if selectedId~=nil and row.id==selectedId then selectedRow=row;break end
     end
     if not selectedRow then selectedId=nil end
+    detail:SetAttribute("SelectionSource",selectedRow and "EXISTING_GAME_ITEM" or "NONE")
     detailTitle.Text=selectedRow and tostring(selectedRow.name or selectedRow.title or selectedRow.id or "아이템") or "아이템을 선택하세요"
     detailMeta.Text=selectedRow and
       (tostring(selectedRow.category or "아이템").." · "..tostring(selectedRow.rarity or "일반").." · "..tostring(selectedRow.quantity or selectedRow.count or 1)
