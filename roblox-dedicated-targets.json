@@ -2,7 +2,7 @@
   "version": 1,
   "authority": "company-runtime",
   "purpose": "durable-game-specific-roblox-dedicated-target-identity",
-  "updatedAt": "2026-10-26T15:36:04.828Z",
+  "updatedAt": "2026-10-27T01:34:00+09:00",
   "targets": [
     {
       "gameId": "cozy-island",
@@ -48,6 +48,22 @@
       "lastVerifiedAt": "2026-10-26T15:36:04.828Z",
       "historicalWorkflowRunId": 35693230640,
       "workflowRunId": 40349441359
+    },
+    {
+      "gameId": "baeksu-war",
+      "universeId": "10773115989",
+      "placeId": "120481433333785",
+      "dedicated": true,
+      "shared": false,
+      "private": true,
+      "verified": true,
+      "source": "owner-baeksu-war-existing-target-official-open-cloud-success",
+      "bootstrapState": "PUBLISHED_PRIVATE",
+      "verifiedAt": "2026-10-27T01:18:03+09:00",
+      "lastVerifiedAt": "2026-10-27T01:18:03+09:00",
+      "workflowRunId": 40357603387,
+      "publishedVersionNumber": 14,
+      "verificationScope": "PRIVATE_PUBLICATION_TARGET_ONLY_NOT_F0_F9_PASS"
     }
   ]
 }
