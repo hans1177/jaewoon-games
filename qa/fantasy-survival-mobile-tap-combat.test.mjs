@@ -19,30 +19,66 @@ test('mobile tap combat preserves parseable game script and native button input'
   assert.match(source,/body:has\(#sheet\.open\) \.actions/);
 });
 
-test('tapping a visible enemy fires only when target is attackable and within weapon range',()=>{
-  const start=source.indexOf('let closest=null,cd=70;');
-  const end=source.indexOf("\n if(state.area==='surface'){",start);
-  assert.ok(start>=0&&end>start,'live handleWorldTap enemy branch must exist');
-  const tap=new Function('visible','dist','wx','wy','now','state','doubleTapTarget',
-   'unlockBestiary','tapArrowAimTarget','currentWeapon','currentRange','showNotice','attack',source.slice(start,end));
-  const cases=[
-    {name:'in range',x:40,range:120,attacks:1,aim:1},
-    {name:'out of range',x:200,range:80,attacks:0,aim:0},
-    {name:'unarmed',x:40,range:null,attacks:0,aim:0},
-    {name:'harmless',x:40,range:120,mood:'harmless',attacks:0,aim:0},
-    {name:'burrowed',x:40,range:120,burrowed:true,attacks:0,aim:0},
-  ];
-  for(const c of cases){
-    const enemy={x:c.x,y:0,type:{id:'test',name:'시험 몬스터',r:20,
-      mood:c.mood||'hostile',burrower:!!c.burrowed},netId:'enemy-test',hp:100,area:'surface',emerged:!c.burrowed};
-    const state={player:{x:0,y:0,faceX:0,faceY:0}};
-    let attacks=0,aim=0;
-    tap([enemy],(x,y,xx,yy)=>Math.hypot(x-xx,y-yy),c.x,0,1000,state,
-      ()=>false,()=>{},()=>{aim++},()=>c.range===null?null:{range:c.range},()=>c.range||0,
-      ()=>{},target=>{assert.equal(target,enemy);attacks++});
-    assert.equal(attacks,c.attacks,c.name);
-    assert.equal(aim,c.aim,c.name+' should preserve ranged tap-aim bounds');
-  }
+test('tapping a visible enemy picks the correct species and preserves attack rules',()=>{
+ const start=source.indexOf(' const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);',source.indexOf('function handleWorldTap('));
+ const end=source.indexOf("\n if(state.area==='surface'){",start);
+ assert.ok(start>=0&&end>start,'live handleWorldTap enemy branch must exist');
+ const tap=new Function('state','dist','worldPoint','wx','wy','now','doubleTapTarget',
+  'unlockBestiary','tapArrowAimTarget','currentWeapon','currentRange','showNotice','attack',source.slice(start,end));
+ const makeEnemy=(id,x,options={})=>({
+  netId:id,x,y:0,hp:100,area:'surface',emerged:!options.burrower,
+  type:{id,name:id,r:options.r||20,mood:options.mood||'aggressive',burrower:!!options.burrower}
+ });
+ const state={area:'surface',enemies:[makeEnemy('goblin',0),makeEnemy('sandSpirit',48,{r:28})],
+  player:{x:0,y:0,faceX:0,faceY:0}};
+ const events=[];
+ let previous=null,previousAt=0;
+ const doubleTapTarget=(id,now,action)=>{
+  if(id===previous&&now-previousAt<850){previous=null;action();return true}
+  previous=id;previousAt=now;return false
+ };
+ const run=(x,now,worldPoint=null,weapon={range:120})=>tap(state,
+  (x,y,xx,yy)=>Math.hypot(x-xx,y-yy),worldPoint,x,0,now,doubleTapTarget,
+  id=>events.push('book:'+id),()=>events.push('aim'),()=>weapon,()=>weapon?.range||0,
+  message=>events.push('notice:'+message),enemy=>events.push('attack:'+enemy.type.id));
+ // 가까이 서 있는 다른 종이 마지막 배열 항목이라는 이유만으로 선택되면 안 된다.
+ run(0,1000);run(0,1200);
+ assert.deepEqual(events,['aim','attack:goblin','book:goblin']);
+ events.length=0;run(0,1600,{monsterId:'sandSpirit'});
+ assert.deepEqual(events,['aim','attack:sandSpirit'],'3D에서 선택된 몬스터 ID가 우선한다');
+ events.length=0;run(600,2100);
+ assert.deepEqual(events,[],'빈 곳을 누르면 다른 몬스터를 등록하거나 공격하지 않는다');
+ state.enemies=[makeEnemy('distant',240)];events.length=0;
+ run(0,2500,{monsterId:'distant'},{range:60});
+ assert.ok(events.some(event=>event.includes('사거리 밖')));
+ assert.ok(!events.some(event=>event.startsWith('attack:')));
+ state.enemies=[makeEnemy('unarmed',0)];events.length=0;
+ run(0,2800,null,null);
+ assert.ok(events.some(event=>event.includes('무기를 장착해')));
+ assert.ok(!events.some(event=>event.startsWith('attack:')));
+ state.enemies=[makeEnemy('harmless',0,{mood:'harmless'})];events.length=0;
+ run(0,3100);run(0,3300);
+ assert.deepEqual(events,['book:harmless'],'무해 몬스터도 두 번 누르면 같은 종이 등록된다');
+ state.enemies=[makeEnemy('burrower',0,{burrower:true})];events.length=0;
+ run(0,3600);run(0,3800);
+ assert.deepEqual(events,['book:burrower'],'잠복 몬스터도 두 번 누르면 같은 종이 등록된다');
+});
+
+test('bestiary registration stores only the selected species and keeps existing records',()=>{
+ const start=source.indexOf('function unlockBestiary(id){');
+ const end=source.indexOf('\nfunction bestiaryPortrait(',start);
+ assert.ok(start>=0&&end>start,'the real bestiary registration function must exist');
+ const state={bestiary:{existing:true},dirty:false},notices=[];
+ let saves=0;
+ const register=new Function('state','BESTIARY_INFO','creatures','showNotice','saveGame',
+  source.slice(start,end)+';return unlockBestiary;')(
+  state,{goblin:{},sandSpirit:{}},
+  {goblin:{name:'숲 고블린'},sandSpirit:{name:'모래정령'}},
+  message=>notices.push(message),()=>saves++);
+ register('goblin');register('goblin');register('sandSpirit');
+ assert.deepEqual(state.bestiary,{existing:true,goblin:true,sandSpirit:true});
+ assert.deepEqual(notices,['숲 고블린 도감 등록','모래정령 도감 등록']);
+ assert.equal(saves,2,'이미 등록한 종류는 중복 저장하지 않는다');
 });
 
 test('tap combat waits for touch release and rejects swipes or holds',()=>{
