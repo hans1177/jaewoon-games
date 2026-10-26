@@ -991,7 +991,7 @@ export function computeVibeSeedProposal(target){
     ?(standard?.materialClassification||[]).filter(row=>preserveFamilies.has(row.broad))
     :(standard?.materialClassification||[]);
   if(preserveFamilies&&materialFamilies.length<2)throw new Error('OWNER_PRESERVATION_MATERIAL_DOMAIN_EVIDENCE_MISSING');
-  const standardSources=standard?materialFamilies.flatMap(row=>(row.specificMaterials||[]).map(material=>({
+  const standardSources=materialFamilies.flatMap(row=>(row.specificMaterials||[]).map(material=>({
     id:`STANDARD:${row.broad}:${material.middle}:${material.name}`,label:material.name,
     source:row.broad,middle:material.middle,material,
     principle:material.feature,
