@@ -517,9 +517,47 @@ end)
  terrain.WaterTransparency=.22
  terrain.WaterWaveSize=.14
  terrain.WaterWaveSpeed=9
- terrain:FillBlock(CFrame.new(0,seaLevel-10,0),Vector3.new(940,20,940),Enum.Material.Water)
- terrain:FillBlock(CFrame.new(0,seaLevel-23,0),Vector3.new(940,8,940),Enum.Material.Sand)
+ -- 메인: 기존 다른 섬은 그대로 두고 시작섬 남쪽에 넓은 새 대륙을 이어 붙인다.
+ terrain:FillBlock(CFrame.new(0,seaLevel-10,440),Vector3.new(2300,20,2380),Enum.Material.Water)
+ terrain:FillBlock(CFrame.new(0,seaLevel-23,440),Vector3.new(2300,8,2380),Enum.Material.Sand)
  workspace:SetAttribute("SeaSwimmable",true)
+ local home=Style.HomeIsland
+ local homeTop=Style.Regions[1].Pos.Y+Style.Regions[1].Size.Y/2
+ workspace:SetAttribute("HomeIslandArtPass",home.ArtPass)
+ workspace:SetAttribute("HomeIslandLengthStuds",home.Length)
+ -- 지형: 고정 노이즈 해안선. 원정 기지와 충돌하지 않도록 남쪽 118스터드부터 확장한다.
+ for iz=3,29 do
+  local z=iz*45
+  local progress=math.clamp((z-118)/1187,0,1)
+  local halfWidth=36+520*math.sin(progress*math.pi)^.83
+  for ix=-13,13 do
+   local x=ix*45
+   local edge=halfWidth+math.noise(ix*.37,iz*.24)*23+math.sin(ix*.8+iz*.39)*9-math.abs(x)
+   if edge>0 then
+    local beach=edge<71 or z>1260
+    local top=homeTop+(beach and -1 or math.noise(ix*.17,iz*.2)*1.1)
+    terrain:FillBlock(CFrame.new(x,(top-29)/2,z),Vector3.new(47,top+29,47),
+     beach and Enum.Material.Sand or Enum.Material.Grass)
+   end
+  end
+  if iz%5==0 then task.wait() end
+ end
+ -- 절벽과 숲 뒤편의 돌산.
+ for _,peak in ipairs({{-345,610,74},{-396,657,56},{335,750,76},{393,801,50},{-318,990,60},{380,985,69}})do
+  local x,z,r=peak[1],peak[2],peak[3]
+  terrain:FillBall(Vector3.new(x,homeTop+r*.22,z),r,Enum.Material.Rock)
+  terrain:FillBall(Vector3.new(x,homeTop+r*.10,z),r*.77,Enum.Material.Grass)
+ end
+ -- 실제 수면을 가진 달빛 호수.
+ terrain:FillBlock(CFrame.new(225,3,780),Vector3.new(148,12,164),Enum.Material.Air)
+ terrain:FillBlock(CFrame.new(225,0,780),Vector3.new(148,5,164),Enum.Material.Water)
+ local atmosphere=Lighting:FindFirstChild("CozyIslandAtmosphere")or Instance.new("Atmosphere")
+ atmosphere.Name="CozyIslandAtmosphere";atmosphere.Density=.27;atmosphere.Offset=.08
+ atmosphere.Color=Color3.fromRGB(216,237,226);atmosphere.Decay=Color3.fromRGB(142,179,194)
+ atmosphere.Haze=1.3;atmosphere.Glare=.11;atmosphere.Parent=Lighting
+ local clouds=terrain:FindFirstChild("CozyIslandClouds")or Instance.new("Clouds")
+ clouds.Name="CozyIslandClouds";clouds.Cover=.31;clouds.Density=.46
+ clouds.Color=Color3.fromRGB(255,247,227);clouds.Parent=terrain
  for index,r in ipairs(Style.Regions)do
   local island=part(world,r.Name,r.Size,r.Pos,r.Color,r.Material);label(island,r.Name,r.Accent,58)
   local topY=r.Pos.Y+r.Size.Y/2
@@ -553,6 +591,112 @@ end)
     prompt(crop,"작물","수확").Triggered:Connect(function(p)gather(p,"Food",C.ManualGatherAmount,"수확")end)
    end
 
+
+   -- 메인: 신규 시작섬의 경관. 기존 채집·NPC·몹·원정·저장에는 관여하지 않는다.
+   local scenery=Instance.new("Folder");scenery.Name="GrandIslandScenery";scenery.Parent=world
+   local function sceneryPart(name,size,pos,color,material,solid)
+    local item=part(scenery,name,size,pos,color,material)
+    item.CanCollide=solid==true;item.CanTouch=false;item.CanQuery=solid==true
+    if not solid then item.CastShadow=false end
+    return item
+   end
+   local wood=Color3.fromRGB(128,93,65)
+   -- 부두에서 노을 등대까지 도보 연결
+   for z=145,1235,37 do
+    sceneryPart("IslandTrail",Vector3.new(16,.65,39),Vector3.new(0,topY+.56,z),
+     Color3.fromRGB(186,165,130),Enum.Material.Ground,true)
+   end
+   for _,route in ipairs({{390,-180},{675,205},{985,-185}})do
+    for step=1,math.floor(math.abs(route[2])/35)do
+     local x=(route[2]>0 and 1 or -1)*step*35
+     sceneryPart("IslandTrailBranch",Vector3.new(38,.65,11),Vector3.new(x,topY+.58,route[1]),
+      Color3.fromRGB(191,169,129),Enum.Material.Ground,true)
+    end
+   end
+   -- 숲, 암석, 꽃 군락: 고정된 원형 배치로 로드할 때 위치를 유지한다.
+   for i=1,home.ForestCount do
+    local a=i*2.3999632297
+    local z=345+math.sqrt(i/home.ForestCount)*790+math.sin(i*1.27)*62
+    local p=math.clamp((z-118)/1187,0,1)
+    local width=36+520*math.sin(p*math.pi)^.83
+    local x=math.sin(a)*width*.83
+    if math.abs(x)>28 and (x-225)^2+(z-780)^2>23000 and
+      (x+345)^2+(z-610)^2>12000 and (x-335)^2+(z-750)^2>9500 then
+     local trunk=tree(scenery,Vector3.new(x,topY-.3,z),1.3+(i%6)*.27)
+     trunk.Name=(i%11==0 and "AncientTree_" or "IslandTree_")..i
+    end
+   end
+   for i=1,54 do
+    local z=270+(i*59)%905
+    local p=math.clamp((z-118)/1187,0,1)
+    local w=36+520*math.sin(p*math.pi)^.83
+    local x=math.sin(i*2.41)*w*.75
+    if math.abs(x)>45 and (x-225)^2+(z-780)^2>22000 then
+     rock(scenery,Vector3.new(x,topY,z),.6+(i%4)*.26,Color3.fromRGB(116,119,113))
+    end
+   end
+   for i=1,98 do
+    local z=285+(i*73)%890
+    local p=math.clamp((z-118)/1187,0,1)
+    local w=36+520*math.sin(p*math.pi)^.83
+    local x=math.sin(i*1.711)*w*.78
+    if math.abs(x)>22 and (x-225)^2+(z-780)^2>18000 then
+     local color=i%3==0 and Color3.fromRGB(255,215,118)
+       or i%3==1 and Color3.fromRGB(239,174,198) or Color3.fromRGB(216,208,245)
+     local flower=sceneryPart("Wildflower",Vector3.new(3,.5,3),
+      Vector3.new(x,topY+.37,z),color,Enum.Material.SmoothPlastic,false)
+     flower.Shape=Enum.PartType.Ball
+    end
+   end
+   -- 고대 숲 신전
+   local shrine=sceneryPart("ForestShrine",Vector3.new(28,2,28),
+    Vector3.new(-265,topY+1.2,550),Color3.fromRGB(167,160,141),Enum.Material.Slate,true)
+   for _,dx in ipairs({-11,11})do
+    for _,dz in ipairs({-11,11})do
+     sceneryPart("ShrinePillar",Vector3.new(3.5,17,3.5),
+      Vector3.new(-265+dx,topY+9,550+dz),
+      Color3.fromRGB(191,190,173),Enum.Material.Limestone,true)
+    end
+   end
+   label(shrine,"고대 숲 신전",Color3.fromRGB(238,246,219),110)
+   -- 달빛 호수: 나무 선착장과 노란 등불
+   local lakeSign=sceneryPart("MoonLakeMarker",Vector3.new(9,9,2),
+    Vector3.new(130,topY+4.5,740),wood,Enum.Material.Wood,true)
+   label(lakeSign,"달빛 호수",Color3.fromRGB(193,232,250),115)
+   for z=687,724,12 do
+    sceneryPart("MoonLakePier",Vector3.new(13,1.2,14),
+     Vector3.new(225,topY+.4,z),wood,Enum.Material.WoodPlanks,true)
+   end
+   for _,x in ipairs({214,236})do
+    for _,z in ipairs({690,725})do
+     sceneryPart("MoonLakePost",Vector3.new(1.8,9,1.8),
+      Vector3.new(x,topY+4.5,z),wood,Enum.Material.Wood,true)
+     local lantern=sceneryPart("MoonLakeLantern",Vector3.new(3,3,3),
+      Vector3.new(x,topY+10,z),Color3.fromRGB(252,211,132),Enum.Material.Neon,false)
+     local light=Instance.new("PointLight");light.Range=19;light.Brightness=.8;light.Parent=lantern
+    end
+   end
+   -- 바위산 폭포: 충돌 없는 외형 장식
+   local falls=sceneryPart("CrystalWaterfall",Vector3.new(9,60,30),
+    Vector3.new(309,topY+31,775),Color3.fromRGB(143,221,247),Enum.Material.Glass,false)
+   falls.Transparency=.35
+   local mist=sceneryPart("WaterfallMist",Vector3.new(18,2,30),
+    Vector3.new(303,topY+1,775),Color3.fromRGB(224,246,249),Enum.Material.Glass,false)
+   mist.Transparency=.6
+   -- 바람 전망대와 남쪽 해안의 노을 등대
+   local lookout=sceneryPart("WindLookout",Vector3.new(31,3,31),
+    Vector3.new(-318,topY+49,990),Color3.fromRGB(159,152,140),Enum.Material.Slate,true)
+   label(lookout,"바람 전망대",Color3.fromRGB(224,243,237),145)
+   sceneryPart("SunsetLighthouse",Vector3.new(18,58,18),
+    Vector3.new(0,topY+29,1200),Color3.fromRGB(228,223,205),Enum.Material.Brick,true)
+   sceneryPart("LighthouseCap",Vector3.new(24,5,24),
+    Vector3.new(0,topY+60,1200),Color3.fromRGB(186,101,86),Enum.Material.Slate,true)
+   local beacon=sceneryPart("LighthouseBeacon",Vector3.new(13,6,13),
+    Vector3.new(0,topY+55,1200),Color3.fromRGB(252,217,143),Enum.Material.Neon,false)
+   local beam=Instance.new("PointLight");beam.Range=75;beam.Brightness=2.5
+   beam.Color=Color3.fromRGB(255,228,166);beam.Parent=beacon
+   label(beacon,"노을 등대",Color3.fromRGB(255,230,174),165)
+   workspace:SetAttribute("GrandIslandSceneryCount",#scenery:GetDescendants())
    decorateHomeAssets(world,topY)
    local npcs=Instance.new("Folder");npcs.Name="HomeNPCs";npcs.Parent=world
    local chief=figure(npcs,"Chief",Vector3.new(17,topY+6,12),Color3.fromRGB(157,109,73),Color3.fromRGB(77,67,57),1);label(chief,"마을 이장",Color3.fromRGB(255,221,145),30);prompt(chief,"마을 이장","주민 고용").Triggered:Connect(hire)
