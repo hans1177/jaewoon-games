@@ -103112,11 +103112,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_e2be598ebe9accbb7d7936d7",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10258",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "94a249cbf5468228d18f4c7faeef04894457ad0a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10258,
+        "baseBranch": "main",
+        "headBranch": "fix/roblox-daechung-native-rig-20261026",
+        "baseSha": "94a249cbf5468228d18f4c7faeef04894457ad0a",
+        "headSha": "c2a6625369c0a3554e971ad0428b77d3f13b3576",
+        "mergeCommitSha": "6a3b620a599332e1066bb95802ca595a7bb1eb30",
+        "mergedAt": "2026-10-26T06:01:46Z",
+        "authorLogin": "hans1177",
+        "titleHash": "feddfd649cfc625bdee646781702ba58ea35eef254abc06c39cab81d4c9cd3f1",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/roblox-daechung-native-rig-20261026",
+        "candidateSha": "c2a6625369c0a3554e971ad0428b77d3f13b3576"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 47,
+        "deletedLineCount": 65,
+        "changedFiles": [
+          "qa/daechung-rpg-native-renewal.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/daechung-rpg-native-renewal.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10258",
+        "merge-commit:6a3b620a599332e1066bb95802ca595a7bb1eb30",
+        "base-main:94a249cbf5468228d18f4c7faeef04894457ad0a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 811
+    "total": 812
   }
 }
