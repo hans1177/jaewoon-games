@@ -49,7 +49,7 @@ menu.Visible=false
 local caption=label(menu,"집 선택",UDim2.new(1,-48,0,33),UDim2.fromOffset(8,5))
 local close=Instance.new("TextButton");close.Text="닫기";close.Size=UDim2.fromOffset(42,30)
 close.Position=UDim2.new(1,-47,0,5);close.Parent=menu
-close.Activated:Connect(function()menu.Visible=false end)
+close.Activated:Connect(function()menu.Visible=false;dock.Visible=true end)
 local choices=Instance.new("ScrollingFrame");choices.Size=UDim2.new(1,-12,1,-48)
 choices.Position=UDim2.fromOffset(6,41);choices.BackgroundTransparency=1;choices.BorderSizePixel=0
 choices.ScrollBarThickness=3;choices.AutomaticCanvasSize=Enum.AutomaticSize.Y;choices.CanvasSize=UDim2.new()
@@ -60,14 +60,17 @@ notice.TextColor3=Color3.fromRGB(252,226,137)
 local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={}}
 local chosen=1
 local function redrawMenu(index)
- chosen=index;menu.Visible=true
- for _,x in ipairs(choices:GetChildren()) do if x:IsA("TextButton") then x:Destroy() end end
+ chosen=index;menu.Visible=true;dock.Visible=false
+ for _,x in ipairs(choices:GetChildren()) do if x:IsA("GuiObject") then x:Destroy() end end
  local b=current.Buildings[index]
  if b and b.Kind~="" and C.ById[b.Kind] then
   local u=C.ById[b.Kind];caption.Text=u.Home.." "..b.Level.."/10"
   if b.Level<C.MaxLevel then
    button(choices,"다음 진화 · "..C.UpgradeCost(u,b.Level).."G",UDim2.new(1,-8,0,43),1,function() remote:FireServer("UPGRADE",chosen) end)
-  else label(choices,"10단계 진화 완료",UDim2.new(1,-10,0,43),UDim2.fromOffset(2,0)) end
+  else
+   local done=label(choices,"10단계 진화 완료",UDim2.new(1,-10,0,43),UDim2.fromOffset(2,0))
+   done.LayoutOrder=1
+  end
  else
   caption.Text="슬롯 "..index.." · 집 선택"
   for i,u in ipairs(C.Units) do
@@ -104,6 +107,7 @@ for _,k in ipairs({"Gold","HomeHP","EnemyHP","Stage"}) do
 end
 remote:FireServer("SYNC")
 -- 카메라: 횡스크롤이 아닌 고정 3D 사선 시점
+local lastNarrow=nil
 Run:BindToRenderStep("BaeksuWarCamera",Enum.RenderPriority.Camera.Value+1,function()
  local cam=workspace.CurrentCamera
  local x=p:GetAttribute("ArenaX")
@@ -111,8 +115,11 @@ Run:BindToRenderStep("BaeksuWarCamera",Enum.RenderPriority.Camera.Value+1,functi
  cam.CameraType=Enum.CameraType.Scriptable;cam.FieldOfView=65
  cam.CFrame=CFrame.lookAt(Vector3.new(x+52,82,-41),Vector3.new(x,0,-1))
  local narrow=cam.ViewportSize.X<700
- dock.Size=narrow and UDim2.fromOffset(160,254) or UDim2.fromOffset(208,295)
- dock.Position=narrow and UDim2.new(1,-165,.52,-108) or UDim2.new(1,-216,.52,-125)
- menu.Size=narrow and UDim2.fromOffset(181,255) or UDim2.fromOffset(228,306)
- menu.Position=narrow and UDim2.new(0,5,.52,-110) or UDim2.new(0,8,.52,-135)
+ if narrow~=lastNarrow then
+  lastNarrow=narrow
+  dock.Size=narrow and UDim2.fromOffset(160,254) or UDim2.fromOffset(208,295)
+  dock.Position=narrow and UDim2.new(1,-165,.52,-108) or UDim2.new(1,-216,.52,-125)
+  menu.Size=narrow and UDim2.fromOffset(181,255) or UDim2.fromOffset(228,306)
+  menu.Position=narrow and UDim2.new(0,5,.52,-110) or UDim2.new(0,8,.52,-135)
+ end
 end)
