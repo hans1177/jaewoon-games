@@ -25,7 +25,8 @@ local function label(parent,name,text,size)
  return make("TextLabel",parent,name,{BackgroundTransparency=1,Text=text,TextSize=size or 16,TextColor3=colors.text,Font=Enum.Font.Gotham,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
 end
 local function button(parent,name,text)
- local b=CommonUI.CreatePrimaryButton({name=name,text=text,minWidth=44,minHeight=44,textSize=16,
+ local iconKeys={["배낭 · 메뉴"]="INVENTORY",["배낭"]="INVENTORY",["장비"]="EQUIPMENT",["상점"]="SHOP",["퀘스트"]="QUEST",["연구"]="SKILLS",["설정"]="SETTINGS"}
+ local b=CommonUI.CreatePrimaryButton({name=name,text=text,iconKey=iconKeys[text],minWidth=44,minHeight=44,textSize=16,
   size=UDim2.fromOffset(108,52),theme={Primary=colors.card,PrimaryTop=colors.card,PrimaryBottom=colors.panel,Text=colors.text,TouchHeight=44}})
  b.ZIndex=parent:IsA("GuiObject")and parent.ZIndex+1 or 1
  for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
@@ -67,7 +68,10 @@ function Menu.install(config,gui,player,options)
  make("UIGradient",panel,"WoodGrain",{Rotation=87,Color=ColorSequence.new(Color3.fromRGB(135,103,64),Color3.fromRGB(66,44,30))})
  -- 등록된 소유 원목 9-Slice 이미지만 적용한다. 미등록이면 원목 그라데이션으로 표시.
  local uiArt=config.CivilizationUIArt or {}
- if typeof(uiArt.Wood)=="string" and uiArt.Wood~=""then
+ local generatedPanelImage="" -- NATIVE_RPG_PANEL_IMAGE
+ if generatedPanelImage~=""then
+  make("ImageLabel",panel,"AdventureNineSlice",{BackgroundTransparency=1,Image=generatedPanelImage,ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(128,128,1126,1126),SliceScale=.18,Size=UDim2.fromScale(1,1),ZIndex=panel.ZIndex})
+ elseif typeof(uiArt.Wood)=="string" and uiArt.Wood~=""then
   make("ImageLabel",panel,"WoodNineSlice",{BackgroundTransparency=1,Image=uiArt.Wood,ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(24,24,40,40),Size=UDim2.fromScale(1,1),ZIndex=panel.ZIndex})
  end
  -- Presentation only: interruptible entrance; never delays menu input or changes game state.
@@ -266,7 +270,7 @@ function Menu.install(config,gui,player,options)
   local backpack=player:FindFirstChildOfClass("Backpack")
   for _,container in pairs({backpack=backpack,character=player.Character})do
    for _,tool in ipairs(container:GetChildren())do
-    if tool:IsA("Tool")then table.insert(rows,{id=tool,tool=tool,name=tool.Name,icon="T",category="도구",equipped=container==player.Character})end
+    if tool:IsA("Tool")then table.insert(rows,{id=tool,tool=tool,name=tool.Name,icon="T",image=tool.TextureId,category="도구",equipped=container==player.Character})end
    end
   end
   -- 같은 아이템 버튼은 유지해 상태 갱신 중 터치·게임패드 선택이 끊기지 않게 한다.
@@ -283,12 +287,15 @@ function Menu.install(config,gui,player,options)
    local b=itemButtons[id]
    if not b then
     local makeSlot=row.category=="장비"and CommonUI.CreateEquipmentSlot or CommonUI.CreateInventorySlot
-    b=makeSlot({name="InventorySlot"..index,role=tostring(row.id),theme={PanelInset=colors.card,Text=colors.text,PrimaryTop=colors.gold}})
+    b=makeSlot({name="InventorySlot"..index,role=tostring(row.id),image=row.image,iconKey=row.id=="Weapon"and "EQUIPMENT"or row.id=="Armor"and "DEFENSE"or nil,theme={PanelInset=colors.card,Text=colors.text,PrimaryTop=colors.gold}})
     b.ZIndex=items.ZIndex+1
     for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
-    b.Icon.Visible=false;b.Quantity.Visible=false;b.SelectedRing.Visible=false
+    b.Icon.Position=UDim2.fromOffset(8,4);b.Icon.Size=UDim2.new(1,-16,0,48)
+    b.Icon.Visible=b.Icon.Image~="";b.Quantity.Visible=false;b.SelectedRing.Visible=false
+    if b:FindFirstChild("FallbackGlyph")then b.FallbackGlyph.Visible=false end
+    if b:FindFirstChild("ItemName")then b.ItemName:Destroy()end
     b.Parent=items;itemButtons[id]=b
-    local icon=label(b,"ItemIcon",row.icon,28);icon.Font=Enum.Font.GothamBold;icon.TextColor3=colors.gold;icon.TextXAlignment=Enum.TextXAlignment.Center;icon.Position=UDim2.fromOffset(4,6);icon.Size=UDim2.new(1,-8,0,36)
+    local icon=label(b,"ItemIcon",row.icon,28);icon.Font=Enum.Font.GothamBold;icon.TextColor3=colors.gold;icon.TextXAlignment=Enum.TextXAlignment.Center;icon.Position=UDim2.fromOffset(4,6);icon.Size=UDim2.new(1,-8,0,36);icon.Visible=b.Icon.Image==""
     local name=label(b,"ItemName",row.name,13);name.TextXAlignment=Enum.TextXAlignment.Center;name.Position=UDim2.fromOffset(4,45);name.Size=UDim2.new(1,-8,0,34)
     local badge=label(b,"ItemState","",11);badge.TextColor3=colors.gold;badge.TextXAlignment=Enum.TextXAlignment.Center;badge.Position=UDim2.fromOffset(4,82);badge.Size=UDim2.new(1,-8,0,18)
     b.Activated:Connect(function()

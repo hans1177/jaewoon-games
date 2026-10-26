@@ -261,6 +261,13 @@ if(process.argv.includes('--shared-ui-only')){
    const replacement=field==='generatedIconAtlas'?'local ICON_ATLAS_IMAGE = "rbxassetid://'+assetId+'" -- NATIVE_UI_ATLAS_IMAGE':'PanelTexture = "rbxassetid://'+assetId+'", -- NATIVE_UI_PANEL_IMAGE';
    fs.writeFileSync(target,before.replace(pattern,replacement));
   }
+  if(field==='generatedPanelSkin'){
+   const menuPath='roblox-games/daechung-rpg/shared/RPGMenu.luau';
+   const menu=fs.readFileSync(menuPath,'utf8');
+   const anchor=/local generatedPanelImage="[^"]*" -- NATIVE_RPG_PANEL_IMAGE/;
+   if(!anchor.test(menu))throw Error('RPG_PANEL_BINDING_ANCHOR_MISSING');
+   fs.writeFileSync(menuPath,menu.replace(anchor,'local generatedPanelImage="rbxassetid://'+assetId+'" -- NATIVE_RPG_PANEL_IMAGE'));
+  }
   console.log('UI_ART_NATIVE_IMPORTED='+field+':'+assetId);
  }
 }

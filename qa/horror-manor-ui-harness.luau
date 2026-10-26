@@ -29,7 +29,7 @@ function methods:GetPropertyChangedSignal(key)
  self.PropertySignals[key]=self.PropertySignals[key]or signal();return self.PropertySignals[key]
 end
 Instance={new=function(class)
- local values={ClassName=class,ZIndex=1,AbsoluteSize={X=390,Y=760},CharacterAdded=signal(),CharacterRemoving=signal(),Activated=signal(),MouseEnter=signal(),MouseLeave=signal(),MouseButton1Down=signal(),MouseButton1Up=signal(),AttributeChanged=signal(),PropertySignals={},Visible=true,Enabled=true,Active=true,GroupTransparency=0,CanvasPosition={X=0,Y=0}}
+ local values={ClassName=class,ZIndex=1,AbsoluteSize={X=390,Y=760},CharacterAdded=signal(),CharacterRemoving=signal(),Activated=signal(),InputBegan=signal(),InputEnded=signal(),SelectionGained=signal(),SelectionLost=signal(),Destroying=signal(),MouseEnter=signal(),MouseLeave=signal(),MouseButton1Down=signal(),MouseButton1Up=signal(),AttributeChanged=signal(),PropertySignals={},Visible=true,Enabled=true,Active=true,GroupTransparency=0,CanvasPosition={X=0,Y=0}}
  local o=setmetatable({}, {__index=function(_,k)if values[k]~=nil then return values[k]end;return methods[k]end,__newindex=function(_,k,v)
   local changed=values[k]~=v;values[k]=v
   if changed and values.PropertySignals[k]then values.PropertySignals[k]:Fire()end
@@ -52,7 +52,7 @@ task={spawn=function(fn)fn()end,defer=function(fn)table.insert(deferred,fn)end,d
 local function flush()while #deferred>0 do local queue=deferred;deferred={};for _,fn in ipairs(queue)do fn()end end end
 local TweenService={Create=function(_,object,_,goal)
  local completed=signal()
- return {Completed=completed,Play=function()for key,value in pairs(goal)do object[key]=value end;task.defer(function()completed:Fire()end)end}
+ return {Cancel=function()end,Completed=completed,Play=function()for key,value in pairs(goal)do object[key]=value end;task.defer(function()completed:Fire()end)end}
 end}
 local attrs={LobbyClientReady=true,PersonalLobbyOwner=7,RoundState="ROOM_BROWSER",MonsterForm="DRACULA",LobbyAppearance="SURVIVOR",Coins=100,MonsterXP=0,ManorVisibility="PRIVATE",ManorVisitorCount=0,VisitedManorOwnerUserId=0,VisitedManorOwnerName=""}
 local changes={}
