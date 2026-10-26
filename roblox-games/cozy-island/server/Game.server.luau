@@ -518,8 +518,15 @@ end)
  terrain.WaterWaveSize=.14
  terrain.WaterWaveSpeed=9
  -- 메인: 기존 다른 섬은 그대로 두고 시작섬 남쪽에 넓은 새 대륙을 이어 붙인다.
- terrain:FillBlock(CFrame.new(0,seaLevel-10,440),Vector3.new(2300,20,2380),Enum.Material.Water)
- terrain:FillBlock(CFrame.new(0,seaLevel-23,440),Vector3.new(2300,8,2380),Enum.Material.Sand)
+ -- 대형 바다는 크기가 제한된 영역으로 나눠 생성해 초기 로딩 부담을 낮춘다.
+ terrain:FillBlock(CFrame.new(0,seaLevel-10,0),Vector3.new(940,20,940),Enum.Material.Water)
+ terrain:FillBlock(CFrame.new(0,seaLevel-23,0),Vector3.new(940,8,940),Enum.Material.Sand)
+ for z=650,1250,600 do
+  for x=-700,700,700 do
+   terrain:FillBlock(CFrame.new(x,seaLevel-10,z),Vector3.new(700,20,600),Enum.Material.Water)
+   terrain:FillBlock(CFrame.new(x,seaLevel-23,z),Vector3.new(700,8,600),Enum.Material.Sand)
+  end
+ end
  workspace:SetAttribute("SeaSwimmable",true)
  local home=Style.HomeIsland
  local homeTop=Style.Regions[1].Pos.Y+Style.Regions[1].Size.Y/2
