@@ -12,6 +12,16 @@ C.Units={
  {Id="golem",Name="골렘",Home="골렘 제단",Cost=270,Upgrade=148,HP=365,Damage=31,Speed=4.6,Interval=6.3,Range=5,Color=Color3.fromRGB(141,125,112),Shape="GOLEM"},
  {Id="dragon",Name="용",Home="용의 둥지",Cost=400,Upgrade=210,HP=230,Damage=43,Speed=10,Interval=7.3,Range=7,Color=Color3.fromRGB(193,90,76),Shape="DRAGON"}
 }
+-- Noob Army Tycoon의 넓은 섬·다리·전선 구조를 참고한 독자적 3D 필드 좌표.
+-- 원작 맵/모델을 복사하지 않는다. 기존 생물 밸런스, 슬롯/레벨/저장 키는 그대로 둔다.
+C.World={
+ ArenaGap=1120,WaterWidth=1000,WaterLength=1280,IslandWidth=760,IslandLength=1100,
+ FriendlyGateZ=-318,EnemyGateZ=338,
+ FriendlySpawnZ=-286,EnemySpawnZ=307,
+ FriendlyBaseZ=-348,BuildZ=-365,PlayerSpawnZ=-331,
+ RallyZ=48,DefendZ=-254,
+ CaptureZ={-56,132},
+}
 C.ById={} for _,u in ipairs(C.Units) do C.ById[u.Id]=u end
 function C.SlotCost(i) if i<=3 then return 0 end return math.floor(110*1.42^(i-4)) end
 function C.UpgradeCost(u,lv) return math.floor(u.Upgrade*1.42^(lv-1)) end
