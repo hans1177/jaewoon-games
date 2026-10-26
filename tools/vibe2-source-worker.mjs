@@ -7432,13 +7432,17 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     const actions=order?.assetProduction?.assetSupplySummary?.nextActions||[];
     // Download every family required by the game, including music/audio, UI,
     // sprites, VFX, motion and materials; never pretend a source is game-ready.
+    const directActorSource=e=>target==='roblox'&&e?.sourceType==='ROBLOX_ACTOR_3D'
+      &&/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.(?:fbx|glb)$/i.test(clean(e?.localSourcePath))
+      &&/^[a-f0-9]{40}$/i.test(clean(e?.repositoryGitBlobSha));
+    const sharedArchiveSource=e=>
+      /^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(clean(e?.localSourcePath))
+      &&Number.isSafeInteger(Number(e?.archiveBytes))
+      &&Number(e?.archiveBytes)>=512&&Number(e?.archiveBytes)<=104857600;
     const chosen=actions.filter(row=>row?.action==='ACQUIRE_ADAPT'
       &&clean(row?.externalAcquisition?.license).toUpperCase().replaceAll('_','-')==='CC0-1.0'
-      &&/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(clean(row?.externalAcquisition?.localSourcePath))
       &&/^[0-9a-f]{64}$/i.test(clean(row?.externalAcquisition?.sourceHash))
-      &&Number.isSafeInteger(Number(row?.externalAcquisition?.archiveBytes))
-      &&Number(row?.externalAcquisition?.archiveBytes)>=512
-      &&Number(row?.externalAcquisition?.archiveBytes)<=104857600);
+      &&(sharedArchiveSource(row?.externalAcquisition)||directActorSource(row?.externalAcquisition)));
     if(chosen.length){
       assertCandidateBranch(cwd);
       const tracked=[],lfsEligible=new Set(),plainGitMissing=new Set();
@@ -7446,6 +7450,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         const rel=posix(row.externalAcquisition.localSourcePath),entry=row.externalAcquisition;
         try{
           execFileSync('git',['ls-files','--error-unmatch','--',rel],{cwd,timeout:10000,stdio:'pipe'});
+          if(directActorSource(entry)){
+            const blobSha=execFileSync('git',['rev-parse','HEAD:'+rel],{cwd,timeout:10000,stdio:'pipe'}).toString('utf8').trim();
+            if(blobSha.toLowerCase()!==clean(entry.repositoryGitBlobSha).toLowerCase())
+              throw new Error('ROBLOX_ACTOR_SOURCE_GIT_BLOB_MISMATCH');
+          }
           // The canonical Git blob, not a damaged working-tree file, must
           // authorize hydration. A different LFS oid is never repaired.
           let lfs=false;
@@ -7456,7 +7465,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
             if(attr.endsWith(': lfs')){
               const blob=execFileSync('git',['show','HEAD:'+rel],{cwd,timeout:10000,maxBuffer:512,stdio:'pipe'}).toString('utf8');
               const m=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(blob);
-              lfs=Boolean(m&&m[1]===clean(entry.sourceHash).toLowerCase()&&Number(m[2])===Number(entry.archiveBytes));
+              lfs=Boolean(m&&m[1]===clean(entry.sourceHash).toLowerCase()
+                &&(directActorSource(entry)
+                  ?Number(m[2])>256&&Number(m[2])<=104857600
+                  :Number(m[2])===Number(entry.archiveBytes)));
             }
           }catch{}
           tracked.push(row);
@@ -7470,8 +7482,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const verify=row=>{
         const rel=posix(row.externalAcquisition.localSourcePath),full=path.resolve(cwd,rel);
         try{
-          const bytes=Number(row.externalAcquisition.archiveBytes);
-          if(fs.statSync(full).size!==bytes)return false;
+          const info=fs.statSync(full);
+          if(directActorSource(row.externalAcquisition)){
+            if(!info.isFile()||info.size<=256||info.size>104857600)return false;
+          }else if(!info.isFile()||info.size!==Number(row.externalAcquisition.archiveBytes))return false;
           return crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex')===clean(row.externalAcquisition.sourceHash).toLowerCase();
         }catch{return false;}
       };
@@ -7496,7 +7510,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }
       for(const row of tracked){
         const entry=row.externalAcquisition,rel=posix(entry.localSourcePath);
-        if(!verify(row)&&(lfsEligible.has(rel)||plainGitMissing.has(rel))){
+        if(!verify(row)&&(lfsEligible.has(rel)||plainGitMissing.has(rel))
+          &&!directActorSource(entry)){
           // Only an exact, registry-pinned public OpenGameArt attachment can
           // replace an unavailable LFS original. Landing pages are forbidden.
           let uri=null;
@@ -7537,7 +7552,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
             const e=row?.externalAcquisition;
             if(!e||!ready.get(posix(e.localSourcePath)))return row;
             return {...row,externalAcquisition:{...e,downloaded:true,
-              acquisitionState:'ACQUIRED_ORIGINAL_FILES'}};
+              acquisitionState:directActorSource(e)
+                ?'NATIVE_IMPORT_AND_STYLE_ADAPT_REQUIRED':'ACQUIRED_ORIGINAL_FILES'}};
           })}}};
     }
   }
