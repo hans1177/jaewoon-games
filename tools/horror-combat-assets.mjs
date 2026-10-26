@@ -55,7 +55,7 @@ if(!creator){
 // 공용 원본도 이 기존 네이티브 등록 경로를 사용한다. 원본 파일은 수정하지 않는다.
 const registryPath='company-asset-library.json';
 const registry=process.argv.includes('--include-shared-models')?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
-const candidates=[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
+const candidates=process.argv.includes('--shared-ui-only')?[]:[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
 const failures=[];
 for(const asset of registry?.assets||[]){
  if(asset.companyCommonBase!==true||!['CC0-1.0','project-original'].includes(asset.license))continue;
@@ -140,7 +140,7 @@ for(const candidate of candidates){
  }
 }
 if(failures.length)process.exitCode=1;
-console.log('SHARED_NATIVE_IMPORT_CANDIDATES='+String(candidates.length-1));
+console.log('SHARED_NATIVE_IMPORT_CANDIDATES='+String(Math.max(0,candidates.length-1)));
 console.log('SHARED_NATIVE_IMPORT_FAILED='+String(failures.length));
 
 // Extend this existing native import job with the owner-requested shared library.
@@ -208,4 +208,59 @@ if(process.argv.includes('--include-shared-materials')){
  native.productionVerified=false;
  fs.writeFileSync(nativePath,JSON.stringify(native,null,2)+'\n');
  console.log('SHARED_MATERIAL_NATIVE_CHANNELS='+Object.keys(native.maps).length);
+}
+
+// 오너 승인 UI 이미지도 기존 이미지 등록·권한 부여 경로에서 처리한다.
+if(process.argv.includes('--shared-ui-only')){
+ const catalogPath='assets/roblox/common-ui-v1/catalog.json';
+ const catalog=JSON.parse(fs.readFileSync(catalogPath,'utf8'));
+ const gameIds=['horror-escape-room','cozy-island','daechung-rpg'];
+ const universes=['10767445796','10767445741','10767445769'];
+ for(const field of ['generatedIconAtlas','generatedPanelSkin']){
+  const art=catalog[field];
+  if(art?.source!=='OWNER_REQUESTED_IMAGE_GENERATION'||art.license!=='OWNER_AUTHORIZED_GENERATED_UI_NOT_CC0'
+   ||!art.authorization||!['assets/roblox/common-ui-v1/icons.png','assets/roblox/common-ui-v1/panel.png'].includes(art.path))throw Error('UI_ART_AUTHORIZATION_MISSING');
+  const bytes=fs.readFileSync(art.path);
+  if(crypto.createHash('sha256').update(bytes).digest('hex')!==art.sha256
+   ||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+   ||bytes.readUInt32BE(16)!==art.width||bytes.readUInt32BE(20)!==art.height)throw Error('UI_ART_SOURCE_MISMATCH');
+  let assetId=art.nativeAssetId;
+  if(!/^[1-9]\d*$/.test(String(assetId||''))||art.importedSourceHash!==art.sha256){
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Image',displayName:field==='generatedIconAtlas'?'Vibe Adventure UI Icons':'Vibe Fantasy Panel',description:'Owner authorized original generated UI art '+art.sha256,creationContext:{creator}}));
+   form.append('fileContent',new Blob([bytes],{type:'image/png'}),field+'.png');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(op.path||''))throw Error('UI_ART_OPERATION_INVALID');
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   if(!op.done||op.error||!(/^[1-9]\d*$/.test(String(op.response?.assetId||''))))throw Error('UI_ART_IMPORT_FAILED');
+   assetId=String(op.response.assetId);
+   // 업로드 영수증을 먼저 보존한다. 권한 부여 실패 시 같은 이미지를 중복 등록하지 않는다.
+   art.nativeAssetId=assetId;art.importedSourceHash=art.sha256;art.importedRevision=process.env.GITHUB_SHA;
+   fs.writeFileSync(catalogPath,JSON.stringify(catalog,null,2)+'\n');
+  }
+  for(const universe of universes){
+   const grants=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+    method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+    body:JSON.stringify({subjectType:'Universe',subjectId:universe,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})
+   });
+   if(grants.errors?.length)throw Error('UI_ART_PERMISSION_FAILED:'+universe);
+  }
+  art.nativeImportVerified=true;art.authorizedUniverseIds=universes;art.runtimeVerified=false;
+  fs.writeFileSync(catalogPath,JSON.stringify(catalog,null,2)+'\n');
+  const targets=['assets/roblox/common-ui-v1/RobloxCommonUI.luau',...gameIds.map(id=>'roblox-games/'+id+'/shared/RobloxCommonUI.luau')];
+  for(const target of targets){
+   // 판타지 원목/금속 스킨을 공포·포근섬에 일괄 강제하지 않는다.
+   if(field==='generatedPanelSkin'&&target!=='roblox-games/daechung-rpg/shared/RobloxCommonUI.luau')continue;
+   const before=fs.readFileSync(target,'utf8');
+   const pattern=field==='generatedIconAtlas'?/local ICON_ATLAS_IMAGE = "[^"]*" -- NATIVE_UI_ATLAS_IMAGE/:/PanelTexture = "[^"]*", -- NATIVE_UI_PANEL_IMAGE/;
+   if(!pattern.test(before))throw Error('UI_ART_BINDING_ANCHOR_MISSING:'+target);
+   const replacement=field==='generatedIconAtlas'?'local ICON_ATLAS_IMAGE = "rbxassetid://'+assetId+'" -- NATIVE_UI_ATLAS_IMAGE':'PanelTexture = "rbxassetid://'+assetId+'", -- NATIVE_UI_PANEL_IMAGE';
+   fs.writeFileSync(target,before.replace(pattern,replacement));
+  }
+  console.log('UI_ART_NATIVE_IMPORTED='+field+':'+assetId);
+ }
 }

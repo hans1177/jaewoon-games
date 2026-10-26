@@ -1,10 +1,35 @@
--- 파일명: assets/roblox/common-ui-v1/RobloxCommonUI.luau
+-- 파일명: shared/RobloxCommonUI.luau
 -- 역할: 모든 Roblox 게임에서 스타일만 바꿔 재사용하는 회사 공용 UI 베이스
 -- 원칙: 표시/터치 피드백만 소유한다. 체력/보상/입력 권한/세이브/네트워크 권한은 게임 코드가 소유한다.
 
+-- 임포트: 표시 전용 트윈, 게임 행동과 서버 상태는 변경하지 않는다.
+local TweenService = game:GetService("TweenService")
 local RobloxCommonUI = {}
+-- 자산: 오너가 제작 승인한 이미지 시트. 등록 성공 전에는 ID를 추측하지 않는다.
+local ICON_ATLAS_IMAGE = "" -- NATIVE_UI_ATLAS_IMAGE
+local ICON_ATLAS_SIZE = 1254
+local ICON_ATLAS_KEYS = table.freeze({
+  INVENTORY = 0,
+  EQUIPMENT = 1,
+  MAP = 2,
+  QUEST = 3,
+  SKILLS = 4,
+  CRAFT = 5,
+  SHOP = 6,
+  SETTINGS = 7,
+  HEALTH = 8,
+  DEFENSE = 9,
+  POTION = 10,
+  LOOT = 11,
+  CRYSTAL = 12,
+  FIRE = 13,
+  LEAF = 14,
+  ACHIEVEMENT = 15,
+})
+
 
 local DEFAULT_THEME = table.freeze({
+  PanelTexture = "", -- NATIVE_UI_PANEL_IMAGE
   Panel = Color3.fromRGB(31, 36, 43),
   PanelRaised = Color3.fromRGB(44, 51, 61),
   PanelInset = Color3.fromRGB(21, 25, 30),
@@ -109,6 +134,23 @@ function RobloxCommonUI.CreatePanel(options)
   stroke(frame, theme.Border, 1.5, 0.08)
   gradient(frame, theme.PanelRaised, theme.Panel, 90)
 
+  -- Optional licensed, already-bound texture. Never invent a Roblox asset ID.
+  local surfaceTexture = options.surfaceTexture or theme.PanelTexture
+  if typeof(surfaceTexture) == "string" and surfaceTexture ~= "" then
+    local surface = Instance.new("ImageLabel")
+    surface.Name = "VerifiedSurfaceSkin"
+    surface.BackgroundTransparency = 1
+    surface.Size = UDim2.fromScale(1, 1)
+    surface.Image = surfaceTexture
+    surface.ScaleType = (typeof(options.sliceCenter) == "Rect" or (options.surfaceTexture == nil and theme.PanelTexture ~= "")) and Enum.ScaleType.Slice or Enum.ScaleType.Stretch
+    surface.SliceCenter = typeof(options.sliceCenter) == "Rect" and options.sliceCenter or Rect.new(128,128,1126,1126)
+    surface.SliceScale = tonumber(options.sliceScale) or 0.18
+    surface.ImageTransparency = math.clamp(tonumber(options.surfaceOpacity) or 0, 0, 1)
+    surface.ZIndex = frame.ZIndex
+    surface.Parent = frame
+    surface:SetAttribute("PresentationOnlySkin", true)
+  end
+
   local shadow = Instance.new("Frame")
   shadow.Name = "DepthShadow"
   shadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -126,7 +168,7 @@ function RobloxCommonUI.CreatePanel(options)
   inner.Position = UDim2.fromOffset(7, 7)
   inner.Size = UDim2.new(1, -14, 1, -14)
   inner.BackgroundColor3 = theme.PanelInset
-  inner.BackgroundTransparency = 0.54
+  inner.BackgroundTransparency = surfaceTexture ~= "" and 0.96 or 0.54
   inner.BorderSizePixel = 0
   inner.ZIndex = frame.ZIndex + 1
   inner.Parent = frame
@@ -176,20 +218,34 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   scale.Scale = 1
   scale.Parent = button
 
-  button.MouseEnter:Connect(function()
-    outline.Transparency = 0
-    scale.Scale = 1.015
+  -- 메인: 마우스·터치·게임패드가 같은 눌림/복귀 상태를 사용한다.
+  local activeTween = nil
+  local hovered = false
+  local function animate(target)
+    if activeTween then activeTween:Cancel() end
+    if options.reducedMotion == true then scale.Scale = target; return end
+    activeTween = TweenService:Create(scale, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = target})
+    activeTween:Play()
+  end
+  local function restore()
+    outline.Transparency = hovered and 0 or 0.06
+    animate(hovered and 1.025 or 1)
+  end
+  button.MouseEnter:Connect(function() hovered = true; restore() end)
+  button.MouseLeave:Connect(function() hovered = false; restore() end)
+  button.SelectionGained:Connect(function() hovered = true; restore() end)
+  button.SelectionLost:Connect(function() hovered = false; restore() end)
+  button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1
+      or input.KeyCode == Enum.KeyCode.ButtonA then
+      if button.Active then animate(0.96) end
+    end
   end)
-  button.MouseLeave:Connect(function()
-    outline.Transparency = 0.06
-    scale.Scale = 1
+  button.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1
+      or input.KeyCode == Enum.KeyCode.ButtonA then restore() end
   end)
-  button.MouseButton1Down:Connect(function()
-    scale.Scale = 0.97
-  end)
-  button.MouseButton1Up:Connect(function()
-    scale.Scale = 1
-  end)
+  button.Destroying:Connect(function() if activeTween then activeTween:Cancel() end end)
 
   button:SetAttribute("PresentationRole", "PRIMARY_TOUCH_ACTION")
   button:SetAttribute("MinimumTouchHeight", theme.TouchHeight)
@@ -280,16 +336,59 @@ function RobloxCommonUI.CreateInventorySlot(options)
   local icon = Instance.new("ImageLabel")
   icon.Name = "Icon"
   icon.Position = UDim2.fromOffset(7, 7)
-  icon.Size = UDim2.new(1, -14, 1, -14)
+  icon.Size = UDim2.new(1, -14, 1, -30)
   icon.BackgroundTransparency = 1
-  icon.Image = tostring(options.image or "")
+  local atlasIndex = ICON_ATLAS_KEYS[string.upper(tostring(options.iconKey or ""))]
+  local useAtlas = tostring(options.image or "") == "" and atlasIndex ~= nil and ICON_ATLAS_IMAGE ~= ""
+  icon.Image = useAtlas and ICON_ATLAS_IMAGE or tostring(options.image or "")
+  if useAtlas then
+    local x, y = atlasIndex % 4, math.floor(atlasIndex / 4)
+    local left, top = math.floor(x * ICON_ATLAS_SIZE / 4), math.floor(y * ICON_ATLAS_SIZE / 4)
+    icon.ImageRectOffset = Vector2.new(left, top)
+    icon.ImageRectSize = Vector2.new(math.floor((x+1)*ICON_ATLAS_SIZE/4)-left, math.floor((y+1)*ICON_ATLAS_SIZE/4)-top)
+  end
   icon.ScaleType = Enum.ScaleType.Fit
+  icon.Visible = icon.Image ~= ""
   icon.Parent = button
+  -- 승인된 이미지가 없으면 플레이어가 읽을 수 있는 원형 글리프를 보여준다.
+  -- 게임 자산 ID를 추측하거나 공백 아이콘을 최종 이미지로 남기지 않는다.
+  local glyph = Instance.new("TextLabel")
+  glyph.Name = "FallbackGlyph"
+  glyph.Size = UDim2.new(1, -16, 1, -16)
+  glyph.Position = UDim2.fromOffset(8, 8)
+  glyph.BackgroundTransparency = 1
+  glyph.Text = tostring(options.glyph or "?")
+  glyph.TextColor3 = theme.Text
+  glyph.TextSize = 26
+  glyph.Font = Enum.Font.GothamBold
+  glyph.TextScaled = false
+  glyph.Visible = icon.Image == "" and options.glyph ~= nil
+  glyph.Parent = button
+  icon:GetPropertyChangedSignal("Image"):Connect(function()
+    glyph.Visible = icon.Image == "" and (options.glyph ~= nil or button:GetAttribute("BoundItemId") ~= nil)
+    icon.Visible = icon.Image ~= ""
+  end)
+
+  -- 실제 아이템 이름은 이미지와 별도로 표시한다. 임의 픽토그램은 만들지 않는다.
+  local itemName = Instance.new("TextLabel")
+  itemName.Name = "ItemName"
+  itemName.Position = UDim2.new(0, 5, 1, -21)
+  itemName.Size = UDim2.new(1, -10, 0, 16)
+  itemName.BackgroundTransparency = 1
+  itemName.Text = tostring(options.itemName or "")
+  itemName.TextColor3 = theme.Text
+  itemName.Font = options.font or Enum.Font.GothamBold
+  itemName.TextSize = 11
+  itemName.TextTruncate = Enum.TextTruncate.AtEnd
+  itemName.ZIndex = button.ZIndex + 2
+  itemName.Parent = button
+  local slotGradient = gradient(button, theme.PanelRaised, theme.PanelInset, 90)
+  slotGradient.Name = "RaritySurface"
 
   local quantity = Instance.new("TextLabel")
   quantity.Name = "Quantity"
   quantity.AnchorPoint = Vector2.new(1, 1)
-  quantity.Position = UDim2.new(1, -5, 1, -4)
+  quantity.Position = UDim2.new(1, -5, 1, -23)
   quantity.Size = UDim2.fromOffset(34, 18)
   quantity.BackgroundTransparency = 1
   quantity.Text = tostring(options.quantityText or "")
@@ -297,7 +396,34 @@ function RobloxCommonUI.CreateInventorySlot(options)
   quantity.TextSize = tonumber(options.textSize) or 12
   quantity.Font = options.font or Enum.Font.GothamBold
   quantity.TextXAlignment = Enum.TextXAlignment.Right
+  quantity.TextStrokeColor3 = theme.Shadow
+  quantity.TextStrokeTransparency = 0.25
+  quantity.ZIndex = button.ZIndex + 3
   quantity.Parent = button
+
+  local stateBadge = Instance.new("TextLabel")
+  stateBadge.Name = "StateBadge"
+  stateBadge.Size = UDim2.new(1, -8, 0, 17)
+  stateBadge.Position = UDim2.fromOffset(4, 4)
+  stateBadge.BackgroundColor3 = theme.Positive
+  stateBadge.BackgroundTransparency = 0.08
+  stateBadge.TextColor3 = theme.Text
+  stateBadge.TextSize = 10
+  stateBadge.Font = Enum.Font.GothamBold
+  stateBadge.Text = options.locked == true and "잠김" or options.equipped == true and "장착" or ""
+  stateBadge.Visible = stateBadge.Text ~= ""
+  stateBadge.Parent = button
+  corner(stateBadge, 4)
+
+  local rarityRail = Instance.new("Frame")
+  rarityRail.Name = "RarityRail"
+  rarityRail.Size = UDim2.new(1, -12, 0, 3)
+  rarityRail.Position = UDim2.new(0, 6, 1, -5)
+  rarityRail.BackgroundColor3 = typeof(options.rarityColor) == "Color3" and options.rarityColor or theme.Accent
+  rarityRail.BorderSizePixel = 0
+  rarityRail.Visible = options.rarityColor ~= nil
+  rarityRail.Parent = button
+  corner(rarityRail, 2)
 
   local selected = Instance.new("Frame")
   selected.Name = "SelectedRing"
@@ -319,6 +445,89 @@ function RobloxCommonUI.CreateInventorySlot(options)
   button:SetAttribute("OwnsInventoryAuthority", false)
   button:SetAttribute("OwnsEquipAuthority", false)
   return button, icon, quantity, selected
+end
+
+-- Shared presentation-only binding for real game-owned inventory records.
+-- Called when searching, filtering, sorting, selecting, or receiving fresh snapshots.
+local INVENTORY_TIER_COLORS = table.freeze({
+  COMMON = Color3.fromRGB(129, 145, 159),
+  UNCOMMON = Color3.fromRGB(86, 194, 125),
+  RARE = Color3.fromRGB(83, 152, 241),
+  EPIC = Color3.fromRGB(167, 113, 234),
+  LEGENDARY = Color3.fromRGB(246, 187, 64),
+  MYTHIC = Color3.fromRGB(239, 98, 133),
+  ["일반"] = Color3.fromRGB(129, 145, 159),
+  ["고급"] = Color3.fromRGB(86, 194, 125),
+  ["희귀"] = Color3.fromRGB(83, 152, 241),
+  ["영웅"] = Color3.fromRGB(167, 113, 234),
+  ["전설"] = Color3.fromRGB(246, 187, 64),
+  ["신화"] = Color3.fromRGB(239, 98, 133),
+})
+
+function RobloxCommonUI.UpdateInventorySlot(slot, item, options)
+  assert(slot and slot:IsA("GuiButton"), "COMMON_INVENTORY_SLOT_REQUIRED")
+  item = type(item) == "table" and item or {}
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local image = tostring(item.image or item.icon or "")
+  slot:SetAttribute("BoundItemId", tostring(item.id or ""))
+  slot:SetAttribute("BoundFromGameState", true)
+  slot:SetAttribute("ItemLocked", item.locked == true)
+  slot:SetAttribute("ItemEquipped", item.equipped == true)
+  local icon = slot:FindFirstChild("Icon")
+  if icon then
+    local atlasIndex = ICON_ATLAS_KEYS[string.upper(tostring(item.iconKey or ""))]
+    local useAtlas = image == "" and atlasIndex ~= nil and ICON_ATLAS_IMAGE ~= ""
+    icon.Image = useAtlas and ICON_ATLAS_IMAGE or image
+    icon.ImageRectOffset = Vector2.zero
+    icon.ImageRectSize = Vector2.zero
+    if useAtlas then
+      local x, y = atlasIndex % 4, math.floor(atlasIndex / 4)
+      local left, top = math.floor(x*ICON_ATLAS_SIZE/4), math.floor(y*ICON_ATLAS_SIZE/4)
+      icon.ImageRectOffset = Vector2.new(left, top)
+      icon.ImageRectSize = Vector2.new(math.floor((x+1)*ICON_ATLAS_SIZE/4)-left, math.floor((y+1)*ICON_ATLAS_SIZE/4)-top)
+    end
+    image = icon.Image
+    icon.Visible = image ~= ""
+  end
+  local itemName = slot:FindFirstChild("ItemName")
+  if itemName then itemName.Text = tostring(item.name or item.title or item.id or "") end
+  local glyph = slot:FindFirstChild("FallbackGlyph")
+  if glyph then
+    local label = tostring(item.glyph or item.name or item.title or item.id or "?")
+    local ok, offset = pcall(utf8.offset, label, 2)
+    glyph.Text = ok and string.sub(label, 1, offset and offset - 1 or #label) or "?"
+    glyph.Visible = image == ""
+  end
+  local badge = slot:FindFirstChild("StateBadge")
+  if badge then
+    badge.Text = item.locked == true and "잠김" or item.equipped == true and "장착" or ""
+    badge.Visible = badge.Text ~= ""
+    badge.BackgroundColor3 = item.locked == true and theme.Danger or theme.Positive
+  end
+  local rail = slot:FindFirstChild("RarityRail")
+  local rarity = string.upper(tostring(item.rarity or ""))
+  if rail then
+    local color = typeof(item.rarityColor) == "Color3" and item.rarityColor or INVENTORY_TIER_COLORS[rarity]
+    rail.Visible = color ~= nil
+    rail.BackgroundColor3 = color or theme.Border
+  end
+  local rarityColor = typeof(item.rarityColor) == "Color3" and item.rarityColor or INVENTORY_TIER_COLORS[rarity]
+  local surface = slot:FindFirstChild("RaritySurface")
+  if surface then
+    surface.Color = ColorSequence.new(rarityColor and theme.PanelRaised:Lerp(rarityColor, 0.28) or theme.PanelRaised, theme.PanelInset)
+  end
+  local quantity = slot:FindFirstChild("Quantity")
+  if quantity then
+    local amount = item.quantity or item.count
+    quantity.Text = amount == nil and "" or tostring(amount)
+  end
+  local highlight = slot:FindFirstChild("SelectedRing")
+  if highlight then highlight.Visible = options.selected == true or item.selected == true end
+  slot.Active = item.id ~= nil and item.locked ~= true
+  slot:SetAttribute("RarityVisual", rarity)
+  slot:SetAttribute("OwnsEquipAuthority", false)
+  return slot
 end
 
 function RobloxCommonUI.CreateTooltip(options)
@@ -703,13 +912,42 @@ function RobloxCommonUI.CreateIconButton(options)
   button.Size = options.size or UDim2.fromOffset(52, 52)
   button.BackgroundColor3 = theme.PanelRaised
   button.BorderSizePixel = 0
-  button.Image = tostring(options.image or "")
+  local atlasIndex = ICON_ATLAS_KEYS[string.upper(tostring(options.iconKey or ""))]
+  local useAtlas = tostring(options.image or "") == "" and atlasIndex ~= nil and ICON_ATLAS_IMAGE ~= ""
+  button.Image = useAtlas and ICON_ATLAS_IMAGE or tostring(options.image or "")
+  if useAtlas then
+    local x, y = atlasIndex % 4, math.floor(atlasIndex / 4)
+    local left, top = math.floor(x*ICON_ATLAS_SIZE/4), math.floor(y*ICON_ATLAS_SIZE/4)
+    button.ImageRectOffset = Vector2.new(left, top)
+    button.ImageRectSize = Vector2.new(math.floor((x+1)*ICON_ATLAS_SIZE/4)-left, math.floor((y+1)*ICON_ATLAS_SIZE/4)-top)
+  end
   button.ScaleType = Enum.ScaleType.Fit
+  local missingImage = button.Image == ""
+  -- 외부 ID 없이도 확실히 보이는 상태 아이콘. 실제 이미지가 연결되면 자동으로 숨긴다.
+  local fallback = Instance.new("TextLabel")
+  fallback.Name = "FallbackGlyph"
+  fallback.Size = UDim2.new(1, -14, 1, -14)
+  fallback.Position = UDim2.fromOffset(7, 7)
+  fallback.BackgroundTransparency = 1
+  fallback.Text = tostring(options.shortLabel or options.label or "?")
+  fallback.TextColor3 = theme.Text
+  fallback.TextScaled = true
+  fallback.Font = Enum.Font.GothamBold
+  fallback.Visible = missingImage
+  fallback.Parent = button
+  local fallbackSize = Instance.new("UITextSizeConstraint")
+  fallbackSize.MaxTextSize = 22
+  fallbackSize.MinTextSize = 11
+  fallbackSize.Parent = fallback
   button.Selectable = true
   tag(button, "ICON_BUTTON")
   corner(button, tonumber(options.cornerRadius) or 12)
-  local outline = stroke(button, theme.Border, 1.2, 0.10)
+  local outline = stroke(button, options.selected == true and theme.Accent or theme.Border, options.selected == true and 2.4 or 1.2, 0.10)
   sizeConstraint(button, 48, 48)
+  button.Active = options.locked ~= true
+  button.AutoButtonColor = options.locked ~= true
+  button:SetAttribute("IconSelected", options.selected == true)
+  button:SetAttribute("IconLocked", options.locked == true)
 
   local badge = commonText(button, "Badge", options.badgeText or "", UDim2.new(1, -23, 0, 3), UDim2.fromOffset(20, 18), theme.Text, 10, true)
   badge.TextXAlignment = Enum.TextXAlignment.Center
@@ -719,6 +957,12 @@ function RobloxCommonUI.CreateIconButton(options)
 
   button.MouseButton1Down:Connect(function() outline.Transparency = 0 end)
   button.MouseButton1Up:Connect(function() outline.Transparency = 0.10 end)
+  button:SetAttribute("IconFallbackActive", missingImage)
+  button:GetPropertyChangedSignal("Image"):Connect(function()
+    local absent = button.Image == ""
+    fallback.Visible = absent
+    button:SetAttribute("IconFallbackActive", absent)
+  end)
   button:SetAttribute("PresentationRole", "ICON_ACTION")
   button:SetAttribute("OwnsGameplayAction", false)
   button:SetAttribute("OwnsRemoteAuthority", false)
@@ -1557,6 +1801,17 @@ local function surfaceShell(options, atomId, role)
   stroke(chrome, theme.Border, 1.5, 0.08)
   gradient(chrome, theme.PanelRaised, theme.Panel, 90)
 
+  if theme.PanelTexture ~= "" then
+    local skin = Instance.new("ImageLabel")
+    skin.Name = "GamePanelSkin"
+    skin.Size = UDim2.fromScale(1,1)
+    skin.BackgroundTransparency = 1
+    skin.Image = theme.PanelTexture
+    skin.ScaleType = Enum.ScaleType.Slice
+    skin.SliceCenter = Rect.new(128,128,1126,1126)
+    skin.SliceScale = 0.18
+    skin.Parent = chrome
+  end
   local header = Instance.new("Frame")
   header.Name = "Header"
   header.Position = UDim2.fromOffset(16, 12)
@@ -1845,17 +2100,84 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   scroll.ScrollingDirection=Enum.ScrollingDirection.Y
   scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
   scroll.Active=true;scroll.Parent=body
+  -- A live read-only inspector; server owns actual item, equip and trade state.
+  local detail = Instance.new("Frame")
+  detail.Name = "SelectedItemDetail"
+  detail.BackgroundColor3 = theme.PanelInset
+  detail.BorderSizePixel = 0
+  detail.Parent = body
+  corner(detail, 10)
+  stroke(detail, theme.Border, 1.2, 0.16)
+  -- 상세 미리보기: 선택한 실제 아이템의 승인된 이미지와 등급만 읽는다.
+  local detailArt = Instance.new("ImageLabel")
+  detailArt.Name = "SelectedItemArt"
+  detailArt.BackgroundTransparency = 1
+  detailArt.ScaleType = Enum.ScaleType.Fit
+  detailArt.Image = ""
+  detailArt.Visible = false
+  detailArt.Parent = detail
+  local detailTitle = Instance.new("TextLabel")
+  detailTitle.Name = "SelectedItemName"
+  detailTitle.BackgroundTransparency = 1
+  detailTitle.Position = UDim2.fromOffset(10, 7)
+  detailTitle.Size = UDim2.new(1, -20, 0, 25)
+  detailTitle.Text = "아이템을 선택하세요"
+  detailTitle.TextColor3 = theme.Text
+  detailTitle.TextSize = 15
+  detailTitle.Font = Enum.Font.GothamBold
+  detailTitle.TextXAlignment = Enum.TextXAlignment.Left
+  detailTitle.TextTruncate = Enum.TextTruncate.AtEnd
+  detailTitle.Parent = detail
+  local detailMeta = Instance.new("TextLabel")
+  detailMeta.Name = "SelectedItemMeta"
+  detailMeta.BackgroundTransparency = 1
+  detailMeta.Position = UDim2.fromOffset(10, 34)
+  detailMeta.Size = UDim2.new(1, -20, 0, 23)
+  detailMeta.Text = ""
+  detailMeta.TextColor3 = theme.Accent
+  detailMeta.TextSize = 12
+  detailMeta.TextXAlignment = Enum.TextXAlignment.Left
+  detailMeta.TextTruncate = Enum.TextTruncate.AtEnd
+  detailMeta.Parent = detail
+  local detailDescription = Instance.new("TextLabel")
+  detailDescription.Name = "SelectedItemDescription"
+  detailDescription.BackgroundTransparency = 1
+  detailDescription.Position = UDim2.fromOffset(10, 60)
+  detailDescription.Size = UDim2.new(1, -20, 1, -68)
+  detailDescription.Text = ""
+  detailDescription.TextColor3 = theme.MutedText
+  detailDescription.TextSize = 12
+  detailDescription.TextWrapped = true
+  detailDescription.TextXAlignment = Enum.TextXAlignment.Left
+  detailDescription.TextYAlignment = Enum.TextYAlignment.Top
+  detailDescription.Parent = detail
   local grid,cellLayout,slots=RobloxCommonUI.CreateInventoryGrid({
     name="FullInventoryGrid",columns=options.columns or 6,
     slotCount=options.slotCount or (options.items and #options.items or 1),
     size=UDim2.new(1,-8,0,160),theme=theme
   })
   grid.Parent=scroll
+  local emptyMessage = Instance.new("TextLabel")
+  emptyMessage.Name = "InventoryEmptyMessage"
+  emptyMessage.Size = UDim2.new(1, -24, 0, 74)
+  emptyMessage.Position = UDim2.fromOffset(12, 18)
+  emptyMessage.BackgroundTransparency = 1
+  emptyMessage.TextColor3 = theme.MutedText
+  emptyMessage.Font = Enum.Font.GothamMedium
+  emptyMessage.TextSize = 14
+  emptyMessage.TextWrapped = true
+  emptyMessage.Text = "보유 아이템이 없어"
+  emptyMessage.Visible = false
+  emptyMessage.Parent = scroll
   -- 기존 실제 게임 소유 목록은 그대로 유지하고, 화면에서 보이는 결과만 분류한다.
   local rows,shown,filterNames={},{},{}
   local selectedId=nil
   local currentFilter="전체"
   local sortByName=false
+  local sortByRarity=false
+  -- 희귀도는 실제 게임 아이템 메타데이터를 읽기만 한다. 게임 소유 데이터는 변경하지 않는다.
+  local rarityRank={COMMON=1,UNCOMMON=2,RARE=3,EPIC=4,LEGENDARY=5,MYTHIC=6,
+    ["일반"]=1,["고급"]=2,["희귀"]=3,["영웅"]=4,["전설"]=5,["신화"]=6}
   local refresh
   local function resizeGrid()
     local available=scroll.AbsoluteSize.X-8
@@ -1873,13 +2195,27 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       sort.AnchorPoint=Vector2.new(0,0)
       sort.Position=UDim2.fromOffset(0,56);sort.Size=UDim2.new(1,0,0,48)
       filters.Position=UDim2.fromOffset(0,112)
-      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-172)
+      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-280)
+      detail.Position=UDim2.new(0,0,1,-100);detail.Size=UDim2.new(1,0,0,100)
     else
       search.Size=UDim2.new(0.42,0,0,48)
       sort.AnchorPoint=Vector2.new(1,0)
       sort.Position=UDim2.new(1,0,0,0);sort.Size=UDim2.fromOffset(170,48)
       filters.Position=UDim2.fromOffset(0,58)
-      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(1,0,1,-116)
+      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(0.69,-8,1,-116)
+      detail.Position=UDim2.new(0.69,0,0,116);detail.Size=UDim2.new(0.31,0,1,-116)
+    end
+    if compact then
+      detailArt.Position=UDim2.fromOffset(8,8);detailArt.Size=UDim2.fromOffset(80,80)
+      detailTitle.Position=UDim2.fromOffset(96,7);detailTitle.Size=UDim2.new(1,-106,0,25)
+      detailMeta.Position=UDim2.fromOffset(96,34);detailMeta.Size=UDim2.new(1,-106,0,23)
+      detailDescription.Position=UDim2.fromOffset(96,60);detailDescription.Size=UDim2.new(1,-106,1,-68)
+    else
+      local artHeight=math.clamp(math.floor(detail.AbsoluteSize.Y*0.38),64,160)
+      detailArt.Position=UDim2.fromOffset(12,8);detailArt.Size=UDim2.new(1,-24,0,artHeight)
+      detailTitle.Position=UDim2.fromOffset(10,artHeight+16);detailTitle.Size=UDim2.new(1,-20,0,25)
+      detailMeta.Position=UDim2.fromOffset(10,artHeight+43);detailMeta.Size=UDim2.new(1,-20,0,23)
+      detailDescription.Position=UDim2.fromOffset(10,artHeight+70);detailDescription.Size=UDim2.new(1,-20,1,-artHeight-78)
     end
     root:SetAttribute("MobileStackedLayout",compact)
     resizeGrid()
@@ -1896,6 +2232,14 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
         if category~=""and not found[category]then
           filterNames[#filterNames+1]=category;found[category]=true
         end
+        local rarity=tostring(row.rarity or "")
+        local rarityFilter="희귀도: "..rarity
+        if rarity~=""and not found[rarityFilter]then
+          filterNames[#filterNames+1]=rarityFilter;found[rarityFilter]=true
+        end
+        if row.equipped==true and not found["장착 중"]then
+          filterNames[#filterNames+1]="장착 중";found["장착 중"]=true
+        end
       end
     end
     if not table.find(filterNames,currentFilter)then currentFilter=filterNames[1]or"전체"end
@@ -1903,7 +2247,8 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       if not filterButtons[i]then
         local index=i
         local button=RobloxCommonUI.CreateTabButton({
-          name="Filter"..i,text=name,size=UDim2.fromOffset(96,48),theme=theme
+          name="Filter"..i,text=name,
+          size=UDim2.fromOffset(math.max(96,(utf8.len(name)or #name)*12+30),48),theme=theme
         })
         button.LayoutOrder=i;button.Parent=filters
         filterButtons[i]=button
@@ -1929,18 +2274,38 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     end)
   end
   refresh=function()
+    if selectedId ~= nil then
+      local exists = false
+      for _,item in ipairs(rows) do
+        if item.id == selectedId then exists = true; break end
+      end
+      if not exists then selectedId = nil end
+    end
     updateFilters()
     shown={}
     local query=string.lower(tostring(search.Text or ""))
     for _,row in ipairs(rows)do
       local category=tostring(row.category or "")
-      local name=string.lower(tostring(row.name or row.title or row.id or ""))
-      if (currentFilter=="전체"or currentFilter==category)
-        and (query==""or string.find(name,query,1,true))then
+      local rarity=tostring(row.rarity or "")
+      local filterMatch=currentFilter=="전체"or currentFilter==category
+        or (rarity~=""and currentFilter=="희귀도: "..rarity)
+        or (currentFilter=="장착 중"and row.equipped==true)
+      local searchable=string.lower(table.concat({
+        tostring(row.name or row.title or ""),tostring(row.id or ""),
+        tostring(row.description or ""),category,rarity
+      }," "))
+      if filterMatch and (query==""or string.find(searchable,query,1,true))then
         shown[#shown+1]=row
       end
     end
-    if sortByName then
+    if sortByRarity then
+      table.sort(shown,function(left,right)
+        local a=rarityRank[string.upper(tostring(left.rarity or ""))]or 0
+        local b=rarityRank[string.upper(tostring(right.rarity or ""))]or 0
+        if a~=b then return a>b end
+        return tostring(left.id or "")<tostring(right.id or "")
+      end)
+    elseif sortByName then
       table.sort(shown,function(left,right)
         local a=string.lower(tostring(left.name or left.title or left.id or ""))
         local b=string.lower(tostring(right.name or right.title or right.id or ""))
@@ -1966,21 +2331,43 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       end
       slot.Visible=true
       slot.Name="Slot"..i;slot.LayoutOrder=i
-      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
-      slot:SetAttribute("BoundFromGameState",true)
-      local icon=slot:FindFirstChild("Icon")
-      local quantity=slot:FindFirstChild("Quantity")
-      local highlight=slot:FindFirstChild("SelectedRing")
-      if icon then icon.Image=tostring(row.image or "")end
-      if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
-      if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
-      slot.Active=row.id~=nil and row.locked~=true
+      RobloxCommonUI.UpdateInventorySlot(slot,row,{theme=theme,selected=selectedId~=nil and selectedId==row.id})
     end
     for i=#shown+1,#slots do slots[i].Visible=false end
+    emptyMessage.Visible=#shown==0
+    emptyMessage.Text=#rows==0 and "보유 아이템이 없어" or "조건에 맞는 아이템이 없어"
+    local selectedRow=nil
+    for _,row in ipairs(rows)do
+      if selectedId~=nil and row.id==selectedId then selectedRow=row;break end
+    end
+    if not selectedRow then selectedId=nil end
+    detailTitle.Text=selectedRow and tostring(selectedRow.name or selectedRow.title or selectedRow.id or "아이템") or "아이템을 선택하세요"
+    detailMeta.Text=selectedRow and
+      (tostring(selectedRow.category or "아이템").." · "..tostring(selectedRow.rarity or "일반").." · "..tostring(selectedRow.quantity or selectedRow.count or 1)
+        ..(selectedRow.equipped==true and " · 장착 중" or "")..(selectedRow.locked==true and " · 잠김" or "")) or ""
+    detailDescription.Text=selectedRow and tostring(selectedRow.description or "") or ""
+    detailArt.Image=selectedRow and tostring(selectedRow.image or selectedRow.icon or "") or ""
+    detailArt.ImageRectOffset=Vector2.zero;detailArt.ImageRectSize=Vector2.zero
+    local atlasIndex=selectedRow and ICON_ATLAS_KEYS[string.upper(tostring(selectedRow.iconKey or ""))]
+    if detailArt.Image==""and atlasIndex~=nil and ICON_ATLAS_IMAGE~=""then
+      local x,y=atlasIndex%4,math.floor(atlasIndex/4)
+      local left,top=math.floor(x*ICON_ATLAS_SIZE/4),math.floor(y*ICON_ATLAS_SIZE/4)
+      detailArt.Image=ICON_ATLAS_IMAGE
+      detailArt.ImageRectOffset=Vector2.new(left,top)
+      detailArt.ImageRectSize=Vector2.new(math.floor((x+1)*ICON_ATLAS_SIZE/4)-left,math.floor((y+1)*ICON_ATLAS_SIZE/4)-top)
+    end
+    detailArt.Visible=detailArt.Image~=""
+    detailArt:SetAttribute("BoundItemId",selectedId~=nil and tostring(selectedId)or "")
+    local selectedRarity=selectedRow and string.upper(tostring(selectedRow.rarity or "")) or ""
+    detailMeta.TextColor3=selectedRow
+      and (typeof(selectedRow.rarityColor)=="Color3"and selectedRow.rarityColor
+        or INVENTORY_TIER_COLORS[selectedRarity]or theme.Accent) or theme.Accent
+    detail:SetAttribute("BoundSelectedItemId",selectedId~=nil and tostring(selectedId) or "")
     root:SetAttribute("BoundItemCount",#rows)
     root:SetAttribute("BoundVisibleItemCount",#shown)
     root:SetAttribute("CurrentInventoryFilter",currentFilter)
     root:SetAttribute("InventorySortByName",sortByName)
+    root:SetAttribute("InventorySortByRarity",sortByRarity)
     resizeGrid()
   end
   local function sync(items)
@@ -1989,8 +2376,14 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   end
   search:GetPropertyChangedSignal("Text"):Connect(refresh)
   sort.Activated:Connect(function()
-    sortByName=not sortByName
-    sort.Text=sortByName and "정렬: 이름순"or"정렬: 기본순"
+    if sortByName then
+      sortByName=false;sortByRarity=true
+    elseif sortByRarity then
+      sortByRarity=false
+    else
+      sortByName=true
+    end
+    sort.Text=sortByName and "정렬: 이름순"or sortByRarity and "정렬: 희귀도순"or"정렬: 기본순"
     refresh()
   end)
   body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
@@ -2005,7 +2398,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   root:SetAttribute("OwnsSaveAuthority",false)
   root:SetAttribute("OwnsRemoteAuthority",false)
   return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,
-    slots=slots,Sync=sync}
+    detail=detail,slots=slots,emptyMessage=emptyMessage,Sync=sync}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
@@ -4365,15 +4758,63 @@ function RobloxCommonUI.CreateRouteRiskPreview(options)
 end
 
 function RobloxCommonUI.CreateThreatEdgeIndicator(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"THREAT_EDGE_INDICATOR","THREAT_EDGE_INDICATOR","위협 방향",{"좌/우/후방","위협 등급","거리","시야 밖 상태"})
+  local theme = cloneTheme(options.theme)
+  local direction = commonText(parts.inner,"ThreatDirection","",UDim2.new(0,14,1,-64),UDim2.new(1,-28,0,50),theme.Danger,28,true)
+  direction.TextXAlignment = Enum.TextXAlignment.Center
+  local symbol = {LEFT="←",RIGHT="→",FRONT="↑",BACK="↓",NORTH="↑",SOUTH="↓",WEST="←",EAST="→"}
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local facing = string.upper(tostring(state.direction or "UNKNOWN"))
+    direction.Text = (symbol[facing] or "•") .. "  " .. tostring(state.label or facing)
+    parts.labels[1].Text = "위협 · " .. tostring(state.label or facing)
+    parts.labels[2].Text = "단계 · " .. tostring(state.severity or "미확인")
+    parts.labels[3].Text = "거리 · " .. tostring(state.distance or "미확인")
+    parts.labels[4].Text = state.offscreen == true and "시야 밖" or "화면 안"
+  end
+  sync(options.threat)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,Direction=direction}
 end
 
 function RobloxCommonUI.CreateBossPhaseStrip(options)
-  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP","보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  options = options or {}
+  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP",options.title or "보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "ConfirmedBossHealth"
+  track.Size = UDim2.new(1,-28,0,22)
+  track.Position = UDim2.new(0,14,1,-64)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,7)
+  local fill = Instance.new("Frame")
+  fill.Name = "VisualHealthFill"
+  fill.Size = UDim2.fromScale(1,1)
+  fill.BackgroundColor3 = theme.Danger
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,7)
+  local value = commonText(parts.inner,"ConfirmedValue","",UDim2.new(0,14,1,-37),UDim2.new(1,-28,0,24),theme.Text,12,true)
+  value.TextXAlignment = Enum.TextXAlignment.Right
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local hp = math.max(0,tonumber(state.hp) or 0)
+    local maxHp = math.max(0,tonumber(state.maxHp) or 0)
+    local ratio = maxHp > 0 and math.clamp(hp/maxHp,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 페이즈 · " .. tostring(state.phase or "미확인")
+    parts.labels[2].Text = "다음 변화 · " .. tostring(state.nextPhase or "미확인")
+    parts.labels[3].Text = "위험 패턴 · " .. tostring(state.warning or "미확인")
+    parts.labels[4].Text = "진행도 · " .. tostring(math.floor(ratio*100)) .. "%"
+    value.Text = tostring(math.floor(hp)) .. " / " .. tostring(math.floor(maxHp))
+  end
+  sync(options.bossState)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsDamageAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,HealthFill=fill}
 end
 
 -- 디펜스: 웨이브/정예/준비시간은 실제 전투 디렉터가 준 현재 상태만 표시한다.
@@ -4412,9 +4853,38 @@ function RobloxCommonUI.CreateWaveForecastRibbon(options)
 end
 
 function RobloxCommonUI.CreateStatusEffectTimeline(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"STATUS_EFFECT_TIMELINE","STATUS_EFFECT_TIMELINE","상태효과 타임라인",{"현재 효과","남은 시간","중첩","해제 가능"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "RemainingStatusDuration"
+  track.Position = UDim2.new(0,14,1,-55)
+  track.Size = UDim2.new(1,-28,0,12)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,5)
+  local fill = Instance.new("Frame")
+  fill.Name = "DurationFill"
+  fill.Size = UDim2.fromScale(0,1)
+  fill.BackgroundColor3 = theme.Accent
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,5)
+  local function sync(status)
+    status = type(status) == "table" and status or {}
+    local remaining = math.max(0,tonumber(status.remaining) or 0)
+    local total = math.max(0,tonumber(status.total) or 0)
+    local ratio = total > 0 and math.clamp(remaining/total,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 효과 · " .. tostring(status.name or "없음")
+    parts.labels[2].Text = "남은 시간 · " .. tostring(math.floor(remaining*10)/10)
+    parts.labels[3].Text = "중첩 · " .. tostring(math.max(0,math.floor(tonumber(status.stacks) or 0)))
+    parts.labels[4].Text = status.dispellable == true and "해제 가능" or "해제 여부 미확인"
+  end
+  sync(options.status)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,DurationFill=fill}
 end
 
 function RobloxCommonUI.CreateHousingStructuralSupportOverlay(options)
@@ -4457,6 +4927,264 @@ function RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
   local root,parts=deepSystemPanel(options,"FAILURE_RECOVERY_CHECKPOINT","FAILURE_RECOVERY_CHECKPOINT","복구 지점",{"마지막 정상 상태","복구 가능 항목","유실 없음 표시","다시 시작"})
   root:SetAttribute("OwnsSystemAuthority",false)
   return root,parts
+end
+
+
+-- Presentation-only native controller, shared by Roblox games via the existing common UI.
+-- Confirmed combat/status events are supplied by each game's authoritative source.
+
+-- Native 3D item viewer for a real game-bound model; never constructs placeholder geometry.
+function RobloxCommonUI.CreateItemModelPreview(options)
+  options = options or {}
+  local source = options.model
+  assert(source and (source:IsA("Model") or source:IsA("BasePart")), "verified game item model required")
+  local theme = cloneTheme(options.theme)
+  local viewer = Instance.new("ViewportFrame")
+  viewer.Name = options.name or "BoundItemPreview"
+  viewer.Size = options.size or UDim2.fromOffset(240, 240)
+  viewer.BackgroundColor3 = theme.PanelInset
+  viewer.BorderSizePixel = 0
+  viewer.Ambient = Color3.fromRGB(135, 140, 150)
+  viewer.LightColor = Color3.fromRGB(250, 246, 234)
+  viewer.LightDirection = Vector3.new(-1, -1, -0.5)
+  tag(viewer, "VERIFIED_ITEM_MODEL_PREVIEW")
+  viewer:SetAttribute("OwnsGameplayAction", false)
+  corner(viewer, 10)
+  stroke(viewer, theme.Border, 1, 0.08)
+  local world = Instance.new("WorldModel")
+  world.Parent = viewer
+  local clone = source:Clone()
+  -- An imported model may include scripts. A visual-only copy never executes gameplay.
+  for _, descendant in ipairs(clone:GetDescendants()) do
+    if descendant:IsA("BaseScript") or descendant:IsA("ModuleScript") then
+      descendant:Destroy()
+    end
+  end
+  clone.Parent = world
+  local model = clone
+  if clone:IsA("BasePart") then
+    model = Instance.new("Model")
+    model.Name = "VisualPreviewRoot"
+    clone.Parent = model
+    model.Parent = world
+  end
+  for _, part in ipairs(model:GetDescendants()) do
+    if part:IsA("BasePart") then
+      part.Anchored = true
+      part.CanCollide = false
+      part.CanTouch = false
+      part.CanQuery = false
+    end
+  end
+  local origin, bounds = model:GetBoundingBox()
+  local diameter = math.max(bounds.X, bounds.Y, bounds.Z, 0.5)
+  local camera = Instance.new("Camera")
+  camera.FieldOfView = 35
+  camera.CFrame = CFrame.lookAt(origin.Position + Vector3.new(diameter,diameter*0.7,diameter*2.6),origin.Position)
+  camera.Parent = viewer
+  viewer.CurrentCamera = camera
+  return viewer,{model=model,camera=camera,bounds=bounds,ownsGameplayAuthority=false}
+end
+
+function RobloxCommonUI.CreateVisualFeedbackController(options)
+  options = options or {}
+  local parent = options.parent
+  assert(parent and (parent:IsA("GuiObject") or parent:IsA("LayerCollector")), "visual feedback requires an existing GUI container")
+  local TweenService = game:GetService("TweenService")
+  local theme = cloneTheme(options.theme)
+  local reducedMotion = options.reducedMotion == true
+  local maxDamage = math.clamp(math.floor(tonumber(options.maxDamage) or 28), 1, 60)
+  local maxNotices = math.clamp(math.floor(tonumber(options.maxNotices) or 3), 1, 5)
+  local overlay = Instance.new("Frame")
+  overlay.Name = "CommonVisualFeedback"
+  overlay.BackgroundTransparency = 1
+  overlay.Size = UDim2.fromScale(1, 1)
+  overlay.ClipsDescendants = true
+  overlay.ZIndex = 80
+  overlay.Parent = parent
+  tag(overlay, "PRESENTATION_FEEDBACK")
+  overlay:SetAttribute("GameplayAuthority", false)
+
+  local pool, active, seen, notices = {}, {}, {}, {}
+  local destroyed = false
+  local iconTweens = setmetatable({}, {__mode = "k"})
+  local function newPopup()
+    local label = Instance.new("TextLabel")
+    label.Name = "ConfirmedDamageNumber"
+    label.BackgroundTransparency = 1
+    label.AnchorPoint = Vector2.new(0.5, 0.5)
+    label.Size = UDim2.fromOffset(122, 44)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 21
+    label.TextStrokeColor3 = Color3.fromRGB(15, 16, 24)
+    label.TextStrokeTransparency = 0.2
+    label.TextXAlignment = Enum.TextXAlignment.Center
+    label.Visible = false
+    label.ZIndex = 82
+    label.Parent = overlay
+    tag(label, "DAMAGE_POPUP")
+    return label
+  end
+  for i = 1, maxDamage do pool[i] = {label = newPopup(), busy = false, generation = 0} end
+  local function popupColor(kind)
+    if kind == "CRITICAL" then return Color3.fromRGB(255, 224, 137) end
+    if kind == "HEAL" then return Color3.fromRGB(132, 249, 180) end
+    if kind == "SHIELD" then return Color3.fromRGB(136, 209, 255) end
+    if kind == "DOT" then return Color3.fromRGB(212, 170, 244) end
+    return theme.Text
+  end
+  local controller = {}
+  function controller.ShowDamage(event)
+    if destroyed or type(event) ~= "table" or event.confirmed ~= true then return false end
+    local id = tostring(event.eventId or "")
+    local amount = tonumber(event.amount)
+    if id == "" or not amount or amount ~= amount or seen[id] then return false end
+    local xy = event.viewportPosition
+    if typeof(xy) ~= "Vector2" and typeof(event.worldPosition) == "Vector3" then
+      local camera = options.camera or workspace.CurrentCamera
+      if camera then
+        local screen, visible = camera:WorldToViewportPoint(event.worldPosition)
+        if not visible then return false end
+        xy = Vector2.new(screen.X, screen.Y)
+        local origin = overlay.AbsolutePosition
+        xy = xy - origin
+      end
+    end
+    if typeof(xy) ~= "Vector2" or xy.X < 0 or xy.Y < 0
+      or xy.X > overlay.AbsoluteSize.X or xy.Y > overlay.AbsoluteSize.Y then return false end
+    local entry
+    for _, candidate in ipairs(pool) do
+      if not candidate.busy then entry = candidate break end
+    end
+    if not entry then return false end
+    seen[id] = true
+    task.delay(5, function() seen[id] = nil end)
+    entry.busy = true
+    entry.generation += 1
+    local generation = entry.generation
+    local index = 0
+    for _, item in ipairs(pool) do if item.busy then index += 1 end end
+    local jitter = ((index % 5) - 2) * 14
+    local safeX = math.clamp(xy.X + jitter, math.min(61,overlay.AbsoluteSize.X*0.5), math.max(overlay.AbsoluteSize.X*0.5,overlay.AbsoluteSize.X-61))
+    local safeY = math.clamp(xy.Y, math.min(26,overlay.AbsoluteSize.Y*0.5), math.max(overlay.AbsoluteSize.Y*0.5,overlay.AbsoluteSize.Y-26))
+    local kind = string.upper(tostring(event.kind or "DAMAGE"))
+    local label = entry.label
+    label.Text = (kind == "MISS" and "MISS" or (kind == "HEAL" and "+" or "") .. tostring(math.floor(amount + 0.5)))
+    label.TextColor3 = popupColor(kind)
+    label.TextSize = kind == "CRITICAL" and 28 or 21
+    label.TextTransparency = 0
+    label.TextStrokeTransparency = 0.2
+    label.Position = UDim2.fromOffset(safeX, safeY)
+    label.Visible = true
+    local duration = reducedMotion and 0.18 or (kind == "CRITICAL" and 0.92 or 0.72)
+    local target = {Position = UDim2.fromOffset(math.min(overlay.AbsoluteSize.X - 61,safeX + 8), math.max(24,safeY - (reducedMotion and 10 or 64))), TextTransparency = 1, TextStrokeTransparency = 1}
+    local tween = TweenService:Create(label, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), target)
+    active[entry] = tween
+    tween:Play()
+    task.delay(duration + 0.08, function()
+      if entry.generation ~= generation then return end
+      entry.busy = false
+      active[entry] = nil
+      if label.Parent then label.Visible = false end
+    end)
+    return true
+  end
+  function controller.PositionTooltip(tooltip, anchor)
+    if destroyed or not tooltip or not tooltip:IsA("GuiObject") or typeof(anchor) ~= "Vector2" then return false end
+    local size = overlay.AbsoluteSize
+    local width = math.min(tooltip.AbsoluteSize.X, math.max(1, size.X - 16))
+    local height = math.min(tooltip.AbsoluteSize.Y, math.max(1, size.Y - 16))
+    local x = math.clamp(anchor.X - width * 0.5, 8, math.max(8, size.X - width - 8))
+    local y = anchor.Y + 14
+    if y + height > size.Y - 8 then y = anchor.Y - height - 14 end
+    tooltip.AnchorPoint = Vector2.new(0, 0)
+    tooltip.Position = UDim2.fromOffset(x, math.clamp(y, 8, math.max(8, size.Y - height - 8)))
+    return true
+  end
+  function controller.AnimateIcon(icon, state)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    local old = iconTweens[icon]
+    if old then old:Cancel() end
+    local scale = icon:FindFirstChild("VibeVisualScale")
+    if not scale then
+      scale = Instance.new("UIScale")
+      scale.Name = "VibeVisualScale"
+      scale.Parent = icon
+    end
+    local mode = string.upper(tostring(state or "READY"))
+    local target = mode == "ACTIVATE" and 1.14 or mode == "COOLDOWN" and 0.94 or 1
+    local duration = reducedMotion and 0.01 or 0.18
+    local tween = TweenService:Create(scale, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = target})
+    iconTweens[icon] = tween
+    tween:Play()
+    if mode == "ACTIVATE" then
+      task.delay(duration, function()
+        if destroyed or not icon.Parent or iconTweens[icon] ~= tween then return end
+        local settle = TweenService:Create(scale, TweenInfo.new(reducedMotion and 0.01 or 0.16), {Scale = 1})
+        iconTweens[icon] = settle
+        settle:Play()
+      end)
+    end
+    return true
+  end
+  function controller.UpdateStatusIcon(icon, status)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    status = status or {}
+    local meter = icon:FindFirstChild("VisualDurationMeter")
+    if not meter then
+      meter = Instance.new("Frame")
+      meter.Name = "VisualDurationMeter"
+      meter.AnchorPoint = Vector2.new(0, 1)
+      meter.Position = UDim2.fromScale(0, 1)
+      meter.Size = UDim2.new(1, 0, 0, 3)
+      meter.BackgroundColor3 = theme.Accent
+      meter.BorderSizePixel = 0
+      meter.ZIndex = icon.ZIndex + 1
+      meter.Parent = icon
+    end
+    local total = math.max(0, tonumber(status.total) or 0)
+    local remaining = math.max(0, tonumber(status.remaining) or 0)
+    local ratio = total > 0 and math.clamp(remaining / total, 0, 1) or 0
+    meter.Size = UDim2.new(ratio, 0, 0, 3)
+    icon:SetAttribute("PresentationEffectStacks", math.max(0, math.floor(tonumber(status.stacks) or 0)))
+    return true
+  end
+  function controller.Notify(event)
+    if destroyed or type(event) ~= "table" then return false end
+    local id = tostring(event.id or "")
+    if id == "" then return false end
+    for _, notice in ipairs(notices) do if notice.id == id then return false end end
+    local toast = RobloxCommonUI.CreateNotificationToast({title = event.title, text = event.text, kind = event.kind, theme = theme})
+    toast.AnchorPoint = Vector2.new(1, 0)
+    toast.Parent = overlay
+    table.insert(notices, {id = id, frame = toast})
+    while #notices > maxNotices do
+      local oldest = table.remove(notices, 1)
+      oldest.frame:Destroy()
+    end
+    for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    task.delay(math.clamp(tonumber(event.duration) or 2.4, 0.3, 8), function()
+      for index, item in ipairs(notices) do
+        if item.id == id then
+          table.remove(notices, index)
+          if item.frame.Parent then item.frame:Destroy() end
+          break
+        end
+      end
+      for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    end)
+    return true
+  end
+  function controller.Destroy()
+    if destroyed then return end
+    destroyed = true
+    for _, tween in pairs(active) do tween:Cancel() end
+    for _, tween in pairs(iconTweens) do tween:Cancel() end
+    table.clear(seen)
+    overlay:Destroy()
+  end
+  controller.Root = overlay
+  return controller
 end
 
 function RobloxCommonUI.Create(atomId, options)
@@ -4888,7 +5616,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
  title.Parent=hud;status.Parent=hud;if healthTrack then healthTrack.Parent=hud end
  if multiplayerStatus then multiplayerStatus.Parent=hud end
- local menu=RobloxCommonUI.CreatePrimaryButton({name="GameActionsMenu",text="메뉴",minWidth=52,minHeight=52})
+ local menu=RobloxCommonUI.CreateIconButton({name="GameActionsMenu",shortLabel="메뉴",iconKey="SETTINGS",size=UDim2.fromOffset(72,52)})
  menu.Parent=gui
  local close=RobloxCommonUI.CreatePrimaryButton({name="CloseActionsMenu",text="닫기",minWidth=52,minHeight=52})
  close.Parent=root
@@ -4908,7 +5636,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
   if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8)end
   if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
-  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
+  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(72,52)
   if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
