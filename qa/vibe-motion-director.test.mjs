@@ -428,6 +428,21 @@ test('humanoid monsters reuse biped combat semantics, quadrupeds keep sixty inde
   assert.equal(createCommonMonsterActionLoadout({speciesId:'SPIDER'}).quadruped60.length,0);
 });
 
+test('heavy biped sync shares 30+30 character actions while monster rigs never inherit R15 motion by profile alone',()=>{
+  const heavy=createDuelCombatMotionLoadout({weaponFamily:'UNARMED',bodyPlan:'HEAVY_BIPED',actorClass:'HUMANOID_NPC'});
+  assert.equal(heavy.composableMotionSlotCount,60);
+  const heavyRoblox=createRobloxCharacterMotionPlan({bodyPlan:'HEAVY_BIPED',rigProfile:'R15',actorClass:'HUMANOID_NPC'});
+  assert.equal(heavyRoblox.bipedActionSync.composableMotionSlotCount,60);
+  const boss=createRobloxCharacterMotionPlan({bodyPlan:'BOSS_BIPED',rigProfile:'R15'});
+  assert.equal(boss.bipedActionSync.composableMotionSlotCount,60);
+  for(const bodyPlan of ['FLYING','ARACHNID','AQUATIC','TENTACLED','HEXAPOD_INSECT','CENTAUR']){
+    const creature=createRobloxCharacterMotionPlan({bodyPlan,rigProfile:'R15',actorClass:'CREATURE'});
+    assert.equal(creature.bipedActionSync,null,bodyPlan);
+    assert.deepEqual(creature.requiredStates,['IDLE_ACTING','BODY_PLAN_LOCOMOTION','TURN','ATTACK','HIT','DEATH']);
+  }
+  assert.throws(()=>createDuelCombatMotionLoadout({bodyPlan:'FLYING'}),/BIPED_COMBAT_RIG_REQUIRED/);
+});
+
 test('non-humanoid creature families keep sixty anatomy-bound motions without inventing gameplay',()=>{
   const familyExamples=Object.freeze({
     SPIDER:'ARTHROPOD',ANT:'ARTHROPOD',BEETLE:'ARTHROPOD',MANTIS:'ARTHROPOD',
