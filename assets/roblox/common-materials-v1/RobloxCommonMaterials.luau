@@ -77,6 +77,25 @@ local PRESETS = table.freeze({
       VOID_PURPLE = table.freeze({material = Enum.Material.Neon, color = Color3.fromRGB(151, 105, 220), reflectance = 0.04}),
     }),
   }),
+  -- Block/toy worlds opt in through an explicit SurfaceRole; not a global art style override.
+  TOY_PLASTIC = table.freeze({
+    defaultVariant = "COBALT",
+    variants = table.freeze({
+      COBALT = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(54, 119, 238), reflectance = 0.07}),
+      POP_RED = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(229, 73, 67), reflectance = 0.06}),
+      SUNNY = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(246, 197, 62), reflectance = 0.07}),
+      MINT = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(64, 195, 153), reflectance = 0.06}),
+    }),
+  }),
+  TOY_STUDDED = table.freeze({
+    defaultVariant = "COBALT",
+    variants = table.freeze({
+      COBALT = table.freeze({material = Enum.Material.Plastic, color = Color3.fromRGB(54, 119, 238), reflectance = 0.04}),
+      POP_RED = table.freeze({material = Enum.Material.Plastic, color = Color3.fromRGB(229, 73, 67), reflectance = 0.04}),
+      SUNNY = table.freeze({material = Enum.Material.Plastic, color = Color3.fromRGB(246, 197, 62), reflectance = 0.04}),
+      MINT = table.freeze({material = Enum.Material.Plastic, color = Color3.fromRGB(64, 195, 153), reflectance = 0.04}),
+    }),
+  }),
   BRICK = table.freeze({
     defaultVariant = "RED",
     variants = table.freeze({
@@ -364,6 +383,9 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  local materialName=part.Material.Name
  local atom=part:GetAttribute("SurfaceRole") or ROLE_MATERIALS[materialName]
  if not atom or not PRESETS[atom]then return false end
+ -- An explicit toy-stud surface is cosmetic, and only a standard Part supports native studs.
+ local studRequested=atom=="TOY_STUDDED" and part:GetAttribute("SurfaceStudsEnabled")==true
+ if atom=="TOY_STUDDED" and not part:IsA("Part") then return false end
  local source=PBR_SOURCES[materialName]
  if style=="HORROR"then
   if materialName=="WoodPlanks"then source="Wood062"elseif materialName=="Concrete"then source="Concrete046"elseif materialName=="Brick"then source="Bricks079"end
@@ -371,8 +393,14 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  local name=string.lower(part.Name)
  if atom=="FABRIC" and (name:find("boot",1,true) or name:find("pouch",1,true) or name:find("belt",1,true))then atom="LEATHER_LIKE";source=style=="HORROR"and"Leather026"or"Leather008"end
  local transparency=part.Transparency
- RobloxCommonMaterials.Apply(part,atom,{tint=part.Color,tintStrength=1,preservePhysics=true,preserveBaseMaterial=true,
-   materialVariant=source and("Vibe_"..materialName.."_"..source)or nil})
+ RobloxCommonMaterials.Apply(part,atom,{tint=part.Color,tintStrength=1,preservePhysics=true,
+   preserveBaseMaterial=atom~="TOY_PLASTIC" and atom~="TOY_STUDDED",
+   materialVariant=atom=="TOY_PLASTIC" or atom=="TOY_STUDDED" and nil
+     or source and("Vibe_"..materialName.."_"..source)or nil})
+ if studRequested then
+  part.TopSurface=Enum.SurfaceType.Studs
+  part:SetAttribute("NativeStudsApplied",true)
+ end
  part.Transparency=transparency
  part:SetAttribute("MaterialSourceId",source)
  part:SetAttribute("MaterialStyle",style)
@@ -384,10 +412,10 @@ function RobloxCommonMaterials.Audit()
     version = 4,
     packId = "roblox-common-materials-v1",
     atoms = table.freeze({
-      "WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL", "BRICK", "ICE", "ASPHALT",
+      "WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL", "BRICK", "TOY_PLASTIC", "TOY_STUDDED", "ICE", "ASPHALT",
       "SKIN", "BONE", "WATER", "MUD", "SAND", "SNOW", "MOSS", "EMISSIVE", "CORROSION", "DIRT", "WET_DRY", "DAMAGE", "WEATHERING", "STYLE_VARIANT"
     }),
-    atomCount = 25,
+    atomCount = 27,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
