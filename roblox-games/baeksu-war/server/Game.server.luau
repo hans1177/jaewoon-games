@@ -17,7 +17,7 @@ local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspa
 local function block(parent,name,size,cf,color,material,shape)
  local x=Instance.new("Part")
  x.Name=name;x.Size=size;x.CFrame=cf;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
- x.Anchored=true;x.CanCollide=false;x.CanTouch=false
+ x.Anchored=true;x.CanCollide=(name=="집중 전장" or name=="진격로" or name=="고정 건설 칸");x.CanTouch=false
  if shape then x.Shape=shape end;x.Parent=parent
  return x
 end
