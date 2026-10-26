@@ -129,6 +129,16 @@ body{
   </section>
 
   <section class="card">
+    <div class="head"><h2>Roblox F0~F9 반복개발 현황</h2><span>실제 단계·검증 날짜(KST) · 완료 회차</span></div>
+    <div class="qaGrid" id="robloxFloorStats"><div class="empty">Roblox 플로어 기록 불러오는 중</div></div>
+    <div class="pipeline" id="robloxFloorList" style="margin-top:10px"><div class="empty">개발 대기열 연결 중</div></div>
+    <p style="color:#8fb3ce;font-size:10px;line-height:1.6;margin:11px 2px 1px">
+      대기열 등록은 실행 중인 작업의 증거가 아닙니다. F0 통과, F9 완주, 비공개 배포는 각각 분리하여 표시하며,
+      마지막 검증 날짜가 없다면 '증거 없음'으로 표시합니다.
+    </p>
+  </section>
+
+  <section class="card">
     <div class="head"><h2>검증 · QA 현황</h2><span>통과 여부를 한눈에</span></div>
     <div class="qaGrid" id="qaGrid"><div class="empty">검증 상태 불러오는 중</div></div>
   </section>
@@ -222,6 +232,53 @@ function renderPipeline(s,c){
       </div>
     </article>`).join(''):'<div class="empty">표시할 개발 파이프라인이 없습니다.</div>';
 }
+const fmtKst=value=>{
+  if(!value||!Number.isFinite(Date.parse(value)))return '검증된 날짜 없음';
+  return new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',
+    year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',
+    hourCycle:'h23'}).format(new Date(value))+' KST';
+};
+const floorLabel=code=>({
+ F0_BEFORE_SOURCE_BIND:'F0 진입 전 · 소스 연결',
+ F0:'F0 · 소스 사전검증',
+ F0_TO_F1_PRIVATE_CANDIDATE:'F0 통과 → 비공개 검증본 배포',
+ F1_TO_F4_RUNTIME_EVIDENCE:'F1~F4 · 실제 실행 검증',
+ F9:'F9 · 최종 회귀검증'
+}[code]||code||'플로어 미확인');
+const floorResultLabel=code=>({
+ REPAIR_REQUIRED:'수정 필요',
+ PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE:'검증본 게시 · 실행 증거 대기',
+ F0_PASSED_AWAITING_NEXT_EVIDENCE:'F0 통과 · 다음 증거 대기',
+ PRE_F0_OR_PENDING:'시작/검증 대기'
+}[code]||'검증 불가');
+function renderRobloxFloors(exposure){
+  const games=Array.isArray(exposure?.games)?exposure.games:[];
+  const active=games.map(g=>({g,f:(g.platforms||[]).find(p=>p.platform==='ROBLOX')?.floorProgress}))
+    .filter(x=>x.f?.tracked===true)
+    .sort((a,b)=>Date.parse(b.f.checkedAt||0)-Date.parse(a.f.checkedAt||0)
+       ||String(a.g.gameName).localeCompare(String(b.g.gameName),'ko'));
+  const f0Count=active.filter(x=>x.f.f0PassedAt).length;
+  const complete=active.reduce((n,x)=>n+Math.max(0,Number(x.f.completedCycles)||0),0);
+  robloxFloorStats.innerHTML=[
+    ['등록된 Roblox 게임',active.length,'현재 개발 대기열','blue'],
+    ['F0 통과 게임',f0Count,'증거 날짜가 있는 경우만','good'],
+    ['F0~F9 검증 완료 회차',complete,'F9 정확한 게시 증거 필요','warn'],
+  ].map(([label,value,note,cls])=>`<div class="qa ${cls}"><b>${esc(label)}</b><strong>${esc(value)}</strong><span>${esc(note)}</span></div>`).join('');
+  robloxFloorList.innerHTML=active.length?active.map(({g,f})=>`
+    <article class="gameRow">
+      <div class="gameTop">
+        <div><b>${esc(g.gameName||g.gameId)}</b><small>${esc(floorLabel(f.currentFloor))}</small></div>
+        <span class="pill ${f.result==='REPAIR_REQUIRED'?'danger':f.f0PassedAt?'dev':'review'}">${esc(floorResultLabel(f.result))}</span>
+      </div>
+      <div class="next">
+        <div><b>마지막 검증 날짜</b><span>${esc(fmtKst(f.verifiedAt))}</span></div>
+        <div><b>개발 대기열 기록 날짜</b><span>${esc(fmtKst(f.checkedAt))}</span></div>
+        <div><b>F0 통과</b><span>${esc(fmtKst(f.f0PassedAt))}</span></div>
+        <div><b>F0~F9 완료 회차</b><span>${esc(f.completedCycles||0)}회 (정확한 게시 검증 기준)</span></div>
+      </div>
+      ${f.failureCode?`<small style="color:#ffaaa3">수정 대상: ${esc(f.failureCode)}</small>`:''}
+    </article>`).join(''):`<div class="empty">현재 Roblox 개발 대기열 기록이 없습니다. 데이터 기준: ${esc(fmtKst(exposure?.generatedAt))}</div>`;
+}
 function renderQa(s){
   const reviews=s.postModificationReviews||[];
   const latestReview=reviews[reviews.length-1]||null;
@@ -278,14 +335,18 @@ function renderDepartments(s){
 }
 Promise.all([
   fetch('/company-status.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('status');return r.json()}),
-  fetch('/game-catalog.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('catalog');return r.json()})
-]).then(([s,c])=>{
+  fetch('/game-catalog.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('catalog');return r.json()}),
+  fetch('/homepage-platform-exposure.json?ts='+Date.now(),{cache:'no-store'})
+    .then(r=>{if(!r.ok)throw new Error('exposure');return r.json()})
+    .catch(()=>({games:[],generatedAt:null}))
+]).then(([s,c,exposure])=>{
   const games=c.games||[];
   devCount.textContent=games.filter(g=>g.homepageCategory==='development-confirmed').length;
   testCount.textContent=(s.testBuilds||[]).filter(b=>b.download&&String(b.status||'').toLowerCase()==='ready').length;
   approvalCount.textContent=pendingApprovals(s).length;
   reviewCount.textContent=games.filter(g=>g.homepageCategory==='reviewing').length;
   renderPipeline(s,c);
+  renderRobloxFloors(exposure);
   renderQa(s);
   renderUnity(s);
   renderDecisions(s);
@@ -293,7 +354,7 @@ Promise.all([
   renderDepartments(s);
   updated.textContent='상태 기준 · '+(s.updatedAt||'업데이트 정보 없음')+' · 카탈로그 '+(c.updatedAt||'업데이트 정보 없음');
 }).catch(err=>{
-  pipelineList.innerHTML=qaGrid.innerHTML=unityList.innerHTML=decisionList.innerHTML=buildList.innerHTML=aiWork.innerHTML='<div class="empty">상태 데이터를 불러오지 못했습니다.</div>';
+  pipelineList.innerHTML=robloxFloorList.innerHTML=qaGrid.innerHTML=unityList.innerHTML=decisionList.innerHTML=buildList.innerHTML=aiWork.innerHTML='<div class="empty">상태 데이터를 불러오지 못했습니다.</div>';
   updated.textContent='상태 데이터 연결 확인 필요';
   console.error(err);
 });
