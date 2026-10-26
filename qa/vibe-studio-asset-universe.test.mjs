@@ -2658,6 +2658,46 @@ test('company-common UI current catalog preserves prior atoms and expands reusab
   assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
   assert.equal(quality.sourceAssetCount,catalog.atoms.length);
   assert.match(source,new RegExp('atomCount = '+catalog.atoms.length+'\\b'));
+  // 공용 UI 204종은 서로 다른 파일 204개가 아니라 하나의 공용 Luau 모듈이 공개하는 팩토리다.
+  // 목록 선언만 존재하는 유령 모듈, 중복 팩토리, 외부 권한 획득을 정적 계약에서 차단한다.
+  const exportedFactories=[...source.matchAll(/^function RobloxCommonUI\.([A-Za-z][A-Za-z0-9_]*)\(/gm)]
+    .map(match=>match[1]);
+  const exportedSet=new Set(exportedFactories);
+  assert.equal(exportedFactories.length,exportedSet.size,'PUBLIC_UI_FUNCTION_COLLISION');
+  assert.equal(catalog.atoms.length,204,'COMPANY_COMMON_UI_CATALOG_DRIFT');
+  const auditAtomsBlock=source.match(/atoms = table\.freeze\(\{([\s\S]*?)\}\)/);
+  assert.ok(auditAtomsBlock,'COMPANY_COMMON_UI_AUDIT_ATOMS_REQUIRED');
+  const auditIds=[...auditAtomsBlock[1].matchAll(/"([A-Z][A-Z0-9_]*)"/g)]
+    .map(match=>match[1]);
+  const declaredIds=catalog.atoms.map(row=>row.atomId);
+  assert.deepEqual(auditIds,declaredIds,'UI_CATALOG_AUDIT_ORDER_DRIFT');
+  const declaredFactories=new Set();
+  for(const row of catalog.atoms){
+    assert.match(row.atomId,/^[A-Z][A-Z0-9_]*$/);
+    assert.equal(row.source,'RobloxCommonUI.luau',row.atomId+':SOURCE_PATH_DRIFT');
+    assert.match(row.factory,/^Create[A-Z][A-Za-z0-9_]*$/,row.atomId+':NOT_A_FACTORY');
+    assert.ok(!declaredFactories.has(row.factory),row.atomId+':DUPLICATE_FACTORY');
+    assert.ok(exportedSet.has(row.factory),row.atomId+':MISSING_LUAU_FUNCTION');
+    declaredFactories.add(row.factory);
+  }
+  assert.equal(declaredFactories.size,204);
+  // 같은 회사 공용 팩을 사용한다고 선언한 기존 게임도 204개를 실제로 공개해야 한다.
+  const gamesDir=path.join(root,'roblox-games');
+  let checkedConsumers=0;
+  for(const gameFolder of fs.readdirSync(gamesDir,{withFileTypes:true})){
+    if(!gameFolder.isDirectory())continue;
+    const consumer=path.join(gamesDir,gameFolder.name,'shared','RobloxCommonUI.luau');
+    if(!fs.existsSync(consumer))continue;
+    const gameSource=fs.readFileSync(consumer,'utf8');
+    if(!/atomCount = 204\b/.test(gameSource))continue;
+    const gameFactories=new Set([...gameSource.matchAll(/^function RobloxCommonUI\.([A-Za-z][A-Za-z0-9_]*)\(/gm)]
+      .map(match=>match[1]));
+    for(const row of catalog.atoms)
+      assert.ok(gameFactories.has(row.factory),gameFolder.name+':MISSING_COMPANY_UI_FACTORY:'+row.factory);
+    checkedConsumers++;
+  }
+  assert.ok(checkedConsumers>0,'NO_DECLARED_COMPANY_UI_CONSUMERS');
+  assert.equal(catalog.productionVerified,false,'STATIC_FACTORY_COVERAGE_IS_NOT_RUNTIME_EVIDENCE');
   for(const id of ['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH','INVENTORY_SLOT','DIALOGUE_PANEL','AI_COMPANION_STATUS_CARD','MOUNT_STATUS_HUD','PARRY_TIMING_INDICATOR','WORLD_PROP_INTERACTION_PROMPT']){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
