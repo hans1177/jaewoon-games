@@ -4,6 +4,7 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local Run=game:GetService("RunService")
+local Input=game:GetService("UserInputService")
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
 local remote=RS:WaitForChild(C.Remote)
@@ -114,7 +115,7 @@ Run:BindToRenderStep("BaeksuWarCamera",Enum.RenderPriority.Camera.Value+1,functi
  if not cam or type(x)~="number" then return end
  cam.CameraType=Enum.CameraType.Scriptable;cam.FieldOfView=65
  cam.CFrame=CFrame.lookAt(Vector3.new(x+52,82,-41),Vector3.new(x,0,-1))
- local narrow=cam.ViewportSize.X<700
+ local narrow=cam.ViewportSize.X<700 or (Input.TouchEnabled and cam.ViewportSize.X<950)
  if narrow~=lastNarrow then
   lastNarrow=narrow
   dock.Size=narrow and UDim2.fromOffset(160,254) or UDim2.fromOffset(208,295)
