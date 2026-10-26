@@ -5550,3 +5550,81 @@ test('registered 86 CC0 actor originals enter the existing all-game asset build-
  assert.equal(JSON.parse(missingMatch[1]).onDemandLibrarySupply.selectedActions[0]
   .nativeBuildBlockedByUnacquiredSource,true,'unacquired bytes must remain blocked');
 });
+
+
+test('Roblox native CC0 selector uses only an exact registered GLB blob and still requires per-Universe grant',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-registered-roblox-id-'));
+ try{
+  const relative='assets/roblox/actors/sources/qa-actors/Chef.glb';
+  const full=path.join(root,relative);
+  fs.mkdirSync(path.dirname(full),{recursive:true});
+  const raw=Buffer.alloc(640,87);
+  fs.writeFileSync(full,raw);
+  const sourceHash=createHash('sha256').update(raw).digest('hex');
+  const blobSha=createHash('sha1').update(Buffer.from('blob '+raw.length+'\0')).update(raw).digest('hex');
+  const assetId=132263407299485;
+  const registered={family:'actor',key:'Chef',assetId,license:'CC0-1.0',
+   originalPath:relative,gitBlobSha:blobSha,sourceVerification:'git-blob-sha',
+   approvedUniverseIds:['111'],studioRuntimeVerified:false};
+  const registryPath=path.join(root,'assets/roblox/common-registered-external-assets-v1.json');
+  const writeRegistry=rows=>{
+   fs.mkdirSync(path.dirname(registryPath),{recursive:true});
+   fs.writeFileSync(registryPath,JSON.stringify({version:1,registeredAssets:rows}));
+  };
+  const original={sourceType:'ROBLOX_ACTOR_3D',sourceModelId:'fixture:chef',
+   displayName:'Chef',file:'Chef.glb',sourcePath:relative,sourceFormat:'GLB',
+   family:'CHARACTER',roles:['chef'],sourceOnly:true,gameApplied:false,
+   sha256:sourceHash,repositoryGitBlobSha:blobSha,licenseDeclared:'CC0-1.0',
+   licenseEvidenceUrl:'https://kenney.nl/assets/food-kit'};
+  const select=(target='roblox')=>{
+   const result=buildAssetSupplyDecisionSummary({repoRoot:root,gameId:'chef-qa',
+    target,request:'replace chef NPC visual',
+    requirements:[{family:'CHARACTER',role:'chef'}],
+    registry:{assets:[],externalSources:[]},actorOriginalSources:[original]});
+   const action=result.nextActions.find(row=>row.externalAcquisition?.sourceModelId==='fixture:chef');
+   assert.ok(action,'the original remains an available visual candidate');
+   return action;
+  };
+  writeRegistry([registered]);
+  const selected=select();
+  assert.equal(selected.externalAcquisition.registeredRobloxAssetId,String(assetId));
+  assert.equal(selected.externalAcquisition.universeUseGrantRequired,true);
+  assert.equal(selected.automaticReplacementAuthorized,false);
+  assert.equal(selected.assetization.runtimeVerified,false);
+  assert.equal(select('web').externalAcquisition.registeredRobloxAssetId,null,
+   'a Roblox model ID must not leak into web source selection');
+  const promptFor=action=>{
+   const order={target:'roblox',gameId:'chef-qa',
+    assetProduction:{assetSupplySummary:{nextActions:[action]},nativeAuthoringExecution:{enabled:false}}};
+   const prompt=buildPrompt(order,{files:[{path:'server/Game.server.luau',
+    content:'-- isolated fixture',editable:true}]},['server/Game.server.luau']);
+   const payload=/\[ASSET IMPLEMENTATION CONTRACT BEGIN\]\n([^\n]+)/.exec(prompt);
+   assert.ok(payload);
+   return JSON.parse(payload[1]).onDemandLibrarySupply.selectedActions[0];
+  };
+  const native=promptFor(selected);
+  assert.equal(native.registeredRobloxAssetId,String(assetId));
+  assert.equal(native.universeUseGrantRequired,true);
+  assert.equal(native.nativeBuildBlockedByUnadaptedArchive,false);
+  assert.equal(native.runtimeVerified,false);
+  assert.equal(native.productionVerified,false);
+  for(const bad of [
+   {...registered,gitBlobSha:'0'.repeat(40)},
+   {...registered,originalPath:'assets/roblox/actors/sources/qa-actors/Other.glb'},
+   {...registered,assetId:0},
+   {...registered,license:'CC-BY'},
+   {...registered,sourceVerification:'uploaded-but-not-verified'},
+  ]){
+   writeRegistry([bad]);
+   const action=select();
+   assert.equal(action.externalAcquisition.registeredRobloxAssetId,null);
+   const withheld=promptFor(action);
+   assert.equal(withheld.nativeBuildBlockedByUnadaptedArchive,true,
+    'unregistered original must retain native import and adaptation gate');
+  }
+  const unavailable={...selected,externalAcquisition:{...selected.externalAcquisition,
+   downloaded:false,acquisitionState:'SOURCE_BYTES_REQUIRED'}};
+  assert.equal(promptFor(unavailable).nativeBuildBlockedByUnacquiredSource,true,
+   'registered ID alone must not replace missing original source bytes');
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
