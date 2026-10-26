@@ -894,3 +894,68 @@ test('Roblox inventory rarity filtering and native stud reapplication remain pre
  assert.ok(authored.includes('and part:IsA("Part") and part.Shape==Enum.PartType.Block and part.Anchored'));
  assert.ok(authored.includes('preservePhysics=true'));
 });
+
+
+test('Roblox common simulator-grade graphics bind real UI surfaces without external assets or game authority',()=>{
+ const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const segment=(first,next)=>ui.slice(ui.indexOf(first),ui.indexOf(next,ui.indexOf(first)));
+ const theme=segment('local DEFAULT_THEME = table.freeze({','local function cloneTheme');
+ const panel=segment('function RobloxCommonUI.CreatePanel(options)','function RobloxCommonUI.CreatePrimaryButton(options)');
+ const button=segment('function RobloxCommonUI.CreatePrimaryButton(options)','function RobloxCommonUI.CreateHealthBar(options)');
+ const slot=segment('function RobloxCommonUI.CreateInventorySlot(options)','local INVENTORY_TIER_COLORS');
+ const update=segment('function RobloxCommonUI.UpdateInventorySlot(slot, item, options)','function RobloxCommonUI.CreateTooltip(options)');
+ const icon=segment('function RobloxCommonUI.CreateIconButton(options)','function RobloxCommonUI.CreateDialogueAssistantButton(options)');
+ const shell=segment('local function surfaceShell(options, atomId, role)','local function stateCard(options, atomId, role, defaultTitle, defaultBody, accentKey)');
+ const inventory=segment('function RobloxCommonUI.CreateInventoryFullScreen(options)','function RobloxCommonUI.CreateEquipmentFullScreen(options)');
+ for(const visual of ['PanelRaised = Color3.fromRGB(255, 255, 255)','PanelInset = Color3.fromRGB(228, 241, 255)','PrimaryTop = Color3.fromRGB(100, 203, 255)'])
+   assert.ok(theme.includes(visual),'BRIGHT_THEME_MISSING:'+visual);
+ for(const visual of ['CandyTopAccent','gradient(topAccent, theme.PrimaryTop, theme.Accent, 0)','stroke(frame, theme.Border, 2.3, 0)'])
+   assert.ok(panel.includes(visual),'PANEL_GRAPHICS_MISSING:'+visual);
+ for(const visual of ['ButtonDepthEdge','TextStrokeTransparency = 0.64','MinimumTouchHeight','MouseButton1Down','MouseButton1Up'])
+   assert.ok(button.includes(visual),'BUTTON_GRAPHICS_OR_TOUCH_MISSING:'+visual);
+ for(const visual of ['ItemSpotlight','RarityOutline','RaritySparkle','SelectedRing','FallbackGlyph','Quantity','StateBadge','RarityRail'])
+   assert.ok(slot.includes(visual),'SLOT_GRAPHICS_MISSING:'+visual);
+ for(const visual of ['outline.Color = rarityColor or theme.Border','spotlight.BackgroundColor3 = rarityColor or theme.PrimaryTop','quantity.Visible = quantity.Text ~= ""','item.equipped == true','slot.Active = item.id ~= nil and item.locked ~= true'])
+   assert.ok(update.includes(visual),'GAME_ITEM_BINDING_MISSING:'+visual);
+ assert.ok(icon.includes('gradient(button, theme.PanelRaised, theme.PanelInset, 90)'));
+ for(const visual of ['IconIllustrationPlate','IconIllustrationGlint','iconPlate.Visible = absent','gloss.Visible = absent','fallback.Font = Enum.Font.FredokaOne',
+   'NativeIllustratedIcon','vector.Visible = absent and hasVectorIcon','fallback.Visible = absent and not hasVectorIcon',
+   'BackpackBody','ShopAwning','SwordBlade','PawPad','GearHub','MenuGlyphBar',
+   'iconPlate.ZIndex = button.ZIndex + 1','fallback.ZIndex = button.ZIndex + 3'])
+   assert.ok(icon.includes(visual),'ICON_ILLUSTRATION_MISSING:'+visual);
+ assert.ok(button.includes('button.Font = options.font or Enum.Font.FredokaOne'));
+ assert.ok(slot.includes('glyph.Font = Enum.Font.FredokaOne'));
+ assert.ok(shell.includes('emblem.Font = Enum.Font.FredokaOne'));
+ for(const visual of ['HeaderEmblem','HeaderColorStripe','title.TextTruncate = Enum.TextTruncate.AtEnd'])
+   assert.ok(shell.includes(visual),'FULLSCREEN_HEADER_MISSING:'+visual);
+ for(const visual of ['SelectedItemRarityStripe','detailStripe.BackgroundColor3=detailMeta.TextColor3','MobileStackedLayout','OwnsSaveAuthority",false'])
+   assert.ok(inventory.includes(visual),'INVENTORY_DETAIL_OR_MOBILE_MISSING:'+visual);
+ for(const visual of ['SelectedItemArt','pcall(RobloxCommonUI.CreateItemModelPreview,{','SelectedItemHasNativeArt','previewImage.Visible=body.AbsoluteSize.X>=560','if activePreview then activePreview:Destroy()'])
+   assert.ok(inventory.includes(visual),'ITEM_ART_BINDING_MISSING:'+visual);
+ assert.doesNotMatch(ui,/require\(\d+\)|DataStoreService|FireServer\(|UpdateAsync\(|SetAsync\(/);
+ const catalog=JSON.parse(fs.readFileSync('assets/roblox/common-ui-v1/catalog.json','utf8'));
+ assert.equal(catalog.atoms.length,204,'EXISTING_COMMON_UI_CATALOG_CHANGED');
+ assert.equal(catalog.productionVerified,false,'VISUAL_CHANGE_CANNOT_CLAIM_RUNTIME_VERIFICATION');
+});
+
+
+test('Survival game actually opens new illustrated common inventory and reads authoritative resources',()=>{
+ const game=fs.readFileSync('roblox-games/survival/client/Game.client.luau','utf8');
+ const shared=fs.readFileSync('roblox-games/survival/shared/RobloxCommonUI.luau','utf8');
+ const canonical=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const preview=game.slice(game.indexOf('-- 생존 인벤토리 · 기존 서버 자원 Attribute'));
+ assert.ok(preview.length>2000,'ACTUAL_SURVIVAL_INVENTORY_NOT_BOUND');
+ assert.equal(shared,canonical,'GAME_COMMON_UI_COPY_STALE');
+ for(const name of ['SurvivalInventoryOverlay','OpenSurvivalInventory','CloseSurvivalInventory',
+   'CommonUI.CreateInventoryFullScreen({','bagView.Sync(actualItems)','GetAttribute("ResourceWood")',
+   'GetAttribute("ResourceStone")','GetAttributeChangedSignal("ResourceWood")',
+   'GetAttributeChangedSignal("ResourceStone")','InventoryBoundToServerAttributes',
+   'ScreenInsets.CoreUISafeInsets','setSurvivalInventoryOpen(false)','bagButton.Activated','bagClose.Activated'])
+   assert.ok(preview.includes(name),'GAME_VISIBLE_INVENTORY_BINDING_MISSING:'+name);
+ assert.ok(preview.includes('if typeof(wood)=="number" and wood>0 then'));
+ assert.ok(preview.includes('if typeof(stone)=="number" and stone>0 then'));
+ assert.ok(preview.includes('if open and gui:GetAttribute("GameMenuOpen")==true then return end'));
+ assert.doesNotMatch(preview,/DataStoreService|FireServer\(|FireClient\(|UpdateAsync\(|SetAsync\(/);
+ assert.ok(!preview.includes('game:GetService("DataStoreService")'));
+ assert.equal((shared.match(/^function RobloxCommonUI\./gm)||[]).length,212);
+});
