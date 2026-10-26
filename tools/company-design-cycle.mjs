@@ -1296,6 +1296,8 @@ function computeVibeNativeDesign(){
     bSystemReference,
     representativeGameReference:seed.A_REPRESENTATIVE_GAME_REFERENCE||seed.REFERENCE_GAMES?.[0]||null,
     basicDesignMethod:typeof basicDesignMethod==='undefined'?null:basicDesignMethod,
+    preservationMaterialFamilies:ownerPreservationDesign&&seed.B_SYSTEM_REFERENCE
+      ?['전쟁·군사','자연·생태']:null,
     discoveryCount:seed.designDiscoveryCount
   });
   const sketch=!computed.basicDesignSelection&&!freeTopicMode&&seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion?.formula==='MAIN × A × B × C'
