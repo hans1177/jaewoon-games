@@ -838,7 +838,28 @@ p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
  if value:find("^RESOURCE:")then resourceSfx.TimePosition=0;resourceSfx:Play();flash(Color3.fromRGB(120,220,120))
  elseif value:find("^BUILD:")then buildSfx.TimePosition=0;buildSfx:Play();flash(Color3.fromRGB(240,200,110))
- elseif value:find("^HIT:")then hitSfx.TimePosition=0;hitSfx:Play();flash(Color3.fromRGB(235,110,90))
+ elseif value:find("^HIT:")then
+  hitSfx.TimePosition=0;hitSfx:Play();flash(Color3.fromRGB(235,110,90))
+  -- 서버가 인정한 전투 타격에만 내부 SKILL 아톰의 짧은 충격 이펙트를 적용한다.
+  -- 서버의 전투 판정·피해량·재화·저장에는 관여하지 않는다.
+  if hasStudioAssetAtom("SKILL","IMPACT_SMALL") then
+   local character=p.Character
+   local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+   if rootPart and rootPart:IsA("BasePart") then
+    local impact=Instance.new("Attachment")
+    impact.Name="CozySkillImpact";impact.Parent=rootPart
+    local sparks=Instance.new("ParticleEmitter")
+    sparks.Name="CozySkillImpactSparks"
+    sparks.Rate=0;sparks.Speed=NumberRange.new(5,9)
+    sparks.Lifetime=NumberRange.new(.12,.25)
+    sparks.Size=NumberSequence.new(.42)
+    sparks.LightEmission=.7
+    sparks.Color=ColorSequence.new(Color3.fromRGB(255,220,152))
+    sparks.Parent=impact
+    sparks:Emit(9)
+    task.delay(.7,function()if impact.Parent then impact:Destroy()end end)
+   end
+  end
  elseif value:find("^CAPTURE:")then captureSfx.TimePosition=0;captureSfx:Play();flash(Color3.fromRGB(110,210,255))end
 end)
 
