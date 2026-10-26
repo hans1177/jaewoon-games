@@ -47,7 +47,7 @@ list.Parent=dock
 local ll=Instance.new("UIListLayout");ll.SortOrder=Enum.SortOrder.LayoutOrder;ll.Padding=UDim.new(0,5);ll.Parent=list
 local buy=Instance.new("TextButton");buy.Size=UDim2.new(1,-14,0,43);buy.Position=UDim2.new(0,7,1,-49)
 buy.TextSize=13;buy.TextColor3=Color3.new(1,1,1);buy.BackgroundColor3=Color3.fromRGB(111,89,51)
-buy.Font=Enum.Font.GothamBold;buy.Parent=dock
+buy.Font=Enum.Font.GothamBold;buy.Text="전장 준비 중";buy.Parent=dock
 local menu=panel(gui,UDim2.fromOffset(228,306),UDim2.new(0,8,.52,-135))
 menu.Visible=false
 local caption=label(menu,"집 선택",UDim2.new(1,-48,0,33),UDim2.fromOffset(8,5))
@@ -105,6 +105,7 @@ local function renderEconomy(e)
   (e.Mission or 1)>5 and "모두 완료" or (e.CanClaim and ("보상 받기 +"..tostring(e.MissionReward or 0).."G") or "조건 달성 시 보상"))
  missionBtn.BackgroundColor3=e.CanClaim and Color3.fromRGB(134,106,52) or Color3.fromRGB(67,111,109)
 end
+local hasState=false
 local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={},Economy={}}
 local function updateStatus()
  status.Text=string.format("스테이지 %d · 골드 %d\n우리 성문 %d  |  적 성문 %d",
@@ -154,6 +155,12 @@ local function refresh()
 end
 buy.Activated:Connect(function()remote:FireServer("BUY_SLOT")end)
 remote.OnClientEvent:Connect(function(action,data)
+ if action=="LOAD_ERROR" then
+  status.Text="전장 시작 오류 · 재접속 필요"
+  notice.Text=type(data)=="table" and (data.Message or "전장 불러오기 실패") or "전장 불러오기 실패"
+  buy.Text="로딩 실패"
+  return
+ end
  if action=="ECONOMY" and type(data)=="table" then
   current.Gold=data.Gold or current.Gold
   current.Economy=data
@@ -169,6 +176,7 @@ remote.OnClientEvent:Connect(function(action,data)
   return
  end
  if action~="STATE" or type(data)~="table" then return end
+ hasState=true
  current=data
  if data.Message and data.Message~="" then notice.Text=data.Message end
  updateSaveNotice()
@@ -180,6 +188,13 @@ for _,k in ipairs({"Gold","HomeHP","EnemyHP","Stage"}) do
  end)
 end
 remote:FireServer("SYNC")
+task.delay(12,function()
+ if not hasState and gui.Parent then
+  status.Text="전장 서버 응답 지연"
+  notice.Text="전장 초기화가 지연되고 있어 · 동기화 재요청"
+  remote:FireServer("SYNC")
+ end
+end)
 -- Noob Army Tycoon형 Roblox 기본 3인칭 카메라 사용.
 -- Scriptable/매 프레임 CFrame 덮어쓰기를 제거해 PC 우클릭, 휠, 모바일 드래그/핀치 및
 -- 캐릭터 이동을 Roblox 기본 CameraModule이 처리하도록 한다.
