@@ -1613,9 +1613,9 @@ test('shared Roblox UI renders live inventory icon fallback, equipped badges, se
   assert.match(inventory,/#rows==0 and "보유 아이템이 없어" or "조건에 맞는 아이템이 없어"/);
   assert.match(inventory,/selectedId = nil/);
   assert.match(inventory,/GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
-  assert.match(inventory,/row\.locked==true and "잠김" or row\.equipped==true and "장착"/);
-  assert.match(inventory,/row\.rarityColor/);
-  assert.match(inventory,/utf8\.offset\(label,2\)/,'Korean glyph uses a real UTF8 codepoint');
+  assert.match(inventory,/UpdateInventorySlot\(slot,row,\{theme=theme,selected=/);
+  assert.match(inventory,/detailMeta\.TextColor3/);
+  assert.match(ui,/pcall\(utf8\.offset, label, 2\)/,'Korean glyph uses a real UTF8 codepoint');
   assert.match(inventory,/BoundVisibleItemCount/);
   assert.match(inventory,/OwnsInventoryAuthority",false/);
   assert.match(inventory,/OwnsSaveAuthority",false/);
