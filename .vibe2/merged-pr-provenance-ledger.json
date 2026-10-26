@@ -107407,11 +107407,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_64216bbd82330fa5daccb5c5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10393",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "5970f5c249d7055a1d1bbd2eaee98fe46964d89e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10393,
+        "baseBranch": "main",
+        "headBranch": "owner/baeksu-war-v3-freecamera-modular-build-20261026",
+        "baseSha": "5970f5c249d7055a1d1bbd2eaee98fe46964d89e",
+        "headSha": "2a4359bd2261f290345f41b86c92b880312c7917",
+        "mergeCommitSha": "f6a521adf586766b924e9e3bc5df71736cbc4a6a",
+        "mergedAt": "2026-10-26T14:03:46Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b0e9997644490c0eb2f6adeb759dffb926d302a79a13c4f7733d20fc66386879",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/baeksu-war-v3-freecamera-modular-build-20261026",
+        "candidateSha": "2a4359bd2261f290345f41b86c92b880312c7917"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 429,
+        "deletedLineCount": 236,
+        "changedFiles": [
+          ".github/workflows/owner-baeksu-war-private-preview.yml",
+          "roblox-games/baeksu-war/V3-MESH-PROVENANCE.md",
+          "roblox-games/baeksu-war/client/Game.client.luau",
+          "roblox-games/baeksu-war/server/Game.server.luau",
+          "roblox-games/baeksu-war/shared/VisualAssetIds.luau",
+          "roblox-games/baeksu-war/shared/VisualKit.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/baeksu-war-upload-meshes.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-baeksu-war-private-preview.yml",
+          "roblox-games/baeksu-war/client/Game.client.luau",
+          "roblox-games/baeksu-war/server/Game.server.luau",
+          "roblox-games/baeksu-war/shared/VisualAssetIds.luau",
+          "roblox-games/baeksu-war/shared/VisualKit.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/baeksu-war-upload-meshes.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10393",
+        "merge-commit:f6a521adf586766b924e9e3bc5df71736cbc4a6a",
+        "base-main:5970f5c249d7055a1d1bbd2eaee98fe46964d89e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 846
+    "total": 847
   }
 }
