@@ -1,170 +1,149 @@
 #!/usr/bin/env python3
-"""Author original mesh assets off-line. Roblox gameplay never creates Part primitives.
-Meshes are newly authored by Jaewoon, not falsely represented as third-party CC0.
-Generates GLB with real mesh geometry/materials, from Blender-independent trimesh.
-"""
-import os, sys, math
-import numpy as np
-import trimesh
-OUT = sys.argv[1] if len(sys.argv)>1 else '/tmp/baeksu-art'
-os.makedirs(OUT, exist_ok=True)
-scene = None
-counter = 0
-def rgba(hexcode):
-    h=hexcode.lstrip('#')
-    return [int(h[i:i+2],16) for i in (0,2,4)]+[255]
-def add_mesh(mesh,color,name):
-    global counter
-    mesh.visual.vertex_colors=rgba(color)
-    scene.add_geometry(mesh, geom_name=f'{counter:04d}_{name}')
-    counter+=1
-def ball(name,xyz,scale,color,sub=2):
-    mesh=trimesh.creation.icosphere(subdivisions=sub,radius=1)
-    mesh.apply_scale(scale)
-    mesh.apply_translation(xyz)
-    add_mesh(mesh,color,name)
-def block(name,xyz,scale,color):
-    mesh=trimesh.creation.box(extents=scale)
-    mesh.apply_translation(xyz)
-    add_mesh(mesh,color,name)
-def rod(name,a,b,r,color,n=10):
-    a,b=np.array(a),np.array(b)
-    v=b-a
-    if np.linalg.norm(v)<1e-3:return
-    mesh=trimesh.creation.cylinder(radius=r,height=np.linalg.norm(v),sections=n)
-    T=trimesh.geometry.align_vectors([0,0,1],v)
-    mesh.apply_transform(T)
-    mesh.apply_translation((a+b)/2)
-    add_mesh(mesh,color,name)
-def triangle(name,vertices,color):
-    v=np.array(vertices,dtype=float)
-    faces=np.array([[0,i,i+1] for i in range(1,len(v)-1)],dtype=int)
-    mesh=trimesh.Trimesh(vertices=v,faces=faces,process=False)
-    add_mesh(mesh,color,name)
-def head(name,xyz,color,eye_z=.95):
-    ball(name,xyz,(.72,.7,.8),color,3)
-    for side in [-1,1]:
-        ball('eye',(xyz[0]+side*.30,xyz[1]+.20,xyz[2]+eye_z),(.15,.17,.13),'#202f42',2)
-        ball('eye-glint',(xyz[0]+side*.26,xyz[1]+.25,xyz[2]+eye_z+.07),(.055,.065,.04),'#ffffff',2)
-def feet4(c,width,z_back,z_front):
-    for side in [-1,1]:
-        for z in (z_back,z_front):
-            ball('paw',(side*width,-.98,z),(.40,.8,.43),c,2)
-def build_creature(kind):
-    global scene,counter
-    scene=trimesh.Scene();counter=0
-    if kind=='sparrow':
-        ball('feather body',(0,0,0),(1.05,.87,1.3),'#d9b27c',3)
-        head('sparrow head',(0,.70,.8),'#f3d59c')
-        triangle('beak',[(-.33,.65,1.55),(.33,.65,1.55),(0,.43,2.2)],'#f5a644')
-        for side in [-1,1]:
-            ball('wing',(side*.9,.2,-.2),(.8,.27,.95),'#a47755')
-            for j in range(3):
-                triangle('feather',[(side*1,.2,-.3),(side*(1.85+j*.15),.08,-.8-j*.1),(side*1.5,.05,-.8)],'#bf8b5f')
-            rod('bird leg',(side*.43,-.6,.4),(side*.43,-1.65,.65),.13,'#da9852')
-        triangle('tail',[(-.5,.2,-1.1),(.5,.2,-1.1),(0,.08,-2.0)],'#b47e50')
-    elif kind=='ant':
-        ball('head',(0,.25,1.28),(.68,.68,.73),'#845445')
-        ball('thorax',(0,0,0),(.53,.57,.73),'#aa6b56')
-        ball('abdomen',(0,.05,-1.28),(.94,.76,1.03),'#683c35',3)
-        for side in [-1,1]:
-            ball('eye',(side*.44,.55,1.7),(.18,.20,.15),'#181e22')
-            rod('antenna',(side*.35,.74,1.55),(side*.58,1.42,1.85),.09,'#4b2a2d')
-            for j,z in enumerate((.9,0,-.75)):
-                rod('insect thigh',(side*.36,-.1,z),(side*1.36,-.45,z+.4),.12,'#694035')
-                rod('insect shin',(side*1.36,-.45,z+.4),(side*1.58,-1.25,z+.64),.08,'#694035')
-    elif kind=='beetle':
-        ball('chest',(0,-.02,.55),(1.1,.85,1.1),'#305e4e')
-        ball('elytra',(0,.55,-.68),(1.5,1.14,1.65),'#2d8675',3)
-        ball('head',(0,.38,1.55),(.91,.74,.9),'#3b735b')
-        rod('front horn',(0,.87,2.0),(0,1.92,2.25),.22,'#344b3a')
-        rod('horn fork',(-.6,1.93,2.3),(.6,1.93,2.3),.16,'#344b3a')
-        for side in [-1,1]:
-            for z in (-1,0,1):
-                rod('beetle leg',(side*.8,-.55,z),(side*1.9,-.98,z+.25),.20,'#2c4d43')
-    elif kind=='wolf':
-        ball('wolf body',(0,.05,0),(.98,1.01,1.75),'#73828d',3)
-        ball('chest',(0,.25,1.15),(1.12,1.1,1.0),'#8f9da6')
-        head('wolf head',(0,.72,1.92),'#bbc4c8')
-        ball('muzzle',(0,.35,2.66),(.43,.33,.76),'#dde0d8')
-        ball('nose',(0,.45,3.27),(.25,.17,.22),'#242c37')
-        feet4('#5d6c75',.7,-1.1,1.15)
-        for side in [-1,1]:
-            triangle('pointed ears',[(side*.38,1.26,1.85),(side*.82,2.04,1.62),(side*.93,1.31,2)],'#596777')
-        rod('tail',(0,.35,-1.55),(.3,1.35,-2.7),.28,'#8c969e')
-    elif kind=='turtle':
-        ball('body',(0,-.25,0),(1.42,.83,1.7),'#79a97b',3)
-        ball('shell',(0,.42,-.22),(1.72,1.1,1.91),'#4e7660',3)
-        for side in [-1,1]:
-            for z in [-.8,.6]:
-                ball('shell plate',(side*.72,1,-.2+z),(.64,.25,.71),'#7e9c68')
-                ball('foot',(side*1.35,-.9,z),(.56,.55,.69),'#a0ba85')
-        head('turtle head',(0,0,1.69),'#b5ce98')
-        triangle('tail',[(-.25,-.3,-1.7),(.25,-.3,-1.7),(0,-.4,-2.5)],'#76916b')
-    elif kind=='slime':
-        ball('gel dome',(0,-.1,0),(1.6,1.35,1.4),'#63d8bf',3)
-        ball('core',(0,-.2,.8),(.84,.64,.6),'#a4fff1',3)
-        for side in [-1,1]:
-            ball('eye',(side*.55,.28,1.15),(.2,.24,.15),'#173f47')
-        for z in [-.8,.8]:
-            ball('bubble',(.85,.92,z),(.3,.26,.32),'#bcfff2')
-    elif kind=='golem':
-        block('stone torso',(0,.1,0),(2.5,2.8,1.75),'#89796b')
-        block('stone head',(0,2.1,.25),(1.95,1.7,1.6),'#a29683')
-        for side in [-1,1]:
-            ball('shoulder',(side*1.95,.9,0),(.86,.9,.84),'#73695f',2)
-            block('stone arm',(side*2.3,-.25,0),(1.05,2.1,1.0),'#9a8770')
-            block('stone leg',(side*.7,-2,0),(1.0,1.7,1.15),'#786f62')
-            ball('eye',(side*.48,2.18,1.07),(.18,.19,.1),'#e8c95a',2)
-        ball('crystal',(0,1,1.05),(.43,.7,.28),'#6fe9d5',2)
-    elif kind=='dragon':
-        ball('dragon torso',(0,0,0),(1.45,1.27,1.95),'#ae4947',3)
-        head('dragon head',(0,1.08,1.74),'#db7969')
-        ball('long muzzle',(0,.68,2.7),(.67,.45,.97),'#ce7561')
-        for side in [-1,1]:
-            triangle('wing leather',[(side*.8,.85,-.3),(side*4.0,2.5,-.9),(side*2.8,.5,-1.7),(side*3.7,.55,-2.3)],'#7e3e4b')
-            rod('wing bone',(side*.8,.9,-.4),(side*4.0,2.5,-.9),.17,'#f2bb8d')
-            triangle('head horns',[(side*.35,1.65,1.4),(side*1.05,2.6,.6),(side*.8,1.55,1.8)],'#ddbf9e')
-            ball('leg',(side*.85,-1.25,.6),(.50,.98,.52),'#6f373d')
-        for j in range(4):
-            rod('tail',(0,.0,-1.7-j*.6),(0,-.25,-2.5-j*.6),max(.17,.58-j*.11),'#a04d49')
-            triangle('dorsal spike',[(-.4,.85,-.1-j*.7),(.4,.85,-.1-j*.7),(0,1.62,-.45-j*.7)],'#d6ac8d')
-    scene.export(os.path.join(OUT,kind+'.glb'))
-def build_world():
-    global scene,counter
-    # Mesh-based art: a forest tree, house and two castle shapes. Terrain is separate.
-    scene=trimesh.Scene();counter=0
-    block('house body',(0,3.2,0),(7.5,5.5,7.5),'#b58c69')
-    block('door',(0,2.5,3.81),(2.0,3.7,.22),'#50392f')
-    for side in [-1,1]:
-        block('window',(side*2.22,4,3.83),(1.4,1.4,.2),'#f2c77c')
-        block('corner trim',(side*3.62,3.5,side*3.62),(.52,6,.5),'#e6d0a5')
-    for side in [-1,1]:
-        roof=trimesh.creation.box(extents=(4.95,.48,9))
-        roof.apply_transform(trimesh.transformations.rotation_matrix(side*.49,[0,0,1]))
-        roof.apply_translation((side*2.1,6.5,0))
-        add_mesh(roof,'#814b45','sloped roof')
-    scene.export(os.path.join(OUT,'home.glb'))
-    scene=trimesh.Scene();counter=0
-    block('castle core',(0,6,0),(21,12,5),'#8b9caa')
-    block('gate door',(0,4,2.7),(7.0,8,.6),'#6d5244')
-    for side in [-1,1]:
-        block('turret',(side*11.6,8,0),(5.5,16,6),'#8696a7')
-        block('turret crenellation',(side*11.6,17,0),(6.3,2,6.5),'#c5ced6')
-        for j in range(5):
-            block('battlement',(side*(1+j*2),13,0),(1.4,2,5.5),'#afbec9')
-    scene.export(os.path.join(OUT,'gate.glb'))
-    scene=trimesh.Scene();counter=0
-    rod('trunk',(0,0,0),(0,5.6,0),.65,'#90694b')
-    for x,y,z,r in [(-1.5,6,0,2),(1.3,6.3,.3,2),(0,8,0,2.1),(.5,7,-1.6,1.9)]:
-        ball('foliage',(x,y,z),(r,r*.82,r),'#559663',2)
-    scene.export(os.path.join(OUT,'tree.glb'))
-    scene=trimesh.Scene();counter=0
-    ball('rock base',(0,.4,0),(2.3,1.55,2.1),'#a5a5a0',1)
-    ball('slate facets',(.25,1.1,.25),(1.6,.85,1.45),'#7c898e',1)
-    scene.export(os.path.join(OUT,'rock.glb'))
+# 파일명: tools/baeksu-war-author-meshes.py
+# 역할: 임의 모델 생성이 아닌, 검증된 CC0 원본 메시를 그대로 Roblox GLB로 변환한다.
+# 실행: blender --background --disable-autoexec --python tools/baeksu-war-author-meshes.py -- /tmp/baeksu-art
+import bpy
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import sys
+import tempfile
+import urllib.request
+import zipfile
 
-for kind in ('sparrow','ant','beetle','wolf','turtle','slime','golem','dragon'):
-    build_creature(kind)
-build_world()
-print('BAEKSU_WAR_MESH_ASSET_COUNT='+str(len(os.listdir(OUT))))
+ROOT=Path(__file__).resolve().parent.parent
+OUT=Path(sys.argv[sys.argv.index('--')+1]) if '--' in sys.argv else Path('/tmp/baeksu-art')
+OUT.mkdir(parents=True,exist_ok=True)
+ACTORS=json.loads((ROOT/'assets/roblox/actors/manifest.json').read_text())
+WILDLIFE=json.loads((ROOT/'assets/external/simple-rpg/wildlife/manifest.json').read_text())
+PRIORITY=json.loads((ROOT/'assets/external/simple-rpg/priority-v1/manifest.json').read_text())
+EXTERNAL=json.loads((ROOT/'assets/external/simple-rpg/manifest.json').read_text())
+
+# 에셋 역할은 기존 게임 8종을 보존. 유사 후보는 오너의 4차 명시 승인을 따른다.
+# 형식: 라이브러리 출처, 원본 파일, ZIP 내부에서 검색할 실물 메시 이름.
+ROLES={
+ 'sparrow':('wildlife','five-animals.zip','bird'),
+ 'ant':('wildlife','ant.blend','ant'),
+ 'beetle':('wildlife','shellbug.zip','bug'),
+ 'wolf':('wildlife','wolf-eagle.zip','wolf'),
+ 'turtle':('wildlife','turtle.blend','turtle'),
+ 'slime':('actor','quaternius-monsters/FBX/Slime.fbx','Slime'),
+ 'golem':('actor','quaternius-cute/FBX/Cyclops.fbx','Cyclops'),
+ 'dragon':('actor','quaternius-monsters/FBX/Dragon.fbx','Dragon'),
+ 'home':('priority','medieval-house-a.zip','house'),
+ 'gate':('priority','kenney-castles.zip','gate'),
+ 'tree':('actor','quaternius-cute/FBX/Tree.fbx','Tree'),
+ 'rock':('priority','kenney-hexagon-world.zip','stone-rocks'),
+}
+EXPECTED=list(ROLES)
+FORMATS={'.glb','.gltf','.fbx','.obj','.blend'}
+record={}
+def sha(data):
+ return hashlib.sha256(data).hexdigest()
+def download_verified(url,digest):
+ if not url.startswith('https://opengameart.org/sites/default/files/'):
+  raise RuntimeError('UNAPPROVED_DOWNLOAD_SOURCE:'+url)
+ request=urllib.request.Request(url,headers={'User-Agent':'Jaewoon-Game-Asset-Provenance/1.0'})
+ with urllib.request.urlopen(request,timeout=60) as response:
+  data=response.read(70*1024*1024+1)
+ if len(data)>70*1024*1024 or sha(data)!=digest:
+  raise RuntimeError('DOWNLOADED_ASSET_DIGEST_MISMATCH')
+ return data
+def get_source(kind,filename):
+ if kind=='actor':
+  path=ROOT/'assets/roblox/actors/sources'/filename
+  family=filename.split('/')[0]
+  item=next(x for x in ACTORS['sources'] if x['id']==family)
+  record=next(x for x in item['sourceFiles'] if x['path']==path.relative_to(ROOT).as_posix())
+  return path,record['sha256'],item['sourceUrl'],None,item['license'],filename
+ if kind=='wildlife':
+  item=next(x for x in WILDLIFE['packs'] if x['file']==filename)
+  return ROOT/'assets/external/simple-rpg/wildlife'/filename,item['sha256'],item['licenseEvidence'],item['sourceUrl'],item['license'],filename
+ if kind=='priority':
+  item=next(x for x in PRIORITY['packs'] if x['file']==filename)
+  return ROOT/'assets/external/simple-rpg/priority-v1'/filename,item['sha256'],item['licenseSourceUrl'],item['sourceUrl'],item['licenseDeclared'],filename
+ raise RuntimeError('UNKNOWN_SOURCE')
+def choose_zip_model(zipf,target):
+ candidates=[]
+ for entry in zipf.infolist():
+  path=Path(entry.filename)
+  if entry.is_dir() or path.suffix.lower() not in FORMATS or entry.file_size>60*1024*1024:
+   continue
+  if '..' in path.parts or entry.filename.startswith('/'):
+   continue
+  stem=path.stem.lower()
+  wanted=target.lower().replace('_','-')
+  if wanted not in stem.replace('_','-'):
+   continue
+  # 원본 GLB/FBX 우선. 후보 여러 개면 일반 모델을 우선하며 애니메이션 전용 파일은 제외.
+  weight={'.glb':0,'.gltf':1,'.fbx':2,'.blend':3,'.obj':4}[path.suffix.lower()]
+  if stem==wanted:weight-=10
+  if any(x in stem for x in ('animation','walk','run','rig','skeleton','collision')):weight+=8
+  candidates.append((weight,len(path.parts),len(stem),entry.filename))
+ if not candidates:raise RuntimeError('SOURCE_MODEL_NOT_FOUND:'+target)
+ candidates.sort()
+ return candidates[0][3]
+def import_source(path):
+ bpy.ops.wm.read_factory_settings(use_empty=True)
+ ext=path.suffix.lower()
+ if ext=='.blend':
+  bpy.ops.wm.open_mainfile(filepath=str(path),load_ui=False)
+ elif ext=='.fbx':bpy.ops.import_scene.fbx(filepath=str(path))
+ elif ext=='.obj':
+  if hasattr(bpy.ops.wm,'obj_import'):bpy.ops.wm.obj_import(filepath=str(path))
+  else:bpy.ops.import_scene.obj(filepath=str(path))
+ elif ext in ('.glb','.gltf'):bpy.ops.import_scene.gltf(filepath=str(path))
+ else:raise RuntimeError('UNSUPPORTED_MODEL:'+ext)
+ # 원본 장면의 카메라/조명/외부 스크립트는 결과에 넣지 않는다.
+ for ob in list(bpy.data.objects):
+  if ob.type not in ('MESH','ARMATURE','EMPTY'):
+   bpy.data.objects.remove(ob,do_unlink=True)
+ meshes=[o for o in bpy.data.objects if o.type=='MESH' and len(o.data.vertices)>=3 and len(o.data.polygons)>=1]
+ if not meshes:raise RuntimeError('REAL_MESH_NOT_FOUND:'+str(path))
+ for ob in bpy.data.objects:ob.select_set(True)
+ bpy.context.view_layer.objects.active=meshes[0]
+ return sum(len(o.data.polygons) for o in meshes)
+for role,(family,name,needle) in ROLES.items():
+ src,digest,license_url,download_url,license_tag,source_name=get_source(family,name)
+ if license_tag not in ('CC0','CC0-1.0'):
+  raise RuntimeError('LICENSE_NOT_CC0:'+role)
+ data=src.read_bytes() if src.exists() else b''
+ # Git LFS 포인터는 실물 에셋이 아니므로 원본 출처에서 다운로드하고 SHA256을 재검증한다.
+ if sha(data)!=digest:
+  if not download_url:raise RuntimeError('ASSET_SOURCE_MISSING_OR_HASH_FAILED:'+role)
+  data=download_verified(download_url,digest)
+ with tempfile.TemporaryDirectory(prefix='baeksu-cc0-') as tmp:
+  tmpdir=Path(tmp)
+  suffix=Path(name).suffix.lower()
+  if suffix=='.zip':
+   package=tmpdir/'source.zip';package.write_bytes(data)
+   with zipfile.ZipFile(package) as z:
+    match=choose_zip_model(z,needle)
+    # 안전하게 필요한 모델 파일만 꺼내되 OBJ/GLTF의 동반 MTL/텍스처는 허용한다.
+    for info in z.infolist():
+     entry=Path(info.filename)
+     if info.is_dir() or '..' in entry.parts or info.filename.startswith('/') or info.file_size>60*1024*1024:continue
+     if entry.suffix.lower() not in FORMATS.union({'.mtl','.png','.jpg','.jpeg','.webp','.bin'}):continue
+     dst=tmpdir/'unpacked'/entry
+     dst.parent.mkdir(parents=True,exist_ok=True)
+     with z.open(info) as f,dst.open('wb') as o:shutil.copyfileobj(f,o)
+    model=tmpdir/'unpacked'/match
+  else:
+   model=tmpdir/Path(name).name
+   model.write_bytes(data)
+  polygons=import_source(model)
+  target=OUT/(role+'.glb')
+  bpy.ops.export_scene.gltf(filepath=str(target),export_format='GLB',export_apply=True,export_animations=False)
+  output=target.read_bytes()
+  if output[:4]!=b'glTF' or len(output)<1000 or polygons<4:
+   raise RuntimeError('MODEL_CONVERSION_NOT_VERIFIED:'+role)
+  record[role]={'sourceFile':str(src.relative_to(ROOT)),'sourceSha256':digest,
+      'license':'CC0-1.0','licenseEvidence':license_url,'sourceModel':str(model.relative_to(tmpdir)) if model.is_relative_to(tmpdir) else model.name,
+      'modelPolygons':polygons,'glbSha256':sha(output),'bytes':len(output)}
+  print('BAEKSU_CC0_READY:'+role+':'+record[role]['glbSha256'])
+(OUT/'provenance.json').write_text(json.dumps({'version':4,'roles':record},indent=2,ensure_ascii=False)+'\n')
+assert set(record)==set(EXPECTED)
+print('BAEKSU_CC0_MODEL_COUNT='+str(len(record)))
