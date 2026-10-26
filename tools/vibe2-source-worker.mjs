@@ -7498,7 +7498,21 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
           console.log('VIBE2_SELECTED_ASSET_GIT_RESTORE=ATTEMPTED:'+safeId(rel));
         }catch{console.log('VIBE2_SELECTED_ASSET_GIT_RESTORE=FAILED:'+safeId(rel));}
       }
-      const missing=tracked.filter(row=>lfsEligible.has(posix(row.externalAcquisition.localSourcePath))&&!verify(row));
+      const missing=tracked.filter(row=>{
+        const entry=row.externalAcquisition,rel=posix(entry.localSourcePath);
+        if(!lfsEligible.has(rel)||verify(row))return false;
+        if(!directActorSource(entry))return true;
+        // Never silently overwrite a damaged checked-out actor with another binary.
+        // Only an absent file or the exact pinned LFS pointer is recoverable.
+        try{
+          const full=path.resolve(cwd,rel);
+          if(fs.statSync(full).size>256)return false;
+          const pointer=fs.readFileSync(full,'utf8');
+          const m=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(pointer);
+          return Boolean(m&&m[1]===clean(entry.sourceHash).toLowerCase()
+            &&Number(m[2])>256&&Number(m[2])<=104857600);
+        }catch(error){return error?.code==='ENOENT';}
+      });
       if(missing.length){
         // A single targeted LFS request replaces checkout of unrelated game assets.
         const include=[...new Set(missing.map(row=>posix(row.externalAcquisition.localSourcePath)))].sort();
