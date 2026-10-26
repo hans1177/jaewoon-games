@@ -1130,7 +1130,7 @@ export function createDuelCombatMotionLoadout({
     WAND:'STAFF_OR_WAND',
     SHIELD:'SHIELD_SWORD'
   });
-  if(!['HUMANOID','HUMANOID_UNDEAD','BOSS_BIPED','BIPED','R15','R6'].includes(upper(bodyPlan)))
+  if(!['HUMANOID','HUMANOID_UNDEAD','HEAVY_BIPED','BOSS_BIPED','BIPED','R15','R6'].includes(upper(bodyPlan)))
     throw Error('BIPED_COMBAT_RIG_REQUIRED:'+upper(bodyPlan));
   const requested=upper(weaponFamily)||'UNARMED';
   const resolvedWeapon=aliases[requested]||requested;
@@ -3984,8 +3984,9 @@ export function createRobloxCharacterMotionPlan({
     archetype,
     recentMotionIds
   });
-  const humanoid=/HUMANOID|BIPED|R15|R6/.test(upper(bodyPlan)+' '+upper(rigProfile))
-    && !/QUADRUPED|CENTAUR|ARACHNID|HEXAPOD|SERPENT/.test(upper(bodyPlan));
+  // rigProfile=R15만으로 거미·비행·수중 생물까지 사람형으로 분류하지 않는다.
+  // 실질적인 이족 신체 구조가 선언된 경우에만 30+30 공통 연계에 연결한다.
+  const humanoid=['HUMANOID','HUMANOID_UNDEAD','HEAVY_BIPED','BOSS_BIPED','BIPED','R15','R6'].includes(upper(bodyPlan));
   const limbCount=studio.limbCount||procedural.limbCount||(/QUADRUPED/.test(upper(bodyPlan))?4:2);
   const requiredStates=humanoid
     ?['IDLE','WALK','JOG','RUN','START','STOP','TURN','ATTACK','HIT','DEATH']
