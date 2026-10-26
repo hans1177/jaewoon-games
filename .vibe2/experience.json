@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -165933,39 +165931,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4a06cbcc02e267b84126644f",
-          "taskId": "fifty-days-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "fifty-days",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:783d79f29eca7de8f7219365710828ec4f8c3eb6",
-            "actions-run:40321528867",
-            "reservation-id:40321528867:1",
-            "capability-application-sample:3f398cf08cdf6727fbc6"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_ed9ae00c1af501c3edc5c657",
           "taskId": "gem-survivor-existing-web-assessment-v1",
           "workKey": null,
@@ -168036,6 +168001,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:8ae70405800908a92f4c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1f7e49b0bdb97dc6b2b9c03b",
+          "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "core-clash-4v4",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:101c038db7b8d447cba0"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172965,39 +172963,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_cb6c239c150f1b0eb7759677",
-          "taskId": "wild-survival-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "wild-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:e8147986956020ce4520"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_3a045fa0d723cbe6ac056697",
           "taskId": "cat-step-web-startup-spatial-repair-v1",
           "workKey": null,
@@ -175068,6 +175033,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:24238408c9e87078c397"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f13c9575a23bf84ddfb9b065",
+          "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "core-clash-4v4",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:101c038db7b8d447cba0"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189468,39 +189466,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_bd402295485211080598de87",
-          "taskId": "fifty-days-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "fifty-days",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:8fec501826e190fa019e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_fef915be901e0b4c9df8fd3c",
           "taskId": "gem-survivor-existing-web-assessment-v1",
           "workKey": null,
@@ -191571,6 +191536,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:24238408c9e87078c397"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f0367bb020c476940649fed8",
+          "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "core-clash-4v4",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:101c038db7b8d447cba0"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196519,39 +196517,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_13184328aef084cec3ce8247",
-          "taskId": "fifty-days-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "fifty-days",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:8fec501826e190fa019e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_25dcc5df2210a55d088d185c",
           "taskId": "gem-survivor-existing-web-assessment-v1",
           "workKey": null,
@@ -198622,6 +198587,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:24238408c9e87078c397"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_aece1c4826166659002600e5",
+          "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "core-clash-4v4",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:101c038db7b8d447cba0"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201465,39 +201463,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_de761bdaaaf32f9414f5339e",
-          "taskId": "star-frontier-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "star-frontier",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:cf4ae8bc4df949b273eef4f7b336f92a58ae6ad8",
-            "actions-run:40319203557",
-            "reservation-id:40319203557:1",
-            "capability-application-sample:eb894f1bcee6f4642192"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_e1b0aa3966ee900d6312de45",
           "taskId": "tower-choice-rpg-web-library-cc0-replacement-v1",
           "workKey": null,
@@ -203568,6 +203533,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:24238408c9e87078c397"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7cd06a461d3681125abec17e",
+          "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "core-clash-4v4",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:101c038db7b8d447cba0"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -303396,39 +303394,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_2b85963cabaab0af8558657a",
-          "taskId": "moon-ruins-studio-evolution-roblox-stability-v2",
-          "workKey": null,
-          "gameId": "moon-ruins",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:63bf9b19914f9a343174"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_c2d50c16ad0f105c9b6341ee",
           "taskId": "party-rpg-studio-evolution-roblox-stability-v2",
           "workKey": null,
@@ -305499,6 +305464,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:47d7f70d5d6c79550fef"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5fae94fce7fb2d8af6ab3a96",
+          "taskId": "kingshot-ad-studio-evolution-roblox-usability-v4",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:1a717e0e235e3456c313"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -312448,39 +312446,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_1e32925f17cb949583682239",
-          "taskId": "moon-ruins-studio-evolution-roblox-stability-v2",
-          "workKey": null,
-          "gameId": "moon-ruins",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:63bf9b19914f9a343174"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_eda996e0003fe5bdae2f31d3",
           "taskId": "party-rpg-studio-evolution-roblox-stability-v2",
           "workKey": null,
@@ -314551,6 +314516,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:47d7f70d5d6c79550fef"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ffbf63fbe66d8086655bee7b",
+          "taskId": "kingshot-ad-studio-evolution-roblox-usability-v4",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:1a717e0e235e3456c313"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -335348,39 +335346,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_9ba9767461790519ac800d56",
-          "taskId": "moon-ruins-studio-evolution-roblox-stability-v2",
-          "workKey": null,
-          "gameId": "moon-ruins",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:63bf9b19914f9a343174"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_05ad6cfd27458fe95dc05cc5",
           "taskId": "party-rpg-studio-evolution-roblox-stability-v2",
           "workKey": null,
@@ -337451,6 +337416,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:47d7f70d5d6c79550fef"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a3d6a1ec9044fff78b7bbbf6",
+          "taskId": "kingshot-ad-studio-evolution-roblox-usability-v4",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:1a717e0e235e3456c313"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -341028,39 +341026,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_0955bc7f2bfc40a4a9ae1caa",
-          "taskId": "moon-ruins-studio-evolution-roblox-stability-v2",
-          "workKey": null,
-          "gameId": "moon-ruins",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:63bf9b19914f9a343174"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_300d1575f67010169b8e4f18",
           "taskId": "party-rpg-studio-evolution-roblox-stability-v2",
           "workKey": null,
@@ -343131,6 +343096,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:47d7f70d5d6c79550fef"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3bdea0158dc00946e50a8d75",
+          "taskId": "kingshot-ad-studio-evolution-roblox-usability-v4",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:1a717e0e235e3456c313"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -405466,39 +405464,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_0be478b1f33e6b9251c8d800",
-          "taskId": "moon-ruins-studio-evolution-roblox-stability-v2",
-          "workKey": null,
-          "gameId": "moon-ruins",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9a2016ef91b1c1c380162224b57ec36d67420660",
-            "actions-run:40317089964",
-            "reservation-id:40317089964:1",
-            "capability-application-sample:63bf9b19914f9a343174"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_7437de2faac9b4e69d9059b9",
           "taskId": "party-rpg-studio-evolution-roblox-stability-v2",
           "workKey": null,
@@ -407569,6 +407534,39 @@
             "actions-run:40333027718",
             "reservation-id:40333027718:1",
             "capability-application-sample:47d7f70d5d6c79550fef"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a8dead25f08cbdc49e5876b7",
+          "taskId": "kingshot-ad-studio-evolution-roblox-usability-v4",
+          "workKey": null,
+          "gameId": "kingshot-ad",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f42d2937c4ca20faa336af84",
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_0a17c87ebe16c73e38747aab"
+          ],
+          "evidence": [
+            "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+            "actions-run:40340748710",
+            "reservation-id:40340748710:1",
+            "capability-application-sample:1a717e0e235e3456c313"
           ],
           "observedAt": null,
           "rawCodeStored": false,
