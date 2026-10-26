@@ -5575,6 +5575,7 @@ test('Roblox native CC0 selector uses only an exact registered GLB blob and stil
    displayName:'Chef',file:'Chef.glb',sourcePath:relative,sourceFormat:'GLB',
    family:'CHARACTER',roles:['chef'],sourceOnly:true,gameApplied:false,
    sha256:sourceHash,repositoryGitBlobSha:blobSha,licenseDeclared:'CC0-1.0',
+   sourceUrl:'https://kenney.nl/assets/food-kit',
    licenseEvidenceUrl:'https://kenney.nl/assets/food-kit'};
   const select=(target='roblox')=>{
    const result=buildAssetSupplyDecisionSummary({repoRoot:root,gameId:'chef-qa',
