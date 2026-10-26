@@ -1599,9 +1599,11 @@ test('shared Roblox UI renders live inventory icon fallback, equipped badges, se
   for(const src of [slot,icon]) {
     assert.match(src,/FallbackGlyph/);
     assert.match(src,/GetPropertyChangedSignal\("Image"\)/);
-    assert.match(src,/\.Visible = .*Image (?:==|~=) ""/);
     assert.doesNotMatch(src,/rbxassetid:\/\//i);
   }
+  assert.match(slot,/glyph.Visible = icon.Image == ""/);
+  assert.match(icon,/fallback.Visible = absent/);
+  assert.match(icon,/button:SetAttribute\("IconFallbackActive", absent\)/);
   assert.match(slot,/StateBadge/);
   assert.match(slot,/RarityRail/);
   assert.match(slot,/options\.locked == true/);
