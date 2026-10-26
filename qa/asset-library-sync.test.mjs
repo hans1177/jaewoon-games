@@ -853,3 +853,21 @@ test('로블록스 CC0 캐릭터 86종과 공용 원본 111개는 실제 바이�
   assert.match(pack.licenseEvidenceUrl,/^https:\/\//);
  }
 });
+
+
+test('common Roblox UI inspector and toy material detail stays game-state bound',()=>{
+ const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const mats=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
+ const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+ const begin=ui.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)');
+ const end=ui.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)',begin);
+ assert.ok(begin>=0&&end>begin);
+ const inv=ui.slice(begin,end);
+ for(const name of ['SelectedItemDetail','SelectedItemName','SelectedItemMeta','SelectedItemDescription','BoundSelectedItemId','InventoryEmptyMessage','BoundVisibleItemCount'])assert.ok(inv.includes(name),name);
+ assert.ok(inv.includes('options.onSelect(current.id,current)'));
+ assert.ok(inv.includes('slot.Active=row.id~=nil and row.locked~=true'));
+ for(const name of ['FallbackGlyph','IconSelected','IconLocked'])assert.ok(ui.includes(name),name);
+ for(const name of ['TOY_PLASTIC','TOY_STUDDED','SurfaceStudsEnabled','SurfacePaletteVariant','PreserveAuthoredTint','preservePhysics=true','atomCount = 27'])assert.ok(mats.includes(name),name);
+ assert.ok(worker.includes('RobloxCommonUI.CreateInventoryFullScreen and the returned Sync(items)'));
+ assert.ok(worker.includes('SurfaceStudsEnabled=true is only valid for Part.TopSurface'));
+});
