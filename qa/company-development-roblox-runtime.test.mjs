@@ -1583,3 +1583,54 @@ test('new Roblox game creation connects native styled UI without inventing inven
   assert.doesNotMatch(client,/Instance\.new\("Inventory"\)/,'do not create gameplay inventory absent from the approved seed');
   assert.ok(compiled.result.implementationNotes.some(x=>x.includes('new-game Roblox creation renders bounded UICorner')));
 });
+
+
+test('common native inventory detail, image fallback and gated toy studs preserve game authority',()=>{
+  const ui=fs.readFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),'utf8');
+  const material=fs.readFileSync(new URL('../assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',import.meta.url),'utf8');
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const slotStart=ui.indexOf('function RobloxCommonUI.CreateInventorySlot(options)');
+  const slotEnd=ui.indexOf('function RobloxCommonUI.CreateTooltip(options)',slotStart);
+  const slot=ui.slice(slotStart,slotEnd);
+  assert.ok(slotStart>=0&&slotEnd>slotStart,'native shared slot owner');
+  for(const token of ['IconFallback','RarityStripe','ItemStateBadge','NoInventedIconAsset','UpdateInventorySlot','BoundFromGameState'])
+    assert.ok(slot.includes(token),'inventory slot capability '+token);
+  for(const token of ['item.quantity or item.count','item.equipped == true','item.locked == true','item.glyph or item.name','icon.Visible = image ~= ""','fallback.Visible = image == ""','ITEM_RARITY_COLOR[rarity]'])
+    assert.ok(slot.includes(token),'real item state '+token);
+  assert.match(slot,/OwnsInventoryAuthority", false/);
+  assert.match(slot,/OwnsEquipAuthority", false/);
+  for(const token of ['["희귀"]','["전설"]','["신화"]'])
+    assert.ok(ui.includes(token),'Korean item tier '+token);
+  const icons=ui.slice(ui.indexOf('function RobloxCommonUI.CreateIconButton(options)'),
+    ui.indexOf('function RobloxCommonUI.CreateDialogueAssistantButton(options)'));
+  assert.match(icons,/IconGlyphFallback/);
+  assert.match(icons,/button\.Image == ""/);
+  assert.match(icons,/NoInventedIconAsset/);
+  const inventory=ui.slice(ui.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)'),
+    ui.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)'));
+  assert.match(inventory,/RobloxCommonUI\.UpdateInventorySlot\(slot, row,/);
+  assert.match(inventory,/local selectedRow=nil/);
+  assert.match(inventory,/GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+  assert.match(inventory,/SelectedItemDetail/);
+  assert.match(inventory,/InventoryInputBound/);
+  assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
+  assert.match(inventory,/OwnsSaveAuthority",false/);
+  assert.match(inventory,/OwnsRemoteAuthority",false/);
+  assert.doesNotMatch(inventory,/FireServer\(/,'inventory renderer cannot invent purchases or equips');
+  const applied=material.slice(material.indexOf('function RobloxCommonMaterials.ApplyAuthoredSurface'));
+  assert.match(material,/TOY_PLASTIC = table\.freeze/);
+  assert.match(material,/TOY_STUDDED = table\.freeze/);
+  assert.match(applied,/SurfaceRole/);
+  assert.match(applied,/SurfaceStudsEnabled/);
+  assert.match(applied,/part\.Shape==Enum\.PartType\.Block and part\.Anchored/);
+  assert.match(applied,/if atom=="TOY_STUDDED" and not studRequested then return false end/);
+  assert.match(applied,/Enum\.SurfaceType\.Studs/);
+  assert.match(applied,/PreviousTopSurfaceName/);
+  assert.match(applied,/ToyStudRuntimeVerified",false/);
+  assert.match(material,/preservePhysics=true/);
+  assert.match(worker,/RobloxCommonUI\.UpdateInventorySlot/);
+  assert.match(worker,/anchored Part\.Shape==Block/);
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
+  assert.match(bootstrap,/assets\/roblox\/common-materials-v1\/RobloxCommonMaterials\.luau/);
+});
