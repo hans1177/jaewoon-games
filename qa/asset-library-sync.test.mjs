@@ -385,10 +385,12 @@ test('real inventory search sort and category controls filter owner data without
  assert.match(inventory,/if not table\.find\(filterNames,currentFilter\)then currentFilter=filterNames\[1\]or"전체"end/);
  assert.match(inventory,/search:GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
  assert.match(inventory,/sort\.Activated:Connect\(function\(\)/);
- assert.match(inventory,/sortByName=not sortByName/);
+ assert.match(inventory,/sortByName=false;sortByRarity=true/);
+ assert.match(inventory,/sortByRarity=false/);
+ assert.match(inventory,/sortByName=true/);
  assert.match(inventory,/table\.sort\(shown,function\(left,right\)/);
  assert.match(inventory,/currentFilter=="전체"or currentFilter==category/);
- assert.match(inventory,/string\.find\(name,query,1,true\)/);
+ assert.match(inventory,/string\.find\(searchable,query,1,true\)/);
  assert.match(inventory,/local current=shown\[index\]/);
  assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
  assert.match(inventory,/selectedId=current\.id/);
@@ -423,7 +425,9 @@ test('Vibe common character equipment inventory and trading screens sync exact o
  assert.match(equipment,/row\.equipped==true/);
  assert.match(equipment,/if row and row\.id and row\.locked~=true and type\(options\.onEquip\)=="function"then/);
  assert.match(equipment,/options\.onEquip\(row\.id,row\)/);
- assert.match(inventory,/slot:SetAttribute\("BoundItemId",tostring\(row\.id or ""\)\)/);
+ assert.match(inventory,/RobloxCommonUI.UpdateInventorySlot\(slot,row,\{theme=theme,selected=/);
+ const paint=script.slice(script.indexOf("function RobloxCommonUI.UpdateInventorySlot("),script.indexOf("function RobloxCommonUI.CreateTooltip("));
+ assert.match(paint,/slot:SetAttribute\("BoundItemId", tostring\(item\.id or ""\)\)/);
  assert.match(inventory,/local current=shown\[index\]/);
  assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
  assert.match(inventory,/if type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
