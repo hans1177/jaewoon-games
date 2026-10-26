@@ -1734,7 +1734,11 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       // 함수 본문이나 규칙을 추측하지 않고 누락된 디스패치 항목만 원래 테이블에 생성한다.
       const code=executableText(source,'luau');
       const configRelative='shared/GameConfig.luau',configFile=path.resolve(sourceRoot,configRelative);
-      const tables=[...code.matchAll(/^local\s+handlers\s*=\s*\{([^{}]*)\}/gm)];
+      // [유연한 호출 계약] 실제 이벤트와 행동표 이름을 기존 검증 경로에서 캡처한다.
+      const dispatcher=/([A-Za-z_][A-Za-z_0-9]*)\.OnServerEvent:Connect\(function\(player, (actionId|action)\)\n  if typeof\(\2\) ~= "string" then return end\n  local handler = ([A-Za-z_][A-Za-z_0-9]*)\[\2\]\n  if typeof\(handler\) ~= "function" then return end\n  local now = os\.clock\(\)\n  local previous = lastAction\[player\] or 0\n  if now - previous < Config\.RateLimitSeconds then return end\n  lastAction\[player\] = now\n  handler\(player\)\n(?:  broadcastMultiplayerSync\(player\)\n)?end\)/g;
+      const dispatchers=[...source.matchAll(dispatcher)].filter(row=>code.slice(row.index,row.index+row[1].length)===row[1]);
+      const handlerTable=dispatchers[0]?.[3]||'handlers';
+      const tables=[...code.matchAll(new RegExp('^local\\s+'+handlerTable+'\\s*=\\s*\\{([^{}]*)\\}','gm'))];
       const configBinding='local Config = require(Shared:WaitForChild("GameConfig"))';
       const sharedBinding='local Shared = ReplicatedStorage:WaitForChild("Shared")';
       const storageBinding='local ReplicatedStorage = game:GetService("ReplicatedStorage")';
@@ -1744,19 +1748,17 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       });
       if(tables.length===1&&safeImports&&fs.existsSync(configFile)&&!fs.lstatSync(configFile).isSymbolicLink()
         &&fs.realpathSync(configFile).startsWith(root+path.sep)
-        &&[...code.matchAll(/\bhandlers\s*=(?!=)/g)].length===1
-        &&[...code.matchAll(/\bhandlers\b/g)].length===2
+        &&[...code.matchAll(new RegExp('\\b'+handlerTable+'\\s*=(?!=)','g'))].length===1
+        &&[...code.matchAll(new RegExp('\\b'+handlerTable+'\\b','g'))].length===2
         &&[...code.matchAll(/\bConfig\s*=(?!=)/g)].length===1
         &&[...code.matchAll(/\bShared\s*=(?!=)/g)].length===1
         &&[...code.matchAll(/\bReplicatedStorage\s*=(?!=)/g)].length===1
         &&!/\bConfig\s*\.\s*Actions\s*(?:=|(?:\.[A-Za-z_]\w*|\[[^\]\n]*\])\s*=)/.test(code)){
         const configSource=fs.readFileSync(configFile,'utf8');
         const configCode=executableText(configSource,'luau');
-        const actionTables=[...configCode.matchAll(/\bActions\s*=\s*\{/g)];
+        const actionTables=[...configCode.matchAll(/\bActions\s*=\s*(table\.freeze\(\s*)?\{/g)];
         const configTables=[...configCode.matchAll(/^local\s+Config\s*=\s*\{/gm)];
         const table=tables[0],tableBodyStart=table.index+table[0].indexOf('{')+1;
-        const dispatcher=/remote\.OnServerEvent:Connect\(function\(player, (actionId|action)\)\n  if typeof\(\1\) ~= "string" then return end\n  local handler = handlers\[\1\]\n  if typeof\(handler\) ~= "function" then return end\n  local now = os\.clock\(\)\n  local previous = lastAction\[player\] or 0\n  if now - previous < Config\.RateLimitSeconds then return end\n  lastAction\[player\] = now\n  handler\(player\)\n(?:  broadcastMultiplayerSync\(player\)\n)?end\)/g;
-        const dispatchers=[...source.matchAll(dispatcher)].filter(row=>code.slice(row.index,row.index+6)==='remote');
         if(configSource.length<=1000000&&actionTables.length===1&&configTables.length===1&&dispatchers.length===1
           &&dispatchers[0].index>table.index+table[0].length
           &&source.indexOf(storageBinding)<source.indexOf(sharedBinding)&&source.indexOf(sharedBinding)<source.indexOf(configBinding)
@@ -1782,29 +1784,51 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           const approved=new Map(),existing=new Map();
           const prefix=configCode.slice(configStart,actionTable.index);
           let valid=actionTable.index>configStart&&actionEnd>start&&actionEnd<configEnd
+            &&(!actionTable[1]||/^\s*\)/.test(configCode.slice(actionEnd+1)))
             &&[...prefix.matchAll(/\{/g)].length===[...prefix.matchAll(/\}/g)].length;
-          const actionLines=actionBody.split('\n'),actionCodeLines=executableText(actionBody,'luau').split('\n');
-          for(let index=0;index<actionLines.length;index++){
-            const line=actionLines[index];
-            if(!line.trim()||/^\s*--[^[]/.test(line))continue;
-            if(recordActions){
-              // 승인 목록은 실행하지 않는다. 리터럴 레코드의 유일한 Id만 읽는다.
-              const record=/^\s*\{([^{}]*)\}\s*,\s*(?:--[^\n]*)?$/.exec(line);
-              if(!record||!actionCodeLines[index].trim()){valid=false;break;}
-              const fields=new Map();let offset=0;
+          if(recordActions){
+            // 여러 줄·주석·문자열 속 쉼표/중괄호도 실행하지 않고 구문 경계로 분리한다.
+            const recordCode=executableText(actionBody,'luau');let cursor=0;
+            for(const record of recordCode.matchAll(/\{([^{}]*)\}/g)){
+              const end=record.index+record[0].length,separator=/^\s*,/.exec(recordCode.slice(end));
+              if(!/^\s*$/.test(recordCode.slice(cursor,record.index))||!separator){valid=false;break;}
+              cursor=end+separator[0].length;
+              const raw=actionBody.slice(record.index+1,end-1),fields=new Map();let offset=0;
               const field=/\s*([A-Za-z_][A-Za-z_0-9]*)\s*=\s*("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[+-]?\d+(?:\.\d+)?|true|false|nil)\s*(?:,\s*|$)/gy;
-              while(offset<record[1].length&&record[1].slice(offset).trim()){
-                field.lastIndex=offset;const item=field.exec(record[1]);
+              while(offset<raw.length&&raw.slice(offset).trim()){
+                field.lastIndex=offset;const item=field.exec(raw);
                 if(!item||fields.has(item[1])){valid=false;break;}
                 fields.set(item[1],item[2]);offset=field.lastIndex;
               }
               const id=/^(["'])([A-Za-z_][A-Za-z_0-9-]*)\1$/.exec(fields.get('Id')||'')?.[2];
               if(!valid||!id||approved.has(id)){valid=false;break;}
-              approved.set(id,id);continue;
+              approved.set(id,id);
             }
-            const row=/^\s*([A-Za-z_][A-Za-z_0-9]*)\s*=\s*(["'])([A-Za-z_][A-Za-z_0-9-]*)\2\s*,\s*(?:--[^\n]*)?$/.exec(line);
-            if(!row||!actionCodeLines[index].trim()||approved.has(row[1])||[...approved.values()].includes(row[3])){valid=false;break;}
-            approved.set(row[1],row[3]);
+            if(!/^\s*$/.test(recordCode.slice(cursor)))valid=false;
+          }else{
+            const actionLines=actionBody.split('\n'),actionCodeLines=executableText(actionBody,'luau').split('\n');
+            for(let index=0;index<actionLines.length;index++){
+              const line=actionLines[index];
+              if(!line.trim()||/^\s*--[^[]/.test(line))continue;
+              const row=/^\s*([A-Za-z_][A-Za-z_0-9]*)\s*=\s*(["'])([A-Za-z_][A-Za-z_0-9-]*)\2\s*,\s*(?:--[^\n]*)?$/.exec(line);
+              if(!row||!actionCodeLines[index].trim()||approved.has(row[1])||[...approved.values()].includes(row[3])){valid=false;break;}
+              approved.set(row[1],row[3]);
+            }
+          }
+          const functions=inspectSourceFunctions(source,{language:'luau'}),contracts=new Map(),constants=new Map(),requiredConstants=new Set();
+          // 타입은 지우거나 재작성하지 않는다. 실제 매개변수 이름과 인자 수만 읽는다.
+          for(const fn of functions){
+            const header=/^local\s+function\s+([A-Za-z_][A-Za-z_0-9]*)\(([^)]*)\)/.exec(source.slice(fn.start,fn.end));
+            if(!header)continue;
+            const parts=header[2].trim()?header[2].split(','):[];
+            const parameters=parts.map(part=>/^\s*([A-Za-z_][A-Za-z_0-9]*)\s*(?::\s*[A-Za-z_][A-Za-z_0-9.]*(?:\?)?)?\s*$/.exec(part)?.[1]);
+            if(parameters.every(Boolean)&&new Set(parameters).size===parameters.length)contracts.set(fn.name,{parameters});
+          }
+          for(const row of source.matchAll(/^local\s+([A-Za-z_][A-Za-z_0-9]*)(?:\s*:\s*string)?\s*=\s*(["'])([A-Za-z_][A-Za-z_0-9-]*)\2[ \t]*(?:--[^\n]*)?$/gm)){
+            if(code.slice(row.index,row.index+5)==='local'
+              &&[...code.matchAll(new RegExp('\\b'+row[1]+'\\s*(?::\\s*string\\s*)?=(?!=)','g'))].length===1){
+              constants.set(row[1],{value:row[3],at:row.index});
+            }
           }
           const body=source.slice(tableBodyStart,tableBodyStart+table[1].length);
           const bodyLines=body.split('\n'),bodyCodeLines=executableText(body,'luau').split('\n');
@@ -1812,16 +1836,17 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             const line=bodyLines[index];
             if(!line.trim()||/^\s*--[^[]/.test(line))continue;
             const row=recordActions
-              ?/^\s*\[(["'])([A-Za-z_][A-Za-z_0-9-]*)\1\]\s*=\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*(?:--[^\n]*)?$/.exec(line)
+              ?/^\s*\[(?:(["'])([A-Za-z_][A-Za-z_0-9-]*)\1|([A-Za-z_][A-Za-z_0-9]*))\]\s*=\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*(?:--[^\n]*)?$/.exec(line)
               :/^\s*\[Config\.Actions\.([A-Za-z_][A-Za-z_0-9]*)\]\s*=\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*(?:--[^\n]*)?$/.exec(line);
-            const key=recordActions?row?.[2]:row?.[1],name=recordActions?row?.[3]:row?.[2];
+            const key=recordActions?(row?.[2]||constants.get(row?.[3])?.value):row?.[1],name=recordActions?row?.[4]:row?.[2];
             if(!row||!bodyCodeLines[index].trim()||!approved.has(key)||existing.has(key)){valid=false;break;}
+            if(recordActions&&row[3])requiredConstants.add(row[3]);
             existing.set(key,name);
           }
-          const functions=inspectSourceFunctions(source,{language:'luau'}),additions=[],bindings=[];
+          const additions=[],bindings=[],identities=new Map();
           const outer=code.split('');
           for(const fn of functions)for(let at=fn.start;at<fn.end;at++)if(outer[at]!=='\n')outer[at]=' ';
-          const positions=[...new Set([...functions.map(fn=>fn.start),table.index])].sort((a,b)=>a-b);
+          const positions=[...new Set([...functions.map(fn=>fn.start),...[...constants.values()].map(row=>row.at),table.index])].sort((a,b)=>a-b);
           const tokens=[...outer.join('').matchAll(/\b(?:function|if|elseif|for|while|do|repeat|until|end)\b/g)];
           const topLevel=new Set(),stack=[];let tokenIndex=0,pendingDo=0;
           for(const position of positions){
@@ -1835,37 +1860,77 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             }
             if(stack.length===0)topLevel.add(position);
           }
+          for(const symbol of requiredConstants){
+            const constant=constants.get(symbol);
+            if(!constant||!topLevel.has(constant.at)||constant.at>=table.index
+              ||functions.some(fn=>fn.start<constant.at&&fn.end>constant.at))valid=false;
+          }
+          // 기존 상태 쓰기의 호출 경로를 고정점으로 전파한다. 순환 호출만으로는 근거가 생기지 않는다.
+          const writers=new Map(),writerFunctions=functions.filter(fn=>contracts.get(fn.name)?.parameters.length===3
+            &&topLevel.has(fn.start)&&fn.end<table.index
+            &&!functions.some(parent=>parent!==fn&&parent.start<fn.start&&parent.end>fn.start)
+            &&[...code.matchAll(new RegExp('\\bfunction\\s+'+fn.name+'\\s*\\(','g'))].length===1
+            &&!new RegExp('\\b'+fn.name+'\\s*=(?!=)').test(code)
+            &&contracts.get(fn.name).parameters.slice(0,2).every(parameter=>!new RegExp('\\b'+parameter+'\\s*=(?!=)').test(fn.code)));
+          for(const fn of writerFunctions){
+            const [actor,key]=contracts.get(fn.name).parameters;
+            if(new RegExp('\\b'+actor+':SetAttribute\\(\\s*'+key+'\\s*,').test(fn.code))writers.set(fn.name,[fn.name]);
+          }
+          for(let pass=0;pass<writerFunctions.length;pass++){
+            let changed=false;
+            for(const fn of writerFunctions){
+              if(writers.has(fn.name))continue;
+              const [actor,key]=contracts.get(fn.name).parameters;
+              for(const child of writerFunctions){
+                const chain=writers.get(child.name);
+                if(!chain||child.end>fn.start||chain.includes(fn.name))continue;
+                if(new RegExp('\\b'+child.name+'\\(\\s*'+actor+'\\s*,\\s*'+key+'\\s*,').test(fn.code)){
+                  writers.set(fn.name,[fn.name,...chain]);changed=true;break;
+                }
+              }
+            }
+            if(!changed)break;
+          }
           for(const [key,id] of approved){
             if(existing.has(key))continue;
             const matches=functions.filter(fn=>{
               if(!recordActions)return fn.name.toLowerCase()===key.toLowerCase();
-              const markers=[...fn.body.matchAll(/\bplayer:SetAttribute\(\s*(["'])LastApprovedScope\1\s*,\s*(["'])([A-Za-z_][A-Za-z_0-9-]*)\2\s*\)/g)]
-                .filter(row=>fn.code.slice(row.index,row.index+6)==='player'&&!/\bfunction\b/.test(fn.code.slice(0,row.index)));
-              return markers.length===1&&markers[0][3]===id;
+              const parameters=contracts.get(fn.name)?.parameters;
+              if(parameters?.length!==1)return false;
+              const actor=parameters[0];
+              const marker=new RegExp('\\b'+actor+':SetAttribute\\(\\s*(["\\x27])LastApprovedScope\\1\\s*,\\s*(?:(["\\x27])([A-Za-z_][A-Za-z_0-9-]*)\\2|([A-Za-z_][A-Za-z_0-9]*))\\s*\\)','g');
+              const markers=[...fn.body.matchAll(marker)].filter(row=>fn.code.slice(row.index,row.index+actor.length)===actor
+                &&!/\bfunction\b/.test(fn.code.slice(0,row.index))).map(row=>{
+                  const constant=constants.get(row[4]);
+                  const resolved=row[3]||(constant&&topLevel.has(constant.at)&&constant.at<fn.start
+                    &&!functions.some(scope=>scope.start<constant.at&&scope.end>constant.at)?constant.value:null);
+                  return {id:resolved,symbol:row[4]||null};
+                });
+              if(markers.length===1&&markers[0].id===id){identities.set(fn.name,markers[0]);return true;}
+              return false;
             });
             if(matches.length!==1)continue;
             const fn=matches[0],name=fn.name;
-            if(!new RegExp('^local\\s+function\\s+'+name+'\\(player\\)').test(source.slice(fn.start,fn.end))
+            if(contracts.get(name)?.parameters.length!==1
               ||fn.end>table.index||!topLevel.has(fn.start)||functions.some(parent=>parent!==fn&&parent.start<fn.start&&parent.end>fn.start)
               ||[...code.matchAll(new RegExp('\\bfunction\\s+'+name+'\\s*\\(','g'))].length!==1
               ||new RegExp('\\b'+name+'\\s*=(?!=)').test(code)
+              ||new RegExp('\\b'+contracts.get(name).parameters[0]+'\\s*=(?!=)').test(fn.code)
               ||/(?:save|load|admin|delete|shutdown|initialize|reset)/i.test(name))continue;
             const stateWrites=[];
             if(recordActions){
+              const actor=contracts.get(name).parameters[0];
               // 행동 ID 마커만으로는 게임 로직 증거가 아니다. 실제 상태 쓰기까지 추적한다.
-              for(const row of fn.body.matchAll(/\bplayer:SetAttribute\(\s*(["'])([A-Za-z_][A-Za-z_0-9]*)\1\s*,/g)){
-                if(fn.code.slice(row.index,row.index+6)==='player')stateWrites.push({attribute:row[2],function:name,via:'DIRECT_PLAYER_ATTRIBUTE'});
+              const direct=new RegExp('\\b'+actor+':SetAttribute\\(\\s*(["\\x27])([A-Za-z_][A-Za-z_0-9]*)\\1\\s*,','g');
+              for(const row of fn.body.matchAll(direct)){
+                if(fn.code.slice(row.index,row.index+actor.length)===actor)stateWrites.push({attribute:row[2],function:name,via:'DIRECT_PLAYER_ATTRIBUTE'});
               }
-              for(const helper of functions){
-                const signature=/^local\s+function\s+([A-Za-z_][A-Za-z_0-9]*)\(player,\s*([A-Za-z_][A-Za-z_0-9]*),\s*([A-Za-z_][A-Za-z_0-9]*)\)/.exec(source.slice(helper.start,helper.end));
-                if(!signature||helper.end>fn.start||!topLevel.has(helper.start)
-                  ||functions.some(parent=>parent!==helper&&parent.start<helper.start&&parent.end>helper.start)
-                  ||[...code.matchAll(new RegExp('\\bfunction\\s+'+helper.name+'\\s*\\(','g'))].length!==1
-                  ||new RegExp('\\b'+helper.name+'\\s*=(?!=)').test(code)
-                  ||!new RegExp('\\bplayer:SetAttribute\\(\\s*'+signature[2]+'\\s*,').test(helper.code))continue;
-                const call=new RegExp('\\b'+helper.name+'\\(\\s*player,\\s*(["\\x27])([A-Za-z_][A-Za-z_0-9]*)\\1\\s*,','g');
+              for(const helper of writerFunctions){
+                const writerPath=writers.get(helper.name);
+                if(!writerPath||helper.end>fn.start)continue;
+                const call=new RegExp('\\b'+helper.name+'\\(\\s*'+actor+'\\s*,\\s*(["\\x27])([A-Za-z_][A-Za-z_0-9]*)\\1\\s*,','g');
                 for(const row of fn.body.matchAll(call))if(fn.code.slice(row.index,row.index+helper.name.length)===helper.name){
-                  stateWrites.push({attribute:row[2],function:name,via:helper.name});
+                  stateWrites.push({attribute:row[2],function:name,via:helper.name,writerPath});
                 }
               }
               const gameplayWrites=stateWrites.filter(row=>!['LastApprovedScope','LastLearningPattern','ActionSequence','LearningOperator'].includes(row.attribute)
@@ -1873,20 +1938,26 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
               if(!gameplayWrites.length)continue;
               additions.push('  ['+JSON.stringify(id)+'] = '+name+',');
               bindings.push({actionKey:key,actionId:id,function:name,identityEvidence:'EXISTING_LAST_APPROVED_SCOPE',
+                ...(identities.get(name)?.symbol?{identitySymbol:identities.get(name).symbol}:{}),
                 stateWrites:[...new Map(gameplayWrites.map(row=>[row.attribute+'|'+row.via,row])).values()]});
             }else{
               additions.push('  [Config.Actions.'+key+'] = '+name+',');bindings.push({actionKey:key,actionId:id,function:name});
             }
           }
-          if(valid&&approved.size&&existing.size&&additions.length){
+          if(valid&&approved.size&&additions.length){
             if(topLevel.has(table.index)){
               const dependencyHash=crypto.createHash('sha256').update(configSource).digest('hex');
               const anchor=source.slice(table.index,table.index+table[0].length);
-              candidates.push({summary:'Roblox game-action contract completion from existing server functions',
-                expectedEffect:'Restore missing approved gameplay dispatch entries while retaining existing function bodies, validation and rate limits',
-                edits:[{path:relative,find:anchor,replace:anchor.slice(0,-1).trimEnd()+'\n'+additions.join('\n')+'\n}'}],
+              const bundles=[{lines:additions,proof:bindings,priority:0},
+                ...(additions.length>1?additions.map((line,index)=>({lines:[line],proof:[bindings[index]],priority:1})):[])];
+              for(const bundle of bundles)candidates.push({summary:'Roblox game-action contract completion from existing server functions',
+                expectedEffect:'Restore selected approved gameplay dispatch entries while retaining existing function bodies, validation and rate limits',
+                edits:[{path:relative,find:anchor,replace:anchor.slice(0,-1).trimEnd()+'\n'+bundle.lines.join('\n')+'\n}'}],
                 newFiles:[],replaceFiles:[],tests:[],readDependencies:[configRelative],dependencyHashes:{[configRelative]:dependencyHash},
-                semanticGrounding:{type:'APPROVED_ACTION_TO_EXISTING_SERVER_FUNCTION',bindings,authorityPathPreserved:true,runtimeVerified:false},
+                deterministicPriority:bundle.priority,
+                semanticGrounding:{type:'APPROVED_ACTION_TO_EXISTING_SERVER_FUNCTION',bindings:bundle.proof,
+                  bindingCoverage:{selected:bundle.proof.length,total:approved.size-existing.size,resolvable:bindings.length,
+                    unresolved:approved.size-existing.size-bindings.length},authorityPathPreserved:true,runtimeVerified:false},
                 deterministicRobloxNativeRepair:'APPROVED_SERVER_ACTION_COMPLETION'});
             }
           }
@@ -2169,7 +2240,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   // [코딩 엔진] 실제 소스 후보를 전부 비교하고 작은 수정부터 독립 검증한다.
   // 첫 후보 실패가 다른 책임 함수/파일의 실행 가능한 후보까지 막지 않는다.
   const ranked=[...new Map(candidates.map(candidate=>[rejectedSourcePatchFingerprint(candidate),candidate])).values()]
-    .sort((a,b)=>a.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0)
+    .sort((a,b)=>(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
+      ||a.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0)
       -b.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0));
   const selection={version:1,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
     attempts:[],selectedFingerprint:null,runtimeVerified:false};
