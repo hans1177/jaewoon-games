@@ -204,7 +204,7 @@
         "core-loop"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "UNITY"
+      "selectedPlatform": "WEB"
     },
     {
       "id": "P0004",
@@ -269,14 +269,14 @@
       "id": "P0006",
       "slug": "daechung-rpg",
       "name": "대충 RPG",
-      "sourcePath": "roblox-games/daechung-rpg",
+      "sourcePath": "web-games/daechung-rpg",
       "productionSourcePath": "unity-games/daechung-rpg",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "ROBLOX",
-      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
-      "targetEngine": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "roblox-unity-native",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -298,21 +298,17 @@
         "public-web-archive"
       ],
       "lifecycleState": "ACTIVE",
-      "productionTier": 2,
       "concurrentTargetPlatforms": [
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/daechung-rpg"
+        "ROBLOX": "roblox-games/daechung-rpg",
+        "UNITY": "unity-games/daechung-rpg"
       },
-      "designBaselineSource": "design/daechung-rpg/2026-10-26/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/daechung-rpg/2026-10-26/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        }
-      },
-      "updatedAt": "2026-10-26T00:33:38.922Z"
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "strictDesignScoreRequiredForAdmission": false,
+      "strictDesignReviewRunsInParallel": true
     },
     {
       "id": "P0007",
@@ -341,7 +337,7 @@
       "targetEngine": "design-only",
       "protectedValues": [],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
+      "selectedPlatform": "WEB",
       "targetPlatformReady": true
     },
     {
@@ -414,7 +410,7 @@
         "public-stable"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
+      "selectedPlatform": "WEB",
       "targetPlatformReady": true
     },
     {
@@ -434,7 +430,7 @@
         "public-stable"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
+      "selectedPlatform": "WEB",
       "targetPlatformReady": true
     },
     {
@@ -443,14 +439,16 @@
       "name": "포근섬",
       "sourcePath": "roblox-games/cozy-island",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cozy-island"
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
       },
       "developmentFocus": {
         "total": 0
@@ -458,20 +456,11 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
-      "targetEngine": "ROBLOX",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "roblox-unity-native",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/cozy-island/2026-10-25/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/cozy-island/2026-10-25/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        }
-      },
-      "updatedAt": "2026-10-26T00:33:38.922Z",
-      "productionTier": 2
+      "strictDesignReviewRunsInParallel": true
     },
     {
       "id": "RUNTIME-fantasy-survival",
@@ -479,14 +468,16 @@
       "name": "마력숲 생존기",
       "sourcePath": "roblox-games/fantasy-survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival"
+        "ROBLOX": "roblox-games/fantasy-survival",
+        "UNITY": "unity-games/fantasy-survival"
       },
       "developmentFocus": {
         "total": 0
@@ -494,52 +485,40 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
-      "targetEngine": "ROBLOX",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "roblox-unity-native",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/fantasy-survival/2026-10-25/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/fantasy-survival/2026-10-25/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        }
-      },
-      "updatedAt": "2026-10-26T00:33:38.922Z",
-      "productionTier": 2
+      "strictDesignReviewRunsInParallel": true
     },
     {
-      "id": "SEED-OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+      "id": "RUNTIME-horror-escape-room",
       "slug": "horror-escape-room",
       "name": "심야 대탈출",
-      "protectedValues": [
-        "core-loop",
-        "design-baseline",
-        "save-meaning"
-      ],
+      "sourcePath": "roblox-games/horror-escape-room",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
-      "productionTier": 2,
-      "targetEngine": "ROBLOX",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room"
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
       },
-      "sourcePath": "roblox-games/horror-escape-room",
-      "designBaselineSource": "design/horror-escape-room/2026-10-25/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/horror-escape-room/2026-10-25/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        }
+      "developmentFocus": {
+        "total": 0
       },
-      "updatedAt": "2026-10-26T00:33:38.922Z"
+      "runtimeSynthesized": true,
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": true,
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "roblox-unity-native",
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "strictDesignScoreRequiredForAdmission": false,
+      "strictDesignReviewRunsInParallel": true
     }
   ],
   "productionClassState": {
@@ -562,20 +541,21 @@
     },
     "counts": {
       "releaseConfirmed": 0,
-      "developmentConfirmed": 2,
-      "designOnly": 11
+      "developmentConfirmed": 4,
+      "designOnly": 10
     },
     "releaseConfirmedGameIds": [],
     "developmentConfirmedGameIds": [
+      "P0006",
       "RUNTIME-cozy-island",
-      "RUNTIME-fantasy-survival"
+      "RUNTIME-fantasy-survival",
+      "RUNTIME-horror-escape-room"
     ],
     "designOnlyGameIds": [
       "P0001",
       "P0002",
       "P0004",
       "P0005",
-      "P0006",
       "P0007",
       "P0008",
       "P0009",
@@ -597,7 +577,8 @@
         "P0102",
         "P0103",
         "RUNTIME-cozy-island",
-        "RUNTIME-fantasy-survival"
+        "RUNTIME-fantasy-survival",
+        "RUNTIME-horror-escape-room"
       ],
       "paused": [],
       "rebuild": [],
@@ -606,11 +587,11 @@
     },
     "pipeline": {
       "target": 60,
-      "count": 13,
+      "count": 14,
       "activeDevelopmentWipMax": null,
       "capacityOnly": true,
       "noArtificialGlobalGameCountCap": true,
-      "deficit": 47
+      "deficit": 46
     },
     "ranking": [
       {
@@ -619,7 +600,7 @@
         "gameId": "P0006",
         "slug": "daechung-rpg",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DESIGN_ONLY",
+        "productionClass": "DEVELOPMENT_CONFIRMED",
         "gameplayFamily": "RPG",
         "evidenceScore": 811,
         "developmentFocus": 8,
@@ -639,7 +620,7 @@
         "evidenceScore": 806,
         "developmentFocus": 8,
         "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
+        "targetPlatform": "WEB",
         "targetPlatformReady": true,
         "sourceReady": true
       },
@@ -676,36 +657,6 @@
       {
         "rank": 5,
         "rawEvidenceRank": 5,
-        "gameId": "P0102",
-        "slug": "survival2",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DESIGN_ONLY",
-        "gameplayFamily": "SURVIVAL",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 6,
-        "rawEvidenceRank": 6,
-        "gameId": "P0103",
-        "slug": "territory-war",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DESIGN_ONLY",
-        "gameplayFamily": "STRATEGY",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 7,
-        "rawEvidenceRank": 7,
         "gameId": "RUNTIME-cozy-island",
         "slug": "cozy-island",
         "lifecycleState": "ACTIVE",
@@ -719,8 +670,8 @@
         "sourceReady": true
       },
       {
-        "rank": 8,
-        "rawEvidenceRank": 8,
+        "rank": 6,
+        "rawEvidenceRank": 6,
         "gameId": "RUNTIME-fantasy-survival",
         "slug": "fantasy-survival",
         "lifecycleState": "ACTIVE",
@@ -732,8 +683,52 @@
         "targetPlatform": "ROBLOX",
         "targetPlatformReady": true,
         "sourceReady": true
+      },
+      {
+        "rank": 7,
+        "rawEvidenceRank": 7,
+        "gameId": "RUNTIME-horror-escape-room",
+        "slug": "horror-escape-room",
+        "lifecycleState": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "gameplayFamily": "UNCLASSIFIED",
+        "evidenceScore": 6,
+        "developmentFocus": 0,
+        "artbookBaselineRank": 0,
+        "targetPlatform": "ROBLOX",
+        "targetPlatformReady": true,
+        "sourceReady": true
+      },
+      {
+        "rank": 8,
+        "rawEvidenceRank": 8,
+        "gameId": "P0102",
+        "slug": "survival2",
+        "lifecycleState": "ACTIVE",
+        "productionClass": "DESIGN_ONLY",
+        "gameplayFamily": "SURVIVAL",
+        "evidenceScore": 6,
+        "developmentFocus": 0,
+        "artbookBaselineRank": 0,
+        "targetPlatform": "WEB",
+        "targetPlatformReady": true,
+        "sourceReady": true
+      },
+      {
+        "rank": 9,
+        "rawEvidenceRank": 9,
+        "gameId": "P0103",
+        "slug": "territory-war",
+        "lifecycleState": "ACTIVE",
+        "productionClass": "DESIGN_ONLY",
+        "gameplayFamily": "STRATEGY",
+        "evidenceScore": 6,
+        "developmentFocus": 0,
+        "artbookBaselineRank": 0,
+        "targetPlatform": "WEB",
+        "targetPlatformReady": true,
+        "sourceReady": true
       }
     ]
-  },
-  "updatedAt": "2026-10-26T00:33:38.922Z"
+  }
 }
