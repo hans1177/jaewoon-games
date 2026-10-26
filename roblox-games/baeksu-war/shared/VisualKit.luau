@@ -36,21 +36,39 @@ for _,key in ipairs(expected) do
  assert(type(id)=="number" and id>0,"백수대전쟁 3D 모델 ID 누락: "..key)
 end
 -- 게임 시작 때 모델을 미리 적재. 전투 Heartbeat 중에는 네트워크를 호출하지 않는다.
+-- 외부 3D Model 요청은 맵/Remote 초기화를 막지 않도록 별도 스레드에서 병렬 실행한다.
+-- 실패한 모델은 검증되지 않은 파츠로 대체하지 않는다. 다음 재시도에서만 다시 요청한다.
+function Kit.Ready()
+ for _,key in ipairs(expected) do if not templates[key] then return false end end
+ return true
+end
 function Kit.Preload()
+ local remaining=0
+ local failed={}
  for _,key in ipairs(expected) do
   if not templates[key] then
-   local ok,asset=pcall(function()return AssetService:LoadAssetAsync(IDs[key])end)
-   if not ok or not asset then error("필수 3D 모델 적재 실패: "..key..": "..tostring(asset)) end
-   -- 외부 에셋 스크립트는 절대 실행하지 않는다.
-   for _,desc in ipairs(asset:GetDescendants()) do
-    if desc:IsA("BaseScript") or desc:IsA("ModuleScript") then desc:Destroy() end
-   end
-   assert(asset:FindFirstChildWhichIsA("MeshPart",true)~=nil,
-    "3D 메시 실물 누락: "..key)
-   asset.Parent=nil
-   templates[key]=asset
+   remaining+=1
+   task.spawn(function()
+    local ok,asset=pcall(function()return AssetService:LoadAssetAsync(IDs[key])end)
+    if ok and asset and asset:IsA("Model") and asset:FindFirstChildWhichIsA("MeshPart",true) then
+     -- Roblox 외부 모델은 신뢰할 수 있는 메시로만 사용하고 모든 스크립트를 폐기한다.
+     for _,desc in ipairs(asset:GetDescendants()) do
+      if desc:IsA("BaseScript") or desc:IsA("ModuleScript") then desc:Destroy() end
+     end
+     asset.Parent=nil
+     templates[key]=asset
+    else
+     table.insert(failed,key)
+     warn("백수대전쟁 3D 원본 모델 로딩 실패: "..key.." / "..tostring(asset))
+     if typeof(asset)=="Instance" then asset:Destroy() end
+    end
+    remaining-=1
+   end)
   end
  end
+ while remaining>0 do task.wait(.08) end
+ if #failed>0 then warn("백수대전쟁 원본 모델 미적재: "..table.concat(failed,",")) end
+ return Kit.Ready()
 end
 local function meshClone(key,parent,cf,size,team)
  local source=templates[key]
