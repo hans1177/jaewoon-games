@@ -1,7 +1,7 @@
 
 -- 파일명: shared/Config.luau
 -- 백수대전쟁 공식 경제·생물 밸런스
-local C={GameId="baeksu-war",SaveKey="baeksu-war-v1",StartGold=300,StartSlots=3,MaxLevel=10,GateHP=500,EnemyHP=380,Cap=55,Remote="BeastWarAction"}
+local C={GameId="baeksu-war",Platform="ROBLOX",MobileFirst=true,PolicySource="company-learning/platform-release-roadmap.json",SaveKey="baeksu-war-v1",StartGold=300,StartSlots=3,MaxLevel=10,GateHP=500,EnemyHP=380,Cap=55,Remote="BeastWarAction"}
 C.Units={
  {Id="sparrow",Name="참새",Home="참새집",Cost=0,Upgrade=38,HP=38,Damage=7,Speed=13,Interval=3.2,Range=4,Color=Color3.fromRGB(226,192,113),Shape="BIRD"},
  {Id="ant",Name="개미",Home="개미굴",Cost=65,Upgrade=54,HP=65,Damage=9,Speed=9,Interval=3,Range=3.5,Color=Color3.fromRGB(100,73,66),Shape="ANT"},
