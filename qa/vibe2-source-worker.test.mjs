@@ -605,6 +605,104 @@ test('no-model Roblox gameplay generated server action executes all ten engine c
   }
 });
 
+// [실행 연결 10종] 기존 멱등 바인더와 표시 함수를 그대로 재사용한다.
+const NATIVE_BINDER=['local bound = {}','local visits = 0','local function bindExisting(item)',
+  '  if bound[item] then return end','  bound[item] = true','  visits += 1','end'].join('\n');
+const NATIVE_RUNTIME_CASES=[
+  {id:'character',kind:'INITIAL_CHARACTER_BINDING',source:'local Players = game:GetService("Players")\nlocal player = Players.LocalPlayer\n'+NATIVE_BINDER+'\nplayer.CharacterAdded:Connect(bindExisting)',
+    checks:'assert(visits == 1); characterSignal:Fire(first); assert(visits == 1); characterSignal:Fire(second); assert(visits == 2)'},
+  {id:'players',kind:'INITIAL_PLAYER_BINDING',source:'local Players = game:GetService("Players")\n'+NATIVE_BINDER+'\nPlayers.PlayerAdded:Connect(bindExisting)',
+    checks:'assert(visits == 2); playerSignal:Fire(first); assert(visits == 2); playerSignal:Fire(third); assert(visits == 3)'},
+  {id:'tags',kind:'INITIAL_TAGGED_BINDING',source:'local tags = game:GetService("CollectionService")\n'+NATIVE_BINDER+'\ntags:GetInstanceAddedSignal("Harvestable"):Connect(bindExisting)',
+    checks:'assert(visits == 2); tagSignal:Fire(first); assert(visits == 2); tagSignal:Fire(third); assert(visits == 3)'},
+  {id:'children',kind:'INITIAL_CHILD_BINDING',source:'local folder = workspace:WaitForChild("Objects")\n'+NATIVE_BINDER+'\nfolder.ChildAdded:Connect(bindExisting)',
+    checks:'assert(visits == 2); childSignal:Fire(first); assert(visits == 2); childSignal:Fire(third); assert(visits == 3)'},
+  {id:'descendants',kind:'INITIAL_DESCENDANT_BINDING',source:'local folder = workspace:WaitForChild("Objects")\n'+NATIVE_BINDER+'\nfolder.DescendantAdded:Connect(bindExisting)',
+    checks:'assert(visits == 3); descendantSignal:Fire(first); assert(visits == 3); descendantSignal:Fire({}); assert(visits == 4)'},
+  {id:'camera',kind:'CAMERA_REFERENCE_REFRESH',source:'local camera = workspace.CurrentCamera',
+    checks:'assert(camera == cameraFirst); workspace.CurrentCamera = cameraSecond; cameraSignal:Fire(); assert(camera == cameraSecond); workspace.CurrentCamera = nil; cameraSignal:Fire(); assert(camera == cameraSecond); script.Destroying:Fire(); workspace.CurrentCamera = cameraThird; cameraSignal:Fire(); assert(camera == cameraSecond)'},
+  {id:'viewport',kind:'INITIAL_VIEWPORT_RENDER',source:'local camera = workspace.CurrentCamera\nlocal panel = Instance.new("Frame")\nlocal function resize()\n  panel.Size = UDim2.fromOffset(320, 200)\nend\ncamera:GetPropertyChangedSignal("ViewportSize"):Connect(resize)',
+    checks:'assert(uiWrites == 1); viewportSignal:Fire(); assert(uiWrites == 2)'},
+  {id:'hud',kind:'INITIAL_ATTRIBUTE_HUD_RENDER',source:'local Players = game:GetService("Players")\nlocal player = Players.LocalPlayer\nlocal status = Instance.new("TextLabel")\nlocal function renderHealth()\n  status.Text = tostring(player:GetAttribute("Health"))\nend\nplayer:GetAttributeChangedSignal("Health"):Connect(renderHealth)',
+    checks:'assert(status.Text == "33" and uiWrites == 1); attributeSignal:Fire(); assert(uiWrites == 2)'},
+  {id:'scroll',kind:'VERTICAL_SCROLL_CANVAS',source:'local menu = Instance.new("ScrollingFrame")\nmenu.CanvasSize = UDim2.new()\nlocal layout = Instance.new("UIListLayout")\nlayout.FillDirection = Enum.FillDirection.Vertical\nlayout.Parent = menu',
+    checks:'assert(menu.AutomaticCanvasSize == Enum.AutomaticSize.Y)'},
+  {id:'teardown',kind:'SCRIPT_CONNECTION_TEARDOWN',source:'local RunService = game:GetService("RunService")\nlocal ticks = 0\nlocal function update()\n  ticks += 1\nend\nlocal tickConnection = RunService.Heartbeat:Connect(update)\nscript.Destroying:Connect(function() end)',
+    checks:'tickSignal:Fire(); assert(ticks == 1); script.Destroying:Fire(); tickSignal:Fire(); assert(ticks == 1)'}
+];
+for(const entry of NATIVE_RUNTIME_CASES)test('no-model Roblox native runtime capability '+entry.id,t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-runtime-'+entry.id+'-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'));const file='client/Game.client.luau';fs.writeFileSync(path.join(root,file),entry.source);
+  const args={order:{target:'roblox',goal:'native runtime lifecycle camera hud scroll cleanup repair'},sourceRoot:root,responsibleFiles:[file]};
+  const raw=deterministicRobloxNativeRepairCandidate(args);
+  assert.equal(raw?.deterministicRobloxNativeRepair,entry.kind);
+  assert.deepEqual(raw.newFiles,[]);assert.equal(fs.readFileSync(path.join(root,file),'utf8'),entry.source);
+  let patched=entry.source;for(const edit of raw.edits){assert.equal(patched.split(edit.find).length,2);patched=patched.replace(edit.find,edit.replace);}
+  fs.writeFileSync(path.join(root,file),patched);
+  assert.notEqual(deterministicRobloxNativeRepairCandidate(args)?.deterministicRobloxNativeRepair,entry.kind,'replay must not add the same connection twice');
+});
+
+test('no-model Roblox native runtime refuses non-idempotent startup and gameplay-mutating render functions',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-runtime-negative-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'));const file='client/Game.client.luau';
+  const sources=[
+    NATIVE_RUNTIME_CASES[0].source.replace('  if bound[item] then return end\n',''),
+    NATIVE_RUNTIME_CASES[0].source.replace('  bound[item] = true\n',''),
+    NATIVE_RUNTIME_CASES[0].source.replace('  visits += 1','  visits += 1\n  bound[item] = nil'),
+    '--[[\n'+NATIVE_RUNTIME_CASES[0].source+'\n]]',
+    NATIVE_RUNTIME_CASES[7].source.replace('  status.Text =','  remote:FireServer("attack")\n  status.Text ='),
+    NATIVE_RUNTIME_CASES[7].source.replace('  status.Text =','  coins = 999\n  status.Text ='),
+    NATIVE_RUNTIME_CASES[8].source.replace('FillDirection.Vertical','FillDirection.Horizontal'),
+    NATIVE_RUNTIME_CASES[8].source.replace('UDim2.new()','UDim2.new(0, 0, 0, 300)'),
+    NATIVE_RUNTIME_CASES[9].source.replace('function() end','function() customCleanup() end')
+  ];
+  for(const source of sources){fs.writeFileSync(path.join(root,file),source);
+    assert.equal(deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'native runtime lifecycle camera hud scroll cleanup repair'},sourceRoot:root,responsibleFiles:[file]}),null);
+  }
+});
+
+test('no-model Roblox native runtime generated code executes ten lifecycle and UI repairs in isolated Luau',t=>{
+  const compiler=process.env.VIBE2_TEST_LUAU_COMPILER;if(!compiler){t.skip('existing practice CI provides the Luau executor');return;}
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-runtime-luau-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'));const file='client/Game.client.luau';
+  const prelude=[
+    'local task = {defer = function(fn, ...) fn(...) end}',
+    'local function signal()',
+    '  local slots = {}; local result = {}',
+    '  function result:Connect(fn) local c = {Connected = true, callback = fn}; function c:Disconnect() self.Connected = false end; table.insert(slots, c); return c end',
+    '  function result:Fire(...) for _, c in ipairs(slots) do if c.Connected then c.callback(...) end end end',
+    '  return result',
+    'end',
+    'local first, second, third = {}, {}, {}',
+    'local characterSignal, playerSignal, tagSignal, childSignal, descendantSignal = signal(), signal(), signal(), signal(), signal()',
+    'local cameraSignal, viewportSignal, attributeSignal, tickSignal = signal(), signal(), signal(), signal()',
+    'local script = {Destroying = signal()}',
+    'local cameraFirst = {GetPropertyChangedSignal = function(_, key) assert(key == "ViewportSize"); return viewportSignal end}',
+    'local cameraSecond, cameraThird = {}, {}',
+    'local localPlayer = {Character = first, CharacterAdded = characterSignal, GetAttribute = function(_, key) assert(key == "Health"); return 33 end, GetAttributeChangedSignal = function(_, key) assert(key == "Health"); return attributeSignal end}',
+    'local playersService = {LocalPlayer = localPlayer, PlayerAdded = playerSignal, GetPlayers = function() return {first, second} end}',
+    'local tagsService = {GetTagged = function(_, key) assert(key == "Harvestable"); return {first, second} end, GetInstanceAddedSignal = function(_, key) assert(key == "Harvestable"); return tagSignal end}',
+    'local folderObject = {ChildAdded = childSignal, DescendantAdded = descendantSignal, GetChildren = function() return {first, second} end, GetDescendants = function() return {first, second, third} end}',
+    'local workspace = {CurrentCamera = cameraFirst, WaitForChild = function(_, key) assert(key == "Objects"); return folderObject end, GetPropertyChangedSignal = function(_, key) assert(key == "CurrentCamera"); return cameraSignal end}',
+    'local game = {GetService = function(_, key) if key == "Players" then return playersService elseif key == "CollectionService" then return tagsService elseif key == "RunService" then return {Heartbeat = tickSignal} end; error("unknown service") end}',
+    'local uiWrites = 0',
+    'local Instance = {new = function(_) local values = {}; return setmetatable({}, {__index = values, __newindex = function(_, key, value) values[key] = value; uiWrites += 1 end}) end}',
+    'local UDim2 = {new = function(...) return {...} end, fromOffset = function(...) return {...} end}',
+    'local Enum = {AutomaticSize = {Y = "Y"}, FillDirection = {Vertical = "Vertical", Horizontal = "Horizontal"}}'
+  ].join('\n');
+  const runtime=path.join(path.dirname(compiler),process.platform==='win32'?'luau.exe':'luau');
+  for(const entry of NATIVE_RUNTIME_CASES){
+    fs.writeFileSync(path.join(root,file),entry.source);
+    const raw=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'native runtime lifecycle camera hud scroll cleanup repair'},sourceRoot:root,responsibleFiles:[file],
+      candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot:root,target:'roblox',luauCompiler:compiler})});
+    assert.equal(raw?.deterministicRobloxNativeRepair,entry.kind);
+    let patched=entry.source;for(const edit of raw.edits)patched=patched.replace(edit.find,edit.replace);
+    const scriptFile=path.join(root,entry.id+'.luau');fs.writeFileSync(scriptFile,[prelude,patched,entry.checks,'print("NATIVE_RUNTIME_CAUSAL_REPLAY=PASS")'].join('\n'));
+    execFileSync(compiler,['--null',scriptFile],{encoding:'utf8',timeout:15000});
+    assert.match(execFileSync(runtime,[scriptFile],{encoding:'utf8',timeout:15000}),/NATIVE_RUNTIME_CAUSAL_REPLAY=PASS/,entry.id);
+  }
+});
+
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
