@@ -31,20 +31,32 @@ test('acquired PBR channels match immutable source hashes, dimensions and normal
  assert.equal(count,manifest.mapCount);
 });
 
-test('all 44 game packages load byte-identical common materials',()=>{
- let count=0;
+test('game packages preserve material APIs while scoped current consumers match the common source',()=>{
+ let count=0,current=0;
+ const normalize=value=>value.split('\n').slice(1).join('\n');
+ const api=[...source.matchAll(/^function RobloxCommonMaterials\.(\w+)\(/gm)].map(row=>row[1]);
  for(const game of fs.readdirSync('roblox-games')){
   if(!fs.existsSync(`roblox-games/${game}/client/Game.client.luau`))continue;
-  assert.equal(fs.readFileSync(`roblox-games/${game}/shared/RobloxCommonMaterials.luau`,'utf8'),source);
-  assert.match(fs.readFileSync(`roblox-games/${game}/client/MaterialPresentation.client.luau`,'utf8'),/Materials\.ApplyAuthoredSurface/);
+  const consumer=fs.readFileSync(`roblox-games/${game}/shared/RobloxCommonMaterials.luau`,'utf8');
+  const presentation=fs.readFileSync(`roblox-games/${game}/client/MaterialPresentation.client.luau`,'utf8');
+  for(const name of api)assert.ok(consumer.includes(`function RobloxCommonMaterials.${name}(`),game+':MATERIAL_API_MISSING:'+name);
+  assert.match(presentation,/Materials\.ApplyAuthoredSurface/);
+  // 범위 밖의 구버전 게임은 보존한다. 새 스타일을 실제 요청하는 소비자만 최신 구현을 요구한다.
+  if(presentation.includes('SurfaceStudsEnabled')){
+   assert.equal(normalize(consumer),normalize(source),game+':CURRENT_MATERIAL_SOURCE_DRIFT');
+   assert.match(consumer,/TOY_STUDDED = table\.freeze/);
+   assert.match(consumer,/TOY_PLASTIC = table\.freeze/);
+   current++;
+  }
   count++;
  }
  assert.equal(count,44);
+ assert.ok(current>=3,'SCOPED_CURRENT_MATERIAL_CONSUMERS_REQUIRED');
 });
 
 test('material application preserves actor identity, physical behavior, opacity and authored mesh PBR',{skip:!process.env.VIBE2_LUAU_BINARY},()=>{
  const mock=`
-local Enum={Material=setmetatable({},{__index=function(_,name)return{Name=name}end})}
+local Enum={Material=setmetatable({},{__index=function(_,name)return{Name=name}end}),PartType={Block="Block"},SurfaceType={Studs={Name="Studs"},Smooth={Name="Smooth"}}}
 local Color3={};function Color3.fromRGB(r,g,b)return{_type='Color3',R=r,G=g,B=b,Lerp=function(self,other,t)return t==1 and other or self end}end
 local PhysicalProperties={new=function(d,f,e,fw,ew)return{Density=d,Friction=f,Elasticity=e,FrictionWeight=fw,ElasticityWeight=ew}end}
 local function typeof(v)return type(v)=='table' and v._type or type(v)end
@@ -72,6 +84,15 @@ variants.Vibe_Wood_Wood062={BaseMaterial=p.Material,IsA=function(_,c)return c=='
 assert(M.ApplyAuthoredSurface(p,'HORROR'));assert(p.MaterialVariant=='Vibe_Wood_Wood062')
 assert(p:GetAttribute('PBRBindingState')=='NATIVE_VARIANT_BOUND_REVIEW_PENDING')
 local preserved=part('CustomStone','Rock');preserved.MaterialVariant='GameSpecific';assert(not M.ApplyAuthoredSurface(preserved,'COZY'))
+local toy=part('VillagePlaza','Wood');toy.Anchored=true;toy.Shape=Enum.PartType.Block;toy.TopSurface=Enum.SurfaceType.Smooth
+local tint=toy.Color;toy.MaterialVariant='PreviousVisual';toy:SetAttribute('SurfaceRole','TOY_STUDDED');toy:SetAttribute('SurfaceStudsEnabled',true);toy:SetAttribute('PreserveAuthoredTint',true)
+assert(M.ApplyAuthoredSurface(toy,'COZY'));assert(toy.TopSurface==Enum.SurfaceType.Studs)
+assert(toy.Material.Name=='Plastic' and toy.MaterialVariant=='' and toy.Color==tint)
+assert(toy.CustomPhysicalProperties.Density==2 and toy.Transparency==.27)
+local actor=part('Torso','Plastic');actor:SetAttribute('SurfaceRole','TOY_PLASTIC');actor:SetAttribute('PreserveAuthoredTint',true)
+assert(M.ApplyAuthoredSurface(actor,'FANTASY'));assert(actor.Material.Name=='SmoothPlastic')
+local unsupported=part('AuthoredGround','Grass','MeshPart');unsupported:SetAttribute('SurfaceRole','TOY_STUDDED');unsupported:SetAttribute('SurfaceStudsEnabled',true)
+assert(not M.ApplyAuthoredSurface(unsupported,'COZY'))
 print('MATERIAL_BEHAVIOR_PASS')
 `;
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'material-qa-'));
