@@ -991,7 +991,7 @@ test('verified owner-only publication saves queue and policy before resuming F0-
  const policyPr=source.indexOf('gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$policy_branch"');
  assert.ok(queuePush>0&&policyBranch>queuePush&&policyPr>policyBranch,
    'Persist lossless queue, then propose a gated central policy PR');
- assert.doesNotMatch(source,/git push origin HEAD:main/);
+ assert.doesNotMatch(source,new RegExp(['git push origin','HEAD:main'].join(' ')));
  assert.match(source,/OWNER_DIRECT_HANDOFF_POLICY=PR_PENDING_VERIFIED_MERGE/);
  assert.match(source,/OWNER_DIRECT_HANDOFF_F0_F9_WAKE=AFTER_VALIDATED_POLICY_PR_MAIN_MERGE/);
  const ownerJobs=source.slice(0,source.indexOf('  owner-verified-resume:'));
