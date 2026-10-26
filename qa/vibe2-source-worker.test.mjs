@@ -9929,3 +9929,31 @@ test('Roblox native candidate can edit more than eight approved files without br
     {target:'roblox',responsibleFiles:files,sourceRootRelative:'roblox-games/test'}),/변경 없는 edit/);
 });
 
+
+
+// [커뮤니티 Roblox 50종] 공개 제작 패턴을 목적별로 선택하고 다른 플랫폼에 전파하지 않는다.
+test('community 50 scoped coding recipes are individually reachable without copying external source',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const first=worker.indexOf('  const communityRobloxCapabilities=[');
+  const last=worker.indexOf('  const communityRobloxGoal=',first);
+  assert.ok(first>0&&last>first,'canonical source worker must own the capability table');
+  const raw=worker.slice(first,last);
+  const entries=[...raw.matchAll(/^\s{4}(\["[A-Z_]+","[^"]+","[^"]+"\]),?$/gm)].map(row=>JSON.parse(row[1]));
+  assert.equal(entries.length,50,'all 50 distinct capabilities must be executable selection rules');
+  assert.equal(new Set(entries.map(entry=>entry[0])).size,50);
+  const context={files:[{path:'client/Main.client.luau',content:'-- original owner source\nlocal alive = true',editable:true}]};
+  const opt={verifiedExternalLearningContract:{block:''}};
+  const prompt=(goal,target='roblox')=>buildPrompt({target,gameId:'community-practice',goal,selectedTask:{}},context,['client/Main.client.luau'],opt);
+  for(const [id,keywords,guide] of entries){
+    const selected=prompt(keywords.split('|')[0]);
+    assert.ok(selected.includes(id+': '+guide),'missing active coding feature: '+id);
+    assert.ok(selected.includes('no wrappers, new save keys, balance changes'));
+    assert.ok(selected.includes('runtime PASS claims'));
+  }
+  assert.doesNotMatch(prompt('unrelated art asset naming'),/\[COMMUNITY ROBLOX SOURCE CODING PRACTICES\]/);
+  assert.doesNotMatch(prompt('remote rate limit','web'),/\[COMMUNITY ROBLOX SOURCE CODING PRACTICES\]/);
+  assert.doesNotMatch(prompt('remote rate limit','unity'),/\[COMMUNITY ROBLOX SOURCE CODING PRACTICES\]/);
+  const broad=prompt(entries.map(entry=>entry[1].split('|')[0]).join(' '));
+  assert.equal((broad.match(/^[A-Z]+_[A-Z_]+: /gm)||[]).length,6,'do not increase ordinary code generation context excessively');
+  assert.ok(!broad.includes('https://raw.githubusercontent.com/'),'external libraries must not be copied into game prompts');
+});
