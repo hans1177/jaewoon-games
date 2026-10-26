@@ -1024,6 +1024,7 @@ jobs:
           game_path="design/$GAME_ID"
           worktree="/tmp/minimum-design-persist-$GAME_ID-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           pushed=0
+          early_design_new_commit=0
           for attempt in $(seq 1 24); do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$worktree" 2>/dev/null || true
@@ -1037,15 +1038,19 @@ jobs:
             git -C "$worktree" add -- "$game_path"
             if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$worktree" commit -m "runtime: minimum dual-platform design $GAME_ID $DESIGN_DATE"
-            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; early_design_new_commit=1; break; fi
             sleep "$((1 + RANDOM % 5))"
           done
           git worktree remove --force "$worktree" 2>/dev/null || true
           git worktree prune
           test "$pushed" = 1
-          gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+          if [ "$early_design_new_commit" = 1 ]; then
+            gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'EARLY_NATIVE_PROMOTION_DISPATCH=YES'
+          else
+            echo 'EARLY_NATIVE_PROMOTION_DISPATCH=SKIPPED_ALREADY_PERSISTED'
+          fi
           echo 'MINIMUM_DESIGN_CONTRACT=PASS'
-          echo 'EARLY_NATIVE_PROMOTION_DISPATCH=YES'
           echo 'STRICT_REVIEW_CONTINUES_IN_PARALLEL=YES'
 
       - name: Apply strict 30-minute design review
@@ -1094,6 +1099,7 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));const deterministic=roadmap?.developmentLifecycleMachine?.deterministicGateAuthority?.enabled===true&&roadmap?.developmentLifecycleMachine?.deterministicGateAuthority?.aiMayDecidePassFail===false;if(!deterministic&&(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true))throw new Error('legacy five department lead contract failed');if(deterministic&&status?.baselineGate?.evidence?.deterministicDesignGate?.pass!==true)throw new Error('deterministic design evidence missing');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
       - name: Persist validated design evidence to company runtime branch
+        id: persisted_design
         if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true'
         shell: bash
         run: |
@@ -1103,11 +1109,12 @@ jobs:
           cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json || seed_changed=1
           if [ "$seed_changed" = 1 ]; then cp game-seed-state.json "/tmp/seed-design-candidate-${{ matrix.target.game_id }}.json"; fi
           git add -- "$game_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true
-          git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; exit 0; }
+          git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; echo 'runtime_changed=false' >> "$GITHUB_OUTPUT"; exit 0; }
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
           generated_commit="$(git rev-parse HEAD)"
           runtime_worktree="/tmp/seed-design-persist-${{ matrix.target.game_id }}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           pushed=0
+          persisted_design_new_commit=0
           for attempt in $(seq 1 24); do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$runtime_worktree" 2>/dev/null || true
@@ -1142,18 +1149,23 @@ jobs:
             if [ "$seed_changed" = 1 ]; then git -C "$runtime_worktree" add -- game-seed-state.json; fi
             if git -C "$runtime_worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$runtime_worktree" commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
-            if git -C "$runtime_worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            if git -C "$runtime_worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; persisted_design_new_commit=1; break; fi
             sleep "$((1 + RANDOM % 5))"
           done
           git worktree remove --force "$runtime_worktree" 2>/dev/null || true
           git worktree prune
           test "$pushed" = 1
           echo 'SEED_DESIGN_RUNTIME_PERSIST_WORKTREE=ISOLATED'
-          echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
+          echo "runtime_changed=$persisted_design_new_commit" >> "$GITHUB_OUTPUT"
+          if [ "$persisted_design_new_commit" = 1 ]; then
+            echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
+          else
+            echo 'SEED_DESIGN_RUNTIME_CHANGE=NO_ALREADY_PERSISTED'
+          fi
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Dispatch per-game promotion reconciliation on own strict PASS
-        if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true' && steps.persisted_design.outputs.runtime_changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.target.game_id }}
