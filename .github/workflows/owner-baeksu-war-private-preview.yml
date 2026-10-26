@@ -1,0 +1,79 @@
+name: Owner Baeksu War One-shot Private Preview
+run-name: 백수대전쟁 비공개 선배포 · ${{ github.sha }}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/baeksu-war/**'
+      - '.github/workflows/owner-baeksu-war-private-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-baeksu-war-private-preview
+  cancel-in-progress: false
+
+jobs:
+  private-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+      ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+      ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build only baeksu-war Roblox place
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo-7.7.0.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo-7.7.0.zip' | sha256sum -c -
+          mkdir -p /tmp/owner-baeksu-rojo
+          unzip -q /tmp/rojo-7.7.0.zip -d /tmp/owner-baeksu-rojo
+          chmod +x /tmp/owner-baeksu-rojo/rojo
+          /tmp/owner-baeksu-rojo/rojo build roblox-games/baeksu-war/default.project.json -o /tmp/owner-baeksu-war-private-preview.rbxlx
+          test -s /tmp/owner-baeksu-war-private-preview.rbxlx
+      - name: Publish isolated private preview with official Roblox API
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-roblox-dedicated-experience.mjs \
+            --game-id=baeksu-war \
+            --game-name='백수대전쟁 [비공개 선배포]' \
+            --place-file=/tmp/owner-baeksu-war-private-preview.rbxlx \
+            --source-revision="$GITHUB_SHA" \
+            --output=/tmp/owner-baeksu-war-preview-receipt.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p=JSON.parse(fs.readFileSync('/tmp/owner-baeksu-war-preview-receipt.json','utf8'));
+          if(p.gameId!=='baeksu-war'||p.private!==true||p.published!==true||!Number.isInteger(Number(p.versionNumber))||Number(p.versionNumber)<1)throw new Error('PRIVATE_PREVIEW_NOT_PUBLISHED');
+          if(!/^[1-9][0-9]*$/.test(String(p.placeId||'')))throw new Error('PRIVATE_PREVIEW_PLACE_ID_MISSING');
+          const url='https://www.roblox.com/games/'+p.placeId+'/';
+          console.log('BAEKSU_WAR_PRIVATE_PREVIEW_URL='+url);
+          console.log('BAEKSU_WAR_PUBLISHED_PLACE_VERSION='+p.versionNumber);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            '## 백수대전쟁 비공개 선배포\\n\\n'+
+            '- Roblox game link: '+url+'\\n'+
+            '- Place ID: '+p.placeId+'\\n'+
+            '- Universe ID: '+p.universeId+'\\n'+
+            '- Published version: '+p.versionNumber+'\\n'+
+            '- Source revision: '+p.sourceRevision+'\\n'+
+            '- Exposure: PRIVATE (not public/canonical release)\\n');
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: baeksu-war-private-preview-receipt
+          path: /tmp/owner-baeksu-war-preview-receipt.json
+          if-no-files-found: ignore
