@@ -315,6 +315,10 @@ function RobloxCommonUI.CreateInventorySlot(options)
   glyph.TextScaled = false
   glyph.Visible = icon.Image == ""
   glyph.Parent = button
+  icon:GetPropertyChangedSignal("Image"):Connect(function()
+    glyph.Visible = icon.Image == ""
+    icon.Visible = icon.Image ~= ""
+  end)
 
   local quantity = Instance.new("TextLabel")
   quantity.Name = "Quantity"
@@ -791,6 +795,11 @@ function RobloxCommonUI.CreateIconButton(options)
   button.MouseButton1Down:Connect(function() outline.Transparency = 0 end)
   button.MouseButton1Up:Connect(function() outline.Transparency = 0.10 end)
   button:SetAttribute("IconFallbackActive", missingImage)
+  button:GetPropertyChangedSignal("Image"):Connect(function()
+    local absent = button.Image == ""
+    fallback.Visible = absent
+    button:SetAttribute("IconFallbackActive", absent)
+  end)
   button:SetAttribute("PresentationRole", "ICON_ACTION")
   button:SetAttribute("OwnsGameplayAction", false)
   button:SetAttribute("OwnsRemoteAuthority", false)
