@@ -130,7 +130,7 @@ function main(){
     fs.readFileSync(options['changed-files'],'utf8').split(/\r?\n/).filter(Boolean):[];
   const selected=chooseGameQa({
     games:map.games,changedFiles:changes,
-    gameId:options['game-id']||'',all:options.all===true
+    gameId:options['game-id']||'',all:options.all===true,repoRoot
   });
   const report={
     schemaVersion:1,scope:options['game-id']||options.all&&'ALL' ||'CHANGED_GAME_FILES',
