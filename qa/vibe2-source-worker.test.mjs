@@ -9957,3 +9957,42 @@ test('community 50 scoped coding recipes are individually reachable without copy
   assert.equal((broad.match(/^[A-Z]+_[A-Z_]+: /gm)||[]).length,6,'do not increase ordinary code generation context excessively');
   assert.ok(!broad.includes('https://raw.githubusercontent.com/'),'external libraries must not be copied into game prompts');
 });
+
+
+// [바이브 제작 100종] 기존 프롬프트 생성 경로에서만 선택되는 실제 제작 지시 검증.
+test('Roblox maker 100 production recipe selection stays distinct, scoped and source-bound',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const start=worker.indexOf('  const makerCapabilityRecipes=[');
+  const end=worker.indexOf('  const makerRequest=',start);
+  assert.ok(start>=0&&end>start,'must live inside existing source worker');
+  const block=worker.slice(start,end);
+  const entries=[...block.matchAll(/^\s{4}(\["[A-Z0-9_]+","[^"]+","[^"]+"\]),?$/gm)].map(row=>JSON.parse(row[1]));
+  assert.equal(entries.length,100,'exactly 100 authoring modules');
+  assert.equal(new Set(entries.map(row=>row[0])).size,100,'no duplicate recipes');
+  const groupCounts={};
+  for(const [id] of entries){const group=id.split('_')[0];groupCounts[group]=(groupCounts[group]||0)+1;}
+  assert.deepEqual(Object.keys(groupCounts).sort(),['AUDIO','BUILD','CHARACTER','MOBILE','MOTION','TOY','UI','VERIFY','VFX','WORLD']);
+  assert.ok(Object.values(groupCounts).every(n=>n===10));
+  const context={files:[{path:'client/Game.client.luau',content:'-- existing owned source\nlocal hud = Instance.new("ScreenGui")',editable:true}]};
+  const options={verifiedExternalLearningContract:{block:''}};
+  const build=(goal,target='roblox')=>buildPrompt({target,gameId:'maker-qa',goal,selectedTask:{}},context,['client/Game.client.luau'],options);
+  for(const [id,keywords,guide] of entries){
+    const prompt=build(keywords.split('|')[0]);
+    assert.ok(prompt.includes(id+': '+guide),'unreachable generator module '+id);
+    assert.match(prompt,/Implement real Luau\/Instance changes inside existing responsible source\/functions/);
+    assert.match(prompt,/do not fabricate texture IDs, licenses, models, server authority or save data/);
+    assert.match(prompt,/Runtime publication and F0-F9 remain UNVERIFIED without actual evidence/);
+  }
+  const stud=build('스터드 바닥과 블록 재질, 입체 버튼으로 제작');
+  assert.match(stud,/TOY_STUDDED_WORLD_SURFACE:/);
+  assert.match(stud,/TOY_TOY_PLASTIC_FAMILY:/);
+  assert.match(stud,/TOY_CHUNKY_BEVEL_BUTTON:/);
+  assert.match(stud,/Reuse approved game assets and RobloxCommonMaterials when present/);
+  assert.doesNotMatch(build('게임 자료 요약'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  assert.doesNotMatch(build('스터드 바닥','web'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  assert.doesNotMatch(build('스터드 바닥','unity'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  const broad=build(entries.map(row=>row[1].split('|')[0]).join(' '));
+  assert.equal((broad.match(/^(?:TOY|WORLD|CHARACTER|MOTION|UI|VFX|BUILD|AUDIO|MOBILE|VERIFY)_[A-Z_]+: /gm)||[]).length,8,
+    'existing prompt budget must limit production selection to eight per task');
+  assert.ok(!broad.includes('https://raw.githubusercontent.com/'));
+});
