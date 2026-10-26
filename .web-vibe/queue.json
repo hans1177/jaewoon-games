@@ -100,7 +100,7 @@
       "goal": "포근섬(cozy-island) 모바일 전용 스트롱홀드 스타일 그래픽 한방 통합패치. 사용자가 첨부한 5장의 이미지와 같은 45도 쿼터뷰/넓은 공성전 조감 시야, 사실적 석재·사암·모래·벽돌·목재·기와·흙길·풀·물 재질, 자연스러운 하천/해안/절벽 경계, 세밀한 성벽·망루·성문·흉벽·창문·그늘, 작은 병사/기병/공성병기 비율을 포근섬 세계에 적용. 원본 이미지/저작권 에셋 복제 금지, 기존 검증된 3D 자산 라이브러리 재사용 및 고유 재질 생성. 현재 실행 경로 web-games/cozy-island/index.html -> game-v3.js -> render-v3.js 확인됨. 기존 render-v3.js의 init3d/make3d/draw3d/resize/defaultStrategyZoom/panCamera/screenToWorld와 필요한 기존 책임 함수만 직접 수정; 새로운 wrapper/override/shadow 렌더러/파이프라인 생성 금지. 모바일 360~430px 우선: 손가락 드래그 이동, 정확한 터치 월드 좌표, 확대축소, UI 버튼/조이스틱 가림·화면 잘림 방지, 낮은 그래픽 비용(공유 메시/텍스처, 렌더링 밀도·픽셀비 조절, GPU 과부하·발열 제한). 고급 그래픽은 유지하되 작은 화면에서 병사/건물/동선 식별성 확보. 기존 월드·모든 지역 이동·지역 해금·자동 채집/전투·건축·병력·전투 수치·보상·재화·저장 키/세이브 데이터 절대 변경/초기화 금지. 사용자가 명시하지 않은 새 게임 규칙 만들지 말 것. 먼저 최신 main 전체 소스, 우선 정책 4개와 자산 라이브러리/라이선스/기존 회귀를 확인하고 한 번의 연결된 후보 변경으로 적용. 실제 모바일 WebGL 시작, 조작, 지역 이동, 건축·공성, 저장/불러오기, FPS, 오류 검증 후 기존 QA/보안/F0~F9/PR/공식 배포 절차를 통과한 증거가 있을 때만 완료 보고.",
       "responsibleFiles": [],
       "priority": "owner-immediate",
-      "status": "queued",
+      "status": "blocked",
       "ownerDirective": true,
       "evidence": [
         "web-vibe-independent:v1",
@@ -108,10 +108,10 @@
         "qa-required-before-pr-merge",
         "web-vibe-recovery-failure:needs-source-or-provider-recheck"
       ],
-      "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-10-25T23:20:51.280Z",
-      "recoveryNextAt": "2026-10-26T00:20:51.280Z",
-      "blocker": null
+      "recoveryAttempts": 3,
+      "recoveryLastFailureAt": "2026-10-26T01:21:23.679Z",
+      "recoveryNextAt": null,
+      "blocker": "WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW"
     },
     {
       "id": "pwa-b511ed8d-cbfa-4ea2-91b0-a28f126fd47d",
