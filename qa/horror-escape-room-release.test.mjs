@@ -961,6 +961,16 @@ test('첫 화면은 현재 캐릭터 접지와 저택 장면 수신을 확인하
 });
 
 
+test('owner package source integrity verifies actual Rojo inputs and ignores unrelated tracked audio',()=>{
+ assert.match(ownerWorkflow,/git diff --exit-code -- "\$project" roblox-games\/horror-escape-room assets\/roblox\/world-ghosts/);
+ assert.doesNotMatch(ownerWorkflow,/^\s+git diff --exit-code\s*$/m);
+ assert.match(ownerWorkflow,/cp "\$backup" "\$project"\n\s+trap - EXIT\n[\s\S]*?git diff --exit-code --/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_ACTUAL_ROJO_SOURCE_UNCHANGED=PASS/);
+ assert.match(ownerWorkflow,/sha256sum \/tmp\/horror-owner-direct\/horror-escape-room\.rbxlx/);
+ assert.match(ownerWorkflow,/ROBLOX_OPEN_CLOUD_API_KEY/);
+ assert.match(ownerWorkflow,/Ensure canonical owner universe remains private/);
+});
+
 test('verified owner-only publication saves queue and policy before resuming F0-F9',()=>{
  const source=ownerWorkflow;
  assert.match(source,/  owner-verified-resume:\n    needs: owner-direct-publish/);
