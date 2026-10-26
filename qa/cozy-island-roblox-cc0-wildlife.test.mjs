@@ -10,20 +10,20 @@ test('Cozy Roblox village keeps existing actors while unverified CC0 bears remai
  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
  const factory=read('roblox-games/cozy-island/shared/WildlifeFactory.luau');
  const animator=read('roblox-games/cozy-island/shared/WildlifeAnimator.luau');
- assert.match(style,/Size=Vector3\\.new\\(220,10,220\\)/);
- assert.match(server,/VillagePlaza",Vector3\\.new\\(104,1,92\\)/);
+ assert.match(style,/Size=Vector3\.new\(220,10,220\)/);
+ assert.match(server,/VillagePlaza",Vector3\.new\(104,1,92\)/);
  assert.match(server,/VillageGreen/);
- assert.match(server,/spawnMob\\("BOAR"/);
- assert.match(server,/spawnMob\\("RAIDER"/);
+ assert.match(server,/spawnMob\("BOAR"/);
+ assert.match(server,/spawnMob\("RAIDER"/);
  // Owner CC0 policy: do not synthesize, place or declare bears verified when
  // the exact source license and digest are absent from the registered library.
  assert.match(server,/CozyBearCC0Status","BLOCKED_UNVERIFIED_SOURCE"/);
  assert.match(server,/VillageBearCount",0/);
- assert.doesNotMatch(server,/Wildlife\\.Spawn\\("BEAR"/);
- assert.doesNotMatch(server,/spawnVillageBears\\(/);
+ assert.doesNotMatch(server,/Wildlife\.Spawn\("BEAR"/);
+ assert.doesNotMatch(server,/spawnVillageBears\(/);
  // Native animation support may remain available; it is not runtime proof
  // for a bear that was not legally sourced or spawned.
- assert.match(client,/WildlifeAnimator\\.bind/);
+ assert.match(client,/WildlifeAnimator\.bind/);
  assert.match(client,/VibeSurvivalWildlife/);
  assert.match(factory,/AnimationController/);
  assert.match(factory,/Motor6D/);
