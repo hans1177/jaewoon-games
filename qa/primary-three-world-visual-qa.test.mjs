@@ -87,6 +87,14 @@ test('대충 RPG 공용 GLB 캐릭터와 몬스터는 네이티브 바인딩 검
  assert.match(visual,/SharedNpcModels=\{VillageChief=/);
  assert.match(visual,/SharedEnemyModels=\{MEADOW=/);
  assert.match(server,/SharedPlayerVisualState","RIG_RETARGET_REQUIRED"/);
+ const rigFailure=server.indexOf('SharedPlayerVisualState","RIG_RETARGET_REQUIRED"');
+ const defaultRigHide=server.indexOf('for _,part in ipairs(character:GetChildren())do',rigFailure);
+ assert.ok(rigFailure>=0&&defaultRigHide>rigFailure,'unretargeted native asset must not hide the playable R15 avatar');
+ const safeSource=server.slice(server.indexOf('if rigParts<7 then'),defaultRigHide);
+ assert.match(safeSource,/folder:Destroy\(\)/,'release incomplete GLB rather than overlay an unanimated mannequin');
+ assert.match(safeSource,/ARTICULATED_R15_LIMBS_UNAVAILABLE/);
+ assert.match(safeSource,/\breturn\b/,'retain the working character before the default rig is hidden');
+ assert.doesNotMatch(server,/SharedPlayerVisualState","FULL_MESH_BOUND"/,'unrigged full-body GLB is never a retarget PASS');
  assert.match(server,/RuntimeVisualReview","PENDING"/);
  assert.match(server,/MotionRetargetReview","PENDING"/);
  assert.match(server,/if fallbackAssetId and fallbackAssetId~=assetId/);
