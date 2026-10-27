@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "horror-escape-room-build-up-g18-ac3e41c083d9",
-  "directiveFingerprint": "ac3e41c083d98b87216d05a1a4fead28b9c60e3e93446eb6f6d2dbcaca48a9e6",
-  "previousDirectiveFingerprint": "89273fbe133bc63c38f3f8153a995d151c7e3f77637c03a72e9a13c83b4a1bac",
-  "forbiddenRepeatFingerprint": "89273fbe133bc63c38f3f8153a995d151c7e3f77637c03a72e9a13c83b4a1bac",
+  "directiveId": "horror-escape-room-build-up-g19-d280ea81791e",
+  "directiveFingerprint": "d280ea81791e39f4ccc9cc45a57b1e99b6ea4709f0dda722224b95d7b80eb9af",
+  "previousDirectiveFingerprint": "ac3e41c083d98b87216d05a1a4fead28b9c60e3e93446eb6f6d2dbcaca48a9e6",
+  "forbiddenRepeatFingerprint": "ac3e41c083d98b87216d05a1a4fead28b9c60e3e93446eb6f6d2dbcaca48a9e6",
   "gameId": "horror-escape-room",
   "gameName": "심야 대탈출",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/horror-escape-room",
-  "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+  "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
   "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
   "designSourceBuildUp": {
     "version": 1,
@@ -371,7 +371,7 @@
           "정화와 팀 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+        "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -419,7 +419,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
-    "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+    "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
     "multiplayerMode": "COMPETITIVE",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -1007,6 +1007,10 @@
         }
       ],
       "designAuthored": true,
+      "designedGenreCount": 2,
+      "minimumImplementedGenreCount": 1,
+      "runtimeAcceptance": "ONE_OF_TWO_AUTHORED_C_GENRES_WITH_ACTUAL_RUNTIME_AND_INDEPENDENT_QA",
+      "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
@@ -1049,10 +1053,32 @@
     "changesDevelopmentAdmission": false,
     "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
+  "creativeCGenreImplementation": {
+    "requiredDesignGenreCount": 2,
+    "designedGenreCount": 2,
+    "requiredVerifiedRuntimeGenreCount": 1,
+    "verifiedGenreCount": 0,
+    "satisfied": false,
+    "verifiedGenres": [],
+    "pendingGenres": [
+      {
+        "role": "PRIMARY",
+        "name": "감염 추격",
+        "status": "FOLLOW_UP_IMPLEMENTATION_PENDING"
+      },
+      {
+        "role": "SECONDARY",
+        "name": "미스터리",
+        "status": "FOLLOW_UP_IMPLEMENTATION_PENDING"
+      }
+    ],
+    "evidenceState": "NOT_VERIFIED",
+    "gameReleaseProven": false
+  },
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+    "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 74,
     "authoredCounts": {
@@ -4631,11 +4657,11 @@
         "authoredId": null,
         "designDetail": {
           "name": "메인·보조 장르 플레이 인과",
-          "trigger": "두 장르 동시 발동",
+          "trigger": "두 장르 설계·최소 한 장르의 네이티브 플레이 인과 검증",
           "stateChange": "감염 추격 장르의 주 목표를 진행하는 동안 미스터리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 미스터리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다."
         },
         "playerChoice": null,
-        "trigger": "두 장르 동시 발동",
+        "trigger": "두 장르 설계·최소 한 장르의 네이티브 플레이 인과 검증",
         "stateChange": "감염 추격 장르의 주 목표를 진행하는 동안 미스터리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 미스터리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
         "linkedRuleIds": [],
         "designResponsibleSystem": null,
@@ -7130,8 +7156,8 @@
     ],
     "signals": {
       "combat": 533,
-      "progression": 836,
-      "ai": 368,
+      "progression": 838,
+      "ai": 370,
       "save": 344,
       "multiplayer": 33,
       "animation": 300,
@@ -7360,7 +7386,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1424,
+        "line": 1425,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "context": "local function combatSkinIdForPlayer(player)",
@@ -7440,7 +7466,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1607,
+        "line": 1608,
         "kind": "FUNCTION",
         "symbol": "markCombatSkinAttack",
         "context": "local function markCombatSkinAttack(userId,origin,duration,stage)",
@@ -7448,7 +7474,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1885,
+        "line": 1886,
         "kind": "FUNCTION",
         "symbol": "drawMiniMap",
         "context": "local function drawMiniMap(id)",
@@ -7456,7 +7482,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 2595,
+        "line": 2596,
         "kind": "FUNCTION",
         "symbol": "updateCosmeticUI",
         "context": "local function updateCosmeticUI()",
@@ -7576,7 +7602,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1419,
+        "line": 1420,
         "kind": "FUNCTION",
         "symbol": "combatFormIdForPlayer",
         "context": "local function combatFormIdForPlayer(player)",
@@ -7603,19 +7629,19 @@
   "previousVersionDelta": {
     "previousGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 심야 대탈출와 진영 전환과 추격 경로 × 증언과 합의된 현실가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "9f6906b83346b41c7cf69482863a83de86c412da32af431003cfb237f248e582",
-    "currentSourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+    "currentSourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
     "blockers": [
-      "roblox-runtime-foundation-awaiting-observation"
+      "roblox-build-package-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -8713,8 +8739,99 @@
     "고유 시스템 \"정화와 팀 대응 × 오만과 응보\": 플레이어 선택 \"바뀐 인원과 역할을 읽고 정화·지원·반격의 우선순위를 선택하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다. 오만과 응보의 반작용을 선택한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 \"금기와 기회의 교차\": 플레이어 선택 \"증언과 합의된 현실의 제약과 오만과 응보의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 심야 대탈출, 진영 전환과 추격 경로 × 증언과 합의된 현실, 정화와 팀 대응 × 오만과 응보, 금기와 기회의 교차 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
-    "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
+    "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다.",
+    "모든 승인 게임 빌드업은 한 세대 최소 5개의 실제 플레이 가치 개선을 목표로 한다. 입력→상태 변화→화면/모션/사운드 피드백을 기존 책임 소스에서 연결하고 각 항목의 동일 빌드 검증 증거를 남긴다. 5번의 소스 수정이나 에셋 교체를 실제 플레이 통과로 계산하지 않는다. 실패·설계 누락은 기존 원인 수리 우선이며 F0~F9와 저장·밸런스·권한은 유지한다."
   ],
+  "playableImprovementContract": {
+    "version": 1,
+    "scope": "ALL_ACTIVE_APPROVED_GAME_BUILD_UP",
+    "minimumPerGeneration": 5,
+    "floorBoundary": "EXISTING_F0_F9_SEQUENCE_UNCHANGED",
+    "targets": [
+      {
+        "id": "FIRST_ACTION",
+        "anchor": "진영 전환과 추격 경로: 상대 진영과 이동 경로를 읽고 감염 또는 회피의 시점과 대상을 선택하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.",
+        "intent": "첫 플레이에서 기존 핵심 행동을 발견하고 실제로 수행할 수 있게 개선",
+        "gameId": "horror-escape-room",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/horror-escape-room/server/Game.server.luau",
+          "roblox-games/horror-escape-room/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "CORE_STATE_RESPONSE",
+        "anchor": "정화와 팀 대응: 바뀐 인원과 역할을 읽고 정화·지원·반격의 우선순위를 선택하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다.",
+        "intent": "기존 핵심 행동의 입력→상태 변화 연결 및 즉시 피드백 개선",
+        "gameId": "horror-escape-room",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/horror-escape-room/server/Game.server.luau",
+          "roblox-games/horror-escape-room/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "PLAYER_CHOICE",
+        "anchor": "심야 대탈출",
+        "intent": "기존 플레이어 선택과 그 결과의 가독성 및 다음 행동 연결 개선",
+        "gameId": "horror-escape-room",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/horror-escape-room/server/Game.server.luau",
+          "roblox-games/horror-escape-room/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "PRESENTATION_BINDING",
+        "anchor": "역사적 세력 균형와 업보와 인과응보의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
+        "intent": "실제 행동 상태에 연결된 캐릭터·카메라·모션·VFX·UI/소리 반응 개선",
+        "gameId": "horror-escape-room",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/horror-escape-room/server/Game.server.luau",
+          "roblox-games/horror-escape-room/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "SESSION_RETRY",
+        "anchor": "진영 전환과 추격 경로로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+        "intent": "실패·재도전·재접속 시 기존 플레이 진행과 상태 복구 경험 개선",
+        "gameId": "horror-escape-room",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/horror-escape-room/server/Game.server.luau",
+          "roblox-games/horror-escape-room/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      }
+    ],
+    "candidateTargetsAreNotFiveVerifiedImprovements": true,
+    "distinctActualPlayerValueRequired": true,
+    "sourceEditsAreNotRuntimeProof": true,
+    "approvedExistingGameOnly": true,
+    "repairFailedCausalFoundationFirst": true,
+    "missingRuntimeEvidenceRemainsUnverified": true,
+    "noShadowPipeline": true
+  },
   "progressionContentWorldDirectives": [
     "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 진영 전환과 추격 경로의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 정화와 팀 대응의 새 상대는 기존 상태를 증폭하거나 반전한다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
     "새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.",
@@ -8757,7 +8874,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 1143012,
+        "sourceBytes": 1142834,
         "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -8790,13 +8907,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 6,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 5,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 6,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -8812,7 +8929,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -8850,7 +8967,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 122,
+        "score": 104,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -8964,11 +9081,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
-    "priorSourceFingerprint": "9f6906b83346b41c7cf69482863a83de86c412da32af431003cfb237f248e582",
+    "sourceFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
+    "priorSourceFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -8987,7 +9104,7 @@
     "version": 1,
     "gameId": "horror-escape-room",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+    "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -9993,6 +10110,186 @@
         "runtimeVerified": false
       }
     ],
+    "actorMotion": {
+      "version": 2,
+      "trigger": "CREATION_AND_EVERY_BUILD_UP",
+      "gameId": "horror-escape-room",
+      "platform": "ROBLOX",
+      "nextGameSpecificMotionWorkUnit": {
+        "generation": 19,
+        "actorClass": "COMPANION",
+        "sourceOwnerFile": "roblox-games/horror-escape-room/client/Game.client.luau",
+        "qualityAxis": "BODY_PLAN_LOCOMOTION",
+        "featureId": "BODY_PLAN_LOCOMOTION",
+        "evidenceCount": 0,
+        "previousVerifiedScore": null,
+        "verifiedTransferGames": 0,
+        "decision": "SOURCE_GROUNDED_UNVERIFIED_EXPLORATION",
+        "intent": "REAL_NATIVE_ACTOR_ANIMATION_IMPLEMENTATION",
+        "noUnknownBoneCreation": true,
+        "approvedExistingRigAndClipRequired": true,
+        "preserveGameplayAndSave": true,
+        "sourceOnlyEvidence": true,
+        "runtimeVerified": false
+      },
+      "detectedActorClasses": [
+        {
+          "actorClass": "PLAYER",
+          "sourceOwnerFiles": [
+            "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+            "roblox-games/horror-escape-room/client/Game.client.luau",
+            "roblox-games/horror-escape-room/server/Game.server.luau",
+            "roblox-games/horror-escape-room/shared/GameConfig.luau",
+            "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+            "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
+            "roblox-games/horror-escape-room/launch-mvp.json",
+            "roblox-games/horror-escape-room/server/ManorLobby.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "NPC",
+          "sourceOwnerFiles": [
+            "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+            "roblox-games/horror-escape-room/client/Game.client.luau",
+            "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+            "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "LOOK_GESTURE",
+            "START",
+            "WALK_TURN_STOP",
+            "INTERACT",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "ENEMY",
+          "sourceOwnerFiles": [
+            "roblox-games/horror-escape-room/client/Game.client.luau",
+            "roblox-games/horror-escape-room/server/Game.server.luau",
+            "roblox-games/horror-escape-room/shared/GameConfig.luau",
+            "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+            "roblox-games/horror-escape-room/launch-mvp.json",
+            "roblox-games/horror-escape-room/server/ManorLobby.luau",
+            "roblox-games/horror-escape-room/shared/Translations.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "BOSS",
+          "sourceOwnerFiles": [
+            "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+            "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "APPROACH_TURN",
+            "ANTICIPATION_IMPACT_FOLLOW_THROUGH_RECOVERY",
+            "DIRECTIONAL_HIT_DEATH",
+            "APPROVED_SIGNATURE_ACTION"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "CREATURE",
+          "sourceOwnerFiles": [
+            "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+            "roblox-games/horror-escape-room/client/Game.client.luau",
+            "roblox-games/horror-escape-room/server/Game.server.luau",
+            "roblox-games/horror-escape-room/shared/GameConfig.luau",
+            "roblox-games/horror-escape-room/default.project.json",
+            "roblox-games/horror-escape-room/shared/MonsterStories.luau",
+            "roblox-games/horror-escape-room/shared/Translations.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "BODY_PLAN_IDLE",
+            "GAIT_START_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "COMPANION",
+          "sourceOwnerFiles": [
+            "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+            "roblox-games/horror-escape-room/client/Game.client.luau",
+            "roblox-games/horror-escape-room/server/Game.server.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "MOUNT",
+          "sourceOwnerFiles": [
+            "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "BODY_PLAN_IDLE",
+            "GAIT_START_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        }
+      ],
+      "approvedSourceOrder": [
+        "VERIFIED_SAME_GAME_CLIP",
+        "VERIFIED_COMPATIBLE_COMPANY_CLIP",
+        "LICENSE_VERIFIED_REPOSITORY_CLIP",
+        "LICENSE_VERIFIED_EXTERNAL_CLIP",
+        "COMPATIBLE_RETARGET_AND_CLEANUP",
+        "AUTHORIZED_NATIVE_AUTHORING_FOR_REAL_GAP"
+      ],
+      "mandatoryPolish": [
+        "ACTUAL_COMPATIBLE_RIG_AND_ANIMATOR",
+        "CROSSFADE_POSE_VELOCITY_MATCH",
+        "LOCOMOTION_SPEED_SYNC_AND_WEIGHT_SHIFT",
+        "FOOT_CONTACT_IK_WHEN_APPLICABLE",
+        "UPPER_LOWER_BODY_LAYERING",
+        "SECONDARY_ACTING_PER_BODY_PLAN",
+        "ANTICIPATION_SINGLE_AUTHORIZED_IMPACT_FOLLOW_THROUGH_RECOVERY",
+        "DIRECTIONAL_HIT_AND_DEATH_WHEN_APPLICABLE",
+        "CAMERA_VFX_AUDIO_EVENT_SYNC",
+        "MOBILE_LOD_AND_POOLING",
+        "BEFORE_AFTER_EXACT_ACTOR_NATIVE_PLAY_QA"
+      ],
+      "applicableApprovedActorsOnly": true,
+      "allDiscoveredActorsReviewedEachCycle": true,
+      "actorCountLimit": null,
+      "noInventedActorOrPrimitiveFallback": true,
+      "noUnapprovedCombatForNoncombatActor": true,
+      "preserveExistingDamageTimingHitboxCooldownSpeedSaveProgressionEconomyNetworkAuthority": true,
+      "sourceOnlyEvidence": true,
+      "runtimeVerified": false
+    },
     "sharedAssetSelection": {
       "registry": "company-asset-library.json",
       "archives": "assets/asset-manifest.json#sharedOriginalArchives",
@@ -10060,7 +10357,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+      "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -10084,7 +10381,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+      "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
       "sourceFiles": [
         {
           "file": "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
@@ -10152,7 +10449,7 @@
           "file": "roblox-games/horror-escape-room/client/Game.client.luau",
           "sites": [
             {
-              "line": 1270,
+              "line": 1271,
               "source": "local x=Instance.new(\"Part\")"
             }
           ],
@@ -10193,8 +10490,8 @@
       "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
       "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
       "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
-      "ANIMATION": "주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.",
-      "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
+      "ANIMATION": "플레이어·NPC·몬스터·동물·보스·동료·탈것의 호환 리그·검증된 실제 모션을 우선 연결한다. 포즈/속도 매칭 크로스페이드, 발 접지·무게 이동, 상태 전환을 역할별로 적용하고 기존 공격은 ANTICIPATION→ACCELERATION→승인된 IMPACT→FOLLOW_THROUGH→RECOVERY로 연결한다. 게임 판정은 유지한다.",
+      "SECONDARY_MOTION": "플레이어·NPC의 시선/몸짓, 동물·몹의 꼬리/날개/체중, 보스의 무기/후속동작, 가동 건축물 등 실제 해당 부위에 관성·지연·복귀를 연결하되 판정·충돌 권한은 유지한다. 정지 모델 전체 이동만으로 모션 합격을 주장하지 않는다.",
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
       "UI_HUD": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
@@ -10230,7 +10527,7 @@
     "gameId": "horror-escape-room",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+    "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -10312,14 +10609,14 @@
         "impact": "GRAPHICS",
         "applicability": "INSPECT_EXISTING_OR_APPROVED_SURFACE",
         "applicabilityReason": null,
-        "scene": "기존 적 종류를 같은 조명에서 접근→추적→공격 전조→피격→사망 순으로 관찰",
+        "scene": "실제 일반 적·몬스터·동물·보스 종류별로 같은 조명에서 대기→이동→추적→전조→피격→사망(해당 시) 순으로 관찰",
         "failureCriteria": "색만 다른 복제·역할 식별 불가·공격 전조 안 보임·배경에 묻힘·죽은 적이 움직이거나 남음",
         "responsibility": "적 모델·상태 표현·전조·사망 정리",
         "retest": "기존 종류별 역할과 위험 전조가 구별되는 화면/행동 기록",
         "evidenceState": "UNVERIFIED",
         "remoteAssertions": [
-          "DISTINCT_ENEMY_ROLE_AND_TELEGRAPH",
-          "ATTACK_HIT_DEATH_STATE_SEQUENCE",
+          "DISTINCT_ENEMY_CREATURE_BOSS_BODY_PLAN_AND_TELEGRAPH",
+          "ACTOR_SPECIFIC_ATTACK_HIT_DEATH_STATE_SEQUENCE",
           "DESPAWN_CLEANUP"
         ],
         "remoteProofState": "UNVERIFIED",
@@ -10333,15 +10630,15 @@
         "impact": "GRAPHICS",
         "applicability": "INSPECT_EXISTING_OR_APPROVED_SURFACE",
         "applicabilityReason": null,
-        "scene": "idle→start→walk/run→turn→stop→jump/land→attack→hit/death, 행동 중 취소·재시작",
+        "scene": "실제 플레이어·NPC·몬스터·동물·보스·동료·탈것별 idle→start→walk/run→turn→stop→jump/land→attack→hit/death(해당할 때), 행동 중 취소·재시작",
         "failureCriteria": "T포즈·정지 모델·전환 튐·루프 끊김·중복 트랙·사망 뒤 idle·전체 CFrame 이동만으로 모션 주장",
         "responsibility": "Animator·관절·블렌딩·상태 전환·트랙 수명",
         "retest": "같은 입력 순서의 연속 프레임/동작 기록과 실제 상태 일치",
         "evidenceState": "UNVERIFIED",
         "remoteAssertions": [
-          "TIME_ORDERED_IDLE_MOVE_TURN_JUMP",
-          "JOINT_ANIMATION_AND_BLEND",
-          "ATTACK_HIT_DEATH_NO_STALE_TRACK"
+          "TIME_ORDERED_IDLE_MOVE_TURN_JUMP_PER_ACTOR",
+          "ACTOR_SPECIFIC_JOINT_ACTIVITY_POSE_BLEND_FOOT_CONTACT",
+          "NPC_CREATURE_BOSS_HIT_DEATH_NO_STALE_TRACK"
         ],
         "remoteProofState": "UNVERIFIED",
         "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
@@ -10854,7 +11151,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1424,
+        "line": 1425,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "currentBehavior": "local function combatSkinIdForPlayer(player)",
@@ -11077,7 +11374,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1424,
+        "line": 1425,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "context": "local function combatSkinIdForPlayer(player)",
@@ -11238,11 +11535,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c7e269dd457cd2b8774420484393fda3e8c95c25bd452e31af455667d9fce483",
+      "sourceTreeFingerprint": "4728e551b5786211a197c08829be7086f92ee8ae40921e366d1f08e77adf3ebd",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -11285,6 +11582,9 @@
     "DESIGNED_SYSTEM_CONTENT_VOLUME_TRACED_TO_EXACT_SOURCE_AND_PLAY_EVIDENCE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT",
+    "PER_ACTOR_MOTION_NATIVE_PLAYBACK_AND_EXACT_REMOTE_QA_REQUIRED_WHEN_APPLICABLE",
+    "FIVE_DISTINCT_PLAYABLE_IMPROVEMENTS_WITH_EXACT_GAME_RUNTIME_PROOF_WHEN_STAGE_REQUIRES",
+    "FIVE_SOURCE_DELTA_ITEMS_ALONE_CANNOT_PASS_ACTUAL_PLAY",
     "PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED",
     "THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY",
     "MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED"
@@ -11297,7 +11597,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -11357,5 +11657,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-27T07:31:05.811Z"
+  "generatedAt": "2026-10-27T18:11:24.839Z"
 }

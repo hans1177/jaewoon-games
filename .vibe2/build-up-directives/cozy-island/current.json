@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "cozy-island-build-up-g25-0b94c4fa0dba",
-  "directiveFingerprint": "0b94c4fa0dba5ae2e27bdeacc2b6f77b1d49b4163b38f45e03c9f39e72e0b93b",
-  "previousDirectiveFingerprint": "88c360b674ba33c0d1ec95f1dfd4849cea5d6168c45097f874e70da007691dd8",
-  "forbiddenRepeatFingerprint": "88c360b674ba33c0d1ec95f1dfd4849cea5d6168c45097f874e70da007691dd8",
+  "directiveId": "cozy-island-build-up-g26-eb1d6d191b59",
+  "directiveFingerprint": "eb1d6d191b59adf6dd8011887d986aede3a819fe53a754173db2aad2c9c62a5f",
+  "previousDirectiveFingerprint": "0b94c4fa0dba5ae2e27bdeacc2b6f77b1d49b4163b38f45e03c9f39e72e0b93b",
+  "forbiddenRepeatFingerprint": "0b94c4fa0dba5ae2e27bdeacc2b6f77b1d49b4163b38f45e03c9f39e72e0b93b",
   "gameId": "cozy-island",
   "gameName": "포근섬",
-  "generation": 25,
+  "generation": 26,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cozy-island",
-  "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+  "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
   "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+        "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
-    "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+    "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -862,7 +862,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+    "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4330,12 +4330,12 @@
     ],
     "signals": {
       "combat": 240,
-      "progression": 539,
-      "ai": 250,
+      "progression": 540,
+      "ai": 253,
       "save": 202,
       "multiplayer": 29,
       "animation": 129,
-      "motionStates": 1153,
+      "motionStates": 1154,
       "gameFeel": 76,
       "vfx": 79,
       "camera": 111,
@@ -4354,7 +4354,7 @@
       "settings": 33,
       "feedback": 171,
       "session": 89,
-      "content": 746,
+      "content": 747,
       "choice": 1817,
       "connection": 8,
       "performance": 58,
@@ -4712,7 +4712,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 358,
+        "line": 370,
         "kind": "FUNCTION",
         "symbol": "makeButton",
         "context": "local function makeButton(parent,text,color)",
@@ -4720,7 +4720,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 573,
+        "line": 585,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
@@ -4784,7 +4784,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 650,
+        "line": 662,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -4803,19 +4803,19 @@
   "previousVersionDelta": {
     "previousGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
-    "currentSourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+    "previousGeneration": 25,
+    "previousSourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+    "currentSourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED",
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
     "blockers": [
-      "roblox-cloud-image-content-unverified"
+      "roblox-runtime-evidence-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -5934,9 +5934,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/server/BattleVisual.luau",
           "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/shared/GameConfig.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -5949,9 +5949,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/server/BattleVisual.luau",
           "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/shared/GameConfig.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -5964,9 +5964,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/server/BattleVisual.luau",
           "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/shared/GameConfig.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -5979,9 +5979,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/server/BattleVisual.luau",
           "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/shared/GameConfig.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -5994,9 +5994,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/server/BattleVisual.luau",
           "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/shared/GameConfig.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6053,7 +6053,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 584945,
+        "sourceBytes": 585402,
         "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6086,12 +6086,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=4.",
+    "themeDepth": 3,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 2,
+        "WORLD_ECOLOGY_STORY_CHAIN": 3,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -6101,7 +6101,6 @@
       },
       "sequence": [
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -6112,6 +6111,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
       ],
@@ -6144,7 +6144,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 166,
+        "score": 148,
         "gapDomains": []
       },
       {
@@ -6259,11 +6259,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 26,
+    "previousGeneration": 25,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
-    "priorSourceFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
+    "sourceFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
+    "priorSourceFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6282,7 +6282,7 @@
     "version": 1,
     "gameId": "cozy-island",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+    "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7198,17 +7198,38 @@
       }
     ],
     "actorMotion": {
-      "version": 1,
+      "version": 2,
       "trigger": "CREATION_AND_EVERY_BUILD_UP",
       "gameId": "cozy-island",
       "platform": "ROBLOX",
+      "nextGameSpecificMotionWorkUnit": {
+        "generation": 26,
+        "actorClass": "COMPANION",
+        "sourceOwnerFile": "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+        "qualityAxis": "CINEMATIC_ATTACK_ENVELOPE",
+        "featureId": "CINEMATIC_ATTACK_ENVELOPE",
+        "evidenceCount": 0,
+        "previousVerifiedScore": null,
+        "verifiedTransferGames": 0,
+        "decision": "SOURCE_GROUNDED_UNVERIFIED_EXPLORATION",
+        "intent": "REAL_NATIVE_ACTOR_ANIMATION_IMPLEMENTATION",
+        "noUnknownBoneCreation": true,
+        "approvedExistingRigAndClipRequired": true,
+        "preserveGameplayAndSave": true,
+        "sourceOnlyEvidence": true,
+        "runtimeVerified": false
+      },
       "detectedActorClasses": [
         {
           "actorClass": "PLAYER",
           "sourceOwnerFiles": [
             "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
             "roblox-games/cozy-island/client/Game.client.luau",
-            "roblox-games/cozy-island/server/Game.server.luau"
+            "roblox-games/cozy-island/shared/GameConfig.luau",
+            "roblox-games/cozy-island/server/Game.server.luau",
+            "roblox-games/cozy-island/default.project.json",
+            "roblox-games/cozy-island/server/BattleVisual.luau",
+            "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -7222,9 +7243,11 @@
         {
           "actorClass": "NPC",
           "sourceOwnerFiles": [
+            "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
             "roblox-games/cozy-island/client/Game.client.luau",
             "roblox-games/cozy-island/server/Game.server.luau",
-            "roblox-games/cozy-island/launch-mvp.json"
+            "roblox-games/cozy-island/launch-mvp.json",
+            "roblox-games/cozy-island/shared/CozyCC0Library.luau"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -7241,7 +7264,9 @@
           "actorClass": "ENEMY",
           "sourceOwnerFiles": [
             "roblox-games/cozy-island/client/Game.client.luau",
-            "roblox-games/cozy-island/server/Game.server.luau"
+            "roblox-games/cozy-island/shared/GameConfig.luau",
+            "roblox-games/cozy-island/server/Game.server.luau",
+            "roblox-games/cozy-island/server/BattleVisual.luau"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -7256,7 +7281,9 @@
           "actorClass": "BOSS",
           "sourceOwnerFiles": [
             "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
-            "roblox-games/cozy-island/server/BattleVisual.luau"
+            "roblox-games/cozy-island/shared/GameConfig.luau",
+            "roblox-games/cozy-island/server/BattleVisual.luau",
+            "roblox-games/cozy-island/launch-mvp.json"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -7273,10 +7300,12 @@
           "sourceOwnerFiles": [
             "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
             "roblox-games/cozy-island/client/Game.client.luau",
+            "roblox-games/cozy-island/shared/GameConfig.luau",
+            "roblox-games/cozy-island/server/Game.server.luau",
+            "roblox-games/cozy-island/default.project.json",
             "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-            "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
-            "roblox-games/cozy-island/shared/WildlifeFactory.luau",
-            "roblox-games/cozy-island/shared/WildlifeCatalog.luau"
+            "roblox-games/cozy-island/launch-mvp.json",
+            "roblox-games/cozy-island/shared/SurvivalWildlife.luau"
           ],
           "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
           "motions": [
@@ -7413,7 +7442,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+      "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -7437,7 +7466,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+      "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
       "sourceFiles": [
         {
           "file": "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -7549,7 +7578,7 @@
     "gameId": "cozy-island",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+    "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7879,14 +7908,14 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/server/Game.server.luau",
-      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/client/Game.client.luau",
       "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -8112,14 +8141,14 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/server/Game.server.luau",
-      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/client/Game.client.luau",
       "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -8320,14 +8349,14 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/server/Game.server.luau",
-      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/client/Game.client.luau",
       "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -8472,14 +8501,14 @@
     "gameId": "cozy-island",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/server/Game.server.luau",
-      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/client/Game.client.luau",
       "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -8557,11 +8586,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "04c02c80846031613bfad77b361954375a551d811b1a4bba43b330c7fd8ec347",
+      "sourceTreeFingerprint": "bedf650ccebaa11799c09d592655b8e5576cafe6f07b0753342009afc627b3a3",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED"
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8619,7 +8648,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 27,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8681,5 +8710,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-27T17:05:50.138Z"
+  "generatedAt": "2026-10-27T18:11:24.369Z"
 }
