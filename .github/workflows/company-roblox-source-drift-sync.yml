@@ -128,7 +128,10 @@ jobs:
               [[ -z "$game_id" ]] && continue
               # 변경 감지는 게임이 실제 연결한 공용 모듈만 포함한다. 다른 게임의 자산 갱신은 충돌이 아니다.
               if ! SOURCE_GAME_ID="$game_id" SOURCE_GAME_ROOT=. LIVE_MAIN="$live_main" node --input-type=module <<'NODE'
-          import {robloxBuildSourceChangedBetween} from './tools/company-roblox-source-drift-sync.mjs';
+          import path from 'node:path';
+          import {pathToFileURL} from 'node:url';
+          const sourceTool=pathToFileURL(path.resolve(process.env.SOURCE_GAME_ROOT,'tools/company-roblox-source-drift-sync.mjs')).href;
+          const {robloxBuildSourceChangedBetween}=await import(sourceTool);
           const changed=robloxBuildSourceChangedBetween({
             repoRoot:process.env.SOURCE_GAME_ROOT,
             gameId:process.env.SOURCE_GAME_ID,
@@ -215,7 +218,10 @@ jobs:
               [[ -z "$game_id" ]] && continue
               # 변경 감지는 게임이 실제 연결한 공용 모듈만 포함한다. 다른 게임의 자산 갱신은 충돌이 아니다.
               if ! SOURCE_GAME_ID="$game_id" SOURCE_GAME_ROOT="$GITHUB_WORKSPACE" LIVE_MAIN="$live_main" node --input-type=module <<'NODE'
-          import {robloxBuildSourceChangedBetween} from './tools/company-roblox-source-drift-sync.mjs';
+          import path from 'node:path';
+          import {pathToFileURL} from 'node:url';
+          const sourceTool=pathToFileURL(path.resolve(process.env.SOURCE_GAME_ROOT,'tools/company-roblox-source-drift-sync.mjs')).href;
+          const {robloxBuildSourceChangedBetween}=await import(sourceTool);
           const changed=robloxBuildSourceChangedBetween({
             repoRoot:process.env.SOURCE_GAME_ROOT,
             gameId:process.env.SOURCE_GAME_ID,
