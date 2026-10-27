@@ -420,6 +420,27 @@ test('simple RPG only plays game-specific common weapon motion from actual serve
   assert.equal(client.includes('remote:FireServer("CivNativeCombatMotion'),false);
 });
 
+test('Baeksu native CC0 mesh creatures play bounded walk and server-confirmed hit poses without R15 assumptions',()=>{
+  const source=fs.readFileSync('roblox-games/baeksu-war/server/Game.server.luau','utf8');
+  const visual=fs.readFileSync('roblox-games/baeksu-war/shared/VisualKit.luau','utf8');
+  const config=fs.readFileSync('roblox-games/baeksu-war/shared/Config.luau','utf8');
+  assert.match(config,/SaveKey="baeksu-war-v1"/);
+  assert.match(source,/u.Last=now;target.HP-=u.Damage/);
+  assert.match(source,/u.Last>0 and now-u.Last or math.huge/);
+  assert.match(source,/local striking=attackAge>=0 and attackAge<=.32/);
+  assert.match(source,/if moved or striking or u.VisualPoseActive then/);
+  assert.match(source,/VisualKit.PoseCreature\\(u.Visual,a.X\\+u.X,u.Z,/);
+  assert.match(source,/u.VisualPoseActive=moved or striking/);
+  assert.match(visual,/function Kit.PoseCreature\\(actor,x,z,yaw,motion\\)/);
+  assert.match(visual,/actor:PivotTo\\(CFrame.new\\(x,terrainHeight\\(x,z\\)\\+offset\\+\\.04\\+bob,z\\+lunge\\)/);
+  assert.match(visual,/local strike=math.sin\\(math.pi\\*age\\/\\.32\\)/);
+  assert.match(visual,/bob=math.abs\\(math.sin\\(phase\\)\\)\\*\\.085/);
+  // Approved imported meshes retain ground/physics authority; visual pivot never changes combat X/Z.
+  assert.doesNotMatch(visual,/Instance.new\\("Part"\\)/);
+  assert.doesNotMatch(visual,/Enum.HumanoidRigType.R15/);
+  assert.doesNotMatch(source,/SetAttribute\\("Damage"/);
+});
+
 test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   assert.match(bootstrap,/company-asset-library\.json/);
