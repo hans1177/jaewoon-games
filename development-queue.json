@@ -1753,7 +1753,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-27T11:30:54.837Z",
+      "updatedAt": "2026-10-27T11:34:25.656Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2426,18 +2426,18 @@
         "sourceRevision": "d3e0378c66877d2aac883c0eebe3662b6b1dcc7b",
         "artifactIdentity": "sha256:397914f8ce1890b869b21ba17f0e5dd2253122e1cb83cecef2d673e708c10824",
         "artifactRunId": 40466199265,
-        "universeId": "10773076775",
-        "placeId": "115056847915626",
-        "candidateVersionNumber": 5,
+        "universeId": "10767445796",
+        "placeId": "98222620265768",
+        "candidateVersionNumber": 137,
         "httpStatus": 429,
         "failureStage": "CREATE",
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
         "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
         "externalCapacityDeferred": true,
-        "retryAfterSeconds": 2566,
-        "retryNotBefore": "2026-10-27T10:23:04.417Z",
-        "observedAt": "2026-10-27T09:40:19.125Z",
-        "workflowRunId": 40482373479,
+        "retryAfterSeconds": 100,
+        "retryNotBefore": "2026-10-27T11:36:05.044Z",
+        "observedAt": "2026-10-27T11:34:25.656Z",
+        "workflowRunId": 40496919946,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxRuntimePassed": false,
@@ -2532,9 +2532,9 @@
         "testedAt": "2026-10-26T00:36:00.324Z"
       },
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-cloud-image-content-unverified"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2751,7 +2751,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-27T11:30:54.837Z"
+        "verifiedAt": "2026-10-27T11:34:25.656Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-27T08:21:53.831Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-27T10:22:44.511Z",
@@ -6279,7 +6279,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T11:31:02.753Z",
+  "updatedAt": "2026-10-27T11:34:25.656Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
