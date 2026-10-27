@@ -1147,16 +1147,25 @@ test('legacy Baeksu war enters canonical all-game common-module sweep without fa
     const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
     const paths=[
       'default.project.json','client/Game.client.luau','server/Game.server.luau',
-      'shared/Config.luau','shared/VisualKit.luau'
+      'shared/GameConfig.luau','shared/VisualKit.luau'
     ];
     for(const name of paths){
       const destination=path.join(gameRoot,name);
       fs.mkdirSync(path.dirname(destination),{recursive:true});
       fs.copyFileSync(path.join('roblox-games/baeksu-war',name),destination);
     }
+    // 기존 게임은 현재 공용 15종이 연결돼 있다. 복사한 임시 프로젝트만
+    // 초기 미연결 상태로 되돌려 자동 등록·중복 없는 재실행을 검증한다.
+    const fixtureProjectFile=path.join(gameRoot,'default.project.json');
+    const fixtureProject=JSON.parse(fs.readFileSync(fixtureProjectFile,'utf8'));
+    const fixtureShared=fixtureProject.tree.ReplicatedStorage.Shared;
+    for(const name of Object.keys(fixtureShared)){
+      if(name.startsWith('RobloxCommon'))delete fixtureShared[name];
+    }
+    fs.writeFileSync(fixtureProjectFile,JSON.stringify(fixtureProject,null,2)+'\n');
     const originalClient=fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8');
     const originalServer=fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8');
-    const originalConfig=fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8');
+    const originalConfig=fs.readFileSync(path.join(gameRoot,'shared/GameConfig.luau'),'utf8');
     const before=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
     assert.equal(before.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
     const playbooks=path.join(tmp,'verified-playbooks.json');
@@ -1182,7 +1191,7 @@ test('legacy Baeksu war enters canonical all-game common-module sweep without fa
       '../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
     assert.equal(fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8'),originalClient);
     assert.equal(fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8'),originalServer);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8'),originalConfig);
+    assert.equal(fs.readFileSync(path.join(gameRoot,'shared/GameConfig.luau'),'utf8'),originalConfig);
     const evidencePath=path.join(gameRoot,'roblox-source-bootstrap.json');
     const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
     assert.equal(evidence.moduleSyncOnly,true);
