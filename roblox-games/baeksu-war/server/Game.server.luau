@@ -287,7 +287,7 @@ local function spawn(a,kind,team,level)
  if not body or not visual then m:Destroy();return end
  -- 임의 메시의 첫 MeshPart를 전체 유닛의 이동 Pivot으로 지정하지 않는다.
  -- 전투 판정은 기존 X/Z 좌표를 그대로 쓰고, 외형만 Terrain 발 높이로 이동한다.
- table.insert(a.Units,{Model=m,Visual=visual,Team=team,Kind=kind,HP=stat.HP,Damage=stat.Damage,Speed=stat.Speed,Range=stat.Range,X=x,Z=z,Last=0})
+ table.insert(a.Units,{Model=m,Visual=visual,Team=team,Kind=kind,HP=stat.HP,Damage=stat.Damage,Speed=stat.Speed,Range=stat.Range,X=x,Z=z,Last=0,VisualPhase=0,VisualPoseActive=false})
 end
 local function clearUnits(a)
  for _,u in ipairs(a.Units) do if u.Model then u.Model:Destroy() end end
@@ -471,6 +471,7 @@ local function tickArena(a,dt,now)
  end
  for _,u in ipairs(a.Units) do
   if u.HP>0 then
+   local moved=false
    local target,best=nil,math.huge
    local opponents=byTeam[u.Team=="ALLY" and "ENEMY" or "ALLY"]
    for _,v in ipairs(opponents) do
@@ -503,11 +504,26 @@ local function tickArena(a,dt,now)
       step=math.min(step,math.max(0,goal-u.Z))
      end
      u.Z+=step
+     moved=math.abs(step)>1e-4
     end
     if target and distance<13 then u.X+=math.clamp(target.X-u.X,-u.Speed*dt*.3,u.Speed*dt*.3) end
-    VisualKit.PoseCreature(u.Visual,a.X+u.X,u.Z,direction==1 and 0 or math.pi)
     if direction==1 and u.Z>C.World.EnemyGateZ+2 then a.EnemyHP-=u.Damage;kill(a,u,false)
     elseif direction==-1 and u.Z<C.World.FriendlyGateZ-2 then a.HomeHP-=u.Damage;kill(a,u,false) end
+   end
+   -- 이동 중에는 기존 서버 위치 위에서만 보행 박자. 근접 공격 피해가 실제 승인된
+   -- 마지막 타격 후 0.32초에 한해 전진·반동을 재생하고, 끝나면 원래 피벗을 복원한다.
+   if u.HP>0 and u.Visual and u.Visual.Parent then
+    local attackAge=u.Last>0 and now-u.Last or math.huge
+    local striking=attackAge>=0 and attackAge<=.32
+    if moved then u.VisualPhase+=dt*math.max(.1,u.Speed)*1.3 end
+    if moved or striking or u.VisualPoseActive then
+     VisualKit.PoseCreature(u.Visual,a.X+u.X,u.Z,u.Team=="ALLY" and 0 or math.pi,{
+      moving=moved,phase=u.VisualPhase,
+      facing=u.Team=="ALLY" and 1 or -1,
+      attackElapsed=striking and attackAge or nil,
+     })
+    end
+    u.VisualPoseActive=moved or striking
    end
   end
  end

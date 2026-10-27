@@ -420,6 +420,34 @@ test('simple RPG only plays game-specific common weapon motion from actual serve
   assert.equal(client.includes('remote:FireServer("CivNativeCombatMotion'),false);
 });
 
+test('Baeksu native CC0 mesh creatures play bounded walk and server-confirmed hit poses without R15 assumptions',()=>{
+  const source=fs.readFileSync('roblox-games/baeksu-war/server/Game.server.luau','utf8');
+  const visual=fs.readFileSync('roblox-games/baeksu-war/shared/VisualKit.luau','utf8');
+  const config=fs.readFileSync('roblox-games/baeksu-war/shared/GameConfig.luau','utf8');
+  for(const required of [
+    'SaveKey="baeksu-war-v1"', 'Cap=55'
+  ])assert.ok(config.includes(required),required);
+  const damage=source.indexOf('u.Last=now;target.HP-=u.Damage');
+  const motion=source.indexOf('local attackAge=u.Last>0 and now-u.Last or math.huge');
+  assert.ok(damage>=0 && motion>damage,'server-confirmed damage precedes creature impact pose');
+  for(const required of [
+    'local striking=attackAge>=0 and attackAge<=.32',
+    'if moved or striking or u.VisualPoseActive then',
+    'VisualKit.PoseCreature(u.Visual,a.X+u.X,u.Z,',
+    'u.VisualPoseActive=moved or striking',
+  ])assert.ok(source.includes(required),required);
+  for(const required of [
+    'function Kit.PoseCreature(actor,x,z,yaw,motion)',
+    'actor:PivotTo(CFrame.new(x,terrainHeight(x,z)+offset+.04+bob,z+lunge)',
+    'local strike=math.sin(math.pi*age/.32)',
+    'bob=math.abs(math.sin(phase))*.085',
+  ])assert.ok(visual.includes(required),required);
+  // Approved imported meshes retain ground/physics authority; visual pivot never changes combat X/Z.
+  assert.equal(visual.includes('Instance.new("Part")'),false);
+  assert.equal(visual.includes('Enum.HumanoidRigType.R15'),false);
+  assert.equal(source.includes('SetAttribute("Damage"'),false);
+});
+
 test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   assert.match(bootstrap,/company-asset-library\.json/);
