@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-27T18:50:00.952Z",
+  "updatedAt": "2026-10-27T19:19:03.512Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -470,8 +470,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T07:13:17.730Z",
-      "updatedAt": "2026-10-27T18:50:00.950Z",
-      "occurrenceCount": 399,
+      "updatedAt": "2026-10-27T19:19:03.509Z",
+      "occurrenceCount": 400,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -592,8 +592,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-10-27T18:50:00.950Z",
-      "occurrenceCount": 311,
+      "updatedAt": "2026-10-27T19:19:03.509Z",
+      "occurrenceCount": 312,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -11907,7 +11907,8 @@
       "evidence": [
         "roblox-build-package:roblox-package-asset-binding-failed",
         "{\"sourceRevision\":\"532fc65108fcbfd11efcad2acbc25ce46e4ae1ae\",\"buildSourceRevision\":\"532fc65108fcbfd11efcad2acbc25ce46e4ae1ae\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"76be284d7967709fd6427f3c875f4a732c5a5ed6\",\"buildSourceRevision\":\"76be284d7967709fd6427f3c875f4a732c5a5ed6\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"76be284d7967709fd6427f3c875f4a732c5a5ed6\",\"buildSourceRevision\":\"76be284d7967709fd6427f3c875f4a732c5a5ed6\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"cfc59df18d90269edfdb8cb3391107c6f651fdac\",\"buildSourceRevision\":\"cfc59df18d90269edfdb8cb3391107c6f651fdac\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -11916,8 +11917,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-27T07:30:33.941Z",
-      "updatedAt": "2026-10-27T18:31:39.104Z",
-      "occurrenceCount": 13
+      "updatedAt": "2026-10-27T19:19:03.509Z",
+      "occurrenceCount": 14
     },
     {
       "id": "bug-c5d944a757e7c627e4aa",
@@ -11956,7 +11957,8 @@
       "evidence": [
         "roblox-build-package:roblox-package-asset-binding-failed",
         "{\"sourceRevision\":\"1f9c75136cca543c0b4ec125c2cf8813ec694b9e\",\"buildSourceRevision\":\"1f9c75136cca543c0b4ec125c2cf8813ec694b9e\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"0dbe5977f02ed7c50acd7a6a0bee02abe8125242\",\"buildSourceRevision\":\"0dbe5977f02ed7c50acd7a6a0bee02abe8125242\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"0dbe5977f02ed7c50acd7a6a0bee02abe8125242\",\"buildSourceRevision\":\"0dbe5977f02ed7c50acd7a6a0bee02abe8125242\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"dbd0dc47853ca1a231cf85a72de561ba50ca619c\",\"buildSourceRevision\":\"dbd0dc47853ca1a231cf85a72de561ba50ca619c\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -11965,8 +11967,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-27T13:39:12.567Z",
-      "updatedAt": "2026-10-27T18:31:39.104Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-10-27T19:19:03.509Z",
+      "occurrenceCount": 10
     }
   ]
 }
