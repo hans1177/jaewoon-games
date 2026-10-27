@@ -401,21 +401,23 @@ test('simple RPG only plays game-specific common weapon motion from actual serve
   const client=fs.readFileSync('roblox-games/simple-rpg/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/simple-rpg/server/Game.server.luau','utf8');
   const project=JSON.parse(fs.readFileSync('roblox-games/simple-rpg/default.project.json','utf8'));
-  assert.match(server,/chosen\\.Humanoid:TakeDamage\\(damage\\)[\\s\\S]*remote:FireClient\\(player, "CIV_HIT"/);
+  const damageAt=server.indexOf('chosen.Humanoid:TakeDamage(damage)');
+  const confirmedAt=server.indexOf('remote:FireClient(player, "CIV_HIT"');
+  assert.ok(damageAt>=0 && confirmedAt>damageAt,'only server-confirmed damage may trigger combat motion');
   assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
     '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
-  assert.match(client,/commonMotion\\.CreateCombatCombo/);
-  assert.match(client,/commonMotion\\.MapCombatPoseToR15/);
-  assert.match(client,/commonMotion\\.BindJointPose/);
-  assert.match(client,/RunService\\.PreSimulation:Connect/);
-  assert.match(client,/humanoid\\.RigType ~= Enum\\.HumanoidRigType\\.R15/);
+  for(const signal of [
+    'commonMotion.CreateCombatCombo','commonMotion.MapCombatPoseToR15',
+    'commonMotion.BindJointPose','RunService.PreSimulation:Connect',
+    'humanoid.RigType ~= Enum.HumanoidRigType.R15'
+  ])assert.ok(client.includes(signal),signal);
   for(const profile of ['UNARMED','SPEAR','SWORD','GREATSWORD']){
-    assert.match(client,new RegExp('profile = "'+profile+'"'));
+    assert.ok(client.includes('profile = "'+profile+'"'),profile);
   }
   const hook=client.indexOf('elseif kind == "CIV_HIT" and typeof(payload) == "table"');
   assert.ok(hook>=0);
-  assert.match(client.slice(hook,hook+155),/playApprovedRpgCombatMotion\\(\\)/);
-  assert.doesNotMatch(client,/remote:FireServer\\("CivNativeCombatMotion/);
+  assert.ok(client.slice(hook,hook+160).includes('playApprovedRpgCombatMotion()'));
+  assert.equal(client.includes('remote:FireServer("CivNativeCombatMotion'),false);
 });
 
 test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
