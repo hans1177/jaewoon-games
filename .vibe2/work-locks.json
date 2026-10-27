@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-bjkqkg",
+      "worker": "vibe2",
+      "taskId": "tower-choice-rpg-studio-evolution-roblox-usability-v2",
+      "gameId": "tower-choice-rpg",
+      "files": [
+        "roblox-games/tower-choice-rpg/client/Game.client.luau",
+        "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
+        "roblox-games/tower-choice-rpg/server/Game.server.luau",
+        "roblox-games/tower-choice-rpg/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "9cca6bb911df04811eca087d011535997d64d643",
+      "runId": "40439428004",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-27T03:00:49.604Z",
+      "expiresAt": "2026-10-27T03:45:49.604Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:tower-choice-rpg-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
