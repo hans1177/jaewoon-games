@@ -447,7 +447,8 @@ export function projectJsonForGame(gameId='',gameRoot=''){
       StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}},
     },
   };
-  return synchronizeRobloxCommonModules({project,gameRoot:gameRoot||path.resolve('roblox-games',clean(gameId))}).project;
+  // 호출자가 제공하지 않은 작업 디렉터리의 게임을 추정하지 않는다. 실제 F0 작성기는 정확한 gameRoot를 전달한다.
+  return synchronizeRobloxCommonModules({project,gameRoot}).project;
 }
 
 const ROBLOX_BOOTSTRAP_STUDIO_FAMILY_PREFERENCES=Object.freeze({

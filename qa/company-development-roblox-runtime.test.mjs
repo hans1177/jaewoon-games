@@ -354,6 +354,11 @@ test('all canonical Roblox common modules and company pattern libraries are incl
   assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonBuilding.$path,'../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
 });
 
+test('Rojo project template never guesses the working directory as a game source root',()=>{
+  const project=projectJsonForGame('horror-escape-room');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+});
+
 test('game-specific Luau module remains protected when a common library changes',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-common-library-'));
   try{
