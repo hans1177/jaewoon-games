@@ -1609,6 +1609,12 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
     playerFacingInspectionContract:buildGameSpecificBuildUpDirective({gameId:'demo',platform:'ROBLOX',designRecord:design()}).playerFacingInspectionContract,
     gameIdentityAndNonNegotiables:{identity:'공통 원본'},
     thisLoopPrimaryGoal:'CODE_OWNER_REPAIR '.repeat(2400),
+    gameInternalAutoComposition:{actorMotion:{
+      trigger:'CREATION_AND_EVERY_BUILD_UP',
+      detectedActorClasses:[{actorClass:'NPC',sourceOwnerFiles:[owner],motions:['IDLE_ACTING','WALK_TURN_STOP'],state:'SOURCE_CANDIDATE'}],
+      mandatoryPolish:['CROSSFADE_POSE_VELOCITY_MATCH','FOOT_CONTACT_IK_WHEN_APPLICABLE'],
+      approvedSourceOrder:['VERIFIED_SAME_GAME_CLIP'],runtimeVerified:false
+    }},
     designToPlatformCodingTrace:{
       activePlatform:'ROBLOX',multiplayerMode:'COOP',minimumParticipants:2,
       platformCodingPlans:[{platform:'ROBLOX',canonicalGameSourceRoot:'roblox-games/demo'}],
@@ -1631,6 +1637,9 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
     assert.match(variant,/designCodeBinding=design:/);
     assert.match(variant,/designCodeVerification=/);
     assert.match(variant,/inspectionContract=.*QUALITY_UNVERIFIED/);
+    assert.match(variant,/actorMotion=EACH_BUILD_UP_PER_ACTOR_PLAY_QA_UNVERIFIED/);
+    assert.match(variant,/actorMotionRule=Bind the verified real native animation clips/);
+    assert.match(variant,/NPC/);
     for(const item of row.playerFacingInspectionContract.cases)assert.ok(variant.includes(item.id));
     for(const line of playerFacingInspectionPromptLines(row.playerFacingInspectionContract,{generation:1}))assert.ok(variant.includes(line),'inspection replay must survive focused/oversized recovery');
   }
