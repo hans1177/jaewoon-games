@@ -1,0 +1,2469 @@
+{
+  "version": 2,
+  "gameId": "fantasy-survival",
+  "date": "2026-10-27",
+  "source": "tools/vibe2-design-intelligence.mjs",
+  "brief": {
+    "version": 1,
+    "loop": [
+      "STABILIZE",
+      "UNDERSTAND",
+      "OBSERVE",
+      "DIAGNOSE",
+      "PRIORITIZE",
+      "BLUEPRINT",
+      "PROPOSE",
+      "COMPARE",
+      "REVISE",
+      "VALIDATE",
+      "LEARN",
+      "REPLAN",
+      "EXPAND"
+    ],
+    "gameId": "fantasy-survival",
+    "ownerIntent": {
+      "literal": "2026-10-10 사용자 요청: 현행 중앙정책과 동일한 Game Designer AI 신규 설계를 기존 canonical 설계 주기에서 실행한다. 사용자 요구와 원본 설계는 입력·검증 기준이며, 기존 초안을 단순 복사하거나 요청 전달자가 게임 설계를 대신 작성하지 않는다. 기존 Game Designer AI가 같은 공통 원본으로 identity-core 및 설계 시드를 체크포인트 내에서 직접 작성한 뒤, 전략적으로 구별되는 PLAN_A/PLAN_B와 상세 설계·장면 및 상태 연결·게임 진행·복구 가능성·입력·전투·보상·모바일 조작·필요한 장르별 A/B/c/@ 구조와 구체적 검증 계획을 저작하고 결정론적 최종 엄격 설계 평가를 받는다. 플레이어 판타지, 게임 정체성, 핵심 루프 의미, 사용자 확정 규칙, 기존 구현의 정확한 수치·밸런스·저장 키·저장 데이터·멀티플레이 의도를 보존하되, 새로운 차별화와 대안은 기존 구현에 자동 덮어쓰지 않는 검증 가능한 제안으로 허용한다. 모든 Unity Web 신규·기존 게임은 unity-games/<gameId>/ 원본 C# 기반 진짜 3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작만 최종 목표로 삼고 2D·2.5D·HTML 대체물을 최종 통과시킬 수 없다. Roblox 독립 진행과 Unity Android·UEFN 보류를 유지한다. 사용자가 승인한 F0~F9 순서와 세이브 구조는 변경하지 않으며 엄격 검증 80점 이상이고 하드 실패 0인 경우에만 설계 PASS를 표시한다. 실제 Unity WebGL 산출물·브라우저·모바일 실행 검증 없이 개발·배포 PASS를 주장하지 않는다.",
+      "eventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:fantasy-survival",
+      "semanticTextDeduplicationForbidden": true,
+      "repeatedIdenticalRequestCreatesNewRevision": true
+    },
+    "identityAnchors": [
+      "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
+      "기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다.,채집·제작·장비·전투·퀘스트·연구소 스토리의 인과와 저장 의미를 바꾸지 않고 피드백 품질을 높인다.,Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다.",
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+      "PRESERVE_EXISTING_SAVE_KEY_jaewoon_fantasy_survival_v1_AND_MIGRATE_ONLY_IF_REQUIRED",
+      "HYBRID"
+    ],
+    "baseConceptIsReferenceNotPrison": true,
+    "creativeDeviationAllowed": true,
+    "genreTransitionChallengeAllowed": true,
+    "stabilityFirst": true,
+    "causalDefectOwnership": {
+      "classes": [
+        "IMPLEMENTATION_RUNTIME_DEFECT",
+        "DESIGN_DEFECT",
+        "MIXED_DEFECT",
+        "UNRESOLVED_CAUSE"
+      ],
+      "sameSymptomDualIndependentMutationForbidden": true,
+      "unresolvedCauseAction": "TRACE_BEFORE_MUTATION"
+    },
+    "blueprint": {
+      "minimumPlans": 2,
+      "labels": [
+        "PLAN_A",
+        "PLAN_B"
+      ],
+      "materialChangeRequiresPlanComparison": true,
+      "selectedPlanRequiresRationale": true,
+      "radicalChallengeReversibleUntilValidated": true
+    },
+    "antiMonotony": {
+      "colorOrStatOnlyDifferentiationInsufficient": true,
+      "mapRegionsNeedDifferentGameplayRoles": true,
+      "enemiesNeedDifferentBehaviorOrCounterplayRoles": true,
+      "repeatedTemplateCloningCreatesVarietyDebt": true
+    },
+    "narrativeDialogue": {
+      "whenApplicable": true,
+      "characterVoiceProfileRequired": true,
+      "grammarRegisterVocabularyRhythmRelationshipEmotionKnowledgeSubtextRequired": true,
+      "foreshadowingPayoffTrackingRequired": true,
+      "twistNeedsPriorEvidence": true
+    },
+    "referenceHomage": {
+      "publicDomainClassicsMayInformMotifStructureThemeAndArchetype": true,
+      "protectedModernWorksAbstractTechniqueOnly": true,
+      "directProtectedExpressionCopyForbidden": true,
+      "multiReferenceGeneralizationPreferred": true
+    },
+    "representativeSystemBenchmark": {
+      "role": "A_NAMED_SIMILAR_GAME_SYSTEM_REFERENCE_B_EXISTING_GAME_SYSTEM_PRESERVED",
+      "dimensions": [
+        "PRIMARY_ACTION_AND_INPUT",
+        "HUD_INFORMATION_HIERARCHY",
+        "MENU_NAVIGATION_AND_RETURN",
+        "CAMERA_AND_FEEDBACK",
+        "COMBAT_OR_PRIMARY_INTERACTION_LOOP",
+        "WORLD_AND_STAGE_PROGRESSION",
+        "EQUIPMENT_PROGRESS_AND_REWARDS",
+        "ONBOARDING_AND_FIRST_SESSION",
+        "FAILURE_RETRY_SAVE_RECOVERY",
+        "MID_LATE_GAME_DEPTH_AND_REPLAY"
+      ],
+      "perDimensionEvidence": [
+        "NAMED_GAME_AND_SOURCE",
+        "OBSERVED_OR_UNVERIFIED_STATUS",
+        "PLAYER_INPUT",
+        "WORLD_OR_UI_STATE_TRANSITION",
+        "VISIBLE_FEEDBACK",
+        "NEXT_CHOICE",
+        "B_BASELINE_PRESERVATION",
+        "ADAPT_OR_REJECT_REASON",
+        "EXACT_TEST_SCENARIO"
+      ],
+      "noGenreFeaturesWithoutGameFit": true,
+      "originalCharacterVisualUiTextAndWorldRequired": true,
+      "directScreenAssetCodeOrDistinctiveExpressionCopyForbidden": true,
+      "referenceOnlyNotSourceOrRuntimeProof": true
+    },
+    "designSourceBuildUp": {
+      "orderedLoop": [
+        "READ_CURRENT_APPROVED_DESIGN_AND_SOURCE",
+        "COMPARE_A_REFERENCE_TO_B_BASELINE",
+        "EVOLVE_MAIN_A_B_C_D_AT_DESIGN",
+        "REVIEW_AND_APPROVE_DESIGN_REVISION",
+        "MAP_DESIGN_RULE_TO_RESPONSIBLE_SOURCE_FUNCTION",
+        "IMPLEMENT_CHANGED_DESIGN_IN_EXISTING_GAME_SOURCE",
+        "VERIFY_EXACT_BUILD_AND_ACTUAL_PLAY",
+        "FEED_VERIFIED_GAPS_TO_NEXT_DESIGN_REVISION"
+      ],
+      "bothDesignAndSourceMustEvolveOnApprovedGameplayExpansion": true,
+      "visualAndDefectRepairMayContinueWithinExistingApprovedDesign": true,
+      "designRevisionIsNotRuntimePass": true,
+      "sourceChangeIsNotDesignPass": true,
+      "preserve": [
+        "PLAYER_IDENTITY",
+        "EXISTING_RULES",
+        "SAVE_KEYS_AND_MEANING",
+        "BALANCE",
+        "MULTIPLAYER_AUTHORITY"
+      ],
+      "evidenceRequired": [
+        "DESIGN_REVISION_FINGERPRINT",
+        "RULE_AND_SYSTEM_IDS",
+        "SOURCE_REVISION_AND_RESPONSIBLE_FILES",
+        "BEFORE_AFTER_PLAYER_CHOICES",
+        "EXACT_BUILD_QA_AND_RUNTIME_SCENARIO"
+      ]
+    },
+    "convenienceEvolution": {
+      "study": [
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS",
+        "REUSABLE_SETUP",
+        "BATCH_PREVIEW_AND_COMMIT",
+        "INTERRUPTION_AND_RETURN"
+      ],
+      "referenceRequires": [
+        "SOURCE_URL",
+        "OBSERVED_DATE",
+        "OBSERVED_FEATURE",
+        "ABSTRACT_PRINCIPLE",
+        "GENRE_AND_SYSTEM_FIT",
+        "ADAPT_OR_REJECT_REASON"
+      ],
+      "baselineAndCandidate": [
+        "TASK_COMPLETION",
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "documentedFeatureIsRuntimeProof": false,
+      "staticRouteLengthIsMeasuredPlayerEffort": false,
+      "learningAuthority": "EXISTING_VERIFIED_EXPERIENCE_AND_FRESH_EXACT_BUILD_QA"
+    },
+    "depthAndRewardEvolution": {
+      "layers": [
+        "APPROVED_MAIN_A_B_C_CORE_FUN",
+        "SHORT_SESSION_SMALL_JOYS",
+        "OPTIONAL_DEEP_LONG_TERM_PLAY"
+      ],
+      "rewardContract": [
+        "VISIBLE_CONDITIONS",
+        "SAVED_PROGRESS",
+        "EXPLICIT_GUARANTEED_MILESTONES",
+        "DUPLICATE_PURPOSE",
+        "INTERRUPTION_AND_RESUME",
+        "EXACTLY_ONCE_REWARD_CLAIM"
+      ],
+      "systemicDepth": [
+        "EASY_ENTRY",
+        "SYSTEM_INTERDEPENDENCE",
+        "CONTEXTUAL_TRADEOFFS",
+        "COMBINATORIAL_NEW_USES",
+        "MULTIPLE_VIABLE_SOLUTIONS",
+        "MASTERY_CHANGES_CHOICES",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "academicSubjectMatterRequired": false,
+      "featureCountAndGrindingAreNotDepth": true,
+      "chain": [
+        "DISCOVERABLE_CLUE",
+        "EXPERIMENT_OR_MASTERY_CHOICE",
+        "COST_AND_COUNTERPLAY",
+        "NEW_PLAY_OPTION",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "payoffAxes": [
+        "NEW_ACTION",
+        "NEW_ROUTE",
+        "BUILD_COMBINATION",
+        "WORLD_RELATIONSHIP",
+        "OPTIONAL_MASTERY"
+      ],
+      "numberOrRewardCountAloneInsufficient": true,
+      "preserveGenreSaveAndBalance": true,
+      "compareBeforeAfterPlayerChoices": true,
+      "failedHypothesesMustInformNextIteration": true
+    },
+    "priorFeedback": {
+      "source": "PRIOR_STRICT_DESIGN_REVIEW",
+      "bypassAllowed": false,
+      "verdict": "PASS",
+      "totalScore": 80,
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "improvementTargets": [
+        {
+          "dimension": "CORE_LOOP_DESIGN",
+          "current": 11.2,
+          "maxScore": 14,
+          "gap": 2.8000000000000007
+        },
+        {
+          "dimension": "IDEA_AND_DISTINCTNESS",
+          "current": 9.6,
+          "maxScore": 12,
+          "gap": 2.4000000000000004
+        },
+        {
+          "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+          "current": 9.6,
+          "maxScore": 12,
+          "gap": 2.4000000000000004
+        }
+      ],
+      "recordedAt": "2026-09-19T16:50:51.557Z"
+    },
+    "factPackAvailable": true,
+    "authorityExpanded": false
+  },
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 145,
+    "sha256": "6873594e232eeda3bfeb7ac3c9b5fc8b764afbc0856ce969905f91717a586348",
+    "inventoryCount": 160,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MATERIAL": [],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "USE",
+            "assetId": "tycoon-after-school",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "forest-cc0-bat",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": true,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MATERIAL": [],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "USE",
+            "assetId": "tycoon-after-school",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "forest-cc0-bat",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": true,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MATERIAL": [],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "USE",
+            "assetId": "tycoon-after-school",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "ADAPT",
+            "assetId": "forest-cc0-bat",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": true,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "tycoon-after-school": {
+        "family": "AUDIO",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "role": "MUSIC_LOOP",
+        "sourcePath": "assets/shared/tycoon/after-school.ogg",
+        "platform": "SHARED_AUDIO",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "UNVERIFIED",
+        "productionVerified": false
+      },
+      "external-tinytreats-fence-corner-v1": {
+        "family": "BUILDING",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-fence-corner-v1",
+          "sourceModel": "assets/shared/homely-house/fence_corner.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "FENCE",
+        "sourcePath": "/assets/shared/homely-house/fence_corner.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "external-actor-barbarian": {
+        "family": "CHARACTER",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-actor-barbarian",
+          "sourceModel": "assets/roblox/actors/native/barbarian.glb",
+          "sourceLicense": "cc0-1.0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [],
+            "currentSourceBound": false,
+            "genericFamilyRequest": true,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": null,
+        "sourcePath": "assets/roblox/actors/native/barbarian.glb",
+        "platform": "ROBLOX",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
+        "productionVerified": false
+      },
+      "forest-cc0-bat": {
+        "family": "CREATURE",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": true,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "forest-cc0-bat",
+          "sourceModel": null,
+          "sourceLicense": "cc0-1.0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "b43fd37140419b2554ccff744704a798cd83258673d4cbe9e5e23f59d37769ab",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [],
+            "currentSourceBound": true,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": false,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": null,
+          "nativeSourceModelField": null,
+          "nativeSourceLicenseField": null,
+          "nativeSourceCreditField": null,
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": null,
+        "sourcePath": "assets/shared/forest/bat.fbx",
+        "platform": null,
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING",
+        "productionVerified": false
+      },
+      "external-tinytreats-cobblestones-v1": {
+        "family": "ENVIRONMENT",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-cobblestones-v1",
+          "sourceModel": "assets/shared/homely-house/cobblestones.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "COBBLESTONES",
+        "sourcePath": "/assets/shared/homely-house/cobblestones.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "external-tinytreats-bench-a-v1": {
+        "family": "PROP",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-bench-a-v1",
+          "sourceModel": "assets/shared/homely-house/bench_A.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "BENCH",
+        "sourcePath": "/assets/shared/homely-house/bench_A.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "tycoon-arrowBlue_left": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "role": "CONTROL_ICON",
+        "sourcePath": "assets/shared/tycoon/arrowBlue_left.png",
+        "platform": "SHARED_UI",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "UNVERIFIED",
+        "productionVerified": false
+      }
+    }
+  },
+  "report": {
+    "version": 2,
+    "required": true,
+    "pipeline": [
+      "STABILITY_TRIAGE",
+      "DEFECT_OWNERSHIP",
+      "DESIGNER",
+      "DESIGN_BLUEPRINT",
+      "DESIGN_INTEGRITY",
+      "CONTENT_DIVERSITY",
+      "REFERENCE_HOMAGE",
+      "NARRATIVE_DIALOGUE",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "stages": [
+      {
+        "name": "STABILITY_TRIAGE",
+        "status": "CLEAR_FOR_DESIGN_EVALUATION",
+        "findings": [],
+        "highestSeverity": "NONE",
+        "repeatedMinorBugCluster": false,
+        "creativeExpansionMayProceed": true,
+        "priorityRule": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION"
+      },
+      {
+        "name": "DEFECT_OWNERSHIP",
+        "status": "CLASSIFIED",
+        "owner": "NONE",
+        "route": "NO_DEFECT_SIGNAL",
+        "designRevisionAllowed": true,
+        "sameSymptomDualIndependentMutationForbidden": true,
+        "preserveApprovedDesignForRuntimeDefect": false,
+        "unresolvedCauseMustNotInventDesignFailure": false
+      },
+      {
+        "name": "DESIGNER",
+        "status": "PASS",
+        "goal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
+        "designChange": true,
+        "rationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+        "alternatives": [
+          "철학·사상의 조건을 우선 학습하는 정방향 탐색 계획",
+          "공성전의 반작용부터 읽는 역방향 탐색 계획"
+        ],
+        "issues": []
+      },
+      {
+        "name": "DESIGN_BLUEPRINT",
+        "status": "READY",
+        "materialDesignChange": true,
+        "alternatives": [
+          {
+            "label": "PLAN_A",
+            "concept": "철학·사상의 조건을 우선 학습하는 정방향 탐색 계획",
+            "playerFantasy": "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다의 결과를 축적해 다음 결정을 통제한다.",
+            "genreDirection": "중심 스릴러 진행 속에서 보조 공상과학가 숨겨진 단서를 제공한다.",
+            "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+            "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+            "landmarksTraversal": "철학·사상의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+            "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+            "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+            "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+            "questStoryEventFlow": "철학·사상의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+            "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+          },
+          {
+            "label": "PLAN_B",
+            "concept": "공성전의 반작용부터 읽는 역방향 탐색 계획",
+            "playerFantasy": "정보 부족을 감수하고 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다를 먼저 실험한다.",
+            "genreDirection": "보조 공상과학 판단이 앞서 중심 스릴러 목표의 순서를 뒤집는다.",
+            "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+            "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+            "landmarksTraversal": "공성전의 반작용과 발견 단서를 시각적으로 구분한다.",
+            "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+            "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+            "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+            "questStoryEventFlow": "공성전의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+            "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+          },
+          {
+            "label": "PLAN_A",
+            "concept": "철학·사상의 조건을 우선 학습하는 정방향 탐색 계획",
+            "playerFantasy": "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다의 결과를 축적해 다음 결정을 통제한다.",
+            "genreDirection": "중심 스릴러 진행 속에서 보조 공상과학가 숨겨진 단서를 제공한다.",
+            "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+            "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+            "landmarksTraversal": "철학·사상의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+            "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+            "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+            "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+            "questStoryEventFlow": "철학·사상의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+            "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+          },
+          {
+            "label": "PLAN_B",
+            "concept": "공성전의 반작용부터 읽는 역방향 탐색 계획",
+            "playerFantasy": "정보 부족을 감수하고 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다를 먼저 실험한다.",
+            "genreDirection": "보조 공상과학 판단이 앞서 중심 스릴러 목표의 순서를 뒤집는다.",
+            "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+            "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+            "landmarksTraversal": "공성전의 반작용과 발견 단서를 시각적으로 구분한다.",
+            "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+            "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+            "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+            "questStoryEventFlow": "공성전의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+            "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+          }
+        ],
+        "selectedPlan": "PLAN_A",
+        "selectedRationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+        "requiredAlternativeFields": [
+          "concept",
+          "playerFantasy",
+          "coreLoopShift",
+          "mapTopologyRegionRoles",
+          "landmarksTraversal",
+          "enemyEcosystemCounterplay",
+          "bossSignatureMoments",
+          "progressionEconomy",
+          "questStoryEventFlow",
+          "failureRetryRecovery",
+          "platformAdaptation",
+          "implementationScope",
+          "validationPlan"
+        ],
+        "eachAlternativeMustCoverRequiredAxes": true,
+        "genreChallengeAllowed": true,
+        "baseConceptIsReferenceNotPrison": true,
+        "identityAnchors": [
+          "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
+          "기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다.,채집·제작·장비·전투·퀘스트·연구소 스토리의 인과와 저장 의미를 바꾸지 않고 피드백 품질을 높인다.,Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다.",
+          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+          "PRESERVE_EXISTING_SAVE_KEY_jaewoon_fantasy_survival_v1_AND_MIGRATE_ONLY_IF_REQUIRED",
+          "HYBRID"
+        ],
+        "issues": []
+      },
+      {
+        "name": "DESIGN_INTEGRITY",
+        "status": "CHECKED",
+        "results": [
+          {
+            "key": "movementAndControlReachable",
+            "label": "PLAYER_MOVEMENT_AND_CONTROL_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "spawnToFirstActionReachable",
+            "label": "SPAWN_TO_FIRST_ACTION_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "progressionReachable",
+            "label": "PROGRESSION_GRAPH_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "questPrerequisitesSatisfiable",
+            "label": "QUEST_PREREQUISITE_SATISFIABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "sessionEndReachable",
+            "label": "WIN_FAIL_SESSION_END_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "failureRecoveryReachable",
+            "label": "FAILURE_RETRY_RECOVERY_PATH",
+            "value": "PASS"
+          },
+          {
+            "key": "mapObjectivesReachable",
+            "label": "MAP_ROUTE_AND_OBJECTIVE_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "economyFeasible",
+            "label": "RESOURCE_AND_REQUIRED_COST_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "counterplayFeasible",
+            "label": "ENEMY_COUNTERPLAY_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "bossPhaseTransitionsReachable",
+            "label": "BOSS_PHASE_TRANSITION_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "multiplayerLifecycleFeasible",
+            "label": "MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "saveCompatible",
+            "label": "SAVE_MEANING_AND_MIGRATION_COMPATIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "narrativeCausalityConsistent",
+            "label": "NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY",
+            "value": "PASS"
+          }
+        ],
+        "failed": [],
+        "designScoreCannotOverrideUnplayableState": true,
+        "issues": []
+      },
+      {
+        "name": "CONTENT_DIVERSITY",
+        "status": "CHECKED",
+        "regionCount": 2,
+        "enemyOrChallengeCount": 2,
+        "objectiveCount": 2,
+        "pairwiseMinimumDifferentiators": 2,
+        "colorOrStatOnlyDifferentiationInsufficient": true,
+        "issues": []
+      },
+      {
+        "name": "REFERENCE_HOMAGE",
+        "status": "CHECKED",
+        "inspirations": [
+          {
+            "titleOrTradition": "철학·사상",
+            "rightsBasis": "ABSTRACT_TECHNIQUE",
+            "borrowedTechnique": "선택과 자기 규정",
+            "transformation": "선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+          },
+          {
+            "titleOrTradition": "전쟁·군사",
+            "rightsBasis": "ABSTRACT_TECHNIQUE",
+            "borrowedTechnique": "높이와 접근 경로",
+            "transformation": "공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+          }
+        ],
+        "originalityRule": "공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다.",
+        "publicDomainMotifStructureThemeArchetypeAllowed": true,
+        "protectedModernExpressionCopyForbidden": true,
+        "abstractTechniqueReferenceAllowed": true,
+        "issues": []
+      },
+      {
+        "name": "NARRATIVE_DIALOGUE",
+        "required": true,
+        "status": "READY",
+        "worldRules": [
+          "철학·사상에 의해 바뀐 인물·지역의 상태는 공성전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다."
+        ],
+        "characterGoals": [
+          "철학·사상의 원칙을 지키는 인물과 공성전의 책임을 지려는 인물이 목표를 놓고 충돌한다."
+        ],
+        "plotBeats": [
+          "철학·사상의 원칙을 지키는 인물과 공성전의 책임을 지려는 인물이 목표를 놓고 충돌한다. 철학·사상에 의해 바뀐 인물·지역의 상태는 공성전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.",
+          "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다 또는 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다 중 무엇을 우선할지 판단한다.",
+          "철학·사상의 흔적이 남은 지역은 공성전의 선택에 따라 새로운 출입·보상 조건을 갖는다. 암호문와 가면 의식가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다."
+        ],
+        "questStates": [
+          "이전 선택 조건을 확인한다.",
+          "상대의 반작용이 나타나면 다음 선택을 바꾼다."
+        ],
+        "foreshadowing": [
+          "철학·사상의 작은 변화가 공성전의 큰 반작용을 예고한다."
+        ],
+        "payoffs": [
+          "공성전의 결과가 다시 철학·사상의 앞선 의미를 바꾼다."
+        ],
+        "intentionalUnresolvedForeshadowing": [],
+        "twists": [
+          "A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다."
+        ],
+        "dialogueRules": [
+          "현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다."
+        ],
+        "characterVoiceProfiles": [
+          {
+            "character": "철학·사상의 이해관계자",
+            "grammarRegister": "경험을 중심으로 짧게 이야기한다.",
+            "vocabularyRhythm": "경고와 선택 비용을 구체적으로 말한다.",
+            "relationshipShift": "플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.",
+            "emotionalRange": "불안에서 신뢰 또는 반발로 변한다.",
+            "knowledgeBoundary": "첫 시스템의 현재 변화만 안다.",
+            "subtextBehavior": "숨기고 싶은 위험을 발언 순서로 드러낸다."
+          },
+          {
+            "character": "공성전의 이해관계자",
+            "grammarRegister": "규칙과 반작용을 비교해 설명한다.",
+            "vocabularyRhythm": "사건 이전과 이후를 비교하며 말한다.",
+            "relationshipShift": "선택 결과에 따라 요구와 제안이 달라진다.",
+            "emotionalRange": "의심과 설득, 체념 또는 수용을 보인다.",
+            "knowledgeBoundary": "자신이 관찰한 후속 결과만 안다.",
+            "subtextBehavior": "정보 부족을 역이용해 다른 협상을 제시한다."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "scene": "첫 진입",
+            "purpose": "세계의 조건을 알아차리게 한다.",
+            "characterGoals": "무엇을 지킬지 정한다.",
+            "conflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+            "informationAsymmetry": "두 소재가 서로 다른 원인을 알고 있다.",
+            "reversal": "첫 선택이 예기치 않은 다른 문제를 일으킨다.",
+            "stateChange": "A의 상태가 B의 조건을 바꾼다."
+          },
+          {
+            "scene": "귀환과 해결",
+            "purpose": "이전 선택의 결과를 확인한다.",
+            "characterGoals": "손실과 관계를 재조정한다.",
+            "conflict": "서로의 비용을 누가 부담할지 충돌한다.",
+            "informationAsymmetry": "후속 사건의 단서가 플레이어에게만 보인다.",
+            "reversal": "B의 결과로 A의 옛 선택을 새롭게 해석한다.",
+            "stateChange": "세계 접근과 위험 상태가 갱신된다."
+          }
+        ],
+        "issues": [],
+        "principles": [
+          "GRAMMAR_AND_LANGUAGE_QUALITY_MUST_MATCH_CHARACTER_AND_SCENE",
+          "FORMALITY_VOCABULARY_RHYTHM_RELATIONSHIP_AND_EMOTION_DEFINE_CHARACTER_VOICE",
+          "ALL_CHARACTERS_SAME_VOICE_FORBIDDEN",
+          "CHARACTER_MAY_NOT_KNOW_UNLEARNED_INFORMATION",
+          "DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_SUBTEXT_AND_SCENE_OBJECTIVE",
+          "WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT",
+          "QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE",
+          "FORESHADOWING_REQUIRES_PAYOFF_OR_INTENTIONAL_UNRESOLVED_STATE",
+          "TWIST_REQUIRES_PRIOR_EVIDENCE_AND_CHARACTER_KNOWLEDGE_SUPPORT",
+          "DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION"
+        ],
+        "authorityExpanded": false
+      },
+      {
+        "name": "CONSTRAINT_ENGINE",
+        "status": "PASS",
+        "constraints": [],
+        "blockers": [],
+        "warnings": [
+          "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED"
+        ],
+        "authorityExpanded": false
+      },
+      {
+        "name": "CRITIC",
+        "status": "PASS",
+        "issues": [],
+        "questions": [
+          "플레이어가 이 시스템을 무시하거나 악용할 수 있는가?",
+          "반복 플레이에서 지배전략 하나로 고착되는가?",
+          "보상과 위험의 변화가 실제 선택을 만드는가?",
+          "기존 세이브/규칙/아트북 의도와 충돌하지 않는가?"
+        ]
+      },
+      {
+        "name": "CAUSALITY_GRAPH",
+        "status": "UNVERIFIED",
+        "nodes": [],
+        "edges": [],
+        "issues": [
+          "CAUSALITY_INPUT_REQUIRED"
+        ],
+        "invented": false
+      },
+      {
+        "name": "PLAYER_MODEL",
+        "status": "MODEL_READY",
+        "archetypes": [
+          {
+            "id": "novice",
+            "label": "초보",
+            "focus": "이해 가능성, 생존, 첫 성공까지의 마찰"
+          },
+          {
+            "id": "optimizer",
+            "label": "최적화형",
+            "focus": "최강 선택 고착, 우회/악용 가능성, 지배전략"
+          },
+          {
+            "id": "farmer",
+            "label": "파밍형",
+            "focus": "반복 보상, 경제 폭주, 무한 루프"
+          },
+          {
+            "id": "aggressive",
+            "label": "공격형",
+            "focus": "공격 편향의 보상과 과도한 위험"
+          },
+          {
+            "id": "safe",
+            "label": "안전형",
+            "focus": "회피/회복/대기 전략의 과도한 효율"
+          }
+        ],
+        "observations": [],
+        "evidenceRequired": true,
+        "predictedFactsInvented": false
+      },
+      {
+        "name": "COMBAT_ECONOMY_SIMULATOR",
+        "status": "UNVERIFIED",
+        "combat": {
+          "verified": false,
+          "reason": "COMBAT_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "economy": {
+          "verified": false,
+          "reason": "ECONOMY_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "inventedInputs": false,
+        "issues": [
+          "UNVERIFIED_SIMULATION_INPUT"
+        ]
+      },
+      {
+        "name": "IMPLEMENTATION",
+        "status": "READY",
+        "allowed": true,
+        "blockers": [],
+        "sourceMutationAuthorized": false,
+        "protectedGameplayMutationAutomatic": false
+      },
+      {
+        "name": "AUTO_PLAYER",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 입력 기반 플레이/진행/재시작/막힘 여부 증거"
+      },
+      {
+        "name": "TELEMETRY",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 플레이 수치 또는 엔진 QA 런 증거"
+      },
+      {
+        "name": "DESIGN_REVIEW",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "decision": null,
+        "evidence": null,
+        "assumptionFailed": false
+      },
+      {
+        "name": "EXPERIENCE_MEMORY",
+        "status": "WAITING_VERIFIED_REVIEW",
+        "ready": false,
+        "qaVerified": false,
+        "authorityExpanded": false,
+        "directMemoryWrite": false,
+        "promotionTool": "tools/vibe2-experience-control.mjs"
+      }
+    ],
+    "stability": {
+      "name": "STABILITY_TRIAGE",
+      "status": "CLEAR_FOR_DESIGN_EVALUATION",
+      "findings": [],
+      "highestSeverity": "NONE",
+      "repeatedMinorBugCluster": false,
+      "creativeExpansionMayProceed": true,
+      "priorityRule": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION"
+    },
+    "defectOwnership": {
+      "name": "DEFECT_OWNERSHIP",
+      "status": "CLASSIFIED",
+      "owner": "NONE",
+      "route": "NO_DEFECT_SIGNAL",
+      "designRevisionAllowed": true,
+      "sameSymptomDualIndependentMutationForbidden": true,
+      "preserveApprovedDesignForRuntimeDefect": false,
+      "unresolvedCauseMustNotInventDesignFailure": false
+    },
+    "designerHandoff": {
+      "required": false,
+      "ready": false,
+      "status": "NOT_REQUIRED",
+      "gameId": null,
+      "requestId": null,
+      "request": null,
+      "changeFields": [],
+      "owner": "EXISTING_GAME_DESIGNER",
+      "existingModule": "tools/company-design-cycle.mjs",
+      "existingWorkflow": ".github/workflows/company-seed-design-runtime.yml",
+      "designCycleExecuted": true,
+      "requestPersisted": false,
+      "sourceMutationAuthorized": false,
+      "authorityExpanded": false,
+      "runtimeVerified": false
+    },
+    "blueprint": {
+      "name": "DESIGN_BLUEPRINT",
+      "status": "READY",
+      "materialDesignChange": true,
+      "alternatives": [
+        {
+          "label": "PLAN_A",
+          "concept": "철학·사상의 조건을 우선 학습하는 정방향 탐색 계획",
+          "playerFantasy": "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다의 결과를 축적해 다음 결정을 통제한다.",
+          "genreDirection": "중심 스릴러 진행 속에서 보조 공상과학가 숨겨진 단서를 제공한다.",
+          "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+          "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+          "landmarksTraversal": "철학·사상의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+          "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+          "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+          "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+          "questStoryEventFlow": "철학·사상의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+          "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "공성전의 반작용부터 읽는 역방향 탐색 계획",
+          "playerFantasy": "정보 부족을 감수하고 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다를 먼저 실험한다.",
+          "genreDirection": "보조 공상과학 판단이 앞서 중심 스릴러 목표의 순서를 뒤집는다.",
+          "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+          "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+          "landmarksTraversal": "공성전의 반작용과 발견 단서를 시각적으로 구분한다.",
+          "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+          "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+          "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+          "questStoryEventFlow": "공성전의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+          "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+        },
+        {
+          "label": "PLAN_A",
+          "concept": "철학·사상의 조건을 우선 학습하는 정방향 탐색 계획",
+          "playerFantasy": "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다의 결과를 축적해 다음 결정을 통제한다.",
+          "genreDirection": "중심 스릴러 진행 속에서 보조 공상과학가 숨겨진 단서를 제공한다.",
+          "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+          "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+          "landmarksTraversal": "철학·사상의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+          "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+          "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+          "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+          "questStoryEventFlow": "철학·사상의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+          "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "공성전의 반작용부터 읽는 역방향 탐색 계획",
+          "playerFantasy": "정보 부족을 감수하고 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다를 먼저 실험한다.",
+          "genreDirection": "보조 공상과학 판단이 앞서 중심 스릴러 목표의 순서를 뒤집는다.",
+          "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+          "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+          "landmarksTraversal": "공성전의 반작용과 발견 단서를 시각적으로 구분한다.",
+          "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+          "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+          "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+          "questStoryEventFlow": "공성전의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+          "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+        }
+      ],
+      "selectedPlan": "PLAN_A",
+      "selectedRationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+      "requiredAlternativeFields": [
+        "concept",
+        "playerFantasy",
+        "coreLoopShift",
+        "mapTopologyRegionRoles",
+        "landmarksTraversal",
+        "enemyEcosystemCounterplay",
+        "bossSignatureMoments",
+        "progressionEconomy",
+        "questStoryEventFlow",
+        "failureRetryRecovery",
+        "platformAdaptation",
+        "implementationScope",
+        "validationPlan"
+      ],
+      "eachAlternativeMustCoverRequiredAxes": true,
+      "genreChallengeAllowed": true,
+      "baseConceptIsReferenceNotPrison": true,
+      "identityAnchors": [
+        "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
+        "기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다.,채집·제작·장비·전투·퀘스트·연구소 스토리의 인과와 저장 의미를 바꾸지 않고 피드백 품질을 높인다.,Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다.",
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+        "PRESERVE_EXISTING_SAVE_KEY_jaewoon_fantasy_survival_v1_AND_MIGRATE_ONLY_IF_REQUIRED",
+        "HYBRID"
+      ],
+      "issues": []
+    },
+    "integrity": {
+      "name": "DESIGN_INTEGRITY",
+      "status": "CHECKED",
+      "results": [
+        {
+          "key": "movementAndControlReachable",
+          "label": "PLAYER_MOVEMENT_AND_CONTROL_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "spawnToFirstActionReachable",
+          "label": "SPAWN_TO_FIRST_ACTION_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "progressionReachable",
+          "label": "PROGRESSION_GRAPH_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "questPrerequisitesSatisfiable",
+          "label": "QUEST_PREREQUISITE_SATISFIABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "sessionEndReachable",
+          "label": "WIN_FAIL_SESSION_END_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "failureRecoveryReachable",
+          "label": "FAILURE_RETRY_RECOVERY_PATH",
+          "value": "PASS"
+        },
+        {
+          "key": "mapObjectivesReachable",
+          "label": "MAP_ROUTE_AND_OBJECTIVE_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "economyFeasible",
+          "label": "RESOURCE_AND_REQUIRED_COST_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "counterplayFeasible",
+          "label": "ENEMY_COUNTERPLAY_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "bossPhaseTransitionsReachable",
+          "label": "BOSS_PHASE_TRANSITION_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "multiplayerLifecycleFeasible",
+          "label": "MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "saveCompatible",
+          "label": "SAVE_MEANING_AND_MIGRATION_COMPATIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "narrativeCausalityConsistent",
+          "label": "NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY",
+          "value": "PASS"
+        }
+      ],
+      "failed": [],
+      "designScoreCannotOverrideUnplayableState": true,
+      "issues": []
+    },
+    "diversity": {
+      "name": "CONTENT_DIVERSITY",
+      "status": "CHECKED",
+      "regionCount": 2,
+      "enemyOrChallengeCount": 2,
+      "objectiveCount": 2,
+      "pairwiseMinimumDifferentiators": 2,
+      "colorOrStatOnlyDifferentiationInsufficient": true,
+      "issues": []
+    },
+    "referenceHomage": {
+      "name": "REFERENCE_HOMAGE",
+      "status": "CHECKED",
+      "inspirations": [
+        {
+          "titleOrTradition": "철학·사상",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "선택과 자기 규정",
+          "transformation": "선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        },
+        {
+          "titleOrTradition": "전쟁·군사",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "높이와 접근 경로",
+          "transformation": "공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        }
+      ],
+      "originalityRule": "공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다.",
+      "publicDomainMotifStructureThemeArchetypeAllowed": true,
+      "protectedModernExpressionCopyForbidden": true,
+      "abstractTechniqueReferenceAllowed": true,
+      "issues": []
+    },
+    "referenceCapabilities": {
+      "version": 1,
+      "requirements": {
+        "R01": {
+          "id": "R01",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "PERMITTED_OBSERVED_SOURCE_REQUIRED"
+          ],
+          "accepted": 0,
+          "rejected": 0,
+          "inferredNotObserved": true,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R02": {
+          "id": "R02",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "OBSERVATION_BOUND_FUN_HYPOTHESIS_REQUIRED"
+          ],
+          "hypotheses": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R03": {
+          "id": "R03",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "TWO_SOURCES_AND_DISTINCT_ORIGINAL_RULES_REQUIRED"
+          ],
+          "plans": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R04": {
+          "id": "R04",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "REAL_INPUT_ACTION_HIT_TIMINGS_REQUIRED"
+          ],
+          "measurements": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R05": {
+          "id": "R05",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "SOURCE_GAP_AND_RUNTIME_PROVEN_TARGET_REQUIRED"
+          ],
+          "recipeCandidates": [],
+          "autoPromote": false,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R06": {
+          "id": "R06",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "REPRODUCED_RUNTIME_GAPS_REQUIRED"
+          ],
+          "prioritized": [],
+          "candidateOnly": true,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R07": {
+          "id": "R07",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "MEASURED_GENRE_DOMAIN_HOLDOUT_REQUIRED"
+          ],
+          "skills": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R08": {
+          "id": "R08",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "TIME_ORDERED_SCENE_EVIDENCE_REQUIRED"
+          ],
+          "observations": [],
+          "inferredEngineInternalsVerified": false,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R09": {
+          "id": "R09",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "VERIFIED_BEFORE_AFTER_IMPROVEMENT_REQUIRED"
+          ],
+          "improvements": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R10": {
+          "id": "R10",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "REPEATED_HOLDOUT_EXPERIMENT_REQUIRED"
+          ],
+          "tested": 0,
+          "eligible": 0,
+          "automaticKnowledgePromotion": false,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        }
+      },
+      "allVerified": false,
+      "nextImprovementCandidates": [],
+      "readOnlyImprovementBudget": 3,
+      "evidenceOnly": true,
+      "authorityExpanded": false,
+      "sourceMutationAuthorized": false
+    },
+    "narrative": {
+      "name": "NARRATIVE_DIALOGUE",
+      "required": true,
+      "status": "READY",
+      "worldRules": [
+        "철학·사상에 의해 바뀐 인물·지역의 상태는 공성전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다."
+      ],
+      "characterGoals": [
+        "철학·사상의 원칙을 지키는 인물과 공성전의 책임을 지려는 인물이 목표를 놓고 충돌한다."
+      ],
+      "plotBeats": [
+        "철학·사상의 원칙을 지키는 인물과 공성전의 책임을 지려는 인물이 목표를 놓고 충돌한다. 철학·사상에 의해 바뀐 인물·지역의 상태는 공성전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.",
+        "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다 또는 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다 중 무엇을 우선할지 판단한다.",
+        "철학·사상의 흔적이 남은 지역은 공성전의 선택에 따라 새로운 출입·보상 조건을 갖는다. 암호문와 가면 의식가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다."
+      ],
+      "questStates": [
+        "이전 선택 조건을 확인한다.",
+        "상대의 반작용이 나타나면 다음 선택을 바꾼다."
+      ],
+      "foreshadowing": [
+        "철학·사상의 작은 변화가 공성전의 큰 반작용을 예고한다."
+      ],
+      "payoffs": [
+        "공성전의 결과가 다시 철학·사상의 앞선 의미를 바꾼다."
+      ],
+      "intentionalUnresolvedForeshadowing": [],
+      "twists": [
+        "A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다."
+      ],
+      "dialogueRules": [
+        "현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다."
+      ],
+      "characterVoiceProfiles": [
+        {
+          "character": "철학·사상의 이해관계자",
+          "grammarRegister": "경험을 중심으로 짧게 이야기한다.",
+          "vocabularyRhythm": "경고와 선택 비용을 구체적으로 말한다.",
+          "relationshipShift": "플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.",
+          "emotionalRange": "불안에서 신뢰 또는 반발로 변한다.",
+          "knowledgeBoundary": "첫 시스템의 현재 변화만 안다.",
+          "subtextBehavior": "숨기고 싶은 위험을 발언 순서로 드러낸다."
+        },
+        {
+          "character": "공성전의 이해관계자",
+          "grammarRegister": "규칙과 반작용을 비교해 설명한다.",
+          "vocabularyRhythm": "사건 이전과 이후를 비교하며 말한다.",
+          "relationshipShift": "선택 결과에 따라 요구와 제안이 달라진다.",
+          "emotionalRange": "의심과 설득, 체념 또는 수용을 보인다.",
+          "knowledgeBoundary": "자신이 관찰한 후속 결과만 안다.",
+          "subtextBehavior": "정보 부족을 역이용해 다른 협상을 제시한다."
+        }
+      ],
+      "sceneBeats": [
+        {
+          "scene": "첫 진입",
+          "purpose": "세계의 조건을 알아차리게 한다.",
+          "characterGoals": "무엇을 지킬지 정한다.",
+          "conflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+          "informationAsymmetry": "두 소재가 서로 다른 원인을 알고 있다.",
+          "reversal": "첫 선택이 예기치 않은 다른 문제를 일으킨다.",
+          "stateChange": "A의 상태가 B의 조건을 바꾼다."
+        },
+        {
+          "scene": "귀환과 해결",
+          "purpose": "이전 선택의 결과를 확인한다.",
+          "characterGoals": "손실과 관계를 재조정한다.",
+          "conflict": "서로의 비용을 누가 부담할지 충돌한다.",
+          "informationAsymmetry": "후속 사건의 단서가 플레이어에게만 보인다.",
+          "reversal": "B의 결과로 A의 옛 선택을 새롭게 해석한다.",
+          "stateChange": "세계 접근과 위험 상태가 갱신된다."
+        }
+      ],
+      "issues": [],
+      "principles": [
+        "GRAMMAR_AND_LANGUAGE_QUALITY_MUST_MATCH_CHARACTER_AND_SCENE",
+        "FORMALITY_VOCABULARY_RHYTHM_RELATIONSHIP_AND_EMOTION_DEFINE_CHARACTER_VOICE",
+        "ALL_CHARACTERS_SAME_VOICE_FORBIDDEN",
+        "CHARACTER_MAY_NOT_KNOW_UNLEARNED_INFORMATION",
+        "DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_SUBTEXT_AND_SCENE_OBJECTIVE",
+        "WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT",
+        "QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE",
+        "FORESHADOWING_REQUIRES_PAYOFF_OR_INTENTIONAL_UNRESOLVED_STATE",
+        "TWIST_REQUIRES_PRIOR_EVIDENCE_AND_CHARACTER_KNOWLEDGE_SUPPORT",
+        "DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION"
+      ],
+      "authorityExpanded": false
+    },
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "advisory": [
+      "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED",
+      "CAUSALITY_INPUT_REQUIRED",
+      "UNVERIFIED_SIMULATION_INPUT"
+    ],
+    "guidance": "[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n안정성 우선: CLEAR_FOR_DESIGN_EVALUATION; 원인 소유권=NONE; route=NO_DEFECT_SIGNAL. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다.\n설계 밑그림: Plan A/B 이상 비교=READY; 선택안=PLAN_A. 기본 컨셉은 기준점이며 검증 가능한 창의적 장르/구조 도전은 허용한다.\n설계 도달성 검사: CHECKED; 콘텐츠 다양성: CHECKED.\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 게이트: 명시적 구조 문제 없음.\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n서사 계약: READY. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n실제 플레이 격차 검증 증거 없음. 임의 개선/수치 변경 금지.\nR01-R10 참고 자료는 사용권한/실측/독립 QA 없는 한 구현 또는 경험 승격 증거가 아니다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+    "planTarget": "UNITY",
+    "priorExperienceCount": 4,
+    "authorityExpanded": false
+  }
+}
