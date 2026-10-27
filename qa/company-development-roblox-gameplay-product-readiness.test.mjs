@@ -36,7 +36,8 @@ local button=Instance.new("TextButton")
 button.Activated:Connect(function() end)
 if UserInputService.TouchEnabled then ContextActionService:BindAction("x",function() end,true,Enum.KeyCode.ButtonA) end
 `;
-\ntest('fantasy survival now drives a real source-owned survival wave, attack, harvest and equipment loop',()=>{
+
+test('fantasy survival now drives a real source-owned survival wave, attack, harvest and equipment loop',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
@@ -51,13 +52,13 @@ if UserInputService.TouchEnabled then ContextActionService:BindAction("x",functi
   const check=evaluateRobloxGameplayProductReadiness({gameId:'fantasy-survival',baseline,config,server,client,project});
   assert.equal(check.pass,true,JSON.stringify(check.blockers));
   assert.equal(check.antiSkeletonPassed,true);
-  assert.match(server,/CreatureParts.Create\\(partId/);
-  assert.match(server,/WorldProps.Create\\(id/);
-  assert.match(server,/targetHuman:TakeDamage\\(enemy.damage\\)/);
+  assert.match(server,/CreatureParts.Create\(partId/);
+  assert.match(server,/WorldProps.Create\(id/);
+  assert.match(server,/targetHuman:TakeDamage\(enemy.damage\)/);
   assert.match(server,/ProximityPrompt/);
   assert.match(server,/if wood<cost or stone<cost then return false end/);
   assert.match(server,/if actionAccepted and action.Id == actionId and action.Kind == "COMBAT"/);
-  assert.doesNotMatch(server,/local function scopeHandler\\d+\\(/);
+  assert.doesNotMatch(server,/local function scopeHandler\d+\(/);
 });
 
 test('generic scope handler skeleton cannot satisfy a survival design',()=>{
