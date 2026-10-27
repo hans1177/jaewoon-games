@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
-import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource,synchronizeRobloxCommonModules} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
 import {buildTransformativeRecombination,recombinationDesignAxes,transformativeRecipeCompatibility} from '../tools/vibe3-transformative-recombination.mjs';
@@ -336,6 +336,37 @@ test('Rojo project maps shared server and client source roots',()=>{
   assert.equal(project.tree.ReplicatedStorage.Shared.$path,'shared');
   assert.equal(project.tree.ServerScriptService.GameServer.$path,'server');
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
+});
+
+test('all canonical Roblox common modules and company pattern libraries are included in build-up inventory',()=>{
+  const project=projectJsonForGame('test-game');
+  const result=synchronizeRobloxCommonModules({project});
+  assert.ok(result.moduleCount>=14,'canonical modules should be discovered dynamically');
+  assert.equal(result.moduleCount,result.libraryCoverage.runtimeModuleCount);
+  assert.equal(result.libraryCoverage.patternSourcesRuntimeInjected,false);
+  assert.equal(result.libraryCoverage.unverifiedAssetsAutoPromoted,false);
+  assert.match(result.libraryCoverage.sourceFingerprint,/^[0-9a-f]{64}$/);
+  assert.ok(result.libraryCoverage.firstPartyPackCount>=14);
+  assert.ok(result.libraryCoverage.firstPartyPatternSourceCount>0);
+  assert.equal(typeof result.libraryCoverage.verifiedCodePatternCount,'number');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonSkillPresentation.$path,'../../assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonBuilding.$path,'../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
+});
+
+test('game-specific Luau module remains protected when a common library changes',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-common-library-'));
+  try{
+    const root=path.join(tmp,'game');
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    fs.writeFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),'return {GameSpecific=true}\\n');
+    const project=projectJsonForGame('test-game',root);
+    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
+    const result=synchronizeRobloxCommonModules({project,gameRoot:root});
+    assert.ok(result.conflicts.some(row=>row.module==='RobloxCommonMotion'));
+    assert.equal(fs.readFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),'utf8'),'return {GameSpecific=true}\\n');
+    assert.ok(result.linked.includes('RobloxCommonBuilding'));
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
 test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
