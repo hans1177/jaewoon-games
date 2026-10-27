@@ -118998,7 +118998,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -119033,7 +119033,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 10,
-      "previousReservationId": "system-ai:40477602928:1",
+      "previousReservationId": "system-ai:40489193621:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -119041,12 +119041,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40489193621:1",
-      "reservedAt": "2026-10-27T10:38:12.138Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -119275,7 +119275,8 @@
         "actions-run:40473167941",
         "system-ai-handoff-to-reservation:system-ai:40477602928:1",
         "system-ai-handoff-from-reservation:system-ai:40477602928:1",
-        "system-ai-handoff-to-reservation:system-ai:40489193621:1"
+        "system-ai-handoff-to-reservation:system-ai:40489193621:1",
+        "actions-run:40489193621"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 402,
@@ -119290,7 +119291,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-27T10:38:12.138Z"
+      "updatedAt": "2026-10-27T10:43:26.001Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -147214,7 +147215,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -147248,7 +147249,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 6,
-      "previousReservationId": "system-ai:40485230363:1",
+      "previousReservationId": "system-ai:40489193621:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -147256,12 +147257,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40489193621:1",
-      "reservedAt": "2026-10-27T10:38:12.138Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -147386,7 +147387,8 @@
         "system-ai-blocked-task-count:33",
         "system-ai-handoff-to-reservation:system-ai:40485230363:1",
         "actions-run:40485230363",
-        "system-ai-handoff-to-reservation:system-ai:40489193621:1"
+        "system-ai-handoff-to-reservation:system-ai:40489193621:1",
+        "actions-run:40489193621"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1666,
@@ -147401,7 +147403,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-27T10:38:12.138Z"
+      "updatedAt": "2026-10-27T10:43:26.001Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -167276,7 +167278,7 @@
     },
     {
       "id": "recovery-recovery-491876e5719e322845a6",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -167320,7 +167322,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:1bbef1f2745b262d83688b3ecbcf0c8a822aa65c:fantasy-survival"
       ],
-      "retries": 1,
+      "retries": 2,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
@@ -167334,12 +167336,12 @@
       "sourceMutationBaseline": "1bbef1f2745b262d83688b3ecbcf0c8a822aa65c",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40489193621:1",
-      "reservedAt": "2026-10-27T10:38:12.138Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:40071176060:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -167395,7 +167397,8 @@
         "learning-penalty:YES",
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
-        "system-ai-handoff-to-reservation:system-ai:40489193621:1"
+        "system-ai-handoff-to-reservation:system-ai:40489193621:1",
+        "actions-run:40489193621"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2289,
@@ -167410,7 +167413,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T06:55:30.381Z",
-      "updatedAt": "2026-10-27T10:38:12.138Z"
+      "updatedAt": "2026-10-27T10:43:26.001Z"
     },
     {
       "id": "recovery-recovery-ad592fee592e422a7a33",
