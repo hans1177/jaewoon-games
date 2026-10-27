@@ -22,10 +22,2660 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "externalGameplayPracticeDrills": 0,
+  "externalGameplayPracticeDrills": 50,
   "phase4GeneralizationDrills": 6,
   "adaptiveImprovementDrills": 4,
   "drills": [
+    {
+      "id": "external-afk-arena-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40441001366-afk-arena",
+        "gameId": "afk-arena",
+        "designAxes": {
+          "genre": {
+            "id": "IDLE_GROWTH_RPG",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40441001366-afk-arena"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "3fdb1cd607c70b85e82ca5461cb3b1212849f0efc043e9e4bcff931bca040e79",
+          "afterScreenshotSha256": "3fdb1cd607c70b85e82ca5461cb3b1212849f0efc043e9e4bcff931bca040e79",
+          "measuredInputCount": 2,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-afk-arena-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40441001366-afk-arena",
+        "gameId": "afk-arena",
+        "designAxes": {
+          "genre": {
+            "id": "IDLE_GROWTH_RPG",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40441001366-afk-arena"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "3fdb1cd607c70b85e82ca5461cb3b1212849f0efc043e9e4bcff931bca040e79",
+          "afterScreenshotSha256": "3fdb1cd607c70b85e82ca5461cb3b1212849f0efc043e9e4bcff931bca040e79",
+          "measuredInputCount": 2,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-among-us-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40437075216-among-us",
+        "gameId": "among-us",
+        "designAxes": {
+          "genre": {
+            "id": "SOCIAL_PARTY",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40437075216-among-us"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "cdd9cf60c718090a8b51ddb43ddae0935b5c711f0f8d5e4115f0f13091e0e526",
+          "afterScreenshotSha256": "cdd9cf60c718090a8b51ddb43ddae0935b5c711f0f8d5e4115f0f13091e0e526",
+          "measuredInputCount": 2,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-among-us-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40437075216-among-us",
+        "gameId": "among-us",
+        "designAxes": {
+          "genre": {
+            "id": "SOCIAL_PARTY",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40437075216-among-us"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "cdd9cf60c718090a8b51ddb43ddae0935b5c711f0f8d5e4115f0f13091e0e526",
+          "afterScreenshotSha256": "cdd9cf60c718090a8b51ddb43ddae0935b5c711f0f8d5e4115f0f13091e0e526",
+          "measuredInputCount": 2,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-angry-birds-2-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40430905945-angry-birds-2",
+        "gameId": "angry-birds-2",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40430905945-angry-birds-2"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "84287e23573589dca2705a07d21bf01c82a609f84a570a349d26dc505f4a14b7",
+          "afterScreenshotSha256": "e1fc785a43be2a4fe7415085b2c6a6cee7b2f887b1b4f6615dd88ed0f97859c5",
+          "measuredInputCount": 1,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-angry-birds-2-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40430905945-angry-birds-2",
+        "gameId": "angry-birds-2",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40430905945-angry-birds-2"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "84287e23573589dca2705a07d21bf01c82a609f84a570a349d26dc505f4a14b7",
+          "afterScreenshotSha256": "e1fc785a43be2a4fe7415085b2c6a6cee7b2f887b1b4f6615dd88ed0f97859c5",
+          "measuredInputCount": 1,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-arknights-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40435225450-arknights",
+        "gameId": "arknights",
+        "designAxes": {
+          "genre": {
+            "id": "TOWER_DEFENSE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40435225450-arknights"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "c9e6ae942f83579c8ae3effaeaf93159e07570c39837b4b43da232c28dea2dc6",
+          "afterScreenshotSha256": "f1573032ba5d4067700345f9d80499a4cc9d0b19ba5075396b74d724a6a39f00",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-arknights-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40435225450-arknights",
+        "gameId": "arknights",
+        "designAxes": {
+          "genre": {
+            "id": "TOWER_DEFENSE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40435225450-arknights"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "c9e6ae942f83579c8ae3effaeaf93159e07570c39837b4b43da232c28dea2dc6",
+          "afterScreenshotSha256": "f1573032ba5d4067700345f9d80499a4cc9d0b19ba5075396b74d724a6a39f00",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-asphalt-legends-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40434392092-asphalt-legends",
+        "gameId": "asphalt-legends",
+        "designAxes": {
+          "genre": {
+            "id": "RACING",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40434392092-asphalt-legends"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "684da17bda7647f46fdaeaee40b348aa5f873776a43cd0af539d9136c218a52f",
+          "afterScreenshotSha256": "6a973362436f4c2ea86045511354916b889682140f1cf4bc7294ce93251cf93b",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-asphalt-legends-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40434392092-asphalt-legends",
+        "gameId": "asphalt-legends",
+        "designAxes": {
+          "genre": {
+            "id": "RACING",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40434392092-asphalt-legends"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "684da17bda7647f46fdaeaee40b348aa5f873776a43cd0af539d9136c218a52f",
+          "afterScreenshotSha256": "6a973362436f4c2ea86045511354916b889682140f1cf4bc7294ce93251cf93b",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-block-blast-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40439034804-block-blast",
+        "gameId": "block-blast",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40439034804-block-blast"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "c1e7d36aea10a9e3726298351baef665a2279e0009434740a93c504272f6fe0c",
+          "afterScreenshotSha256": "4deb4f6ce17ef652ab5b7980016413fc35ab1b7ddee029c830ca4746fc4b1b12",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-block-blast-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40439034804-block-blast",
+        "gameId": "block-blast",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40439034804-block-blast"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "c1e7d36aea10a9e3726298351baef665a2279e0009434740a93c504272f6fe0c",
+          "afterScreenshotSha256": "4deb4f6ce17ef652ab5b7980016413fc35ab1b7ddee029c830ca4746fc4b1b12",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-brawl-stars-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-38659058517-brawl-stars",
+        "gameId": "brawl-stars",
+        "designAxes": {
+          "genre": {
+            "id": "ACTION_PVP",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-38659058517-brawl-stars"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "1278e84fc4329631d0fd4713d2f3b0d8077f2377db0f63805392cf4db37404f9",
+          "afterScreenshotSha256": "435adeb6bd8468f1cf78c78a42bb59f262c553ffda64698dbd47ba0a12acc165",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-brawl-stars-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-38659058517-brawl-stars",
+        "gameId": "brawl-stars",
+        "designAxes": {
+          "genre": {
+            "id": "ACTION_PVP",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-38659058517-brawl-stars"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "1278e84fc4329631d0fd4713d2f3b0d8077f2377db0f63805392cf4db37404f9",
+          "afterScreenshotSha256": "435adeb6bd8468f1cf78c78a42bb59f262c553ffda64698dbd47ba0a12acc165",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-candy-crush-saga-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40441001366-candy-crush-saga",
+        "gameId": "candy-crush-saga",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40441001366-candy-crush-saga"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "5301dc8fc253c0eea044e581cd448f2ccc5645bc1202b68925e5bf6e0fa18ad2",
+          "afterScreenshotSha256": "2958664ce31f7ce3aaec8223f1d9c916e4622677ab31779a27482e1328675299",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-candy-crush-saga-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40441001366-candy-crush-saga",
+        "gameId": "candy-crush-saga",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40441001366-candy-crush-saga"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "5301dc8fc253c0eea044e581cd448f2ccc5645bc1202b68925e5bf6e0fa18ad2",
+          "afterScreenshotSha256": "2958664ce31f7ce3aaec8223f1d9c916e4622677ab31779a27482e1328675299",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-clash-of-clans-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40429418108-clash-of-clans",
+        "gameId": "clash-of-clans",
+        "designAxes": {
+          "genre": {
+            "id": "STRATEGY_BASE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40429418108-clash-of-clans"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "a3fd22dcf4deacf2b3a5dec48a07555bed6f2bbf5ddbbf88997069fb123d80c0",
+          "afterScreenshotSha256": "fb808b8606590c6efbf19ec2077e3afddc9c07509e416017411561ee194deaaf",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-clash-of-clans-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40429418108-clash-of-clans",
+        "gameId": "clash-of-clans",
+        "designAxes": {
+          "genre": {
+            "id": "STRATEGY_BASE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40429418108-clash-of-clans"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "a3fd22dcf4deacf2b3a5dec48a07555bed6f2bbf5ddbbf88997069fb123d80c0",
+          "afterScreenshotSha256": "fb808b8606590c6efbf19ec2077e3afddc9c07509e416017411561ee194deaaf",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-efootball-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40435225450-efootball",
+        "gameId": "efootball",
+        "designAxes": {
+          "genre": {
+            "id": "SPORTS_FOOTBALL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40435225450-efootball"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "4eb8f030d4d86554bc2255086341f117ce3cef4c095d5ac6950cdc6817964c9b",
+          "afterScreenshotSha256": "36d82ad3417f92fd5c498ce07a616f6672d2438c94c992f0fc6b7b004cdb5121",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-efootball-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40435225450-efootball",
+        "gameId": "efootball",
+        "designAxes": {
+          "genre": {
+            "id": "SPORTS_FOOTBALL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40435225450-efootball"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "4eb8f030d4d86554bc2255086341f117ce3cef4c095d5ac6950cdc6817964c9b",
+          "afterScreenshotSha256": "36d82ad3417f92fd5c498ce07a616f6672d2438c94c992f0fc6b7b004cdb5121",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-gardenscapes-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40431663500-gardenscapes",
+        "gameId": "gardenscapes",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40431663500-gardenscapes"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "06971e003ce39fa252be9afb34ad280b11e6e62a1f2b47e8b41052ef10470a68",
+          "afterScreenshotSha256": "06971e003ce39fa252be9afb34ad280b11e6e62a1f2b47e8b41052ef10470a68",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-gardenscapes-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40431663500-gardenscapes",
+        "gameId": "gardenscapes",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40431663500-gardenscapes"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "06971e003ce39fa252be9afb34ad280b11e6e62a1f2b47e8b41052ef10470a68",
+          "afterScreenshotSha256": "06971e003ce39fa252be9afb34ad280b11e6e62a1f2b47e8b41052ef10470a68",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-hay-day-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40424482125-hay-day",
+        "gameId": "hay-day",
+        "designAxes": {
+          "genre": {
+            "id": "FARM_COZY",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40424482125-hay-day"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "92cec876b9ccdc8b97b09a003428366bbb78bc073560980a0c4b490a345d08f8",
+          "afterScreenshotSha256": "7fffb1fc78ba43fc4768d3632a68949cf9a65346d76e7f135f600c9795a1fbc5",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-hay-day-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40424482125-hay-day",
+        "gameId": "hay-day",
+        "designAxes": {
+          "genre": {
+            "id": "FARM_COZY",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40424482125-hay-day"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "92cec876b9ccdc8b97b09a003428366bbb78bc073560980a0c4b490a345d08f8",
+          "afterScreenshotSha256": "7fffb1fc78ba43fc4768d3632a68949cf9a65346d76e7f135f600c9795a1fbc5",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-hill-climb-racing-2-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40430115336-hill-climb-racing-2",
+        "gameId": "hill-climb-racing-2",
+        "designAxes": {
+          "genre": {
+            "id": "CASUAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40430115336-hill-climb-racing-2"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "02fb023b1814147d8657b266f03212f09d82fe92b73880b86020297fb8cc4ee9",
+          "afterScreenshotSha256": "26c8118badf48bd05e2dccdd6c305395d606018721433be93246edae388f50c1",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-hill-climb-racing-2-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40430115336-hill-climb-racing-2",
+        "gameId": "hill-climb-racing-2",
+        "designAxes": {
+          "genre": {
+            "id": "CASUAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40430115336-hill-climb-racing-2"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "02fb023b1814147d8657b266f03212f09d82fe92b73880b86020297fb8cc4ee9",
+          "afterScreenshotSha256": "26c8118badf48bd05e2dccdd6c305395d606018721433be93246edae388f50c1",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-homescapes-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40431663500-homescapes",
+        "gameId": "homescapes",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40431663500-homescapes"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "61e9a2fd12e3d5760f8ea3aeed0effdd79bd07de01cd6d37e08b9e65badacf64",
+          "afterScreenshotSha256": "61e9a2fd12e3d5760f8ea3aeed0effdd79bd07de01cd6d37e08b9e65badacf64",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-homescapes-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40431663500-homescapes",
+        "gameId": "homescapes",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40431663500-homescapes"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "61e9a2fd12e3d5760f8ea3aeed0effdd79bd07de01cd6d37e08b9e65badacf64",
+          "afterScreenshotSha256": "61e9a2fd12e3d5760f8ea3aeed0effdd79bd07de01cd6d37e08b9e65badacf64",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-monopoly-go-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40429418108-monopoly-go",
+        "gameId": "monopoly-go",
+        "designAxes": {
+          "genre": {
+            "id": "CASUAL_BOARD",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40429418108-monopoly-go"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "2bd2f904e0506aafb95592ff3c871fbb2e68cfd595b41a91dcb70e09ca7d5e5e",
+          "afterScreenshotSha256": "a5d0be4f4ec41f7adadc5238d68e8b3ac8eb112505c6dd7649257d09aaae5771",
+          "measuredInputCount": 2,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-monopoly-go-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40429418108-monopoly-go",
+        "gameId": "monopoly-go",
+        "designAxes": {
+          "genre": {
+            "id": "CASUAL_BOARD",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40429418108-monopoly-go"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "2bd2f904e0506aafb95592ff3c871fbb2e68cfd595b41a91dcb70e09ca7d5e5e",
+          "afterScreenshotSha256": "a5d0be4f4ec41f7adadc5238d68e8b3ac8eb112505c6dd7649257d09aaae5771",
+          "measuredInputCount": 2,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-piano-fire-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40411758826-piano-fire",
+        "gameId": "piano-fire",
+        "designAxes": {
+          "genre": {
+            "id": "RHYTHM",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40411758826-piano-fire"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "9251d2dbe0e6909848f85f4668017a3d1c474b63b331c83bea8ef898bb694673",
+          "afterScreenshotSha256": "291742a1ac33caa57a7d4e39e1f4833d836dc233ad84435ee2d4e71648045671",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-piano-fire-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40411758826-piano-fire",
+        "gameId": "piano-fire",
+        "designAxes": {
+          "genre": {
+            "id": "RHYTHM",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40411758826-piano-fire"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "9251d2dbe0e6909848f85f4668017a3d1c474b63b331c83bea8ef898bb694673",
+          "afterScreenshotSha256": "291742a1ac33caa57a7d4e39e1f4833d836dc233ad84435ee2d4e71648045671",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-pizza-ready-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40433760447-pizza-ready",
+        "gameId": "pizza-ready",
+        "designAxes": {
+          "genre": {
+            "id": "IDLE_TYCOON",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40433760447-pizza-ready"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "aa113a3da79925b6fd65e484a6ba6ebfe81e1daab7e610eab3c766159374f1ba",
+          "afterScreenshotSha256": "1134942abcaa87528fe46508ea3f72e539834cd7a9e5a4873e3c1960c7eb2c1a",
+          "measuredInputCount": 1,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-pizza-ready-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40433760447-pizza-ready",
+        "gameId": "pizza-ready",
+        "designAxes": {
+          "genre": {
+            "id": "IDLE_TYCOON",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40433760447-pizza-ready"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "aa113a3da79925b6fd65e484a6ba6ebfe81e1daab7e610eab3c766159374f1ba",
+          "afterScreenshotSha256": "1134942abcaa87528fe46508ea3f72e539834cd7a9e5a4873e3c1960c7eb2c1a",
+          "measuredInputCount": 1,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-pk-xd-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40437075216-pk-xd",
+        "gameId": "pk-xd",
+        "designAxes": {
+          "genre": {
+            "id": "SANDBOX_SOCIAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40437075216-pk-xd"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+          "afterScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-pk-xd-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40437075216-pk-xd",
+        "gameId": "pk-xd",
+        "designAxes": {
+          "genre": {
+            "id": "SANDBOX_SOCIAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40437075216-pk-xd"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+          "afterScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-pokemon-go-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40430905945-pokemon-go",
+        "gameId": "pokemon-go",
+        "designAxes": {
+          "genre": {
+            "id": "LOCATION_COLLECTION_RPG",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40430905945-pokemon-go"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "97bafd73f3b89ab23c9b3439dfd88fb9833bc9dc861330a1316358e91741ee0d",
+          "afterScreenshotSha256": "b15d554090f24446db1abeb92d9c5491ea83ef7b1a4a7f2df58cd541ecf5a26a",
+          "measuredInputCount": 2,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-pokemon-go-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40430905945-pokemon-go",
+        "gameId": "pokemon-go",
+        "designAxes": {
+          "genre": {
+            "id": "LOCATION_COLLECTION_RPG",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40430905945-pokemon-go"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "97bafd73f3b89ab23c9b3439dfd88fb9833bc9dc861330a1316358e91741ee0d",
+          "afterScreenshotSha256": "b15d554090f24446db1abeb92d9c5491ea83ef7b1a4a7f2df58cd541ecf5a26a",
+          "measuredInputCount": 2,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-royal-match-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40440031157-royal-match",
+        "gameId": "royal-match",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40440031157-royal-match"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "28cf399476f986afb2df5de3d3e0b20e39230e32d805ba3d1ed82afa32e2b0bc",
+          "afterScreenshotSha256": "28cf399476f986afb2df5de3d3e0b20e39230e32d805ba3d1ed82afa32e2b0bc",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-royal-match-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40440031157-royal-match",
+        "gameId": "royal-match",
+        "designAxes": {
+          "genre": {
+            "id": "PUZZLE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40440031157-royal-match"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "28cf399476f986afb2df5de3d3e0b20e39230e32d805ba3d1ed82afa32e2b0bc",
+          "afterScreenshotSha256": "28cf399476f986afb2df5de3d3e0b20e39230e32d805ba3d1ed82afa32e2b0bc",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-simcity-buildit-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40423412456-simcity-buildit",
+        "gameId": "simcity-buildit",
+        "designAxes": {
+          "genre": {
+            "id": "CITY_BUILDER_SIMULATION",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40423412456-simcity-buildit"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "afterScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-simcity-buildit-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40423412456-simcity-buildit",
+        "gameId": "simcity-buildit",
+        "designAxes": {
+          "genre": {
+            "id": "CITY_BUILDER_SIMULATION",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40423412456-simcity-buildit"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "afterScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+          "measuredInputCount": 3,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-standoff-2-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40435225450-standoff-2",
+        "gameId": "standoff-2",
+        "designAxes": {
+          "genre": {
+            "id": "FPS_TACTICAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40435225450-standoff-2"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "97cd381b8fe5d51d92c15db377992cd7e3d2537eec8f9e058c26434ba8c8dc6f",
+          "afterScreenshotSha256": "ea6cc1ed026f874a7023a54e1504144114089da1315194d89e820f9e21753047",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-standoff-2-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40435225450-standoff-2",
+        "gameId": "standoff-2",
+        "designAxes": {
+          "genre": {
+            "id": "FPS_TACTICAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40435225450-standoff-2"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "97cd381b8fe5d51d92c15db377992cd7e3d2537eec8f9e058c26434ba8c8dc6f",
+          "afterScreenshotSha256": "ea6cc1ed026f874a7023a54e1504144114089da1315194d89e820f9e21753047",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-subway-surfers-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40439034804-subway-surfers",
+        "gameId": "subway-surfers",
+        "designAxes": {
+          "genre": {
+            "id": "CASUAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40439034804-subway-surfers"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "dfbf0115ed4a44171c9df555b41805f692eb66e3b2bc92ecc2fb676e41cca5aa",
+          "afterScreenshotSha256": "dfbf0115ed4a44171c9df555b41805f692eb66e3b2bc92ecc2fb676e41cca5aa",
+          "measuredInputCount": 4,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-subway-surfers-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40439034804-subway-surfers",
+        "gameId": "subway-surfers",
+        "designAxes": {
+          "genre": {
+            "id": "CASUAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40439034804-subway-surfers"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "dfbf0115ed4a44171c9df555b41805f692eb66e3b2bc92ecc2fb676e41cca5aa",
+          "afterScreenshotSha256": "dfbf0115ed4a44171c9df555b41805f692eb66e3b2bc92ecc2fb676e41cca5aa",
+          "measuredInputCount": 4,
+          "visualChange": false
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-survivor-io-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40440031157-survivor-io",
+        "gameId": "survivor-io",
+        "designAxes": {
+          "genre": {
+            "id": "ACTION_SURVIVAL_ROGUELITE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40440031157-survivor-io"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "36eb803fe8b2ff4c2230e5ac7cb3ce5e5e8eb3b8d3a35573fdbad99c10094ae0",
+          "afterScreenshotSha256": "82e81b3e09dc810842f6dab00ac29f391200f9c163d019f7cacaa6d42e2e93cc",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-survivor-io-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40440031157-survivor-io",
+        "gameId": "survivor-io",
+        "designAxes": {
+          "genre": {
+            "id": "ACTION_SURVIVAL_ROGUELITE",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40440031157-survivor-io"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "36eb803fe8b2ff4c2230e5ac7cb3ce5e5e8eb3b8d3a35573fdbad99c10094ae0",
+          "afterScreenshotSha256": "82e81b3e09dc810842f6dab00ac29f391200f9c163d019f7cacaa6d42e2e93cc",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-whiteout-survival-web",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "platformProfile": "web",
+      "codingPracticeDrill": "web-input-save",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40432933009-whiteout-survival",
+        "gameId": "whiteout-survival",
+        "designAxes": {
+          "genre": {
+            "id": "STRATEGY_SURVIVAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40432933009-whiteout-survival"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "ecbc73e36c8acdcfc1987617a5c8058bde98b5b0a7e6aa8051a54365db11d1cc",
+          "afterScreenshotSha256": "8c71902cd2d81e104bb896030a81b2b235c6a00d842f16b34e63f61ae03b22b1",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
+    {
+      "id": "external-whiteout-survival-roblox",
+      "kind": "EXTERNAL_OBSERVATION_CODE_PRACTICE",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "platformProfile": "roblox",
+      "robloxCodePractice": true,
+      "robloxPracticeDrill": "authority",
+      "externalGameplayPractice": {
+        "sourceRevision": "external-playtest-40432933009-whiteout-survival",
+        "gameId": "whiteout-survival",
+        "designAxes": {
+          "genre": {
+            "id": "STRATEGY_SURVIVAL",
+            "subgenre": "",
+            "rules": []
+          },
+          "style": {
+            "id": "",
+            "visual": [],
+            "motion": []
+          },
+          "concept": {
+            "id": "",
+            "world": [],
+            "mood": []
+          },
+          "sourceRevision": "external-playtest-40432933009-whiteout-survival"
+        },
+        "observation": {
+          "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+          "beforeScreenshotSha256": "ecbc73e36c8acdcfc1987617a5c8058bde98b5b0a7e6aa8051a54365db11d1cc",
+          "afterScreenshotSha256": "8c71902cd2d81e104bb896030a81b2b235c6a00d842f16b34e63f61ae03b22b1",
+          "measuredInputCount": 3,
+          "visualChange": true
+        },
+        "comparison": {
+          "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+          "sourceGameplayEquivalenceVerified": false,
+          "physicalParametersVerified": false,
+          "motionCurvesVerified": false,
+          "menuSemanticsVerified": false
+        },
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL",
+        "practiceOnly": true,
+        "runtimePromotionAllowed": false
+      }
+    },
     {
       "id": "review-fail_wu3qnk",
       "kind": "REPRO_DRILL",
