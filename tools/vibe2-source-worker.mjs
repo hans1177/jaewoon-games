@@ -1774,6 +1774,67 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         });
       }
     }
+    if(motionWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
+      // [모션 제작 규칙 A] IK 가중치를 관절 포즈/프레임레이트에 맞춰 부드럽게 연속 보간.
+      // 원본 R15 IKControl/접지 레이캐스트가 있는 경우만 수정한다. 충돌/서버 Root는 그대로 둔다.
+      const footContact='footState.control.Weight = groundGap <= 0.35 and (rootSpeed < 1 and 0.5 or 0.32) or 0.12';
+      const footRelease='footState.control.Weight = 0';
+      if(source.includes('verifiedLearningCreateFootIk(')
+        &&source.includes('verifiedLearningRunService.RenderStepped:Connect(function(dt)')
+        &&source.includes('local updateHz = 60')
+        &&source.split(footContact).length===2&&source.split(footRelease).length===2){
+        const contactReplacement=[
+          'local targetWeight = groundGap <= 0.35 and (rootSpeed < 1 and 0.5 or 0.32) or 0.12',
+          'footState.control.Weight += (targetWeight - footState.control.Weight) * (1 - math.exp(-18 / updateHz))'
+        ].join('\n');
+        const releaseReplacement='footState.control.Weight += (0 - footState.control.Weight) * (1 - math.exp(-22 / updateHz))';
+        candidates.push({
+          summary:'R15 real foot IK: soften planted contact/release for animation start, stop and mobile LOD transitions',
+          expectedEffect:'Existing grounded feet ease contact pressure at their actual update rate instead of snapping IK on raycast edge or speed change',
+          edits:[{path:relative,find:footContact,replace:contactReplacement},{path:relative,find:footRelease,replace:releaseReplacement}],
+          newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-40,
+          deterministicRobloxNativeRepair:'ACTOR_R15_FOOT_IK_CONTINUOUS_BLEND',
+          semanticGrounding:{actorClasses:['PLAYER','NPC','ENEMY','BOSS'],existingNativeIK:true,frameInvariant:true,
+            noRootMotion:true,noHitboxDamageCooldownChange:true,runtimeVerified:false}
+        });
+      }
+      // [모션 제작 규칙 B] 공격/걷기 루프의 관절 보간을 dt-독립적 감쇠로 바꾼다.
+      const poseLerp='joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,roll),math.clamp(step*16,0,1))';
+      if(source.includes('RunService.PreSimulation:Connect(function(dt)')
+        &&source.includes('item:IsA("Motor6D")')
+        &&source.includes('CozyMotionState')
+        &&source.split(poseLerp).length===2){
+        candidates.push({
+          summary:'Articulated NPC and monster joint motion: frame-rate independent pose smoothing',
+          expectedEffect:'Stable pose interpolation across phone and desktop FPS without modifying action states or hit timing',
+          edits:[{path:relative,find:poseLerp,
+            replace:'joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,roll),1-math.exp(-16*step))'}],
+          newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-30,
+          deterministicRobloxNativeRepair:'ACTOR_NPC_MOB_FRAME_INVARIANT_JOINTS',
+          semanticGrounding:{actorClasses:['NPC','ENEMY','CREATURE'],existingMotor6D:true,noRootMotion:true,
+            noHitboxDamageCooldownChange:true,runtimeVerified:false}
+        });
+      }
+      // [모션 제작 규칙 C] 매 프레임 절대시각 × 현재 속도로 gait phase를 다시
+      // 계산하던 패턴은 이동속도/정지/재출발마다 다리가 순간이동한다.
+      const gaitPhase='local phase=now*(moving and math.clamp(speed*1.35,5,13) or 2)+record.phase';
+      if(source.includes('RunService.PreSimulation:Connect(function(dt)')
+        &&source.includes('record.elapsed+=dt')
+        &&source.includes('local stride=moving and math.sin(phase)*.68 or math.sin(phase)*.025')
+        &&source.split(gaitPhase).length===2){
+        candidates.push({
+          summary:'Actor authored gait continuity: integrate phase over actual elapsed frames instead of speed-scaled absolute clock',
+          expectedEffect:'NPC and monster legs retain a continuous walk phase across movement starts, stops, turns and speed changes',
+          edits:[{path:relative,find:gaitPhase,replace:[
+            'record.gaitPhase=(record.gaitPhase or record.phase)+math.min(step,.1)*(moving and math.clamp(speed*1.35,5,13) or .35)',
+            'local phase=record.gaitPhase'
+          ].join('\n')}],newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-25,
+          deterministicRobloxNativeRepair:'ACTOR_NPC_MOB_CONTINUOUS_GAIT_PHASE',
+          semanticGrounding:{actorClasses:['NPC','ENEMY','CREATURE'],existingMotor6D:true,noRootMotion:true,
+            noHitboxDamageCooldownChange:true,runtimeVerified:false}
+        });
+      }
+    }
     if(runtimeWork&&/(?:^|\/)(?:server|client)(?:\/|$)|\.(?:server|client)\.luau$/i.test(relative)){
       // [실행 연결 10종] 기존 함수·입력·화면 값을 재사용하고 새 게임 규칙은 만들지 않는다.
       const code=executableText(source,'luau'),functions=inspectSourceFunctions(source,{language:'luau'});
