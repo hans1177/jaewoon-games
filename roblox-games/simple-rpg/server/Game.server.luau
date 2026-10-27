@@ -145,15 +145,20 @@ local function bindFoundationCharacter(character)
   overlap.CollisionGroup = rootPart.CollisionGroup
   local blockers = workspace:GetPartBoundsInBox(CFrame.new(target), Vector3.new(math.max(rootPart.Size.X, 1.5), math.max(clearance * 2 - 0.4, rootPart.Size.Y), math.max(rootPart.Size.Z, 1.5)), overlap)
   for _, part in ipairs(blockers) do
-    -- 스폰 지형과 높이가 겹치는 기존 로비/대륙 바닥은 벽·NPC 장애물이 아니다.
-    -- 다만 실제 발 높이 위로 돌출된 충돌체는 통과시키지 않는다.
-    local isUnderlyingWalkableFloor = part:GetAttribute("WalkableGround") == true
-      and part.Anchored and part.Position.Y + part.Size.Y * 0.5 <= groundHit.Position.Y + 0.1
-    if part ~= groundHit.Instance and part.CanCollide and not isUnderlyingWalkableFloor then
-      character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED")
-      return
+    if part ~= groundHit.Instance and part.CanCollide then
+      -- [백수전쟁 스폰 구조 참고] 서로 겹쳐 설치된 원본 대륙/로비 바닥은
+      -- 플레이어 발밑 지지면이다. 같은 높이 이하의 지형을 머리 충돌로 오판하지 않는다.
+      local isSupportingGround = part:IsA("BasePart") and part.Anchored
+        and part:GetAttribute("WalkableGround") == true
+        and (part.Position.Y + part.Size.Y * 0.5) <= (groundHit.Position.Y + 0.1)
+      if not isSupportingGround then
+        character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED")
+        character:SetAttribute("SpawnBlockingPart", part.Name)
+        return
+      end
     end
   end
+  character:SetAttribute("SpawnBlockingPart", nil)
   foundationSpawn.Position = Vector3.new(foundationSpawn.Position.X, groundHit.Position.Y + foundationSpawn.Size.Y * 0.5 + 0.05, foundationSpawn.Position.Z)
   foundationSpawn:SetAttribute("FoundationSpawnGrounded", true)
   rootPart.Anchored = false
@@ -182,6 +187,7 @@ local function bindFoundationCharacter(character)
       character:SetAttribute("GROUND_CONTACT", true)
       character:SetAttribute("FoundationFailure", nil)
       character:SetAttribute("NativeFoundationGroundingVersion", 3)
+      character:SetAttribute("FoundationSourceAssetId", startGround and startGround:GetAttribute("VerifiedRobloxAssetId") or nil)
       return
     end
     task.wait(0.1)
@@ -407,7 +413,15 @@ if assetModule and assetModule:IsA("ModuleScript") then
 end
 local function importCuratedModel(folder, name, assetId)
   if not folder or typeof(assetId) ~= "number" or assetId <= 0 or assetId % 1 ~= 0 then return end
-  local ok, container = pcall(function() return InsertService:LoadAsset(assetId) end)
+  -- 백수전쟁의 소스 준비 재시도 방식과 동일한 취지: 승인된 동일 Roblox 자산 ID만
+  -- 짧게 재요청한다. 권한/소유권 실패는 우회하거나 임의 Part로 대체하지 않는다.
+  local ok, container = false, nil
+  for attempt = 1, 4 do
+    ok, container = pcall(function() return InsertService:LoadAsset(assetId) end)
+    if ok and container then break end
+    warn("SIMPLE_RPG_CURATED_ASSET_RETRY", name, assetId, attempt, tostring(container))
+    if attempt < 4 then task.wait(0.5 * 2 ^ (attempt - 1)) end
+  end
   if not ok or not container then
     warn("SIMPLE_RPG_CURATED_ASSET_UNAVAILABLE", name, assetId)
     return
