@@ -390,7 +390,6 @@ jobs:
               console.log('ROBLOX_PERMANENTLY_REMOVED_GAME_SKIP='+item.gameId);
               continue;
             }
-            if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -1178,7 +1177,6 @@ jobs:
             ||Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
-            if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(sourceBusyIds.has(String(item.gameId||''))){
               console.log('ROBLOX_TECHNICAL_DEFER_SOURCE_STAGE='+item.gameId);

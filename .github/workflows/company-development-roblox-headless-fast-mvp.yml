@@ -107,7 +107,6 @@ jobs:
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=256)break;
-            if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
