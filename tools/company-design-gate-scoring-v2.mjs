@@ -144,8 +144,14 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     // 유틸: 문법의 정확한 참조 역할은 설명문이 아니다. 실제 시스템·선택·출처는 아래 표준 검수로 확인한다.
     if(path==='creativeGrammar.b.existingSystemReference.scope'&&['B_SUPPORTING_REFERENCE_ONLY','B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(text))return;
     if(path==='creativeGrammar.existingGameSystemRole'&&['B_SUPPORTING_REFERENCE','B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(text))return;
-    // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
-    if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
+    // 보존형 설계가 사용하는 검증된 표현 패스 ID는 서술형 임시 표식이 아니다.
+    // ID가 놓인 허용된 필드만 제외하고, TODO·PLACEHOLDER 및 임의의 대문자 문구는 계속 거부한다.
+    const preservationPassIds=['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'];
+    const canonicalTraceId=/^implementationTraceability\[\d+\]\.designElement$/.test(path);
+    const canonicalMilestoneId=seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+      &&seed.OWNER_REBUILD_MODE==='PRESERVATION_PRESENTATION_UPGRADE'
+      &&/^contentExpansionPlan\[\d+\]\.milestone$/.test(path);
+    if((canonicalTraceId||canonicalMilestoneId)&&preservationPassIds.includes(text))return;
     if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
       reject('DESIGN_PLACEHOLDER_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,value:text.slice(0,160)},`${path}의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.`);
     }
