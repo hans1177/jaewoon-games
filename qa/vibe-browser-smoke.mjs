@@ -91,6 +91,15 @@ try{
   const response=await page.request.get(liveBase+'web-games/publish-manifest.json');
   assert.ok(response.ok(),'GEM_PUBLIC_MANIFEST_HTTP');
   assert.equal((await response.json()).sourceSha,process.env.GITHUB_SHA,'GEM_PUBLIC_SOURCE_SHA');
+   // 사후검증 체크아웃은 검사기만 포함하므로 동일 공개판의 실제 모듈을 검사한다.
+   const speciesResponse=await page.request.get(liveBase+'web-games/gem-survivor/gem3d.mjs');
+   assert.ok(speciesResponse.ok(),'GEM_PUBLIC_RENDERER_HTTP');
+   const speciesSource=await speciesResponse.text();
+   const speciesLiteral=speciesSource.match(/const SPECIES=\[([^\]]+)\]/);
+   assert.ok(speciesLiteral,'GEM_NATIVE_SPECIES_DECLARATION_MISSING');
+   const species=[...speciesLiteral[1].matchAll(/['"]([^'"]+)['"]/g)].map(row=>row[1]);
+   assert.ok(species.length>=14,'GEM_NATIVE_SPECIES_UNEXPECTED_SHRINK');
+   assert.equal(new Set(species).size,species.length,'GEM_NATIVE_SPECIES_DUPLICATE');
   for(const mobile of [false,true]){
    const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1100,height:720},isMobile:mobile,hasTouch:mobile});
    const gem=await context.newPage(),gemErrors=[];
@@ -112,12 +121,6 @@ try{
      assert.equal(await canvas.getAttribute('data-world-width'),'4200');
      assert.equal(await canvas.getAttribute('data-world-height'),'3200');
      // 정확한 렌더러 소스의 모든 3D 몬스터 종류가 게시본에 로딩됐는지 검증한다.
-     const speciesSource=fs.readFileSync('web-games/gem-survivor/gem3d.mjs','utf8');
-     const speciesLiteral=speciesSource.match(/const SPECIES=\[([^\]]+)\]/);
-     assert.ok(speciesLiteral,'GEM_NATIVE_SPECIES_DECLARATION_MISSING');
-     const species=[...speciesLiteral[1].matchAll(/['"]([^'"]+)['"]/g)].map(row=>row[1]);
-     assert.ok(species.length>=14,'GEM_NATIVE_SPECIES_UNEXPECTED_SHRINK');
-     assert.equal(new Set(species).size,species.length,'GEM_NATIVE_SPECIES_DUPLICATE');
      assert.equal(Number(await canvas.getAttribute('data-authored-monster-kinds')),species.length,'GEM_NATIVE_SPECIES_NOT_FULLY_RENDERED');
      assert.equal(await canvas.getAttribute('data-player-hp'),'200');
      assert.ok(Number(await canvas.getAttribute('data-glow-instances'))>0);
