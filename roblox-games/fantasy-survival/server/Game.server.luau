@@ -384,7 +384,10 @@ end
 -- 데이터 읽기가 실패한 세션에서는 임시 플레이만 허용한다.
 -- 실패한 로드의 기본값으로 기존 저장 데이터가 덮어써지는 것을 막는다.
 local persistenceAllowed = {}
-Players.PlayerAdded:Connect(function(player)
+local profileBindingStarted = {}
+local function onSurvivalPlayerAdded(player)
+  if profileBindingStarted[player] then return end
+  profileBindingStarted[player] = true
   player:SetAttribute("ProfileReady", false)
   local ok, saved = pcall(function()
     if not store then error("SURVIVAL_DATASTORE_UNAVAILABLE") end
@@ -407,9 +410,11 @@ Players.PlayerAdded:Connect(function(player)
   bindSurvivalHealth(player)
   player:SetAttribute("ProfileReady", true)
   broadcastSurvivalState(player)
-end)
+end
+Players.PlayerAdded:Connect(onSurvivalPlayerAdded)
+-- PlayerAdded 이전에 존재하던 플레이어도 동일한 저장 프로필 검증·캐릭터 연결을 수행한다.
 for _, player in ipairs(Players:GetPlayers()) do
-  task.defer(function() if player:GetAttribute("Score") == nil then initializePlayer(player) end end)
+  task.defer(onSurvivalPlayerAdded, player)
 end
 remote.OnServerEvent:Connect(function(player, actionId)
   if typeof(actionId) ~= "string" or player:GetAttribute("ProfileReady") ~= true then return end
@@ -452,6 +457,7 @@ end
 Players.PlayerRemoving:Connect(function(player)
   saveSurvivalProgress(player)
   persistenceAllowed[player] = nil
+  profileBindingStarted[player] = nil
   lastAction[player] = nil
   attackCooldown[player] = nil
 end)
