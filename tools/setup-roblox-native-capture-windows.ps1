@@ -26,7 +26,8 @@ Require-Program 'ffmpeg' 'Gyan.FFmpeg'
 Require-Program 'ffprobe' 'Gyan.FFmpeg'
 # 설치: 본 작업은 웹 브라우저가 실행하는 실제 Windows Roblox Player를 사용한다.
 $NativePlayerVersions = Join-Path $env:LOCALAPPDATA 'Roblox\Versions'
-$NativePlayers = @(Get-ChildItem -LiteralPath $NativePlayerVersions -Directory -ErrorAction SilentlyContinue |
+$NativePlayers = @(Get-ChildItem -LiteralPath $NativePlayerVersions -ErrorAction SilentlyContinue |
+ Where-Object { $_.PSIsContainer } |
  ForEach-Object { Join-Path $_.FullName 'RobloxPlayerBeta.exe' } |
  Where-Object { Test-Path -LiteralPath $_ })
 if ($NativePlayers.Count -eq 0) {
@@ -35,7 +36,8 @@ if ($NativePlayers.Count -eq 0) {
  }
  & winget install -e --id Roblox.Roblox --silent --accept-source-agreements --accept-package-agreements
  if ($LASTEXITCODE -ne 0) { throw 'ROBLOX_PLAYER_INSTALL_FAILED' }
- $NativePlayers = @(Get-ChildItem -LiteralPath $NativePlayerVersions -Directory -ErrorAction SilentlyContinue |
+ $NativePlayers = @(Get-ChildItem -LiteralPath $NativePlayerVersions -ErrorAction SilentlyContinue |
+ Where-Object { $_.PSIsContainer } |
   ForEach-Object { Join-Path $_.FullName 'RobloxPlayerBeta.exe' } |
   Where-Object { Test-Path -LiteralPath $_ })
 }
@@ -101,9 +103,23 @@ if ($RegisterWatcher) {
  $Action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $Args
  $Trigger = New-ScheduledTaskTrigger -AtLogOn -User "$env:USERDOMAIN\$env:USERNAME"
  $Principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
- Register-ScheduledTask -TaskName 'JaewoonRobloxNativeMedia' -Action $Action -Trigger $Trigger -Principal $Principal -Force | Out-Null
- Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMedia'
- Write-Host 'ROBLOX_WINDOWS_CAPTURE_WATCHER=STARTED_AND_REGISTERED_AT_USER_LOGON'
+ try {
+  Register-ScheduledTask -TaskName 'JaewoonRobloxNativeMedia' -Action $Action -Trigger $Trigger -Principal $Principal -Force | Out-Null
+  Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMedia'
+  Write-Host 'ROBLOX_WINDOWS_CAPTURE_WATCHER=STARTED_AND_REGISTERED_AT_USER_LOGON'
+ } catch {
+  # 일반 사용자 스케줄러 권한이 없는 경우 현재 사용자 자동실행 키만 사용한다.
+  if ($_.Exception.HResult -ne -2147024891 -and
+   $_.Exception.Message -notmatch '0x80070005|Access is denied|Access denied') { throw }
+  $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+  if (-not (Test-Path -LiteralPath $runKey)) {
+   New-Item -Path $runKey -Force | Out-Null
+  }
+  $command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "'+$Watcher+'" -Base "'+$Base+'"'
+  New-ItemProperty -Path $runKey -Name 'JaewoonRobloxNativeMedia' -PropertyType String -Value $command -Force | Out-Null
+  Start-Process -FilePath 'powershell.exe' -ArgumentList $Args -WindowStyle Hidden
+  Write-Host 'ROBLOX_WINDOWS_CAPTURE_WATCHER=STARTED_AND_REGISTERED_WITH_CURRENT_USER_RUN'
+ }
 }
 Write-Host 'ROBLOX_WINDOWS_MEDIA_CODE_INSTALLED=YES'
 Write-Host 'ROBLOX_ACCOUNT_AND_PRIVATE_SESSION_LOGIN_STILL_REQUIRED=YES'
