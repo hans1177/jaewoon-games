@@ -48,8 +48,8 @@ function observedNativeNpc(target){
   const tail=bytes.subarray(Math.max(0,bytes.length-4*1024*1024)).toString('utf8');
   const offset=tail.lastIndexOf(prefix);
   if(offset<0)continue;
-  const match=tail.slice(offset+prefix.length).match(/^([1-9][0-9]*)[|]NPC_MOVED/);
-  if(match)return {placeVersion:match[1],clientLogObserved:true};
+  const match=tail.slice(offset+prefix.length).match(/^([1-9][0-9]*)[|]NPC_MOVED[|]([1-9][0-9]*)/);
+  if(match)return {placeVersion:match[1],sessionNonce:match[2],clientLogObserved:true};
  }
  throw Error('PRIVATE_NPC_LAUNCH_DATA_OR_NATIVE_MOVE_ATTESTATION_MISSING');
 }
@@ -82,6 +82,14 @@ async function run(){
  if(process.env.ROBLOX_CAPTURE_AUTHORIZED!=='1')throw Error('EXPLICIT_PRIVATE_CAPTURE_AUTHORIZATION_REQUIRED');
  // Fail closed if the private game did not print its actual engine/NPC motion identity.
  const observed=observedNativeNpc(target);
+ const stateRoot=path.join(os.tmpdir(),'jaewoon-native-client-capture');
+ fs.mkdirSync(stateRoot,{recursive:true});
+ const stateFile=path.join(stateRoot,gameId+'.json');
+ if(fs.existsSync(stateFile)){
+  const state=readJson(stateFile);
+  if(state.sessionNonce===observed.sessionNonce&&state.placeVersion===observed.placeVersion)
+   throw Error('NATIVE_GAMEPLAY_SESSION_ALREADY_CAPTURED');
+ }
  const duration=Number(arg('seconds','24'));
  if(!Number.isInteger(duration)||duration<8||duration>27)throw Error('DURATION_MUST_BE_8_TO_27_SECONDS');
  const at=new Date().toISOString();
@@ -115,7 +123,9 @@ async function run(){
   captureAt:at,sourceRevision:/^[a-f0-9]{40}$/.test(revision)?revision:null,
   sha256:sha256(file),artifactIdentity:path.relative(runtimeRoot,file).replaceAll(path.sep,'/'),
   windowProcess:'RobloxPlayerBeta',windowTitleMatched:'Roblox',
-  observedNativePlaceVersion:observed.placeVersion,clientLogObserved:observed.clientLogObserved,
+  observedNativePlaceVersion:observed.placeVersion,
+  nativeCaptureSessionNonce:observed.sessionNonce,
+  clientLogObserved:observed.clientLogObserved,
   durationSeconds:Number(meta.format.duration),width:v.width,height:v.height,
   humanPlayerRequired:false,actorAutomation:{mode:'IN_GAME_NPC_AI',
    playerControl:false,existingGameplayOnly:true,verified:false},
@@ -128,6 +138,10 @@ async function run(){
   uploadVerified:false,videoPublished:false
  };
  fs.writeFileSync(path.join(folder,'capture.json'),JSON.stringify(proof,null,2)+'\n');
+ fs.writeFileSync(stateFile,JSON.stringify({
+  gameId,placeVersion:observed.placeVersion,sessionNonce:observed.sessionNonce,
+  videoSha256:proof.sha256,captureAt:at
+ },null,2)+'\n');
  console.log('ROBLOX_WINDOW_CAPTURE_SAVED='+file);
  console.log('ROBLOX_CAPTURE_SHA256='+proof.sha256);
  console.log('ROBLOX_RUNTIME_ATTESTATION_REQUIRED=YES');
