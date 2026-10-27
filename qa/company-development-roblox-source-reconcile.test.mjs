@@ -1602,3 +1602,32 @@ test('newer native semantic mismatch enters causal source repair without rewriti
     assert.deepEqual(files.map(file=>fs.readFileSync(path.join(root,file),'utf8')),before);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
+
+test('compact existing Roblox GameConfig preserves game balance while learning is really bound',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-compact-learning-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const flat='local C={GameId="'+gameId+'",PolicySource="company-learning/platform-release-roadmap.json",Genre="Simulation",PlayMode="SINGLE",MultiplayerRequired=false,SaveKey="keep-save",StartGold=300,GateHP=500}\nC.World={CaptureZ={-56,132}}\nreturn C\n';
+    fs.writeFileSync(configFile,flat);
+    const first=applyVerifiedExternalLearningToExistingRobloxSource({root,learning:verifiedLearning});
+    assert.equal(first.changed,true);
+    const output=fs.readFileSync(configFile,'utf8');
+    for(const preserved of ['SaveKey="keep-save"','StartGold=300','GateHP=500','C.World={CaptureZ={-56,132}}','return C'])assert.ok(output.includes(preserved),preserved);
+    assert.match(output,/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/);
+    assert.match(output,/GameSpecificSemanticMappings/);
+    assert.match(fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8'),/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/);
+    const second=applyVerifiedExternalLearningToExistingRobloxSource({root,learning:verifiedLearning});
+    assert.equal(second.changed,false,'repeat learning sweep must not change native gameplay');
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('legacy module-only source cannot be promoted without current native static QA',()=>{
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  assert.match(sweep,/validateExistingRobloxSourceTree/);
+  assert.match(sweep,/ROBLOX_LEGACY_NATIVE_SOURCE_ADMISSION/);
+  assert.match(sweep,/moduleSyncOnly===true&&!independentlyVerifiedNativeSource/);
+  assert.match(sweep,/independentlyVerifiedNativeSource\?\{moduleSyncOnly:false,sourceValidationPassed:true,sourceValidationBlockers:\[\]\}/);
+  assert.match(sweep,/runtimeRef\+':'\+baselinePath/);
+});
