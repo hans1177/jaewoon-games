@@ -381,6 +381,33 @@ assert.doesNotMatch(designReviewBlock,/identity\.length>=80/);
   const rejected=validateDesignAuthoringContent({seed:preservedSeed,design:{contentExpansionPlan:invalid},fields:['contentExpansionPlan']});
   assert.ok(rejected.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
 }
+// 다른 보존형 게임은 마력숲 전용 덮어쓰기를 적용하지 않고 자체 소스·저장을 사용한다.
+{
+  const cycleSource=fs.readFileSync(new URL('../tools/company-design-cycle.mjs',import.meta.url),'utf8');
+  const begin=cycleSource.indexOf('function enforceOwnerPreservationDesign(value){');
+  const end=cycleSource.indexOf('\nconst DESIGN_GATE_FIELDS=',begin);
+  assert.ok(begin>=0&&end>begin);
+  const gameSeed={
+    gameId:'baeksu-war',gameName:'백수대전쟁',
+    REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION:true,OWNER_REBUILD_MODE:'PRESERVATION_PRESENTATION_UPGRADE',
+    MULTIPLAYER_DESIGN_MODE:'SINGLE',CANONICAL_IMPLEMENTATION_SOURCE:'roblox-games/baeksu-war',
+    SAVE_POLICY:'PRESERVE_EXISTING_SAVE_KEY_baeksu-war-v1_AND_FIELDS',
+    CORE_LOOP:['원래 전장 건설을 선택한다.','원래 전투 결과로 성장한다.','원래 스테이지를 재도전한다.']
+  };
+  const preserve=runInNewContext(cycleSource.slice(begin,end)+'\nenforceOwnerPreservationDesign',{
+    seed:gameSeed,game:{name:'백수대전쟁'},
+    ownerPreservationDesign:true,allGamesMultiplayerRequired:false,
+    clean:value=>String(value??'').trim()
+  });
+  const original={identity:'백수대전쟁의 기존 게임 정체성',coreFun:'자동 전투·건설 루프',coreLoop:['임시 모델 초안']};
+  const output=preserve(original);
+  assert.equal(output.identity,original.identity);
+  assert.deepEqual(Array.from(output.coreLoop),gameSeed.CORE_LOOP);
+  assert.ok(output.technicalAssumptions[0].includes('roblox-games/baeksu-war'));
+  assert.ok(output.technicalAssumptions[1].includes('baeksu-war-v1'));
+  assert.equal(output.preservationContract.gameplayRule,'NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE');
+  assert.equal(JSON.stringify(output).includes('마력숲'),false);
+}
 console.log('COMPANY_DESIGN_GATE_SCORING_V2_TEST=PASS');
 
 
