@@ -10071,7 +10071,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-26T18:09:21.243Z",
+      "updatedAt": "2026-10-27T01:18:06.617Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -25569,7 +25569,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-26T18:09:21.243Z",
+      "updatedAt": "2026-10-27T01:18:06.617Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -35251,7 +35251,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-26T18:09:21.243Z",
+      "updatedAt": "2026-10-27T01:18:06.617Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -35269,8 +35269,8 @@
       "minimumDesignContract": {
         "version": 1,
         "pass": true,
-        "source": "design/fantasy-survival/2026-10-25/design-revised.json",
-        "date": "2026-10-25"
+        "source": "design/fantasy-survival/2026-10-27/design-revised.json",
+        "date": "2026-10-27"
       },
       "promotion": {
         "from": "DEVELOPMENT_CONFIRMED",
@@ -35283,8 +35283,8 @@
         "targetSourcePaths": {
           "ROBLOX": "roblox-games/fantasy-survival"
         },
-        "designBaselineSource": "design/fantasy-survival/2026-10-25/design-revised.json",
-        "designDate": "2026-10-25",
+        "designBaselineSource": "design/fantasy-survival/2026-10-27/design-revised.json",
+        "designDate": "2026-10-27",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:10:39.607Z"
@@ -35300,7 +35300,7 @@
       "strictDesignReviewUpdatedAt": "2026-10-10T12:21:02.829Z",
       "platformDesignProfiles": {
         "ROBLOX": {
-          "source": "design/fantasy-survival/2026-10-25/design-revised.json",
+          "source": "design/fantasy-survival/2026-10-27/design-revised.json",
           "jsonPointer": "/content/platformProfiles/ROBLOX"
         }
       },
@@ -38666,7 +38666,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-26T18:09:21.243Z",
+      "updatedAt": "2026-10-27T01:18:06.617Z",
       "ROBLOX_GENRE": "Survival",
       "ROBLOX_SUBGENRE": null,
       "ROBLOX_GENRE_LABEL_KO": "서바이벌",
@@ -100149,9 +100149,9 @@
       "CANONICAL_IMPLEMENTATION_SOURCE": "roblox-games/baeksu-war",
       "SAVE_POLICY": "PRESERVE_EXISTING_SAVE_KEY_baeksu-war-v1_AND_FIELDS",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "ownerRequestInstanceId": "OWNER-BAEKSU-F0F9-RECOVERY-20261027",
       "OWNER_LATEST_DESIGN_REQUEST": "2026-10-27 오너 직접 지시: 기존 백수대전쟁 Roblox 프로젝트를 포근섬·5포탈 RPG·심야 대탈출·마력숲과 동일한 정규 F0~F9 반복개발에 편입하고, 검증 실패 시 기존 게임 테스터/시스템 AI의 병목 분류·원인별 복구·같은 실패 단계 재검증·재배포 흐름을 끊지 않는다. 새 큐·새 파이프라인·보안/자산/저장 검증 우회 금지.\n원본 소스(roblox-games/baeksu-war)의 게임은 생물 8종 서식지 건설→자동 출격·진격→전선 거점 점령→보상→시설/연구/10단계 진화→성문 공성·스테이지→저장 후 반복하는 Roblox 동물 군단 타이쿤이다. SimCity·그리스 신화·신화 경영·호러·손님 직원·도시 시뮬레이션 등 원본에 없는 가짜 세계관과 루프는 금지한다.\n참고 게임은 Roblox Noob Army Tycoon 단 1개: 큰 섬/두 기지/긴 진격로/생산과 공성 성장 루프만 개념으로 참고. 게임 고유 맵·코드·아트 복제 금지. 이미 구현한 760x1100 섬, 1000x1280 해역, 장거리 교량·거점·접이식 모바일 UI 및 검증된 12개 CC0 3D 자산과 기존 DataStore baeksu-war-v1 보존.\n디자이너가 A: 외부의 자동 군단 생산/기지 성장 참고 체계, B: 기존 백수대전쟁의 실제 서식지 건설/생물 8종·전투·진화·경제·저장 시스템을 양방향 실제 상태 변화로 연결하는 최신 MAIN=A+B+C+D+@ 설계를 직접 작성한다. 없는 시스템을 만들어 원본을 덮어쓰지 않는다. 설계 오류 DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED는 실제 상태 입출력 연결을 고쳐 같은 디자이너 단계에서 재시도한다.\nF0 원본/컴파일/맵·카메라·접지, F1~F8 영향 영역(게임플레이/UI·그래픽/PBR·생물 움직임/저장·멀티 권한/모바일), F9 정확한 소스와 아티팩트 최종 검증→승인된 기존 Open Cloud 비공개 대상 배포→배포본 검증 후 다음 F0를 반복한다. 코드만 변경하고 검증 없이 F0~F9 PASS 또는 실제 플레이 테스트 완료를 주장하지 않는다.",
       "REFERENCE_GAMES": [
@@ -100187,7 +100187,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-26T17:57:09.811Z",
+      "updatedAt": "2026-10-27T01:18:06.617Z",
       "ROBLOX_GENRE": "Strategy",
       "ROBLOX_SUBGENRE": null,
       "ROBLOX_GENRE_LABEL_KO": "전략",
@@ -100196,7 +100196,42 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-27T01:17:48.908Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-27T01:17:48.908Z",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/baeksu-war/2026-10-27/design-revised.json",
+        "date": "2026-10-27"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/baeksu-war/2026-10-27/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_ROBLOX_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/baeksu-war"
+        },
+        "designBaselineSource": "design/baeksu-war/2026-10-27/design-revised.json",
+        "designDate": "2026-10-27",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-27T01:18:06.617Z"
+      }
     }
   ],
   "seedMaterials": [
@@ -105852,7 +105887,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-26T18:09:21.243Z",
+  "updatedAt": "2026-10-27T01:18:06.617Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -106010,5 +106045,6 @@
       "survival2",
       "territory-war"
     ]
-  }
+  },
+  "policyAuthority": "company-learning/platform-release-roadmap.json"
 }
