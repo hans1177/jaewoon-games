@@ -9,6 +9,23 @@ import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRo
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {bindExistingServerStudioMaterial,buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('selected Fantasy Survival motion reaches a server-authorized R15 frame sink, not just an asset list',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(source,'MOTION'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('activeCombatController.Step(combatR15Targets, dt)','-- missing render frame'),
+    'MOTION'
+  ),false,'an unplayed rig pose must not count as an applied asset');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then','if not true then'),
+    'MOTION'
+  ),false,'an unselected module cannot satisfy motion binding');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('GetAttributeChangedSignal("ApprovedCombatMotion")','GetAttributeChangedSignal("UnverifiedMotion")'),
+    'MOTION'
+  ),false,'a motion without server-approved action is not applied');
+});
+
 test('guarded native bindings distinguish selected atoms from list counts',()=>{
   const environment='if #studioAssetFamily("ENVIRONMENT") > 0 and camp and camp:IsA("BasePart") then\n  camp.Material = Enum.Material.Slate\nend';
   const prop='if #studioAssetFamily("PROP") > 0 and workbench and workbench:IsA("BasePart") then\n  workbench.Material = Enum.Material.WoodPlanks\nend';

@@ -153,6 +153,25 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     .replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|--\[(=*)\[[\s\S]*?\]\2\]|--[^\n]*/g,(match,literal)=>literal||' ');
   const nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
   if(!nativePattern)return false;
+  // 모션은 관절 쓰기가 공용 모듈의 BindJointPose 내부에서 발생한다.
+  // 선택 atom → 서버 승인 → R15 Motor6D → 실제 샘플·맵핑·프레임 Step이
+  // 모두 존재할 때만 소스 수준의 실제 자산 소비로 인정한다.
+  // 이 판정은 Roblox 런타임 재생·프레임 품질 검증을 대체하지 않는다.
+  if(family==='MOTION'){
+    const motionChain=[
+      /Shared\s*:\s*FindFirstChild\s*\(\s*["']RobloxCommonMotion["']\s*\)/,
+      /\bpcall\s*\(\s*require\s*,\s*combatMotionModule\s*\)/,
+      /GetAttributeChangedSignal\s*\(\s*["']ApprovedCombatMotion["']\s*\)/,
+      /\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']MOTION["']\s*,\s*["'][A-Z0-9_]+["']\s*\)\s*then\s*[\s\S]{0,220}?\breturn\b/,
+      /:\s*IsA\s*\(\s*["']Motor6D["']\s*\)/,
+      /\bcombatMotionSource\.CreateCombatCombo\s*\(/,
+      /\bcombatMotionSource\.BindJointPose\s*\(/,
+      /\bcombatMotionSource\.SampleCombatCombo\s*\(/,
+      /\bcombatMotionSource\.MapCombatPoseToR15\s*\(/,
+      /\bactiveCombatController\.Step\s*\(\s*combatR15Targets\s*,\s*dt\s*\)/,
+    ];
+    if(motionChain.every(pattern=>pattern.test(raw)))return true;
+  }
   const renderSink=/(?:\.(?:Color|BackgroundColor3|TextColor3|ImageColor3|Material|MaterialVariant|TextureID|MeshId|Transparency|Size|CFrame|Position|Orientation|Rotation|LightEmission|Rate|Volume|PlaybackSpeed|AnimationId|Transform|Thickness|CornerRadius)\s*=|TweenService\s*:\s*Create\s*\(|:\s*Create\s*\([^\n]*(?:TweenInfo|Position|Rotation|Transform)|Instance\.new\s*\(\s*["'](?:UIStroke|UICorner|UIGradient|SurfaceAppearance|ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\s*\))/i;
   const statements=raw.split(/[;\n]/);
   for(const ref of raw.matchAll(robloxStudioAssetFamilyRefPattern(family))){
