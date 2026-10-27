@@ -123,7 +123,7 @@ export function resolveWebVibeSources(gameId,{repoRoot=ROOT,files='index.html'}=
   if(!selected.size)fail('WEB_VIBE_NO_ELIGIBLE_SOURCES');
   return [...selected].sort().map(relative=>{
     const file=path.join(gameRoot,relative),original=fs.readFileSync(file,'utf8');
-    if(original.length>350000||original.length<8)fail('WEB_VIBE_SOURCE_SIZE_OUT_OF_SCOPE');
+    if(Buffer.byteLength(original,'utf8')>2*1024*1024||original.length<8)fail('WEB_VIBE_SOURCE_SIZE_OUT_OF_SCOPE');
     return {file,relative:'web-games/'+gameId+'/'+relative,original};
   });
 }
