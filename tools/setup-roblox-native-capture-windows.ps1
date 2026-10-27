@@ -46,10 +46,23 @@ if ($CaptureGameId -and $PrivateLinkCode) {
   throw 'CAPTURE_GAME_ID_NOT_ALLOWLISTED'
  }
  $PrivateConfig = Join-Path $Base 'private-capture-join.xml'
- [pscustomobject]@{
-  GameId = $CaptureGameId
-  LinkCode = $PrivateLinkCode
- } | Export-Clixml -Path $PrivateConfig -Force
+ # 설정: 다른 게임의 DPAPI 링크를 삭제하지 않고 게임별로 추가/교체한다.
+ $entries = @()
+ if (Test-Path -LiteralPath $PrivateConfig) {
+  $old = Import-Clixml -LiteralPath $PrivateConfig
+  if ($old -and $old.Entries) { $entries = @($old.Entries) }
+  elseif ($old -and $old.GameId -and $old.LinkCode -is [Security.SecureString]) {
+   $entries = @($old)
+  }
+ }
+ $entries = @($entries | Where-Object {
+  $_.GameId -ne $CaptureGameId -and
+  $_.GameId -in @('cozy-island','daechung-rpg','horror-escape-room') -and
+  $_.LinkCode -is [Security.SecureString]
+ })
+ $entries += [pscustomobject]@{GameId=$CaptureGameId; LinkCode=$PrivateLinkCode}
+ [pscustomobject]@{Version=2; Entries=$entries} |
+  Export-Clixml -LiteralPath $PrivateConfig -Force
  Write-Host 'ROBLOX_PRIVATE_CAPTURE_JOIN_CONFIG=DPAPI_SAVED'
 } elseif ($CaptureGameId -or $PrivateLinkCode) {
  throw 'CAPTURE_GAME_ID_AND_SECURE_PRIVATE_LINK_CODE_BOTH_REQUIRED'
