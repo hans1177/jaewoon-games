@@ -1405,3 +1405,39 @@ test('newer native semantic mismatch enters causal source repair without rewriti
     assert.deepEqual(files.map(file=>fs.readFileSync(path.join(root,file),'utf8')),before);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
+
+test('five-game loop routes baeksu-style legacy Config source to canonical Vibe repair before impossible learning sweep',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-legacy-config-loop-'));
+  try{
+    const id='baeksu-war';
+    const root=path.join(tmp,'roblox-games',id);
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'server'),{recursive:true});
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    fs.writeFileSync(path.join(root,'default.project.json'),JSON.stringify(projectJsonForGame(id)));
+    fs.writeFileSync(path.join(root,'shared','Config.luau'),'local C={GameId="baeksu-war",SaveKey="baeksu-war-v1"}\\nreturn C\\n');
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),
+      'local C=require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Config"))\\n');
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),'-- preserve existing gameplay and save owner\\n');
+    initGitRepo(tmp);
+    const sourceRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const before=Object.fromEntries(['shared/Config.luau','server/Game.server.luau','client/Game.client.luau']
+      .map(file=>[file,fs.readFileSync(path.join(root,file),'utf8')]));
+    const item={...staleItem(),gameId:id,currentStep:'TARGET_PLATFORM_SOURCE_BIND',robloxSourceCommit:sourceRevision};
+    const [row]=evaluateExistingRobloxSources({
+      queue:{items:[item]},repoRoot:tmp,sourceRevision,requestedGameId:id,
+      loadBaseline:()=>baseline,playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary
+    });
+    assert.equal(row.gameId,id);
+    assert.equal(row.pass,false);
+    assert.equal(row.failure,'existing-source-static-revalidation-failed');
+    assert.equal(row.sourceContractRepairRequired,true);
+    assert.equal(row.verifiedExternalLearningRefreshRequired,false);
+    assert.deepEqual(row.blockers,['ROBLOX_EXISTING_CONFIG_LAYOUT_REQUIRES_APPROVED_GAME_OWNED_ADAPTER']);
+    assert.equal(row.sourceContractRepairEvidence.staticContract.pass,false);
+    assert.equal(row.sourceContractRepairEvidence.qualityFailureDetails[0].observed.existingConfig,'shared/Config.luau');
+    assert.equal(fs.existsSync(path.join(root,'shared','GameConfig.luau')),false);
+    for(const [file,source] of Object.entries(before))
+      assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
