@@ -44,180 +44,322 @@ local function initializePlayer(player)
   end
 end
 
-local function scopeHandler1(player)
-  setNumber(player, "Health", math.clamp(readNumber(player, "Health", 100) - 1, 0, 100))
-  setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 6)
-  player:SetAttribute("LastApprovedScope", "genre-core")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "idle-reward")
+-- 마력숲 생존기: 실제 게임 상태, 생물 파도, 수집 노드, 성장의 권한은 서버가 소유한다.
+-- 공용 외형 라이브러리는 표현만 담당하고 데미지·드랍·저장은 이 게임에서 계산한다.
+local RunService = game:GetService("RunService")
+local CreatureParts = require(Shared:WaitForChild("RobloxCommonCreatureParts"))
+local WorldProps = require(Shared:WaitForChild("RobloxCommonWorldProps"))
+local gameWorld = workspace:FindFirstChild("FantasySurvivalWorld")
+if not gameWorld then
+  gameWorld = Instance.new("Folder")
+  gameWorld.Name = "FantasySurvivalWorld"
+  gameWorld.Parent = workspace
+end
+local enemies = {}
+local resourceNodes = {}
+local CurrentWave = 0
+local WaveState = "PREPARE"
+local nextWaveAt = os.clock() + 8
+local worldClock = 0
+local encounterSerial = 0
+local attackCooldown = {}
+local LastWaveReward = 0
+local MAX_ENEMIES = 22
 
-  local participants = Players:GetPlayers()
-  if Config.CoopRequired then
-    local shared = 0
-    for _, participant in ipairs(participants) do
-      shared += readNumber(participant, "Progress", 0)
-    end
-    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end
-  end
-  if Config.CompetitiveRequired then
-    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)
-  end
-  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}
-  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)
+local function worldAsset(id, location)
+  local ok, model = pcall(function()
+    return WorldProps.Create(id, {parent=gameWorld, quality="near", anchored=true,
+      pivot=CFrame.new(location)})
+  end)
+  if not ok then warn("마력숲 공용 월드 자산 로딩 실패: "..tostring(id)) end
+  return ok and model or nil
 end
 
-local function scopeHandler2(player)
-  local enemy = math.max(0, readNumber(player, "EnemyHealth", 100) - 12)
-  setNumber(player, "EnemyHealth", enemy)
-  setNumber(player, "Combo", readNumber(player, "Combo", 0) + 1)
-  setNumber(player, "Score", readNumber(player, "Score", 0) + 10)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 6)
-  if enemy <= 0 then
-    setNumber(player, "EnemyHealth", 100)
-    setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)
-    setNumber(player, "Coins", readNumber(player, "Coins", 0) + 3)
-  end
-  player:SetAttribute("LastApprovedScope", "scope-corefun-ea77622450")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "offline-progress")
-
+local function broadcastSurvivalState(actor)
   local participants = Players:GetPlayers()
-  if Config.CoopRequired then
-    local shared = 0
-    for _, participant in ipairs(participants) do
-      shared += readNumber(participant, "Progress", 0)
-    end
-    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end
+  local objective = 0
+  for _, member in ipairs(participants) do
+    objective += readNumber(member, "Progress", 0)
   end
-  if Config.CompetitiveRequired then
-    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)
+  for _, member in ipairs(participants) do
+    member:SetAttribute("SharedObjective", objective)
+    member:SetAttribute("CurrentWave", CurrentWave)
+    member:SetAttribute("RunPhase", WaveState)
+    member:SetAttribute("AliveEnemies", #enemies)
   end
-  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}
-  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)
+  remote:FireAllClients("MULTIPLAYER_SYNC", {
+    ActorUserId=actor and actor.UserId or 0, ParticipantCount=#participants,
+    SharedObjective=objective, CurrentWave=CurrentWave,
+    WaveState=WaveState, AliveEnemies=#enemies,
+    RoundScore=actor and readNumber(actor, "RoundScore", 0) or 0,
+  })
 end
 
-local function scopeHandler3(player)
-  local enemy = math.max(0, readNumber(player, "EnemyHealth", 100) - 13)
-  setNumber(player, "EnemyHealth", enemy)
-  setNumber(player, "Combo", readNumber(player, "Combo", 0) + 1)
-  setNumber(player, "Score", readNumber(player, "Score", 0) + 11)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 7)
-  if enemy <= 0 then
-    setNumber(player, "EnemyHealth", 100)
-    setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)
-    setNumber(player, "Coins", readNumber(player, "Coins", 0) + 3)
+local function awardProgress(player, experience, coinReward)
+  local xp = readNumber(player, "XP", 0) + experience
+  local level = readNumber(player, "Level", 1)
+  while xp >= (25 + level*12) and level < 50 do
+    xp -= (25 + level*12)
+    level += 1
   end
-  player:SetAttribute("LastApprovedScope", "scope-coreloop-0-9b2d4dfbc6")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "upgrade-layer")
-
-  local participants = Players:GetPlayers()
-  if Config.CoopRequired then
-    local shared = 0
-    for _, participant in ipairs(participants) do
-      shared += readNumber(participant, "Progress", 0)
-    end
-    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end
-  end
-  if Config.CompetitiveRequired then
-    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)
-  end
-  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}
-  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)
+  setNumber(player, "XP", xp)
+  setNumber(player, "Level", level)
+  setNumber(player, "Coins", readNumber(player, "Coins", 0) + coinReward)
+  setNumber(player, "Progress", readNumber(player, "Progress", 0) + experience)
 end
 
-local function scopeHandler4(player)
-  local enemy = math.max(0, readNumber(player, "EnemyHealth", 100) - 14)
-  setNumber(player, "EnemyHealth", enemy)
-  setNumber(player, "Combo", readNumber(player, "Combo", 0) + 1)
-  setNumber(player, "Score", readNumber(player, "Score", 0) + 12)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 8)
-  if enemy <= 0 then
-    setNumber(player, "EnemyHealth", 100)
-    setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)
-    setNumber(player, "Coins", readNumber(player, "Coins", 0) + 3)
-  end
-  player:SetAttribute("LastApprovedScope", "scope-coreloop-1-6ebe58f496")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "claim-idempotency")
-
-  local participants = Players:GetPlayers()
-  if Config.CoopRequired then
-    local shared = 0
-    for _, participant in ipairs(participants) do
-      shared += readNumber(participant, "Progress", 0)
-    end
-    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end
-  end
-  if Config.CompetitiveRequired then
-    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)
-  end
-  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}
-  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)
+local function gatherResource(player, node)
+  local character = player.Character
+  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart or not node or not node.model or not node.model.Parent then return false end
+  if (rootPart.Position - node.model:GetPivot().Position).Magnitude > 14 then return false end
+  local now = os.clock()
+  if now < node.readyAt then return false end
+  node.readyAt = now + 11
+  node.model:SetAttribute("NextHarvestAt", node.readyAt)
+  local material = node.kind == "WOOD" and "Wood" or "Stone"
+  setNumber(player, material, readNumber(player, material, 0) + 2)
+  awardProgress(player, 3, 1)
+  player:SetAttribute("LastApprovedScope", "resource-harvest")
+  broadcastSurvivalState(player)
+  return true
 end
 
-local function scopeHandler5(player)
-  setNumber(player, "Level", readNumber(player, "Level", 1) + 1)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 12)
-  setNumber(player, "Score", readNumber(player, "Score", 0) + 10)
-  setNumber(player, "Coins", readNumber(player, "Coins", 0) + 7)
-  player:SetAttribute("LastApprovedScope", "scope-coreloop-2-6c927cfa40")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "persistent-growth")
-
-  local participants = Players:GetPlayers()
-  if Config.CoopRequired then
-    local shared = 0
-    for _, participant in ipairs(participants) do
-      shared += readNumber(participant, "Progress", 0)
+local function createResourceNodes()
+  local positions = {
+    {kind="WOOD",id="RESOURCE_WOOD_NODE",position=Vector3.new(-27,2,-22)},
+    {kind="WOOD",id="RESOURCE_WOOD_NODE",position=Vector3.new(28,2,25)},
+    {kind="WOOD",id="RESOURCE_WOOD_NODE",position=Vector3.new(37,2,-32)},
+    {kind="STONE",id="RESOURCE_ROCK_NODE",position=Vector3.new(-35,2,31)},
+    {kind="STONE",id="RESOURCE_ROCK_NODE",position=Vector3.new(11,2,-39)},
+    {kind="STONE",id="RESOURCE_ROCK_NODE",position=Vector3.new(-7,2,43)},
+  }
+  for _,spec in ipairs(positions) do
+    local model = worldAsset(spec.id, spec.position)
+    if model then
+      local part = model:FindFirstChildWhichIsA("BasePart", true)
+      if part then
+        local node = {model=model,kind=spec.kind,readyAt=0}
+        table.insert(resourceNodes, node)
+        local prompt = Instance.new("ProximityPrompt")
+        prompt.Name = "GatherPrompt"
+        prompt.ActionText = spec.kind=="WOOD" and "나무 채집" or "돌 채집"
+        prompt.ObjectText = spec.kind=="WOOD" and "마력숲 목재" or "마력숲 광석"
+        prompt.MaxActivationDistance = 12
+        prompt.HoldDuration = .55
+        prompt.RequiresLineOfSight = false
+        prompt.Parent = part
+        prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
+      end
     end
-    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end
   end
-  if Config.CompetitiveRequired then
-    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)
+  worldAsset("LORE_STONE", Vector3.new(0,2,53))
+  worldAsset("SIGNPOST", Vector3.new(5,2,-6))
+end
+createResourceNodes()
+
+local function spawnEnemy(isBoss, index)
+  if #enemies >= MAX_ENEMIES then return false end
+  encounterSerial += 1
+  local theta = encounterSerial*2.399 + index*.31
+  local radius = 51 + (index%3)*11
+  local location = Vector3.new(math.cos(theta)*radius, 3, math.sin(theta)*radius)
+  local partId = isBoss and "GOLEM_CORE" or (index%3==0 and "INSECT_THORAX" or "QUADRUPED_TORSO")
+  local ok, model = pcall(function()
+    return CreatureParts.Create(partId,{
+      parent=gameWorld, quality="near", anchored=true,
+      scale=isBoss and 2.1 or 1.05, pivot=CFrame.new(location)
+    })
+  end)
+  if not ok or not model then
+    warn("마력숲 몬스터 자산 적용 실패: "..partId)
+    return false
   end
-  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}
-  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)
+  local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
+  model.Name = isBoss and "마력숲 보스" or "마력숲 야생 생물"
+  model:SetAttribute("EnemyHealth",hitPoints)
+  model:SetAttribute("CurrentWave",CurrentWave)
+  model:SetAttribute("Boss",isBoss)
+  table.insert(enemies,{
+    model=model,HP=hitPoints,maxHP=hitPoints,
+    isBoss=isBoss,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
+    speed=isBoss and 4.8 or 7.5,position=location,lastAttack=0
+  })
+  return true
 end
 
-local function scopeHandler6(player)
-  local enemy = math.max(0, readNumber(player, "EnemyHealth", 100) - 16)
-  setNumber(player, "EnemyHealth", enemy)
-  setNumber(player, "Combo", readNumber(player, "Combo", 0) + 1)
-  setNumber(player, "Score", readNumber(player, "Score", 0) + 14)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + 10)
-  if enemy <= 0 then
-    setNumber(player, "EnemyHealth", 100)
-    setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)
-    setNumber(player, "Coins", readNumber(player, "Coins", 0) + 3)
+local function startWave()
+  if #Players:GetPlayers()==0 then
+    nextWaveAt=os.clock()+6
+    return
   end
-  player:SetAttribute("LastApprovedScope", "scope-mobileux-5acfb2eaa6")
-  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
-  player:SetAttribute("LastLearningPattern", "commercial-idle-runtime-architecture")
-
-  local participants = Players:GetPlayers()
-  if Config.CoopRequired then
-    local shared = 0
-    for _, participant in ipairs(participants) do
-      shared += readNumber(participant, "Progress", 0)
-    end
-    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end
+  WaveState="COMBAT"
+  CurrentWave += 1
+  local number=math.min(3+CurrentWave*2, MAX_ENEMIES)
+  if CurrentWave%5==0 then number=math.max(2,number-1) end
+  local spawned=0
+  for n=1,number do
+    if spawnEnemy(false,n) then spawned+=1 end
   end
-  if Config.CompetitiveRequired then
-    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)
+  if CurrentWave%5==0 and spawnEnemy(true,number+1) then spawned+=1 end
+  if spawned==0 then
+    WaveState="PREPARE"
+    nextWaveAt=os.clock()+8
   end
-  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}
-  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)
+  broadcastSurvivalState(nil)
 end
 
-local handlers = {
-  ["genre-core"] = scopeHandler1,
-  ["scope-corefun-ea77622450"] = scopeHandler2,
-  ["scope-coreloop-0-9b2d4dfbc6"] = scopeHandler3,
-  ["scope-coreloop-1-6ebe58f496"] = scopeHandler4,
-  ["scope-coreloop-2-6c927cfa40"] = scopeHandler5,
-  ["scope-mobileux-5acfb2eaa6"] = scopeHandler6,
+local function finishWave()
+  if WaveState~="COMBAT" then return end
+  WaveState="REST"
+  nextWaveAt=os.clock()+10
+  LastWaveReward=CurrentWave
+  for _,player in ipairs(Players:GetPlayers()) do
+    awardProgress(player,8+CurrentWave*2,4+CurrentWave)
+    player:SetAttribute("LastApprovedScope","survived-wave")
+  end
+  broadcastSurvivalState(nil)
+end
+
+local function nearestEnemy(rootPart, range)
+  local selected,best=nil,range or 21
+  for _,enemy in ipairs(enemies) do
+    if enemy.HP>0 and enemy.model.Parent then
+      local offset=enemy.position-rootPart.Position
+      local distance=offset.Magnitude
+      if distance<best and (distance<6 or rootPart.CFrame.LookVector:Dot(offset.Unit)>.05) then
+        selected,best=enemy,distance
+      end
+    end
+  end
+  return selected
+end
+
+local function attackEnemy(player)
+  local character=player.Character
+  local human=character and character:FindFirstChildOfClass("Humanoid")
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not human or human.Health<=0 or not rootPart then return false end
+  local target=nearestEnemy(rootPart,25)
+  if not target then return false end
+  local now=os.clock()
+  if now<(attackCooldown[player] or 0) then return false end
+  attackCooldown[player]=now+.42
+  local level=readNumber(player,"Level",1)
+  local weaponTier=readNumber(player,"WeaponTier",0)
+  local damage=math.floor(16+level*2.2+weaponTier*8)
+  target.HP=math.max(0,target.HP-damage)
+  target.model:SetAttribute("EnemyHealth",target.HP)
+  setNumber(player,"Combo",readNumber(player,"Combo",0)+1)
+  setNumber(player,"Score",readNumber(player,"Score",0)+damage)
+  player:SetAttribute("LastApprovedScope","combat-impact")
+  if target.HP<=0 then
+    target.model:Destroy()
+    for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
+    awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
+    setNumber(player,"EnemyHealth",0)
+    if target.isBoss then setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1) end
+    if Config.CompetitiveRequired then
+      setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+(target.isBoss and 5 or 1))
+    end
+    if #enemies==0 then finishWave() end
+  else
+    setNumber(player,"EnemyHealth",target.HP)
+  end
+  broadcastSurvivalState(player)
+  return true
+end
+
+local function gatherNearestResource(player)
+  local character=player.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart then return false end
+  local nearest,distance=nil,14
+  for _,node in ipairs(resourceNodes) do
+    if node.model.Parent and os.clock()>=node.readyAt then
+      local d=(rootPart.Position-node.model:GetPivot().Position).Magnitude
+      if d<distance then nearest,distance=node,d end
+    end
+  end
+  return nearest and gatherResource(player,nearest) or false
+end
+
+local function upgradeEquipment(player)
+  local tier=readNumber(player,"WeaponTier",0)
+  if tier>=10 then return false end
+  local wood=readNumber(player,"Wood",0)
+  local stone=readNumber(player,"Stone",0)
+  local cost=2+tier
+  if wood<cost or stone<cost then return false end
+  setNumber(player,"Wood",wood-cost)
+  setNumber(player,"Stone",stone-cost)
+  setNumber(player,"WeaponTier",tier+1)
+  player:SetAttribute("LastApprovedScope","resource-to-equipment-upgrade")
+  broadcastSurvivalState(player)
+  return true
+end
+
+local function startSurvivalRun(player)
+  if player:GetAttribute("RunActive")==true then return false end
+  player:SetAttribute("RunActive",true)
+  player:SetAttribute("CurrentWave",CurrentWave)
+  player:SetAttribute("LastApprovedScope","survival-run-started")
+  broadcastSurvivalState(player)
+  return true
+end
+
+local function updateEnemyAI(dt,now)
+  worldClock+=dt
+  if #enemies==0 then
+    if WaveState=="COMBAT" then finishWave() end
+    if now>=nextWaveAt then startWave() end
+    return
+  end
+  for _,enemy in ipairs(enemies) do
+    if enemy.HP>0 and enemy.model.Parent then
+      local targetPlayer,targetRoot,targetHuman=nil,nil,nil
+      local range=140
+      for _,player in ipairs(Players:GetPlayers()) do
+        local character=player.Character
+        local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+        local human=character and character:FindFirstChildOfClass("Humanoid")
+        if rootPart and human and human.Health>0 then
+          local d=(rootPart.Position-enemy.position).Magnitude
+          if d<range then targetPlayer,targetRoot,targetHuman,range=player,rootPart,human,d end
+        end
+      end
+      if targetRoot then
+        local offset=Vector3.new(targetRoot.Position.X-enemy.position.X,0,targetRoot.Position.Z-enemy.position.Z)
+        local d=offset.Magnitude
+        if d>4.4 then
+          local step=math.min(enemy.speed*dt,d-4.4)
+          enemy.position+=offset.Unit*step
+          enemy.model:PivotTo(CFrame.lookAt(enemy.position,enemy.position+offset.Unit))
+        elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
+          enemy.lastAttack=now
+          targetHuman:TakeDamage(enemy.damage)
+          setNumber(targetPlayer,"Health",math.max(0,math.floor(targetHuman.Health)))
+        end
+      end
+    end
+  end
+end
+local enemyUpdateElapsed=0
+RunService.Heartbeat:Connect(function(dt)
+  enemyUpdateElapsed+=math.min(dt,.15)
+  if enemyUpdateElapsed<.12 then return end
+  local step=math.min(enemyUpdateElapsed,.25)
+  enemyUpdateElapsed=0
+  updateEnemyAI(step,os.clock())
+end)
+
+local handlers={
+  ["genre-core"]=startSurvivalRun,
+  ["scope-corefun-ea77622450"]=attackEnemy,
+  ["scope-coreloop-0-9b2d4dfbc6"]=attackEnemy,
+  ["scope-coreloop-1-6ebe58f496"]=gatherNearestResource,
+  ["scope-coreloop-2-6c927cfa40"]=upgradeEquipment,
+  ["scope-mobileux-5acfb2eaa6"]=attackEnemy,
 }
 
 Players.PlayerAdded:Connect(function(player)
@@ -244,10 +386,10 @@ remote.OnServerEvent:Connect(function(player, actionId)
   local previous = lastAction[player] or 0
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
-  handler(player)
-  -- [서버 권한] 비전투 입력은 시각 전투 이벤트를 만들지 않는다.
+  local actionAccepted=handler(player)
+  -- [서버 권한] 실제 승인된 공격 판정이 있을 때만 전투 모션 이벤트를 보낸다.
   for _, action in ipairs(Config.Actions) do
-    if action.Id == actionId and action.Kind == "COMBAT" then
+    if actionAccepted and action.Id == actionId and action.Kind == "COMBAT" then
       player:SetAttribute("ApprovedCombatMotion", actionId .. ":" .. tostring(readNumber(player, "ActionSequence", 0)))
       break
     end
@@ -260,6 +402,7 @@ Players.PlayerRemoving:Connect(function(player)
     store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
   end)
   lastAction[player] = nil
+  attackCooldown[player] = nil
 end)
 
 
