@@ -439,6 +439,7 @@ jobs:
               &&runtime.runtimeFoundationPassed===true
               &&runtime.runtimeAcceptancePassed===true
               &&runtime.validationProvider==='ROBLOX_OFFICIAL_CLOUD_API_ONLY'
+              &&runtime.openCloudServerScenarioEvidence?.allChecksPassed===true
               &&runtime.openCloudImageEvidence?.imageContentPassed===true
               &&post.sourceRevision===sourceRevision
               &&post.artifactIdentity===artifactIdentity
@@ -1326,6 +1327,7 @@ jobs:
                     serverBootObserved:true,
                     serverBootEvidence:engineProbe?.serverBootEvidence||null,
                     openCloudWorldEvidence:engineProbe?.worldEvidence||null,
+                    openCloudServerScenarioEvidence:engineProbe?.cloudServerScenarioEvidence||null,
                     openCloudImageEvidence:engineProbe?.imageEvidence||null,
                     blockers:['runtime-sentinel-unavailable','client-runtime-observation-pending'],
                     observedAt:stamp,
@@ -1489,6 +1491,7 @@ jobs:
                 serverBootObserved:engineProbe?.serverBootObserved===true,
                 serverBootEvidence:engineProbe?.serverBootEvidence||null,
                 openCloudWorldEvidence:engineProbe?.worldEvidence||null,
+                    openCloudServerScenarioEvidence:engineProbe?.cloudServerScenarioEvidence||null,
                 openCloudImageEvidence:engineProbe?.imageEvidence||null,
                 blockers:staleSentinelWithVerifiedServerBoot
                   ?[...new Set([...(result.blockers||[]),'stale-runtime-sentinel','client-runtime-observation-pending'])]
@@ -1619,7 +1622,9 @@ jobs:
             const multiplayerReleasePassed=multiplayer.known===true
               &&(multiplayer.required!==true||staticMultiplayerCodePass);
             const cloudEnginePassed=engineProbe?.engineExecuted===true&&engineProbe?.exactPlace===true&&engineProbe?.exactVersion===true;
-            const runtimeAcceptanceForRelease=result.developmentContinuationPassed===true&&multiplayerReleasePassed&&cloudEnginePassed&&engineProbe?.imageEvidence?.imageContentPassed===true;
+            const cloudServerScenariosPassed=engineProbe?.cloudServerScenarioEvidence?.allChecksPassed===true;
+            console.log('ROBLOX_OPEN_CLOUD_SERVER_SCENARIOS='+item.gameId+':'+Number(engineProbe?.cloudServerScenarioEvidence?.passedCount||0)+'/5:observed='+Number(engineProbe?.cloudServerScenarioEvidence?.observedCount||0));
+            const runtimeAcceptanceForRelease=result.developmentContinuationPassed===true&&multiplayerReleasePassed&&cloudEnginePassed&&cloudServerScenariosPassed&&engineProbe?.imageEvidence?.imageContentPassed===true;
             const evidence={
               ...result,
               releaseRuntimeAcceptancePassed:runtimeAcceptanceForRelease,
@@ -1634,6 +1639,7 @@ jobs:
               observedAt:stamp,
               workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
               openCloudWorldEvidence:engineProbe?.worldEvidence||null,
+                    openCloudServerScenarioEvidence:engineProbe?.cloudServerScenarioEvidence||null,
               openCloudImageEvidence:engineProbe?.imageEvidence||null,
               authority:'existing-game-tester-roblox-runtime-foundation-v1',
             };
