@@ -28,6 +28,10 @@ if(!fs.existsSync(root))throw new Error('ROBLOX_GAMES_ROOT_MISSING:'+root);
 if(!playbooksFile||!fs.existsSync(playbooksFile))throw new Error('ROBLOX_LEARNING_PLAYBOOKS_MISSING:'+playbooksFile);
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+function synchronizeGameCommonProject({gameId,gameRoot}){
+  const {projectFile,commonModules,commonProjectChanged}=synchronizeGameCommonProject({gameId,gameRoot});
+  return {projectFile,commonModules,commonProjectChanged};
+}
 const runtimeRef=String(args['runtime-ref']||'').trim();
 const runtimeQueueFile=String(args['runtime-queue']||'').trim();
 if(Boolean(runtimeRef)!==Boolean(runtimeQueueFile)||runtimeRef&&!/^[A-Za-z0-9][A-Za-z0-9/_-]*$/.test(runtimeRef)){
@@ -45,7 +49,9 @@ const gameIds=fs.readdirSync(root,{withFileTypes:true})
   .filter(entry=>entry.isDirectory())
   .map(entry=>entry.name)
   .filter(gameId=>!requestedGameSet.size||requestedGameSet.has(gameId))
-  .filter(gameId=>fs.existsSync(path.join(root,gameId,'shared','GameConfig.luau'))&&fs.existsSync(path.join(root,gameId,'client','Game.client.luau')))
+  .filter(gameId=>fs.existsSync(path.join(root,gameId,'client','Game.client.luau'))
+    &&(fs.existsSync(path.join(root,gameId,'shared','GameConfig.luau'))
+      ||fs.existsSync(path.join(root,gameId,'shared','Config.luau'))))
   .sort();
 if(requestedGameSet.size){
   const found=new Set(gameIds);
@@ -56,7 +62,44 @@ if(requestedGameSet.size){
 const results=[];
 for(const gameId of gameIds){
   const gameRoot=path.join(root,gameId);
-  const configSource=fs.readFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'utf8');
+  const standardConfigFile=path.join(gameRoot,'shared','GameConfig.luau');
+  if(!fs.existsSync(standardConfigFile)){
+    // Legacy Roblox project (e.g., baeksu-war) has Config.luau but no Vibe2 design
+    // baseline. Synchronize only the native module map; never fabricate learning,
+    // source validation or release evidence, or rewrite the game's own scripts.
+    if(!fs.existsSync(path.join(gameRoot,'shared','Config.luau'))
+      ||!fs.existsSync(path.join(gameRoot,'server','Game.server.luau'))){
+      throw new Error('ROBLOX_SWEEP_LEGACY_SOURCE_INCOMPLETE:'+gameId);
+    }
+    const {projectFile,commonModules,commonProjectChanged}=synchronizeGameCommonProject({gameId,gameRoot});
+    const evidenceFile=path.join(gameRoot,'roblox-source-bootstrap.json');
+    const beforeEvidence=fs.existsSync(evidenceFile)?fs.readFileSync(evidenceFile,'utf8'):'';
+    const evidence=beforeEvidence?readJson(evidenceFile):{
+      version:1,gameId,platform:'ROBLOX',
+      sourcePath:path.relative(process.cwd(),gameRoot).replaceAll('\\','/')
+    };
+    const nextEvidence={
+      ...evidence,
+      moduleSyncOnly:true,
+      commonModuleSync:{count:commonModules.moduleCount,linked:commonModules.linked,
+        local:commonModules.local,conflicts:commonModules.conflicts,
+        libraryCoverage:commonModules.libraryCoverage}
+    };
+    const stableEvidence=JSON.stringify(nextEvidence,null,2)+'\n';
+    const evidenceChanged=stableEvidence!==beforeEvidence;
+    const changed=commonProjectChanged||evidenceChanged;
+    if(evidenceChanged)fs.writeFileSync(evidenceFile,stableEvidence,'utf8');
+    const changedFiles=[];
+    if(commonProjectChanged)changedFiles.push(path.relative(process.cwd(),projectFile).replaceAll('\\','/'));
+    if(evidenceChanged)changedFiles.push(path.relative(process.cwd(),evidenceFile).replaceAll('\\','/'));
+    results.push({gameId,changed,changedFiles,serverTouched:false,
+      moduleSyncOnly:true,verifiedExternalLearningApplied:false,
+      commonModuleCount:commonModules.moduleCount,
+      commonModuleConflictCount:commonModules.conflicts.length,
+      commonModuleProjectChanged:commonProjectChanged});
+    continue;
+  }
+  const configSource=fs.readFileSync(standardConfigFile,'utf8');
   const fallbackProfile=existingRobloxGameLearningProfile(gameId);
   const sourceProfile=robloxLearningProfileFromSource({gameId,config:configSource,fallback:fallbackProfile});
   // Use the same canonical company-runtime design as exact source reconciliation.
