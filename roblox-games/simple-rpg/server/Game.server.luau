@@ -145,17 +145,13 @@ local function bindFoundationCharacter(character)
   overlap.CollisionGroup = rootPart.CollisionGroup
   local blockers = workspace:GetPartBoundsInBox(CFrame.new(target), Vector3.new(math.max(rootPart.Size.X, 1.5), math.max(clearance * 2 - 0.4, rootPart.Size.Y), math.max(rootPart.Size.Z, 1.5)), overlap)
   for _, part in ipairs(blockers) do
-    if part ~= groundHit.Instance and part.CanCollide then
-      -- [백수전쟁 스폰 구조 참고] 서로 겹쳐 설치된 원본 대륙/로비 바닥은
-      -- 플레이어 발밑 지지면이다. 같은 높이 이하의 지형을 머리 충돌로 오판하지 않는다.
-      local isSupportingGround = part:IsA("BasePart") and part.Anchored
-        and part:GetAttribute("WalkableGround") == true
-        and (part.Position.Y + part.Size.Y * 0.5) <= (groundHit.Position.Y + 0.1)
-      if not isSupportingGround then
-        character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED")
-        character:SetAttribute("SpawnBlockingPart", part.Name)
-        return
-      end
+    -- [기존 백수대전쟁 참조 빌드업] 승인된 중첩 바닥은 지지면이며 돌출된 장애물은 차단한다.
+    local isUnderlyingWalkableFloor = part:GetAttribute("WalkableGround") == true
+      and part.Anchored and part.Position.Y + part.Size.Y * 0.5 <= groundHit.Position.Y + 0.1
+    if part ~= groundHit.Instance and part.CanCollide and not isUnderlyingWalkableFloor then
+      character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED")
+      character:SetAttribute("SpawnBlockingPart", part.Name)
+      return
     end
   end
   character:SetAttribute("SpawnBlockingPart", nil)
