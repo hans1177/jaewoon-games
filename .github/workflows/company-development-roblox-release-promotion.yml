@@ -1435,6 +1435,11 @@ jobs:
             sudo apt-get install -y librsvg2-bin
           fi
           rsvg-convert --version
+          # Install video tools only when a real Roblox runtime recording exists.
+          if [ -d main/assets/runtime-evidence/roblox ] && find main/assets/runtime-evidence/roblox -type f -name '*.mp4' -print -quit | grep -q .; then
+            command -v ffmpeg >/dev/null 2>&1 || { sudo apt-get update -y; sudo apt-get install -y ffmpeg; }
+            command -v ffprobe >/dev/null 2>&1
+          fi
 
       - name: Verify thumbnail sync contract
         working-directory: main
@@ -1555,6 +1560,17 @@ jobs:
             echo 'ROBLOX_DETAIL_MEDIA_IMAGE_SYNC_SUBMITTED_OR_EXISTING'
           fi
           echo 'ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES'
+
+      - name: Keep authentic Roblox gameplay edits as private review artifacts
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-native-video-edits-${{ github.run_id }}
+          path: |
+            main/.tmp/roblox-detail-evidence/*-edited.mp4
+            main/.tmp/roblox-detail-evidence/*-edited.mp4.json
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Persist verified thumbnail evidence to runtime
         if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
