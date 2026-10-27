@@ -29,7 +29,14 @@ if(!playbooksFile||!fs.existsSync(playbooksFile))throw new Error('ROBLOX_LEARNIN
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 function synchronizeGameCommonProject({gameId,gameRoot}){
-  const {projectFile,commonModules,commonProjectChanged}=synchronizeGameCommonProject({gameId,gameRoot});
+  const projectFile=path.join(gameRoot,'default.project.json');
+  if(!fs.existsSync(projectFile))throw new Error('ROBLOX_SWEEP_COMMON_PROJECT_REQUIRED:'+gameId);
+  const beforeProject=fs.readFileSync(projectFile,'utf8');
+  const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
+  const commonModules=synchronizeRobloxCommonModules({project,gameRoot});
+  const afterProject=JSON.stringify(project,null,2)+'\n';
+  const commonProjectChanged=beforeProject!==afterProject;
+  if(commonProjectChanged)fs.writeFileSync(projectFile,afterProject,'utf8');
   return {projectFile,commonModules,commonProjectChanged};
 }
 const runtimeRef=String(args['runtime-ref']||'').trim();
