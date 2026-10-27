@@ -3460,3 +3460,34 @@ test('reboot-safe Studio session settles only the exact reserved source and arti
   });
   assert.equal(staleApplied.item.robloxStudioRuntimeSession.status,'QUEUED_FOR_STUDIO');
 });
+
+test('cloud Studio playtest rejects player bots, public servers and external GUI injection',()=>{
+  const allowed={
+    roblox:{studioExecution:{
+      enabled:true,required:false,optionalDiagnostic:true,deploymentGate:false,f9Gate:false,
+      officialStudioMcpOnly:true,localPlaceFileRequired:true,
+      onlinePublishedPlaceDirectOpenForbidden:true,robloxPlayerAutomationForbidden:true,
+      externalGuiAutomationForbidden:true,undocumentedStudioCliAutomationForbidden:true,
+      studioMcpTransport:'STDIO'
+    }},
+    developmentLifecycleMachine:{robloxStudioUsage:{
+      learningUseForbidden:false,
+      forbidden:['ROBLOX_PLAYER_AUTOMATION','PUBLIC_SERVER_BOT_PLAY',
+        'PUBLISHED_PLACE_DIRECT_STUDIO_AUTOMATION','UNDOCUMENTED_STUDIO_CLI_AUTOMATION',
+        'EXTERNAL_GUI_MACRO_OR_INJECTION']
+    }}
+  };
+  assert.equal(validateLocalStudioPolicy(allowed),true);
+  for(const key of ['robloxPlayerAutomationForbidden','externalGuiAutomationForbidden',
+    'onlinePublishedPlaceDirectOpenForbidden','officialStudioMcpOnly']){
+    const unsafe=structuredClone(allowed);
+    unsafe.roblox.studioExecution[key]=false;
+    assert.throws(()=>validateLocalStudioPolicy(unsafe),/ROBLOX_STUDIO_MCP_POLICY_MISMATCH/);
+  }
+  for(const forbidden of allowed.developmentLifecycleMachine.robloxStudioUsage.forbidden){
+    const unsafe=structuredClone(allowed);
+    unsafe.developmentLifecycleMachine.robloxStudioUsage.forbidden=
+      unsafe.developmentLifecycleMachine.robloxStudioUsage.forbidden.filter(x=>x!==forbidden);
+    assert.throws(()=>validateLocalStudioPolicy(unsafe),/ROBLOX_STUDIO_MCP_POLICY_MISMATCH/);
+  }
+});
