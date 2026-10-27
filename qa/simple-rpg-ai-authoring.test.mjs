@@ -484,7 +484,9 @@ test('verified start ground owns stable lobby and respawn without late save-load
   assert.match(server, /part\.Anchored and part\.Position\.Y \+ part\.Size\.Y \* 0\.5 <= groundHit\.Position\.Y \+ 0\.1/);
   assert.match(server, /part ~= groundHit\.Instance and part\.CanCollide and not isUnderlyingWalkableFloor/);
   assert.match(server, /if contacts >= 3 then\s+moving:Disconnect\(\)\s+character:SetAttribute\("GROUND_CONTACT", true\)/);
-  assert.doesNotMatch(server, /character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+  const lobbySpawnBlock = server.slice(server.indexOf('-- 처음 접속 시 로비에서 시작.'), server.indexOf('player.CharacterAdded:Connect(function()', server.indexOf('-- 처음 접속 시 로비에서 시작.')));
+  assert.ok(lobbySpawnBlock.length > 100);
+  assert.doesNotMatch(lobbySpawnBlock, /character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
   assert.match(server, /SIMPLE_RPG_SPAWN_GROUNDING_UNVERIFIED/);
   assert.match(server, /if character:GetAttribute\("CivTravelCompleted"\) then return end/);
   assert.match(server, /store:GetAsync\("player:" \.\. player\.UserId\)/);
