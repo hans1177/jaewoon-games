@@ -986,17 +986,40 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate live published 3D model and game controls
+      # 브라우저 실행 직전에 다시 SHA를 확인해 느린 실행기 준비 중 게시본 교체를 정상적으로 구별한다.
+      - name: Prepare post-publication Chromium
         if: steps.live_revision.outputs.exact == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          # Ubuntu runner의 기존 런타임을 이용하고, 12분 넘는 전체 OS 폰트 재설치를 피한다.
+          npx playwright install --only-shell chromium
+      - name: Recheck exact published revision after browser setup
+        id: browser_revision
+        if: steps.live_revision.outputs.exact == 'true'
+        env:
+          PAGES_BASE: ${{ needs.publish-pages.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="${PAGES_BASE%/}/web-games/publish-manifest.json"
+          actual="$(curl -fsSL --retry 2 --max-time 15 "$url" | node -e "let t='';process.stdin.on('data',d=>t+=d);process.stdin.on('end',()=>{try{let j=JSON.parse(t);if(!/^[a-f0-9]{40}$/.test(j.sourceSha||''))process.exit(1);process.stdout.write(j.sourceSha)}catch{process.exit(1)}})")"
+          if [ "$actual" != "$GITHUB_SHA" ]; then
+            echo "POST_PUBLISH_BROWSER_SETUP_SUPERSEDED_BY=$actual"
+            echo "exact=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "POST_PUBLISH_BROWSER_EXACT_SHA=PASS"
+            echo "exact=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Validate live published 3D model and game controls
+        if: steps.browser_revision.outputs.exact == 'true'
         id: forest_native_3d_live_qa
         env:
           VIBE_SMOKE_LIVE_BASE: ${{ needs.publish-pages.outputs.page_url }}
         shell: bash
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts playwright@1.56.1
-          # The existing smoke launches headless Chromium without a browser channel.
-          npx playwright install --with-deps --only-shell chromium
           node qa/vibe-browser-smoke.mjs
       - name: Keep naval battle mobile render evidence
         if: ${{ always() && steps.live_revision.outputs.exact == 'true' }}
