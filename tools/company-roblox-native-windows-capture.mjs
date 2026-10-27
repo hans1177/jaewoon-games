@@ -53,11 +53,6 @@ function observedNativeNpc(target){
  }
  throw Error('PRIVATE_NPC_LAUNCH_DATA_OR_NATIVE_MOVE_ATTESTATION_MISSING');
 }
-function playerWindow(){')+'([1-9][0-9]*)\\|NPC_MOVED'));
-  if(match)return {placeVersion:match[1],clientLogObserved:true};
- }
- throw Error('PRIVATE_NPC_LAUNCH_DATA_OR_NATIVE_MOVE_ATTESTATION_MISSING');
-}
 function playerWindow(){
  const ps="$ErrorActionPreference='Stop'; $p=@(Get-Process -Name 'RobloxPlayerBeta' -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 -and $_.MainWindowTitle -match 'Roblox' }); @($p | ForEach-Object { [pscustomobject]@{pid=$_.Id;hwnd=$_.MainWindowHandle.ToInt64();title=$_.MainWindowTitle} }) | ConvertTo-Json -Compress";
  const out=command('powershell.exe',['-NoProfile','-NonInteractive','-Command',ps],15000);
