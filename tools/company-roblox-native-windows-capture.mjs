@@ -139,8 +139,153 @@ function submitCapture({file,proofPath,proof,stateFile,observed}){
  }else console.log('ROBLOX_NATIVE_CAPTURE_DISPATCHED=YES');
  console.log('ROBLOX_NATIVE_CAPTURE_SUBMITTED=YES');
 }
+// 안드로이드: 승인된 실물폰만 촬영하며, 게임 입력/터치/잠금 우회는 하지 않는다.
+async function captureAndroid(){
+ const target=runtimeTarget();
+ const listed=command('adb',['devices'],10000);
+ if(listed.status!==0)throw Error('ADB_REQUIRED_ON_ANDROID');
+ const devices=listed.stdout.split(/\r?\n/).slice(1)
+  .map(x=>x.trim().split(/\s+/)).filter(x=>x[1]==='device');
+ if(devices.length!==1||!/^[A-Za-z0-9._:-]+$/.test(devices[0][0]))
+  throw Error('EXACTLY_ONE_AUTHORIZED_PHYSICAL_ANDROID_DEVICE_REQUIRED');
+ const serial=devices[0][0];
+ const adb=(args,timeout=15000,buffer=1024*1024)=>spawnSync('adb',
+  ['-s',serial,...args],{encoding:'utf8',timeout,maxBuffer:buffer});
+ for(const key of ['ro.kernel.qemu','ro.boot.qemu']){
+  const r=adb(['shell','getprop',key]);
+  if(r.status!==0||r.stdout.trim()==='1')throw Error('ANDROID_EMULATOR_NOT_SUPPORTED');
+ }
+ if(adb(['shell','getprop','ro.product.model']).stdout.trim().length===0)
+  throw Error('PHYSICAL_ANDROID_MODEL_UNVERIFIED');
+ const pkg=adb(['shell','pm','path','com.roblox.client']);
+ if(pkg.status!==0||!pkg.stdout.includes('package:'))throw Error('ROBLOX_ANDROID_APP_NOT_INSTALLED');
+ if(mode==='check'){
+  console.log('ROBLOX_ANDROID_PHYSICAL_DEVICE_READY=YES');
+  console.log('ROBLOX_ANDROID_NPC_GAMEPLAY_NOT_VERIFIED=YES');
+  return;
+ }
+ if(process.env.ROBLOX_CAPTURE_AUTHORIZED!=='1')throw Error('EXPLICIT_PRIVATE_CAPTURE_AUTHORIZATION_REQUIRED');
+ const link=String(process.env.JAEWOON_CAPTURE_PRIVATE_LINK_CODE||'');
+ if(process.env.JAEWOON_CAPTURE_GAME_ID!==gameId||!/^[A-Za-z0-9_-]{8,200}$/.test(link))
+  throw Error('ANDROID_PRIVATE_SERVER_LINK_CONFIGURATION_REQUIRED');
+ for(const bin of ['ffmpeg','ffprobe']){
+  if(command(bin,['-version'],7000).status!==0)throw Error(bin.toUpperCase()+'_MISSING');
+ }
+ // Roblox 공식 딥링크로만 진입한다. 외부 매크로나 플레이어 조작은 사용하지 않는다.
+ const uri='roblox://placeId='+target.placeId+'&linkCode='+encodeURIComponent(link)
+  +'&launchData='+encodeURIComponent('JAEWOON_NATIVE_CAPTURE_'+gameId);
+ const joined=adb(['shell','am','start','-a','android.intent.action.VIEW','-d',"'"+uri+"'"],20000);
+ if(joined.status!==0||/Error:|unable to resolve/i.test(joined.stdout+joined.stderr))
+  throw Error('ANDROID_PRIVATE_ROBLOX_DEEPLINK_FAILED');
+ const foreground=()=>{
+  const a=adb(['shell','dumpsys','activity','activities'],15000,5*1024*1024);
+  const w=adb(['shell','dumpsys','window'],15000,3*1024*1024);
+  return a.status===0&&w.status===0
+   &&/(?:topResumedActivity|mResumedActivity|ResumedActivity:)[^\n]*com\.roblox\.client/i.test(a.stdout)
+   &&/(?:mCurrentFocus|mFocusedApp)[^\n]*com\.roblox\.client/i.test(w.stdout);
+ };
+ const prefix='JAEWOON_NATIVE_CAPTURE_READY|'+gameId+'|'+target.universeId+'|'+target.placeId+'|';
+ let observed=null;
+ const deadline=Date.now()+47000;
+ while(Date.now()<deadline){
+  if(foreground()){
+   const raw=adb(['logcat','-d','-t','12000'],17000,12*1024*1024);
+   // 다른 앱 로그는 보관하거나 외부로 보내지 않고 촬영 신호만 검사한다.
+   if(raw.status===0){
+    const ix=raw.stdout.lastIndexOf(prefix);
+    if(ix>=0){
+     const m=raw.stdout.slice(ix+prefix.length).match(/^([1-9]\d*)[|]NPC_MOVED[|]([1-9]\d*)/);
+     if(m){
+      const ageSeconds=Math.floor(Date.now()/1000)-Number(m[2]);
+      if(ageSeconds>=-2&&ageSeconds<=7)
+       observed={placeVersion:m[1],sessionNonce:m[2],ageSeconds,clientLogObserved:true};
+     }
+    }
+   }
+  }
+  if(observed)break;
+  await new Promise(resolve=>setTimeout(resolve,2000));
+ }
+ if(!observed)throw Error('ANDROID_NATIVE_NPC_LOG_OR_FOREGROUND_ATTESTATION_MISSING');
+ const stateDir=path.join(os.tmpdir(),'jaewoon-native-client-capture');
+ fs.mkdirSync(stateDir,{recursive:true});
+ const stateFile=path.join(stateDir,gameId+'.json');
+ if(fs.existsSync(stateFile)){
+  const state=readJson(stateFile);
+  if(state.sessionNonce===observed.sessionNonce&&state.placeVersion===observed.placeVersion){
+   if(state.uploaded)throw Error('NATIVE_GAMEPLAY_SESSION_ALREADY_CAPTURED');
+   if(state.videoPath&&state.proofPath&&fs.existsSync(state.videoPath)&&fs.existsSync(state.proofPath)
+    &&sameRoot(path.join(runtimeRoot,'assets','runtime-evidence','roblox',gameId),state.videoPath)){
+    if(process.env.ROBLOX_CAPTURE_SUBMIT==='1'){
+     submitCapture({file:state.videoPath,proofPath:state.proofPath,
+      proof:readJson(state.proofPath),stateFile,observed});
+     console.log('ROBLOX_CAPTURE_REUSED_EXISTING_VIDEO_AFTER_UPLOAD_FAILURE=YES');
+     return;
+    }
+   }
+   throw Error('NATIVE_CAPTURE_LOCAL_FILE_PENDING_UPLOAD');
+  }
+ }
+ const duration=Number(arg('seconds','19'));
+ if(!Number.isInteger(duration)||duration<8||duration>22)
+  throw Error('DURATION_MUST_BE_8_TO_22_SECONDS');
+ const at=new Date().toISOString();
+ const folder=path.join(runtimeRoot,'assets','runtime-evidence','roblox',gameId,at.replace(/[:.]/g,'-'));
+ if(!sameRoot(path.join(runtimeRoot,'assets','runtime-evidence','roblox',gameId),folder)||fs.existsSync(folder))
+  throw Error('ANDROID_CAPTURE_DESTINATION_INVALID');
+ fs.mkdirSync(folder,{recursive:true});
+ const file=path.join(folder,'capture.mp4');
+ const remote='/sdcard/Movies/jaewoon-npc-'+gameId+'-'+Date.now()+'.mp4';
+ try{
+  const recorded=adb(['shell','screenrecord','--size','1280x720','--bit-rate','3000000',
+   '--time-limit',String(duration),remote],(duration+20)*1000);
+  if(recorded.status!==0)throw Error('ANDROID_SCREENRECORD_FAILED');
+  if(!foreground())throw Error('ANDROID_ROBLOX_LEFT_FOREGROUND_DURING_CAPTURE');
+  const pulled=adb(['pull',remote,file],35000,2*1024*1024);
+  if(pulled.status!==0||!fs.existsSync(file))throw Error('ANDROID_CAPTURE_PULL_FAILED');
+ }finally{
+  adb(['shell','rm','-f',remote],8000);
+ }
+ const {meta,v}=validateNativeVideo(file,duration);
+ const revision=command('git',['-C',root,'rev-parse','HEAD']).stdout.trim();
+ const proof={
+  version:1,gameId,universeId:target.universeId,placeId:target.placeId,
+  captureSource:'ROBLOX_NATIVE_SCRIPTED_ACTOR_CAPTURE',
+  captureAt:at,sourceRevision:/^[a-f0-9]{40}$/.test(revision)?revision:null,
+  sha256:sha256(file),artifactIdentity:path.relative(runtimeRoot,file).replaceAll(path.sep,'/'),
+  captureDevice:'ANDROID_PHYSICAL',androidPackage:'com.roblox.client',
+  nativeVideoOrigin:'PHYSICAL_ANDROID_ROBLOX_SCREENRECORD_WITH_REAL_NPC_MOVEMENT',
+  observedNativePlaceVersion:observed.placeVersion,nativeCaptureSessionNonce:observed.sessionNonce,
+  captureStartLagSeconds:observed.ageSeconds,clientLogObserved:true,
+  sourceRevisionBinding:'WORKER_CHECKOUT_SHA_NOT_NATIVE_PUBLISHED_PLACE_VERIFICATION',
+  durationSeconds:Number(meta.format.duration),width:v.width,height:v.height,
+  humanPlayerRequired:false,
+  actorAutomation:{mode:'IN_GAME_NPC_AI',playerControl:false,existingGameplayOnly:true,verified:true},
+  runtimeVerification:{
+   pass:true,actualGameplay:true,actualNativeEngine:true,
+   clientScreenRecording:true,syntheticFrameRendering:false,
+   playerAutomation:false,observedGameplayInteractions:1,
+   observedNativeNpcMotionStudsMin:2.5,gameIdentityFromClientLog:true,
+   videoFrameAuditPassed:true,publishedPlaceRevisionChecked:false,releaseApprovalRequired:true
+  },uploadVerified:false,videoPublished:false
+ };
+ const proofPath=path.join(folder,'capture.json');
+ fs.writeFileSync(proofPath,JSON.stringify(proof,null,2)+'\n');
+ fs.writeFileSync(stateFile,JSON.stringify({
+  gameId,placeVersion:observed.placeVersion,sessionNonce:observed.sessionNonce,
+  videoSha256:proof.sha256,videoPath:file,proofPath,uploaded:false,captureAt:at
+ },null,2)+'\n');
+ console.log('ROBLOX_ANDROID_CAPTURE_SAVED='+file);
+ console.log('ROBLOX_CAPTURE_SHA256='+proof.sha256);
+ console.log('ROBLOX_NATIVE_RUNTIME_CLIP_ATTESTED=YES');
+ console.log('ROBLOX_PUBLICATION_MODERATION_STILL_REQUIRED=YES');
+ if(process.env.ROBLOX_CAPTURE_SUBMIT==='1')
+  submitCapture({file,proofPath,proof,stateFile,observed});
+}
+
 async function run(){
  if(!['check','capture'].includes(mode))throw Error('UNKNOWN_MODE');
+ if(arg('device')==='android')return captureAndroid();
  if(process.platform!=='win32')throw Error('WINDOWS_SESSION_REQUIRED');
  const target=runtimeTarget();
  for(const bin of ['ffmpeg','ffprobe']){
