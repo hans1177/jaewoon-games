@@ -6,6 +6,12 @@ on:
     paths:
       - 'assets/jaewoon-motion-engine.js'
       - 'assets/jaewoon-motion-evolution.js'
+      - 'assets/roblox/common-motion-v1/RobloxCommonMotion.luau'
+      - 'tools/vibe2-motion-evolution.mjs'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/vibe2-learning-motor.mjs'
+      - 'company-learning/motion-evolution-history.json'
+      - 'qa/vibe2-motion-evolution.test.mjs'
       - 'qa/jaewoon-motion-engine.test.cjs'
       - 'qa/jaewoon-motion-evolution.test.cjs'
       - '.github/workflows/motion-evolution-qa.yml'
@@ -13,6 +19,12 @@ on:
     paths:
       - 'assets/jaewoon-motion-engine.js'
       - 'assets/jaewoon-motion-evolution.js'
+      - 'assets/roblox/common-motion-v1/RobloxCommonMotion.luau'
+      - 'tools/vibe2-motion-evolution.mjs'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/vibe2-learning-motor.mjs'
+      - 'company-learning/motion-evolution-history.json'
+      - 'qa/vibe2-motion-evolution.test.mjs'
       - 'qa/jaewoon-motion-engine.test.cjs'
       - 'qa/jaewoon-motion-evolution.test.cjs'
       - '.github/workflows/motion-evolution-qa.yml'
@@ -32,6 +44,8 @@ jobs:
           node-version: '22'
       - run: node --check assets/jaewoon-motion-engine.js
       - run: node --check assets/jaewoon-motion-evolution.js
+      - run: node --check tools/vibe2-motion-evolution.mjs
+      - run: node --test qa/vibe2-motion-evolution.test.mjs
       - run: node --test qa/jaewoon-motion-engine.test.cjs qa/jaewoon-motion-evolution.test.cjs
       - name: Authority and self-promotion guard
         shell: bash
