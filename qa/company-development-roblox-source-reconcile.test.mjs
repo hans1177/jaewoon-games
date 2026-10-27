@@ -1141,71 +1141,83 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
 });
 
-test('legacy Baeksu war enters canonical all-game common-module sweep without fake learning or source QA',()=>{
-  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-baeksu-native-modules-'));
-  try{
-    const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
-    const paths=[
-      'default.project.json','client/Game.client.luau','server/Game.server.luau',
-      'shared/GameConfig.luau','shared/VisualKit.luau'
-    ];
-    for(const name of paths){
-      const destination=path.join(gameRoot,name);
-      fs.mkdirSync(path.dirname(destination),{recursive:true});
-      fs.copyFileSync(path.join('roblox-games/baeksu-war',name),destination);
+test('Baeksu native-only common module sweep tolerates both legacy and renamed configs without source QA claims',()=>{
+  // Isolated source-planning workers do not necessarily checkout unrelated games.
+  // The test fixture owns only the legacy Rojo contract; game source is not copied.
+  for(const renamedConfig of [false,true]){
+    const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-baeksu-native-modules-'));
+    try{
+      const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
+      const configFile=path.join(gameRoot,'shared',renamedConfig?'GameConfig.luau':'Config.luau');
+      const clientFile=path.join(gameRoot,'client','Game.client.luau');
+      const serverFile=path.join(gameRoot,'server','Game.server.luau');
+      const projectFile=path.join(gameRoot,'default.project.json');
+      const evidencePath=path.join(gameRoot,'roblox-source-bootstrap.json');
+      for(const file of [configFile,clientFile,serverFile]){
+        fs.mkdirSync(path.dirname(file),{recursive:true});
+      }
+      const originalClient='-- existing legacy gameplay client preserved\n';
+      const originalServer='-- existing legacy authoritative server preserved\n';
+      const originalConfig='return {GameId="baeksu-war",SaveKey="baeksu-war-v1"}\n';
+      fs.writeFileSync(configFile,originalConfig);
+      fs.writeFileSync(clientFile,originalClient);
+      fs.writeFileSync(serverFile,originalServer);
+      const project={
+        name:'백수대전쟁',
+        tree:{
+          $className:'DataModel',
+          ReplicatedStorage:{Shared:{$path:'shared',
+            RobloxCommonUI:{$path:'../../assets/roblox/common-ui-v1/RobloxCommonUI.luau'},
+            RobloxCommonIcons:{$path:'../../assets/roblox/common-ui-v1/RobloxCommonIcons.luau'}}},
+          ServerScriptService:{GameServer:{$path:'server'}},
+          StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}}
+        }
+      };
+      fs.writeFileSync(projectFile,JSON.stringify(project,null,2)+'\n');
+      if(renamedConfig){
+        // The actual game's initial native-only evidence remains authoritative
+        // when another development worker renames Config.luau to GameConfig.luau.
+        fs.writeFileSync(evidencePath,JSON.stringify({
+          version:1,gameId:'baeksu-war',platform:'ROBLOX',moduleSyncOnly:true
+        },null,2)+'\n');
+      }
+      const playbooks=path.join(tmp,'verified-playbooks.json');
+      fs.writeFileSync(playbooks,'{}\n');
+      const report=path.join(tmp,'report.json');
+      const command=[
+        path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+        '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war',
+        '--playbooks='+playbooks,'--report='+report
+      ];
+      execFileSync(process.execPath,command,{stdio:'pipe'});
+      const first=JSON.parse(fs.readFileSync(report,'utf8'));
+      assert.equal(first.scannedGameCount,1);
+      assert.equal(first.changedGameCount,1);
+      assert.equal(first.results[0].moduleSyncOnly,true);
+      assert.equal(first.results[0].verifiedExternalLearningApplied,false);
+      assert.equal(first.results[0].commonModuleCount,15);
+      assert.equal(first.results[0].commonModuleConflictCount,0);
+      const mapped=JSON.parse(fs.readFileSync(projectFile,'utf8')).tree.ReplicatedStorage.Shared;
+      assert.equal(Object.keys(mapped).filter(name=>name.startsWith('RobloxCommon')).length,15);
+      assert.equal(mapped.RobloxCommonMotion.$path,
+        '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+      assert.equal(fs.readFileSync(clientFile,'utf8'),originalClient);
+      assert.equal(fs.readFileSync(serverFile,'utf8'),originalServer);
+      assert.equal(fs.readFileSync(configFile,'utf8'),originalConfig);
+      const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
+      assert.equal(evidence.moduleSyncOnly,true);
+      assert.equal(evidence.sourceValidationPassed,undefined);
+      assert.equal(evidence.vibe3LearningApplied,undefined);
+      assert.match(evidence.commonModuleSync.libraryCoverage.runtimeBindingFingerprint,/^[a-f0-9]{64}$/);
+      const stableProject=fs.readFileSync(projectFile,'utf8');
+      const stableEvidence=fs.readFileSync(evidencePath,'utf8');
+      execFileSync(process.execPath,command,{stdio:'pipe'});
+      assert.equal(JSON.parse(fs.readFileSync(report,'utf8')).changedGameCount,0);
+      assert.equal(fs.readFileSync(projectFile,'utf8'),stableProject);
+      assert.equal(fs.readFileSync(evidencePath,'utf8'),stableEvidence);
+    }finally{
+      fs.rmSync(tmp,{recursive:true,force:true});
     }
-    // 기존 게임은 현재 공용 15종이 연결돼 있다. 복사한 임시 프로젝트만
-    // 초기 미연결 상태로 되돌려 자동 등록·중복 없는 재실행을 검증한다.
-    const fixtureProjectFile=path.join(gameRoot,'default.project.json');
-    const fixtureProject=JSON.parse(fs.readFileSync(fixtureProjectFile,'utf8'));
-    const fixtureShared=fixtureProject.tree.ReplicatedStorage.Shared;
-    for(const name of Object.keys(fixtureShared)){
-      if(name.startsWith('RobloxCommon'))delete fixtureShared[name];
-    }
-    fs.writeFileSync(fixtureProjectFile,JSON.stringify(fixtureProject,null,2)+'\n');
-    const originalClient=fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8');
-    const originalServer=fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8');
-    const originalConfig=fs.readFileSync(path.join(gameRoot,'shared/GameConfig.luau'),'utf8');
-    const before=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
-    assert.equal(before.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
-    const playbooks=path.join(tmp,'verified-playbooks.json');
-    fs.writeFileSync(playbooks,'{}\n');
-    const report=path.join(tmp,'report.json');
-    const command=[
-      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
-      '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war',
-      '--playbooks='+playbooks,'--report='+report
-    ];
-    execFileSync(process.execPath,command,{stdio:'pipe'});
-    const first=JSON.parse(fs.readFileSync(report,'utf8'));
-    assert.equal(first.scannedGameCount,1);
-    assert.equal(first.changedGameCount,1);
-    assert.equal(first.results[0].moduleSyncOnly,true);
-    assert.equal(first.results[0].verifiedExternalLearningApplied,false);
-    assert.equal(first.results[0].commonModuleCount,15);
-    assert.equal(first.results[0].commonModuleConflictCount,0);
-    const project=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
-    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
-      '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
-    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonBuilding.$path,
-      '../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
-    assert.equal(fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8'),originalClient);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8'),originalServer);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'shared/GameConfig.luau'),'utf8'),originalConfig);
-    const evidencePath=path.join(gameRoot,'roblox-source-bootstrap.json');
-    const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
-    assert.equal(evidence.moduleSyncOnly,true);
-    assert.equal(evidence.sourceValidationPassed,undefined);
-    assert.equal(evidence.vibe3LearningApplied,undefined);
-    assert.match(evidence.commonModuleSync.libraryCoverage.runtimeBindingFingerprint,/^[a-f0-9]{64}$/);
-    const afterProject=fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8');
-    const afterEvidence=fs.readFileSync(evidencePath,'utf8');
-    execFileSync(process.execPath,command,{stdio:'pipe'});
-    assert.equal(JSON.parse(fs.readFileSync(report,'utf8')).changedGameCount,0);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'),afterProject);
-    assert.equal(fs.readFileSync(evidencePath,'utf8'),afterEvidence);
-  }finally{
-    fs.rmSync(tmp,{recursive:true,force:true});
   }
 });
 
