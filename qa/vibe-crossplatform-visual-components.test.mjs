@@ -122,7 +122,8 @@ test('both native platform adapters expose concrete event-safe visual abilities'
   assert.match(src,/descendant:IsA\("BaseScript"\)/);
   assert.match(src,/model:GetBoundingBox\(\)/);
   assert.match(src,/seen\[id\]/);
-  assert.match(src,/surface\.ScaleType = typeof\(options\.sliceCenter\)/);
+  assert.ok(src.includes('surface.ScaleType = (typeof(options.sliceCenter) == "Rect" or (options.surfaceTexture == nil and theme.PanelTexture ~= "")) and Enum.ScaleType.Slice or Enum.ScaleType.Stretch'), 'explicit crop or registered theme skin enables Slice; other textures remain Stretch');
+  assert.ok(src.includes('surface.SliceCenter = typeof(options.sliceCenter) == "Rect" and options.sliceCenter or Rect.new(128,128,1126,1126)'), 'preserve current theme-slice fallback and explicit crop');
   const js=fs.readFileSync('assets/jaewoon-graphics-engine.js','utf8');
   assert.match(js,/createWebPresentationController/);
   assert.match(js,/confirmed!==true/);
