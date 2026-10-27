@@ -1627,7 +1627,7 @@ function buildPlayerFacingInspectionContract({gameId,platform='COMMON',source,st
 
 // [기존 BUILD_UP] 게임 내부 구성 자동 판단: 실제 게임 코드에 이미 존재하는 기능만 연결한다.
 // 분석 결과는 source signature이며 실제 동작/플랫폼 적용 증거는 아니다.
-export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX',repoRoot=process.cwd(),sourceRoot='',sourceObservation={},design={}}={}){
+export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX',repoRoot=process.cwd(),sourceRoot='',sourceObservation={},design={},generation=1}={}){
   const roots=uniq(sourceObservation?.sourceRoots?.length?sourceObservation.sourceRoots:[sourceRoot||sourceObservation?.sourceRoot])
     .map(posix).filter(Boolean);
   const repo=path.resolve(repoRoot);
@@ -1708,8 +1708,29 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
   }
   const found=key=>evidence[key].length>0;
   const targets=Object.fromEntries(Object.entries(evidence).map(([key,files])=>[key,Object.freeze(uniq(files).slice(0,6))]));
+  // 각 회차에 같은 캐릭터/동작만 손보지 않도록 실제 소스가 있는 역할과 품질 축을 순회한다.
+  // 파일 신호는 작업 대상 후보일 뿐, 해당 배우가 게임 안에 있거나 모션이 재생됐다는 증거는 아니다.
+  const actorCycleOrder=['BOSS','CREATURE','ENEMY','NPC','COMPANION','PLAYER','MOUNT','INTERACTIVE_PROP'];
+  const actorCandidates=actorCycleOrder
+    .filter(actorClass=>actorEvidence[actorClass].length)
+    .map(actorClass=>({actorClass,files:uniq(actorEvidence[actorClass]).sort()}));
+  const actorCycle=Math.max(1,Math.floor(Number(generation)||1))-1;
+  const actorPriority=actorCandidates.length?actorCandidates[actorCycle%actorCandidates.length]:null;
+  const motionQualityAxes=['NATIVE_CLIP_AND_RIG_BINDING','LOCOMOTION_START_STOP_TURN','POSE_CROSSFADE_AND_FOOT_CONTACT',
+    'ANTICIPATION_IMPACT_RECOVERY_IF_APPLICABLE','HIT_REACTION_AND_DEATH_IF_APPLICABLE',
+    'NPC_GAZE_CREATURE_TAIL_SECONDARY_MOTION','MOBILE_LOD_AND_CONTACT_SYNC'];
+  const focusAxis=motionQualityAxes[Math.floor(actorCycle/Math.max(1,actorCandidates.length))%motionQualityAxes.length];
+  const actorMotionFocus=Object.freeze({
+    generation:actorCycle+1,actorClass:actorPriority?.actorClass||null,
+    sourceOwnerFile:actorPriority?.files[actorCycle%actorPriority.files.length]||null,
+    qualityAxis:actorPriority?focusAxis:null,
+    intent:'REPAIR_ACTUAL_GAME_MOTION_SOURCE_NOT_AUDIT_OR_MARKER',
+    chooseApprovedExistingActorAndClip:true,confirmRealRigAndRuntimeFirst:true,
+    applicationState:'SOURCE_CANDIDATE_NOT_IMPLEMENTED',runtimeVerified:false
+  });
   const actorMotion=Object.freeze({
-    version:1,trigger:'CREATION_AND_EVERY_BUILD_UP',gameId:clean(gameId),platform:clean(platform).toUpperCase(),
+    version:2,trigger:'CREATION_AND_EVERY_BUILD_UP',gameId:clean(gameId),platform:clean(platform).toUpperCase(),
+    nextGameSpecificMotionWorkUnit:actorMotionFocus,
     detectedActorClasses:Object.freeze(Object.entries(actorEvidence).filter(([,files])=>files.length)
       .map(([actorClass,files])=>Object.freeze({
         actorClass,sourceOwnerFiles:Object.freeze(uniq(files).slice(0,8)),
@@ -2589,6 +2610,7 @@ export function directivePrompt(d={}){
        ' F0부터 발견한 책임 파일의 실제 보이는 원형 파츠를 CC0 파생 자산으로 교체한다. 기존 외형 보존은 불필요하다. 비슷한 CC0 자산이면 우선 사용하고 정확히 같은 모델·종류·스타일을 기다리지 않는다. 크기·색·재질을 맞추고 움직임을 호환 연결한다. 기존 생성 함수를 직접 수정하고 원형 표시·재생성 fallback을 제거한다. 숨은 충돌체·판정·리그 루트·스폰·트리거는 보이는 원형과 구분해 기능을 유지한다. 대체 자산이 없으면 기존 자산 공급 GAP로 연결하며 원형 유지나 새 파츠 조립을 교체 완료로 처리하지 않는다. 책임 범위 밖 파일은 기존 후속 BUILD_UP에 남기고 모든 대상이 같은 빌드 실행 검증을 통과하기 전에는 전체 완료를 주장하지 않는다.':'' ,
     'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(autoSummary),
     'ACTOR_MOTION_AUTO_BUILD_UP: '+JSON.stringify(d.gameInternalAutoComposition?.actorMotion||{}),
+    'ACTOR_MOTION_NEXT_WORK_UNIT: '+JSON.stringify(d.gameInternalAutoComposition?.actorMotion?.nextGameSpecificMotionWorkUnit||{}),
     'ACTOR_MOTION_RULE: 매 게임 제작·모든 빌드업에서 실제 등장하는 플레이어/NPC/몹/동물/보스/동료/탈것 및 움직이는 건축물의 모션을 각각 기존 책임 소스에서 개선한다. 검증된 원본 클립을 우선 재사용하고 적합한 리그/상태/포즈·속도 크로스페이드·발 접지·관성·공격 전조·승인된 타격 이벤트·회복과 피격 반응을 실제 해당 역할에만 적용한다. 미검증 자산, 임의 외형·파츠, 가짜 애니메이션, 승인 없는 밸런스 변경 금지. 동일 버전 실제 게임 배우별 연속프레임·모바일 입력·원격 QA 증거 없으면 UNVERIFIED.',
     'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action and source-grounded NPC AI/quest/dialogue/crafting/economy/progression/farming/weather/physics/camera/audio/skill effects/network only when game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive existing actions and approved hit events; NPC decisions must not grant economy/save/combat authority; crafting and shopping use actual items/currency/state. Use applicable moduleConnections as source-only QA work units, never completed features. Mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with authoritative state; source signatures never pass QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
@@ -3242,7 +3264,7 @@ export function buildGameSpecificBuildUpDirective({
       generationLimit:null,
       shadowPipelineForbidden:true
     },
-    gameInternalAutoComposition:buildGameInternalAutoCompositionPlan({gameId:id,platform,repoRoot,sourceRoot,sourceObservation:source,design}),
+    gameInternalAutoComposition:buildGameInternalAutoCompositionPlan({gameId:id,platform,repoRoot,sourceRoot,sourceObservation:source,design,generation}),
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus,platform}),
     playerFacingInspectionContract:buildPlayerFacingInspectionContract({gameId:id,platform,source,states,responsibleFiles:topFiles}),
     experienceBuildUpContract:buildExperienceBuildupContract({platform,design,source,focus}),
