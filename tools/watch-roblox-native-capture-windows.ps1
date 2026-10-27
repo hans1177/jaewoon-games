@@ -22,6 +22,15 @@ $NextLaunchAttempt = [DateTime]::MinValue
 function Start-ApprovedPrivateCaptureSession {
  $gameId = [string]$env:JAEWOON_CAPTURE_GAME_ID
  $linkCode = [string]$env:JAEWOON_CAPTURE_PRIVATE_LINK_CODE
+ $privateConfig = Join-Path $Base 'private-capture-join.xml'
+ if (Test-Path $privateConfig) {
+  # DPAPI decrypts only for the same signed-in Windows user on this device.
+  $join = Import-Clixml -Path $privateConfig
+  if ($join -and $join.LinkCode -is [Security.SecureString]) {
+   $gameId = [string]$join.GameId
+   $linkCode = (New-Object System.Net.NetworkCredential('', $join.LinkCode)).Password
+  }
+ }
  if ($gameId -notin @('cozy-island','daechung-rpg','horror-escape-room')) { return }
  if ($linkCode -notmatch '^[A-Za-z0-9_-]{8,200}
  try {
