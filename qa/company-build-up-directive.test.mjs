@@ -93,6 +93,32 @@ test('every game worker receives concrete player-facing inspections without fabr
   }
 });
 
+test('all game platforms receive five source-grounded playable improvement targets without fake PASS',()=>{
+  for(const platform of ['WEB','ROBLOX','UNITY','UNITY_WEB']){
+    const gameId='all-games-'+platform.toLowerCase().replaceAll('_','-');
+    const file=platform==='WEB'?('web-games/'+gameId+'/game.js'):platform==='ROBLOX'
+      ?('roblox-games/'+gameId+'/server/Game.server.luau'):('unity-games/'+gameId+'/Assets/Scripts/GameCore.cs');
+    const d=buildGameSpecificBuildUpDirective({
+      gameId,platform,designRecord:{content:{
+        identity:'기존 마을 생존 탐험',coreFun:'채집해 생존',
+        coreLoop:['이동해 자원 발견','채집하여 상태 변경','거점으로 복귀'],
+        signatureSystems:[{name:'채집·거점 상호작용'}],
+        progressionDirection:'현재 지역 탐사 심화'
+      }},responsibleFiles:[file]
+    });
+    const contract=d.playableImprovementContract;
+    assert.equal(contract.minimumPerGeneration,5);
+    assert.equal(contract.scope,'ALL_ACTIVE_APPROVED_GAME_BUILD_UP');
+    assert.equal(contract.floorBoundary,'EXISTING_F0_F9_SEQUENCE_UNCHANGED');
+    assert.deepEqual(contract.targets.map(row=>row.id),['FIRST_ACTION','CORE_STATE_RESPONSE','PLAYER_CHOICE','PRESENTATION_BINDING','SESSION_RETRY']);
+    assert.ok(contract.targets.every(row=>row.gameId===gameId&&row.status==='PROPOSED_NOT_IMPLEMENTED'&&row.actualGameplayPass===false));
+    assert.equal(contract.candidateTargetsAreNotFiveVerifiedImprovements,true);
+    assert.ok(d.gameplayImplementationDirectives.some(row=>row.includes('최소 5개')));
+    assert.ok(d.acceptanceEvidence.includes('FIVE_SOURCE_DELTA_ITEMS_ALONE_CANNOT_PASS_ACTUAL_PLAY'));
+    assert.match(directivePrompt(d),/FIVE_PLAYABLE_IMPROVEMENTS_RULE:/);
+  }
+});
+
 test('design and source BUILD_UP stay coupled without inventing reference or runtime PASS',()=>{
   const first=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
     designRecord:design(),sourceObservation:{sourceTreeFingerprint:'initial-tree',topFiles:[],sourceAnchors:[],observations:[],signals:{}},
