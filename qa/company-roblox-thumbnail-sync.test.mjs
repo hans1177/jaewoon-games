@@ -382,6 +382,8 @@ test('native footage edit produces short playable real-source cuts without claim
       '-show_entries','stream=width,height','-of','csv=p=0',output],{encoding:'utf8'});
     assert.equal(probe.status,0,probe.stderr);
     assert.match(probe.stdout,/1280,720/);
+    // Restore an accepted native-capture evidence source before asserting output-path validation.
+    fs.writeFileSync(proof,JSON.stringify(scripted));
     assert.throws(()=>editVerifiedRobloxGameplayVideo({
       root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json',
       outputPath:'assets/homepage-media/cozy-island.mp4'
