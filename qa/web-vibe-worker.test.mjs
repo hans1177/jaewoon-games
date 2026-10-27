@@ -12,6 +12,19 @@ test('independent WEB worker requires its own credentials and own localhost mode
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
   assert.equal(assertWebVibeWorkerEnvironment({token:'123456789abc'}).organization,'WEB');
 });
+test('WEB cloud checkout recovery is limited to authenticated ephemeral GitHub workspace',()=>{
+  const source=fs.readFileSync('tools/web-vibe-worker.mjs','utf8');
+  assert.match(source,/function verifiedLocalMain\(\{cloud=false\}=\{\}\)/);
+  assert.match(source,/process\.env\.GITHUB_ACTIONS==='true'/);
+  assert.match(source,/process\.env\.GITHUB_REPOSITORY===REPO/);
+  assert.match(source,/path\.resolve\(process\.env\.GITHUB_WORKSPACE\|\|'\/'\)===ROOT/);
+  assert.match(source,/if\(!isolatedCloudCheckout\)fail\('WEB_VIBE_LOCAL_UNCOMMITTED_CHANGES'\)/);
+  assert.match(source,/WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST/);
+  assert.match(source,/run\('git',\['restore','--source=HEAD'/);
+  assert.match(source,/run\('git',\['clean','-fd'\]\)/);
+  assert.match(source,/WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY/);
+  assert.match(source,/verifiedLocalMain\(\{cloud:args\.cloud===true\}\)/);
+});
 test('WEB local worker can select only web queue tasks',()=>{
   const valid={id:'pwa-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',gameId:'insect-survival',
     target:'web',sourceRoot:'web-games/insect-survival',status:'queued',goal:'web HUD'};
