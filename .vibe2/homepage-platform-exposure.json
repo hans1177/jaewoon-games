@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-27T18:32:00.365Z",
+  "updatedAt": "2026-10-27T18:50:47.276Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -72,14 +72,14 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -103,7 +103,7 @@
             "artifactIdentity": "sha256:b21b47913df8525dd57e53846ae8deca0066eaa479548c65ec37e4d0248b2758",
             "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -147,7 +147,7 @@
             ],
             "candidateVersionNumber": 70
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-2cfb0882ff23baaef682",
@@ -166,7 +166,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -315,8 +315,8 @@
               "noRuntimeErrors": false
             },
             "blockers": [],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "03182c3967abdb54fa7eaa2ccbbf5a847e02abfd",
+            "artifactIdentity": "sha256:d029f50102f36b8b27112ff614ef46de72cea1605c23c53e69fa3460aecc1a55",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -361,7 +361,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 0
+            "candidateVersionNumber": 6
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
