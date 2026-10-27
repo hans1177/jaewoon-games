@@ -77,11 +77,11 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
     const evidenceFile=path.join(root,'roblox-source-bootstrap.json');
     let syncedFingerprint='';
     if(fs.existsSync(evidenceFile)){
-      try{syncedFingerprint=clean(readJson(evidenceFile)?.commonModuleSync?.libraryCoverage?.sourceFingerprint);}
+      try{syncedFingerprint=clean(readJson(evidenceFile)?.commonModuleSync?.libraryCoverage?.runtimeBindingFingerprint);}
       catch{syncedFingerprint='';}
     }
     // 경로가 같아도 라이브러리 본문이나 검증된 패턴이 바뀌면 다음 빌드업에서 재검사한다.
-    const staleLibrary=Boolean(syncedFingerprint)&&syncedFingerprint!==binding.libraryCoverage.sourceFingerprint;
+    const staleLibrary=Boolean(syncedFingerprint)&&syncedFingerprint!==binding.libraryCoverage.runtimeBindingFingerprint;
     commonModuleRefreshRequired=JSON.stringify(project)!==previous||staleLibrary;
     commonModuleConflicts=binding.conflicts;
   }catch(error){
