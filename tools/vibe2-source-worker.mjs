@@ -11,6 +11,7 @@ import { buildInternalMotionCoaching, singleMotionResponseSchema } from './vibe2
 import { buildRobloxSourceCoaching } from './vibe3-roblox-distillation.mjs';
 import { robloxProductionPromptLines, productionBlueprintContractsForFiles, validateSpatialBlueprint, validateInterfaceBlueprint } from './company-roblox-production-plan.mjs';
 import { playerFacingInspectionPromptLines } from './company-build-up-directive.mjs';
+import { evaluatePlayableImprovementSourceProof } from './company-playable-improvement-source-proof.mjs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -3135,7 +3136,7 @@ export function evaluateGraphicsReplacementReport({candidate={},contract={}}={})
   return{required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',report,min,max,groundedCount:report.replacementEvidence.length};
 }
 
-export function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');const scopedChangedFileLimit=target==='roblox'&&responsibleFiles.length?Math.max(MAX_CHANGED_FILES,responsibleFiles.length):MAX_CHANGED_FILES;if(touchedCount>scopedChangedFileLimit)throw new Error(`변경 파일 수가 최대 ${scopedChangedFileLimit}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport),...(parsed.spatialBlueprint?{spatialBlueprint:normalizeBlueprintSourcePaths(parsed.spatialBlueprint,{target,responsibleFiles,sourceRootRelative})}:{}),...(parsed.interfaceBlueprint?{interfaceBlueprint:normalizeBlueprintSourcePaths(parsed.interfaceBlueprint,{target,responsibleFiles,sourceRootRelative})}:{}),...(parsed.motionRepairReport&&typeof parsed.motionRepairReport==='object'?{motionRepairReport:parsed.motionRepairReport}:{})};}
+export function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');const scopedChangedFileLimit=target==='roblox'&&responsibleFiles.length?Math.max(MAX_CHANGED_FILES,responsibleFiles.length):MAX_CHANGED_FILES;if(touchedCount>scopedChangedFileLimit)throw new Error(`변경 파일 수가 최대 ${scopedChangedFileLimit}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),playableImprovementReport:parsed.playableImprovementReport&&typeof parsed.playableImprovementReport==='object'?parsed.playableImprovementReport:null,graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport),...(parsed.spatialBlueprint?{spatialBlueprint:normalizeBlueprintSourcePaths(parsed.spatialBlueprint,{target,responsibleFiles,sourceRootRelative})}:{}),...(parsed.interfaceBlueprint?{interfaceBlueprint:normalizeBlueprintSourcePaths(parsed.interfaceBlueprint,{target,responsibleFiles,sourceRootRelative})}:{}),...(parsed.motionRepairReport&&typeof parsed.motionRepairReport==='object'?{motionRepairReport:parsed.motionRepairReport}:{})};}
 
 const PRESENTATION_PATCH_PATTERNS=Object.freeze({
   ASSET_ADAPTATION:/(?:drawImage|fillStyle|strokeStyle|background|gradient|border|shadow|filter|opacity|font|transform|sprite|texture|mesh|material|shader|lighting|light\b|Color3|BrickColor|SurfaceAppearance|MeshPart|SpecialMesh|ImageLabel|ImageButton|Instance\.new|GameObject(?:\.CreatePrimitive)?|MeshRenderer|SpriteRenderer|Renderer\b|CFrame|Vector3|\.Size\b|\.Position\b|localScale|localPosition)/i,
@@ -3302,12 +3303,16 @@ export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',
   const sourceDeltaUnits=sourceRows.length;
   const visualUnits=visualRows.length;
   const gameplayUnits=gameplayRows.length;
+  // Five source edits alone do not prove five playable improvements. Each distinct
+  // action→state→feedback chain must be grounded to an exact changed source block.
+  // Real platform play remains UNVERIFIED until existing native F0–F9 / platform QA.
+  const playableProof=evaluatePlayableImprovementSourceProof({candidate,contract});
   const sourcePass=sourceDeltaUnits>=requiredSourceDeltaUnits;
   const visualPass=visualUnits>=requiredVisualUnits;
   const gameplayPass=gameplayUnits>=requiredGameplayUnits;
   return{
     required:requiredSourceDeltaUnits>0||requiredVisualUnits>0||requiredGameplayUnits>0,
-    pass:sourcePass&&visualPass&&gameplayPass,
+    pass:sourcePass&&visualPass&&gameplayPass&&playableProof.pass,
     phase,
     focusPillar,
     requiredSourceDeltaUnits,
@@ -3316,10 +3321,11 @@ export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',
     visualUnits,
     requiredGameplayUnits,
     gameplayUnits,
+    playableProof,
     files:unique(sourceRows.map(row=>row.path)),
     visualFiles:unique(visualRows.map(row=>row.path)),
     gameplayFiles:unique(gameplayRows.map(row=>row.path)),
-    reason:!sourcePass?'INSUFFICIENT_CONNECTED_SOURCE_DELTAS':!visualPass?'INSUFFICIENT_PRESENTATION_DELTAS':!gameplayPass?'GAMEPLAY_SOURCE_DELTA_REQUIRED':'STUDIO_QUALITY_DELTA_PRESENT'
+    reason:!sourcePass?'INSUFFICIENT_CONNECTED_SOURCE_DELTAS':!visualPass?'INSUFFICIENT_PRESENTATION_DELTAS':!gameplayPass?'GAMEPLAY_SOURCE_DELTA_REQUIRED':!playableProof.pass?'PLAYABLE_IMPROVEMENT_SOURCE_PROOF_REQUIRED:'+playableProof.reason:'STUDIO_QUALITY_DELTA_PRESENT'
   };
 }
 
@@ -3410,11 +3416,15 @@ function studioQualityWorkerGuidance(order = {}) {
     '설계는 게임 의미와 금지선을 정하는 기준이지 구현 분량의 상한이 아니다.',
     phase==='BUILD_UP'
       ?`현재 책임 범위 안에서 서로 연결된 실질 개선을 최소 ${Number(connected.min||3)}개 이상 묶어 구현한다. 기능 완성도, 시스템 연결, 피드백, 연출, 오류 복구, 모바일 UX 중 관련된 축을 함께 끝낸다.`
+
       :phase==='OPTIMIZE'
         ?'새 규칙을 억지로 늘리지 말고 실제 병목, 중복 처리, 렌더/업데이트 비용, 입력 지연, 상태 불일치, UI 가독성, 코드 책임 혼선을 직접 줄인다.'
         :'재현된 오류와 실패 근거부터 원인 시스템에서 직접 수리하고 동일 실패를 다시 확인한 뒤 남는 범위에서 품질을 올린다.',
     focus==='PRESENTATION'
       ?'그래픽은 실제 화면 변화가 있어야 한다. 캐릭터/적 실루엣, 환경 깊이·랜드마크, 애니메이션 상태, 공격·피격·사망 반응, VFX, 조명, UI 계층, 카메라·오디오 타이밍 중 약한 요소를 최소 2개 이상 실제 렌더 책임 코드에서 함께 개선한다. 마커/상수/주석만 추가하는 작업은 실패다.'
+      :'',
+    phase==='BUILD_UP'&&Number(contract?.requiredPlayableImprovements?.min||0)>=5
+      ?'FIVE_PLAYABLE_SOURCE_PROOF_REQUIRED: playableImprovementReport.items에 FIRST_ACTION, CORE_STATE_RESPONSE, PLAYER_CHOICE, PRESENTATION_BINDING, SESSION_RETRY 다섯 ID를 각각 넣는다. 각 항목은 id,path,before,after,action,state,feedback,scenario를 포함한다. before는 edits[].find의 실제 기존 코드 발췌, after는 같은 edits[].replace 안에 새로 추가된 실제 실행 코드 발췌이고 해당 after 코드에 action/state/feedback 세 정확한 코드 구절이 모두 존재해야 한다. 다섯 항목은 서로 다른 실제 변경 부분과 검증 시나리오를 지녀야 한다. 주석/선언/거짓 runtime PASS는 실패이며 이 증명은 소스 증거일 뿐 실제 게임 클라우드 실행 PASS가 아니다.'
       :'',
     '한 파일에 여러 독립적인 정확한 edit가 필요하면 여러 edits[] 항목을 사용할 수 있다. 관련 책임 파일 여러 개를 함께 수정해도 된다.',
     '새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.',
@@ -7076,7 +7086,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
           'Every edits[].find MUST be copied character-for-character from the matching EDITABLE FILE block and occur exactly once.',
           multiFilePairRequired?'UNITY WEB BOOTSTRAP PAIR CONTRACT: return at least one exact edits[] entry for EACH Allowed edit path. GameCore.cs and RuntimeBootstrap.cs must both change in the same candidate. Do not use newFiles or replaceFiles.':'',
-          studioExpansion?'STUDIO_QUALITY_EVOLUTION BUILD_UP: return 3-6 connected edits with at least 3 actual source deltas. Keep each replacement concise and directly related so the package finishes within the model budget.':'',
+          studioExpansion?'STUDIO_QUALITY_EVOLUTION BUILD_UP: return the minimum connected source edits required by the exact studio quality contract; when five-play proof is required, include five distinct player-facing code chains and playableImprovementReport.items for each. Do not report source-only proof as native runtime PASS.':'',
           (presentationDelta||studioExpansion&&/focus=PRESENTATION/i.test(rawPrompt))?'PRESENTATION focus: at least 2 edits must change real visual/render/motion/camera/VFX/UI source so the rendered result can visibly differ; marker-only metadata and gameplay-only edits do not count.':'',
           robloxPresentationDelta?'ROBLOX PRESENTATION PATCH DELTA RECOVERY: prefer an Allowed edit path owned by client/visual/render/UI/camera/VFX code before server/gameplay owners. The candidate must create an observable native visual delta, not a marker.':'',
           robloxPresentationTask?'ROBLOX FULL GRAPHICS CONTRACT: improve a game-relevant visual domain with coherent material/color/style. Continue other applicable domains in later tasks; additional visual domains are unlimited. Motion is mandatory through TweenService/RenderStepped/Heartbeat/Animator/AnimationTrack/Motor6D/Bone plus an actual CFrame/Transform/Position/Orientation mutation.':'',
