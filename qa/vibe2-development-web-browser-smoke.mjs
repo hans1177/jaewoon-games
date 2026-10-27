@@ -353,18 +353,35 @@ try{
     }))()`);
 
     if(gameId==='party-rpg'){
-      // [실제 게임 연결] 등록만 된 CC0가 아니라 로더가 읽은 늑대 모델을 확인한다.
-      currentPhase='PARTY_RPG_CC0_WOLF_NATIVE_RUNTIME';
+      // [현재 책임 소스] PartyView가 실제 디코딩한 34개 GLB와 메시만 증거로 인정한다.
+      // 예전 wolf.fbx/전역 진단 변수는 이 게임의 현재 런타임 계약이 아니다.
+      currentPhase='PARTY_RPG_CC0_GLB_NATIVE_RUNTIME';
       let evidence=null;
-      for(let attempt=0;attempt<48;attempt++){
-        evidence=await cdp.evaluate('window.vibe3dDiagnostics||null');
-        if(evidence?.loaded?.includes('wolf'))break;
+      for(let attempt=0;attempt<80;attempt++){
+        evidence=await cdp.evaluate(`(()=>{
+          const view=window.partyRpgVibeState?.()?.view;
+          const models=view?.models;
+          if(!view||!(models instanceof Map))return null;
+          const loaded=[...models.entries()].map(([key,asset])=>{
+            let meshCount=0,vertexCount=0;
+            asset?.scene?.traverse?.(node=>{
+              if(node.isMesh&&node.geometry?.attributes?.position?.count>0){
+                meshCount++;
+                vertexCount+=node.geometry.attributes.position.count;
+              }
+            });
+            return {key,meshCount,vertexCount};
+          });
+          return {ready:view.ready===true,loaded};
+        })()`);
+        if(evidence?.ready&&evidence.loaded.length===34)break;
         await delay(250);
       }
-      assert.ok(evidence?.loaded?.includes('wolf'),
-        'party-rpg: registered CC0 wolf FBX must load as a real native 3D model: '+JSON.stringify(evidence));
-      assert.ok(evidence?.missing?.includes('guardian'),
-        'party-rpg: unverified replacement roles must remain explicitly missing');
+      assert.equal(evidence?.ready,true,'party-rpg: native Three.js renderer did not initialize');
+      assert.equal(evidence?.loaded?.length,34,
+        'party-rpg: expected all 34 current licensed GLB roles to load: '+JSON.stringify(evidence));
+      assert.ok(evidence.loaded.every(row=>row.meshCount>0&&row.vertexCount>0),
+        'party-rpg: loaded GLB must contain actual renderable 3D mesh geometry: '+JSON.stringify(evidence.loaded.filter(row=>!row.meshCount||!row.vertexCount)));
     }
     currentPhase='ASSERT';
     const missing=local404.slice(missingStart).filter(item=>item!=='/favicon.ico');
