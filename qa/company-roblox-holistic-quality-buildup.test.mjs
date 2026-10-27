@@ -76,6 +76,27 @@ test('missing source and bad scope fail closed and do not infer functional compl
   assert.equal(plan.officialStudioScenarios.every(row=>row.verified===false),true);
 }));
 
+test('shared asset library is audited across all records without confusing CC0 labels for verified rights',()=>fixture(({dir,game,base})=>{
+  fs.mkdirSync(path.join(dir,'assets','shared'),{recursive:true});
+  fs.writeFileSync(path.join(dir,'assets','shared','good.ogg'),Buffer.from('OggS-audio'));
+  fs.writeFileSync(path.join(dir,'company-asset-library.json'),JSON.stringify({assets:[
+    {id:'music-good',path:'assets/shared/good.ogg',license:'CC0',sourceHash:'a'.repeat(64),targetGame:game},
+    {id:'bad-rights',path:'assets/shared/missing.glb',license:'UNKNOWN',sourceHash:'',targetGame:game},
+    {id:'other-library-asset',path:'assets/shared/elsewhere.png',license:'CC0-1.0',sourceHash:'b'.repeat(64),targetGame:'another-game'}
+  ]}));
+  fs.writeFileSync(path.join(base,'server','Game.server.luau'),'print("boot")');
+  const plan=buildRobloxHolisticQualityPlan({repoRoot:dir,gameId:game});
+  assert.equal(plan.sharedLibrary.status,'METADATA_LOADED_NOT_RUNTIME_VERIFIED');
+  assert.equal(plan.sharedLibrary.coverage.total,3);
+  assert.equal(plan.sharedLibrary.coverage.gameRelevant,2);
+  assert.equal(plan.sharedLibrary.coverage.localFilesMissing,2);
+  assert.equal(plan.sharedLibrary.coverage.recordedCc0,2);
+  assert.equal(plan.sharedLibrary.licenseEvidenceVerified,false);
+  assert.equal(plan.sharedLibrary.assetRuntimeVerified,false);
+  assert.ok(plan.sharedLibrary.examples.every(row=>row.actualQualityVerified===false));
+  assert.match(robloxHolisticQualityPromptLines(plan).join('\n'),/SHARED_LIBRARY_QA/);
+}));
+
 test('Studio evidence cannot self-certify all five scenarios or physical touch',()=>fixture(({dir,game,base})=>{
   fs.writeFileSync(path.join(base,'server','Game.server.luau'),'print("boot")');
   const studioEvidence={
