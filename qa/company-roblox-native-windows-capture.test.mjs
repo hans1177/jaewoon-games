@@ -33,6 +33,29 @@ test('Windows-only native capture recorder has no player automation or GUI macro
  assert.doesNotMatch(worker,/\b-i\s*,\s*'desktop'|\bdesktop capture\b/i);
 });
 
+test('physical Android capture reuses native footage and git intake, without fake frames or player inputs',()=>{
+ assert.match(worker,/arg\('device'\)==='android'/);
+ assert.match(worker,/async function captureAndroid\(\)/);
+ assert.match(worker,/ADB_REQUIRED_ON_ANDROID/);
+ assert.match(worker,/EXACTLY_ONE_AUTHORIZED_PHYSICAL_ANDROID_DEVICE_REQUIRED/);
+ assert.match(worker,/ANDROID_EMULATOR_NOT_SUPPORTED/);
+ assert.match(worker,/ro\.kernel\.qemu/);
+ assert.match(worker,/com\.roblox\.client/);
+ assert.match(worker,/android\.intent\.action\.VIEW/);
+ assert.match(worker,/JAEWOON_NATIVE_CAPTURE_/);
+ assert.match(worker,/ANDROID_NATIVE_NPC_LOG_OR_FOREGROUND_ATTESTATION_MISSING/);
+ assert.match(worker,/dumpsys/);
+ assert.match(worker,/screenrecord/);
+ assert.match(worker,/--time-limit/);
+ assert.match(worker,/validateNativeVideo\(file,duration\)/);
+ assert.match(worker,/PHYSICAL_ANDROID_ROBLOX_SCREENRECORD_WITH_REAL_NPC_MOVEMENT/);
+ assert.match(worker,/NATIVE_CAPTURE_LOCAL_FILE_PENDING_UPLOAD/);
+ assert.match(worker,/ROBLOX_NATIVE_CAPTURE_SUBMIT/);
+ assert.match(worker,/ROBLOX_CAPTURE_SUBMIT/);
+ assert.match(worker,/submitCapture\(\{file,proofPath,proof,stateFile,observed\}\)/);
+ assert.doesNotMatch(worker,/adb\(\['shell','input','tap'|adb\(\['shell','input','swipe'/);
+});
+
 test('private in-engine camera follows real existing NPC with native client video capture',()=>{
  assert.match(director,/game\.PrivateServerId==""/);
  assert.match(director,/JAEWOON_NATIVE_CAPTURE_/);
