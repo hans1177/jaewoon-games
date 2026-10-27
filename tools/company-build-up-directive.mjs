@@ -2436,7 +2436,11 @@ export function directivePrompt(d={}){
   const volume=d.designedGameVolume||{};
   // 전체 항목의 이름과 상태는 빠짐없이 전달하되, 상세 계약은 책임 워커가 현재 항목에만 펼친다.
   // 게임 전체의 반복 프롬프트 폭증을 막고 현재 큐·F0–F9 구조를 그대로 유지한다.
-  const volumeRows=(volume.items||[]).map(row=>'- '+row.ref+' '+row.title+' | source='+row.sourceEvidenceState+' | ruleIds='+(row.linkedRuleIds||[]).join(',')+' | runtime=UNVERIFIED').join('\n');
+  // 대형 콘텐츠에서는 ref/명칭만 전달한다. 각 항목의 설계 원문·소스 후보·ruleIds는
+  // designedGameVolume.items에 그대로 보존되며 실제 담당 워커가 선택 항목만 확장한다.
+  const compactVolumeIndex=(volume.items||[]).length>=24;
+  const volumeRows=(volume.items||[]).map(row=>'- '+row.ref+' '+row.title+
+    (compactVolumeIndex?'':' | source='+row.sourceEvidenceState+' | ruleIds='+(row.linkedRuleIds||[]).join(',')+' | runtime=UNVERIFIED')).join('\n');
   // 대용량 승인 콘텐츠는 원본 directive에 보존하고, 전체 게임 프롬프트에는
   // 이미 인덱싱된 상세 항목을 재출력하지 않는다. 담당 워커가 선택한 항목만 펼친다.
   const fullDesignContext=d.designImplementationContext||{};
