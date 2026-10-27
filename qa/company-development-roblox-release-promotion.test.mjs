@@ -676,28 +676,32 @@ test('CC0 registered models receive per-target Universe grants only after exact 
  assert.ok(restart>actualPublish,'subsequent F0 must remain behind exact post-publish QA');
 });
 
-test('Cozy 429 auto-retry respects exact source and private validation without media or publish fanout',()=>{
+test('four owner-selected Roblox games auto-retry only due exact private 429 QA without republishing',()=>{
  const head=workflow.slice(0,workflow.indexOf('\n'+'jobs:\n'));
- assert.match(head,/cron: '17 2 \* \* \*'/);
- assert.match(head,/cron: '32 \* \* \*'/);
- const start=workflow.indexOf('  cozy-capacity-retry:');
+ assert.ok(head.includes("cron: '17 2 * * *'"));
+ assert.ok(head.includes("cron: '32 * * * *'"));
+ const start=workflow.indexOf('  roblox-capacity-retry:');
  const end=workflow.indexOf('\n  release-dedupe:',start);
- assert.ok(start>0&&end>start,'keep one scheduled check in existing canonical publish workflow');
+ assert.ok(start>0&&end>start,'reuse existing canonical workflow without duplicate pipeline');
  const retry=workflow.slice(start,end);
- assert.match(retry,/runs-on: ubuntu-slim/);
- assert.match(retry,/github\.event\.schedule == '32 \* \* \* \*'/);
- assert.match(retry,/item\?\.robloxFoundationF0Passed===true/);
- assert.match(retry,/item\?\.robloxRuntimeFoundationPassed!==true/);
- assert.match(retry,/candidate\.validationOnly===true/);
- assert.match(retry,/Number\(failure\.httpStatus\)===429/);
- assert.match(retry,/failure\.sourceRevision===item\.robloxSourceCommit/);
- assert.match(retry,/failure\.artifactIdentity===item\.robloxBuildArtifactIdentity/);
- assert.match(retry,/Number\(failure\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
- assert.match(retry,/dueAt<=Date\.now\(\)/);
- assert.match(retry,/Roblox runtime foundation QA · cozy-island/);
- assert.match(retry,/gh workflow run company-development-roblox-post-runtime-qa\.yml[\s\S]*-f game_id=cozy-island -f retry_open_cloud_only=true/);
- assert.doesNotMatch(retry,/company-development-roblox-runtime\.yml|company-development-roblox-release-promotion\.yml --repo/);
- const thumbnail=workflow.slice(workflow.indexOf('  thumbnail-sync:'));
- assert.match(thumbnail,/github\.event\.schedule == '17 2 \* \* \*'/);
+ assert.ok(retry.includes('runs-on: ubuntu-slim'));
+ assert.ok(retry.includes("github.event.schedule == '32 * * * *'"));
+ assert.ok(retry.includes("new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg'])"));
+ assert.ok(retry.includes("item.robloxFoundationF0Passed===true"));
+ assert.ok(retry.includes("candidate.published===true&&candidate.validationOnly===true"));
+ assert.ok(retry.includes("failure.authority==='roblox-open-cloud-engine-probe-failure'"));
+ assert.ok(retry.includes("Number(failure.httpStatus)===429"));
+ assert.ok(retry.includes("failure.sourceRevision===item.robloxSourceCommit"));
+ assert.ok(retry.includes("failure.artifactIdentity===item.robloxBuildArtifactIdentity"));
+ assert.ok(retry.includes("Number(failure.candidateVersionNumber)===Number(candidate.versionNumber)"));
+ assert.ok(retry.includes("dueAt<=Date.now()"));
+ assert.ok(retry.includes("startsWith('Roblox runtime foundation QA · ')"));
+ assert.ok(retry.includes("const gameId=!busy&&eligible.length?eligible[0].gameId:''"));
+ assert.ok(retry.includes("at-bt||a.gameId.localeCompare(b.gameId)"));
+ assert.ok(retry.includes("gh workflow run company-development-roblox-post-runtime-qa.yml"));
+ assert.ok(retry.includes('-f game_id="$GAME_ID" -f retry_open_cloud_only=true'));
+ assert.doesNotMatch(retry,/gh workflow run (?:company-development-roblox-runtime|company-development-roblox-release-promotion)\.yml/);
  assert.doesNotMatch(retry,/publishRobloxPlace|ROBLOX_PUBLISHED_VERSION_NUMBER|autoActivate/);
-});
+ const thumbnail=workflow.slice(workflow.indexOf('  thumbnail-sync:'));
+ assert.ok(thumbnail.includes("github.event.schedule == '17 2 * * *'"));
+});\n
