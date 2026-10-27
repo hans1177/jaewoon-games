@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
-import {pathToFileURL} from 'node:url';
+import {pathToFileURL,fileURLToPath} from 'node:url';
 import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 import {recombinationDesignAxes} from './vibe3-transformative-recombination.mjs';
@@ -338,8 +338,49 @@ function genreCoreKind(profile){
   return 'OBJECTIVE';
 }
 
-export function projectJsonForGame(gameId=''){
-  return {
+
+const ROBLOX_COMMON_ASSET_ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../assets/roblox');
+// 공용 모듈은 별도 파이프라인 없이 기존 Rojo Shared 경로에 최신 자사 원본을 연결한다.
+// 게임별 독자 모듈은 보존하고 서로 다른 버전은 미검증으로 보고한다.
+export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot=ROBLOX_COMMON_ASSET_ROOT}={}){
+  const shared=project?.tree?.ReplicatedStorage?.Shared;
+  if(!shared||shared.$path!=='shared')throw new Error('ROBLOX_COMMON_MODULE_SHARED_ROOT_REQUIRED');
+  const linked=[],local=[],conflicts=[];
+  const roots=fs.readdirSync(assetRoot,{withFileTypes:true})
+    .filter(entry=>entry.isDirectory()&&/^common-[a-z0-9-]+-v[0-9]+$/.test(entry.name))
+    .map(entry=>entry.name).sort();
+  const seen=new Map();
+  for(const directory of roots){
+    const folder=path.join(assetRoot,directory);
+    for(const entry of fs.readdirSync(folder,{withFileTypes:true})){
+      if(!entry.isFile()||!/^RobloxCommon[A-Za-z0-9]+\.luau$/.test(entry.name))continue;
+      const moduleName=entry.name.slice(0,-'.luau'.length);
+      if(seen.has(moduleName))throw new Error('ROBLOX_COMMON_MODULE_DUPLICATE:'+moduleName);
+      seen.set(moduleName,directory);
+      const original=path.join(folder,entry.name);
+      const current=gameRoot?path.join(gameRoot,'shared',entry.name):'';
+      const expected='../../assets/roblox/'+directory+'/'+entry.name;
+      if(current&&fs.existsSync(current)){
+        const canonicalHash=crypto.createHash('sha256').update(fs.readFileSync(original)).digest('hex');
+        const localHash=crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex');
+        if(canonicalHash!==localHash)conflicts.push({module:moduleName,reason:'GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL'});
+        local.push(moduleName);
+        continue;
+      }
+      const existing=shared[moduleName];
+      if(existing&&existing.$path!==expected){
+        conflicts.push({module:moduleName,reason:'EXISTING_GAME_SPECIFIC_MODULE_MAPPING'});
+        continue;
+      }
+      shared[moduleName]={$path:expected};
+      linked.push(moduleName);
+    }
+  }
+  return Object.freeze({project,moduleCount:seen.size,linked:Object.freeze(linked),local:Object.freeze(local),conflicts:Object.freeze(conflicts)});
+}
+
+export function projectJsonForGame(gameId='',gameRoot=''){
+  const project = {
     name:clean(gameId)||'jaewoon-roblox-game',
     tree:{
       $className:'DataModel',
@@ -359,6 +400,7 @@ export function projectJsonForGame(gameId=''){
       StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}},
     },
   };
+  return synchronizeRobloxCommonModules({project,gameRoot:gameRoot||path.resolve('roblox-games',clean(gameId))}).project;
 }
 
 const ROBLOX_BOOTSTRAP_STUDIO_FAMILY_PREFERENCES=Object.freeze({
@@ -1170,6 +1212,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const beforeProject=fs.readFileSync(projectFile,'utf8');
   const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({sourceText:robloxStudioAssetDetectionSourceFromRoot(root)});
   const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
+  const commonModules=synchronizeRobloxCommonModules({project,gameRoot:root});
   if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
   const existingLighting=project.tree.Lighting&&typeof project.tree.Lighting==='object'?project.tree.Lighting:{};
   const existingLightingProperties=existingLighting.$properties&&typeof existingLighting.$properties==='object'?existingLighting.$properties:{};
@@ -1340,6 +1383,7 @@ task.defer(reportNativeFoundationReady)
     foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
     serverSourceChanged:afterServer!==beforeServer,
+    commonModuleSync:{count:commonModules.moduleCount,linked:commonModules.linked,local:commonModules.local,conflicts:commonModules.conflicts},
   });
 }
 function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
@@ -1732,7 +1776,7 @@ function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
   fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),sharedConfig.endsWith('\n')?sharedConfig:`${sharedConfig}\n`,'utf8');
   fs.writeFileSync(path.join(root,'server','Game.server.luau'),serverCode.endsWith('\n')?serverCode:`${serverCode}\n`,'utf8');
   fs.writeFileSync(path.join(root,'client','Game.client.luau'),clientCode.endsWith('\n')?clientCode:`${clientCode}\n`,'utf8');
-  fs.writeFileSync(path.join(root,'default.project.json'),`${JSON.stringify(projectJsonForGame(gameId),null,2)}\n`,'utf8');
+  fs.writeFileSync(path.join(root,'default.project.json'),`${JSON.stringify(projectJsonForGame(gameId,root),null,2)}\n`,'utf8');
 }
 
 async function main(){
