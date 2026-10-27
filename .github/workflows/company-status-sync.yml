@@ -259,9 +259,11 @@ jobs:
             git fetch origin main --depth=1 --no-tags
             if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
               git fetch origin "$COMPANY_RUNTIME_BRANCH" --depth=1 --no-tags
-              git checkout -B company-status-persist "origin/$COMPANY_RUNTIME_BRANCH"
+              # The generated state is already committed above. Discard only
+              # checkout/LFS side effects in this disposable Actions worktree.
+              git checkout -f -B company-status-persist "origin/$COMPANY_RUNTIME_BRANCH"
             else
-              git checkout -B company-status-persist origin/main
+              git checkout -f -B company-status-persist origin/main
             fi
             git checkout "$generated_commit" -- "${runtime_paths[@]}"
             git add -- "${runtime_paths[@]}"
