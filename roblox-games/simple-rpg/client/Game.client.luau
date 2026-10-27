@@ -643,6 +643,92 @@ for _, key in ipairs({"CivEra", "CivTech", "CivRaceID", "CivWood",
   player:GetAttributeChangedSignal(key):Connect(updateNumbers)
 end
 
+-- 대충알피지: 기존 서버가 피해를 실제 승인한 CIV_HIT 이벤트에만 공용 전투 포즈를 연결한다.
+-- 입력, 공격 쿨다운, 서버 피해량, 루트 이동 및 기존 이동 애니메이터는 수정하지 않는다.
+local commonMotion = nil
+local commonMotionModule = Shared:FindFirstChild("RobloxCommonMotion")
+if commonMotionModule then
+  local ok, module = pcall(require, commonMotionModule)
+  if ok and type(module) == "table" and type(module.BindJointPose) == "function"
+    and type(module.CreateCombatCombo) == "function"
+    and type(module.SampleCombatCombo) == "function"
+    and type(module.MapCombatPoseToR15) == "function" then
+    commonMotion = module
+  end
+end
+local activeMotionCharacter = nil
+local activeMotionController = nil
+local activeMotionCombo = nil
+local activeMotionStart = 0
+local motionTargets = {}
+local r15MotionTargets = {}
+local motionByWeapon = {
+  [0] = {profile = "UNARMED", action = "U:JAB_LEFT"},
+  [1] = {profile = "SPEAR", action = "W:SPEAR_JAB"},
+  [2] = {profile = "SWORD", action = "W:BLADE_SLASH_R"},
+  [3] = {profile = "GREATSWORD", action = "W:BLADE_OVERHEAD"},
+}
+local function finishRpgCombatMotion()
+  if activeMotionController then activeMotionController.Destroy(true) end
+  if activeMotionCharacter and activeMotionCharacter.Parent then
+    activeMotionCharacter:SetAttribute("CivNativeCombatMotionState", "IDLE")
+  end
+  activeMotionController = nil
+  activeMotionCombo = nil
+  activeMotionCharacter = nil
+  table.clear(motionTargets)
+  table.clear(r15MotionTargets)
+end
+player.CharacterAdded:Connect(finishRpgCombatMotion)
+local function playApprovedRpgCombatMotion()
+  if not commonMotion or player:GetAttribute("CivReady") ~= true then return end
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not humanoid or humanoid.Health <= 0 then return end
+  if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+    character:SetAttribute("CivNativeCombatMotionState", "R15_REQUIRED")
+    return
+  end
+  local weaponId = tonumber(player:GetAttribute("CivEquippedWeapon")) or 0
+  local motion = motionByWeapon[weaponId]
+  if not motion then return end
+  local joints = {}
+  for _, descendant in ipairs(character:GetDescendants()) do
+    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1 then
+      joints[descendant.Name] = descendant
+    end
+  end
+  if not (joints.Waist and joints.LeftShoulder and joints.RightShoulder
+    and joints.LeftElbow and joints.RightElbow) then
+    character:SetAttribute("CivNativeCombatMotionState", "R15_JOINTS_REQUIRED")
+    return
+  end
+  local ok, combo = pcall(commonMotion.CreateCombatCombo, motion.profile, {motion.action})
+  if not ok or not combo or not combo.steps or #combo.steps ~= 1 then return end
+  finishRpgCombatMotion()
+  activeMotionCharacter = character
+  activeMotionCombo = combo
+  activeMotionStart = os.clock()
+  activeMotionController = commonMotion.BindJointPose(joints, {response = 32})
+  character:SetAttribute("CivNativeCombatMotionProfile", motion.profile)
+  character:SetAttribute("CivNativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
+end
+RunService.PreSimulation:Connect(function(dt)
+  if not(activeMotionController and activeMotionCombo and activeMotionCharacter) then return end
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if character ~= activeMotionCharacter or not humanoid or humanoid.Health <= 0 then
+    finishRpgCombatMotion()
+    return
+  end
+  table.clear(motionTargets)
+  table.clear(r15MotionTargets)
+  local _, _, finished = commonMotion.SampleCombatCombo(activeMotionCombo, os.clock()-activeMotionStart, motionTargets)
+  commonMotion.MapCombatPoseToR15(motionTargets, r15MotionTargets)
+  activeMotionController.Step(r15MotionTargets, dt)
+  if finished then finishRpgCombatMotion() end
+end)
+
 remote.OnClientEvent:Connect(function(kind, payload)
   if kind == "CIV_MESSAGE" and typeof(payload) == "string" then
     showNotice(payload)
@@ -651,6 +737,7 @@ remote.OnClientEvent:Connect(function(kind, payload)
   elseif kind == "CIV_PARRY" then
     showNotice("패링 성공")
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
+    playApprovedRpgCombatMotion()
     showNotice(tostring(payload.Enemy) .. " · " .. tostring(payload.Damage) .. " 피해")
   elseif kind == "MULTIPLAYER_SYNC" and typeof(payload) == "table" and hud then
     hud:SetAttribute("ParticipantCount", tonumber(payload.ParticipantCount) or 0)
