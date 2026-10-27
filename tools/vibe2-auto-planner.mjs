@@ -860,6 +860,38 @@ export function projectSort(a,b){
   }
   return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);
 }
+// 완성도/실제 처리율 기반 웹 개발 동시성: 기존 owner cap을 넘기지 않고,
+// 아직 실행 중인 작업을 취소하지 않으며 다음 빈 슬롯 보충만 조절한다.
+export function adaptiveWebDevelopmentTarget({maxTarget=0,projects=[],runnerPressure={}}={}){
+  const ceiling=Math.max(0,Math.floor(Number(maxTarget)||0));
+  if(!ceiling)return 0;
+  const eligible=(Array.isArray(projects)?projects:[]).filter(project=>project?.engine==='web'
+    &&project?.releaseState==='development-confirmed');
+  if(!eligible.length)return 0;
+  const closeout=eligible.filter(project=>{
+    const v=project.developmentValidation||{};
+    const score=v.score===null||v.score===undefined||v.score===''?NaN:Number(v.score);
+    const state=clean(v.state).toUpperCase();
+    return Number.isFinite(score)&&score>=89
+      &&['PASS','VERIFIED','COMPLETED','COMPLETE'].includes(state)
+      &&Array.isArray(v.blockers)&&v.blockers.length===0;
+  }).length;
+  // QA가 확인한 준완성 게임은 새 기능 슬롯 대신 검증/마무리로 전환한다.
+  // 완성도 정보가 없으면 완료로 추측하지 않고 작업 미완료로 계산한다.
+  const incomplete=eligible.length-closeout;
+  const base=Math.max(Math.min(2,eligible.length),2+Math.ceil(Math.sqrt(incomplete)));
+  let target=Math.min(ceiling,eligible.length,base);
+  const telemetry=runnerPressure?.lastTelemetry||runnerPressure||{};
+  const checkedAt=Date.parse(String(runnerPressure?.lastUpdatedAt||''));
+  const fresh=!Number.isFinite(checkedAt)||Date.now()-checkedAt<=30*60*1000;
+  if(fresh){
+    const level=clean(telemetry.pressureLevel).toUpperCase();
+    const failure=Number(telemetry.failureRatePct);
+    if(level==='SEVERE'||(Number.isFinite(failure)&&failure>=80))target=Math.min(target,4);
+    else if(level==='HIGH'||(Number.isFinite(failure)&&failure>=40))target=Math.min(target,6);
+  }
+  return Math.max(1,target);
+}
 // [중앙정책] 동기식 기획 1회 동안만 같은 main 정책 스냅샷을 공유한다.
 let activePlanningPolicySnapshot=null;
 function centralPresentationPolicy(repoRoot=process.cwd()){
@@ -4321,7 +4353,12 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     ||(webFlowUnityOnly
       ?activeTargets.includes('UNITY_WEB')&&effectiveAccess.UNITY_WEB==='ALWAYS_ALLOWED'
       :activeTargets.includes('WEB')&&effectiveAccess.WEB==='ALWAYS_ALLOWED');
-  const webFlowTarget=webFlowPolicy?.enabled===true&&authorizedWebFlow?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
+  const webFlowMax=webFlowPolicy?.enabled===true&&authorizedWebFlow?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
+  const webFlowTarget=webFlowUnityOnly?webFlowMax:adaptiveWebDevelopmentTarget({
+    maxTarget:webFlowMax,
+    projects:allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)),
+    runnerPressure:readJson(path.join(repoRoot,'.vibe2/parallelism-control.json'),{})
+  });
   const webFlowMatches=item=>webFlowUnityOnly
     ?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage'))
     :(clean(item.target).toLowerCase()==='web'&&posix(item.sourceRoot).startsWith('web-games/')&&item.unityWebDevelopment!==true);
