@@ -1438,15 +1438,38 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
       const direct=clean(row.downloadUrl||row.assetUrl||row.archiveUrl);
       const hasSafeDirect=publicHttps(direct)&&/\.(?:glb|gltf|fbx|obj|zip)$/i.test(new URL(direct).pathname);
+      // [수급] 원본 주소·파일 크기·SHA-256·보존 경로가 전부 고정되어야 실제 다운로드 후보가 된다.
+      // HTML 랜딩 페이지나 해시 없는 외부 메타데이터는 미수급 상태로 유지한다.
+      const pinnedPath=clean(row.localSourcePath||row.sourcePath).replaceAll('\\','/');
+      const pinnedHash=clean(row.sourceHash||row.sha256).toLowerCase();
+      const pinnedBytes=Number(row.archiveBytes??row.bytes);
+      const pinnedDirect=hasSafeDirect
+        &&/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|glb|gltf|fbx|obj)$/.test(pinnedPath)
+        &&!pinnedPath.split('/').includes('..')
+        &&/^[a-f0-9]{64}$/.test(pinnedHash)
+        &&Number.isSafeInteger(pinnedBytes)&&pinnedBytes>=512&&pinnedBytes<=104857600;
+      let presentAndVerified=false;
+      if(pinnedDirect){
+        try{
+          const full=path.resolve(repoRoot,pinnedPath),info=fs.statSync(full);
+          presentAndVerified=info.isFile()&&info.size===pinnedBytes
+            &&sharedArchiveSha256(full,info)===pinnedHash;
+        }catch{/* 이미 등록된 원본이 없으면 기존 소스 워커의 다운로드 작업에 위임한다. */}
+      }
       candidates.push(freeze({
         sourceId:clean(row.id),sourceName:clean(row.name),family,license:clean(row.license),
         sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
         licenseSnapshotDate:clean(row.verifiedAt),downloadUrl:hasSafeDirect?direct:null,
-        acquisitionState:hasSafeDirect?'SELECTED_DIRECT_DOWNLOAD_PENDING':'SOURCE_PAGE_RESOLUTION_REQUIRED',
+        sourceType:pinnedDirect?'PINNED_EXTERNAL_DIRECT_SOURCE':null,
+        sourcePath:pinnedDirect?pinnedPath:null,sourceHash:pinnedDirect?pinnedHash:null,
+        archiveBytes:pinnedDirect?pinnedBytes:null,downloaded:presentAndVerified,
+        acquisitionState:pinnedDirect?(presentAndVerified?'ACQUIRED_ORIGINAL_FILES':'SELECTED_DIRECT_DOWNLOAD_PENDING')
+          :hasSafeDirect?'DIRECT_SOURCE_HASH_AND_DESTINATION_REQUIRED':'SOURCE_PAGE_RESOLUTION_REQUIRED',
         matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
-        categoryMatchVerified:true,sourceHash:null,downloaded:false,runtimeVerified:false,
+        categoryMatchVerified:true,runtimeVerified:false,
         rawRedistributionAllowed:row.rawRedistributionAllowed===true,
-        roleScore:matchedRoles.length*10+nameFit,spatial3dSourceRequired:spatialFamilies.has(family)
+        roleScore:matchedRoles.length*10+nameFit+(pinnedDirect?1:0),
+        spatial3dSourceRequired:spatialFamilies.has(family)
       }));
     }
     return freezeList(candidates.sort((a,b)=>b.roleScore-a.roleScore||a.sourceId.localeCompare(b.sourceId)));
