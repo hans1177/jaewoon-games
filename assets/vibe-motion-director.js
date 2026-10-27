@@ -1003,16 +1003,40 @@ export function createSurvivalPlayerMotionProfile({platform='ROBLOX',tool='AXE'}
     SPEAR:'SURVIVAL_SPEAR_THRUST',
     NONE:'SURVIVAL_TOOL_READY'
   }[toolKey]||'SURVIVAL_TOOL_READY';
+  // [모션] 모든 후보는 기존 CC0 GLB 안의 클립을 조회하는 이름일 뿐이다.
+  // 실제 원본 파일에 없는 동작을 만들거나 다른 도구의 공격을 임의로 대체하지 않는다.
+  const attackName=toolKey==='SPEAR'?'1H_Melee_Attack_Stab'
+    :toolKey==='NONE'?'Unarmed_Melee_Attack_Punch_A':'1H_Melee_Attack_Chop';
+  const cc0Clips=Object.freeze({
+    idle:'Idle',walk:'Walking_A',run:'Running_A',hit:'Hit_A',death:'Death_A',
+    dodge:'Dodge_Forward',block:'Block',interact:'Interact',attack:attackName
+  });
+  const cc0ClipCandidates=Object.freeze({
+    idle:freezeList([cc0Clips.idle,'Idle_A','Idle_B']),
+    walk:freezeList([cc0Clips.walk,'Walking_B','Walking']),
+    run:freezeList([cc0Clips.run,'Running_B','Running']),
+    hit:freezeList([cc0Clips.hit,'Hit_B']),
+    death:freezeList([cc0Clips.death,'Death_B']),
+    dodge:freezeList([cc0Clips.dodge]),
+    block:freezeList([cc0Clips.block]),
+    interact:freezeList([cc0Clips.interact]),
+    attack:freezeList([attackName])
+  });
   return Object.freeze({
     target:'POLISHED_STYLIZED_SURVIVAL_CHARACTER_MOTION',
     platform:upper(platform),
     tool:toolKey,
     primaryToolMotion:toolMotion,
-    // 웹 모션: 확보된 KayKit CC0 리그의 실제 클립 이름. 게임 판정은 원래 상태가 소유한다.
-    cc0Clips:Object.freeze({
-      idle:'Idle',walk:'Walking_A',run:'Running_A',hit:'Hit_A',death:'Death_A',
-      dodge:'Dodge_Forward',block:'Block',interact:'Interact',
-      attack:toolKey==='SPEAR'?'1H_Melee_Attack_Stab':toolKey==='NONE'?'Unarmed_Melee_Attack_Punch_A':'1H_Melee_Attack_Chop'
+    // 시각 상태만 고르고 기존 게임의 스탯/공격시각/저장 구조는 유지한다.
+    cc0Clips,
+    cc0ClipCandidates,
+    clipSelection:Object.freeze({
+      verifiedSourceClipsOnly:true,
+      incompatibleWeaponFallbackForbidden:true,
+      missingAttackMayNotBorrowIdleOrWalk:true,
+      oneShotReplayOnAuthoritativeAttackTimestamp:true,
+      locomotionTransitionKeepsGameplayRoot:true,
+      actualRigAndMobileQualityMustBeVerified:true
     }),
     groups:SURVIVAL_PLAYER_MOTION_PACK,
     mechanics:Object.freeze({
