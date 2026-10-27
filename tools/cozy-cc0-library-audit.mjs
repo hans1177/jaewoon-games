@@ -143,6 +143,7 @@ export async function grantCozyCC0({report,apiKey=process.env.ROBLOX_OPEN_CLOUD_
       body,signal:AbortSignal.timeout(45000)});
   }
   const result=await response.json().catch(()=>({}));
+  // Only the exact Roblox successAssetIds receipt authorizes the private publish.
   const accepted=new Set(Array.isArray(result.successAssetIds)?result.successAssetIds.map(String):[]);
   const missed=ids.filter(row=>!accepted.has(String(row.assetId)));
   if(!response.ok||(Array.isArray(result.errors)&&result.errors.length>0)||missed.length){
