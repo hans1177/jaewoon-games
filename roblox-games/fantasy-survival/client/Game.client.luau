@@ -507,6 +507,18 @@ RunService.PreSimulation:Connect(function(dt)
   local _, _, finished = combatMotionSource.SampleCombatCombo(
     activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
   )
+  if type(combatMotionSource.RefineActorCinematicPose) == "function" then
+    local timeInAction = os.clock() - activeCombatStartedAt
+    combatMotionSource.RefineActorCinematicPose(combatPoseTargets, {
+      actorClass = "PLAYER", bodyPlan = "BIPED", weaponStyle = activeCombatCombo.profileId,
+      actionPhase = math.clamp(timeInAction / math.max(.05, activeCombatCombo.duration), 0, 1),
+      authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
+      visualSpeed = humanoid.MoveDirection.Magnitude,
+      mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
+      comboContinuity = #activeCombatCombo.steps > 1 and .32 or 0,
+      intensity = 1, secondary = .55,
+    })
+  end
   combatMotionSource.MapCombatPoseToR15(combatPoseTargets, combatR15Targets)
   activeCombatController.Step(combatR15Targets, dt)
   if finished then finishNativeCombatMotion() end
