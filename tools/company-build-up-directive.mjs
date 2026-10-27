@@ -737,7 +737,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
       linkedElements:row.linkedElements,observableAcceptance:row.consequence
     }))]);
     if(Array.isArray(design.creativeGrammar?.cGenres))groups.push(['CREATIVE_C_PRIMARY_SECONDARY_GENRE',design.creativeGrammar.cGenres.map(row=>({name:row.role+' '+row.name,trigger:row.role,stateChange:row.gameplayEffect}))]);
-    if(design.creativeGrammar?.cGenreInterlock)groups.push(['CREATIVE_C_GENRE_INTERLOCK',[{name:'메인·보조 장르 플레이 인과',trigger:'두 장르 동시 발동',stateChange:design.creativeGrammar.cGenreInterlock}]]);
+    if(design.creativeGrammar?.cGenreInterlock)groups.push(['CREATIVE_C_GENRE_INTERLOCK',[{name:'메인·보조 장르 플레이 인과',trigger:'두 장르 설계·최소 한 장르의 네이티브 플레이 인과 검증',stateChange:design.creativeGrammar.cGenreInterlock}]]);
     if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>
       Number(design.creativeGrammar?.standardVersion||0)>=1?{
         name:row.discovery,trigger:row.experiment||row.clue,stateChange:row.newChoice,
@@ -1146,7 +1146,7 @@ export function buildDesignToPlatformCodingTrace({
       requirements.set('CREATIVE_C_CAUSALITY',{id:'CREATIVE_C_CAUSALITY',
         kind:'DESIGN_CREATIVE_INTERLOCK',title:'A_B_C_PRIMARY_SECONDARY_GAMEPLAY_EFFECT',
         weight:creativeCReady?75:115,sourceOwnerCandidates:contentOwners,
-        expectedNativeBehavior:'ACTUAL_GAMEPLAY_STATE_AND_PLAYER_DECISION_CHANGE_FROM_CREATIVE_C'});
+        expectedNativeBehavior:'AT_LEAST_ONE_OF_TWO_AUTHORED_C_GENRES_PRODUCES_VERIFIED_NATIVE_STATE_CHANGE'});
     }
     requirements.set('NATIVE_3D_VISUAL',{id:'NATIVE_3D_VISUAL',kind:'UNITY_WEB_SPATIAL_PRESENTATION',
       weight:spatialReady?65:125,sourceOwnerCandidates:spatialOwners,
@@ -1266,6 +1266,9 @@ export function buildDesignToPlatformCodingTrace({
         experiment:clean(row?.experiment),nextQuestion:clean(row?.nextQuestion)
       }))),
       designAuthored:Boolean(creativeCReady&&creativeDReady&&creativeAtReady),
+      designedGenreCount:cGenres.length,minimumImplementedGenreCount:1,
+      runtimeAcceptance:'ONE_OF_TWO_AUTHORED_C_GENRES_WITH_ACTUAL_RUNTIME_AND_INDEPENDENT_QA',
+      unverifiedDesignedGenreRemainsPending:true,
       runtimeVerified:false
     }):null,
     observedGameCodeFiles:Object.freeze(observedFiles),
@@ -2784,6 +2787,35 @@ export function buildGameSpecificBuildUpDirective({
     gameId:id,design,platform,sourceRoot,sourceObservation:source,
     responsibleFiles:topFiles,repoRoot,multiplayerRequired
   });
+  // C는 PRIMARY+SECONDARY 두 작품 장르를 모두 설계하며 한 장르만 네이티브 검증되면 구현 조건을 충족한다.
+  // 런타임/독립 QA/현재 게임/현재 소스/실제 플레이 행동·상태 증거가 없으면 통과시키지 않는다.
+  const cRuntimeGenreRows=designToPlatformCodingTrace.creativeCBinding?.genres||[];
+  const cRuntimeProofs=Array.isArray(runtimeEvidence?.creativeCGenreEvidence)?runtimeEvidence.creativeCGenreEvidence:[];
+  const cRuntimeSourceTree=clean(source?.sourceTreeFingerprint);
+  const cRuntimeSameGameAndSource=Boolean(cRuntimeSourceTree
+    &&runtimeEvidence?.runtimeObserved===true
+    &&runtimeEvidence?.runtimePassed===true
+    &&runtimeEvidence?.independentQaPassed===true
+    &&clean(runtimeEvidence?.gameId)===id
+    &&clean(runtimeEvidence?.sourceTreeFingerprint)===cRuntimeSourceTree);
+  const cVerifiedGenreRows=cRuntimeSameGameAndSource?cRuntimeGenreRows.filter(row=>cRuntimeProofs.some(proof=>
+    proof?.runtimeVerified===true
+    &&clean(proof?.role)===row.role&&clean(proof?.name)===row.name
+    &&clean(proof?.sourceTreeFingerprint)===cRuntimeSourceTree
+    &&clean(proof?.nativePlayerAction)&&clean(proof?.nativeStateChange)
+    &&clean(proof?.independentQaEvidenceRef)
+  )):[];
+  const creativeCGenreImplementation=Object.freeze({
+    requiredDesignGenreCount:2,designedGenreCount:cRuntimeGenreRows.length,
+    requiredVerifiedRuntimeGenreCount:1,verifiedGenreCount:cVerifiedGenreRows.length,
+    satisfied:Boolean(designToPlatformCodingTrace.creativeCBinding?.designAuthored
+      &&cRuntimeGenreRows.length===2&&cVerifiedGenreRows.length>=1),
+    verifiedGenres:Object.freeze(cVerifiedGenreRows.map(row=>Object.freeze({role:row.role,name:row.name}))),
+    pendingGenres:Object.freeze(cRuntimeGenreRows.filter(row=>!cVerifiedGenreRows.some(v=>v.role===row.role&&v.name===row.name))
+      .map(row=>Object.freeze({role:row.role,name:row.name,status:'FOLLOW_UP_IMPLEMENTATION_PENDING'}))),
+    evidenceState:cRuntimeSameGameAndSource?'CURRENT_GAME_NATIVE_RUNTIME_AND_INDEPENDENT_QA_REVIEWED':'NOT_VERIFIED',
+    gameReleaseProven:false
+  });
   // 전체 볼륨 인덱스는 기존 요약 컨텍스트의 8~24개 제한에 의해 설계 항목이 누락되지 않게 한다.
   // 다른 코딩/계획 컨텍스트의 기존 요약 예산과 원본 게임 규칙은 그대로 유지한다.
   const authoredDesign=designRecord?.content&&typeof designRecord.content==='object'
@@ -3045,6 +3077,7 @@ export function buildGameSpecificBuildUpDirective({
     designSourceBuildUp,
     identityReinforcement,
     designToPlatformCodingTrace,
+    creativeCGenreImplementation,
     designedGameVolume,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',

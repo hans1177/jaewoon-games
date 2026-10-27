@@ -2190,3 +2190,46 @@ test('Roblox BUILD_UP automatically links source-owned UI icons inventory and wo
   assert.doesNotMatch(directivePrompt({...visual,platform:'WEB'}),/ROBLOX_BUILD_UP_AUTO_VISUAL_CRAFT/);
   assert.doesNotMatch(directivePrompt({...visual,allDomainImplementationDirectives:[]}),/ROBLOX_BUILD_UP_AUTO_VISUAL_CRAFT/);
 });
+
+test('two designed C story genres require only one independently verified native genre',()=>{
+  const fixture=design();
+  fixture.content.creativeGrammar={
+    mainIdentity:'선택에 따라 사건 진행이 바뀌는 게임',
+    a:{system:'탐색',material:'역사',materialDomain:'역사',stateChange:'탐색 뒤 접근 변경'},
+    b:{system:'구축',material:'신화',materialDomain:'신화',stateChange:'건축 뒤 경로 변경'},
+    abCausality:'탐색 결과가 구축 조건을 바꾸고 구축 결과가 탐색 경로를 바꾼다.',
+    standardVersion:1,
+    cGenres:[
+      {role:'PRIMARY',name:'미스터리',gameplayEffect:'단서 선택으로 새로운 접근 경로를 해금한다.'},
+      {role:'SECONDARY',name:'공포',gameplayEffect:'위험을 피하는 행동으로 진행 경로를 변경한다.'}
+    ],
+    cGenreInterlock:'공포 위험 상태에 따라 미스터리 탐색이 달라진다.',
+    cWorldAndGameplayEffect:'두 이야기 장르가 다음 게임 선택에 영향을 준다.',
+    dCreations:[{id:'D_1',materialPath:['역사','조사','단서'],creation:'단서',gameplayEffect:'새 경로',
+      genreRoles:['PRIMARY','SECONDARY'],linkedElements:['A','B']}],
+    delveDiscoveries:[1,2,3,4].map(i=>({sourceDId:'D_1',clue:'단서 '+i,experiment:'실험 '+i,discovery:'발견 '+i,newChoice:'선택 '+i,nextQuestion:'질문 '+i}))
+  };
+  const id='c-genre-implementation-fixture',tree='current-fixture-tree';
+  const view=runtimeEvidence=>buildGameSpecificBuildUpDirective({gameId:id,platform:'ROBLOX',designRecord:fixture,
+    sourceObservation:{sourceTreeFingerprint:tree,topFiles:[],sourceAnchors:[],observations:[],signals:{}},
+    runtimeEvidence}).creativeCGenreImplementation;
+  const genreProof={role:'PRIMARY',name:'미스터리',runtimeVerified:true,sourceTreeFingerprint:tree,
+    nativePlayerAction:'단서 터치',nativeStateChange:'다음 구역 개방',independentQaEvidenceRef:'case-7'};
+  const complete={gameId:id,sourceTreeFingerprint:tree,runtimeObserved:true,runtimePassed:true,independentQaPassed:true,creativeCGenreEvidence:[genreProof]};
+  const one=view(complete);
+  assert.equal(one.requiredDesignGenreCount,2);
+  assert.equal(one.requiredVerifiedRuntimeGenreCount,1);
+  assert.equal(one.verifiedGenreCount,1);
+  assert.equal(one.satisfied,true);
+  assert.deepEqual(one.pendingGenres,[{role:'SECONDARY',name:'공포',status:'FOLLOW_UP_IMPLEMENTATION_PENDING'}]);
+  assert.equal(one.gameReleaseProven,false);
+  assert.equal(view({...complete,independentQaPassed:false}).satisfied,false);
+  assert.equal(view({...complete,runtimePassed:false}).satisfied,false);
+  assert.equal(view({...complete,sourceTreeFingerprint:'stale-tree'}).satisfied,false);
+  assert.equal(view({...complete,creativeCGenreEvidence:[{...genreProof,nativeStateChange:''}]}).satisfied,false);
+  assert.equal(view({...complete,creativeCGenreEvidence:[{...genreProof,name:'비극'}]}).satisfied,false);
+  const incomplete=structuredClone(fixture);incomplete.content.creativeGrammar.cGenres.pop();
+  assert.equal(buildGameSpecificBuildUpDirective({gameId:id,platform:'ROBLOX',designRecord:incomplete,
+    sourceObservation:{sourceTreeFingerprint:tree,topFiles:[],sourceAnchors:[],observations:[],signals:{}},
+    runtimeEvidence:complete}).creativeCGenreImplementation.satisfied,false);
+});
