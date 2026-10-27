@@ -133,9 +133,9 @@ function remoteQueue(token){
   if(data.encoding!=='base64'||typeof data.content!=='string')fail('WEB_VIBE_REMOTE_QUEUE_CONTENT_INVALID');
   return {queue:assertWebVibeQueue(JSON.parse(Buffer.from(data.content.replace(/\s/g,''),'base64').toString('utf8'))),sha:data.sha};
 }
-function verifiedLocalMain(){
+// 메인: 깃허브 임시 실행 폴더만 원본 main으로 복구하고 사용자 PC의 변경은 건드리지 않는다.
+function verifiedLocalMain({cloud=false}={}){
   if(run('git',['branch','--show-current'])!=='main')fail('WEB_VIBE_LOCAL_MAIN_REQUIRED');
-  if(run('git',['status','--porcelain']))fail('WEB_VIBE_LOCAL_UNCOMMITTED_CHANGES');
   const origin=run('git',['remote','get-url','origin']);
   // The WEB worker must not fall back to a native team's SSH key.
   if(!/^https:\/\/github\.com\/hans1177\/jaewoon-games(?:\.git)?$/i.test(origin))
@@ -143,6 +143,20 @@ function verifiedLocalMain(){
   run('git',['fetch','--quiet','origin','main']);
   if(run('git',['rev-parse','HEAD'])!==run('git',['rev-parse','origin/main']))
     fail('WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST');
+  const dirty=run('git',['status','--porcelain','--untracked-files=all']);
+  if(!dirty)return;
+  const isolatedCloudCheckout=cloud===true
+    &&process.env.GITHUB_ACTIONS==='true'
+    &&process.env.GITHUB_REPOSITORY===REPO
+    &&path.resolve(process.env.GITHUB_WORKSPACE||'/')===ROOT;
+  if(!isolatedCloudCheckout)fail('WEB_VIBE_LOCAL_UNCOMMITTED_CHANGES');
+  // Actions checkout와 사전 검사가 남긴 임시 변경만 폐기한다. 실제 game main 소스는 HEAD 그대로다.
+  console.log('WEB_VIBE_CLOUD_CHECKOUT_DIRTY='+dirty.split('\n').length);
+  run('git',['restore','--source=HEAD','--staged','--worktree','--','.']);
+  run('git',['clean','-fd']);
+  const remaining=run('git',['status','--porcelain','--untracked-files=all']);
+  if(remaining)fail('WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:'+remaining.split('\n').length);
+  console.log('WEB_VIBE_CLOUD_CHECKOUT_REPAIRED=PASS');
 }
 // 클라우드/로컬은 같은 WEB_VIBE_1 파일 검증과 PR 경로를 사용한다.
 // 원격 모델 응답은 절대 권한이 아니며 기존 단일 bounded edit 검사만 통과한다.
@@ -299,7 +313,7 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
   if(args.apply&&!args.pr)fail('WEB_VIBE_APPLY_REQUIRES_REVIEWABLE_PR');
   const token=clean(process.env.WEB_VIBE_GH_TOKEN);
   assertWebVibeWorkerEnvironment({token,cloud:args.cloud===true});
-  verifiedLocalMain();
+  verifiedLocalMain({cloud:args.cloud===true});
   const state=remoteQueue(token);
   if(args.check)return {organization:'WEB',engine:'WEB_VIBE_1',webQueued:state.queue.tasks.filter(t=>t.status==='queued').length,sourceWritten:false,modelConnected:false};
   if(!args.task)fail('WEB_VIBE_TASK_ID_REQUIRED');
