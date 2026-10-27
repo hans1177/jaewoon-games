@@ -471,3 +471,45 @@ test('bounded A-star path reuse avoids repeat computation without changing comba
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
   assert.match(server, /UpdateAsync\("player:" \.\. player\.UserId/);
 });
+
+test('simple RPG authored lobby spawn follows Baeksu war single CharacterAdded placement and rejects late overwrite', () => {
+  const baeksu = fs.readFileSync('roblox-games/baeksu-war/server/Game.server.luau', 'utf8');
+  assert.match(baeksu, /player\.CharacterAdded:Connect\(function\(character\)/);
+  assert.match(server, /player\.CharacterAdded:Connect\(bindFoundationCharacter\)/);
+  assert.match(server, /startGround = civPart\(workspace, "SimpleRpgGround"/);
+  assert.match(server, /foundationSpawn = spawnSource:Clone\(\)/);
+  assert.match(server, /character:PivotTo\(character:GetPivot\(\) \+ \(target - rootPart\.Position\)\)/);
+  // Existing explicit lobby teleport actions intentionally retain their original coordinates.
+  // Only the post-load first-join path must not overwrite the verified foundation placement.
+  const firstJoin = server.slice(server.indexOf('-- 처음 접속 시 로비에서 시작.'),
+    server.indexOf('player.CharacterAdded:Connect(function()',server.indexOf('-- 처음 접속 시 로비에서 시작.')));
+  assert.ok(firstJoin.length > 100,'first-join block exists');
+  assert.doesNotMatch(firstJoin, /character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+  assert.match(server, /character:SetAttribute\("CivTravelCompleted", true\)\s+character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+  assert.match(server, /if character:GetAttribute\("CivTravelCompleted"\) then return end/);
+  assert.match(server, /SIMPLE_RPG_LOBBY_GROUNDING_UNVERIFIED/);
+});
+
+test('simple RPG spawn treats overlapping licensed walkable ground as support, but keeps physical blockers fail-closed', () => {
+  assert.match(server, /local isSupportingGround = part:IsA\("BasePart"\) and part\.Anchored/);
+  assert.match(server, /part:GetAttribute\("WalkableGround"\) == true/);
+  assert.match(server, /part\.Position\.Y \+ part\.Size\.Y \* 0\.5/);
+  assert.match(server, /if not isSupportingGround then/);
+  assert.match(server, /"SPAWN_CLEARANCE_BLOCKED"/);
+  assert.match(server, /character:SetAttribute\("SpawnBlockingPart", part\.Name\)/);
+  assert.match(server, /"SPAWN_GROUND_MISSING"/);
+  assert.match(server, /"GROUND_CONTACT_FAILURE"/);
+  assert.match(server, /contacts >= 3 then\s+moving:Disconnect\(\)/);
+  assert.match(server, /character:SetAttribute\("FoundationSourceAssetId"/);
+  assert.doesNotMatch(server, /Instance\.new\("(?:Part|SpawnLocation|MeshPart)"\)/);
+});
+
+test('simple RPG waits boundedly for only source-verified curated Roblox meshes without fake spawn assets', () => {
+  assert.match(server, /for attempt = 1, 4 do\s+ok, container = pcall\(function\(\) return InsertService:LoadAsset\(assetId\) end\)/);
+  assert.match(server, /SIMPLE_RPG_CURATED_ASSET_RETRY/);
+  assert.match(server, /SIMPLE_RPG_CURATED_ASSET_UNAVAILABLE/);
+  assert.match(server, /error\("SIMPLE_RPG_EXTERNAL_MESH_REQUIRED:" \..+name\)/);
+  assert.match(server, /error\("SIMPLE_RPG_EXTERNAL_SPAWN_MESH_REQUIRED"\)/);
+  assert.match(server, /template:GetAttribute\("CuratedExternalAsset"\) == true/);
+  assert.match(server, /VerifiedRobloxAssetId/);
+});
