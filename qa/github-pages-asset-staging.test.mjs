@@ -442,3 +442,14 @@ test('published Gem Survivor movement smoke uses an initialized game frame',()=>
  assert.match(block,/dataset\.playerX\)>x\+25/);
  assert.doesNotMatch(block,/waitForTimeout\(700\)/);
 });
+
+// 사후검증 병목: 12분 이상 걸리던 apt 글꼴 설치를 반복하지 않고 게시본 교체를 재확인한다.
+test('post-deploy browser checks source again after fast install',()=>{
+ const post=workflow.slice(workflow.indexOf('  post-publication-3d-smoke:'));
+ assert.match(post,/npx playwright install --only-shell chromium/);
+ assert.doesNotMatch(post,/playwright install --with-deps/);
+ assert.match(post,/id: browser_revision/);
+ assert.match(post,/POST_PUBLISH_BROWSER_SETUP_SUPERSEDED_BY/);
+ assert.match(post,/if: steps\.browser_revision\.outputs\.exact == 'true'/);
+ assert.match(post,/node qa\/vibe-browser-smoke\.mjs/);
+});
