@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "cozy-island-build-up-g23-9b731ad8f28f",
-  "directiveFingerprint": "9b731ad8f28f5243e1586e12ec223a01014d7d1ae4ebb10011001e9f18eb1029",
-  "previousDirectiveFingerprint": "4916cd1e7361b6eedeb0098172f8270bc1fc03a98799a54af964c847be24c9f8",
-  "forbiddenRepeatFingerprint": "4916cd1e7361b6eedeb0098172f8270bc1fc03a98799a54af964c847be24c9f8",
+  "directiveId": "cozy-island-build-up-g24-88c360b674ba",
+  "directiveFingerprint": "88c360b674ba33c0d1ec95f1dfd4849cea5d6168c45097f874e70da007691dd8",
+  "previousDirectiveFingerprint": "9b731ad8f28f5243e1586e12ec223a01014d7d1ae4ebb10011001e9f18eb1029",
+  "forbiddenRepeatFingerprint": "9b731ad8f28f5243e1586e12ec223a01014d7d1ae4ebb10011001e9f18eb1029",
   "gameId": "cozy-island",
   "gameName": "포근섬",
-  "generation": 23,
+  "generation": 24,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cozy-island",
-  "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+  "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
   "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+        "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
-    "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+    "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -791,6 +791,10 @@
         }
       ],
       "designAuthored": true,
+      "designedGenreCount": 2,
+      "minimumImplementedGenreCount": 1,
+      "runtimeAcceptance": "ONE_OF_TWO_AUTHORED_C_GENRES_WITH_ACTUAL_RUNTIME_AND_INDEPENDENT_QA",
+      "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
@@ -833,10 +837,32 @@
     "changesDevelopmentAdmission": false,
     "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
+  "creativeCGenreImplementation": {
+    "requiredDesignGenreCount": 2,
+    "designedGenreCount": 2,
+    "requiredVerifiedRuntimeGenreCount": 1,
+    "verifiedGenreCount": 0,
+    "satisfied": false,
+    "verifiedGenres": [],
+    "pendingGenres": [
+      {
+        "role": "PRIMARY",
+        "name": "탐험",
+        "status": "FOLLOW_UP_IMPLEMENTATION_PENDING"
+      },
+      {
+        "role": "SECONDARY",
+        "name": "대전 슈팅 액션",
+        "status": "FOLLOW_UP_IMPLEMENTATION_PENDING"
+      }
+    ],
+    "evidenceState": "NOT_VERIFIED",
+    "gameReleaseProven": false
+  },
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+    "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -2805,11 +2831,11 @@
         "authoredId": null,
         "designDetail": {
           "name": "메인·보조 장르 플레이 인과",
-          "trigger": "두 장르 동시 발동",
+          "trigger": "두 장르 설계·최소 한 장르의 네이티브 플레이 인과 검증",
           "stateChange": "탐험 목표를 해결하려면 A의 ResourceState 확보와 B의 RouteState 변경을 반복한다. 대전 슈팅 액션 판단에서는 역사적 세력 균형의 단서를 먼저 해석하거나 희극의 오해와 엇갈림의 반작용을 감수해야 B의 대응·A의 재진입 중 하나가 가능하다. 보조 장르를 제거하면 실제 접근 조건이 달라진다."
         },
         "playerChoice": null,
-        "trigger": "두 장르 동시 발동",
+        "trigger": "두 장르 설계·최소 한 장르의 네이티브 플레이 인과 검증",
         "stateChange": "탐험 목표를 해결하려면 A의 ResourceState 확보와 B의 RouteState 변경을 반복한다. 대전 슈팅 액션 판단에서는 역사적 세력 균형의 단서를 먼저 해석하거나 희극의 오해와 엇갈림의 반작용을 감수해야 B의 대응·A의 재진입 중 하나가 가능하다. 보조 장르를 제거하면 실제 접근 조건이 달라진다.",
         "linkedRuleIds": [],
         "designResponsibleSystem": null,
@@ -4304,13 +4330,13 @@
     ],
     "signals": {
       "combat": 239,
-      "progression": 528,
-      "ai": 225,
+      "progression": 539,
+      "ai": 229,
       "save": 202,
       "multiplayer": 29,
       "animation": 127,
-      "motionStates": 1123,
-      "gameFeel": 59,
+      "motionStates": 1138,
+      "gameFeel": 66,
       "vfx": 79,
       "camera": 111,
       "audio": 58,
@@ -4328,7 +4354,7 @@
       "settings": 33,
       "feedback": 171,
       "session": 89,
-      "content": 740,
+      "content": 746,
       "choice": 1817,
       "connection": 8,
       "performance": 58,
@@ -4344,7 +4370,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "score": 285
+        "score": 293
       },
       {
         "file": "roblox-games/cozy-island/shared/GameConfig.luau",
@@ -4662,7 +4688,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 119,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "bindCombatActor",
         "context": "local function bindCombatActor(actor)",
@@ -4686,7 +4712,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 288,
+        "line": 353,
         "kind": "FUNCTION",
         "symbol": "makeButton",
         "context": "local function makeButton(parent,text,color)",
@@ -4694,7 +4720,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 503,
+        "line": 568,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
@@ -4758,7 +4784,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 580,
+        "line": 645,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -4777,19 +4803,19 @@
   "previousVersionDelta": {
     "previousGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 22,
-    "previousSourceTreeFingerprint": "1bf10ec35b7deb69d4aed8b801f367fc569e572b60be1dcb56e1ed49ea4b8a0c",
-    "currentSourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+    "previousGeneration": 23,
+    "previousSourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+    "currentSourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED",
     "blockers": [
-      "roblox-runtime-candidate-deploy-pending"
+      "roblox-cloud-image-content-unverified"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -5892,8 +5918,99 @@
     "고유 시스템 \"상대 기술과 팀 전술 대응 × 의례와 호혜 관계\": 플레이어 선택 \"행동: 교전 결과와 팀 상황에 따라 장비·엄폐·협동 공격을 조정한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 \"문화·언어와 번역의 경로 해독\": 플레이어 선택 \"A의 RouteState로 진입해 RiskState·ResourceState가 바뀐 이유를 확인하고 B의 대응을 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독, 미지 공간과 지도 정보 수집 × 문화·언어와 번역, 상대 기술과 팀 전술 대응 × 의례와 호혜 관계, 문화·언어와 번역의 경로 해독 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
-    "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
+    "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다.",
+    "모든 승인 게임 빌드업은 한 세대 최소 5개의 실제 플레이 가치 개선을 목표로 한다. 입력→상태 변화→화면/모션/사운드 피드백을 기존 책임 소스에서 연결하고 각 항목의 동일 빌드 검증 증거를 남긴다. 5번의 소스 수정이나 에셋 교체를 실제 플레이 통과로 계산하지 않는다. 실패·설계 누락은 기존 원인 수리 우선이며 F0~F9와 저장·밸런스·권한은 유지한다."
   ],
+  "playableImprovementContract": {
+    "version": 1,
+    "scope": "ALL_ACTIVE_APPROVED_GAME_BUILD_UP",
+    "minimumPerGeneration": 5,
+    "floorBoundary": "EXISTING_F0_F9_SEQUENCE_UNCHANGED",
+    "targets": [
+      {
+        "id": "FIRST_ACTION",
+        "anchor": "A 시작: RouteState·RiskState를 확인한 뒤 새 지역에서 지도 단서와 접근 가능 통로를 조사한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+        "intent": "첫 플레이에서 기존 핵심 행동을 발견하고 실제로 수행할 수 있게 개선",
+        "gameId": "cozy-island",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "CORE_STATE_RESPONSE",
+        "anchor": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 교전 결과와 팀 상황에 따라 장비·엄폐·협동 공격을 조정한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+        "intent": "기존 핵심 행동의 입력→상태 변화 연결 및 즉시 피드백 개선",
+        "gameId": "cozy-island",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "PLAYER_CHOICE",
+        "anchor": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독",
+        "intent": "기존 플레이어 선택과 그 결과의 가독성 및 다음 행동 연결 개선",
+        "gameId": "cozy-island",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "PRESENTATION_BINDING",
+        "anchor": "역사적 세력 균형와 희극의 오해와 엇갈림의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
+        "intent": "실제 행동 상태에 연결된 캐릭터·카메라·모션·VFX·UI/소리 반응 개선",
+        "gameId": "cozy-island",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      },
+      {
+        "id": "SESSION_RETRY",
+        "anchor": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 미지 공간과 지도 정보 수집의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+        "intent": "실패·재도전·재접속 시 기존 플레이 진행과 상태 복구 경험 개선",
+        "gameId": "cozy-island",
+        "status": "PROPOSED_NOT_IMPLEMENTED",
+        "sourceOwnerCandidates": [
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
+        ],
+        "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
+        "actualGameplayPass": false
+      }
+    ],
+    "candidateTargetsAreNotFiveVerifiedImprovements": true,
+    "distinctActualPlayerValueRequired": true,
+    "sourceEditsAreNotRuntimeProof": true,
+    "approvedExistingGameOnly": true,
+    "repairFailedCausalFoundationFirst": true,
+    "missingRuntimeEvidenceRemainsUnverified": true,
+    "noShadowPipeline": true
+  },
   "progressionContentWorldDirectives": [
     "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 미지 공간과 지도 정보 수집의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
     "새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.",
@@ -5936,7 +6053,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 578602,
+        "sourceBytes": 582059,
         "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5968,13 +6085,13 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 10,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
+    "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
+    "themeDepth": 1,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 0,
+        "WORLD_ECOLOGY_STORY_CHAIN": 1,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -5986,7 +6103,6 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -5996,7 +6112,8 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY"
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "WORLD_ECOLOGY_STORY_CHAIN"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6007,18 +6124,16 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 3,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6027,13 +6142,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 32,
-        "gapDomains": [
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": 24,
@@ -6055,6 +6163,13 @@
         "gapDomains": []
       },
       {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 14,
+        "gapDomains": [
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 14,
         "gapDomains": []
@@ -6071,13 +6186,14 @@
       }
     ],
     "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
+      "BACKGROUND_ENVIRONMENT_IDENTITY: 배경·지형·조명·소품이 지역 역할과 세계 분위기를 설명해야 한다.",
+      "REGION_TOPOLOGY_AND_LANDMARK: 기존 지역과 이어지는 진입 경로·랜드마크·우회/잠금 경로를 만든다.",
+      "REGION_NATIVE_ENCOUNTER: 그 장소에 존재할 이유가 있는 몬스터/적/상호작용 역할과 서로 다른 행동 패턴을 만든다.",
+      "REGION_RESOURCE_OR_ITEM: 지역 고유 자원·아이템·장비·보상이 탐험이나 전투 선택에 실제 의미를 갖게 한다.",
+      "QUEST_EVENT_REASON_TO_ENTER: 플레이어가 왜 지금 이 지역에 가는지 목표·퀘스트·사건과 연결한다.",
+      "STORY_AND_WORLD_CAUSALITY: 환경 단서·NPC·적·보상·지역 변화가 같은 세계 원인과 결과를 공유하게 한다.",
+      "REGION_RULE_OR_HAZARD: 지형·날씨·시간·위험·상태·접근 조건 중 게임에 맞는 규칙을 플레이 선택과 연결한다.",
+      "RETURN_OR_FORWARD_CONNECTION: 기존 지역으로 돌아올 이유 또는 다음 지역·보스·해금으로 이어지는 결과를 남긴다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -6143,11 +6259,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 23,
-    "previousGeneration": 22,
+    "generation": 24,
+    "previousGeneration": 23,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
-    "priorSourceFingerprint": "1bf10ec35b7deb69d4aed8b801f367fc569e572b60be1dcb56e1ed49ea4b8a0c",
+    "sourceFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
+    "priorSourceFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6166,7 +6282,7 @@
     "version": 1,
     "gameId": "cozy-island",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+    "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7079,6 +7195,155 @@
         "runtimeVerified": false
       }
     ],
+    "actorMotion": {
+      "version": 1,
+      "trigger": "CREATION_AND_EVERY_BUILD_UP",
+      "gameId": "cozy-island",
+      "platform": "ROBLOX",
+      "detectedActorClasses": [
+        {
+          "actorClass": "PLAYER",
+          "sourceOwnerFiles": [
+            "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+            "roblox-games/cozy-island/client/Game.client.luau",
+            "roblox-games/cozy-island/server/Game.server.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "NPC",
+          "sourceOwnerFiles": [
+            "roblox-games/cozy-island/client/Game.client.luau",
+            "roblox-games/cozy-island/server/Game.server.luau",
+            "roblox-games/cozy-island/launch-mvp.json"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "LOOK_GESTURE",
+            "START",
+            "WALK_TURN_STOP",
+            "INTERACT",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "ENEMY",
+          "sourceOwnerFiles": [
+            "roblox-games/cozy-island/client/Game.client.luau",
+            "roblox-games/cozy-island/server/Game.server.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "BOSS",
+          "sourceOwnerFiles": [
+            "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+            "roblox-games/cozy-island/server/BattleVisual.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "APPROACH_TURN",
+            "ANTICIPATION_IMPACT_FOLLOW_THROUGH_RECOVERY",
+            "DIRECTIONAL_HIT_DEATH",
+            "APPROVED_SIGNATURE_ACTION"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "CREATURE",
+          "sourceOwnerFiles": [
+            "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+            "roblox-games/cozy-island/client/Game.client.luau",
+            "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
+            "roblox-games/cozy-island/shared/WildlifeFactory.luau",
+            "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
+            "roblox-games/cozy-island/shared/WildlifeCatalog.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "BODY_PLAN_IDLE",
+            "GAIT_START_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "COMPANION",
+          "sourceOwnerFiles": [
+            "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "IDLE_ACTING",
+            "START_WALK_RUN_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        },
+        {
+          "actorClass": "MOUNT",
+          "sourceOwnerFiles": [
+            "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
+          ],
+          "state": "SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN",
+          "motions": [
+            "BODY_PLAN_IDLE",
+            "GAIT_START_TURN_STOP",
+            "ATTACK_IF_APPLICABLE",
+            "HIT_DEATH_IF_APPLICABLE"
+          ],
+          "runtimeVerified": false
+        }
+      ],
+      "approvedSourceOrder": [
+        "VERIFIED_SAME_GAME_CLIP",
+        "VERIFIED_COMPATIBLE_COMPANY_CLIP",
+        "LICENSE_VERIFIED_REPOSITORY_CLIP",
+        "LICENSE_VERIFIED_EXTERNAL_CLIP",
+        "COMPATIBLE_RETARGET_AND_CLEANUP",
+        "AUTHORIZED_NATIVE_AUTHORING_FOR_REAL_GAP"
+      ],
+      "mandatoryPolish": [
+        "ACTUAL_COMPATIBLE_RIG_AND_ANIMATOR",
+        "CROSSFADE_POSE_VELOCITY_MATCH",
+        "LOCOMOTION_SPEED_SYNC_AND_WEIGHT_SHIFT",
+        "FOOT_CONTACT_IK_WHEN_APPLICABLE",
+        "UPPER_LOWER_BODY_LAYERING",
+        "SECONDARY_ACTING_PER_BODY_PLAN",
+        "ANTICIPATION_SINGLE_AUTHORIZED_IMPACT_FOLLOW_THROUGH_RECOVERY",
+        "DIRECTIONAL_HIT_AND_DEATH_WHEN_APPLICABLE",
+        "CAMERA_VFX_AUDIO_EVENT_SYNC",
+        "MOBILE_LOD_AND_POOLING",
+        "BEFORE_AFTER_EXACT_ACTOR_NATIVE_PLAY_QA"
+      ],
+      "applicableApprovedActorsOnly": true,
+      "allDiscoveredActorsReviewedEachCycle": true,
+      "actorCountLimit": null,
+      "noInventedActorOrPrimitiveFallback": true,
+      "noUnapprovedCombatForNoncombatActor": true,
+      "preserveExistingDamageTimingHitboxCooldownSpeedSaveProgressionEconomyNetworkAuthority": true,
+      "sourceOnlyEvidence": true,
+      "runtimeVerified": false
+    },
     "sharedAssetSelection": {
       "registry": "company-asset-library.json",
       "archives": "assets/asset-manifest.json#sharedOriginalArchives",
@@ -7146,7 +7411,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+      "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -7170,7 +7435,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+      "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
       "sourceFiles": [
         {
           "file": "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -7245,8 +7510,8 @@
       "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
       "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
       "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
-      "ANIMATION": "주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.",
-      "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
+      "ANIMATION": "플레이어·NPC·몬스터·동물·보스·동료·탈것의 호환 리그·검증된 실제 모션을 우선 연결한다. 포즈/속도 매칭 크로스페이드, 발 접지·무게 이동, 상태 전환을 역할별로 적용하고 기존 공격은 ANTICIPATION→ACCELERATION→승인된 IMPACT→FOLLOW_THROUGH→RECOVERY로 연결한다. 게임 판정은 유지한다.",
+      "SECONDARY_MOTION": "플레이어·NPC의 시선/몸짓, 동물·몹의 꼬리/날개/체중, 보스의 무기/후속동작, 가동 건축물 등 실제 해당 부위에 관성·지연·복귀를 연결하되 판정·충돌 권한은 유지한다. 정지 모델 전체 이동만으로 모션 합격을 주장하지 않는다.",
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
       "UI_HUD": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
@@ -7282,7 +7547,7 @@
     "gameId": "cozy-island",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+    "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7364,14 +7629,14 @@
         "impact": "GRAPHICS",
         "applicability": "INSPECT_EXISTING_OR_APPROVED_SURFACE",
         "applicabilityReason": null,
-        "scene": "기존 적 종류를 같은 조명에서 접근→추적→공격 전조→피격→사망 순으로 관찰",
+        "scene": "실제 일반 적·몬스터·동물·보스 종류별로 같은 조명에서 대기→이동→추적→전조→피격→사망(해당 시) 순으로 관찰",
         "failureCriteria": "색만 다른 복제·역할 식별 불가·공격 전조 안 보임·배경에 묻힘·죽은 적이 움직이거나 남음",
         "responsibility": "적 모델·상태 표현·전조·사망 정리",
         "retest": "기존 종류별 역할과 위험 전조가 구별되는 화면/행동 기록",
         "evidenceState": "UNVERIFIED",
         "remoteAssertions": [
-          "DISTINCT_ENEMY_ROLE_AND_TELEGRAPH",
-          "ATTACK_HIT_DEATH_STATE_SEQUENCE",
+          "DISTINCT_ENEMY_CREATURE_BOSS_BODY_PLAN_AND_TELEGRAPH",
+          "ACTOR_SPECIFIC_ATTACK_HIT_DEATH_STATE_SEQUENCE",
           "DESPAWN_CLEANUP"
         ],
         "remoteProofState": "UNVERIFIED",
@@ -7385,15 +7650,15 @@
         "impact": "GRAPHICS",
         "applicability": "INSPECT_EXISTING_OR_APPROVED_SURFACE",
         "applicabilityReason": null,
-        "scene": "idle→start→walk/run→turn→stop→jump/land→attack→hit/death, 행동 중 취소·재시작",
+        "scene": "실제 플레이어·NPC·몬스터·동물·보스·동료·탈것별 idle→start→walk/run→turn→stop→jump/land→attack→hit/death(해당할 때), 행동 중 취소·재시작",
         "failureCriteria": "T포즈·정지 모델·전환 튐·루프 끊김·중복 트랙·사망 뒤 idle·전체 CFrame 이동만으로 모션 주장",
         "responsibility": "Animator·관절·블렌딩·상태 전환·트랙 수명",
         "retest": "같은 입력 순서의 연속 프레임/동작 기록과 실제 상태 일치",
         "evidenceState": "UNVERIFIED",
         "remoteAssertions": [
-          "TIME_ORDERED_IDLE_MOVE_TURN_JUMP",
-          "JOINT_ANIMATION_AND_BLEND",
-          "ATTACK_HIT_DEATH_NO_STALE_TRACK"
+          "TIME_ORDERED_IDLE_MOVE_TURN_JUMP_PER_ACTOR",
+          "ACTOR_SPECIFIC_JOINT_ACTIVITY_POSE_BLEND_FOOT_CONTACT",
+          "NPC_CREATURE_BOSS_HIT_DEATH_NO_STALE_TRACK"
         ],
         "remoteProofState": "UNVERIFIED",
         "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
@@ -7612,14 +7877,14 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
       "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -7845,14 +8110,14 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
       "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -7906,7 +8171,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 119,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "bindCombatActor",
         "currentBehavior": "local function bindCombatActor(actor)",
@@ -8053,14 +8318,14 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
       "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -8129,7 +8394,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 119,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "bindCombatActor",
         "context": "local function bindCombatActor(actor)",
@@ -8205,14 +8470,14 @@
     "gameId": "cozy-island",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
       "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -8290,11 +8555,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c5b61ac6c0b134f137cd7ad3f3f87de856ec196d1c7af6fc65239e4cdb5b89cc",
+      "sourceTreeFingerprint": "fc87bd153f4481ab6e6b37bf3e4952c5f90f72abf06306d3c72249443f8c4bc2",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8337,6 +8602,9 @@
     "DESIGNED_SYSTEM_CONTENT_VOLUME_TRACED_TO_EXACT_SOURCE_AND_PLAY_EVIDENCE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT",
+    "PER_ACTOR_MOTION_NATIVE_PLAYBACK_AND_EXACT_REMOTE_QA_REQUIRED_WHEN_APPLICABLE",
+    "FIVE_DISTINCT_PLAYABLE_IMPROVEMENTS_WITH_EXACT_GAME_RUNTIME_PROOF_WHEN_STAGE_REQUIRES",
+    "FIVE_SOURCE_DELTA_ITEMS_ALONE_CANNOT_PASS_ACTUAL_PLAY",
     "PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED",
     "THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY",
     "MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED"
@@ -8349,7 +8617,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 24,
+    "nextGeneration": 25,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8411,5 +8679,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-27T07:31:05.289Z"
+  "generatedAt": "2026-10-27T17:00:11.031Z"
 }
