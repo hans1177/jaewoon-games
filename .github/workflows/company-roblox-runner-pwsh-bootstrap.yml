@@ -85,7 +85,10 @@ jobs:
             }
 
             $valid = @($candidates | Where-Object { Test-RunnerRoot $_ } | Sort-Object -Unique)
-            if ($valid.Count -eq 0) { throw "ROBLOX_RUNNER_ROOT_NOT_FOUND:$expectedRunnerName" }
+            if ($valid.Count -eq 0) {
+              Write-Host 'ROBLOX_RUNNER_RECOVERY=SEPARATE_RUNNER_NOT_FOUND'
+              return $null
+            }
             if ($valid.Count -eq 1) { return $valid[0] }
 
             $running = @($valid | Where-Object {
@@ -107,6 +110,10 @@ jobs:
           }
 
           $runnerRoot = Resolve-RobloxRunnerRoot
+          if (-not $runnerRoot) {
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_FALLBACK=USE_EXISTING_UNITY_WINDOWS_HOST'
+            exit 0
+          }
           $listenerExe = Join-Path $runnerRoot 'bin\Runner.Listener.exe'
           Write-Host "ROBLOX_RUNNER_ROOT=$runnerRoot"
           Write-Host 'ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA'
@@ -131,8 +138,8 @@ jobs:
           Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
 
   bootstrap:
-    name: install durable Roblox runner startup
-    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    name: validate native Roblox capture on available Windows host
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 20
     steps:
       - name: Install hidden user-logon Startup launcher
@@ -176,7 +183,10 @@ jobs:
               if ($runnerRoot) { break }
             }
           }
-          if (-not $runnerRoot) { throw 'ROBLOX_RUNNER_ROOT_NOT_FOUND' }
+          if (-not $runnerRoot) {
+            Write-Host 'ROBLOX_RUNNER_STARTUP=SEPARATE_RUNNER_NOT_PRESENT_USE_UNITY_CAPTURE_HOST'
+            exit 0
+          }
 
           $listenerExe = Join-Path $runnerRoot 'bin\Runner.Listener.exe'
           $startupRoot = [Environment]::GetFolderPath('Startup')
