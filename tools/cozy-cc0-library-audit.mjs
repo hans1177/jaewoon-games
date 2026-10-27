@@ -136,8 +136,20 @@ export async function grantCozyCC0({report,apiKey=process.env.ROBLOX_OPEN_CLOUD_
     headers={...headers,'x-csrf-token':response.headers.get('x-csrf-token')};
     response=await fetchImpl(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(45000)});
   }
+  // A Cookie CSRF denial can be a revoked session; try the separately scoped
+  // Open Cloud key when one is already configured. Never grant implicitly.
+  if(authCookie&&response.status===403&&apiKey){
+    response=await fetchImpl(url,{method:'PATCH',headers:{'content-type':'application/json','x-api-key':apiKey},
+      body,signal:AbortSignal.timeout(45000)});
+  }
   const result=await response.json().catch(()=>({}));
-  if(!response.ok||result.errors?.length)throw Error('COZY_CC0_UNIVERSE_GRANT_FAILED:HTTP_'+response.status);
+  const accepted=new Set(Array.isArray(result.successAssetIds)?result.successAssetIds.map(String):[]);
+  const missed=ids.filter(row=>!accepted.has(String(row.assetId)));
+  if(!response.ok||(Array.isArray(result.errors)&&result.errors.length>0)||missed.length){
+    // Grant receipts must prove each model, not merely HTTP 200. No auth, cookie,
+    // or response payload is logged (Roblox's error responses may contain details).
+    throw Error('COZY_CC0_UNIVERSE_GRANT_FAILED:HTTP_'+response.status+':MISSING_'+missed.length);
+  }
   return {granted:true,universeId:EXPECTED_UNIVERSE,assetIds:ids.map(x=>x.assetId)};
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])){
