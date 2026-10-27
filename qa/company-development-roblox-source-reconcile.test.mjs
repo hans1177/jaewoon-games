@@ -1252,6 +1252,59 @@ test('foundation repair grounds managed spawn before player binding and corrects
 });
 
 
+test('legacy Config.luau Roblox game gets common modules only, preserves gameplay and reruns idempotently',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-legacy-common-sync-'));
+  try{
+    const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
+    fs.cpSync('roblox-games/baeksu-war',gameRoot,{recursive:true});
+    const projectFile=path.join(gameRoot,'default.project.json');
+    const originalProject=JSON.parse(fs.readFileSync(projectFile,'utf8'));
+    const shared=originalProject.tree.ReplicatedStorage.Shared;
+    assert.ok(shared.RobloxCommonUI && shared.RobloxCommonIcons);
+    // The production main may already have been synchronized. Recreate a genuinely old game.
+    for(const name of Object.keys(shared))if(name.startsWith('RobloxCommon')
+      &&name!=='RobloxCommonUI'&&name!=='RobloxCommonIcons')delete shared[name];
+    fs.writeFileSync(projectFile,JSON.stringify(originalProject,null,2)+'\\n');
+    const original={
+      config:fs.readFileSync(path.join(gameRoot,'shared','Config.luau'),'utf8'),
+      client:fs.readFileSync(path.join(gameRoot,'client','Game.client.luau'),'utf8'),
+      server:fs.readFileSync(path.join(gameRoot,'server','Game.server.luau'),'utf8'),
+    };
+    const reportFile=path.join(tmp,'report.json');
+    const args=[
+      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+      '--root='+path.join(tmp,'roblox-games'),
+      '--game-id=baeksu-war',
+      '--playbooks='+path.resolve('company-learning/vibe3-task-playbooks.json'),
+      '--report='+reportFile,
+    ];
+    execFileSync(process.execPath,args,{cwd:process.cwd(),stdio:'pipe'});
+    const report=JSON.parse(fs.readFileSync(reportFile,'utf8'));
+    assert.equal(report.scannedGameCount,1);
+    assert.equal(report.changedGameCount,1);
+    assert.equal(report.results[0].commonOnly,true);
+    assert.equal(report.results[0].verifiedExternalLearningApplied,false);
+    assert.equal(report.results[0].semanticMappingVersion,0);
+    assert.equal(report.results[0].serverTouched,false);
+    assert.equal(report.results[0].commonModuleConflictCount,0);
+    assert.ok(report.results[0].commonModuleCount>=14);
+    const syncedProject=fs.readFileSync(projectFile,'utf8');
+    const syncedShared=JSON.parse(syncedProject).tree.ReplicatedStorage.Shared;
+    assert.equal(syncedShared.RobloxCommonMotion.$path,
+      '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+    assert.equal(syncedShared.RobloxCommonUI.$path,shared.RobloxCommonUI.$path);
+    assert.equal(syncedShared.RobloxCommonIcons.$path,shared.RobloxCommonIcons.$path);
+    for(const [name,originalContent] of Object.entries(original)){
+      const p=name==='config'?'shared/Config.luau':name==='client'?'client/Game.client.luau':'server/Game.server.luau';
+      assert.equal(fs.readFileSync(path.join(gameRoot,p),'utf8'),originalContent);
+    }
+    assert.equal(fs.existsSync(path.join(gameRoot,'roblox-source-bootstrap.json')),false);
+    execFileSync(process.execPath,args,{cwd:process.cwd(),stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    assert.equal(fs.readFileSync(projectFile,'utf8'),syncedProject);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
 test('Roblox verified learning sweep rebinds exact runtime design and config without downgrading a newer native client',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-runtime-learning-sweep-'));
   try{
