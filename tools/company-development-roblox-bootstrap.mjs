@@ -1672,9 +1672,16 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   const actions=approvedActions(baseline,profile,learning);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
   const generatedServerCode=serverSource({gameId,saveRequired,actions,profile,learning});
-  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({
+  // [제작기 직접 수정] 실제 생성될 클라이언트의 관절·Animator 사용을 확인한 뒤 상태를 결정한다.
+  // 게임별 선택 목록이나 테스트용 Frame만 보고 MOTION을 적용했다고 기록하지 않는다.
+  const initialStudioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({
     serverSource:generatedServerCode,
     clientSource:'local root = Instance.new("Frame")'
+  });
+  const motionBoundClient=clientSource({profile,learning,studioAssets,studioAssetFamilyStatus:initialStudioAssetFamilyStatus});
+  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({
+    serverSource:generatedServerCode,
+    clientSource:motionBoundClient
   });
   const result={
     sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platformProfile,learning,studioAssets}),
