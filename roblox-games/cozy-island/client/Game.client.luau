@@ -115,6 +115,8 @@ CollectionService:GetInstanceRemovedSignal("VibeSurvivalWildlife"):Connect(unbin
 
 -- 메인: 리깅/렌더링 최적화. 기존 원본 CC0의 Motor6D 또는 기본 관절을 재사용한다.
 -- 화면 밖 동작은 건너뛰고 가시 거리별 갱신 빈도를 제한한다.
+-- [메인: NPC·몬스터 실동작] 기존 CozyCombatActor의 현재 관절과 서버 상태를 그대로 사용한다.
+-- CC0 원본 리그/모션을 우선하며, 이 구간은 피해·충돌·이동권한·저장값을 변경하지 않는다.
 local combatActors=setmetatable({}, {__mode="k"})
 local function bindCombatActor(actor)
  if not actor:IsA("BasePart")or combatActors[actor]then return end
@@ -122,7 +124,11 @@ local function bindCombatActor(actor)
  for _,item in ipairs(actor:GetDescendants())do
   if item:IsA("Motor6D")and item.Part1 then table.insert(joints,item)end
  end
- combatActors[actor]={joints=joints,elapsed=0,nextVisibility=0,visible=true,interval=1/30,phase=math.random()*6.28}
+ combatActors[actor]={
+  joints=joints,elapsed=0,nextVisibility=0,visible=true,interval=1/30,
+  phase=math.random()*math.pi*2,gaitPhase=0,gaitBlend=0,smoothSpeed=0,
+  state="IDLE",stateAge=0,turnLean=0,lastFacing=actor.CFrame.LookVector,
+ }
 end
 for _,actor in ipairs(CollectionService:GetTagged("CozyCombatActor"))do bindCombatActor(actor)end
 CollectionService:GetInstanceAddedSignal("CozyCombatActor"):Connect(bindCombatActor)
@@ -133,8 +139,8 @@ RunService.PreSimulation:Connect(function(dt)
  local now=os.clock()
  for actor,record in pairs(combatActors)do
   if not actor.Parent then combatActors[actor]=nil else
-   -- 비동기 원본 모델 연결 뒤 실제 관절을 다시 수집한다.
-   if not record.originalChecked and (actor:GetAttribute("CC0VisualReady") or actor:GetAttribute("SharedMonsterVisualReady")) then
+   -- [리깅] 비동기로 연결된 실제 원본 관절을 같은 책임 함수에서 다시 수집한다.
+   if not record.originalChecked and (actor:GetAttribute("CC0VisualReady")or actor:GetAttribute("SharedMonsterVisualReady"))then
     record.joints={}
     for _,joint in ipairs(actor:GetDescendants())do
      if joint:IsA("Motor6D")and joint.Part1 then table.insert(record.joints,joint)end
@@ -150,33 +156,92 @@ RunService.PreSimulation:Connect(function(dt)
     record.interval=distance<80 and 1/30 or distance<140 and 1/18 or 1/10
    end
    if record.visible and record.elapsed>=record.interval then
-    local step=math.min(record.elapsed,.1);record.elapsed=0
-    local state=actor:GetAttribute("CozyMotionState")or"IDLE"
-    local speed=actor:GetAttribute("CozyMotionSpeed")or 0
-    local moving=state=="WALK" and speed>0
-    local phase=now*(moving and math.clamp(speed*1.35,5,13) or 2)+record.phase
-    local stride=moving and math.sin(phase)*.68 or math.sin(phase)*.025
-    local attack=state=="ATTACK" and math.sin(now*14)*.52+.48 or 0
-    local hit=state=="HIT" and .35 or 0
-    local death=state=="DEATH" and .85 or 0
+    local step=math.min(record.elapsed,.1)
+    record.elapsed=0
+    local state=tostring(actor:GetAttribute("CozyMotionState")or"IDLE")
+    local actorKind=tostring(actor:GetAttribute("CozyActorType")or"NPC")
+    if record.state~=state then
+     record.state=state
+     record.stateAge=0
+    else
+     record.stateAge+=step
+    end
+    local actualSpeed=math.max(0,tonumber(actor:GetAttribute("CozyMotionSpeed"))or 0)
+    local moving=state=="WALK"and actualSpeed>.05
+    local targetSpeed=moving and actualSpeed or 0
+    record.smoothSpeed+=(targetSpeed-record.smoothSpeed)*(1-math.exp(-step*(moving and 11 or 17)))
+    record.gaitBlend+=((moving and 1 or 0)-record.gaitBlend)*(1-math.exp(-step*(moving and 10 or 15)))
+    -- [연속 보행] 누적 거리 기반 위상으로 속도·정지 전환 시 갑작스런 포즈 점프를 방지한다.
+    record.gaitPhase+=record.smoothSpeed*step*(actorKind=="BOAR"and 1.12 or .92)
+    local phase=record.gaitPhase+record.phase
+    local stepCycle=math.sin(phase)*record.gaitBlend
+    local settle=math.sin(now*1.3+record.phase)*.012
+    local facing=actor.CFrame.LookVector
+    local turn=record.lastFacing:Cross(facing).Y
+    record.turnLean+=(math.clamp(turn*3,-.14,.14)-record.turnLean)*(1-math.exp(-step*7))
+    record.lastFacing=facing
+
+    -- [액션] 서버가 이미 결정한 HIT/ATTACK/DEATH 상태를 단 한 번의 자세 변화로 표현한다.
+    local window=state=="HIT"and .30 or state=="DEATH"and .65 or .45
+    local untilTime=actor:GetAttribute("CozyMotionUntil")
+    if typeof(untilTime)=="number"and untilTime>now and state~="WALK"and state~="IDLE"then
+     window=math.max(window,record.stateAge+untilTime-now)
+    end
+    local progress=math.clamp(record.stateAge/math.max(.05,window),0,1)
+    local anticipate=state=="ATTACK"and math.sin(math.pi*math.clamp(progress/.48,0,1)) or 0
+    local strike=state=="ATTACK"and math.sin(math.pi*math.clamp((progress-.22)/.65,0,1))or 0
+    local recoil=state=="HIT"and math.sin(math.pi*math.clamp(progress,0,1))or 0
+    local collapse=state=="DEATH"and progress*progress*(3-2*progress)or 0
+    local boar=actorKind=="BOAR"
+    local npc=actorKind=="NPC"
+
     for _,joint in ipairs(record.joints)do
      if joint.Parent and joint.Part1 then
-      local name=joint.Name
-      local arm=name:find("Arm",1,true)~=nil
-      local leg=name:find("Leg",1,true)~=nil
-      local visual=name:find("CozyVisualJoint",1,true)~=nil
-      local side=name:find("LJoint",1,true)and 1 or name:find("RJoint",1,true)and -1 or joint.Part1.Position.X<actor.Position.X and 1 or -1
-      if arm or leg or visual then
-       local angle
-       local roll
-       if visual then
-        angle=stride*.08+attack*.18+hit*.12+death*.3
-        roll=stride*.025
-       else
-        angle=(arm and -side or side)*stride+(arm and attack or 0)+hit+death
-        roll=arm and side*attack*.22 or 0
-       end
-       joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,roll),math.clamp(step*16,0,1))
+      local name=(joint.Name.." "..joint.Part1.Name):lower()
+      local arm=name:find("arm",1,true)or name:find("shoulder",1,true)or name:find("hand",1,true)
+      local leg=name:find("leg",1,true)or name:find("thigh",1,true)or name:find("foot",1,true)or name:find("hoof",1,true)
+      local head=name:find("head",1,true)or name:find("neck",1,true)
+      local tail=name:find("tail",1,true)
+      local body=name:find("body",1,true)or name:find("spine",1,true)or name:find("chest",1,true)
+      local visual=name:find("cozyvisualjoint",1,true)~=nil
+      local side=joint.C0.Position.X<0 and 1 or -1
+      local rhythm=phase
+      if boar and leg then
+       -- 네발짐승의 좌우 대각선 지지발이 교차하도록 원본 관절을 제어.
+       local rear=joint.C0.Position.Z>0
+       if (side>0)==rear then rhythm+=math.pi end
+      elseif leg and side<0 then
+       rhythm+=math.pi
+      end
+      local gait=math.sin(rhythm)*record.gaitBlend
+      local lift=math.max(0,math.sin(rhythm+.35))*record.gaitBlend
+      local x,y,z=0,0,0
+      if arm then
+       x=-side*stepCycle*(npc and .30 or .40)+anticipate*.23-strike*(npc and .38 or .54)+recoil*.22+collapse*.48
+       z=side*(settle*.8+record.turnLean*.5)
+      elseif leg then
+       x=gait*(boar and .34 or .42)+lift*.12-recoil*.10-collapse*.27
+       z=side*record.turnLean*.22
+      elseif head then
+       x=settle*1.8-anticipate*.095+strike*.11+recoil*.20+collapse*.24
+       y=math.sin(now*.67+record.phase)*.035+record.turnLean*.45
+       z=record.turnLean*.35
+      elseif tail then
+       y=math.sin(now*1.65+record.phase)*.13+stepCycle*.085
+       z=record.turnLean*.5+recoil*.10
+      elseif body then
+       x=settle+math.abs(stepCycle)*.022-anticipate*.075+strike*.095+recoil*.19+collapse*.58
+       y=record.turnLean*.28
+       z=stepCycle*.028+record.turnLean*.24
+      elseif visual then
+       -- 독립 관절이 없는 CC0 원본은 과한 전신 회전으로 관절 애니메이션을 위조하지 않는다.
+       x=settle*.45-anticipate*.05+strike*.11+recoil*.13+collapse*.38
+       z=record.turnLean*.12
+      end
+      if arm or leg or head or tail or body or visual then
+       local target=CFrame.Angles(x,y,z)
+       local response=state=="HIT"and 22 or state=="ATTACK"and 17 or state=="DEATH"and 10 or 13
+       joint.Transform=joint.Transform:Lerp(target,1-math.exp(-step*response))
       end
      end
     end
