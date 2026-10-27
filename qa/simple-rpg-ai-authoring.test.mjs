@@ -519,6 +519,30 @@ test('simple RPG spawn retains verified existing walkable-floor guard and physic
   assert.match(server, /character:SetAttribute\("SpawnBlockingPart", nil\)/);
 });
 
+test('simple RPG keeps movement proof alive after spawn contact and closes it only after movement or teardown', () => {
+  const marker = server.indexOf('local function bindFoundationCharacter(character)');
+  const end = server.indexOf('local function bindFoundationPlayer(player)', marker);
+  assert.ok(marker >= 0 && end > marker);
+  const foundation = server.slice(marker, end);
+  assert.match(foundation, /local moving\s*\n\s*local function stopMovementProof\(\)/);
+  assert.match(foundation, /humanoid\.Running:Connect\(function\(speed\)/);
+  assert.match(foundation, /if speed > 0\.1 and displacement\.Magnitude > 0\.5 then\s+character:SetAttribute\("MOVEMENT_CONFIRMED", true\)\s+stopMovementProof\(\)/);
+  assert.match(foundation, /humanoid\.Died:Once\(stopMovementProof\)/);
+  assert.match(foundation, /character\.Destroying:Once\(stopMovementProof\)/);
+  // 이전 결함: 접지 완료 즉시 감시를 종료하여 정상 이동도 확인할 수 없었다.
+  const contactStart = foundation.indexOf('if contacts >= 3 then');
+  const contactEnd = foundation.indexOf('task.wait(0.1)', contactStart);
+  const contactSuccess = foundation.slice(contactStart, contactEnd);
+  assert.ok(contactStart >= 0 && contactEnd > contactStart);
+  assert.match(contactSuccess, /character:SetAttribute\("GROUND_CONTACT", true\)/);
+  assert.doesNotMatch(contactSuccess, /moving:Disconnect\(|stopMovementProof\(/);
+  assert.match(foundation, /until os\.clock\(\) >= deadline\s+stopMovementProof\(\)\s+character:SetAttribute\("FoundationFailure", "GROUND_CONTACT_FAILURE"\)/);
+  // 스폰 후 위치를 늦게 덮어씌우는 예전 로비 이동을 다시 넣지 않는다.
+  const firstJoin = server.slice(server.indexOf('-- 처음 접속 시 로비에서 시작.'),
+    server.indexOf('player.CharacterAdded:Connect(function()', server.indexOf('-- 처음 접속 시 로비에서 시작.')));
+  assert.doesNotMatch(firstJoin, /character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+});
+
 test('simple RPG waits boundedly for only source-verified curated Roblox meshes without fake spawn assets', () => {
   assert.match(server, /for attempt = 1, 4 do\s+ok, container = pcall\(function\(\) return InsertService:LoadAsset\(assetId\) end\)/);
   assert.match(server, /SIMPLE_RPG_CURATED_ASSET_RETRY/);
