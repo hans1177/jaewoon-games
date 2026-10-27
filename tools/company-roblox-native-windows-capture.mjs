@@ -38,7 +38,7 @@ function observedNativeNpc(target){
  const base=process.env.LOCALAPPDATA||path.join(os.homedir(),'AppData','Local');
  const folder=path.join(base,'Roblox','logs');
  if(!fs.existsSync(folder))throw Error('ROBLOX_NATIVE_CLIENT_LOG_MISSING');
- const files=fs.readdirSync(folder).filter(f=>/\\.log$/i.test(f))
+ const files=fs.readdirSync(folder).filter(f=>f.toLowerCase().endsWith('.log'))
   .map(name=>({file:path.join(folder,name),stat:fs.statSync(path.join(folder,name))}))
   .filter(x=>x.stat.isFile()&&Date.now()-x.stat.mtimeMs<3*60*1000)
   .sort((a,b)=>b.stat.mtimeMs-a.stat.mtimeMs).slice(0,5);
@@ -46,7 +46,14 @@ function observedNativeNpc(target){
  for(const item of files){
   const bytes=fs.readFileSync(item.file);
   const tail=bytes.subarray(Math.max(0,bytes.length-4*1024*1024)).toString('utf8');
-  const match=tail.match(new RegExp(prefix.replace(/[.*+?^\\$\\{\\}()|[\\]\\\\]/g,'\\function playerWindow(){')+'([1-9][0-9]*)\\|NPC_MOVED'));
+  const offset=tail.lastIndexOf(prefix);
+  if(offset<0)continue;
+  const match=tail.slice(offset+prefix.length).match(/^([1-9][0-9]*)[|]NPC_MOVED/);
+  if(match)return {placeVersion:match[1],clientLogObserved:true};
+ }
+ throw Error('PRIVATE_NPC_LAUNCH_DATA_OR_NATIVE_MOVE_ATTESTATION_MISSING');
+}
+function playerWindow(){')+'([1-9][0-9]*)\\|NPC_MOVED'));
   if(match)return {placeVersion:match[1],clientLogObserved:true};
  }
  throw Error('PRIVATE_NPC_LAUNCH_DATA_OR_NATIVE_MOVE_ATTESTATION_MISSING');
