@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {MOTION_FORGE_FEATURES,validateMotionEvolutionEvidence,recordVerifiedMotionEvolution,planVerifiedActorEvolution} from '../tools/vibe2-motion-evolution.mjs';
+import {mergeNativeMotionEvolutionEvidence} from '../tools/vibe2-learning-motor.mjs';
 
 const base={
   gameId:'P1001',platform:'ROBLOX',actorClass:'BOSS',featureId:'FULL_BODY_WEIGHT_TRANSFER',
@@ -57,4 +58,20 @@ test('game-specific evolution alternates actor types and prioritizes verified we
   assert.equal(plan.runtimeVerified,false,'planning is not playback proof');
   const empty=planVerifiedActorEvolution({gameId:'P1001',generation:15,actorCandidates:[]});
   assert.equal(empty.actorClass,null);
+});
+
+test('existing Vibe learning motor ingests only independently checked motion samples',()=>{
+  const unverified={...base,evidenceId:'bad-motion',nativePlaybackObserved:false};
+  const result=mergeNativeMotionEvolutionEvidence({history:[],
+    queueInput:{motionEvolutionEvidence:[unverified]},
+    companyQueueInput:{motionEvolutionEvidence:[base]}});
+  assert.equal(result.accepted,1);
+  assert.equal(result.rejected,1);
+  assert.equal(result.changed,true);
+  assert.equal(result.records.length,1);
+  assert.equal(result.records[0].evidenceId,base.evidenceId);
+  const repeated=mergeNativeMotionEvolutionEvidence({history:result.records,
+    companyQueueInput:{motionEvolutionEvidence:[base]}});
+  assert.equal(repeated.changed,false);
+  assert.equal(repeated.records.length,1);
 });
