@@ -599,6 +599,61 @@ function enforceOwnerPreservationDesign(value){
   const designMode=allGamesMultiplayerRequired&&existingMode==='SINGLE'?clean(value.multiplayerMode).toUpperCase():existingMode;
   const lockedSemantics=['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE'];
   const presentationPasses=['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE'];
+  // 마력숲의 기존 파일럿 명세는 해당 게임에만 적용한다. 다른 게임의 설계·구현 경로와
+  // 세이브 키를 마력숲 텍스트로 덮어쓰면 재시도가 끝나도 잘못된 기본 설계가 남는다.
+  if(clean(seed.gameId)!=='fantasy-survival'){
+    const gameName=clean(seed.gameName||game.name||seed.gameId);
+    const source=clean(seed.CANONICAL_IMPLEMENTATION_SOURCE||seed.EXISTING_ROBLOX_SOURCE_PATH||seed.EXISTING_WEB_SOURCE_PATH);
+    const save=clean(seed.SAVE_POLICY)||'PRESERVE_EXISTING_SAVE';
+    const originalLoop=Array.isArray(seed.CORE_LOOP)&&seed.CORE_LOOP.length>=3?seed.CORE_LOOP.slice(0,8):value.coreLoop;
+    return{
+      ...value,
+      coreLoop:originalLoop,
+      progressionDirection:`${gameName}의 기존 건설·전투·성장·스테이지 진행과 해금 순서를 원본 구현 그대로 유지한다. 표현 개선은 원본 플레이 진행 조건이나 저장된 상태를 바꾸지 않는다.`,
+      progressionEconomyBalance:{
+        progressionLoop:`${gameName}의 기존 핵심 루프와 보상·성장 선택 순서를 그대로 사용하고 시각 효과가 새 진행 조건을 만들지 않도록 검증한다.`,
+        resourceFlow:'기존 서버 권한 보상·자원 획득량·구매 가격·소비·드랍·저장 규칙을 원본 구현에서 확인하고 한 값도 바꾸지 않는다.',
+        balanceRules:'기존 생물/캐릭터 능력치·진화·공격력·쿨다운·경제 밸런스와 전투 판정은 보존하고 모션·연출만 연결한다.'
+      },
+      contentExpansionPlan:[
+        {milestone:'ASSET_ADAPTATION',newGameplay:`${gameName}에 새 플레이 규칙을 추가하지 않고 기존 유닛·시설·지역 에셋의 표현 품질만 높인다.`,systemImpact:`${source||gameName}의 원래 오브젝트·상태와 충돌·상호작용·저장 의미는 그대로 유지한다.`},
+        {milestone:'LIVING_MOTION_AND_ANIMATION_FEEL',newGameplay:`${gameName}의 기존 대기·이동·공격·피격·사망 상태에 자연스러운 전환과 반응을 더하며 새 행동은 만들지 않는다.`,systemImpact:'기존 서버 판정 공격·적중·데미지·쿨다운·이동 속도를 원본 그대로 사용하고 모션은 표현 계층에만 둔다.'},
+        {milestone:'VFX_AUDIO_CAMERA_POLISH_MOBILE',newGameplay:`${gameName}의 기존 전투·보상·진행 이벤트에 시각 효과·효과음·카메라·모바일 UI를 동기화한다.`,systemImpact:'기존 전투/스테이지 결과와 세이브 필드는 유지하고 터치 가독성·프레임 안정성과 중복 재생 방지를 확인한다.'}
+      ],
+      failureRetryRisk:{
+        failureStates:['기존 구현에서 발생하는 전투 패배 또는 생존 실패만 유지한다.','기존 단계 목표를 달성하지 못한 상태의 복귀·재도전만 유지한다.'],
+        retryFlow:`${gameName}의 원래 스테이지 재도전과 저장 진행 복구 흐름을 보존하며 패배에 새 벌점이나 손실을 추가하지 않는다.`,
+        riskPressure:'기존 적·지역·전선·라운드의 공격 및 위험 수치를 유지하고 시각 효과가 난이도를 바꾸지 않도록 한다.',
+        recoveryRules:'기존 재접속·저장 로드·재도전 경로를 유지하고 게임 데이터를 지우거나 새로운 비용을 부과하지 않는다.'
+      },
+      multiplayerMode:designMode,
+      multiplayerExpansionDecision:allGamesMultiplayerRequired&&existingMode==='SINGLE'
+        ?value.multiplayerExpansionDecision
+        :'기존 멀티 역할과 권한을 보존하면서 입장·복구·동기화는 실제 서버·클라이언트 증거로 확인한다.',
+      technicalAssumptions:[
+        `기존 구현 경로 ${source||'OWNER_CANONICAL_IMPLEMENTATION_SOURCE'}의 책임 함수와 데이터 계약만 사용하며 별도 구현 경로를 만들지 않는다.`,
+        `SAVE_POLICY=${save}. 저장 키·필드·보상·진행의 의미를 변경하거나 새 데이터로 대체하지 않는다.`,
+        '연출 모듈은 기존 서버 판정에 종속시키고 모바일 입력·재접속·기존 게임 기능의 회귀를 검증한다.'
+      ],
+      validationQuestions:[
+        `${gameName}에서 기존 건설/전투/보상/성장/재도전 선택이 연출 변경 전후 동일한 게임 결과를 내는가?`,
+        `${save}에 따라 기존 저장 데이터를 로드하고 같은 필드·슬롯·진행 상태로 재개되는가?`,
+        '실제 모바일 터치 입력과 클라이언트 성능에서 표현이 전투 판정과 서버 권한을 방해하지 않는가?'
+      ],
+      implementationTraceability:[
+        {designElement:'ASSET_ADAPTATION',responsibleSystem:`${source||gameName}의 기존 유닛·건물·월드 표시 함수`,validationEvidence:'동일 상태에서 표현만 달라지고 원본 건설·충돌·보상·세이브 값은 동일함을 비교한다.'},
+        {designElement:'LIVING_MOTION_AND_ANIMATION_FEEL',responsibleSystem:`${source||gameName}의 이동·공격·피격 이벤트와 표현 갱신 함수`,validationEvidence:'기존 이벤트 시간·데미지·쿨다운과 모션 전환을 비교해 서버 판정 불변을 확인한다.'},
+        {designElement:'VFX_AUDIO_CAMERA_POLISH_MOBILE',responsibleSystem:`${source||gameName}의 보상/전투 이벤트와 UI·오디오·카메라 책임 함수`,validationEvidence:'실제 모바일 입력·가독성·프레임·효과 중복·전투 결과·저장 불변을 함께 검증한다.'}
+      ],
+      preservationContract:{
+        mode:'PRESERVATION_PRESENTATION_UPGRADE',
+        sourceOfTruth:'EXISTING_IMPLEMENTATION_AND_OWNER_SEED',
+        lockedSemantics,presentationPasses,
+        gameplayRule:'NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE',
+        targetSessionMinutes:Number(seed.TARGET_SESSION_MINUTES||30)
+      }
+    };
+  }
   return {
     ...value,
     identity:'기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.',
