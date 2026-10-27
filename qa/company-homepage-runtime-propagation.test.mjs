@@ -564,12 +564,16 @@ test('기존 홈페이지 매니저가 원본 타이틀을 보존하면서 영�
   const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
   const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
   assert.match(manager,/recordVideo:\{dir:temp,size:\{width:1920,height:1080\}/);
-  assert.match(manager,/const captureVersion=3;/);
+  assert.match(manager,/const captureVersion=4;/);
+  assert.match(manager,/const focusedEditIds=new Set/);
+  assert.match(manager,/const shots=\\[\\[0,3\\.4\\]/);
+  assert.match(manager,/concat=n=/);
+  assert.match(manager,/editVersion/);
   assert.match(manager,/scale=1920:1080:flags=lanczos,setsar=1/);
   assert.match(manager,/media\.games\[id\]\.screenshots=frames\.map/);
   assert.match(manager,/source:'ACTUAL_GAMEPLAY_VIDEO_FRAME'/);
   assert.match(workflow,/node tools\/homepage-manager\.mjs --capture-release-media/);
-  assert.match(manager,/const captureVersion=3;/);
+  assert.match(manager,/const captureVersion=4;/);
 });
 
 
