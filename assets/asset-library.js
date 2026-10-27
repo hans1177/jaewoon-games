@@ -15,7 +15,7 @@ const motionLabels={IDLE_RELAXED:'대기',WALK:'걷기',JOG:'조깅',RUN:'달리
 const featuredTargets=[['featuredWalk','roblox-world-ghost-ghoul','walk'],['featuredAttack','roblox-world-ghost-ifrit','attack']];
 let manifest=null,registry=null,registryEtag=null,registryViewSignature='',rows=[],kind='monster',selectedId='',selectionToken=0,currentKey='',currentRow=null;
 let viewer=null,viewerPromise=null,refreshing=false,paused=matchMedia('(prefers-reduced-motion:reduce)').matches,selectedClip='idle';
-let sourceInventoryVersion='',nativeAutoSelected=false;
+let sourceInventoryVersion='',nativeAutoSelected=false,publishedWebManifest=null;
 const cache=new Map();
 const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
@@ -249,6 +249,9 @@ async function choose(row,force=false){
  else sourceLink.removeAttribute('href');
  const verifiedConsumers=[...new Set((Array.isArray(bound)?bound:[]).filter(id=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(id)))];
  const advertisedConsumers=Array.isArray(row.asset?.consumerGameIds)?row.asset.consumerGameIds:[];
+ $('selectedAssetPublishStatus').textContent=!publishedWebManifest?'웹 게시본 확인 불가 · 실제 배포 미검증':hasLocalSource
+  ?(publishedWebManifest.sharedAssets.includes(sourceFile)?'현재 웹 게시 파일 목록에 포함: '+sourceFile:'현재 웹 게시 파일 목록에 포함되지 않음: '+sourceFile)
+  :'선택 자산의 웹 게시 파일 매칭 불가';
  $('assetSyncDetail').textContent=[
   '선택: '+row.id,
   hasLocalSource?'저장소 원본: '+sourceFile:'직접 수정할 로컬 원본 경로 미확인',
@@ -349,11 +352,26 @@ async function choose(row,force=false){
 async function refresh(force=false){
  if(refreshing)return;refreshing=true;$('refreshAssets').disabled=true;
  try{
-  const [nextManifest,nextRegistry]=await Promise.all([request(MANIFEST).then(response=>response.json()),readRegistry()]);
+  const [nextManifest,nextRegistry,nextPublication]=await Promise.all([
+   request(MANIFEST).then(response=>response.json()),readRegistry(),
+   request('/jaewoon-games/web-games/publish-manifest.json').then(response=>response.json()).catch(()=>null)
+  ]);
   if(nextManifest.schemaVersion!==1||nextManifest.sampledBy!=='OFFICIAL_LUAU'||!Array.isArray(nextManifest.monsters)||!Array.isArray(nextManifest.environments)||!Array.isArray(nextManifest.commonMotions))throw Error('미리보기 목록을 확인하고 있어.');
   const nextRegistrySignature=nextRegistry===registry?registryViewSignature:registrySignature(nextRegistry);
   const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registryViewSignature!==nextRegistrySignature;
   manifest=nextManifest;registry=nextRegistry;registryViewSignature=nextRegistrySignature;syncFeaturedButtons();
+  // [실제 웹 게시본] 서버의 게시 manifest만 증거로 사용한다. 리스트 갱신이나 로블록스 게임 배포로 오인하지 않는다.
+  publishedWebManifest=nextPublication?.target==='GITHUB_PAGES_INTERNAL_STATIC'
+   &&/^[a-f0-9]{40}$/i.test(String(nextPublication.sourceSha||''))
+   &&Array.isArray(nextPublication.sharedAssets)?nextPublication:null;
+  $('webPublishStatus').textContent=publishedWebManifest
+   ?'웹 게시본 기록 확인 · 원본 커밋 '+publishedWebManifest.sourceSha.slice(0,12)+' · 실제 게임 적용은 별도 검증'
+   :'웹 게시본 증거 확인 불가 · 페이지 목록만 표시 중';
+  const selectedSource=String(currentRow?.asset?.sourcePath||currentRow?.asset?.path||'').replace(/^\/+/, '').replaceAll('\\','/');
+  $('selectedAssetPublishStatus').textContent=!publishedWebManifest?'웹 게시본 확인 불가 · 실제 배포 미검증'
+   :/^assets\/[a-zA-Z0-9._/-]+$/.test(selectedSource)&&!selectedSource.split('/').includes('..')
+    ?(publishedWebManifest.sharedAssets.includes(selectedSource)?'현재 웹 게시 파일 목록에 포함: '+selectedSource:'현재 웹 게시 파일 목록에 포함되지 않음: '+selectedSource)
+    :'선택 자산의 웹 게시 파일 매칭 불가';
   // [외부 에셋] 로블록스 대상의 출처 검증 후보를 기존 등록부에서 노출한다.
   // 실제 파일 확보 여부와 네이티브 실행 검증은 별도 상태로 표시하며 승격하지 않는다.
   const robloxSources=Array.isArray(registry.externalSources)?registry.externalSources.filter(source=>
