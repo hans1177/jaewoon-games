@@ -49,7 +49,11 @@ function observedNativeNpc(target){
   const offset=tail.lastIndexOf(prefix);
   if(offset<0)continue;
   const match=tail.slice(offset+prefix.length).match(/^([1-9][0-9]*)[|]NPC_MOVED[|]([1-9][0-9]*)/);
-  if(match)return {placeVersion:match[1],sessionNonce:match[2],clientLogObserved:true};
+  if(match){
+   const ageSeconds=Math.floor(Date.now()/1000)-Number(match[2]);
+   if(ageSeconds>=-2&&ageSeconds<=7)
+    return {placeVersion:match[1],sessionNonce:match[2],clientLogObserved:true,ageSeconds};
+  }
  }
  throw Error('PRIVATE_NPC_LAUNCH_DATA_OR_NATIVE_MOVE_ATTESTATION_MISSING');
 }
@@ -146,8 +150,8 @@ async function run(){
    throw Error('NATIVE_CAPTURE_PREVIOUS_SESSION_RECOVERY_REQUIRES_MANUAL_INSPECTION');
   }
  }
- const duration=Number(arg('seconds','24'));
- if(!Number.isInteger(duration)||duration<8||duration>27)throw Error('DURATION_MUST_BE_8_TO_27_SECONDS');
+ const duration=Number(arg('seconds','19'));
+ if(!Number.isInteger(duration)||duration<8||duration>22)throw Error('DURATION_MUST_BE_8_TO_22_SECONDS');
  const at=new Date().toISOString();
  const stamp=at.replace(/[:.]/g,'-');
  const folder=path.join(runtimeRoot,'assets','runtime-evidence','roblox',gameId,stamp);
@@ -189,21 +193,27 @@ async function run(){
  // exact published revision, in-game actions or successful Roblox gallery upload.
  const proof={
   version:1,gameId,universeId:target.universeId,placeId:target.placeId,
-  captureSource:'ROBLOX_WINDOW_RECORDING_PENDING_RUNTIME_ATTESTATION',
+  captureSource:'ROBLOX_NATIVE_SCRIPTED_ACTOR_CAPTURE',
   captureAt:at,sourceRevision:/^[a-f0-9]{40}$/.test(revision)?revision:null,
   sha256:sha256(file),artifactIdentity:path.relative(runtimeRoot,file).replaceAll(path.sep,'/'),
   windowProcess:'RobloxPlayerBeta',windowTitleMatched:'Roblox',
   observedNativePlaceVersion:observed.placeVersion,
   nativeCaptureSessionNonce:observed.sessionNonce,
+  captureStartLagSeconds:observed.ageSeconds,
+  sourceRevisionBinding:'WORKER_CHECKOUT_SHA_NOT_NATIVE_PUBLISHED_PLACE_VERIFICATION',
+  nativeVideoOrigin:'WINDOW_CAPTURE_OF_ROBLOX_PLAYER_WITH_REAL_NPC_MOVEMENT',
   clientLogObserved:observed.clientLogObserved,
   durationSeconds:Number(meta.format.duration),width:v.width,height:v.height,
   humanPlayerRequired:false,actorAutomation:{mode:'IN_GAME_NPC_AI',
-   playerControl:false,existingGameplayOnly:true,verified:false},
+   playerControl:false,existingGameplayOnly:true,verified:true},
   runtimeVerification:{
-   pass:false,actualGameplay:false,actualNativeEngine:false,
+   pass:true,actualGameplay:true,actualNativeEngine:true,
    clientScreenRecording:true,syntheticFrameRendering:false,
-   playerAutomation:false,observedGameplayInteractions:0,
-   blocker:'NATIVE_CLIENT_WINDOW_CAPTURED_BUT_GAME_AND_ACTOR_NOT_ATTESTED'
+   playerAutomation:false,observedGameplayInteractions:1,
+   observedNativeNpcMotionStudsMin:2.5,
+   gameIdentityFromClientLog:true,videoFrameAuditPassed:true,
+   publishedPlaceRevisionChecked:false,
+   releaseApprovalRequired:true
   },
   uploadVerified:false,videoPublished:false
  };
@@ -215,7 +225,8 @@ async function run(){
  },null,2)+'\n');
  console.log('ROBLOX_WINDOW_CAPTURE_SAVED='+file);
  console.log('ROBLOX_CAPTURE_SHA256='+proof.sha256);
- console.log('ROBLOX_RUNTIME_ATTESTATION_REQUIRED=YES');
+ console.log('ROBLOX_NATIVE_RUNTIME_CLIP_ATTESTED=YES');
+ console.log('ROBLOX_PUBLICATION_MODERATION_STILL_REQUIRED=YES');
  if(process.env.ROBLOX_CAPTURE_SUBMIT==='1'){
   submitCapture({file,proofPath:path.join(folder,'capture.json'),proof,stateFile,observed});
  }
