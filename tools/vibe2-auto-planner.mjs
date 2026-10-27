@@ -94,7 +94,7 @@ const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
   status:'ACTIVE',
   growth:Object.freeze({
     detailDepthLevel:Object.freeze({base:1,stepEveryCycles:1,max:null}),
-    connectedImprovements:Object.freeze({base:3,stepEveryCycles:2,max:8}),
+    connectedImprovements:Object.freeze({base:5,stepEveryCycles:2,max:8}),
     meaningfulDistinctAxes:Object.freeze({base:2,stepEveryCycles:3,max:5}),
     crossSystemConnections:Object.freeze({base:1,stepEveryCycles:2,max:4}),
     activeDetailDimensions:Object.freeze({base:2,stepEveryCycles:1,max:10}),
@@ -210,11 +210,13 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
   const sourceCompositionDepthLevel=expectationMetric(growth?.sourceCompositionDepthLevel,level,fallbackGrowth.sourceCompositionDepthLevel);
   const sourceParity=policy?.assetLibrarySourceParity||DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.assetLibrarySourceParity;
   const assetLibrarySnapshot=assetLibrarySourceSnapshot(repoRoot,sourceParity?.libraryPath);
+  // 공통 BUILD_UP만 적용한다. 고장 수리는 원인 우선으로 처리하고, F0~F9 순서는 변경하지 않는다.
+  const minimumPlayableImprovements=Math.max(5,Math.floor(Number(policy?.allGamesGameplayImprovementContract?.minimumPerBuildUp)||5));
   const baseMinimumConnectedImprovements=expectationMetric(growth?.connectedImprovements,level,fallbackGrowth.connectedImprovements);
   const sourceCompositionConnectedFloor=assetLibrarySnapshot.present&&clean(sourceParity?.status||'ACTIVE').toUpperCase()==='ACTIVE'
     ?minimumActiveSourceCompositionDimensions
     :0;
-  const minimumConnectedImprovements=Math.max(baseMinimumConnectedImprovements,sourceCompositionConnectedFloor);
+  const minimumConnectedImprovements=Math.max(minimumPlayableImprovements,baseMinimumConnectedImprovements,sourceCompositionConnectedFloor);
   const repair=clean(phase).toUpperCase()==='REPAIR';
   const activeVisualAxes=VISUAL_ITERATION_AXES.slice(0,Math.min(VISUAL_ITERATION_AXES.length,level+1));
   const visualFocus=VISUAL_ITERATION_AXES[(level-1)%VISUAL_ITERATION_AXES.length];
@@ -228,6 +230,8 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     focusPillar:clean(focusPillar).toUpperCase()||'GENERAL',
     detailDepthLevel:expectationMetric(growth?.detailDepthLevel,level,fallbackGrowth.detailDepthLevel),
     minimumConnectedImprovements,
+    minimumPlayableImprovements,
+    playableImprovementVerification:'SOURCE_CONNECTED_IMPROVEMENT_TARGET_ONLY_UNTIL_EXACT_PLATFORM_PLAY_EVIDENCE',
     minimumMeaningfulDistinctAxes:expectationMetric(growth?.meaningfulDistinctAxes,level,fallbackGrowth.meaningfulDistinctAxes),
     minimumCrossSystemConnections:expectationMetric(growth?.crossSystemConnections,level,fallbackGrowth.crossSystemConnections),
     minimumActiveDetailDimensions,
@@ -284,6 +288,7 @@ function buildUpIterationExpectationPrompt(expectation={}){
   ].filter(Boolean);
   return `[ITERATION_EXPECTATION_ESCALATION] level=${expectation.expectationLevel}; tier=${expectation.tier}; detailDepth=${expectation.detailDepthLevel}
 이 반복의 품질 기준은 이전 verified baseline보다 낮아질 수 없다. 실패 수리는 같은 기대치 레벨을 유지하고, 성공한 반복만 다음 기대치를 올린다. 새 workflow/stage/queue/worker를 만들지 말고 기존 BUILD_UP 책임 작업 안에서 충족한다. 내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다. Studio/실런타임 증거는 기존 canonical 단계가 원래 요구하는 경우에만 별도로 사용한다.
+전 게임 플레이 개선: 매 기존 BUILD_UP 세대에서 최소 ${expectation.minimumPlayableImprovements}개의 서로 다른 실제 플레이 개선을 목표로 하고, 각각 게임 고유 플레이어 입력→상태 변화→화면/모션/소리 피드백→다음 선택을 기존 책임 소스 및 해당 플랫폼의 동일 후보 검증 증거로 연결한다. 파일 수정 횟수, 주석, UI 색/이름, 모델 교체만으로 실제 플레이 5개 완료로 세지 않는다. 장애 복구 단계는 기존 원인부터 수리하되 기대 수준을 낮추거나 무관한 신규 기능을 발명하지 않는다. F0~F9 검증 순서와 승인된 디자인·세이브·밸런스·서버 권한은 유지한다.
 최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 연결형 콘텐츠 묶음 ${expectation.minimumConnectedContentBundles}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 같은 QA/체크 재통과만 반복하거나 이름/색/수치 복제·마커/문서만 추가한 변경은 성장으로 계산하지 않는다.
 디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
 표현 품질 제작: F0에서 실제 대상 플랫폼의 그래픽/움직임 기반을 만들고, 기존 F0~F9 이후 검증된 빌드를 시작점으로 다음 BUILD_UP을 반복한다. visual-depth=${expectation.visualIteration?.depthLevel}; focus=${expectation.visualIteration?.currentFocus}; active=${(expectation.visualIteration?.activeAxes||[]).join('|')}. 매 반복의 약한 실측 표현 축만 기존 책임 함수에서 개선하며 이전 PASS 품질을 떨어뜨리지 않는다. 픽셀은 승인된 픽셀 스타일에만 그리드·nearest·지역 타일 변화를, 3D는 맞는 원본 리그·메시·재질/조명을 개선한다. 몹 종별 idle/move/turn, 무기별 windup/impact/recoil/recovery, 적중 이벤트 한 번에 동기화된 VFX/SFX/카메라, 모바일 터치·프레임/메모리·실측 동일 장면 전후 비교를 확인한다. 값·저장·드롭·판정·권한 변경은 금지하며 별도 QA 단계/파이프라인은 추가하지 않는다.
@@ -3334,6 +3339,8 @@ ${expectationInstruction}
     'studio-quality-expectation-tier:'+iterationExpectation.tier,
     'studio-quality-detail-depth:'+String(iterationExpectation.detailDepthLevel),
     'studio-quality-min-connected-improvements:'+String(iterationExpectation.minimumConnectedImprovements),
+    'studio-quality-min-playable-improvements:'+String(iterationExpectation.minimumPlayableImprovements),
+    'studio-quality-five-play-evidence:EXACT_CANDIDATE_UNVERIFIED_UNTIL_RUNTIME',
     'studio-quality-min-distinct-axes:'+String(iterationExpectation.minimumMeaningfulDistinctAxes),
     'studio-quality-min-cross-system-connections:'+String(iterationExpectation.minimumCrossSystemConnections),
     'studio-quality-min-active-detail-dimensions:'+String(iterationExpectation.minimumActiveDetailDimensions),
@@ -3424,6 +3431,13 @@ ${expectationInstruction}
     qualityExpectation:iterationExpectation,
     visualIteration:iterationExpectation.visualIteration,
     requiredConnectedImprovements:{min:iterationExpectation.minimumConnectedImprovements,max:null},
+    requiredPlayableImprovements:{
+      min:iterationExpectation.minimumPlayableImprovements,
+      scope:'ALL_ACTIVE_APPROVED_GAMES',
+      evidence:'DISTINCT_GAME_ACTION_STATE_FEEDBACK_AND_SAME_BUILD_PLATFORM_PROOF',
+      sourceOnlyPassForbidden:true,
+      f0ToF9SequenceUnchanged:true
+    },
     requiredMeaningfulDistinctAxes:{min:iterationExpectation.minimumMeaningfulDistinctAxes,max:null},
     requiredCrossSystemConnections:{min:iterationExpectation.minimumCrossSystemConnections,max:null},
     requiredActiveDetailDimensions:{min:iterationExpectation.minimumActiveDetailDimensions,dimensions:[...iterationExpectation.activeDetailDimensions]},
