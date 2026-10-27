@@ -67,6 +67,8 @@ test('Windows watcher and bootstrap never drive Roblox Player input and use boun
  assert.match(watcher,/RegisterWatcher|ROBLOX_CAPTURE_SUBMIT/);
  assert.match(watcher,/ROBLOX_CAPTURE_AUTHORIZED/);
  assert.match(watcher,/Start-ApprovedPrivateCaptureSession/);
+ assert.match(watcher,/Import-Clixml/);
+ assert.match(watcher,/private-capture-join\.xml/);
  assert.match(watcher,/JAEWOON_CAPTURE_PRIVATE_LINK_CODE/);
  assert.match(watcher,/JAEWOON_CAPTURE_GAME_ID/);
  assert.match(watcher,/&linkCode=/);
@@ -76,6 +78,9 @@ test('Windows watcher and bootstrap never drive Roblox Player input and use boun
  assert.match(watcher,/target\.verified -ne \$true/);
  assert.doesNotMatch(watcher,/SendKeys|SendInput|pyautogui|Start-Process Roblox|mouse_event/i);
  assert.match(setup,/New-ScheduledTaskTrigger -AtLogOn/);
+ assert.match(setup,/Export-Clixml/);
+ assert.match(setup,/Security\.SecureString/);
+ assert.match(setup,/CAPTURE_GAME_ID_NOT_ALLOWLISTED/);
  assert.match(setup,/LogonType Interactive/);
  assert.doesNotMatch(setup,/auto-login|ROBLOSECURITY=/i);
 });
