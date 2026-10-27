@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-gd7blz",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-diagnostic-bundle-MISSING-VIEWPORT-unity-index-html",
+      "gameId": "daechung-rpg",
+      "files": [
+        "web-games/daechung-rpg/unity/index.html"
+      ],
+      "baseSha": "36aea4d2d579ee34b845a4fa8901d0dd8960cf4e",
+      "runId": "40466796552",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-27T07:52:01.350Z",
+      "expiresAt": "2026-10-27T08:37:01.350Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-diagnostic-bundle-MISSING-VIEWPORT-unity-index-html"
+      ]
+    }
+  ]
 }
