@@ -52,6 +52,10 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   const check=evaluateRobloxGameplayProductReadiness({gameId:'fantasy-survival',baseline,config,server,client,project});
   assert.equal(check.pass,true,JSON.stringify(check.blockers));
   assert.equal(check.antiSkeletonPassed,true);
+  assert.match(client,/player:GetAttribute\("CurrentWave"\)/);
+  assert.match(client,/player:GetAttribute\("WeaponTier"\)/);
+  assert.match(client,/remote:FireServer\(primaryCombatAction.Id\)/);
+  assert.match(config,/Label = "가까운 자원 채집"/);
   assert.match(server,/CreatureParts.Create\(partId/);
   assert.match(server,/WorldProps.Create\(id/);
   assert.match(server,/targetHuman:TakeDamage\(enemy.damage\)/);

@@ -323,7 +323,7 @@ multiplayerStatus.Text = "Multiplayer sync ready"
 multiplayerStatus.Parent = root
 remote.OnClientEvent:Connect(function(kind, payload)
   if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end
-  multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)
+  multiplayerStatus.Text = string.format("참여 %d명 · 공동 목표 %d · 개인 점수 %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)
 end)
 
 local list = Instance.new("ScrollingFrame")
@@ -353,16 +353,29 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
-local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
+local watched = {"Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+  status.Text = string.format("웨이브 %d · 적 %d · HP %d · Lv %d  |  경험치 %d\n나무 %d · 돌 %d · 무기 강화 %d · 처치 점수 %d",
+    player:GetAttribute("CurrentWave") or 0, player:GetAttribute("AliveEnemies") or 0,
+    player:GetAttribute("Health") or 100, player:GetAttribute("Level") or 1,
+    player:GetAttribute("XP") or 0, player:GetAttribute("Wood") or 0,
+    player:GetAttribute("Stone") or 0, player:GetAttribute("WeaponTier") or 0,
+    player:GetAttribute("RoundScore") or 0)
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
 
-if #Config.Actions > 0 then
+-- 키보드 스페이스/게임패드 A는 안내용 생존 시작이 아니라 실제 전투 버튼에 연결한다.
+local primaryCombatAction = nil
+for _, action in ipairs(Config.Actions) do
+  if action.Kind == "COMBAT" then primaryCombatAction = action; break end
+end
+primaryCombatAction = primaryCombatAction or Config.Actions[1]
+if primaryCombatAction then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
-    if inputState == Enum.UserInputState.Begin and gui:GetAttribute("GameMenuOpen")~=true then remote:FireServer(Config.Actions[1].Id) end
+    if inputState == Enum.UserInputState.Begin and gui:GetAttribute("GameMenuOpen")~=true then
+      remote:FireServer(primaryCombatAction.Id)
+    end
     return Enum.ContextActionResult.Sink
   end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)
 end
@@ -383,7 +396,7 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,Config.Actions[1]and{label=CommonUI.ActionLabel(Config.Actions[1],1),activate=function()remote:FireServer(Config.Actions[1].Id)end}or nil)
+CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",activate=function()remote:FireServer(primaryCombatAction.Id)end}or nil)
 
 -- [모션·액션] 서버가 승인한 기존 COMBAT 입력만 R15 공용 관절 애니메이션에 연결한다.
 -- 서버 피해·이동·콤보 판정, 원래 Animator, 저장값은 수정하지 않는다.

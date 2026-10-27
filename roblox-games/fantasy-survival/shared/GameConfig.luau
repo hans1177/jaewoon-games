@@ -74,12 +74,12 @@ local Config = {
     Stone = 0, WeaponTier = 0, Bosses = 0,
   },
   Actions = {
-    { Id = "genre-core", Label = "Survival core gameplay", Kind = "SURVIVAL", Order = 1, LearningPattern = "idle-reward" },
-    { Id = "scope-corefun-ea77622450", Label = "기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.", Kind = "COMBAT", Order = 2, LearningPattern = "offline-progress" },
-    { Id = "scope-coreloop-0-9b2d4dfbc6", Label = "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.", Kind = "COMBAT", Order = 3, LearningPattern = "upgrade-layer" },
-    { Id = "scope-coreloop-1-6ebe58f496", Label = "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.", Kind = "GATHER", Order = 4, LearningPattern = "claim-idempotency" },
-    { Id = "scope-coreloop-2-6c927cfa40", Label = "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.", Kind = "PROGRESSION", Order = 5, LearningPattern = "persistent-growth" },
-    { Id = "scope-mobileux-5acfb2eaa6", Label = "가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃.", Kind = "COMBAT", Order = 6, LearningPattern = "commercial-idle-runtime-architecture" },
+    { Id = "genre-core", Label = "생존 시작", Kind = "SURVIVAL", Order = 1, LearningPattern = "idle-reward" },
+    { Id = "scope-corefun-ea77622450", Label = "근접 공격", Kind = "COMBAT", Order = 2, LearningPattern = "offline-progress" },
+    { Id = "scope-coreloop-0-9b2d4dfbc6", Label = "연속 전투", Kind = "COMBAT", Order = 3, LearningPattern = "upgrade-layer" },
+    { Id = "scope-coreloop-1-6ebe58f496", Label = "가까운 자원 채집", Kind = "GATHER", Order = 4, LearningPattern = "claim-idempotency" },
+    { Id = "scope-coreloop-2-6c927cfa40", Label = "나무·돌로 장비 강화", Kind = "PROGRESSION", Order = 5, LearningPattern = "persistent-growth" },
+    { Id = "scope-mobileux-5acfb2eaa6", Label = "공격 (터치)", Kind = "COMBAT", Order = 6, LearningPattern = "commercial-idle-runtime-architecture" },
   },
   -- STUDIO_ASSET_BINDING_BEGIN
   StudioAssets = {
