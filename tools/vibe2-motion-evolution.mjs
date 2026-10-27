@@ -86,7 +86,11 @@ export function planVerifiedActorEvolution({
  }
  const maxRank=Math.max(...entries.map(row=>row.rank));
  const candidates=entries.filter(row=>row.rank===maxRank);
- const selected=candidates[cycle%candidates.length];
+ const fallbackActor=actors[cycle%actors.length];
+ const fallbackFeature=MOTION_FORGE_FEATURES[Math.floor(cycle/actors.length)%MOTION_FORGE_FEATURES.length];
+ const selected=candidates.find(row=>row.actor===fallbackActor&&row.feature===fallbackFeature)
+  ||candidates.find(row=>row.actor===fallbackActor)
+  ||candidates[cycle%candidates.length];
  const file=selected.actor.files[cycle%selected.actor.files.length];
  return Object.freeze({
   generation:cycle+1,actorClass:selected.actor.actorClass,sourceOwnerFile:file,
