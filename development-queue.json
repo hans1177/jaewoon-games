@@ -2868,7 +2868,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-27T01:18:06.617Z"
       },
-      "updatedAt": "2026-10-27T14:15:11.855Z",
+      "updatedAt": "2026-10-27T14:18:03.036Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2928,9 +2928,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-package-revalidation-pending"
       ],
       "robloxSourceCommit": "0dbe5977f02ed7c50acd7a6a0bee02abe8125242",
       "robloxQualityBuildUpRequired": true,
@@ -3652,7 +3652,7 @@
       },
       "robloxInternalReleasePublished": false,
       "robloxPublicRelease": false,
-      "robloxSourceBootstrapPassedAt": "2026-10-27T14:15:11.855Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-27T14:18:03.036Z",
       "robloxBuildFailedAt": null,
       "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
@@ -3660,9 +3660,9 @@
       "robloxFastMvpPublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "1f9c75136cca543c0b4ec125c2cf8813ec694b9e",
+        "previousSourceRevision": "0dbe5977f02ed7c50acd7a6a0bee02abe8125242",
         "newSourceRevision": "0dbe5977f02ed7c50acd7a6a0bee02abe8125242",
-        "invalidatedAt": "2026-10-27T14:14:46.573Z"
+        "invalidatedAt": "2026-10-27T14:18:03.036Z"
       },
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -6930,7 +6930,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T14:15:11.855Z",
+  "updatedAt": "2026-10-27T14:18:03.036Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
