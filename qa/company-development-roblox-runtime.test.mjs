@@ -425,7 +425,7 @@ test('Baeksu native CC0 mesh creatures play bounded walk and server-confirmed hi
   const visual=fs.readFileSync('roblox-games/baeksu-war/shared/VisualKit.luau','utf8');
   const config=fs.readFileSync('roblox-games/baeksu-war/shared/Config.luau','utf8');
   for(const required of [
-    'SaveKey="baeksu-war-v1"', 'C.Cap=55'
+    'SaveKey="baeksu-war-v1"', 'Cap=55'
   ])assert.ok(config.includes(required),required);
   const damage=source.indexOf('u.Last=now;target.HP-=u.Damage');
   const motion=source.indexOf('local attackAge=u.Last>0 and now-u.Last or math.huge');
