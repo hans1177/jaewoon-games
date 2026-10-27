@@ -350,14 +350,19 @@ export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot
     .filter(entry=>entry.isDirectory()&&/^common-[a-z0-9-]+-v[0-9]+$/.test(entry.name))
     .map(entry=>entry.name).sort();
   const seen=new Map();
+  const fingerprints=[];
+  const sourceHash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
   for(const directory of roots){
     const folder=path.join(assetRoot,directory);
+    const catalog=path.join(folder,'catalog.json');
+    if(fs.existsSync(catalog))fingerprints.push(directory+'/catalog.json:'+sourceHash(catalog));
     for(const entry of fs.readdirSync(folder,{withFileTypes:true})){
       if(!entry.isFile()||!/^RobloxCommon[A-Za-z0-9]+\.luau$/.test(entry.name))continue;
       const moduleName=entry.name.slice(0,-'.luau'.length);
       if(seen.has(moduleName))throw new Error('ROBLOX_COMMON_MODULE_DUPLICATE:'+moduleName);
       seen.set(moduleName,directory);
       const original=path.join(folder,entry.name);
+      fingerprints.push(directory+'/'+entry.name+':'+sourceHash(original));
       const current=gameRoot?path.join(gameRoot,'shared',entry.name):'';
       const expected='../../assets/roblox/'+directory+'/'+entry.name;
       if(current&&fs.existsSync(current)){
@@ -376,7 +381,32 @@ export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot
       linked.push(moduleName);
     }
   }
-  return Object.freeze({project,moduleCount:seen.size,linked:Object.freeze(linked),local:Object.freeze(local),conflicts:Object.freeze(conflicts)});
+  // 공용 Roblox 런타임 모듈과 개발용 패턴 라이브러리는 별도로 취급한다.
+  // 자사 JS/설계/코딩 패턴은 빌드업 참조와 검증 대상으로만 사용하며 클라이언트에 배포하지 않는다.
+  const repoRoot=path.resolve(assetRoot,'../..');
+  const assets=path.join(repoRoot,'assets');
+  const patternSources=fs.existsSync(assets)
+    ?fs.readdirSync(assets,{withFileTypes:true}).filter(entry=>entry.isFile()&&/^vibe[a-z0-9-]*\.(?:js|mjs)$/.test(entry.name)).map(entry=>entry.name).sort():[];
+  const firstPartyLibraries=['company-asset-library.json','company-learning/vibe2-code-pattern-library.json','company-learning/vibe3-task-playbooks.json'];
+  const libraryFingerprints={};
+  for(const name of firstPartyLibraries){
+    const file=path.join(repoRoot,name);
+    libraryFingerprints[name]=fs.existsSync(file)?sourceHash(file):null;
+  }
+  const patternPath=path.join(repoRoot,'company-learning/vibe2-code-pattern-library.json');
+  const patternLibrary=fs.existsSync(patternPath)?JSON.parse(fs.readFileSync(patternPath,'utf8')):{patterns:[]};
+  const verifiedPatterns=(patternLibrary.patterns||[]).filter(pattern=>pattern?.verified===true&&pattern?.rawCodeStored!==true&&pattern?.retrievalEligible!==false&&pattern?.independentQa==='PASS');
+  const sourceFingerprint=crypto.createHash('sha256')
+    .update(JSON.stringify({modules:fingerprints.sort(),libraries:libraryFingerprints,patternSources})).digest('hex');
+  return Object.freeze({
+    project,moduleCount:seen.size,linked:Object.freeze(linked),local:Object.freeze(local),conflicts:Object.freeze(conflicts),
+    libraryCoverage:Object.freeze({
+      runtimeModuleCount:seen.size,firstPartyPackCount:roots.length,
+      firstPartyPatternSourceCount:patternSources.length,verifiedCodePatternCount:verifiedPatterns.length,
+      patternSourcesRuntimeInjected:false,unverifiedAssetsAutoPromoted:false,
+      libraryFingerprints:Object.freeze(libraryFingerprints),sourceFingerprint,
+    }),
+  });
 }
 
 export function projectJsonForGame(gameId='',gameRoot=''){
