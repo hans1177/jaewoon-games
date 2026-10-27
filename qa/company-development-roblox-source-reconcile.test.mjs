@@ -1136,6 +1136,9 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.match(workflow,/^  COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
   assert.match(workflow,/^  COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
   assert.match(workflow,/COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json[\s\S]*Apply verified learning to selected Roblox source scope/);
+  assert.match(workflow,/assets\/roblox\/common-\*\/\*\*/);
+  assert.match(workflow,/company-learning\/vibe2-code-pattern-library\.json/);
+  assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
 });
 
 test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
@@ -1289,6 +1292,13 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
     const nativeBefore=clientBefore.match(nativePattern)?.[0];
     assert.ok(nativeBefore);
     fs.writeFileSync(clientFile,clientBefore);
+    // 새 모듈 없이 생성된 레거시 게임도 학습 스윕에서 재연결되는지 검증한다.
+    const projectFile=path.join(root,'default.project.json');
+    const legacyProject=projectJsonForGame(gameId);
+    for(const name of Object.keys(legacyProject.tree.ReplicatedStorage.Shared)){
+      if(name.startsWith('RobloxCommon'))delete legacyProject.tree.ReplicatedStorage.Shared[name];
+    }
+    fs.writeFileSync(projectFile,JSON.stringify(legacyProject,null,2)+'\n');
     const serverBefore=fs.readFileSync(serverFile,'utf8');
     const baselinePath='design/'+gameId+'/2026-09-12/design-revised.json';
     const baselineFile=path.join(tmp,baselinePath);
@@ -1320,6 +1330,13 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
     assert.equal(report.results[0].runtimeDesignBaselineSource,baselinePath);
     assert.equal(report.results[0].designProfile.subgenre,'Factory Simulator');
     assert.equal(report.results[0].newerNativeBindingPreserved,true);
+    assert.equal(report.results[0].commonModuleProjectChanged,true);
+    assert.ok(report.results[0].commonModuleCount>=12);
+    assert.equal(report.results[0].commonModuleConflictCount,0);
+    assert.equal(JSON.parse(fs.readFileSync(projectFile,'utf8')).tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
+      '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+    assert.ok(report.results[0].changedFiles.some(file=>file.endsWith('default.project.json')));
+    assert.match(fs.readFileSync(path.join(root,'roblox-source-bootstrap.json'),'utf8'),/runtimeBindingFingerprint/);
     const expected=createRobloxVibe3LearningContext({
       gameId,profile:robloxBuildProfileFromBaseline(runtimeBaseline),playbooks:revisedPlaybooks
     });
@@ -1329,8 +1346,10 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
       new RegExp('SemanticMappingFingerprint\\s*=\\s*"'+expected.semanticMappingFingerprint+'"'));
     assert.equal(fs.readFileSync(clientFile,'utf8').match(nativePattern)?.[0],nativeBefore);
     assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
+    const boundProject=fs.readFileSync(projectFile,'utf8');
     execFileSync(process.execPath,args,{cwd:tmp,stdio:'pipe'});
     assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    assert.equal(fs.readFileSync(projectFile,'utf8'),boundProject);
     // Unscoped maintenance cannot rewrite the newer client native block.
     execFileSync(process.execPath,args.filter(arg=>!arg.startsWith('--game-id=')),{cwd:tmp,stdio:'pipe'});
     assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);

@@ -5,7 +5,7 @@ import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from
 import {robloxLearningProfileFromSource} from './company-development-roblox-gameplay-product-readiness.mjs';
 import {latestVerifiedDesign} from './company-all-games-design-reset.mjs';
 import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
-import {applyVerifiedExternalLearningToExistingRobloxSource,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
+import {applyVerifiedExternalLearningToExistingRobloxSource,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,synchronizeRobloxCommonModules} from './company-development-roblox-bootstrap.mjs';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
   const i=x.indexOf('=');
@@ -123,6 +123,16 @@ for(const gameId of gameIds){
   }else{
     applied=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
   }
+  // 기존 F0 공용 라이브러리 연결 함수를 재사용해 학습 스윕에서도 기존 게임의 모듈 맵을 동기화한다.
+  // 게임별 Luau/서버/저장 소스는 변경하지 않고 로컬 동명 모듈 충돌을 기록한다.
+  const projectFile=path.join(gameRoot,'default.project.json');
+  if(!fs.existsSync(projectFile))throw new Error('ROBLOX_SWEEP_COMMON_PROJECT_REQUIRED:'+gameId);
+  const beforeProject=fs.readFileSync(projectFile,'utf8');
+  const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
+  const commonModules=synchronizeRobloxCommonModules({project,gameRoot});
+  const afterProject=JSON.stringify(project,null,2)+'\n';
+  const commonProjectChanged=beforeProject!==afterProject;
+  if(commonProjectChanged)fs.writeFileSync(projectFile,afterProject,'utf8');
   const evidenceFile=path.join(gameRoot,'roblox-source-bootstrap.json');
   let evidence={version:1,gameId,platform:'ROBLOX',sourcePath:path.relative(process.cwd(),gameRoot).replaceAll('\\','/')};
   if(fs.existsSync(evidenceFile)){
@@ -149,23 +159,28 @@ for(const gameId of gameIds){
     verifiedExternalValidationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
     verifiedExternalLearningGameDevelopmentAppliedCount:Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0),
     serverTouchedByVerifiedExternalLearningSweep:false,
+    commonModuleSync:{count:commonModules.moduleCount,linked:commonModules.linked,local:commonModules.local,conflicts:commonModules.conflicts,libraryCoverage:commonModules.libraryCoverage},
     verifiedExternalLearningSweepAt:previousSweepAt
   };
   const beforeEvidence=fs.existsSync(evidenceFile)?fs.readFileSync(evidenceFile,'utf8'):'';
   const stableEvidence=JSON.stringify(nextEvidence,null,2)+'\n';
   const evidenceContentChanged=beforeEvidence!==stableEvidence;
-  const sweepChanged=applied.changed||evidenceContentChanged;
+  const sweepChanged=applied.changed||commonProjectChanged||evidenceContentChanged;
   if(sweepChanged)nextEvidence={...nextEvidence,verifiedExternalLearningSweepAt:new Date().toISOString()};
   const afterEvidence=JSON.stringify(nextEvidence,null,2)+'\n';
   const evidenceFileChanged=beforeEvidence!==afterEvidence;
   if(evidenceFileChanged)fs.writeFileSync(evidenceFile,afterEvidence);
   const changedFiles=[...applied.changedFiles.map(file=>path.relative(process.cwd(),file).replaceAll('\\','/'))];
+  if(commonProjectChanged)changedFiles.push(path.relative(process.cwd(),projectFile).replaceAll('\\','/'));
   if(evidenceFileChanged)changedFiles.push(path.relative(process.cwd(),evidenceFile).replaceAll('\\','/'));
   results.push({
     gameId,
     changed:sweepChanged,
     changedFiles,
     serverTouched:false,
+    commonModuleCount:commonModules.moduleCount,
+    commonModuleConflictCount:commonModules.conflicts.length,
+    commonModuleProjectChanged:commonProjectChanged,
     verifiedExternalLearningFingerprint:learning.verifiedExternalLearningFingerprint||null,
     applyAxes:[...(learning.verifiedExternalLearningApplyAxes||[])],
     semanticMappingVersion:Number(learning.semanticMappingVersion||0),
