@@ -16,6 +16,49 @@ local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpe
 local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 2
+local studioAssetConfig = C.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioAssetSelectionFingerprint = studioAssetConfig.SelectionFingerprint or ""
+local function studioAssetFamily(family)
+  local atoms = studioAssetFamilies[family]
+  return type(atoms) == "table" and atoms or {}
+end
+local function hasStudioAssetAtom(familyOrAtom, atom)
+  local family = atom == nil and "UI" or familyOrAtom
+  local assetAtom = atom == nil and familyOrAtom or atom
+  return table.find(studioAssetFamily(family), assetAtom) ~= nil
+end
+local STUDIO_ASSET_SELECTION = {
+  CHARACTER = studioAssetFamily("CHARACTER"),
+  CREATURE = studioAssetFamily("CREATURE"),
+  BUILDING = studioAssetFamily("BUILDING"),
+  ENVIRONMENT = studioAssetFamily("ENVIRONMENT"),
+  WEAPON = studioAssetFamily("WEAPON"),
+  SKILL = studioAssetFamily("SKILL"),
+  MATERIAL = studioAssetFamily("MATERIAL"),
+  AUDIO = studioAssetFamily("AUDIO"),
+  VFX = studioAssetFamily("VFX"),
+  UI = studioAssetFamily("UI"),
+  MOTION = studioAssetFamily("MOTION"),
+  PROP = studioAssetFamily("PROP"),
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+  CHARACTER = "NOT_APPLICABLE",
+  CREATURE = "APPLIED",
+  BUILDING = "NOT_APPLICABLE",
+  ENVIRONMENT = "APPLIED",
+  WEAPON = "NOT_APPLICABLE",
+  SKILL = "NOT_APPLICABLE",
+  MATERIAL = "APPLIED",
+  AUDIO = "NOT_APPLICABLE",
+  VFX = "APPLIED",
+  UI = "APPLIED",
+  MOTION = "APPLIED",
+  PROP = "APPLIED",
+}
+-- STUDIO_ASSET_BINDING_CLIENT_END
 local remote=RS:WaitForChild(C.Remote)
 -- 회사 보유 공용 게임창/버튼/아이콘 라이브러리(동일 저장소 자산)를 실물 UI에 사용한다.
 local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
@@ -246,6 +289,19 @@ gui.Name="BaeksuHUD";gui.ResetOnSpawn=false;gui.DisplayOrder=12
 gui.ZIndexBehavior=Enum.ZIndexBehavior.Global
 gui.Parent=p:WaitForChild("PlayerGui")
 local modalLayer=Instance.new("Frame")
+if hasStudioAssetAtom("UI", "FRAME_PANEL") then
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = modalLayer
+end
+
+modalLayer:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+modalLayer:SetAttribute("StudioAssetSelectionFingerprint", studioAssetSelectionFingerprint)
+modalLayer:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
+
 modalLayer.Name="게임 시스템 창";modalLayer.BackgroundTransparency=1
 modalLayer.Size=UDim2.fromScale(1,1);modalLayer.ZIndex=15
 modalLayer.Visible=false;modalLayer.Parent=gui
