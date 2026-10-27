@@ -509,9 +509,17 @@ RunService.PreSimulation:Connect(function(dt)
   )
   if type(combatMotionSource.RefineActorCinematicPose) == "function" then
     local timeInAction = os.clock() - activeCombatStartedAt
+    local currentStep = activeCombatCombo.steps[#activeCombatCombo.steps]
+    for _, candidateStep in ipairs(activeCombatCombo.steps) do
+      if timeInAction < candidateStep.start + candidateStep.duration then
+        currentStep = candidateStep
+        break
+      end
+    end
+    local stepPhase = math.clamp((timeInAction - currentStep.start) / math.max(.05, currentStep.duration), 0, 1)
     combatMotionSource.RefineActorCinematicPose(combatPoseTargets, {
       actorClass = "PLAYER", bodyPlan = "BIPED", weaponStyle = activeCombatCombo.profileId,
-      actionPhase = math.clamp(timeInAction / math.max(.05, activeCombatCombo.duration), 0, 1),
+      actionPhase = stepPhase,
       authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
       visualSpeed = humanoid.MoveDirection.Magnitude,
       mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
