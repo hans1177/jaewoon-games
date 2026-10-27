@@ -107,9 +107,10 @@ export async function uploadRobloxHomepageThumbnail({
     try{body=statusText?JSON.parse(statusText):{};}catch{}
     if(!status.ok)throw new Error('ROBLOX_THUMBNAIL_STATUS_FAILED:'+status.status+':'+statusText.slice(0,500));
     const state=clean(body?.uploadStatus);
-    const rows=body?.uploadThumbnailStatusDict&&typeof body.uploadThumbnailStatusDict==='object'?Object.values(body.uploadThumbnailStatusDict):[];
-    const thumbnailId=clean(rows[0]?.homepageThumbnailId||rows[0]?.thumbnailId);
-    if(state.toLowerCase()==='finished'){
+    // 메인: 로블록스는 완료된 작업만 작업 ID별로 반환하며 상태를 숫자로도 보낸다.
+    const row=body?.uploadThumbnailStatusDict?.[operationId];
+    const thumbnailId=clean(row?.homepageThumbnailId||row?.thumbnailId);
+    if(state.toLowerCase()==='finished'||(['1','2'].includes(state)&&thumbnailId)){
       if(!thumbnailId)throw new Error('ROBLOX_THUMBNAIL_FINISHED_WITHOUT_ID');
       return Object.freeze({uploaded:true,operationId,thumbnailId,uploadStatus:state,attempt});
     }
