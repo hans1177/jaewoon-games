@@ -336,6 +336,52 @@ test('native footage edit produces short playable real-source cuts without claim
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
+test('automatic Roblox video edit stays blocked without genuine native capture, without affecting detail image sync',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-auto-video-'));
+  try{
+    const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',
+      dedicated:true,shared:false,verified:true};
+    const source='assets/roblox-thumbnails/cozy-island.png';
+    fs.mkdirSync(path.join(root,'assets','roblox-thumbnails'),{recursive:true});
+    const image=Buffer.alloc(700,42);
+    fs.writeFileSync(path.join(root,source),image);
+    const hash=crypto.createHash('sha256').update(image).digest('hex');
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[
+      {id:target.gameId,canonical:{marketing:{thumbnail:source}}}
+    ]}));
+    fs.writeFileSync(path.join(root,'queue.json'),JSON.stringify({items:[{
+      gameId:target.gameId,robloxPublicationTarget:target,
+      robloxDetailMediaEvidence:{gameId:target.gameId,universeId:target.universeId,
+        sourceSha256:hash,imageStatus:'SUBMITTED_AWAITING_ROBLOX_MODERATION'}
+    }]}));
+    let fetches=0;
+    const opts={
+      root,catalogPath:'game-catalog.json',queuePath:'queue.json',gameId:target.gameId,
+      detailOnly:true,fetchImpl:async()=>{fetches++;return Response.json({data:[]});}
+    };
+    const first=await syncRobloxHomepageThumbnail(opts);
+    assert.equal(first.automaticVideo.status,'NATIVE_RUNTIME_CAPTURE_UNAVAILABLE');
+    assert.equal(first.automaticVideo.videoPublished,false);
+    assert.equal(first.imageStatus,'AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD');
+    assert.equal(fetches,1);
+    const dir=path.join(root,'assets','runtime-evidence','roblox',target.gameId,'2026-10-27','artifact');
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'capture.mp4'),Buffer.alloc(2000,24));
+    fs.writeFileSync(path.join(dir,'capture.json'),JSON.stringify({
+      gameId:target.gameId,universeId:target.universeId,placeId:target.placeId,
+      captureSource:'WEB',sourceRevision:'a'.repeat(40),
+      sha256:crypto.createHash('sha256').update(Buffer.alloc(2000,24)).digest('hex'),
+      runtimeVerification:{pass:true,actualGameplay:true,playerAutomation:false}
+    }));
+    const second=await syncRobloxHomepageThumbnail(opts);
+    assert.equal(second.automaticVideo.status,'NATIVE_CAPTURE_REJECTED_OR_EDIT_FAILED');
+    assert.equal(second.automaticVideo.videoPublished,false);
+    assert.equal(second.videoStatus,'NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED');
+    assert.equal(fetches,2);
+    assert.equal(fs.existsSync(path.join(root,'.tmp','roblox-detail-evidence',target.gameId+'-edited.mp4')),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('release promotion auto-syncs thumbnails on main push without republishing place',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/thumbnail_only:/);
@@ -355,6 +401,8 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES/);
   assert.match(workflow,/ROBLOX_ROBLOSECURITY: \$\{\{ secrets\.ROBLOX_ROBLOSECURITY \}\}/);
   assert.match(workflow,/librsvg2-bin/);
+  assert.match(workflow,/Keep authentic Roblox gameplay edits as private review artifacts/);
+  assert.match(workflow,/if-no-files-found: ignore/);
   assert.match(workflow,/ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS/);
   assert.doesNotMatch(workflow,/Roblox Player automation/i);
 });
