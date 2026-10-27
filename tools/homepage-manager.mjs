@@ -280,7 +280,9 @@ async function captureReleaseMedia(planOnly=false,{titlesOnly=false}={}){
 
   const gameFilter=process.argv.find(x=>x.startsWith('--media-game='))?.slice(13);
   const candidates=[];
-  const captureVersion=3;
+  const captureVersion=4;
+  const editVersion=1;
+  const focusedEditIds=new Set(['cozy-island','daechung-rpg','horror-escape-room']);
   for(const game of catalog.games||[]){
     const id=game.canonical?.identity?.gameId||game.id;
     if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||gameFilter&&gameFilter!==id)continue;
@@ -291,7 +293,8 @@ async function captureReleaseMedia(planOnly=false,{titlesOnly=false}={}){
     if(!fs.existsSync(entry))continue;
     const artifactIdentity=webTreeFingerprint(fs,dir);
     const current=validatedHomepageMedia(id,media.games[id]);
-    if(current?.video?.artifactIdentity===artifactIdentity&&current.screenshots?.length)continue;
+    if(current?.video?.artifactIdentity===artifactIdentity&&current.screenshots?.length
+      &&(!focusedEditIds.has(id)||media.games[id]?.video?.editVersion===editVersion))continue;
     const attempt=media.games[id].captureAttempt;
     if(attempt?.captureVersion===captureVersion&&attempt?.artifactIdentity===artifactIdentity&&Date.now()-Date.parse(attempt.at)<86400000)continue;
     candidates.push({id,artifactIdentity,platform:/createUnityInstance|\.loader\.js/.test(fs.readFileSync(entry,'utf8'))?'UNITY_WEB':'WEB'});
@@ -379,7 +382,20 @@ async function captureReleaseMedia(planOnly=false,{titlesOnly=false}={}){
         await context.close();context=null;
         const output=`assets/homepage-media/${id}.mp4`;
         const temporaryOutput=temp+'/'+id+'.mp4';
-        execFileSync('ffmpeg',['-y','-loglevel','error','-ss',String(Math.max(0,clipStart)),'-i',videoPath,'-t','12','-vf','scale=640:360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2','-r','24','-c:v','libx264','-preset','fast','-crf','29','-maxrate','1500k','-bufsize','3000k','-pix_fmt','yuv420p','-an','-movflags','+faststart',temporaryOutput],{timeout:60000,stdio:'pipe'});
+        // 메인: 검증된 웹게임 플레이 녹화만 3컷 하이라이트로 직접 편집한다.
+        // Roblox 네이티브 실행 영상으로 표시하거나 상세 페이지에 업로드하지 않는다.
+        const shots=[[0,3.4],[3.7,7],[7.25,11.15]];
+        const scaled='scale=640:360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=24,format=yuv420p';
+        const filters=shots.map(([start,end],i)=>'[0:v]trim=start='+start+':end='+end
+          +',setpts=PTS-STARTPTS,'+scaled+'[shot'+i+']');
+        const clipLength=shots.reduce((total,[start,end])=>total+end-start,0);
+        const editFilter=filters.join(';')+';'+shots.map((_,i)=>'[shot'+i+']').join('')
+          +'concat=n='+shots.length+':v=1:a=0,fade=t=in:st=0:d=0.2'
+          +',fade=t=out:st='+(clipLength-.45).toFixed(3)+':d=0.4[edited]';
+        execFileSync('ffmpeg',['-y','-loglevel','error','-ss',String(Math.max(0,clipStart)),
+          '-i',videoPath,'-filter_complex',editFilter,'-map','[edited]','-c:v','libx264',
+          '-preset','fast','-crf','27','-maxrate','1500k','-bufsize','3000k',
+          '-pix_fmt','yuv420p','-an','-movflags','+faststart',temporaryOutput],{timeout:60000,stdio:'pipe'});
         const duration=Number(execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',temporaryOutput],{encoding:'utf8'}).trim());
         const bytes=fs.readFileSync(temporaryOutput);
         if(duration<10||duration>12.5||bytes.length<2048||bytes.length>3145728)throw Error('VIDEO_DURATION_OR_SIZE_INVALID');
@@ -414,7 +430,7 @@ async function captureReleaseMedia(planOnly=false,{titlesOnly=false}={}){
         for(const frame of frames)fs.copyFileSync(frame.temporaryFrame,frame.src);
         fs.copyFileSync(temporaryOutput,output);
         media.games[id].video={gameId:id,platform,sourceRevision,artifactIdentity,capturedAt,
-          src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,
+          src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,editVersion,
           width:640,height:360,runtimeVerification:{pass:true,inputEvents,visualChangeObserved:true,
           scriptErrors:0,purpose:'MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE'}};
         media.games[id].screenshots=frames.map(({temporaryFrame,...frame})=>frame);
