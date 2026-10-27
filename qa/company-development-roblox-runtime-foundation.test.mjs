@@ -1245,7 +1245,10 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(continueBlock,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES/);
 
   const releaseHeader=release.slice(0,release.indexOf('\njobs:\n'));
-  assert.match(releaseHeader,/group: roblox-publish-exact-\$\{\{ inputs\.game_id \|\| 'sync' \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}-\$\{\{ github\.sha \}\}/);
+  // [정식 F0~F9] 미디어 갱신은 합치고 배포 검증은 게임·단계·리비전·F9 회차별로 분리한다.
+  assert.ok(releaseHeader.includes("'roblox-media-main-latest'"));
+  assert.ok(releaseHeader.includes("format('roblox-media-capture-{0}', github.event.client_payload.game_id)"));
+  assert.ok(releaseHeader.includes("format('roblox-publish-exact-{0}-{1}-{2}-{3}', inputs.game_id, inputs.publish_stage, github.sha, inputs.publish_cycle_id)"));
   assert.match(releaseHeader,/cancel-in-progress: false/);
   assert.match(release,/retry_window_seconds=900/);
   assert.match(release,/ROBLOX_PUBLISH_SERVER_BUSY_ATTEMPT=/);
