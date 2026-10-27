@@ -2,7 +2,7 @@
 # Uses native Roblox client telemetry; does not send any keyboard/mouse input or auto-login.
 param(
  [string]$Base = "$env:LOCALAPPDATA\JaewoonNativeMedia",
- [int]$PollSeconds = 25
+ [int]$PollSeconds = 3
 )
 $ErrorActionPreference = "Stop"
 $Repo = Join-Path $Base "main"
@@ -39,5 +39,5 @@ while ($true) {
   "[$(Get-Date -Format o)] WATCHER_EXCEPTION=$($_.Exception.Message)" |
    Out-File -FilePath $Log -Append -Encoding utf8
  }
- Start-Sleep -Seconds ([Math]::Max(10,$PollSeconds))
+ Start-Sleep -Seconds ([Math]::Max(2,$PollSeconds))
 }
