@@ -427,3 +427,18 @@ test('published Cozy Island smoke initializes model-sign texture cache',()=>{
  assert.match(smoke,/const renderer=Object\.create\(IslandRendererV3\.prototype\);\s*renderer\.signTextures3d=new Map\(\);/);
  assert.match(smoke,/renderer\.make3d\(kind,3\.05\)/);
 });
+
+// 공개판의 입력 검사는 첫 프레임 좌표와 실제 이동을 비교하며 시간 경과만으로 성공하지 않는다.
+test('published Gem Survivor movement smoke uses an initialized game frame',()=>{
+ const smoke=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+ const start=smoke.indexOf("  for(const mobile of [false,true])");
+ const end=smoke.indexOf(" if(liveBase){\n  // Post-deploy validation",start);
+ assert.ok(start>0&&end>start);
+ const block=smoke.slice(start,end);
+ assert.match(block,/game\?\.running&&!game\.paused&&x>0/);
+ assert.match(block,/Math\.abs\(x-game\.player\.x\)<1/);
+ assert.match(block,/Input\.dispatchTouchEvent/);
+ assert.match(block,/gem\.keyboard\.down\('d'\)/);
+ assert.match(block,/dataset\.playerX\)>x\+25/);
+ assert.doesNotMatch(block,/waitForTimeout\(700\)/);
+});

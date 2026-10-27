@@ -126,19 +126,32 @@ try{
      assert.ok(Number(await canvas.getAttribute('data-glow-instances'))>0);
      assert.ok(Number(await canvas.getAttribute('data-glow-instances'))<=256);
      assert.ok(Number(await canvas.getAttribute('data-particle-instances'))<=360);
+     // 리셋 직후 캔버스에는 이전 프레임 좌표가 남을 수 있다. 실제 시작·첫 3D 프레임을 확인한다.
+     await gem.waitForFunction(()=>{
+      const game=window.gemSurvivorState?.();
+      const x=Number(document.getElementById('game')?.dataset.playerX);
+      return game?.running&&!game.paused&&x>0&&Math.abs(x-game.player.x)<1;
+     },null,{timeout:15000});
      const first=Number(await canvas.getAttribute('data-player-x'));
      if(mobile){
       const bounds=await gem.locator('#joystick').boundingBox();
+      assert.ok(bounds&&bounds.width>0&&bounds.height>0,'GEM_TOUCH_JOYSTICK_MISSING');
       const cdp=await context.newCDPSession(gem);
-      await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:bounds.x+bounds.width/2+30,y:bounds.y+bounds.height/2}]});
-      await gem.waitForTimeout(700);
-      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-      await cdp.detach();
+      try{
+       await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:bounds.x+bounds.width/2+30,y:bounds.y+bounds.height/2}]});
+       await gem.waitForFunction(x=>Number(document.getElementById('game')?.dataset.playerX)>x+25,first,{timeout:6000});
+      }finally{
+       await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+       await cdp.detach();
+      }
      }else{
-      await gem.keyboard.down('d');await gem.waitForTimeout(700);await gem.keyboard.up('d');
+      await gem.keyboard.down('d');
+      try{
+       await gem.waitForFunction(x=>Number(document.getElementById('game')?.dataset.playerX)>x+25,first,{timeout:6000});
+      }finally{await gem.keyboard.up('d');}
      }
      const moved=Number(await canvas.getAttribute('data-player-x'));
-     assert.ok(moved>first+25,'GEM_MOVE_'+(mobile?'TOUCH':'KEYBOARD'));
+     assert.ok(moved>first+25,'GEM_MOVE_'+(mobile?'TOUCH':'KEYBOARD')+' '+JSON.stringify({hero,first,moved}));
      await gem.locator('#pauseBtn').click();
      const paused=Number(await canvas.getAttribute('data-player-x'));
      await gem.keyboard.down('d');await gem.waitForTimeout(200);await gem.keyboard.up('d');
