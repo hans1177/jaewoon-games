@@ -28,7 +28,7 @@ function Start-ApprovedPrivateCaptureSession {
   $join = Import-Clixml -Path $privateConfig
   if ($join -and $join.LinkCode -is [Security.SecureString]) {
    $gameId = [string]$join.GameId
-   $linkCode = (New-Object System.Net.NetworkCredential('', $join.LinkCode)).Password
+   $linkCode = ([System.Net.NetworkCredential]::new('', $join.LinkCode)).Password
   }
  }
  if ($gameId -notin @('cozy-island','daechung-rpg','horror-escape-room')) { return }
