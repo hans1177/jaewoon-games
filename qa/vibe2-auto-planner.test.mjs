@@ -1922,6 +1922,8 @@ test('full planner replaces low-value micro work with queued studio packages and
   fs.mkdirSync(validationDir,{recursive:true});
   fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
 
+  // Repeated gameplay BUILD_UP must use the normal approved design gate.
+  writeStudioDesign(root,gameId);
   const assessment={
     id:`${gameId}-existing-web-assessment-v1`,gameId,target:'web',department:'development',type:'implementation',
     sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'assessment complete',
