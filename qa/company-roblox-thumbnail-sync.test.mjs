@@ -589,6 +589,8 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.ok(workflow.includes('ROBLOX_UNATTENDED_CONCEPT_PREVIEWS_CREATED='));
   assert.ok(workflow.includes('GITHUB_STEP_SUMMARY'),'automatic production output should be visible from Action summary');
   assert.ok(workflow.includes('roblox-media-main-latest'),'main media pushes must coalesce to one latest pending run');
+  assert.ok(workflow.includes("cron: '17 2 * * *'"),'missed native-capture completion events must recover with daily fallback');
+  assert.ok(workflow.includes("github.event_name == 'schedule'"),'scheduled fallback must run existing media sync');
   assert.ok(workflow.includes('ROBLOX_DETAIL_IMAGE_REPAIR_PENDING_VIDEO_UNBLOCKED'),'video editing should continue after image API failure');
   assert.ok(workflow.includes('retention-days: 30'),'production archive should outlive 7-day default');
   assert.ok(workflow.includes('repository_dispatch:'),'capture-ready event wakes existing video pipeline');
