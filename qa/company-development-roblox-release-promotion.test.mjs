@@ -321,7 +321,10 @@ test('validation and final publish dedupe same-game stage without workflow-level
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   const header=workflow.slice(0,jobsAt);
-  assert.match(header,/group: roblox-publish-exact-\$\{\{ inputs\.game_id \|\| 'sync' \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}-\$\{\{ github\.sha \}\}/);
+  // Push/schedule media refreshes coalesce, but validation/final publish remains
+  // scoped to gameId, publish stage, exact SHA and immutable F9 cycle.
+  assert.match(header,/roblox-media-main-latest/);
+  assert.match(header,/format\('roblox-publish-exact-\{0\}-\{1\}-\{2\}-\{3\}', inputs\.game_id, inputs\.publish_stage, github\.sha, inputs\.publish_cycle_id\)/);
   assert.match(header,/cancel-in-progress: false/);
   assert.match(workflow,/release-dedupe:/);
   assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
@@ -584,7 +587,7 @@ test('F0 checkpoint becomes dispatchable only after preflight and artifact uploa
 test('final publication dedupe keeps distinct immutable cycles independent',()=>{
   const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.match(header,/format\(' · \{0\}', inputs\.publish_cycle_id\)/);
-  assert.match(header,/group: roblox-publish-exact-[^\n]*inputs\.publish_cycle_id/);
+  assert.match(header,/format\('roblox-publish-exact-\{0\}-\{1\}-\{2\}-\{3\}', inputs\.game_id, inputs\.publish_stage, github\.sha, inputs\.publish_cycle_id\)/);
   const guard=workflow.slice(workflow.indexOf('  release-dedupe:'),workflow.indexOf('\n  release:'));
   assert.match(guard,/PUBLISH_CYCLE_ID: \$\{\{ inputs\.publish_cycle_id/);
   assert.match(guard,/stage==='final'\?' · '\+cycle:''/);
