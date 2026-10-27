@@ -1637,6 +1637,26 @@ test('preservation presentation task is restored instead of superseded by generi
   assert.ok(restored.evidence.includes('owner-preservation-presentation-preempts-generic-web-repair'));
 });
 
+
+test('every active game platform uses the five-play minimum even when older config asks for one source edit',()=>{
+  const root=tempRepo();
+  fs.writeFileSync(path.join(root,'company-learning','vibe-autonomous-content-expansion-policy.json'),
+    JSON.stringify({iterationExpectationEscalation:{
+      status:'ACTIVE',
+      allGamesGameplayImprovementContract:{minimumPerBuildUp:1},
+      growth:{connectedImprovements:{base:1,stepEveryCycles:10,max:2}}
+    }}));
+  for(const focusPillar of ['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']){
+    for(const phase of ['BUILD_UP','REPAIR']){
+      const result=resolveBuildUpIterationExpectation({repoRoot:root,cycle:1,phase,focusPillar});
+      assert.equal(result.minimumPlayableImprovements,5);
+      assert.ok(result.minimumConnectedImprovements>=5);
+      assert.equal(result.visualIteration.startsAt,'F0_EXISTING_SOURCE_BIND');
+      assert.equal(result.visualIteration.continuesThrough,'F9_AND_VERIFIED_NEXT_BUILD_UP');
+    }
+  }
+});
+
 test('build-up iteration expectation rises with verified cycles without adding pipeline stages',()=>{
   const root=tempRepo();
   fs.writeFileSync(path.join(root,'company-learning','vibe-autonomous-content-expansion-policy.json'),JSON.stringify({
@@ -1675,7 +1695,10 @@ test('build-up iteration expectation rises with verified cycles without adding p
   const sixth=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'BUILD_UP',focusPillar:'PRESENTATION'});
   const repair=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'REPAIR',focusPillar:'STABILITY'});
   assert.equal(first.tier,'FOUNDATION_COMPLETENESS');
-  assert.equal(first.minimumConnectedImprovements,4);
+  assert.equal(first.minimumConnectedImprovements,5);
+  assert.equal(first.minimumPlayableImprovements,5);
+  assert.equal(repair.minimumPlayableImprovements,5);
+  assert.ok(first.playableImprovementVerification.includes('EXACT_PLATFORM_PLAY_EVIDENCE'));
   assert.equal(third.tier,'COHERENT_CONTENT_EXPANSION');
   assert.ok(third.minimumConnectedImprovements>first.minimumConnectedImprovements);
   assert.ok(third.minimumCrossSystemConnections>first.minimumCrossSystemConnections);
@@ -1803,7 +1826,10 @@ test('first studio build-up cycle establishes presentation baseline even when no
   assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
   assert.equal(task.studioQualityEvolution.visibleRenderDeltaRequired,true);
   assert.equal(task.studioQualityEvolution.qualityExpectation.expectationLevel,1);
-  assert.equal(task.studioQualityEvolution.requiredConnectedImprovements.min,3);
+  assert.equal(task.studioQualityEvolution.requiredConnectedImprovements.min,5);
+  assert.equal(task.studioQualityEvolution.requiredPlayableImprovements.min,5);
+  assert.ok(task.goal.includes('매 기존 BUILD_UP 세대에서 최소 5개'));
+  assert.ok(task.evidence.includes('studio-quality-min-playable-improvements:5'));
   assert.match(task.goal,/ITERATION_EXPECTATION_ESCALATION/);
   assert.ok(task.evidence.includes('studio-quality-expectation-tier:FOUNDATION_COMPLETENESS'));
   assert.ok(task.evidence.includes('graphics-evolution-before-after-comparison-required'));
@@ -1937,7 +1963,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.ok(first,'full planner must eventually queue the first studio-quality package');
   assert.equal(first.taskWorkUnits,7);
   assert.equal(first.studioQualityEvolution?.cycle,1);
-  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
+  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,5);
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,null);
   assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
