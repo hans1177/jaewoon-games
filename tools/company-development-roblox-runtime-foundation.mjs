@@ -414,6 +414,9 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS="..tostring(worldObjectDuplicateIds))',
     'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS="..tostring(resourcePromptCount))',
     'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED="..tostring(resourcePromptEnabledCount))',
+    // Five read-only Cloud scenario observations; no client simulation or save mutation.
+    'local cloudServerScenarios={{"EXACT_VERSION",tostring(game.PlaceId)=="' + place + '" and tonumber(game.PlaceVersion)==' + version + '},{"SERVER_SCRIPT",deployedGameScript~=nil and deployedGameScript:IsA("Script") and deployedGameScript.Enabled},{"WORLD_GEOMETRY",finiteWorldBounds and basePartCount>0},{"SPAWN_SUPPORT",spawnCount>0 and unsupportedSpawns==0 and floatingSpawns==0},{"INTERACTION_BINDINGS",worldObjectDuplicateIds==0 and resourcePromptEnabledCount<=resourcePromptCount}}',
+    'for i,scenario in ipairs(cloudServerScenarios) do print("JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_"..tostring(i).."="..scenario[1].."|"..tostring(scenario[2])) end',
   ].join(';');
   const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
   const decode=async(response,label)=>{
@@ -510,6 +513,25 @@ export async function probeRobloxOpenCloudEngine({
   // Only an actually running simulation with a game-produced boot marker can prove a server-script boot.
   const exactLuauTaskObserved=serverContextExecuted&&exactPlace&&exactVersion;
   const serverBootObserved=exactLuauTaskObserved&&simulationRunning&&legacyFoundationServerBootMarkerObserved;
+  // Absent, duplicated or misnamed logs never count as cloud evidence.
+  const scenarioNames=['EXACT_VERSION','SERVER_SCRIPT','WORLD_GEOMETRY','SPAWN_SUPPORT','INTERACTION_BINDINGS'];
+  const scenarioRows=scenarioNames.map((name,index)=>{
+    const matches=[...joined.matchAll(new RegExp('^JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_'+(index+1)+'=([^|\\n]+)\\|(true|false)$','gm'))];
+    const observed=matches.length===1&&matches[0][1]===name;
+    return Object.freeze({number:index+1,name,observed,passed:observed&&matches[0][2]==='true'});
+  });
+  const cloudServerScenarioEvidence=Object.freeze({
+    provider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
+    taskPath:rawPath,placeId:place,placeVersion:version,
+    scenarioCount:5,observedCount:scenarioRows.filter(row=>row.observed).length,
+    passedCount:scenarioRows.filter(row=>row.passed).length,
+    allChecksPassed:exactLuauTaskObserved&&scenarioRows.every(row=>row.passed),
+    scenarios:Object.freeze(scenarioRows),
+    executionScope:'NON_SIMULATING_READ_ONLY_SERVER_STRUCTURE',
+    actualPlayerPlayVerified:false,combatBehaviorVerified:false,
+    clientInputVerified:false,clientRenderingVerified:false,
+    saveRoundtripVerified:false,
+  });
   const serverBootEvidence=Object.freeze({
     observed:serverBootObserved,
     provider:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION',
@@ -595,7 +617,7 @@ export async function probeRobloxOpenCloudEngine({
     expectedBuildUpAssetSourceUsageFingerprint:expectedBuildUpAssetSourceUsageFingerprint||null,
     expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
     expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetAtomMatch:atomMatch,studioAssetFingerprintMatch:fingerprintMatch,studioAssetLibraryVersionMatch:libraryVersionMatch,studioAssetSelectionMatched,
-    state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),
+    state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),cloudServerScenarioEvidence,
   });
 }
 

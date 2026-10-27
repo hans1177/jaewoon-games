@@ -1610,3 +1610,71 @@ test('legacy Open Cloud Plugin capability denial remains diagnostic rather than 
  assert.doesNotMatch(script,/RunService:Run\(\)/);
 });
 
+
+ 
+test('five official Cloud server scenarios are read-only, version-bound and never claim player gameplay',async()=>{
+ const markers=['EXACT_VERSION','SERVER_SCRIPT','WORLD_GEOMETRY','SPAWN_SUPPORT','INTERACTION_BINDINGS'];
+ const expected=markers.map((name,i)=>`JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_${i+1}=${name}|true`);
+ const execute=async(marked,version=20)=>{
+  let script='';
+  const fetchImpl=async(_url,init={})=>{
+   if(init.method==='POST'){
+    script=JSON.parse(init.body).script;
+    return new Response(JSON.stringify({path:'universes/1/places/2/versions/20/luau-execution-sessions/x/tasks/t',state:'COMPLETE'}));
+   }
+   return new Response(JSON.stringify({luauExecutionSessionTaskLogs:[{structuredMessages:[
+    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+    {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION='+version},
+    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true'},
+    ...marked.map(message=>({message}))
+   ]}]}));
+  };
+  const result=await probeRobloxOpenCloudEngine({
+   universeId:'1',placeId:'2',versionNumber:20,apiKey:'test-key',fetchImpl,
+   networkRetryAttempts:1,pollIntervalMs:0
+  });
+  return{result,script};
+ };
+ const valid=await execute(expected);
+ assert.match(valid.script,/local cloudServerScenarios=/);
+ assert.match(valid.script,/tonumber\(game.PlaceVersion\)==20/);
+ assert.doesNotMatch(valid.script,/RunService:Run\(/);
+ assert.doesNotMatch(valid.script,/LoadCharacter\(|VirtualInput|keypress|FireServer\(/);
+ assert.equal(valid.result.cloudServerScenarioEvidence.scenarioCount,5);
+ assert.equal(valid.result.cloudServerScenarioEvidence.observedCount,5);
+ assert.equal(valid.result.cloudServerScenarioEvidence.passedCount,5);
+ assert.equal(valid.result.cloudServerScenarioEvidence.allChecksPassed,true);
+ assert.equal(valid.result.cloudServerScenarioEvidence.actualPlayerPlayVerified,false);
+ assert.equal(valid.result.cloudServerScenarioEvidence.combatBehaviorVerified,false);
+ assert.equal(valid.result.cloudServerScenarioEvidence.clientInputVerified,false);
+ assert.equal(valid.result.cloudServerScenarioEvidence.clientRenderingVerified,false);
+ assert.equal(valid.result.cloudServerScenarioEvidence.saveRoundtripVerified,false);
+ for(const modified of [
+  expected.slice(0,4),
+  [...expected,expected[0]],
+  expected.map((x,i)=>i===2?x.replace('true','false'):x),
+  expected.map((x,i)=>i===1?x.replace('SERVER_SCRIPT','OTHER_SCRIPT'):x)
+ ]){
+  const bad=(await execute(modified)).result.cloudServerScenarioEvidence;
+  assert.equal(bad.allChecksPassed,false);
+ }
+ const stale=(await execute(expected,19)).result;
+ assert.equal(stale.exactVersion,false);
+ assert.equal(stale.cloudServerScenarioEvidence.allChecksPassed,false);
+});
+
+ 
+test('canonical F0 private runtime and F9 post-publish retain five exact cloud check results without local players',()=>{
+ const f0=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const f9=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+ assert.match(f0,/runtime\.openCloudServerScenarioEvidence\?\.allChecksPassed===true/);
+ assert.match(f0,/const cloudServerScenariosPassed=engineProbe\?\.cloudServerScenarioEvidence\?\.allChecksPassed===true/);
+ assert.match(f0,/runtimeAcceptanceForRelease=.*cloudServerScenariosPassed/);
+ assert.match(f0,/openCloudServerScenarioEvidence:engineProbe\?\.cloudServerScenarioEvidence\|\|null/);
+ assert.match(f9,/const cloudScenarios=proof\.cloudServerScenarioEvidence\|\|null/);
+ assert.match(f9,/cloudScenarios\?\.observedCount===5/);
+ assert.match(f9,/serverChecksPassed&&stillCurrent/);
+ assert.match(f9,/cloudServerScenarioEvidence:cloudScenarios,liveGameplayVerified:false/);
+ assert.match(f9,/mobileVerified:false/);
+ assert.match(f9,/ROBLOX_POST_PUBLISH_SERVER_SCENARIOS=/);
+});
