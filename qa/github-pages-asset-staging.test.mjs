@@ -418,3 +418,12 @@ test('published Gem Survivor smoke reads live species without a local game check
  await assert.rejects(readSpecies({request:{get:async()=>({ok:()=>false})}},live,assert),/GEM_PUBLIC_RENDERER_HTTP/);
  await assert.rejects(readSpecies({request:{get:async()=>({ok:()=>true,text:async()=>'<html>unavailable</html>'})}},live,assert),/GEM_NATIVE_SPECIES_DECLARATION_MISSING/);
 });
+
+// 회귀: 공개판 포근섬 모델 검사는 실제 생성자와 동일한 텍스처 캐시를 준비해야 한다.
+test('published Cozy Island smoke initializes model-sign texture cache',()=>{
+ const renderer=fs.readFileSync('web-games/cozy-island/render-v3.js','utf8');
+ const smoke=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+ assert.match(renderer,/this\.signTextures3d=new Map\(\)/);
+ assert.match(smoke,/const renderer=Object\.create\(IslandRendererV3\.prototype\);\s*renderer\.signTextures3d=new Map\(\);/);
+ assert.match(smoke,/renderer\.make3d\(kind,3\.05\)/);
+});
