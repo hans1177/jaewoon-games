@@ -1262,6 +1262,7 @@ test('native design authoring reuses only validated original grammar and causal 
     },
     game:{name:'원본 검증 게임'},gameId:'native-grammar-test',
     seedState:{seedMaterials:[]},seedGameplaySketch:null,pendingSeedGrammarNotAuthored:true,
+    ownerPreservationDesign:false,
     allGamesMultiplayerRequired:false,originalMultiplayerMode:'COOP',nativeDesignVariation:0,
     clean:value=>String(value??'').trim(),
     validateDesignAuthoringContent,
