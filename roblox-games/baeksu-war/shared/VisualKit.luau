@@ -4,6 +4,12 @@ local AssetService=game:GetService("AssetService")
 local Debris=game:GetService("Debris")
 local IDs=require(script.Parent:WaitForChild("VisualAssetIds"))
 local Kit={}
+-- 실제 선택된 중앙 자산 atom만 실물 메시의 시각 효과에 적용한다.
+local selectedFamilies=(require(script.Parent:WaitForChild("GameConfig")).StudioAssets or {}).Families or {}
+local function hasStudioAssetAtom(family,atom)
+ local choices=selectedFamilies[family]
+ return type(choices)=="table" and table.find(choices,atom)~=nil
+end
 local templates={}
 local expected={'sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'}
 -- 수입 메시마다 기준점이 다르므로 지형과 실제 발끝 높이를 기준으로 배치한다.
@@ -107,7 +113,15 @@ local function finishMeshMaterials(mesh,creatureColor,team)
  end
  local textured=mesh:IsA("MeshPart") and mesh.TextureID~="" or mesh:FindFirstChildWhichIsA("SurfaceAppearance")~=nil
  mesh.Color=textured and mesh.Color:Lerp(shade,.3) or shade
- if not textured then mesh.Material=Enum.Material.SmoothPlastic end
+ if not textured then
+  if hasStudioAssetAtom("MATERIAL","FUR") and (name:find("fur") or name:find("wool")) then
+   mesh.Material=Enum.Material.Fabric
+  elseif hasStudioAssetAtom("MATERIAL","METAL") and (name:find("armor") or name:find("plate")) then
+   mesh.Material=Enum.Material.Metal
+  else
+   mesh.Material=Enum.Material.SmoothPlastic
+  end
+ end
  if team=="ENEMY" then mesh.Color=mesh.Color:Lerp(Color3.fromRGB(190,74,71),.14) end
 end
 local function meshClone(key,parent,cf,size,team,creatureColor)
@@ -141,7 +155,7 @@ function Kit.BuildCreature(folder,cf,unit,level,team)
  local scale=1+math.min(level-1,9)*.055
  actor:ScaleTo(actor:GetScale()*scale)
  Kit.PoseCreature(actor,cf.Position.X,cf.Position.Z,team=="ENEMY" and math.pi or 0)
- if level>=5 then
+ if level>=5 and hasStudioAssetAtom("VFX","STATUS_GLOW") then
   -- 진화한 실물 CC0 메시의 발밑에서만 소량의 광휘를 발생시킨다.
   -- 파츠/충돌/전투 판정/저장값을 추가하지 않으며 원본 메시를 유지한다.
   local attachment=Instance.new("Attachment")
