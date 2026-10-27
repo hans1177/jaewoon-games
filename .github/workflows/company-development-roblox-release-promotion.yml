@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '17 2 * * *'
     # Lightweight existing-canonical-gate retry for exact Roblox 429 after Retry-After.
-    - cron: '32 * * * *'
+    - cron: '*/10 * * * *'
   push:
     branches: [main]
     paths:
@@ -69,7 +69,7 @@ env:
 jobs:
   roblox-capacity-retry:
     name: retry one due exact private Roblox 429 validation without republishing
-    if: ${{ github.event_name == 'schedule' && github.event.schedule == '32 * * * *' }}
+    if: ${{ github.event_name == 'schedule' && github.event.schedule == '*/10 * * * *' }}
     runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
@@ -115,7 +115,7 @@ jobs:
             const bt=Date.parse(String(b.robloxRuntimeFoundationEvidence?.observedAt||''))||0;
             return at-bt||a.gameId.localeCompare(b.gameId);
           });
-          // At most one due game per hourly check; 429 failures are re-stamped,
+          // At most one due game per ten-minute check; 429 failures are re-stamped,
           // which rotates the next attempt to another waiting game.
           const gameId=!busy&&eligible.length?eligible[0].gameId:'';
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'game_id='+gameId+'\n');
