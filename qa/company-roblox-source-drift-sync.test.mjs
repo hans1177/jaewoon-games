@@ -504,7 +504,7 @@ test('shared Roblox module edits select actual consumers and invalidate only the
 
 test('source drift monitors shared assets without bypassing canonical per-game runtime',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/assets\\/roblox\\/\\*\\*/);
-  assert.match(workflow,/git diff --name-only .* -- roblox-games\\/ assets\\/roblox\\/ assets\\/shared\\/ assets\\/external\\//);
-  assert.match(workflow,/gh workflow run company-development-roblox-runtime\\.yml/);
+  assert.ok(workflow.includes("'assets/roblox/**'"));
+  assert.ok(workflow.includes('git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ assets/roblox/ assets/shared/ assets/external/'));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime.yml'));
 });

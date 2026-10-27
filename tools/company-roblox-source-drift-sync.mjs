@@ -42,7 +42,7 @@ function robloxBoundAssetPaths({repoRoot='.',gameId=''}={}){
   return [...paths].sort();
 }
 export function changedRobloxBuildGameIds(files=[],{repoRoot='.'}={}){
-  const changed=(files||[]).map(file=>clean(file).replaceAll('\\','/').replace(/^\\.\\//,'')).filter(Boolean);
+  const changed=(files||[]).map(file=>clean(file).replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean);
   const ids=new Set(changed.map(robloxBuildInputGameId).filter(Boolean));
   const assets=changed.filter(file=>file.startsWith('assets/'));
   if(assets.length){
