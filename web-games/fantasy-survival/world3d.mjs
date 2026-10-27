@@ -423,7 +423,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     underwater:['#5bafb8','#1b5369','#97cdda'],'underwater-dungeon':['#518292','#163847','#6aa3a0'],
     water:['#8dcee5','#246586','#d9f5f5'],lava:['#ffc074','#ad4429','#e46e30']
   });
-  const detailGeometry=new THREE.PlaneGeometry(floorPitchX*.94,floorPitchZ*.94);
+  // [지형] 기존 CC0 원본 바닥의 삼각형을 사용하여 임시 평면 메시를 없앤다.
+  const detailGeometry=sourceFloor.geometry.clone();
+  const detailPositions=detailGeometry.getAttribute('position');
+  const detailUvs=new Float32Array(detailPositions.count*2);
+  for(let i=0;i<detailPositions.count;i++){
+    detailUvs[2*i]=(detailPositions.getX(i)-floorBounds.min.x)/floorPitchX;
+    detailUvs[2*i+1]=1-(detailPositions.getZ(i)-floorBounds.min.z)/floorPitchZ;
+  }
+  detailGeometry.setAttribute('uv',new THREE.BufferAttribute(detailUvs,2));
   const detailTransform=new THREE.Object3D(),terrainDetailBatches=new Map();
   function terrainPixelBatch(zone){
     let row=terrainDetailBatches.get(zone);
@@ -539,7 +547,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   }
   // 메인 · 기존 건축 청사진을 3D 월드 위에서 직접 미리 보여준다.
   const blueprintMaterial=new THREE.MeshBasicMaterial({color:0x80f5a3,transparent:true,opacity:.48,depthWrite:false});
-  const blueprintGhost=new THREE.Mesh(new THREE.BoxGeometry(2,.7,2),blueprintMaterial);
+  // [건축] 청사진은 허가된 원본 모델만 표시하고 임시 상자를 만들지 않는다.
+  const blueprintGhost=new THREE.Group();
+  let blueprintSourceId='',blueprintVisual=null;
   blueprintGhost.visible=false;blueprintGhost.renderOrder=12;scene.add(blueprintGhost);
   // 메인: 기존 CC0 석재 메시를 공유하여 산성 구슬을 GPU 한 번의 배치로 렌더링한다.
   let acidBatch=null,acidBatchCapacity=0;
@@ -767,50 +777,19 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   if(hero)scene.add(hero.avatar);
 
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
-  let equippedVisualId='',equippedVisual=null;
+  // [장비] 원본 캐릭터 GLB의 기본 장비·모션을 유지한다.
+  // 검증된 무기별 원본이 없으므로 임의 상자·원통 모델은 생성하지 않는다.
+  // 공격·장비·저장 판정은 기존 게임 본편이 그대로 담당한다.
+  let equippedVisualId='';
   const swingArc=new THREE.Mesh(new THREE.TorusGeometry(.79,.045,4,23,Math.PI*1.12),
     new THREE.MeshBasicMaterial({color:0xdbe8fb,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
   swingArc.visible=false;swingArc.position.set(0,1.05,.46);swingArc.rotation.set(.12,0,-.25);
   const swingRing=new THREE.Mesh(new THREE.RingGeometry(.30,.38,18),
     new THREE.MeshBasicMaterial({color:0xe6d4a0,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
   swingRing.visible=false;swingRing.rotation.x=-Math.PI/2;swingRing.position.y=.055;
-  function disposeEquippedVisual(){
-    if(!equippedVisual)return;
-    equippedVisual.parent?.remove(equippedVisual);
-    equippedVisual.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose()}});
-    equippedVisual=null;equippedVisualId='';
-  }
   function updateEquippedVisual(id){
-    if(!hero)return;
-    if(equippedVisual?.parent===hero.avatar&&id===equippedVisualId)return;
-    disposeEquippedVisual();equippedVisualId=id;
-    if(!id||id==='none')return;
-    const kind=/bow|crossbow/.test(id)?'bow':/spear|lance|glaive|trident/.test(id)?'spear':
-      /axe|scythe/.test(id)?'axe':/hammer|maul|mace/.test(id)?'hammer':
-      /dagger|knife|fang/.test(id)?'dagger':/orb|staff|wand|seeker/.test(id)?'staff':'sword';
-    const gold=/gold|sunstone|holy/.test(id),crystal=/crystal|rune/.test(id);
-    const metal=new THREE.MeshStandardMaterial({color:gold?0xf0cb60:crystal?0xb3a3f8:0xb3c6cf,metalness:.36,roughness:.52,flatShading:true});
-    const grip=new THREE.MeshStandardMaterial({color:0x604a35,roughness:1,flatShading:true});
-    const equipment=new THREE.Group();equipment.position.set(.48,1.04,.25);
-    const part=(geometry,material,x,y,z,rz=0)=>{
-      const mesh=new THREE.Mesh(geometry,material.clone());
-      mesh.position.set(x,y,z);mesh.rotation.z=rz;mesh.castShadow=false;equipment.add(mesh);
-    };
-    if(kind==='bow'){
-      part(new THREE.TorusGeometry(.35,.035,4,14,Math.PI),grip,0,.15,0,Math.PI/2);
-      part(new THREE.CylinderGeometry(.012,.012,.7,4),metal,-.01,.15,0);
-    }else{
-      const length=kind==='spear'||kind==='staff'?1.22:kind==='hammer'?.75:.62;
-      part(new THREE.CylinderGeometry(.035,.045,length,5),grip,0,.1,0,-.25);
-      if(kind==='spear')part(new THREE.ConeGeometry(.13,.44,5),metal,.16,.79,0,-.25);
-      else if(kind==='axe')part(new THREE.BoxGeometry(.32,.30,.10),metal,.12,.39,0,-.25);
-      else if(kind==='hammer')part(new THREE.BoxGeometry(.40,.26,.25),metal,.14,.45,0,-.25);
-      else if(kind==='staff')part(new THREE.OctahedronGeometry(.16,0),metal,.17,.73,0);
-      else if(kind==='dagger')part(new THREE.ConeGeometry(.095,.40,4),metal,.10,.50,0,-.25);
-      else part(new THREE.BoxGeometry(.13,.65,.07),metal,.12,.59,0,-.25);
-    }
-    metal.dispose();grip.dispose();
-    hero.avatar.add(equipment);equippedVisual=equipment;
+    if(!hero||id===equippedVisualId)return;
+    equippedVisualId=id;
   }
   let observedWeather='';
   let weatherVisualEffects=[];
@@ -992,8 +971,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       tileIndex++;
       const pixelZone=surface?(surface.kind==='lava'?'lava':'water'):tileZone;
       const pixelBatch=terrainPixelBatch(pixelZone);
-      detailTransform.position.set(gx,.032,gz);
-      detailTransform.rotation.set(-Math.PI/2,0,0);
+      detailTransform.position.set(gx-floorCenterX,floorSurfaceY+.032,gz-floorCenterZ);
+      detailTransform.rotation.set(0,0,0);
       detailTransform.scale.setScalar(1);detailTransform.updateMatrix();
       pixelBatch.mesh.setMatrixAt(pixelBatch.mesh.count++,detailTransform.matrix);
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
@@ -1095,7 +1074,6 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         swingRing.material.opacity=(1-swingAge/260)*.35;
         swingRing.scale.setScalar(.5+swingAge/220*2);
       }
-      if(equippedVisual)equippedVisual.rotation.z=attackPhase*(heavy?-.50:/spear|lance|glaive/.test(tool)?-.14:-.32);
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
       const desired=heroClips.find(clip=>clip.name===clipName);
@@ -1184,11 +1162,32 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     for(let i=visibleBoltCount;i<mageBoltEffects.length;i++)mageBoltEffects[i].visible=false;
     const bp=state.area==='surface'?state.blueprint:null;
-    blueprintGhost.visible=!!bp;
-    if(bp){
-      blueprintGhost.position.set(bp.x*SCALE,.38,bp.y*SCALE);
+    const blueprintKind=!bp?'':/door|gate/i.test(bp.id)?'gate_single'
+      :/wall|fence/i.test(bp.id)?'fence_straight'
+      :/bench|forge|work|craft|furnace/i.test(bp.id)?'bench_B'
+      :/chest|storage|crate|box/i.test(bp.id)?'package'
+      :/house|home|hut|shelter/i.test(bp.id)?'house':'';
+    if(blueprintKind!==blueprintSourceId||(!blueprintVisual&&models.has(blueprintKind))){
+      if(blueprintVisual){blueprintGhost.remove(blueprintVisual);blueprintVisual=null}
+      blueprintSourceId=blueprintKind;
+      const source=models.get(blueprintKind);
+      if(source){
+        source.geometry.computeBoundingBox();
+        const bounds=source.geometry.boundingBox;
+        const width=Math.max(.01,bounds.max.x-bounds.min.x);
+        const height=Math.max(.01,bounds.max.y-bounds.min.y);
+        const depth=Math.max(.01,bounds.max.z-bounds.min.z);
+        blueprintVisual=new THREE.Mesh(source.geometry,blueprintMaterial);
+        blueprintVisual.position.set(-(bounds.min.x+bounds.max.x)/2,-bounds.min.y,
+          -(bounds.min.z+bounds.max.z)/2);
+        blueprintGhost.add(blueprintVisual);
+        blueprintGhost.scale.setScalar(Math.min(3/width,1.3/height,3/depth,2));
+      }
+    }
+    blueprintGhost.visible=!!bp&&!!blueprintVisual;
+    if(bp&&blueprintVisual){
+      blueprintGhost.position.set(bp.x*SCALE,.03,bp.y*SCALE);
       blueprintGhost.rotation.y=bp.vertical?Math.PI/2:0;
-      blueprintGhost.scale.set(bp.id==='wood-wall'||bp.id==='wood-door'?1.8:1,1,1);
       blueprintMaterial.color.setHex(bp.canPlace?0x80f5a3:0xff7373);
     }
     renderer.render(scene,camera);
@@ -1224,8 +1223,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     nativeCreatureActors.clear();
     for(const texture of nameTextures.values())texture.dispose();
     nameTextures.clear();
-    scene.remove(blueprintGhost);blueprintGhost.geometry.dispose();blueprintMaterial.dispose();
-    disposeEquippedVisual();swingArc.parent?.remove(swingArc);swingRing.parent?.remove(swingRing);
+    scene.remove(blueprintGhost);if(blueprintVisual)blueprintGhost.remove(blueprintVisual);
+    blueprintMaterial.dispose();
+    swingArc.parent?.remove(swingArc);swingRing.parent?.remove(swingRing);
     swingArc.geometry.dispose();swingArc.material.dispose();swingRing.geometry.dispose();swingRing.material.dispose();
     if(acidBatch)scene.remove(acidBatch);
     acidMaterial.dispose();
