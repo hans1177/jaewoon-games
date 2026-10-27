@@ -438,6 +438,11 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=INCOMPLETE_SCOPE_403/);
   assert.match(workflow,/assets\/roblox-thumbnails\//);
   assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS/);
+  assert.ok(workflow.includes("'assets/roblox-thumbnails/**'"),'new canonical art must trigger media regeneration');
+  assert.ok(workflow.includes("'assets/runtime-evidence/roblox/**'"),'real native footage intake must trigger edit');
+  assert.ok(workflow.includes('ROBLOX_UNATTENDED_CONCEPT_PREVIEWS_CREATED='));
+  assert.ok(workflow.includes('GITHUB_STEP_SUMMARY'),'automatic production output should be visible from Action summary');
+  assert.ok(workflow.includes('retention-days: 30'),'production archive should outlive 7-day default');
   assert.match(workflow,/company-roblox-thumbnail-sync\.mjs/);
   assert.match(workflow,/Publish exact game image to Roblox experience detail page/);
   assert.match(workflow,/robloxDetailMediaEvidence/);
