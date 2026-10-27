@@ -3668,9 +3668,20 @@ export function aggregateRuntimeMotionSignals(samples=[]){
   const sameFamilyRepeatRate=rows.length?count('sameFamilyRepeat')/rows.length:0;
   const verifiedPassCount=rows.filter(row=>row.runtimeVerified===true&&row.pass===true).length;
   const verifiedFailureCount=rows.filter(row=>row.runtimeVerified===true&&row.pass===false&&text(row.failureReason)).length;
+  // [빌드업 경험] 게임의 실제 GLB 클립 누락을 기록하되 검증 전에는 학습 권한을 부여하지 않는다.
+  const missingSourceClips=new Map(),verifiedMissingSourceClips=new Map();
+  for(const row of rows){
+    const role=upper(row.missingMotionRole);
+    if(!['IDLE','WALK','RUN','ATTACK','HIT','DEATH','DODGE','BLOCK','INTERACT'].includes(role))continue;
+    missingSourceClips.set(role,(missingSourceClips.get(role)||0)+1);
+    if(row.runtimeVerified===true&&row.pass===false&&text(row.failureReason))
+      verifiedMissingSourceClips.set(role,(verifiedMissingSourceClips.get(role)||0)+1);
+  }
   return Object.freeze({
     sampleCount:rows.length,
     usageByMotion:Object.freeze(Object.fromEntries([...usage.entries()])),
+    missingSourceClipRoles:Object.freeze(Object.fromEntries(missingSourceClips)),
+    verifiedFailureClipRoles:Object.freeze(Object.fromEntries(verifiedMissingSourceClips)),
     transitionQualityScore:avg('transitionQualityScore'),
     contactQaScore:avg('contactQaScore'),
     pairAlignmentScore:avg('pairAlignmentScore'),
@@ -3704,6 +3715,9 @@ export function buildRuntimeMotionLearningCandidate({
     positiveMasteryEligible:positive,
     negativeAvoidPatternEligible:negative,
     verifiedFailureLessons:Object.freeze(lessons),
+    // 원본의 클립 부재를 학습/교체 후보로 활용하는 것도 기존 런타임 QA 검증이 필수다.
+    observedSourceClipGaps:summary.missingSourceClipRoles||Object.freeze({}),
+    verifiedFailureClipGaps:summary.verifiedFailureClipRoles||Object.freeze({}),
     preparedSemanticEligible:false,
     rawTelemetryDirectTraining:false,
     feedsExistingCanonicalLearningChain:positive||negative,
