@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-16z2p4d",
+      "worker": "vibe2",
+      "taskId": "core-clash-4v4-existing-web-assessment-v1",
+      "gameId": "core-clash-4v4",
+      "files": [
+        "web-games/core-clash-4v4/index.html"
+      ],
+      "baseSha": "36aea4d2d579ee34b845a4fa8901d0dd8960cf4e",
+      "runId": "40466796552",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-27T07:37:15.815Z",
+      "expiresAt": "2026-10-27T08:22:15.815Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:core-clash-4v4-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
