@@ -163,15 +163,30 @@ local function bindFoundationCharacter(character)
   rootPart.AssemblyLinearVelocity = Vector3.zero
   rootPart.AssemblyAngularVelocity = Vector3.zero
   local movementOrigin = rootPart.Position
-  local moving = humanoid.Running:Connect(function(speed)
-    if not current() or not rootPart.Parent or humanoid.FloorMaterial == Enum.Material.Air then return end
+  local moving
+  local function stopMovementProof()
+    if moving then moving:Disconnect(); moving = nil end
+  end
+  -- [백수전쟁 참조] 스폰 접지 뒤에도 실제 이동까지 감지한다.
+  -- 종전 코드는 접지 3회 성공 즉시 연결을 끊어 MOVEMENT_CONFIRMED가 영구 false로 남을 수 있었다.
+  moving = humanoid.Running:Connect(function(speed)
+    if not current() or not rootPart.Parent or humanoid.Health <= 0 then
+      stopMovementProof()
+      return
+    end
+    if humanoid.FloorMaterial == Enum.Material.Air then return end
     local displacement = (rootPart.Position - movementOrigin) * Vector3.new(1, 0, 1)
-    if speed > 0.1 and displacement.Magnitude > 0.5 then character:SetAttribute("MOVEMENT_CONFIRMED", true) end
+    if speed > 0.1 and displacement.Magnitude > 0.5 then
+      character:SetAttribute("MOVEMENT_CONFIRMED", true)
+      stopMovementProof()
+    end
   end)
+  humanoid.Died:Once(stopMovementProof)
+  character.Destroying:Once(stopMovementProof)
   local deadline = os.clock() + 5
   local contacts = 0
   repeat
-    if not current() or not rootPart.Parent or humanoid.Health <= 0 then moving:Disconnect(); return end
+    if not current() or not rootPart.Parent or humanoid.Health <= 0 then stopMovementProof(); return end
     local contact = workspace:Raycast(rootPart.Position, Vector3.new(0, -(clearance + 0.75), 0), params)
     local errorY = contact and math.abs((rootPart.Position.Y - contact.Position.Y) - clearance) or math.huge
     if contact and contact.Normal.Y >= 0.55 and contact.Instance.Anchored and errorY <= 0.35 and not rootPart.Anchored
@@ -179,7 +194,7 @@ local function bindFoundationCharacter(character)
       contacts += 1
     else contacts = 0 end
     if contacts >= 3 then
-      moving:Disconnect()
+      -- 접지만 성공했을 뿐 실제 이동은 아직 미검증: Running 관측은 유지한다.
       character:SetAttribute("GROUND_CONTACT", true)
       character:SetAttribute("FoundationFailure", nil)
       character:SetAttribute("NativeFoundationGroundingVersion", 3)
@@ -188,7 +203,7 @@ local function bindFoundationCharacter(character)
     end
     task.wait(0.1)
   until os.clock() >= deadline
-  moving:Disconnect()
+  stopMovementProof()
   character:SetAttribute("FoundationFailure", "GROUND_CONTACT_FAILURE")
 end
 local function bindFoundationPlayer(player)
