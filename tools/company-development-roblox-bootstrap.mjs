@@ -907,7 +907,16 @@ ${rows(learning.verifiedExternalLearningUseForbidden||[])}
 function replaceOrInsertVerifiedExternalLearningConfig(source='',learning={}){
   const block=verifiedExternalLearningConfigBlock(learning);
   const managed=/  -- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN\n[\s\S]*?  -- VERIFIED_EXTERNAL_LEARNING_BINDING_END\n/;
-  if(managed.test(source))return source.replace(managed,block);
+  if(managed.test(source))return source.replace(managed,()=>block);
+  // Compact native game configs add C.Units/C.World after their initial table.
+  // Inject learning inside that same table without rewriting balance or saves.
+  const compact=source.match(/^local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*\{([^\n{}]+)\}\s*$/m);
+  const returns=source.match(/\breturn\s+([A-Za-z_][A-Za-z0-9_]*)\s*$/);
+  if(compact&&returns?.[1]===compact[1]
+    &&/\bPolicySource\s*=\s*["']company-learning\/platform-release-roadmap\.json["']/.test(compact[2])){
+    const fields=compact[2].trim().replace(/,\s*$/,'');
+    return source.replace(compact[0],()=>`local ${compact[1]}={${fields},\n${block}}`);
+  }
   const returnIndex=source.lastIndexOf('\nreturn ');
   const closeIndex=returnIndex>=0?source.lastIndexOf('\n}',returnIndex):-1;
   if(closeIndex<0)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_INSERT_POINT_MISSING');
