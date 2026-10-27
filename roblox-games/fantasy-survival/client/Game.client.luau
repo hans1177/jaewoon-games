@@ -384,3 +384,92 @@ end
 task.defer(reportNativeFoundationReady)
 
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,Config.Actions[1]and{label=CommonUI.ActionLabel(Config.Actions[1],1),activate=function()remote:FireServer(Config.Actions[1].Id)end}or nil)
+
+-- [모션·액션] 서버가 승인한 기존 COMBAT 입력만 R15 공용 관절 애니메이션에 연결한다.
+-- 서버 피해·이동·콤보 판정, 원래 Animator, 저장값은 수정하지 않는다.
+-- 이 경로는 미게시 원본 포즈를 직접 합성하며 실제 재생 QA 전까지 인증된 AnimationTrack이 아니다.
+local combatMotionSource = nil
+local combatMotionModule = Shared:FindFirstChild("RobloxCommonMotion")
+if combatMotionModule then
+  local ok, source = pcall(require, combatMotionModule)
+  if ok and type(source) == "table" and source.CreateCombatCombo and source.SampleCombatCombo
+    and source.MapCombatPoseToR15 and source.BindJointPose then combatMotionSource = source end
+end
+local RunService = game:GetService("RunService")
+local authorizedCombatScopes = {}
+for _, action in ipairs(Config.Actions) do
+  if action.Kind == "COMBAT" then authorizedCombatScopes[action.Id] = true end
+end
+local activeCombatCharacter = nil
+local activeCombatController = nil
+local activeCombatCombo = nil
+local activeCombatStartedAt = 0
+local combatPoseTargets = {}
+local combatR15Targets = {}
+local function finishNativeCombatMotion()
+  if activeCombatController then activeCombatController.Destroy(true) end
+  if activeCombatCharacter and activeCombatCharacter.Parent then
+    activeCombatCharacter:SetAttribute("NativeCombatMotionState", "IDLE")
+  end
+  activeCombatController = nil
+  activeCombatCombo = nil
+  activeCombatCharacter = nil
+  table.clear(combatPoseTargets)
+  table.clear(combatR15Targets)
+end
+player.CharacterAdded:Connect(function() finishNativeCombatMotion() end)
+player:GetAttributeChangedSignal("ActionSequence"):Connect(function()
+  -- 요청 버튼이 아닌 서버 승인 카운터가 증가한 경우에만 시각 모션을 시작한다.
+  if not authorizedCombatScopes[tostring(player:GetAttribute("LastApprovedScope") or "")] then return end
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not combatMotionSource or not humanoid or humanoid.Health <= 0 then return end
+  if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+    character:SetAttribute("NativeCombatMotionState", "R15_REQUIRED")
+    return
+  end
+  local tool = character:FindFirstChildOfClass("Tool")
+  local equipment = tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or "UNARMED"
+  local profile = equipment == "UNARMED" and "UNARMED" or combatMotionSource.ResolveWeaponProfile(equipment)
+  if not profile then
+    character:SetAttribute("NativeCombatMotionState", "MATCHING_WEAPON_MOTION_REQUIRED")
+    return
+  end
+  local joints = {}
+  for _, descendant in ipairs(character:GetDescendants()) do
+    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1 then
+      joints[descendant.Name] = descendant
+    end
+  end
+  if not (joints.Waist and joints.LeftShoulder and joints.RightShoulder
+    and joints.LeftElbow and joints.RightElbow) then
+    character:SetAttribute("NativeCombatMotionState", "COMPATIBLE_R15_JOINTS_REQUIRED")
+    return
+  end
+  finishNativeCombatMotion()
+  local ok, combo = pcall(combatMotionSource.CreateCombatCombo, profile)
+  if not ok or not combo or not combo.steps or #combo.steps == 0 then return end
+  activeCombatCharacter = character
+  activeCombatCombo = combo
+  activeCombatStartedAt = os.clock()
+  activeCombatController = combatMotionSource.BindJointPose(joints, {response = 32})
+  character:SetAttribute("NativeCombatMotionProfile", profile)
+  character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
+end)
+RunService.PreSimulation:Connect(function(dt)
+  if not (activeCombatController and activeCombatCombo and activeCombatCharacter) then return end
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if character ~= activeCombatCharacter or not humanoid or humanoid.Health <= 0 then
+    finishNativeCombatMotion()
+    return
+  end
+  table.clear(combatPoseTargets)
+  table.clear(combatR15Targets)
+  local _, _, finished = combatMotionSource.SampleCombatCombo(
+    activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
+  )
+  combatMotionSource.MapCombatPoseToR15(combatPoseTargets, combatR15Targets)
+  activeCombatController.Step(combatR15Targets, dt)
+  if finished then finishNativeCombatMotion() end
+end)
