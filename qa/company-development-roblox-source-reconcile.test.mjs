@@ -1264,7 +1264,7 @@ test('legacy Config.luau Roblox game gets common modules only, preserves gamepla
     // The production main may already have been synchronized. Recreate a genuinely old game.
     for(const name of Object.keys(shared))if(name.startsWith('RobloxCommon')
       &&name!=='RobloxCommonUI'&&name!=='RobloxCommonIcons')delete shared[name];
-    fs.writeFileSync(projectFile,JSON.stringify(originalProject,null,2)+'\\n');
+    fs.writeFileSync(projectFile,JSON.stringify(originalProject,null,2));
     const original={
       config:fs.readFileSync(path.join(gameRoot,'shared','Config.luau'),'utf8'),
       client:fs.readFileSync(path.join(gameRoot,'client','Game.client.luau'),'utf8'),
