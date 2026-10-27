@@ -47,7 +47,14 @@ try{
     await ocean.screenshot({path:'ocean-naval-'+viewport.width+'.png'});
     await ocean.locator('#fire').click();
     await ocean.locator('#navalEncounter').waitFor({state:'hidden',timeout:15000});
-    await ocean.locator('#naval3d').waitFor({state:'hidden'});
+    // [해전 종료] 3D 항해 화면은 계속 유지하고 전투 카메라만 일반 항해 시점으로 복귀한다.
+    // 기존 항해 3D를 끄는 예전 기준은 실제 정상 동작을 타임아웃으로 잘못 처리한다.
+    await ocean.locator('#naval3d').waitFor({state:'visible',timeout:15000});
+    await ocean.waitForFunction(()=>{
+     const canvas=document.getElementById('naval3d');
+     return canvas&&!canvas.hidden&&['chase','angle'].includes(canvas.dataset.camera)
+       &&Number(canvas.dataset.models)>=1;
+    },null,{timeout:15000});
     const saved=await ocean.evaluate(async()=>{const e=await import('./engine.mjs');return e.loadGame(localStorage);});
     assert.equal(saved.victories,1,'OCEAN_VICTORY_NOT_SAVED');assert.equal(saved.supplies.ammo,39,'OCEAN_AMMO_RULE_CHANGED');
     await ocean.reload({waitUntil:'networkidle'});assert.equal(await ocean.locator('#navalEncounter').isVisible(),false,'OCEAN_VICTORY_RELOAD_REENTERS_BATTLE');

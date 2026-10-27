@@ -720,7 +720,10 @@ test('CC0 role-grounded selection rejects unrelated score and unlicensed origina
   assert.equal(unknown.nextActions[0].reason,'ROLE_REQUIREMENT_UNRESOLVED');
   const missing=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'RUN'}],registry});
   assert.equal(missing.nextActions[0].action,'HOLD','without a verified matching existing asset, automatic authoring is forbidden');
-  assert.equal(missing.nextActions[0].reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
+  assert.equal(missing.nextActions[0].reason,'CURRENT_GAME_MISSING_ROLE_UNRESOLVED');
+  assert.equal(missing.libraryDownloadRequests[0]?.state,'VERIFIED_SOURCE_CATALOG_GAP');
+  assert.equal(missing.libraryDownloadRequests[0]?.autoSourceFetchAllowed,false);
+  assert.equal(missing.libraryDownloadRequests[0]?.directGameReplacementAuthorized,false);
   assert.equal(missing.runtimeVerificationGranted,false);
   const current=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION'}],registry:{assets:[{...registry.assets[0],consumerGameIds:['g']} ]}});
   assert.equal(current.nextActions[0].assetId,'bed','existing consumers remain reusable and quality work is not globally stopped');

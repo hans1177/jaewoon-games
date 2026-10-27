@@ -1428,7 +1428,11 @@ test('Roblox native motion binding keeps Animator IK foot-contact and mobile fra
 test('exact duplicate validation deployment coalesces by game stage and control revision',()=>{
   const publish=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-release-promotion.yml',import.meta.url),'utf8');
   const header=publish.slice(0,publish.indexOf('\njobs:\n'));
-  assert.match(header,/group: roblox-publish-exact-\$\{\{ inputs\.game_id \|\| 'sync' \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}-\$\{\{ github\.sha \}\}/);
+  // [중복 차단] 미디어 동기화는 최신 1건으로 합치고 실제 배포는 게임·단계·SHA·F9 주기별 분리한다.
+  assert.ok(header.includes("group: ${{ (github.event_name == 'push' || github.event_name == 'schedule')"));
+  assert.ok(header.includes("'roblox-media-main-latest'"));
+  assert.ok(header.includes("format('roblox-media-capture-{0}', github.event.client_payload.game_id)"));
+  assert.ok(header.includes("format('roblox-publish-exact-{0}-{1}-{2}-{3}', inputs.game_id, inputs.publish_stage, github.sha, inputs.publish_cycle_id)"));
   assert.match(header,/cancel-in-progress: false/);
   assert.match(publish,/release-dedupe:/);
   assert.match(publish,/ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=/);
