@@ -23,13 +23,34 @@ local function seatOnGround(model,x,z)
  local shift=terrainHeight(x,z)+.04-baseY(model)
  model:PivotTo(model:GetPivot()+Vector3.new(0,shift,0))
 end
-function Kit.PoseCreature(actor,x,z,yaw)
+-- 기존 CC0 원본 메시의 전체 피벗만 미세하게 움직인다.
+-- 이 모델들은 일반적으로 R15/Motor6D가 아니므로 사람형 61종 모션을 강제로 적용하지 않는다.
+-- 서버 전투 판정과 X/Z 위치, 지형 발높이, 물리·충돌·저장값은 바꾸지 않는다.
+function Kit.PoseCreature(actor,x,z,yaw,motion)
  local offset=actor:GetAttribute("PivotAboveFeet")
  if type(offset)~="number" then
   offset=actor:GetPivot().Position.Y-baseY(actor)
   actor:SetAttribute("PivotAboveFeet",offset)
  end
- actor:PivotTo(CFrame.new(x,terrainHeight(x,z)+offset+.04,z)*CFrame.Angles(0,yaw or 0,0))
+ local bob,pitch,roll,lunge=0,0,0,0
+ if type(motion)=="table" then
+  local age=tonumber(motion.attackElapsed)
+  if age and age>=0 and age<=.32 then
+   -- 실제 서버 공격 데미지가 적용된 직후에만 작은 전진·반동 포즈.
+   local strike=math.sin(math.pi*age/.32)
+   bob=.055*strike
+   pitch=-.055*strike
+   lunge=(motion.facing==-1 and -1 or 1)*.24*strike
+  elseif motion.moving==true then
+   -- 프레임별 루트 이동이 아닌 기존 서버 이동 위치 위의 가벼운 보행 박자.
+   local phase=tonumber(motion.phase) or 0
+   bob=math.abs(math.sin(phase))*.085
+   pitch=math.sin(phase)*.024
+   roll=math.sin(phase*.5)*.014
+  end
+ end
+ actor:PivotTo(CFrame.new(x,terrainHeight(x,z)+offset+.04+bob,z+lunge)
+  *CFrame.Angles(pitch,yaw or 0,roll))
 end
 for _,key in ipairs(expected) do
  local id=IDs[key]
