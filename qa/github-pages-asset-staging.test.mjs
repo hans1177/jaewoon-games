@@ -392,3 +392,17 @@ test('superseded Pages snapshot never uploads or enters the official publish job
  assert.ok(publish.includes("needs.deploy.outputs.artifact_ready == 'true'"));
  assert.ok(publish.includes('uses: actions/deploy-pages@v4'));
 });
+
+
+test('published Gem Survivor smoke checks full authored 3D species roster instead of obsolete 14',()=>{
+ const smoke=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+ const renderer=fs.readFileSync('web-games/gem-survivor/gem3d.mjs','utf8');
+ const literal=renderer.match(/const SPECIES=\[([^\]]+)\]/);
+ assert.ok(literal);
+ const species=[...literal[1].matchAll(/['"]([^'"]+)['"]/g)].map(row=>row[1]);
+ assert.ok(species.length>=14);
+ assert.equal(new Set(species).size,species.length);
+ assert.match(smoke,/GEM_NATIVE_SPECIES_NOT_FULLY_RENDERED/);
+ assert.match(smoke,/species.length/);
+ assert.doesNotMatch(smoke,/getAttribute\('data-authored-monster-kinds'\),'14'/);
+});

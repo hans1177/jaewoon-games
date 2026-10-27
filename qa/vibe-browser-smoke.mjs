@@ -111,7 +111,14 @@ try{
      const canvas=gem.locator('#game');
      assert.equal(await canvas.getAttribute('data-world-width'),'4200');
      assert.equal(await canvas.getAttribute('data-world-height'),'3200');
-     assert.equal(await canvas.getAttribute('data-authored-monster-kinds'),'14');
+     // 정확한 렌더러 소스의 모든 3D 몬스터 종류가 게시본에 로딩됐는지 검증한다.
+     const speciesSource=fs.readFileSync('web-games/gem-survivor/gem3d.mjs','utf8');
+     const speciesLiteral=speciesSource.match(/const SPECIES=\[([^\]]+)\]/);
+     assert.ok(speciesLiteral,'GEM_NATIVE_SPECIES_DECLARATION_MISSING');
+     const species=[...speciesLiteral[1].matchAll(/['"]([^'"]+)['"]/g)].map(row=>row[1]);
+     assert.ok(species.length>=14,'GEM_NATIVE_SPECIES_UNEXPECTED_SHRINK');
+     assert.equal(new Set(species).size,species.length,'GEM_NATIVE_SPECIES_DUPLICATE');
+     assert.equal(Number(await canvas.getAttribute('data-authored-monster-kinds')),species.length,'GEM_NATIVE_SPECIES_NOT_FULLY_RENDERED');
      assert.equal(await canvas.getAttribute('data-player-hp'),'200');
      assert.ok(Number(await canvas.getAttribute('data-glow-instances'))>0);
      assert.ok(Number(await canvas.getAttribute('data-glow-instances'))<=256);
