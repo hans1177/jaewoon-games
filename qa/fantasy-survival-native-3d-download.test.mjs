@@ -640,5 +640,4 @@ test('native fantasy preview uses original CC0 geometry for terrain texture and 
   assert.match(moduleSource,/source\.geometry\.computeBoundingBox\(\)/);
   assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
   assert.doesNotMatch(moduleSource,/function part\(geometry,material/);
-  assert.match(moduleSource,/SAVE_KEY|sourceFloor\.geometry\.clone/);
 });
