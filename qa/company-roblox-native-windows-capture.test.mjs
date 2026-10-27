@@ -86,7 +86,7 @@ test('Windows watcher and bootstrap never drive Roblox Player input and use boun
  assert.match(setup,/winget install -e --id Roblox[.]Roblox/);
  assert.match(setup,/ROBLOX_NATIVE_PLAYER_BINARY_INSTALLED=YES/);
  assert.match(setup,/ROBLOX_CAPTURE_WATCHER_POWERSHELL_PARSE_FAILED/);
- assert.match(setup,/HKCU:\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run/);
+ assert.match(setup,/HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run/);
  assert.match(setup,/ROBLOX_WINDOWS_CAPTURE_WATCHER=STARTED_AND_REGISTERED_WITH_CURRENT_USER_RUN/);
  assert.doesNotMatch(setup,/Get-ChildItem -LiteralPath \$NativePlayerVersions -Directory/);
  assert.doesNotMatch(setup,/auto-login|ROBLOSECURITY=/i);
@@ -118,7 +118,7 @@ test('service session hands native Player setup to a signed-in Windows desktop o
  assert.match(workflow,/WindowsIdentity\]::GetCurrent\(\)/);
  assert.match(workflow,/NTAccount\]::new\(\$consoleUser\)/);
  assert.match(workflow,/SERVICE_ACCOUNT_DIFFERS_FROM_CONSOLE_USER/);
- assert.match(workflow,/HKCU:\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run/);
+ assert.match(workflow,/HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run/);
  assert.match(workflow,/INTERACTIVE_LOGON_AUTORUN_REGISTERED/);
  assert.match(workflow,/USER_SIGNIN_REQUIRED_TO_RUN_PLAYER/);
  assert.match(workflow,/Get-ItemProperty -Path \$runKey/);
