@@ -390,11 +390,29 @@ export async function syncRobloxHomepageThumbnail({
       &&previous.universeId===target.universeId
       &&Boolean(previous.sourceSha256)
       &&previous.sourceSha256!==validated.sha256;
-    const media=await syncRobloxExperienceDetailMedia({
-      universeId:target.universeId,pngPath,cookie:robloxCookie,
-      skipDuplicateUpload:samePreviousUpload,refreshExistingImage,
-      previousImageBaselineIds:Array.isArray(previous.imageBaselineIds)?previous.imageBaselineIds:[],fetchImpl
-    });
+    // IMAGE_UPLOAD and VIDEO_EDIT are independent tasks. One failing may never stop the other.
+    let media,imageSyncFailure=null;
+    try{
+      media=await syncRobloxExperienceDetailMedia({
+        universeId:target.universeId,pngPath,cookie:robloxCookie,
+        skipDuplicateUpload:samePreviousUpload,refreshExistingImage,
+        previousImageBaselineIds:Array.isArray(previous.imageBaselineIds)?previous.imageBaselineIds:[],fetchImpl
+      });
+    }catch(error){
+      imageSyncFailure=clean(error?.message||error).slice(0,220);
+      media={
+        universeId:target.universeId,
+        imageStatus:'DETAIL_IMAGE_SYNC_FAILED_RETRY_REQUIRED',
+        verifiedDetailImage:false,canonicalImageContentVerified:false,
+        newGalleryImageApproved:false,
+        imageBaselineIds:Array.isArray(previous.imageBaselineIds)?previous.imageBaselineIds:[],
+        existingImageCount:null,approvedRobloxGameplayVideoCount:null,
+        videoStatus:'NATIVE_ROBLOX_VIDEO_PUBLICATION_STATUS_UNKNOWN',
+        checkedAt:new Date().toISOString(),imageSyncFailure,
+        authority:'ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA_NOT_VERIFIED'
+      };
+      console.warn('ROBLOX_DETAIL_IMAGE_SYNC_REPAIR_REQUIRED='+target.gameId+':'+imageSyncFailure);
+    }
     // 메인: 인증된 Roblox 런타임 촬영본이 있으면 사람이 버튼을 누르지 않아도 컷 편집한다.
     // 영상 원본은 기존 중앙 런타임 증거 경로만 인정하며 파일이 없다면 제작 완료로 표시하지 않는다.
     // 실제 미디어는 main 또는 회사 runtime 상태 저장소에서 도착할 수 있다.
@@ -475,7 +493,7 @@ export async function syncRobloxHomepageThumbnail({
       version:1,gameId:target.gameId,placeId:target.placeId,
       sourcePath:target.source,sourceSha256:validated.sha256,
       renderedPngSha256:rendered.sha256,...media,
-      automaticVideo
+      imageSyncFailure,automaticVideo
     };
     if(clean(outputPath))writeJson(path.resolve(root,outputPath),evidence);
     console.log('ROBLOX_DETAIL_IMAGE_STATE='+media.imageStatus);
