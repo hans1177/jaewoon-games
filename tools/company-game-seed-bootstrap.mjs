@@ -713,7 +713,8 @@ export function computeVibeSeedProposal(target){
     ?(['B_SYSTEM_ONLY','B_SUPPORTING_REFERENCE_ONLY','B_EXISTING_GAME_SYSTEMS'].includes(target.bSystemReference?.scope)?target.bSystemReference:
       target.aSystemReference?.scope==='A_SYSTEM_ONLY'?target.aSystemReference:null)
     :null;
-  const freeTopicMode=target.designTopicMode==='VIBE_FREE_TOPIC'||Boolean(bReference);
+  // 기존 B 시스템 참조만으로 오너의 자유 주제 모드를 켜지 않는다.
+  const freeTopicMode=target.designTopicMode==='VIBE_FREE_TOPIC';
   const requestedName=freeTopicMode?'':clean(target.gameName||target.ownerGameName);
   const ownerBrief=freeTopicMode?'':clean(target.ownerBrief||target.brief);
   const requestContext=freeTopicMode?'':[target.basicDesignMethod?'':requestedName,ownerBrief,clean(target.gameDescription),...(Array.isArray(target.coreLoop)?target.coreLoop.map(clean):[])].join(' ');
