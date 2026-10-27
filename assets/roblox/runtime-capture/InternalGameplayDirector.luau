@@ -28,9 +28,17 @@ end
 function Director.install(gameId)
  local p=Players.LocalPlayer
  if not p or game.PrivateServerId=="" then return false end
- local joined=p:GetJoinData()
- local launch=joined and joined.LaunchData
- if type(launch)~="string" or launch~="JAEWOON_NATIVE_CAPTURE_"..gameId then return false end
+ -- Roblox documents that LaunchData may arrive shortly after joining.
+ -- No mode starts unless the exact private-session opt-in is present.
+ local launch=""
+ local deadline=os.clock()+10
+ repeat
+  local ok,joined=pcall(function()return p:GetJoinData()end)
+  if ok and type(joined)=="table" then launch=tostring(joined.LaunchData or"")end
+  if launch~="" then break end
+  task.wait(.25)
+ until os.clock()>=deadline
+ if launch~="JAEWOON_NATIVE_CAPTURE_"..gameId then return false end
  if p:GetAttribute("InternalNativeCaptureRunning") then return false end
  p:SetAttribute("InternalNativeCaptureRunning",true)
  p:SetAttribute("InternalNativeCaptureState","WAITING_FOR_EXISTING_NPC")
