@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="18">
+<html lang="ko" data-asset-library-version="19">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -25,6 +25,16 @@
  <div class="collectionHeader"><div><p class="eyebrow">SOURCE INVENTORY</p><h2 id="sourceCollectionsTitle">소스팩과 제작 원본</h2></div><p>압축 원본·모델 목록·제작 레시피까지 확인해. 아직 게임에 적용됐다는 뜻은 아니야.</p></div>
  <div id="sourcePackList" class="sourcePackList" aria-label="회사 제작 원본 카탈로그"></div>
  <p class="muted" id="sourcePackStatus" role="status">중앙 등록부의 소스팩을 확인하는 중…</p>
+</section>
+<section class="assetSyncPanel" aria-labelledby="assetSyncTitle">
+ <div class="assetSyncHead"><div><p class="eyebrow">ASSET SYNC</p><h2 id="assetSyncTitle">에셋 수정·배포 연결</h2></div><p>원본 수정은 권한이 있는 깃허브에서 진행해. 저장소 main에 반영되면 기존 웹 배포가 실행되고, 로블록스는 실제 연결된 게임의 원본 변경만 감지해 재빌드해.</p></div>
+ <div class="assetSyncActions">
+  <a id="assetSourceLink" href="#" target="_blank" rel="noopener noreferrer" hidden>선택한 자산 원본 보기·수정</a>
+  <a href="https://github.com/hans1177/jaewoon-games/actions/workflows/magic-forest-pages.yml" target="_blank" rel="noopener noreferrer">웹 에셋 배포 확인·실행</a>
+  <a href="https://github.com/hans1177/jaewoon-games/actions/workflows/company-roblox-source-drift-sync.yml" target="_blank" rel="noopener noreferrer">로블록스 변경 동기화 확인</a>
+ </div>
+ <p class="assetSyncDetail" id="assetSyncDetail" role="status">자산을 선택하면 실제 소스 연결 상태가 표시돼.</p>
+ <p class="assetSyncNote">에셋만 수정해서 웹 라이브러리를 배포할 수 있어. 로블록스 자동 재빌드는 프로젝트에 연결된 실제 소스 변경만 처리해. 등록 정보나 미리보기 갱신이 게임 배포·실행 검증을 뜻하지는 않아.</p>
 </section>
 <section class="featuredMotions" aria-label="이번 작업 대표 모션과 액션">
  <div class="featureIntro"><p class="eyebrow">NEW MOTION · ACTION</p><strong>이미지가 아니라 실제 동작으로 확인</strong><span>현재 소스에서 뽑은 3D 샘플을 아래 뷰어에서 바로 재생해.</span></div>

@@ -53,3 +53,15 @@ body{margin:0;background:radial-gradient(ellipse at 48% -270px,#214266 0,#0b1424
 @media(max-width:390px){.sourcePackList{grid-template-columns:1fr}.inventorySummary small{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.assetList button{transition:none}}
 
+
+/* 에셋 관리자: 공개 페이지에서는 읽기 및 권한 있는 GitHub 원본·기존 배포 작업 링크만 제공한다. */
+.assetSyncPanel{margin:0 0 23px;padding:18px 20px;border:1px solid #314c61;border-radius:16px;background:#102033}
+.assetSyncHead{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.assetSyncHead h2{font-size:20px;margin:3px 0 8px}
+.assetSyncHead>p{max-width:640px;margin:0;color:var(--muted);font-size:12px}
+.assetSyncActions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.assetSyncActions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border:1px solid #527a96;border-radius:10px;background:#1b364f;padding:9px 13px;font-size:12px;font-weight:700}
+.assetSyncActions a:hover,.assetSyncActions a:focus-visible{border-color:#a2ddff}
+.assetSyncDetail{font-size:12px;color:#d6e8f6;overflow-wrap:anywhere;margin:8px 0}
+.assetSyncNote{color:var(--muted);font-size:11px;margin:8px 0 0}
+@media(max-width:760px){.assetSyncPanel{padding:15px}.assetSyncHead{display:block}.assetSyncActions{display:grid;grid-template-columns:1fr}.assetSyncActions a{text-align:center}}
