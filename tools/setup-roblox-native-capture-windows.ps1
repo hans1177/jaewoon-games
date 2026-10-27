@@ -2,7 +2,10 @@
 # This never automates Roblox login, Studio/Player GUI interaction, or purchases a VM.
 param(
  [string]$Base = "$env:LOCALAPPDATA\JaewoonNativeMedia",
- [switch]$RegisterWatcher
+ [switch]$RegisterWatcher,
+ [ValidateSet('','cozy-island','daechung-rpg','horror-escape-room')]
+ [string]$CaptureGameId = '',
+ [Security.SecureString]$PrivateLinkCode
 )
 $ErrorActionPreference = 'Stop'
 if ($env:OS -ne 'Windows_NT') { throw 'WINDOWS_INTERACTIVE_SESSION_REQUIRED' }
@@ -37,6 +40,17 @@ if (-not (Test-Path (Join-Path $Runtime '.git'))) {
 }
 if ((& git -C $Runtime branch --show-current).Trim() -ne 'company-runtime') {
  throw 'RUNTIME_BRANCH_MISMATCH'
+}
+# Keep private server joining details in per-user Windows DPAPI, not in GitHub or logs.
+if ($CaptureGameId -and $PrivateLinkCode) {
+ $PrivateConfig = Join-Path $Base 'private-capture-join.xml'
+ [pscustomobject]@{
+  GameId = $CaptureGameId
+  LinkCode = $PrivateLinkCode
+ } | Export-Clixml -Path $PrivateConfig -Force
+ Write-Host 'ROBLOX_PRIVATE_CAPTURE_JOIN_CONFIG=DPAPI_SAVED'
+} elseif ($CaptureGameId -or $PrivateLinkCode) {
+ throw 'CAPTURE_GAME_ID_AND_SECURE_PRIVATE_LINK_CODE_BOTH_REQUIRED'
 }
 if ($RegisterWatcher) {
  $Watcher = Join-Path $Repo 'tools\watch-roblox-native-capture-windows.ps1'
