@@ -354,6 +354,22 @@ test('native footage edit produces short playable real-source cuts without claim
     assert.equal(botResult.observedGameplayInteractions,4);
     assert.equal(botResult.uploadVerified,false);
     assert.equal(botResult.verifiedForSubmission,false);
+    // 단위시험의 영상은 인공 테스트 패턴이다. 여기서는 제출 판정 조건만 모의 검증한다.
+    const attested={
+      ...scripted,clientLogObserved:true,
+      runtimeVerification:{
+        ...scripted.runtimeVerification,
+        gameIdentityFromClientLog:true,videoFrameAuditPassed:true,
+        observedNativeNpcMotionStudsMin:2.5
+      }
+    };
+    fs.writeFileSync(proof,JSON.stringify(attested));
+    const autoReady=editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'
+    });
+    assert.equal(autoReady.verifiedForSubmission,true);
+    assert.equal(autoReady.manualNativeGameplayReviewRequired,false);
+
 
     fs.writeFileSync(proof,JSON.stringify({...scripted,actorAutomation:{...scripted.actorAutomation,mode:'OFFLINE_FAKE_RENDER'}}));
     assert.throws(()=>editVerifiedRobloxGameplayVideo({
