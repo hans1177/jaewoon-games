@@ -326,14 +326,14 @@ test('source drift persist checks only game-bound shared assets before each writ
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
   assert.match(workflow,/ROBLOX_SOURCE_SYNC_STALE_GAME_SOURCE=/);
   assert.match(workflow,/ROBLOX_SOURCE_SYNC_SOURCE_FRESH=/);
-  assert.match(workflow,/git -C "\\$GITHUB_WORKSPACE" fetch --no-tags --depth=1 origin main/);
-  assert.equal((workflow.match(/robloxBuildSourceChangedBetween\\(/g)||[]).length,2);
-  assert.match(workflow,/repoRoot:process\\.env\\.SOURCE_GAME_ROOT/);
-  assert.match(workflow,/gameId:process\\.env\\.SOURCE_GAME_ID/);
-  assert.match(workflow,/fromRevision:process\\.env\\.SOURCE_REVISION/);
-  assert.match(workflow,/toRevision:process\\.env\\.LIVE_MAIN/);
+  assert.match(workflow,/git -C "\$GITHUB_WORKSPACE" fetch --no-tags --depth=1 origin main/);
+  assert.equal((workflow.match(/robloxBuildSourceChangedBetween\(/g)||[]).length,2);
+  assert.match(workflow,/repoRoot:process\.env\.SOURCE_GAME_ROOT/);
+  assert.match(workflow,/gameId:process\.env\.SOURCE_GAME_ID/);
+  assert.match(workflow,/fromRevision:process\.env\.SOURCE_REVISION/);
+  assert.match(workflow,/toRevision:process\.env\.LIVE_MAIN/);
   assert.match(workflow,/ROBLOX_SOURCE_SYNC_DEPENDENCY_COMPARISON_UNVERIFIED/);
-  assert.doesNotMatch(workflow,/diff --quiet "\\$SOURCE_REVISION" "\\$live_main" --[^\\n]*assets\\/roblox/);
+  assert.doesNotMatch(workflow,/diff --quiet "\$SOURCE_REVISION" "\$live_main" --[^\n]*assets\/roblox/);
 });
 
 test('forced F0 restart invalidates package and F0 even when current source is unchanged',()=>{
