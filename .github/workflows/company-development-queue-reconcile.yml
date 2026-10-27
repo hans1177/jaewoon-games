@@ -108,8 +108,8 @@ jobs:
             git checkout -f -B development-queue-reconcile-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             git clean -fd
-            git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json
-            git reset -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
+            git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs tools/company-roblox-floor-report.mjs company-learning/platform-release-roadmap.json
+            git reset -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs tools/company-roblox-floor-report.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
             git restore --source=origin/main --worktree -- roblox-games
 
             # Main is the owner-policy authority; company-runtime owns mutable
