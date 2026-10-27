@@ -1427,7 +1427,7 @@ task.defer(reportNativeFoundationReady)
     foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
     serverSourceChanged:afterServer!==beforeServer,
-    commonModuleSync:{count:commonModules.moduleCount,linked:commonModules.linked,local:commonModules.local,conflicts:commonModules.conflicts},
+    commonModuleSync:{count:commonModules.moduleCount,linked:commonModules.linked,local:commonModules.local,conflicts:commonModules.conflicts,libraryCoverage:commonModules.libraryCoverage},
   });
 }
 function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
@@ -1881,6 +1881,7 @@ async function main(){
       verifiedExternalLearningFingerprint:existingLearning.verifiedExternalLearningFingerprint||null,
       verifiedExternalLearningApplyAxes:existingLearning.verifiedExternalLearningApplyAxes||[],
       studioAssetBinding:applied.studioAssets,studioAssetFamilyStatus:applied.studioAssetFamilyStatus,studioAssetBindingApplied:applied.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
+       commonModuleSync:applied.commonModuleSync,
       implementationNotes:foundationRepair?['existing Roblox gameplay source preserved','native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass']:['existing Roblox gameplay source preserved','company library Studio asset binding updated in existing config and client presentation','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass'],
       buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
       buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
@@ -1911,6 +1912,7 @@ async function main(){
   const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective});
   if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
   writeSourceTree(outputRoot,built.result,gameId);
+  const commonModuleSync=synchronizeRobloxCommonModules({project:JSON.parse(fs.readFileSync(path.join(outputRoot,'default.project.json'),'utf8')),gameRoot:outputRoot});
   const evidence={
     version:4,gameId,gameName,platform:'ROBLOX',policyDocument:roadmapFile,stage:'TARGET_PLATFORM_SOURCE_BIND',
     sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
@@ -1929,6 +1931,7 @@ async function main(){
     recombinationOperator:built.learning.transformationOperator,recombinationSourceProjects:built.learning.sourceProjects,learningFeatureBlend:built.learning.featureBlend,
     platformDesignProfile:built.platformProfile,webPlatformHandoffLegacy:built.webHandoff,webPlatformHandoffRequired:false,
     studioAssetBinding:built.studioAssets,studioAssetFamilyStatus:built.studioAssetFamilyStatus,studioAssetBindingApplied:built.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
+    commonModuleSync:{count:commonModuleSync.moduleCount,linked:commonModuleSync.linked,local:commonModuleSync.local,conflicts:commonModuleSync.conflicts,libraryCoverage:commonModuleSync.libraryCoverage},
     implementationNotes:built.result.implementationNotes,
     buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
     buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
