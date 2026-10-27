@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1vparlz",
+      "worker": "vibe2",
+      "taskId": "wild-survival-existing-web-assessment-v1",
+      "gameId": "wild-survival",
+      "files": [
+        "web-games/wild-survival/index.html"
+      ],
+      "baseSha": "027620a1527a39510c25239df585d8d50cf713f5",
+      "runId": "40579257387",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-27T20:43:44.787Z",
+      "expiresAt": "2026-10-27T21:28:44.787Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:wild-survival-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
