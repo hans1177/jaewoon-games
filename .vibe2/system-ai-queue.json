@@ -147209,7 +147209,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -147243,7 +147243,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 6,
-      "previousReservationId": "system-ai:40285318439:1",
+      "previousReservationId": "system-ai:40485230363:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -147251,12 +147251,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40485230363:1",
-      "reservedAt": "2026-10-27T10:14:34.701Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -147379,7 +147379,8 @@
         "actions-run:40285318439",
         "system-ai-impact-score:1666",
         "system-ai-blocked-task-count:33",
-        "system-ai-handoff-to-reservation:system-ai:40485230363:1"
+        "system-ai-handoff-to-reservation:system-ai:40485230363:1",
+        "actions-run:40485230363"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1666,
@@ -147394,7 +147395,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-27T10:14:34.701Z"
+      "updatedAt": "2026-10-27T10:24:09.692Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
