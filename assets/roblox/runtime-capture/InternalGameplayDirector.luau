@@ -95,7 +95,7 @@ function Director.install(gameId)
   -- Dedicated Windows capture observer can verify the game/Universe/Place and
   -- that a real humanoid was observed moving, without any keyboard/mouse control.
   print("JAEWOON_NATIVE_CAPTURE_READY|"..gameId.."|"..tostring(game.GameId).."|"..
-   tostring(game.PlaceId).."|"..tostring(game.PlaceVersion).."|NPC_MOVED")
+   tostring(game.PlaceId).."|"..tostring(game.PlaceVersion).."|NPC_MOVED|"..tostring(os.time()))
   local finishState="NATIVE_SCENE_RECORDED_FILE_NOT_EXPORTED"
   local complete=false
   local success,startResult=pcall(function()
