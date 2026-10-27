@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-27T13:39:12.569Z",
+  "updatedAt": "2026-10-27T16:38:04.233Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -469,8 +469,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T07:13:17.730Z",
-      "updatedAt": "2026-10-27T13:39:12.567Z",
-      "occurrenceCount": 390,
+      "updatedAt": "2026-10-27T16:38:04.230Z",
+      "occurrenceCount": 391,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -590,8 +590,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-10-27T13:39:12.567Z",
-      "occurrenceCount": 306,
+      "updatedAt": "2026-10-27T16:38:04.230Z",
+      "occurrenceCount": 307,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -11914,8 +11914,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-27T07:30:33.941Z",
-      "updatedAt": "2026-10-27T13:39:12.567Z",
-      "occurrenceCount": 5
+      "updatedAt": "2026-10-27T16:38:04.230Z",
+      "occurrenceCount": 6
     },
     {
       "id": "bug-c5d944a757e7c627e4aa",
@@ -11953,7 +11953,8 @@
       "responsibleFiles": [],
       "evidence": [
         "roblox-build-package:roblox-package-asset-binding-failed",
-        "{\"sourceRevision\":\"1f9c75136cca543c0b4ec125c2cf8813ec694b9e\",\"buildSourceRevision\":\"1f9c75136cca543c0b4ec125c2cf8813ec694b9e\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"1f9c75136cca543c0b4ec125c2cf8813ec694b9e\",\"buildSourceRevision\":\"1f9c75136cca543c0b4ec125c2cf8813ec694b9e\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"0dbe5977f02ed7c50acd7a6a0bee02abe8125242\",\"buildSourceRevision\":\"0dbe5977f02ed7c50acd7a6a0bee02abe8125242\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -11962,8 +11963,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-27T13:39:12.567Z",
-      "updatedAt": "2026-10-27T13:39:12.567Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-10-27T16:38:04.230Z",
+      "occurrenceCount": 2
     }
   ]
 }
