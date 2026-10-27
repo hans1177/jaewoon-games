@@ -62,6 +62,10 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/ProximityPrompt/);
   assert.match(server,/if wood<cost or stone<cost then return false end/);
   assert.match(server,/if actionAccepted and action.Id == actionId and action.Kind == "COMBAT"/);
+  assert.match(server,/local approvedSequence = readNumber\(player, "ActionSequence", 0\) \+ 1/);
+  assert.match(server,/player:SetAttribute\("ApprovedCombatMotion", actionId/);
+  assert.match(server,/humanoid\.HealthChanged:Connect\(reportHealth\)/);
+  assert.match(server,/humanoid\.Died:Connect/);
   assert.doesNotMatch(server,/local function scopeHandler\d+\(/);
 });
 

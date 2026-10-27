@@ -362,6 +362,25 @@ local handlers={
   ["scope-mobileux-5acfb2eaa6"]=attackEnemy,
 }
 
+local function bindSurvivalHealth(player)
+  local function bindCharacter(character)
+    local humanoid = character:WaitForChild("Humanoid", 10)
+    if not humanoid then return end
+    -- 플레이어 실제 휴머노이드 체력만 HUD에 전달한다. 서버가 소유하는 체력 판정은 유지한다.
+    local function reportHealth(value)
+      if player.Parent then setNumber(player, "Health", math.max(0, math.floor(value))) end
+    end
+    reportHealth(humanoid.Health)
+    humanoid.HealthChanged:Connect(reportHealth)
+    humanoid.Died:Connect(function()
+      player:SetAttribute("RunActive", false)
+      player:SetAttribute("LastApprovedScope", "survival-respawn")
+    end)
+  end
+  player.CharacterAdded:Connect(bindCharacter)
+  if player.Character then task.defer(bindCharacter, player.Character) end
+end
+
 Players.PlayerAdded:Connect(function(player)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
@@ -371,9 +390,13 @@ Players.PlayerAdded:Connect(function(player)
       local value = saved[key]
       if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
     end
+    player:SetAttribute("ActionSequence", 0)
+    player:SetAttribute("LastApprovedScope", "ready")
   else
     initializePlayer(player)
   end
+  bindSurvivalHealth(player)
+  broadcastSurvivalState(player)
 end)
 for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function() if player:GetAttribute("Score") == nil then initializePlayer(player) end end)
@@ -390,7 +413,11 @@ remote.OnServerEvent:Connect(function(player, actionId)
   -- [서버 권한] 실제 승인된 공격 판정이 있을 때만 전투 모션 이벤트를 보낸다.
   for _, action in ipairs(Config.Actions) do
     if actionAccepted and action.Id == actionId and action.Kind == "COMBAT" then
-      player:SetAttribute("ApprovedCombatMotion", actionId .. ":" .. tostring(readNumber(player, "ActionSequence", 0)))
+      -- Roblox 속성 변경 이벤트는 같은 문자열을 재전송하면 발생하지 않는다.
+      -- 피해 판정이 성공한 공격마다 별도 승인 번호를 발급해 연속 타격 모션을 유지한다.
+      local approvedSequence = readNumber(player, "ActionSequence", 0) + 1
+      setNumber(player, "ActionSequence", approvedSequence)
+      player:SetAttribute("ApprovedCombatMotion", actionId .. ":" .. tostring(approvedSequence))
       break
     end
   end
