@@ -38,7 +38,10 @@ test('daechung Unity Web QA touches the same fixed-screen attack button used by 
   assert.match(source,/var actionRect = new Rect\(/);
   assert.match(source,/center\.x \/ Screen\.width/);
   assert.match(source,/center\.y \/ Screen\.height/);
-  assert.match(source,/GUI\.Button\(actionRect, "ATTACK"\)/);
+  // Same fixed button: HUNT in town, ATTACK in actual encounter.
+  assert.match(source,/GUI\.Button\(actionRect, canEnterHunt \? "HUNT" : "ATTACK"\)/);
+  assert.match(source,/var canEnterHunt = _enemy == null && _core != null && _core\.Player\.currentRegionId == "town"/);
+  assert.match(source,/if \(canEnterHunt\) MoveTo\("field-1"\);\s*else AttackEnemy\(\);/);
   assert.match(source,/MOBILE_TARGET game=daechung-rpg role=action/);
   assert.match(source,/MOBILE_INPUT game=daechung-rpg role=action status=PASS/);
   assert.doesNotMatch(source,/var attackRect = GUILayoutUtility\.GetLastRect\(\)/);

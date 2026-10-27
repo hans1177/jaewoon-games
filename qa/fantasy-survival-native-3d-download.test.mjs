@@ -427,7 +427,9 @@ test('CC0 action profile selects exact source clips and leaves combat authority 
  assert.equal(motion.cc0Clips.attack,'1H_Melee_Attack_Stab');
  assert.equal(motion.cc0Clips.run,'Running_A');
  assert.equal(motion.cc0Clips.idle,'Idle');
- assert.match(moduleSource,/clip\.name===clipName/);
+ // Verified clip alternatives are chosen by exact name rather than ambiguous partial matching.
+ assert.match(moduleSource,/const candidates=playerMotionProfile\.cc0ClipCandidates\[motionRole\]\|\|\[clipName\]/);
+ assert.match(moduleSource,/candidates\.map\(name=>heroClips\.find\(clip=>clip\.name===name\)\)\.find\(Boolean\)/);
  assert.match(moduleSource,/THREE\.LoopOnce/);
  assert.match(moduleSource,/attackAt!==lastHeroAttackAt/);
 });
