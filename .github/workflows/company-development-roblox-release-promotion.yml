@@ -4,6 +4,10 @@ name: Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
 run-name: Roblox publish · ${{ inputs.game_id || 'push' }} · ${{ github.event_name == 'workflow_dispatch' && (inputs.publish_stage || 'validation') || 'sync-only' }}${{ inputs.publish_stage == 'final' && format(' · {0}', inputs.publish_cycle_id) || '' }}
 
 on:
+  # Restore progress even if a native-capture worker cannot send its completion event.
+  # This runs the existing sync-only job; never authorizes player automation or publication.
+  schedule:
+    - cron: '17 2 * * *'
   push:
     branches: [main]
     paths:
@@ -49,7 +53,7 @@ permissions:
 # only the latest waiting sync, instead of queueing a separate media job for each SHA.
 # Per-game validation/final publish preserves exact immutable revision/cycle isolation.
 concurrency:
-  group: ${{ github.event_name == 'push' && 'roblox-media-main-latest' || github.event_name == 'repository_dispatch' && format('roblox-media-capture-{0}', github.event.client_payload.game_id) || format('roblox-publish-exact-{0}-{1}-{2}-{3}', inputs.game_id, inputs.publish_stage, github.sha, inputs.publish_cycle_id) }}
+  group: ${{ (github.event_name == 'push' || github.event_name == 'schedule') && 'roblox-media-main-latest' || github.event_name == 'repository_dispatch' && format('roblox-media-capture-{0}', github.event.client_payload.game_id) || format('roblox-publish-exact-{0}-{1}-{2}-{3}', inputs.game_id, inputs.publish_stage, github.sha, inputs.publish_cycle_id) }}
   cancel-in-progress: false
 
 env:
@@ -1411,7 +1415,7 @@ jobs:
   thumbnail-sync:
     name: sync canonical Roblox and homepage thumbnails
     needs: release
-    if: ${{ always() && (github.event_name == 'push' || github.event_name == 'repository_dispatch' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
+    if: ${{ always() && (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'repository_dispatch' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
