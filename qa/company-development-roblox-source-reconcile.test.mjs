@@ -1163,9 +1163,16 @@ test('legacy Baeksu war enters canonical all-game common-module sweep without fa
       if(name.startsWith('RobloxCommon'))delete fixtureShared[name];
     }
     fs.writeFileSync(fixtureProjectFile,JSON.stringify(fixtureProject,null,2)+'\n');
+    // 구형 Config 전용 분기를 검증하기 위해 임시 복사본만 과거 파일 구조로 복원한다.
+    // 현재 main의 GameConfig 및 서버·클라이언트는 절대 변경하지 않는다.
+    fs.renameSync(path.join(gameRoot,'shared/GameConfig.luau'),path.join(gameRoot,'shared/Config.luau'));
+    for(const name of ['client/Game.client.luau','server/Game.server.luau']){
+      const nativeFile=path.join(gameRoot,name);
+      fs.writeFileSync(nativeFile,fs.readFileSync(nativeFile,'utf8').replaceAll('WaitForChild("GameConfig")','WaitForChild("Config")'));
+    }
     const originalClient=fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8');
     const originalServer=fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8');
-    const originalConfig=fs.readFileSync(path.join(gameRoot,'shared/GameConfig.luau'),'utf8');
+    const originalConfig=fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8');
     const before=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
     assert.equal(before.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
     const playbooks=path.join(tmp,'verified-playbooks.json');
@@ -1191,7 +1198,7 @@ test('legacy Baeksu war enters canonical all-game common-module sweep without fa
       '../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
     assert.equal(fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8'),originalClient);
     assert.equal(fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8'),originalServer);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'shared/GameConfig.luau'),'utf8'),originalConfig);
+    assert.equal(fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8'),originalConfig);
     const evidencePath=path.join(gameRoot,'roblox-source-bootstrap.json');
     const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
     assert.equal(evidence.moduleSyncOnly,true);
@@ -1207,6 +1214,30 @@ test('legacy Baeksu war enters canonical all-game common-module sweep without fa
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+
+test('standard Baeksu GameConfig does not claim verified learning without a real playbook',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-baeksu-verified-gate-'));
+  try{
+    const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
+    const paths=['default.project.json','client/Game.client.luau','server/Game.server.luau','shared/GameConfig.luau'];
+    for(const name of paths){
+      const dest=path.join(gameRoot,name);
+      fs.mkdirSync(path.dirname(dest),{recursive:true});
+      fs.copyFileSync(path.join('roblox-games/baeksu-war',name),dest);
+    }
+    const projectFile=path.join(gameRoot,'default.project.json');
+    const beforeProject=fs.readFileSync(projectFile,'utf8');
+    const playbooks=path.join(tmp,'verified-playbooks.json');
+    fs.writeFileSync(playbooks,'{}\\n');
+    assert.throws(()=>execFileSync(process.execPath,[
+      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+      '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war','--playbooks='+playbooks
+    ],{stdio:'pipe'}),/Command failed/);
+    assert.equal(fs.readFileSync(projectFile,'utf8'),beforeProject);
+    assert.equal(fs.existsSync(path.join(gameRoot,'roblox-source-bootstrap.json')),false);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
 test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
