@@ -1559,3 +1559,16 @@ QACamera.install(C,gui,function()
  return shots
 end)
 render()
+
+
+-- Private, opt-in production capture: follows existing server NPC movement.
+-- No player inputs, new NPCs, or public gameplay changes.
+task.defer(function()
+ local shared=RS:WaitForChild("Shared",5)
+ local module=shared and shared:FindFirstChild("InternalGameplayDirector")
+ if not module then return end
+ local ok,director=pcall(require,module)
+ if ok and director and type(director.install)=="function" then
+  director.install("daechung-rpg")
+ end
+end)
