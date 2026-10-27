@@ -4421,6 +4421,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   for(const {project,webSeed,distinctSeed,focusedSeed} of planningProjects){
     if(planned.length>=capacity)break;
     if(webSeed&&(webFlowGames.size>=webFlowTarget||webFlowGames.has(project.gameId)))continue;
+    // 전체 기획 대기열이 커도 웹 개발의 실질적 서로 다른 게임 수는 적정 목표를 초과해 신규 배정하지 않는다.
+    // 이미 진행 중인 게임, 오너 집중 게임, 기존 검증·복구 작업은 중단하지 않는다.
+    if(!webFlowUnityOnly&&webFlowMax>0&&project.engine==='web'&&!webFlowGames.has(project.gameId)
+      &&webFlowGames.size>=webFlowTarget&&!focusedSeed)continue;
     if(distinctSeed&&(activeGameIds.size>=distinctTarget||activeGameIds.has(project.gameId)))continue;
     if(!webSeed&&!distinctSeed&&!focusedSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
