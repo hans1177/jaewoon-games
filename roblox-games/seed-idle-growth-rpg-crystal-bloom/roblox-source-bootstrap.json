@@ -1154,5 +1154,59 @@
   "verifiedExternalValidationOnlyPrincipleCount": 14,
   "verifiedExternalLearningGameDevelopmentAppliedCount": 9,
   "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-10-25T05:16:23.950Z"
+  "verifiedExternalLearningSweepAt": "2026-10-27T06:57:32.598Z",
+  "commonModuleSync": {
+    "count": 15,
+    "linked": [
+      "RobloxCommonBuilding",
+      "RobloxCommonCharacterGear",
+      "RobloxCommonCreatureParts",
+      "RobloxCommonEnvironment",
+      "RobloxCommonFoliage",
+      "RobloxCommonItems",
+      "RobloxCommonMotion",
+      "RobloxCommonPresentation",
+      "RobloxCommonSkillPresentation",
+      "RobloxCommonTools",
+      "RobloxCommonIcons",
+      "RobloxCommonVFX",
+      "RobloxCommonWorldProps"
+    ],
+    "local": [
+      "RobloxCommonMaterials",
+      "RobloxCommonUI"
+    ],
+    "conflicts": [
+      {
+        "module": "RobloxCommonMaterials",
+        "reason": "GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL"
+      },
+      {
+        "module": "RobloxCommonUI",
+        "reason": "GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL"
+      }
+    ],
+    "libraryCoverage": {
+      "runtimeModuleCount": 15,
+      "firstPartyPackCount": 14,
+      "firstPartyPatternSourceCount": 79,
+      "firstPartyDevelopmentSourceCount": 132,
+      "nativeSpecializedPackCount": 6,
+      "verifiedCodePatternCount": 0,
+      "patternSourcesRuntimeInjected": false,
+      "unverifiedAssetsAutoPromoted": false,
+      "libraryFingerprints": {
+        "company-asset-library.json": "6873594e232eeda3bfeb7ac3c9b5fc8b764afbc0856ce969905f91717a586348",
+        "company-learning/canonical-learning-pipeline.json": "33b1748870fabf0bfaec02c667651a9f7cbce211edf6e0d4da6bdd1ec484a16a",
+        "company-learning/vibe2-code-pattern-library.json": "f29210c5520d6ff3ce597ee6168d2b9b9bc9ae221b280c57aa042c0ae51bd826",
+        "company-learning/vibe3-task-playbooks.json": "e0ff9baaeef973b14c0b23001704dcde72be6d86908af802eca0e26c72b04dfa",
+        "company-learning/vibe3-engine-contract.json": "8364e9d1337ddf6c4c867f7ae6288700f70e01d8ec2bf230dba44fbcc2f59154",
+        "assets/asset-manifest.json": "4ea6425265f36b8d9b5dbb683815a30d24d985548413441b053b36b9e2e330d2",
+        "assets/asset-license-ledger.json": "76bcae6c367d44a7280b87302133099472be50d36d6a903a3a4f0e6077eea6c2",
+        "assets/roblox/common-registered-external-assets-v1.json": "f55af5886be2e7fe3031e7e7939a06274a28d1265fb0ab6356870e98b21fe05a"
+      },
+      "sourceFingerprint": "6a79672588a2fa9c8836038e11aff804dbff850252e509086c8467a48c3722d9",
+      "runtimeBindingFingerprint": "12c6a9f71394ed54c08e7b02c50a8736d98d7f7100dafa0d297442bb5f543139"
+    }
+  }
 }
