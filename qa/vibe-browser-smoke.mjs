@@ -414,6 +414,8 @@ try{
     const buildingModels=await cozy.evaluate(async()=>{
       const {IslandRendererV3,ECONOMY_3D_LOOK}=await import('./render-v3.js');
       const renderer=Object.create(IslandRendererV3.prototype);
+      // 검사기는 전체 WebGL 생성자를 실행하지 않으므로 생성자의 간판 텍스처 상태를 그대로 준비한다.
+      renderer.signTextures3d=new Map();
       const models=Object.entries(ECONOMY_3D_LOOK).map(([id,kind])=>{
         const model=renderer.make3d(kind,3.05);
         const signature=JSON.stringify(model.children.map(mesh=>[
