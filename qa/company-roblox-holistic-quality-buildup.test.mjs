@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   ROBLOX_QUALITY_FAMILIES, ROBLOX_MOTION_STATES, ROBLOX_OFFICIAL_STUDIO_FIVE_PLAYBOT_SCENARIOS,
+  ROBLOX_DETAILED_QUALITY_CHECKS,
   buildRobloxHolisticQualityPlan,robloxHolisticQualityPromptLines
 } from '../tools/company-roblox-holistic-quality-buildup.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
@@ -35,6 +36,23 @@ test('all asset/system/source responsibilities and motion-action phases are pres
   assert.ok(ROBLOX_OFFICIAL_STUDIO_FIVE_PLAYBOT_SCENARIOS.every(row=>row.status==='PLANNED_UNEXECUTED'&&row.realDeviceTouchVerified===false));
 });
 
+test('125 explicit acceptance checks include at least 60 different motion, action and rig checks',()=>{
+  assert.equal(ROBLOX_DETAILED_QUALITY_CHECKS.length,125);
+  const rows=ROBLOX_DETAILED_QUALITY_CHECKS;
+  assert.equal(new Set(rows.map(row=>row.id)).size,rows.length);
+  assert.equal(rows.filter(row=>/^(RIG_|MOTION_|ACTION_)/.test(row.id)).length,78);
+  assert.ok(rows.every(row=>row.acceptance.startsWith('Verify ')));
+  assert.ok(rows.every(row=>row.sourceSignals.length>0&&row.feedback.includes('rerun')));
+  assert.ok(rows.every(row=>ROBLOX_QUALITY_FAMILIES.some(family=>family.id===row.family)));
+  const required=['RIG_SKIN_WEIGHTS','MOTION_FOOT_PLANT','MOTION_ATTACK_ANTICIPATION','MOTION_ATTACK_IMPACT',
+    'MOTION_ATTACK_RECOVERY','MOTION_HIT_REACTION','MOTION_DEATH','MOTION_RESPAWN','ACTION_HIT_RANGE',
+    'ACTION_DODGE_INVULN','ACTION_ATTACK_VFX_SYNC','UI_REAL_DEVICE_TOUCH','MODEL_TOPOLOGY_VALID','SAVE_REJOIN_ROUNDTRIP'];
+  required.forEach(id=>assert.ok(rows.some(row=>row.id===id),id));
+  assert.equal(rows.find(row=>row.id==='UI_REAL_DEVICE_TOUCH').verificationMethod,'DEVICE_ACTUAL');
+  assert.equal(rows.find(row=>row.id==='WORLD_SPAWN_SUPPORT').verificationMethod,'SERVER_CLOUD_EXACT');
+  assert.equal(rows.find(row=>row.id==='MOTION_FOOT_PLANT').verificationMethod,'STUDIO_ACTUAL');
+});
+
 test('exact bytes detect malformed assets and missing shared references with no invented quality credit',()=>fixture(({dir,game,base})=>{
   fs.writeFileSync(path.join(base,'client','UI.client.luau'),
     'local UserInputService = game:GetService("UserInputService")\n'
@@ -52,6 +70,10 @@ test('exact bytes detect malformed assets and missing shared references with no 
   assert.ok(plan.issues.some(row=>row.id==='ASSET_SIGNATURE_INVALID'&&row.path.endsWith('broken.glb')));
   assert.ok(plan.issues.some(row=>row.id==='SOURCE_ASSET_REFERENCE_MISSING'&&row.path.endsWith('missing.png')));
   assert.ok(plan.assetReferences.some(row=>row.path.endsWith('icon.png')&&row.exists===true&&row.licenseVerified===false));
+  assert.equal(plan.detailedCheckCounts.total,125);
+  assert.equal(plan.detailedCheckCounts.motionActionRig,78);
+  assert.equal(plan.detailedCheckCounts.unexecuted,125);
+  assert.ok(plan.detailedChecks.every(row=>row.verified===false&&row.executionStatus==='NOT_EXECUTED'));
   assert.equal(plan.officialStudioScenarios.length,5);
   assert.equal(plan.officialStudioScenarios.filter(row=>row.verified).length,0);
   assert.equal(plan.motion.actualActionVerified,false);
@@ -110,6 +132,9 @@ test('Studio evidence cannot self-certify all five scenarios or physical touch',
   assert.ok(plan.officialStudioScenarios.every(x=>x.evidenceState.includes('SCENARIO_PASS_NOT_ASSUMED')));
   assert.ok(plan.officialStudioScenarios.every(x=>x.realDeviceTouchVerified===false));
   assert.ok(plan.motion.states.every(x=>!x.actualAnimatorVerified));
+  assert.equal(plan.detailedCheckCounts.actualPlayVerified,0);
+  assert.ok(plan.detailedChecks.every(row=>row.observedPass===false&&row.evidenceReference===null));
+  assert.equal(plan.detailedChecks.find(row=>row.id==='UI_REAL_DEVICE_TOUCH').realDeviceTouchRequired,true);
 }));
 
 test('existing Roblox BUILD_UP feeds source-only whole asset and action plan to worker prompt',()=>fixture(({dir,game,base})=>{
@@ -125,6 +150,7 @@ test('existing Roblox BUILD_UP feeds source-only whole asset and action plan to 
   const prompt=directivePrompt(directive);
   assert.match(prompt,/ROBLOX_HOLISTIC_QUALITY_BUILD_UP/);
   assert.match(prompt,/MOTION_ACTION_BUILD_UP/);
+  assert.match(prompt,/DETAILED_QUALITY_CHECKS: total=125 motionActionRig=78 executed=0/);
   assert.match(prompt,/FIVE_OFFICIAL_STUDIO_SCENARIOS/);
   assert.match(prompt,/F0/);
 }));
