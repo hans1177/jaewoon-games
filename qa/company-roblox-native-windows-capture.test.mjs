@@ -44,6 +44,11 @@ test('physical Android capture reuses native footage and git intake, without fak
  assert.match(worker,/android\.intent\.action\.VIEW/);
  assert.match(worker,/JAEWOON_NATIVE_CAPTURE_/);
  assert.match(worker,/ANDROID_NATIVE_NPC_LOG_OR_FOREGROUND_ATTESTATION_MISSING/);
+ assert.match(worker,/ANDROID_ROBLOX_PID_ATTESTATION_REQUIRED/);
+ assert.match(worker,/pidof/);
+ assert.match(worker,/expectedPid/);
+ assert.match(worker,/logcat/);
+ assert.match(worker,/threadtime/);
  assert.match(worker,/dumpsys/);
  assert.match(worker,/screenrecord/);
  assert.match(worker,/--time-limit/);
