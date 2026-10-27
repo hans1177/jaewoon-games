@@ -5160,25 +5160,7 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "400baa7f1a826bc0a01a41109be7a2bc337abdd4",
-      "artifactIdentity": "sha256:b21b47913df8525dd57e53846ae8deca0066eaa479548c65ec37e4d0248b2758",
-      "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 40487130486,
-      "testedAt": "2026-10-27T10:33:06.264Z",
-      "repairSurfaces": [
-        "CORE_GAMEPLAY"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "DESIGN_GENRE_MISMATCH:Simulation:RPG",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"daechung-rpg\",\"pass\":false,\"blockers\":[\"DESIGN_GENRE_MISMATCH:Simulation:RPG\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"TYCOON\",\"SAVE\",\"MULTIPLAYER\",\"MOBILE_UI\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":true,\"WORLD\":true,\"CONTENT_ENTITY\":true,\"COMBAT\":true,\"ENEMY_AI\":true,\"EQUIPMENT\":true,\"PROGRESSION\":true,\"QUEST\":true,\"BOSS\":true,\"TYCOON\":true,\"SAVE\":true,\"MULTIPLAYER\":true,\"MOBILE_UI\":true,\"SESSION_FLOW\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"A 시작: RouteState·RiskState를 확인한 뒤 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"TYCOON\"],\"pass\":true},{\"index\":1,\"step\":\"B 대응: A의 ResourceState·RiskState를 확인한 뒤 마을에서 퀘스트와 장비 준비 → 포탈로 사냥터 이동 → 몬스터 직접 전투 → 보스 첫 처치로 AI 동료 해금 → 15마리 파티 사냥과 기여도 보상 → 플레이어 + 보스 동료 최대 3명 편성 → 보스 공략 → 보스 동료 해금 → 파티 조합 확장 → 마을 귀환/회복/강화한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\"],\"pass\":true},{\"index\":2,\"step\":\"A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 도시 시설과 자원 흐름의 운영의 새 선택을 실행하거나 @ 발견 조건을 시험한다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"TYCOON\"],\"pass\":true}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"신화·야구 시뮬레이션×공포: 중계기: 중계 지점 사이 연결이 확보됨의 성립\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"EQUIPMENT\",\"QUEST\",\"TYCOON\",\"MULTIPLAYER\"],\"pass\":true},{\"index\":1,\"name\":\"도시 시설과 자원 흐름의 운영 × 신화\",\"capabilities\":[\"CONTENT_ENTITY\",\"TYCOON\"],\"pass\":true},{\"index\":2,\"name\":\"마을에서 퀘스트와 장비 준비 × 야구\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\"],\"pass\":true},{\"index\":3,\"name\":\"중계기: 중계 지점 사이 연결이 확보됨의 성립\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"QUEST\",\"BOSS\",\"TYCOON\",\"MULTIPLAYER\"],\"pass\":true}],\"placeholderDebt\":{\"primitiveConstructionCount\":9,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":true,\"genericScopeHandlerCount\":0,\"meaningfulGameplayFunctionCount\":19},\"studioQualitySheet\":{\"Core\":\"PLAYABLE\",\"Content\":\"PLAYABLE\",\"World\":\"POLISHED\",\"Combat\":\"PLAYABLE\",\"AI\":\"PLAYABLE\",\"Progression\":\"PLAYABLE\",\"UI\":\"POLISHED\",\"Graphics\":\"POLISHED\",\"Motion\":\"POLISHED\",\"Audio\":\"PLAYABLE\",\"Mobile\":\"POLISHED\",\"Performance\":\"PLAYABLE\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":5,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":4,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":4,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":5,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":4,\"pass\":true},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":true},{\"id\":\"QUEST_TO_PROGRESSION\",\"pass\":true},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":true}],\"pass\":true},\"placeholder\":{\"pass\":false,\"primitiveConstructionCount\":9,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":true,\"genericScopeHandlerCount\":0,\"meaningfulGameplayFunctionCount\":19},\"criticalGaps\":[\"PRIMARY_PLACEHOLDER_DEBT\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":true,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"070954a75ebc3b76d4f53d882d58be14ee0e34c01e124fad38fc884fade914a2\",\"antiSkeletonPassed\":true,\"designGenre\":\"Simulation\",\"sourceGenre\":\"RPG\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
     "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
     "blockers": [
