@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
@@ -4873,6 +4873,31 @@ test('Unity development floor preserves existing Roblox repair observations with
   }
 });
 
+test('WEB adaptive development slots follow verified completion and measured runner pressure',()=>{
+  const make=(n)=>Array.from({length:n},(_,i)=>({
+    gameId:'web-'+i,engine:'web',releaseState:'development-confirmed',
+    developmentValidation:{state:'MISSING',score:null,blockers:[]}
+  }));
+  const unfinished=make(27);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished}),8);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:2,projects:unfinished}),2);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished.slice(0,2)}),2);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:[]}),0);
+  const finishing=unfinished.map((x,i)=>i<23?{
+    ...x,developmentValidation:{state:'PASS',score:92,blockers:[]}
+  }:x);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:finishing}),4);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished,
+    runnerPressure:{lastTelemetry:{pressureLevel:'SEVERE',failureRatePct:100}}}),4);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished,
+    runnerPressure:{lastTelemetry:{pressureLevel:'HIGH',failureRatePct:40}}}),6);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished,
+    runnerPressure:{lastUpdatedAt:'2020-01-01T00:00:00Z',lastTelemetry:{pressureLevel:'SEVERE',failureRatePct:100}}}),8,
+  'stale worker pressure must not permanently throttle future development');
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished.map(x=>({
+    ...x,developmentValidation:{state:'PASS',score:null,blockers:[]}
+  }))}),8,'missing score cannot be treated as completed');
+});
 test('web two-game planning floor fills a native backlog without duplicating games or exceeding persistent capacity',()=>{
   const root=tempRepo();
   try{
