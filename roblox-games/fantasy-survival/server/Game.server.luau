@@ -180,10 +180,21 @@ local function spawnEnemy(isBoss, index)
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
+  -- 기존 공용 생물 모델 위에만 공격 예고를 표시한다. 판정용 가짜 파츠를 만들지 않는다.
+  local attackTelegraph = Instance.new("Highlight")
+  attackTelegraph.Name = "AttackAnticipation"
+  attackTelegraph.Adornee = model
+  attackTelegraph.FillColor = isBoss and Color3.fromRGB(238,65,65) or Color3.fromRGB(255,185,89)
+  attackTelegraph.FillTransparency = .72
+  attackTelegraph.OutlineTransparency = .2
+  attackTelegraph.Enabled = false
+  attackTelegraph.Parent = model
+  model:SetAttribute("AttackState", "IDLE")
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
     isBoss=isBoss,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
-    speed=isBoss and 4.8 or 7.5,position=location,lastAttack=0
+    speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,
+    lastAttack=0,windupUntil=nil,windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE"
   })
   return true
 end
@@ -308,6 +319,19 @@ local function startSurvivalRun(player)
   return true
 end
 
+local function setEnemyAttackState(enemy, state)
+  if enemy.attackState==state then return end
+  enemy.attackState=state
+  enemy.model:SetAttribute("AttackState",state)
+  enemy.telegraph.Enabled=state=="ANTICIPATION"
+end
+
+local function cancelEnemyWindup(enemy)
+  enemy.windupUntil=nil
+  enemy.windupTargetUserId=nil
+  setEnemyAttackState(enemy,"RECOVERY")
+end
+
 local function updateEnemyAI(dt,now)
   worldClock+=dt
   if #enemies==0 then
@@ -323,22 +347,51 @@ local function updateEnemyAI(dt,now)
         local character=player.Character
         local rootPart=character and character:FindFirstChild("HumanoidRootPart")
         local human=character and character:FindFirstChildOfClass("Humanoid")
-        if rootPart and human and human.Health>0 then
+        if player:GetAttribute("ProfileReady")==true and rootPart and human and human.Health>0 then
           local d=(rootPart.Position-enemy.position).Magnitude
           if d<range then targetPlayer,targetRoot,targetHuman,range=player,rootPart,human,d end
         end
       end
-      if targetRoot then
+      local leashDistance=(enemy.position-enemy.spawnPosition).Magnitude
+      if leashDistance>145 then
+        -- 시야 밖으로 유인되면 추적을 끊고 최초 스폰 지점으로 귀환한다.
+        targetRoot=nil
+      end
+      if not targetRoot then
+        if enemy.windupUntil then cancelEnemyWindup(enemy) end
+        local homeOffset=Vector3.new(enemy.spawnPosition.X-enemy.position.X,0,enemy.spawnPosition.Z-enemy.position.Z)
+        if homeOffset.Magnitude>1 then
+          setEnemyAttackState(enemy,"RETURN_TO_SPAWN")
+          enemy.position+=homeOffset.Unit*math.min(enemy.speed*dt,homeOffset.Magnitude)
+          enemy.model:PivotTo(CFrame.lookAt(enemy.position,enemy.position+homeOffset.Unit))
+        else
+          setEnemyAttackState(enemy,"IDLE")
+        end
+      else
         local offset=Vector3.new(targetRoot.Position.X-enemy.position.X,0,targetRoot.Position.Z-enemy.position.Z)
-        local d=offset.Magnitude
-        if d>4.4 then
-          local step=math.min(enemy.speed*dt,d-4.4)
+        local distance=offset.Magnitude
+        local attackRange=4.4
+        if enemy.windupUntil then
+          -- 공격 예고 중 대상이 사라지거나 거리를 벌렸다면 피해 없이 취소한다.
+          if targetPlayer.UserId~=enemy.windupTargetUserId or distance>attackRange+1 or targetHuman.Health<=0 then
+            cancelEnemyWindup(enemy)
+          elseif now>=enemy.windupUntil then
+            enemy.windupUntil=nil
+            enemy.windupTargetUserId=nil
+            enemy.lastAttack=now
+            setEnemyAttackState(enemy,"RECOVERY")
+            targetHuman:TakeDamage(enemy.damage)
+            setNumber(targetPlayer,"Health",math.max(0,math.floor(targetHuman.Health)))
+          end
+        elseif distance>attackRange then
+          setEnemyAttackState(enemy,"CHASE")
+          local step=math.min(enemy.speed*dt,distance-attackRange)
           enemy.position+=offset.Unit*step
           enemy.model:PivotTo(CFrame.lookAt(enemy.position,enemy.position+offset.Unit))
         elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
-          enemy.lastAttack=now
-          targetHuman:TakeDamage(enemy.damage)
-          setNumber(targetPlayer,"Health",math.max(0,math.floor(targetHuman.Health)))
+          enemy.windupTargetUserId=targetPlayer.UserId
+          enemy.windupUntil=now+(enemy.isBoss and .48 or .32)
+          setEnemyAttackState(enemy,"ANTICIPATION")
         end
       end
     end
