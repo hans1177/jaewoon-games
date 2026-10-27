@@ -83,7 +83,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-27T02:31:39.845Z",
+      "updatedAt": "2026-10-27T02:40:53.453Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -729,7 +729,8 @@
         "uploaded": true,
         "verified": true,
         "uploadedAt": "2026-10-27T02:23:07.222Z",
-        "authority": "ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION"
+        "authority": "ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION",
+        "reusedWithoutUpload": true
       },
       "robloxDetailMediaEvidence": {
         "version": 1,
@@ -739,12 +740,25 @@
         "sourceSha256": "ac41720872f82083dcc45e582f5a1c521aefd7e515e914cf820effc792bcbe0c",
         "renderedPngSha256": "cf56bef474f4f630b8261ee10b972bc24c34cee1af530ba55c84eacb33725cfa",
         "universeId": "10767445769",
-        "imageStatus": "SUBMITTED_AWAITING_ROBLOX_MODERATION",
+        "imageStatus": "AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD",
         "verifiedDetailImage": false,
+        "canonicalImageContentVerified": false,
+        "newGalleryImageApproved": false,
+        "imageBaselineIds": [],
         "existingImageCount": 0,
         "approvedRobloxGameplayVideoCount": 0,
         "videoStatus": "NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED",
-        "checkedAt": "2026-10-27T02:31:39.845Z",
+        "videoPublication": {
+          "requirement": "ACTUAL_NATIVE_ROBLOX_GAMEPLAY_CAPTURE",
+          "maxSeconds": 30,
+          "monthlyUploadQuota": 3,
+          "destination": "CREATOR_DASHBOARD_PLACE_VIDEOS",
+          "automationPlayerControlAllowed": false,
+          "captureVerified": false,
+          "uploadVerified": false,
+          "nextAction": "CAPTURE_ACTUAL_GAMEPLAY_THEN_UPLOAD_VIA_CREATOR_DASHBOARD"
+        },
+        "checkedAt": "2026-10-27T02:40:53.453Z",
         "authority": "ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA"
       }
     },
@@ -830,7 +844,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-27T02:31:41.271Z",
+      "updatedAt": "2026-10-27T02:40:54.028Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1672,7 +1686,8 @@
         "uploaded": true,
         "verified": true,
         "uploadedAt": "2026-10-27T02:24:53.503Z",
-        "authority": "ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION"
+        "authority": "ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION",
+        "reusedWithoutUpload": true
       },
       "robloxDetailMediaEvidence": {
         "version": 1,
@@ -1682,12 +1697,25 @@
         "sourceSha256": "8d2b05b5f9042f2a078ffd708044b4b2da5e3ae4ed08f710252ac62574bbc795",
         "renderedPngSha256": "a879a790ab76e478eef42c3184543e9281fe1ccd10c5add84c30fbe305348bc5",
         "universeId": "10767445796",
-        "imageStatus": "SUBMITTED_AWAITING_ROBLOX_MODERATION",
+        "imageStatus": "AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD",
         "verifiedDetailImage": false,
+        "canonicalImageContentVerified": false,
+        "newGalleryImageApproved": false,
+        "imageBaselineIds": [],
         "existingImageCount": 0,
         "approvedRobloxGameplayVideoCount": 0,
         "videoStatus": "NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED",
-        "checkedAt": "2026-10-27T02:31:41.271Z",
+        "videoPublication": {
+          "requirement": "ACTUAL_NATIVE_ROBLOX_GAMEPLAY_CAPTURE",
+          "maxSeconds": 30,
+          "monthlyUploadQuota": 3,
+          "destination": "CREATOR_DASHBOARD_PLACE_VIDEOS",
+          "automationPlayerControlAllowed": false,
+          "captureVerified": false,
+          "uploadVerified": false,
+          "nextAction": "CAPTURE_ACTUAL_GAMEPLAY_THEN_UPLOAD_VIA_CREATOR_DASHBOARD"
+        },
+        "checkedAt": "2026-10-27T02:40:54.028Z",
         "authority": "ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA"
       }
     },
@@ -1959,7 +1987,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-27T02:31:42.537Z",
+      "updatedAt": "2026-10-27T02:40:54.645Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3197,7 +3225,8 @@
         "uploaded": true,
         "verified": true,
         "uploadedAt": "2026-10-27T02:24:22.870Z",
-        "authority": "ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION"
+        "authority": "ROBLOX_OPEN_CLOUD_THUMBNAIL_PERSONALIZATION",
+        "reusedWithoutUpload": true
       },
       "robloxDetailMediaEvidence": {
         "version": 1,
@@ -3207,12 +3236,25 @@
         "sourceSha256": "22117a88d8761f655c25fb26c36cfc1d11ac95865aa6c74b1f7ab433b0f1b295",
         "renderedPngSha256": "d1b2056acc895f407d7f8196c8b56c427bbdccb0deaee262174dafa8c4f6d82b",
         "universeId": "10767445741",
-        "imageStatus": "SUBMITTED_AWAITING_ROBLOX_MODERATION",
+        "imageStatus": "AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD",
         "verifiedDetailImage": false,
+        "canonicalImageContentVerified": false,
+        "newGalleryImageApproved": false,
+        "imageBaselineIds": [],
         "existingImageCount": 0,
         "approvedRobloxGameplayVideoCount": 0,
         "videoStatus": "NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED",
-        "checkedAt": "2026-10-27T02:31:42.537Z",
+        "videoPublication": {
+          "requirement": "ACTUAL_NATIVE_ROBLOX_GAMEPLAY_CAPTURE",
+          "maxSeconds": 30,
+          "monthlyUploadQuota": 3,
+          "destination": "CREATOR_DASHBOARD_PLACE_VIDEOS",
+          "automationPlayerControlAllowed": false,
+          "captureVerified": false,
+          "uploadVerified": false,
+          "nextAction": "CAPTURE_ACTUAL_GAMEPLAY_THEN_UPLOAD_VIA_CREATOR_DASHBOARD"
+        },
+        "checkedAt": "2026-10-27T02:40:54.645Z",
         "authority": "ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA"
       }
     },
@@ -9327,7 +9369,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T02:31:42.537Z",
+  "updatedAt": "2026-10-27T02:40:54.645Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
