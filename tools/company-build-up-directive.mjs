@@ -1679,14 +1679,14 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
   const evidence=Object.fromEntries(Object.keys(roles).map(key=>[key,[]]));
   // [모션] 기존 게임 소스에서 실제 배우별 책임 파일 후보를 찾는다. 키워드만으로 런타임 PASS 금지.
   const actorRoles=Object.freeze({
-    PLAYER:/\\b(?:player|character|avatar|hero|protagonist)\\b|LocalPlayer|CharacterAdded|플레이어|주인공/i,
-    NPC:/\\b(?:npc|villager|merchant|vendor|resident|civilian|questgiver|guard|worker)\\b|주민|상인|경비병/i,
-    ENEMY:/\\b(?:enemy|monster|mob|hostile|bandit)\\b|적군|몬스터|적캐릭터/i,
-    BOSS:/\\b(?:boss|miniboss|raidboss)\\b|보스|우두머리/i,
-    CREATURE:/\\b(?:creature|wildlife|animal|quadruped|canine|feline|spider|serpent|bird|bear|wolf)\\b|야생동물|동물|짐승/i,
-    COMPANION:/\\b(?:companion|ally|follower|pet)\\b|동료|펫|소환수/i,
-    MOUNT:/\\b(?:mount|rider|horse|vehicle)\\b|탈것|기승|말타기/i,
-    INTERACTIVE_PROP:/\\b(?:animateddoor|movingplatform|mechanicalprop|animatedbuilding|drawbridge)\\b|움직이는문|승강기|가동건축물/i
+    PLAYER:/\b(?:player|character|avatar|hero|protagonist)\b|LocalPlayer|CharacterAdded|플레이어|주인공/i,
+    NPC:/\b(?:npc|villager|merchant|vendor|resident|civilian|questgiver|guard|worker)\b|주민|상인|경비병/i,
+    ENEMY:/\b(?:enemy|monster|mob|hostile|bandit)\b|적군|몬스터|적캐릭터/i,
+    BOSS:/\b(?:boss|miniboss|raidboss)\b|보스|우두머리/i,
+    CREATURE:/\b(?:creature|wildlife|animal|quadruped|canine|feline|spider|serpent|bird|bear|wolf)\b|야생동물|동물|짐승/i,
+    COMPANION:/\b(?:companion|ally|follower|pet)\b|동료|펫|소환수/i,
+    MOUNT:/\b(?:mount|rider|horse|vehicle)\b|탈것|기승|말타기/i,
+    INTERACTIVE_PROP:/\b(?:animateddoor|movingplatform|mechanicalprop|animatedbuilding|drawbridge)\b|움직이는문|승강기|가동건축물/i
   });
   const actorEvidence=Object.fromEntries(Object.keys(actorRoles).map(key=>[key,[]]));
   for(const entry of topFiles){
