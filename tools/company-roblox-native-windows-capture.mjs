@@ -64,6 +64,49 @@ function playerWindow(){
  if(!Number.isSafeInteger(Number(w.hwnd))||Number(w.hwnd)<=0||!Number.isSafeInteger(Number(w.pid)))throw Error('ROBLOX_WINDOW_HANDLE_INVALID');
  return w;
 }
+function submitCapture({file,proofPath,proof,stateFile,observed}){
+ const gitStatus=command('git',['-C',runtimeRoot,'rev-parse','--abbrev-ref','HEAD']);
+ if(gitStatus.status!==0||gitStatus.stdout.trim()!=='company-runtime')
+  throw Error('RUNTIME_CHECKOUT_MUST_TRACK_COMPANY_RUNTIME');
+ const relVideo=path.relative(runtimeRoot,file);
+ const relProof=path.relative(runtimeRoot,proofPath);
+ if(!sameRoot(path.join(runtimeRoot,'assets','runtime-evidence','roblox',gameId),file)
+   ||!sameRoot(runtimeRoot,proofPath)||!fs.existsSync(file)||!fs.existsSync(proofPath)
+   ||sha256(file)!==proof.sha256)
+  throw Error('NATIVE_CAPTURE_SUBMISSION_INTEGRITY_INVALID');
+ // Do not repeatedly commit the same recorded asset after an interrupted upload.
+ const stage=command('git',['-C',runtimeRoot,'add','--',relVideo,relProof],25000);
+ if(stage.status!==0)throw Error('NATIVE_CAPTURE_GIT_ADD_FAILED');
+ const staged=command('git',['-C',runtimeRoot,'diff','--cached','--quiet','--',relVideo,relProof],25000);
+ if(staged.status===1){
+  const c=command('git',['-C',runtimeRoot,'-c','user.name=jaewoon-native-media-worker',
+   '-c','user.email=actions@users.noreply.github.com',
+   'commit','-m','runtime: intake private NPC footage for '+gameId,
+   '--only','--',relVideo,relProof],30000);
+  if(c.status!==0)throw Error('NATIVE_CAPTURE_COMMIT_FAILED');
+ }else if(staged.status!==0)throw Error('NATIVE_CAPTURE_STAGING_CHECK_FAILED');
+ let pushed=false;
+ for(let retry=0;retry<4;retry++){
+  const rebase=command('git',['-C',runtimeRoot,'pull','--rebase','origin','company-runtime'],45000);
+  if(rebase.status!==0)throw Error('NATIVE_CAPTURE_RUNTIME_REBASE_CONFLICT');
+  const push=command('git',['-C',runtimeRoot,'push','origin','HEAD:company-runtime'],45000);
+  if(push.status===0){pushed=true;break;}
+ }
+ if(!pushed)throw Error('NATIVE_CAPTURE_RUNTIME_PUSH_RETRY_EXHAUSTED');
+ fs.writeFileSync(stateFile,JSON.stringify({
+  gameId,placeVersion:observed.placeVersion,sessionNonce:observed.sessionNonce,
+  videoSha256:proof.sha256,videoPath:file,proofPath,uploaded:true,
+  captureAt:proof.captureAt
+ },null,2)+'\n');
+ const dispatched=command('gh',['api','--method','POST',
+  'repos/hans1177/jaewoon-games/dispatches',
+  '-f','event_type=roblox_native_capture_available',
+  '-f','client_payload[game_id]='+gameId],15000);
+ if(dispatched.status!==0){
+  console.warn('ROBLOX_NATIVE_CAPTURE_DISPATCH_PENDING_DAILY_RECOVERY=YES');
+ }else console.log('ROBLOX_NATIVE_CAPTURE_DISPATCHED=YES');
+ console.log('ROBLOX_NATIVE_CAPTURE_SUBMITTED=YES');
+}
 async function run(){
  if(!['check','capture'].includes(mode))throw Error('UNKNOWN_MODE');
  if(process.platform!=='win32')throw Error('WINDOWS_SESSION_REQUIRED');
@@ -87,8 +130,21 @@ async function run(){
  const stateFile=path.join(stateRoot,gameId+'.json');
  if(fs.existsSync(stateFile)){
   const state=readJson(stateFile);
-  if(state.sessionNonce===observed.sessionNonce&&state.placeVersion===observed.placeVersion)
-   throw Error('NATIVE_GAMEPLAY_SESSION_ALREADY_CAPTURED');
+  if(state.sessionNonce===observed.sessionNonce&&state.placeVersion===observed.placeVersion){
+   if(state.uploaded===true)throw Error('NATIVE_GAMEPLAY_SESSION_ALREADY_CAPTURED');
+   if(state.videoPath&&state.proofPath&&fs.existsSync(state.videoPath)
+      &&fs.existsSync(state.proofPath)
+      &&sameRoot(path.join(runtimeRoot,'assets','runtime-evidence','roblox',gameId),state.videoPath)){
+    if(process.env.ROBLOX_CAPTURE_SUBMIT==='1'){
+     const proof=readJson(state.proofPath);
+     submitCapture({file:state.videoPath,proofPath:state.proofPath,proof,stateFile,observed});
+     console.log('ROBLOX_CAPTURE_REUSED_EXISTING_VIDEO_AFTER_UPLOAD_FAILURE=YES');
+     return;
+    }
+    throw Error('NATIVE_CAPTURE_LOCAL_FILE_PENDING_UPLOAD');
+   }
+   throw Error('NATIVE_CAPTURE_PREVIOUS_SESSION_RECOVERY_REQUIRES_MANUAL_INSPECTION');
+  }
  }
  const duration=Number(arg('seconds','24'));
  if(!Number.isInteger(duration)||duration<8||duration>27)throw Error('DURATION_MUST_BE_8_TO_27_SECONDS');
@@ -154,34 +210,14 @@ async function run(){
  fs.writeFileSync(path.join(folder,'capture.json'),JSON.stringify(proof,null,2)+'\n');
  fs.writeFileSync(stateFile,JSON.stringify({
   gameId,placeVersion:observed.placeVersion,sessionNonce:observed.sessionNonce,
-  videoSha256:proof.sha256,captureAt:at
+  videoSha256:proof.sha256,videoPath:file,
+  proofPath:path.join(folder,'capture.json'),uploaded:false,captureAt:at
  },null,2)+'\n');
  console.log('ROBLOX_WINDOW_CAPTURE_SAVED='+file);
  console.log('ROBLOX_CAPTURE_SHA256='+proof.sha256);
  console.log('ROBLOX_RUNTIME_ATTESTATION_REQUIRED=YES');
  if(process.env.ROBLOX_CAPTURE_SUBMIT==='1'){
-  const gitStatus=command('git',['-C',runtimeRoot,'rev-parse','--abbrev-ref','HEAD']);
-  if(gitStatus.status!==0||gitStatus.stdout.trim()!=='company-runtime')
-   throw Error('RUNTIME_CHECKOUT_MUST_TRACK_COMPANY_RUNTIME');
-  const relVideo=path.relative(runtimeRoot,file);
-  const relProof=path.relative(runtimeRoot,path.join(folder,'capture.json'));
-  for(const args of [
-   ['-C',runtimeRoot,'add','--',relVideo,relProof],
-   ['-C',runtimeRoot,'-c','user.name=jaewoon-native-media-worker',
-    '-c','user.email=actions@users.noreply.github.com',
-    'commit','-m','runtime: intake verified-window NPC capture for '+gameId,
-    '--only','--',relVideo,relProof],
-   ['-C',runtimeRoot,'push','origin','HEAD:company-runtime']
-  ]){
-   const res=command('git',args,30000);
-   if(res.status!==0)throw Error('RUNTIME_CAPTURE_SUBMISSION_FAILED:'+String(res.stderr||'').slice(0,160));
-  }
-  const dispatched=command('gh',['api','--method','POST',
-   'repos/hans1177/jaewoon-games/dispatches',
-   '-f','event_type=roblox_native_capture_available',
-   '-f','client_payload[game_id]='+gameId],15000);
-  if(dispatched.status!==0)throw Error('CAPTURE_DISPATCH_FAILED:'+String(dispatched.stderr||'').slice(0,160));
-  console.log('ROBLOX_NATIVE_CAPTURE_SUBMITTED=YES');
+  submitCapture({file,proofPath:path.join(folder,'capture.json'),proof,stateFile,observed});
  }
 }
 run().catch(e=>fail(String(e?.message||e)));
