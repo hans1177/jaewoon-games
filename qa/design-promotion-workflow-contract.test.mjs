@@ -34,6 +34,18 @@ test('V5 authored identity core is promoted during detailed design, without a ne
   assert.doesNotMatch(designRuntime,/gh workflow run company-development-unity-runtime\.yml/);
 });
 
+test('stranded verified ideas re-enter the existing promotion worker on an hourly watchdog without bypassing gates',()=>{
+  const trigger=promotion.slice(promotion.indexOf('on:'),promotion.indexOf('\npermissions:'));
+  assert.match(trigger,/schedule:\s*\n\s*- cron: '53 \* \* \* \*'/);
+  const job=promotion.slice(promotion.indexOf('\n  promote:'),promotion.indexOf('\n    runs-on:',promotion.indexOf('\n  promote:')));
+  assert.match(job,/github\.event_name == 'schedule'/);
+  assert.match(promotion,/node tools\/design-only-promotion-sync\.mjs/);
+  assert.match(promotion,/node --test qa\/company-minimum-design-contract\.test\.mjs/);
+  assert.match(promotion,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
+  assert.match(promotion,/git diff --cached --quiet/);
+  assert.match(promotion,/refill_required/);
+});
+
 test('partial design-runtime failure still evaluates each persisted minimum-design-ready game',()=>{
   assert.match(designRuntime,/fail-fast:\s*false/);
   assert.match(promotion,/workflow_run:[\s\S]*types:\s*\[completed\]/);
