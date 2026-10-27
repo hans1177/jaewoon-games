@@ -530,3 +530,14 @@ test('public asset library exposes existing asset-only publication and exact Rob
   assert.ok(drift.includes('company-development-roblox-runtime.yml'));
   assert.doesNotMatch(page,/github_pat_|ghp_|GITHUB_TOKEN|api\.github\.com\/repos\/.*\/dispatches/);
 });
+
+test('asset library checks actual published Pages manifest separately from native runtime success',()=>{
+  const browser=fs.readFileSync('assets/asset-library.js','utf8');
+  const page=fs.readFileSync('asset-library.html','utf8');
+  assert.ok(page.includes('id="webPublishStatus"'));
+  assert.ok(page.includes('id="selectedAssetPublishStatus"'));
+  assert.ok(browser.includes("request('/web-games/publish-manifest.json')"));
+  assert.ok(browser.includes("nextPublication?.target==='GITHUB_PAGES_INTERNAL_STATIC'"));
+  assert.ok(browser.includes('publishedWebManifest.sharedAssets.includes(sourceFile)'));
+  assert.ok(browser.includes('실제 게임 적용은 별도 검증'));
+});
