@@ -185,16 +185,23 @@ async function captureAndroid(){
    &&/(?:mCurrentFocus|mFocusedApp)[^\n]*com\.roblox\.client/i.test(w.stdout);
  };
  const prefix='JAEWOON_NATIVE_CAPTURE_READY|'+gameId+'|'+target.universeId+'|'+target.placeId+'|';
+ const pidReply=adb(['shell','pidof','com.roblox.client']);
+ const pids=pidReply.stdout.trim().split(/\s+/);
+ if(pidReply.status!==0||pids.length!==1||!/^[1-9][0-9]*$/.test(pids[0]))
+  throw Error('ANDROID_ROBLOX_PID_ATTESTATION_REQUIRED');
+ const expectedPid=pids[0];
  let observed=null;
  const deadline=Date.now()+47000;
  while(Date.now()<deadline){
   if(foreground()){
-   const raw=adb(['logcat','-d','-t','12000'],17000,12*1024*1024);
-   // 다른 앱 로그는 보관하거나 외부로 보내지 않고 촬영 신호만 검사한다.
+   const raw=adb(['logcat','-d','-v','threadtime','-t','12000'],17000,12*1024*1024);
+   // Android 로그의 프로세스 PID까지 Roblox 앱과 일치해야 한다.
    if(raw.status===0){
-    const ix=raw.stdout.lastIndexOf(prefix);
-    if(ix>=0){
-     const m=raw.stdout.slice(ix+prefix.length).match(/^([1-9]\d*)[|]NPC_MOVED[|]([1-9]\d*)/);
+    const line=raw.stdout.split(/\r?\n/).filter(x=>x.includes(prefix)).at(-1)||'';
+    const pid=line.match(/^\d\d-\d\d\s+\d\d:\d\d:\d\d[.]\d+\s+(\d+)\s+\d+\s+[A-Z]/);
+    const ix=line.lastIndexOf(prefix);
+    if(pid&&pid[1]===expectedPid&&ix>=0){
+     const m=line.slice(ix+prefix.length).match(/^([1-9]\d*)[|]NPC_MOVED[|]([1-9]\d*)/);
      if(m){
       const ageSeconds=Math.floor(Date.now()/1000)-Number(m[2]);
       if(ageSeconds>=-2&&ageSeconds<=7)
