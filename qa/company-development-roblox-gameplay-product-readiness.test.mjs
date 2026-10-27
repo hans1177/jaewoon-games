@@ -71,6 +71,8 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/player:GetAttribute\("ProfileReady"\) ~= true/);
   assert.match(server,/local merged = typeof\(previous\) == "table" and table\.clone\(previous\) or \{\}/);
   assert.match(server,/game:BindToClose\(function\(\)/);
+  assert.match(server,/if player.Parent ~= Players then return end/);
+  assert.match(server,/local saved = ok and committed ~= nil/);
   assert.doesNotMatch(server,/local function scopeHandler\d+\(/);
 });
 
