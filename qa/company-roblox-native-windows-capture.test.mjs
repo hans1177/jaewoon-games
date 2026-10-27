@@ -82,6 +82,10 @@ test('Windows watcher and bootstrap never drive Roblox Player input and use boun
  assert.match(setup,/Security\.SecureString/);
  assert.match(setup,/CAPTURE_GAME_ID_NOT_ALLOWLISTED/);
  assert.match(setup,/LogonType Interactive/);
+ assert.match(setup,/RobloxPlayerBeta[.]exe/);
+ assert.match(setup,/winget install -e --id Roblox[.]Roblox/);
+ assert.match(setup,/ROBLOX_NATIVE_PLAYER_BINARY_INSTALLED=YES/);
+ assert.match(setup,/ROBLOX_CAPTURE_WATCHER_POWERSHELL_PARSE_FAILED/);
  assert.doesNotMatch(setup,/auto-login|ROBLOSECURITY=/i);
 });
 
