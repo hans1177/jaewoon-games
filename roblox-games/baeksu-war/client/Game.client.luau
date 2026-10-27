@@ -99,6 +99,9 @@ local title=label(top,"백수대전쟁  /  동물 군단 본부",UDim2.new(1,-16
 title.TextSize=15
 local status=label(top,"전장 동기화 중",UDim2.new(1,-16,0,25),UDim2.fromOffset(10,30))
 status.TextSize=13
+-- 연합 공동 점령 진행도는 기존 상단 HUD의 남는 공간에 표시한다.
+local sharedObjectiveLabel=label(top,"연합 전선 확인 중",UDim2.new(1,-16,0,14),UDim2.fromOffset(10,51))
+sharedObjectiveLabel.TextSize=11
 local allyBar,allyBarView=CommonUI.CreateHealthBar({name="아군 성문 체력",theme=theme,size=UDim2.new(.46,-8,0,23),ratio=1,text="아군 500"})
 allyBar.Parent=top;allyBar.Position=UDim2.fromOffset(10,67)
 local enemyBar,enemyBarView=CommonUI.CreateHealthBar({name="적군 성문 체력",theme=theme,size=UDim2.new(.46,-8,0,23),ratio=1,text="적군 380"})
@@ -349,6 +352,10 @@ local function refresh()
 end
 buy.Activated:Connect(function()remote:FireServer("BUY_SLOT")end)
 remote.OnClientEvent:Connect(function(action,data)
+ if action=="SHARED_OBJECTIVE" and type(data)=="table" and data.SharedObjective=="CONTROL_FRONTLINE" then
+  sharedObjectiveLabel.Text=string.format("연합 거점 %d/%d · 참여 %d명",tonumber(data.Owned) or 0,tonumber(data.Target) or 0,tonumber(data.Participants) or 0)
+  return
+ end
  if action=="LOAD_ERROR" then
   status.Text="전장 시작 오류 · 재접속 필요"
   notice.Text=type(data)=="table" and (data.Message or "전장 불러오기 실패") or "전장 불러오기 실패"
