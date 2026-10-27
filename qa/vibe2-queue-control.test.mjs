@@ -25,6 +25,7 @@ import {
   buildNeuralWorkerTransaction,
   recoverFixedFullWebTransportFailures,
   recoverFixedSourceCandidateGenerationFailures,
+  recoverFixedAssetWorkOrderFailures,
   recoverStaleRunningReservations,
   recoverCompletedRunningReservations,
   recoverTransientWorkLockBlocks,
@@ -1790,6 +1791,65 @@ test('practice-only PASS settles verified checkpoint without candidate QA promot
   assert.equal(task.lastOutcome,'PASS');
   assert.ok(task.evidence.includes('production-pass:NO'));
   assert.equal(merged.applied[0].outcome,'DONE_PRACTICE');
+});
+
+
+test('고정된 자산 바인딩 작업주문 크래시만 동일 큐에서 한 번 복구하고 권한 차단을 유지한다',()=>{
+  const source=id=>({
+    id,gameId:'game',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/game',responsibleFiles:['web-games/game/index.html'],
+    status:'blocked',blocker:'work-order-not-runnable',lastOutcome:'BLOCKED',
+    retries:4,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
+    paidResourceRequired:false,ownerDevelopmentHold:false,
+    reservationId:'stale-reservation',reservationRunId:'123',reservationRunAttempt:1,
+    reservedAt:'2026-10-26T00:00:00Z',
+    evidence:['failure-cause:work-order-not-runnable','workload:changed-files:0','reservation-id:40418888039:1']
+  });
+  const eligible=source('asset-binding-web');
+  const roblox={...source('asset-binding-roblox'),target:'roblox',gameId:'native',
+    sourceRoot:'roblox-games/native',responsibleFiles:['roblox-games/native/main.luau']};
+  const held={...source('owner-held'),ownerDevelopmentHold:true};
+  const approval={...source('requires-owner'),requiresOwnerDecision:true};
+  const protectedWork={...source('protected'),protectedChange:true};
+  const paid={...source('paid'),paidResourceRequired:true};
+  const noWorkerAttempt={...source('no-worker-attempt'),evidence:['failure-cause:work-order-not-runnable']};
+  const unrelated={...source('qa-failure'),blocker:'incremental-qa-failed'};
+  const external={...source('external-principle'),blocker:'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED'};
+  const marked={...source('already-recovered'),evidence:[...eligible.evidence,
+    'repair-retry:vibe2-asset-work-order-undefined-binding-v1']};
+  const state=createVibeContinuousQueue({tasks:[
+    eligible,roblox,held,approval,protectedWork,paid,noWorkerAttempt,unrelated,external,marked
+  ]});
+  const first=recoverFixedAssetWorkOrderFailures(state);
+  assert.equal(first.recovered,2);
+  for(const id of ['asset-binding-web','asset-binding-roblox']){
+    const task=first.queue.tasks.find(t=>t.id===id);
+    assert.equal(task.status,'queued');
+    assert.equal(task.blocker,null);
+    assert.equal(task.retries,4,'기존 작업 시도 횟수를 임의 초기화하지 않는다');
+    assert.equal(task.reservationId,null);
+    assert.equal(task.reservationRunId,null);
+    assert.equal(task.lastOutcome,'RETRY_AFTER_FIXED_ASSET_WORK_ORDER_FAILURE');
+    assert.ok(task.evidence.includes('repair-retry:vibe2-asset-work-order-undefined-binding-v1'));
+  }
+  for(const id of ['owner-held','requires-owner','protected','paid','no-worker-attempt',
+    'qa-failure','external-principle','already-recovered']){
+    const task=first.queue.tasks.find(t=>t.id===id);
+    assert.equal(task.status,'blocked',id);
+  }
+  const second=recoverFixedAssetWorkOrderFailures(first.queue);
+  assert.equal(second.recovered,0,'동일 인프라 복구를 반복 예약하지 않는다');
+  const sameFailure=createVibeContinuousQueue({tasks:first.queue.tasks.map(t=>
+    t.id==='asset-binding-web'?{...t,status:'blocked',blocker:'work-order-not-runnable'}:t)});
+  assert.equal(recoverFixedAssetWorkOrderFailures(sameFailure).recovered,0,
+    '수정된 작업주문이 재차 실패하면 우회나 무한 재시도를 하지 않는다');
+});
+
+test('실행 전 작업주문 크래시는 통상 차단과 분리해 기록한다',()=>{
+  const workflow=fs.readFileSync(path.resolve('..','.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  assert.match(workflow,/ORDER_STEP_OUTCOME: \$\{\{ steps\.order\.outcome \}\}/);
+  assert.match(workflow,/work-order-generation-step-failed/);
+  assert.match(workflow,/work-order-generation-step-failed:v1/);
 });
 
 

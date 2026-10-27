@@ -50,6 +50,7 @@ export function webSourceRetiredInCatalog(game={}) {
 }
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
+const FIXED_ASSET_WORK_ORDER_REPAIR_EVIDENCE = 'repair-retry:vibe2-asset-work-order-undefined-binding-v1';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
 const COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE = 'recovery:completed-reservation-run-v1';
 const TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE = 'recovery:transient-work-lock-requeue-v1';
@@ -547,15 +548,54 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
   };
 }
 
+// [복구] 과거 F0 작업주문 생성 시 자산 자동 바인딩 변수 미정의로 작업 생성 전에 종료된 회차만
+// 같은 큐에서 한 번 재예약한다. 보호/소유자 보류/외부 학습 승인 상태는 그대로 차단한다.
+// 본 재예약은 작업 성공·검증·F0~F9 우회가 아니라 수정된 main에서 작업주문을 다시 만들기 위한 것이다.
+export function recoverFixedAssetWorkOrderFailures(queueInput) {
+  const queue=createVibeContinuousQueue(queueInput);
+  let recovered=0;
+  const tasks=queue.tasks.map(task=>{
+    const evidence=Array.isArray(task.evidence)?task.evidence:[];
+    const crashBeforeSourceWrite=evidence.includes('failure-cause:work-order-not-runnable')
+      && evidence.includes('workload:changed-files:0')
+      && evidence.some(row=>/^reservation-id:\d+:\d+$/.test(clean(row)));
+    const eligible=task.status==='blocked'
+      && clean(task.blocker)==='work-order-not-runnable'
+      && ['web','roblox'].includes(clean(task.target).toLowerCase())
+      && clean(task.department).toLowerCase()==='development'
+      && clean(task.type).toLowerCase()==='implementation'
+      && task.ownerDevelopmentHold!==true
+      && task.requiresOwnerDecision!==true
+      && task.protectedChange!==true
+      && task.paidResourceRequired!==true
+      && !evidence.includes(FIXED_ASSET_WORK_ORDER_REPAIR_EVIDENCE)
+      && crashBeforeSourceWrite;
+    if(!eligible)return task;
+    recovered++;
+    return {
+      ...task,
+      ...clearedReservation(),
+      status:'queued',
+      blocker:null,
+      lastOutcome:'RETRY_AFTER_FIXED_ASSET_WORK_ORDER_FAILURE',
+      evidence:[...new Set([...evidence,FIXED_ASSET_WORK_ORDER_REPAIR_EVIDENCE])]
+    };
+  });
+  return {recovered,queue:recovered
+    ?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
+}
+
 function recoverRunnableInfrastructureState(queueInput) {
   const transport = recoverFixedFullWebTransportFailures(queueInput);
   const sourceGeneration = recoverFixedSourceCandidateGenerationFailures(transport.queue);
-  const stale = recoverStaleRunningReservations(sourceGeneration.queue);
+  const workOrder = recoverFixedAssetWorkOrderFailures(sourceGeneration.queue);
+  const stale = recoverStaleRunningReservations(workOrder.queue);
   return {
     queue:stale.queue,
-    recovered:transport.recovered + sourceGeneration.recovered + stale.recovered,
+    recovered:transport.recovered + sourceGeneration.recovered + workOrder.recovered + stale.recovered,
     transportRecovered:transport.recovered,
     sourceGenerationRecovered:sourceGeneration.recovered,
+    workOrderRecovered:workOrder.recovered,
     staleRecovered:stale.recovered
   };
 }
