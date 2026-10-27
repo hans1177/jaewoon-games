@@ -414,6 +414,9 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS="..tostring(worldObjectDuplicateIds))',
     'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS="..tostring(resourcePromptCount))',
     'print("JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED="..tostring(resourcePromptEnabledCount))',
+    // Official Cloud task: five non-simulating observations, never player input or saves.
+    'local cloudServerScenarios={{"EXACT_VERSION",tostring(game.PlaceId)=="' + place + '" and tonumber(game.PlaceVersion)==' + version + '},{"SERVER_SCRIPT",deployedGameScript~=nil and deployedGameScript:IsA("Script") and deployedGameScript.Enabled},{"WORLD_GEOMETRY",finiteWorldBounds and basePartCount>0},{"SPAWN_SUPPORT",spawnCount>0 and unsupportedSpawns==0 and floatingSpawns==0},{"INTERACTION_BINDINGS",worldObjectDuplicateIds==0 and resourcePromptEnabledCount<=resourcePromptCount}}',
+    'for i,scenario in ipairs(cloudServerScenarios) do print("JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_"..tostring(i).."="..scenario[1].."|"..tostring(scenario[2])) end',
   ].join(';');
   const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
   const decode=async(response,label)=>{
@@ -510,6 +513,130 @@ export async function probeRobloxOpenCloudEngine({
   // Only an actually running simulation with a game-produced boot marker can prove a server-script boot.
   const exactLuauTaskObserved=serverContextExecuted&&exactPlace&&exactVersion;
   const serverBootObserved=exactLuauTaskObserved&&simulationRunning&&legacyFoundationServerBootMarkerObserved;
+  // Duplicate, absent or renamed result markers are unverified, not synthetic passes.
+  const scenarioNames=['EXACT_VERSION','SERVER_SCRIPT','WORLD_GEOMETRY','SPAWN_SUPPORT','INTERACTION_BINDINGS'];
+  const scenarioRows=scenarioNames.map((name,index)=>{
+    const matches=[...joined.matchAll(new RegExp('^JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_'+(index+1)+'=([^|\\n]+)\\|(true|false)
+    observed:serverBootObserved,
+    provider:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION',
+    taskState:state,
+    exactPlace,
+    exactVersion,
+    exactLuauTaskObserved,
+    scriptExecuted:serverContextExecuted,
+    gameServerScriptPresent,
+    gameServerScriptEnabled,
+    headlessServerExecution:true,
+    livePlayerSimulationClaimed:false,
+    simulationStartSupported:false,
+    simulationRunningBefore,
+    simulationStartAttempted,
+    simulationStartSucceeded,
+    simulationStartError:simulationStartError||null,
+    simulationStartCapabilityDenied,
+    simulationRunningAfter:simulationRunning,
+    legacyFoundationServerBootMarkerObserved,
+    authority:'roblox-open-cloud-luau-execution-session-task',
+  });
+  const studioAssetApplied=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true');
+  const studioAssetBindingVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=(\d+)/)?.[1]||0);
+  const observedStudioAssetSelectionFingerprint=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT=([^\n]*)/)?.[1]||'');
+  const observedStudioAssetLibraryVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION=(\d+)/)?.[1]||0);
+  const observedStudioAssetAtomCsv=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=([^\n]*)/)?.[1]||'');
+  const observedStudioAssetAtoms=[...new Set(observedStudioAssetAtomCsv.split(',').map(clean).filter(Boolean))].sort();
+  const observedAtomSet=new Set(observedStudioAssetAtoms);
+  const atomMatch=expectedStudioAssetAtoms.length>0&&expectedStudioAssetAtoms.length===observedStudioAssetAtoms.length&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom));
+  const fingerprintMatch=!expectedStudioAssetSelectionFingerprint||observedStudioAssetSelectionFingerprint===expectedStudioAssetSelectionFingerprint;
+  const libraryVersionMatch=expectedStudioAssetLibraryVersion<=0||observedStudioAssetLibraryVersion===expectedStudioAssetLibraryVersion;
+  const studioAssetSelectionMatched=!studioAssetBindingRequired||(atomMatch&&studioAssetApplied&&studioAssetBindingVersion===expectedStudioAssetBindingVersion&&fingerprintMatch&&libraryVersionMatch);
+  const boundsMatch=joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE=([0-9.+-]+),([0-9.+-]+),([0-9.+-]+)/);
+  const worldEvidence=Object.freeze({
+    observed:/^JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=\d+$/m.test(joined),
+    runtimeWorldReady:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY=true'),
+    startupWaitSeconds:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_STARTUP_WAIT_SECONDS=([0-9.]+)/)?.[1]||0),
+    basePartCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0),
+    spawnCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=(\d+)/)?.[1]||0),
+    spawnsInBounds:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS=true'),
+    markerSpawnCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MARKER_SPAWNS=(\d+)/)?.[1]||0),
+    spawnGroundingObserved:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true')
+      &&Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=(\d+)/)?.[1]||0)>0
+      &&/^JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=\d+$/m.test(joined)
+      &&/^JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=\d+$/m.test(joined),
+    unsupportedSpawns:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=(\d+)/)?.[1]||0),
+    floatingSpawns:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=(\d+)/)?.[1]||0),
+    maximumSpawnGroundGap:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MAX_SPAWN_GROUND_GAP=([0-9.]+)/)?.[1]||0),
+    meshPartCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MESH_PARTS=(\d+)/)?.[1]||0),
+    graphicsEvidenceScope:'ENGINE_SCENE_STRUCTURE_NOT_RENDERED_SCREENSHOT',
+    finiteWorldBounds:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_FINITE=true'),
+    boundsSize:Object.freeze({
+      x:Number(boundsMatch?.[1]||0),y:Number(boundsMatch?.[2]||0),z:Number(boundsMatch?.[3]||0)
+    }),
+    landmarkCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_LANDMARKS=(\d+)/)?.[1]||0),
+    objectiveCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_OBJECTIVES=(\d+)/)?.[1]||0),
+    terrainPresent:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_TERRAIN_PRESENT=true'),
+    lightingAtmospherePresent:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE=true'),
+    streamingEnabled:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED=true'),
+    scanCapped:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED=true'),
+    worldGeometryPresent:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0)>0,
+    // 공식 Open Cloud 서버 실행으로 확인되는 구조 증거만 기록한다. 채집/드롭·터치는 별도 실제 게임 검증 대상이다.
+    worldObjectBinding:Object.freeze({
+      observed:/^JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS=\d+$/m.test(joined),
+      stableIdCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_OBJECT_IDS=(\d+)/)?.[1]||0),
+      duplicateStableIdCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS=(\d+)/)?.[1]||0),
+      resourcePromptCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS=(\d+)/)?.[1]||0),
+      enabledResourcePromptCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED=(\d+)/)?.[1]||0),
+      gameplayInteractionVerified:false,
+      authority:'OPEN_CLOUD_WORLD_STRUCTURE_ONLY'
+    }),
+    sameLuauExecutionSession:true
+  });
+  return Object.freeze({
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunningBefore,simulationStartAttempted,simulationStartSucceeded,simulationStartError:simulationStartError||null,simulationStartCapabilityDenied,simulationRunning,serverBootObserved,serverContextExecuted,exactLuauTaskObserved,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
+    playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
+    studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
+    expectedStudioAssetSelectionFingerprint:expectedStudioAssetSelectionFingerprint||null,
+    observedStudioAssetSelectionFingerprint:observedStudioAssetSelectionFingerprint||null,
+    expectedStudioAssetLibraryVersion:expectedStudioAssetLibraryVersion||null,
+    observedStudioAssetLibraryVersion:observedStudioAssetLibraryVersion||null,
+    expectedBuildUpAssetSourceUsageFingerprint:expectedBuildUpAssetSourceUsageFingerprint||null,
+    expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
+    expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetAtomMatch:atomMatch,studioAssetFingerprintMatch:fingerprintMatch,studioAssetLibraryVersionMatch:libraryVersionMatch,studioAssetSelectionMatched,
+    state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),cloudServerScenarioEvidence,
+  });
+}
+
+function args(argv){const out={};for(let i=0;i<argv.length;i++){const x=argv[i];if(!x.startsWith('--'))continue;const [k,v]=x.slice(2).split('=',2);out[k]=v??argv[++i];}return out;}
+async function main(){
+  const a=args(process.argv.slice(2));
+  let sentinel;
+  if(a['sentinel-file'])sentinel=JSON.parse(fs.readFileSync(a['sentinel-file'],'utf8'));
+  else sentinel=await fetchRobloxRuntimeFoundationEvidence({universeId:a['universe-id'],apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY});
+  const result=validateRobloxRuntimeFoundationEvidence({sentinel,gameId:a['game-id'],placeId:a['place-id'],versionNumber:Number(a['version-number'])});
+  if(!a.output)throw new Error('output required');
+  fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');
+  console.log('ROBLOX_RUNTIME_FOUNDATION='+(result.runtimeFoundationPassed?'PASS':'BLOCKED')+':'+result.gameId);
+  console.log('ROBLOX_RUNTIME_ACCEPTANCE='+(result.runtimeAcceptancePassed?'PASS':'BLOCKED')+':'+result.gameId);
+  if(!result.runtimeAcceptancePassed)process.exitCode=2;
+}
+const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
+if(isMain){main().catch(error=>{console.error(error.stack||error);process.exitCode=1;});}
+
+,'gm'))];
+    const observed=matches.length===1&&matches[0][1]===name;
+    return Object.freeze({number:index+1,name,observed,passed:observed&&matches[0][2]==='true'});
+  });
+  const cloudServerScenarioEvidence=Object.freeze({
+    provider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
+    taskPath:rawPath,placeId:place,placeVersion:version,
+    scenarioCount:5,observedCount:scenarioRows.filter(row=>row.observed).length,
+    passedCount:scenarioRows.filter(row=>row.passed).length,
+    allChecksPassed:exactLuauTaskObserved&&scenarioRows.every(row=>row.passed),
+    scenarios:Object.freeze(scenarioRows),
+    executionScope:'NON_SIMULATING_READ_ONLY_SERVER_STRUCTURE',
+    actualPlayerPlayVerified:false,combatBehaviorVerified:false,
+    clientInputVerified:false,clientRenderingVerified:false,
+    saveRoundtripVerified:false,
+  });
   const serverBootEvidence=Object.freeze({
     observed:serverBootObserved,
     provider:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION',
