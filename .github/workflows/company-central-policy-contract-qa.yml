@@ -268,15 +268,10 @@ jobs:
              ! grep -Ev '^(\.github/workflows/company-development-roblox-post-runtime-qa\.yml|qa/company-development-roblox-post-runtime-qa\.test\.mjs)$' /tmp/central-policy-impact-files.txt | grep -q .; then
             isolated_post_runtime=YES
           fi
-          # Studio-only changes keep the constitutional preflight and complete Studio suite.
+          # Isolated Studio changes: constitutional preflight plus complete Studio tests.
           if [ "$full_policy" = NO ] && [ "$studio_contract" = YES ] && [ "$post_runtime_contract" = NO ]; then
             changed_count=$(wc -l < /tmp/central-policy-impact-files.txt)
-            studio_count=$(grep -Ec '^(tools/company-development-roblox-studio-local-play[.]mjs|qa/company-development-roblox-studio-local-play[.]test[.]mjs)$' /tmp/central-policy-impact-files.txt || true)
-            if [ "$changed_count" -gt 0 ] && [ "$changed_count" -eq "$studio_count" ]; then
-              isolated_studio=YES
-            fi
-          fi
-          echo "isolated_studio=$isolated_studio" >> "$GITHUB_OUTPUT"
+            studio_count=$(grep -Ec '^(tools/company-development-roblox-studio-local-play[.]mjs|qa/company-development-roblox-studio-local-play[.]test[.]mjs)
           echo "full_policy=$full_policy" >> "$GITHUB_OUTPUT"
           echo "studio_contract=$studio_contract" >> "$GITHUB_OUTPUT"
           echo "post_runtime_contract=$post_runtime_contract" >> "$GITHUB_OUTPUT"
@@ -376,8 +371,10 @@ jobs:
             qa/company-platform-score-learning-contract.test.mjs \
             qa/company-strict-learning-delta-contract.test.mjs \
             qa/vibe2-handoff.test.mjs
- /tmp/central-policy-impact-files.txt | grep -q .; then
-            isolated_studio=YES
+ /tmp/central-policy-impact-files.txt || true)
+            if [ "$changed_count" -gt 0 ] && [ "$changed_count" -eq "$studio_count" ]; then
+              isolated_studio=YES
+            fi
           fi
           echo "isolated_studio=$isolated_studio" >> "$GITHUB_OUTPUT"
           echo "isolated_post_runtime=$isolated_post_runtime" >> "$GITHUB_OUTPUT"
