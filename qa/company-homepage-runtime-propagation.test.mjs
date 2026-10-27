@@ -566,7 +566,7 @@ test('기존 홈페이지 매니저가 원본 타이틀을 보존하면서 영�
   assert.match(manager,/recordVideo:\{dir:temp,size:\{width:1920,height:1080\}/);
   assert.match(manager,/const captureVersion=4;/);
   assert.match(manager,/const focusedEditIds=new Set/);
-  assert.match(manager,/const shots=\\[\\[0,3\\.4\\]/);
+  assert.ok(manager.includes('const shots=[[0,3.4]'));
   assert.match(manager,/concat=n=/);
   assert.match(manager,/editVersion/);
   assert.match(manager,/scale=1920:1080:flags=lanczos,setsar=1/);
