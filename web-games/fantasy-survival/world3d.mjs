@@ -656,11 +656,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
         ||(!attacking?undeadClips.find(c=>/idle|walk/i.test(c.name)):null)||null;
       if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
-        actor.action?.fadeOut(.09);
+        const transitionSeconds=attacking?.10:moving?.16:.22;
+        actor.action?.fadeOut(transitionSeconds);
         actor.action=actor.mixer.clipAction(clip).reset();
         actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
         actor.action.clampWhenFinished=attacking;
-        actor.action.fadeIn(.09).play();actor.clipName=clip.name;
+        actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
         if(attacking)actor.lastAttackStamp=e.attackAt;
       }
       if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
@@ -775,11 +776,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
         ||(!attacking?actor.clips.find(c=>/idle|walk/i.test(c.name)):null);
       if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
-        actor.action?.fadeOut(.09);
+        const transitionSeconds=attacking?.10:moving?.16:.22;
+        actor.action?.fadeOut(transitionSeconds);
         actor.action=actor.mixer.clipAction(clip).reset();
         actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
         actor.action.clampWhenFinished=attacking;
-        actor.action.fadeIn(.09).play();actor.clipName=clip.name;
+        actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
         if(attacking)actor.lastAttackStamp=e.attackAt;
       }
       if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
@@ -1114,7 +1116,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const attackAt=Number(p.attackAt)||0;
       if(heroMixer&&(nextName!==heroActionName||(pose==='attack'&&attackAt!==lastHeroAttackAt))){
         const nextAction=desired?heroMixer.clipAction(desired):null;
-        if(heroAction&&heroAction!==nextAction)heroAction.fadeOut(.09);
+        const heroTransition=pose==='attack'?.085:pose==='move'?.16:.22;
+        if(heroAction&&heroAction!==nextAction)heroAction.fadeOut(heroTransition);
         else if(heroAction&&pose==='attack')heroAction.stop(); // 같은 원본 클립도 새 공격 이벤트마다 재시작한다.
         heroAction=nextAction;
         if(heroAction){
@@ -1123,7 +1126,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           // 실제 시각 애니메이션 시간만 변경한다. 이동 루트와 공격 판정은 건드리지 않는다.
           if(pose==='attack')heroAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:selectedAppearance?.model?.startsWith('rogue')?.23:.32);
           else heroAction.setEffectiveTimeScale(pose==='move'?1.3:1);
-          heroAction.fadeIn(.09).play();
+          heroAction.fadeIn(heroTransition).play();
         }
         heroActionName=nextName;
         if(pose==='attack')lastHeroAttackAt=attackAt;
