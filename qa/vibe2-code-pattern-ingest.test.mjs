@@ -525,3 +525,38 @@ test('party RPG save cannot overwrite existing DataStore progress when its initi
   assert.match(source,/verifiedSaveRead\[player\] = nil\s*end\s*Players.PlayerRemoving:Connect\(savePlayer\)/);
   assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
 });
+
+test('no-model Vibe refines a real actor motion restart bug once, not arbitrary game rules',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-wildlife-motion-repair-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const file='client/Game.client.luau',absolute=path.join(root,file);
+  fs.mkdirSync(path.dirname(absolute),{recursive:true});
+  const unsafe=[
+    'local function syncWildlife(model,controller)',
+    ' local speed=model:GetAttribute("WildlifeDesiredSpeed")',
+    ' controller:SetSpeed(speed)',
+    ' controller:SetState(tostring(model:GetAttribute("WildlifeMotionState")or"LOCOMOTION"),{',
+    '  side=model:GetAttribute("WildlifeHitSide"),',
+    '  duration=model:GetAttribute("WildlifeAttackDuration"),',
+    ' })',
+    'end',
+    'for _,attribute in ipairs({"WildlifeDesiredSpeed","WildlifeMotionState","WildlifeHitSide","WildlifeAttackDuration"})do',
+    ' table.insert(list,model:GetAttributeChangedSignal(attribute):Connect(function()syncWildlife(model,controller)end))',
+    'end'
+  ].join('\n');
+  fs.writeFileSync(absolute,unsafe);
+  const args={order:{target:'roblox',goal:'Improve real wildlife mob NPC attack animation motion'},
+    sourceRoot:root,responsibleFiles:[file]};
+  const candidate=deterministicRobloxNativeRepairCandidate(args);
+  assert.equal(candidate?.deterministicRobloxNativeRepair,'WILDLIFE_NATIVE_ACTION_STATE_DEBOUNCE');
+  assert.equal(candidate?.deterministicSelection?.status,'SOURCE_GROUNDED_UNVALIDATED');
+  assert.equal(candidate?.edits.length,1);
+  assert.match(candidate.edits[0].replace,/controller\.sourceState==state/);
+  assert.match(candidate.edits[0].replace,/controller\.sourceHitSide==side/);
+  assert.match(candidate.edits[0].replace,/controller\.sourceAttackDuration==duration/);
+  assert.equal(candidate.edits[0].replace.includes('SetAttribute("WildlifeMotionState"'),false);
+  const fixed=unsafe.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  fs.writeFileSync(absolute,fixed);
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'corrected motion cannot be patched repeatedly');
+  assert.equal(deterministicRobloxNativeRepairCandidate({...args,order:{target:'unity',goal:'motion'}}),null,'other engines must not be changed');
+});
