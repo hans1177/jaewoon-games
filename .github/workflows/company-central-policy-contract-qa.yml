@@ -259,6 +259,7 @@ jobs:
           studio_contract=NO
           post_runtime_contract=NO
           isolated_post_runtime=NO
+          isolated_studio=NO
           if grep -Eq '^(company-directive\.json|company-learning/(platform-release-roadmap|company-log-map|company-architecture-map|security-immune-system|other-ai-machine-directive|next-session-handoff)\.json|tools/company-shared-context\.mjs|tools/company-constitution-enforcer\.mjs|\.github/workflows/company-central-policy-contract-qa\.yml)$' /tmp/central-policy-impact-files.txt; then full_policy=YES; fi
           if grep -Eq '^(tools/company-development-roblox-studio-local-play\.mjs|qa/company-development-roblox-studio-local-play\.test\.mjs)$' /tmp/central-policy-impact-files.txt; then studio_contract=YES; fi
           if grep -Eq '^(\.github/workflows/company-development-roblox-post-runtime-qa\.yml|qa/company-development-roblox-post-runtime-qa\.test\.mjs)$' /tmp/central-policy-impact-files.txt; then post_runtime_contract=YES; fi
@@ -267,6 +268,15 @@ jobs:
              ! grep -Ev '^(\.github/workflows/company-development-roblox-post-runtime-qa\.yml|qa/company-development-roblox-post-runtime-qa\.test\.mjs)$' /tmp/central-policy-impact-files.txt | grep -q .; then
             isolated_post_runtime=YES
           fi
+          # Studio-only changes require constitutional preflight and Studio QA.
+          if [ "$full_policy" = NO ] && [ "$studio_contract" = YES ] && [ "$post_runtime_contract" = NO ]; then
+            changed_count=$(wc -l < /tmp/central-policy-impact-files.txt)
+            studio_count=$(grep -Ec '^(tools/company-development-roblox-studio-local-play[.]mjs|qa/company-development-roblox-studio-local-play[.]test[.]mjs)$' /tmp/central-policy-impact-files.txt || true)
+            if [ "$changed_count" -gt 0 ] && [ "$changed_count" -eq "$studio_count" ]; then
+              isolated_studio=YES
+            fi
+          fi
+          echo "isolated_studio=$isolated_studio" >> "$GITHUB_OUTPUT"
           echo "isolated_post_runtime=$isolated_post_runtime" >> "$GITHUB_OUTPUT"
           echo "full_policy=$full_policy" >> "$GITHUB_OUTPUT"
           echo "studio_contract=$studio_contract" >> "$GITHUB_OUTPUT"
@@ -281,8 +291,15 @@ jobs:
           node tools/company-constitution-enforcer.mjs --phase=policy-qa
           node --test qa/company-development-roblox-post-runtime-qa.test.mjs
 
+      - name: Verify isolated official Studio MCP contract with shared policy preflight
+        if: ${{ steps.impact.outputs.isolated_studio == 'YES' }}
+        run: |
+          node tools/company-constitution-enforcer.mjs --phase=policy-qa
+          node --check tools/company-development-roblox-studio-local-play.mjs
+          node --test qa/company-development-roblox-studio-local-play.test.mjs
+
       - name: Verify central policy and selected-platform production authority
-        if: ${{ steps.impact.outputs.isolated_post_runtime != 'YES' }}
+        if: ${{ steps.impact.outputs.isolated_post_runtime != 'YES' && steps.impact.outputs.isolated_studio != 'YES' }}
         env:
           FULL_POLICY: ${{ steps.impact.outputs.full_policy }}
           STUDIO_CONTRACT: ${{ steps.impact.outputs.studio_contract }}
