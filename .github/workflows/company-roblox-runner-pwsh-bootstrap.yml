@@ -240,7 +240,37 @@ jobs:
           # 촬영 환경: 다른 PC의 원격 화면이나 가짜 영상 대신 실제 GPU/Windows 세션만 사용한다.
           $session = [Diagnostics.Process]::GetCurrentProcess().SessionId
           if ($session -eq 0) {
-            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=BLOCKED_SERVICE_SESSION_NO_VISIBLE_PLAYER'
+            # Windows 서비스 세션에서는 촬영하지 않는다. 이미 로그인된 실제 사용자
+            # 세션에 기존 설치기를 예약 실행하여 Roblox Player 창을 사용한다.
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=SERVICE_SESSION_REQUIRES_INTERACTIVE_LAUNCH'
+            $console = Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue
+            $consoleUser = [string]$console.UserName
+            if ([string]::IsNullOrWhiteSpace($consoleUser)) {
+              Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=WAITING_FOR_WINDOWS_USER_LOGON'
+              exit 0
+            }
+            $gpu = @(Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -and $_.Name -notmatch 'Microsoft Basic Display|Microsoft Remote Display|Virtual Display' })
+            if ($gpu.Count -eq 0) {
+              Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=BLOCKED_NATIVE_GPU_MISSING'
+              exit 0
+            }
+            $source = Join-Path $env:GITHUB_WORKSPACE 'tools\setup-roblox-native-capture-windows.ps1'
+            if (-not (Test-Path -LiteralPath $source)) {
+              throw 'ROBLOX_NATIVE_CAPTURE_SETUP_MISSING_FROM_MAIN'
+            }
+            $safeRoot = Join-Path $env:ProgramData 'JaewoonNativeMedia'
+            New-Item -ItemType Directory -Force -Path $safeRoot | Out-Null
+            $persistentSetup = Join-Path $safeRoot 'setup-roblox-native-capture-windows.ps1'
+            Copy-Item -LiteralPath $source -Destination $persistentSetup -Force
+            $arguments = '-NoProfile -ExecutionPolicy Bypass -File "'+$persistentSetup+'" -RegisterWatcher'
+            $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $arguments
+            $trigger = New-ScheduledTaskTrigger -AtLogOn -User $consoleUser
+            $principal = New-ScheduledTaskPrincipal -UserId $consoleUser -LogonType Interactive -RunLevel Limited
+            Register-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap' -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
+            Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap'
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=INTERACTIVE_USER_SETUP_DISPATCHED'
+            Write-Host 'ROBLOX_ACTUAL_CLIENT_RECORDING_NOT_YET_ATTESTED=YES'
             exit 0
           }
           $gpu = @(Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue |
