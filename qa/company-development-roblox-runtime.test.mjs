@@ -1681,13 +1681,16 @@ test('existing and generated Roblox games bind confirmed combat to compatible R1
   const canonical=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
   assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
   assert.match(server,/player:SetAttribute\("ActionSequence"/);
+  assert.match(server,/player:SetAttribute\("ApprovedCombatMotion"/);
+  assert.match(generator,/player:SetAttribute\(\\\"ApprovedCombatMotion\\\"/);
   assert.match(canonical,/function RobloxCommonMotion.CreateCombatCombo\(/);
   assert.match(canonical,/function RobloxCommonMotion.BindJointPose\(/);
   for(const source of [generator,client]){
     for(const call of ['CreateCombatCombo','SampleCombatCombo','MapCombatPoseToR15','BindJointPose']){
       assert.ok(source.includes('combatMotionSource.'+call),'missing native motion action call: '+call);
     }
-    assert.ok(source.includes('player:GetAttributeChangedSignal("ActionSequence")'),'authoritative action event required');
+    assert.ok(source.includes('player:GetAttributeChangedSignal("ApprovedCombatMotion")'),'authoritative atomic action event required');
+    assert.ok(source.includes('approved:match("^([^:]+):(%d+)$")'),'action scope and event must bind atomically');
     assert.ok(source.includes('if action.Kind == "COMBAT"'),'unrelated gameplay action may not play attack');
     assert.ok(source.includes('humanoid.RigType ~= Enum.HumanoidRigType.R15'),'do not bind to incompatible rigs');
     assert.ok(source.includes('MATCHING_WEAPON_MOTION_REQUIRED'),'do not fake arbitrary weapon animations');
