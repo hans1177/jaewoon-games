@@ -372,8 +372,8 @@ export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot
         const canonicalHeader='-- 파일명: assets/roblox/'+directory+'/'+entry.name;
         // 기존 게임용 파일의 첫줄 출처 주석만 바뀐 복제본은 기능 충돌이 아니다.
         // 해당 주석 한 줄 이외의 글자/바이트는 모두 같아야 한다. 게임 전용 수정은 반드시 보호한다.
-        const headerOnlyCopy=canonicalSource.startsWith(canonicalHeader+'\\n')
-          &&localSource.startsWith(expectedLocalHeader+'\\n')
+        const headerOnlyCopy=canonicalSource.startsWith(canonicalHeader+'\n')
+          &&localSource.startsWith(expectedLocalHeader+'\n')
           &&localSource.slice(expectedLocalHeader.length)===canonicalSource.slice(canonicalHeader.length);
         if(canonicalSource!==localSource&&!headerOnlyCopy){
           conflicts.push({module:moduleName,reason:'GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL'});
