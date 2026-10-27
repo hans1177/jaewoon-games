@@ -825,8 +825,14 @@ jobs:
             const grantedIds=new Set(Array.isArray(response.successAssetIds)
               ?response.successAssetIds.map(String):[]);
             if(!grant.ok||(Array.isArray(response.errors)&&response.errors.length>0)
-              ||assetIds.some(assetId=>!grantedIds.has(String(assetId))))
+              ||assetIds.some(assetId=>!grantedIds.has(String(assetId)))){
+              // 원문 오류·키·요청 본문을 출력하지 않고 공식 오류 코드만 허용 문자로 정규화한다.
+              const reason=String(response?.error?.code||response?.errors?.[0]?.code||'UNSPECIFIED')
+                .replace(/[^A-Za-z0-9_]/g,'_').slice(0,64);
+              console.error('ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE='+reason);
+              if(grant.status===403)console.error('ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS');
               throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+grant.status);
+            }
             console.log('ROBLOX_CC0_UNIVERSE_GRANT_ACCEPTED='+assetIds.length);
           }else console.log('ROBLOX_CC0_UNIVERSE_GRANT=NO_REGISTERED_ACTOR_USE');
           const result=await publishRobloxPlace({plan,retryDelaysMs:[]});
@@ -914,8 +920,15 @@ jobs:
             sleep $((attempt*2))
           done
           test "$persisted" = 1
-          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" || true
-          echo "ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_F9_REPAIR:$GAME_ID:${PUBLISH_CYCLE_ID:-VALIDATION}"
+          # 403은 API 키 범위·대상 Universe 또는 자산 소유 권한 문제가 해결되기 전까지 재시도해도 성공할 수 없다.
+          # 복구 상태는 유지하되 동일 권한 거부의 자동 재호출은 멈춘다.
+          if [ -f /tmp/roblox-final-release-publish.log ] && grep -q 'ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_403' /tmp/roblox-final-release-publish.log; then
+            echo "ROBLOX_CC0_PERMISSION_REPAIR_REQUIRED=OWNER_ASSET_GRANT_OR_API_KEY_SCOPE:$GAME_ID"
+            echo "ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=DEFERRED_PERMISSION_REPAIR:$GAME_ID"
+          else
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" || true
+            echo "ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_F9_REPAIR:$GAME_ID:${PUBLISH_CYCLE_ID:-VALIDATION}"
+          fi
           echo "ROBLOX_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO"
 
       - name: Persist proven internal release state only

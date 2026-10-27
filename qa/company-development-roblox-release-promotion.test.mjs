@@ -655,6 +655,14 @@ test('CC0 registered models receive per-target Universe grants only after exact 
  assert.match(publish,/assetIds\.some\(assetId=>!grantedIds\.has\(String\(assetId\)\)\)/);
  assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
  assert.match(publish,/ROBLOX_CC0_GRANT_API_KEY_REQUIRED/);
+ assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE=/);
+ assert.match(publish,/ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS/);
+ const repair=workflow.slice(workflow.indexOf('      - name: Persist publication retry requirement'),
+   workflow.indexOf('      - name: Persist proven internal release state only'));
+ assert.match(repair,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_403/);
+ assert.match(repair,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=DEFERRED_PERMISSION_REPAIR:/);
+ assert.match(repair,/OWNER_ASSET_GRANT_OR_API_KEY_SCOPE/);
+ assert.match(repair,/ROBLOX_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO/);
  assert.doesNotMatch(publish,/\bautoActivate\b|\bactivateUniverse\b/,
   'automatically regranting an actor must not increase public exposure');
  const restart=workflow.indexOf("      - name: Restart this game's F0 from exact current main");
