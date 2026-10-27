@@ -74,6 +74,20 @@ test('WEB onepatch selects all existing game text files without count limit',t=>
   assert.equal(resolveWebVibeSources('demo',{repoRoot:root,files:'*'}).length,25);
   assert.throws(()=>resolveWebVibeSources('demo',{repoRoot:root,files:'roblox-games/demo/server/init.luau'}));
 });
+test('WEB owner worker accepts existing large game file but keeps a finite source limit',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-vibe-large-source-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const game=path.join(root,'web-games','fantasy-survival');
+  fs.mkdirSync(game,{recursive:true});
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+    games:[{id:'fantasy-survival',webPath:'web-games/fantasy-survival'}]
+  }));
+  const file=path.join(game,'index.html');
+  fs.writeFileSync(file,'<html>'+('개발된 기존 게임 내용').repeat(85000)+'</html>');
+  assert.equal(resolveWebVibeSources('fantasy-survival',{repoRoot:root}).length,1);
+  fs.writeFileSync(file,'<html>'+('X'.repeat(2*1024*1024))+'</html>');
+  assert.throws(()=>resolveWebVibeSources('fantasy-survival',{repoRoot:root}),/SOURCE_SIZE_OUT_OF_SCOPE/);
+});
 test('WEB onepatch preserves existing save keys and JSON structure across files',()=>{
   const original='export const value = 1;\nlocalStorage.getItem("game-save-v1");';
   assert.match(safeWebVibeReplacement(original,JSON.stringify({
