@@ -408,8 +408,11 @@ export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot
   const patternPath=path.join(repoRoot,'company-learning/vibe2-code-pattern-library.json');
   const patternLibrary=fs.existsSync(patternPath)?JSON.parse(fs.readFileSync(patternPath,'utf8')):{patterns:[]};
   const verifiedPatterns=(patternLibrary.patterns||[]).filter(pattern=>pattern?.verified===true&&pattern?.rawCodeStored!==true&&pattern?.retrievalEligible!==false&&pattern?.independentQa==='PASS');
+  const moduleFingerprints=fingerprints.sort();
+  const runtimeBindingFingerprint=crypto.createHash('sha256')
+    .update(JSON.stringify({modules:moduleFingerprints,verifiedPatterns:verifiedPatterns.map(pattern=>({id:pattern.id,sourceRevision:pattern.sourceRevision}))})).digest('hex');
   const sourceFingerprint=crypto.createHash('sha256')
-    .update(JSON.stringify({modules:fingerprints.sort(),libraries:libraryFingerprints,sourceFiles,nativePacks})).digest('hex');
+    .update(JSON.stringify({modules:moduleFingerprints,libraries:libraryFingerprints,sourceFiles,nativePacks})).digest('hex');
   return Object.freeze({
     project,moduleCount:seen.size,linked:Object.freeze(linked),local:Object.freeze(local),conflicts:Object.freeze(conflicts),
     libraryCoverage:Object.freeze({
@@ -418,7 +421,7 @@ export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot
       firstPartyDevelopmentSourceCount:sourceFiles.length,nativeSpecializedPackCount:nativePacks.length,
       verifiedCodePatternCount:verifiedPatterns.length,
       patternSourcesRuntimeInjected:false,unverifiedAssetsAutoPromoted:false,
-      libraryFingerprints:Object.freeze(libraryFingerprints),sourceFingerprint,
+      libraryFingerprints:Object.freeze(libraryFingerprints),sourceFingerprint,runtimeBindingFingerprint,
     }),
   });
 }
