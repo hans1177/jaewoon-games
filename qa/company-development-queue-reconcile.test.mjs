@@ -845,3 +845,33 @@ test('status and queue synchronization fetch current snapshots while retaining r
   assert.match(status,/PUBLIC_MAIN_WRITE=NO/);
   assert.match(status,/git checkout "\$generated_commit" -- "\$\{runtime_paths\[@\]\}"/);
 });
+
+
+test('portal RPG canonical title wins over stale seed and queue without changing simple-rpg',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'portal-rpg-queue-title-'));
+ try{
+  writePolicy(root);
+  write(root,'game-catalog.json',{games:[
+   {id:'daechung-rpg',name:'포탈 알피지',canonical:{identity:{name:'포탈 알피지'}},productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'},
+   {id:'simple-rpg',name:'대충알피지',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}
+  ]});
+  write(root,'game-seed-state.json',{seeds:[
+   {gameId:'daechung-rpg',gameName:'5포탈 RPG: 던전 파티',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'},
+   {gameId:'simple-rpg',gameName:'대충알피지',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}
+  ]});
+  writeDesign(root,'daechung-rpg');writeDesign(root,'simple-rpg');
+  write(root,'development-queue.json',{version:1,items:[
+   {gameId:'daechung-rpg',gameName:'5포탈 RPG: 던전 파티',status:'ACTIVE',currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',customEvidence:'PORTAL_KEPT'},
+   {gameId:'simple-rpg',gameName:'대충알피지',status:'ACTIVE',currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',customEvidence:'SIMPLE_KEPT'}
+  ]});
+  reconcileDevelopmentQueue({root});
+  const queue=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8'));
+  const portal=queue.items.find(row=>row.gameId==='daechung-rpg');
+  const simple=queue.items.find(row=>row.gameId==='simple-rpg');
+  assert.equal(portal.gameName,'포탈 알피지');
+  assert.equal(portal.customEvidence,'PORTAL_KEPT');
+  assert.equal(simple.gameName,'대충알피지');
+  assert.equal(simple.customEvidence,'SIMPLE_KEPT');
+  assert.equal(reconcileDevelopmentQueue({root}).changed,false);
+ }finally{fs.rmSync(root,{recursive:true,force:true})}
+});

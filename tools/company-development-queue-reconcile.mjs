@@ -307,7 +307,12 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
   Object.assign(item,{
     gameId,
     seedId:item.seedId||seed?.seedId||null,
-    gameName:item.gameName||seed?.gameName||game?.name||gameId,
+    // 공식 카탈로그에서 확정한 포탈 알피지 이름을 옛 시드/큐 기록이 되돌리지 못한다.
+    // 별도 simple-rpg의 게임명·기존 저장 및 플랫폼 ID는 변경하지 않는다.
+    gameName:gameId==='daechung-rpg'
+      &&clean(game?.name)==='포탈 알피지'
+      &&clean(game?.canonical?.identity?.name)==='포탈 알피지'
+      ?'포탈 알피지':item.gameName||seed?.gameName||game?.name||gameId,
     productionClass:'DEVELOPMENT_CONFIRMED',
     productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
     lifecycleState:upper(game?.lifecycleState||'ACTIVE'),
