@@ -235,16 +235,20 @@ async function choose(row,force=false){
   ?publishedWebManifest.robloxAssetBindings:null;
  const publishedConsumers=bindingIndex&&assetFile.startsWith('assets/')&&!assetFile.split('/').includes('..')
   ?Object.entries(bindingIndex).filter(([source])=>source===assetFile||assetFile.startsWith(source+'/')).flatMap(([,games])=>Array.isArray(games)?games:[]):[];
- const bound=[...new Set([...(Array.isArray(row.asset?.sourceBoundConsumerGameIds)?row.asset.sourceBoundConsumerGameIds:[]),...publishedConsumers])];
+ // Never promote historical registry hints into actual Rojo code-consumer claims.
+ const bound=[...new Set(publishedConsumers.filter(id=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(id)))];
+ const registeredBindings=Array.isArray(row.asset?.sourceBoundConsumerGameIds)
+  ?row.asset.sourceBoundConsumerGameIds.filter(id=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{1,48}$/.test(id)):[];
+ const registrationInfo=registeredBindings.length?'등록부 기재 소스 연결(재검증 별도): '+registeredBindings.join(', '):'';
  const bindings=(row.asset?.sourceConsumerBindings||[]).flatMap(item=>
   (item.evidenceFiles||[]).map(file=>item.gameId+' → '+file));
  const boundInfo=bound.length?'코드 연결: '+bound.join(', '):bindingIndex?'코드 연결: 해당 자산의 직접 Rojo 연결 없음':'코드 연결: 최신 전체 연결 정보를 확인할 수 없음';
- const bindingInfo=bindings.length?'실제 연결 근거: '+bindings.slice(0,6).join(' / ')+(bindings.length>6?' 외 '+(bindings.length-6)+'건':''):'';
+ const bindingInfo=bindings.length?'등록부 소스 경로 근거(검증 별도): '+bindings.slice(0,6).join(' / ')+(bindings.length>6?' 외 '+(bindings.length-6)+'건':''):'';
  const verifiedBound=(row.asset?.sourceConsumerBindings||[]).some(item=>item.runtimeVerified===true);
- const verificationInfo=verifiedBound?'해당 연결의 실행검증 근거 표시 있음':'연결만으로 실행검증을 인정하지 않음';
+ const verificationInfo=verifiedBound?'등록부에 실행검증 표시 있음(현재 버전 재검증 별도)':'연결만으로 실행검증을 인정하지 않음';
  const stages=['등록: 원장 항목','호환: 게임별 별도 검사',
-  bound.length?'코드 적용: 소스 연결 확인':'코드 적용: 미확인',
-  verifiedBound?'게임 실행검증: 기록 있음':'게임 실행검증: 미확인'].join(' / ');
+  bound.length?'코드 연결: Rojo 경로 확인(실제 적용 미검증)':'코드 연결: 미확인',
+  verifiedBound?'게임 실행검증: 등록부 기록만 있음':'게임 실행검증: 미확인'].join(' / ');
  const sourcePath=String(row.asset?.sourcePath||row.asset?.path||'').trim();
  // [에셋 동기화] 공개 화면에는 권한 없는 쓰기 요청을 두지 않고, 허용된 저장소 원본과 기존 배포 경로만 안내한다.
  const sourceFile=sourcePath.replace(/^\/+/, '').replaceAll('\\','/');
@@ -253,7 +257,7 @@ async function choose(row,force=false){
  sourceLink.hidden=!hasLocalSource;
  if(hasLocalSource)sourceLink.href='https://github.com/hans1177/jaewoon-games/blob/main/'+sourceFile.split('/').map(encodeURIComponent).join('/');
  else sourceLink.removeAttribute('href');
- const verifiedConsumers=[...new Set((Array.isArray(bound)?bound:[]).filter(id=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(id)))];
+ const verifiedConsumers=bound;
  const advertisedConsumers=Array.isArray(row.asset?.consumerGameIds)?row.asset.consumerGameIds:[];
  $('selectedAssetPublishStatus').textContent=!publishedWebManifest?'웹 게시본 확인 불가 · 실제 배포 미검증':hasLocalSource
   ?(publishedWebManifest.sharedAssets.includes(sourceFile)?'현재 웹 게시 파일 목록에 포함: '+sourceFile:'현재 웹 게시 파일 목록에 포함되지 않음: '+sourceFile)
@@ -261,7 +265,8 @@ async function choose(row,force=false){
  $('assetSyncDetail').textContent=[
   '선택: '+row.id,
   hasLocalSource?'저장소 원본: '+sourceFile:'직접 수정할 로컬 원본 경로 미확인',
-  bound.length?'실제 소스 연결: '+bound.join(', '):bindingIndex?'선택 자산의 직접 게임 연결 없음':'게임별 실제 연결 정보 미검증',
+  verifiedConsumers.length?'게시본 Rojo 소스 연결: '+verifiedConsumers.join(', '):bindingIndex?'선택 자산의 직접 Rojo 연결 없음':'게임별 실제 연결 정보 미검증',
+  registrationInfo,
   advertisedConsumers.length?'선언된 사용처 '+advertisedConsumers.length+'개(실제 연결과 별도)':'',
   '게임 빌드·배포·실행 검증은 각각 별도 확인'
  ].filter(Boolean).join(' · ');
@@ -270,7 +275,7 @@ async function choose(row,force=false){
  const sharedInfo=sharedSource>1?'동일 경로 등록 '+sharedSource+'개 · 실제 중복 여부는 별도 확인 필요':'';
  const sourceVersion=row.asset?.sourceRevision||row.asset?.version?'자산 버전: '+(row.asset.sourceRevision||row.asset.version):'';
  const registryVersion=registry?.version?'등록부 버전: '+registry.version:'';
- $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=(kind==='all'||kind==='native')?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,stages,consumers,boundInfo,bindingInfo,verificationInfo,sourceInfo,sharedInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
+ $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=(kind==='all'||kind==='native')?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,stages,consumers,boundInfo,bindingInfo,verificationInfo,sourceInfo,sharedInfo,registrationInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
  $('assetType').textContent=kind==='all'?(categoryLabels[category]||category).toUpperCase():kind==='monster'?'MONSTER STUDIO':kind==='common'?'COMMON CHARACTER MOTION':'WORLD LIBRARY';
  $('assetCanvas').hidden=true;$('assetImage').hidden=true;$('motionControls').hidden=true;$('playbackControls').hidden=true;$('inspectionMetrics').hidden=true;
  $('meshControls').hidden=true;$('meshWireframe').checked=false;
