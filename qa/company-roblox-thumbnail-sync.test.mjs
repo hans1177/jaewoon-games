@@ -11,7 +11,8 @@ import {
   uploadRobloxHomepageThumbnail,
   syncRobloxExperienceDetailMedia,
   syncRobloxHomepageThumbnail,
-  editVerifiedRobloxGameplayVideo
+  editVerifiedRobloxGameplayVideo,
+  renderRobloxConceptTrailer
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
 const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
@@ -382,6 +383,48 @@ test('automatic Roblox video edit stays blocked without genuine native capture, 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('unattended concept trailer is visibly labeled promotional artwork, never native Roblox gameplay',()=>{
+  if(spawnSync('ffmpeg',['-version'],{encoding:'utf8'}).status!==0)return;
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-concept-video-'));
+  try{
+    const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',
+      source:'assets/roblox-thumbnails/cozy-island.png'};
+    const source=path.join(root,target.source);
+    const renderedPath=path.join(root,'.tmp','roblox-thumbnails','cozy-island.png');
+    fs.mkdirSync(path.dirname(source),{recursive:true});
+    fs.mkdirSync(path.dirname(renderedPath),{recursive:true});
+    const make=spawnSync('ffmpeg',['-y','-loglevel','error','-f','lavfi','-i',
+      'color=c=0x3b5369:s=1920x1080:d=1','-frames:v','1',source],
+      {encoding:'utf8',timeout:60000});
+    assert.equal(make.status,0,make.stderr);
+    fs.copyFileSync(source,renderedPath);
+    const checksum=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+    const validated={sourcePath:source,sha256:checksum(source)};
+    const rendered={outputPath:renderedPath,sha256:checksum(renderedPath)};
+    const result=renderRobloxConceptTrailer({
+      root,target,validated,rendered,durationSeconds:3
+    });
+    assert.equal(result.kind,'AUTOMATED_CANONICAL_ART_MOTION_PROMO');
+    assert.equal(result.platform,'MARKETING_ARTWORK_NOT_ROBLOX_GAMEPLAY');
+    assert.equal(result.actualGameplay,false);
+    assert.equal(result.nativeCaptureVerified,false);
+    assert.equal(result.videoPublished,false);
+    assert.equal(result.uploadAllowed,false);
+    assert.match(result.onScreenDisclosure,/NOT GAMEPLAY/);
+    assert.ok(fs.existsSync(path.join(root,result.videoPath)));
+    assert.ok(fs.existsSync(path.join(root,result.videoPath+'.json')));
+    assert.equal(result.videoSha256,checksum(path.join(root,result.videoPath)));
+    assert.ok(result.seconds>=2.5&&result.seconds<=3.5);
+    assert.throws(()=>renderRobloxConceptTrailer({
+      root,target,validated:{...validated,sha256:'0'.repeat(64)},rendered,durationSeconds:3
+    }),/ROBLOX_CONCEPT_CANONICAL_SOURCE_INTEGRITY_FAILED/);
+    assert.throws(()=>renderRobloxConceptTrailer({
+      root,target:{...target,source:'assets/roblox-thumbnails/another-game.png'},
+      validated,rendered,durationSeconds:3
+    }),/ROBLOX_CONCEPT_VERIFIED_GAME_TARGET_REQUIRED/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('release promotion auto-syncs thumbnails on main push without republishing place',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/thumbnail_only:/);
@@ -401,7 +444,10 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES/);
   assert.match(workflow,/ROBLOX_ROBLOSECURITY: \$\{\{ secrets\.ROBLOX_ROBLOSECURITY \}\}/);
   assert.match(workflow,/librsvg2-bin/);
-  assert.match(workflow,/Keep authentic Roblox gameplay edits as private review artifacts/);
+  assert.match(workflow,/Archive native gameplay edits and separately labeled art previews/);
+  assert.match(workflow,/Render official-source concept art previews without gameplay claims/);
+  assert.match(workflow,/concept-only=true/);
+  assert.match(workflow,/concept-trailer\\.mp4/);
   assert.match(workflow,/if-no-files-found: ignore/);
   assert.match(workflow,/ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS/);
   assert.doesNotMatch(workflow,/Roblox Player automation/i);
