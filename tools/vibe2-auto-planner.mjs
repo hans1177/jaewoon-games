@@ -880,7 +880,8 @@ export function adaptiveWebDevelopmentTarget({maxTarget=0,projects=[],runnerPres
   // 완성도 정보가 없으면 완료로 추측하지 않고 작업 미완료로 계산한다.
   const incomplete=eligible.length-closeout;
   const base=Math.max(Math.min(2,eligible.length),2+Math.ceil(Math.sqrt(incomplete)));
-  let target=Math.min(ceiling,eligible.length,base);
+  // Keep the owner's two-distinct-game floor visible as a shortfall when only one eligible game remains.
+  let target=Math.min(ceiling,Math.max(Math.min(2,ceiling),Math.min(eligible.length,base)));
   const telemetry=runnerPressure?.lastTelemetry||runnerPressure||{};
   const checkedAt=Date.parse(String(runnerPressure?.lastUpdatedAt||''));
   const fresh=!Number.isFinite(checkedAt)||Date.now()-checkedAt<=30*60*1000;
@@ -4188,7 +4189,7 @@ function supersedeLegacyMicroTasksForStudioQuality(queueInput){
   return{count,queue:count?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
 }
 
-export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={}}={}){
+export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={},runnerPressure=null}={}){
   // 기획 도중의 반복 정책 파싱을 제거한다. 다음 계획/독립 호출은 언제나 파일을 재확인한다.
   const previousPlanningPolicySnapshot=activePlanningPolicySnapshot;
   const policyFile=path.resolve(repoRoot,CANONICAL_POLICY_PATH);
@@ -4357,7 +4358,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const webFlowTarget=webFlowUnityOnly?webFlowMax:adaptiveWebDevelopmentTarget({
     maxTarget:webFlowMax,
     projects:allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)),
-    runnerPressure:readJson(path.join(repoRoot,'.vibe2/parallelism-control.json'),{})
+    runnerPressure:runnerPressure||readJson(path.join(repoRoot,'.vibe2/parallelism-control.json'),{})
   });
   const webFlowMatches=item=>webFlowUnityOnly
     ?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage'))
@@ -4630,7 +4631,7 @@ export function runVibe2AutoPlanner({
   const robloxDistillationLedger=readJson(resolvedRobloxDistillationFile,{version:1,records:[]});
   const robloxPlaybooks=readJson(path.join(repoRoot,'company-learning','vibe3-task-playbooks.json'),{});
   const queueBefore=readJson(resolvedQueueFile,{tasks:[]});
-  let result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:readJson(developmentQueueFile,{items:[]}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks});
+  let result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:readJson(developmentQueueFile,{items:[]}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks,runnerPressure:readJson(resolvedControlFile,{})});
   if(ownerRobloxPatch){
     // 기존 중앙 문서 네 개가 검증되기 전에는 큐도 변경하지 않는다.
     const centralFiles=['platform-release-roadmap.json','company-log-map.json',
