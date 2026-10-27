@@ -2,6 +2,10 @@ name: Company DESIGN_ONLY Promotion Sync
 
 on:
   workflow_dispatch:
+  # 설계가 PASS로 저장됐어도 이벤트 전달·후속 실행이 실패하면 기존 승격기를
+  # 정기 재진입시킨다. 점수·허가를 새로 생성하지 않으며 검증된 증거만 읽는다.
+  schedule:
+    - cron: '53 * * * *'
   workflow_run:
     workflows:
       - Company Seed DESIGN_ONLY Runtime
@@ -34,7 +38,7 @@ env:
 
 jobs:
   promote:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'workflow_run' && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'))
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_run' && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'))
     runs-on: ubuntu-slim
     timeout-minutes: 12
     steps:
