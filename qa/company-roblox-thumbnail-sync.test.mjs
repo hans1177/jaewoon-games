@@ -101,6 +101,24 @@ test('Open Cloud thumbnail upload uses files multipart and verifies Finished ope
   assert.equal(requests.length,2);
 });
 
+test('numeric status requires a completed record for the exact upload operation',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-status-'));
+  const png=path.join(dir,'thumbnail.png');
+  fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10]));
+  let polls=0;
+  const result=await uploadRobloxHomepageThumbnail({
+    universeId:'10767445741',pngPath:png,apiKey:'secret',attempts:3,sleepImpl:async()=>{},
+    fetchImpl:async(url)=>{
+      if(String(url).endsWith('/thumbnails/uploads'))return Response.json({fileToOperationIdDict:{'thumbnail.png':'op-1'}});
+      polls++;
+      return Response.json({uploadStatus:2,uploadThumbnailStatusDict:polls===1?{'other':{homepageThumbnailId:'wrong'}}:{'op-1':{homepageThumbnailId:'right'}}});
+    }
+  });
+  assert.equal(polls,2);
+  assert.equal(result.thumbnailId,'right');
+  fs.rmSync(dir,{recursive:true,force:true});
+});
+
 test('Roblox game detail image uses exact game ID and CSRF, never pretends a web video is native',async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-detail-'));
   const png=path.join(dir,'cozy-island.png');
