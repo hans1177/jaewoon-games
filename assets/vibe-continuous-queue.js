@@ -4,6 +4,9 @@
 
 const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
+// [메인] 이 모듈이 직접 검증·정규화한 불변 큐만 동일 프로세스 안에서 재사용한다.
+// 외부 JSON·저장소 요약·새 스프레드 객체는 항상 기존 전체 정규화와 권한 검사를 거친다.
+const normalizedQueueInstances = new WeakSet();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const freezeList = (values = []) => freeze(unique(values));
 const CANONICAL_POLICY_EVIDENCE='central-policy:company-learning/platform-release-roadmap.json';
@@ -430,10 +433,11 @@ function normalizeTask(input = {}, index = 0) {
 
 export function createVibeContinuousQueue(seed = {}) {
   if (seed?.queueStorage) throw new Error('VIBE2_QUEUE_STORAGE_RESTORE_REQUIRED');
+  if (normalizedQueueInstances.has(seed)) return seed;
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
   const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : normalizeConcurrencyLimit(seed?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
   const tasks = source.map(normalizeTask);
-  return freeze({
+  const queue = freeze({
     version: 5,
     mode: 'hierarchical-dag-sharded-work-stealing-queue',
     maxConcurrentTasks: configuredMax,
@@ -468,6 +472,8 @@ export function createVibeContinuousQueue(seed = {}) {
     defaultRetryPolicy: UNLIMITED_RETRY_POLICY,
     tasks: freeze(tasks)
   });
+  normalizedQueueInstances.add(queue);
+  return queue;
 }
 
 function completedIds(queue) {
