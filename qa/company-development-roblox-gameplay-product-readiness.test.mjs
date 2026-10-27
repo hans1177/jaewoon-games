@@ -55,6 +55,9 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(client,/player:GetAttribute\("CurrentWave"\)/);
   assert.match(client,/player:GetAttribute\("WeaponTier"\)/);
   assert.match(client,/remote:FireServer\(primaryCombatAction.Id\)/);
+  assert.match(client,/ProfileReady/);
+  assert.match(client,/SaveStatus/);
+  assert.match(client,/임시 플레이 · 이번 접속의 진행은 저장되지 않음/);
   assert.match(config,/Label = "가까운 자원 채집"/);
   assert.match(server,/CreatureParts.Create\(partId/);
   assert.match(server,/WorldProps.Create\(id/);

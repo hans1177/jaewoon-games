@@ -353,7 +353,7 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
-local watched = {"Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope"}
+local watched = {"Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text = string.format("웨이브 %d · 적 %d · HP %d · Lv %d  |  경험치 %d\n나무 %d · 돌 %d · 무기 강화 %d · 처치 점수 %d",
     player:GetAttribute("CurrentWave") or 0, player:GetAttribute("AliveEnemies") or 0,
@@ -361,6 +361,14 @@ local function render()
     player:GetAttribute("XP") or 0, player:GetAttribute("Wood") or 0,
     player:GetAttribute("Stone") or 0, player:GetAttribute("WeaponTier") or 0,
     player:GetAttribute("RoundScore") or 0)
+  local saveStatus = player:GetAttribute("SaveStatus")
+  if player:GetAttribute("ProfileReady") ~= true then
+    status.Text = "프로필 불러오는 중 · 전투 잠시 대기"
+  elseif saveStatus == "SESSION_ONLY" then
+    status.Text ..= "\n임시 플레이 · 이번 접속의 진행은 저장되지 않음"
+  elseif saveStatus == "SAVE_FAILED" then
+    status.Text ..= "\n저장 실패 · 기존 저장 데이터 보호 중"
+  end
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
