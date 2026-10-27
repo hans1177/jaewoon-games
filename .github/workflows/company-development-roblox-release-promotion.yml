@@ -14,6 +14,8 @@ on:
       - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'tools/company-roblox-thumbnail-sync.mjs'
       - 'tools/company-roblox-native-windows-capture.mjs'
+      - 'tools/setup-roblox-native-capture-windows.ps1'
+      - 'tools/watch-roblox-native-capture-windows.ps1'
       - 'assets/roblox/runtime-capture/**'
       - 'qa/company-roblox-thumbnail-sync.test.mjs'
       - 'qa/company-roblox-native-windows-capture.test.mjs'
@@ -1461,6 +1463,17 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/company-roblox-native-windows-capture.mjs
+          if command -v pwsh >/dev/null 2>&1; then
+            pwsh -NoProfile -NonInteractive -Command '
+              foreach($file in @("tools/setup-roblox-native-capture-windows.ps1", "tools/watch-roblox-native-capture-windows.ps1")){
+                $tokens=$null; $errors=$null
+                [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file).Path, [ref]$tokens, [ref]$errors) | Out-Null
+                if($errors.Count -gt 0){ $errors | ForEach-Object { Write-Error $_.Message }; exit 1 }
+              }
+            '
+          else
+            echo "ROBLOX_WINDOWS_POWERSHELL_PARSE=NOT_AVAILABLE_ON_LINUX_HOST"
+          fi
           node --test qa/company-roblox-native-windows-capture.test.mjs qa/company-roblox-thumbnail-sync.test.mjs qa/company-homepage-runtime-propagation.test.mjs
 
       - name: Resolve thumbnail sync games
