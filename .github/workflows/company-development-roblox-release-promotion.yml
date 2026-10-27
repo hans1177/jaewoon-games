@@ -1522,6 +1522,7 @@ jobs:
           fi
 
       - name: Publish exact game image to Roblox experience detail page
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
         working-directory: main
         env:
           GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
@@ -1554,6 +1555,7 @@ jobs:
           echo 'ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES'
 
       - name: Persist verified thumbnail evidence to runtime
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
         working-directory: main
         env:
           GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
