@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
-import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,validateRobloxBootstrap,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasCurrentRobloxPackageAssetRepair,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
@@ -1630,4 +1630,38 @@ test('legacy module-only source cannot be promoted without current native static
   assert.match(sweep,/moduleSyncOnly===true&&!independentlyVerifiedNativeSource/);
   assert.match(sweep,/independentlyVerifiedNativeSource\?\{moduleSyncOnly:false,sourceValidationPassed:true,sourceValidationBlockers:\[\]\}/);
   assert.match(sweep,/runtimeRef\+':'\+baselinePath/);
+});
+
+
+// [복합장르] 설계 A 또는 B 장르 하나만 일치하면 인정하되, 실제 소스·모드 검증은 유지한다.
+test('composite genre accepts a primary or supporting game genre but not an unrelated genre',()=>{
+  const root='roblox-games/daechung-rpg';
+  const original=fs.readFileSync(path.join(root,'shared/GameConfig.luau'),'utf8');
+  const server=fs.readFileSync(path.join(root,'server/Game.server.luau'),'utf8');
+  const client=fs.readFileSync(path.join(root,'client/Game.client.luau'),'utf8');
+  const profile={version:1,targetPlatform:'ROBLOX',genre:'Simulation',subgenre:null,playMode:'COOP',multiplayerRequired:true,
+    networkingRequired:true,multiplayerQaRequired:true,coopImplementationRequired:true,competitiveImplementationRequired:false,
+    minimumParticipantsForRequiredQa:2};
+  const oldSource='design/daechung-rpg/2026-09-22/design-revised.json';
+  const reference={
+    scope:'B_EXISTING_GAME_SYSTEMS',source:oldSource,
+    playerChoice:'마을에서 퀘스트와 장비 준비 → 포탈 → 몬스터 전투 → 보스 해금 → 장비 강화'
+  };
+  const makeBaseline=(primary='시뮬레이션',secondary='플랫폼 액션',ref=reference)=>({
+    gameId:'daechung-rpg',
+    content:{identity:'복합장르 기존 게임 보존',robloxBuildProfile:profile,
+      creativeGrammar:{a:{gameRole:'PRIMARY',gameGenre:primary},b:{gameRole:'SUPPORTING',gameGenre:secondary,existingSystemReference:ref}}}
+  });
+  const validate=(config,design=makeBaseline(),serverCode=server)=>validateRobloxBootstrap({
+    sharedConfig:config,serverCode,clientCode:client,baseline:design
+  }).blockers;
+  const passes=validate(original);
+  assert.ok(!passes.includes('CONFIG_GENRE_PROFILE_REQUIRED'),passes.join(','));
+  const explicit=makeBaseline('시뮬레이션','역할수행',null);
+  assert.ok(!validate(original,explicit).includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+  const unsupported=makeBaseline('시뮬레이션','플랫폼 액션',null);
+  assert.ok(validate(original,unsupported).includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+  assert.ok(validate(original,makeBaseline(),server.replace(/Quest/g,'Other').replace(/Portal/g,'Other').replace(/Boss/g,'Other')).includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+  assert.ok(validate(original.replace(/Genre\s*=\s*"RPG"/,'Genre="Puzzle"')).includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+  assert.ok(validate(original.replace(/PlayMode\s*=\s*"COOP"/,'PlayMode="SINGLE"')).includes('CONFIG_PLAY_MODE_PROFILE_REQUIRED'));
 });

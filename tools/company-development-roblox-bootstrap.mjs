@@ -1471,7 +1471,7 @@ task.defer(reportNativeFoundationReady)
     commonModuleSync:{count:commonModules.moduleCount,linked:commonModules.linked,local:commonModules.local,conflicts:commonModules.conflicts,libraryCoverage:commonModules.libraryCoverage},
   });
 }
-function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
+function sourceBlockers(text,{kind,saveRequired=false,profile=null,baseline={},serverCode=''}={}){
   const value=String(text??'');
   const blockers=[];
   const minBytes=kind==='config'?500:kind==='server'?1600:1200;
@@ -1488,7 +1488,41 @@ function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
       const genreField=value.match(/\bGenre\s*=\s*(["'][^"'\n]*["'])\s*(?=[,}\n\r])/);
       const modeField=value.match(/\bPlayMode\s*=\s*(["'][^"'\n]*["'])\s*(?=[,}\n\r])/);
       const multiplayerField=value.match(/\bMultiplayerRequired\s*=\s*(true|false)\s*(?=[,}\n\r])/);
-      if(genreField?.[1]!==luauString(profile.genre))blockers.push('CONFIG_GENRE_PROFILE_REQUIRED');
+      // [복합장르 검증] 주·보조 장르 가운데 실제 소스가 구현한 하나를 인정한다.
+      // 플레이 모드/멀티플레이어, 서버 권한·저장·게임 밸런스 검증은 종전 기준을 유지한다.
+      let genreAccepted=genreField?.[1]===luauString(profile.genre);
+      if(!genreAccepted){
+        const grammar=baselineContent(baseline)?.creativeGrammar;
+        const primary=grammar?.a,secondary=grammar?.b;
+        if(primary?.gameRole==='PRIMARY'&&secondary?.gameRole==='SUPPORTING'
+          &&clean(primary.gameGenre)&&clean(secondary.gameGenre)
+          &&clean(primary.gameGenre)!==clean(secondary.gameGenre)){
+          const canonical={
+            '시뮬레이션':'Simulation','전략':'Strategy','역할수행':'RPG','롤플레잉':'RPG',
+            '서바이벌':'Survival','생존':'Survival','플랫폼 액션':'Action','액션':'Action',
+            '생활':'Simulation','퍼즐':'Puzzle','공포 생존':'Survival'
+          };
+          const genres=new Set([primary.gameGenre,secondary.gameGenre].map(value=>canonical[clean(value)]||clean(value)));
+          // 기존 게임 보존 B 근거가 직접 RPG 퀘스트·보스·성장 흐름을 명시하고,
+          // 서버 소스에 동일 기능이 존재할 때만 RPG를 보조 게임 장르로 인정한다.
+          const original=secondary.existingSystemReference;
+          const gameId=clean(baseline?.gameId);
+          const previousSource=clean(original?.source);
+          const loop=clean(original?.playerChoice);
+          if(gameId&&original?.scope==='B_EXISTING_GAME_SYSTEMS'
+            &&previousSource.startsWith('design/'+gameId+'/')&&/^design\/[a-z0-9-]+\/20\d{2}-\d{2}-\d{2}\/design-revised\.json$/.test(previousSource)
+            &&/퀘스트/.test(loop)&&/포탈/.test(loop)&&/몬스터/.test(loop)
+            &&/보스/.test(loop)&&/강화|장비/.test(loop)
+            &&/\bQuest\b|Quest[A-Z]|quest[A-Z]/.test(serverCode)
+            &&/\bPortal\b|Portal[A-Z]|portal[A-Z]/.test(serverCode)
+            &&/\bBoss\b|Boss[A-Z]|boss[A-Z]/.test(serverCode)
+            &&/\bLevel\b|Level[A-Z]|level[A-Z]|\bEquipment\b|Equipment[A-Z]/.test(serverCode)){
+            genres.add('RPG');
+          }
+          genreAccepted=genres.has(clean(genreField?.[1]).replace(/^["']|["']$/g,''));
+        }
+      }
+      if(!genreAccepted)blockers.push('CONFIG_GENRE_PROFILE_REQUIRED');
       if(modeField?.[1]!==luauString(profile.playMode))blockers.push('CONFIG_PLAY_MODE_PROFILE_REQUIRED');
       if(multiplayerField?.[1]!==(profile.multiplayerRequired?'true':'false'))blockers.push('CONFIG_MULTIPLAYER_PROFILE_REQUIRED');
     }
@@ -1527,7 +1561,7 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
   const buildProfile=profile||robloxBuildProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
   const blockers=[
-    ...sourceBlockers(sharedConfig,{kind:'config',saveRequired,profile:buildProfile}),
+    ...sourceBlockers(sharedConfig,{kind:'config',saveRequired,profile:buildProfile,baseline,serverCode}),
     ...sourceBlockers(serverCode,{kind:'server',saveRequired,profile:buildProfile}),
     ...sourceBlockers(clientCode,{kind:'client',saveRequired,profile:buildProfile}),
   ];
