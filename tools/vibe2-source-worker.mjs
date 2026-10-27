@@ -1720,7 +1720,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     &&/(?:missing|unbound|restore|dispatch|connect|implement|누락|연결|복구|구현|미동작)/i.test(intent);
   const runtimeWork=/(?:runtime|spawn|respawn|character|stream|lifecycle|camera|hud|scroll|viewport|cleanup|스폰|리스폰|캐릭터|초기|스트리밍|카메라|화면|스크롤|런타임|누수|종료.*정리)/i.test(intent);
   const motionWork=/(?:motion|animation|animator|rig|npc|mob|creature|boss|wildlife|모션|애니메이션|리깅|몹|보스|동물)/i.test(intent)
-    ||Boolean(order?.selectedTask?.buildUpDirective?.gameInternalAutoComposition?.actorMotion?.nextGameSpecificMotionWorkUnit?.actorClass);
+    ||Boolean((order?.selectedTask?.buildUpDirective||order?.buildUpDirective)?.gameInternalAutoComposition?.actorMotion?.nextGameSpecificMotionWorkUnit?.actorClass);
   if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork&&!motionWork)return null;
   let root;
   try{root=fs.realpathSync(sourceRoot);}catch{return null;}
