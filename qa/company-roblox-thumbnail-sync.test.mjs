@@ -182,6 +182,64 @@ test('existing Roblox native media is preserved without duplicate re-upload',asy
   fs.rmSync(dir,{recursive:true,force:true});
 });
 
+test('changed canonical detail artwork replaces an old image without claiming immediate approval',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-detail-refresh-'));
+  try{
+    const png=path.join(dir,'cozy-island.png');
+    fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10,0,0]));
+    const calls=[];
+    const fetchImpl=async(url,opts={})=>{
+      calls.push(String(url));
+      if(String(url).includes('/media?'))return Response.json({data:[
+        {assetType:'Image',assetId:101,approved:true}
+      ]});
+      assert.equal(String(url),'https://publish.roblox.com/v1/games/10767445741/thumbnail/image');
+      if(!opts.headers['x-csrf-token'])return new Response('',{status:403,headers:{'x-csrf-token':'valid-token'}});
+      return Response.json({});
+    };
+    const media=await syncRobloxExperienceDetailMedia({
+      universeId:'10767445741',pngPath:png,cookie:'cookie',
+      refreshExistingImage:true,fetchImpl
+    });
+    assert.equal(media.imageStatus,'UPDATED_IMAGE_SUBMITTED_AWAITING_MODERATION');
+    assert.equal(media.verifiedDetailImage,false);
+    assert.equal(media.canonicalImageContentVerified,false);
+    assert.deepEqual(media.imageBaselineIds,['101']);
+    assert.equal(media.videoPublication.captureVerified,false);
+    assert.equal(media.videoPublication.maxSeconds,30);
+    assert.equal(calls.length,3);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('moderation polling does not confuse old approved images with new footage or artwork',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-detail-poll-'));
+  try{
+    const png=path.join(dir,'cozy-island.png');
+    fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10,0,0]));
+    const observe=async data=>syncRobloxExperienceDetailMedia({
+      universeId:'10767445741',pngPath:png,skipDuplicateUpload:true,
+      previousImageBaselineIds:['101'],fetchImpl:async()=>Response.json({data})
+    });
+    const oldApproved=await observe([{assetType:'Image',assetId:101,approved:true}]);
+    assert.equal(oldApproved.imageStatus,'AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD');
+    assert.equal(oldApproved.verifiedDetailImage,false);
+    const newPending=await observe([
+      {assetType:'Image',assetId:101,approved:true},
+      {assetType:'Image',assetId:202,approved:false}
+    ]);
+    assert.equal(newPending.newGalleryImageApproved,false);
+    const newApproved=await observe([
+      {assetType:'Image',assetId:101,approved:true},
+      {assetType:'Image',assetId:202,approved:true}
+    ]);
+    assert.equal(newApproved.imageStatus,'NEW_GALLERY_IMAGE_APPROVED_SOURCE_UNVERIFIED');
+    assert.equal(newApproved.verifiedDetailImage,true);
+    assert.equal(newApproved.canonicalImageContentVerified,false);
+    assert.deepEqual(newApproved.imageBaselineIds,['101']);
+    assert.equal(newApproved.videoStatus,'NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
 test('release promotion auto-syncs thumbnails on main push without republishing place',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/thumbnail_only:/);
