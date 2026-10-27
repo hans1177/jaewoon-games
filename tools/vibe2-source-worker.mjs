@@ -3656,9 +3656,14 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
           .map(row=>({actorClass:row.actorClass,files:row.sourceOwnerFiles,motions:row.motions,state:row.state,runtimeVerified:false})),
         mandatoryPolish:auto.actorMotion.mandatoryPolish,
         approvedSourceOrder:auto.actorMotion.approvedSourceOrder,
+        nextGameSpecificMotionWorkUnit:auto.actorMotion.nextGameSpecificMotionWorkUnit||null,
         runtimeVerified:false
       }:null,
       runtimeVerified:false,noNewAssetGeneration:true
+    }):'',
+    auto?.actorMotion?.nextGameSpecificMotionWorkUnit?'actorMotionFocus='+JSON.stringify({
+      ...auto.actorMotion.nextGameSpecificMotionWorkUnit,
+      ownerInAllowedFiles:!responsibleFiles.length||responsibleFiles.some(p=>posix(p)===posix(auto.actorMotion.nextGameSpecificMotionWorkUnit.sourceOwnerFile)||posix(p).endsWith('/'+posix(auto.actorMotion.nextGameSpecificMotionWorkUnit.sourceOwnerFile)))
     }):'',
     auto?.actorMotion?'actorMotion=EACH_BUILD_UP_PER_ACTOR_PLAY_QA_UNVERIFIED; actors='+(auto.actorMotion.detectedActorClasses||[]).map(row=>row.actorClass).join('|')+'; craft=APPROVED_REAL_MOTION_RIG_POSE_VELOCITY_CROSSFADE_FOOT_IK_SECONDARY_ACTING_HIT_SYNC_MOBILE_LOD; preserveGameplay=true':'',
     auto?.actorMotion?'actorMotionRule=Bind the verified real native animation clips to existing actor owners for actual player, NPC, monster, creature, boss, companion, mount and moving prop as applicable; blend joint motion and weight shift, preserve server hit and original game balance, use existing remote F0-F9 QA for timed per-actor playback evidence and same version before/after; source signatures are NOT visual PASS.':'',
@@ -3685,7 +3690,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
-  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','actorMotion=','actorMotionRule=','inspectionContract=','inspectionIndex=','inspectionRemoteMatrix=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest=','inspectionRemoteChecks='];
+  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','actorMotion=','actorMotionRule=','actorMotionFocus=','inspectionContract=','inspectionIndex=','inspectionRemoteMatrix=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest=','inspectionRemoteChecks='];
   const keepPrefixes=focusedRobloxVisual?[
     ...inspectionPrefixes,
     'robloxProduction','gameProduction',
