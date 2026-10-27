@@ -1079,17 +1079,29 @@ buildWorld(live){
     const defeated=entry.kind==='enemy'&&live.enemies.find(e=>e.dead&&key==='enemy'+e.id);
     if(!defeated||!entry.visualInitialized){this.removeActor(key,entry);continue;}
     if(!entry.deadAt){
-     entry.deadAt=now;entry.ring.visible=false;entry.root.userData.live=null;
+     // [실제 사망 액션] 보스·정예·일반 몹의 기존 GLB 쓰러짐 클립을
+     // 끊지 않고 재생한 뒤 퇴장한다. 사망 판정·드랍·보상 시간은 변경하지 않는다.
+     entry.deadAt=now;
+     entry.deathDuration=defeated.boss?1.35:defeated.elite?1.08:.88;
+     entry.ring.visible=false;entry.root.userData.live=null;
      entry.mixer.stopAllAction();
-     if(entry.clips.death){const action=entry.clips.death;action.reset().setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;action.setEffectiveTimeScale(Math.max(.7,action.getClip().duration/.65));action.play();}
+     if(entry.clips.death){
+      const action=entry.clips.death;
+      const clipSeconds=Math.max(.01,action.getClip().duration);
+      action.reset().setLoop(THREE.LoopOnce,1);
+      action.clampWhenFinished=true;
+      action.setEffectiveTimeScale(THREE.MathUtils.clamp(clipSeconds/(entry.deathDuration*.85),.7,2));
+      action.play();
+     }
     }
     const elapsed=(now-entry.deadAt)/1000;
-    if(elapsed>=.75){this.removeActor(key,entry);continue;}
+    if(elapsed>=entry.deathDuration){this.removeActor(key,entry);continue;}
     if(!live.paused){
      if(entry.clips.death)entry.mixer.update(dt);
-     else entry.model.rotation.z+=(Math.PI*.41-entry.model.rotation.z)*(1-Math.exp(-dt*9));
-     entry.root.position.y=Math.max(-.24,entry.root.position.y-dt*.28);
-     const opacity=elapsed>.47?Math.max(.02,1-(elapsed-.47)/.28):1;
+     else entry.model.rotation.z+=(Math.PI*(defeated.boss?.46:.41)-entry.model.rotation.z)*(1-Math.exp(-dt*(defeated.boss?7:9)));
+     entry.root.position.y=Math.max(defeated.boss?-.34:-.24,entry.root.position.y-dt*(defeated.boss?.31:.28));
+     const fadeAt=entry.deathDuration-.28;
+     const opacity=elapsed>fadeAt?Math.max(.02,1-(elapsed-fadeAt)/.28):1;
      if(entry.pixel)entry.pixel.material.opacity=opacity;
      else entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material]){m.transparent=opacity<1;m.opacity=opacity;}});
     }
