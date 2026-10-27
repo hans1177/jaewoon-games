@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g65-52fcf7223fa1",
-  "directiveFingerprint": "52fcf7223fa13b1e2292205edaf3ca0b4918efc56e0ece40a8680c14db7964d3",
-  "previousDirectiveFingerprint": "90052684edea2c78b71d2b6c208148f015771e282f8a570bd13dddceed53720c",
-  "forbiddenRepeatFingerprint": "90052684edea2c78b71d2b6c208148f015771e282f8a570bd13dddceed53720c",
+  "directiveId": "daechung-rpg-build-up-g66-f323e6588f8e",
+  "directiveFingerprint": "f323e6588f8e083a388bab8516e94b3fea74525c60395b62db1004e68e344467",
+  "previousDirectiveFingerprint": "52fcf7223fa13b1e2292205edaf3ca0b4918efc56e0ece40a8680c14db7964d3",
+  "forbiddenRepeatFingerprint": "52fcf7223fa13b1e2292205edaf3ca0b4918efc56e0ece40a8680c14db7964d3",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 65,
+  "generation": 66,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+  "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
   "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+        "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -487,7 +487,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+    "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -1042,7 +1042,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+    "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4660,7 +4660,7 @@
       "animation": 178,
       "motionStates": 1510,
       "gameFeel": 48,
-      "vfx": 82,
+      "vfx": 85,
       "camera": 169,
       "audio": 44,
       "audioDynamics": 36,
@@ -4669,7 +4669,7 @@
       "entryFlow": 39,
       "loadingFlow": 0,
       "input": 224,
-      "map": 955,
+      "map": 958,
       "landmark": 113,
       "interaction": 439,
       "inventory": 360,
@@ -4677,8 +4677,8 @@
       "settings": 41,
       "feedback": 227,
       "session": 122,
-      "content": 1665,
-      "choice": 1977,
+      "content": 1674,
+      "choice": 1980,
       "connection": 13,
       "performance": 80,
       "lighting": 221,
@@ -4717,7 +4717,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/default.project.json",
-        "score": 77
+        "score": 87
       },
       {
         "file": "roblox-games/daechung-rpg/launch-mvp.json",
@@ -5126,9 +5126,9 @@
   "previousVersionDelta": {
     "previousGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티와 퀘스트와 인물 관계 × 서사시의 추방과 귀환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 64,
-    "previousSourceTreeFingerprint": "3e06f13a1a0eb9e13ba1a2c4254a7b87d73812e9db5af68f8cf461a2e3bd7047",
-    "currentSourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+    "previousGeneration": 65,
+    "previousSourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+    "currentSourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6285,7 +6285,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 763389,
+        "sourceBytes": 796514,
         "largestFileBytes": 269824,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6318,8 +6318,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 8,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=0.",
+    "themeDepth": 9,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=0.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6327,7 +6327,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 9,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 8,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 9,
         "MID_LATE_ENDGAME_COMPLETION": 9,
         "PRESENTATION_WORLD_COHESION": 12
       },
@@ -6337,7 +6337,7 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "MID_LATE_ENDGAME_COMPLETION",
         "MID_LATE_ENDGAME_COMPLETION",
-        "MID_LATE_ENDGAME_COMPLETION",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6361,14 +6361,17 @@
       "breadthCycleComplete": true,
       "missingThemes": [],
       "leastCoveredThemes": [
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM"
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 48,
+        "score": 30,
         "gapDomains": []
       },
       {
@@ -6482,11 +6485,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 65,
-    "previousGeneration": 64,
+    "generation": 66,
+    "previousGeneration": 65,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
-    "priorSourceFingerprint": "3e06f13a1a0eb9e13ba1a2c4254a7b87d73812e9db5af68f8cf461a2e3bd7047",
+    "sourceFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
+    "priorSourceFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6505,7 +6508,7 @@
     "version": 1,
     "gameId": "daechung-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+    "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6918,7 +6921,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/daechung-rpg/client/Game.client.luau",
-          "roblox-games/daechung-rpg/shared/GameConfig.luau"
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/default.project.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -7081,7 +7085,8 @@
       ],
       "SKILL_VFX": [
         "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/default.project.json"
       ],
       "NETWORK": [
         "roblox-games/daechung-rpg/server/Game.server.luau",
@@ -7483,6 +7488,7 @@
         "responsibleFiles": [
           "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/default.project.json",
           "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
           "roblox-games/daechung-rpg/server/Game.server.luau",
           "roblox-games/daechung-rpg/shared/RPGMenu.luau",
@@ -7565,7 +7571,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+      "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -7589,7 +7595,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+      "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
       "sourceFiles": [
         {
           "file": "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
@@ -7743,7 +7749,7 @@
     "gameId": "daechung-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+    "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8751,7 +8757,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ac954a22c97001b9c1e4b14d1c9c6850a20dc4235cc32537fd2a2283042eace9",
+      "sourceTreeFingerprint": "547e2920e9c67c0ed21551c95a5dcc565e4e07b8dc0818f820ed7b045da2c98c",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8810,7 +8816,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 66,
+    "nextGeneration": 67,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8872,5 +8878,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-27T03:55:00.766Z"
+  "generatedAt": "2026-10-27T07:31:05.506Z"
 }
