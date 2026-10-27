@@ -36,7 +36,7 @@ test('Windows-only native capture recorder has no player automation or GUI macro
 
 test('native video frame audit detects full black and frozen recordings on Windows and Android',()=>{
  const start=worker.indexOf('function validateNativeVideo(file,duration){');
- const end=worker.indexOf('\\nfunction submitCapture(',start);
+ const end=worker.indexOf('\nfunction submitCapture(',start);
  assert.ok(start>=0&&end>start,'canonical video validation must remain callable');
  const source=worker.slice(start,end);
  const audit=(message)=>{
@@ -46,13 +46,13 @@ test('native video frame audit detects full black and frozen recordings on Windo
     ?{status:0,stdout:JSON.stringify({streams:[{codec_type:'video',width:1280,height:720}],format:{duration:19}})}
     :{status:0,stderr:message}
   };
-  return vm.runInNewContext(source+"\\nvalidateNativeVideo('capture.mp4',19);",context);
+  return vm.runInNewContext(source+"\nvalidateNativeVideo('capture.mp4',19);",context);
  };
  assert.throws(()=>audit('black_start:0'),/CAPTURE_BLACK_FRAMES_REJECTED/);
- assert.throws(()=>audit('black_start: 0\\nblack_end:18.1'),/CAPTURE_BLACK_FRAMES_REJECTED/);
+ assert.throws(()=>audit('black_start: 0\nblack_end:18.1'),/CAPTURE_BLACK_FRAMES_REJECTED/);
  assert.throws(()=>audit('freeze_start: 0'),/CAPTURE_STATIC_FRAMES_REJECTED/);
- assert.throws(()=>audit('freeze_start:0\\nfreeze_end:18'),/CAPTURE_STATIC_FRAMES_REJECTED/);
- assert.doesNotThrow(()=>audit('black_start:0\\nblack_end:3\\nfreeze_start:3\\nfreeze_end:4'));
+ assert.throws(()=>audit('freeze_start:0\nfreeze_end:18'),/CAPTURE_STATIC_FRAMES_REJECTED/);
+ assert.doesNotThrow(()=>audit('black_start:0\nblack_end:3\nfreeze_start:3\nfreeze_end:4'));
 });
 
 test('physical Android capture reuses native footage and git intake, without fake frames or player inputs',()=>{
