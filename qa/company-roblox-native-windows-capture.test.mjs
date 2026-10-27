@@ -36,6 +36,7 @@ test('Windows-only native capture recorder has no player automation or GUI macro
 test('private in-engine camera follows real existing NPC with native client video capture',()=>{
  assert.match(director,/game\.PrivateServerId==""/);
  assert.match(director,/JAEWOON_NATIVE_CAPTURE_/);
+ assert.match(director,/local deadline=os\.clock\(\)\+10/);
  assert.match(director,/Players:GetPlayerFromCharacter\(item\)/);
  assert.match(director,/FindFirstChildOfClass\("Humanoid"\)/);
  assert.match(director,/not root\.Anchored/);
@@ -65,6 +66,14 @@ test('Windows watcher and bootstrap never drive Roblox Player input and use boun
  assert.match(watcher,/\[int\]\$PollSeconds = 3/);
  assert.match(watcher,/RegisterWatcher|ROBLOX_CAPTURE_SUBMIT/);
  assert.match(watcher,/ROBLOX_CAPTURE_AUTHORIZED/);
+ assert.match(watcher,/Start-ApprovedPrivateCaptureSession/);
+ assert.match(watcher,/JAEWOON_CAPTURE_PRIVATE_LINK_CODE/);
+ assert.match(watcher,/JAEWOON_CAPTURE_GAME_ID/);
+ assert.match(watcher,/&linkCode=/);
+ assert.match(watcher,/&launchData=/);
+ assert.match(watcher,/Start-Process -FilePath \$uri/);
+ assert.match(watcher,/Get-Date\).AddMinutes\(5\)/);
+ assert.match(watcher,/target\.verified -ne \$true/);
  assert.doesNotMatch(watcher,/SendKeys|SendInput|pyautogui|Start-Process Roblox|mouse_event/i);
  assert.match(setup,/New-ScheduledTaskTrigger -AtLogOn/);
  assert.match(setup,/LogonType Interactive/);
