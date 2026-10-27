@@ -16,6 +16,7 @@ local store
 pcall(function()store=DSS:GetDataStore(C.SaveKey)end)
 local arenas,lastRequest={},{}
 local nextArena=0
+local lastSharedObjectiveSignature=""
 local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspace
 -- 기존 8종/10단계/저장키를 유지하며 경제·지휘·전선점령만 확장한다.
 local COMMANDS={PUSH=true,RALLY=true,DEFEND=true}
@@ -66,6 +67,27 @@ local function economy(a)
   TechCost=a.Tech<5 and techCost(a.Tech) or 0,PassiveGold=income,
   CaptureOwners={a.Points[1].Owner,a.Points[2].Owner}
  }
+end
+-- 서버 전체 플레이어가 실제 점령한 거점을 합쳐 연합의 공통 목표를 동기화한다.
+-- 개인 골드, 전투 수치, 저장값은 다른 플레이어에게 전송하지 않는다.
+local function broadcastSharedObjective(targetPlayer)
+ local participants,owned=0,0
+ for _,participant in ipairs(Players:GetPlayers()) do
+  local arena=arenas[participant]
+  if arena then
+   participants+=1
+   owned+=ownedPoints(arena)
+  end
+ end
+ local total=participants*#C.World.CaptureZ
+ local state={SharedObjective="CONTROL_FRONTLINE",Participants=participants,Owned=owned,Target=total,Complete=participants>0 and owned==total}
+ local signature=participants..":"..owned..":"..total
+ if signature~=lastSharedObjectiveSignature then
+  lastSharedObjectiveSignature=signature
+  remote:FireAllClients("SHARED_OBJECTIVE",state)
+ elseif targetPlayer and targetPlayer.Parent then
+  remote:FireClient(targetPlayer,"SHARED_OBJECTIVE",state)
+ end
 end
 local function drawCaptureMarker(a,point,index)
  -- 월드 공간 UI만 사용한다. 새 Part/임의 건물/원통형 장식은 만들지 않는다.
@@ -125,7 +147,10 @@ local function tickCapture(a,dt)
     or point.Owner=="ENEMY" and Color3.fromRGB(255,159,153) or Color3.fromRGB(255,230,174)
   end
  end
- if changed then a.Player:SetAttribute("CapturedPoints",ownedPoints(a)) end
+ if changed then
+  a.Player:SetAttribute("CapturedPoints",ownedPoints(a))
+  broadcastSharedObjective()
+ end
 end
 -- ===== 배경/지형 =====
 -- Terrain만 사용하며, 캐릭터·건물·소품을 도형 파츠로 새로 제작하지 않는다.
@@ -240,6 +265,7 @@ local function send(a,msg)
   slots[i]=b and {Kind=b.Kind,Level=b.Level} or {Kind="",Level=0}
  end
  remote:FireClient(p,"STATE",{Gold=a.Gold,Stage=a.Stage,HomeHP=a.HomeHP,EnemyHP=a.EnemyHP,Unlocked=a.Unlocked,Buildings=slots,Economy=economy(a),Message=msg or ""})
+ broadcastSharedObjective(p)
 end
 local function save(a)
  if not a.Loaded or a.SessionOnly or not store then return false end
@@ -599,6 +625,7 @@ Players.PlayerRemoving:Connect(function(p)
   for _,marker in ipairs(a.CaptureMarkers) do marker:Destroy() end
   a.Folder:Destroy()
   arenas[p]=nil
+  broadcastSharedObjective()
  end
  lastRequest[p]=nil
 end)
