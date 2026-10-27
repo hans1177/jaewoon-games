@@ -1662,3 +1662,19 @@ test('five official Cloud server scenarios are read-only, version-bound and neve
  assert.equal(stale.exactVersion,false);
  assert.equal(stale.cloudServerScenarioEvidence.allChecksPassed,false);
 });
+
+ 
+test('canonical F0 private runtime and F9 post-publish retain five exact cloud check results without local players',()=>{
+ const f0=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const f9=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+ assert.match(f0,/runtime\.openCloudServerScenarioEvidence\?\.allChecksPassed===true/);
+ assert.match(f0,/const cloudServerScenariosPassed=engineProbe\?\.cloudServerScenarioEvidence\?\.allChecksPassed===true/);
+ assert.match(f0,/runtimeAcceptanceForRelease=.*cloudServerScenariosPassed/);
+ assert.match(f0,/openCloudServerScenarioEvidence:engineProbe\?\.cloudServerScenarioEvidence\|\|null/);
+ assert.match(f9,/const cloudScenarios=proof\.cloudServerScenarioEvidence\|\|null/);
+ assert.match(f9,/cloudScenarios\?\.observedCount===5/);
+ assert.match(f9,/serverChecksPassed&&stillCurrent/);
+ assert.match(f9,/cloudServerScenarioEvidence:cloudScenarios,liveGameplayVerified:false/);
+ assert.match(f9,/mobileVerified:false/);
+ assert.match(f9,/ROBLOX_POST_PUBLISH_SERVER_SCENARIOS=/);
+});
