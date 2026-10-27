@@ -1136,6 +1136,9 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.match(workflow,/^  COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
   assert.match(workflow,/^  COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
   assert.match(workflow,/COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json[\s\S]*Apply verified learning to selected Roblox source scope/);
+  assert.match(workflow,/assets\/roblox\/common-\*\/\*\*/);
+  assert.match(workflow,/company-learning\/vibe2-code-pattern-library\.json/);
+  assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
 });
 
 test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
