@@ -74,7 +74,15 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
     const project=readJson(path.join(root,'default.project.json'));
     const previous=JSON.stringify(project);
     const binding=synchronizeRobloxCommonModules({project,gameRoot:root});
-    commonModuleRefreshRequired=JSON.stringify(project)!==previous;
+    const evidenceFile=path.join(root,'roblox-source-bootstrap.json');
+    let syncedFingerprint='';
+    if(fs.existsSync(evidenceFile)){
+      try{syncedFingerprint=clean(readJson(evidenceFile)?.commonModuleSync?.libraryCoverage?.sourceFingerprint);}
+      catch{syncedFingerprint='';}
+    }
+    // 경로가 같아도 라이브러리 본문이나 검증된 패턴이 바뀌면 다음 빌드업에서 재검사한다.
+    const staleLibrary=Boolean(syncedFingerprint)&&syncedFingerprint!==binding.libraryCoverage.sourceFingerprint;
+    commonModuleRefreshRequired=JSON.stringify(project)!==previous||staleLibrary;
     commonModuleConflicts=binding.conflicts;
   }catch(error){
     commonModuleRefreshRequired=true;
