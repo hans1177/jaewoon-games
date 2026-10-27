@@ -164,6 +164,9 @@ export function editVerifiedRobloxGameplayVideo({
   const selections=windows.map(([a,b])=>[Number(a.toFixed(3)),Number(b.toFixed(3))]);
   const seconds=selections.reduce((sum,[a,b])=>sum+b-a,0);
   const output=path.resolve(root,outputPath||path.join('.tmp','roblox-detail-evidence',gameId+'-edited.mp4'));
+  const permittedOutputRoot=path.resolve(root,'.tmp','roblox-detail-evidence');
+  if(!output.startsWith(permittedOutputRoot+path.sep)||path.extname(output).toLowerCase()!=='.mp4')
+    throw new Error('ROBLOX_VIDEO_OUTPUT_MUST_BE_TEMP_EDIT');
   if(output===src)throw new Error('ROBLOX_VIDEO_MUST_PRESERVE_ORIGINAL');
   fs.mkdirSync(path.dirname(output),{recursive:true});
   const stages=selections.map(([start,end],i)=>'[0:v]trim=start='+start+':end='+end
@@ -186,7 +189,7 @@ export function editVerifiedRobloxGameplayVideo({
     editedVideoSha256:sha256(output),editedVideoBytes:fs.statSync(output).size,
     expectedSeconds:Number(seconds.toFixed(3)),editedSegments:selections,
     type:'REAL_NATIVE_ROBLOX_GAMEPLAY_EDIT',uploadVerified:false,
-    verifiedForSubmission:true,moderationApproved:false,
+    verifiedForSubmission:false,manualNativeGameplayReviewRequired:true,moderationApproved:false,
     notes:'Official Creator Dashboard video submission and moderation not yet completed.'
   });
   writeJson(output+'.json',result);
