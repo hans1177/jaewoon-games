@@ -390,6 +390,7 @@ Players.PlayerAdded:Connect(function(player)
     if not store then error("SURVIVAL_DATASTORE_UNAVAILABLE") end
     return store:GetAsync("player:" .. player.UserId)
   end)
+  if player.Parent ~= Players then return end
   local validSaved = ok and (saved == nil or typeof(saved) == "table")
   persistenceAllowed[player] = validSaved
   if validSaved and typeof(saved) == "table" then
@@ -435,8 +436,8 @@ local function saveSurvivalProgress(player)
   if persistenceAllowed[player] ~= true or not store then return false end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
-  local ok = pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function(previous)
+  local ok, committed = pcall(function()
+    return store:UpdateAsync("player:" .. player.UserId, function(previous)
       -- 다른 버전의 데이터와 알 수 없는 이전 필드는 버리지 않는다.
       if previous ~= nil and typeof(previous) ~= "table" then return nil end
       local merged = typeof(previous) == "table" and table.clone(previous) or {}
@@ -444,8 +445,9 @@ local function saveSurvivalProgress(player)
       return merged
     end)
   end)
-  player:SetAttribute("SaveStatus", ok and "SAVED" or "SAVE_FAILED")
-  return ok
+  local saved = ok and committed ~= nil
+  player:SetAttribute("SaveStatus", saved and "SAVED" or "SAVE_FAILED")
+  return saved
 end
 Players.PlayerRemoving:Connect(function(player)
   saveSurvivalProgress(player)
