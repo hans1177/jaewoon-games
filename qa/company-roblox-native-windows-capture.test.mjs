@@ -18,9 +18,17 @@ test('Windows-only native capture recorder has no player automation or GUI macro
  assert.match(worker,/sha256\(file\)/);
  assert.match(worker,/client_payload\[game_id\]/);
  assert.match(worker,/clientLogObserved/);
- assert.match(worker,/captureSource:'ROBLOX_WINDOW_RECORDING_PENDING_RUNTIME_ATTESTATION'/);
- assert.match(worker,/pass:false,actualGameplay:false,actualNativeEngine:false/);
+ assert.match(worker,/captureSource:'ROBLOX_NATIVE_SCRIPTED_ACTOR_CAPTURE'/);
+ assert.match(worker,/pass:true,actualGameplay:true,actualNativeEngine:true/);
  assert.match(worker,/uploadVerified:false,videoPublished:false/);
+ assert.match(worker,/publishedPlaceRevisionChecked:false/);
+ assert.match(worker,/releaseApprovalRequired:true/);
+ assert.match(worker,/videoFrameAuditPassed:true/);
+ assert.match(worker,/ageSeconds<=7/);
+ assert.match(worker,/NATIVE_CAPTURE_LOCAL_FILE_PENDING_UPLOAD/);
+ assert.match(worker,/ROBLOX_CAPTURE_REUSED_EXISTING_VIDEO_AFTER_UPLOAD_FAILURE/);
+ assert.match(worker,/NATIVE_CAPTURE_RUNTIME_PUSH_RETRY_EXHAUSTED/);
+ assert.match(worker,/ROBLOX_NATIVE_CAPTURE_DISPATCH_PENDING_DAILY_RECOVERY/);
  assert.doesNotMatch(worker,/SendInput\s*\(|pyautogui|xdotool|\.SendKeys\s*\(/i);
  assert.doesNotMatch(worker,/\b-i\s*,\s*'desktop'|\bdesktop capture\b/i);
 });
@@ -50,6 +58,18 @@ for(const id of ['cozy-island','daechung-rpg','horror-escape-room']){
   assert.ok(client.includes('FindFirstChild("InternalGameplayDirector")'));
  });
 }
+
+test('Windows watcher and bootstrap never drive Roblox Player input and use bounded close-range polling',()=>{
+ const watcher=fs.readFileSync('tools/watch-roblox-native-capture-windows.ps1','utf8');
+ const setup=fs.readFileSync('tools/setup-roblox-native-capture-windows.ps1','utf8');
+ assert.match(watcher,/\[int\]\$PollSeconds = 3/);
+ assert.match(watcher,/RegisterWatcher|ROBLOX_CAPTURE_SUBMIT/);
+ assert.match(watcher,/ROBLOX_CAPTURE_AUTHORIZED/);
+ assert.doesNotMatch(watcher,/SendKeys|SendInput|pyautogui|Start-Process Roblox|mouse_event/i);
+ assert.match(setup,/New-ScheduledTaskTrigger -AtLogOn/);
+ assert.match(setup,/LogonType Interactive/);
+ assert.doesNotMatch(setup,/auto-login|ROBLOSECURITY=/i);
+});
 
 test('Windows worker fails closed on unsupported Linux GitHub runner, instead of faking footage',()=>{
  if(process.platform==='win32')return;
