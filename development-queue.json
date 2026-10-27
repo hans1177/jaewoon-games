@@ -1831,7 +1831,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-27T01:18:06.617Z"
       },
-      "updatedAt": "2026-10-27T07:30:24.711Z",
+      "updatedAt": "2026-10-27T07:46:54.298Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1846,7 +1846,7 @@
         "capturedAt": "2026-10-27T01:22:58.311Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-27T07:30:24.711Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-27T07:46:54.298Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1891,9 +1891,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-static-revalidation-failed:SOURCE_CONFIG_MISSING"
+        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_MULTIPLAYER_PARTICIPANT_STATE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
       ],
       "robloxSourceCommit": "36aea4d2d579ee34b845a4fa8901d0dd8960cf4e",
       "robloxQualityBuildUpRequired": true,
@@ -1933,7 +1933,9 @@
         ],
         "workflowRunId": 40466735126,
         "testedAt": "2026-10-27T07:30:24.711Z"
-      }
+      },
+      "robloxInternalReleasePublished": false,
+      "robloxPublicRelease": false
     },
     {
       "gameId": "cozy-island",
@@ -4543,7 +4545,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T07:42:41.190Z",
+  "updatedAt": "2026-10-27T07:46:54.298Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
