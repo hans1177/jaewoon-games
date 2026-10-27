@@ -78,7 +78,7 @@ export async function uploadRobloxHomepageThumbnail({
   apiKey,
   fetchImpl=globalThis.fetch,
   sleepImpl=wait,
-  attempts=30
+  attempts=120
 }={}) {
   if(!validId(universeId))throw new Error('ROBLOX_THUMBNAIL_UNIVERSE_INVALID');
   if(!clean(apiKey))throw new Error('ROBLOX_THUMBNAIL_API_KEY_MISSING');
@@ -114,7 +114,8 @@ export async function uploadRobloxHomepageThumbnail({
       return Object.freeze({uploaded:true,operationId,thumbnailId,uploadStatus:state,attempt});
     }
     if(/failed|error|rejected/i.test(state))throw new Error('ROBLOX_THUMBNAIL_PROCESSING_FAILED:'+statusText.slice(0,500));
-    await sleepImpl(1000);
+    if(attempt===1||attempt%12===0)console.log('ROBLOX_THUMBNAIL_PROCESSING_PENDING:attempt='+attempt+':state='+(state||'UNKNOWN'));
+    if(attempt<Math.max(1,Number(attempts)||1))await sleepImpl(2500);
   }
   throw new Error('ROBLOX_THUMBNAIL_PROCESSING_TIMEOUT:'+operationId);
 }
