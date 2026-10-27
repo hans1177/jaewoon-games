@@ -1846,7 +1846,7 @@ test('고정된 자산 바인딩 작업주문 크래시만 동일 큐에서 한 
 });
 
 test('실행 전 작업주문 크래시는 통상 차단과 분리해 기록한다',()=>{
-  const workflow=fs.readFileSync(path.resolve('..','.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  const workflow=fs.readFileSync(path.resolve('.github/workflows/vibe2-continuous-core.yml'),'utf8');
   assert.match(workflow,/ORDER_STEP_OUTCOME: \$\{\{ steps\.order\.outcome \}\}/);
   assert.match(workflow,/work-order-generation-step-failed/);
   assert.match(workflow,/work-order-generation-step-failed:v1/);
