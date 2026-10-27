@@ -245,6 +245,13 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   handler(player)
+  -- [서버 권한] 비전투 입력은 시각 전투 이벤트를 만들지 않는다.
+  for _, action in ipairs(Config.Actions) do
+    if action.Id == actionId and action.Kind == "COMBAT" then
+      player:SetAttribute("ApprovedCombatMotion", actionId .. ":" .. tostring(readNumber(player, "ActionSequence", 0)))
+      break
+    end
+  end
 end)
 Players.PlayerRemoving:Connect(function(player)
   local snapshot = {}
