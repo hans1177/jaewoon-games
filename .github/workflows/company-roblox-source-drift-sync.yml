@@ -126,7 +126,22 @@ jobs:
             IFS=',' read -r -a game_ids <<< "$CHANGED_GAME_IDS"
             for game_id in "${game_ids[@]}"; do
               [[ -z "$game_id" ]] && continue
-              if ! git diff --quiet "$SOURCE_REVISION" "$live_main" --                 "roblox-games/$game_id/default.project.json"                 "roblox-games/$game_id/shared"                 "roblox-games/$game_id/server"                 "roblox-games/$game_id/client" "assets/roblox" "assets/shared" "assets/external"; then
+              # 변경 감지는 게임이 실제 연결한 공용 모듈만 포함한다. 다른 게임의 자산 갱신은 충돌이 아니다.
+              if ! SOURCE_GAME_ID="$game_id" SOURCE_GAME_ROOT=. LIVE_MAIN="$live_main" node --input-type=module <<'NODE'
+          import {robloxBuildSourceChangedBetween} from './tools/company-roblox-source-drift-sync.mjs';
+          const changed=robloxBuildSourceChangedBetween({
+            repoRoot:process.env.SOURCE_GAME_ROOT,
+            gameId:process.env.SOURCE_GAME_ID,
+            fromRevision:process.env.SOURCE_REVISION,
+            toRevision:process.env.LIVE_MAIN,
+          });
+          if(changed===null){
+            console.error('ROBLOX_SOURCE_SYNC_DEPENDENCY_COMPARISON_UNVERIFIED');
+            process.exit(4);
+          }
+          if(changed)process.exit(3);
+          NODE
+              then
                 echo "ROBLOX_SOURCE_SYNC_STALE_GAME_SOURCE=$game_id:$SOURCE_REVISION:$live_main" >&2
                 return 3
               fi
@@ -198,7 +213,22 @@ jobs:
             IFS=',' read -r -a game_ids <<< "$CHANGED_GAME_IDS"
             for game_id in "${game_ids[@]}"; do
               [[ -z "$game_id" ]] && continue
-              if ! git -C "$GITHUB_WORKSPACE" diff --quiet "$SOURCE_REVISION" "$live_main" --                 "roblox-games/$game_id/default.project.json"                 "roblox-games/$game_id/shared"                 "roblox-games/$game_id/server"                 "roblox-games/$game_id/client" "assets/roblox" "assets/shared" "assets/external"; then
+              # 변경 감지는 게임이 실제 연결한 공용 모듈만 포함한다. 다른 게임의 자산 갱신은 충돌이 아니다.
+              if ! SOURCE_GAME_ID="$game_id" SOURCE_GAME_ROOT="$GITHUB_WORKSPACE" LIVE_MAIN="$live_main" node --input-type=module <<'NODE'
+          import {robloxBuildSourceChangedBetween} from './tools/company-roblox-source-drift-sync.mjs';
+          const changed=robloxBuildSourceChangedBetween({
+            repoRoot:process.env.SOURCE_GAME_ROOT,
+            gameId:process.env.SOURCE_GAME_ID,
+            fromRevision:process.env.SOURCE_REVISION,
+            toRevision:process.env.LIVE_MAIN,
+          });
+          if(changed===null){
+            console.error('ROBLOX_SOURCE_SYNC_DEPENDENCY_COMPARISON_UNVERIFIED');
+            process.exit(4);
+          }
+          if(changed)process.exit(3);
+          NODE
+              then
                 echo "ROBLOX_SOURCE_SYNC_STALE_GAME_SOURCE=$game_id:$SOURCE_REVISION:$live_main" >&2
                 return 3
               fi
