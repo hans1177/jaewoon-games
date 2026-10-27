@@ -6,7 +6,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,synchronizeRobloxCommonModules} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 import {robloxLearningProfileFromSource} from './company-development-roblox-gameplay-product-readiness.mjs';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
@@ -67,6 +67,27 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const statusBlock=client.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
   const familySelectionTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>new RegExp('\\b'+family+'\\s*=').test(selectionBlock));
   const familyStatusTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(statusBlock));
+  // 정식 공용 모듈 신규 추가/갱신은 모든 기존 게임의 다음 F0에 적용한다.
+  // 이 검사는 프로젝트를 디스크에 쓰지 않으며, 게임별 커스텀 모듈을 덮어쓰지 않는다.
+  let commonModuleRefreshRequired=false,commonModuleConflicts=[];
+  try{
+    const project=readJson(path.join(root,'default.project.json'));
+    const previous=JSON.stringify(project);
+    const binding=synchronizeRobloxCommonModules({project,gameRoot:root});
+    const evidenceFile=path.join(root,'roblox-source-bootstrap.json');
+    let syncedFingerprint='';
+    if(fs.existsSync(evidenceFile)){
+      try{syncedFingerprint=clean(readJson(evidenceFile)?.commonModuleSync?.libraryCoverage?.runtimeBindingFingerprint);}
+      catch{syncedFingerprint='';}
+    }
+    // 경로가 같아도 라이브러리 본문이나 검증된 패턴이 바뀌면 다음 빌드업에서 재검사한다.
+    const staleLibrary=Boolean(syncedFingerprint)&&syncedFingerprint!==binding.libraryCoverage.runtimeBindingFingerprint;
+    commonModuleRefreshRequired=JSON.stringify(project)!==previous||staleLibrary;
+    commonModuleConflicts=binding.conflicts;
+  }catch(error){
+    commonModuleRefreshRequired=true;
+    commonModuleConflicts=[{reason:'COMMON_MODULE_PROJECT_UNREADABLE',detail:clean(error?.message||error)}];
+  }
   const currentFamilyStatus=Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[
     family,
     clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase()
@@ -85,18 +106,20 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
     ||!clientVisibleBound
     ||!familySelectionTraceComplete
     ||!familyStatusTraceComplete
-    ||familyStatusMismatches.length>0;
+    ||familyStatusMismatches.length>0
+    ||commonModuleRefreshRequired;
   const sourceUsageMismatch=sourceUsageFingerprint!==expectedSourceUsageFingerprint||sourceUsageLibraryVersion!==expectedSourceUsageLibraryVersion;
   const reason=familyStatusMismatches.length
     ?'FAMILY_STATUS_SOURCE_MISMATCH'
     :sourceUsageMismatch?'SOURCE_USAGE_LINEAGE_MISMATCH'
+    :commonModuleRefreshRequired?'COMMON_MODULE_BINDING_REFRESH_REQUIRED'
     :(refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null);
   return {
     required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,
     sourceUsageFingerprint,expectedSourceUsageFingerprint,sourceUsageLibraryVersion,expectedSourceUsageLibraryVersion,
     bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,
     familySelectionTraceComplete,familyStatusTraceComplete,currentFamilyStatus,expectedFamilyStatus,
-    familyStatusMismatches,reason
+    familyStatusMismatches,commonModuleRefreshRequired,commonModuleConflicts,reason
   };
 }
 

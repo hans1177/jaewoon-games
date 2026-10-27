@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
-import {pathToFileURL} from 'node:url';
+import {pathToFileURL,fileURLToPath} from 'node:url';
 import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 import {recombinationDesignAxes} from './vibe3-transformative-recombination.mjs';
@@ -338,8 +338,96 @@ function genreCoreKind(profile){
   return 'OBJECTIVE';
 }
 
-export function projectJsonForGame(gameId=''){
-  return {
+
+const ROBLOX_COMMON_ASSET_ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../assets/roblox');
+// 공용 모듈은 별도 파이프라인 없이 기존 Rojo Shared 경로에 최신 자사 원본을 연결한다.
+// 게임별 독자 모듈은 보존하고 서로 다른 버전은 미검증으로 보고한다.
+export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot=ROBLOX_COMMON_ASSET_ROOT}={}){
+  const shared=project?.tree?.ReplicatedStorage?.Shared;
+  if(!shared||shared.$path!=='shared')throw new Error('ROBLOX_COMMON_MODULE_SHARED_ROOT_REQUIRED');
+  const linked=[],local=[],conflicts=[];
+  const roots=fs.readdirSync(assetRoot,{withFileTypes:true})
+    .filter(entry=>entry.isDirectory()&&/^common-[a-z0-9-]+-v[0-9]+$/.test(entry.name))
+    .map(entry=>entry.name).sort();
+  const seen=new Map();
+  const fingerprints=[];
+  const sourceHash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  for(const directory of roots){
+    const folder=path.join(assetRoot,directory);
+    const catalog=path.join(folder,'catalog.json');
+    if(fs.existsSync(catalog))fingerprints.push(directory+'/catalog.json:'+sourceHash(catalog));
+    for(const entry of fs.readdirSync(folder,{withFileTypes:true})){
+      if(!entry.isFile()||!/^RobloxCommon[A-Za-z0-9]+\.luau$/.test(entry.name))continue;
+      const moduleName=entry.name.slice(0,-'.luau'.length);
+      if(seen.has(moduleName))throw new Error('ROBLOX_COMMON_MODULE_DUPLICATE:'+moduleName);
+      seen.set(moduleName,directory);
+      const original=path.join(folder,entry.name);
+      fingerprints.push(directory+'/'+entry.name+':'+sourceHash(original));
+      const current=gameRoot?path.join(gameRoot,'shared',entry.name):'';
+      const expected='../../assets/roblox/'+directory+'/'+entry.name;
+      if(current&&fs.existsSync(current)){
+        const canonicalHash=crypto.createHash('sha256').update(fs.readFileSync(original)).digest('hex');
+        const localHash=crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex');
+        if(canonicalHash!==localHash)conflicts.push({module:moduleName,reason:'GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL'});
+        local.push(moduleName);
+        continue;
+      }
+      const existing=shared[moduleName];
+      if(existing&&existing.$path!==expected){
+        conflicts.push({module:moduleName,reason:'EXISTING_GAME_SPECIFIC_MODULE_MAPPING'});
+        continue;
+      }
+      shared[moduleName]={$path:expected};
+      linked.push(moduleName);
+    }
+  }
+  // 공용 Roblox 런타임 모듈과 개발용 패턴 라이브러리는 별도로 취급한다.
+  // 자사 JS/설계/코딩 패턴은 빌드업 참조와 검증 대상으로만 사용하며 클라이언트에 배포하지 않는다.
+  const repoRoot=path.resolve(assetRoot,'../..');
+  const assets=path.join(repoRoot,'assets');
+  const sourceFiles=fs.existsSync(assets)
+    ?fs.readdirSync(assets,{withFileTypes:true}).filter(entry=>entry.isFile()&&/\.(?:js|mjs)$/.test(entry.name)).map(entry=>entry.name).sort():[];
+  const patternSources=sourceFiles.filter(name=>name.startsWith('vibe'));
+  const nativePacks=fs.readdirSync(assetRoot,{withFileTypes:true})
+    .filter(entry=>entry.isDirectory()&&!roots.includes(entry.name)).map(entry=>entry.name).sort();
+  const firstPartyLibraries=[
+    'company-asset-library.json',
+    'company-learning/canonical-learning-pipeline.json',
+    'company-learning/vibe2-code-pattern-library.json',
+    'company-learning/vibe3-task-playbooks.json',
+    'company-learning/vibe3-engine-contract.json',
+    'assets/asset-manifest.json',
+    'assets/asset-license-ledger.json',
+    'assets/roblox/common-registered-external-assets-v1.json'
+  ];
+  const libraryFingerprints={};
+  for(const name of firstPartyLibraries){
+    const file=path.join(repoRoot,name);
+    libraryFingerprints[name]=fs.existsSync(file)?sourceHash(file):null;
+  }
+  const patternPath=path.join(repoRoot,'company-learning/vibe2-code-pattern-library.json');
+  const patternLibrary=fs.existsSync(patternPath)?JSON.parse(fs.readFileSync(patternPath,'utf8')):{patterns:[]};
+  const verifiedPatterns=(patternLibrary.patterns||[]).filter(pattern=>pattern?.verified===true&&pattern?.rawCodeStored!==true&&pattern?.retrievalEligible!==false&&pattern?.independentQa==='PASS');
+  const moduleFingerprints=fingerprints.sort();
+  const runtimeBindingFingerprint=crypto.createHash('sha256')
+    .update(JSON.stringify({modules:moduleFingerprints,verifiedPatterns:verifiedPatterns.map(pattern=>({id:pattern.id,sourceRevision:pattern.sourceRevision}))})).digest('hex');
+  const sourceFingerprint=crypto.createHash('sha256')
+    .update(JSON.stringify({modules:moduleFingerprints,libraries:libraryFingerprints,sourceFiles,nativePacks})).digest('hex');
+  return Object.freeze({
+    project,moduleCount:seen.size,linked:Object.freeze(linked),local:Object.freeze(local),conflicts:Object.freeze(conflicts),
+    libraryCoverage:Object.freeze({
+      runtimeModuleCount:seen.size,firstPartyPackCount:roots.length,
+      firstPartyPatternSourceCount:patternSources.length,
+      firstPartyDevelopmentSourceCount:sourceFiles.length,nativeSpecializedPackCount:nativePacks.length,
+      verifiedCodePatternCount:verifiedPatterns.length,
+      patternSourcesRuntimeInjected:false,unverifiedAssetsAutoPromoted:false,
+      libraryFingerprints:Object.freeze(libraryFingerprints),sourceFingerprint,runtimeBindingFingerprint,
+    }),
+  });
+}
+
+export function projectJsonForGame(gameId='',gameRoot=''){
+  const project = {
     name:clean(gameId)||'jaewoon-roblox-game',
     tree:{
       $className:'DataModel',
@@ -359,6 +447,7 @@ export function projectJsonForGame(gameId=''){
       StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}},
     },
   };
+  return synchronizeRobloxCommonModules({project,gameRoot:gameRoot||path.resolve('roblox-games',clean(gameId))}).project;
 }
 
 const ROBLOX_BOOTSTRAP_STUDIO_FAMILY_PREFERENCES=Object.freeze({
@@ -1170,6 +1259,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const beforeProject=fs.readFileSync(projectFile,'utf8');
   const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({sourceText:robloxStudioAssetDetectionSourceFromRoot(root)});
   const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
+  const commonModules=synchronizeRobloxCommonModules({project,gameRoot:root});
   if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
   const existingLighting=project.tree.Lighting&&typeof project.tree.Lighting==='object'?project.tree.Lighting:{};
   const existingLightingProperties=existingLighting.$properties&&typeof existingLighting.$properties==='object'?existingLighting.$properties:{};
@@ -1340,6 +1430,7 @@ task.defer(reportNativeFoundationReady)
     foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
     serverSourceChanged:afterServer!==beforeServer,
+    commonModuleSync:{count:commonModules.moduleCount,linked:commonModules.linked,local:commonModules.local,conflicts:commonModules.conflicts,libraryCoverage:commonModules.libraryCoverage},
   });
 }
 function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
@@ -1732,7 +1823,7 @@ function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
   fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),sharedConfig.endsWith('\n')?sharedConfig:`${sharedConfig}\n`,'utf8');
   fs.writeFileSync(path.join(root,'server','Game.server.luau'),serverCode.endsWith('\n')?serverCode:`${serverCode}\n`,'utf8');
   fs.writeFileSync(path.join(root,'client','Game.client.luau'),clientCode.endsWith('\n')?clientCode:`${clientCode}\n`,'utf8');
-  fs.writeFileSync(path.join(root,'default.project.json'),`${JSON.stringify(projectJsonForGame(gameId),null,2)}\n`,'utf8');
+  fs.writeFileSync(path.join(root,'default.project.json'),`${JSON.stringify(projectJsonForGame(gameId,root),null,2)}\n`,'utf8');
 }
 
 async function main(){
@@ -1793,6 +1884,7 @@ async function main(){
       verifiedExternalLearningFingerprint:existingLearning.verifiedExternalLearningFingerprint||null,
       verifiedExternalLearningApplyAxes:existingLearning.verifiedExternalLearningApplyAxes||[],
       studioAssetBinding:applied.studioAssets,studioAssetFamilyStatus:applied.studioAssetFamilyStatus,studioAssetBindingApplied:applied.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
+       commonModuleSync:applied.commonModuleSync,
       implementationNotes:foundationRepair?['existing Roblox gameplay source preserved','native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass']:['existing Roblox gameplay source preserved','company library Studio asset binding updated in existing config and client presentation','runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass'],
       buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
       buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
@@ -1823,6 +1915,7 @@ async function main(){
   const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective});
   if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
   writeSourceTree(outputRoot,built.result,gameId);
+  const commonModuleSync=synchronizeRobloxCommonModules({project:JSON.parse(fs.readFileSync(path.join(outputRoot,'default.project.json'),'utf8')),gameRoot:outputRoot});
   const evidence={
     version:4,gameId,gameName,platform:'ROBLOX',policyDocument:roadmapFile,stage:'TARGET_PLATFORM_SOURCE_BIND',
     sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
@@ -1841,6 +1934,7 @@ async function main(){
     recombinationOperator:built.learning.transformationOperator,recombinationSourceProjects:built.learning.sourceProjects,learningFeatureBlend:built.learning.featureBlend,
     platformDesignProfile:built.platformProfile,webPlatformHandoffLegacy:built.webHandoff,webPlatformHandoffRequired:false,
     studioAssetBinding:built.studioAssets,studioAssetFamilyStatus:built.studioAssetFamilyStatus,studioAssetBindingApplied:built.studioAssets.applied===true,studioAssetRuntimeVerified:false,studioAssetPromotionEligible:false,
+    commonModuleSync:{count:commonModuleSync.moduleCount,linked:commonModuleSync.linked,local:commonModuleSync.local,conflicts:commonModuleSync.conflicts,libraryCoverage:commonModuleSync.libraryCoverage},
     implementationNotes:built.result.implementationNotes,
     buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
     buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
