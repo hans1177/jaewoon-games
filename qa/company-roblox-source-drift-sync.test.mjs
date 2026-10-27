@@ -511,3 +511,22 @@ test('source drift monitors shared assets without bypassing canonical per-game r
   assert.ok(workflow.includes('git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ assets/roblox/ assets/shared/ assets/external/'));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime.yml'));
 });
+
+// 에셋 전용 웹 게시·소스 변경 동기화는 새 권한 서버 없이 기존 공인 경로만 연결한다.
+test('public asset library exposes existing asset-only publication and exact Roblox source sync without claiming runtime pass',()=>{
+  const page=fs.readFileSync('asset-library.html','utf8');
+  const browser=fs.readFileSync('assets/asset-library.js','utf8');
+  const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  const drift=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(page,/id="assetSourceLink"[^>]*hidden/);
+  assert.ok(page.includes('actions/workflows/magic-forest-pages.yml'));
+  assert.ok(page.includes('actions/workflows/company-roblox-source-drift-sync.yml'));
+  assert.ok(browser.includes("sourceFile.split('/').includes('..')"));
+  assert.ok(browser.includes('sourceLink.hidden=!hasLocalSource'));
+  assert.ok(browser.includes('verifiedConsumers.length'));
+  assert.ok(browser.includes('라이브러리 목록 자동 갱신'));
+  assert.match(pages,/push:\s*\n\s*branches: \[main\]/);
+  assert.ok(drift.includes("'assets/roblox/**'"));
+  assert.ok(drift.includes('company-development-roblox-runtime.yml'));
+  assert.doesNotMatch(page,/github_pat_|ghp_|GITHUB_TOKEN|api\.github\.com\/repos\/.*\/dispatches/);
+});

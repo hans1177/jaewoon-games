@@ -240,6 +240,22 @@ async function choose(row,force=false){
   bound.length?'코드 적용: 소스 연결 확인':'코드 적용: 미확인',
   verifiedBound?'게임 실행검증: 기록 있음':'게임 실행검증: 미확인'].join(' / ');
  const sourcePath=String(row.asset?.sourcePath||row.asset?.path||'').trim();
+ // [에셋 동기화] 공개 화면에는 권한 없는 쓰기 요청을 두지 않고, 허용된 저장소 원본과 기존 배포 경로만 안내한다.
+ const sourceFile=sourcePath.replace(/^\/+/, '').replaceAll('\\','/');
+ const sourceLink=$('assetSourceLink');
+ const hasLocalSource=/^assets\/[a-zA-Z0-9._/-]+$/.test(sourceFile)&&!sourceFile.split('/').includes('..');
+ sourceLink.hidden=!hasLocalSource;
+ if(hasLocalSource)sourceLink.href='https://github.com/hans1177/jaewoon-games/blob/main/'+sourceFile.split('/').map(encodeURIComponent).join('/');
+ else sourceLink.removeAttribute('href');
+ const verifiedConsumers=[...new Set((Array.isArray(bound)?bound:[]).filter(id=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(id)))];
+ const advertisedConsumers=Array.isArray(row.asset?.consumerGameIds)?row.asset.consumerGameIds:[];
+ $('assetSyncDetail').textContent=[
+  '선택: '+row.id,
+  hasLocalSource?'저장소 원본: '+sourceFile:'직접 수정할 로컬 원본 경로 미확인',
+  verifiedConsumers.length?'소스 연결 기록: '+verifiedConsumers.join(', '):'게임별 소스 연결 기록 없음',
+  advertisedConsumers.length?'선언된 사용처 '+advertisedConsumers.length+'개(실제 연결과 별도)':'',
+  '게임 빌드·배포·실행 검증은 각각 별도 확인'
+ ].filter(Boolean).join(' · ');
  const sharedSource=sourcePath?(registry?.assets||[]).filter(asset=>String(asset?.sourcePath||asset?.path||'').trim()===sourcePath).length:0;
  const sourceInfo=sourcePath?'원본 경로: '+sourcePath:'원본 경로: 미기재';
  const sharedInfo=sharedSource>1?'동일 경로 등록 '+sharedSource+'개 · 실제 중복 여부는 별도 확인 필요':'';
@@ -389,7 +405,7 @@ async function refresh(force=false){
    if(selected)await choose(selected,force);
   }
   document.documentElement.dataset.assetLibraryVersion=String(registry.version||'');
-  $('syncStatus').textContent='자동 동기화 연결됨 · 버전 '+String(registry.version||'확인 중')+' · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 확인';
+  $('syncStatus').textContent='라이브러리 목록 자동 갱신 · 버전 '+String(registry.version||'확인 중')+' · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 확인 · 실제 게임 배포 상태는 위 기존 작업에서 확인';
  }catch(error){$('syncStatus').textContent=(registry?'이전 목록을 표시 중이야. ':'')+(error.message||'자산 정보를 불러오지 못했어.')+' 새로고침으로 다시 시도할 수 있어.';}
  finally{refreshing=false;$('refreshAssets').disabled=false;}
 }
