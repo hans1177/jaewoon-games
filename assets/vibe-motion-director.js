@@ -1003,16 +1003,40 @@ export function createSurvivalPlayerMotionProfile({platform='ROBLOX',tool='AXE'}
     SPEAR:'SURVIVAL_SPEAR_THRUST',
     NONE:'SURVIVAL_TOOL_READY'
   }[toolKey]||'SURVIVAL_TOOL_READY';
+  // [모션] 모든 후보는 기존 CC0 GLB 안의 클립을 조회하는 이름일 뿐이다.
+  // 실제 원본 파일에 없는 동작을 만들거나 다른 도구의 공격을 임의로 대체하지 않는다.
+  const attackName=toolKey==='SPEAR'?'1H_Melee_Attack_Stab'
+    :toolKey==='NONE'?'Unarmed_Melee_Attack_Punch_A':'1H_Melee_Attack_Chop';
+  const cc0Clips=Object.freeze({
+    idle:'Idle',walk:'Walking_A',run:'Running_A',hit:'Hit_A',death:'Death_A',
+    dodge:'Dodge_Forward',block:'Block',interact:'Interact',attack:attackName
+  });
+  const cc0ClipCandidates=Object.freeze({
+    idle:freezeList([cc0Clips.idle,'Idle_A','Idle_B']),
+    walk:freezeList([cc0Clips.walk,'Walking_B','Walking']),
+    run:freezeList([cc0Clips.run,'Running_B','Running']),
+    hit:freezeList([cc0Clips.hit,'Hit_B']),
+    death:freezeList([cc0Clips.death,'Death_B']),
+    dodge:freezeList([cc0Clips.dodge]),
+    block:freezeList([cc0Clips.block]),
+    interact:freezeList([cc0Clips.interact]),
+    attack:freezeList([attackName])
+  });
   return Object.freeze({
     target:'POLISHED_STYLIZED_SURVIVAL_CHARACTER_MOTION',
     platform:upper(platform),
     tool:toolKey,
     primaryToolMotion:toolMotion,
-    // 웹 모션: 확보된 KayKit CC0 리그의 실제 클립 이름. 게임 판정은 원래 상태가 소유한다.
-    cc0Clips:Object.freeze({
-      idle:'Idle',walk:'Walking_A',run:'Running_A',hit:'Hit_A',death:'Death_A',
-      dodge:'Dodge_Forward',block:'Block',interact:'Interact',
-      attack:toolKey==='SPEAR'?'1H_Melee_Attack_Stab':toolKey==='NONE'?'Unarmed_Melee_Attack_Punch_A':'1H_Melee_Attack_Chop'
+    // 시각 상태만 고르고 기존 게임의 스탯/공격시각/저장 구조는 유지한다.
+    cc0Clips,
+    cc0ClipCandidates,
+    clipSelection:Object.freeze({
+      verifiedSourceClipsOnly:true,
+      incompatibleWeaponFallbackForbidden:true,
+      missingAttackMayNotBorrowIdleOrWalk:true,
+      oneShotReplayOnAuthoritativeAttackTimestamp:true,
+      locomotionTransitionKeepsGameplayRoot:true,
+      actualRigAndMobileQualityMustBeVerified:true
     }),
     groups:SURVIVAL_PLAYER_MOTION_PACK,
     mechanics:Object.freeze({
@@ -3644,9 +3668,20 @@ export function aggregateRuntimeMotionSignals(samples=[]){
   const sameFamilyRepeatRate=rows.length?count('sameFamilyRepeat')/rows.length:0;
   const verifiedPassCount=rows.filter(row=>row.runtimeVerified===true&&row.pass===true).length;
   const verifiedFailureCount=rows.filter(row=>row.runtimeVerified===true&&row.pass===false&&text(row.failureReason)).length;
+  // [빌드업 경험] 게임의 실제 GLB 클립 누락을 기록하되 검증 전에는 학습 권한을 부여하지 않는다.
+  const missingSourceClips=new Map(),verifiedMissingSourceClips=new Map();
+  for(const row of rows){
+    const role=upper(row.missingMotionRole);
+    if(!['IDLE','WALK','RUN','ATTACK','HIT','DEATH','DODGE','BLOCK','INTERACT'].includes(role))continue;
+    missingSourceClips.set(role,(missingSourceClips.get(role)||0)+1);
+    if(row.runtimeVerified===true&&row.pass===false&&text(row.failureReason))
+      verifiedMissingSourceClips.set(role,(verifiedMissingSourceClips.get(role)||0)+1);
+  }
   return Object.freeze({
     sampleCount:rows.length,
     usageByMotion:Object.freeze(Object.fromEntries([...usage.entries()])),
+    missingSourceClipRoles:Object.freeze(Object.fromEntries(missingSourceClips)),
+    verifiedFailureClipRoles:Object.freeze(Object.fromEntries(verifiedMissingSourceClips)),
     transitionQualityScore:avg('transitionQualityScore'),
     contactQaScore:avg('contactQaScore'),
     pairAlignmentScore:avg('pairAlignmentScore'),
@@ -3680,6 +3715,9 @@ export function buildRuntimeMotionLearningCandidate({
     positiveMasteryEligible:positive,
     negativeAvoidPatternEligible:negative,
     verifiedFailureLessons:Object.freeze(lessons),
+    // 원본의 클립 부재를 학습/교체 후보로 활용하는 것도 기존 런타임 QA 검증이 필수다.
+    observedSourceClipGaps:summary.missingSourceClipRoles||Object.freeze({}),
+    verifiedFailureClipGaps:summary.verifiedFailureClipRoles||Object.freeze({}),
     preparedSemanticEligible:false,
     rawTelemetryDirectTraining:false,
     feedsExistingCanonicalLearningChain:positive||negative,
