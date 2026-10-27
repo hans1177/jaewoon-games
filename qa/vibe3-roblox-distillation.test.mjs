@@ -52,6 +52,18 @@ test('Roblox applied code coaching stays in current responsible files, ranks adv
   assert.notEqual(buildRobloxSourceCoaching({cwd,order,responsibleFiles:[file]}).evidence.references[0].sha256,result.evidence.references[0].sha256);
 });
 
+test('Vibe Roblox source worker receives all company modules with hashes but does not claim gameplay application',()=>{
+  const order={target:'roblox',gameId:'daechung-rpg',source:{root:'roblox-games/daechung-rpg'},goal:'전투 모션 애니메이션 개선'};
+  const result=buildRobloxSourceCoaching({cwd:process.cwd(),order,responsibleFiles:['client/Game.client.luau']});
+  assert.equal(result.evidence.retrieved,true);
+  assert.equal(result.evidence.companyModulesApplicationVerified,false);
+  assert.equal(result.evidence.applicationVerified,false);
+  assert.ok(result.evidence.companyModuleCount>=14);
+  assert.ok(result.evidence.companyModules.some(x=>x.name==='RobloxCommonMotion'&&/^[0-9a-f]{64}$/.test(x.sha256)));
+  assert.match(result.block,/FIRST-PARTY ROBLOX COMMON MODULES/);
+  assert.equal(result.evidence.weightTraining,false);
+});
+
 test('verified Roblox distillation carries application and failure lessons without raw code or automatic promotion',()=>{
   const row=buildInternalRobloxDistillation({gameId:'demo',sourceRevision:REV,artifactIdentity:ART,runtimeEvidence:{runtimePassed:true},postRuntimeQaEvidence:{exactRevision:true,regressionPassed:true},source:{serverSource:'local remote=Instance.new("RemoteEvent")\nremote.OnServerEvent:Connect(function()end)\nlocal function bootstrapLobbyCharacter(p,c)\n return c\nend'}});
   assert.ok(row.principles.some(x=>x.startsWith('BOOTSTRAP_SPAWN:')&&x.includes('Avoid:')&&x.includes('Verify:')));
