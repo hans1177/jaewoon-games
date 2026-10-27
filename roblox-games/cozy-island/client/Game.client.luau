@@ -132,7 +132,7 @@ local function bindCombatActor(actor)
  combatActors[actor]={
   joints=joints,elapsed=0,nextVisibility=0,visible=true,interval=1/30,
   phase=math.random()*math.pi*2,gaitPhase=0,gaitBlend=0,smoothSpeed=0,
-  state="IDLE",stateAge=0,turnLean=0,lastFacing=actor.CFrame.LookVector,
+  state="IDLE",stateAge=0,turnLean=0,lookYaw=0,lastFacing=actor.CFrame.LookVector,
  }
 end
 for _,actor in ipairs(CollectionService:GetTagged("CozyCombatActor"))do bindCombatActor(actor)end
@@ -199,6 +199,18 @@ RunService.PreSimulation:Connect(function(dt)
     local collapse=state=="DEATH"and progress*progress*(3-2*progress)or 0
     local boar=actorKind=="BOAR"
     local npc=actorKind=="NPC"
+    local lookTarget=0
+    if npc and state=="IDLE" and p.Character then
+     local center=p.Character:FindFirstChild("HumanoidRootPart")
+     if center then
+      local delta=center.Position-actor.Position
+      if delta.Magnitude>2 and delta.Magnitude<23 then
+       local v=actor.CFrame:VectorToObjectSpace(delta.Unit)
+       lookTarget=math.clamp(math.atan2(v.X,-v.Z),-.3,.3)
+      end
+     end
+    end
+    record.lookYaw+=(lookTarget-record.lookYaw)*(1-math.exp(-step*4.6))
 
     for _,joint in ipairs(record.joints)do
      if joint.Parent and joint.Part1 then
@@ -229,7 +241,7 @@ RunService.PreSimulation:Connect(function(dt)
        z=side*record.turnLean*.22
       elseif head then
        x=settle*1.8-anticipate*.095+strike*.11+recoil*.20+collapse*.24
-       y=math.sin(now*.67+record.phase)*.035+record.turnLean*.45
+       y=math.sin(now*.67+record.phase)*.035+record.turnLean*.45+record.lookYaw
        z=record.turnLean*.35
       elseif tail then
        y=math.sin(now*1.65+record.phase)*.13+stepCycle*.085
