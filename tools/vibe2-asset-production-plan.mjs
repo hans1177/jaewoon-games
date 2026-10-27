@@ -1935,7 +1935,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   if(!actions.length)pushAction({action:'HOLD',assetId:null,family:null,reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK'});
   // [원본 수급 요청] 동일 게임/역할에 대해 기존 작업목록 안에서만 수급한다.
   // 등록·검증되지 않은 링크는 요청으로만 남고, 자동 다운로드/게임 교체를 허가하지 않는다.
-  const libraryDownloadRequests=freezeList(actions.filter(row=>row.action==='ACQUIRE_ADAPT'
+  const libraryDownloadRequests=freezeList((id?actions:[]).filter(row=>row.action==='ACQUIRE_ADAPT'
     ||row.action==='HOLD'&&clean(row.requestedRole)&&clean(row.reason).includes('MISSING_ROLE'))
     .map(row=>freeze({
       gameId:id,target:platform,family:clean(row.family)||null,requestedRole:clean(row.requestedRole)||null,
