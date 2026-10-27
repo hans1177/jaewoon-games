@@ -111,6 +111,55 @@ function assetRefs(texts,repo){
       status:exists?'REFERENCE_EXISTS_RIGHTS_AND_RUNTIME_UNVERIFIED':'MISSING_SOURCE_ASSET'};
   });
 }
+// Audit every shared library record, but select only game-relevant examples for a compact build-up directive.
+// Metadata is never license verification, and downloaded/exists are never runtime-quality proof.
+let libraryCache=null;
+function readSharedLibrary(repo){
+  const file=path.join(repo,'company-asset-library.json');
+  if(!fs.existsSync(file))return {status:'NOT_AVAILABLE',rows:[]};
+  const stat=fs.statSync(file),key=file+':'+stat.mtimeMs+':'+stat.size;
+  if(libraryCache?.key===key)return libraryCache.value;
+  let value;
+  try{
+    const doc=JSON.parse(fs.readFileSync(file,'utf8'));
+    value={status:'METADATA_LOADED_NOT_RUNTIME_VERIFIED',rows:Array.isArray(doc.assets)?doc.assets:[]};
+  }catch{value={status:'INVALID_LIBRARY_METADATA',rows:[]};}
+  libraryCache={key,value};
+  return value;
+}
+function libraryCoverage(repo,gameId,refs){
+  const library=readSharedLibrary(repo),referenced=new Set(refs.map(row=>row.path));
+  const counters={total:library.rows.length,recordedCc0:0,hashRecorded:0,localFilesPresent:0,
+    localFilesMissing:0,ownershipOrLicenseMetadataGaps:0,gameRelevant:0,unverifiedRuntime:library.rows.length};
+  const selected=[];
+  for(const row of library.rows){
+    const rel=norm(row?.path),full=path.resolve(repo,rel);
+    const fileSafe=Boolean(rel)&&!path.isAbsolute(rel)&&full.startsWith(repo+path.sep);
+    const exists=fileSafe&&fs.existsSync(full)&&fs.statSync(full).isFile();
+    const cc0=/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(row?.license));
+    const hash=/^[0-9a-f]{64}$/i.test(clean(row?.sourceHash));
+    const relevant=clean(row?.targetGame)===gameId
+      ||(Array.isArray(row?.targetGames)&&row.targetGames.includes(gameId))
+      ||referenced.has(rel)
+      ||(rel&&refs.some(x=>x.path.endsWith('/'+path.basename(rel))));
+    if(cc0)counters.recordedCc0++;
+    if(hash)counters.hashRecorded++;
+    if(exists)counters.localFilesPresent++;else counters.localFilesMissing++;
+    if(!cc0||!hash||!fileSafe)counters.ownershipOrLicenseMetadataGaps++;
+    if(relevant){
+      counters.gameRelevant++;
+      if(selected.length<64)selected.push({
+        id:clean(row.id),path:rel,recordedLicense:clean(row.license)||'UNKNOWN',
+        localExists:exists,sourceHashRecorded:hash,licenseMetadataOnly:true,
+        actualQualityVerified:false,sourceUsageNeedsReview:true
+      });
+    }
+  }
+  return {status:library.status,coverage:counters,examples:selected,
+    licenseEvidenceVerified:false,assetRuntimeVerified:false,
+    allAssetsConsidered:library.status==='METADATA_LOADED_NOT_RUNTIME_VERIFIED',
+    improvementRule:'Verify full provenance, exact source integrity, visual/functionality and actual game binding before promotion.'};
+}
 function motionChecks(text){
   const keys={
     IDLE:/\bidle\b/,WALK:/\bwalk\b/,RUN:/\brun\b/,START:/\bstart\b/,
@@ -151,6 +200,7 @@ export function buildRobloxHolisticQualityPlan({
   const refs=assetRefs(texts,scope.repo);
   const broken=assets.filter(row=>row.integrity.startsWith('INVALID'));
   const missing=refs.filter(row=>!row.exists);
+  const sharedLibrary=libraryCoverage(scope.repo,gameId,refs);
   const rows=ROBLOX_QUALITY_FAMILIES.map(def=>{
     const files=known.filter(file=>def.tokens.some(token=>file.toLowerCase().includes(token))).slice(0,6);
     const mentioned=def.tokens.some(token=>combined.includes(token));
@@ -191,7 +241,7 @@ export function buildRobloxHolisticQualityPlan({
     sourceOnly:true,qualityComplete:false,
     evidenceScope:{staticSource:true,cloudEngine:false,realStudioPlay:false,realScreen:false,realTouch:false,
       thumbnailIsNotRuntimeScreenshot:true,simulatedTouchIsNotHardwareTouch:true},
-    assets,assetReferences:refs,issues,
+    assets,assetReferences:refs,sharedLibrary,issues,
     motion:{states:motionChecks(combined),requiredRealAnimatorStateCheck:true,
       requireStateInputToStateToFeedbackTrace:true,
       enforceAttackAnticipationImpactRecovery:true,
@@ -219,6 +269,7 @@ export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10){
   const states=(plan.motion?.states||[]).filter(row=>row.sourceMentioned!==true).map(row=>row.id);
   return [
     'ROBLOX_HOLISTIC_QUALITY_BUILD_UP: game='+plan.gameId+' sourceTree='+plan.sourceTreeFingerprint+' scanComplete='+plan.scan?.complete+' assets='+plan.scan?.assetCount+' sourceOnly=true',
+    'SHARED_LIBRARY_QA: metadata='+plan.sharedLibrary?.status+' total='+plan.sharedLibrary?.coverage?.total+' gameRelevant='+plan.sharedLibrary?.coverage?.gameRelevant+' missingLocal='+plan.sharedLibrary?.coverage?.localFilesMissing+' ownershipGaps='+plan.sharedLibrary?.coverage?.ownershipOrLicenseMetadataGaps+' rightsProof=UNVERIFIED; evaluate all relevant library entries, keep originals, repair provenance before new use.',
     'QUALITY_FAMILY_REPAIR_TARGETS: '+top.map(row=>row.id+'['+row.priority+']:'+row.improvement+' @ '+(row.sourceFiles?.join('|')||'LOCATE_OWNING_SOURCE')).join(' ; '),
     'MOTION_ACTION_BUILD_UP: cover Animator/Motor6D/Bone idle-walk-run-start-stop-turn-jump-land, anticipation-impact-recovery, hit-death-respawn; bind every transition to input, server state, VFX/SFX and observed hit; candidate missing source tokens='+states.join('|')+'; tokens are not proof.',
     'FIVE_OFFICIAL_STUDIO_SCENARIOS: '+(plan.officialStudioScenarios||[]).map(row=>row.id+'='+row.status).join('|')+'; Studio unavailable => PENDING, NEVER PASS; virtual touch != physical mobile touch.',
