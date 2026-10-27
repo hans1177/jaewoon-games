@@ -1698,5 +1698,7 @@ test('existing and generated Roblox games bind confirmed combat to compatible R1
     assert.ok(source.includes('finishNativeCombatMotion()'),'restore joints after attack or character change');
     assert.ok(source.includes('SOURCE_POSE_PLAYING_UNVERIFIED'),'native runtime proof must remain outstanding');
   }
+  assert.match(client,/MOTION = "APPLIED"/);
+  assert.ok(generator.includes('const motionBoundClient=clientSource('),'status must be computed from actual client code');
   assert.doesNotMatch(client,/CreatePreviewAnimation\(|RegisterKeyframeSequence\(/);
 });
