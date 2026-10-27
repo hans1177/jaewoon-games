@@ -85,6 +85,22 @@ test('Windows watcher and bootstrap never drive Roblox Player input and use boun
  assert.doesNotMatch(setup,/auto-login|ROBLOSECURITY=/i);
 });
 
+test('capture watcher has one uninterrupted loop and preserves all three secured join configurations',()=>{
+ const watcher=fs.readFileSync('tools/watch-roblox-native-capture-windows.ps1','utf8');
+ const setup=fs.readFileSync('tools/setup-roblox-native-capture-windows.ps1','utf8');
+ assert.equal((watcher.match(/while \(\$true\)/g)||[]).length,1);
+ assert.equal((watcher.match(/function Start-ApprovedPrivateCaptureSession\b/g)||[]).length,1);
+ assert.match(watcher,/Update-CaptureCheckouts/);
+ assert.match(watcher,/git -C \$directory pull --ff-only/);
+ assert.match(watcher,/Get-ApprovedJoinEntries/);
+ assert.match(watcher,/\$GameIds = @\('cozy-island', 'daechung-rpg', 'horror-escape-room'\)/);
+ assert.match(watcher,/PRIVATE_DEDICATED_TARGET_UNVERIFIED/);
+ assert.match(watcher,/Write-CaptureDiagnostic/);
+ assert.match(setup,/\$entries \+= \[pscustomobject\]@\{GameId=\$CaptureGameId; LinkCode=\$PrivateLinkCode\}/);
+ assert.match(setup,/\$entries = @\(\$entries \| Where-Object/);
+ assert.doesNotMatch(watcher,/\)\) \{ return \}/);
+});
+
 test('Windows worker fails closed on unsupported Linux GitHub runner, instead of faking footage',()=>{
  if(process.platform==='win32')return;
  const result=spawnSync(process.execPath,
