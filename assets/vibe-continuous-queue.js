@@ -157,6 +157,11 @@ function normalizeStudioQualityEvolution(input=null){
     approvedDesignElements:approved,
     designIsImplementationCeiling:input.designIsImplementationCeiling===true,
     requiredConnectedImprovements:connected,
+    requiredPlayableImprovements:input.requiredPlayableImprovements&&typeof input.requiredPlayableImprovements==='object'
+      ?freeze({min:Math.max(5,Math.floor(Number(input.requiredPlayableImprovements.min)||5)),
+        scope:clean(input.requiredPlayableImprovements.scope)||'ALL_ACTIVE_APPROVED_GAMES',
+        evidence:clean(input.requiredPlayableImprovements.evidence)||'DISTINCT_GAME_ACTION_STATE_FEEDBACK_AND_SAME_BUILD_PLATFORM_PROOF',
+        sourceOnlyPassForbidden:true,f0ToF9SequenceUnchanged:true}):null,
     realSourceDeltaRequired:input.realSourceDeltaRequired!==false,
     gameplaySourceDeltaRequired:input.gameplaySourceDeltaRequired===true,
     visibleRenderDeltaRequired:input.visibleRenderDeltaRequired===true,
