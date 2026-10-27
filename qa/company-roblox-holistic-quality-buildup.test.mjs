@@ -83,6 +83,8 @@ test('exact bytes detect malformed assets and missing shared references with no 
   assert.ok(plan.priorityWork.some(row=>row.priority==='P0'));
   const text=robloxHolisticQualityPromptLines(plan).join('\n');
   assert.match(text,/MOTION_ACTION_BUILD_UP/);
+  assert.match(text,/DETAILED_GAME_SOURCE_TARGETS:/);
+  assert.match(text,/repair only observed failure or approved gap/);
   assert.match(text,/anticipation-impact-recovery/);
   assert.match(text,/PENDING, NEVER PASS/);
 }));
