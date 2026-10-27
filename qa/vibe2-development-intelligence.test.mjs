@@ -55,6 +55,26 @@ test('implementation impact gives no gameplay credit to metadata only but recogn
   assert.equal(classifyImplementationImpact({changedFiles:['unity-games/a/Assets/Scripts/GameCore.cs']}).status,'GAMEPLAY_IMPLEMENTATION');
 });
 
+test('buildup recognizes actual Roblox Luau as game implementation and prioritizes native client visuals',()=>{
+  const server='roblox-games/simple-rpg/server/Game.server.luau';
+  const client='roblox-games/simple-rpg/client/Game.client.luau';
+  const evidence='roblox-games/simple-rpg/roblox-source-bootstrap.json';
+  const changed=classifyImplementationImpact({changedFiles:[server],role:'development'});
+  assert.equal(changed.status,'GAMEPLAY_IMPLEMENTATION');
+  assert.equal(changed.implementationCredit,true);
+  assert.deepEqual(changed.gameplayFiles,[server]);
+  assert.equal(classifyImplementationImpact({changedFiles:[server,evidence],role:'integration'}).status,'GAMEPLAY_IMPLEMENTATION');
+  const context=rankAdaptiveContextCandidates({
+    role:'graphics',files:[
+      {path:server,content:'combat authority'},
+      {path:client,content:'native camera and animation'},
+      {path:'roblox-games/simple-rpg/shared/ProgressionData.luau',content:'data'}
+    ]
+  });
+  assert.equal(context[0].path,client);
+  assert.equal(classifyImplementationImpact({changedFiles:['company-learning/report.json'],role:'graphics'}).status,'NO_GAME_CHANGE');
+});
+
 test('verified evidence memory reuses matching failure and latest checkpoint only from the verified evidence root',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-evidence-'));
   try{

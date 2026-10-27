@@ -47,6 +47,10 @@ export function failureFingerprint(input={}){
 function rolePathBoost(role,file){
   const rel=posix(file).toLowerCase();
   if(role==='graphics'&&/(?:\.css$|\.svg$|ui|hud|render|visual|sprite|animation|animator|effect|vfx|shader|material)/.test(rel))return 22;
+  // Native Roblox visual and animation logic commonly lives in Game.client.luau.
+  // Rank this actual game source above unrelated generic files when the graphics worker
+  // has only a bounded source context; no visual QA authority is implied.
+  if(role==='graphics'&&/^roblox-games\/[^/]+\/client\/[^/]+\.client\.luau$/.test(rel))return 18;
   if(role==='qa'&&/(?:^|\/)(?:qa|test|tests|spec)(?:\/|\.|-|_)/.test(rel))return 20;
   if(role==='balance'&&/(?:balance|economy|enemy|wave|reward|loot|difficulty|stat)/.test(rel))return 18;
   if(role==='development'&&/(?:main|game|runtime|core|player|world|controller|bootstrap)/.test(rel))return 14;
@@ -118,7 +122,9 @@ function isVisualPath(file){
 }
 function isGameplayPath(file){
   const rel=posix(file).toLowerCase();
-  return !isMetaOnlyPath(rel)&&(/^(?:web-games|unity-games)\//.test(rel)||/\.(?:js|mjs|cjs|html?|cs|json)$/.test(rel));
+  // Roblox .luau is executable game source. Previously it was classified as
+  // IMPLEMENTATION_OTHER while Web/Unity received actual GAMEPLAY_IMPLEMENTATION.
+  return !isMetaOnlyPath(rel)&&(/^(?:web-games|unity-games|roblox-games)\//.test(rel)||/\.(?:js|mjs|cjs|html?|cs|lua|luau|json)$/.test(rel));
 }
 
 export function classifyImplementationImpact({changedFiles=[],role='development'}={}){
