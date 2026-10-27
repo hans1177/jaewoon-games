@@ -114391,11 +114391,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_2c8a5c5f3e8c73ff8f42f017",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10756",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "0dbe5977f02ed7c50acd7a6a0bee02abe8125242",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10756,
+        "baseBranch": "main",
+        "headBranch": "fix/build-up-five-play-source-evidence-gate-20261027",
+        "baseSha": "0dbe5977f02ed7c50acd7a6a0bee02abe8125242",
+        "headSha": "ec1f9b09366623d990cbbde87d6336bb4b613c0a",
+        "mergeCommitSha": "189f5e3812550435fe83bb7b1ce5b52703d5a336",
+        "mergedAt": "2026-10-27T14:24:32Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b1c675cd854b141ff64103d8abe8376910f5beadc62d87d82698e7624e6a96df",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/build-up-five-play-source-evidence-gate-20261027",
+        "candidateSha": "ec1f9b09366623d990cbbde87d6336bb4b613c0a"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 182,
+        "deletedLineCount": 21,
+        "changedFiles": [
+          "assets/vibe-continuous-queue.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/github-pages-asset-staging.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "tools/company-playable-improvement-source-proof.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/vibe-continuous-queue.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/github-pages-asset-staging.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "tools/company-playable-improvement-source-proof.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10756",
+        "merge-commit:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+        "base-main:0dbe5977f02ed7c50acd7a6a0bee02abe8125242"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 903
+    "total": 904
   }
 }
