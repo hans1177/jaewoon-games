@@ -180,13 +180,16 @@ async function run(){
   '-an','-f','null','-'],60000);
  if(audit.status!==0)throw Error('CAPTURE_FRAME_AUDIT_FAILED');
  const messages=String(audit.stderr||'');
- if(/black_start:0(?:[.\\s]|$)/.test(messages)&&/black_end:[0-9.]+/.test(messages)){
-  const m=messages.match(/black_end:([0-9.]+)/);
-  if(m&&Number(m[1])>=duration-2)throw Error('CAPTURE_BLACK_FRAMES_REJECTED');
+ // 분석: 영상 끝까지 검거나 정지된 경우 종료 이벤트가 없어도 거부한다.
+ const fullBlack=messages.match(/black_start:\\s*0(?:[.\\s]|$)/);
+ if(fullBlack){
+  const end=messages.match(/black_end:\\s*([0-9.]+)/);
+  if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_BLACK_FRAMES_REJECTED');
  }
- if(/freeze_start:\\s*0(?:[.\\s]|$)/.test(messages)){
-  const m=messages.match(/freeze_end:\\s*([0-9.]+)/);
-  if(m&&Number(m[1])>=duration-2)throw Error('CAPTURE_STATIC_FRAMES_REJECTED');
+ const fullFreeze=messages.match(/freeze_start:\\s*0(?:[.\\s]|$)/);
+ if(fullFreeze){
+  const end=messages.match(/freeze_end:\\s*([0-9.]+)/);
+  if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_STATIC_FRAMES_REJECTED');
  }
  const revision=command('git',['-C',root,'rev-parse','HEAD']).stdout.trim();
  // OS pixels and native process are evidence of a window recording, not proof of
