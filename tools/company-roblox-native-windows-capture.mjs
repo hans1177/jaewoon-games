@@ -84,14 +84,14 @@ function validateNativeVideo(file,duration){
  if(audit.status!==0)throw Error('CAPTURE_FRAME_AUDIT_FAILED');
  const messages=String(audit.stderr||'');
  // 분석: 영상 끝까지 검거나 정지된 경우 종료 이벤트가 없어도 거부한다.
- const fullBlack=messages.match(/black_start:\\s*0(?:[.\\s]|$)/);
+ const fullBlack=messages.match(/black_start:\s*0(?:[.\s]|$)/);
  if(fullBlack){
-  const end=messages.match(/black_end:\\s*([0-9.]+)/);
+  const end=messages.match(/black_end:\s*([0-9.]+)/);
   if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_BLACK_FRAMES_REJECTED');
  }
- const fullFreeze=messages.match(/freeze_start:\\s*0(?:[.\\s]|$)/);
+ const fullFreeze=messages.match(/freeze_start:\s*0(?:[.\s]|$)/);
  if(fullFreeze){
-  const end=messages.match(/freeze_end:\\s*([0-9.]+)/);
+  const end=messages.match(/freeze_end:\s*([0-9.]+)/);
   if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_STATIC_FRAMES_REJECTED');
  }
  return {meta,v};
