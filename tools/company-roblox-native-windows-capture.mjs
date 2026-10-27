@@ -34,6 +34,23 @@ function runtimeTarget(){
    ||!/^[1-9]\d*$/.test(String(t.placeId||'')))throw Error('VERIFIED_PRIVATE_UNIVERSE_REQUIRED');
  return {universeId:String(t.universeId),placeId:String(t.placeId)};
 }
+function observedNativeNpc(target){
+ const base=process.env.LOCALAPPDATA||path.join(os.homedir(),'AppData','Local');
+ const folder=path.join(base,'Roblox','logs');
+ if(!fs.existsSync(folder))throw Error('ROBLOX_NATIVE_CLIENT_LOG_MISSING');
+ const files=fs.readdirSync(folder).filter(f=>/\\.log$/i.test(f))
+  .map(name=>({file:path.join(folder,name),stat:fs.statSync(path.join(folder,name))}))
+  .filter(x=>x.stat.isFile()&&Date.now()-x.stat.mtimeMs<3*60*1000)
+  .sort((a,b)=>b.stat.mtimeMs-a.stat.mtimeMs).slice(0,5);
+ const prefix='JAEWOON_NATIVE_CAPTURE_READY|'+gameId+'|'+target.universeId+'|'+target.placeId+'|';
+ for(const item of files){
+  const bytes=fs.readFileSync(item.file);
+  const tail=bytes.subarray(Math.max(0,bytes.length-4*1024*1024)).toString('utf8');
+  const match=tail.match(new RegExp(prefix.replace(/[.*+?^\\$\\{\\}()|[\\]\\\\]/g,'\\function playerWindow(){')+'([1-9][0-9]*)\\|NPC_MOVED'));
+  if(match)return {placeVersion:match[1],clientLogObserved:true};
+ }
+ throw Error('PRIVATE_NPC_LAUNCH_DATA_OR_NATIVE_MOVE_ATTESTATION_MISSING');
+}
 function playerWindow(){
  const ps="$ErrorActionPreference='Stop'; $p=@(Get-Process -Name 'RobloxPlayerBeta' -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 -and $_.MainWindowTitle -match 'Roblox' }); @($p | ForEach-Object { [pscustomobject]@{pid=$_.Id;hwnd=$_.MainWindowHandle.ToInt64();title=$_.MainWindowTitle} }) | ConvertTo-Json -Compress";
  const out=command('powershell.exe',['-NoProfile','-NonInteractive','-Command',ps],15000);
@@ -61,6 +78,8 @@ async function run(){
   return;
  }
  if(process.env.ROBLOX_CAPTURE_AUTHORIZED!=='1')throw Error('EXPLICIT_PRIVATE_CAPTURE_AUTHORIZATION_REQUIRED');
+ // Fail closed if the private game did not print its actual engine/NPC motion identity.
+ const observed=observedNativeNpc(target);
  const duration=Number(arg('seconds','24'));
  if(!Number.isInteger(duration)||duration<8||duration>27)throw Error('DURATION_MUST_BE_8_TO_27_SECONDS');
  const at=new Date().toISOString();
@@ -94,6 +113,7 @@ async function run(){
   captureAt:at,sourceRevision:/^[a-f0-9]{40}$/.test(revision)?revision:null,
   sha256:sha256(file),artifactIdentity:path.relative(runtimeRoot,file).replaceAll(path.sep,'/'),
   windowProcess:'RobloxPlayerBeta',windowTitleMatched:'Roblox',
+  observedNativePlaceVersion:observed.placeVersion,clientLogObserved:observed.clientLogObserved,
   durationSeconds:Number(meta.format.duration),width:v.width,height:v.height,
   humanPlayerRequired:false,actorAutomation:{mode:'IN_GAME_NPC_AI',
    playerControl:false,existingGameplayOnly:true,verified:false},
@@ -109,5 +129,29 @@ async function run(){
  console.log('ROBLOX_WINDOW_CAPTURE_SAVED='+file);
  console.log('ROBLOX_CAPTURE_SHA256='+proof.sha256);
  console.log('ROBLOX_RUNTIME_ATTESTATION_REQUIRED=YES');
+ if(process.env.ROBLOX_CAPTURE_SUBMIT==='1'){
+  const gitStatus=command('git',['-C',runtimeRoot,'rev-parse','--abbrev-ref','HEAD']);
+  if(gitStatus.status!==0||gitStatus.stdout.trim()!=='company-runtime')
+   throw Error('RUNTIME_CHECKOUT_MUST_TRACK_COMPANY_RUNTIME');
+  const relVideo=path.relative(runtimeRoot,file);
+  const relProof=path.relative(runtimeRoot,path.join(folder,'capture.json'));
+  for(const args of [
+   ['-C',runtimeRoot,'add','--',relVideo,relProof],
+   ['-C',runtimeRoot,'-c','user.name=jaewoon-native-media-worker',
+    '-c','user.email=actions@users.noreply.github.com',
+    'commit','-m','runtime: intake verified-window NPC capture for '+gameId,
+    '--only','--',relVideo,relProof],
+   ['-C',runtimeRoot,'push','origin','HEAD:company-runtime']
+  ]){
+   const res=command('git',args,30000);
+   if(res.status!==0)throw Error('RUNTIME_CAPTURE_SUBMISSION_FAILED:'+String(res.stderr||'').slice(0,160));
+  }
+  const dispatched=command('gh',['api','--method','POST',
+   'repos/hans1177/jaewoon-games/dispatches',
+   '-f','event_type=roblox_native_capture_available',
+   '-f','client_payload[game_id]='+gameId],15000);
+  if(dispatched.status!==0)throw Error('CAPTURE_DISPATCH_FAILED:'+String(dispatched.stderr||'').slice(0,160));
+  console.log('ROBLOX_NATIVE_CAPTURE_SUBMITTED=YES');
+ }
 }
 run().catch(e=>fail(String(e?.message||e)));
