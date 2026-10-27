@@ -544,6 +544,7 @@ test('queue normalization preserves studio quality cycle state and package hando
       baselineId:'g-studio-evolution-v2',baselineSource:'VERIFIED_QUEUE_TASK',
       explicitGap:'attack readability',designIsImplementationCeiling:false,
       requiredConnectedImprovements:{min:3,max:6},
+      requiredPlayableImprovements:{min:5,scope:'ALL_ACTIVE_APPROVED_GAMES',sourceOnlyPassForbidden:true},
       realSourceDeltaRequired:true,visibleRenderDeltaRequired:true,
       protectedRegressionForbidden:true,nextCycleRequired:true
     },
@@ -555,6 +556,7 @@ test('queue normalization preserves studio quality cycle state and package hando
         version:1,cycle:3,phase:'OPTIMIZE',focusPillar:'PRESENTATION',
         baselineId:'g-studio-evolution-v2',
         requiredConnectedImprovements:{min:3,max:6},
+      requiredPlayableImprovements:{min:5,scope:'ALL_ACTIVE_APPROVED_GAMES',sourceOnlyPassForbidden:true},
         realSourceDeltaRequired:true,visibleRenderDeltaRequired:true,
         protectedRegressionForbidden:true,nextCycleRequired:true
       }
@@ -567,6 +569,9 @@ test('queue normalization preserves studio quality cycle state and package hando
   assert.equal(task.studioQualityEvolution?.visibleRenderDeltaRequired,true);
   assert.equal(task.packageContext?.studioQualityEvolution?.cycle,3);
   assert.equal(task.packageContext?.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
+  assert.equal(task.studioQualityEvolution?.requiredPlayableImprovements?.min,5);
+  assert.equal(task.packageContext?.studioQualityEvolution?.requiredPlayableImprovements?.min,5);
+  assert.equal(task.studioQualityEvolution?.requiredPlayableImprovements?.sourceOnlyPassForbidden,true);
 });
 
 test('reserve persists atomic graphics schema migration even when no task can be newly reserved',()=>{

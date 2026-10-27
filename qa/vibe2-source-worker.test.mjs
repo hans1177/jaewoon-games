@@ -10,6 +10,7 @@ import http from 'node:http';
 import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
+import {PLAYABLE_IMPROVEMENT_IDS,evaluatePlayableImprovementSourceProof} from '../tools/company-playable-improvement-source-proof.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
 
 // [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
@@ -3767,6 +3768,48 @@ test('Roblox presentation recovery ranks a real visual anchor above a nonvisual 
   assert.match(focused.prompt,/PRESENTATION TASK HARD RULE/i);
   assert.match(focused.prompt,/ROBLOX VISUAL ANCHOR RULE/i);
   assert.match(focused.prompt,/even when the previous failure was timeout/i);
+});
+
+
+test('all-game BUILD_UP five-play gate rejects source-edit counting, missing role, duplicates and forged native PASS',()=>{
+  const contract={
+    phase:'BUILD_UP',focusPillar:'STABILITY',realSourceDeltaRequired:true,gameplaySourceDeltaRequired:true,
+    requiredConnectedImprovements:{min:5,max:null},
+    requiredPlayableImprovements:{min:5,scope:'ALL_ACTIVE_APPROVED_GAMES',sourceOnlyPassForbidden:true}
+  };
+  const edits=PLAYABLE_IMPROVEMENT_IDS.map((id,index)=>{
+    const before='local function play'+index+'(player)\\n  return false\\nend';
+    const action='local action'+index+' = player.UserId ~= nil';
+    const state='local state'+index+' = action'+index+' and "READY" or "WAIT"';
+    const feedback='hud.Text = state'+index;
+    const after='local function play'+index+'(player)\\n  '+action+'\\n  '+state+'\\n  '+feedback+'\\n  return state'+index+'\\nend';
+    return{edit:{path:'server/Game.server.luau',find:before,replace:after},proof:{
+      id,path:'server/Game.server.luau',before,after,action,state,feedback,
+      scenario:'Press the existing action, observe real state and HUD: '+id,
+      runtimeVerified:false
+    }};
+  });
+  const source={edits:edits.map(x=>x.edit),newFiles:[],replaceFiles:[]};
+  const noProof=evaluateStudioQualityCandidateDelta({candidate:source,contract});
+  assert.equal(noProof.sourceDeltaUnits,5);
+  assert.equal(noProof.pass,false,'five edits alone cannot pass five-play gate');
+  assert.match(noProof.reason,/PLAYABLE_IMPROVEMENT_SOURCE_PROOF_REQUIRED/);
+  const report={items:edits.map(x=>x.proof)};
+  const candidate={...source,playableImprovementReport:report};
+  const valid=evaluatePlayableImprovementSourceProof({candidate,contract});
+  assert.equal(valid.pass,true);
+  assert.equal(valid.groundedCount,5);
+  assert.equal(valid.runtimeVerified,false);
+  assert.equal(evaluateStudioQualityCandidateDelta({candidate,contract}).pass,true);
+  const duplicate={...candidate,playableImprovementReport:{items:[...report.items.slice(0,4),report.items[3]]}};
+  assert.equal(evaluatePlayableImprovementSourceProof({candidate:duplicate,contract}).pass,false);
+  const spoofed={...candidate,playableImprovementReport:{items:report.items.map((row,index)=>index===2?{...row,runtimeVerified:true}:row)}};
+  assert.equal(evaluatePlayableImprovementSourceProof({candidate:spoofed,contract}).pass,false);
+  const detached={...candidate,playableImprovementReport:{items:report.items.map((row,index)=>index===1?{...row,feedback:'ui.Update("FAKE")'}:row)}};
+  assert.equal(evaluatePlayableImprovementSourceProof({candidate:detached,contract}).pass,false);
+  const metadataOnly={...candidate,playableImprovementReport:{items:report.items.map((row,index)=>index===4?{...row,after:'-- '+row.after}:row)}};
+  assert.equal(evaluatePlayableImprovementSourceProof({candidate:metadataOnly,contract}).pass,false);
+  assert.equal(evaluatePlayableImprovementSourceProof({candidate,contract:{phase:'REPAIR',requiredPlayableImprovements:{min:5}}}).required,false);
 });
 
 test('studio build-up rejects micro patches and requires the configured connected source delta count',()=>{
