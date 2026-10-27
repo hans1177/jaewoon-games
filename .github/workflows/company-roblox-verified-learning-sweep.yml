@@ -162,6 +162,19 @@ jobs:
             [ "$state" = "MERGED" ] && break
             git fetch --no-tags --depth=1 origin main "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH"
             git checkout "$SOURCE_BRANCH"
+            # Git LFS can leave a dirty *ephemeral runner* checkout after
+            # smudging shared .ogg assets; never stash game sources or secrets.
+            dirty="$(git diff --name-only)"
+            if [ -n "$dirty" ]; then
+              unexpected="$(printf '%s\n' "$dirty" | grep -Ev '^assets/shared/tycoon/[^/]+[.]ogg$' || true)"
+              if [ -n "$unexpected" ]; then
+                echo "ROBLOX_SWEEP_REBASE_UNEXPECTED_DIRTY_FILES=$unexpected" >&2
+                exit 1
+              fi
+              git stash push -m 'ephemeral-lfs-smudge-before-verified-sweep-rebase' -- assets/shared/tycoon/*.ogg
+              git diff --quiet || { echo 'ROBLOX_SWEEP_REBASE_STILL_DIRTY' >&2; exit 1; }
+              echo 'ROBLOX_SWEEP_REBASE_LFS_WORKTREE_ISOLATED=YES'
+            fi
             git rebase origin/main
             git push --force-with-lease origin "HEAD:$SOURCE_BRANCH"
             sleep 1
