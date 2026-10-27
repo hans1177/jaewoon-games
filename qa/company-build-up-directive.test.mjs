@@ -136,7 +136,7 @@ test('existing all-game build-up discovers actor-specific native motion without 
       'local companion = workspace:FindFirstChild("Companion")',
       'local horse = workspace:FindFirstChild("Horse")',
       'local gate = workspace:FindFirstChild("AnimatedDoor")'
-    ].join('\\n'));
+    ].join('\n'));
     const d=buildGameSpecificBuildUpDirective({
       gameId,platform:'ROBLOX',repoRoot:root,sourceRoot,
       designRecord:{content:{identity:'기존 생존게임',coreFun:'탐험',coreLoop:['이동','상호작용','복귀']}},
@@ -162,7 +162,7 @@ test('existing all-game build-up discovers actor-specific native motion without 
     const prompt=directivePrompt(d);
     assert.match(prompt,/ACTOR_MOTION_AUTO_BUILD_UP:/);
     assert.match(prompt,/ACTOR_MOTION_RULE:/);
-    assert.match(prompt,/실제 런타임 PASS/);
+    assert.match(prompt,/UNVERIFIED/);
     assert.ok(d.playerFacingInspectionContract.cases.find(row=>row.id==='MOTION_TRANSITIONS').remoteAssertions.includes('ACTOR_SPECIFIC_JOINT_ACTIVITY_POSE_BLEND_FOOT_CONTACT'));
     assert.ok(d.playerFacingInspectionContract.cases.find(row=>row.id==='MONSTER_READABILITY').remoteAssertions.includes('DISTINCT_ENEMY_CREATURE_BOSS_BODY_PLAN_AND_TELEGRAPH'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
