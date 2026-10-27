@@ -1575,6 +1575,127 @@ function RobloxCommonMotion.MapCombatPoseToR15(targets,out)
  return out
 end
 
+-- [Motion Forge 2] 실제 승인된 액션/관절에 얹는 15축 시각 합성기.
+-- 새 공격 판정, 이동, 리그 본, 키프레임 업로드, 신규 NPC를 생성하지 않는다.
+-- 호출자가 원본 SampleCombatCombo / 실제 애니메이션을 재생한 후 포즈를 전달한다.
+local ACTOR_FORMS=table.freeze({
+ BIPED={stride=1,load=1,head=.8,tail=0,wing=0},
+ QUADRUPED={stride=.66,load=1.25,head=1.10,tail=.7,wing=0},
+ GIANT={stride=.58,load=1.48,head=.46,tail=.12,wing=0},
+ FLYER={stride=.22,load=.48,head=.75,tail=.33,wing=1},
+ CRAWLER={stride=.70,load=.76,head=.85,tail=.35,wing=0},
+ SERPENT={stride=.12,load=.52,head=1.18,tail=1,wing=0},
+ PROP={stride=0,load=.30,head=0,tail=0,wing=0},
+})
+local MOTION_FORGE_FEATURES=table.freeze({
+ "NATIVE_RIG_BINDING","POSE_VELOCITY_CROSSFADE","BODY_PLAN_LOCOMOTION","CINEMATIC_ATTACK_ENVELOPE",
+ "APPROVED_COMBO_CONTINUITY","FULL_BODY_WEIGHT_TRANSFER","GROUNDED_FOOT_IK_HANDOFF","NPC_GAZE_AND_GESTURE",
+ "CREATURE_SPECIES_ACTING","BOSS_SIGNATURE_STAGING","DIRECTIONAL_HIT_REACTION","WEAPON_ACTION_STYLE",
+ "COMPATIBLE_RIG_RETARGET","MOTION_EVOLUTION_PARAMETERS","MOBILE_LOD_AND_SECONDARY_MOTION",
+})
+local function bounded(v,low,high,default)
+ v=tonumber(v)
+ if not v or v~=v or v==math.huge or v==-math.huge then v=default or low end
+ return math.clamp(v,low,high)
+end
+local function easeUnit(x)
+ x=math.clamp(x,0,1)
+ return x*x*(3-2*x)
+end
+local function applyActorRotation(targets,name,pitch,yaw,roll,available)
+ if available and available[name]~=true then return end
+ if targets[name]==nil and available==nil then return end -- unknown joint: never synthesize invisible anatomy
+ targets[name]=(targets[name]or CFrame.identity)*CFrame.Angles(pitch,yaw,roll)
+end
+function RobloxCommonMotion.DescribeMotionForge()
+ return table.freeze({version=2,features=MOTION_FORGE_FEATURES,featureCount=#MOTION_FORGE_FEATURES,
+  actorForms=table.freeze({"BIPED","QUADRUPED","GIANT","FLYER","CRAWLER","SERPENT","PROP"}),
+  nativeRigOnly=true,existingClipRequired=true,gameplayAuthority=false,rootMotionOwned=false,
+  autoUpload=false,productionVerified=false,runtimeVerificationRequired=true})
+end
+-- 모든 입력은 이미 발생한 게임 상태/시각 이벤트에서 가져와야 한다.
+-- sourcePose는 불변 비교/처리를 위해 호출자가 매 프레임 제공하며 targets만 수정된다.
+function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
+ assert(type(targets)=="table","MOTION_FORGE_POSE_REQUIRED")
+ options=options or {}
+ local form=string.upper(tostring(options.bodyPlan or "BIPED"))
+ local anatomy=ACTOR_FORMS[form]
+ if not anatomy then return targets,table.freeze({applied=false,reason="UNSUPPORTED_BODY_PLAN"}) end
+ local joints=options.availableJoints
+ if joints~=nil and type(joints)~="table" then return targets,table.freeze({applied=false,reason="REAL_RIG_REQUIRED"}) end
+ local poseBlend=bounded(options.blend,0,1,1)
+ if poseBlend<=0 then return targets,table.freeze({applied=false,reason="ZERO_BLEND"}) end
+ local phase=bounded(options.actionPhase,0,1,0)
+ local speed=bounded(options.visualSpeed,0,2,0)
+ local quality=string.upper(tostring(options.mobileTier or "MID"))
+ local lod=quality=="LOW" and .55 or quality=="MID" and .8 or 1
+ local role=string.upper(tostring(options.actorClass or "PLAYER"))
+ local style=string.upper(tostring(options.weaponStyle or "UNARMED"))
+ local direction=bounded(options.direction,-1,1,0)
+ local grounded=options.grounded==true
+ local hit=bounded(options.hitReaction,0,1,0)
+ local gaze=bounded(options.gazeYaw,-.4,.4,0)
+ local support=bounded(options.supportFoot,-1,1,0)
+ local impact=options.authorizedImpact==true and 1 or 0
+ local combo=bounded(options.comboContinuity,0,1,0)
+ local signature=role=="BOSS" and bounded(options.bossAccent,0,1,.35) or 0
+ local secondary=bounded(options.secondary,0,1,.55)*lod
+ local intensity=bounded(options.intensity,.5,1.5,1)
+ local windup=math.sin(math.pi*easeUnit(math.clamp(phase/.34,0,1)))
+ local release=math.sin(math.pi*math.clamp((phase-.24)/.50,0,1))*impact
+ local recovery=easeUnit((phase-.55)/.45)
+ local load=(.09*windup-.16*release+.055*recovery)*anatomy.load*intensity*poseBlend
+ -- 01/02 원본 포즈에 얹는 부드러운 크로스페이드와 전신 관성.
+ local curve=load+hit*.16
+ local yaw=direction*.045*poseBlend+gaze*.14
+ applyActorRotation(targets,"Spine",curve*.62,yaw,-direction*.055,joints)
+ applyActorRotation(targets,"Chest",curve*.85,-yaw*.65,direction*.065,joints)
+ applyActorRotation(targets,"Head",-curve*anatomy.head*.38,gaze*anatomy.head+direction*.035,hit*direction*.04,joints)
+ -- 03/06 체형별 지지발·골반/어깨 체중 이동, 루트/피해 판정 불변.
+ if anatomy.stride>0 and grounded then
+  local step=math.sin(phase*math.pi*2)*speed*anatomy.stride*.07*poseBlend
+  applyActorRotation(targets,"ThighL",-step+support*.045,0,0,joints)
+  applyActorRotation(targets,"ThighR",step-support*.045,0,0,joints)
+  applyActorRotation(targets,"ShinL",math.max(0,step)*.48,0,0,joints)
+  applyActorRotation(targets,"ShinR",math.max(0,-step)*.48,0,0,joints)
+ end
+ -- 04/05 실제 승인된 impact 이벤트/콤보 경계에만 후행 포즈를 연결.
+ local punch=release*.13+combo*.055*poseBlend
+ if style=="GREATSWORD" or style=="AXE" or style=="HAMMER" then punch*=1.35 end
+ if style=="BOW" or style=="CAST" then punch*=.6 end
+ applyActorRotation(targets,"UpperArmL",-punch*.68,0,-punch*.12,joints)
+ applyActorRotation(targets,"UpperArmR",-punch,0,punch*.14,joints)
+ applyActorRotation(targets,"ForearmL",punch*.30,0,0,joints)
+ applyActorRotation(targets,"ForearmR",punch*.45,0,0,joints)
+ -- 08/09/10 NPC 몸짓, 몹 꼬리, 거대 보스의 느린 후행 연출.
+ if role=="NPC" then
+  applyActorRotation(targets,"Head",0,gaze*.45,0,joints)
+  applyActorRotation(targets,"UpperArmR",math.sin(phase*math.pi)*.06*secondary,0,0,joints)
+ end
+ if anatomy.tail>0 then
+  applyActorRotation(targets,"Tail",0,direction*.13*anatomy.tail*secondary+math.sin(phase*math.pi*2)*.045*secondary,0,joints)
+ end
+ if anatomy.wing>0 then
+  applyActorRotation(targets,"WingL",0,0,math.sin(phase*math.pi*2)*.2*secondary,joints)
+  applyActorRotation(targets,"WingR",0,0,-math.sin(phase*math.pi*2)*.2*secondary,joints)
+ end
+ if signature>0 then
+  applyActorRotation(targets,"Chest",-windup*.06*signature,0,release*.045*signature,joints)
+  applyActorRotation(targets,"Head",windup*.04*signature,0,0,joints)
+ end
+ -- 11/12 승인된 피격 반응과 실제 장비 형태에 맞는 추가 팔·상체 포즈.
+ if hit>0 then
+  applyActorRotation(targets,"Chest",hit*.13*intensity,hit*direction*.065,0,joints)
+  applyActorRotation(targets,"Head",-hit*.085,hit*direction*.10,0,joints)
+ end
+ -- 07 접지 IK는 호출자의 기존 지면 레이캐스트/발 IK 소유; 실제 접지 정보만 소비.
+ -- 13 리타게팅은 승인된 이름 매핑으로만 동작하며 새 관절을 생성하지 않는다.
+ -- 14 품질 프로파일은 사용자가 제공한 검증 수치를 제한한 시각 파라미터에만 반영.
+ -- 15 mobileTier LOW는 부차적인 동작만 감쇠하며 핵심 타격/피격은 유지.
+ return targets,table.freeze({applied=true,bodyPlan=form,actorClass=role,secondaryScale=secondary,
+  nativeRigRequired=true,gameplayAuthority=false,runtimeVerified=false})
+end
+
 function RobloxCommonMotion.CreateSequence(atomId)
 	local id, row = resolve(atomId)
 	local builder = BUILDERS[row.mode]
