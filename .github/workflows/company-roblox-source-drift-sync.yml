@@ -5,11 +5,17 @@ on:
     branches: [main]
     paths:
       - 'roblox-games/**'
+      - 'assets/roblox/**'
+      - 'assets/shared/**'
+      - 'assets/external/**'
   pull_request:
     branches: [main]
     types: [closed]
     paths:
       - 'roblox-games/**'
+      - 'assets/roblox/**'
+      - 'assets/shared/**'
+      - 'assets/external/**'
   workflow_dispatch:
     inputs:
       game_id:
@@ -88,7 +94,7 @@ jobs:
             if ! git cat-file -e "$CURRENT_SHA^{commit}" 2>/dev/null; then
               git fetch --no-tags --depth=1 origin "$CURRENT_SHA"
             fi
-            git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ > /tmp/roblox-push-files.txt
+            git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ assets/roblox/ assets/shared/ assets/external/ > /tmp/roblox-push-files.txt
             changed="$(node tools/company-roblox-source-drift-sync.mjs --resolve-files=/tmp/roblox-push-files.txt)"
           fi
           if [[ -n "$changed" ]] && ! [[ "$changed" =~ ^[a-z0-9][a-z0-9-]{1,48}(,[a-z0-9][a-z0-9-]{1,48})*$ ]]; then
@@ -120,7 +126,7 @@ jobs:
             IFS=',' read -r -a game_ids <<< "$CHANGED_GAME_IDS"
             for game_id in "${game_ids[@]}"; do
               [[ -z "$game_id" ]] && continue
-              if ! git diff --quiet "$SOURCE_REVISION" "$live_main" --                 "roblox-games/$game_id/default.project.json"                 "roblox-games/$game_id/shared"                 "roblox-games/$game_id/server"                 "roblox-games/$game_id/client"; then
+              if ! git diff --quiet "$SOURCE_REVISION" "$live_main" --                 "roblox-games/$game_id/default.project.json"                 "roblox-games/$game_id/shared"                 "roblox-games/$game_id/server"                 "roblox-games/$game_id/client" "assets/roblox" "assets/shared" "assets/external"; then
                 echo "ROBLOX_SOURCE_SYNC_STALE_GAME_SOURCE=$game_id:$SOURCE_REVISION:$live_main" >&2
                 return 3
               fi
@@ -192,7 +198,7 @@ jobs:
             IFS=',' read -r -a game_ids <<< "$CHANGED_GAME_IDS"
             for game_id in "${game_ids[@]}"; do
               [[ -z "$game_id" ]] && continue
-              if ! git -C "$GITHUB_WORKSPACE" diff --quiet "$SOURCE_REVISION" "$live_main" --                 "roblox-games/$game_id/default.project.json"                 "roblox-games/$game_id/shared"                 "roblox-games/$game_id/server"                 "roblox-games/$game_id/client"; then
+              if ! git -C "$GITHUB_WORKSPACE" diff --quiet "$SOURCE_REVISION" "$live_main" --                 "roblox-games/$game_id/default.project.json"                 "roblox-games/$game_id/shared"                 "roblox-games/$game_id/server"                 "roblox-games/$game_id/client" "assets/roblox" "assets/shared" "assets/external"; then
                 echo "ROBLOX_SOURCE_SYNC_STALE_GAME_SOURCE=$game_id:$SOURCE_REVISION:$live_main" >&2
                 return 3
               fi

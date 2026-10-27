@@ -1,12 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {
   activeRobloxDevelopmentItem,
   reconcileChangedRobloxItems,
   robloxBuildInputGameId,
   changedRobloxBuildGameIds,
+  robloxBuildSourceChangedBetween,
   restoreMetadataOnlyRobloxInvalidation,
   restartRobloxFromF0
 } from '../tools/company-roblox-source-drift-sync.mjs';
@@ -466,4 +470,41 @@ test('post-publication F0 restart invokes Web BUILD_UP planner only after persis
   assert.match(step,/! -s \/tmp\/roblox-drift-eligible-game-ids\.txt/);
   assert.match(step,/gh workflow run vibe2-24h-runner\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
   assert.doesNotMatch(step,/gh workflow run vibe2-continuous-core\.yml/);
+});
+
+
+// 공용 모션의 실물 Rojo 연결이 바뀌면 해당 게임만 F0 재빌드 대상으로 선정한다.
+test('shared Roblox module edits select actual consumers and invalidate only their package identity',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-asset-drift-'));
+  const asset='assets/roblox/common-motion-v1/RobloxCommonMotion.luau';
+  const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+  try{
+    for(const id of ['game-a','game-b']){
+      const dir=path.join(root,'roblox-games',id);
+      fs.mkdirSync(dir,{recursive:true});
+      const shared={$path:'shared'};
+      if(id==='game-a')shared.RobloxCommonMotion={$path:'../../'+asset};
+      fs.writeFileSync(path.join(dir,'default.project.json'),JSON.stringify({tree:{ReplicatedStorage:{Shared:shared}}}));
+    }
+    fs.mkdirSync(path.join(root,'assets/roblox/common-motion-v1'),{recursive:true});
+    fs.writeFileSync(path.join(root,asset),'return {}\n');
+    git('init');git('config','user.name','test');git('config','user.email','test@example.invalid');
+    git('add','.');git('commit','-m','base');
+    const from=git('rev-parse','HEAD');
+    assert.deepEqual(changedRobloxBuildGameIds([asset],{repoRoot:root}),['game-a']);
+    assert.deepEqual(changedRobloxBuildGameIds(['assets/roblox/common-motion-v1/other.luau'],{repoRoot:root}),[]);
+    assert.deepEqual(changedRobloxBuildGameIds([asset,'roblox-games/game-b/client/Game.client.luau'],{repoRoot:root}),['game-a','game-b']);
+    fs.writeFileSync(path.join(root,asset),'return {Version=2}\n');
+    git('add','.');git('commit','-m','update motion');
+    const to=git('rev-parse','HEAD');
+    assert.equal(robloxBuildSourceChangedBetween({repoRoot:root,gameId:'game-a',fromRevision:from,toRevision:to}),true);
+    assert.equal(robloxBuildSourceChangedBetween({repoRoot:root,gameId:'game-b',fromRevision:from,toRevision:to}),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('source drift monitors shared assets without bypassing canonical per-game runtime',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/assets\\/roblox\\/\\*\\*/);
+  assert.match(workflow,/git diff --name-only .* -- roblox-games\\/ assets\\/roblox\\/ assets\\/shared\\/ assets\\/external\\//);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\\.yml/);
 });

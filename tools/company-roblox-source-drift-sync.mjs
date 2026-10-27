@@ -1,3 +1,4 @@
+// 파일명: tools/company-roblox-source-drift-sync.mjs
 // Synchronize changed Roblox game source on main with company-runtime without reusing stale release evidence.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,19 +21,51 @@ export function robloxBuildInputGameId(file=''){
   if(rel==='default.project.json'||rel.startsWith('shared/')||rel.startsWith('server/')||rel.startsWith('client/'))return gameId;
   return '';
 }
-export function changedRobloxBuildGameIds(files=[]){
-  return [...new Set((files||[]).map(robloxBuildInputGameId).filter(Boolean))].sort();
+// 공용 자산 의존성: 실제 Rojo 프로젝트에 연결된 저장소 자산만 영향 게임에 반영한다.
+function robloxBoundAssetPaths({repoRoot='.',gameId=''}={}){
+  if(!/^[a-z0-9][a-z0-9-]{1,48}$/.test(clean(gameId)))return [];
+  const root=path.resolve(repoRoot);
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  let project;
+  try{project=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));}
+  catch{return [];}
+  const paths=new Set();
+  const walk=node=>{
+    if(!node||typeof node!=='object')return;
+    if(typeof node.$path==='string'){
+      const relative=path.relative(root,path.resolve(gameRoot,node.$path)).replaceAll('\\','/');
+      if(relative.startsWith('assets/'))paths.add(relative);
+    }
+    for(const child of Object.values(node))if(child&&typeof child==='object')walk(child);
+  };
+  walk(project.tree);
+  return [...paths].sort();
 }
-function robloxBuildPathspecs(gameId=''){
+export function changedRobloxBuildGameIds(files=[],{repoRoot='.'}={}){
+  const changed=(files||[]).map(file=>clean(file).replaceAll('\\','/').replace(/^\\.\\//,'')).filter(Boolean);
+  const ids=new Set(changed.map(robloxBuildInputGameId).filter(Boolean));
+  const assets=changed.filter(file=>file.startsWith('assets/'));
+  if(assets.length){
+    const gamesRoot=path.join(repoRoot,'roblox-games');
+    const games=fs.existsSync(gamesRoot)?fs.readdirSync(gamesRoot,{withFileTypes:true}):[];
+    for(const entry of games){
+      if(!entry.isDirectory())continue;
+      const bindings=robloxBoundAssetPaths({repoRoot,gameId:entry.name});
+      if(bindings.some(bound=>assets.some(file=>file===bound||file.startsWith(bound+'/'))))ids.add(entry.name);
+    }
+  }
+  return [...ids].sort();
+}
+function robloxBuildPathspecs(gameId='',repoRoot='.'){
   const root=`roblox-games/${clean(gameId)}`;
-  return [`${root}/default.project.json`,`${root}/shared`,`${root}/server`,`${root}/client`];
+  return [`${root}/default.project.json`,`${root}/shared`,`${root}/server`,`${root}/client`,...robloxBoundAssetPaths({repoRoot,gameId})];
 }
 export function robloxBuildSourceChangedBetween({repoRoot='.',gameId='',fromRevision='',toRevision=''}={}){
   const from=clean(fromRevision),to=clean(toRevision),id=clean(gameId);
   if(!/^[0-9a-f]{40}$/i.test(from)||!/^[0-9a-f]{40}$/i.test(to)||!id)return null;
   if(from===to)return false;
   try{
-    execFileSync('git',['diff','--quiet',from,to,'--',...robloxBuildPathspecs(id)],{cwd:repoRoot,stdio:'ignore'});
+    execFileSync('git',['diff','--quiet',from,to,'--',...robloxBuildPathspecs(id,repoRoot)],{cwd:repoRoot,stdio:'ignore'});
     return false;
   }catch(error){
     if(Number(error?.status)===1)return true;
@@ -242,7 +275,7 @@ function runCli(){
   const resolveFiles=arg('resolve-files');
   if(resolveFiles){
     const files=fs.existsSync(resolveFiles)?fs.readFileSync(resolveFiles,'utf8').split(/\r?\n/).map(clean).filter(Boolean):[];
-    process.stdout.write(changedRobloxBuildGameIds(files).join(','));
+    process.stdout.write(changedRobloxBuildGameIds(files,{repoRoot:arg('repo-root','.')}).join(','));
     return;
   }
   const generation=clean(process.env.ROBLOX_SOURCE_DRIFT_SYNC_GENERATION);
