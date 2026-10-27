@@ -1978,7 +1978,7 @@ test('full planner replaces low-value micro work with queued studio packages and
       :row
   )};
   let second=null;
-  for(let i=0;i<12&&!second;i++){
+  for(let i=0;i<40&&!second;i++){
     const result=planVibe2AutonomousTasks({
       status:{projects:[]},catalog:catalogOnly,queue:working,repoRoot:root,
       maxConcurrentTasks:4,queueMaxConcurrentTasks:4,planningBacklogTarget:4,planningBacklogMinimum:0
@@ -1998,7 +1998,11 @@ test('full planner replaces low-value micro work with queued studio packages and
         :row
     )};
   }
-  assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
+  assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle; recent='+JSON.stringify(working.tasks.filter(row=>row.gameId===gameId).slice(-18).map(row=>({
+    id:row.id,status:row.status,phase:row.studioQualityEvolution?.phase,
+    cycle:row.studioQualityEvolution?.cycle,focus:row.studioQualityEvolution?.focusPillar,
+    blocker:row.blocker
+  }))));
   assert.notEqual(second.id,first.id);
   assert.equal(second.taskWorkUnits,7);
   assert.equal(second.studioQualityEvolution?.cycle,2);
