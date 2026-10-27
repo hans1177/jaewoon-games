@@ -4485,7 +4485,14 @@ test('canonical company asset registry becomes dry-run idempotent after current 
   const root=path.resolve(here,'..');
   const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
   const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
-  assert.equal(result.changed,false,JSON.stringify(result.changedSections));
+  const firstAutomation=first.registry.internalAssetLibraryAutomation||{};
+  const secondAutomation=result.registry.internalAssetLibraryAutomation||{};
+  const automationDrift=[...new Set([...Object.keys(firstAutomation),...Object.keys(secondAutomation)])]
+    .filter(field=>JSON.stringify(firstAutomation[field])!==JSON.stringify(secondAutomation[field]))
+    .map(field=>({field,first:JSON.stringify(firstAutomation[field])?.slice(0,400),
+      second:JSON.stringify(secondAutomation[field])?.slice(0,400)}));
+  assert.equal(result.changed,false,JSON.stringify({sections:result.changedSections,
+    automationDrift}));
   assert.deepEqual(result.changedSections,[]);
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
