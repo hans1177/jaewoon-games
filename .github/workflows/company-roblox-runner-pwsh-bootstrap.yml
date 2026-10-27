@@ -263,22 +263,31 @@ jobs:
             New-Item -ItemType Directory -Force -Path $safeRoot | Out-Null
             $persistentSetup = Join-Path $safeRoot 'setup-roblox-native-capture-windows.ps1'
             Copy-Item -LiteralPath $source -Destination $persistentSetup -Force
-            $arguments = '-NoProfile -ExecutionPolicy Bypass -File "'+$persistentSetup+'" -RegisterWatcher'
-            $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $arguments
-            $trigger = New-ScheduledTaskTrigger -AtLogOn -User $consoleUser
-            $principal = New-ScheduledTaskPrincipal -UserId $consoleUser -LogonType Interactive -RunLevel Limited
+            # 비관리자 GitHub 서비스는 로그인 세션을 강제로 생성할 수 없다.
+            # 서비스와 현재 콘솔 사용자가 동일할 때만 해당 사용자 자동실행 키를 등록한다.
+            $serviceIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+            $consoleSid = $null
             try {
-              Register-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap' -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
-              Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap'
+              $consoleSid = (New-Object Security.Principal.NTAccount($consoleUser)).
+                Translate([Security.Principal.SecurityIdentifier]).Value
             } catch {
-              if ($_.Exception.HResult -eq -2147024891 -or $_.Exception.Message -match '0x80070005|Access is denied|Access denied') {
-                Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=INTERACTIVE_USER_TASK_REGISTRATION_PERMISSION_REQUIRED'
-                Write-Host 'ROBLOX_NATIVE_CAPTURE_AUTORUN=NOT_INSTALLED'
-                exit 0
-              }
-              throw
+              Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=CONSOLE_ACCOUNT_IDENTITY_UNVERIFIED'
+              exit 0
             }
-            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=INTERACTIVE_USER_SETUP_DISPATCHED'
+            if ($serviceIdentity.User.Value -ne $consoleSid) {
+              Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=SERVICE_ACCOUNT_DIFFERS_FROM_CONSOLE_USER'
+              exit 0
+            }
+            $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+            if (-not (Test-Path -LiteralPath $runKey)) {
+              New-Item -Path $runKey -Force | Out-Null
+            }
+            $command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "'+$persistentSetup+'" -RegisterWatcher'
+            New-ItemProperty -Path $runKey -Name 'JaewoonRobloxNativeMediaBootstrap' -Value $command -PropertyType String -Force | Out-Null
+            $verified = (Get-ItemProperty -Path $runKey -Name 'JaewoonRobloxNativeMediaBootstrap').JaewoonRobloxNativeMediaBootstrap
+            if ($verified -ne $command) { throw 'ROBLOX_NATIVE_CAPTURE_AUTORUN_REGISTRATION_VERIFY_FAILED' }
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=INTERACTIVE_LOGON_AUTORUN_REGISTERED'
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=USER_SIGNIN_REQUIRED_TO_RUN_PLAYER'
             Write-Host 'ROBLOX_ACTUAL_CLIENT_RECORDING_NOT_YET_ATTESTED=YES'
             exit 0
           }
