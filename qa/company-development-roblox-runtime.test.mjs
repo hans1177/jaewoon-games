@@ -1093,7 +1093,9 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
     assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
     assert.equal(project.tree.Lighting.CompatibilityToneMap,undefined);
-    assert.equal(result.changedFiles.some(file=>file.endsWith('default.project.json')),false);
+    // 공용 모듈 자동 연결로 프로젝트 매핑이 정상 갱신되어야 한다.
+    assert.equal(result.changedFiles.some(file=>file.endsWith('default.project.json')),true);
+    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
