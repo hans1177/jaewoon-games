@@ -420,11 +420,17 @@ export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10){
   if(!plan?.gameId)return [];
   const top=(plan.priorityWork||[]).slice(0,Math.max(1,Math.min(16,Number(maxFamilies)||10)));
   const states=(plan.motion?.states||[]).filter(row=>row.sourceMentioned!==true).map(row=>row.id);
+  const targetFamilies=new Set(top.map(row=>row.id));
+  const detailed=(plan.detailedChecks||[])
+    .filter(row=>row.sourceCandidate===true||targetFamilies.has(row.family))
+    .sort((a,b)=>Number(b.sourceCandidate)-Number(a.sourceCandidate)||Number(targetFamilies.has(b.family))-Number(targetFamilies.has(a.family))||a.id.localeCompare(b.id))
+    .slice(0,12);
   return [
     'ROBLOX_HOLISTIC_QUALITY_BUILD_UP: game='+plan.gameId+' sourceTree='+plan.sourceTreeFingerprint+' scanComplete='+plan.scan?.complete+' assets='+plan.scan?.assetCount+' sourceOnly=true',
     'SHARED_LIBRARY_QA: metadata='+plan.sharedLibrary?.status+' total='+plan.sharedLibrary?.coverage?.total+' gameRelevant='+plan.sharedLibrary?.coverage?.gameRelevant+' missingLocal='+plan.sharedLibrary?.coverage?.localFilesMissing+' ownershipGaps='+plan.sharedLibrary?.coverage?.ownershipOrLicenseMetadataGaps+' rightsProof=UNVERIFIED; evaluate all relevant library entries, keep originals, repair provenance before new use.',
     'QUALITY_FAMILY_REPAIR_TARGETS: '+top.map(row=>row.id+'['+row.priority+']:'+row.improvement+' @ '+(row.sourceFiles?.join('|')||'LOCATE_OWNING_SOURCE')).join(' ; '),
     'DETAILED_QUALITY_CHECKS: total='+plan.detailedCheckCounts?.total+' motionActionRig='+plan.detailedCheckCounts?.motionActionRig+' executed=0; full definitions in robloxHolisticQualityPlan.detailedChecks; pick game-applicable checks, measure exact results before changing owning code or assets; count labels != tested gameplay.',
+    'DETAILED_GAME_SOURCE_TARGETS: '+detailed.map(row=>row.id+'['+row.verificationMethod+'] '+row.acceptance+' => repair only observed failure or approved gap; sourceCandidate='+row.sourceCandidate).join(' ; ')+'. Exclude features absent from approved design; rerun same check after source/asset repair.',
     'MOTION_ACTION_BUILD_UP: cover Animator/Motor6D/Bone idle-walk-run-start-stop-turn-jump-land, anticipation-impact-recovery, hit-death-respawn; bind every transition to input, server state, VFX/SFX and observed hit; candidate missing source tokens='+states.join('|')+'; tokens are not proof.',
     'FIVE_OFFICIAL_STUDIO_SCENARIOS: '+(plan.officialStudioScenarios||[]).map(row=>row.id+'='+row.status).join('|')+'; Studio unavailable => PENDING, NEVER PASS; virtual touch != physical mobile touch.',
     'QUALITY_PROOF_RULE: source edits and asset files are proposals; require verified licenses/hashes, source-specific QA, exact build engine evidence and real Studio rendered/action evidence for claims. Do not modify approved saves, economy, combat values or server authority.'
