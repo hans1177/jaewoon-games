@@ -45,7 +45,8 @@ if ($RegisterWatcher) {
  $Trigger = New-ScheduledTaskTrigger -AtLogOn -User "$env:USERDOMAIN\$env:USERNAME"
  $Principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
  Register-ScheduledTask -TaskName 'JaewoonRobloxNativeMedia' -Action $Action -Trigger $Trigger -Principal $Principal -Force | Out-Null
- Write-Host 'ROBLOX_WINDOWS_CAPTURE_WATCHER=REGISTERED_AT_USER_LOGON'
+ Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMedia'
+ Write-Host 'ROBLOX_WINDOWS_CAPTURE_WATCHER=STARTED_AND_REGISTERED_AT_USER_LOGON'
 }
 Write-Host 'ROBLOX_WINDOWS_MEDIA_CODE_INSTALLED=YES'
 Write-Host 'ROBLOX_ACCOUNT_AND_PRIVATE_SESSION_LOGIN_STILL_REQUIRED=YES'
