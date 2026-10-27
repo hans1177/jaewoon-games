@@ -164,7 +164,7 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
       /GetAttributeChangedSignal\s*\(\s*["']ApprovedCombatMotion["']\s*\)/,
       /\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']MOTION["']\s*,\s*["'][A-Z0-9_]+["']\s*\)\s*then\s*[\s\S]{0,220}?\breturn\b/,
       /:\s*IsA\s*\(\s*["']Motor6D["']\s*\)/,
-      /\bcombatMotionSource\.CreateCombatCombo\s*\(/,
+      /\bcombatMotionSource\.CreateCombatCombo\b/,
       /\bcombatMotionSource\.BindJointPose\s*\(/,
       /\bcombatMotionSource\.SampleCombatCombo\s*\(/,
       /\bcombatMotionSource\.MapCombatPoseToR15\s*\(/,
