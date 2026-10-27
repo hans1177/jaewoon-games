@@ -53,3 +53,20 @@ test('포탈 알피지 is distinct from 대충알피지 by game ID, source, rele
  assert.match(portalWeb,/<title>포탈 알피지<\/title>/);
  assert.doesNotMatch(portalWeb,/대충 용사 RPG/);
 });
+
+test('current portal RPG public metadata cannot revive the old Korean daechung title',()=>{
+ const marketing=JSON.parse(fs.readFileSync('company-learning/marketing/daechung-rpg/latest.json','utf8'));
+ const artbooks=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+ const health=JSON.parse(fs.readFileSync('public-game-health.json','utf8'));
+ assert.equal(marketing.gameId,'daechung-rpg');
+ assert.equal(marketing.gameName,'포탈 알피지');
+ assert.ok(!JSON.stringify(marketing).includes('대충 RPG'));
+ const portalArtbooks=artbooks.artbooks.filter(row=>row.gameId==='daechung-rpg');
+ assert.ok(portalArtbooks.length>0);
+ assert.ok(portalArtbooks.every(row=>row.gameName==='포탈 알피지'));
+ const portalHealth=health.games.find(row=>row.gameId==='daechung-rpg');
+ assert.equal(portalHealth?.name,'포탈 알피지');
+ const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+ assert.equal(catalog.games.find(row=>row.id==='simple-rpg').name,'대충알피지');
+ assert.equal(catalog.games.find(row=>row.id==='daechung-rpg').name,'포탈 알피지');
+});

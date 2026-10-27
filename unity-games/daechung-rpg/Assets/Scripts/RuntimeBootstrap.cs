@@ -1,5 +1,5 @@
 // 파일명: RuntimeBootstrap.cs
-// 역할: 대충 RPG Unity 재개발의 Android 플레이 가능 초안
+// 역할: 포탈 알피지 Unity 재개발의 Android 플레이 가능 초안
 // 초안 그래픽: 검증된 무료 애니메이션 Pirate/Skeleton 에셋을 실제 전투 상태와 연결한다.
 
 using System.Collections.Generic;

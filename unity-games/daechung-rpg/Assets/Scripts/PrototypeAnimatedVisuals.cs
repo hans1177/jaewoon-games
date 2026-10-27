@@ -1,5 +1,5 @@
 // 파일명: PrototypeAnimatedVisuals.cs
-// 역할: 대충 RPG 초안에 검증된 무료 Pirate/Skeleton 애니메이션 스프라이트를 실제 적용한다.
+// 역할: 포탈 알피지 초안에 검증된 무료 Pirate/Skeleton 애니메이션 스프라이트를 실제 적용한다.
 // 출처: https://github.com/chongdashu/ai-pixel-snapped-game-sprites (MIT)
 
 using System;

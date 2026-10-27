@@ -1,5 +1,5 @@
 // 파일명: GameCore.cs
-// 역할: 대충 RPG Unity 재개발의 핵심 상태·데이터·세이브 모델
+// 역할: 포탈 알피지 Unity 재개발의 핵심 상태·데이터·세이브 모델
 using System;
 using System.Collections.Generic;
 using UnityEngine;

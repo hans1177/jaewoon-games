@@ -1,5 +1,5 @@
 // 파일명: AndroidTestBuild.cs
-// 역할: GitHub-hosted GameCI가 대충 RPG Android 테스트 APK를 재현 가능하게 빌드한다.
+// 역할: GitHub-hosted GameCI가 포탈 알피지 Android 테스트 APK를 재현 가능하게 빌드한다.
 using System;
 using System.IO;
 using UnityEditor;
