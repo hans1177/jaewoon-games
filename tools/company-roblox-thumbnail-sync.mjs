@@ -267,6 +267,13 @@ export function editVerifiedRobloxGameplayVideo({
   if(render.status!==0||!fs.existsSync(output)||fs.statSync(output).size<1024
     ||fs.statSync(output).size>15*1024*1024)
     throw new Error('ROBLOX_VIDEO_EDIT_FAILED:'+clean(render.stderr||'INVALID_OUTPUT').slice(0,350));
+  // 전용 NPC 자동촬영의 클라이언트 로그·움직임·프레임 검사가 모두 확인된 경우
+  // 사람이 직접 플레이하거나 별도로 검토하지 않아도 제출 준비로 기록한다.
+  const npcSubmissionReady=scriptedScene
+    &&evidence.clientLogObserved===true
+    &&evidence.runtimeVerification?.gameIdentityFromClientLog===true
+    &&evidence.runtimeVerification?.videoFrameAuditPassed===true
+    &&Number(evidence.runtimeVerification?.observedNativeNpcMotionStudsMin)>=2.5;
   const result=Object.freeze({
     gameId,universeId,placeId,captureSource:evidence.captureSource,
     humanPlayerRequired:false,
@@ -277,7 +284,7 @@ export function editVerifiedRobloxGameplayVideo({
     editedVideoSha256:sha256(output),editedVideoBytes:fs.statSync(output).size,
     expectedSeconds:Number(seconds.toFixed(3)),editedSegments:selections,
     type:'REAL_NATIVE_ROBLOX_GAMEPLAY_EDIT',uploadVerified:false,
-    verifiedForSubmission:false,manualNativeGameplayReviewRequired:true,moderationApproved:false,
+    verifiedForSubmission:npcSubmissionReady,manualNativeGameplayReviewRequired:!npcSubmissionReady,moderationApproved:false,
     notes:'Official Creator Dashboard video submission and moderation not yet completed.'
   });
   writeJson(output+'.json',result);
@@ -466,7 +473,7 @@ export async function syncRobloxHomepageThumbnail({
           captureEvidencePath:path.relative(path.resolve(root),clip.proof)
         });
         automaticVideo={
-          status:'NATIVE_VIDEO_EDITED_PENDING_REVIEW_AND_PUBLICATION',
+          status:edited.verifiedForSubmission?'NATIVE_VIDEO_READY_FOR_ROBLOX_SUBMISSION':'NATIVE_VIDEO_EDITED_PENDING_REVIEW_AND_PUBLICATION',
           videoPublished:false,humanGameplayRequired:false,
           automatedNpcGameplaySupported:true,nativeClientCaptureStillRequired:true,
           captureIntake:clip.scope,
@@ -474,7 +481,8 @@ export async function syncRobloxHomepageThumbnail({
           editedVideoPath:edited.editedVideoPath,
           editedVideoSha256:edited.editedVideoSha256,
           editedVideoBytes:edited.editedVideoBytes,
-          manualNativeGameplayReviewRequired:true
+          verifiedForSubmission:edited.verifiedForSubmission,
+          manualNativeGameplayReviewRequired:edited.manualNativeGameplayReviewRequired
         };
         break;
       }catch(error){
