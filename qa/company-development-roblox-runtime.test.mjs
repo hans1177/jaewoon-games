@@ -374,6 +374,50 @@ test('game-specific Luau module remains protected when a common library changes'
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
+test('only source-location header variants of first-party Roblox modules are equivalent; gameplay edits stay protected',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-common-header-equivalence-'));
+  try{
+    const root=path.join(tmp,'game');
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    const canonical=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+    const local=canonical.replace('-- 파일명: assets/roblox/common-motion-v1/RobloxCommonMotion.luau',
+      '-- 파일명: shared/RobloxCommonMotion.luau');
+    assert.notEqual(canonical,local);
+    fs.writeFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),local);
+    const originalProject=projectJsonForGame('test-game',root);
+    const exact=synchronizeRobloxCommonModules({project:originalProject,gameRoot:root});
+    assert.ok(exact.local.includes('RobloxCommonMotion'));
+    assert.equal(exact.conflicts.some(row=>row.module==='RobloxCommonMotion'),false);
+    assert.equal(originalProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
+    fs.writeFileSync(path.join(root,'shared','RobloxCommonMotion.luau'),local.replace('duration = 3.2','duration = 999'));
+    const changed=synchronizeRobloxCommonModules({project:originalProject,gameRoot:root});
+    assert.ok(changed.conflicts.some(row=>row.module==='RobloxCommonMotion'
+      &&row.reason==='GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL'));
+    assert.equal(originalProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('simple RPG only plays game-specific common weapon motion from actual server-confirmed combat hits',()=>{
+  const client=fs.readFileSync('roblox-games/simple-rpg/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/simple-rpg/server/Game.server.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/simple-rpg/default.project.json','utf8'));
+  assert.match(server,/chosen\\.Humanoid:TakeDamage\\(damage\\)[\\s\\S]*remote:FireClient\\(player, "CIV_HIT"/);
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
+    '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  assert.match(client,/commonMotion\\.CreateCombatCombo/);
+  assert.match(client,/commonMotion\\.MapCombatPoseToR15/);
+  assert.match(client,/commonMotion\\.BindJointPose/);
+  assert.match(client,/RunService\\.PreSimulation:Connect/);
+  assert.match(client,/humanoid\\.RigType ~= Enum\\.HumanoidRigType\\.R15/);
+  for(const profile of ['UNARMED','SPEAR','SWORD','GREATSWORD']){
+    assert.match(client,new RegExp('profile = "'+profile+'"'));
+  }
+  const hook=client.indexOf('elseif kind == "CIV_HIT" and typeof(payload) == "table"');
+  assert.ok(hook>=0);
+  assert.match(client.slice(hook,hook+155),/playApprovedRpgCombatMotion\\(\\)/);
+  assert.doesNotMatch(client,/remote:FireServer\\("CivNativeCombatMotion/);
+});
+
 test('Roblox bootstrap reads the company material library but leaves verification to downstream runtime',()=>{
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   assert.match(bootstrap,/company-asset-library\.json/);
