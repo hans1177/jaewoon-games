@@ -150,6 +150,9 @@ test('existing all-game build-up discovers actor-specific native motion without 
     assert.equal(actor.sourceOnlyEvidence,true);
     assert.equal(actor.noInventedActorOrPrimitiveFallback,true);
     assert.equal(actor.actorCountLimit,null);
+    assert.equal(actor.nextGameSpecificMotionWorkUnit.actorClass,'BOSS');
+    assert.equal(actor.nextGameSpecificMotionWorkUnit.sourceOwnerFile,file);
+    assert.equal(actor.nextGameSpecificMotionWorkUnit.runtimeVerified,false);
     for(const kind of ['PLAYER','NPC','ENEMY','BOSS','CREATURE','COMPANION','MOUNT','INTERACTIVE_PROP']){
       const row=actor.detectedActorClasses.find(item=>item.actorClass===kind);
       assert.ok(row,'actor class missing: '+kind);
