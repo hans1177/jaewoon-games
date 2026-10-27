@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1r51mdg",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-web-library-cc0-replacement-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "web-games/daechung-rpg/index.html",
+        "web-games/daechung-rpg/patch-core18.js",
+        "web-games/daechung-rpg/patch-v15.js",
+        "web-games/daechung-rpg/patch-v16.js",
+        "web-games/daechung-rpg/patch-v17.js",
+        "web-games/daechung-rpg/patch-v18.js"
+      ],
+      "baseSha": "dbd0dc47853ca1a231cf85a72de561ba50ca619c",
+      "runId": "40562442217",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-27T19:19:19.952Z",
+      "expiresAt": "2026-10-27T20:04:19.952Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-web-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
