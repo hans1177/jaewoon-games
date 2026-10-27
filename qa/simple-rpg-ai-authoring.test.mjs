@@ -471,3 +471,23 @@ test('bounded A-star path reuse avoids repeat computation without changing comba
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
   assert.match(server, /UpdateAsync\("player:" \.\. player\.UserId/);
 });
+
+test('verified native spawn is bound before curated world hydration and never overridden by a late lobby jump',()=>{
+  const firstCharacterBind = server.indexOf('Players.PlayerAdded:Connect(bindFoundationPlayer)');
+  const curatedImport = server.indexOf('local worldModels = Shared:FindFirstChild("CuratedWorldModels")');
+  const actualSpawnFloor = server.indexOf('startGround = civPart(workspace, "SimpleRpgGround"');
+  const worldReady = server.indexOf('foundationWorldReady = true');
+  assert.ok(firstCharacterBind>0 && firstCharacterBind<curatedImport,'character arrival must be observed before slow licensed asset imports');
+  assert.ok(actualSpawnFloor>curatedImport && worldReady>actualSpawnFloor,'ground must be created before unblocking spawn');
+  assert.match(server,/local foundationWorldReady = false/);
+  assert.match(server,/rootPart\.Anchored = true\s+character:SetAttribute\("FoundationFailure", "WORLD_ASSETS_PENDING"\)/);
+  assert.match(server,/while current\(\) and not foundationWorldReady do task\.wait\(0\.1\) end/);
+  assert.match(server,/if not foundationSpawn or not startGround or not startGround\.Parent then/);
+  assert.match(server,/part:GetAttribute\("WalkableGround"\) == true/);
+  assert.match(server,/part\.Position\.Y \+ part\.Size\.Y \* 0\.5 <= groundHit\.Position\.Y \+ 0\.15/);
+  assert.match(server,/character:PivotTo\(character:GetPivot\(\) \+ \(target - rootPart\.Position\)\)/);
+  assert.match(server,/character:SetAttribute\("GROUND_CONTACT", true\)/);
+  assert.doesNotMatch(server,/character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+  assert.match(server,/SIMPLE_RPG_EXTERNAL_SPAWN_MESH_REQUIRED/);
+  assert.equal((server.match(/bindFoundationPlayer\(player\)/g)||[]).length,0,'do not bind the same player twice during data load');
+});
