@@ -2506,7 +2506,7 @@ export function directivePrompt(d={}){
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
     'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A는 이름 있는 대표 유사 장르 게임의 실제 시스템·플레이 경험을 출처와 함께 추상화하며 B는 우리 기존 게임의 실제 시스템·원본 출처·기존 상태/규칙을 보존한다. A→B와 B→A의 새로운 플레이어 선택·상태 전이를 설계한다. C는 작품 주/보조 장르, D는 고유 장소·존재·사건·규칙, @는 D 연관 연구·실험·새 선택이다. 조작·HUD·메뉴·카메라·월드 진행·성장·실패/재도전까지 원리를 참고하되 고유 화면/그래픽/캐릭터/문구/코드를 복제하지 않는다. 먼저 최신 설계를 빌드업하고 엄격 심사를 통과한 규칙 ID만 기존 책임 소스에 구현한다. 실제 입력→서버/웹 상태→피드백→저장/재접속과 동일 빌드 검증을 수행한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
-    `FIVE_PLAYABLE_IMPROVEMENTS: ${JSON.stringify(d.playableImprovementContract||{})}`,
+    `FIVE_PLAYABLE_IMPROVEMENTS: scope=${d.playableImprovementContract?.scope||'ALL_ACTIVE_APPROVED_GAME_BUILD_UP'}; minimum=${d.playableImprovementContract?.minimumPerGeneration||5}; targets=${(d.playableImprovementContract?.targets||[]).map(row=>row.id).join('|')}; state=PROPOSED_NOT_IMPLEMENTED; evidence=EXACT_SOURCE_AND_SAME_BUILD_PLAY_QA_REQUIRED`,
     'FIVE_PLAYABLE_IMPROVEMENTS_RULE: 모든 승인된 실제 게임 BUILD_UP에서 기존 핵심 플레이를 기준으로 최소 5개의 서로 다른 플레이 가치 개선을 수행한다. 각 항목은 기존 게임/설계의 책임 소스, 입력, 실제 상태 변화, 시각·모션·오디오 피드백과 동일 빌드 플랫폼 검증 시나리오에 추적한다. 문서·주석·에셋 수·5개 코드 조각은 5개 실제 플레이 PASS가 아니다. 실패한 기초/런타임 단계는 먼저 원인을 수리하고 동일 실패 테스트를 통과한 뒤 다음 개선을 이어간다. F0~F9 순서는 그대로 둔다.',
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
