@@ -80,6 +80,7 @@ local weatherSyncEvent = ensureRemote("WeatherSyncEvent", "RemoteEvent")
 -- Only verified downloaded meshes may supply walkable ground or interaction geometry.
 -- The source MeshParts are installed after the curated library is loaded below.
 local startGround: BasePart? = nil
+local foundationWorldReady = false
 
 -- native-foundation-sentinel-v1
 local foundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
@@ -104,6 +105,15 @@ local function bindFoundationCharacter(character)
   local rootPart = character:WaitForChild("HumanoidRootPart", 10)
   if not current() then return end
   if not humanoid or not rootPart then character:SetAttribute("FoundationFailure", "CHARACTER_FOUNDATION_FAILURE"); return end
+  -- [스폰] 실제 CC0 지형을 구축하기 전에 자동 생성된 플레이어가 허공으로 떨어지는 것을 막는다.
+  rootPart.Anchored = true
+  character:SetAttribute("FoundationFailure", "WORLD_ASSETS_PENDING")
+  while current() and not foundationWorldReady do task.wait(0.1) end
+  if not current() then return end
+  if not foundationSpawn or not startGround or not startGround.Parent then
+    character:SetAttribute("FoundationFailure", "VERIFIED_SPAWN_GROUND_UNAVAILABLE")
+    return
+  end
   character:SetAttribute("GROUND_CONTACT", false)
   character:SetAttribute("MOVEMENT_CONFIRMED", false)
   local leg = humanoid.RigType == Enum.HumanoidRigType.R6 and character:FindFirstChild("Left Leg") or nil
@@ -138,7 +148,16 @@ local function bindFoundationCharacter(character)
   overlap.CollisionGroup = rootPart.CollisionGroup
   local blockers = workspace:GetPartBoundsInBox(CFrame.new(target), Vector3.new(math.max(rootPart.Size.X, 1.5), math.max(clearance * 2 - 0.4, rootPart.Size.Y), math.max(rootPart.Size.Z, 1.5)), overlap)
   for _, part in ipairs(blockers) do
-    if part ~= groundHit.Instance and part.CanCollide then character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED"); return end
+    if part ~= groundHit.Instance and part.CanCollide then
+      -- [중첩 지형] 같은 높이 또는 더 낮은 검증된 지면은 캐릭터 위 장애물이 아니다.
+      -- 실제 건축물·벽·위쪽 지형의 충돌은 기존대로 차단한다.
+      local supportBelow = part:GetAttribute("WalkableGround") == true
+        and part.Anchored and part.Position.Y + part.Size.Y * 0.5 <= groundHit.Position.Y + 0.15
+      if not supportBelow then
+        character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED")
+        return
+      end
+    end
   end
   foundationSpawn.Position = Vector3.new(foundationSpawn.Position.X, groundHit.Position.Y + foundationSpawn.Size.Y * 0.5 + 0.05, foundationSpawn.Position.Z)
   foundationSpawn:SetAttribute("FoundationSpawnGrounded", true)
@@ -178,6 +197,9 @@ local function bindFoundationPlayer(player)
   if player.Character then task.defer(bindFoundationCharacter, player.Character) end
   player.CharacterAdded:Connect(bindFoundationCharacter)
 end
+-- [스폰] 대량 원본 지형·리그·모델 가져오기보다 먼저 캐릭터 이벤트를 구독한다.
+Players.PlayerAdded:Connect(bindFoundationPlayer)
+for _, foundationPlayer in ipairs(Players:GetPlayers()) do bindFoundationPlayer(foundationPlayer) end
 foundationRemote.OnServerEvent:Connect(function(player, signal)
   if typeof(signal) ~= "string" then return end
   player:SetAttribute("NativeFoundationReadyAt", os.time())
@@ -2248,10 +2270,11 @@ local function bindInventorySync(player)
   end)
 end
 
+-- [스폰] 월드의 검증된 지형/물리 생성이 끝난 후에만 대기 캐릭터를 배치한다.
+foundationWorldReady = true
 Players.PlayerAdded:Connect(function(player)
   bindInventorySync(player)
   player:SetAttribute("CivReady", false)
-  bindFoundationPlayer(player)
   initializePlayer(player)
   local loadOk, saved = false, nil
   if store then
@@ -2316,17 +2339,9 @@ Players.PlayerAdded:Connect(function(player)
       if player.Parent == Players then civTravel(player, portalData.CivDestinationRaceID) end
     end)
   else
-    -- 처음 접속 시 로비에서 시작. 기존 저장 데이터와 포털 도착 위치는 변경하지 않는다.
-    task.spawn(function()
-      if player.Parent ~= Players then return end
-      local character = player.Character or player.CharacterAdded:Wait()
-      local humanoid = character and character:WaitForChild("Humanoid", 10)
-      if player.Parent ~= Players or player.Character ~= character
-        or not humanoid or humanoid.Health <= 0 then return end
-      -- 로딩 중 새 캐릭터가 생기거나 먼저 이동했다면 늦은 로비 배치를 하지 않는다.
-      if character:GetAttribute("CivTravelCompleted") then return end
-      character:PivotTo(CFrame.new(0, 5, 0))
-    end)
+    -- [로비] 최초 위치(0,0)는 이미 검증된 시작 지형의 네이티브 스폰으로 배치한다.
+    -- DataStore/빌딩 복원 완료 후 임의 높이로 두 번째 이동을 하면 착지·플레이를 방해한다.
+    -- 기존 포털 전송의 좌표/저장 구조는 건드리지 않는다.
   end
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
@@ -2338,7 +2353,6 @@ Players.PlayerAdded:Connect(function(player)
 end)
 for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function()
-    bindFoundationPlayer(player)
     if player:GetAttribute("Score") == nil then initializePlayer(player) end
     bindInventorySync(player)
     -- 스크립트 재시작 중 이미 접속한 사용자도 검증된 세이브를 읽는다.
