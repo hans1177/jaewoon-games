@@ -337,7 +337,8 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
  assert.match(moduleSource,/getRenderStats:/);
  assert.match(moduleSource,/renderer\.info\.render\.triangles/);
  assert.match(index,/dataset\.nativeTriangles=String\(nativeDraw\.triangles\)/);
- assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,mobileBudget\?\.9:1\.5\)\*qualityFactor\)/);
+ assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,mobileBudget\?\.82:\.95\)\*qualityFactor\)/);
+  assert.match(moduleSource,/Math\.max\(mobileBudget\?\.48:\.58,qualityFactor-\.13\)/);
  assert.match(index,/MAGIC_FOREST_NATIVE_3D_FRAME_FAILED/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
  assert.match(moduleSource,/productionReady:false/);
@@ -403,7 +404,7 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
  assert.match(moduleSource,/actor\.anchor\.position\.set\(destX,0,destZ\)/);
  assert.match(moduleSource,/actor\.mixer\.clipAction\(clip\)/);
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
- assert.match(moduleSource,/child\.userData\.worldPoint=\{x:e\.x,y:e\.y\}/);
+ assert.match(moduleSource,/child\.userData\.worldPoint=\{x:e\.x,y:e\.y,monsterId:e\.netId\}/);
  assert.match(moduleSource,/interactables\.push\(child\)/);
  assert.match(moduleSource,/get undeadProxySourceLoaded\(\)\{return !!undeadSource\}/);
  assert.match(moduleSource,/productionReady:false/);
@@ -628,4 +629,15 @@ test('native species motion uses actual movement and restarts one-shot attacks w
  assert.match(moduleSource,/bolt\.kind==='sunOrb'/);
  assert.match(moduleSource,/mageBoltGeometry\.dispose\(\)/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+test('native fantasy preview uses original CC0 geometry for terrain texture and building ghost',()=>{
+  assert.match(moduleSource,/const detailGeometry=sourceFloor\.geometry\.clone\(\)/);
+  assert.match(moduleSource,/detailGeometry\.setAttribute\('uv',new THREE\.BufferAttribute\(detailUvs,2\)\)/);
+  assert.match(moduleSource,/detailTransform\.position\.set\(gx-floorCenterX,floorSurfaceY\+\.032,gz-floorCenterZ\)/);
+  assert.match(moduleSource,/blueprintVisual=new THREE\.Mesh\(source\.geometry,blueprintMaterial\)/);
+  assert.match(moduleSource,/blueprintGhost\.visible=!!bp&&!!blueprintVisual/);
+  assert.match(moduleSource,/source\.geometry\.computeBoundingBox\(\)/);
+  assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+  assert.doesNotMatch(moduleSource,/function part\(geometry,material/);
 });
