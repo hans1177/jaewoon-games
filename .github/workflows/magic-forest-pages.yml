@@ -525,9 +525,44 @@ jobs:
             fs.writeFileSync(pathname,original.replace(/(["'\x60])\/(?!["'\x60\/])/g,'$1/jaewoon-games/'));
           }
           fs.writeFileSync(path.join(site,'.nojekyll'),'');
+          // [에셋 연결] 현재 main의 실제 Rojo 프로젝트만 읽어 출처별 소비 게임을 기록한다.
+          // 선언된 후보·미리보기·실행 검증과 구분하며 게임 소스나 공개 상태는 변경하지 않는다.
+          const consumerSets=new Map(),unreadableProjects=[];
+          const robloxProjects=cp.execFileSync('git',['ls-tree','-rz','HEAD','--','roblox-games'],{encoding:'utf8',maxBuffer:32*1024*1024}).split('\0');
+          for(const record of robloxProjects){
+            const match=/^100644 blob [a-f0-9]{40}\t(roblox-games\/([a-z0-9][a-z0-9-]{1,48})\/default\.project\.json)$/.exec(record);
+            if(!match)continue;
+            const gameId=match[2];
+            try{
+              const project=JSON.parse(cp.execFileSync('git',['show','HEAD:'+match[1]],{encoding:'utf8',maxBuffer:1024*1024}));
+              if(!project?.tree||typeof project.tree!=='object')throw Error('PROJECT_TREE_MISSING');
+              const walk=node=>{
+                if(!node||typeof node!=='object')return;
+                if(typeof node.$path==='string'){
+                  const source=path.posix.normalize(path.posix.join('roblox-games',gameId,node.$path.replaceAll('\\','/')));
+                  if(source.startsWith('assets/')&&trackedAssets.has(source)){
+                    if(!consumerSets.has(source))consumerSets.set(source,new Set());
+                    consumerSets.get(source).add(gameId);
+                  }else if(source.startsWith('assets/')&&[...trackedAssets].some(file=>file.startsWith(source+'/'))){
+                    if(!consumerSets.has(source))consumerSets.set(source,new Set());
+                    consumerSets.get(source).add(gameId);
+                  }
+                }
+                for(const child of Object.values(node))if(child&&typeof child==='object')walk(child);
+              };
+              walk(project.tree);
+            }catch(error){
+              unreadableProjects.push(gameId);
+              console.error('PAGES_ROBLOX_BINDING_UNVERIFIED='+gameId+':'+String(error?.message||error));
+            }
+          }
+          const robloxAssetBindings=Object.fromEntries([...consumerSets].sort(([a],[b])=>a.localeCompare(b)).map(([source,ids])=>[source,[...ids].sort()]));
+          console.log('PAGES_ROBLOX_BOUND_ASSETS='+consumerSets.size);
+          console.log('PAGES_ROBLOX_UNREADABLE_PROJECTS='+unreadableProjects.length);
           fs.writeFileSync(path.join(site,'web-games/publish-manifest.json'),JSON.stringify({
             version:1,sourceSha:process.env.GITHUB_SHA,routes:routes.sort(),sharedAssets:[...refs].sort(),
-            sourceTreeShas,target:'GITHUB_PAGES_INTERNAL_STATIC',gameCount:routes.length
+            sourceTreeShas,target:'GITHUB_PAGES_INTERNAL_STATIC',gameCount:routes.length,
+            robloxBindingIndexVersion:1,robloxAssetBindings,robloxBindingIndexIncomplete:unreadableProjects.length>0,robloxBindingIndexUnreadableGames:unreadableProjects.sort()
           },null,2)+'\n');
           if(!routes.length)throw Error('WEB_GAME_ROUTES_EMPTY');
           console.log('WEB_PAGES_SOURCE_SHA='+process.env.GITHUB_SHA);

@@ -229,10 +229,16 @@ async function choose(row,force=false){
  const runtime=row.asset?.runtimeVerificationState?'runtimeVerificationState: '+row.asset.runtimeVerificationState:'runtimeVerificationState: 미기재';
  // [실제 사용처] 선언/추적/런타임을 혼동하지 않는다.
  const consumers=Array.isArray(row.asset?.consumerGameIds)&&row.asset.consumerGameIds.length?'선언된 사용 게임: '+row.asset.consumerGameIds.join(', '):'';
- const bound=row.asset?.sourceBoundConsumerGameIds||[];
+ // [실제 빌드 연결] 게시본에 포함된 Rojo 프로젝트의 $path만 인정한다. 원장의 희망 사용처는 제외한다.
+ const assetFile=String(row.asset?.sourcePath||row.asset?.path||'').replace(/^\/+/, '').replaceAll('\\','/');
+ const bindingIndex=publishedWebManifest?.robloxBindingIndexVersion===1&&publishedWebManifest?.robloxAssetBindings&&typeof publishedWebManifest.robloxAssetBindings==='object'&&!publishedWebManifest.robloxBindingIndexIncomplete
+  ?publishedWebManifest.robloxAssetBindings:null;
+ const publishedConsumers=bindingIndex&&assetFile.startsWith('assets/')&&!assetFile.split('/').includes('..')
+  ?Object.entries(bindingIndex).filter(([source])=>source===assetFile||assetFile.startsWith(source+'/')).flatMap(([,games])=>Array.isArray(games)?games:[]):[];
+ const bound=[...new Set([...(Array.isArray(row.asset?.sourceBoundConsumerGameIds)?row.asset.sourceBoundConsumerGameIds:[]),...publishedConsumers])];
  const bindings=(row.asset?.sourceConsumerBindings||[]).flatMap(item=>
   (item.evidenceFiles||[]).map(file=>item.gameId+' → '+file));
- const boundInfo=bound.length?'코드 연결: '+bound.join(', '):'코드 연결: 확인된 기록 없음';
+ const boundInfo=bound.length?'코드 연결: '+bound.join(', '):bindingIndex?'코드 연결: 해당 자산의 직접 Rojo 연결 없음':'코드 연결: 최신 전체 연결 정보를 확인할 수 없음';
  const bindingInfo=bindings.length?'실제 연결 근거: '+bindings.slice(0,6).join(' / ')+(bindings.length>6?' 외 '+(bindings.length-6)+'건':''):'';
  const verifiedBound=(row.asset?.sourceConsumerBindings||[]).some(item=>item.runtimeVerified===true);
  const verificationInfo=verifiedBound?'해당 연결의 실행검증 근거 표시 있음':'연결만으로 실행검증을 인정하지 않음';
@@ -255,7 +261,7 @@ async function choose(row,force=false){
  $('assetSyncDetail').textContent=[
   '선택: '+row.id,
   hasLocalSource?'저장소 원본: '+sourceFile:'직접 수정할 로컬 원본 경로 미확인',
-  verifiedConsumers.length?'소스 연결 기록: '+verifiedConsumers.join(', '):'게임별 소스 연결 기록 없음',
+  bound.length?'실제 소스 연결: '+bound.join(', '):bindingIndex?'선택 자산의 직접 게임 연결 없음':'게임별 실제 연결 정보 미검증',
   advertisedConsumers.length?'선언된 사용처 '+advertisedConsumers.length+'개(실제 연결과 별도)':'',
   '게임 빌드·배포·실행 검증은 각각 별도 확인'
  ].filter(Boolean).join(' · ');
@@ -358,7 +364,7 @@ async function refresh(force=false){
   ]);
   if(nextManifest.schemaVersion!==1||nextManifest.sampledBy!=='OFFICIAL_LUAU'||!Array.isArray(nextManifest.monsters)||!Array.isArray(nextManifest.environments)||!Array.isArray(nextManifest.commonMotions))throw Error('미리보기 목록을 확인하고 있어.');
   const nextRegistrySignature=nextRegistry===registry?registryViewSignature:registrySignature(nextRegistry);
-  const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registryViewSignature!==nextRegistrySignature;
+  const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registryViewSignature!==nextRegistrySignature||String(publishedWebManifest?.sourceSha||'')!==String(nextPublication?.sourceSha||'');
   manifest=nextManifest;registry=nextRegistry;registryViewSignature=nextRegistrySignature;syncFeaturedButtons();
   // [실제 웹 게시본] 서버의 게시 manifest만 증거로 사용한다. 리스트 갱신이나 로블록스 게임 배포로 오인하지 않는다.
   publishedWebManifest=nextPublication?.target==='GITHUB_PAGES_INTERNAL_STATIC'

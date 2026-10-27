@@ -352,12 +352,18 @@ test('the complete canonical async staging program builds independent game route
   const runtimes=/for\(const shared of \[([^\]]+)\]/.exec(code)[1];
   for(const match of runtimes.matchAll(/'([^']+)'/g))put('assets/'+match[1],'// canonical shared runtime');
   put('assets/vibe-model-preview.html','<html>source preview</html>');put('assets/scene.mjs','// scene source');put('assets/texture.bin',Buffer.alloc(10000,42));
+  put('roblox-games/first/default.project.json',JSON.stringify({tree:{ReplicatedStorage:{Shared:{$path:'shared',VibeScene:{$path:'../../assets/scene.mjs'}}}}}));
+  put('roblox-games/second/default.project.json',JSON.stringify({tree:{ReplicatedStorage:{Shared:{$path:'shared'}}}}));
   git('init','--quiet');git('add','--all');git('-c','user.name=QA','-c','user.email=qa@example.invalid','commit','--quiet','-m','fixture');const sha=git('rev-parse','HEAD');
   fs.writeFileSync(path.join(directory,'assets/scene.mjs'),'cache pollution');
   const result=spawnSync(process.execPath,['-'],{cwd:directory,input:code,encoding:'utf8',env:{...process.env,GITHUB_SHA:sha}});
   assert.equal(result.status,0,result.stderr+'\n'+result.stdout);
   const manifest=JSON.parse(fs.readFileSync(path.join(directory,'_site/web-games/publish-manifest.json'),'utf8'));
   assert.equal(manifest.sourceSha,sha);assert.equal(manifest.routes.length,3);
+  assert.equal(manifest.robloxBindingIndexVersion,1);
+  assert.equal(manifest.robloxBindingIndexIncomplete,false);
+  assert.deepEqual(manifest.robloxAssetBindings['assets/scene.mjs'],['first']);
+  assert.equal(manifest.robloxAssetBindings['assets/texture.bin'],undefined);
   for(const id of games){assert.match(fs.readFileSync(path.join(directory,'_site/web-games/'+id+'/index.html'),'utf8'),/\/jaewoon-games\/assets\/scene\.mjs/);assert.match(manifest.sourceTreeShas[id],/^[a-f0-9]{40}$/);}
   assert.equal(fs.readFileSync(path.join(directory,'_site/assets/scene.mjs'),'utf8'),'// scene source');
   assert.match(result.stdout,/PAGES_GAME_COPY_PARALLELISM=8/);assert.match(result.stdout,/PAGES_ASSET_IO_PARALLELISM=8/);
