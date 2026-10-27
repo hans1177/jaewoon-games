@@ -295,6 +295,39 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     let baselineLoadError=null;
     try{baseline=loadBaseline(item);}catch(error){baselineLoadError=error;}
     const learningProfile=baseline?robloxBuildProfileFromBaseline(baseline):null;
+    // 실소스의 Config.luau와 GameConfig.luau는 임의로 같은 계약으로 취급할 수 없다.
+    // 학습 sweep은 GameConfig만 읽으므로 기존 Config만 있는 게임을 반복 호출하면
+    // ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND가 계속 발생한다. 해당 게임의 책임 소스 복구로 보내며
+    // Config·Game.client·서버의 게임플레이·저장·자산 연결은 수정하지 않는다.
+    const canonicalConfig=path.join(root,'shared','GameConfig.luau');
+    const legacyConfig=path.join(root,'shared','Config.luau');
+    if(fs.existsSync(root)&&!fs.existsSync(canonicalConfig)&&fs.existsSync(legacyConfig)){
+      const blockers=['ROBLOX_EXISTING_CONFIG_LAYOUT_REQUIRES_APPROVED_GAME_OWNED_ADAPTER'];
+      const repairable=sha40(currentRevision)&&sha40(sourceTreeSha);
+      results.push({
+        gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,
+        sourceDrift:!sourceBind,saveRequired:false,blockers,
+        failure:'existing-source-static-revalidation-failed',
+        sourceContractRepairRequired:repairable,
+        nativeConfigLayout:'EXISTING_LEGACY_CONFIG_NO_CANONICAL_GAMECONFIG',
+        verifiedExternalLearningRefreshRequired:false,
+        sourceContractRepairEvidence:repairable?{
+          version:1,gameId:item.gameId,sourceRevision:currentRevision,sourceTreeSha,artifactIdentity:null,
+          authority:'roblox-source-static-contract-failure',
+          staticContract:{pass:false,blockers},
+          assetRepairContext:robloxPackageAssetRepairContext({assetLibrary,baseline}),
+          qualityFailureKinds:blockers,repairSurfaces:['SOURCE_CONTRACT'],
+          qualityFailureDetails:[{
+            id:blockers[0],repairSurface:'SOURCE_CONTRACT',priority:'P0',
+            observed:{existingConfig:'shared/Config.luau',
+              missingCanonicalConfig:'shared/GameConfig.luau',
+              clientConfigReferenced:'Config',sweepRequires:'GameConfig'},
+            hint:'Repair only the current approved game source and existing design contract. Map canonical Roblox config/learning to the real Config.lua client consumer, or implement a tested game-owned adapter without duplicate economic state. Do not replace assets, invent a model, change saves or gameplay authority, or claim sweep/F0/Roblox runtime PASS before tests.'
+          }]
+        }:null
+      });
+      continue;
+    }
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
     const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
     const studioRefreshResult=studioState.refreshRequired===true?{
