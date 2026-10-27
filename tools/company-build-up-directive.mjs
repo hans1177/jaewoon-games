@@ -10,6 +10,7 @@ import {pathToFileURL} from 'node:url';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
 import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
+import {planVerifiedActorEvolution,loadVerifiedMotionHistory} from './vibe2-motion-evolution.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const uniq=v=>[...new Set((Array.isArray(v)?v:[]).map(clean).filter(Boolean))];
@@ -1714,19 +1715,12 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
   const actorCandidates=actorCycleOrder
     .filter(actorClass=>actorEvidence[actorClass].length)
     .map(actorClass=>({actorClass,files:uniq(actorEvidence[actorClass]).sort()}));
-  const actorCycle=Math.max(1,Math.floor(Number(generation)||1))-1;
-  const actorPriority=actorCandidates.length?actorCandidates[actorCycle%actorCandidates.length]:null;
-  const motionQualityAxes=['NATIVE_CLIP_AND_RIG_BINDING','LOCOMOTION_START_STOP_TURN','POSE_CROSSFADE_AND_FOOT_CONTACT',
-    'ANTICIPATION_IMPACT_RECOVERY_IF_APPLICABLE','HIT_REACTION_AND_DEATH_IF_APPLICABLE',
-    'NPC_GAZE_CREATURE_TAIL_SECONDARY_MOTION','MOBILE_LOD_AND_CONTACT_SYNC'];
-  const focusAxis=motionQualityAxes[Math.floor(actorCycle/Math.max(1,actorCandidates.length))%motionQualityAxes.length];
-  const actorMotionFocus=Object.freeze({
-    generation:actorCycle+1,actorClass:actorPriority?.actorClass||null,
-    sourceOwnerFile:actorPriority?.files[actorCycle%actorPriority.files.length]||null,
-    qualityAxis:actorPriority?focusAxis:null,
-    intent:'REPAIR_ACTUAL_GAME_MOTION_SOURCE_NOT_AUDIT_OR_MARKER',
-    chooseApprovedExistingActorAndClip:true,confirmRealRigAndRuntimeFirst:true,
-    applicationState:'SOURCE_CANDIDATE_NOT_IMPLEMENTED',runtimeVerified:false
+  // [반복 진화] 기본은 배우/모션 축을 순회하고, 실제 플랫폼 검증을 통과한
+  // 동일 게임의 개선 이력이 있으면 낮은 품질 축에 개발 후보를 우선 투입한다.
+  // 정적 소스 일치나 횟수만으로 품질이 개선되었다고 간주하지 않는다.
+  const actorMotionFocus=planVerifiedActorEvolution({
+    gameId:clean(gameId),generation,platform:clean(platform).toUpperCase(),actorCandidates,
+    history:loadVerifiedMotionHistory(repo),
   });
   const actorMotion=Object.freeze({
     version:2,trigger:'CREATION_AND_EVERY_BUILD_UP',gameId:clean(gameId),platform:clean(platform).toUpperCase(),
