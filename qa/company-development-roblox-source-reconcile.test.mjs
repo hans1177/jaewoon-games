@@ -754,6 +754,26 @@ test('existing Roblox source rebind applies all verified APK learning without ch
   }
 });
 
+test('legacy native config is routed to source repair instead of an impossible learning sweep',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-legacy-config-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    fs.renameSync(path.join(root,'shared','GameConfig.luau'),path.join(root,'shared','Config.luau'));
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'TARGET_PLATFORM_SOURCE_BIND',robloxSourceCommit:revision};
+    const [row]=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.equal(row.failure,'existing-source-static-revalidation-failed');
+    assert.equal(row.sourceContractRepairRequired,true);
+    assert.deepEqual(row.blockers,['SOURCE_CONFIG_MISSING']);
+    assert.equal(row.sourceContractRepairEvidence.staticContract.pass,false);
+    assert.equal(fs.existsSync(path.join(root,'shared','Config.luau')),true);
+    assert.equal(fs.existsSync(path.join(root,'shared','GameConfig.luau')),false);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
 test('source reconciliation accepts a more specific source subgenre only when design subgenre is unspecified',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-source-subgenre-'));
   try{

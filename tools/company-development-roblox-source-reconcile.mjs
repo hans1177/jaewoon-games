@@ -295,6 +295,28 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     let baselineLoadError=null;
     try{baseline=loadBaseline(item);}catch(error){baselineLoadError=error;}
     const learningProfile=baseline?robloxBuildProfileFromBaseline(baseline):null;
+    // 기존 네이티브 소스의 구성 파일이 다르면 학습 갱신기는 처리할 수 없다.
+    // 해당 실패를 실제 소스 복구로 전달해 무한 학습 재요청을 방지한다.
+    const configPath=path.join(root,'shared','GameConfig.luau');
+    const clientPath=path.join(root,'client','Game.client.luau');
+    if(fs.existsSync(root)&&(!fs.existsSync(configPath)||!fs.existsSync(clientPath))){
+      const blockers=[];
+      if(!fs.existsSync(configPath))blockers.push('SOURCE_CONFIG_MISSING');
+      if(!fs.existsSync(clientPath))blockers.push('SOURCE_CLIENT_MISSING');
+      const repairable=sha40(currentRevision)&&sha40(sourceTreeSha);
+      results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,
+        sourceDrift:!sourceBind,saveRequired:false,blockers,
+        failure:'existing-source-static-revalidation-failed',sourceContractRepairRequired:repairable,
+        sourceContractRepairEvidence:repairable?{
+          version:1,gameId:item.gameId,sourceRevision:currentRevision,sourceTreeSha,artifactIdentity:null,
+          authority:'roblox-source-static-contract-failure',staticContract:{pass:false,blockers},
+          assetRepairContext:robloxPackageAssetRepairContext({assetLibrary,baseline}),
+          qualityFailureKinds:blockers,repairSurfaces:['SOURCE_CONTRACT'],
+          qualityFailureDetails:blockers.map(id=>({id,repairSurface:'SOURCE_CONTRACT',priority:'P0',
+            hint:'Inspect the existing native config and client and repair the canonical source integration. Preserve gameplay, saves, server authority and existing config; do not add a duplicate config or fabricate verification.'}))
+        }:null});
+      continue;
+    }
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
     const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
     const studioRefreshResult=studioState.refreshRequired===true?{
