@@ -1637,6 +1637,26 @@ test('preservation presentation task is restored instead of superseded by generi
   assert.ok(restored.evidence.includes('owner-preservation-presentation-preempts-generic-web-repair'));
 });
 
+
+test('every active game platform uses the five-play minimum even when older config asks for one source edit',()=>{
+  const root=tempRepo();
+  fs.writeFileSync(path.join(root,'company-learning','vibe-autonomous-content-expansion-policy.json'),
+    JSON.stringify({iterationExpectationEscalation:{
+      status:'ACTIVE',
+      allGamesGameplayImprovementContract:{minimumPerBuildUp:1},
+      growth:{connectedImprovements:{base:1,stepEveryCycles:10,max:2}}
+    }}));
+  for(const focusPillar of ['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']){
+    for(const phase of ['BUILD_UP','REPAIR']){
+      const result=resolveBuildUpIterationExpectation({repoRoot:root,cycle:1,phase,focusPillar});
+      assert.equal(result.minimumPlayableImprovements,5);
+      assert.ok(result.minimumConnectedImprovements>=5);
+      assert.equal(result.visualIteration.startsAt,'F0_EXISTING_SOURCE_BIND');
+      assert.equal(result.visualIteration.continuesThrough,'F9_AND_VERIFIED_NEXT_BUILD_UP');
+    }
+  }
+});
+
 test('build-up iteration expectation rises with verified cycles without adding pipeline stages',()=>{
   const root=tempRepo();
   fs.writeFileSync(path.join(root,'company-learning','vibe-autonomous-content-expansion-policy.json'),JSON.stringify({
@@ -1649,7 +1669,7 @@ test('build-up iteration expectation rises with verified cycles without adding p
       newStageForbidden:true,
       growth:{
         detailDepthLevel:{base:1,stepEveryCycles:1,max:null},
-        connectedImprovements:{base:4,stepEveryCycles:2,max:8},
+        connectedImprovements:{base:5,stepEveryCycles:2,max:8},
         meaningfulDistinctAxes:{base:2,stepEveryCycles:3,max:5},
         crossSystemConnections:{base:1,stepEveryCycles:2,max:4},
         activeDetailDimensions:{base:2,stepEveryCycles:1,max:10},
@@ -1675,7 +1695,10 @@ test('build-up iteration expectation rises with verified cycles without adding p
   const sixth=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'BUILD_UP',focusPillar:'PRESENTATION'});
   const repair=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'REPAIR',focusPillar:'STABILITY'});
   assert.equal(first.tier,'FOUNDATION_COMPLETENESS');
-  assert.equal(first.minimumConnectedImprovements,4);
+  assert.equal(first.minimumConnectedImprovements,5);
+  assert.equal(first.minimumPlayableImprovements,5);
+  assert.equal(repair.minimumPlayableImprovements,5);
+  assert.ok(first.playableImprovementVerification.includes('EXACT_PLATFORM_PLAY_EVIDENCE'));
   assert.equal(third.tier,'COHERENT_CONTENT_EXPANSION');
   assert.ok(third.minimumConnectedImprovements>first.minimumConnectedImprovements);
   assert.ok(third.minimumCrossSystemConnections>first.minimumCrossSystemConnections);
@@ -1803,7 +1826,10 @@ test('first studio build-up cycle establishes presentation baseline even when no
   assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
   assert.equal(task.studioQualityEvolution.visibleRenderDeltaRequired,true);
   assert.equal(task.studioQualityEvolution.qualityExpectation.expectationLevel,1);
-  assert.equal(task.studioQualityEvolution.requiredConnectedImprovements.min,3);
+  assert.equal(task.studioQualityEvolution.requiredConnectedImprovements.min,5);
+  assert.equal(task.studioQualityEvolution.requiredPlayableImprovements.min,5);
+  assert.ok(task.goal.includes('매 기존 BUILD_UP 세대에서 최소 5개'));
+  assert.ok(task.evidence.includes('studio-quality-min-playable-improvements:5'));
   assert.match(task.goal,/ITERATION_EXPECTATION_ESCALATION/);
   assert.ok(task.evidence.includes('studio-quality-expectation-tier:FOUNDATION_COMPLETENESS'));
   assert.ok(task.evidence.includes('graphics-evolution-before-after-comparison-required'));
@@ -1896,6 +1922,8 @@ test('full planner replaces low-value micro work with queued studio packages and
   fs.mkdirSync(validationDir,{recursive:true});
   fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
 
+  // Repeated gameplay BUILD_UP must use the normal approved design gate.
+  writeStudioDesign(root,gameId);
   const assessment={
     id:`${gameId}-existing-web-assessment-v1`,gameId,target:'web',department:'development',type:'implementation',
     sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'assessment complete',
@@ -1937,7 +1965,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.ok(first,'full planner must eventually queue the first studio-quality package');
   assert.equal(first.taskWorkUnits,7);
   assert.equal(first.studioQualityEvolution?.cycle,1);
-  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,3);
+  assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.min,5);
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,null);
   assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
@@ -1950,7 +1978,7 @@ test('full planner replaces low-value micro work with queued studio packages and
       :row
   )};
   let second=null;
-  for(let i=0;i<12&&!second;i++){
+  for(let i=0;i<40&&!second;i++){
     const result=planVibe2AutonomousTasks({
       status:{projects:[]},catalog:catalogOnly,queue:working,repoRoot:root,
       maxConcurrentTasks:4,queueMaxConcurrentTasks:4,planningBacklogTarget:4,planningBacklogMinimum:0
@@ -1959,7 +1987,7 @@ test('full planner replaces low-value micro work with queued studio packages and
     second=working.tasks.find(row=>
       row.gameId===gameId
       &&row.id!==first.id
-      &&row.studioQualityEvolution?.focusPillar===firstFocus
+      &&row.studioQualityEvolution?.cycle===2
       &&String(row.status||'').trim().toLowerCase()==='queued'
       &&(row.evidence||[]).includes('studio-quality-loop:v1')
     )||null;
@@ -1970,10 +1998,15 @@ test('full planner replaces low-value micro work with queued studio packages and
         :row
     )};
   }
-  assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
+  assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle; recent='+JSON.stringify(working.tasks.filter(row=>row.gameId===gameId).slice(-18).map(row=>({
+    id:row.id,status:row.status,phase:row.studioQualityEvolution?.phase,
+    cycle:row.studioQualityEvolution?.cycle,focus:row.studioQualityEvolution?.focusPillar,
+    blocker:row.blocker
+  }))));
   assert.notEqual(second.id,first.id);
   assert.equal(second.taskWorkUnits,7);
   assert.equal(second.studioQualityEvolution?.cycle,2);
+  assert.ok(['PRESENTATION','CORE_FUN','USABILITY','PROGRESSION','STABILITY'].includes(second.studioQualityEvolution?.focusPillar));
   assert.equal(second.studioQualityEvolution?.baselineId,first.id);
   assert.equal(second.studioQualityEvolution?.nextCycleRequired,true);
   assert.ok(second.evidence.includes('studio-quality-loop:v1'));
