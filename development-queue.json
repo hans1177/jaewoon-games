@@ -1753,7 +1753,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-27T13:25:19.937Z",
+      "updatedAt": "2026-10-27T13:32:17.870Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2434,10 +2434,10 @@
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
         "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
         "externalCapacityDeferred": true,
-        "retryAfterSeconds": 2193,
-        "retryNotBefore": "2026-10-27T12:36:33.967Z",
-        "observedAt": "2026-10-27T12:00:01.416Z",
-        "workflowRunId": 40500070570,
+        "retryAfterSeconds": 1352,
+        "retryNotBefore": "2026-10-27T13:54:49.249Z",
+        "observedAt": "2026-10-27T13:32:17.870Z",
+        "workflowRunId": 40512731054,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxRuntimePassed": false,
@@ -2532,9 +2532,9 @@
         "testedAt": "2026-10-26T00:36:00.324Z"
       },
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-cloud-image-content-unverified"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2751,7 +2751,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-27T13:25:19.937Z"
+        "verifiedAt": "2026-10-27T13:32:17.870Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-27T08:21:53.831Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-27T10:22:44.511Z",
@@ -6959,7 +6959,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T13:30:37.226Z",
+  "updatedAt": "2026-10-27T13:32:17.870Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
