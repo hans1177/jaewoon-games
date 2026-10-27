@@ -679,13 +679,13 @@ test('CC0 registered models receive per-target Universe grants only after exact 
 test('four owner-selected Roblox games auto-retry only due exact private 429 QA without republishing',()=>{
  const head=workflow.slice(0,workflow.indexOf('\n'+'jobs:\n'));
  assert.ok(head.includes("cron: '17 2 * * *'"));
- assert.ok(head.includes("cron: '32 * * * *'"));
+ assert.ok(head.includes("cron: '*/10 * * * *'"));
  const start=workflow.indexOf('  roblox-capacity-retry:');
  const end=workflow.indexOf('\n  release-dedupe:',start);
  assert.ok(start>0&&end>start,'reuse existing canonical workflow without duplicate pipeline');
  const retry=workflow.slice(start,end);
  assert.ok(retry.includes('runs-on: ubuntu-slim'));
- assert.ok(retry.includes("github.event.schedule == '32 * * * *'"));
+ assert.ok(retry.includes("github.event.schedule == '*/10 * * * *'"));
  assert.ok(retry.includes("new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg'])"));
  assert.ok(retry.includes("item.robloxFoundationF0Passed===true"));
  assert.ok(retry.includes("candidate.published===true&&candidate.validationOnly===true"));
