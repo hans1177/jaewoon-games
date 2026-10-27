@@ -650,7 +650,9 @@ test('등록된 authored 스킨드 GLB만 전투 비주얼로 쓰고 블록형 p
  assert.match(ownerWorkflow,/OWNER_DIRECT_COMBAT_TEMPLATE_PACKAGED=PASS/);
  assert.match(client,/local function authoredCombatTemplate\(\)/);
  assert.match(client,/local function bindAuthoredCombatMotion\(model\)/);
- assert.match(client,/d:IsA\("Bone"\)/);
+ assert.match(client,/for _,bone in ipairs\(model:GetDescendants\(\)\)do/);
+ assert.match(client,/bone:IsA\("Bone"\)/);
+ assert.match(client,/CommonMotion\.BindJointPose\(bones,\{response=18,responseByJoint=responses\}\)/);
  assert.match(client,/RuntimeQuality","AUTHORED_SKINNED_MESH"/);
  assert.match(client,/ProceduralFallback",false/);
  assert.match(client,/local function ensureCombatSkin\(source,rootPart,skinId,formId\)/);
