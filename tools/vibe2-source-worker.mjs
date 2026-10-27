@@ -1719,7 +1719,9 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   const actionWork=/(?:gameplay|combat|craft|quest|action|dispatch|implementation|게임|전투|공격|제작|퀘스트|행동|구현)/i.test(intent)
     &&/(?:missing|unbound|restore|dispatch|connect|implement|누락|연결|복구|구현|미동작)/i.test(intent);
   const runtimeWork=/(?:runtime|spawn|respawn|character|stream|lifecycle|camera|hud|scroll|viewport|cleanup|스폰|리스폰|캐릭터|초기|스트리밍|카메라|화면|스크롤|런타임|누수|종료.*정리)/i.test(intent);
-  if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork)return null;
+  const motionWork=/(?:motion|animation|animator|rig|npc|mob|creature|boss|wildlife|모션|애니메이션|리깅|몹|보스|동물)/i.test(intent)
+    ||Boolean(order?.selectedTask?.buildUpDirective?.gameInternalAutoComposition?.actorMotion?.nextGameSpecificMotionWorkUnit?.actorClass);
+  if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork&&!motionWork)return null;
   let root;
   try{root=fs.realpathSync(sourceRoot);}catch{return null;}
   const candidates=[],sourceHashes=new Map();
@@ -1731,6 +1733,47 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     const source=fs.readFileSync(file,'utf8');
     if(source.length>1000000)continue;
     sourceHashes.set(relative,crypto.createHash('sha256').update(source).digest('hex'));
+    // [게임별 실구현 · 무모델] 실제 동물 애니메이터가 '속도' Attribute 변경마다
+    // 공격/피격 SetState를 재시작하면 한 동작이 끝나지 못한다. 원본 함수의 상태/옵션을
+    // 그대로 두고 상태나 액션 옵션이 바뀐 경우에만 재생한다. 다른 함수/게임은 건드리지 않는다.
+    if(motionWork&&/(?:^|\\/)client(?:\\/|$)|\\.client\\.luau$/i.test(relative)){
+      const unsafe=[
+        'local function syncWildlife(model,controller)',
+        ' local speed=model:GetAttribute("WildlifeDesiredSpeed")',
+        ' controller:SetSpeed(speed)',
+        ' controller:SetState(tostring(model:GetAttribute("WildlifeMotionState")or"LOCOMOTION"),{',
+        '  side=model:GetAttribute("WildlifeHitSide"),',
+        '  duration=model:GetAttribute("WildlifeAttackDuration"),',
+        ' })',
+        'end'
+      ].join('\\n');
+      const watched='{"WildlifeDesiredSpeed","WildlifeMotionState","WildlifeHitSide","WildlifeAttackDuration"}';
+      if(source.split(unsafe).length===2&&source.split(watched).length===2
+        &&source.includes('GetAttributeChangedSignal(attribute):Connect(function()syncWildlife(model,controller)end)')){
+        const fixed=[
+          'local function syncWildlife(model,controller)',
+          ' controller:SetSpeed(model:GetAttribute("WildlifeDesiredSpeed"))',
+          ' local state=tostring(model:GetAttribute("WildlifeMotionState")or"LOCOMOTION")',
+          ' local side=model:GetAttribute("WildlifeHitSide")',
+          ' local duration=model:GetAttribute("WildlifeAttackDuration")',
+          ' if controller.sourceState==state',
+          '  and (state~="HIT" or controller.sourceHitSide==side)',
+          '  and (state~="ATTACK" or controller.sourceAttackDuration==duration) then return end',
+          ' controller.sourceState=state',
+          ' controller.sourceHitSide=side',
+          ' controller.sourceAttackDuration=duration',
+          ' controller:SetState(state,{side=side,duration=duration})',
+          'end'
+        ].join('\\n');
+        candidates.push({
+          summary:'Auto-refine existing wildlife actor animation: prevent movement changes replaying attack and hit clips',
+          expectedEffect:'Allow real articulated NPC/creature motion to finish even while speed changes; replay only on authoritative state or action-option changes',
+          edits:[{path:relative,find:unsafe,replace:fixed}],newFiles:[],replaceFiles:[],tests:[],
+          deterministicRobloxNativeRepair:'WILDLIFE_NATIVE_ACTION_STATE_DEBOUNCE',
+          semanticGrounding:{actorClasses:['CREATURE','NPC','ENEMY'],sourceBound:true,preserveServerAttackDamageCooldown:true,runtimeVerified:false}
+        });
+      }
+    }
     if(runtimeWork&&/(?:^|\/)(?:server|client)(?:\/|$)|\.(?:server|client)\.luau$/i.test(relative)){
       // [실행 연결 10종] 기존 함수·입력·화면 값을 재사용하고 새 게임 규칙은 만들지 않는다.
       const code=executableText(source,'luau'),functions=inspectSourceFunctions(source,{language:'luau'});
