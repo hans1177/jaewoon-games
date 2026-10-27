@@ -108,6 +108,15 @@ function studioQualityImplementationFailures(task={},row={}){
   const phase=clean(contract.phase).toUpperCase();
   const minimum=phase==='BUILD_UP'?Math.max(1,Math.floor(Number(contract?.requiredConnectedImprovements?.min||3)||3)):1;
   if(Number(delta.sourceDeltaUnits||0)<minimum)return['studio-quality-connected-improvements'];
+  if(phase==='BUILD_UP'&&Number(contract?.requiredPlayableImprovements?.min||0)>=5){
+    const proof=delta.playableProof;
+    const ids=new Set((proof?.items||[]).map(item=>clean(item?.id)));
+    const requiredIds=['FIRST_ACTION','CORE_STATE_RESPONSE','PLAYER_CHOICE','PRESENTATION_BINDING','SESSION_RETRY'];
+    if(proof?.required!==true||proof.pass!==true||proof.runtimeVerified!==false
+      ||Number(proof.groundedCount||0)<Math.max(5,Number(contract.requiredPlayableImprovements.min))
+      ||requiredIds.some(id=>!ids.has(id))||(proof.items||[]).some(row=>row.runtimeVerified!==false||row.sourceState!=='GROUNDED_SOURCE_ONLY'))
+      return['studio-quality-five-playable-source-proofs'];
+  }
   if(clean(contract.focusPillar).toUpperCase()==='PRESENTATION'&&Number(delta.visualUnits||0)<2)return['studio-quality-presentation-delta'];
   return[];
 }
