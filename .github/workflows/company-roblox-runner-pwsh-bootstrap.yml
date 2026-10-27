@@ -267,8 +267,17 @@ jobs:
             $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $arguments
             $trigger = New-ScheduledTaskTrigger -AtLogOn -User $consoleUser
             $principal = New-ScheduledTaskPrincipal -UserId $consoleUser -LogonType Interactive -RunLevel Limited
-            Register-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap' -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
-            Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap'
+            try {
+              Register-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap' -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
+              Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap'
+            } catch {
+              if ($_.Exception.Message -match '0x80070005|Access is denied|Access denied|액세스가 거부') {
+                Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=INTERACTIVE_USER_TASK_REGISTRATION_PERMISSION_REQUIRED'
+                Write-Host 'ROBLOX_NATIVE_CAPTURE_AUTORUN=NOT_INSTALLED'
+                exit 0
+              }
+              throw
+            }
             Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=INTERACTIVE_USER_SETUP_DISPATCHED'
             Write-Host 'ROBLOX_ACTUAL_CLIENT_RECORDING_NOT_YET_ATTESTED=YES'
             exit 0
