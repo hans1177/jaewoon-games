@@ -1884,6 +1884,23 @@ jobs:
                   f9Ids.push(item.gameId);
                   console.log('ROBLOX_INTERNAL_FLOW_CONTINUES_RUNTIME_FINDING_EXTERNAL_ONLY='+item.gameId+':'+runtimeSignature);
                   pending++;
+                }else if(cloudEnginePassed&&!cloudServerScenariosPassed){
+                  // Non-simulating Cloud observations are distinct from actual player QA.
+                  // Retry or repair only this exact candidate; never invent five play sessions.
+                  const incomplete=(engineProbe?.cloudServerScenarioEvidence?.scenarios||[])
+                    .filter(row=>row?.passed!==true).map(row=>String(row?.name||'UNKNOWN'));
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=false;
+                  item.robloxInternalRegressionContinuationAllowed=false;
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                  item.robloxFailureSignature='ROBLOX_CLOUD_SERVER_SCENARIOS_UNVERIFIED';
+                  item.routingBlockers=[
+                    'roblox-cloud-server-scenarios-unverified',
+                    ...incomplete.map(name=>'roblox-cloud-server-scenario:'+name.toLowerCase()),
+                  ];
+                  console.log('ROBLOX_OPEN_CLOUD_SERVER_SCENARIOS_PENDING='+item.gameId+':'+incomplete.join(','));
+                  pending++;
                 }else if(groundFailure){
                   item.robloxIndependentQaPassed=false;
                   item.robloxRegressionPassed=false;
