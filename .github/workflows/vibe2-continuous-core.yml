@@ -164,8 +164,9 @@ jobs:
             echo "VIBE2_RESERVE_WAKE_LATEST_SHA=$latest_main"
             if [[ "$GITHUB_SHA" != "$latest_main" ]]; then
               if [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' ]]; then
-                proceed=false
-                echo "VIBE2_FANIN_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+                # Refill is a wake signal, not a pinned candidate. Revalidate the
+                # latest main contract below instead of starving the current queue.
+                echo "VIBE2_FANIN_WAKE_REBASED_TO_LATEST=$GITHUB_SHA:$latest_main"
               else
                 echo "VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST=$GITHUB_SHA:$latest_main"
               fi
