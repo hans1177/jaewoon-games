@@ -1641,12 +1641,17 @@ function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
  local signature=role=="BOSS" and bounded(options.bossAccent,0,1,.35) or 0
  local secondary=bounded(options.secondary,0,1,.55)*lod
  local intensity=bounded(options.intensity,.5,1.5,1)
+ -- 14. 이력에서 선택된 시각 프로파일만 제한된 범위에서 사용한다.
+ local profile=type(options.profile)=="table" and options.profile or {}
+ local attackGain=bounded(profile.attackStrike,.5,1.5,1)
+ local inertiaGain=bounded(profile.secondaryMotion,.5,1.5,1)
+ local footGain=bounded(profile.footContact,.5,1.5,1)
  local windup=math.sin(math.pi*easeUnit(math.clamp(phase/.34,0,1)))
  local release=math.sin(math.pi*math.clamp((phase-.24)/.50,0,1))*impact
  local recovery=easeUnit((phase-.55)/.45)
  local load=(.09*windup-.16*release+.055*recovery)*anatomy.load*intensity*poseBlend
  -- 01/02 원본 포즈에 얹는 부드러운 크로스페이드와 전신 관성.
- local curve=load+hit*.16
+ local curve=(load+hit*.16)*inertiaGain
  local yaw=direction*.045*poseBlend+gaze*.14
  applyActorRotation(targets,"Spine",curve*.62,yaw,-direction*.055,joints)
  applyActorRotation(targets,"Chest",curve*.85,-yaw*.65,direction*.065,joints)
@@ -1658,9 +1663,21 @@ function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
   applyActorRotation(targets,"ThighR",step-support*.045,0,0,joints)
   applyActorRotation(targets,"ShinL",math.max(0,step)*.48,0,0,joints)
   applyActorRotation(targets,"ShinR",math.max(0,-step)*.48,0,0,joints)
+  -- 07. 기존 발 지면 감지에서 받은 접촉도/노멀만 처리. 새 레이캐스트/루트 이동 불필요.
+  local contact=type(options.footContact)=="table" and options.footContact or nil
+  if contact then
+   for _,side in ipairs({"L","R"})do
+    local c=contact[side]
+    if type(c)=="table"and c.grounded==true then
+     local pitch=bounded(c.pitch,-.25,.25,0)*footGain
+     local roll=bounded(c.roll,-.25,.25,0)*footGain
+     applyActorRotation(targets,"Foot"..side,pitch,0,roll,joints)
+    end
+   end
+  end
  end
  -- 04/05 실제 승인된 impact 이벤트/콤보 경계에만 후행 포즈를 연결.
- local punch=release*.13+combo*.055*poseBlend
+ local punch=(release*.13+combo*.055*poseBlend)*attackGain
  if style=="GREATSWORD" or style=="AXE" or style=="HAMMER" then punch*=1.35 end
  if style=="BOW" or style=="CAST" then punch*=.6 end
  applyActorRotation(targets,"UpperArmL",-punch*.68,0,-punch*.12,joints)
@@ -1694,6 +1711,43 @@ function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
  -- 15 mobileTier LOW는 부차적인 동작만 감쇠하며 핵심 타격/피격은 유지.
  return targets,table.freeze({applied=true,bodyPlan=form,actorClass=role,secondaryScale=secondary,
   nativeRigRequired=true,gameplayAuthority=false,runtimeVerified=false})
+end
+
+-- 02. 관절의 기존 소스 포즈 두 개 사이를 위치·속도 완화 곡선으로 연결한다.
+-- 게임 상태/시간은 외부 호출자가 소유하고, 대상에 없는 관절은 새로 생성하지 않는다.
+function RobloxCommonMotion.BlendExistingActorPoses(fromPose,toPose,alpha,out)
+ out=out or {}
+ local weight=easeUnit(bounded(alpha,0,1,0))
+ for name,pose in pairs(fromPose or {})do
+  if typeof(pose)=="CFrame"and typeof(toPose and toPose[name])=="CFrame"then
+   out[name]=pose:Lerp(toPose[name],weight)
+  elseif typeof(pose)=="CFrame"then out[name]=pose end
+ end
+ for name,pose in pairs(toPose or {})do
+  if out[name]==nil and typeof(pose)=="CFrame"then out[name]=pose end
+ end
+ return out
+end
+-- 13. 실제 관절에 대한 승인된 일대일 이름 매핑만 리타게팅한다.
+-- unknown/duplicate/root/rig-part-absent 이름은 합성하지 않는다.
+function RobloxCommonMotion.RetargetExistingActorPose(sourcePose,approvedMapping,actualJoints,out)
+ assert(type(sourcePose)=="table"and type(approvedMapping)=="table"and type(actualJoints)=="table","RIG_MAPPING_REQUIRED")
+ out=out or {}
+ local consumed={}
+ local count=0
+ for sourceName,targetName in pairs(approvedMapping)do
+  local joint=actualJoints[targetName]
+  local pose=sourcePose[sourceName]
+  if sourceName~="Root"and sourceName~="HumanoidRootPart"
+    and targetName~="Root"and targetName~="HumanoidRootPart"
+    and type(sourceName)=="string"and type(targetName)=="string"
+    and not consumed[targetName]and typeof(pose)=="CFrame"
+    and typeof(joint)=="Instance"and(joint:IsA("Motor6D")or joint:IsA("Bone"))
+    and joint.Parent then
+   consumed[targetName]=true;out[targetName]=pose;count+=1
+  end
+ end
+ return out,count
 end
 
 function RobloxCommonMotion.CreateSequence(atomId)
