@@ -1117,6 +1117,13 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
   const root=path.join(tmp,'line-defense');
   try{
     fs.cpSync('roblox-games/line-defense',root,{recursive:true});
+    // 공용 모듈 전사 동기화 이후 저장소 원본에는 이미 모듈이 연결되어 있다.
+    // F0의 재연결 능력을 검증하려면 복제한 픽스처에서 정확히 한 모듈을 제거해야 한다.
+    const fixtureProjectFile=path.join(root,'default.project.json');
+    const fixtureProject=JSON.parse(fs.readFileSync(fixtureProjectFile,'utf8'));
+    assert.ok(fixtureProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion);
+    delete fixtureProject.tree.ReplicatedStorage.Shared.RobloxCommonMotion;
+    fs.writeFileSync(fixtureProjectFile,JSON.stringify(fixtureProject,null,2)+'\n');
     const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
     const result=applyRobloxStudioAssetBindingToExistingSource({
       root,
