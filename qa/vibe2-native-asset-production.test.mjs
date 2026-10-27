@@ -5710,3 +5710,51 @@ test('Roblox CC0 actor on-demand hydration shares the original worker without to
  assert.match(worker,/NATIVE_IMPORT_AND_STYLE_ADAPT_REQUIRED/);
  assert.doesNotMatch(worker,/robloxRuntimePassed\s*:\s*true|productionVerified\s*:\s*true/);
 });
+
+test('WEB/ROBLOX current game usage drives existing graphics detail and guarded gap-download requests',()=>{
+  for(const target of ['web','roblox']){
+    const used={
+      id:'forest-wolf',family:'CREATURE',role:'wolf',license:'CC0-1.0',
+      platform:'SHARED_MASTER',status:'REPO_ASSET',
+      path:'assets/shared/forest/wolf.glb',sourceHash:'a'.repeat(64),
+      consumerGameIds:['forest-game'],internalAuditScore:425,internalAuditEvidenceResolved:false
+    };
+    const missing={id:'external-spider',name:'Spider',category:'CREATURE',
+      status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0-1.0',
+      sourceUrl:'https://kenney.nl/assets/spider',licenseEvidenceUrl:'https://kenney.nl/assets/spider',
+      verifiedAt:'2026-10-23',platformTargets:['WEB','ROBLOX'],
+      automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,
+      derivativesAllowed:true,capabilities:['spider','glb']};
+    const args={gameId:'forest-game',target,
+      requirements:[{family:'CREATURE',role:'wolf'},{family:'CREATURE',role:'spider'},
+        {family:'WEAPON',role:'sword'}],
+      registry:{assets:[used],externalSources:[missing]}};
+    const summary=buildAssetSupplyDecisionSummary(args);
+    const detail=summary.nextActions.find(row=>row.assetId==='forest-wolf'&&row.action==='IMPROVE');
+    assert.equal(detail?.reason,'CURRENT_GAME_USED_ASSET_DETAIL_AUDIT_REQUIRED');
+    assert.equal(detail.detailRefinement.owner,'EXISTING_GRAPHICS_PRODUCTION');
+    assert.equal(detail.detailRefinement.target,target.toUpperCase());
+    assert.ok(detail.detailRefinement.detailAxes.includes('RIG_JOINT_HIERARCHY'));
+    assert.ok(detail.detailRefinement.detailAxes.includes('IDLE_WALK_RUN_ATTACK_ACTION_CLIPS'));
+    assert.equal(detail.detailRefinement.runtimeVerified,false);
+    assert.ok(summary.usedAssetDetailActionCount>=1);
+    const spider=summary.libraryDownloadRequests.find(row=>row.requestedRole==='spider');
+    assert.equal(spider?.route,'EXISTING_ASSET_DEVELOPMENT_ON_DEMAND');
+    assert.equal(spider?.selectedSourceId,'external-spider');
+    assert.equal(spider?.autoSourceFetchAllowed,false,'unhashed landing pages cannot download');
+    assert.equal(spider?.directGameReplacementAuthorized,false);
+    const sword=summary.libraryDownloadRequests.find(row=>row.requestedRole==='sword');
+    assert.equal(sword?.state,'VERIFIED_SOURCE_CATALOG_GAP');
+    assert.equal(sword?.autoSourceFetchAllowed,false);
+    const verified1000=buildAssetSupplyDecisionSummary({...args,requirements:[{family:'CREATURE',role:'wolf'}],
+      registry:{assets:[{...used,internalAuditScore:1000,internalAuditEvidenceResolved:true}],externalSources:[]}});
+    assert.equal(verified1000.nextActions.some(row=>row.reason==='CURRENT_GAME_USED_ASSET_DETAIL_AUDIT_REQUIRED'),false);
+    const held=buildAssetSupplyDecisionSummary({...args,gameId:''});
+    assert.equal(held.usedAssetDetailActionCount,0);
+    assert.equal(held.libraryDownloadRequests.length,0);
+  }
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(worker,/libraryDownloadRequests:Object.freeze\(order.assetProduction.assetSupplySummary\?\.libraryDownloadRequests/);
+  assert.match(worker,/usedAssetDetailActions:Object.freeze/);
+  assert.match(worker,/Return verified failures to the existing learning motor/);
+});

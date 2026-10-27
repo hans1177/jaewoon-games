@@ -5976,6 +5976,15 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
         selectionIsNotAcquisition:true,
         nativeBuildRequiresRegisteredAssetAndRealSource:true,
         sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
+        // Current WEB and ROBLOX game-bound assets go through the same graphics owner.
+        // A gap/download request alone never grants source, license, rig or runtime authority.
+        libraryDownloadRequests:Object.freeze(order.assetProduction.assetSupplySummary?.libraryDownloadRequests||[]),
+        usedAssetDetailActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
+          .filter(row=>row.action==='IMPROVE'&&row.detailRefinement?.gameId===order.gameId)
+          .map(row=>Object.freeze({assetId:row.assetId,family:row.family,
+            responsibleFiles:row.responsibleFiles||[],refinement:row.detailRefinement,
+            verifiedSourceRequired:true,requiresActualMeshRigMotionAndActionQa:true,
+            gameBalanceAndSavePreserved:true,productionVerified:false,runtimeVerified:false}))),
         selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
           .filter(row=>row.action==='ACQUIRE_ADAPT'
             ||row.action==='ADAPT'&&(row.libraryReuse?.derivativeCandidateReady===true
@@ -6048,7 +6057,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
           })))
       })
     }),
-    'Only inspect, verify and apply existing company/common or downloaded license-cleared assets. Do not invent or generate new meshes, characters, artwork, props, audio, algorithms, or asset files. Inspect the sourceArchive bytes, SHA256, contained file types, licensing and model rig/animation before extraction and platform conversion. Reuse the existing conversion responsibility and bind the verified asset into the game consumer, preserving gameplay, save and networking. For a ROBLOX_ACTOR_3D source, a non-null registeredRobloxAssetId with the exact verified original Git blob authorizes choosing that already-uploaded Model in the existing responsible game visual binding; the current Universe must still receive its own cloud Use grant before any place publish. An unregistered original has no usable Roblox asset ID; never invent one or claim it is applied. Preserve the actor identity, physics, motions, hitbox, health, economy and save. If the archive has no matching safe file, leave that role pending, never substitute an invented asset. Runtime, mobile and import QA remain mandatory before marking applied.',
+    'During each WEB or ROBLOX build-up, inspect the libraryDownloadRequests and usedAssetDetailActions in the SAME existing graphics production worklist. Prioritize assets proven to be used by this game; improve weakest evidenced detail in existing mesh/material, joint weights and rig, animation clip actions and blending, contact and mobile optimization. If current asset has no measured axis, measure source/render/motion first; do not fabricate improvements. Use only the existing scoped source/DCC owner and re-run game runtime, independent QA and regression before replacement. Return verified failures to the existing learning motor; unverified observations may not teach positive lessons. Do not add a new worker, pipeline, queue or override or bypass external learning approval. Only inspect, verify and apply existing company/common or downloaded license-cleared assets. Do not invent or generate new meshes, characters, artwork, props, audio, algorithms, or asset files. Inspect the sourceArchive bytes, SHA256, contained file types, licensing and model rig/animation before extraction and platform conversion. Reuse the existing conversion responsibility and bind the verified asset into the game consumer, preserving gameplay, save and networking. For a ROBLOX_ACTOR_3D source, a non-null registeredRobloxAssetId with the exact verified original Git blob authorizes choosing that already-uploaded Model in the existing responsible game visual binding; the current Universe must still receive its own cloud Use grant before any place publish. An unregistered original has no usable Roblox asset ID; never invent one or claim it is applied. Preserve the actor identity, physics, motions, hitbox, health, economy and save. If the archive has no matching safe file, leave that role pending, never substitute an invented asset. Runtime, mobile and import QA remain mandatory before marking applied.',
     'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'
   ].join('\n'):'';
