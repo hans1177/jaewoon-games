@@ -1908,7 +1908,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
     }else if(!originalRequested){
-      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
+      // [부족 자산] 같은 family가 아예 없는 게임도 역할별 요청을 지우지 않고 기존 수급 목록으로 전달한다.
+      const unmetRoles=sourceRoles.filter(role=>role&&role!=='generic');
+      if(unmetRoles.length){
+        for(const role of unmetRoles)pushAction({
+          action:'HOLD',assetId:null,family,requestedRole:role,
+          reason:'CURRENT_GAME_MISSING_ROLE_UNRESOLVED',
+          roleEvidence:{requestedRoles:[role],matchedRoles:[],verifiedRoleMatch:false},
+          gameSourceComparisonRequired:true,runtimeVerificationGranted:false
+        });
+      }else pushAction({action:'HOLD',assetId:null,family,
+        reason:'ROLE_REQUIREMENT_UNRESOLVED',
+        roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
