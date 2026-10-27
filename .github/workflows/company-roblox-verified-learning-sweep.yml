@@ -35,6 +35,8 @@ concurrency:
 
 env:
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
+  COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+  COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
 
 jobs:
   sweep:
