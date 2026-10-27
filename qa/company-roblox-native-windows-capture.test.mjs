@@ -105,6 +105,21 @@ test('capture watcher has one uninterrupted loop and preserves all three secured
  assert.doesNotMatch(watcher,/\)\) \{ return \}/);
 });
 
+test('service session hands native Player setup to a signed-in Windows desktop only',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml','utf8');
+ assert.match(workflow,/\[Diagnostics[.]Process\]::GetCurrentProcess\(\)[.]SessionId/);
+ assert.match(workflow,/SERVICE_SESSION_REQUIRES_INTERACTIVE_LAUNCH/);
+ assert.match(workflow,/WAITING_FOR_WINDOWS_USER_LOGON/);
+ assert.match(workflow,/Win32_ComputerSystem/);
+ assert.match(workflow,/BLOCKED_NATIVE_GPU_MISSING/);
+ assert.match(workflow,/New-ScheduledTaskPrincipal -UserId \$consoleUser -LogonType Interactive/);
+ assert.match(workflow,/New-ScheduledTaskTrigger -AtLogOn -User \$consoleUser/);
+ assert.match(workflow,/JaewoonRobloxNativeMediaBootstrap/);
+ assert.match(workflow,/Start-ScheduledTask -TaskName 'JaewoonRobloxNativeMediaBootstrap'/);
+ assert.match(workflow,/ROBLOX_ACTUAL_CLIENT_RECORDING_NOT_YET_ATTESTED=YES/);
+ assert.doesNotMatch(workflow,/ROBLOSECURITY=|SendKeys|pyautogui/);
+});
+
 test('Windows worker fails closed on unsupported Linux GitHub runner, instead of faking footage',()=>{
  if(process.platform==='win32')return;
  const result=spawnSync(process.execPath,
