@@ -284,9 +284,39 @@ async function captureAndroid(){
 }
 
 async function run(){
- if(!['check','capture'].includes(mode))throw Error('UNKNOWN_MODE');
- if(arg('device')==='android')return captureAndroid();
+ if(!['check','capture','watch'].includes(mode))throw Error('UNKNOWN_MODE');
+ if(arg('device')==='android'){
+  if(mode!=='watch')return captureAndroid();
+  // 모바일 상주 실행: 한 게임당 14일에 한 번만 새 영상 생성.
+  // 비공개 인증/자산 증거가 없으면 촬영 성공으로 처리하지 않는다.
+  if(process.env.ROBLOX_CAPTURE_AUTHORIZED!=='1'||process.env.ROBLOX_CAPTURE_SUBMIT!=='1')
+   throw Error('ANDROID_WATCH_AUTHORIZATION_AND_SUBMISSION_REQUIRED');
+  let lastError='',lastLogged=0;
+  const stateFile=path.join(os.tmpdir(),'jaewoon-native-client-capture',gameId+'.json');
+  while(true){
+   try{
+    const state=fs.existsSync(stateFile)?readJson(stateFile):null;
+    if(state&&!state.uploaded&&state.videoPath&&state.proofPath
+      &&fs.existsSync(state.videoPath)&&fs.existsSync(state.proofPath)){
+     submitCapture({file:state.videoPath,proofPath:state.proofPath,
+      proof:readJson(state.proofPath),stateFile,
+      observed:{placeVersion:state.placeVersion,sessionNonce:state.sessionNonce}});
+    }else if(!state?.uploaded||Date.now()-Date.parse(state.captureAt)>=14*86400*1000){
+     await captureAndroid();
+    }
+    lastError='';
+   }catch(e){
+    const signature=String(e?.message||e);
+    if(lastError!==signature||Date.now()-lastLogged>30*60000){
+     console.error('ROBLOX_ANDROID_WATCH_BLOCKED='+signature);
+     lastError=signature;lastLogged=Date.now();
+    }
+   }
+   await new Promise(resolve=>setTimeout(resolve,10*60*1000));
+  }
+ }
  if(process.platform!=='win32')throw Error('WINDOWS_SESSION_REQUIRED');
+ if(mode==='watch')throw Error('WINDOWS_WATCH_USE_EXISTING_POWERSHELL_WORKER');
  const target=runtimeTarget();
  for(const bin of ['ffmpeg','ffprobe']){
   const r=command(bin,['-version'],7000);
