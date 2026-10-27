@@ -1600,6 +1600,10 @@ jobs:
               --queue=../runtime/development-queue.json \
               --output=".tmp/roblox-detail-evidence/$game_id.json"; then
               echo "ROBLOX_DETAIL_MEDIA_EVIDENCE_WRITTEN=$game_id"
+              if ! node -e 'const fs=require("fs");const e=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.exit(e.imageSyncFailure?1:0)' ".tmp/roblox-detail-evidence/$game_id.json"; then
+                media_failed+=("$game_id")
+                echo "ROBLOX_DETAIL_IMAGE_REPAIR_PENDING_VIDEO_UNBLOCKED=$game_id"
+              fi
             else
               media_failed+=("$game_id")
               echo "ROBLOX_DETAIL_MEDIA_REPAIR_REQUIRED=$game_id"
