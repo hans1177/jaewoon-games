@@ -511,18 +511,12 @@ test('simple RPG authored lobby spawn follows Baeksu war single CharacterAdded p
   assert.match(server, /SIMPLE_RPG_SPAWN_GROUNDING_UNVERIFIED/);
 });
 
-test('simple RPG spawn treats overlapping licensed walkable ground as support, but keeps physical blockers fail-closed', () => {
-  assert.match(server, /local isSupportingGround = part:IsA\("BasePart"\) and part\.Anchored/);
-  assert.match(server, /part:GetAttribute\("WalkableGround"\) == true/);
-  assert.match(server, /part\.Position\.Y \+ part\.Size\.Y \* 0\.5/);
-  assert.match(server, /if not isSupportingGround then/);
-  assert.match(server, /"SPAWN_CLEARANCE_BLOCKED"/);
-  assert.match(server, /character:SetAttribute\("SpawnBlockingPart", part\.Name\)/);
-  assert.match(server, /"SPAWN_GROUND_MISSING"/);
-  assert.match(server, /"GROUND_CONTACT_FAILURE"/);
-  assert.match(server, /contacts >= 3 then\s+moving:Disconnect\(\)/);
-  assert.match(server, /character:SetAttribute\("FoundationSourceAssetId"/);
-  assert.doesNotMatch(server, /Instance\.new\("(?:Part|SpawnLocation|MeshPart)"\)/);
+test('simple RPG spawn retains verified existing walkable-floor guard and physical blocker trace', () => {
+  assert.match(server, /local isUnderlyingWalkableFloor = part:GetAttribute\("WalkableGround"\) == true/);
+  assert.match(server, /part.Anchored and part.Position.Y \+ part.Size.Y \* 0.5 <= groundHit.Position.Y \+ 0.1/);
+  assert.match(server, /part ~= groundHit.Instance and part.CanCollide and not isUnderlyingWalkableFloor/);
+  assert.match(server, /character:SetAttribute\("SpawnBlockingPart", part.Name\)/);
+  assert.match(server, /character:SetAttribute\("SpawnBlockingPart", nil\)/);
 });
 
 test('simple RPG waits boundedly for only source-verified curated Roblox meshes without fake spawn assets', () => {
