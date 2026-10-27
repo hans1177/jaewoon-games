@@ -295,16 +295,29 @@ local function attackTargets(controller, targets)
 		add(targets, "NeckJoint", pitch(17 * anticipate - 29 * contact))
 		add(targets, "HeadJoint", pitch(12 * anticipate - 24 * contact))
 	elseif gait == "CANINE" or gait == "CANINE_LIGHT" then
-		add(targets, "BodyJoint", pose(0, 0, -0.05 * contact, 6 * anticipate - 14 * contact, 0, 0))
-		add(targets, "NeckJoint", pitch(18 * anticipate - 34 * contact))
-		add(targets, "HeadJoint", pitch(14 * anticipate - 28 * contact))
-		add(targets, "JawJoint", pitch(31 * contact))
+		-- [액션] 실제 턱·목·견갑의 힘 전달: 위협 자세→물기→턱 닫기→후속 회복.
+		add(targets, "BodyJoint", pose(0, -0.025 * anticipate + 0.016 * follow, -0.05 * contact, 6 * anticipate - 14 * contact + 5 * follow, 0, 0))
+		add(targets, "ChestJoint", pose(0, 0.015 * anticipate, -0.07 * contact, 9 * anticipate - 16 * contact + 7 * follow, 0, 0))
+		add(targets, "NeckJoint", pitch(18 * anticipate - 34 * contact + 12 * follow))
+		add(targets, "HeadJoint", pitch(14 * anticipate - 28 * contact + 10 * follow))
+		add(targets, "JawJoint", pitch(17 * anticipate + 31 * contact - 8 * follow))
+		add(targets, "TailBaseJoint", yaw(-7 * anticipate + 12 * follow))
 	else
 		add(targets, "ChestJoint", pitch(10 * anticipate - 17 * contact + 5 * follow))
 		add(targets, "NeckJoint", pitch(18 * anticipate - 25 * contact))
 		add(targets, "HeadJoint", pitch(12 * anticipate - 22 * contact))
 	end
 
+	-- [액션] 전조 동안 뒷다리가 무게를 받고, 타격 직후 앞다리가 착지한다.
+	-- 애니메이션 대상 Motor6D만 사용하며 뿌리 이동/공격 범위는 그대로 둔다.
+	local support = 7 * anticipate - 12 * contact + 5 * follow
+	add(targets, "BLHip", pitch(-support))
+	add(targets, "BRHip", pitch(-support))
+	add(targets, "BLKnee", pitch(-6 * anticipate + 9 * contact))
+	add(targets, "BRKnee", pitch(-6 * anticipate + 9 * contact))
+	add(targets, "FRAnkle", pitch(10 * contact - 6 * follow))
+	add(targets, "FLAnkle", pitch(10 * contact - 6 * follow))
+	add(targets, "ChestJoint", roll(3 * anticipate - 4 * follow))
 	if settle > 0 then
 		add(targets, "TailBaseJoint", yaw(math.sin(t * 18) * 5 * settle))
 	end
@@ -318,6 +331,15 @@ local function hitTargets(controller, targets)
 	add(targets, "ChestJoint", pose(0, 0, 0.04 * impact, -13 * impact, -side * 12 * impact, -side * 10 * impact))
 	add(targets, "NeckJoint", pose(0, 0, 0, 9 * impact, side * 6 * impact, 0))
 	add(targets, "HeadJoint", pose(0, 0, 0, 12 * impact, side * 9 * impact, side * 5 * impact))
+	-- [피격] 앞발 지지·뒷다리 반발·귀/꼬리 지연을 붙여 몸통만 흔들리는 문제를 줄인다.
+	add(targets, "FLHip", pitch(-5 * impact - side * 4 * impact))
+	add(targets, "FRHip", pitch(-5 * impact + side * 4 * impact))
+	add(targets, "BLKnee", pitch(9 * impact))
+	add(targets, "BRKnee", pitch(9 * impact))
+	add(targets, "TailBaseJoint", yaw(-side * 13 * impact))
+	add(targets, "TailTipJoint", yaw(side * 8 * impact))
+	add(targets, "EarLJoint", roll(side * 6 * impact))
+	add(targets, "EarRJoint", roll(-side * 6 * impact))
 end
 
 local function deathTargets(controller, targets)
@@ -332,6 +354,10 @@ local function deathTargets(controller, targets)
 	add(targets, "BLHip", pitch(25 * t))
 	add(targets, "BRHip", pitch(-20 * t))
 	add(targets, "TailBaseJoint", roll(side * 24 * t))
+	add(targets, "TailTipJoint", roll(side * 12 * t))
+	add(targets, "JawJoint", pitch(7 * t))
+	add(targets, "FLAnkle", pitch(11 * t))
+	add(targets, "FRAnkle", pitch(-9 * t))
 end
 
 local function updateLag(controller, dt)
@@ -431,7 +457,11 @@ function Controller:SetState(state, options)
 	elseif nextState == "DEATH" then
 		self.deathSide = (tonumber(options.side) or -1) >= 0 and 1 or -1
 	end
-	self.model:SetAttribute("WildlifeMotionState", nextState)
+	-- [서버 권한] 클라이언트는 Motor6D만 연출한다. 서버가 보낸 상태 Attribute를
+	-- 로컬 완료/복귀로 덮지 않아야 공격 이벤트가 속도 갱신과 충돌하지 않는다.
+	if RunService:IsServer() then
+		self.model:SetAttribute("WildlifeMotionState", nextState)
+	end
 end
 
 function Controller:SetSpeed(speed)
