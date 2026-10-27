@@ -3,13 +3,15 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import crypto from 'node:crypto';
 import {
   resolveRobloxThumbnailTarget,
   validateCanonicalThumbnail,
   uploadRobloxHomepageThumbnail,
   syncRobloxExperienceDetailMedia,
-  syncRobloxHomepageThumbnail
+  syncRobloxHomepageThumbnail,
+  editVerifiedRobloxGameplayVideo
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
 const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
@@ -269,6 +271,68 @@ test('moderation polling does not confuse old approved images with new footage o
     assert.equal(newApproved.canonicalImageContentVerified,false);
     assert.deepEqual(newApproved.imageBaselineIds,['101']);
     assert.equal(newApproved.videoStatus,'NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('native gameplay editor rejects web clips and mismatched or missing runtime capture proofs',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-native-video-guard-'));
+  try{
+    const cap=path.join(dir,'capture.mp4'),proof=path.join(dir,'proof.json');
+    fs.writeFileSync(cap,Buffer.alloc(2400,17));
+    const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713'};
+    const args={root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'};
+    assert.throws(()=>editVerifiedRobloxGameplayVideo(args),/ENOENT/);
+    const evidence={
+      gameId:target.gameId,universeId:target.universeId,placeId:target.placeId,
+      captureSource:'WEB',sourceRevision:'a'.repeat(40),
+      runtimeVerification:{pass:true,actualGameplay:true,playerAutomation:false},
+      sha256:crypto.createHash('sha256').update(fs.readFileSync(cap)).digest('hex')
+    };
+    fs.writeFileSync(proof,JSON.stringify(evidence));
+    assert.throws(()=>editVerifiedRobloxGameplayVideo(args),/ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH/);
+    fs.writeFileSync(proof,JSON.stringify({...evidence,captureSource:'ROBLOX_NATIVE_PLAYER_CAPTURE',sha256:'0'.repeat(64)}));
+    assert.throws(()=>editVerifiedRobloxGameplayVideo(args),/ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH/);
+    fs.writeFileSync(proof,JSON.stringify({...evidence,captureSource:'ROBLOX_NATIVE_PLAYER_CAPTURE',runtimeVerification:{pass:true,actualGameplay:true,playerAutomation:true}}));
+    assert.throws(()=>editVerifiedRobloxGameplayVideo(args),/ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('native footage edit produces short playable real-source cuts without claiming publication',()=>{
+  if(spawnSync('ffmpeg',['-version'],{encoding:'utf8'}).status!==0)return;
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-native-video-edit-'));
+  try{
+    const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713'};
+    const capture=path.join(dir,'capture.mp4'),proof=path.join(dir,'proof.json');
+    const make=spawnSync('ffmpeg',['-y','-loglevel','error','-f','lavfi','-i',
+      'testsrc2=size=320x180:rate=24:duration=11.5',
+      '-c:v','libx264','-pix_fmt','yuv420p',capture],{encoding:'utf8',timeout:60000});
+    assert.equal(make.status,0,make.stderr);
+    fs.writeFileSync(proof,JSON.stringify({
+      gameId:target.gameId,universeId:target.universeId,placeId:target.placeId,
+      captureSource:'ROBLOX_NATIVE_PLAYER_CAPTURE',sourceRevision:'f'.repeat(40),
+      runtimeVerification:{pass:true,actualGameplay:true,playerAutomation:false},
+      sha256:crypto.createHash('sha256').update(fs.readFileSync(capture)).digest('hex')
+    }));
+    const result=editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'
+    });
+    assert.equal(result.type,'REAL_NATIVE_ROBLOX_GAMEPLAY_EDIT');
+    assert.equal(result.uploadVerified,false);
+    assert.equal(result.verifiedForSubmission,false);
+    assert.equal(result.manualNativeGameplayReviewRequired,true);
+    assert.ok(result.expectedSeconds<30);
+    const output=path.join(dir,result.editedVideoPath);
+    assert.ok(fs.existsSync(output));
+    assert.equal(result.editedVideoSha256,crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex'));
+    assert.ok(fs.existsSync(output+'.json'));
+    const probe=spawnSync('ffprobe',['-v','error','-select_streams','v:0',
+      '-show_entries','stream=width,height','-of','csv=p=0',output],{encoding:'utf8'});
+    assert.equal(probe.status,0,probe.stderr);
+    assert.match(probe.stdout,/1280,720/);
+    assert.throws(()=>editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json',
+      outputPath:'assets/homepage-media/cozy-island.mp4'
+    }),/ROBLOX_VIDEO_OUTPUT_MUST_BE_TEMP_EDIT/);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
