@@ -261,8 +261,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # 중앙 4개 문서의 무결성과 실제 헌법·아키텍처 정책 권한을 분리 검증한다.
           node tools/company-shared-context.mjs --output=/tmp/roblox-foundation-worker-context.json
-          node -e "const x=require('/tmp/roblox-foundation-worker-context.json');if(x.pass!==true||x.architectureProjection?.valid!==true)process.exit(1)"
+          node tools/company-constitution-enforcer.mjs --phase=roblox-runtime-foundation
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {compileOwnerCanonicalConstitution,compileCentralArchitectureProjection} from './tools/company-shared-context.mjs';
+          const integrity=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-worker-context.json','utf8'));
+          if(integrity.pass!==true||integrity.scope!=='RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY'
+              ||integrity.policyAuthorityVerified!==false||integrity.sourceWriteAuthorized!==false
+              ||integrity.releaseAuthorized!==false)throw new Error('ROBLOX_FOUNDATION_RETAINED_DOCUMENT_INTEGRITY_INVALID');
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const constitution=compileOwnerCanonicalConstitution(policy);
+          const architecture=compileCentralArchitectureProjection(policy);
+          if(constitution.valid!==true)throw new Error('ROBLOX_FOUNDATION_CANONICAL_CONSTITUTION_INVALID:'+constitution.errors.join('|'));
+          if(architecture.valid!==true)throw new Error('ROBLOX_FOUNDATION_CANONICAL_ARCHITECTURE_INVALID:'+architecture.errors.join('|'));
+          console.log('ROBLOX_FOUNDATION_CANONICAL_CONSTITUTION=VERIFIED:'+constitution.fingerprint);
+          console.log('ROBLOX_FOUNDATION_ARCHITECTURE_PROJECTION=VERIFIED:'+architecture.fingerprint);
+          NODE
           echo 'ROBLOX_FOUNDATION_SHARED_CONTEXT=PASS'
 
       - name: Keep transient Open Cloud retries inside bounded scan
