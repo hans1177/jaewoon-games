@@ -268,8 +268,7 @@ jobs:
             $serviceIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
             $consoleSid = $null
             try {
-              $consoleSid = (New-Object Security.Principal.NTAccount($consoleUser)).
-                Translate([Security.Principal.SecurityIdentifier]).Value
+              $consoleSid = ([Security.Principal.NTAccount]::new($consoleUser)).Translate([Security.Principal.SecurityIdentifier]).Value
             } catch {
               Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=CONSOLE_ACCOUNT_IDENTITY_UNVERIFIED'
               exit 0
