@@ -423,7 +423,7 @@ test('simple RPG only plays game-specific common weapon motion from actual serve
 test('Baeksu native CC0 mesh creatures play bounded walk and server-confirmed hit poses without R15 assumptions',()=>{
   const source=fs.readFileSync('roblox-games/baeksu-war/server/Game.server.luau','utf8');
   const visual=fs.readFileSync('roblox-games/baeksu-war/shared/VisualKit.luau','utf8');
-  const config=fs.readFileSync('roblox-games/baeksu-war/shared/Config.luau','utf8');
+  const config=fs.readFileSync('roblox-games/baeksu-war/shared/GameConfig.luau','utf8');
   for(const required of [
     'SaveKey="baeksu-war-v1"', 'Cap=55'
   ])assert.ok(config.includes(required),required);
