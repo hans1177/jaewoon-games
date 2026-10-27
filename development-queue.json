@@ -2095,7 +2095,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -2121,7 +2121,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-27T09:21:49.562Z",
+      "updatedAt": "2026-10-27T09:23:56.460Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2136,8 +2136,9 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
       "routingBlockers": [
+        "roblox-first-frame-grounding-unobserved",
         "roblox-runtime-foundation-awaiting-observation"
       ],
       "robloxSourceCandidateBranch": null,
@@ -3352,7 +3353,7 @@
       "robloxFastMvpPublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxEvidenceInvalidatedBySourceChange": null,
-      "robloxRuntimeRetryCount": 6,
+      "robloxRuntimeRetryCount": 7,
       "robloxEvidenceInvalidatedByF0Restart": {
         "sourceRevision": "0c7764c459253ee20013206f42b1f5dbb1c0f070",
         "previousSourceRevision": "57d726598cfe3170b0fddc6ff28a8a0ebcbf9e58",
@@ -3469,10 +3470,59 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-27T09:21:49.562Z"
+        "verifiedAt": "2026-10-27T09:23:56.460Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-27T08:56:07.427Z",
-      "robloxRuntimeLastObservationAttemptAt": "2026-10-27T09:21:49.562Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-10-27T09:23:56.460Z",
+      "robloxFirstFrameGroundingEvidence": {
+        "observed": true,
+        "runtimeWorldReady": false,
+        "startupWaitSeconds": 0,
+        "basePartCount": 1,
+        "spawnCount": 0,
+        "spawnsInBounds": false,
+        "markerSpawnCount": 0,
+        "spawnGroundingObserved": false,
+        "unsupportedSpawns": 0,
+        "floatingSpawns": 0,
+        "maximumSpawnGroundGap": 0,
+        "meshPartCount": 0,
+        "graphicsEvidenceScope": "ENGINE_SCENE_STRUCTURE_NOT_RENDERED_SCREENSHOT",
+        "finiteWorldBounds": true,
+        "boundsSize": {
+          "x": 2044,
+          "y": 252,
+          "z": 2044
+        },
+        "landmarkCount": 0,
+        "objectiveCount": 0,
+        "terrainPresent": true,
+        "lightingAtmospherePresent": false,
+        "streamingEnabled": false,
+        "scanCapped": false,
+        "worldGeometryPresent": true,
+        "worldObjectBinding": {
+          "observed": true,
+          "stableIdCount": 0,
+          "duplicateStableIdCount": 0,
+          "resourcePromptCount": 0,
+          "enabledResourcePromptCount": 0,
+          "gameplayInteractionVerified": false,
+          "authority": "OPEN_CLOUD_WORLD_STRUCTURE_ONLY"
+        },
+        "sameLuauExecutionSession": true,
+        "sourceRevision": "d3e0378c66877d2aac883c0eebe3662b6b1dcc7b",
+        "artifactIdentity": "sha256:cd58f538ca4281505bf562ff50944c7ae1226cb4950e871d3e2a9fcbc121cffc",
+        "placeId": "127826577038785",
+        "candidateVersionNumber": 2,
+        "serverBootObserved": false,
+        "serverContextExecuted": true,
+        "simulationRunningAfter": false,
+        "simulationStartSucceeded": false,
+        "simulationStartCapabilityDenied": false,
+        "observedAt": "2026-10-27T09:23:56.460Z",
+        "authority": "roblox-open-cloud-exact-first-frame-observation"
+      }
     },
     {
       "gameId": "fantasy-survival",
@@ -4722,7 +4772,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T09:23:06.209Z",
+  "updatedAt": "2026-10-27T09:23:56.460Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
