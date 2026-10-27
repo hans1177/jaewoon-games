@@ -113643,11 +113643,165 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_fac3ebde15cc69b6cea8bda3",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10712",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9a13ce20150317763d17c8159c453509ff6cd7ac",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10712,
+        "baseBranch": "main",
+        "headBranch": "feat/all-games-five-play-improvements-20261027",
+        "baseSha": "9a13ce20150317763d17c8159c453509ff6cd7ac",
+        "headSha": "5f47a402a4205332d0529ec90729e6d41c99d365",
+        "mergeCommitSha": "656142d602aea3cd77b38e70a45fb8fa2239bd1a",
+        "mergedAt": "2026-10-27T13:21:54Z",
+        "authorLogin": "hans1177",
+        "titleHash": "9c398ccd807ab126cd931bf53d7139292c587d7eaa10a75f174352b4282e2d79",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/all-games-five-play-improvements-20261027",
+        "candidateSha": "5f47a402a4205332d0529ec90729e6d41c99d365"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 20,
+        "addedLineCount": 427,
+        "deletedLineCount": 129,
+        "changedFiles": [
+          "assets/asset-library.js",
+          "company-learning/vibe-autonomous-content-expansion-policy.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-build-up-directive.test.mjs",
+          "qa/company-development-queue-reconcile.test.mjs",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/daechung-rpg-playcanvas-migration.test.mjs",
+          "qa/daechung-rpg-safe-boot.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/github-pages-asset-staging.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "roblox-games/baeksu-war/shared/VisualKit.luau",
+          "tools/company-build-up-directive.mjs",
+          "tools/company-development-queue-reconcile.mjs",
+          "tools/company-development-roblox-gameplay-product-readiness.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/asset-library.js",
+          "company-learning/vibe-autonomous-content-expansion-policy.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-build-up-directive.test.mjs",
+          "qa/company-development-queue-reconcile.test.mjs",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/daechung-rpg-playcanvas-migration.test.mjs",
+          "qa/daechung-rpg-safe-boot.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/github-pages-asset-staging.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "roblox-games/baeksu-war/shared/VisualKit.luau",
+          "tools/company-build-up-directive.mjs",
+          "tools/company-development-queue-reconcile.mjs",
+          "tools/company-development-roblox-gameplay-product-readiness.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10712",
+        "merge-commit:656142d602aea3cd77b38e70a45fb8fa2239bd1a",
+        "base-main:9a13ce20150317763d17c8159c453509ff6cd7ac"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 897
+    "total": 898
   }
 }
