@@ -1435,11 +1435,11 @@ jobs:
             sudo apt-get install -y librsvg2-bin
           fi
           rsvg-convert --version
-          # Install video tools only when a real Roblox runtime recording exists.
-          if [ -d main/assets/runtime-evidence/roblox ] && find main/assets/runtime-evidence/roblox -type f -name '*.mp4' -print -quit | grep -q .; then
-            command -v ffmpeg >/dev/null 2>&1 || { sudo apt-get update -y; sudo apt-get install -y ffmpeg; }
-            command -v ffprobe >/dev/null 2>&1
-          fi
+          # Video tools support both native-capture editing and non-gameplay art previews.
+          command -v ffmpeg >/dev/null 2>&1 && command -v ffprobe >/dev/null 2>&1 || {
+            sudo apt-get update -y
+            sudo apt-get install -y ffmpeg
+          }
 
       - name: Verify thumbnail sync contract
         working-directory: main
@@ -1486,6 +1486,31 @@ jobs:
           game_ids="$(sed -n 's/^game_ids=//p' "$GITHUB_OUTPUT" | tail -n1)"
           test -n "$game_ids"
           echo "ROBLOX_THUMBNAIL_SYNC_GAMES=$game_ids"
+
+      - name: Render official-source concept art previews without gameplay claims
+        if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
+        working-directory: main
+        env:
+          GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          generated=0
+          skipped=0
+          for game_id in $GAME_IDS; do
+            if node tools/company-roblox-thumbnail-sync.mjs \
+              --concept-only=true \
+              --game-id="$game_id" \
+              --catalog=game-catalog.json \
+              --queue=../runtime/development-queue.json; then
+              generated=$((generated + 1))
+            else
+              skipped=$((skipped + 1))
+              echo "ROBLOX_CONCEPT_VIDEO_FAILED_NON_BLOCKING=$game_id"
+            fi
+          done
+          echo "ROBLOX_UNATTENDED_CONCEPT_PREVIEWS_CREATED=$generated FAILED=$skipped"
+          echo 'ROBLOX_CONCEPT_VIDEOS_ARE_NOT_NATIVE_GAMEPLAY=YES'
 
       - name: Render upload and verify shared thumbnails
         id: thumbnail
@@ -1561,14 +1586,16 @@ jobs:
           fi
           echo 'ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES'
 
-      - name: Keep authentic Roblox gameplay edits as private review artifacts
+      - name: Archive native gameplay edits and separately labeled art previews
         if: ${{ !cancelled() && steps.thumbnail_games.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
-          name: roblox-native-video-edits-${{ github.run_id }}
+          name: roblox-video-production-${{ github.run_id }}
           path: |
             main/.tmp/roblox-detail-evidence/*-edited.mp4
             main/.tmp/roblox-detail-evidence/*-edited.mp4.json
+            main/.tmp/roblox-detail-evidence/*-concept-trailer.mp4
+            main/.tmp/roblox-detail-evidence/*-concept-trailer.mp4.json
           if-no-files-found: ignore
           retention-days: 7
 
