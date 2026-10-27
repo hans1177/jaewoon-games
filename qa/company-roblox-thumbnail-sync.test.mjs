@@ -242,6 +242,9 @@ test('changed canonical detail artwork replaces an old image without claiming im
     assert.deepEqual(media.imageBaselineIds,['101']);
     assert.equal(media.videoPublication.captureVerified,false);
     assert.equal(media.videoPublication.maxSeconds,30);
+    assert.equal(media.videoPublication.humanGameplayRequired,false);
+    assert.equal(media.videoPublication.nativeClientCaptureStillRequired,true);
+    assert.deepEqual(media.videoPublication.acceptedAutomatedActors,['IN_GAME_NPC_AI','IN_GAME_SCRIPTED_REPLAY']);
     assert.equal(calls.length,3);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
@@ -321,11 +324,60 @@ test('native footage edit produces short playable real-source cuts without claim
     assert.equal(result.uploadVerified,false);
     assert.equal(result.verifiedForSubmission,false);
     assert.equal(result.manualNativeGameplayReviewRequired,true);
+    assert.equal(result.humanPlayerRequired,false);
     assert.ok(result.expectedSeconds<30);
     const output=path.join(dir,result.editedVideoPath);
     assert.ok(fs.existsSync(output));
     assert.equal(result.editedVideoSha256,crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex'));
     assert.ok(fs.existsSync(output+'.json'));
+
+    // A game-side NPC/replay is allowed, but only footage captured from a real Roblox client.
+    const scripted={
+      gameId:target.gameId,universeId:target.universeId,placeId:target.placeId,
+      captureSource:'ROBLOX_NATIVE_SCRIPTED_ACTOR_CAPTURE',
+      sourceRevision:'f'.repeat(40),
+      actorAutomation:{mode:'IN_GAME_NPC_AI',playerControl:false,existingGameplayOnly:true},
+      runtimeVerification:{
+        pass:true,actualGameplay:true,playerAutomation:false,
+        actualNativeEngine:true,clientScreenRecording:true,
+        syntheticFrameRendering:false,observedGameplayInteractions:4
+      },
+      sha256:crypto.createHash('sha256').update(fs.readFileSync(capture)).digest('hex')
+    };
+    fs.writeFileSync(proof,JSON.stringify(scripted));
+    const botResult=editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'
+    });
+    assert.equal(botResult.humanPlayerRequired,false);
+    assert.equal(botResult.captureSource,'ROBLOX_NATIVE_SCRIPTED_ACTOR_CAPTURE');
+    assert.equal(botResult.sceneControl,'IN_GAME_NPC_AI');
+    assert.equal(botResult.observedGameplayInteractions,4);
+    assert.equal(botResult.uploadVerified,false);
+    assert.equal(botResult.verifiedForSubmission,false);
+
+    fs.writeFileSync(proof,JSON.stringify({...scripted,actorAutomation:{...scripted.actorAutomation,mode:'OFFLINE_FAKE_RENDER'}}));
+    assert.throws(()=>editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'
+    }),/ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH/);
+    fs.writeFileSync(proof,JSON.stringify({...scripted,runtimeVerification:{
+      ...scripted.runtimeVerification,syntheticFrameRendering:true
+    }}));
+    assert.throws(()=>editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'
+    }),/ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH/);
+    fs.writeFileSync(proof,JSON.stringify({...scripted,runtimeVerification:{
+      ...scripted.runtimeVerification,observedGameplayInteractions:0
+    }}));
+    assert.throws(()=>editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'
+    }),/ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH/);
+    fs.writeFileSync(proof,JSON.stringify({...scripted,actorAutomation:{
+      ...scripted.actorAutomation,playerControl:true
+    }}));
+    assert.throws(()=>editVerifiedRobloxGameplayVideo({
+      root:dir,target,capturePath:'capture.mp4',captureEvidencePath:'proof.json'
+    }),/ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH/);
+
     const probe=spawnSync('ffprobe',['-v','error','-select_streams','v:0',
       '-show_entries','stream=width,height','-of','csv=p=0',output],{encoding:'utf8'});
     assert.equal(probe.status,0,probe.stderr);
@@ -363,6 +415,8 @@ test('automatic Roblox video edit stays blocked without genuine native capture, 
     const first=await syncRobloxHomepageThumbnail(opts);
     assert.equal(first.automaticVideo.status,'NATIVE_RUNTIME_CAPTURE_UNAVAILABLE');
     assert.equal(first.automaticVideo.videoPublished,false);
+    assert.equal(first.automaticVideo.humanGameplayRequired,false);
+    assert.equal(first.automaticVideo.automatedNpcGameplaySupported,true);
     assert.equal(first.imageStatus,'AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD');
     assert.equal(fetches,1);
     const dir=path.join(root,'assets','runtime-evidence','roblox',target.gameId,'2026-10-27','artifact');
