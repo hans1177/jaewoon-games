@@ -2593,10 +2593,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-27T01:28:09.503Z",
+      "updatedAt": "2026-10-27T01:31:31.472Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2614,17 +2614,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
       "robloxBuildArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-      "robloxBuildPassedAt": "2026-10-25T14:44:04.283Z",
+      "robloxBuildPassedAt": "2026-10-27T01:31:31.472Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-25T14:44:04.283Z",
+      "robloxBuildPreflightPassedAt": "2026-10-27T01:31:31.472Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-25T14:42:49.325Z",
+        "checkedAt": "2026-10-27T01:30:38.199Z",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "secondaryOwnerFocus": false,
@@ -2659,10 +2659,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "gemini-3.5-flash-lite",
+            "model": "openai/gpt-oss-20b",
             "decision": "PASS",
             "blockers": [],
-            "note": "Exact deterministic package identity checks have passed, source validation is confirmed, and build/package steps are successful. Immutable package is approved to start runtime testing."
+            "note": "All required build evidence is present and has passed validation. The immutable package is eligible to begin runtime testing."
           }
         ],
         "blockers": [],
@@ -2676,12 +2676,12 @@
         "gameId": "fantasy-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-25T14:42:50.094Z",
+        "checkedAt": "2026-10-27T01:30:39.003Z",
         "sourcePath": "roblox-games/fantasy-survival",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "rebuiltArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-        "artifactRunId": 40203086768,
+        "artifactRunId": 40432513605,
         "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
         "assetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
         "observedAssetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
@@ -2724,8 +2724,11 @@
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
             "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
             "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
             "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -2742,8 +2745,12 @@
             "CONTENT_ENTITY",
             "COMBAT",
             "ENEMY_AI",
+            "GATHERING",
+            "WAVE",
             "EQUIPMENT",
             "PROGRESSION",
+            "QUEST",
+            "BOSS",
             "SAVE",
             "MOBILE_UI",
             "MULTIPLAYER"
@@ -2755,8 +2762,12 @@
             "CONTENT_ENTITY": false,
             "COMBAT": false,
             "ENEMY_AI": false,
+            "GATHERING": false,
+            "WAVE": false,
             "EQUIPMENT": false,
             "PROGRESSION": false,
+            "QUEST": true,
+            "BOSS": false,
             "SAVE": true,
             "MOBILE_UI": true,
             "MULTIPLAYER": true
@@ -2764,32 +2775,37 @@
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+              "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
               "capabilities": [
+                "SESSION_FLOW",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "EQUIPMENT"
+                "WAVE"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+              "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
               "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
                 "COMBAT",
-                "EQUIPMENT"
+                "EQUIPMENT",
+                "PROGRESSION"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
               "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
                 "COMBAT",
-                "EQUIPMENT"
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION",
+                "BOSS"
               ],
               "pass": false
             }
@@ -2851,7 +2867,7 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "MISSING",
+            "Content": "ROUGH",
             "World": "MISSING",
             "Combat": "MISSING",
             "AI": "MISSING",
@@ -2896,6 +2912,10 @@
                   "pass": false
                 },
                 {
+                  "id": "QUEST_TO_PROGRESSION",
+                  "pass": false
+                },
+                {
                   "id": "WORLD_TO_CONTENT",
                   "pass": false
                 }
@@ -2923,12 +2943,12 @@
             "minimumBasePartCount": 5,
             "spawnRequired": true,
             "landmarkRequired": true,
-            "objectiveRequired": false,
+            "objectiveRequired": true,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+          "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
           "antiSkeletonPassed": false,
           "designGenre": "Survival",
           "sourceGenre": "Survival",
@@ -2937,7 +2957,7 @@
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "MISSING",
+          "Content": "ROUGH",
           "World": "MISSING",
           "Combat": "MISSING",
           "AI": "MISSING",
@@ -2989,12 +3009,12 @@
         "gameId": "fantasy-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-25T14:42:50.094Z",
+        "checkedAt": "2026-10-27T01:30:39.003Z",
         "sourcePath": "roblox-games/fantasy-survival",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "rebuiltArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-        "artifactRunId": 40203086768,
+        "artifactRunId": 40432513605,
         "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
         "assetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
         "observedAssetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
@@ -3037,8 +3057,11 @@
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
             "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
             "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
             "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -3055,8 +3078,12 @@
             "CONTENT_ENTITY",
             "COMBAT",
             "ENEMY_AI",
+            "GATHERING",
+            "WAVE",
             "EQUIPMENT",
             "PROGRESSION",
+            "QUEST",
+            "BOSS",
             "SAVE",
             "MOBILE_UI",
             "MULTIPLAYER"
@@ -3068,8 +3095,12 @@
             "CONTENT_ENTITY": false,
             "COMBAT": false,
             "ENEMY_AI": false,
+            "GATHERING": false,
+            "WAVE": false,
             "EQUIPMENT": false,
             "PROGRESSION": false,
+            "QUEST": true,
+            "BOSS": false,
             "SAVE": true,
             "MOBILE_UI": true,
             "MULTIPLAYER": true
@@ -3077,32 +3108,37 @@
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+              "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
               "capabilities": [
+                "SESSION_FLOW",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "EQUIPMENT"
+                "WAVE"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+              "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
               "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
                 "COMBAT",
-                "EQUIPMENT"
+                "EQUIPMENT",
+                "PROGRESSION"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
               "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
                 "COMBAT",
-                "EQUIPMENT"
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION",
+                "BOSS"
               ],
               "pass": false
             }
@@ -3164,7 +3200,7 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "MISSING",
+            "Content": "ROUGH",
             "World": "MISSING",
             "Combat": "MISSING",
             "AI": "MISSING",
@@ -3209,6 +3245,10 @@
                   "pass": false
                 },
                 {
+                  "id": "QUEST_TO_PROGRESSION",
+                  "pass": false
+                },
+                {
                   "id": "WORLD_TO_CONTENT",
                   "pass": false
                 }
@@ -3236,12 +3276,12 @@
             "minimumBasePartCount": 5,
             "spawnRequired": true,
             "landmarkRequired": true,
-            "objectiveRequired": false,
+            "objectiveRequired": true,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+          "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
           "antiSkeletonPassed": false,
           "designGenre": "Survival",
           "sourceGenre": "Survival",
@@ -3250,7 +3290,7 @@
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "MISSING",
+          "Content": "ROUGH",
           "World": "MISSING",
           "Combat": "MISSING",
           "AI": "MISSING",
@@ -3342,8 +3382,8 @@
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 40203086768,
-        "testedAt": "2026-10-25T14:44:04.283Z",
+        "workflowRunId": 40432513605,
+        "testedAt": "2026-10-27T01:31:31.472Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -3351,8 +3391,11 @@
           "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
           "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
           "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+          "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+          "MISSING_GAMEPLAY_CAPABILITY:WAVE",
           "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
           "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+          "MISSING_GAMEPLAY_CAPABILITY:BOSS",
           "CORE_LOOP_STEP_UNIMPLEMENTED:0",
           "CORE_LOOP_STEP_UNIMPLEMENTED:1",
           "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -3385,8 +3428,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -3403,8 +3449,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -3416,8 +3466,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -3425,32 +3479,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -3512,7 +3571,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -3557,6 +3616,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -3584,12 +3647,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -3613,8 +3676,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -3631,8 +3697,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -3644,8 +3714,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -3653,32 +3727,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -3740,7 +3819,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -3785,6 +3864,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -3812,12 +3895,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -3841,8 +3924,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -3859,8 +3945,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -3872,8 +3962,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -3881,32 +3975,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -3968,7 +4067,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -4013,6 +4112,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -4040,12 +4143,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4069,8 +4172,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -4087,8 +4193,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -4100,8 +4210,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -4109,32 +4223,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -4196,7 +4315,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -4241,6 +4360,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -4268,12 +4391,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4297,8 +4420,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -4315,8 +4441,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -4328,8 +4458,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -4337,32 +4471,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -4424,7 +4563,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -4469,6 +4608,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -4496,12 +4639,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4525,8 +4668,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -4543,8 +4689,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -4556,8 +4706,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -4565,32 +4719,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -4652,7 +4811,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -4697,6 +4856,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -4724,12 +4887,508 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
+              "antiSkeletonPassed": false,
+              "designGenre": "Survival",
+              "sourceGenre": "Survival",
+              "designPlayMode": "HYBRID",
+              "sourcePlayMode": "HYBRID"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "fantasy-survival",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "QUEST",
+                "BOSS",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
+                "EQUIPMENT": false,
+                "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "마력숲 생존기",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "ROUGH",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": true,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
+              "antiSkeletonPassed": false,
+              "designGenre": "Survival",
+              "sourceGenre": "Survival",
+              "designPlayMode": "HYBRID",
+              "sourcePlayMode": "HYBRID"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "fantasy-survival",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "QUEST",
+                "BOSS",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
+                "EQUIPMENT": false,
+                "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "마력숲 생존기",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "ROUGH",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": true,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4753,8 +5412,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -4771,8 +5433,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -4784,8 +5450,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -4793,32 +5463,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -4880,7 +5555,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -4925,6 +5600,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -4952,12 +5631,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4981,8 +5660,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -4999,8 +5681,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -5012,8 +5698,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -5021,32 +5711,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -5108,7 +5803,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -5153,6 +5848,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -5180,12 +5879,260 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
+              "antiSkeletonPassed": false,
+              "designGenre": "Survival",
+              "sourceGenre": "Survival",
+              "designPlayMode": "HYBRID",
+              "sourcePlayMode": "HYBRID"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "fantasy-survival",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "QUEST",
+                "BOSS",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
+                "EQUIPMENT": false,
+                "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "마력숲 생존기",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "ROUGH",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": true,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -5209,8 +6156,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -5227,8 +6177,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -5240,8 +6194,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -5249,32 +6207,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -5336,7 +6299,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -5381,6 +6344,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -5408,12 +6375,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -5437,8 +6404,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -5455,8 +6425,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -5468,8 +6442,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -5477,32 +6455,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -5564,7 +6547,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -5609,6 +6592,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -5636,12 +6623,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -5665,8 +6652,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -5683,8 +6673,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -5696,8 +6690,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -5705,32 +6703,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -5792,7 +6795,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -5837,6 +6840,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -5864,12 +6871,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -5893,8 +6900,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -5911,8 +6921,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -5924,8 +6938,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -5933,32 +6951,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -6020,7 +7043,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -6065,6 +7088,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -6092,12 +7119,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -6121,8 +7148,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -6139,8 +7169,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -6152,8 +7186,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -6161,32 +7199,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -6248,7 +7291,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -6293,6 +7336,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -6320,12 +7367,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -6349,8 +7396,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -6367,8 +7417,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -6380,8 +7434,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -6389,32 +7447,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -6476,7 +7539,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -6521,6 +7584,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -6548,12 +7615,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -6577,8 +7644,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -6595,8 +7665,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -6608,8 +7682,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -6617,32 +7695,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -6704,7 +7787,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -6749,6 +7832,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -6776,12 +7863,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -6805,8 +7892,11 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -6823,8 +7913,12 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
+                "GATHERING",
+                "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
+                "QUEST",
+                "BOSS",
                 "SAVE",
                 "MOBILE_UI",
                 "MULTIPLAYER"
@@ -6836,8 +7930,12 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
+                "GATHERING": false,
+                "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
+                "QUEST": true,
+                "BOSS": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
                 "MULTIPLAYER": true
@@ -6845,32 +7943,37 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
+                  "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
                   "capabilities": [
+                    "SESSION_FLOW",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
-                    "EQUIPMENT"
+                    "WAVE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
+                  "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
                   "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "EQUIPMENT",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
                   "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
                     "COMBAT",
-                    "EQUIPMENT"
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION",
+                    "BOSS"
                   ],
                   "pass": false
                 }
@@ -6932,7 +8035,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "MISSING",
+                "Content": "ROUGH",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -6977,6 +8080,10 @@
                       "pass": false
                     },
                     {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -7004,12 +8111,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
+              "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -7542,7 +8649,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T01:30:46.363Z",
+  "updatedAt": "2026-10-27T01:31:31.472Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -7608,5 +8715,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
