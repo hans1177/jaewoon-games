@@ -49,6 +49,15 @@ local function questReady(a)
  if a.Mission==5 then return a.Tech>=2 end
  return false
 end
+-- 임무 진행 상황은 기존 서버 판정과 동일한 수치만 사용한다.
+local function missionProgress(a)
+ if a.Mission==1 then return math.min(5,a.Kills),5 end
+ if a.Mission==2 then return math.min(2,buildingCount(a)),2 end
+ if a.Mission==3 then return math.min(1,a.CapturedEver),1 end
+ if a.Mission==4 then return math.min(3,a.Stage),3 end
+ if a.Mission==5 then return math.min(2,a.Tech),2 end
+ return 1,1
+end
 local function ownedPoints(a)
  local n=0
  for _,point in ipairs(a.Points) do if point.Owner=="ALLY" then n+=1 end end
@@ -56,16 +65,19 @@ local function ownedPoints(a)
 end
 local function economy(a)
  local owned=ownedPoints(a)
+ local missionDone,missionGoal=missionProgress(a)
  local income=math.floor(3+a.Workers*2.5+owned*(2+a.Workers*.8))
  return {
   Gold=a.Gold,Workers=a.Workers,Lab=a.Lab,Research=a.Research,Tech=a.Tech,
   Command=a.Command,Points=owned,Kills=a.Kills,Mission=a.Mission,
   MissionTitle=MISSIONS[a.Mission] and MISSIONS[a.Mission].Title or "모든 임무 완료",
+  MissionProgress=missionDone,MissionGoal=missionGoal,
   MissionReward=MISSIONS[a.Mission] and MISSIONS[a.Mission].Reward or 0,
   CanClaim=questReady(a),WorkerCost=a.Workers<8 and workerCost(a.Workers) or 0,
   LabCost=a.Lab<5 and labCost(a.Lab) or 0,
   TechCost=a.Tech<5 and techCost(a.Tech) or 0,PassiveGold=income,
-  CaptureOwners={a.Points[1].Owner,a.Points[2].Owner}
+  CaptureOwners={a.Points[1].Owner,a.Points[2].Owner},
+  CaptureProgress={math.floor(a.Points[1].Progress),math.floor(a.Points[2].Progress)}
  }
 end
 -- 서버 전체 플레이어가 실제 점령한 거점을 합쳐 연합의 공통 목표를 동기화한다.
