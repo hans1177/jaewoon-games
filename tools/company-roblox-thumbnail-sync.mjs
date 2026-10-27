@@ -204,10 +204,27 @@ export function editVerifiedRobloxGameplayVideo({
     ||fs.statSync(src).size>200*1024*1024||!['.mp4','.mov'].includes(path.extname(src).toLowerCase()))
     throw new Error('ROBLOX_VIDEO_CAPTURE_INVALID');
   const originalHash=sha256(src);
-  const allowedSources=new Set(['ROBLOX_NATIVE_PLAYER_CAPTURE','ROBLOX_APPROVED_STUDIO_RUNTIME_CAPTURE']);
+  // 사람의 직접 플레이는 필수가 아니다. 실제 Roblox 런타임의 NPC AI 전투/리플레이도
+  // 게임 내 기능을 정확하게 보여주는 경우 편집용 원본으로 인정한다.
+  // Roblox 플레이어 자동 조작이나 외부 렌더링한 가짜 플레이 화면은 절대 인정하지 않는다.
+  const scriptedScene=evidence.captureSource==='ROBLOX_NATIVE_SCRIPTED_ACTOR_CAPTURE';
+  const scriptedProof=!scriptedScene||(
+    ['IN_GAME_NPC_AI','IN_GAME_SCRIPTED_REPLAY'].includes(evidence.actorAutomation?.mode)
+    &&evidence.actorAutomation?.playerControl===false
+    &&evidence.actorAutomation?.existingGameplayOnly===true
+    &&evidence.runtimeVerification?.actualNativeEngine===true
+    &&evidence.runtimeVerification?.clientScreenRecording===true
+    &&evidence.runtimeVerification?.syntheticFrameRendering===false
+    &&Number.isInteger(evidence.runtimeVerification?.observedGameplayInteractions)
+    &&evidence.runtimeVerification.observedGameplayInteractions>=1
+  );
+  const allowedSources=new Set([
+    'ROBLOX_NATIVE_PLAYER_CAPTURE','ROBLOX_APPROVED_STUDIO_RUNTIME_CAPTURE',
+    'ROBLOX_NATIVE_SCRIPTED_ACTOR_CAPTURE'
+  ]);
   if(evidence.gameId!==gameId||clean(evidence.universeId)!==universeId
     ||clean(evidence.placeId)!==placeId
-    ||!allowedSources.has(evidence.captureSource)
+    ||!allowedSources.has(evidence.captureSource)||!scriptedProof
     ||evidence.runtimeVerification?.pass!==true
     ||evidence.runtimeVerification?.actualGameplay!==true
     ||evidence.runtimeVerification?.playerAutomation===true
@@ -252,6 +269,9 @@ export function editVerifiedRobloxGameplayVideo({
     throw new Error('ROBLOX_VIDEO_EDIT_FAILED:'+clean(render.stderr||'INVALID_OUTPUT').slice(0,350));
   const result=Object.freeze({
     gameId,universeId,placeId,captureSource:evidence.captureSource,
+    humanPlayerRequired:false,
+    sceneControl:scriptedScene?evidence.actorAutomation.mode:'UNSPECIFIED_NATIVE_RECORDING',
+    observedGameplayInteractions:scriptedScene?evidence.runtimeVerification.observedGameplayInteractions:null,
     sourceRevision:evidence.sourceRevision,sourceSha256:originalHash,
     editedVideoPath:path.relative(path.resolve(root),output).replaceAll(path.sep,'/'),
     editedVideoSha256:sha256(output),editedVideoBytes:fs.statSync(output).size,
@@ -320,6 +340,9 @@ export async function syncRobloxExperienceDetailMedia({
       :'NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED',
     videoPublication:{
       requirement:'ACTUAL_NATIVE_ROBLOX_GAMEPLAY_CAPTURE',
+      humanGameplayRequired:false,
+      acceptedAutomatedActors:['IN_GAME_NPC_AI','IN_GAME_SCRIPTED_REPLAY'],
+      nativeClientCaptureStillRequired:true,
       maxSeconds:30,
       monthlyUploadQuota:3,
       destination:'CREATOR_DASHBOARD_PLACE_VIDEOS',
@@ -375,7 +398,11 @@ export async function syncRobloxHomepageThumbnail({
     // 메인: 인증된 Roblox 런타임 촬영본이 있으면 사람이 버튼을 누르지 않아도 컷 편집한다.
     // 영상 원본은 기존 중앙 런타임 증거 경로만 인정하며 파일이 없다면 제작 완료로 표시하지 않는다.
     const nativeRoot=path.resolve(root,'assets/runtime-evidence/roblox',target.gameId);
-    let automaticVideo={status:'NATIVE_RUNTIME_CAPTURE_UNAVAILABLE',videoPublished:false};
+    let automaticVideo={
+      status:'NATIVE_RUNTIME_CAPTURE_UNAVAILABLE',videoPublished:false,
+      humanGameplayRequired:false,automatedNpcGameplaySupported:true,
+      nativeClientCaptureStillRequired:true
+    };
     if(fs.existsSync(nativeRoot)&&fs.statSync(nativeRoot).isDirectory()){
       const pending=[nativeRoot],clips=[],rootReal=fs.realpathSync(nativeRoot);
       let seen=0;
@@ -401,7 +428,9 @@ export async function syncRobloxHomepageThumbnail({
           });
           automaticVideo={
             status:'NATIVE_VIDEO_EDITED_PENDING_REVIEW_AND_PUBLICATION',
-            videoPublished:false,source:edited.sourceSha256,
+            videoPublished:false,humanGameplayRequired:false,
+            automatedNpcGameplaySupported:true,nativeClientCaptureStillRequired:true,
+            source:edited.sourceSha256,
             editedVideoPath:edited.editedVideoPath,
             editedVideoSha256:edited.editedVideoSha256,
             editedVideoBytes:edited.editedVideoBytes,
@@ -410,7 +439,9 @@ export async function syncRobloxHomepageThumbnail({
           break;
         }catch(error){
           automaticVideo={status:'NATIVE_CAPTURE_REJECTED_OR_EDIT_FAILED',
-            videoPublished:false,reason:clean(error?.message).slice(0,160)};
+            videoPublished:false,humanGameplayRequired:false,
+            automatedNpcGameplaySupported:true,nativeClientCaptureStillRequired:true,
+            reason:clean(error?.message).slice(0,160)};
         }
       }
     }
