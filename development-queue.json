@@ -3542,7 +3542,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-27T12:02:13.682Z",
+      "updatedAt": "2026-10-27T12:10:09.179Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3557,9 +3557,9 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+      "robloxFailureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED",
       "routingBlockers": [
-        "roblox-open-cloud-engine-probe-transient-retry"
+        "roblox-cloud-image-content-unverified"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -4913,7 +4913,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-27T12:00:29.391Z"
+        "verifiedAt": "2026-10-27T12:10:09.179Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-27T08:56:07.427Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-27T10:20:49.641Z",
@@ -4971,36 +4971,7 @@
       "robloxInternalPlaytestPassedAt": null,
       "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
-      "robloxCloudImageEvidence": {
-        "available": true,
-        "permissionDenied": false,
-        "status": 200,
-        "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
-        "universeId": "10767445741",
-        "observedAt": "2026-10-27T11:56:16.982Z",
-        "endpoint": "https://apis.roblox.com/thumbnail-personalization-api/v1/universes/10767445741/thumbnails?maxPageSize=50",
-        "imageMetadataAvailable": true,
-        "thumbnailCount": 8,
-        "imageUrls": [],
-        "imageContent": [],
-        "imageContentChecked": false,
-        "imageContentPassed": false,
-        "imageVisualQualityVerified": false,
-        "metadataCoverage": "RETURNED_API_PAGE_ONLY",
-        "runtimeScreenshot": false,
-        "exactRuntimeVersionImage": false,
-        "state": "IMAGE_CONTENT_UNVERIFIED",
-        "authority": "roblox-open-cloud-thumbnail-image-sanity",
-        "limitation": "THUMBNAIL_METADATA_IS_VISUAL_SANITY_ONLY_NOT_EXACT_RUNTIME_RENDER_PROOF",
-        "requestContext": {
-          "sourceRevision": "d3e0378c66877d2aac883c0eebe3662b6b1dcc7b",
-          "artifactIdentity": "sha256:cd58f538ca4281505bf562ff50944c7ae1226cb4950e871d3e2a9fcbc121cffc",
-          "universeId": "10767445741",
-          "placeId": "116850096561713",
-          "versionNumber": 70,
-          "observedImageRevision": false
-        }
-      }
+      "robloxCloudImageEvidence": null
     },
     {
       "gameId": "fantasy-survival",
@@ -6250,7 +6221,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T12:09:26.103Z",
+  "updatedAt": "2026-10-27T12:10:09.179Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
