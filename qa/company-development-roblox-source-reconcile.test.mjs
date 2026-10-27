@@ -1230,11 +1230,14 @@ test('standard Baeksu GameConfig does not claim verified learning without a real
     const projectFile=path.join(gameRoot,'default.project.json');
     const beforeProject=fs.readFileSync(projectFile,'utf8');
     const playbooks=path.join(tmp,'verified-playbooks.json');
-    fs.writeFileSync(playbooks,'{}\\n');
+    fs.writeFileSync(playbooks,'{}\n');
     assert.throws(()=>execFileSync(process.execPath,[
       path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
       '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war','--playbooks='+playbooks
-    ],{stdio:'pipe'}),/Command failed/);
+    ],{stdio:'pipe'}),error=>{
+      assert.match(String(error.stderr),'ROBLOX_SWEEP_LEARNING_NOT_APPLIED:baeksu-war');
+      return true;
+    });
     assert.equal(fs.readFileSync(projectFile,'utf8'),beforeProject);
     assert.equal(fs.existsSync(path.join(gameRoot,'roblox-source-bootstrap.json')),false);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
