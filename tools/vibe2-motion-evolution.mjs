@@ -25,7 +25,7 @@ function validRow(x){
     ||!safeNumber(x.beforeScore)||!safeNumber(x.afterScore)||x.afterScore-x.beforeScore<3
     ||x.regressionCount!==0)return false;
  if(!safeId(x.evidenceId)||!safeId(x.platform)||!['ROBLOX','WEB'].includes(x.platform)
-    ||!safeId(x.sourceOwnerFile?.replace?.All?.('/','_')||'')||!safeId(x.nativeReplayId))return false;
+    ||!(/^[a-zA-Z0-9_.\/-]{1,200}$/.test(clean(x.sourceOwnerFile))&&!clean(x.sourceOwnerFile).split('/').includes('..'))||!safeId(x.nativeReplayId))return false;
  return true;
 }
 export function validateMotionEvolutionEvidence(evidence={}){
