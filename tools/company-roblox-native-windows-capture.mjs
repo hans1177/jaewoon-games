@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Windows-only observer. Never sends player inputs, launches Studio, or reads other windows.
+// Native Roblox footage recorder: existing Windows plus verified physical Android.
 // Authenticated launch of the private capture scene is separate from OS-level recording.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -67,6 +67,34 @@ function playerWindow(){
  const w=windows[0];
  if(!Number.isSafeInteger(Number(w.hwnd))||Number(w.hwnd)<=0||!Number.isSafeInteger(Number(w.pid)))throw Error('ROBLOX_WINDOW_HANDLE_INVALID');
  return w;
+}
+// 두 운영체제의 녹화 파일에 같은 영상 무결성 검사를 적용한다.
+function validateNativeVideo(file,duration){
+ const stat=fs.statSync(file);
+ if(stat.size<100*1024||stat.size>25*1024*1024)throw Error('VIDEO_SIZE_UNUSABLE');
+ const probe=command('ffprobe',['-v','error','-show_entries','format=duration:stream=codec_type,width,height','-of','json',file],15000);
+ if(probe.status!==0)throw Error('CAPTURE_FFPROBE_FAILED');
+ const meta=JSON.parse(probe.stdout||'{}');
+ const v=(meta.streams||[]).find(x=>x.codec_type==='video');
+ if(!v||v.width!==1280||v.height!==720||Number(meta.format?.duration)<duration-2)throw Error('CAPTURE_VIDEO_NOT_VALIDATED');
+ // Reject blank/frozen GDI GPU surfaces. A playable MP4 alone does not prove gameplay.
+ const audit=command('ffmpeg',['-hide_banner','-nostats','-i',file,
+  '-vf','blackdetect=d=3:pix_th=0.10,freezedetect=n=-55dB:d=3',
+  '-an','-f','null','-'],60000);
+ if(audit.status!==0)throw Error('CAPTURE_FRAME_AUDIT_FAILED');
+ const messages=String(audit.stderr||'');
+ // 분석: 영상 끝까지 검거나 정지된 경우 종료 이벤트가 없어도 거부한다.
+ const fullBlack=messages.match(/black_start:\\s*0(?:[.\\s]|$)/);
+ if(fullBlack){
+  const end=messages.match(/black_end:\\s*([0-9.]+)/);
+  if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_BLACK_FRAMES_REJECTED');
+ }
+ const fullFreeze=messages.match(/freeze_start:\\s*0(?:[.\\s]|$)/);
+ if(fullFreeze){
+  const end=messages.match(/freeze_end:\\s*([0-9.]+)/);
+  if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_STATIC_FRAMES_REJECTED');
+ }
+ return {meta,v};
 }
 function submitCapture({file,proofPath,proof,stateFile,observed}){
  const gitStatus=command('git',['-C',runtimeRoot,'rev-parse','--abbrev-ref','HEAD']);
@@ -167,30 +195,7 @@ async function run(){
   '-c:v','libx264','-preset','veryfast','-crf','27','-maxrate','2100k','-bufsize','4200k',
   '-an','-movflags','+faststart',file],Math.max(60,duration+20)*1000);
  if(result.status!==0||!fs.existsSync(file))throw Error('WINDOW_CAPTURE_FAILED:'+String(result.stderr||'').slice(0,180));
- const stat=fs.statSync(file);
- if(stat.size<100*1024||stat.size>25*1024*1024)throw Error('VIDEO_SIZE_UNUSABLE');
- const probe=command('ffprobe',['-v','error','-show_entries','format=duration:stream=codec_type,width,height','-of','json',file],15000);
- if(probe.status!==0)throw Error('CAPTURE_FFPROBE_FAILED');
- const meta=JSON.parse(probe.stdout||'{}');
- const v=(meta.streams||[]).find(x=>x.codec_type==='video');
- if(!v||v.width!==1280||v.height!==720||Number(meta.format?.duration)<duration-2)throw Error('CAPTURE_VIDEO_NOT_VALIDATED');
- // Reject blank/frozen GDI GPU surfaces. A playable MP4 alone does not prove gameplay.
- const audit=command('ffmpeg',['-hide_banner','-nostats','-i',file,
-  '-vf','blackdetect=d=3:pix_th=0.10,freezedetect=n=-55dB:d=3',
-  '-an','-f','null','-'],60000);
- if(audit.status!==0)throw Error('CAPTURE_FRAME_AUDIT_FAILED');
- const messages=String(audit.stderr||'');
- // 분석: 영상 끝까지 검거나 정지된 경우 종료 이벤트가 없어도 거부한다.
- const fullBlack=messages.match(/black_start:\\s*0(?:[.\\s]|$)/);
- if(fullBlack){
-  const end=messages.match(/black_end:\\s*([0-9.]+)/);
-  if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_BLACK_FRAMES_REJECTED');
- }
- const fullFreeze=messages.match(/freeze_start:\\s*0(?:[.\\s]|$)/);
- if(fullFreeze){
-  const end=messages.match(/freeze_end:\\s*([0-9.]+)/);
-  if(!end||Number(end[1])>=duration-2)throw Error('CAPTURE_STATIC_FRAMES_REJECTED');
- }
+ const {meta,v}=validateNativeVideo(file,duration);
  const revision=command('git',['-C',root,'rev-parse','HEAD']).stdout.trim();
  // OS pixels and native process are evidence of a window recording, not proof of
  // exact published revision, in-game actions or successful Roblox gallery upload.
