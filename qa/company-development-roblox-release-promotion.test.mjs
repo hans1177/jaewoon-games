@@ -650,11 +650,18 @@ test('CC0 registered models receive per-target Universe grants only after exact 
  assert.match(publish,/sourceRoot\+'\/'/);
  assert.match(publish,/subjectType:'Universe',subjectId:String\(process\.env\.ROBLOX_UNIVERSE_ID\)/);
  assert.match(publish,/action:'Use',requests:assetIds\.map/);
- assert.match(publish,/if\(!grant\.ok\|\|\(Array\.isArray\(response\.errors\)&&response\.errors\.length>0\)/);
- assert.match(publish,/response\.successAssetIds\.map\(String\)/);
- assert.match(publish,/assetIds\.some\(assetId=>!grantedIds\.has\(String\(assetId\)\)\)/);
+ assert.match(publish,/const complete=\(result,answer\)=>\{/);
+ assert.match(publish,/answer\.successAssetIds\.map\(String\)/);
+ assert.match(publish,/assetIds\.every\(assetId=>granted\.has\(String\(assetId\)\)\)/);
  assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
- assert.match(publish,/ROBLOX_CC0_GRANT_API_KEY_REQUIRED/);
+ assert.match(publish,/ROBLOX_CC0_GRANT_OWNER_CREDENTIAL_REQUIRED/);
+ assert.match(publish,/ROBLOX_ROBLOSECURITY\|\|process\.env\.ROBLOX_SECURITY_COOKIE/);
+ assert.match(publish,/grant\.status===403/);
+ assert.match(publish,/grant\.headers\.get\('x-csrf-token'\)/);
+ assert.match(publish,/authority='OWNER_COOKIE_CSRF'/);
+ assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_AUTHORITY=/);
+ assert.ok(publish.indexOf('if(!complete(grant,answer))')<actualPublish,
+   'all per-asset grants must be confirmed before the source-locked Roblox upload');
  assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE=/);
  assert.match(publish,/ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS/);
  const repair=workflow.slice(workflow.indexOf('      - name: Persist publication retry requirement'),
