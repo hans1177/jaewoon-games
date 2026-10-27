@@ -111809,11 +111809,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8643a15ef5cfd2c9ba2c0310",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10595",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1d1a897c8c5598095bdb21b70c2a3e9b62f53250",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10595,
+        "baseBranch": "main",
+        "headBranch": "fix/roblox-native-motion-binding-20261027",
+        "baseSha": "1d1a897c8c5598095bdb21b70c2a3e9b62f53250",
+        "headSha": "92924a0ef7e0b563ada4474ebad69f76c679536c",
+        "mergeCommitSha": "271719e195983fb89ccdb4e2b2dd8135e73f1758",
+        "mergedAt": "2026-10-27T05:58:35Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5dcb103e5cb26f9688b0023f0be99a14fb8dd27698219f4e1b5b34f43ea7a768",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/roblox-native-motion-binding-20261027",
+        "candidateSha": "92924a0ef7e0b563ada4474ebad69f76c679536c"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 273,
+        "deletedLineCount": 22,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-roblox-native-windows-capture.test.mjs",
+          "qa/horror-escape-room-release.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/default.project.json",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-roblox-native-windows-capture.mjs"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-roblox-native-windows-capture.test.mjs",
+          "qa/horror-escape-room-release.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/default.project.json",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-roblox-native-windows-capture.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10595",
+        "merge-commit:271719e195983fb89ccdb4e2b2dd8135e73f1758",
+        "base-main:1d1a897c8c5598095bdb21b70c2a3e9b62f53250"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 882
+    "total": 883
   }
 }
