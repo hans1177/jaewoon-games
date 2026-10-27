@@ -2,24 +2,30 @@
   "version": 2,
   "gameId": "fantasy-survival",
   "date": "2026-10-27",
-  "engineDigest": "c4e8e124b8820ca7e3011b40e9817a93fd3718c6ef3b98e23591b018e556c743",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
-  "cachedTaskCount": 10,
+  "engineDigest": "473a5acf55aee22360497f413fc9b290e5d7367ccc53c26c894bf5a54fc2c4f5",
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "deterministic_department_evidence"
+  ],
+  "completedPhaseCount": 3,
+  "cachedTaskCount": 11,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_FULL_FLOW_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/fantasy-survival/2026-10-27/design-seed.json",
-    "contentDigest": "b69804bed089fcc7fab8ec5a60c4dd2af0b13dde6f4aeb89c5f989e9d38039e5",
+    "contentDigest": "f6a68e852a32c3fa09b8feffe39c18df2f186d5d95619e4267142575c224342d",
     "authorModel": "vibe-native:standard-design-v1",
     "status": "AUTHORED_CANDIDATE"
   },
   "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-27T01:09:54.804Z"
+  "updatedAt": "2026-10-27T01:14:08.226Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
