@@ -1794,6 +1794,35 @@ test('practice-only PASS settles verified checkpoint without candidate QA promot
 });
 
 
+
+test('기존 불변 큐 재정규화는 반복 복사하지 않고 외부·변경 입력은 다시 검사한다',()=>{
+  const valid=createVibeContinuousQueue({maxConcurrentTasks:16,tasks:[{
+    id:'verified-normalized',gameId:'sample',target:'web',department:'development',
+    type:'implementation',status:'queued',goal:'기존 기능 보수',
+    evidence:['first','first'],responsibleFiles:['web-games/sample/index.html']
+  }]});
+  assert.equal(createVibeContinuousQueue(valid),valid,
+    '모듈이 방금 정규화한 불변 인스턴스만 중복 비용 없이 재사용한다');
+  const cloned={...valid};
+  assert.notEqual(createVibeContinuousQueue(cloned),valid,
+    '스프레드 복사본은 신뢰하는 기존 인스턴스가 아니므로 다시 정규화한다');
+  const forged=Object.freeze({...valid,tasks:Object.freeze([Object.freeze({
+    ...valid.tasks[0],status:'untrusted-invalid-status'
+  })])});
+  assert.equal(createVibeContinuousQueue(forged).tasks[0].status,'queued',
+    '외부 동결 객체도 정상화 검증을 우회하지 않는다');
+  assert.throws(()=>createVibeContinuousQueue({
+    ...valid,queueStorage:{version:1,entries:[]}
+  }),/VIBE2_QUEUE_STORAGE_RESTORE_REQUIRED/,
+  '분할 저장된 큐의 복원 요구를 우회하지 않는다');
+  const changed=createVibeContinuousQueue({...valid,tasks:[{
+    ...valid.tasks[0],status:'blocked',blocker:'EXTERNAL_LEARNING_APPROVAL_REQUIRED'
+  }]});
+  assert.equal(changed.tasks[0].status,'blocked');
+  assert.equal(changed.tasks[0].blocker,'EXTERNAL_LEARNING_APPROVAL_REQUIRED');
+  assert.equal(valid.tasks[0].status,'queued');
+});
+
 test('고정된 자산 바인딩 작업주문 크래시만 동일 큐에서 한 번 복구하고 권한 차단을 유지한다',()=>{
   const source=id=>({
     id,gameId:'game',target:'web',department:'development',type:'implementation',
