@@ -1141,6 +1141,65 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
 });
 
+test('legacy Baeksu war enters canonical all-game common-module sweep without fake learning or source QA',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-baeksu-native-modules-'));
+  try{
+    const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
+    const paths=[
+      'default.project.json','client/Game.client.luau','server/Game.server.luau',
+      'shared/Config.luau','shared/VisualKit.luau'
+    ];
+    for(const name of paths){
+      const destination=path.join(gameRoot,name);
+      fs.mkdirSync(path.dirname(destination),{recursive:true});
+      fs.copyFileSync(path.join('roblox-games/baeksu-war',name),destination);
+    }
+    const originalClient=fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8');
+    const originalServer=fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8');
+    const originalConfig=fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8');
+    const before=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
+    assert.equal(before.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
+    const playbooks=path.join(tmp,'verified-playbooks.json');
+    fs.writeFileSync(playbooks,'{}\n');
+    const report=path.join(tmp,'report.json');
+    const command=[
+      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+      '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war',
+      '--playbooks='+playbooks,'--report='+report
+    ];
+    execFileSync(process.execPath,command,{stdio:'pipe'});
+    const first=JSON.parse(fs.readFileSync(report,'utf8'));
+    assert.equal(first.scannedGameCount,1);
+    assert.equal(first.changedGameCount,1);
+    assert.equal(first.results[0].moduleSyncOnly,true);
+    assert.equal(first.results[0].verifiedExternalLearningApplied,false);
+    assert.equal(first.results[0].commonModuleCount,15);
+    assert.equal(first.results[0].commonModuleConflictCount,0);
+    const project=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
+    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
+      '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonBuilding.$path,
+      '../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
+    assert.equal(fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8'),originalClient);
+    assert.equal(fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8'),originalServer);
+    assert.equal(fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8'),originalConfig);
+    const evidencePath=path.join(gameRoot,'roblox-source-bootstrap.json');
+    const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
+    assert.equal(evidence.moduleSyncOnly,true);
+    assert.equal(evidence.sourceValidationPassed,undefined);
+    assert.equal(evidence.vibe3LearningApplied,undefined);
+    assert.match(evidence.commonModuleSync.libraryCoverage.runtimeBindingFingerprint,/^[a-f0-9]{64}$/);
+    const afterProject=fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8');
+    const afterEvidence=fs.readFileSync(evidencePath,'utf8');
+    execFileSync(process.execPath,command,{stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(report,'utf8')).changedGameCount,0);
+    assert.equal(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'),afterProject);
+    assert.equal(fs.readFileSync(evidencePath,'utf8'),afterEvidence);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
   const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
