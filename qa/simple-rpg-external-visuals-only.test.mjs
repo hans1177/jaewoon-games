@@ -62,10 +62,20 @@ test('no hand-built monster, companion, or character preview geometry', () => {
 });
 
 test('self-authored weather, impact VFX, camera pulses and limb rigs remain deleted', () => {
-  for (const moduleSource of [client, weather]) {
+  // The shared verified-learning binder generates reusable variants for other genres.
+  // simple-rpg specifically selects PROGRESSION_RISK; unreachable generic combat VFX
+  // must not masquerade as this game's self-authored mesh/VFX implementation.
+  // Keep the native learning block intact for its independent engine contract QA.
+  assert.match(client, /-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/);
+  assert.match(client, /local verifiedLearningSemanticVariant = "PROGRESSION_RISK"/);
+  assert.match(client, /-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/);
+  assert.match(client, /if serverConfirmed~=true then return end/);
+  const gameAuthoredClient = client.replace(
+    /-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/g, '');
+  for (const moduleSource of [gameAuthoredClient, weather]) {
     assert.doesNotMatch(moduleSource, /Instance\.new\("(ParticleEmitter|Highlight|Sparkles|Trail|Fire|Smoke|BloomEffect|DepthOfFieldEffect|ColorCorrectionEffect)"\)/);
   }
-  assert.doesNotMatch(client, /creatureMotionLimbNames|creatureImportedRig|creatureTelegraphHighlights|civPreviewStyles/);
+  assert.doesNotMatch(gameAuthoredClient, /creatureMotionLimbNames|creatureImportedRig|creatureTelegraphHighlights|civPreviewStyles/);
   assert.doesNotMatch(server, /DefeatedEnemyLootEffect|LootRewardNotice|Instance\.new\("PointLight"\)/);
 });
 
