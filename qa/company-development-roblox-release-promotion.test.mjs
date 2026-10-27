@@ -678,14 +678,14 @@ test('CC0 registered models receive per-target Universe grants only after exact 
 
 test('Cozy 429 auto-retry respects exact source and private validation without media or publish fanout',()=>{
  const head=workflow.slice(0,workflow.indexOf('\n'+'jobs:\n'));
- assert.match(head,/cron: '17 2 \\* \\* \\*'/);
- assert.match(head,/cron: '32 \\* \\* \\*'/);
+ assert.match(head,/cron: '17 2 \* \* \*'/);
+ assert.match(head,/cron: '32 \* \* \*'/);
  const start=workflow.indexOf('  cozy-capacity-retry:');
  const end=workflow.indexOf('\n  release-dedupe:',start);
  assert.ok(start>0&&end>start,'keep one scheduled check in existing canonical publish workflow');
  const retry=workflow.slice(start,end);
  assert.match(retry,/runs-on: ubuntu-slim/);
- assert.match(retry,/github\.event\.schedule == '32 \\* \\* \\* \\*'/);
+ assert.match(retry,/github\.event\.schedule == '32 \* \* \* \*'/);
  assert.match(retry,/item\?\.robloxFoundationF0Passed===true/);
  assert.match(retry,/item\?\.robloxRuntimeFoundationPassed!==true/);
  assert.match(retry,/candidate\.validationOnly===true/);
@@ -698,6 +698,6 @@ test('Cozy 429 auto-retry respects exact source and private validation without m
  assert.match(retry,/gh workflow run company-development-roblox-post-runtime-qa\.yml[\s\S]*-f game_id=cozy-island -f retry_open_cloud_only=true/);
  assert.doesNotMatch(retry,/company-development-roblox-runtime\.yml|company-development-roblox-release-promotion\.yml --repo/);
  const thumbnail=workflow.slice(workflow.indexOf('  thumbnail-sync:'));
- assert.match(thumbnail,/github\.event\.schedule == '17 2 \\* \\* \\*'/);
+ assert.match(thumbnail,/github\.event\.schedule == '17 2 \* \* \*'/);
  assert.doesNotMatch(retry,/publishRobloxPlace|ROBLOX_PUBLISHED_VERSION_NUMBER|autoActivate/);
 });
