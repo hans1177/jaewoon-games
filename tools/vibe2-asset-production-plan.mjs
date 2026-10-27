@@ -2668,7 +2668,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       ?libraryPlan.maintenance.inventoryFingerprint
       :clean(previousMaintenance?.lastChangeFingerprint)||libraryPlan.maintenance.inventoryFingerprint,
     catalogFingerprint:fingerprint,
-    catalogChanged:Boolean(previousMaintenance?.catalogFingerprint)&&previousMaintenance.catalogFingerprint!==fingerprint,
+    // Last observed catalog drift belongs to the stable maintenance snapshot.
+    // Clearing it on the next identical dry run falsely increments the registry version.
+    catalogChanged:(Boolean(previousMaintenance?.catalogFingerprint)&&previousMaintenance.catalogFingerprint!==fingerprint)
+      ||previousMaintenance?.catalogChanged===true,
     synchronizedRegistryVersion:Number(original?.version||0)
   };
   const depth=libraryPlan.systemDepthAudit||auditCommonLibrarySystemDepth({assets:next.assets});
