@@ -1669,7 +1669,7 @@ test('build-up iteration expectation rises with verified cycles without adding p
       newStageForbidden:true,
       growth:{
         detailDepthLevel:{base:1,stepEveryCycles:1,max:null},
-        connectedImprovements:{base:4,stepEveryCycles:2,max:8},
+        connectedImprovements:{base:5,stepEveryCycles:2,max:8},
         meaningfulDistinctAxes:{base:2,stepEveryCycles:3,max:5},
         crossSystemConnections:{base:1,stepEveryCycles:2,max:4},
         activeDetailDimensions:{base:2,stepEveryCycles:1,max:10},
