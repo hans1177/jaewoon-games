@@ -2527,6 +2527,7 @@ jobs:
           VARIANT: ${{ matrix.variant }}
           ORDER_RUN: ${{ steps.order.outputs.run }}
           ORDER_REASON: ${{ steps.order.outputs.reason }}
+          ORDER_STEP_OUTCOME: ${{ steps.order.outcome }}
           ROUTE: ${{ steps.order.outputs.route }}
           WORK_LOCK_REQUIRED: ${{ steps.order.outputs.work_lock_required }}
           WORK_LOCK_ACQUIRED: ${{ steps.work_lock.outputs.acquired }}
@@ -2591,7 +2592,9 @@ jobs:
           const performanceOk=process.env.PERFORMANCE_OUTCOME==='success';
           const workLockRequired=process.env.WORK_LOCK_REQUIRED==='true';
           const workLockAcquired=!workLockRequired||process.env.WORK_LOCK_ACQUIRED==='true';
-          let outcome='BLOCKED', blocker=clean(process.env.ORDER_REASON)||'work-order-not-runnable';
+          let outcome='BLOCKED', blocker=process.env.ORDER_STEP_OUTCOME==='failure'
+            ?'work-order-generation-step-failed'
+            :clean(process.env.ORDER_REASON)||'work-order-not-runnable';
           if(process.env.ORDER_RUN==='true' && route==='text-source-worker'){
             if(!workLockAcquired){outcome='BLOCKED';blocker='work-lock-conflict:'+clean(process.env.WORK_LOCK_REASON||'not-acquired');}
             else if(candidateOk&&testOk&&performanceOk){outcome='PASS';blocker='candidate-awaiting-qa-and-deployment';}
@@ -2711,6 +2714,7 @@ jobs:
             review:'WAITING_FAN_IN'
           };
           const evidence=[
+            process.env.ORDER_STEP_OUTCOME==='failure'?'work-order-generation-step-failed:v1':'',
             clean(process.env.CANDIDATE_BRANCH),
             clean(process.env.CANDIDATE_SHA)&&`candidate-sha:${clean(process.env.CANDIDATE_SHA)}`,
             clean(process.env.BASE_SHA)&&`base-main:${clean(process.env.BASE_SHA)}`,
