@@ -479,7 +479,13 @@ test('simple RPG authored lobby spawn follows Baeksu war single CharacterAdded p
   assert.match(server, /startGround = civPart\(workspace, "SimpleRpgGround"/);
   assert.match(server, /foundationSpawn = spawnSource:Clone\(\)/);
   assert.match(server, /character:PivotTo\(character:GetPivot\(\) \+ \(target - rootPart\.Position\)\)/);
-  assert.doesNotMatch(server, /character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+  // Existing explicit lobby teleport actions intentionally retain their original coordinates.
+  // Only the post-load first-join path must not overwrite the verified foundation placement.
+  const firstJoin = server.slice(server.indexOf('-- 처음 접속 시 로비에서 시작.'),
+    server.indexOf('player.CharacterAdded:Connect(function()',server.indexOf('-- 처음 접속 시 로비에서 시작.')));
+  assert.ok(firstJoin.length > 100,'first-join block exists');
+  assert.doesNotMatch(firstJoin, /character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+  assert.match(server, /character:SetAttribute\("CivTravelCompleted", true\)\s+character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
   assert.match(server, /if character:GetAttribute\("CivTravelCompleted"\) then return end/);
   assert.match(server, /SIMPLE_RPG_LOBBY_GROUNDING_UNVERIFIED/);
 });
