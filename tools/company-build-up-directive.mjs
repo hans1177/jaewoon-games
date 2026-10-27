@@ -1562,8 +1562,8 @@ function buildPlayerFacingInspectionContract({gameId,platform='COMMON',source,st
     ['UI_LAYOUT','UI_HUD','UI', 'HUD·메뉴·팝업·인벤을 작은/큰 화면과 가로/세로에서 열고 긴 한글·최대 보유량·위험 경고를 표시', '글자 잘림·겹침·safe area 침범·체력/목표 가림·초점 소실·색만으로 상태 구분', '레이아웃·텍스트·아이콘·정보 우선순위', '같은 해상도/상태 전후 화면과 핵심 정보 식별'],
     ['UI_INTERACTION','MENU_FLOW','UI', '열기→스크롤→선택→장착→닫기→다시 열기, 팝업 위 터치와 빠른 연속 입력', '장식 버튼·중복 실행·닫기 터치의 뒤쪽 공격 전달·선택 초기화·표시와 실제 장착 불일치', '입력 소비·모달·선택 상태·서버 응답 연결', '터치/마우스별 한 번의 입력에 한 번의 결과와 상태 유지'],
     ['CHARACTER_RENDER','CHARACTER_VISUALS','GRAPHICS', '정면/측면/후면, 가까이/멀리, 장비 교체와 이동·경사·착지', '누락 메시/텍스처·기본 부품 대체·장비 관통/부유·리그 찢어짐·발 미끄러짐·지면 관통', '기존 모델 바인딩·리그·장착 접점·접지', '같은 캐릭터/장비/카메라의 실제 렌더와 원본 해시/업로드 ID 연결'],
-    ['MONSTER_READABILITY','ENEMY_VISUALS','GRAPHICS', '기존 적 종류를 같은 조명에서 접근→추적→공격 전조→피격→사망 순으로 관찰', '색만 다른 복제·역할 식별 불가·공격 전조 안 보임·배경에 묻힘·죽은 적이 움직이거나 남음', '적 모델·상태 표현·전조·사망 정리', '기존 종류별 역할과 위험 전조가 구별되는 화면/행동 기록'],
-    ['MOTION_TRANSITIONS','ANIMATION','GRAPHICS', 'idle→start→walk/run→turn→stop→jump/land→attack→hit/death, 행동 중 취소·재시작', 'T포즈·정지 모델·전환 튐·루프 끊김·중복 트랙·사망 뒤 idle·전체 CFrame 이동만으로 모션 주장', 'Animator·관절·블렌딩·상태 전환·트랙 수명', '같은 입력 순서의 연속 프레임/동작 기록과 실제 상태 일치'],
+    ['MONSTER_READABILITY','ENEMY_VISUALS','GRAPHICS', '실제 일반 적·몬스터·동물·보스 종류별로 같은 조명에서 대기→이동→추적→전조→피격→사망(해당 시) 순으로 관찰', '색만 다른 복제·역할 식별 불가·공격 전조 안 보임·배경에 묻힘·죽은 적이 움직이거나 남음', '적 모델·상태 표현·전조·사망 정리', '기존 종류별 역할과 위험 전조가 구별되는 화면/행동 기록'],
+    ['MOTION_TRANSITIONS','ANIMATION','GRAPHICS', '실제 플레이어·NPC·몬스터·동물·보스·동료·탈것별 idle→start→walk/run→turn→stop→jump/land→attack→hit/death(해당할 때), 행동 중 취소·재시작', 'T포즈·정지 모델·전환 튐·루프 끊김·중복 트랙·사망 뒤 idle·전체 CFrame 이동만으로 모션 주장', 'Animator·관절·블렌딩·상태 전환·트랙 수명', '같은 입력 순서의 연속 프레임/동작 기록과 실제 상태 일치'],
     ['ACTION_IMPACT','GAME_FEEL','GAMEPLAY', '기존 주 행동의 준비→실행→판정→회복, 빗나감·피격·취소·연속 입력', '판정보다 먼저 데미지 표현·허공 타격 피드백·VFX/음향 지연·쿨다운 표시 불일치·연속 입력 고착', '기존 서버 판정과 클라이언트 모션/VFX/음향 사건 연결', 'authoritative impact 시점과 시각/음향 타임라인 비교; 데미지·쿨다운·히트 의미 보존'],
     ['CAMERA_COMPOSITION','CAMERA','GRAPHICS', '벽/모서리/좁은 통로·다중 적·장비 UI·큰 VFX·근접/원거리 장면', '카메라 벽 관통·캐릭터/적/목표 가림·과도한 흔들림·줌 튐·모바일 화면 이탈', '카메라 충돌·추적·FOV·오클루전·화면 구성', '같은 동선에서 플레이어·위험·다음 목표를 지속적으로 식별'],
     ['WORLD_BACKGROUND','ENVIRONMENT','MAP', '스폰→허브→주 동선→전투/상호작용 구역→지역 경계, 낮/어둠 등 기존 상태', '빈 평면·무의미한 반복 소품·전경/중경/배경 혼동·랜드마크 부재·동선과 장식 충돌', '기존 맵 배치·지형·랜드마크·조명·배경 밀도', '같은 경로의 전후 장면에서 지역 역할과 목적지 식별; 새 지역은 승인 설계에만 연결'],
@@ -1581,8 +1581,8 @@ function buildPlayerFacingInspectionContract({gameId,platform='COMMON',source,st
     UI_LAYOUT:['MOBILE_VIEWPORT_SAFE_AREA','TEXT_OVERFLOW_AND_HUD_OCCLUSION','RESIZE_AND_ORIENTATION'],
     UI_INTERACTION:['TOUCH_EVENT_TO_ONE_SERVER_OR_UI_ACTION','SCROLL_MODAL_FOCUS','CLOSE_REOPEN_SELECTION'],
     CHARACTER_RENDER:['REGISTERED_ASSET_AND_ORIGINAL_HASH','MESH_RIG_ATTACHMENT','MOVEMENT_GROUND_CONTACT'],
-    MONSTER_READABILITY:['DISTINCT_ENEMY_ROLE_AND_TELEGRAPH','ATTACK_HIT_DEATH_STATE_SEQUENCE','DESPAWN_CLEANUP'],
-    MOTION_TRANSITIONS:['TIME_ORDERED_IDLE_MOVE_TURN_JUMP','JOINT_ANIMATION_AND_BLEND','ATTACK_HIT_DEATH_NO_STALE_TRACK'],
+    MONSTER_READABILITY:['DISTINCT_ENEMY_CREATURE_BOSS_BODY_PLAN_AND_TELEGRAPH','ACTOR_SPECIFIC_ATTACK_HIT_DEATH_STATE_SEQUENCE','DESPAWN_CLEANUP'],
+    MOTION_TRANSITIONS:['TIME_ORDERED_IDLE_MOVE_TURN_JUMP_PER_ACTOR','ACTOR_SPECIFIC_JOINT_ACTIVITY_POSE_BLEND_FOOT_CONTACT','NPC_CREATURE_BOSS_HIT_DEATH_NO_STALE_TRACK'],
     ACTION_IMPACT:['AUTHORITATIVE_HIT_EVENT_ORDER','MISS_CANCEL_COOLDOWN_REPLAY','VFX_AUDIO_DAMAGE_ALIGNMENT'],
     CAMERA_COMPOSITION:['WALL_AND_CORNER_OCCLUSION','TARGET_AND_PLAYER_READABILITY','MOBILE_CAMERA_INPUT'],
     WORLD_BACKGROUND:['SPAWN_TO_OBJECTIVE_WORLD_ROUTE','LANDMARK_AND_TERRAIN_BINDING','LIGHTING_AND_REGION_STATE'],
@@ -1677,6 +1677,18 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     SHOP:/\bshop\b|merchant|vendor|purchase|buy.?item|trade.?request/i
   });
   const evidence=Object.fromEntries(Object.keys(roles).map(key=>[key,[]]));
+  // [모션] 기존 게임 소스에서 실제 배우별 책임 파일 후보를 찾는다. 키워드만으로 런타임 PASS 금지.
+  const actorRoles=Object.freeze({
+    PLAYER:/\\b(?:player|character|avatar|hero|protagonist)\\b|LocalPlayer|CharacterAdded|플레이어|주인공/i,
+    NPC:/\\b(?:npc|villager|merchant|vendor|resident|civilian|questgiver|guard|worker)\\b|주민|상인|경비병/i,
+    ENEMY:/\\b(?:enemy|monster|mob|hostile|bandit)\\b|적군|몬스터|적캐릭터/i,
+    BOSS:/\\b(?:boss|miniboss|raidboss)\\b|보스|우두머리/i,
+    CREATURE:/\\b(?:creature|wildlife|animal|quadruped|canine|feline|spider|serpent|bird|bear|wolf)\\b|야생동물|동물|짐승/i,
+    COMPANION:/\\b(?:companion|ally|follower|pet)\\b|동료|펫|소환수/i,
+    MOUNT:/\\b(?:mount|rider|horse|vehicle)\\b|탈것|기승|말타기/i,
+    INTERACTIVE_PROP:/\\b(?:animateddoor|movingplatform|mechanicalprop|animatedbuilding|drawbridge)\\b|움직이는문|승강기|가동건축물/i
+  });
+  const actorEvidence=Object.fromEntries(Object.keys(actorRoles).map(key=>[key,[]]));
   for(const entry of topFiles){
     const file=posix(entry?.file);
     if(!file||file.split('/').some(part=>part==='.'||part==='..')||file.startsWith('/'))continue;
@@ -1690,10 +1702,33 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
       const contents=fs.readFileSync(actual,'utf8');
       for(const [key,pattern] of Object.entries(roles))
         if(pattern.test(contents))evidence[key].push(file);
+      for(const [actor,pattern] of Object.entries(actorRoles))
+        if(pattern.test(contents))actorEvidence[actor].push(file);
     }catch{}
   }
   const found=key=>evidence[key].length>0;
   const targets=Object.fromEntries(Object.entries(evidence).map(([key,files])=>[key,Object.freeze(uniq(files).slice(0,6))]));
+  const actorMotion=Object.freeze({
+    version:1,trigger:'CREATION_AND_EVERY_BUILD_UP',gameId:clean(gameId),platform:clean(platform).toUpperCase(),
+    detectedActorClasses:Object.freeze(Object.entries(actorEvidence).filter(([,files])=>files.length)
+      .map(([actorClass,files])=>Object.freeze({
+        actorClass,sourceOwnerFiles:Object.freeze(uniq(files).slice(0,8)),
+        state:'SOURCE_CANDIDATE_CONFIRM_ACTUAL_SCENE_AND_DESIGN',
+        motions:Object.freeze(actorClass==='INTERACTIVE_PROP'
+          ?['IDLE','STATEFUL_OPEN_CLOSE_OR_MACHINE_ACTION','SMOOTH_STOP']
+          :actorClass==='NPC'?['IDLE_ACTING','LOOK_GESTURE','START','WALK_TURN_STOP','INTERACT','HIT_DEATH_IF_APPLICABLE']
+          :actorClass==='CREATURE'||actorClass==='MOUNT'?['BODY_PLAN_IDLE','GAIT_START_TURN_STOP','ATTACK_IF_APPLICABLE','HIT_DEATH_IF_APPLICABLE']
+          :actorClass==='BOSS'?['IDLE_ACTING','APPROACH_TURN','ANTICIPATION_IMPACT_FOLLOW_THROUGH_RECOVERY','DIRECTIONAL_HIT_DEATH','APPROVED_SIGNATURE_ACTION']
+          :['IDLE_ACTING','START_WALK_RUN_TURN_STOP','ATTACK_IF_APPLICABLE','HIT_DEATH_IF_APPLICABLE']),
+        runtimeVerified:false
+      }))),
+    approvedSourceOrder:Object.freeze(['VERIFIED_SAME_GAME_CLIP','VERIFIED_COMPATIBLE_COMPANY_CLIP','LICENSE_VERIFIED_REPOSITORY_CLIP','LICENSE_VERIFIED_EXTERNAL_CLIP','COMPATIBLE_RETARGET_AND_CLEANUP','AUTHORIZED_NATIVE_AUTHORING_FOR_REAL_GAP']),
+    mandatoryPolish:Object.freeze(['ACTUAL_COMPATIBLE_RIG_AND_ANIMATOR','CROSSFADE_POSE_VELOCITY_MATCH','LOCOMOTION_SPEED_SYNC_AND_WEIGHT_SHIFT','FOOT_CONTACT_IK_WHEN_APPLICABLE','UPPER_LOWER_BODY_LAYERING','SECONDARY_ACTING_PER_BODY_PLAN','ANTICIPATION_SINGLE_AUTHORIZED_IMPACT_FOLLOW_THROUGH_RECOVERY','DIRECTIONAL_HIT_AND_DEATH_WHEN_APPLICABLE','CAMERA_VFX_AUDIO_EVENT_SYNC','MOBILE_LOD_AND_POOLING','BEFORE_AFTER_EXACT_ACTOR_NATIVE_PLAY_QA']),
+    applicableApprovedActorsOnly:true,allDiscoveredActorsReviewedEachCycle:true,actorCountLimit:null,
+    noInventedActorOrPrimitiveFallback:true,noUnapprovedCombatForNoncombatActor:true,
+    preserveExistingDamageTimingHitboxCooldownSpeedSaveProgressionEconomyNetworkAuthority:true,
+    sourceOnlyEvidence:true,runtimeVerified:false
+  });
   const designText=JSON.stringify({
     identity:design?.identity,genre:design?.genre,coreLoop:design?.coreLoop,
     signatureSystems:design?.signatureSystems,interfacePlan:design?.interfacePlan,
@@ -1826,7 +1861,7 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
     sourceOnlyEvidence:true,applicableGameFeaturesOnly:true,
     components:Object.freeze(components),sourceFilesByRole:Object.freeze(targets),
-    uiModeSelection:contextualUi,worldGraph,stateChain,moduleConnections,
+    uiModeSelection:contextualUi,worldGraph,stateChain,moduleConnections,actorMotion,
     sharedAssetSelection:Object.freeze({
       registry:'company-asset-library.json',archives:'assets/asset-manifest.json#sharedOriginalArchives',
       ui:'assets/roblox/common-ui-v1/catalog.json',
@@ -1928,8 +1963,8 @@ function buildVisualDirective({gameId,design,source,focus,platform}){
       MATERIAL_SURFACE:`나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.`,
       PALETTE:`위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.`,
       LIGHTING:`핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.`,
-      ANIMATION:`주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.`,
-      SECONDARY_MOTION:`무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.`,
+      ANIMATION:`플레이어·NPC·몬스터·동물·보스·동료·탈것의 호환 리그·검증된 실제 모션을 우선 연결한다. 포즈/속도 매칭 크로스페이드, 발 접지·무게 이동, 상태 전환을 역할별로 적용하고 기존 공격은 ANTICIPATION→ACCELERATION→승인된 IMPACT→FOLLOW_THROUGH→RECOVERY로 연결한다. 게임 판정은 유지한다.`,
+      SECONDARY_MOTION:`플레이어·NPC의 시선/몸짓, 동물·몹의 꼬리/날개/체중, 보스의 무기/후속동작, 가동 건축물 등 실제 해당 부위에 관성·지연·복귀를 연결하되 판정·충돌 권한은 유지한다. 정지 모델 전체 이동만으로 모션 합격을 주장하지 않는다.`,
       VFX:`일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.`,
       CAMERA:`기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.`,
       UI_HUD:`${identity}의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.`,
@@ -2553,6 +2588,8 @@ export function directivePrompt(d={}){
       ?'ROBLOX_CC0_PRIMITIVE_REPLACEMENT: '+JSON.stringify(d.visualBuildUpDirective.primitiveReplacement)+
        ' F0부터 발견한 책임 파일의 실제 보이는 원형 파츠를 CC0 파생 자산으로 교체한다. 기존 외형 보존은 불필요하다. 비슷한 CC0 자산이면 우선 사용하고 정확히 같은 모델·종류·스타일을 기다리지 않는다. 크기·색·재질을 맞추고 움직임을 호환 연결한다. 기존 생성 함수를 직접 수정하고 원형 표시·재생성 fallback을 제거한다. 숨은 충돌체·판정·리그 루트·스폰·트리거는 보이는 원형과 구분해 기능을 유지한다. 대체 자산이 없으면 기존 자산 공급 GAP로 연결하며 원형 유지나 새 파츠 조립을 교체 완료로 처리하지 않는다. 책임 범위 밖 파일은 기존 후속 BUILD_UP에 남기고 모든 대상이 같은 빌드 실행 검증을 통과하기 전에는 전체 완료를 주장하지 않는다.':'' ,
     'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(autoSummary),
+    'ACTOR_MOTION_AUTO_BUILD_UP: '+JSON.stringify(d.gameInternalAutoComposition?.actorMotion||{}),
+    'ACTOR_MOTION_RULE: 매 게임 제작·모든 빌드업에서 실제 등장하는 플레이어/NPC/몹/동물/보스/동료/탈것 및 움직이는 건축물의 모션을 각각 기존 책임 소스에서 개선한다. 검증된 원본 클립을 우선 재사용하고 적합한 리그/상태/포즈·속도 크로스페이드·발 접지·관성·공격 전조·승인된 타격 이벤트·회복과 피격 반응을 실제 해당 역할에만 적용한다. 미검증 자산, 임의 외형·파츠, 가짜 애니메이션, 승인 없는 밸런스 변경 금지. 동일 버전 실제 게임 배우별 연속프레임·모바일 입력·원격 QA 증거 없으면 UNVERIFIED.',
     'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action and source-grounded NPC AI/quest/dialogue/crafting/economy/progression/farming/weather/physics/camera/audio/skill effects/network only when game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive existing actions and approved hit events; NPC decisions must not grant economy/save/combat authority; crafting and shopping use actual items/currency/state. Use applicable moduleConnections as source-only QA work units, never completed features. Mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with authoritative state; source signatures never pass QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
@@ -3253,7 +3290,7 @@ export function buildGameSpecificBuildUpDirective({
     preMutationDryRun,
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
     nextActionDecision,
-    acceptanceEvidence:[...effectiveAcceptance,'FIVE_DISTINCT_PLAYABLE_IMPROVEMENTS_WITH_EXACT_GAME_RUNTIME_PROOF_WHEN_STAGE_REQUIRES','FIVE_SOURCE_DELTA_ITEMS_ALONE_CANNOT_PASS_ACTUAL_PLAY','PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED','THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY','MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED'],
+    acceptanceEvidence:[...effectiveAcceptance,'PER_ACTOR_MOTION_NATIVE_PLAYBACK_AND_EXACT_REMOTE_QA_REQUIRED_WHEN_APPLICABLE','FIVE_DISTINCT_PLAYABLE_IMPROVEMENTS_WITH_EXACT_GAME_RUNTIME_PROOF_WHEN_STAGE_REQUIRES','FIVE_SOURCE_DELTA_ITEMS_ALONE_CANNOT_PASS_ACTUAL_PLAY','PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED','THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY','MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED'],
     nextEscalationCandidates:nextCandidates,
     loopEscalation:{automatic:true,nextGeneration:generation+1,currentDevelopmentDepth:depthInfo.developmentDepth,nextDevelopmentDepth:depthInfo.advanceAllowed?depthInfo.developmentDepth+1:depthInfo.developmentDepth,escalationStage:depthInfo.escalationStage,escalationMode:depthInfo.escalationMode,sourceChangedSincePrevious:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution,reuseSameGoalWithoutNewEvidence:false,completedGoalBecomesBaseline:depthInfo.verifiedEvolution},
     coverage:{
