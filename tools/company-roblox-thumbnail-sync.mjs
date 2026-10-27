@@ -144,7 +144,7 @@ export async function syncRobloxExperienceDetailMedia({
   const newlyApproved=skipDuplicateUpload&&images.some(row=>assetId(row)&&!baseline.has(assetId(row))&&row.approved===true);
   let imageStatus=images.length?'EXISTING_GAME_DETAIL_IMAGE':'PENDING_IMAGE_UPLOAD';
   if(skipDuplicateUpload){
-    imageStatus=newlyApproved?'NEW_DETAIL_IMAGE_APPROVED':'AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD';
+    imageStatus=newlyApproved?'NEW_GALLERY_IMAGE_APPROVED_SOURCE_UNVERIFIED':'AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD';
   }else if(!images.length||refreshExistingImage){
     if(!clean(cookie))throw new Error('ROBLOX_DETAIL_COOKIE_MISSING');
     const form=new FormData();
@@ -165,7 +165,8 @@ export async function syncRobloxExperienceDetailMedia({
     universeId:clean(universeId),
     imageStatus,
     verifiedDetailImage:newlyApproved||(!skipDuplicateUpload&&!refreshExistingImage&&images.some(row=>row.approved===true)),
-    verifiedCanonicalImage:newlyApproved,
+    canonicalImageContentVerified:false,
+    newGalleryImageApproved:newlyApproved,
     imageBaselineIds:skipDuplicateUpload?Array.from(baseline):images.map(assetId).filter(Boolean),
     existingImageCount:images.length,
     approvedRobloxGameplayVideoCount:approvedVideos.length,
@@ -216,7 +217,7 @@ export async function syncRobloxHomepageThumbnail({
     const samePreviousUpload=previous.gameId===target.gameId
       &&previous.universeId===target.universeId
       &&previous.sourceSha256===validated.sha256
-      &&['SUBMITTED_AWAITING_ROBLOX_MODERATION','UPDATED_IMAGE_SUBMITTED_AWAITING_MODERATION','AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD'].includes(previous.imageStatus);
+      &&['SUBMITTED_AWAITING_ROBLOX_MODERATION','UPDATED_IMAGE_SUBMITTED_AWAITING_MODERATION','AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD','NEW_GALLERY_IMAGE_APPROVED_SOURCE_UNVERIFIED'].includes(previous.imageStatus);
     const refreshExistingImage=previous.gameId===target.gameId
       &&previous.universeId===target.universeId
       &&Boolean(previous.sourceSha256)
