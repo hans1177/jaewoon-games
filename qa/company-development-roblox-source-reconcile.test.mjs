@@ -1243,6 +1243,58 @@ test('standard Baeksu GameConfig does not claim verified learning without a real
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
+test('legacy module-only admission survives game-specific Config to GameConfig rename in isolated source workers',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-module-only-rename-'));
+  try{
+    const root=path.join(tmp,'roblox-games','baeksu-war');
+    const shared=path.join(root,'shared');
+    const server=path.join(root,'server','Game.server.luau');
+    const client=path.join(root,'client','Game.client.luau');
+    fs.mkdirSync(shared,{recursive:true});
+    fs.mkdirSync(path.dirname(server),{recursive:true});
+    fs.mkdirSync(path.dirname(client),{recursive:true});
+    fs.writeFileSync(path.join(shared,'GameConfig.luau'),'return {GameId="baeksu-war"}\n');
+    fs.writeFileSync(server,'-- existing authoritative server\n');
+    fs.writeFileSync(client,'-- existing game-owned client\n');
+    const projectFile=path.join(root,'default.project.json');
+    fs.writeFileSync(projectFile,JSON.stringify({name:'백수대전쟁',tree:{
+      $className:'DataModel',
+      ReplicatedStorage:{Shared:{$path:'shared',
+        RobloxCommonUI:{$path:'../../assets/roblox/common-ui-v1/RobloxCommonUI.luau'},
+        RobloxCommonIcons:{$path:'../../assets/roblox/common-ui-v1/RobloxCommonIcons.luau'}}},
+      ServerScriptService:{GameServer:{$path:'server'}},
+      StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}}
+    }},null,2)+'\n');
+    const evidenceFile=path.join(root,'roblox-source-bootstrap.json');
+    fs.writeFileSync(evidenceFile,JSON.stringify({
+      version:1,gameId:'baeksu-war',platform:'ROBLOX',moduleSyncOnly:true
+    },null,2)+'\n');
+    const playbooksFile=path.join(tmp,'playbooks.json');
+    fs.writeFileSync(playbooksFile,'{}\n');
+    const reportFile=path.join(tmp,'report.json');
+    const args=[
+      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+      '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war',
+      '--playbooks='+playbooksFile,'--report='+reportFile
+    ];
+    execFileSync(process.execPath,args,{stdio:'pipe'});
+    const first=JSON.parse(fs.readFileSync(reportFile,'utf8'));
+    assert.equal(first.changedGameCount,1);
+    assert.equal(first.results[0].moduleSyncOnly,true);
+    assert.equal(first.results[0].verifiedExternalLearningApplied,false);
+    assert.equal(first.results[0].commonModuleCount,15);
+    const receipt=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
+    assert.equal(receipt.sourceValidationPassed,undefined);
+    assert.equal(receipt.vibe3LearningApplied,undefined);
+    assert.equal(Object.keys(JSON.parse(fs.readFileSync(projectFile,'utf8')).tree.ReplicatedStorage.Shared)
+      .filter(name=>name.startsWith('RobloxCommon')).length,15);
+    assert.equal(fs.readFileSync(server,'utf8'),'-- existing authoritative server\n');
+    assert.equal(fs.readFileSync(client,'utf8'),'-- existing game-owned client\n');
+    execFileSync(process.execPath,args,{stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
 test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
   const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
