@@ -447,7 +447,7 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/Archive native gameplay edits and separately labeled art previews/);
   assert.match(workflow,/Render official-source concept art previews without gameplay claims/);
   assert.match(workflow,/concept-only=true/);
-  assert.match(workflow,/concept-trailer\\.mp4/);
+  assert.ok(workflow.includes('concept-trailer.mp4'));
   assert.match(workflow,/if-no-files-found: ignore/);
   assert.match(workflow,/ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS/);
   assert.doesNotMatch(workflow,/Roblox Player automation/i);
