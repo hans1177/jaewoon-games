@@ -1,5 +1,5 @@
 
--- 파일명: shared/Config.luau
+-- 파일명: shared/GameConfig.luau
 -- 백수대전쟁 공식 경제·생물 밸런스
 local C={GameId="baeksu-war",Platform="ROBLOX",MobileFirst=true,PolicySource="company-learning/platform-release-roadmap.json",SaveKey="baeksu-war-v1",StartGold=300,StartSlots=3,MaxLevel=10,GateHP=500,EnemyHP=380,Cap=55,Remote="BeastWarAction"}
 C.Units={

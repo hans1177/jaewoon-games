@@ -6,7 +6,7 @@ local RS=game:GetService("ReplicatedStorage")
 local Run=game:GetService("RunService")
 local Input=game:GetService("UserInputService")
 local p=Players.LocalPlayer
-local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
+local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local remote=RS:WaitForChild(C.Remote)
 -- 회사 보유 공용 게임창/버튼/아이콘 라이브러리(동일 저장소 자산)를 실물 UI에 사용한다.
 local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))

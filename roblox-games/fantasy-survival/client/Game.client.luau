@@ -437,6 +437,17 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
     character:SetAttribute("NativeCombatMotionState", "MATCHING_WEAPON_MOTION_REQUIRED")
     return
   end
+  -- [공용 자산 실연결] 선택된 스튜디오 모션과 자사 R15 포즈 라이브러리의 동작 ID를 연결한다.
+  -- 자산 카탈로그 ATTACK_LIGHT_1은 공용 포즈 원본 LIGHT_ATTACK_1에 대응한다.
+  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then
+    character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
+    return
+  end
+  local motionOk, authoredMotion = pcall(combatMotionSource.Describe, "LIGHT_ATTACK_1")
+  if not motionOk or not authoredMotion or authoredMotion.rig ~= "R15" then
+    character:SetAttribute("NativeCombatMotionState", "R15_MOTION_SOURCE_REQUIRED")
+    return
+  end
   local joints = {}
   for _, descendant in ipairs(character:GetDescendants()) do
     if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1 then
@@ -454,7 +465,11 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   activeCombatCharacter = character
   activeCombatCombo = combo
   activeCombatStartedAt = os.clock()
-  activeCombatController = combatMotionSource.BindJointPose(joints, {response = 32})
+  -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
+  activeCombatController = combatMotionSource.BindJointPose(joints, {
+    response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
+  })
+  character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
 end)

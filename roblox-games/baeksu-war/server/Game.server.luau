@@ -5,7 +5,7 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local Run=game:GetService("RunService")
-local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
+local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local VisualKit=require(RS:WaitForChild("Shared"):WaitForChild("VisualKit"))
 -- 모델 적재는 서버 시작 단계에서 기다리지 않는다. UI/지형을 먼저 만든다.
 local terrain=workspace.Terrain
