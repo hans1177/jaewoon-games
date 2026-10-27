@@ -626,3 +626,55 @@ test('managed foundation in the middle must not hide real gameplay or generic sk
   assert.equal(evolvedSource.antiSkeletonPassed,true);
   assert.ok(!evolvedSource.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
 });
+
+test('F0 preserves portal RPG native genre only with same-game proven original B gameplay',()=>{
+  const gameId='daechung-rpg',root='roblox-games/'+gameId;
+  const config=fs.readFileSync(root+'/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync(root+'/server/Game.server.luau','utf8');
+  const client=fs.readFileSync(root+'/client/Game.client.luau','utf8');
+  const project=fs.readFileSync(root+'/default.project.json','utf8');
+  const baseline={gameId,content:{
+    identity:'포탈 알피지는 실제 RPG 보스·장비·퀘스트·포탈을 보존한다.',
+    robloxBuildProfile:{
+      version:1,targetPlatform:'ROBLOX',genre:'Simulation',subgenre:null,
+      playMode:'COOP',multiplayerRequired:true,coopImplementationRequired:true,
+      competitiveImplementationRequired:false,networkingRequired:true,
+      multiplayerQaRequired:true,minimumParticipantsForRequiredQa:2
+    },
+    multiplayerMode:'COOP',
+    coreLoop:['마을 퀘스트·장비 준비','포탈에서 몬스터와 보스 전투','경험치·강화·동료 편성'],
+    creativeGrammar:{
+      a:{gameRole:'PRIMARY',gameGenre:'시뮬레이션'},
+      b:{gameRole:'SUPPORTING',gameGenre:'플랫폼 액션',existingSystemReference:{
+        scope:'B_EXISTING_GAME_SYSTEMS',
+        source:'design/daechung-rpg/2026-09-22/design-revised.json',
+        playerChoice:'마을에서 퀘스트와 장비 준비 → 포탈로 사냥터 이동 → 몬스터 직접 전투 → 보스 격파 후 강화'
+      }},
+      cGenres:[{role:'PRIMARY',name:'비극'},{role:'SECONDARY',name:'공포'}]
+    }
+  }};
+  const inspect=(override={})=>evaluateRobloxGameplayProductReadiness({
+    gameId,baseline,config,server,client,project,...override
+  });
+  const preserved=inspect();
+  assert.equal(preserved.designGenre,'Simulation');
+  assert.equal(preserved.sourceGenre,'RPG');
+  assert.equal(preserved.preservedSourceGenreContractVerified,true);
+  assert.equal(preserved.blockers.includes('DESIGN_GENRE_MISMATCH:Simulation:RPG'),false);
+  assert.equal(preserved.preservedSourceGenreAcceptance,
+    'CURRENT_GAME_SOURCE_BOOTSTRAP_VERIFIED_NOT_C_STORY_GENRE_PROOF');
+  assert.equal(inspect({gameId:'other-game'}).preservedSourceGenreContractVerified,false);
+  assert.equal(inspect({gameId:'other-game'}).blockers.includes('DESIGN_GENRE_MISMATCH:Simulation:RPG'),true);
+  const wrongOrigin=structuredClone(baseline);
+  wrongOrigin.content.creativeGrammar.b.existingSystemReference.source='design/another-game/2026-09-22/design-revised.json';
+  assert.equal(inspect({baseline:wrongOrigin}).preservedSourceGenreContractVerified,false);
+  assert.equal(inspect({baseline:wrongOrigin}).blockers.includes('DESIGN_GENRE_MISMATCH:Simulation:RPG'),true);
+  const noSource=server.replace(/C\.Portals/g,'C.UnknownDestinations');
+  assert.equal(inspect({server:noSource}).preservedSourceGenreContractVerified,false);
+  assert.equal(inspect({server:noSource}).blockers.includes('DESIGN_GENRE_MISMATCH:Simulation:RPG'),true);
+  assert.equal(inspect({config:config.replace(/Genre\s*=\s*"RPG"/,'Genre="Puzzle"')}).preservedSourceGenreContractVerified,false);
+  assert.equal(inspect({config:config.replace(/Genre\s*=\s*"RPG"/,'Genre="Puzzle"')}).blockers.includes('DESIGN_GENRE_MISMATCH:Simulation:Puzzle'),true);
+  assert.equal(inspect({baseline:{...baseline,content:{...baseline.content,
+    creativeGrammar:{cGenres:[{role:'PRIMARY',name:'RPG'},{role:'SECONDARY',name:'공포'}]}}}})
+    .preservedSourceGenreContractVerified,false,'C story-genre names alone cannot authorize a gameplay genre change');
+});

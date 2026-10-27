@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import {robloxBuildProfileFromBaseline as canonicalRobloxBuildProfileFromBaseline,requiresPersistentSave as canonicalRequiresPersistentSave} from './company-development-roblox-bootstrap.mjs';
+import {robloxBuildProfileFromBaseline as canonicalRobloxBuildProfileFromBaseline,requiresPersistentSave as canonicalRequiresPersistentSave,validateRobloxBootstrap} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -369,8 +369,23 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
   const actualGenre=field(config,'Genre');
   const expectedPlayMode=inferDesignPlayMode(baseline);
   const actualPlayMode=upper(field(config,'PlayMode'));
+  // 게임 장르(A/B 시스템 분류)와 C의 주·보조 작품 장르는 다른 계약이다.
+  // 보존된 실제 B 게임이 엄격한 네이티브 장르 근거 검사에 통과한 경우만
+  // 플랫폼 프로필과 다른 원래 GameConfig 장르를 유지한다.
+  // C의 장르 하나 구현 기준은 별도의 실플레이·독립 QA에서만 충족된다.
+  let sourceGenrePreservationVerified=false;
+  if(expectedGenre&&actualGenre&&upper(expectedGenre)!==upper(actualGenre)
+    &&clean(gameId)&&clean(baseline?.gameId)===clean(gameId)&&field(config,'GameId')===clean(gameId)){
+    try{
+      const sourceContract=validateRobloxBootstrap({baseline,sharedConfig:config,serverCode:server,clientCode:client});
+      sourceGenrePreservationVerified=!sourceContract.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED');
+    }catch{
+      sourceGenrePreservationVerified=false;
+    }
+  }
   if(expectedGenre&&!actualGenre)blockers.push('DESIGN_GENRE_MISSING:'+expectedGenre);
-  else if(expectedGenre&&upper(expectedGenre)!==upper(actualGenre))blockers.push('DESIGN_GENRE_MISMATCH:'+expectedGenre+':'+actualGenre);
+  else if(expectedGenre&&upper(expectedGenre)!==upper(actualGenre)&&!sourceGenrePreservationVerified)
+    blockers.push('DESIGN_GENRE_MISMATCH:'+expectedGenre+':'+actualGenre);
   if(expectedPlayMode&&!actualPlayMode)blockers.push('DESIGN_PLAY_MODE_MISSING:'+expectedPlayMode);
   else if(expectedPlayMode!==actualPlayMode)blockers.push('DESIGN_PLAY_MODE_MISMATCH:'+expectedPlayMode+':'+actualPlayMode);
   for(const id of required)if(implemented[id]!==true)blockers.push('MISSING_GAMEPLAY_CAPABILITY:'+id);
@@ -419,6 +434,8 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
     antiSkeletonPassed:!genericSkeleton,
     designGenre:expectedGenre,
     sourceGenre:actualGenre||null,
+    preservedSourceGenreContractVerified:sourceGenrePreservationVerified,
+    preservedSourceGenreAcceptance:sourceGenrePreservationVerified?'CURRENT_GAME_SOURCE_BOOTSTRAP_VERIFIED_NOT_C_STORY_GENRE_PROOF':null,
     designPlayMode:expectedPlayMode,
     sourcePlayMode:actualPlayMode||null
   });
