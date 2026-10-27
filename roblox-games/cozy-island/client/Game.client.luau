@@ -86,10 +86,15 @@ local function unbindWildlife(model)
  wildlifeControllers[model]=nil
 end
 local function syncWildlife(model,controller)
- local speed=model:GetAttribute("WildlifeDesiredSpeed")
- controller:SetSpeed(speed)
- controller:SetState(tostring(model:GetAttribute("WildlifeMotionState")or"LOCOMOTION"),{
-  side=model:GetAttribute("WildlifeHitSide"),
+ -- [실동작] 속도 동기화는 걷기만 갱신하고, 공격·피격 재생 시간은 초기화하지 않는다.
+ controller:SetSpeed(model:GetAttribute("WildlifeDesiredSpeed"))
+ local state=tostring(model:GetAttribute("WildlifeMotionState")or"LOCOMOTION")
+ local serial=tonumber(model:GetAttribute("WildlifeMotionSerial"))or 0
+ if controller.sourceState==state and controller.sourceSerial==serial then return end
+ controller.sourceState=state
+ controller.sourceSerial=serial
+ controller:SetState(state,{
+  side=state=="DEATH"and model:GetAttribute("WildlifeDeathSide")or model:GetAttribute("WildlifeHitSide"),
   duration=model:GetAttribute("WildlifeAttackDuration"),
  })
 end
@@ -102,7 +107,7 @@ local function bindWildlife(model)
  wildlifeControllers[model]=controller
  syncWildlife(model,controller)
  local list={}
- for _,attribute in ipairs({"WildlifeDesiredSpeed","WildlifeMotionState","WildlifeHitSide","WildlifeAttackDuration"})do
+ for _,attribute in ipairs({"WildlifeDesiredSpeed","WildlifeMotionState","WildlifeMotionSerial","WildlifeHitSide","WildlifeDeathSide","WildlifeAttackDuration"})do
   table.insert(list,model:GetAttributeChangedSignal(attribute):Connect(function()syncWildlife(model,controller)end))
  end
  table.insert(list,model.AncestryChanged:Connect(function(_,parent)if parent==nil then unbindWildlife(model)end end))
