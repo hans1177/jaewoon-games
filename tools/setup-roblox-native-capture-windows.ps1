@@ -46,13 +46,18 @@ if ($LASTEXITCODE -ne 0) { throw 'CONNECT_GITHUB_AUTH_WITH_GH_AUTH_LOGIN_FIRST' 
 New-Item -ItemType Directory -Force -Path $Base | Out-Null
 $Repo = Join-Path $Base 'main'
 $Runtime = Join-Path $Base 'runtime'
+# 설치: 거대한 게임 에셋을 복제하지 않고 촬영에 필요한 최신 코드·상태만 받는다.
 if (-not (Test-Path (Join-Path $Repo '.git'))) {
- & gh repo clone hans1177/jaewoon-games $Repo -- --branch main
+ & gh repo clone hans1177/jaewoon-games $Repo -- --branch main --depth=1 --filter=blob:none --sparse
  if ($LASTEXITCODE -ne 0) { throw 'MAIN_CLONE_FAILED' }
+ & git -C $Repo sparse-checkout set tools
+ if ($LASTEXITCODE -ne 0) { throw 'MAIN_CAPTURE_SPARSE_CHECKOUT_FAILED' }
 }
 if (-not (Test-Path (Join-Path $Runtime '.git'))) {
- & gh repo clone hans1177/jaewoon-games $Runtime -- --branch company-runtime
+ & gh repo clone hans1177/jaewoon-games $Runtime -- --branch company-runtime --depth=1 --filter=blob:none --sparse
  if ($LASTEXITCODE -ne 0) { throw 'RUNTIME_CLONE_FAILED' }
+ & git -C $Runtime sparse-checkout set assets/runtime-evidence/roblox
+ if ($LASTEXITCODE -ne 0) { throw 'RUNTIME_CAPTURE_SPARSE_CHECKOUT_FAILED' }
 }
 if ((& git -C $Runtime branch --show-current).Trim() -ne 'company-runtime') {
  throw 'RUNTIME_BRANCH_MISMATCH'
