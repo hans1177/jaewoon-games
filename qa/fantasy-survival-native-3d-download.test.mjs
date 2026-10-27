@@ -615,10 +615,10 @@ test('all existing native biome environments show distinct authored palette and 
  assert.match(moduleSource,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
 });
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
- assert.match(moduleSource,/const moving=moveDelta>\.08&&poseElapsed>0&&poseElapsed<420/);
+ assert.match(moduleSource,/const moving=moveDelta>\.14&&poseElapsed>0&&poseElapsed<420/);
  assert.match(moduleSource,/actor\.lastAttackStamp!==e\.attackAt/);
  assert.match(moduleSource,/setLoop\(attacking\?THREE\.LoopOnce:THREE\.LoopRepeat/);
- assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(destX,0,destZ\)/);
  assert.match(moduleSource,/selectedAppearance\?\.model==='mage'\?\.43/);
  assert.match(moduleSource,/bolt\.kind==='mageBolt'/);
  assert.match(moduleSource,/bolt\.kind==='playerArrow'/);
