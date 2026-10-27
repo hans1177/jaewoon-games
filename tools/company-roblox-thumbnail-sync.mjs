@@ -304,10 +304,54 @@ export async function syncRobloxHomepageThumbnail({
       skipDuplicateUpload:samePreviousUpload,refreshExistingImage,
       previousImageBaselineIds:Array.isArray(previous.imageBaselineIds)?previous.imageBaselineIds:[],fetchImpl
     });
+    // 메인: 인증된 Roblox 런타임 촬영본이 있으면 사람이 버튼을 누르지 않아도 컷 편집한다.
+    // 영상 원본은 기존 중앙 런타임 증거 경로만 인정하며 파일이 없다면 제작 완료로 표시하지 않는다.
+    const nativeRoot=path.resolve(root,'assets/runtime-evidence/roblox',target.gameId);
+    let automaticVideo={status:'NATIVE_RUNTIME_CAPTURE_UNAVAILABLE',videoPublished:false};
+    if(fs.existsSync(nativeRoot)&&fs.statSync(nativeRoot).isDirectory()){
+      const pending=[nativeRoot],clips=[],rootReal=fs.realpathSync(nativeRoot);
+      let seen=0;
+      while(pending.length&&seen<128){
+        const folder=pending.pop();seen++;
+        const entries=fs.readdirSync(folder,{withFileTypes:true}).sort((a,b)=>b.name.localeCompare(a.name));
+        for(const entry of entries){
+          if(entry.isSymbolicLink())continue;
+          const full=path.join(folder,entry.name);
+          if(entry.isDirectory()&&pending.length+seen<128){pending.push(full);continue;}
+          if(!entry.isFile()||!/[.]mp4$/i.test(entry.name))continue;
+          const proof=full.replace(/[.]mp4$/i,'.json');
+          if(fs.existsSync(proof)&&fs.realpathSync(full).startsWith(rootReal+path.sep)
+            &&fs.realpathSync(proof).startsWith(rootReal+path.sep))clips.push({full,proof});
+        }
+      }
+      clips.sort((a,b)=>b.full.localeCompare(a.full));
+      for(const clip of clips.slice(0,8)){
+        try{
+          const edited=editVerifiedRobloxGameplayVideo({
+            root,target,capturePath:path.relative(path.resolve(root),clip.full),
+            captureEvidencePath:path.relative(path.resolve(root),clip.proof)
+          });
+          automaticVideo={
+            status:'NATIVE_VIDEO_EDITED_PENDING_REVIEW_AND_PUBLICATION',
+            videoPublished:false,source:edited.sourceSha256,
+            editedVideoPath:edited.editedVideoPath,
+            editedVideoSha256:edited.editedVideoSha256,
+            editedVideoBytes:edited.editedVideoBytes,
+            manualNativeGameplayReviewRequired:true
+          };
+          break;
+        }catch(error){
+          automaticVideo={status:'NATIVE_CAPTURE_REJECTED_OR_EDIT_FAILED',
+            videoPublished:false,reason:clean(error?.message).slice(0,160)};
+        }
+      }
+    }
+    console.log('ROBLOX_DETAIL_NATIVE_VIDEO_AUTOMATION='+target.gameId+':'+automaticVideo.status);
     const evidence={
       version:1,gameId:target.gameId,placeId:target.placeId,
       sourcePath:target.source,sourceSha256:validated.sha256,
-      renderedPngSha256:rendered.sha256,...media
+      renderedPngSha256:rendered.sha256,...media,
+      automaticVideo
     };
     if(clean(outputPath))writeJson(path.resolve(root,outputPath),evidence);
     console.log('ROBLOX_DETAIL_IMAGE_STATE='+media.imageStatus);
