@@ -3649,8 +3649,19 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
       moduleConnections:auto.moduleConnections||[],
       stateChain:auto.stateChain?.applicable?auto.stateChain.checks:[],
       sharedAssetSelection:auto.sharedAssetSelection,
+      actorMotion:auto.actorMotion?{
+        trigger:auto.actorMotion.trigger,
+        actors:(auto.actorMotion.detectedActorClasses||[])
+          .filter(row=>!responsibleFiles.length||(row.sourceOwnerFiles||[]).some(file=>responsibleFiles.some(owned=>posix(file)===posix(owned)||posix(file).endsWith('/'+posix(owned)))))
+          .map(row=>({actorClass:row.actorClass,files:row.sourceOwnerFiles,motions:row.motions,state:row.state,runtimeVerified:false})),
+        mandatoryPolish:auto.actorMotion.mandatoryPolish,
+        approvedSourceOrder:auto.actorMotion.approvedSourceOrder,
+        runtimeVerified:false
+      }:null,
       runtimeVerified:false,noNewAssetGeneration:true
     }):'',
+    auto?.actorMotion?'actorMotion=EACH_BUILD_UP_PER_ACTOR_PLAY_QA_UNVERIFIED; actors='+(auto.actorMotion.detectedActorClasses||[]).map(row=>row.actorClass).join('|')+'; craft=APPROVED_REAL_MOTION_RIG_POSE_VELOCITY_CROSSFADE_FOOT_IK_SECONDARY_ACTING_HIT_SYNC_MOBILE_LOD; preserveGameplay=true':'',
+    auto?.actorMotion?'actorMotionRule=Bind the verified real native animation clips to existing actor owners for actual player, NPC, monster, creature, boss, companion, mount and moving prop as applicable; blend joint motion and weight shift, preserve server hit and original game balance, use existing remote F0-F9 QA for timed per-actor playback evidence and same version before/after; source signatures are NOT visual PASS.':'',
     auto?'autoCompositionRule=Source-grounded existing game owners only: detect BIOME/HOUSING/CUSTOMIZATION/MOTION/ACTION/NPC_AI/QUEST_DIALOGUE/CRAFTING/ECONOMY/PROGRESSION/FARMING/WEATHER/PHYSICS/CAMERA/AUDIO/SKILL_VFX/NETWORK even outside ranked files. Use moduleConnections to prioritize source-local repairs; missing source is not an authorization to create new mechanics. Bind approved biome to native world/navigation; preserve housing ownership/cost/save and mobile controls; bind customization to the actual model; couple motion to the exact existing action hit event. AI cannot grant gameplay authority; items/crafting/economy follow authoritative state. Preserve lobby/inventory/equipment/UI and acquire->store->equip->save->reconnect. Never infer PASS from keywords or create assets from hints; native runtime/mobile QA required.':'',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
@@ -3674,7 +3685,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
-  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','inspectionContract=','inspectionIndex=','inspectionRemoteMatrix=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest=','inspectionRemoteChecks='];
+  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','actorMotion=','actorMotionRule=','inspectionContract=','inspectionIndex=','inspectionRemoteMatrix=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest=','inspectionRemoteChecks='];
   const keepPrefixes=focusedRobloxVisual?[
     ...inspectionPrefixes,
     'robloxProduction','gameProduction',
