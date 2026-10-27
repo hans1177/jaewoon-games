@@ -1,5 +1,5 @@
 -- 파일명: roblox-games/daechung-rpg/client/Game.client.luau
--- 대충 RPG 모바일 HUD: 마을 허브 + 포탈 사냥터 + 전투 UI
+-- 포탈 알피지 모바일 HUD: 마을 허브 + 포탈 사냥터 + 전투 UI
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
@@ -243,7 +243,7 @@ startupTitle.AnchorPoint=Vector2.new(.5,0)
 startupTitle.Position=UDim2.new(.5,0,0,24)
 startupTitle.Size=UDim2.new(.88,0,0,54)
 startupTitle.BackgroundTransparency=1
-startupTitle.Text="5포탈 RPG: 던전 파티"
+startupTitle.Text="포탈 알피지"
 startupTitle.TextColor3=Color3.fromRGB(255,220,146)
 startupTitle.TextScaled=true
 startupTitle.Font=Enum.Font.GothamBold
@@ -288,7 +288,7 @@ startupStatus.ZIndex=102
 startupStatus.Parent=startupCard
 
 -- 로비: 첫 화면에서 서버 저장형 외형을 선택한 뒤 입장한다.
-startupTitle.Text="대충 RPG  ·  나만의 모험"
+startupTitle.Text="포탈 알피지  ·  나만의 모험"
 startupSubtitle.Text="캐릭터 꾸미기  /  마을  /  주택  /  5개 바이옴"
 startupGuide.Text="라이브러리 기반 캐릭터 유형 · 방어구 · 장식 · 색상 선택"
 startupGuide.Position=UDim2.new(.5,0,0,122)
@@ -605,7 +605,7 @@ versionMark.Font=Enum.Font.GothamBold
 versionMark.AnchorPoint=Vector2.new(.5,0)
 versionMark.Position=UDim2.new(.5,0,0,57)
 versionMark.Size=UDim2.fromOffset(310,17);versionMark.ZIndex=15;versionMark.Parent=gui
-local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
+local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="포탈 알피지";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
 local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,38);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
 
 local classBadge=Instance.new("TextLabel");classBadge.Name="ClassBadge";classBadge.Size=UDim2.new(1,-14,0,16);classBadge.Position=UDim2.fromOffset(7,64);classBadge.BackgroundTransparency=1;classBadge.TextColor3=Color3.fromRGB(190,207,255);classBadge.TextXAlignment=Enum.TextXAlignment.Left;classBadge.TextSize=11;classBadge.Font=Enum.Font.GothamBold;classBadge.Parent=stats

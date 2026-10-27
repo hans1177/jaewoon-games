@@ -1,5 +1,5 @@
 -- 파일명: roblox-games/daechung-rpg/server/Game.server.luau
--- 대충 RPG: 마을 허브 + 포탈 전투 + 보스 수집형 AI 동료 파티
+-- 포탈 알피지: 마을 허브 + 포탈 전투 + 보스 수집형 AI 동료 파티
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
@@ -1246,7 +1246,7 @@ local function makeVillage()
  ppart(f,"VillageEntranceBeam",Vector3.new(30,4,5),Vector3.new(0,16,47),Color3.fromRGB(101,69,44),Enum.Material.WoodPlanks)
  local welcome=ppart(f,"VillageWelcomeSign",Vector3.new(24,5,1),Vector3.new(0,15,43.9),Color3.fromRGB(75,52,37),Enum.Material.WoodPlanks)
  welcome.CanCollide=false
- label(welcome,"대충 RPG · 모험가 마을",Color3.fromRGB(255,229,169),44)
+ label(welcome,"포탈 알피지 · 모험가 마을",Color3.fromRGB(255,229,169),44)
  local landmarkBase=ppart(f,"VillageLandmarkBase",Vector3.new(14,2,14),Vector3.new(0,3,-18),Color3.fromRGB(95,100,106),Enum.Material.Slate)
  local landmark=ppart(f,"VillageLandmark",Vector3.new(4,13,4),Vector3.new(0,10,-18),Color3.fromRGB(153,129,92),Enum.Material.Marble)
  landmark.CanCollide=false

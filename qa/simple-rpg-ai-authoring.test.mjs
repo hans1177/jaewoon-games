@@ -528,3 +528,35 @@ test('simple RPG waits boundedly for only source-verified curated Roblox meshes 
   assert.match(server, /template:GetAttribute\("CuratedExternalAsset"\) == true/);
   assert.match(server, /VerifiedRobloxAssetId/);
 });
+
+test('portal RPG and 대충알피지 keep independent identities, UI, and source roots',()=>{
+  const portalRoot='roblox-games/daechung-rpg';
+  const portalFile=rel=>fs.readFileSync(path.join(portalRoot,rel),'utf8');
+  const portalProject=JSON.parse(portalFile('default.project.json'));
+  const portalConfig=portalFile('shared/GameConfig.luau');
+  const portalClient=portalFile('client/Game.client.luau');
+  const portalServer=portalFile('server/Game.server.luau');
+  const portalLaunch=JSON.parse(portalFile('launch-mvp.json'));
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const portal=catalog.games.find(game=>game.id==='daechung-rpg');
+  const simple=catalog.games.find(game=>game.id==='simple-rpg');
+  assert.equal(portalProject.name,'포탈 알피지');
+  assert.match(portalConfig,/GameId="daechung-rpg"/);
+  assert.match(portalConfig,/GameNameKorean="포탈 알피지"/);
+  assert.match(portalClient,/startupTitle\.Text="포탈 알피지"/);
+  assert.match(portalServer,/포탈 알피지 · 모험가 마을/);
+  assert.doesNotMatch(portalClient,/대충\s*RPG|대충알피지/);
+  assert.doesNotMatch(portalServer,/대충\s*RPG|대충알피지/);
+  assert.equal(portalLaunch.gameId,'daechung-rpg');
+  assert.equal(portalLaunch.gameTitleKo,'포탈 알피지');
+  assert.equal(portal.name,'포탈 알피지');
+  assert.equal(portal.canonical.identity.gameId,'daechung-rpg');
+  assert.equal(simple.id,'simple-rpg');
+  assert.equal(simple.name,'대충알피지');
+  assert.equal(project.name,'대충알피지');
+  assert.match(config,/GameId\s*=\s*"simple-rpg"/);
+  assert.match(config,/GameName\s*=\s*"대충알피지"/);
+  assert.match(server,/GetDataStore\("simple-rpg-development-v1"\)/);
+  assert.notEqual(portal.id,simple.id);
+  assert.notEqual(portalRoot,root);
+});
