@@ -13,7 +13,10 @@ on:
     paths:
       - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'tools/company-roblox-thumbnail-sync.mjs'
+      - 'tools/company-roblox-native-windows-capture.mjs'
+      - 'assets/roblox/runtime-capture/**'
       - 'qa/company-roblox-thumbnail-sync.test.mjs'
+      - 'qa/company-roblox-native-windows-capture.test.mjs'
       # Only canonical Roblox marketing art and authenticated real-capture intake wake video sync.
       - 'assets/roblox-thumbnails/**'
       - 'assets/runtime-evidence/roblox/**'
@@ -1457,7 +1460,8 @@ jobs:
         working-directory: main
         run: |
           set -euo pipefail
-          node --test qa/company-roblox-thumbnail-sync.test.mjs qa/company-homepage-runtime-propagation.test.mjs
+          node --check tools/company-roblox-native-windows-capture.mjs
+          node --test qa/company-roblox-native-windows-capture.test.mjs qa/company-roblox-thumbnail-sync.test.mjs qa/company-homepage-runtime-propagation.test.mjs
 
       - name: Resolve thumbnail sync games
         id: thumbnail_games
