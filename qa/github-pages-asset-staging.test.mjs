@@ -394,7 +394,7 @@ test('superseded Pages snapshot never uploads or enters the official publish job
 });
 
 
-test('published Gem Survivor smoke checks full authored 3D species roster instead of obsolete 14',()=>{
+test('published Gem Survivor smoke reads live species without a local game checkout',async()=>{
  const smoke=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
  const renderer=fs.readFileSync('web-games/gem-survivor/gem3d.mjs','utf8');
  const literal=renderer.match(/const SPECIES=\[([^\]]+)\]/);
@@ -405,4 +405,16 @@ test('published Gem Survivor smoke checks full authored 3D species roster instea
  assert.match(smoke,/GEM_NATIVE_SPECIES_NOT_FULLY_RENDERED/);
  assert.match(smoke,/species.length/);
  assert.doesNotMatch(smoke,/getAttribute\('data-authored-monster-kinds'\),'14'/);
+ assert.doesNotMatch(smoke,/fs\.readFileSync\('web-games\/gem-survivor\/gem3d\.mjs'/);
+ const start=smoke.indexOf('   const speciesResponse=');
+ const stop=smoke.indexOf('  for(const mobile of [false,true])',start);
+ assert.ok(start>0&&stop>start);
+ const readSpecies=new AsyncFunction('page','liveBase','assert',smoke.slice(start,stop)+'\nreturn species;');
+ const requests=[];
+ const page={request:{get:async url=>{requests.push(url);return {ok:()=>true,text:async()=>renderer};}}};
+ const live='https://hans1177.github.io/jaewoon-games/';
+ assert.deepEqual(await readSpecies(page,live,assert),species);
+ assert.deepEqual(requests,[live+'web-games/gem-survivor/gem3d.mjs']);
+ await assert.rejects(readSpecies({request:{get:async()=>({ok:()=>false})}},live,assert),/GEM_PUBLIC_RENDERER_HTTP/);
+ await assert.rejects(readSpecies({request:{get:async()=>({ok:()=>true,text:async()=>'<html>unavailable</html>'})}},live,assert),/GEM_NATIVE_SPECIES_DECLARATION_MISSING/);
 });

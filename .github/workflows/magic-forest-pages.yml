@@ -93,7 +93,7 @@ jobs:
           const repo=process.env.GITHUB_REPOSITORY;
           if(repo!=='hans1177/jaewoon-games')throw Error('PAGES_PR_PRUNE_REPOSITORY');
           const api=(path,method='GET')=>{
-            const raw=execFileSync('gh',['api','--method',method,'repos/'+repo+'/'+path],{encoding:'utf8',timeout:15000,stdio:['ignore','pipe','ignore']});
+            const raw=execFileSync('gh',['api','--method',method,'repos/'+repo+'/'+path],{encoding:'utf8',timeout:15000,maxBuffer:16*1024*1024,stdio:['ignore','pipe','ignore']});
             return raw.trim()?JSON.parse(raw):null;
           };
           const runs=api('actions/workflows/magic-forest-pages.yml/runs?event=pull_request&status=queued&per_page=100').workflow_runs||[];
@@ -885,16 +885,17 @@ jobs:
           node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes){if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1);const id=p.split('/')[1];if(!/^[a-f0-9]{40}$/.test(m.sourceTreeShas?.[id]||''))process.exit(1)}"
           # Verify independent published URLs concurrently, preserving every route and asset check.
           # xargs exits nonzero if any worker fails; diagnostics are written per URL.
-          export PAGES_BASE="$base"
+          export PAGES_BASE="$base" DIRECTOR_REPORT="$director_report"
           node -e "const m=require('/tmp/web-pages-published.json');for(const route of m.routes)console.log('route '+route);for(const asset of m.sharedAssets)if(asset)console.log('asset '+asset)" \
             | xargs -r -P 8 -n 2 bash -c '
                 kind="$0"
                 path="$1"
-                if ! curl -fsSL --max-time 15 -o /dev/null "$PAGES_BASE$path"; then
+                # 503 등 일시 오류만 제한 재시도하며 404·지속 오류는 실패로 보존한다.
+                if ! curl -fsSL --retry 2 --retry-delay 1 --retry-max-time 45 --max-time 15 -o /dev/null "$PAGES_BASE$path"; then
                   if [ "$kind" = route ]; then
-                    echo "WEB_PAGES_ROUTE_NOT_LIVE=$path" >&2
+                    echo "WEB_PAGES_ROUTE_NOT_LIVE=$path" | tee -a "$DIRECTOR_REPORT" >&2
                   else
-                    echo "WEB_PAGES_ASSET_NOT_LIVE=$path" >&2
+                    echo "WEB_PAGES_ASSET_NOT_LIVE=$path" | tee -a "$DIRECTOR_REPORT" >&2
                   fi
                   exit 1
                 fi
