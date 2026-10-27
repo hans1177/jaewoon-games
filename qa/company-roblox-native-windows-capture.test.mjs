@@ -49,6 +49,11 @@ test('physical Android capture reuses native footage and git intake, without fak
  assert.match(worker,/--time-limit/);
  assert.match(worker,/validateNativeVideo\(file,duration\)/);
  assert.match(worker,/PHYSICAL_ANDROID_ROBLOX_SCREENRECORD_WITH_REAL_NPC_MOVEMENT/);
+ assert.match(worker,/ANDROID_WATCH_AUTHORIZATION_AND_SUBMISSION_REQUIRED/);
+ assert.match(worker,/ROBLOX_ANDROID_WATCH_BLOCKED=/);
+ assert.match(worker,/14\*86400\*1000/);
+ assert.match(worker,/mode!=='watch'/);
+ assert.match(worker,/mode==='watch'/);
  assert.match(worker,/NATIVE_CAPTURE_LOCAL_FILE_PENDING_UPLOAD/);
  assert.match(worker,/ROBLOX_NATIVE_CAPTURE_SUBMIT/);
  assert.match(worker,/ROBLOX_CAPTURE_SUBMIT/);
