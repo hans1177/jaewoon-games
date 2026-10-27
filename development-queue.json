@@ -83,7 +83,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-27T03:12:20.811Z",
+      "updatedAt": "2026-10-27T03:17:22.794Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -750,6 +750,12 @@
         "videoStatus": "NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED",
         "videoPublication": {
           "requirement": "ACTUAL_NATIVE_ROBLOX_GAMEPLAY_CAPTURE",
+          "humanGameplayRequired": false,
+          "acceptedAutomatedActors": [
+            "IN_GAME_NPC_AI",
+            "IN_GAME_SCRIPTED_REPLAY"
+          ],
+          "nativeClientCaptureStillRequired": true,
           "maxSeconds": 30,
           "monthlyUploadQuota": 3,
           "destination": "CREATOR_DASHBOARD_PLACE_VIDEOS",
@@ -758,11 +764,14 @@
           "uploadVerified": false,
           "nextAction": "CAPTURE_ACTUAL_GAMEPLAY_THEN_UPLOAD_VIA_CREATOR_DASHBOARD"
         },
-        "checkedAt": "2026-10-27T03:12:20.811Z",
+        "checkedAt": "2026-10-27T03:17:22.794Z",
         "authority": "ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA",
         "automaticVideo": {
           "status": "NATIVE_RUNTIME_CAPTURE_UNAVAILABLE",
-          "videoPublished": false
+          "videoPublished": false,
+          "humanGameplayRequired": false,
+          "automatedNpcGameplaySupported": true,
+          "nativeClientCaptureStillRequired": true
         }
       }
     },
@@ -848,7 +857,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-27T03:12:21.240Z",
+      "updatedAt": "2026-10-27T03:17:23.283Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1711,6 +1720,12 @@
         "videoStatus": "NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED",
         "videoPublication": {
           "requirement": "ACTUAL_NATIVE_ROBLOX_GAMEPLAY_CAPTURE",
+          "humanGameplayRequired": false,
+          "acceptedAutomatedActors": [
+            "IN_GAME_NPC_AI",
+            "IN_GAME_SCRIPTED_REPLAY"
+          ],
+          "nativeClientCaptureStillRequired": true,
           "maxSeconds": 30,
           "monthlyUploadQuota": 3,
           "destination": "CREATOR_DASHBOARD_PLACE_VIDEOS",
@@ -1719,11 +1734,14 @@
           "uploadVerified": false,
           "nextAction": "CAPTURE_ACTUAL_GAMEPLAY_THEN_UPLOAD_VIA_CREATOR_DASHBOARD"
         },
-        "checkedAt": "2026-10-27T03:12:21.240Z",
+        "checkedAt": "2026-10-27T03:17:23.283Z",
         "authority": "ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA",
         "automaticVideo": {
           "status": "NATIVE_RUNTIME_CAPTURE_UNAVAILABLE",
-          "videoPublished": false
+          "videoPublished": false,
+          "humanGameplayRequired": false,
+          "automatedNpcGameplaySupported": true,
+          "nativeClientCaptureStillRequired": true
         }
       }
     },
@@ -1995,7 +2013,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-27T03:16:42.132Z",
+      "updatedAt": "2026-10-27T03:17:23.900Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3254,6 +3272,12 @@
         "videoStatus": "NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED",
         "videoPublication": {
           "requirement": "ACTUAL_NATIVE_ROBLOX_GAMEPLAY_CAPTURE",
+          "humanGameplayRequired": false,
+          "acceptedAutomatedActors": [
+            "IN_GAME_NPC_AI",
+            "IN_GAME_SCRIPTED_REPLAY"
+          ],
+          "nativeClientCaptureStillRequired": true,
           "maxSeconds": 30,
           "monthlyUploadQuota": 3,
           "destination": "CREATOR_DASHBOARD_PLACE_VIDEOS",
@@ -3262,11 +3286,14 @@
           "uploadVerified": false,
           "nextAction": "CAPTURE_ACTUAL_GAMEPLAY_THEN_UPLOAD_VIA_CREATOR_DASHBOARD"
         },
-        "checkedAt": "2026-10-27T03:12:21.708Z",
+        "checkedAt": "2026-10-27T03:17:23.900Z",
         "authority": "ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA",
         "automaticVideo": {
           "status": "NATIVE_RUNTIME_CAPTURE_UNAVAILABLE",
-          "videoPublished": false
+          "videoPublished": false,
+          "humanGameplayRequired": false,
+          "automatedNpcGameplaySupported": true,
+          "nativeClientCaptureStillRequired": true
         }
       }
     },
@@ -9381,7 +9408,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T03:17:12.658Z",
+  "updatedAt": "2026-10-27T03:17:23.900Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
