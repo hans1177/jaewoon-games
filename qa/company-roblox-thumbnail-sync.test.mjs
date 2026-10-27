@@ -3,11 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {
   resolveRobloxThumbnailTarget,
   validateCanonicalThumbnail,
   uploadRobloxHomepageThumbnail,
-  syncRobloxExperienceDetailMedia
+  syncRobloxExperienceDetailMedia,
+  syncRobloxHomepageThumbnail
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
 const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
@@ -180,6 +182,36 @@ test('existing Roblox native media is preserved without duplicate re-upload',asy
   assert.equal(report.verifiedDetailImage,true);
   assert.equal(report.approvedRobloxGameplayVideoCount,1);
   fs.rmSync(dir,{recursive:true,force:true});
+});
+
+test('already verified same-source homepage thumbnail is not uploaded again',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-home-reuse-'));
+  try{
+    const root=path.join(dir,'assets','roblox-thumbnails');
+    fs.mkdirSync(root,{recursive:true});
+    const src=path.join(root,'cozy-island.png');
+    fs.writeFileSync(src,Buffer.alloc(800,42));
+    const hash=crypto.createHash('sha256').update(fs.readFileSync(src)).digest('hex');
+    const prev={
+      gameId:'cozy-island',universeId:'10767445741',
+      sourcePath:'assets/roblox-thumbnails/cozy-island.png',
+      sourceSha256:hash,renderedPngSha256:hash,
+      homepageThumbnailId:'known-image',verified:true,uploaded:true
+    };
+    const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',dedicated:true,shared:false,verified:true};
+    fs.writeFileSync(path.join(dir,'game-catalog.json'),JSON.stringify({games:[{
+      id:'cozy-island',canonical:{marketing:{thumbnail:prev.sourcePath}}
+    }]}));
+    fs.writeFileSync(path.join(dir,'queue.json'),JSON.stringify({items:[{
+      gameId:'cozy-island',robloxPublicationTarget:target,robloxThumbnailEvidence:prev
+    }]}));
+    const result=await syncRobloxHomepageThumbnail({
+      root:dir,catalogPath:'game-catalog.json',queuePath:'queue.json',
+      gameId:'cozy-island',apiKey:'',fetchImpl:async()=>{throw new Error('UPLOAD_MUST_NOT_RUN');}
+    });
+    assert.equal(result.homepageThumbnailId,'known-image');
+    assert.equal(result.reusedWithoutUpload,true);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
 test('changed canonical detail artwork replaces an old image without claiming immediate approval',async()=>{
