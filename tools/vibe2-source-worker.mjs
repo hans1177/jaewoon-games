@@ -1736,7 +1736,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     // [게임별 실구현 · 무모델] 실제 동물 애니메이터가 '속도' Attribute 변경마다
     // 공격/피격 SetState를 재시작하면 한 동작이 끝나지 못한다. 원본 함수의 상태/옵션을
     // 그대로 두고 상태나 액션 옵션이 바뀐 경우에만 재생한다. 다른 함수/게임은 건드리지 않는다.
-    if(motionWork&&/(?:^|\\/)client(?:\\/|$)|\\.client\\.luau$/i.test(relative)){
+    if(motionWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
       const unsafe=[
         'local function syncWildlife(model,controller)',
         ' local speed=model:GetAttribute("WildlifeDesiredSpeed")',
@@ -1746,7 +1746,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         '  duration=model:GetAttribute("WildlifeAttackDuration"),',
         ' })',
         'end'
-      ].join('\\n');
+      ].join('\n');
       const watched='{"WildlifeDesiredSpeed","WildlifeMotionState","WildlifeHitSide","WildlifeAttackDuration"}';
       if(source.split(unsafe).length===2&&source.split(watched).length===2
         &&source.includes('GetAttributeChangedSignal(attribute):Connect(function()syncWildlife(model,controller)end)')){
@@ -1764,7 +1764,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           ' controller.sourceAttackDuration=duration',
           ' controller:SetState(state,{side=side,duration=duration})',
           'end'
-        ].join('\\n');
+        ].join('\n');
         candidates.push({
           summary:'Auto-refine existing wildlife actor animation: prevent movement changes replaying attack and hit clips',
           expectedEffect:'Allow real articulated NPC/creature motion to finish even while speed changes; replay only on authoritative state or action-option changes',
