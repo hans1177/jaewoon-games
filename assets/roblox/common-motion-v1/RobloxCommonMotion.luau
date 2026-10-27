@@ -1620,11 +1620,11 @@ function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
  options=options or {}
  local form=string.upper(tostring(options.bodyPlan or "BIPED"))
  local anatomy=ACTOR_FORMS[form]
- if not anatomy then return targets,table.freeze({applied=false,reason="UNSUPPORTED_BODY_PLAN"}) end
+ if not anatomy then return targets,false end
  local joints=options.availableJoints
- if joints~=nil and type(joints)~="table" then return targets,table.freeze({applied=false,reason="REAL_RIG_REQUIRED"}) end
+ if joints~=nil and type(joints)~="table" then return targets,false end
  local poseBlend=bounded(options.blend,0,1,1)
- if poseBlend<=0 then return targets,table.freeze({applied=false,reason="ZERO_BLEND"}) end
+ if poseBlend<=0 then return targets,false end
  local phase=bounded(options.actionPhase,0,1,0)
  local speed=bounded(options.visualSpeed,0,2,0)
  local quality=string.upper(tostring(options.mobileTier or "MID"))
@@ -1709,8 +1709,7 @@ function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
  -- 13 리타게팅은 승인된 이름 매핑으로만 동작하며 새 관절을 생성하지 않는다.
  -- 14 품질 프로파일은 사용자가 제공한 검증 수치를 제한한 시각 파라미터에만 반영.
  -- 15 mobileTier LOW는 부차적인 동작만 감쇠하며 핵심 타격/피격은 유지.
- return targets,table.freeze({applied=true,bodyPlan=form,actorClass=role,secondaryScale=secondary,
-  nativeRigRequired=true,gameplayAuthority=false,runtimeVerified=false})
+ return targets,true
 end
 
 -- 02. 관절의 기존 소스 포즈 두 개 사이를 위치·속도 완화 곡선으로 연결한다.
