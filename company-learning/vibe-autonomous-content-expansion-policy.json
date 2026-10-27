@@ -77,6 +77,21 @@
     "newQueueForbidden": true,
     "queueAmplificationForbidden": true,
     "additionalParallelWorkerForbidden": true,
+    "allGamesGameplayImprovementContract": {
+      "version": 1,
+      "scope": "ALL_ACTIVE_APPROVED_GAME_BUILD_UP_LANES",
+      "minimumPerBuildUp": 5,
+      "appliesTo": ["WEB", "ROBLOX", "UNITY", "UNITY_WEB"],
+      "completionRule": "FIVE_DISTINCT_SOURCE_BOUND_PLAYER_ACTION_STATE_FEEDBACK_IMPROVEMENTS_WITH_SAME_CANDIDATE_RUNTIME_EVIDENCE_WHEN_REQUIRED",
+      "countOnlyCodeEditsCannotProveFivePlayableImprovements": true,
+      "approvedDesignAndExistingGameOnly": true,
+      "knownRuntimeFailuresRepairFirst": true,
+      "sourceOnlyOrAssetOnlyIsNotActualGameplayPass": true,
+      "causalRepairKeepsExpectationWithoutInventing_FIVE_UNRELATED_FEATURES": true,
+      "noNewStagesOrQueue": true,
+      "f0ToF9SequenceUnchanged": true,
+      "protectedSaveBalanceEconomyAndServerAuthorityUnchanged": true
+    },
     "growth": {
       "detailDepthLevel": {
         "base": 1,
@@ -84,7 +99,7 @@
         "max": null
       },
       "connectedImprovements": {
-        "base": 3,
+        "base": 5,
         "stepEveryCycles": 2,
         "max": 8
       },
