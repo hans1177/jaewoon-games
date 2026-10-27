@@ -96,8 +96,26 @@ export function buildRobloxSourceCoaching({cwd=process.cwd(),order={},responsibl
     const ranked=curriculum.lessons.map((row,index)=>({row,index,score:row.terms.split(' ').filter(term=>/^[a-z]+$/.test(term)?new RegExp('\\b'+term+'\\b').test(goal):goal.includes(term)).length})).sort((a,b)=>b.score-a.score||a.index-b.index);
     const studio=selectRobloxStudioLessons(goal);
     const selected=ranked.filter(x=>!studio.length||x.score>0).slice(0,studio.length?1:3).map(x=>x.row);
-    if(!selected.length&&!studio.length)return empty;
-    const evidence={retrieved:true,kind:'ROBLOX_SOURCE_CURRICULUM',sourceReviewedOnly:true,applicationVerified:false,runtimeVerified:false,weightTraining:false,lessonIds:selected.map(row=>row.id),references:selected.map(row=>row.sourceReference),missingTopics:curriculum.missingTopics,studioLessons:studio.map(studioLessonMetadata),studioAdvisoryOnly:true};
+    // 기존 Vibe2 소스 작성기로 게임별 자사 공용 모듈과 검증된 패턴을 직접 인계한다.
+    // 모든 라이브러리를 읽되 게임별 적합·권한·소스 접합을 확인하기 전엔 실행/적용으로 취급하지 않는다.
+    const assetRoot=path.resolve(cwd,'assets/roblox');
+    const companyModules=[];
+    if(fs.existsSync(assetRoot)){
+      for(const directory of fs.readdirSync(assetRoot,{withFileTypes:true}).filter(row=>row.isDirectory()&&/^common-[a-z0-9-]+-v\d+$/.test(row.name)).map(row=>row.name).sort()){
+        for(const entry of fs.readdirSync(path.join(assetRoot,directory),{withFileTypes:true})){
+          if(!entry.isFile()||!/^RobloxCommon[A-Za-z0-9]+\.luau$/.test(entry.name))continue;
+          const relative='assets/roblox/'+directory+'/'+entry.name;
+          const content=fs.readFileSync(path.join(assetRoot,directory,entry.name));
+          companyModules.push({name:entry.name.replace(/\.luau$/,''),path:relative,sha256:crypto.createHash('sha256').update(content).digest('hex')});
+        }
+      }
+    }
+    const patternPath=path.resolve(cwd,'company-learning/vibe2-code-pattern-library.json');
+    const patterns=fs.existsSync(patternPath)?JSON.parse(fs.readFileSync(patternPath,'utf8')).patterns||[]:[];
+    const verifiedPatterns=patterns.filter(row=>row?.verified===true&&row?.rawCodeStored!==true&&row?.independentQa==='PASS'&&row?.retrievalEligible!==false&&(!row.engine||/roblox|luau/i.test(String(row.engine))))
+      .map(row=>({id:clean(row.id),sourceRevision:clean(row.sourceRevision),system:clean(row.system)})).filter(row=>row.id).slice(0,8);
+    if(!selected.length&&!studio.length&&!companyModules.length&&!verifiedPatterns.length)return empty;
+    const evidence={retrieved:true,kind:'ROBLOX_SOURCE_CURRICULUM',sourceReviewedOnly:true,applicationVerified:false,runtimeVerified:false,weightTraining:false,lessonIds:selected.map(row=>row.id),references:selected.map(row=>row.sourceReference),missingTopics:curriculum.missingTopics,studioLessons:studio.map(studioLessonMetadata),studioAdvisoryOnly:true,companyModuleCount:companyModules.length,companyModules:companyModules.map(row=>({name:row.name,path:row.path,sha256:row.sha256})),verifiedCodePatternIds:verifiedPatterns.map(row=>row.id),companyModulesApplicationVerified:false};
     const block=['[ROBLOX SOURCE COACHING BEGIN]',JSON.stringify(evidence),'Distilled source-reading lessons, applied code excerpts and transfer exercises. These are current implementation observations, not approved runtime outcomes. Preserve the current responsible paths and gameplay authority.'];
     for(const row of selected){
       const ref=row.sourceReference,lines=sourceFiles[ref.path].split(/\r?\n/);
@@ -112,6 +130,8 @@ export function buildRobloxSourceCoaching({cwd=process.cwd(),order={},responsibl
     for(const row of studio){
       block.push('ORIGINAL TEACHING EXAMPLE '+row.id+' (adaptation function, not a complete subsystem; not native-verified):\n'+row.exampleCode);
     }
+    if(companyModules.length)block.push('FIRST-PARTY ROBLOX COMMON MODULES (read source by exact path when relevant; map existing game roles, rig and native events before use; availability is not application): '+JSON.stringify(companyModules));
+    if(verifiedPatterns.length)block.push('VERIFIED INTERNAL CODE PATTERN REFERENCES (apply only to compatible responsible code and verify again): '+JSON.stringify(verifiedPatterns));
     block.push('Adapt only the assigned responsibility. Use exact current editable anchors and independently verify the result; a retrieved lesson is not successful application.','[ROBLOX SOURCE COACHING END]');
     return {block:block.join('\n'),evidence};
   }catch{return empty;}
