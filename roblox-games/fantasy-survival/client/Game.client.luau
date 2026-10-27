@@ -418,9 +418,11 @@ local function finishNativeCombatMotion()
   table.clear(combatR15Targets)
 end
 player.CharacterAdded:Connect(function() finishNativeCombatMotion() end)
-player:GetAttributeChangedSignal("ActionSequence"):Connect(function()
-  -- 요청 버튼이 아닌 서버 승인 카운터가 증가한 경우에만 시각 모션을 시작한다.
-  if not authorizedCombatScopes[tostring(player:GetAttribute("LastApprovedScope") or "")] then return end
+player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
+  -- [서버 승인] 하나의 속성에 승인된 전투 액션과 이벤트 번호가 함께 전달된다.
+  local approved = tostring(player:GetAttribute("ApprovedCombatMotion") or "")
+  local approvedScope, approvedEvent = approved:match("^([^:]+):(%d+)$")
+  if not approvedEvent or not authorizedCombatScopes[approvedScope] then return end
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   if not combatMotionSource or not humanoid or humanoid.Health <= 0 then return end
