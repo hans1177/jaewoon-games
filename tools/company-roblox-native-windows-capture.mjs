@@ -114,6 +114,20 @@ async function run(){
  const meta=JSON.parse(probe.stdout||'{}');
  const v=(meta.streams||[]).find(x=>x.codec_type==='video');
  if(!v||v.width!==1280||v.height!==720||Number(meta.format?.duration)<duration-2)throw Error('CAPTURE_VIDEO_NOT_VALIDATED');
+ // Reject blank/frozen GDI GPU surfaces. A playable MP4 alone does not prove gameplay.
+ const audit=command('ffmpeg',['-hide_banner','-nostats','-i',file,
+  '-vf','blackdetect=d=3:pix_th=0.10,freezedetect=n=-55dB:d=3',
+  '-an','-f','null','-'],60000);
+ if(audit.status!==0)throw Error('CAPTURE_FRAME_AUDIT_FAILED');
+ const messages=String(audit.stderr||'');
+ if(/black_start:0(?:[.\\s]|$)/.test(messages)&&/black_end:[0-9.]+/.test(messages)){
+  const m=messages.match(/black_end:([0-9.]+)/);
+  if(m&&Number(m[1])>=duration-2)throw Error('CAPTURE_BLACK_FRAMES_REJECTED');
+ }
+ if(/freeze_start:\\s*0(?:[.\\s]|$)/.test(messages)){
+  const m=messages.match(/freeze_end:\\s*([0-9.]+)/);
+  if(m&&Number(m[1])>=duration-2)throw Error('CAPTURE_STATIC_FRAMES_REJECTED');
+ }
  const revision=command('git',['-C',root,'rev-parse','HEAD']).stdout.trim();
  // OS pixels and native process are evidence of a window recording, not proof of
  // exact published revision, in-game actions or successful Roblox gallery upload.
