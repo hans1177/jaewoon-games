@@ -674,6 +674,38 @@ test('survival player motion profile covers locomotion tools interactions and re
   assert.equal(axe.productionVerified,false);
 });
 
+test('survival CC0 motion profiles query only authored source clips and preserve game authority',()=>{
+  const axe=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'AXE'});
+  const spear=createSurvivalPlayerMotionProfile({platform:'ROBLOX',tool:'SPEAR'});
+  assert.equal(axe.cc0Clips.attack,'1H_Melee_Attack_Chop');
+  assert.deepEqual(spear.cc0ClipCandidates.attack,['1H_Melee_Attack_Stab']);
+  assert.equal(axe.cc0ClipCandidates.run[0],axe.cc0Clips.run);
+  assert.equal(axe.cc0ClipCandidates.walk[0],axe.cc0Clips.walk);
+  assert.equal(axe.clipSelection.verifiedSourceClipsOnly,true);
+  assert.equal(axe.clipSelection.incompatibleWeaponFallbackForbidden,true);
+  assert.equal(axe.clipSelection.oneShotReplayOnAuthoritativeAttackTimestamp,true);
+  assert.equal(axe.rootTranslationOwnedByGameplay,true);
+  assert.equal(axe.productionVerified,false);
+});
+
+test('motion clip gaps enter canonical learning only with verified failure evidence',()=>{
+  const data=[
+    {motionId:'attack',missingMotionRole:'attack',runtimeVerified:false,pass:false},
+    {motionId:'run',missingMotionRole:'run',runtimeVerified:true,pass:false,failureReason:'SOURCE_CLIP_MISSING'}
+  ];
+  const summary=aggregateRuntimeMotionSignals(data);
+  assert.deepEqual(summary.missingSourceClipRoles,{ATTACK:1,RUN:1});
+  assert.deepEqual(summary.verifiedFailureClipRoles,{RUN:1});
+  const candidate=buildRuntimeMotionLearningCandidate({gameId:'fantasy-survival',platform:'WEB',signals:summary,samples:data});
+  assert.equal(candidate.positiveMasteryEligible,false);
+  assert.equal(candidate.negativeAvoidPatternEligible,true);
+  assert.deepEqual(candidate.verifiedFailureClipGaps,{RUN:1});
+  assert.equal(candidate.preparedSemanticEligible,false);
+  assert.equal(candidate.requiresExistingDistillationThresholdHoldoutAndCanary,true);
+  const unverified=buildRuntimeMotionLearningCandidate({gameId:'fantasy-survival',platform:'WEB',samples:[data[0]]});
+  assert.equal(unverified.feedsExistingCanonicalLearningChain,false);
+});
+
 test('survival wildlife motion profile gives species specific articulated motion',()=>{
   const bear=createSurvivalWildlifeMotionProfile({species:'BEAR',platform:'ROBLOX'});
   const boar=createSurvivalWildlifeMotionProfile({species:'BOAR',platform:'ROBLOX'});
