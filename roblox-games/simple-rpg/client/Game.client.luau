@@ -645,7 +645,7 @@ end
 
 -- 대충알피지: 기존 서버가 피해를 실제 승인한 CIV_HIT 이벤트에만 공용 전투 포즈를 연결한다.
 -- 입력, 공격 쿨다운, 서버 피해량, 루트 이동 및 기존 이동 애니메이터는 수정하지 않는다.
-local commonMotion = nil
+local commonMotion: any = nil
 local commonMotionModule = Shared:FindFirstChild("RobloxCommonMotion")
 if commonMotionModule then
   local ok, module = pcall(require, commonMotionModule)
@@ -656,9 +656,9 @@ if commonMotionModule then
     commonMotion = module
   end
 end
-local activeMotionCharacter = nil
-local activeMotionController = nil
-local activeMotionCombo = nil
+local activeMotionCharacter: Model? = nil
+local activeMotionController: any = nil
+local activeMotionCombo: any = nil
 local activeMotionStart = 0
 local motionTargets = {}
 local r15MotionTargets = {}
@@ -683,7 +683,8 @@ player.CharacterAdded:Connect(finishRpgCombatMotion)
 local function playApprovedRpgCombatMotion()
   if not commonMotion or player:GetAttribute("CivReady") ~= true then return end
   local character = player.Character
-  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not character then return end
+  local humanoid = character:FindFirstChildOfClass("Humanoid")
   if not humanoid or humanoid.Health <= 0 then return end
   if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
     character:SetAttribute("CivNativeCombatMotionState", "R15_REQUIRED")
