@@ -112557,11 +112557,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_cae1d0362187743c99e977ff",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10634",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "532fc65108fcbfd11efcad2acbc25ce46e4ae1ae",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10634,
+        "baseBranch": "main",
+        "headBranch": "vibe/roblox-existing-game-common-sync-20261027",
+        "baseSha": "532fc65108fcbfd11efcad2acbc25ce46e4ae1ae",
+        "headSha": "ca25ee055f3132fd7a2aed28ea4492c548747373",
+        "mergeCommitSha": "57656899cac59b86797d336bb0f082213ade3b8b",
+        "mergedAt": "2026-10-27T06:56:42Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3a403a76124a085b8ceeda87e6f52064ff90c5dd5a9bb24568998569514aef54",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe/roblox-existing-game-common-sync-20261027",
+        "candidateSha": "ca25ee055f3132fd7a2aed28ea4492c548747373"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 38,
+        "deletedLineCount": 2,
+        "changedFiles": [
+          ".github/workflows/company-roblox-verified-learning-sweep.yml",
+          "qa/company-development-roblox-source-reconcile.test.mjs",
+          "tools/company-roblox-verified-learning-sweep.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-roblox-verified-learning-sweep.yml",
+          "qa/company-development-roblox-source-reconcile.test.mjs",
+          "tools/company-roblox-verified-learning-sweep.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10634",
+        "merge-commit:57656899cac59b86797d336bb0f082213ade3b8b",
+        "base-main:532fc65108fcbfd11efcad2acbc25ce46e4ae1ae"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 888
+    "total": 889
   }
 }
