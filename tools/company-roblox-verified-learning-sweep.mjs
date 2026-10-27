@@ -41,14 +41,21 @@ const nativeBindingVersion=source=>{
 };
 const playbooks=readJson(playbooksFile);
 const recombination=recombinationFile&&fs.existsSync(recombinationFile)?readJson(recombinationFile):{};
-const gameIds=fs.readdirSync(root,{withFileTypes:true})
+const scopedGameDirectories=fs.readdirSync(root,{withFileTypes:true})
   .filter(entry=>entry.isDirectory())
   .map(entry=>entry.name)
   .filter(gameId=>!requestedGameSet.size||requestedGameSet.has(gameId))
-  .filter(gameId=>fs.existsSync(path.join(root,gameId,'shared','GameConfig.luau'))&&fs.existsSync(path.join(root,gameId,'client','Game.client.luau')))
   .sort();
+const gameIds=scopedGameDirectories.filter(gameId=>fs.existsSync(path.join(root,gameId,'shared','GameConfig.luau'))
+  &&fs.existsSync(path.join(root,gameId,'client','Game.client.luau')));
+// Original owner-authored Roblox projects may use Config.luau rather than GameConfig.luau.
+// They are eligible ONLY for shared Rojo module synchronization, never verified-learning injection.
+const commonOnlyGameIds=scopedGameDirectories.filter(gameId=>!gameIds.includes(gameId)
+  &&fs.existsSync(path.join(root,gameId,'shared','Config.luau'))
+  &&fs.existsSync(path.join(root,gameId,'client','Game.client.luau'))
+  &&fs.existsSync(path.join(root,gameId,'default.project.json')));
 if(requestedGameSet.size){
-  const found=new Set(gameIds);
+  const found=new Set([...gameIds,...commonOnlyGameIds]);
   const missing=requestedGameIds.filter(gameId=>!found.has(gameId));
   if(missing.length)throw new Error('ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND:'+missing.join(','));
 }
@@ -196,6 +203,30 @@ for(const gameId of gameIds){
     currentNativeBindingVersion,
     generatorNativeBindingVersion:Number(ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION||0),
     newerNativeBindingPreserved:currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
+  });
+}
+// Keep native, independently authored games in the existing shared-module sync path.
+// This does not fabricate verified learning or rewrite Config, UI, saves, combat, or server code.
+for(const gameId of commonOnlyGameIds){
+  const gameRoot=path.join(root,gameId);
+  const projectFile=path.join(gameRoot,'default.project.json');
+  const beforeProject=fs.readFileSync(projectFile,'utf8');
+  const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
+  const commonModules=synchronizeRobloxCommonModules({project,gameRoot});
+  const afterProject=JSON.stringify(project,null,2)+'\n';
+  const changed=beforeProject!==afterProject;
+  if(changed)fs.writeFileSync(projectFile,afterProject,'utf8');
+  results.push({
+    gameId,changed,
+    changedFiles:changed?[path.relative(process.cwd(),projectFile).replaceAll('\\','/')]:[],
+    serverTouched:false,
+    commonOnly:true,
+    verifiedExternalLearningApplied:false,
+    commonModuleCount:commonModules.moduleCount,
+    commonModuleConflictCount:commonModules.conflicts.length,
+    commonModuleProjectChanged:changed,
+    semanticMappingVersion:0,
+    serverInspection:'UNCHANGED_NATIVE_AUTHORITATIVE_SOURCE'
   });
 }
 const report={
