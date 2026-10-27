@@ -142,6 +142,25 @@ function Kit.BuildCreature(folder,cf,unit,level,team)
  actor:ScaleTo(actor:GetScale()*scale)
  Kit.PoseCreature(actor,cf.Position.X,cf.Position.Z,team=="ENEMY" and math.pi or 0)
  if level>=5 then
+  -- 진화한 실물 CC0 메시의 발밑에서만 소량의 광휘를 발생시킨다.
+  -- 파츠/충돌/전투 판정/저장값을 추가하지 않으며 원본 메시를 유지한다.
+  local attachment=Instance.new("Attachment")
+  attachment.Name="EvolutionGlowOrigin"
+  attachment.Position=Vector3.new(0,-root.Size.Y*.4,0)
+  attachment.Parent=root
+  local glow=Instance.new("ParticleEmitter")
+  glow.Name="EvolutionGlow"
+  glow.Texture="rbxasset://textures/particles/sparkles_main.dds"
+  glow.Rate=level>=10 and 7 or 3
+  glow.Lifetime=NumberRange.new(.35,.7)
+  glow.Speed=NumberRange.new(.3,1.1)
+  glow.SpreadAngle=Vector2.new(35,35)
+  glow.LightEmission=.65
+  glow.Color=ColorSequence.new(Color3.fromRGB(255,218,116))
+  glow.Size=NumberSequence.new(.18)
+  glow.Parent=attachment
+ end
+ if level>=5 then
   local highlight=Instance.new("Highlight")
   highlight.Name="진화 효과";highlight.FillTransparency=.86
   highlight.OutlineTransparency=.23;highlight.OutlineColor=Color3.fromRGB(255,221,108)
