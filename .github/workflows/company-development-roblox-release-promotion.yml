@@ -862,7 +862,7 @@ jobs:
           done
 
       - name: Persist publication retry requirement and kick existing runtime repair
-        if: always() && steps.target.outputs.skip != 'true' && steps.publish.outcome != 'success'
+        if: always() && steps.target.outcome == 'success' && steps.target.outputs.game_id != '' && steps.target.outputs.skip != 'true' && steps.publish.outcome != 'success'
         working-directory: runtime
         env:
           GH_TOKEN: ${{ github.token }}
