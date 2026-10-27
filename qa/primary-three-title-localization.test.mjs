@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const defs=[
  ['cozy-island','포근섬: 작은 왕국 키우기','Cozy Island: Build a Tiny Kingdom'],
- ['daechung-rpg','5포탈 RPG: 던전 파티','Five Portal RPG: Dungeon Party'],
+ ['daechung-rpg','포탈 알피지','Five Portal RPG: Dungeon Party'],
  ['horror-escape-room','심야 감염전 [4대4]','Midnight Infection [4v4]'],
 ];
 for(const [id,ko,en] of defs){
@@ -21,3 +21,35 @@ for(const [id,ko,en] of defs){
   assert.ok(config.includes('GameNameEnglish='));
  });
 }
+
+
+// 파일명: qa/primary-three-title-localization.test.mjs
+// 두 RPG의 식별자·타이틀·저장소가 분리됐는지 실제 소스에서 확인한다.
+test('포탈 알피지 is distinct from 대충알피지 by game ID, source, release target and save key',()=>{
+ const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+ const portal=catalog.games.find(game=>game.id==='daechung-rpg');
+ const simple=catalog.games.find(game=>game.id==='simple-rpg');
+ assert.equal(portal.name,'포탈 알피지');
+ assert.equal(portal.canonical.identity.name,'포탈 알피지');
+ assert.equal(simple.name,'대충알피지');
+ assert.notEqual(portal.id,simple.id);
+ assert.notEqual(portal.robloxProjectPath,simple.robloxProjectPath);
+ const source=id=>fs.readFileSync('roblox-games/'+id+'/shared/GameConfig.luau','utf8');
+ const server=id=>fs.readFileSync('roblox-games/'+id+'/server/Game.server.luau','utf8');
+ const project=id=>JSON.parse(fs.readFileSync('roblox-games/'+id+'/default.project.json','utf8'));
+ assert.equal(project('daechung-rpg').name,'포탈 알피지');
+ assert.equal(project('simple-rpg').name,'대충알피지');
+ assert.match(source('daechung-rpg'),/GameId="daechung-rpg"/);
+ assert.match(source('simple-rpg'),/GameId = "simple-rpg"/);
+ assert.match(source('daechung-rpg'),/GameNameKorean="포탈 알피지"/);
+ assert.match(source('simple-rpg'),/GameName = "대충알피지"/);
+ assert.match(server('daechung-rpg'),/GetDataStore\("daechung-rpg-portal-v1"\)/);
+ assert.match(server('simple-rpg'),/GetDataStore\("simple-rpg-development-v1"\)/);
+ const portalRelease=fs.readFileSync('.github/workflows/owner-daechung-rpg-direct-publish.yml','utf8');
+ const simpleRelease=fs.readFileSync('.github/workflows/owner-simple-rpg-direct-publish.yml','utf8');
+ assert.match(portalRelease,/GAME_ID: daechung-rpg/);
+ assert.match(simpleRelease,/GAME_ID: simple-rpg/);
+ const portalWeb=fs.readFileSync('web-games/daechung-rpg/index.html','utf8');
+ assert.match(portalWeb,/<title>포탈 알피지<\/title>/);
+ assert.doesNotMatch(portalWeb,/대충 용사 RPG/);
+});

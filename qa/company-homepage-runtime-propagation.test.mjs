@@ -336,7 +336,7 @@ test('visible game titles stay aligned with Roblox project titles',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const expected={
     'cozy-island':'포근섬: 작은 왕국 키우기',
-    'daechung-rpg':'5포탈 RPG: 던전 파티',
+    'daechung-rpg':'포탈 알피지',
     'horror-escape-room':'심야 대탈출'
   };
   for(const [id,title] of Object.entries(expected)){

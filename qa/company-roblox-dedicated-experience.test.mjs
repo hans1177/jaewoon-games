@@ -128,7 +128,7 @@ test('publishRobloxDedicatedPlace sends built place to exact dedicated target', 
 test('dedicated Roblox project titles match the published Experience titles',()=>{
   const expected={
     'cozy-island':'포근섬: 작은 왕국 키우기',
-    'daechung-rpg':'5포탈 RPG: 던전 파티',
+    'daechung-rpg':'포탈 알피지',
     'horror-escape-room':'심야 대탈출',
   };
   for(const [gameId,title] of Object.entries(expected)){
@@ -145,7 +145,7 @@ test('dedicated Roblox workflow recovers and persists the durable target registr
   assert.match(workflow,/registry\.targets\.findIndex/);
   assert.match(workflow,/git add development-queue\.json roblox-dedicated-targets\.json/);
   assert.match(workflow,/gameName: '포근섬: 작은 왕국 키우기'/);
-  assert.match(workflow,/gameName: '5포탈 RPG: 던전 파티'/);
+  assert.match(workflow,/gameName: '포탈 알피지'/);
   assert.match(workflow,/gameName: '심야 대탈출'/);
   assert.match(workflow,/const canonicalSourceRevision=String\(item\.robloxSourceCommit\|\|''\)\.trim\(\)/);
   assert.match(workflow,/const canonicalArtifactIdentity=String\(item\.robloxBuildArtifactIdentity\|\|''\)\.trim\(\)/);

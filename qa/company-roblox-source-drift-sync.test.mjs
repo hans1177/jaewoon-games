@@ -523,7 +523,7 @@ test('public asset library exposes existing asset-only publication and exact Rob
   assert.ok(page.includes('actions/workflows/company-roblox-source-drift-sync.yml'));
   assert.ok(browser.includes("sourceFile.split('/').includes('..')"));
   assert.ok(browser.includes('sourceLink.hidden=!hasLocalSource'));
-  assert.ok(browser.includes('verifiedConsumers.length'));
+  assert.ok(browser.includes("bound.length?'실제 소스 연결:"));
   assert.ok(browser.includes('라이브러리 목록 자동 갱신'));
   assert.match(pages,/push:\s*\n\s*branches: \[main\]/);
   assert.ok(drift.includes("'assets/roblox/**'"));
