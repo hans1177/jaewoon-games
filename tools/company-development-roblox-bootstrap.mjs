@@ -385,9 +385,21 @@ export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot
   // 자사 JS/설계/코딩 패턴은 빌드업 참조와 검증 대상으로만 사용하며 클라이언트에 배포하지 않는다.
   const repoRoot=path.resolve(assetRoot,'../..');
   const assets=path.join(repoRoot,'assets');
-  const patternSources=fs.existsSync(assets)
-    ?fs.readdirSync(assets,{withFileTypes:true}).filter(entry=>entry.isFile()&&/^vibe[a-z0-9-]*\.(?:js|mjs)$/.test(entry.name)).map(entry=>entry.name).sort():[];
-  const firstPartyLibraries=['company-asset-library.json','company-learning/vibe2-code-pattern-library.json','company-learning/vibe3-task-playbooks.json'];
+  const sourceFiles=fs.existsSync(assets)
+    ?fs.readdirSync(assets,{withFileTypes:true}).filter(entry=>entry.isFile()&&/\.(?:js|mjs)$/.test(entry.name)).map(entry=>entry.name).sort():[];
+  const patternSources=sourceFiles.filter(name=>name.startsWith('vibe'));
+  const nativePacks=fs.readdirSync(assetRoot,{withFileTypes:true})
+    .filter(entry=>entry.isDirectory()&&!roots.includes(entry.name)).map(entry=>entry.name).sort();
+  const firstPartyLibraries=[
+    'company-asset-library.json',
+    'company-learning/canonical-learning-pipeline.json',
+    'company-learning/vibe2-code-pattern-library.json',
+    'company-learning/vibe3-task-playbooks.json',
+    'company-learning/vibe3-engine-contract.json',
+    'assets/asset-manifest.json',
+    'assets/asset-license-ledger.json',
+    'assets/roblox/common-registered-external-assets-v1.json'
+  ];
   const libraryFingerprints={};
   for(const name of firstPartyLibraries){
     const file=path.join(repoRoot,name);
@@ -397,12 +409,14 @@ export function synchronizeRobloxCommonModules({project={},gameRoot='',assetRoot
   const patternLibrary=fs.existsSync(patternPath)?JSON.parse(fs.readFileSync(patternPath,'utf8')):{patterns:[]};
   const verifiedPatterns=(patternLibrary.patterns||[]).filter(pattern=>pattern?.verified===true&&pattern?.rawCodeStored!==true&&pattern?.retrievalEligible!==false&&pattern?.independentQa==='PASS');
   const sourceFingerprint=crypto.createHash('sha256')
-    .update(JSON.stringify({modules:fingerprints.sort(),libraries:libraryFingerprints,patternSources})).digest('hex');
+    .update(JSON.stringify({modules:fingerprints.sort(),libraries:libraryFingerprints,sourceFiles,nativePacks})).digest('hex');
   return Object.freeze({
     project,moduleCount:seen.size,linked:Object.freeze(linked),local:Object.freeze(local),conflicts:Object.freeze(conflicts),
     libraryCoverage:Object.freeze({
       runtimeModuleCount:seen.size,firstPartyPackCount:roots.length,
-      firstPartyPatternSourceCount:patternSources.length,verifiedCodePatternCount:verifiedPatterns.length,
+      firstPartyPatternSourceCount:patternSources.length,
+      firstPartyDevelopmentSourceCount:sourceFiles.length,nativeSpecializedPackCount:nativePacks.length,
+      verifiedCodePatternCount:verifiedPatterns.length,
       patternSourcesRuntimeInjected:false,unverifiedAssetsAutoPromoted:false,
       libraryFingerprints:Object.freeze(libraryFingerprints),sourceFingerprint,
     }),
