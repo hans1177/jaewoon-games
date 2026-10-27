@@ -41,6 +41,8 @@ on:
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-build-up-directive.mjs'
       - 'qa/company-build-up-directive.test.mjs'
+      - 'tools/company-roblox-holistic-quality-buildup.mjs'
+      - 'qa/company-roblox-holistic-quality-buildup.test.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
@@ -150,6 +152,8 @@ on:
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-build-up-directive.mjs'
       - 'qa/company-build-up-directive.test.mjs'
+      - 'tools/company-roblox-holistic-quality-buildup.mjs'
+      - 'qa/company-roblox-holistic-quality-buildup.test.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
@@ -323,6 +327,8 @@ jobs:
           node --check tools/company-strict-production-review.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-build-up-directive.mjs
+          node --check tools/company-roblox-holistic-quality-buildup.mjs
+          node --test qa/company-roblox-holistic-quality-buildup.test.mjs
           node --check tools/company-development-unity-evidence.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
