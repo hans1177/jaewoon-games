@@ -35,7 +35,8 @@ test('service worker bypasses stale cache for daechung RPG',()=>{
 test('daechung Unity Web QA touches the same fixed-screen attack button used by real gameplay',()=>{
   const source=fs.readFileSync('unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs','utf8');
   assert.match(source,/DrawPrimaryCombatActionButton\(\)/);
-  assert.match(source,/var actionRect = new Rect\(/);
+  assert.match(source,/_actionButtonRect = new Rect\(safe\.xMax - buttonWidth - margin, safe\.yMax - buttonHeight - margin, buttonWidth, buttonHeight\)/);
+  assert.match(source,/var actionRect = _actionButtonRect;/);
   assert.match(source,/center\.x \/ Screen\.width/);
   assert.match(source,/center\.y \/ Screen\.height/);
   // Same fixed button: HUNT in town, ATTACK in actual encounter.
