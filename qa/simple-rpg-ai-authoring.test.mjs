@@ -489,5 +489,5 @@ test('verified native spawn is bound before curated world hydration and never ov
   assert.match(server,/character:SetAttribute\("GROUND_CONTACT", true\)/);
   assert.doesNotMatch(server,/character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
   assert.match(server,/SIMPLE_RPG_EXTERNAL_SPAWN_MESH_REQUIRED/);
-  assert.equal((server.match(/bindFoundationPlayer\(player\)/g)||[]).length,0,'do not bind the same player twice during data load');
+  assert.equal((server.match(/bindFoundationPlayer\(player\)/g)||[]).length,1,'only the function declaration should remain; never double-bind during data load');
 });
