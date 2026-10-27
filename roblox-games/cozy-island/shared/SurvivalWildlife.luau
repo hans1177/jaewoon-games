@@ -44,7 +44,9 @@ function Wildlife.SetMotionState(model, state, options)
 	assertServer()
 	assert(model and model:IsA("Model"), "model required")
 	local nextState = string.upper(tostring(state or "LOCOMOTION"))
-	model:SetAttribute("WildlifeMotionState", nextState)
+	local oldState = model:GetAttribute("WildlifeMotionState")
+	-- [모션 이벤트] 재공격·연속 피격만 고유 이벤트 번호로 재생한다.
+	-- 상태·속도·공격력·판정은 서버 원본 그대로 유지한다.
 	if options then
 		if options.hitSide ~= nil then
 			model:SetAttribute("WildlifeHitSide", math.clamp(tonumber(options.hitSide) or 0, -1, 1))
@@ -55,6 +57,11 @@ function Wildlife.SetMotionState(model, state, options)
 		if options.attackDuration ~= nil then
 			model:SetAttribute("WildlifeAttackDuration", math.max(0.58, tonumber(options.attackDuration) or 0.92))
 		end
+	end
+	if nextState == oldState and (nextState == "ATTACK" or nextState == "HIT") then
+		model:SetAttribute("WildlifeMotionSerial", (tonumber(model:GetAttribute("WildlifeMotionSerial")) or 0) + 1)
+	else
+		model:SetAttribute("WildlifeMotionState", nextState)
 	end
 end
 
