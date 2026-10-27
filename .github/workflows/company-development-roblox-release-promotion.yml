@@ -726,6 +726,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.target.outputs.game_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
@@ -810,29 +812,52 @@ jobs:
           }
           const assetIds=[...new Set(selected)];
           if(assetIds.length){
-            if(!process.env.ROBLOX_OPEN_CLOUD_API_KEY)
-              throw new Error('ROBLOX_CC0_GRANT_API_KEY_REQUIRED');
-            const grant=await fetch('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
-              method:'PATCH',
-              headers:{'x-api-key':process.env.ROBLOX_OPEN_CLOUD_API_KEY,'content-type':'application/json'},
-              body:JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
-                action:'Use',requests:assetIds.map(assetId=>({assetId,grantToDependencies:true}))}),
-              signal:AbortSignal.timeout(30000)
-            });
-            const response=await grant.json().catch(()=>({}));
-            // HTTP 200 may still contain per-asset failures or omit a requested grant.
-            // Roblox's grant response reports each success in successAssetIds.
-            const grantedIds=new Set(Array.isArray(response.successAssetIds)
-              ?response.successAssetIds.map(String):[]);
-            if(!grant.ok||(Array.isArray(response.errors)&&response.errors.length>0)
-              ||assetIds.some(assetId=>!grantedIds.has(String(assetId)))){
-              // 원문 오류·키·요청 본문을 출력하지 않고 공식 오류 코드만 허용 문자로 정규화한다.
-              const reason=String(response?.error?.code||response?.errors?.[0]?.code||'UNSPECIFIED')
+            // Verified CC0 models still require explicit Roblox Universe grants.
+            // An owner-authenticated cookie is an official alternative to an API
+            // key without asset-permissions:write; never skip grant verification.
+            const url='https://apis.roblox.com/asset-permissions-api/v1/assets/permissions';
+            const body=JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
+              action:'Use',requests:assetIds.map(assetId=>({assetId,grantToDependencies:true}))});
+            const apiKey=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
+            const ownerRaw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+            if(!apiKey&&!ownerRaw)throw new Error('ROBLOX_CC0_GRANT_OWNER_CREDENTIAL_REQUIRED');
+            const request=async headers=>fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(30000)});
+            const decode=async result=>result.json().catch(()=>({}));
+            const complete=(result,answer)=>{
+              const granted=new Set(Array.isArray(answer?.successAssetIds)?answer.successAssetIds.map(String):[]);
+              return result?.ok===true
+                &&(!Array.isArray(answer?.errors)||answer.errors.length===0)
+                &&assetIds.every(assetId=>granted.has(String(assetId)));
+            };
+            let grant=null,answer=null,authority='API_KEY';
+            if(apiKey){
+              grant=await request({'x-api-key':apiKey,'content-type':'application/json'});
+              answer=await decode(grant);
+            }
+            if((!grant||grant.status===403)&&!complete(grant,answer)&&ownerRaw){
+              // Roblox validates the owner and issues the CSRF challenge.
+              const cookie=ownerRaw.includes('.ROBLOSECURITY=')?ownerRaw:'.ROBLOSECURITY='+ownerRaw+';';
+              let headers={'content-type':'application/json',cookie};
+              grant=await request(headers);
+              if(grant.status===403){
+                const csrf=grant.headers.get('x-csrf-token');
+                if(csrf){
+                  headers={...headers,'x-csrf-token':csrf};
+                  grant=await request(headers);
+                }
+              }
+              answer=await decode(grant);
+              authority='OWNER_COOKIE_CSRF';
+            }
+            if(!complete(grant,answer)){
+              // Do not log response bodies or auth material.
+              const reason=String(answer?.error?.code||answer?.errors?.[0]?.code||'UNSPECIFIED')
                 .replace(/[^A-Za-z0-9_]/g,'_').slice(0,64);
               console.error('ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE='+reason);
-              if(grant.status===403)console.error('ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS');
-              throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+grant.status);
+              if(grant?.status===403)console.error('ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS');
+              throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+(grant?.status||0));
             }
+            console.log('ROBLOX_CC0_UNIVERSE_GRANT_AUTHORITY='+authority);
             console.log('ROBLOX_CC0_UNIVERSE_GRANT_ACCEPTED='+assetIds.length);
           }else console.log('ROBLOX_CC0_UNIVERSE_GRANT=NO_REGISTERED_ACTOR_USE');
           const result=await publishRobloxPlace({plan,retryDelaysMs:[]});
