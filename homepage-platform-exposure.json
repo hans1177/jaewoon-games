@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-27T17:46:56.453Z",
+  "generatedAt": "2026-10-27T17:50:16.063Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -2133,14 +2133,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
-            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-27T10:26:25.474Z",
-            "checkedAt": "2026-10-27T17:45:22.318Z",
+            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-10-27T17:50:15.445Z",
             "lastFailureAt": null,
-            "f0PassedAt": "2026-10-27T07:23:59.632Z",
-            "candidatePublishedAt": "2026-10-27T10:26:25.474Z",
+            "f0PassedAt": null,
+            "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
           },
@@ -2153,7 +2153,7 @@
             "version": 1,
             "ready": true,
             "homepageReady": true,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": true,
@@ -2168,8 +2168,8 @@
               "noRuntimeErrors": false
             },
             "blockers": [],
-            "sourceRevision": "d3e0378c66877d2aac883c0eebe3662b6b1dcc7b",
-            "artifactIdentity": "sha256:397914f8ce1890b869b21ba17f0e5dd2253122e1cb83cecef2d673e708c10824",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -2236,7 +2236,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-27T17:45:22.318Z"
+      "updatedAt": "2026-10-27T17:50:15.445Z"
     },
     {
       "gameId": "human-go",
