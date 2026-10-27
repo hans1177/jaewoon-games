@@ -843,14 +843,15 @@ verifiedLearningRunService.RenderStepped:Connect(function(dt)
           if hit then
             local groundGap = math.abs((foot.Position.Y - foot.Size.Y * 0.5) - hit.Position.Y)
             footState.target.WorldCFrame = CFrame.new(hit.Position + hit.Normal * (foot.Size.Y * 0.5 + 0.02))
-            footState.control.Weight = groundGap <= 0.35 and (rootSpeed < 1 and 0.5 or 0.32) or 0.12
+            local targetWeight = groundGap <= 0.35 and (rootSpeed < 1 and 0.5 or 0.32) or 0.12
+            footState.control.Weight += (targetWeight - footState.control.Weight) * (1 - math.exp(-18 / updateHz))
             if footState.lastPosition and rootDelta > 0.02 and groundGap <= 0.12 then
               local footDelta = (verifiedLearningHorizontal(foot.Position) - verifiedLearningHorizontal(footState.lastPosition)).Magnitude
               local normalized = footDelta / math.max(state.humanoid.HipHeight + 2, 4)
               slideMin = slideMin and math.min(slideMin, normalized) or normalized
             end
           else
-            footState.control.Weight = 0
+            footState.control.Weight += (0 - footState.control.Weight) * (1 - math.exp(-22 / updateHz))
           end
           footState.lastPosition = foot.Position
         end
