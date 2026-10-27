@@ -704,4 +704,4 @@ test('four owner-selected Roblox games auto-retry only due exact private 429 QA 
  assert.doesNotMatch(retry,/publishRobloxPlace|ROBLOX_PUBLISHED_VERSION_NUMBER|autoActivate/);
  const thumbnail=workflow.slice(workflow.indexOf('  thumbnail-sync:'));
  assert.ok(thumbnail.includes("github.event.schedule == '17 2 * * *'"));
-});\n
+});
