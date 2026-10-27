@@ -238,6 +238,19 @@ export async function syncRobloxHomepageThumbnail({
     console.log('ROBLOX_DETAIL_MEDIA_VERIFIED='+String(media.verifiedDetailImage));
     return evidence;
   }
+  // 메인: 동일 원본에 대한 검증된 서버 업로드는 재사용해 중복 업로드를 막는다.
+  const previous=(queue.items||[]).find(item=>clean(item?.gameId)===target.gameId)?.robloxThumbnailEvidence||{};
+  if(previous.verified===true&&previous.uploaded===true
+    &&previous.gameId===target.gameId&&previous.universeId===target.universeId
+    &&previous.sourcePath===target.source&&previous.sourceSha256===validated.sha256
+    &&previous.renderedPngSha256===rendered.sha256
+    &&clean(previous.homepageThumbnailId)){
+    const evidence={...previous,reusedWithoutUpload:true};
+    if(clean(outputPath))writeJson(path.resolve(root,outputPath),evidence);
+    console.log('ROBLOX_THUMBNAIL_UPLOAD=REUSED_VERIFIED:'+target.gameId);
+    console.log('ROBLOX_THUMBNAIL_VERIFY=REUSED:thumbnailId='+previous.homepageThumbnailId);
+    return evidence;
+  }
   const uploaded=await uploadRobloxHomepageThumbnail({
     universeId:target.universeId,pngPath,apiKey,fetchImpl,sleepImpl
   });
