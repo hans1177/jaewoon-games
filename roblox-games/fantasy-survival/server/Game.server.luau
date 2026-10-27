@@ -381,11 +381,18 @@ local function bindSurvivalHealth(player)
   if player.Character then task.defer(bindCharacter, player.Character) end
 end
 
+-- 데이터 읽기가 실패한 세션에서는 임시 플레이만 허용한다.
+-- 실패한 로드의 기본값으로 기존 저장 데이터가 덮어써지는 것을 막는다.
+local persistenceAllowed = {}
 Players.PlayerAdded:Connect(function(player)
+  player:SetAttribute("ProfileReady", false)
   local ok, saved = pcall(function()
+    if not store then error("SURVIVAL_DATASTORE_UNAVAILABLE") end
     return store:GetAsync("player:" .. player.UserId)
   end)
-  if ok and typeof(saved) == "table" then
+  local validSaved = ok and (saved == nil or typeof(saved) == "table")
+  persistenceAllowed[player] = validSaved
+  if validSaved and typeof(saved) == "table" then
     for key, fallback in pairs(Config.InitialState) do
       local value = saved[key]
       if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
@@ -395,14 +402,16 @@ Players.PlayerAdded:Connect(function(player)
   else
     initializePlayer(player)
   end
+  player:SetAttribute("SaveStatus", validSaved and "READY" or "SESSION_ONLY")
   bindSurvivalHealth(player)
+  player:SetAttribute("ProfileReady", true)
   broadcastSurvivalState(player)
 end)
 for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function() if player:GetAttribute("Score") == nil then initializePlayer(player) end end)
 end
 remote.OnServerEvent:Connect(function(player, actionId)
-  if typeof(actionId) ~= "string" then return end
+  if typeof(actionId) ~= "string" or player:GetAttribute("ProfileReady") ~= true then return end
   local handler = handlers[actionId]
   if typeof(handler) ~= "function" then return end
   local now = os.clock()
@@ -422,12 +431,25 @@ remote.OnServerEvent:Connect(function(player, actionId)
     end
   end
 end)
-Players.PlayerRemoving:Connect(function(player)
+local function saveSurvivalProgress(player)
+  if persistenceAllowed[player] ~= true or not store then return false end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
-  pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
+  local ok = pcall(function()
+    store:UpdateAsync("player:" .. player.UserId, function(previous)
+      -- 다른 버전의 데이터와 알 수 없는 이전 필드는 버리지 않는다.
+      if previous ~= nil and typeof(previous) ~= "table" then return nil end
+      local merged = typeof(previous) == "table" and table.clone(previous) or {}
+      for key, value in pairs(snapshot) do merged[key] = value end
+      return merged
+    end)
   end)
+  player:SetAttribute("SaveStatus", ok and "SAVED" or "SAVE_FAILED")
+  return ok
+end
+Players.PlayerRemoving:Connect(function(player)
+  saveSurvivalProgress(player)
+  persistenceAllowed[player] = nil
   lastAction[player] = nil
   attackCooldown[player] = nil
 end)
@@ -509,4 +531,17 @@ nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
   if typeof(signal) ~= "string" then return end
   player:SetAttribute("NativeFoundationReadyAt", os.time())
 end)
-game:BindToClose(function() end)
+-- 서버 종료 시에도 저장된 프로필만 보호한다. 임시 세션은 저장 금지.
+game:BindToClose(function()
+  local players = Players:GetPlayers()
+  local remaining = #players
+  if remaining == 0 then return end
+  for _,player in ipairs(players) do
+    task.spawn(function()
+      saveSurvivalProgress(player)
+      remaining -= 1
+    end)
+  end
+  local started = os.clock()
+  while remaining > 0 and os.clock() - started < 12 do task.wait(.1) end
+end)

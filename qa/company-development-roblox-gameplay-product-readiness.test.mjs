@@ -66,6 +66,11 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/player:SetAttribute\("ApprovedCombatMotion", actionId/);
   assert.match(server,/humanoid\.HealthChanged:Connect\(reportHealth\)/);
   assert.match(server,/humanoid\.Died:Connect/);
+  assert.match(server,/persistenceAllowed\[player\] = validSaved/);
+  assert.match(server,/if persistenceAllowed\[player\] ~= true or not store then return false end/);
+  assert.match(server,/player:GetAttribute\("ProfileReady"\) ~= true/);
+  assert.match(server,/local merged = typeof\(previous\) == "table" and table\.clone\(previous\) or \{\}/);
+  assert.match(server,/game:BindToClose\(function\(\)/);
   assert.doesNotMatch(server,/local function scopeHandler\d+\(/);
 });
 
