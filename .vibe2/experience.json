@@ -253799,72 +253799,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_77f4f3941e73d2f2c41e6904",
-          "taskId": "horror-escape-room-web-library-cc0-replacement-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:62cf78171eb56d7d9fc18eaf76dbbc189510075e",
-            "actions-run:40325714446",
-            "reservation-id:40325714446:1",
-            "capability-application-sample:0dbcb35e278734753569"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_06ca452be73280027d0cfb58",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:11eab08b1112bebaa276097631138156d6484e98",
-            "actions-run:40328071360",
-            "reservation-id:40328071360:1",
-            "capability-application-sample:b4e4a65b3ba342c10897"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_4da1598c3bad2fd4f9345f2e",
           "taskId": "horror-escape-room-web-library-cc0-replacement-v1",
           "workKey": null,
@@ -255902,6 +255836,72 @@
             "actions-run:40518677911",
             "reservation-id:40518677911:1",
             "capability-application-sample:25a67181a66d6c734553"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f8253829560b95da4d8fcfe2",
+          "taskId": "internal-motion-la-llorona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:60bc78d3119a759ee6a6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_181ef6c6aac0ecfc7f55f93f",
+          "taskId": "internal-motion-la-sayona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:7569f98f12a2823de9e5"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -353023,72 +353023,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4cf01644f13509bf5694be20",
-          "taskId": "internal-motion-water-gwisin-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:d24908fdd6de844ed381c764231d273b956914c2",
-            "actions-run:38413761239",
-            "reservation-id:38413761239:1",
-            "capability-application-sample:4bf674fee5da8a7fb271"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_d4c085df9d5e0c0276ebd982",
-          "taskId": "internal-motion-bulgasari-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:278be1843b856e74d3de374dfe0d205f8cf86028",
-            "actions-run:38414903958",
-            "reservation-id:38414903958:1",
-            "capability-application-sample:6332bdcf8a6bb527508b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_3fde7203db9a95296059ca1c",
           "taskId": "internal-motion-dokkaebi-walk-v1",
           "workKey": null,
@@ -355129,6 +355063,72 @@
             "actions-run:39373107249",
             "reservation-id:39373107249:1",
             "capability-application-sample:5322bcc407a43fab632a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d15f5e759d75a58852b02679",
+          "taskId": "internal-motion-la-llorona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:60bc78d3119a759ee6a6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_714e1a0566e53ae63aaf11bd",
+          "taskId": "internal-motion-la-sayona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:7569f98f12a2823de9e5"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -413465,72 +413465,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_5dc7ddb59b3efb7dde6185c7",
-          "taskId": "internal-motion-water-gwisin-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:d24908fdd6de844ed381c764231d273b956914c2",
-            "actions-run:38413761239",
-            "reservation-id:38413761239:1",
-            "capability-application-sample:4bf674fee5da8a7fb271"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_5728d7b84bfb22d28d2a6972",
-          "taskId": "internal-motion-bulgasari-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:278be1843b856e74d3de374dfe0d205f8cf86028",
-            "actions-run:38414903958",
-            "reservation-id:38414903958:1",
-            "capability-application-sample:6332bdcf8a6bb527508b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_3f13451890adf8ea1d1a8ff4",
           "taskId": "internal-motion-dokkaebi-walk-v1",
           "workKey": null,
@@ -415571,6 +415505,72 @@
             "actions-run:39373107249",
             "reservation-id:39373107249:1",
             "capability-application-sample:5322bcc407a43fab632a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_dbd272a5291b37fc060a09fe",
+          "taskId": "internal-motion-la-llorona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:60bc78d3119a759ee6a6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4025fd2c6d7eee717a627298",
+          "taskId": "internal-motion-la-sayona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:7569f98f12a2823de9e5"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -434903,72 +434903,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_6be95bf8b0f1218860af16b5",
-          "taskId": "horror-escape-room-web-library-cc0-replacement-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:62cf78171eb56d7d9fc18eaf76dbbc189510075e",
-            "actions-run:40325714446",
-            "reservation-id:40325714446:1",
-            "capability-application-sample:0dbcb35e278734753569"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_64a1039e86d587afce156a7d",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:11eab08b1112bebaa276097631138156d6484e98",
-            "actions-run:40328071360",
-            "reservation-id:40328071360:1",
-            "capability-application-sample:b4e4a65b3ba342c10897"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8637fef0291bb201af82e9e5",
           "taskId": "horror-escape-room-web-library-cc0-replacement-v1",
           "workKey": null,
@@ -437012,6 +436946,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5876aacfd753e7cfc417245b",
+          "taskId": "internal-motion-la-llorona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:60bc78d3119a759ee6a6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_04054909cdf946156df11619",
+          "taskId": "internal-motion-la-sayona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:7569f98f12a2823de9e5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -437122,72 +437122,6 @@
       "confirmations": 7,
       "confidence": 0.875,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_cd0a8b1df44c25abd1b6fedc",
-          "taskId": "internal-motion-water-gwisin-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:d24908fdd6de844ed381c764231d273b956914c2",
-            "actions-run:38413761239",
-            "reservation-id:38413761239:1",
-            "capability-application-sample:4bf674fee5da8a7fb271"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_98e800b4d13e79bed4243020",
-          "taskId": "internal-motion-bulgasari-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:278be1843b856e74d3de374dfe0d205f8cf86028",
-            "actions-run:38414903958",
-            "reservation-id:38414903958:1",
-            "capability-application-sample:6332bdcf8a6bb527508b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_4bf76f9e6c74e8b31156f8b1",
@@ -439230,6 +439164,72 @@
             "actions-run:39373107249",
             "reservation-id:39373107249:1",
             "capability-application-sample:5322bcc407a43fab632a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ad8a985ba7d2ad98f8e81ec8",
+          "taskId": "internal-motion-la-llorona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:60bc78d3119a759ee6a6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_be0c636ebe48bea39776352f",
+          "taskId": "internal-motion-la-sayona-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:189f5e3812550435fe83bb7b1ce5b52703d5a336",
+            "actions-run:40521216661",
+            "reservation-id:40521216661:1",
+            "capability-application-sample:7569f98f12a2823de9e5"
           ],
           "observedAt": null,
           "rawCodeStored": false,
