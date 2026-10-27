@@ -81,7 +81,8 @@ for(const gameId of gameIds){
   // Check the existing native source against the exact current design before
   // enabling learning without changing the actual game rules or saves.
   let independentlyVerifiedNativeSource=false;
-  if(recordedEvidence?.moduleSyncOnly===true&&fs.existsSync(standardConfigFile)
+  if(gameId==='baeksu-war'&&requestedGameSet.has(gameId)
+    &&recordedEvidence?.moduleSyncOnly===true&&fs.existsSync(standardConfigFile)
     &&fs.existsSync(path.join(gameRoot,'server','Game.server.luau'))&&runtimeRef&&runtimeQueue){
     const item=runtimeItems.get(gameId);
     const baselinePath=String(item?.designBaselineSource||'').trim();
