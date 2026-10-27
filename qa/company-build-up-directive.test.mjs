@@ -119,6 +119,65 @@ test('all game platforms receive five source-grounded playable improvement targe
   }
 });
 
+// [모션 회귀] 모든 빌드업에서 실제 등장하는 플레이어 외 NPC·몹·보스·동물·동료·탈것까지 구분한다.
+test('existing all-game build-up discovers actor-specific native motion without inventing runtime PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-actor-motion-'));
+  const gameId='actor-motion-fixture',sourceRoot='roblox-games/'+gameId;
+  const file=sourceRoot+'/server/Actors.server.luau';
+  try{
+    fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});
+    fs.writeFileSync(path.join(root,file),[
+      'local Players = game:GetService("Players")',
+      'local player = Players.LocalPlayer',
+      'local npc = workspace:FindFirstChild("Villager")',
+      'local enemy = workspace:FindFirstChild("Enemy")',
+      'local boss = workspace:FindFirstChild("RaidBoss")',
+      'local animal = workspace:FindFirstChild("Wildlife")',
+      'local companion = workspace:FindFirstChild("Companion")',
+      'local horse = workspace:FindFirstChild("Horse")',
+      'local gate = workspace:FindFirstChild("AnimatedDoor")'
+    ].join('\\n'));
+    const d=buildGameSpecificBuildUpDirective({
+      gameId,platform:'ROBLOX',repoRoot:root,sourceRoot,
+      designRecord:{content:{identity:'기존 생존게임',coreFun:'탐험',coreLoop:['이동','상호작용','복귀']}},
+      sourceObservation:{sourceTreeFingerprint:'real-actor-fixture',sourceRoot,sourceRoots:[sourceRoot],
+        topFiles:[{file,score:10}],sourceAnchors:[],signals:{},observations:[]},
+      responsibleFiles:[file]
+    });
+    const actor=d.gameInternalAutoComposition.actorMotion;
+    assert.equal(actor.trigger,'CREATION_AND_EVERY_BUILD_UP');
+    assert.equal(actor.runtimeVerified,false);
+    assert.equal(actor.sourceOnlyEvidence,true);
+    assert.equal(actor.noInventedActorOrPrimitiveFallback,true);
+    assert.equal(actor.actorCountLimit,null);
+    for(const kind of ['PLAYER','NPC','ENEMY','BOSS','CREATURE','COMPANION','MOUNT','INTERACTIVE_PROP']){
+      const row=actor.detectedActorClasses.find(item=>item.actorClass===kind);
+      assert.ok(row,'actor class missing: '+kind);
+      assert.ok(row.sourceOwnerFiles.includes(file));
+      assert.equal(row.runtimeVerified,false);
+    }
+    assert.ok(actor.mandatoryPolish.includes('CROSSFADE_POSE_VELOCITY_MATCH'));
+    assert.ok(actor.mandatoryPolish.includes('CAMERA_VFX_AUDIO_EVENT_SYNC'));
+    assert.ok(d.acceptanceEvidence.includes('PER_ACTOR_MOTION_NATIVE_PLAYBACK_AND_EXACT_REMOTE_QA_REQUIRED_WHEN_APPLICABLE'));
+    const prompt=directivePrompt(d);
+    assert.match(prompt,/ACTOR_MOTION_AUTO_BUILD_UP:/);
+    assert.match(prompt,/ACTOR_MOTION_RULE:/);
+    assert.match(prompt,/실제 런타임 PASS/);
+    assert.ok(d.playerFacingInspectionContract.cases.find(row=>row.id==='MOTION_TRANSITIONS').remoteAssertions.includes('ACTOR_SPECIFIC_JOINT_ACTIVITY_POSE_BLEND_FOOT_CONTACT'));
+    assert.ok(d.playerFacingInspectionContract.cases.find(row=>row.id==='MONSTER_READABILITY').remoteAssertions.includes('DISTINCT_ENEMY_CREATURE_BOSS_BODY_PLAN_AND_TELEGRAPH'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('actor motion build-up stays unverified when no actual actor source exists',()=>{
+  const d=buildGameSpecificBuildUpDirective({gameId:'empty-motion-game',platform:'WEB',
+    designRecord:{content:{identity:'퍼즐',coreFun:'퍼즐',coreLoop:['선택','완료']}},
+    sourceObservation:{sourceTreeFingerprint:'empty',sourceRoot:'web-games/empty-motion-game',
+      sourceRoots:[],topFiles:[],sourceAnchors:[],signals:{},observations:[]}});
+  assert.deepEqual(d.gameInternalAutoComposition.actorMotion.detectedActorClasses,[]);
+  assert.equal(d.gameInternalAutoComposition.actorMotion.runtimeVerified,false);
+  assert.match(directivePrompt(d),/ACTOR_MOTION_RULE:/);
+});
+
 test('design and source BUILD_UP stay coupled without inventing reference or runtime PASS',()=>{
   const first=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
     designRecord:design(),sourceObservation:{sourceTreeFingerprint:'initial-tree',topFiles:[],sourceAnchors:[],observations:[],signals:{}},
