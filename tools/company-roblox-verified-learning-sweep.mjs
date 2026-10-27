@@ -70,11 +70,14 @@ const results=[];
 for(const gameId of gameIds){
   const gameRoot=path.join(root,gameId);
   const standardConfigFile=path.join(gameRoot,'shared','GameConfig.luau');
-  if(!fs.existsSync(standardConfigFile)){
-    // Legacy Roblox project (e.g., baeksu-war) has Config.luau but no Vibe2 design
-    // baseline. Synchronize only the native module map; never fabricate learning,
-    // source validation or release evidence, or rewrite the game's own scripts.
-    if(!fs.existsSync(path.join(gameRoot,'shared','Config.luau'))
+  const legacyConfigFile=path.join(gameRoot,'shared','Config.luau');
+  const recordedEvidenceFile=path.join(gameRoot,'roblox-source-bootstrap.json');
+  const recordedEvidence=fs.existsSync(recordedEvidenceFile)?readJson(recordedEvidenceFile):null;
+  // A game-specific Config.lua may be renamed during continuous development.
+  // Only existing verified source admission may authorize learning. A legacy
+  // module-only receipt cannot be upgraded merely by renaming GameConfig.luau.
+  if(recordedEvidence?.moduleSyncOnly===true||!fs.existsSync(standardConfigFile)){
+    if(!(fs.existsSync(legacyConfigFile)||fs.existsSync(standardConfigFile))
       ||!fs.existsSync(path.join(gameRoot,'server','Game.server.luau'))){
       throw new Error('ROBLOX_SWEEP_LEGACY_SOURCE_INCOMPLETE:'+gameId);
     }
