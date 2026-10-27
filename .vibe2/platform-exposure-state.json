@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-27T16:49:31.700Z",
+  "updatedAt": "2026-10-27T17:32:44.072Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -729,14 +729,14 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -760,7 +760,7 @@
             "artifactIdentity": "sha256:cd58f538ca4281505bf562ff50944c7ae1226cb4950e871d3e2a9fcbc121cffc",
             "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -777,7 +777,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": true,
+              "multiplayer": false,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -794,6 +794,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -803,7 +804,7 @@
             ],
             "candidateVersionNumber": 70
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-7d114ff3812bf7516f00",
@@ -821,7 +822,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
