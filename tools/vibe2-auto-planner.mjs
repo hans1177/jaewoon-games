@@ -2901,6 +2901,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     &&activeDirectivePlatformCompatible
     &&activeDirectiveSemanticCompatible
     &&activeProductionCompatible
+    // Legacy in-flight directives lack the owner-wide five-play contract; don't keep recycling them.
+    &&Number(activeDirectiveTask.buildUpDirective.playableImprovementContract?.minimumPerGeneration||0)>=5
   );
   if(activeDirectiveMatchesCurrentSource){
     const directive=applyRobloxQualityRepairDirective({
