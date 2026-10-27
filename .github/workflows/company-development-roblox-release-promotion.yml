@@ -13,6 +13,10 @@ on:
       # Only canonical Roblox marketing art and authenticated real-capture intake wake video sync.
       - 'assets/roblox-thumbnails/**'
       - 'assets/runtime-evidence/roblox/**'
+  # Native capture workers can notify this EXISTING workflow after writing verified
+  # footage + sidecar evidence to the durable company-runtime branch.
+  repository_dispatch:
+    types: [roblox_native_capture_available]
   workflow_dispatch:
     inputs:
       game_id:
@@ -138,7 +142,7 @@ jobs:
         continue-on-error: true
         working-directory: main
         env:
-          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || github.event.client_payload.game_id || '' }}
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
           PUBLISH_CYCLE_ID: ${{ inputs.publish_cycle_id || '' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -1406,7 +1410,7 @@ jobs:
   thumbnail-sync:
     name: sync canonical Roblox and homepage thumbnails
     needs: release
-    if: ${{ always() && (github.event_name == 'push' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
+    if: ${{ always() && (github.event_name == 'push' || github.event_name == 'repository_dispatch' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
