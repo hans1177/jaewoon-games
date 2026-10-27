@@ -121,6 +121,74 @@ export async function uploadRobloxHomepageThumbnail({
   throw new Error('ROBLOX_THUMBNAIL_PROCESSING_TIMEOUT:'+operationId);
 }
 
+// 메인: 무인 모션 홍보물은 실제 Roblox 플레이 영상이 아님을 영상 내외부에 명시한다.
+// 캐노니컬 게임별 원본만 사용한다. 공식 경험 상세 페이지 영상으로 게시하지 않는다.
+export function renderRobloxConceptTrailer({
+  root='.',target={},validated={},rendered={},
+  ffmpegCommand='ffmpeg',ffprobeCommand='ffprobe',durationSeconds=12
+}={}){
+  const gameId=clean(target.gameId),universeId=clean(target.universeId),placeId=clean(target.placeId);
+  if(!/^[a-z0-9][a-z0-9-]*$/.test(gameId)||!validId(universeId)||!validId(placeId)
+    ||!clean(target.source).startsWith('assets/roblox-thumbnails/'+gameId+'.'))
+    throw new Error('ROBLOX_CONCEPT_VERIFIED_GAME_TARGET_REQUIRED');
+  if(!Number.isFinite(durationSeconds)||durationSeconds<3||durationSeconds>12)
+    throw new Error('ROBLOX_CONCEPT_DURATION_INVALID');
+  const source=path.resolve(root,target.source),canonicalRoot=path.resolve(root,'assets/roblox-thumbnails');
+  const png=path.resolve(clean(rendered.outputPath)),renderRoot=path.resolve(root,'.tmp','roblox-thumbnails');
+  if(!source.startsWith(canonicalRoot+path.sep)||source!==path.resolve(clean(validated.sourcePath))
+    ||!fs.existsSync(source)||sha256(source)!==validated.sha256
+    ||!png.startsWith(renderRoot+path.sep)||!fs.existsSync(png)
+    ||sha256(png)!==rendered.sha256)
+    throw new Error('ROBLOX_CONCEPT_CANONICAL_SOURCE_INTEGRITY_FAILED');
+  const folder=path.resolve(root,'.tmp','roblox-detail-evidence');
+  fs.mkdirSync(folder,{recursive:true});
+  const video=path.join(folder,gameId+'-concept-trailer.mp4');
+  // 시작/끝 페이드와 느린 카메라 줌은 원본 이미지에서만 구성된다.
+  const seconds=Number(durationSeconds);
+  const fadeEnd=Math.max(0,seconds-0.65);
+  const filter="[0:v]zoompan=z='min(zoom+0.00032,1.085)'"
+    +":x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=24:s=1280x720:fps=24,"
+    +"trim=duration="+seconds+",setpts=PTS-STARTPTS,"
+    +"drawbox=x=0:y=660:w=1280:h=60:color=black@0.72:t=fill,"
+    +"drawtext=text='CONCEPT ART PREVIEW - NOT GAMEPLAY':fontcolor=white:fontsize=28:x=(w-text_w)/2:y=h-45,"
+    +"fade=t=in:st=0:d=0.3,fade=t=out:st="+fadeEnd+":d=0.55,format=yuv420p[out]";
+  const args=['-y','-hide_banner','-loglevel','error','-loop','1','-framerate','1','-i',png,
+    '-filter_complex',filter,'-map','[out]','-t',String(seconds),'-an','-c:v','libx264',
+    '-preset','veryfast','-crf','27','-maxrate','2100k','-bufsize','4200k',
+    '-pix_fmt','yuv420p','-movflags','+faststart',video];
+  const encode=spawnSync(ffmpegCommand,args,{encoding:'utf8',timeout:150000,maxBuffer:1024*1024});
+  if(encode.status!==0||!fs.existsSync(video)||fs.statSync(video).size<1024
+    ||fs.statSync(video).size>15*1024*1024)
+    throw new Error('ROBLOX_CONCEPT_RENDER_FAILED:'+clean(encode.stderr).slice(0,220));
+  const probe=spawnSync(ffprobeCommand,['-v','error','-show_entries',
+    'format=duration:stream=codec_type,codec_name,width,height','-of','json',video],
+    {encoding:'utf8',timeout:30000});
+  let meta={};
+  try{meta=JSON.parse(probe.stdout||'{}');}catch{}
+  const stream=(meta.streams||[]).find(x=>x.codec_type==='video');
+  if(probe.status!==0||!stream||stream.codec_name!=='h264'||stream.width!==1280
+    ||stream.height!==720||Number(meta.format?.duration)<seconds-0.5
+    ||Number(meta.format?.duration)>seconds+0.5)
+    throw new Error('ROBLOX_CONCEPT_RENDER_PROBE_FAILED');
+  const out=Object.freeze({
+    gameId,universeId,placeId,sourcePath:target.source,
+    sourceSha256:validated.sha256,renderedPngSha256:rendered.sha256,
+    videoPath:path.relative(path.resolve(root),video).replaceAll(path.sep,'/'),
+    videoSha256:sha256(video),videoBytes:fs.statSync(video).size,
+    seconds:Number(meta.format.duration),width:1280,height:720,
+    kind:'AUTOMATED_CANONICAL_ART_MOTION_PROMO',
+    platform:'MARKETING_ARTWORK_NOT_ROBLOX_GAMEPLAY',
+    actualGameplay:false,nativeCaptureVerified:false,
+    uploadAllowed:false,videoPublished:false,
+    onScreenDisclosure:'CONCEPT ART PREVIEW - NOT GAMEPLAY',
+    reviewState:'PROMO_GENERATED_OFF_PLATFORM'
+  });
+  writeJson(video+'.json',out);
+  console.log('ROBLOX_CONCEPT_TRAILER_CREATED='+gameId+':'+out.videoSha256);
+  console.log('ROBLOX_CONCEPT_TRAILER_NOT_GAMEPLAY=YES');
+  return out;
+}
+
 // 메인: 실제 Roblox 게임 화면에서 촬영한 검증 가능한 원본만 하이라이트 편집한다.
 // 가짜 게임플레이 합성이나 웹 동반 게임 촬영본을 Roblox 영상으로 변환하지 않는다.
 export function editVerifiedRobloxGameplayVideo({
@@ -411,6 +479,20 @@ function args(argv=process.argv.slice(2)){
 
 async function main(){
   const a=args();
+  if(a['concept-only']==='true'){
+    const root=clean(a.root)||'.';
+    const catalog=readJson(path.resolve(root,clean(a.catalog)||'game-catalog.json'));
+    const queue=readJson(path.resolve(root,clean(a.queue)||'../runtime/development-queue.json'));
+    const target=resolveRobloxThumbnailTarget({catalog,queue,gameId:clean(a['game-id'])});
+    const validated=validateCanonicalThumbnail({root,target});
+    const rendered=renderThumbnailPng({
+      sourcePath:validated.sourcePath,
+      outputPath:path.resolve(root,'.tmp','roblox-thumbnails',target.gameId+'.png'),
+      command:clean(a['render-command'])||'rsvg-convert'
+    });
+    renderRobloxConceptTrailer({root,target,validated,rendered});
+    return;
+  }
   if(a['edit-native']==='true'){
     const root=clean(a.root)||'.';
     const catalog=readJson(path.resolve(root,clean(a.catalog)||'game-catalog.json'));
