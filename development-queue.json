@@ -1709,7 +1709,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-27T01:18:06.617Z"
       },
-      "updatedAt": "2026-10-27T01:54:54.057Z",
+      "updatedAt": "2026-10-27T02:17:40.641Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1724,7 +1724,7 @@
         "capturedAt": "2026-10-27T01:22:58.311Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-27T01:54:54.057Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-27T02:17:40.641Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1773,14 +1773,14 @@
       "routingBlockers": [
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:SOURCE_CONFIG_MISSING"
       ],
-      "robloxSourceCommit": "4d10fff6950541658bcc7e1c3ce2a1da9858c997",
+      "robloxSourceCommit": "78adfc56741b75074e9c0546f32b499e308e8865",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "4d10fff6950541658bcc7e1c3ce2a1da9858c997",
+      "robloxQualityBuildUpSourceRevision": "78adfc56741b75074e9c0546f32b499e308e8865",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "baeksu-war",
-        "sourceRevision": "4d10fff6950541658bcc7e1c3ce2a1da9858c997",
+        "sourceRevision": "78adfc56741b75074e9c0546f32b499e308e8865",
         "sourceTreeSha": "4c29e8d82814607c982e3b9efa5305fc89235845",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -1809,8 +1809,8 @@
             "hint": "Inspect the existing native config and client and repair the canonical source integration. Preserve gameplay, saves, server authority and existing config; do not add a duplicate config or fabricate verification."
           }
         ],
-        "workflowRunId": 40435125617,
-        "testedAt": "2026-10-27T01:54:54.057Z"
+        "workflowRunId": 40437315079,
+        "testedAt": "2026-10-27T02:17:40.641Z"
       }
     },
     {
@@ -9231,7 +9231,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T01:57:07.243Z",
+  "updatedAt": "2026-10-27T02:17:40.641Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
