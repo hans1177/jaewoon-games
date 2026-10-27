@@ -21,7 +21,8 @@
   "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau"
+    "client/Game.client.luau",
+    "default.project.json"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
@@ -575,17 +576,71 @@
   "studioAssetBindingApplied": true,
   "studioAssetRuntimeVerified": false,
   "studioAssetPromotionEligible": false,
+  "commonModuleSync": {
+    "count": 15,
+    "linked": [
+      "RobloxCommonBuilding",
+      "RobloxCommonEnvironment",
+      "RobloxCommonFoliage",
+      "RobloxCommonItems",
+      "RobloxCommonMotion",
+      "RobloxCommonPresentation",
+      "RobloxCommonSkillPresentation",
+      "RobloxCommonTools",
+      "RobloxCommonIcons",
+      "RobloxCommonVFX",
+      "RobloxCommonWorldProps"
+    ],
+    "local": [
+      "RobloxCommonCharacterGear",
+      "RobloxCommonCreatureParts",
+      "RobloxCommonMaterials",
+      "RobloxCommonUI"
+    ],
+    "conflicts": [
+      {
+        "module": "RobloxCommonMaterials",
+        "reason": "GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL"
+      },
+      {
+        "module": "RobloxCommonUI",
+        "reason": "GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL"
+      }
+    ],
+    "libraryCoverage": {
+      "runtimeModuleCount": 15,
+      "firstPartyPackCount": 14,
+      "firstPartyPatternSourceCount": 79,
+      "firstPartyDevelopmentSourceCount": 132,
+      "nativeSpecializedPackCount": 6,
+      "verifiedCodePatternCount": 0,
+      "patternSourcesRuntimeInjected": false,
+      "unverifiedAssetsAutoPromoted": false,
+      "libraryFingerprints": {
+        "company-asset-library.json": "6873594e232eeda3bfeb7ac3c9b5fc8b764afbc0856ce969905f91717a586348",
+        "company-learning/canonical-learning-pipeline.json": "33b1748870fabf0bfaec02c667651a9f7cbce211edf6e0d4da6bdd1ec484a16a",
+        "company-learning/vibe2-code-pattern-library.json": "f29210c5520d6ff3ce597ee6168d2b9b9bc9ae221b280c57aa042c0ae51bd826",
+        "company-learning/vibe3-task-playbooks.json": "e0ff9baaeef973b14c0b23001704dcde72be6d86908af802eca0e26c72b04dfa",
+        "company-learning/vibe3-engine-contract.json": "8364e9d1337ddf6c4c867f7ae6288700f70e01d8ec2bf230dba44fbcc2f59154",
+        "assets/asset-manifest.json": "4ea6425265f36b8d9b5dbb683815a30d24d985548413441b053b36b9e2e330d2",
+        "assets/asset-license-ledger.json": "76bcae6c367d44a7280b87302133099472be50d36d6a903a3a4f0e6077eea6c2",
+        "assets/roblox/common-registered-external-assets-v1.json": "f55af5886be2e7fe3031e7e7939a06274a28d1265fb0ab6356870e98b21fe05a"
+      },
+      "sourceFingerprint": "6a79672588a2fa9c8836038e11aff804dbff850252e509086c8467a48c3722d9",
+      "runtimeBindingFingerprint": "12c6a9f71394ed54c08e7b02c50a8736d98d7f7100dafa0d297442bb5f543139"
+    }
+  },
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "daechung-rpg-build-up-g62-d6b62fe6f633",
-  "buildUpGeneration": 62,
+  "buildUpDirectiveId": "daechung-rpg-build-up-g65-52fcf7223fa1",
+  "buildUpGeneration": 65,
   "buildUpGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티와 퀘스트와 인물 관계 × 서사시의 추방과 귀환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "buildUpDirectiveFingerprint": "d6b62fe6f63309b139da2ac0b0b7c11b4f468097491c2105f1b6d2ad2978e7e6",
+  "buildUpDirectiveFingerprint": "52fcf7223fa13b1e2292205edaf3ca0b4918efc56e0ece40a8680c14db7964d3",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_SOURCE_REPAIR",
-  "createdAt": "2026-10-27T01:50:30.382Z"
+  "createdAt": "2026-10-27T06:41:21.730Z"
 }
