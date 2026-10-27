@@ -79,7 +79,7 @@ jobs:
               (Join-Path $env:USERPROFILE 'github-actions-runner*')
             )
             foreach ($pattern in $patterns) {
-              foreach ($dir in @(Get-ChildItem -Path $pattern -Directory -ErrorAction SilentlyContinue)) {
+              foreach ($dir in @(Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue | Where-Object { $_.PSIsContainer })) {
                 Add-Candidate $dir.FullName
               }
             }
@@ -170,7 +170,7 @@ jobs:
               (Join-Path $env:USERPROFILE 'actions-runner*'),
               (Join-Path $env:USERPROFILE 'github-actions-runner*')
             )) {
-              foreach ($dir in @(Get-ChildItem -Path $pattern -Directory -ErrorAction SilentlyContinue)) {
+              foreach ($dir in @(Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue | Where-Object { $_.PSIsContainer })) {
                 if (Test-RunnerRoot $dir.FullName) { $runnerRoot = $dir.FullName; break }
               }
               if ($runnerRoot) { break }
