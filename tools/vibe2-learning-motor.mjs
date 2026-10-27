@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
+import {recordVerifiedMotionEvolution,loadVerifiedMotionHistory} from './vibe2-motion-evolution.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -3117,7 +3118,22 @@ function learningStateSemanticSnapshot(input={}){
   return JSON.stringify(value);
 }
 
-export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={},externalRuntimeSamples=[]}={}){
+export function mergeNativeMotionEvolutionEvidence({history=[],queueInput={},companyQueueInput={}}={}){
+  // Native QA 산출물이 motionEvolutionEvidence로 제공될 때만 결합한다.
+  // 스스로 증거를 생성하거나 source-only 결과로 PASS를 올리지 않는다.
+  const signals=[
+    ...(Array.isArray(queueInput?.motionEvolutionEvidence)?queueInput.motionEvolutionEvidence:[]),
+    ...(Array.isArray(companyQueueInput?.motionEvolutionEvidence)?companyQueueInput.motionEvolutionEvidence:[]),
+  ];
+  let records=[...history],accepted=0,rejected=0;
+  for(const item of signals){
+    const result=recordVerifiedMotionEvolution(records,item);
+    if(result.accepted){records=[...result.records];accepted++;}else rejected++;
+  }
+  return {records,accepted,rejected,changed:accepted>0&&JSON.stringify(records)!==JSON.stringify(history)};
+}
+export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={},externalRuntimeSamples=[],motionHistoryInput=[]}={}){
+  const motionEvolution=mergeNativeMotionEvolutionEvidence({history:motionHistoryInput,queueInput,companyQueueInput});
   const priorStateSemantic=learningStateSemanticSnapshot(stateInput);
   const specializedExperience=mergeVerifiedSpecializedQueueExperienceMemory(experienceInput,queueInput);
   const cloudExperience=mergeVerifiedRobloxCloudRuntimeExperienceMemory(specializedExperience.memory,companyQueueInput);
@@ -3146,6 +3162,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   return {
     state:graphicsApplied.state,
     stateChanged,
+    motionEvolution,
     addedExperience:(applied.added||0)+(cloudApplied.added||0),
     addedRobloxCloudVerifiedOutcomes:cloudApplied.added||0,
     addedRobloxStudioVerifiedOutcomes:0,
@@ -3203,7 +3220,19 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const queueFile=clean(a.queue);
   const roadmapFile=clean(a.roadmap)||clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname)});
+  const motionHistoryFile=clean(a['motion-history'])||'company-learning/motion-evolution-history.json';
+  const motionHistoryInput=loadVerifiedMotionHistory(process.cwd());
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname),motionHistoryInput});
+  if(result.motionEvolution.changed){
+    const candidatePath=path.resolve(motionHistoryFile),repoRoot=path.resolve('.');
+    if(!candidatePath.startsWith(repoRoot+path.sep)||!candidatePath.endsWith('/company-learning/motion-evolution-history.json'))
+      throw new Error('MOTION_HISTORY_CANONICAL_PATH_REQUIRED');
+    writeJson(motionHistoryFile,{version:1,status:'VERIFIED_RESULTS_ONLY',
+      authority:'NATIVE_RUNTIME_AND_INDEPENDENT_QA_MOTION_EVIDENCE',
+      records:result.motionEvolution.records});
+  }
+  console.log('VIBE2_MOTION_EVOLUTION_VERIFIED_RECORDS_ADDED='+result.motionEvolution.accepted);
+  console.log('VIBE2_MOTION_EVOLUTION_REJECTED='+result.motionEvolution.rejected);
   if(result.stateChanged) writeJson(stateFile,result.state);
   else console.log('VIBE2_LEARNING_STATE_WRITE=SKIPPED_NO_SUBSTANTIVE_CHANGE');
   if(result.experienceChanged) writeJson(experienceFile,result.experience);
