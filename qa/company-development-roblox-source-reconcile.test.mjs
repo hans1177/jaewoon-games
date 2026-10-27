@@ -1132,6 +1132,10 @@ test('source reconciliation and sweep derive verified learning from the same bui
   const workflow=fs.readFileSync('.github/workflows/company-roblox-verified-learning-sweep.yml','utf8');
   assert.match(workflow,/origin\/company-runtime:development-queue\.json/);
   assert.equal((workflow.match(/--runtime-ref=origin\/company-runtime/g)||[]).length,2);
+  // 실제 메인 정책이 없는 학습 스윕은 fail-closed로 멈추며, 워크플로는 정확한 원본 경로만 전달한다.
+  assert.match(workflow,/^  COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
+  assert.match(workflow,/^  COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning\/platform-release-roadmap\.json$/m);
+  assert.match(workflow,/COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json[\s\S]*Apply verified learning to selected Roblox source scope/);
 });
 
 test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
