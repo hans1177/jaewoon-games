@@ -2506,6 +2506,8 @@ export function directivePrompt(d={}){
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
     'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A는 이름 있는 대표 유사 장르 게임의 실제 시스템·플레이 경험을 출처와 함께 추상화하며 B는 우리 기존 게임의 실제 시스템·원본 출처·기존 상태/규칙을 보존한다. A→B와 B→A의 새로운 플레이어 선택·상태 전이를 설계한다. C는 작품 주/보조 장르, D는 고유 장소·존재·사건·규칙, @는 D 연관 연구·실험·새 선택이다. 조작·HUD·메뉴·카메라·월드 진행·성장·실패/재도전까지 원리를 참고하되 고유 화면/그래픽/캐릭터/문구/코드를 복제하지 않는다. 먼저 최신 설계를 빌드업하고 엄격 심사를 통과한 규칙 ID만 기존 책임 소스에 구현한다. 실제 입력→서버/웹 상태→피드백→저장/재접속과 동일 빌드 검증을 수행한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
+    `FIVE_PLAYABLE_IMPROVEMENTS: ${JSON.stringify(d.playableImprovementContract||{})}`,
+    'FIVE_PLAYABLE_IMPROVEMENTS_RULE: 모든 승인된 실제 게임 BUILD_UP에서 기존 핵심 플레이를 기준으로 최소 5개의 서로 다른 플레이 가치 개선을 수행한다. 각 항목은 기존 게임/설계의 책임 소스, 입력, 실제 상태 변화, 시각·모션·오디오 피드백과 동일 빌드 플랫폼 검증 시나리오에 추적한다. 문서·주석·에셋 수·5개 코드 조각은 5개 실제 플레이 PASS가 아니다. 실패한 기초/런타임 단계는 먼저 원인을 수리하고 동일 실패 테스트를 통과한 뒤 다음 개선을 이어간다. F0~F9 순서는 그대로 둔다.',
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
     d.playtestRuntimeFindings?.studioQualityFailure
@@ -3029,6 +3031,37 @@ export function buildGameSpecificBuildUpDirective({
   const preMutationDryRun=buildDevelopmentDryRun({
     gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
   });
+  // 전 게임 빌드업의 플레이 가치 목표. 생성한 후보는 실제 구현/QA PASS가 아니다.
+  // 누락된 원본 설계가 있다면 새 규칙을 발명하지 않고 기존 행동·화면·복구에만 적용한다.
+  const playableImprovementTargets=[
+    {id:'FIRST_ACTION',anchor:clean(design.coreLoop?.[0])||clean(design.coreFun)||identity,
+      intent:'첫 플레이에서 기존 핵심 행동을 발견하고 실제로 수행할 수 있게 개선'},
+    {id:'CORE_STATE_RESPONSE',anchor:clean(design.coreLoop?.[1])||clean(design.coreFun)||identity,
+      intent:'기존 핵심 행동의 입력→상태 변화 연결 및 즉시 피드백 개선'},
+    {id:'PLAYER_CHOICE',anchor:clean(design.signatureSystems?.[0]?.name)||clean(design.coreLoop?.[2])||identity,
+      intent:'기존 플레이어 선택과 그 결과의 가독성 및 다음 행동 연결 개선'},
+    {id:'PRESENTATION_BINDING',anchor:clean(design.visualDirection)||clean(design.identity)||identity,
+      intent:'실제 행동 상태에 연결된 캐릭터·카메라·모션·VFX·UI/소리 반응 개선'},
+    {id:'SESSION_RETRY',anchor:clean(design.failureRetryRisk?.name)||clean(design.coreLoop?.at?.(-1))||identity,
+      intent:'실패·재도전·재접속 시 기존 플레이 진행과 상태 복구 경험 개선'}
+  ].map(row=>Object.freeze({...row,
+    gameId:id,status:'PROPOSED_NOT_IMPLEMENTED',
+    sourceOwnerCandidates:Object.freeze([...topFiles].slice(0,4)),
+    evidenceRequired:'EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE',
+    actualGameplayPass:false
+  }));
+  const playableImprovementContract=Object.freeze({
+    version:1,scope:'ALL_ACTIVE_APPROVED_GAME_BUILD_UP',minimumPerGeneration:5,
+    floorBoundary:'EXISTING_F0_F9_SEQUENCE_UNCHANGED',
+    targets:Object.freeze(playableImprovementTargets),
+    candidateTargetsAreNotFiveVerifiedImprovements:true,
+    distinctActualPlayerValueRequired:true,
+    sourceEditsAreNotRuntimeProof:true,
+    approvedExistingGameOnly:true,
+    repairFailedCausalFoundationFirst:true,
+    missingRuntimeEvidenceRemainsUnverified:true,
+    noShadowPipeline:true
+  });
   const productionPlatform=clean(platform).toUpperCase()==='WEB'&&sourceRoot.split('|').some(root=>posix(root)==='unity-games/'+id)?'UNITY_WEB':platform;
   // 현재 저장소의 모든 1차 게임용 코드 라이브러리를 기존 제작 지시에서 자동 인덱싱한다.
   // 실제 게임에 없는 시스템은 추가하지 않고 외부 코드를 임의로 설치하지 않는다.
@@ -3142,7 +3175,9 @@ export function buildGameSpecificBuildUpDirective({
       :safeDesignlessMode
         ?`검증된/최소 디자인이 아직 없어 ${focus}만 기존 실제 소스에서 안전하게 개선한다. 새 게임 규칙·진행·밸런스 의미는 만들지 않으며 책임 소스 ${exactAnchorLabel}의 전후 품질 차이만 검증한다.`
         :depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스 ${exactAnchorLabel}에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}", 현재 책임 소스는 ${exactAnchorLabel}이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.`,
-    gameplayImplementationDirectives:effectiveGameplay,
+    gameplayImplementationDirectives:[...effectiveGameplay,
+      '모든 승인 게임 빌드업은 한 세대 최소 5개의 실제 플레이 가치 개선을 목표로 한다. 입력→상태 변화→화면/모션/사운드 피드백을 기존 책임 소스에서 연결하고 각 항목의 동일 빌드 검증 증거를 남긴다. 5번의 소스 수정이나 에셋 교체를 실제 플레이 통과로 계산하지 않는다. 실패·설계 누락은 기존 원인 수리 우선이며 F0~F9와 저장·밸런스·권한은 유지한다.'],
+    playableImprovementContract,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
     internalAssetEvolution:{
@@ -3214,7 +3249,7 @@ export function buildGameSpecificBuildUpDirective({
     preMutationDryRun,
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
     nextActionDecision,
-    acceptanceEvidence:[...effectiveAcceptance,'PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED','THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY','MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED'],
+    acceptanceEvidence:[...effectiveAcceptance,'FIVE_DISTINCT_PLAYABLE_IMPROVEMENTS_WITH_EXACT_GAME_RUNTIME_PROOF_WHEN_STAGE_REQUIRES','FIVE_SOURCE_DELTA_ITEMS_ALONE_CANNOT_PASS_ACTUAL_PLAY','PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED','THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY','MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED'],
     nextEscalationCandidates:nextCandidates,
     loopEscalation:{automatic:true,nextGeneration:generation+1,currentDevelopmentDepth:depthInfo.developmentDepth,nextDevelopmentDepth:depthInfo.advanceAllowed?depthInfo.developmentDepth+1:depthInfo.developmentDepth,escalationStage:depthInfo.escalationStage,escalationMode:depthInfo.escalationMode,sourceChangedSincePrevious:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution,reuseSameGoalWithoutNewEvidence:false,completedGoalBecomesBaseline:depthInfo.verifiedEvolution},
     coverage:{
