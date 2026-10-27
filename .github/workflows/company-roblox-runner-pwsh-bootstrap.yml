@@ -133,7 +133,7 @@ jobs:
   bootstrap:
     name: install durable Roblox runner startup
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
-    timeout-minutes: 5
+    timeout-minutes: 20
     steps:
       - name: Install hidden user-logon Startup launcher
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
@@ -213,3 +213,54 @@ jobs:
           Write-Host 'ROBLOX_RUNNER_REBOOT_AUTOSTART=HIDDEN_USER_LOGON_STARTUP'
           Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
           Write-Host 'ROBLOX_RUNNER_HIDDEN_BOOTSTRAP=PASS'
+
+      - name: Checkout native recording setup without downloading game assets
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout: |
+            tools
+
+      - name: Restore real Roblox Player recording on existing interactive Windows runner
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # 촬영 환경: 다른 PC의 원격 화면이나 가짜 영상 대신 실제 GPU/Windows 세션만 사용한다.
+          $session = [Diagnostics.Process]::GetCurrentProcess().SessionId
+          if ($session -eq 0) {
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=BLOCKED_SERVICE_SESSION_NO_VISIBLE_PLAYER'
+            exit 0
+          }
+          $gpu = @(Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -and $_.Name -notmatch 'Microsoft Basic Display|Microsoft Remote Display|Virtual Display' })
+          if ($gpu.Count -eq 0) {
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=BLOCKED_NATIVE_GPU_MISSING'
+            exit 0
+          }
+          Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=WINDOWS_GRAPHICS_SESSION_PRESENT'
+          $base = Join-Path $env:LOCALAPPDATA 'JaewoonNativeMedia'
+          $config = Join-Path $base 'private-capture-join.xml'
+          # 영구 인증/비공개 링크는 Windows 사용자별 보관. GitHub 임시 토큰을 저장하지 않는다.
+          if (-not (Test-Path -LiteralPath $config)) {
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=WAITING_FOR_PRIVATE_SERVER_JOIN_CONFIGURATION'
+            exit 0
+          }
+          if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=WAITING_FOR_PERSISTENT_GITHUB_AUTH'
+            exit 0
+          }
+          & gh auth status 2>$null | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host 'ROBLOX_NATIVE_CAPTURE_HOST=WAITING_FOR_PERSISTENT_GITHUB_AUTH'
+            exit 0
+          }
+          $setup = Join-Path $env:GITHUB_WORKSPACE 'tools\setup-roblox-native-capture-windows.ps1'
+          if (-not (Test-Path -LiteralPath $setup)) { throw 'ROBLOX_NATIVE_CAPTURE_SETUP_MISSING_FROM_MAIN' }
+          & $setup -Base $base -RegisterWatcher
+          if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw 'ROBLOX_NATIVE_CAPTURE_SETUP_FAILED' }
+          $task = Get-ScheduledTask -TaskName 'JaewoonRobloxNativeMedia' -ErrorAction SilentlyContinue
+          if (-not $task) { throw 'ROBLOX_NATIVE_CAPTURE_WATCHER_NOT_REGISTERED' }
+          Write-Host 'ROBLOX_NATIVE_CAPTURE_WATCHER_REGISTERED=YES'
+          Write-Host 'ROBLOX_NATIVE_CAPTURE_VIDEO_RECORDED=NOT_YET_VERIFIED'
