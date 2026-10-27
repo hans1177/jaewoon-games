@@ -560,3 +560,70 @@ test('no-model Vibe refines a real actor motion restart bug once, not arbitrary 
   assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'corrected motion cannot be patched repeatedly');
   assert.equal(deterministicRobloxNativeRepairCandidate({...args,order:{target:'unity',goal:'motion'}}),null,'other engines must not be changed');
 });
+
+test('model-free Vibe crafts distinct real actor motion repairs with native rig and source ownership',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-motion-rules-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const file='client/Game.client.luau',absolute=path.join(root,file);
+  fs.mkdirSync(path.dirname(absolute),{recursive:true});
+  const scenarios=[
+    {
+      code:[
+        'local function verifiedLearningCreateFootIk() end',
+        'verifiedLearningRunService.RenderStepped:Connect(function(dt)',
+        ' local updateHz = 60',
+        ' footState.control.Weight = groundGap <= 0.35 and (rootSpeed < 1 and 0.5 or 0.32) or 0.12',
+        ' else',
+        ' footState.control.Weight = 0',
+        'end)'
+      ].join('\n'),
+      recipe:'ACTOR_R15_FOOT_IK_CONTINUOUS_BLEND',edits:2,
+      required:['targetWeight','math.exp(-18 / updateHz)','math.exp(-22 / updateHz)']
+    },
+    {
+      code:[
+        'RunService.PreSimulation:Connect(function(dt)',
+        ' local actor=workspace:FindFirstChild("NPC")',
+        ' local state=actor:GetAttribute("CozyMotionState")',
+        ' if item:IsA("Motor6D") then',
+        ' joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,roll),math.clamp(step*16,0,1))',
+        ' end',
+        'end)'
+      ].join('\n'),
+      recipe:'ACTOR_NPC_MOB_FRAME_INVARIANT_JOINTS',edits:1,
+      required:['1-math.exp(-16*step)']
+    },
+    {
+      code:[
+        'RunService.PreSimulation:Connect(function(dt)',
+        ' record.elapsed+=dt',
+        ' local phase=now*(moving and math.clamp(speed*1.35,5,13) or 2)+record.phase',
+        ' local stride=moving and math.sin(phase)*.68 or math.sin(phase)*.025',
+        'end)'
+      ].join('\n'),
+      recipe:'ACTOR_NPC_MOB_CONTINUOUS_GAIT_PHASE',edits:1,
+      required:['record.gaitPhase=','local phase=record.gaitPhase']
+    }
+  ];
+  const args={order:{target:'roblox',goal:'High quality native actor animation rig motion'},
+    sourceRoot:root,responsibleFiles:[file]};
+  for(const scenario of scenarios){
+    fs.writeFileSync(absolute,scenario.code);
+    const result=deterministicRobloxNativeRepairCandidate(args);
+    assert.equal(result?.deterministicRobloxNativeRepair,scenario.recipe,scenario.recipe);
+    assert.equal(result?.edits?.length,scenario.edits);
+    assert.equal(result?.semanticGrounding?.runtimeVerified,false);
+    assert.equal(result?.deterministicSelection?.status,'SOURCE_GROUNDED_UNVALIDATED');
+    let patched=scenario.code;
+    for(const edit of result.edits){
+      assert.equal(patched.split(edit.find).length,2);
+      patched=patched.replace(edit.find,edit.replace);
+    }
+    for(const expected of scenario.required)assert.ok(patched.includes(expected),expected);
+    fs.writeFileSync(absolute,patched);
+    assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'do not re-patch same actor pose');
+  }
+  fs.writeFileSync(absolute,scenarios[0].code.replace('local updateHz = 60','local updateHz = 30'));
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'fail closed without actual update cadence');
+  assert.equal(deterministicRobloxNativeRepairCandidate({...args,responsibleFiles:['../outside.luau']}),null);
+});
