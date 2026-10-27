@@ -364,6 +364,23 @@ const designReviewBlock=strictReviewSource.slice(strictReviewSource.indexOf('fun
 assert.doesNotMatch(designReviewBlock,/hard\.push\('30MIN_CONTENT_FAIL'\)/);
 assert.doesNotMatch(designReviewBlock,/identity\.length>=80/);
 
+// 정식 보존형 표현 패스 이름은 작성 완료 ID다. 임의의 대문자 표식은 여전히 거부한다.
+{
+  const preservedSeed={REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION:true,OWNER_REBUILD_MODE:'PRESERVATION_PRESENTATION_UPGRADE'};
+  const good=[
+    {milestone:'ASSET_ADAPTATION',newGameplay:'기존 게임 유닛의 화면 표현을 원본 규칙 그대로 다듬는다.',systemImpact:'공격과 보상을 변경하지 않는다.'},
+    {milestone:'LIVING_MOTION_AND_ANIMATION_FEEL',newGameplay:'기존 공격과 피격에 자연스러운 모션 전환을 연결한다.',systemImpact:'서버 적중과 쿨다운을 보존한다.'},
+    {milestone:'VFX_AUDIO_CAMERA_POLISH_MOBILE',newGameplay:'기존 전투와 보상 이벤트에 화면 및 소리 효과를 연결한다.',systemImpact:'저장과 모바일 입력을 보존한다.'}
+  ];
+  const accept=validateDesignAuthoringContent({seed:preservedSeed,design:{contentExpansionPlan:good},fields:['contentExpansionPlan']});
+  assert.equal(accept.filter(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT').length,0);
+  const generic=validateDesignAuthoringContent({seed:{},design:{contentExpansionPlan:good},fields:['contentExpansionPlan']});
+  assert.ok(generic.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'),'non-preservation games cannot use ungrounded IDs as prose');
+  const invalid=structuredClone(good);
+  invalid[0].milestone='MY_UNVERIFIED_PLACEHOLDER';
+  const rejected=validateDesignAuthoringContent({seed:preservedSeed,design:{contentExpansionPlan:invalid},fields:['contentExpansionPlan']});
+  assert.ok(rejected.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
+}
 console.log('COMPANY_DESIGN_GATE_SCORING_V2_TEST=PASS');
 
 
