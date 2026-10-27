@@ -4882,6 +4882,9 @@ test('WEB adaptive development slots follow verified completion and measured run
   assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished}),8);
   assert.equal(adaptiveWebDevelopmentTarget({maxTarget:2,projects:unfinished}),2);
   assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished.slice(0,2)}),2);
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:2,projects:unfinished.slice(0,1)}),2,
+    'owner floor remains two, so one missing game is reported as shortfall');
+  assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished.slice(0,1)}),2);
   assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:[]}),0);
   const finishing=unfinished.map((x,i)=>i<23?{
     ...x,developmentValidation:{state:'PASS',score:92,blockers:[]}
@@ -4897,6 +4900,11 @@ test('WEB adaptive development slots follow verified completion and measured run
   assert.equal(adaptiveWebDevelopmentTarget({maxTarget:16,projects:unfinished.map(x=>({
     ...x,developmentValidation:{state:'PASS',score:null,blockers:[]}
   }))}),8,'missing score cannot be treated as completed');
+});
+test('WEB adaptive planner receives the actual state branch control file instead of stale main checkout',()=>{
+  const code=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  assert.match(code,/runnerPressure:readJson\(resolvedControlFile,\{\}\)/);
+  assert.match(code,/runnerPressure:runnerPressure\|\|readJson\(path\.join\(repoRoot,'\.vibe2\/parallelism-control\.json'\),\{\}\)/);
 });
 test('web two-game planning floor fills a native backlog without duplicating games or exceeding persistent capacity',()=>{
   const root=tempRepo();
