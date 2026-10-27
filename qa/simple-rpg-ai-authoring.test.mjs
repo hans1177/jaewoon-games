@@ -471,3 +471,24 @@ test('bounded A-star path reuse avoids repeat computation without changing comba
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
   assert.match(server, /UpdateAsync\("player:" \.\. player\.UserId/);
 });
+
+test('verified start ground owns stable lobby and respawn without late save-load teleport', () => {
+  // 백수대전쟁과 동일하게 플레이어 생성 시 배치하고 로드 완료 후 두 번 옮기지 않는다.
+  const baeksu = fs.readFileSync('roblox-games/baeksu-war/server/Game.server.luau', 'utf8');
+  assert.match(baeksu, /player\.CharacterAdded:Connect\(function\(character\)/);
+  assert.match(server, /params\.IncludeInstances = \{startGround\}/);
+  assert.match(server, /startGround:GetAttribute\("WalkableGround"\) ~= true/);
+  assert.match(server, /startGround:GetAttribute\("CuratedExternalAsset"\) ~= true/);
+  assert.match(server, /VERIFIED_SPAWN_GROUND_REQUIRED/);
+  assert.match(server, /isUnderlyingWalkableFloor = part:GetAttribute\("WalkableGround"\) == true/);
+  assert.match(server, /part\.Anchored and part\.Position\.Y \+ part\.Size\.Y \* 0\.5 <= groundHit\.Position\.Y \+ 0\.1/);
+  assert.match(server, /part ~= groundHit\.Instance and part\.CanCollide and not isUnderlyingWalkableFloor/);
+  assert.match(server, /if contacts >= 3 then\s+moving:Disconnect\(\)\s+character:SetAttribute\("GROUND_CONTACT", true\)/);
+  const lobbySpawnBlock = server.slice(server.indexOf('-- 처음 접속 시 로비에서 시작.'), server.indexOf('player.CharacterAdded:Connect(function()', server.indexOf('-- 처음 접속 시 로비에서 시작.')));
+  assert.ok(lobbySpawnBlock.length > 100);
+  assert.doesNotMatch(lobbySpawnBlock, /character:PivotTo\(CFrame\.new\(0, 5, 0\)\)/);
+  assert.match(server, /SIMPLE_RPG_SPAWN_GROUNDING_UNVERIFIED/);
+  assert.match(server, /if character:GetAttribute\("CivTravelCompleted"\) then return end/);
+  assert.match(server, /store:GetAsync\("player:" \.\. player\.UserId\)/);
+  assert.doesNotMatch(server, /Instance\.new\("(?:Part|SpawnLocation|MeshPart)"\)/);
+});

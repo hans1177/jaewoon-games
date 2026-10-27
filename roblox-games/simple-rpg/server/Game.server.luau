@@ -111,16 +111,23 @@ local function bindFoundationCharacter(character)
   if clearance ~= clearance or clearance <= 0 or clearance == math.huge or (humanoid.RigType == Enum.HumanoidRigType.R6 and not leg) then
     character:SetAttribute("FoundationFailure", "CHARACTER_CLEARANCE_INVALID"); return
   end
+  -- [백수대전쟁 스폰 방식 참조] 현재 지역에 배치한 검증 지형부터 캐릭터를 고정한다.
+  -- 다른 섬·대륙·리소스의 충돌과 대규모 Workspace 탐색을 스폰 지면으로 오인하지 않는다.
+  if not foundationSpawn or not startGround or not startGround.Parent
+    or not startGround.Anchored or not startGround.CanCollide
+    or startGround:GetAttribute("WalkableGround") ~= true
+    or startGround:GetAttribute("CuratedExternalAsset") ~= true
+    or (tonumber(startGround:GetAttribute("VerifiedRobloxAssetId")) or 0) <= 0 then
+    character:SetAttribute("FoundationFailure", "VERIFIED_SPAWN_GROUND_REQUIRED")
+    return
+  end
   local params = RaycastParams.new()
   local excluded = {character, foundationSpawn}
-  local walkable = {}
-  for _, object in ipairs(workspace:GetDescendants()) do
-    if object:IsA("SpawnLocation") or object:GetAttribute("SpawnMarkerOnly") == true then table.insert(excluded, object)
-    elseif object:IsA("BasePart") and object.Anchored and object.CanCollide and object:GetAttribute("WalkableGround") == true then table.insert(walkable, object) end
+  for _, other in ipairs(Players:GetPlayers()) do
+    if other.Character then table.insert(excluded, other.Character) end
   end
-  for _, other in ipairs(Players:GetPlayers()) do if other.Character then table.insert(excluded, other.Character) end end
   params.ExcludeInstances = excluded
-  if #walkable > 0 then params.IncludeInstances = walkable end
+  params.IncludeInstances = {startGround}
   params.RespectCanCollide = true
   params.IgnoreWater = true
   params.CollisionGroup = rootPart.CollisionGroup
@@ -138,7 +145,14 @@ local function bindFoundationCharacter(character)
   overlap.CollisionGroup = rootPart.CollisionGroup
   local blockers = workspace:GetPartBoundsInBox(CFrame.new(target), Vector3.new(math.max(rootPart.Size.X, 1.5), math.max(clearance * 2 - 0.4, rootPart.Size.Y), math.max(rootPart.Size.Z, 1.5)), overlap)
   for _, part in ipairs(blockers) do
-    if part ~= groundHit.Instance and part.CanCollide then character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED"); return end
+    -- 스폰 지형과 높이가 겹치는 기존 로비/대륙 바닥은 벽·NPC 장애물이 아니다.
+    -- 다만 실제 발 높이 위로 돌출된 충돌체는 통과시키지 않는다.
+    local isUnderlyingWalkableFloor = part:GetAttribute("WalkableGround") == true
+      and part.Anchored and part.Position.Y + part.Size.Y * 0.5 <= groundHit.Position.Y + 0.1
+    if part ~= groundHit.Instance and part.CanCollide and not isUnderlyingWalkableFloor then
+      character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED")
+      return
+    end
   end
   foundationSpawn.Position = Vector3.new(foundationSpawn.Position.X, groundHit.Position.Y + foundationSpawn.Size.Y * 0.5 + 0.05, foundationSpawn.Position.Z)
   foundationSpawn:SetAttribute("FoundationSpawnGrounded", true)
@@ -164,6 +178,7 @@ local function bindFoundationCharacter(character)
       contacts += 1
     else contacts = 0 end
     if contacts >= 3 then
+      moving:Disconnect()
       character:SetAttribute("GROUND_CONTACT", true)
       character:SetAttribute("FoundationFailure", nil)
       character:SetAttribute("NativeFoundationGroundingVersion", 3)
@@ -2323,9 +2338,13 @@ Players.PlayerAdded:Connect(function(player)
       local humanoid = character and character:WaitForChild("Humanoid", 10)
       if player.Parent ~= Players or player.Character ~= character
         or not humanoid or humanoid.Health <= 0 then return end
-      -- 로딩 중 새 캐릭터가 생기거나 먼저 이동했다면 늦은 로비 배치를 하지 않는다.
+      -- [리스폰] 기초 지면 배치가 이미 캐릭터 생성 시 이뤄진다.
+      -- 세이브/자산 복원 이후 기존 좌표로 다시 강제 순간이동하면 접지 완료가 취소된다.
       if character:GetAttribute("CivTravelCompleted") then return end
-      character:PivotTo(CFrame.new(0, 5, 0))
+      if character:GetAttribute("FoundationFailure") then
+        warn("SIMPLE_RPG_SPAWN_GROUNDING_UNVERIFIED", player.UserId,
+          character:GetAttribute("FoundationFailure"))
+      end
     end)
   end
   player.CharacterAdded:Connect(function()
