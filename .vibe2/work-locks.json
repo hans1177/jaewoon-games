@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-3looor",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-web-startup-spatial-repair-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "web-games/fantasy-survival/index.html"
+      ],
+      "baseSha": "d4da3b816cf2bb8ef65209ec7ace5f0c52d18ded",
+      "runId": "40482072073",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-27T10:02:41.528Z",
+      "expiresAt": "2026-10-27T10:47:41.528Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
