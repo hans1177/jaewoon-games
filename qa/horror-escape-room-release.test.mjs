@@ -663,8 +663,10 @@ test('등록된 authored 스킨드 GLB만 전투 비주얼로 쓰고 블록형 p
  assert.match(client,/state="attack"/);
  assert.match(client,/state="chase"/);
  assert.match(client,/state="walk"/);
- assert.match(client,/CFrame\.new\(0,\.08\*pulse,-\.72\*pulse\)/);
- assert.match(client,/CFrame\.Angles\(math\.rad\(-6\)/);
+ // [실제 skinned GLB] 예전 pulse 기반 임시 메시 이동을 요구하지 않는다.
+ // 기존 authored 관절 및 월드 모델 자세가 현재 원본 게임에 실제 적용되는지 검사한다.
+ assert.match(client,/row\.visualPose=row\.visualPose:Lerp\(pose,alpha\)/);
+ assert.match(client,/row\.model:PivotTo\(rr\.CFrame\*CFrame\.new\(0,visualOffset,0\)\*row\.visualPose\)/);
 });
 
 test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트를 보낸다',()=>{
