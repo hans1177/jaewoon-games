@@ -134,18 +134,23 @@ function parseDownloadedObj(text, modelName, materialText=''){
 async function loadSourceModels(){
   let packedModels=null;
   if(typeof DecompressionStream==='function'){
-    const response=await fetch(new URL('./models.json.gz',import.meta.url),{cache:'force-cache'});
-    if(!response.ok)throw new Error('Compressed CC0 model pack unavailable: '+response.status);
-    packedModels=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+    try{
+      const response=await fetch(new URL('./models.json.gz',import.meta.url),{cache:'force-cache'});
+      if(!response.ok)throw new Error('Compressed CC0 model pack unavailable: '+response.status);
+      const pack=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+      if(!pack?.floor_base?.obj||!pack?.floor_base?.mtl)throw new Error('Compressed CC0 floor source missing');
+      packedModels=pack;
+    }catch(error){
+      // [3D 원본 복구] 압축 파일 문제는 다운로드된 동일 CC0 OBJ/MTL로 복구한다.
+      console.warn('Compressed CC0 pack unavailable; loading licensed original OBJ/MTL',error);
+    }
   }
   // 첫 화면은 바닥 메시만 파싱하고, 나머지 CC0 에셋은 첫 프레임 뒤 순차 로딩한다.
   const required=new Set(['floor_base']);
   const fetchSourceModel=async name=>{
-    if(packedModels){
-      const entry=packedModels[name];
-      if(!entry?.obj||!entry?.mtl)throw new Error('Compressed CC0 model missing: '+name);
-      return [name,parseDownloadedObj(entry.obj,name,entry.mtl)];
-    }
+    const entry=packedModels?.[name];
+    if(entry?.obj&&entry?.mtl)return [name,parseDownloadedObj(entry.obj,name,entry.mtl)];
+    // 압축 묶음이 빠진 개별 모델도 실제 원본 소스에서만 읽는다.
     const geometryUrl=new URL(name+'.obj',SOURCE);
     const materialUrl=new URL(name+'.mtl',SOURCE);
     const [response,mtlResponse]=await Promise.all([
@@ -160,15 +165,28 @@ async function loadSourceModels(){
     return [name,parseDownloadedObj(text,name,materialText)];
   };
   const models=new Map(await Promise.all(MODEL_NAMES.filter(name=>required.has(name)).map(fetchSourceModel)));
+  const failedOptional=new Set();
+  let optionalLoading=false;
   return {models,loadRemaining:async(priorityNames=[])=>{
-    // 플레이 중인 지역의 원본 출입구·상자 모델부터 먼저 준비한다.
-    for(const name of [...new Set([...priorityNames.filter(name=>MODEL_NAMES.includes(name)),...MODEL_NAMES])]){
-      if(required.has(name))continue;
-      await new Promise(resolve=>setTimeout(resolve,0));
-      const [key,model]=await fetchSourceModel(name);
-      models.set(key,model);
-    }
-  }};
+    if(optionalLoading)return false;
+    optionalLoading=true;
+    try{
+      // [실제 그래픽] 한 장식 모델의 로딩 실패가 나머지 CC0 지역 모델을 막지 않는다.
+      for(const name of [...new Set([...priorityNames.filter(name=>MODEL_NAMES.includes(name)),...MODEL_NAMES])]){
+        if(required.has(name)||models.has(name))continue;
+        await new Promise(resolve=>setTimeout(resolve,0));
+        try{
+          const [key,model]=await fetchSourceModel(name);
+          models.set(key,model);
+          failedOptional.delete(name);
+        }catch(error){
+          if(!failedOptional.has(name))console.warn('Original CC0 optional model unavailable: '+name,error);
+          failedOptional.add(name);
+        }
+      }
+    }finally{optionalLoading=false}
+    return failedOptional.size===0;
+  },getFailedOptionalCount:()=>failedOptional.size};
 }
 
 export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100},initialState=null){
@@ -342,7 +360,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     const ordered=[...initialFiles].sort((a,b)=>a[1]-b[1]).map(([file])=>file),limit=mobileBudget?6:10;
     for(let i=0;i<ordered.length;i+=limit)await Promise.all(ordered.slice(i,i+limit).map(loadCreatureSource));
   })();
-  let models,stagedModels,extraModelsStarted=false;
+  let models,stagedModels,extraModelsStarted=false,nextOptionalSourceRetry=0;
   // 모델이 모두 끝날 때까지 월드 시작을 묶어 두지 않는다.
   // 몹은 가까운 종부터 비동기로 로드하고, 미표시 전투는 기존 안전 게이트가 멈춘다.
   try{[stagedModels]=await Promise.all([modelsPromise,heroPromise]);models=stagedModels.models}
@@ -627,14 +645,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       // 이동/공격 상태를 실제 좌표와 공격 시각으로 검출한다. 제자리 문워크와 반복 공격 무동작 방지.
 
       const moving=moveDelta>.14&&poseElapsed>0&&poseElapsed<420;
-      const attacking=poseNow-(Number(e.attackAt)||0)<430;
+      const attackAge=poseNow-(Number(e.attackAt)||0);
+      const attacking=Number(e.attackAt)>0&&attackAge>=0&&attackAge<430;
       actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
       actor.anchor.position.y=moving?.014*Math.sin(poseNow/95):.005*Math.sin(poseNow/360);
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
+      // [액션] 실제 원본 공격 클립을 찾지 못하면 대기 동작을 공격으로 위장하지 않는다.
       const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
-        ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
+        ||(!attacking?undeadClips.find(c=>/idle|walk/i.test(c.name)):null)||null;
       if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
         actor.action?.fadeOut(.09);
         actor.action=actor.mixer.clipAction(clip).reset();
@@ -744,14 +764,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       // 몬스터 실제 이동량을 쓰므로 벽에 걸렸을 때 이동 애니메이션이 계속 나오지 않는다.
 
       const moving=moveDelta>.14&&poseElapsed>0&&poseElapsed<420;
-      const attacking=poseNow-(Number(e.attackAt)||0)<430;
+      const attackAge=poseNow-(Number(e.attackAt)||0);
+      const attacking=Number(e.attackAt)>0&&attackAge>=0&&attackAge<430;
       actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
       actor.anchor.position.y=moving?.016*Math.sin(poseNow/110):.006*Math.sin(poseNow/410);
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
+      // [액션] 종별 실제 리그에서 공격/물기/베기 클립을 찾고 허위 공격 재생을 금지한다.
       const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
-        ||actor.clips.find(c=>/idle|walk/i.test(c.name));
+        ||(!attacking?actor.clips.find(c=>/idle|walk/i.test(c.name)):null);
       if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
         actor.action?.fadeOut(.09);
         actor.action=actor.mixer.clipAction(clip).reset();
@@ -777,6 +799,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   if(hero)scene.add(hero.avatar);
 
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
+  let playerTravelClip='run',actualPlayerClip='',unavailablePlayerClip='';
   // [장비] 원본 캐릭터 GLB의 기본 장비·모션을 유지한다.
   // 검증된 무기별 원본이 없으므로 임의 상자·원통 모델은 생성하지 않는다.
   // 공격·장비·저장 판정은 기존 게임 본편이 그대로 담당한다.
@@ -1074,18 +1097,30 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         swingRing.material.opacity=(1-swingAge/260)*.35;
         swingRing.scale.setScalar(.5+swingAge/220*2);
       }
-      // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
-      const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
-      const desired=heroClips.find(clip=>clip.name===clipName);
+      // [모션·액션] 원본 GLB에 실제 존재하는 클립만 사용한다. 피해/속도/쿨다운은 원본 게임이 소유한다.
+      // 일정한 이동 거리만큼 걷기와 달리기를 분리하고 경계에는 히스테리시스를 둔다.
+      if(pose==='move'){
+        const visualSpeed=moveDelta*1000/Math.max(1,poseElapsed);
+        if(visualSpeed<75)playerTravelClip='walk';
+        else if(visualSpeed>110)playerTravelClip='run';
+      }
+      const motionRole=pose==='move'?playerTravelClip:pose;
+      const clipName=playerMotionProfile.cc0Clips[motionRole];
+      const candidates=playerMotionProfile.cc0ClipCandidates[motionRole]||[clipName];
+      const desired=candidates.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
+      actualPlayerClip=desired?.name||'';
+      unavailablePlayerClip=desired?'':motionRole;
       const nextName=desired?.name||'';
       const attackAt=Number(p.attackAt)||0;
       if(heroMixer&&(nextName!==heroActionName||(pose==='attack'&&attackAt!==lastHeroAttackAt))){
-        if(heroAction)heroAction.fadeOut(.09);
-        heroAction=desired?heroMixer.clipAction(desired):null;
+        const nextAction=desired?heroMixer.clipAction(desired):null;
+        if(heroAction&&heroAction!==nextAction)heroAction.fadeOut(.09);
+        else if(heroAction&&pose==='attack')heroAction.stop(); // 같은 원본 클립도 새 공격 이벤트마다 재시작한다.
+        heroAction=nextAction;
         if(heroAction){
           heroAction.reset().setLoop(pose==='attack'?THREE.LoopOnce:THREE.LoopRepeat,pose==='attack'?1:Infinity);
           heroAction.clampWhenFinished=pose==='attack';
-          // 시각 모션만 가속. 캐릭터 이동속도와 전투 판정은 변경하지 않는다.
+          // 실제 시각 애니메이션 시간만 변경한다. 이동 루트와 공격 판정은 건드리지 않는다.
           if(pose==='attack')heroAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:selectedAppearance?.model?.startsWith('rogue')?.23:.32);
           else heroAction.setEffectiveTimeScale(pose==='move'?1.3:1);
           heroAction.fadeIn(.09).play();
@@ -1194,11 +1229,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     active=true;canvas.hidden=false;fallbackReason='';
     if(!extraModelsStarted){
       extraModelsStarted=true;
+      nextOptionalSourceRetry=sampleNow+30000;
       // 첫 WebGL 프레임 이후 멀리 있는 장식 메시를 단계적으로 파싱한다.
       const priorityModels=(regionScene?.landmarks||[]).map(mark=>mark?.model).filter(Boolean);
       if(!isInterior)priorityModels.push('bench_A','bench_B','fence_straight','gate_single','package');
       setTimeout(()=>{if(!disposed)void stagedModels.loadRemaining(priorityModels).catch(error=>
         console.warn('CC0 optional scenery unavailable',error));},0);
+    }else if(sampleNow>=nextOptionalSourceRetry&&stagedModels.getFailedOptionalCount()>0){
+      // [3D 그래픽 복구] 실패한 원본만 일정 간격으로 재시도하고 이미 로드된 모델은 재사용한다.
+      nextOptionalSourceRetry=sampleNow+30000;
+      void stagedModels.loadRemaining().catch(error=>console.warn('CC0 scenery retry unavailable',error));
     }
   }
   function pick(clientX,clientY){
@@ -1272,7 +1312,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,
       nativeCreatures:nativeCreatureActors.size,undeadCreatures:undeadActors.size,
       resourceBatches:resourceBatches.size,loadingModels:loadingCreatureCount,loadedModels:nativeCreatureSources.size,
-      measuredFps,pixelRatio:renderer.getPixelRatio()}),
+      measuredFps,pixelRatio:renderer.getPixelRatio(),
+      // [모션 검증 입력] 클립 출처·누락 상태는 측정값이며 실제 런타임 합격이나 학습 승인으로 승격하지 않는다.
+      motionSource:'CC0_AUTHORED_GLTF',motionClip:actualPlayerClip,missingMotionRole:unavailablePlayerClip,
+      motionSourceClipCount:heroClips.length,motionRuntimeVerified:false}),
     productionReady:false
   };
 }

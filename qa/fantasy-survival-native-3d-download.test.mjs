@@ -641,3 +641,27 @@ test('native fantasy preview uses original CC0 geometry for terrain texture and 
   assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
   assert.doesNotMatch(moduleSource,/function part\(geometry,material/);
 });
+
+// [모션·3D 복구] CC0 원본 로딩과 실제 리그 동작을 확인하며 미검증 학습은 차단한다.
+test('damaged compressed CC0 source recovers original OBJ and isolates optional failures',()=>{
+  assert.match(moduleSource,/Compressed CC0 pack unavailable; loading licensed original OBJ\/MTL/);
+  assert.match(moduleSource,/const entry=packedModels\?\.\[name\]/);
+  assert.match(moduleSource,/failedOptional=new Set\(\)/);
+  assert.match(moduleSource,/if\(required\.has\(name\)\|\|models\.has\(name\)\)continue/);
+  assert.match(moduleSource,/nextOptionalSourceRetry=sampleNow\+30000/);
+  assert.match(moduleSource,/stagedModels\.getFailedOptionalCount\(\)>0/);
+  assert.match(moduleSource,/Original CC0 optional model unavailable/);
+});
+
+test('native action clips replay from real attack events without substitute animations or fake learning passes',()=>{
+  assert.match(moduleSource,/cc0ClipCandidates\[motionRole\]/);
+  assert.match(moduleSource,/visualSpeed<75/);
+  assert.match(moduleSource,/visualSpeed>110/);
+  assert.match(moduleSource,/heroAction\.stop\(\)/);
+  assert.match(moduleSource,/const attacking=Number\(e\.attackAt\)>0&&attackAge>=0&&attackAge<430/);
+  assert.match(moduleSource,/\(!attacking\?actor\.clips\.find/);
+  assert.match(moduleSource,/\(!attacking\?undeadClips\.find/);
+  assert.match(moduleSource,/motionRuntimeVerified:false/);
+  assert.match(moduleSource,/getRenderStats:\(\)=>/);
+  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
