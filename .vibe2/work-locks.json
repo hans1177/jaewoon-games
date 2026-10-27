@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-c6m4zp",
+      "worker": "vibe2",
+      "taskId": "dice-battle-board-roblox-library-cc0-replacement-v1",
+      "gameId": "dice-battle-board",
+      "files": [
+        "roblox-games/dice-battle-board/client/Game.client.luau",
+        "roblox-games/dice-battle-board/shared/GameConfig.luau",
+        "roblox-games/dice-battle-board/server/Game.server.luau"
+      ],
+      "baseSha": "9cca6bb911df04811eca087d011535997d64d643",
+      "runId": "40439428004",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-27T03:00:34.798Z",
+      "expiresAt": "2026-10-27T03:45:34.798Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:dice-battle-board-roblox-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
