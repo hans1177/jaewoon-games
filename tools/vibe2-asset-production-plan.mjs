@@ -1647,13 +1647,66 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     }
     actions.push(Object.freeze({...row,...(adaptation||{}),action}));
   };
+  // [라이브러리 관리] 현재 게임이 실제 사용하는 원본을 우선 정밀 점검한다.
+  // 공용 품질 원장에 기록된 가장 약한 축을 먼저 수정하고, 측정 없는 점수는 성능 향상으로 인정하지 않는다.
+  const detailAxesForFamily=family=>{
+    if(['CHARACTER','CREATURE'].includes(family))return ['MESH_TOPOLOGY','RIG_JOINT_HIERARCHY','SKIN_WEIGHTS','IDLE_WALK_RUN_ATTACK_ACTION_CLIPS','BLENDING_AND_FOOT_CONTACT','MOBILE_LOD'];
+    if(['WEAPON','PROP','BUILDING','WORLD_OBJECT','TERRAIN','ENVIRONMENT'].includes(family))return ['SOURCE_MESH_DETAIL','MATERIAL_PBR_UV','ROLE_AND_COLLIDER_FIT','SCENE_LIGHTING','DRAW_CALLS_AND_MOBILE_LOD'];
+    if(family==='MOTION')return ['ORIGINAL_RIG_COMPATIBILITY','CLIP_ROLE','TIMING_AND_TRANSITIONS','ROOT_MOTION','ACTION_CONTACT_EVENTS','MOBILE_PLAYBACK'];
+    if(family==='VFX')return ['GAME_EVENT_SYNC','PARTICLE_DETAIL','OCCLUSION_AND_READABILITY','MOBILE_BUDGET'];
+    if(family==='UI')return ['ICON_SOURCE_QUALITY','READABILITY','TOUCH_TARGETS','RESPONSIVE_LAYOUT','MOBILE_MEMORY'];
+    if(family==='AUDIO')return ['EVENT_SYNC','LOOP_SEAM','DYNAMIC_MIX','MOBILE_DECODE'];
+    return ['EXISTING_SOURCE_DETAIL','RUNTIME_PRESENTATION','MOBILE_PERFORMANCE'];
+  };
+  const qualityRepairAssetIds=new Set();
   for(const repair of qualityActions){
+    const assetId=clean(repair.assetId),asset=assetById.get(assetId);
+    if(!assetId||!asset)continue;
+    qualityRepairAssetIds.add(assetId);
+    const family=clean(repair.family||asset.family||asset.category).toUpperCase();
     pushAction({
-      action:'IMPROVE',
-      assetId:clean(repair.assetId)||null,
-      family:clean(repair.family).toUpperCase()||null,
+      action:'IMPROVE',assetId,family,
       reason:'CURRENT_CONSUMER_QUALITY_GAP',
-      responsibleFiles:Object.freeze([...(repair.sourceFiles||[])])
+      responsibleFiles:Object.freeze([...(repair.sourceFiles||[])]),
+      detailRefinement:freeze({
+        owner:'EXISTING_GRAPHICS_PRODUCTION',gameId:id,target:platform,
+        verifiedSourceAssetId:assetId,sourceHash:clean(repair.sourceHash||asset.sourceHash)||null,
+        kind:clean(repair.kind)||'INSPECT_ASSET_QUALITY',
+        weakestAxis:clean(repair.weakestAxis)||null,
+        detailAxes:freezeList(detailAxesForFamily(family)),
+        detailSteps:freezeList(repair.detailSteps||[]),
+        preserveAxes:freezeList(repair.preserveAxes||[]),
+        measuredAxisScore:Number.isFinite(repair.currentAxisScore)?repair.currentAxisScore:null,
+        sameGameSourceAndRigInspectionRequired:true,independentNativeRuntimeQaRequired:true,
+        originalAndSaveImmutable:true,verifiedLearningOnly:true,runtimeVerified:false
+      })
+    });
+  }
+  // 이미 게임에 적용된 자산도 공용 정밀 검사 목록이 누락되면 다음 회차에서 누락으로 남기지 않는다.
+  // 외부 자산 자동 승격, 미측정 품질 PASS, 승인 대기 해제는 절대 수행하지 않는다.
+  if(platform==='WEB'||platform==='ROBLOX')for(const asset of currentAssets){
+    const assetId=clean(asset.id),family=clean(asset.family||asset.category).toUpperCase();
+    if(!assetId||qualityRepairAssetIds.has(assetId))continue;
+    const score=Number(asset.internalAuditScore);
+    if(asset.internalAuditEvidenceResolved===true&&Number.isFinite(score)&&score>=1000)continue;
+    const sourceFiles=unique([asset.masterGlb,asset.masterSourcePath,asset.path,...(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])])
+      .map(value=>clean(value).replace(/^\/+/, '')).filter(value=>value.startsWith('assets/')&&!value.split('/').includes('..'));
+    pushAction({
+      action:'IMPROVE',assetId,family,reason:'CURRENT_GAME_USED_ASSET_DETAIL_AUDIT_REQUIRED',
+      responsibleFiles:freezeList(sourceFiles),
+      detailRefinement:freeze({
+        owner:'EXISTING_GRAPHICS_PRODUCTION',gameId:id,target:platform,
+        verifiedSourceAssetId:assetId,sourceHash:clean(asset.sourceHash||asset.masterGlbHash)||null,
+        kind:'INSPECT_ASSET_QUALITY',weakestAxis:null,
+        detailAxes:freezeList(detailAxesForFamily(family)),detailSteps:freezeList([
+          'INSPECT_EXISTING_GAME_BOUND_SOURCE_AND_RENDERED_ASSET',
+          'MEASURE_MESH_RIG_MOTION_ACTION_AND_MOBILE_DETAIL_WHEN_APPLICABLE',
+          'REPAIR_WEAKEST_VERIFIED_AXIS_IN_EXISTING_RESPONSIBLE_SOURCE',
+          'VERIFY_SAME_GAME_RUNTIME_AND_INDEPENDENT_REGRESSION'
+        ]),preserveAxes:freezeList([]),measuredAxisScore:null,
+        sameGameSourceAndRigInspectionRequired:true,independentNativeRuntimeQaRequired:true,
+        originalAndSaveImmutable:true,verifiedLearningOnly:true,runtimeVerified:false
+      })
     });
   }
 
@@ -1855,7 +1908,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
     }else if(!originalRequested){
-      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
+      // [부족 자산] 같은 family가 아예 없는 게임도 역할별 요청을 지우지 않고 기존 수급 목록으로 전달한다.
+      const unmetRoles=sourceRoles.filter(role=>role&&role!=='generic');
+      if(unmetRoles.length){
+        for(const role of unmetRoles)pushAction({
+          action:'HOLD',assetId:null,family,requestedRole:role,
+          reason:'CURRENT_GAME_MISSING_ROLE_UNRESOLVED',
+          roleEvidence:{requestedRoles:[role],matchedRoles:[],verifiedRoleMatch:false},
+          gameSourceComparisonRequired:true,runtimeVerificationGranted:false
+        });
+      }else pushAction({action:'HOLD',assetId:null,family,
+        reason:'ROLE_REQUIREMENT_UNRESOLVED',
+        roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -1869,6 +1933,23 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     reason:'REFERENCE_VOLUME_ONLY_NO_CURRENT_GAME_DEMAND'
   }));
   if(!actions.length)pushAction({action:'HOLD',assetId:null,family:null,reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK'});
+  // [원본 수급 요청] 동일 게임/역할에 대해 기존 작업목록 안에서만 수급한다.
+  // 등록·검증되지 않은 링크는 요청으로만 남고, 자동 다운로드/게임 교체를 허가하지 않는다.
+  const libraryDownloadRequests=freezeList(actions.filter(row=>row.action==='ACQUIRE_ADAPT'
+    ||row.action==='HOLD'&&clean(row.requestedRole)&&clean(row.reason).includes('MISSING_ROLE'))
+    .map(row=>freeze({
+      gameId:id,target:platform,family:clean(row.family)||null,requestedRole:clean(row.requestedRole)||null,
+      state:row.action==='ACQUIRE_ADAPT'?'SELECTED_CC0_SOURCE_REQUIRES_EXACT_ACQUISITION':'VERIFIED_SOURCE_CATALOG_GAP',
+      selectedSourceId:clean(row.externalAcquisition?.sourceId)||null,
+      downloadUrl:clean(row.externalAcquisition?.downloadUrl)||null,
+      verifiedSha256:clean(row.externalAcquisition?.sourceHash)||null,
+      licenseEvidenceUrl:clean(row.externalAcquisition?.licenseEvidenceUrl)||null,
+      route:'EXISTING_ASSET_DEVELOPMENT_ON_DEMAND',
+      originalSourceShaAndRightsRequired:true,gameBindingRequiresRuntimeQa:true,
+      autoSourceFetchAllowed:row.action==='ACQUIRE_ADAPT'
+        &&Boolean(row.externalAcquisition?.sourceHash)&&Boolean(row.externalAcquisition?.localSourcePath),
+      directGameReplacementAuthorized:false,externalLearningApprovalUnchanged:true
+    })));
   const familyKeys=unique([...requiredFamilies,...currentFamilyCounts.keys(),...repairsByFamily.keys()]).sort();
   const families=Object.fromEntries(familyKeys.map(family=>[family,Object.freeze({
     used:currentFamilyCounts.get(family)||0,
@@ -1887,6 +1968,9 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     existingGameRoleCoverageIndependentByFamily:true,
     missingRolesNeverClaimRuntimeVerified:true,
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
+    libraryDownloadRequests,
+    usedAssetDetailActionCount:actions.filter(row=>row.action==='IMPROVE'&&row.detailRefinement?.gameId===id).length,
+    usedAssetDetailRequiresVerifiedLearning:true,
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
     selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
