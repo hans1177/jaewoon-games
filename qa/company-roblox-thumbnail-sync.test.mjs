@@ -437,6 +437,55 @@ test('automatic Roblox video edit stays blocked without genuine native capture, 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('durable runtime capture intake discovers real files, rejects WEB or missing proof, and does not claim publication',async()=>{
+  const workspace=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-durable-native-intake-'));
+  const root=path.join(workspace,'main');
+  const runtime=path.join(workspace,'runtime');
+  try{
+    const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',
+      dedicated:true,shared:false,verified:true};
+    const source='assets/roblox-thumbnails/cozy-island.png';
+    fs.mkdirSync(path.join(root,'assets','roblox-thumbnails'),{recursive:true});
+    const image=Buffer.alloc(700,19);
+    fs.writeFileSync(path.join(root,source),image);
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[
+      {id:target.gameId,canonical:{marketing:{thumbnail:source}}}
+    ]}));
+    fs.writeFileSync(path.join(root,'queue.json'),JSON.stringify({items:[{
+      gameId:target.gameId,robloxPublicationTarget:target,
+      robloxDetailMediaEvidence:{gameId:target.gameId,universeId:target.universeId,
+        sourceSha256:crypto.createHash('sha256').update(image).digest('hex'),
+        imageStatus:'SUBMITTED_AWAITING_ROBLOX_MODERATION'}
+    }]}));
+    const options={root,gameId:target.gameId,
+      queuePath:'queue.json',detailOnly:true,
+      fetchImpl:async()=>Response.json({data:[]})};
+    const clipDir=path.join(runtime,'assets','runtime-evidence','roblox',target.gameId,'session1');
+    fs.mkdirSync(clipDir,{recursive:true});
+    const cap=path.join(clipDir,'npc.mp4'),proof=path.join(clipDir,'npc.json');
+    fs.writeFileSync(cap,Buffer.alloc(2048,24));
+    fs.writeFileSync(proof,JSON.stringify({
+      gameId:target.gameId,universeId:target.universeId,placeId:target.placeId,
+      captureSource:'WEB',sourceRevision:'a'.repeat(40),
+      sha256:crypto.createHash('sha256').update(fs.readFileSync(cap)).digest('hex'),
+      runtimeVerification:{pass:true,actualGameplay:true,playerAutomation:false}
+    }));
+    // Without verified runtime checkout, do not use files adjacent to the repo.
+    const missing=await syncRobloxHomepageThumbnail(options);
+    assert.equal(missing.automaticVideo.status,'NATIVE_RUNTIME_CAPTURE_UNAVAILABLE');
+    fs.writeFileSync(path.join(runtime,'development-queue.json'),JSON.stringify({items:[]}));
+    const rejected=await syncRobloxHomepageThumbnail(options);
+    assert.equal(rejected.automaticVideo.status,'NATIVE_CAPTURE_REJECTED_OR_EDIT_FAILED');
+    assert.equal(rejected.automaticVideo.captureIntake,'DURABLE_RUNTIME_CAPTURE');
+    assert.equal(rejected.automaticVideo.videoPublished,false);
+    assert.equal(rejected.videoStatus,'NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED');
+    fs.unlinkSync(proof);
+    const noEvidence=await syncRobloxHomepageThumbnail(options);
+    assert.equal(noEvidence.automaticVideo.status,'NATIVE_RUNTIME_CAPTURE_UNAVAILABLE');
+    assert.equal(fs.existsSync(path.join(root,'.tmp','roblox-detail-evidence','cozy-island-edited.mp4')),false);
+  }finally{fs.rmSync(workspace,{recursive:true,force:true});}
+});
+
 test('unattended concept trailer is visibly labeled promotional artwork, never native Roblox gameplay',()=>{
   if(spawnSync('ffmpeg',['-version'],{encoding:'utf8'}).status!==0)return;
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-concept-video-'));
@@ -497,6 +546,9 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.ok(workflow.includes('ROBLOX_UNATTENDED_CONCEPT_PREVIEWS_CREATED='));
   assert.ok(workflow.includes('GITHUB_STEP_SUMMARY'),'automatic production output should be visible from Action summary');
   assert.ok(workflow.includes('retention-days: 30'),'production archive should outlive 7-day default');
+  assert.ok(workflow.includes('repository_dispatch:'),'capture-ready event wakes existing video pipeline');
+  assert.ok(workflow.includes('roblox_native_capture_available'),'capture-ready event type stays explicit');
+  assert.ok(workflow.includes("github.event.client_payload.game_id"),'capture event targets requested game');
   assert.match(workflow,/company-roblox-thumbnail-sync\.mjs/);
   assert.match(workflow,/Publish exact game image to Roblox experience detail page/);
   assert.match(workflow,/robloxDetailMediaEvidence/);
