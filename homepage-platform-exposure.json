@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-27T03:55:55.861Z",
+  "generatedAt": "2026-10-27T03:55:48.993Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -167,9 +167,9 @@
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
             "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-10-27T03:55:55.767Z",
-            "checkedAt": "2026-10-27T03:55:55.767Z",
-            "lastFailureAt": "2026-10-27T03:55:55.767Z",
+            "verifiedAt": "2026-10-27T03:52:35.549Z",
+            "checkedAt": "2026-10-27T03:52:35.549Z",
+            "lastFailureAt": "2026-10-27T03:52:35.549Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": "existing-source-static-revalidation-failed",
@@ -272,7 +272,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-27T03:55:55.767Z"
+      "updatedAt": "2026-10-27T03:52:35.549Z"
     },
     {
       "gameId": "bug-defense",
@@ -953,9 +953,9 @@
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
             "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-10-27T03:55:55.767Z",
-            "checkedAt": "2026-10-27T03:55:55.767Z",
-            "lastFailureAt": "2026-10-27T03:55:55.767Z",
+            "verifiedAt": "2026-10-27T03:51:31.999Z",
+            "checkedAt": "2026-10-27T03:53:28.520Z",
+            "lastFailureAt": "2026-10-27T03:51:31.999Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": "existing-source-static-revalidation-failed",
@@ -1058,7 +1058,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-27T03:55:55.767Z"
+      "updatedAt": "2026-10-27T03:53:28.520Z"
     },
     {
       "gameId": "defense",
@@ -2133,14 +2133,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-10-27T03:55:55.767Z",
+            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
+            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
+            "verifiedAt": "2026-10-26T16:59:25.910Z",
+            "checkedAt": "2026-10-27T03:53:28.520Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
-            "candidatePublishedAt": null,
+            "f0PassedAt": "2026-10-26T16:29:55.364Z",
+            "candidatePublishedAt": "2026-10-26T16:37:57.897Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -2168,8 +2168,8 @@
               "noRuntimeErrors": false
             },
             "blockers": [],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "74bb3686049d4a3f4dda7102c41c464d53f77d7a",
+            "artifactIdentity": "sha256:c7a2663881a469e20ec3c35e5ba12f966c01b1b3425f24513fa35766b63f1500",
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -2236,7 +2236,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-27T03:55:55.767Z"
+      "updatedAt": "2026-10-27T03:53:28.520Z"
     },
     {
       "gameId": "human-go",
