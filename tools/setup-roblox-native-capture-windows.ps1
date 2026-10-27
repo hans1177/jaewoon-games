@@ -3,7 +3,6 @@
 param(
  [string]$Base = "$env:LOCALAPPDATA\JaewoonNativeMedia",
  [switch]$RegisterWatcher,
- [ValidateSet('','cozy-island','daechung-rpg','horror-escape-room')]
  [string]$CaptureGameId = '',
  [Security.SecureString]$PrivateLinkCode
 )
@@ -43,6 +42,9 @@ if ((& git -C $Runtime branch --show-current).Trim() -ne 'company-runtime') {
 }
 # Keep private server joining details in per-user Windows DPAPI, not in GitHub or logs.
 if ($CaptureGameId -and $PrivateLinkCode) {
+ if ($CaptureGameId -notin @('cozy-island','daechung-rpg','horror-escape-room')) {
+  throw 'CAPTURE_GAME_ID_NOT_ALLOWLISTED'
+ }
  $PrivateConfig = Join-Path $Base 'private-capture-join.xml'
  [pscustomobject]@{
   GameId = $CaptureGameId
