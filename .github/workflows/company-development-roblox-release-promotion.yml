@@ -1454,17 +1454,23 @@ jobs:
             versionNumber:Number(cycle.versionNumber),apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
             maxPolls:24,pollIntervalMs:1000
           });}catch(e){error=String(e?.message||e);}
-          const pass=proof.engineExecuted===true&&proof.exactPlace===true&&
-            proof.exactVersion===true&&proof.serverContextExecuted===true;
+          const cloudScenarios=proof.cloudServerScenarioEvidence||null;
+          const serverChecksPassed=cloudScenarios?.scenarioCount===5&&
+            cloudScenarios?.observedCount===5&&cloudScenarios?.allChecksPassed===true;
           const stillCurrent=item.robloxSourceCommit===cycle.sourceRevision&&item.robloxBuildArtifactIdentity===cycle.artifactIdentity;
+          const pass=proof.engineExecuted===true&&proof.exactPlace===true&&
+            proof.exactVersion===true&&proof.serverContextExecuted===true&&
+            serverChecksPassed&&stillCurrent;
           const result={gameId:item.gameId,cycleId:cycle.cycleId,sourceRevision:cycle.sourceRevision,
             artifactIdentity:cycle.artifactIdentity,universeId:String(cycle.universeId),
             placeId:String(cycle.placeId),versionNumber:Number(cycle.versionNumber),
-            pass,headlessExactVersionVerified:pass,liveGameplayVerified:false,
+            pass,headlessExactVersionVerified:proof.engineExecuted===true&&proof.exactPlace===true&&proof.exactVersion===true,
+            cloudServerScenarioEvidence:cloudScenarios,liveGameplayVerified:false,
             mobileVerified:false,serverBootVerified:proof.serverBootObserved===true,
             state:proof.state||'UNVERIFIED',error:error.slice(0,400),checkedAt:new Date().toISOString()};
           fs.writeFileSync('/tmp/roblox-post-publish-qa.json',JSON.stringify(result,null,2));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass&&stillCurrent?'true':'false')+'\n');
+          console.log('ROBLOX_POST_PUBLISH_SERVER_SCENARIOS='+process.env.GAME_ID+':'+Number(cloudScenarios?.passedCount||0)+'/5:observed='+Number(cloudScenarios?.observedCount||0));
           console.log('ROBLOX_POST_PUBLISH_QA='+(pass?'PASS':'UNVERIFIED'));
           NODE
       - name: Keep exact post-publish evidence
