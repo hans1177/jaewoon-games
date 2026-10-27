@@ -83,7 +83,7 @@ test('WEB owner worker accepts existing large game file but keeps a finite sourc
     games:[{id:'fantasy-survival',webPath:'web-games/fantasy-survival'}]
   }));
   const file=path.join(game,'index.html');
-  fs.writeFileSync(file,'<html>'+('개발된 기존 게임 내용').repeat(85000)+'</html>');
+  fs.writeFileSync(file,'<html>'+('X'.repeat(1361000))+'</html>');
   assert.equal(resolveWebVibeSources('fantasy-survival',{repoRoot:root}).length,1);
   fs.writeFileSync(file,'<html>'+('X'.repeat(2*1024*1024))+'</html>');
   assert.throws(()=>resolveWebVibeSources('fantasy-survival',{repoRoot:root}),/SOURCE_SIZE_OUT_OF_SCOPE/);
