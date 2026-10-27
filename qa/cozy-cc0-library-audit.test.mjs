@@ -117,7 +117,7 @@ test('grant validates exact prechecked universe and treats server permission err
   let received;
   const fetchImpl=async (url,opts)=>{
     received={url,method:opts.method,headers:opts.headers,body:JSON.parse(opts.body)};
-    return {ok:true,status:200,json:async()=>({})};
+    return {ok:true,status:200,json:async()=>({successAssetIds:[70786111181272]})};
   };
   const result=await grantCozyCC0({report,apiKey:'mock-test-key',cookie:'',fetchImpl});
   assert.equal(result.granted,true);
@@ -126,4 +126,15 @@ test('grant validates exact prechecked universe and treats server permission err
   assert.deepEqual(received.body.requests,[{assetId:70786111181272,grantToDependencies:true}]);
   await assert.rejects(()=>grantCozyCC0({report:{...report,universeId:'wrong'},apiKey:'mock-test-key',cookie:'',fetchImpl}),/CC0_AUDIT_REQUIRED/);
   await assert.rejects(()=>grantCozyCC0({report,apiKey:'mock-test-key',cookie:'',fetchImpl:async()=>({ok:false,status:403,json:async()=>({})})}),/GRANT_FAILED/);
+  await assert.rejects(()=>grantCozyCC0({report,apiKey:'mock-test-key',cookie:'',fetchImpl:async()=>({ok:true,status:200,json:async()=>({})})}),/GRANT_FAILED:HTTP_200:MISSING_1/);
+  await assert.rejects(()=>grantCozyCC0({report,apiKey:'mock-test-key',cookie:'',fetchImpl:async()=>({ok:true,status:200,json:async()=>({successAssetIds:[],errors:[{code:'CannotManageAsset'}]})})}),/GRANT_FAILED/);
+  const calls=[];
+  const withOwner=await grantCozyCC0({report,apiKey:'mock-test-key',cookie:'mock-owner-cookie',fetchImpl:async (_url,opts)=>{
+    calls.push(opts.headers);
+    if(calls.length===1)return {ok:false,status:403,headers:{get:name=>name==='x-csrf-token'?'mock-csrf':null},json:async()=>({})};
+    return {ok:true,status:200,json:async()=>({successAssetIds:[70786111181272]})};
+  }});
+  assert.equal(withOwner.granted,true);
+  assert.equal(calls.length,2);
+  assert.equal(calls[1]['x-csrf-token'],'mock-csrf');
 });
