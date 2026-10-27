@@ -1672,3 +1672,33 @@ test('native item painter in common Roblox inventory remains source-bound and mo
   assert.match(bootstrap,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
   assert.match(bootstrap,/assets\/roblox\/common-materials-v1\/RobloxCommonMaterials\.luau/);
 });
+
+test('existing and generated Roblox games bind confirmed combat to compatible R15 joints without claiming runtime pass',()=>{
+  const generator=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8'));
+  const canonical=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  assert.match(server,/player:SetAttribute\("ActionSequence"/);
+  assert.match(server,/player:SetAttribute\("ApprovedCombatMotion"/);
+  assert.match(generator,/player:SetAttribute\(\\\"ApprovedCombatMotion\\\"/);
+  assert.match(canonical,/function RobloxCommonMotion.CreateCombatCombo\(/);
+  assert.match(canonical,/function RobloxCommonMotion.BindJointPose\(/);
+  for(const source of [generator,client]){
+    for(const call of ['CreateCombatCombo','SampleCombatCombo','MapCombatPoseToR15','BindJointPose']){
+      assert.ok(source.includes('combatMotionSource.'+call),'missing native motion action call: '+call);
+    }
+    assert.ok(source.includes('player:GetAttributeChangedSignal("ApprovedCombatMotion")'),'authoritative atomic action event required');
+    assert.ok(source.includes('approved:match("^([^:]+):(%d+)$")'),'action scope and event must bind atomically');
+    assert.ok(source.includes('if action.Kind == "COMBAT"'),'unrelated gameplay action may not play attack');
+    assert.ok(source.includes('humanoid.RigType ~= Enum.HumanoidRigType.R15'),'do not bind to incompatible rigs');
+    assert.ok(source.includes('MATCHING_WEAPON_MOTION_REQUIRED'),'do not fake arbitrary weapon animations');
+    assert.ok(source.includes('RunService.PreSimulation:Connect'),'render actual joints after built-in animation');
+    assert.ok(source.includes('finishNativeCombatMotion()'),'restore joints after attack or character change');
+    assert.ok(source.includes('SOURCE_POSE_PLAYING_UNVERIFIED'),'native runtime proof must remain outstanding');
+  }
+  assert.match(client,/MOTION = "APPLIED"/);
+  assert.ok(generator.includes('const motionBoundClient=clientSource('),'status must be computed from actual client code');
+  assert.doesNotMatch(client,/CreatePreviewAnimation\(|RegisterKeyframeSequence\(/);
+});
