@@ -5727,7 +5727,7 @@ export function buildVibeAssetProductionPlan({
   }):null;
   const familyAssetOptimization=buildVibeFamilyAssetOptimizationHandoff({
     gameId:currentGameId,target:resolvedTarget,
-    automaticBindingWork,dynamicLibrary:allGameDynamicLibraryBinding
+    automaticBindingWork:automaticAssetBindingWork,dynamicLibrary:allGameDynamicLibraryBinding
   });
   const primitiveReplacement=task.buildUpDirective?.visualBuildUpDirective?.primitiveReplacement;
   const primitiveReplacementWork=resolvedTarget==='roblox'&&primitiveReplacement?.enabled===true?freeze({
