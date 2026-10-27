@@ -121,6 +121,80 @@ export async function uploadRobloxHomepageThumbnail({
   throw new Error('ROBLOX_THUMBNAIL_PROCESSING_TIMEOUT:'+operationId);
 }
 
+// 메인: 실제 Roblox 게임 화면에서 촬영한 검증 가능한 원본만 하이라이트 편집한다.
+// 가짜 게임플레이 합성이나 웹 동반 게임 촬영본을 Roblox 영상으로 변환하지 않는다.
+export function editVerifiedRobloxGameplayVideo({
+  root='.',target={},capturePath='',captureEvidencePath='',outputPath='',
+  ffmpegCommand='ffmpeg',ffprobeCommand='ffprobe'
+}={}){
+  const gameId=clean(target.gameId),universeId=clean(target.universeId),placeId=clean(target.placeId);
+  if(!gameId||!validId(universeId)||!validId(placeId))throw new Error('ROBLOX_VIDEO_VERIFIED_TARGET_REQUIRED');
+  if(!capturePath||!captureEvidencePath)throw new Error('ROBLOX_VIDEO_NATIVE_CAPTURE_AND_EVIDENCE_REQUIRED');
+  const src=path.resolve(root,capturePath);
+  const evidence=readJson(path.resolve(root,captureEvidencePath));
+  if(!fs.existsSync(src)||!fs.statSync(src).isFile()||fs.statSync(src).size<1024
+    ||fs.statSync(src).size>200*1024*1024||!['.mp4','.mov'].includes(path.extname(src).toLowerCase()))
+    throw new Error('ROBLOX_VIDEO_CAPTURE_INVALID');
+  const originalHash=sha256(src);
+  const allowedSources=new Set(['ROBLOX_NATIVE_PLAYER_CAPTURE','ROBLOX_APPROVED_STUDIO_RUNTIME_CAPTURE']);
+  if(evidence.gameId!==gameId||clean(evidence.universeId)!==universeId
+    ||clean(evidence.placeId)!==placeId
+    ||!allowedSources.has(evidence.captureSource)
+    ||evidence.runtimeVerification?.pass!==true
+    ||evidence.runtimeVerification?.actualGameplay!==true
+    ||evidence.runtimeVerification?.playerAutomation===true
+    ||!(/^[a-f0-9]{40}$/.test(clean(evidence.sourceRevision)))
+    ||clean(evidence.sha256).toLowerCase()!==originalHash)
+    throw new Error('ROBLOX_VIDEO_NATIVE_RUNTIME_PROOF_MISSING_OR_MISMATCH');
+  const probe=spawnSync(ffprobeCommand,['-v','error','-show_entries','format=duration:stream=codec_type,width,height',
+    '-of','json',src],{encoding:'utf8',timeout:30000});
+  if(probe.status!==0)throw new Error('ROBLOX_VIDEO_PROBE_FAILED');
+  let metadata={};
+  try{metadata=JSON.parse(probe.stdout||'{}');}catch{throw new Error('ROBLOX_VIDEO_PROBE_INVALID');}
+  const duration=Number(metadata?.format?.duration);
+  const stream=(metadata.streams||[]).find(row=>row.codec_type==='video');
+  if(!Number.isFinite(duration)||duration<3||duration>1800||!stream?.width||!stream?.height)
+    throw new Error('ROBLOX_VIDEO_UNUSABLE_NATIVE_FOOTAGE');
+  // 편집: 실제 원본에서 서로 다른 플레이 구간만 선택해 30초 미만으로 구성.
+  const windows=duration>=21
+    ?[[0,6],[duration/2-3.5,duration/2+3.5],[duration-7,duration-0.2]]
+    :duration>=11
+      ?[[0,Math.min(5,duration/2)],[duration-Math.min(6,duration/2),duration-0.2]]
+      :[[0,Math.min(duration-0.2,9)]];
+  const selections=windows.map(([a,b])=>[Number(a.toFixed(3)),Number(b.toFixed(3))]);
+  const seconds=selections.reduce((sum,[a,b])=>sum+b-a,0);
+  const output=path.resolve(root,outputPath||path.join('.tmp','roblox-detail-evidence',gameId+'-edited.mp4'));
+  if(output===src)throw new Error('ROBLOX_VIDEO_MUST_PRESERVE_ORIGINAL');
+  fs.mkdirSync(path.dirname(output),{recursive:true});
+  const stages=selections.map(([start,end],i)=>'[0:v]trim=start='+start+':end='+end
+    +',setpts=PTS-STARTPTS,scale=1280:720:force_original_aspect_ratio=decrease,'
+    +'pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=24,format=yuv420p[v'+i+']');
+  const fadeOut=Math.max(0,seconds-.45).toFixed(3);
+  const filter=stages.join(';')+';'+selections.map((_,i)=>'[v'+i+']').join('')
+    +'concat=n='+selections.length+':v=1:a=0,fade=t=in:st=0:d=0.2,fade=t=out:st='+fadeOut+':d=0.4[out]';
+  const render=spawnSync(ffmpegCommand,['-y','-loglevel','error','-i',src,
+    '-filter_complex',filter,'-map','[out]','-an','-c:v','libx264','-preset','fast',
+    '-crf','23','-maxrate','3500k','-bufsize','7000k','-pix_fmt','yuv420p',
+    '-movflags','+faststart',output],{encoding:'utf8',timeout:150000});
+  if(render.status!==0||!fs.existsSync(output)||fs.statSync(output).size<1024
+    ||fs.statSync(output).size>15*1024*1024)
+    throw new Error('ROBLOX_VIDEO_EDIT_FAILED:'+clean(render.stderr||'INVALID_OUTPUT').slice(0,350));
+  const result=Object.freeze({
+    gameId,universeId,placeId,captureSource:evidence.captureSource,
+    sourceRevision:evidence.sourceRevision,sourceSha256:originalHash,
+    editedVideoPath:path.relative(path.resolve(root),output).replaceAll(path.sep,'/'),
+    editedVideoSha256:sha256(output),editedVideoBytes:fs.statSync(output).size,
+    expectedSeconds:Number(seconds.toFixed(3)),editedSegments:selections,
+    type:'REAL_NATIVE_ROBLOX_GAMEPLAY_EDIT',uploadVerified:false,
+    verifiedForSubmission:true,moderationApproved:false,
+    notes:'Official Creator Dashboard video submission and moderation not yet completed.'
+  });
+  writeJson(output+'.json',result);
+  console.log('ROBLOX_NATIVE_VIDEO_EDIT=PASS:'+gameId+':'+result.editedVideoSha256);
+  console.log('ROBLOX_NATIVE_VIDEO_UPLOAD=PENDING_CREATOR_DASHBOARD:'+gameId);
+  return result;
+}
+
 // 메인: 공식 경험 상세 페이지의 이미지는 홈 개인화 썸네일과 별개로 관리한다.
 // 원본 플레이 영상은 Roblox 네이티브 실제 실행 증거 없이는 게시하지 않는다.
 export async function syncRobloxExperienceDetailMedia({
@@ -290,6 +364,18 @@ function args(argv=process.argv.slice(2)){
 
 async function main(){
   const a=args();
+  if(a['edit-native']==='true'){
+    const root=clean(a.root)||'.';
+    const catalog=readJson(path.resolve(root,clean(a.catalog)||'game-catalog.json'));
+    const queue=readJson(path.resolve(root,clean(a.queue)||'../runtime/development-queue.json'));
+    const target=resolveRobloxThumbnailTarget({catalog,queue,gameId:clean(a['game-id'])});
+    editVerifiedRobloxGameplayVideo({
+      root,target,capturePath:clean(a['native-capture']),
+      captureEvidencePath:clean(a['native-evidence']),
+      outputPath:clean(a.output)
+    });
+    return;
+  }
   await syncRobloxHomepageThumbnail({
     root:clean(a.root)||'.',
     catalogPath:clean(a.catalog)||'game-catalog.json',
