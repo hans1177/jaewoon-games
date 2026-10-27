@@ -196,7 +196,7 @@ test('native forest ground has no 10x10 pitch mismatch and all rounded corners a
 });
 test('native forest movement clips are faster without changing gameplay-owned world movement or combat rules',()=>{
  assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
- assert.match(moduleSource,/heroAction\.setDuration\(\.28\)/);
+ assert.match(moduleSource,/heroAction\.setDuration\(selectedAppearance\?\.model==='mage'\?\.43/);
  assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(pose==='move'\?1\.3:1\)/);
  assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(attacking\?1\.35:moving\?1\.25:1\)/);
  assert.match(moduleSource,/heroMixer\.update\(Math\.min\(\.12,/);
@@ -330,7 +330,8 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
  }
  assert.match(moduleSource,/synchronizeNativeCreatures\(state,px,py,seen\)/);
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
- assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/const destX=e\.x\*SCALE,destZ=e\.y\*SCALE/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(destX,0,destZ\)/);
  assert.match(moduleSource,/getUnmappedVisibleMonsterIds:/);
  assert.match(moduleSource,/unsafeUnmappedEncounter/);
  assert.match(moduleSource,/getRenderStats:/);
@@ -398,7 +399,8 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
  assert.match(moduleSource,/cloneAnimatedRig\(undeadSource\)/);
  assert.match(moduleSource,/synchronizeUndead\(state,px,py,seen\)/);
  assert.match(moduleSource,/e\?\.type\?\.id==='wastelandMummy'/);
- assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/const destX=e\.x\*SCALE,destZ=e\.y\*SCALE/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(destX,0,destZ\)/);
  assert.match(moduleSource,/actor\.mixer\.clipAction\(clip\)/);
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
  assert.match(moduleSource,/child\.userData\.worldPoint=\{x:e\.x,y:e\.y\}/);
@@ -443,14 +445,14 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
  const sync=new Function('mobileBudget','qualityFactor','missingVisibleMonsterIds',
   'NATIVE_CREATURE_BY_ID','nativeCreatureSources','undeadSource','nativeCreatureActors',
   'nativeSpeciesMaterials','cloneAnimatedRig','THREE','scene','interactables','performance','SCALE',
-  'cameraFrustum','creatureBounds',
+  'cameraFrustum','creatureBounds','syncBestiaryName',
   'return function synchronizeNativeCreatures(state,px,py,stamp){'+body)(
    true,.58,missing,new Map([['shadowwolf','wolf.fbx']]),new Map([['wolf.fbx',source]]),
    null,actors,speciesMaterials,()=>({scale:{setScalar(){}},position:{},
      traverse(fn){fn({isMesh:true,material,userData:{}})}}),
    {Group,Color:class{constructor(){} }}, {add(){},remove(){}},interactables,{now:()=>1000},1/48,
    {intersectsSphere:bounds=>bounds.center.x<100},
-   {center:{x:0,set(x){this.x=x}}}
+   {center:{x:0,set(x){this.x=x}}},()=>{}
   );
  const state={area:'surface',enemies:Array.from({length:24},(_,i)=>({
   id:'wolf-'+i,type:{id:'shadowwolf',r:19},area:'surface',x:i,y:0,hp:95
