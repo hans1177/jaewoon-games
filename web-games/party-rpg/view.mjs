@@ -516,7 +516,7 @@ buildWorld(live){
    const right=/(right.*(?:foot|ankle)|(?:foot|ankle).*right|(?:foot|ankle)[._-]?r$|rfoot|r_foot)/.test(name);
    if((left||right)&&!feet.some(f=>f.side===(left?'left':'right'))){
     const animatesPosition=original.animations.some(clip=>clip.tracks.some(t=>t.name===node.name+'.position'));
-    feet.push({node,side:left?'left':'right',rest:node.position.clone(),animatesPosition,anchor:null});
+    feet.push({node,side:left?'left':'right',rest:node.position.clone(),animatesPosition,anchor:null,worldPoint:new THREE.Vector3(),localPoint:new THREE.Vector3()});
    }
   });
   // 전신 표현: 실제 고밀도 원화 + 경량 분절 메시. 3D 판정 모델은 그대로 둔다.
@@ -529,11 +529,21 @@ buildWorld(live){
    pixel=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({map:this.actorArt,transparent:true,alphaTest:.12,depthWrite:false,toneMapped:false,side:THREE.DoubleSide}));
    pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=.035;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);
   }
-  // 기존 리깅 클립을 모든 직업·동료 NPC·몬스터가 공유하는 운동 상태로 선택한다.
-   const named=regex=>[...actions].find(([name])=>regex.test(name))?.[1]||null;
-   const clips={idle:named(/idle/i)||named(/^walk|_walk/i)||named(/^run|_run/i),walk:named(/^walk|_walk/i),run:named(/^run|_run/i),attack:named(/^(?!.*idle).*?(attack|spell|shoot|punch|bite|slash|headbutt)/i),hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i),death:named(/death|die|dying/i)};
-   if(clips.attack===clips.idle)clips.attack=null;
-   for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))action.reset().play().setEffectiveWeight(0);
+  // [실제 모션] 원본 GLB의 리깅 동작을 먼저 사용한다. 하나의 Action을
+  // 대기/걷기/달리기에 중복 매핑하면 전환 가중치가 서로 덮이므로 중복을 차단한다.
+  const named=regex=>[...actions].find(([name])=>regex.test(name))?.[1]||null;
+  const idle=named(/(?:^|[_\s-])(idle|breath|stand|rest)(?:$|[_\s-])/i)||named(/idle/i);
+  const walk=named(/(?:^|[_\s-])(walk|amble|prowl)(?:$|[_\s-])/i)||named(/walk/i);
+  const run=named(/(?:^|[_\s-])(run|sprint|gallop)(?:$|[_\s-])/i)||named(/run/i);
+  const clips={idle:idle||walk||run,walk,run,
+   attack:named(/^(?!.*idle).*?(attack|spell|shoot|punch|bite|slash|headbutt)/i),
+   hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i),
+   death:named(/death|die|dying/i)};
+  if(clips.walk===clips.idle)clips.walk=null;
+  if(clips.run===clips.idle||clips.run===clips.walk)clips.run=null;
+  if(clips.attack===clips.idle)clips.attack=null;
+  for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))
+   action.reset().setLoop(THREE.LoopRepeat,Infinity).play().setEffectiveWeight(0);
    const result={root,model,ring,mixer,actions,clips,bones,feet,role,kind,provisional,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
     wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,lastSpecialUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
     lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,modelRestScaleX:model.scale.x,modelRestScaleZ:model.scale.z,
@@ -542,7 +552,7 @@ buildWorld(live){
     specialUntil:0,specialKind:null,deadAt:0,hitAt:0,hitPower:0,hitSide:0,flashMaterials,
     stepDistance:0,visualSpeed:0,locomotionBlend:0,runBlendSmooth:0,npcGesture:0,headFollow:0,turnLag:0,poseEnergy:0,stepStride:kind!=='enemy'?94:role==='bunny'?68:role==='slime'?63:role==='orc'?91:role==='golem'?118:87,
     idleSeed:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:11)*.713,
-    idleAttention:0,lookYaw:0,stance:0,faceTarget:null,visualStyle:'strike',npcRoutine:obj.routine||null};
+    idleAttention:0,lookYaw:0,stance:0,faceTarget:null,visualStyle:'strike',npcRoutine:obj.routine||null,attackFollow:0,hitBlend:0};
   this.scene.add(root);return result;
  }
  // 애니메이션: GLB 실제 걷기/공격 클립을 크로스페이드, 클립 없는 적도 관성·공격 반동·피격 경직 처리.
@@ -571,8 +581,12 @@ buildWorld(live){
    const nextRun=entry.clips.run?THREE.MathUtils.smoothstep(entry.visualSpeed,entry.kind==='enemy'?93:105,entry.kind==='enemy'?165:185):0;
    entry.runBlendSmooth+=(nextRun-entry.runBlendSmooth)*(1-Math.exp(-dt*(nextRun>entry.runBlendSmooth?7:11)));
    // 공격 준비 → 강한 타격 → 자세 회복을 시각적으로 구분한다.
-    const windup=attack?Math.max(0,1-Math.abs(attackProgress-.16)/.16):0;
-    const strike=attack?Math.sin(Math.PI*THREE.MathUtils.clamp((attackProgress-.22)/.64,0,1)):0;
+    const windup=attack?Math.max(0,1-Math.abs(attackProgress-.17)/.17):0;
+    const strike=attack?Math.sin(Math.PI*THREE.MathUtils.clamp((attackProgress-.23)/.59,0,1)):0;
+    // [영화형 액션] 동작의 타격 후 관성/복귀만 변경하고 실제 공격 판정과 타이머는 보존.
+    const followTarget=attack?THREE.MathUtils.smoothstep(attackProgress,.30,.60)*(1-THREE.MathUtils.smoothstep(attackProgress,.69,1)):0;
+    entry.attackFollow+=(followTarget-entry.attackFollow)*(1-Math.exp(-dt*(followTarget>entry.attackFollow?17:10)));
+    entry.hitBlend+=(hit-entry.hitBlend)*(1-Math.exp(-dt*(hit>entry.hitBlend?22:13)));
    const creature=entry.creature,spirit=creature==='spirit'||creature==='flyer',gel=creature==='gel',heavy=creature==='stone';
    const humanoid=entry.kind!=='enemy'||creature==='fighter',hasWalk=!!(entry.clips.walk||entry.clips.run);
    const elapsed=now*.001+entry.idleSeed,resting=Math.max(0,1-entry.locomotionBlend*1.2);
@@ -602,7 +616,7 @@ buildWorld(live){
    const proceduralStep=!hasWalk?Math.sin(entry.walkPhase+entry.motionPhase):0;
    const landing=!hasWalk&&!spirit?Math.pow(Math.max(0,proceduralStep),2)*load*.10:0;
    // 실제 데미지는 그대로; 타격 순간에는 힘을 모으고 전진했다가 복귀한다.
-   const recoil=Math.max(0,1-(now-entry.hitAt)/210)*entry.hitPower;
+   const recoil=entry.hitBlend*entry.hitPower;
    // 애니메이션 없는 원화만 다리·팔·상체를 분리해서 변형한다.
    if(entry.pixel){
     const positions=entry.pixel.geometry.attributes.position,rest=entry.pixelRest;
@@ -630,14 +644,14 @@ buildWorld(live){
    // 기존 GLB 뼈대: 대기·걸음·달리기 가중치를 이동 속도에 따라 연속 보간한다.
    const trigger=hitStart?'hit':attackStart?'attack':null;
    if(trigger&&entry.clips[trigger]){
-    if(entry.gestureAction)entry.gestureAction.fadeOut(.09);
+    if(entry.gestureAction)entry.gestureAction.fadeOut(.13);
     const action=entry.clips[trigger],duration=trigger==='attack'?entry.attackDuration:.34;
     action.reset().setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;
     action.setEffectiveTimeScale(THREE.MathUtils.clamp(action.getClip().duration/Math.max(.22,duration),.65,2.8));
-    action.setEffectiveWeight(1).fadeIn(.09).play();
+    action.setEffectiveWeight(1).fadeIn(.13).play();
     entry.gestureAction=action;entry.gestureUntil=now+duration*1000;
    }
-   if(entry.gestureAction&&now>=entry.gestureUntil){entry.gestureAction.fadeOut(.18);entry.gestureAction=null;}
+   if(entry.gestureAction&&now>=entry.gestureUntil){entry.gestureAction.fadeOut(.24);entry.gestureAction=null;}
    entry.gestureBlend+=((entry.gestureAction?1:0)-entry.gestureBlend)*(1-Math.exp(-dt*16));
    const activity=THREE.MathUtils.clamp(entry.locomotionBlend,0,1);
    const runBlend=entry.runBlendSmooth;
@@ -646,6 +660,7 @@ buildWorld(live){
    if(entry.clips.walk)entry.clips.walk.setEffectiveWeight(activity*(entry.clips.run?1-runBlend:1)*locoWeight);
    if(entry.clips.run)entry.clips.run.setEffectiveWeight(activity*(entry.clips.walk?runBlend:1)*locoWeight);
    if(!entry.clips.walk&&!entry.clips.run&&entry.clips.idle)entry.clips.idle.setEffectiveWeight(locoWeight);
+    if(entry.clips.idle&&!entry.clips.walk&&!entry.clips.run)entry.clips.idle.setEffectiveTimeScale(Math.max(.08,activity*.85));
    // THREE.AnimationAction의 clip time은 초 단위이므로, 이동한 거리/한 주기 보폭에
    // 클립 길이를 곱하면 걷기·달리기가 지면상의 실제 속도와 같은 박자로 진행한다.
    const cyclesPerSecond=entry.stepDistance/Math.max(.001,dt)/entry.stepStride;
@@ -669,10 +684,10 @@ buildWorld(live){
    const settle=1-Math.exp(-dt*(moving?9.5:7.8));
    const posture=(creature==='hunter'?.13:creature==='skitter'?.21:creature==='stone'?.045:0)+(entry.stance||0)*.055;
    const cast=(special&&(entry.specialKind==='ritual'||entry.specialKind==='specter')||attack&&castStyle)?Math.sin(attackProgress*Math.PI)*.15:0;
-   const attackLean=attack?(heavyStrike?.18:bowStyle?-.045:castStyle?-.12:.095)*strike:0;
+   const attackLean=(heavyStrike?.18:bowStyle?-.045:castStyle?-.12:.095)*strike+entry.attackFollow*(heavyStrike?.075:castStyle?-.035:.045);
    const npcSurvey=entry.kind==='ai'&&!entry.npcInParty?watch+greeting:0;
    entry.model.rotation.x+=(posture+breath*.4+windup*.11+attackLean-cast-recoil*.13+greeting*.44-entry.model.rotation.x)*settle;
-   entry.model.rotation.z+=(sway+entry.turnLean*(hasWalk?.35:1)+breath-recoil*entry.hitSide*.15+npcSurvey*.36+(creature==='flyer'?Math.sin(elapsed*9+phase)*.07:0)-entry.model.rotation.z)*settle;
+   entry.model.rotation.z+=(sway+entry.turnLean*(hasWalk?.35:1)+breath-recoil*entry.hitSide*.15+npcSurvey*.36+entry.attackFollow*(bowStyle?-.035:.055)*(entry.facing||1)+(creature==='flyer'?Math.sin(elapsed*9+phase)*.07:0)-entry.model.rotation.z)*settle;
    entry.model.position.y+=(entry.modelRestY+bob-windup*.02+strike*(creature==='hopper'?.045:.028)+hit*.065-entry.model.position.y)*settle;
    const pulse=gel?Math.sin(phase)*pace*.065+Math.sin(elapsed*1.5)*.012:creature==='hopper'?Math.abs(Math.sin(phase))*pace*.021:heavy?Math.pow(Math.max(0,Math.sin(phase)),4)*pace*.018:0;
    const desiredY=entry.modelRestScaleY*(1-pulse);
@@ -681,7 +696,7 @@ buildWorld(live){
    const spread=gel?1+THREE.MathUtils.clamp(pulse,-.09,.09)*.40:1;
    entry.model.scale.x+=(entry.modelRestScaleX*spread-entry.model.scale.x)*settle;
    entry.model.scale.z+=(entry.modelRestScaleZ*spread-entry.model.scale.z)*settle;
-   entry.model.position.z+=(entry.modelRestZ-windup*.055+strike*(heavyStrike?.17:bowStyle?-.035:castStyle?.035:.12)-recoil*.11-entry.model.position.z)*settle;
+   entry.model.position.z+=(entry.modelRestZ-windup*.055+strike*(heavyStrike?.17:bowStyle?-.035:castStyle?.035:.12)+entry.attackFollow*(heavyStrike?.075:.045)-recoil*.11-entry.model.position.z)*settle;
    // 지지발이 없는 날짐승·망령은 전진하며 상체를 낮춰 급강하, 골렘은 착지 충격을 강조.
    if(!hasWalk&&entry.kind==='enemy'){
     entry.model.rotation.x+=(spirit?-load*.15:Math.sin(phase)*load*.045)*settle;
@@ -704,7 +719,7 @@ buildWorld(live){
     const angle=phase+(right?Math.PI:0),step=Math.sin(angle)*lead,swing=Math.sin(angle-.32)*lead;
     const lift=Math.max(0,Math.sin(angle+.1))*lead;
     const walkArm=-step*(hasWalk?.11:.28);
-    const attackHand=(right||!rightSide&&left)?windup*.13-strike*(castStyle?-.18:bowStyle?-.11:.30):windup*.025;
+    const attackHand=(right||!rightSide&&left)?windup*.13-strike*(castStyle?-.18:bowStyle?-.11:.30)-entry.attackFollow*(heavyStrike?.13:.095):windup*.025;
     const slow=part.endsWith('Wing')?11:part.endsWith('Ear')||part==='tail'?5.5:part.endsWith('Hand')||part.endsWith('Toe')?7:part.endsWith('Forearm')||part.endsWith('Shin')?9:part==='head'?6.5:10;
     let x=0,y=0,z=0;
     if(part==='pelvis'){x=-Math.sin(phase*2)*lead*.018;y=turn*.32+entry.headFollow*.10;z=Math.sin(phase)*lead*.023*authored+gesture*.012;}
@@ -722,8 +737,8 @@ buildWorld(live){
     else if(part.endsWith('Toe')){x=Math.max(0,-swing)*(hasWalk?.018:.07);}
     else if(part.endsWith('Wing')){x=creatureGesture*.07+pace*Math.sin(phase*2.2)*.13;z=side*(.07+Math.sin(elapsed*7.8)*.08*(.3+pace*.7));}
     else if(part.endsWith('Ear')){x=Math.sin(elapsed*2.2+side)*.048+Math.sin(phase)*pace*.026;z=side*Math.sin(elapsed*1.24)*.024;}
-    else if(part==='tail'){y=creatureGesture*(.11+.04*pace);z=Math.sin(elapsed*.89)*.048;}
-    else if(part==='jaw'){x=attack?Math.sin(attackProgress*Math.PI)*.10:Math.pow(Math.max(0,Math.sin(idleCycle*.6)),8)*.025;}
+    else if(part==='tail'){y=creatureGesture*(.11+.04*pace)+entry.attackFollow*.085;z=Math.sin(elapsed*.89)*.048-recoil*entry.hitSide*.065;}
+    else if(part==='jaw'){x=attack?Math.sin(attackProgress*Math.PI)*.10+entry.attackFollow*.028:Math.pow(Math.max(0,Math.sin(idleCycle*.6)),8)*.025;}
     // 리깅된 뼈는 원본 애니메이션이 매 프레임 쓴 회전에서, 없는 채널은
     // 초기 바인드 포즈에서 시작한다. 자기 자신의 이전 오프셋 누적 금지.
     const base=bone.tracked?bone.node.rotation:bone.rest;
@@ -739,15 +754,15 @@ buildWorld(live){
    // 땅에 닿은 발은 월드 좌표에 짧게 붙이고, 반대편 발이 들리면 고정을 푼다.
    // 두 발이 없는 몬스터(슬라임/망령/날짐승)는 이 구간을 안전하게 건너뛴다.
    if(entry.feet.length&&hasWalk){
-    const grounded=entry.stepDistance>.04&&entry.visualSpeed>9&&!attack&&hit<.45;
+    const grounded=entry.stepDistance>.04&&entry.visualSpeed>9&&!attack&&entry.hitBlend<.45;
     entry.root.updateMatrixWorld(true);
     for(const foot of entry.feet){
      const phase=(entry.walkPhase+(foot.side==='right'?Math.PI:0))%(Math.PI*2);
      const stance=grounded&&Math.cos(phase)>.2;
      if(!stance){foot.anchor=null;continue;}
-     const point=foot.node.getWorldPosition(new THREE.Vector3());
+     const point=foot.node.getWorldPosition(foot.worldPoint);
      if(!foot.anchor){foot.anchor=point.clone();continue;}
-     const local=foot.node.parent.worldToLocal(foot.anchor.clone());
+     const local=foot.node.parent.worldToLocal(foot.localPoint.copy(foot.anchor));
      let dx=local.x-foot.node.position.x,dz=local.z-foot.node.position.z;
      const size=Math.hypot(dx,dz);
      const maxCorrection=.10/Math.max(.15,Math.abs(entry.model.scale.x));
@@ -1022,7 +1037,7 @@ buildWorld(live){
     const traveled=teleport?0:Math.hypot(entry.root.position.x-oldX,entry.root.position.z-oldZ)/SCALE;
     entry.stepDistance=traveled<.02?0:Math.min(traveled,230*Math.max(.016,dt));
     entry.visualSpeed=entry.stepDistance/Math.max(.001,dt);
-    if(teleport){entry.speed=0;entry.motion=0;}
+    if(teleport){entry.speed=0;entry.motion=0;entry.attackFollow=0;for(const foot of entry.feet)foot.anchor=null;}
     else{
      const targetSpeed=entry.visualSpeed<3?0:entry.visualSpeed;
      entry.speed+=(targetSpeed-entry.speed)*(1-Math.exp(-dt*(targetSpeed?13:22)));
