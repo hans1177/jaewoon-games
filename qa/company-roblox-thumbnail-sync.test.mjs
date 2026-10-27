@@ -488,6 +488,47 @@ test('durable runtime capture intake discovers real files, rejects WEB or missin
   }finally{fs.rmSync(workspace,{recursive:true,force:true});}
 });
 
+test('Roblox image API failure stays visible but cannot block independent native footage intake',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-independent-video-'));
+  try{
+    const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',
+      dedicated:true,shared:false,verified:true};
+    const source='assets/roblox-thumbnails/cozy-island.png';
+    fs.mkdirSync(path.join(root,'assets','roblox-thumbnails'),{recursive:true});
+    const bytes=Buffer.alloc(700,22);
+    fs.writeFileSync(path.join(root,source),bytes);
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[
+      {id:target.gameId,canonical:{marketing:{thumbnail:source}}}
+    ]}));
+    fs.writeFileSync(path.join(root,'queue.json'),JSON.stringify({items:[{
+      gameId:target.gameId,robloxPublicationTarget:target,
+      robloxDetailMediaEvidence:{gameId:target.gameId,universeId:target.universeId,
+        sourceSha256:crypto.createHash('sha256').update(bytes).digest('hex'),
+        imageStatus:'SUBMITTED_AWAITING_ROBLOX_MODERATION'}
+    }]}));
+    const dir=path.join(root,'assets','runtime-evidence','roblox',target.gameId,'episode-1');
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'scene.mp4'),Buffer.alloc(2100,1));
+    fs.writeFileSync(path.join(dir,'scene.json'),JSON.stringify({
+      gameId:target.gameId,universeId:target.universeId,placeId:target.placeId,
+      captureSource:'WEB',sourceRevision:'a'.repeat(40),
+      sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(dir,'scene.mp4'))).digest('hex'),
+      runtimeVerification:{pass:true,actualGameplay:true,playerAutomation:false}
+    }));
+    const result=await syncRobloxHomepageThumbnail({
+      root,gameId:target.gameId,queuePath:'queue.json',detailOnly:true,
+      fetchImpl:async()=>{throw new Error('simulated Roblox image endpoint timeout');}
+    });
+    assert.equal(result.imageStatus,'DETAIL_IMAGE_SYNC_FAILED_RETRY_REQUIRED');
+    assert.match(result.imageSyncFailure,/simulated Roblox image endpoint timeout/);
+    assert.equal(result.verifiedDetailImage,false);
+    assert.equal(result.videoStatus,'NATIVE_ROBLOX_VIDEO_PUBLICATION_STATUS_UNKNOWN');
+    assert.equal(result.automaticVideo.status,'NATIVE_CAPTURE_REJECTED_OR_EDIT_FAILED');
+    assert.equal(result.automaticVideo.videoPublished,false);
+    assert.equal(result.automaticVideo.captureIntake,'MAIN_VERIFIED_CAPTURE');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('unattended concept trailer is visibly labeled promotional artwork, never native Roblox gameplay',()=>{
   if(spawnSync('ffmpeg',['-version'],{encoding:'utf8'}).status!==0)return;
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-concept-video-'));
@@ -547,6 +588,8 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.ok(workflow.includes("'assets/runtime-evidence/roblox/**'"),'real native footage intake must trigger edit');
   assert.ok(workflow.includes('ROBLOX_UNATTENDED_CONCEPT_PREVIEWS_CREATED='));
   assert.ok(workflow.includes('GITHUB_STEP_SUMMARY'),'automatic production output should be visible from Action summary');
+  assert.ok(workflow.includes('roblox-media-main-latest'),'main media pushes must coalesce to one latest pending run');
+  assert.ok(workflow.includes('ROBLOX_DETAIL_IMAGE_REPAIR_PENDING_VIDEO_UNBLOCKED'),'video editing should continue after image API failure');
   assert.ok(workflow.includes('retention-days: 30'),'production archive should outlive 7-day default');
   assert.ok(workflow.includes('repository_dispatch:'),'capture-ready event wakes existing video pipeline');
   assert.ok(workflow.includes('roblox_native_capture_available'),'capture-ready event type stays explicit');
