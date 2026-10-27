@@ -5016,7 +5016,12 @@ test('Vibe game asset supply verifies and applies originals instead of schedulin
     registry:{assets:[],externalSources:[]}});
   const action=plan.nextActions.find(row=>row.family==='BUILDING');
   assert.equal(action.action,'HOLD');
-  assert.equal(action.reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
+  assert.equal(action.reason,'CURRENT_GAME_MISSING_ROLE_UNRESOLVED');
+  assert.equal(plan.libraryDownloadRequests[0]?.requestedRole,'castle');
+  assert.equal(plan.libraryDownloadRequests[0]?.state,'VERIFIED_SOURCE_CATALOG_GAP');
+  assert.equal(plan.libraryDownloadRequests[0]?.route,'EXISTING_ASSET_DEVELOPMENT_ON_DEMAND');
+  assert.equal(plan.libraryDownloadRequests[0]?.autoSourceFetchAllowed,false);
+  assert.equal(plan.libraryDownloadRequests[0]?.directGameReplacementAuthorized,false);
   assert.equal(plan.nextActions.some(row=>row.action==='AUTHOR'),false);
   assert.equal(plan.productionVerificationGranted,false);
   const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
