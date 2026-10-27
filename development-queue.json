@@ -1470,7 +1470,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -1496,7 +1496,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-27T18:49:45.273Z",
+      "updatedAt": "2026-10-27T18:51:58.843Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2174,7 +2174,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -2237,8 +2237,9 @@
         "testedAt": "2026-10-26T00:36:00.324Z"
       },
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
       "routingBlockers": [
+        "roblox-first-frame-grounding-unobserved",
         "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
@@ -2262,7 +2263,7 @@
       "robloxEvidenceInvalidatedBySourceChange": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "horror-escape-room",
@@ -2427,24 +2428,24 @@
           "authority": "OPEN_CLOUD_WORLD_STRUCTURE_ONLY"
         },
         "sameLuauExecutionSession": true,
-        "sourceRevision": "d3e0378c66877d2aac883c0eebe3662b6b1dcc7b",
-        "artifactIdentity": "sha256:397914f8ce1890b869b21ba17f0e5dd2253122e1cb83cecef2d673e708c10824",
-        "placeId": "98222620265768",
-        "candidateVersionNumber": 137,
+        "sourceRevision": "03182c3967abdb54fa7eaa2ccbbf5a847e02abfd",
+        "artifactIdentity": "sha256:d029f50102f36b8b27112ff614ef46de72cea1605c23c53e69fa3460aecc1a55",
+        "placeId": "115056847915626",
+        "candidateVersionNumber": 6,
         "serverBootObserved": false,
         "serverContextExecuted": true,
         "simulationRunningAfter": false,
         "simulationStartSucceeded": false,
         "simulationStartCapabilityDenied": false,
-        "observedAt": "2026-10-27T17:28:14.013Z",
+        "observedAt": "2026-10-27T18:51:58.843Z",
         "authority": "roblox-open-cloud-exact-first-frame-observation"
       },
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
-        "sourceRevision": "d3e0378c66877d2aac883c0eebe3662b6b1dcc7b",
-        "artifactIdentity": "sha256:397914f8ce1890b869b21ba17f0e5dd2253122e1cb83cecef2d673e708c10824",
-        "candidateVersionNumber": 137,
+        "sourceRevision": "03182c3967abdb54fa7eaa2ccbbf5a847e02abfd",
+        "artifactIdentity": "sha256:d029f50102f36b8b27112ff614ef46de72cea1605c23c53e69fa3460aecc1a55",
+        "candidateVersionNumber": 6,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -2456,10 +2457,10 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-27T17:28:14.013Z"
+        "verifiedAt": "2026-10-27T18:51:58.843Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-27T08:21:53.831Z",
-      "robloxRuntimeLastObservationAttemptAt": "2026-10-27T10:22:44.511Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-27T18:51:58.843Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-10-27T18:51:58.843Z",
       "robloxCloudImageEvidence": {
         "available": true,
         "permissionDenied": false,
@@ -6358,7 +6359,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-27T18:50:10.717Z",
+  "updatedAt": "2026-10-27T18:51:58.843Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
