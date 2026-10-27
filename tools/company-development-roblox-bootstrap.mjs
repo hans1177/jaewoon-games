@@ -1513,10 +1513,10 @@ function sourceBlockers(text,{kind,saveRequired=false,profile=null,baseline={},s
             &&previousSource.startsWith('design/'+gameId+'/')&&/^design\/[a-z0-9-]+\/20\d{2}-\d{2}-\d{2}\/design-revised\.json$/.test(previousSource)
             &&/퀘스트/.test(loop)&&/포탈/.test(loop)&&/몬스터/.test(loop)
             &&/보스/.test(loop)&&/강화|장비/.test(loop)
-            &&/\bQuest\b|Quest[A-Z]|quest[A-Z]/.test(serverCode)
-            &&/\bPortal\b|Portal[A-Z]|portal[A-Z]/.test(serverCode)
-            &&/\bBoss\b|Boss[A-Z]|boss[A-Z]/.test(serverCode)
-            &&/\bLevel\b|Level[A-Z]|level[A-Z]|\bEquipment\b|Equipment[A-Z]/.test(serverCode)){
+            &&/\b(?:C\.(?:QuestBaseGold|QuestBaseXP|PartyHuntTarget)|QuestKills|QuestNeed)\b/.test(serverCode)
+            &&/\bC\.Portals\b/.test(serverCode)
+            &&/\b(?:C\.BossCompanions|RunBoss|HiddenBosses)\b/.test(serverCode)
+            &&/\b(?:grantXP\s*\(|C\.LevelCap|C\.AdvancementLevel)\b/.test(serverCode)){
             genres.add('RPG');
           }
           genreAccepted=genres.has(clean(genreField?.[1]).replace(/^["']|["']$/g,''));
