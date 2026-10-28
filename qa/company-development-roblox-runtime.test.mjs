@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
+import {spawnSync} from 'node:child_process';
 import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource,synchronizeRobloxCommonModules} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
@@ -1820,4 +1821,22 @@ test('existing and generated Roblox games bind confirmed combat to compatible R1
   assert.match(client,/MOTION = "APPLIED"/);
   assert.ok(generator.includes('const motionBoundClient=clientSource('),'status must be computed from actual client code');
   assert.doesNotMatch(client,/CreatePreviewAnimation\(|RegisterKeyframeSequence\(/);
+});
+
+
+test('successful source promotion hands the same game to existing technical planning with no other source targets',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const owner=workflow.slice(workflow.indexOf('  source-bootstrap:'),workflow.indexOf('  technical-plan:'));
+  assert.match(owner,/technical_ready_count:|technical_ready_count=/);
+  assert.match(owner,/JSON.stringify\(\{staleReconciliationCount,currentMainRevision,technicalReadyCount\}/);
+  const preserved=owner.slice(owner.indexOf('ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED='),owner.indexOf('if(result.pass===true)',owner.indexOf('ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED=')));
+  assert.doesNotMatch(preserved,/technicalReadyCount\+\+/,'unchanged completed downstream evidence must not cause another round');
+  const start=owner.indexOf("          redispatch='false'");
+  const end=owner.indexOf('          if [[ "$redispatch" == \'true\' ]]; then',start);
+  assert.ok(start>=0&&end>start);
+  const decide=owner.slice(start,end)+'\nprintf "%s" "$redispatch"';
+  for(const [ready,stale,remaining,expected] of [['1','0','0','true'],['0','0','0','false'],['0','1','0','true'],['0','0','1','true']]){
+    const result=spawnSync('bash',['-c',decide],{env:{...process.env,TECHNICAL_READY_COUNT:ready,STALE_RECONCILIATION_COUNT:stale,remaining},encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);assert.equal(result.stdout.trim().split('\n').at(-1),expected);
+  }
 });

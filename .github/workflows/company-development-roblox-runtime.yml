@@ -841,7 +841,7 @@ jobs:
               &&item.concurrentTargetPlatforms.some(value=>String(value||'').toUpperCase()==='ROBLOX');
             return concurrentRoblox?{}:{selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX'};
           };
-          let reconciliationPass=0,reconciliationFail=0,staleReconciliationCount=0;
+          let reconciliationPass=0,reconciliationFail=0,staleReconciliationCount=0,technicalReadyCount=0;
           const supersededWorkerCount=results.filter(result=>result?.superseded===true).length;
           if(sourcePlanContractStale){
             staleReconciliationCount=Math.max(reconciliation.length,expected.length,1);
@@ -919,6 +919,7 @@ jobs:
                 robloxLastSuccessfulStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',
                 robloxFailureSignature:'ROBLOX_BUILD_PACKAGE_PENDING',routingBlockers:['roblox-build-package-pending'],updatedAt:stamp,
               });
+              technicalReadyCount++;
               reconciliationPass++;
             }else{
               const detail=Array.isArray(result.blockers)&&result.blockers.length?`:${result.blockers.join('|')}`:'';
@@ -975,6 +976,7 @@ jobs:
                   updatedAt:stamp,
                 });
                 passCount++;
+                technicalReadyCount++;
               }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
                 Object.assign(item,{
                   ownerFocusRobloxSourceCandidateBranch:result.candidateBranch,
@@ -1010,6 +1012,7 @@ jobs:
                 robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
               });
               passCount++;
+              technicalReadyCount++;
             }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
               Object.assign(item,robloxSelectionPatch(item),{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
@@ -1031,7 +1034,7 @@ jobs:
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
-          fs.writeFileSync('/tmp/roblox-source-persist-meta.json',JSON.stringify({staleReconciliationCount,currentMainRevision},null,2)+'\n');
+          fs.writeFileSync('/tmp/roblox-source-persist-meta.json',JSON.stringify({staleReconciliationCount,currentMainRevision,technicalReadyCount},null,2)+'\n');
           console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
           console.log(`ROBLOX_SOURCE_RECONCILIATION_FAIL=${reconciliationFail}`);
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
@@ -1071,6 +1074,8 @@ jobs:
           done
           stale_reconciliation_count="$(node -e "const fs=require('fs');const p='/tmp/roblox-source-persist-meta.json';const m=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write(String(Number(m.staleReconciliationCount||0)))")"
           echo "stale_reconciliation_count=$stale_reconciliation_count" >> "$GITHUB_OUTPUT"
+          technical_ready_count="$(node -e "const fs=require('fs');const p='/tmp/roblox-source-persist-meta.json';const m=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write(String(Number(m.technicalReadyCount||0)))")"
+          echo "technical_ready_count=$technical_ready_count" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_RECONCILIATION_STALE_COUNT=$stale_reconciliation_count"
           echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
           echo 'ROBLOX_RUNTIME_PASS=NO'
@@ -1084,11 +1089,12 @@ jobs:
           echo 'ROBLOX_SOURCE_REPAIR_UNLIMITED=YES'
 
       - name: Dispatch next Roblox source execution slice when other eligible work remains
-        if: needs.source-plan.outputs.count != '0' || steps.persist_state.outputs.stale_reconciliation_count != '0'
+        if: needs.source-plan.outputs.count != '0' || steps.persist_state.outputs.stale_reconciliation_count != '0' || (steps.persist_state.outputs.technical_ready_count || '0') != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
           STALE_RECONCILIATION_COUNT: ${{ steps.persist_state.outputs.stale_reconciliation_count || '0' }}
+          TECHNICAL_READY_COUNT: ${{ steps.persist_state.outputs.technical_ready_count || '0' }}
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
@@ -1124,6 +1130,9 @@ jobs:
           if [[ "${STALE_RECONCILIATION_COUNT:-0}" =~ ^[1-9][0-9]*$ ]]; then
             redispatch='true'
             echo 'ROBLOX_FRESH_MAIN_RECONCILIATION_REQUIRED=YES'
+          elif [[ "${TECHNICAL_READY_COUNT:-0}" =~ ^[1-9][0-9]*$ ]]; then
+            redispatch='true'
+            echo 'ROBLOX_SOURCE_TO_TECHNICAL_HANDOFF_REQUIRED=YES'
           elif [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
             redispatch='true'
           fi
