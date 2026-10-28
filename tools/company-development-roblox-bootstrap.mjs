@@ -37,7 +37,7 @@ export const ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS=Object.freeze({
   AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|:\s*IsA\(["'](?:Sound|SoundGroup)["']\))/i,
   VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight|:\s*IsA\(["'](?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\))/i,
   UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient|:\s*IsA\(["'](?:GuiObject|LayerCollector|ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)["']\))/i,
-  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|:\s*IsA\(["'](?:Animator|Animation|Motor6D|Bone)["']\))/i,
+  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|:\s*IsA\(["'](?:Animator|Animation|Motor6D|Bone|Model)["']\))/i,
   PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|:\s*IsA\(["'](?:Model|BasePart|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i
 });
 
@@ -173,6 +173,19 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     if(motionChain.every(pattern=>pattern.test(raw)))return true;
   }
   const renderSink=/(?:\.(?:Color|BackgroundColor3|TextColor3|ImageColor3|Material|MaterialVariant|TextureID|MeshId|Transparency|Size|CFrame|Position|Orientation|Rotation|LightEmission|Rate|Volume|PlaybackSpeed|AnimationId|Transform|Thickness|CornerRadius)\s*=|TweenService\s*:\s*Create\s*\(|:\s*Create\s*\([^\n]*(?:TweenInfo|Position|Rotation|Transform)|Instance\.new\s*\(\s*["'](?:UIStroke|UICorner|UIGradient|SurfaceAppearance|ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\s*\))/i;
+  // Model:PivotTo/ScaleTo는 실제 메시 배치/크기 소비다. 목록이나 마커가 아니라
+  // 같은 receiver의 조기 타입 검사 이후, 선택값이 인자로 흐를 때만 인정한다.
+  const modelTransformSink=row=>{
+    const sink=row.match(/\b([A-Za-z_]\w*)\s*:\s*(?:PivotTo|ScaleTo)\s*\(/);
+    if(!sink)return null;
+    const receiver=sink[1],before=raw.slice(0,raw.indexOf(row));
+    const guards=[...before.matchAll(/\bif\s+not\s+([A-Za-z_]\w*)\s*:\s*IsA\s*\(\s*["']Model["']\s*\)\s*then\s+return(?:\s+nil)?\s+end\b/g)];
+    const guard=guards.filter(match=>match[1]===receiver).at(-1);
+    if(!guard)return null;
+    const tail=before.slice(guard.index+guard[0].length);
+    if(/\bfunction\b/.test(tail)||new RegExp('\\b'+receiver+'\\s*=').test(tail))return null;
+    return sink;
+  };
   const statements=raw.split(/[;\n]/);
   for(const ref of raw.matchAll(robloxStudioAssetFamilyRefPattern(family))){
     const index=Number(ref.index||0);
@@ -225,7 +238,7 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     for(let pass=0;pass<statements.length;pass++){
       let changed=false;
       for(const row of statements){
-        const sink=row.match(renderSink);
+        const sink=row.match(renderSink)||modelTransformSink(row);
         const value=sink?row.slice(sink.index+sink[0].length):row.slice(row.indexOf('=')+1);
         const consumesValue=[...aliases].some(alias=>{
           const withoutCount=value.replace(new RegExp('#\\s*\\(*\\s*'+alias+'\\b','g'),'');

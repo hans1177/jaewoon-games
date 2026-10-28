@@ -37,6 +37,35 @@ test('guarded native bindings distinguish selected atoms from list counts',()=>{
   assert.equal(robloxStudioAssetFamilyBoundInText(unbound,'ENVIRONMENT'),false);
 });
 
+test('selected real-model scale and pivot sinks require a native consumer and selected data',()=>{
+  const model='local model=workspace:FindFirstChild("Animal")\nif not model:IsA("Model") then return end\n';
+  const scale=model+'local anatomy=studioAssetFamily("CREATURE")[1]\nlocal scale=anatomy.Scale\nmodel:ScaleTo(scale)';
+  assert.equal(robloxStudioAssetFamilyBoundInText(scale,'CREATURE'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(scale.replace('model:ScaleTo(scale)','model:SetAttribute("SelectedScale",scale)'),'CREATURE'),false);
+  assert.equal(robloxStudioAssetFamilyBoundInText(scale.replace('model:ScaleTo(scale)','model:ScaleTo(1)'),'CREATURE'),false);
+  const pose=model+'local clip=studioAssetFamily("MOTION")[1]\nlocal pose=clip.Pose\nmodel:PivotTo(pose)';
+  assert.equal(robloxStudioAssetFamilyBoundInText(pose,'MOTION'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(pose.replace('model:PivotTo(pose)','model:PivotTo(CFrame.identity)'),'MOTION'),false);
+  assert.equal(robloxStudioAssetFamilyBoundInText(pose.replace(model,''),'MOTION'),false);
+  assert.equal(robloxStudioAssetFamilyBoundInText(pose.replace('not model:IsA','not unrelated:IsA'),'MOTION'),false);
+  assert.equal(robloxStudioAssetFamilyBoundInText(pose.replace('model:PivotTo(pose)','model={}\nmodel:PivotTo(pose)'),'MOTION'),false);
+  assert.equal(robloxStudioAssetFamilyBoundInText(pose.replace('local clip=','local function unrelated(model)\nlocal clip=')+'\nend','MOTION'),false);
+});
+
+test('Cozy NPC anatomy and Baeksu original model consumers use selected library families',()=>{
+  const cozy=fs.readFileSync('roblox-games/cozy-island/client/Game.client.luau','utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(cozy,'CHARACTER'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(cozy.replace('table.find(npcBodyAtoms,"BODY_STANDARD")~=nil','true'),'CHARACTER'),false);
+  const kit=fs.readFileSync('roblox-games/baeksu-war/shared/VisualKit.luau','utf8');
+  for(const family of ['CREATURE','ENVIRONMENT','PROP','MOTION']){
+    assert.equal(robloxStudioAssetFamilyBoundInText(kit,family),true,family);
+    assert.equal(robloxStudioAssetFamilyBoundInText(kit.replace('studioAssetFamily("'+family+'")','{}'),family),false,family+' must lose binding when its actual selection is removed');
+  }
+  assert.doesNotMatch(kit,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
+  assert.ok(kit.includes('actor:PivotTo('));
+  assert.ok(kit.includes('root:ScaleTo(factor)'));
+});
+
 test('stale same-game source trees are coalesced as superseded work instead of failed workers',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('if [ -n "$RECONCILIATION_SOURCE_TREE_SHA" ]; then');
