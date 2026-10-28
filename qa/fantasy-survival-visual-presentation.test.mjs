@@ -348,19 +348,22 @@ test('auto gather reuses authoritative resource balance and tool gates instead o
   assert.doesNotMatch(auto,/wood\+\=|stone\+\=|fiber\+\=|ironOre\+\=|goldOre\+\=|essence\+\=/);
 });
 
-test('auto gather is nearest-only local runtime state and does not alter save or multiplayer semantics',()=>{
+test('auto gather preserves nearest fallback and selected large-tree priority without changing saves or multiplayer',()=>{
   assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=(?:[7-9]\d|[1-9]\d{2,})/);
   assert.match(source,/gathering:\{auto:true,target:null,manualTarget:null,nextAt:0,blockedUntil:0\}/);
   const nearest=functionBody('nearestGatherResource');
   assert.match(nearest,/for\(const n of resourceNodes\(\)\)/);
-  assert.match(nearest,/if\(d<bestD\)\{best=n;bestD=d\}/);
+  assert.match(nearest,/d<Math\.max\(range,resourceGatherRange\(n\)\)&&d<bestD/);
   const save=functionBody('saveGame');
   assert.match(save,/settings:\{difficulty:.*autoGather/);
   assert.doesNotMatch(save,/gathering:\{/);
   const gather=functionBody('gather');
   assert.match(gather,/multiplayer\.connected&&!multiIsHost\(\)/);
   assert.match(gather,/multiSend\('resource-gather'/);
-  assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
+  const automatic=functionBody('updateAutoGather');
+ assert.match(automatic,/const index=candidates\.indexOf\(g\.manualTarget\)/);
+ assert.match(automatic,/candidates\.unshift\(g\.manualTarget\)/);
+ assert.doesNotMatch(automatic,/multiSend|multiBroadcast|channel/);
 });
 
 test('auto gather stops on combat attack hit range exit and resource depletion',()=>{
@@ -376,15 +379,17 @@ test('auto gather stops on combat attack hit range exit and resource depletion',
   assert.match(functionBody('updateHazards'),/interruptAutoGather\(now\)/);
 });
 
-test('manual world targeting stays separate from automatic nearest selection',()=>{
+test('manual world targeting directs automatic gathering while retaining normal structure and combat taps',()=>{
   const tap=functionBody('handleWorldTap');
-  assert.doesNotMatch(tap,/state\.gathering\.manualTarget=gatherTarget/);
+  assert.match(tap,/state\.gathering\.manualTarget=gatherTarget/);
+ assert.match(tap,/if\(gatherTarget\)\{/);
   assert.match(tap,/자동 채집/);
   const gather=functionBody('gather');
   assert.match(gather,/if\(target&&!target\.dead\)/);
   assert.match(gather,/지정한 자원 가까이 가/);
   const auto=functionBody('updateAutoGather');
-  assert.doesNotMatch(auto,/manualTarget/);
+  assert.match(auto,/if\(g\.manualTarget\)\{/);
+ assert.match(auto,/else g\.manualTarget=null/);
 });
 
 
