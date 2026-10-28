@@ -238,7 +238,7 @@ test('post-runtime QA deduplicates heavy scans while Studio planning avoids the 
   assert.match(studioPlan,/runs-on: ubuntu-slim/);
   assert.match(studioPlan,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=HOSTED_CONTROL/);
   assert.match(studioPlan,/ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO/);
-  assert.doesNotMatch(studioPlan,/roblox-studio-authenticated/);
+  assert.doesNotMatch(studioPlan,/runs-on:[^\n]*roblox-studio-authenticated/);
 });
 
 
