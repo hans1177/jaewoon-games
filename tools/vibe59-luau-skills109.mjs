@@ -55,10 +55,14 @@ function emit(p){
  const base='state.'+p.collection,f=base+'.'+p.field,c=p.conditionField?base+'.'+p.conditionField:null;
  const to=p.toField?base+'.'+p.toField:null,k=p.kind;
  const lines=['-- Vibe5.9 skill: '+p.skill.id,
+   'if type(state) ~= "table" then return false end',
    'if type('+base+') ~= "table" then return false end',
    'if type('+f+') ~= "'+(boolKinds.has(k)?'boolean':'number')+'" then return false end'];
  if(c)lines.push('if type('+c+') ~= "'+(confirmKinds.has(k)?'boolean':'number')+'" then return false end');
  if(to)lines.push('if type('+to+') ~= "number" then return false end');
+ if(!boolKinds.has(k))lines.push('if '+f+' ~= '+f+' or '+f+' == math.huge or '+f+' == -math.huge then return false end');
+ if(c&&!confirmKinds.has(k))lines.push('if '+c+' ~= '+c+' or '+c+' == math.huge or '+c+' == -math.huge then return false end');
+ if(to)lines.push('if '+to+' ~= '+to+' or '+to+' == math.huge or '+to+' == -math.huge then return false end');
  let guard,actions;
  switch(k){
   case 'add':guard=f+' >= 0 and '+f+' < '+p.cap;
