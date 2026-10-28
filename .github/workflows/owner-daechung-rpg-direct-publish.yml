@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: owner-daechung-rpg-direct-publish
@@ -30,7 +30,7 @@ jobs:
       - name: Checkout canonical main
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           path: main
           fetch-depth: 1
 
@@ -86,7 +86,7 @@ jobs:
           console.log('DAECHUNG_OWNER_PLACE_ID='+(reuse?chosen.placeId:'NEW'));
           NODE
 
-      - name: Build Daechung RPG from current main
+      - name: Build Daechung RPG from exact triggering source
         working-directory: main
         shell: bash
         run: |
@@ -136,6 +136,106 @@ jobs:
           console.log('DAECHUNG_OWNER_VERSION_NUMBER='+r.versionNumber);
           console.log('DAECHUNG_OWNER_SOURCE_REVISION='+String(r.sourceRevision||''));
           NODE
+
+
+      - name: Persist actual owner publication version with exact-build-only certification
+        working-directory: runtime
+        shell: bash
+        env:
+          RESULT_PATH: /tmp/daechung-owner-publish/daechung-rpg.result.json
+          BUILD_HASH_PATH: /tmp/daechung-owner-publish/build.sha256
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-daechung-owner-publish'
+          git config user.email 'actions@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const result=JSON.parse(fs.readFileSync(process.env.RESULT_PATH,'utf8'));
+          const sha256=fs.readFileSync(process.env.BUILD_HASH_PATH,'utf8').trim().split(/\s+/)[0];
+          const artifact='sha256:'+sha256;
+          const item=(queue.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          const validId=x=>/^[1-9][0-9]*$/.test(String(x||''));
+          const source=String(result.sourceRevision||'');
+          const version=Number(result.versionNumber);
+          const target=item?.robloxPublicationTarget;
+          if(!item||result.pass!==true||result.published!==true||result.private!==true
+            ||result.gameId!==item.gameId||!/^[a-f0-9]{40}$/i.test(source)
+            ||source!==process.env.GITHUB_SHA||!/^sha256:[a-f0-9]{64}$/i.test(artifact)
+            ||!Number.isInteger(version)||version<1||!validId(result.universeId)
+            ||!validId(result.placeId)||target?.verified!==true||target?.dedicated!==true
+            ||target?.shared!==false||String(target.universeId)!==String(result.universeId)
+            ||String(target.placeId)!==String(result.placeId)){
+            throw new Error('DAECHUNG_OWNER_PUBLISH_UNTRUSTED_TARGET_OR_ARTIFACT');
+          }
+          const prior=item.robloxDedicatedExperience;
+          if(Number(prior?.versionNumber||0)>version){
+            console.log('DAECHUNG_OWNER_PUBLISH_STALE_RESULT_IGNORED='+version);
+            process.exit(0);
+          }
+          if(Number(prior?.versionNumber||0)===version
+            &&(String(prior.publisherMainRevision||'')!==source
+              ||String(prior.artifactIdentity||'')!==artifact)){
+            throw new Error('DAECHUNG_OWNER_PUBLISH_VERSION_PROVENANCE_COLLISION');
+          }
+          const f0=item.robloxFoundationF0Evidence||{};
+          const exact=item.robloxBuildOrPackagePassed===true
+            &&item.robloxBuildPreflightPassed===true
+            &&item.robloxFoundationF0Passed===true&&f0.pass===true
+            &&item.robloxSourceCommit===source
+            &&item.robloxBuildSourceRevision===source
+            &&item.robloxBuildArtifactIdentity===artifact
+            &&f0.sourceRevision===source&&f0.artifactIdentity===artifact
+            &&Number.isInteger(Number(f0.artifactRunId))
+            &&Number(f0.artifactRunId)>0;
+          const newState=exact?'PASS':'REPAIR_REQUIRED';
+          if(Number(prior?.versionNumber||0)===version
+            &&prior?.state===newState&&prior?.publisherMainRevision===source
+            &&prior?.artifactIdentity===artifact
+            &&(exact?prior?.sourceRevision===source:true)){
+            console.log('DAECHUNG_OWNER_PUBLISH_PROVENANCE_ALREADY_CURRENT='+version);
+            process.exit(0);
+          }
+          const stamp=new Date().toISOString();
+          item.robloxDedicatedExperience={
+            version:2,gameId:item.gameId,sourceRevision:exact?source:null,
+            publisherMainRevision:source,artifactIdentity:artifact,
+            artifactRunId:exact?Number(f0.artifactRunId):null,
+            universeId:String(result.universeId),placeId:String(result.placeId),
+            created:result.created===true,reusedTarget:result.reusedTarget!==false,
+            configured:true,private:true,published:true,versionNumber:version,
+            state:newState,stage:exact?null:'EXACT_ARTIFACT_BINDING',
+            error:exact?null:'DEDICATED_PUBLISH_ARTIFACT_NOT_BOUND_TO_CANONICAL_GAME_SOURCE',
+            workflowRunId:Number(process.env.GITHUB_RUN_ID),updatedAt:stamp,
+            authority:'owner-dedicated-roblox-experience-bootstrap',
+          };
+          item.robloxDedicatedExperiencePublished=exact;
+          item.robloxDedicatedExperiencePublishedAt=exact?stamp:null;
+          item.updatedAt=stamp;queue.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log('DAECHUNG_OWNER_PUBLISH_RECORDED_VERSION='+version);
+          console.log('DAECHUNG_OWNER_PUBLISH_EXACT_ARTIFACT_PROVENANCE='+newState);
+          console.log('DAECHUNG_OWNER_RUNTIME_OR_STUDIO_PLAY_CLAIM=NO');
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'DAECHUNG_OWNER_PUBLISH_PROVENANCE=ALREADY_CURRENT'
+              exit 0
+            fi
+            git commit -m 'runtime: record Daechung private owner publish provenance [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "DAECHUNG_OWNER_PUBLISH_PROVENANCE_PERSIST=PASS:$attempt"
+              exit 0
+            fi
+            echo "DAECHUNG_OWNER_PUBLISH_PROVENANCE_CONFLICT_RETRY=$attempt"
+            sleep 1
+          done
+          echo 'DAECHUNG_OWNER_PUBLISH_PROVENANCE_PERSIST=FAILED'
+          exit 1
 
       - uses: actions/upload-artifact@v4
         with:
