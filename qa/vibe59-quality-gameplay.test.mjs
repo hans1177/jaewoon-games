@@ -31,7 +31,7 @@ const cases=[
   source:'local blueprints = {}\nlocal buildingsFolder = workspace\n'+
    'local function canPlace(player, id, pos) return true end\n'+
    'local function place(player, blueprintId, placementCFrame)\n'+
-   ' local state = profiles[player]\n if state.inventory.wood and state.building.lastPlaceAt and state.building.lastPlacementKey then end\n'+slot,
+   ' local state = profiles[player]\n if state.inventory.wood and state.building.lastPlaceAt and state.building.lastPlacementKey and state.building.placing then end\n'+slot,
   yes:{playerValid:true,authorized:true,blueprintValid:true,folderValid:true,
    withinRange:true,collisionFree:true,materialCount:7,now:12,lastPlaceAt:8,duplicatePlacement:false},
   yesEffect:{materialCount:5,modelPlaced:true,lastPlaceAt:12,placementRegistered:true},
@@ -65,12 +65,12 @@ const cases=[
    'local function snapshotProfile(state) return table.clone(state) end\n'+
    'local function save(player)\n local state = profiles[player]\n'+
    ' if state.save.revision and state.save.dirty and state.save.saving then end\n'+slot,
-  yes:{dirty:true,saving:false,playerValid:true,snapshotValid:true,staleWrite:false,
+  yes:{dirty:true,saving:false,playerValid:true,snapshotValid:true,staleWrite:false,persistedRevision:4,mergedRevision:5,
    revisionAtStart:4,revisionAfter:4,attemptResults:[false,true]},
-  yesEffect:{attempts:2,dirty:false,saving:false},
-  no:{dirty:true,saving:false,playerValid:true,snapshotValid:true,staleWrite:false,
+  yesEffect:{attempts:2,dirty:false,saving:false,revision:5},
+  no:{dirty:true,saving:false,playerValid:true,snapshotValid:true,staleWrite:false,persistedRevision:4,mergedRevision:5,
    revisionAtStart:4,revisionAfter:4,attemptResults:[false,false,false]},
-  noEffect:{attempts:3,dirty:true,saving:false}},
+  noEffect:{attempts:3,dirty:true,saving:false,revision:4}},
  {id:'ai-throttled-chase',api:'MoveTo(targetRoot.Position)',
   spec:{operation:'ai-throttled-chase',functionName:'chase',range:30,interval:1},
   source:'local function chase(npc, target)\n local state = npcStates[npc]\n'+
@@ -145,7 +145,7 @@ test('crafting cannot partially consume when input fails and saving retains dirt
  const revisionChanged=verifyVibe59QualityScenarios({spec:saving.spec,scenarios:[
   scenarioSet(saving)[1],
   {name:'revision changed while writing',facts:{...saving.yes,revisionAfter:5},
-   expectedApplied:true,expectedEffects:{attempts:2,dirty:true,saving:false}}
+   expectedApplied:false,expectedEffects:{attempts:2,dirty:true,saving:false,revision:5}}
  ]});
  assert.equal(revisionChanged.pass,true);
 });
@@ -233,14 +233,14 @@ test('building duplicate and rapid click attempts do not consume resources',()=>
 test('snapshot-saving rejects concurrent writes and stale persisted revisions',()=>{
  const row=cases[4],source=synthesizeVibe59QualityGameplay({
   spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
- assert.match(source,/snapshotProfile\(state\)/);
+ assert.match(source,/snapshotCopy\(state, 0\)/);
  assert.match(source,/state\.save\.saving = true/);
- assert.match(source,/previous\.save\.revision > revisionAtStart/);
- assert.ok(source.indexOf('snapshotProfile(state)')<source.indexOf('UpdateAsync'));
+ assert.match(source,/previous\.save\.revision ~= revisionAtStart/);
+ assert.ok(source.indexOf('snapshotCopy(state, 0)')<source.indexOf('UpdateAsync'));
  const proof=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
   scenarioSet(row)[0],
   {facts:{...row.yes,staleWrite:true},expectedApplied:false,
-   expectedEffects:{attempts:3,dirty:true,saving:false}}]});
+   expectedEffects:{attempts:3,dirty:true,saving:false,revision:4}}]});
  assert.equal(proof.pass,true);
  assert.throws(()=>synthesizeVibe59QualityGameplay({spec:row.spec,
   source:row.source.replace('state.save.saving','state.save.missing'),
@@ -279,8 +279,8 @@ test('generated Lua refuses NaN, infinity and negative crafting or building reso
 test('saving rejects shallow snapshot aliases and unsafe revision counters',()=>{
  const saving=synthesizeVibe59QualityGameplay({spec:cases[4].spec,
   source:cases[4].source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
- assert.match(saving,/snapshot == state/);
- assert.match(saving,/snapshot\.save == state\.save/);
+ assert.match(saving,/visited\[value\]/);
+ assert.match(saving,/copiedTables > 512/);
  assert.match(saving,/state\.save\.revision == math\.huge/);
  const bestiary=synthesizeVibe59QualityGameplay({spec:cases[3].spec,
   source:cases[3].source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
@@ -296,7 +296,7 @@ test('structure and save decisions reject active cooldown or concurrent save loc
  assert.equal(verifyVibe59QualityScenarios({spec:save.spec,scenarios:[
   scenarioSet(save)[0],
   {facts:{...save.yes,saving:true},expectedApplied:false,
-   expectedEffects:{attempts:0,dirty:true,saving:false}}
+   expectedEffects:{attempts:0,dirty:true,saving:true,revision:4}}
  ]}).pass,true);
 });
 
@@ -311,11 +311,11 @@ test('building rejects nonfinite and out-of-world coordinates before owner autho
 test('saving refuses shallow shared tables all the way through nested profile fields',()=>{
  const row=cases[4],code=synthesizeVibe59QualityGameplay({
   spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
- assert.match(code,/local function detachedTables\(original, copy, depth\)/);
- assert.match(code,/copy\[key\] == value/);
- assert.match(code,/inspectedTables > 512/);
+ assert.match(code,/local function snapshotCopy\(value, depth\)/);
+ assert.match(code,/visited\[value\]/);
+ assert.match(code,/copiedTables > 512/);
  assert.match(code,/depth > 8/);
- assert.ok(code.indexOf('detachedTables(state, snapshot, 0)')<code.indexOf('state.save.saving = true'));
+ assert.ok(code.indexOf('snapshotCopy(state, 0)')<code.indexOf('state.save.saving = true'));
 });
 
 
@@ -360,4 +360,36 @@ test('advanced building source is accepted after fully balanced valid conditiona
   sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'});
  assert.equal(result.operation,'building-authorized-placement');
  assert.match(result.source,/built:GetBoundingBox/);
+});
+
+
+test('DataStore CAS rejects previous revision mismatch and stale merge output',()=>{
+ const row=cases[4];
+ const code=synthesizeVibe59QualityGameplay({spec:row.spec,source:row.source,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(code,/previous\.save\.revision ~= revisionAtStart/);
+ assert.match(code,/merged\.save\.revision ~= revisionAtStart \+ 1/);
+ assert.match(code,/state\.save\.revision = revisionAtStart \+ 1/);
+ assert.match(code,/snapshotCopy\(state, 0\)/);
+ const stale=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
+  scenarioSet(row)[0],
+  {facts:{...row.yes,persistedRevision:5},expectedApplied:false,
+   expectedEffects:{attempts:3,saving:false,dirty:true,revision:4}}
+ ]});
+ assert.equal(stale.pass,true);
+ const badMerge=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
+  scenarioSet(row)[0],
+  {facts:{...row.yes,mergedRevision:4},expectedApplied:false,
+   expectedEffects:{attempts:3,saving:false,dirty:true,revision:4}}
+ ]});
+ assert.equal(badMerge.pass,true);
+});
+test('building placement locks before owner authorizer and releases after failure',()=>{
+ const row=cases[1],code=synthesizeVibe59QualityGameplay({spec:row.spec,
+  source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.ok(code.indexOf('state.building.placing = true')<code.indexOf('canPlace(player'));
+ assert.ok(code.indexOf('state.building.placing = false')>code.indexOf('state.inventory.wood = state.inventory.wood -'));
+ assert.match(code,/existing:GetAttribute\("PlacementKey"\)/);
+ assert.match(code,/existingCount > 512/);
+ assert.match(code,/built:SetAttribute\("PlacementKey", placementKey\)/);
 });
