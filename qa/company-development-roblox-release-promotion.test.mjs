@@ -735,6 +735,28 @@ test('429 scheduler executes exact private candidate predicate without admitting
  assert.deepEqual(select({items:[traditionalValidation]},allowed),['horror-escape-room']);
 });
 
+
+test('429 retry quota gate waits for Cloud QA to be scheduled, but ignores Studio-only backlog',()=>{
+ const start=workflow.indexOf("const cloudJob='existing game tester and QA validate exact Roblox runtime candidate'");
+ const end=workflow.indexOf("if(cloudBusy)fs.appendFileSync",start);
+ assert.ok(start>0&&end>start,'cloud quota decision must be extracted from retry job');
+ const code=workflow.slice(start,end);
+ const isBusy=new Function('jobs',
+   "const active=new Set(['queued','pending','in_progress','requested','waiting']);\n"+
+   code+"\nreturn cloudBusy;");
+ const cloudName='existing game tester and QA validate exact Roblox runtime candidate';
+ const studioName='Official Studio MCP actual play horror-escape-room';
+ assert.equal(isBusy([]),true,'unknown jobs must not reserve another Cloud task');
+ assert.equal(isBusy([{name:'plan exact local Studio MCP playtests',status:'in_progress'}]),true,
+   'planner-only response could still create Cloud QA and must fail closed');
+ assert.equal(isBusy([{name:cloudName,status:'queued'}]),true);
+ assert.equal(isBusy([{name:cloudName,status:'in_progress'}]),true);
+ assert.equal(isBusy([{name:cloudName,status:'completed',conclusion:'success'},
+   {name:studioName,status:'pending'}]),false,'Studio waiting must not starve due Cloud retry');
+ assert.equal(isBusy([{name:cloudName,status:'completed',conclusion:'cancelled'},
+   {name:studioName,status:'queued'}]),false);
+});
+
 test('approved Roblox games including exact fantasy candidate auto-retry only due private 429 QA without republishing',()=>{
  const head=workflow.slice(0,workflow.indexOf('\n'+'jobs:\n'));
  assert.ok(head.includes("cron: '17 2 * * *'"));
@@ -764,7 +786,7 @@ test('approved Roblox games including exact fantasy candidate auto-retry only du
  assert.ok(retry.includes("startsWith('Roblox runtime foundation QA · ')"));
  assert.match(retry,/actions\/runs\/\$run_id\/jobs\?per_page=100/);
  assert.match(retry,/const cloudJob='existing game tester and QA validate exact Roblox runtime candidate'/);
- assert.match(retry,/const cloudBusy=jobs\.length===0\|\|jobs\.some/);
+ assert.match(retry,/const cloudBusy=cloudJobs\.length===0\|\|cloudJobs\.some/);
  assert.match(retry,/const busy=activeCloudRuns\.length>0/);
  assert.match(retry,/ROBLOX_OPEN_CLOUD_429_RETRY_STUDIO_ONLY_RUNS_IGNORED=YES/);
  assert.doesNotMatch(retry,/const busy=\(runs\.workflow_runs\|\|\[\]\)\.some/);
