@@ -685,6 +685,56 @@ test('CC0 registered models receive per-target Universe grants only after exact 
  assert.ok(restart>actualPublish,'subsequent F0 must remain behind exact post-publish QA');
 });
 
+
+test('429 scheduler executes exact private candidate predicate without admitting public or stale releases',()=>{
+ const start=workflow.indexOf('const eligible=(queue.items||[]).filter(item=>{');
+ const end=workflow.indexOf('}).sort((a,b)=>{',start);
+ assert.ok(start>=0&&end>start,'429 retry predicate must be executable');
+ const predicate=workflow.slice(start,end+2)+';';
+ const select=new Function('queue','allowed',predicate+'return eligible.map(item=>item.gameId);');
+ const source='1'.repeat(40),artifact='sha256:'+'2'.repeat(64);
+ const make=(overrides={})=>({
+   gameId:'horror-escape-room',
+   currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+   robloxFoundationF0Passed:true,robloxRuntimeFoundationPassed:false,
+   robloxSourceCommit:source,robloxBuildArtifactIdentity:artifact,
+   robloxRuntimeCandidateEvidence:{
+     gameId:'horror-escape-room',published:true,dedicated:true,
+     authority:'roblox-open-cloud-dedicated-private-runtime-candidate',
+     exposure:'PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE',
+     visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+     versionNumber:139
+   },
+   robloxRuntimeFoundationEvidence:{
+     authority:'roblox-open-cloud-engine-probe-failure',
+     httpStatus:429,sourceRevision:source,artifactIdentity:artifact,
+     candidateVersionNumber:139,retryNotBefore:'2020-01-01T00:00:00Z'
+   },
+   ...overrides
+ });
+ const accepted=make();
+ const publicAttempt=make({robloxRuntimeCandidateEvidence:{
+   ...accepted.robloxRuntimeCandidateEvidence,
+   exposure:'PUBLIC',visibilityIntent:'PUBLIC_DISCOVERY'
+ }});
+ const wrongArtifact=make({robloxRuntimeFoundationEvidence:{
+   ...accepted.robloxRuntimeFoundationEvidence,
+   artifactIdentity:'sha256:'+'0'.repeat(64)
+ }});
+ const notYetDue=make({robloxRuntimeFoundationEvidence:{
+   ...accepted.robloxRuntimeFoundationEvidence,
+   retryNotBefore:'2099-01-01T00:00:00Z'
+ }});
+ const allowed=new Set(['horror-escape-room']);
+ assert.deepEqual(select({items:[accepted]},allowed),['horror-escape-room']);
+ assert.deepEqual(select({items:[publicAttempt,wrongArtifact,notYetDue]},allowed),[]);
+ const traditionalValidation=make({robloxRuntimeCandidateEvidence:{
+   ...accepted.robloxRuntimeCandidateEvidence,validationOnly:true,dedicated:false,
+   authority:'roblox-open-cloud-validation'
+ }});
+ assert.deepEqual(select({items:[traditionalValidation]},allowed),['horror-escape-room']);
+});
+
 test('approved Roblox games including exact fantasy candidate auto-retry only due private 429 QA without republishing',()=>{
  const head=workflow.slice(0,workflow.indexOf('\n'+'jobs:\n'));
  assert.ok(head.includes("cron: '17 2 * * *'"));
