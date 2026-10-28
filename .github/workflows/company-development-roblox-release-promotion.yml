@@ -826,6 +826,7 @@ jobs:
             set +e
             node --input-type=module <<'NODE' 2>&1 | tee /tmp/roblox-final-release-publish.log
           import fs from 'node:fs';
+          import crypto from 'node:crypto';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           import {createRobloxRuntimeCandidatePublishPlan,publishRobloxPlace,assertRobloxLatestPublishCandidate} from './tools/vibe3-roblox-platform.mjs';
           import {execFileSync} from 'node:child_process';
