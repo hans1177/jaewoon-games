@@ -1556,12 +1556,22 @@ test('headless first frame must read actual runtime sentinel but proven unsuppor
  assert.equal(unobserved.reachedSentinel,true,'a headless world scan is not game-script boot failure');
  assert.equal(unobserved.item.robloxRuntimeFoundationPassed,false,'sentinel is still required before F1 PASS');
  assert.equal(unobserved.item.robloxFailureSignature,'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED');
+ assert.equal(unobserved.item.robloxFirstFrameGroundingEvidence.observationCausalClass,'NON_SIMULATING_OPEN_CLOUD_TASK');
+ assert.equal(unobserved.item.robloxFirstFrameGroundingEvidence.simulationUnavailable,true);
+ assert.equal(unobserved.item.robloxFirstFrameGroundingEvidence.actualSpawnHeightObserved,false);
+ assert.deepEqual(unobserved.item.routingBlockers,['roblox-first-frame-requires-simulating-runtime']);
  assert.equal(unobserved.pending,0,'do not count pending twice before the actual sentinel');
  const invalidGround=run({...base,worldEvidence:{...base.worldEvidence,
    spawnCount:1,spawnGroundingObserved:true,unsupportedSpawns:1}});
  assert.equal(invalidGround.reachedSentinel,false,'observed unsupported spawn cannot be ignored');
  assert.equal(invalidGround.failed,1);
  assert.equal(invalidGround.item.robloxRuntimeFoundationPassed,false);
+ const realSimulationButMissingSpawn=run({...base,
+   serverBootEvidence:{simulationRunningAfter:true,simulationStartSucceeded:true},
+   worldEvidence:{...base.worldEvidence,runtimeWorldReady:true}});
+ assert.equal(realSimulationButMissingSpawn.reachedSentinel,true);
+ assert.equal(realSimulationButMissingSpawn.item.robloxFirstFrameGroundingEvidence.simulationUnavailable,false);
+ assert.deepEqual(realSimulationButMissingSpawn.item.routingBlockers,['roblox-first-frame-grounding-unobserved']);
  const grounded=run({...base,worldEvidence:{...base.worldEvidence,
    spawnCount:1,spawnGroundingObserved:true}});
  assert.equal(grounded.reachedSentinel,true);
@@ -1571,6 +1581,7 @@ test('headless first frame must read actual runtime sentinel but proven unsuppor
  assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.artifactIdentity===artifactIdentity/);
  assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.placeId===String\(candidate\.placeId\)/);
  assert.match(unavailable,/unobservedFirstFrame\s*\?'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED':'ROBLOX_RUNTIME_FOUNDATION_PENDING'/);
+ assert.match(unavailable,/roblox-first-frame-requires-simulating-runtime/);
  assert.match(unavailable,/engineProbe\?\.imageEvidence\?\.imageContentPassed===true/,
    'missing images may not authorize internal QA from a sentinel 404');
  const imageGate=workflow.slice(next,validation);
@@ -1694,4 +1705,17 @@ test('canonical F0 private runtime and F9 post-publish retain five exact cloud c
  assert.match(f9,/cloudServerScenarioEvidence:cloudScenarios,liveGameplayVerified:false/);
  assert.match(f9,/mobileVerified:false/);
  assert.match(f9,/ROBLOX_POST_PUBLISH_SERVER_SCENARIOS=/);
+});
+
+test('Daechung village source grounds the physical spawn on its plaza and respects rig clearance without claiming runtime play',()=>{
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ assert.match(server,/local plaza=ppart\(f,"VillagePlaza"/);
+ assert.match(server,/foundationSpawn\.Position=Vector3\.new\(C\.VillageCenter\.X,plaza\.Position\.Y\+plaza\.Size\.Y\*\.5-foundationSpawn\.Size\.Y\*\.5\+\.02,C\.VillageCenter\.Z\)/);
+ assert.match(server,/local feetClearance=\(h and h\.HipHeight or 2\)\+r\.Size\.Y\*\.5\+\.2/);
+ assert.match(server,/local spawnTop=foundationSpawn\.Position\.Y\+foundationSpawn\.Size\.Y\*\.5/);
+ assert.match(server,/p\.RespawnLocation=foundationSpawn/);
+ // Geometric calculation, not observed physics: plaza top 2.35; spawn top 2.37.
+ const plazaTop=1.2+2.3/2;
+ const spawnTop=plazaTop-.2/2+.02+.2/2;
+ assert.ok(Math.abs(spawnTop-plazaTop-.02)<1e-8);
 });
