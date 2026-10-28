@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-27T19:20:34.214Z",
+  "updatedAt": "2026-10-28T01:07:42.273Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -99,8 +99,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "400baa7f1a826bc0a01a41109be7a2bc337abdd4",
-            "artifactIdentity": "sha256:b21b47913df8525dd57e53846ae8deca0066eaa479548c65ec37e4d0248b2758",
+            "sourceRevision": "725bc39a3e74b1124ea69af738cba78785fde348",
+            "artifactIdentity": "sha256:c21262a3569562b2193f21ec88229c5472d1eea1576600115968b9c61a54862f",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -120,7 +120,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": false,
+              "multiplayer": true,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -137,7 +137,6 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -145,7 +144,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 70
+            "candidateVersionNumber": 2
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
