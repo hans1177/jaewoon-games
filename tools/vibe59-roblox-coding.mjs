@@ -224,9 +224,13 @@ export function synthesizeVibe59RobloxDomainAction({spec={},source='',replaceAnc
   const owner=identifier(spec.functionName,'function');
   if(!declared(original,owner,'function')||!declared(original,'state','variable'))
     throw Error('VIBE59_DOMAIN_EXISTING_FUNCTION_REQUIRED');
-  for(const field of [p.field,p.conditionField,p.toField].filter(Boolean))
-    if(!new RegExp('\\bstate\\.'+p.collection+'\\.'+field+'\\b').test(original))
+  const groundedSource=stripVibe59LuauComments(original);
+  for(const field of [p.field,p.conditionField,p.toField].filter(Boolean)){
+    const refs=[...groundedSource.matchAll(new RegExp('\\bstate\\.'+
+      p.collection+'\\.'+field+'\\b','g'))];
+    if(!refs.some(hit=>!insideVibe59QuotedText(groundedSource,hit.index)))
       throw Error('VIBE59_DOMAIN_EXISTING_FIELDS_REQUIRED');
+  }
   if(/(?:^|\n)\s*(?:local\s+)?(?:function\s+\w+|end)\b/.test(replaceAnchor))
     throw Error('VIBE59_DOMAIN_FUNCTION_BODY_REQUIRED');
   return Object.freeze({source:code,operation:p.pattern.id,system:p.pattern.system,

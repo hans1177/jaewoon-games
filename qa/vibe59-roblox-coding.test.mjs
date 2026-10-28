@@ -107,3 +107,13 @@ test('24 offline domain code generators preserve existing state and source autho
   assert.throws(()=>verifyVibe59RobloxDomainScenarios({spec:{operation:'inventory-grant',
     collection:'data',field:'value',amount:2,limit:10},scenarios:[]}),/TWO_SCENARIOS_REQUIRED/);
 });
+
+test('comment-only and string-only fields cannot authorize domain source edits',()=>{
+  const spec={operation:'inventory-grant',collection:'data',field:'value',
+    amount:2,limit:10,functionName:'handler'};
+  const source='local function handler(player)\n local state = profiles[player]\n'+
+    " -- state.data.value\n local example = 'state.data.value'\n -- ACTION\nend";
+  assert.throws(()=>synthesizeVibe59RobloxDomainAction({spec,source,
+    replaceAnchor:'-- ACTION',sourcePath:'server/Main.server.luau'}),
+    /EXISTING_FIELDS_REQUIRED/);
+});
