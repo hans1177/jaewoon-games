@@ -3149,8 +3149,16 @@ export function buildGameSpecificBuildUpDirective({
     safeDesignlessMode,policy:verifiedRoadmap?.robloxStudioProductionFlowContract||{}
   }):null;
   // Source-grounded suggestions only. A plan never counts as runtime or asset PASS.
+  // Quality inspection never follows another game's observed sourceRoot.
+  // Legacy cross-platform callers may carry a fixture/absolute sourceRoot, so
+  // inspect the canonical current Roblox game directory or fail closed as missing.
+  const canonicalRobloxSourceRoot='roblox-games/'+id;
+  const qualityObservedRoot=clean(sourceRoot).replaceAll('\\','/');
+  const qualitySourceRoot=qualityObservedRoot===canonicalRobloxSourceRoot
+    ||qualityObservedRoot.startsWith(canonicalRobloxSourceRoot+'/')
+      ?qualityObservedRoot:canonicalRobloxSourceRoot;
   const robloxHolisticQualityPlan=clean(platform).toUpperCase()==='ROBLOX'
-    ?buildRobloxHolisticQualityPlan({repoRoot,gameId:id,sourceRoot,
+    ?buildRobloxHolisticQualityPlan({repoRoot,gameId:id,sourceRoot:qualitySourceRoot,
       sourceObservation:source,qualityGaps:states.filter(row=>row.state==='GAP'),
       previousPlan:previousDirective?.robloxHolisticQualityPlan,
       runtimeEvidence,sourceRevision:clean(runtimeEvidence?.sourceRevision)})
