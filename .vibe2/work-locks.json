@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-prqi9h",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-web-startup-spatial-repair-v2",
+      "gameId": "daechung-rpg",
+      "files": [
+        "web-games/daechung-rpg/index.html",
+        "web-games/daechung-rpg/patch-v15.js",
+        "web-games/daechung-rpg/patch-v16.js",
+        "web-games/daechung-rpg/patch-v17.js",
+        "web-games/daechung-rpg/patch-core18.js",
+        "web-games/daechung-rpg/patch-v18.js"
+      ],
+      "baseSha": "4c7092141a766f76fbc88d0f7593d56f9ae0f18a",
+      "runId": "40638886221",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-28T05:44:29.755Z",
+      "expiresAt": "2026-10-28T06:29:29.755Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-web-startup-spatial-repair-v2"
+      ]
+    }
+  ]
 }
