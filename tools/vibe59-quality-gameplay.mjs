@@ -71,7 +71,8 @@ function grounded(spec,{source,sourcePath,replaceAnchor}){
   throw Error('VIBE59_QUALITY_SERVER_ONLY');
  if(typeof source!=='string'||source.length>260000||typeof replaceAnchor!=='string'
    ||replaceAnchor!=='-- VIBE59_QUALITY_SLOT'
-   ||source.split(replaceAnchor).length!==2)
+   ||source.split(replaceAnchor).length!==2
+   ||!/(?:^|\n)[ \t]*-- VIBE59_QUALITY_SLOT[ \t]*(?:\r?\n|$)/.test(source))
   throw Error('VIBE59_QUALITY_EXACT_SLOT_REQUIRED');
  const before=source.slice(0,source.indexOf(replaceAnchor));
  const masked=sourceCode(before);
@@ -82,7 +83,13 @@ function grounded(spec,{source,sourcePath,replaceAnchor}){
  const body=masked.slice(matches[0].index);
  if(!/(?:^|\n)\s*local\s+state\s*=/.test(body))
   throw Error('VIBE59_QUALITY_EXISTING_STATE_REQUIRED');
- for(const name of REQUIRED[spec.operation]){
+ const required=REQUIRED[spec.operation].concat(
+  spec.operation==='building-authorized-placement'?['state.inventory.'+spec.material]:
+  spec.operation==='crafting-atomic-recipe'?spec.inputs.map(x=>'state.inventory.'+x.field)
+    .concat('state.inventory.'+spec.output):
+  spec.operation==='bestiary-confirmed-death'?
+    ['state.bestiary.kills.'+spec.species,'state.bestiary.discovered.'+spec.species]:[]);
+ for(const name of required){
   if(name==='state')continue;
   const pat=new RegExp('\\b'+name.replace(/\./g,'\\.')+'\\b');
   if(!pat.test(body))throw Error('VIBE59_QUALITY_EXISTING_FIELD:'+name);
@@ -178,20 +185,21 @@ function qualitySource(s){
   'if not '+s.requiredBindings[1]+'(player, blueprintId, placementCFrame) then return false end',
   'local template = '+s.requiredBindings[0]+'[blueprintId]',
   'if typeof(template) ~= "Instance" or not template:IsA("Model") or not template.PrimaryPart then return false end',
+  'if typeof('+s.requiredBindings[2]+') ~= "Instance" then return false end',
   'if state.inventory.'+s.material+' < '+nLiteral(s.cost)+' then return false end',
   'local character = player.Character',
   'local root = character and character:FindFirstChild("HumanoidRootPart")',
   'if not root or (root.Position - placementCFrame.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
   'local overlap = OverlapParams.new()',
   'overlap.FilterType = Enum.RaycastFilterType.Exclude',
-  'overlap.FilterDescendantsInstances = {character, '+s.requiredBindings[2]+'}',
+  'overlap.FilterDescendantsInstances = {character}',
   'for _, part in ipairs(workspace:GetPartBoundsInBox(placementCFrame, template:GetExtentsSize(), overlap)) do',
   '  if part.CanCollide then return false end',
   'end',
   'local built = template:Clone()',
   'built:PivotTo(placementCFrame)',
   'for _, part in ipairs(built:GetDescendants()) do',
-  '  if part:IsA("BasePart") then part.Anchored = true; part.Transparency = math.min(part.Transparency, 0.95) end',
+  '  if part:IsA("BasePart") then part.Anchored = true end',
   'end',
   'built.Parent = '+s.requiredBindings[2],
   'state.inventory.'+s.material+' = state.inventory.'+s.material+' - '+nLiteral(s.cost),
