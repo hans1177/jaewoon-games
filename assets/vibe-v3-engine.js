@@ -54,6 +54,80 @@ export function createVibeSourceGraph({files=[]}={}){
   return Object.freeze({version:1,nodes:Object.freeze(nodes),edges:Object.freeze(edges),digest,authority:'responsibility-discovery-only'});
 }
 
+
+function normalizeImpactReference(owner,reference,known,symbolOwners,type){
+  const raw=clean(reference).replaceAll('\\','/');
+  const segments=(raw.startsWith('./')||raw.startsWith('../')?owner.split('/').slice(0,-1).join('/')+'/':'')+raw;
+  const normalized=[];
+  for(const part of segments.split('/')){
+    if(!part||part==='.')continue;
+    if(part==='..'){if(!normalized.length)return null;normalized.pop();}
+    else normalized.push(part);
+  }
+  const resolved=normalized.join('/');
+  const matches=[resolved,...['.js','.mjs','.ts','.tsx','.luau','.lua','.cs','/index.js','/init.luau'].map(ext=>resolved+ext)]
+    .filter(file=>known.has(file));
+  if(matches.length===1)return matches[0];
+  if(type==='call-or-symbol'&&matches.length===0){
+    const owners=symbolOwners.get(raw)||[];
+    if(owners.length===1)return owners[0];
+  }
+  return null;
+}
+
+// Read-only dependency blast radius: callers + declared QA, bounded and never a runtime PASS.
+export function createVibeImpactPlan({graph,changedPaths=[],maxDepth=3,maxTests=20}={}){
+  if(!graph||!Array.isArray(graph.nodes))throw new Error('source graph required');
+  const known=new Map(graph.nodes.map(node=>[node.path,node]));
+  const changed=unique(changedPaths).sort();
+  const symbolOwners=new Map();
+  for(const node of graph.nodes)for(const symbol of node.symbols||[]){
+    if(!symbolOwners.has(symbol))symbolOwners.set(symbol,[]);
+    symbolOwners.get(symbol).push(node.path);
+  }
+  const incoming=new Map(),unresolved=[];
+  for(const node of graph.nodes){
+    for(const [type,references] of [['import',node.imports],['call-or-symbol',node.calls]]){
+      for(const ref of references||[]){
+        const target=normalizeImpactReference(node.path,ref,known,symbolOwners,type);
+        if(!target){if(changed.includes(node.path))unresolved.push({from:node.path,reference:ref,type});continue;}
+        if(!incoming.has(target))incoming.set(target,new Set());
+        incoming.get(target).add(node.path);
+      }
+    }
+  }
+  const limit=Math.max(0,Math.min(6,Math.floor(finite(maxDepth,3))));
+  const seen=new Map(changed.filter(file=>known.has(file)).map(file=>[file,0]));
+  const queue=[...seen.keys()];
+  for(let i=0;i<queue.length;i++){
+    const source=queue[i],depth=seen.get(source);
+    if(depth>=limit)continue;
+    for(const caller of [...(incoming.get(source)||[])].sort()){
+      if(seen.has(caller))continue;
+      seen.set(caller,depth+1);
+      queue.push(caller);
+    }
+  }
+  const relatedTests=new Map();
+  for(const [file,depth] of seen){
+    const node=known.get(file);
+    for(const test of node.tests||[])
+      relatedTests.set(test,Math.min(relatedTests.get(test)??Infinity,depth));
+    if(/(?:^|\/)(?:qa|test|tests)\//i.test(file)||/\.(?:test|spec)\.[cm]?[jt]sx?$/i.test(file))
+      relatedTests.set(file,Math.min(relatedTests.get(file)??Infinity,depth));
+  }
+  const max=Math.max(0,Math.min(100,Math.floor(finite(maxTests,20))));
+  const affectedTests=[...relatedTests].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0]))
+    .slice(0,max).map(([path,depth])=>Object.freeze({path,dependencyDepth:depth}));
+  const impactedSources=[...seen].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0]))
+    .map(([path,depth])=>Object.freeze({path,dependencyDepth:depth,changed:changed.includes(path)}));
+  return Object.freeze({version:1,changedPaths:Object.freeze(changed),
+    unknownPaths:Object.freeze(changed.filter(file=>!known.has(file))),
+    impactedSources:Object.freeze(impactedSources),affectedTests:Object.freeze(affectedTests),
+    unresolvedReferences:Object.freeze(unresolved),truncatedTests:relatedTests.size>max,
+    maxDepth:limit,graphDigest:graph.digest,authority:'advisory-source-impact-only',runtimeVerified:false});
+}
+
 function overlapScore(left,right){const a=tokens(left),b=tokens(right);if(!a.size||!b.size)return 0;let hit=0;for(const token of a)if(b.has(token))hit+=1;return hit/Math.max(1,a.size);}
 
 export function rankVibeResponsibleSources({graph,request='',hints=[],limit=8}={}){
@@ -66,7 +140,9 @@ export function rankVibeResponsibleSources({graph,request='',hints=[],limit=8}={
     score+=Math.min(0.1,(incoming.get(node.path)||[]).filter(edge=>hintSet.has(edge.from)).length*0.025);
     return Object.freeze({path:node.path,score:Number(Math.min(1,score).toFixed(6)),symbols:node.symbols,tests:node.tests,assets:node.assets});
   }).sort((a,b)=>b.score-a.score||a.path.localeCompare(b.path));
-  return Object.freeze({version:1,graphDigest:graph.digest,request:query,candidates:Object.freeze(ranked.slice(0,Math.max(1,Math.floor(finite(limit,8))))),authority:'responsibility-ranking-only'});
+  const candidates=Object.freeze(ranked.slice(0,Math.max(1,Math.floor(finite(limit,8)))));
+  const impact=createVibeImpactPlan({graph,changedPaths:candidates.slice(0,1).map(item=>item.path)});
+  return Object.freeze({version:1,graphDigest:graph.digest,request:query,candidates,impact,authority:'responsibility-ranking-only'});
 }
 
 function normalizedQa(record={}){const qa=record.qa||record.verification?.trace||record.verification||{};return{independentQa:upper(qa.independentQa??record.independentQa),browserQa:upper(qa.browserQa??record.browserQa),runtime:upper(qa.runtime??record.runtime)};}
@@ -169,6 +245,10 @@ export function createVibeTaskPlaybook({taskType='general',retrieval=null,source
     }))),
     avoid:Object.freeze((retrieval?.failureWarnings||[]).map(item=>({id:item.entry.id,score:item.score,failureClass:item.entry.failureClass,failure:item.entry.failure}))),
     responsibleSources:Object.freeze((sourceRanking?.candidates||[]).map(item=>({path:item.path,score:item.score}))),
+    impact:Object.freeze({impactedSources:Object.freeze([...(sourceRanking?.impact?.impactedSources||[])]),
+      affectedTests:Object.freeze([...(sourceRanking?.impact?.affectedTests||[])]),
+      unresolvedReferences:Object.freeze([...(sourceRanking?.impact?.unresolvedReferences||[])]),
+      authority:'advisory-source-impact-only'}),
     authority:'verified-task-playbook'
   });
 }
@@ -183,9 +263,31 @@ export function evaluateVibeCandidate(candidate={}){
 }
 
 export function runVibeCandidateTournament({candidates=[],requiredCandidateCount=VIBE3_POLICY.defaultCandidateCount,minWinnerScore=0.78}={}){
-  const required=clampCandidateCount(requiredCandidateCount),evaluations=candidates.map(evaluateVibeCandidate).sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id)),eligible=evaluations.filter(item=>item.eligible),winner=eligible[0]&&eligible[0].score>=unit(minWinnerScore)?eligible[0]:null,blocked=[];
-  if(evaluations.length<required)blocked.push('insufficient-independent-candidates');if(!eligible.length)blocked.push('no-fully-verified-candidate');else if(!winner)blocked.push('winner-score-below-threshold');
-  return Object.freeze({version:1,requiredCandidateCount:required,receivedCandidateCount:evaluations.length,ready:blocked.length===0&&Boolean(winner),winner,evaluations:Object.freeze(evaluations),blockedReasons:Object.freeze(blocked),selectionRule:'verified-first-then-quality-performance-focus-score',authority:'deterministic-tournament'});
+  const required=clampCandidateCount(requiredCandidateCount),evaluations=candidates.map(evaluateVibeCandidate)
+    .sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id)),eligible=evaluations.filter(item=>item.eligible),blocked=[];
+  const ids=new Set(),patchIdentities=new Set(),identities=new Set();
+  let duplicateId=false,duplicatePatch=false;
+  for(const candidate of candidates){
+    const id=clean(candidate?.id||candidate?.candidateId)||'candidate-'+stableHash(JSON.stringify(candidate));
+    if(ids.has(id))duplicateId=true;
+    ids.add(id);
+    const patch=clean(candidate?.patchFingerprint||candidate?.diffHash||candidate?.sourceHash||candidate?.patchRef);
+    if(patch&&patchIdentities.has(patch))duplicatePatch=true;
+    if(patch)patchIdentities.add(patch);
+    identities.add(patch?'patch:'+patch:'id:'+id);
+  }
+  if(duplicateId)blocked.push('duplicate-candidate-id');
+  if(duplicatePatch)blocked.push('duplicate-candidate-patch');
+  if(identities.size<required)blocked.push('insufficient-independent-candidates');
+  const tentative=eligible[0]&&eligible[0].score>=unit(minWinnerScore)?eligible[0]:null;
+  if(!eligible.length)blocked.push('no-fully-verified-candidate');
+  else if(!tentative)blocked.push('winner-score-below-threshold');
+  const winner=blocked.length===0?tentative:null;
+  return Object.freeze({version:1,requiredCandidateCount:required,receivedCandidateCount:evaluations.length,
+    independentCandidateCount:identities.size,ready:Boolean(winner),winner,
+    evaluations:Object.freeze(evaluations),blockedReasons:Object.freeze(blocked),
+    selectionRule:'independent-candidate-then-verified-quality-performance-focus-score',
+    authority:'deterministic-tournament'});
 }
 
 export function classifyVibeRepairFailure(value=''){const text=lower(typeof value==='string'?value:JSON.stringify(value||{}));if(/syntax|parse|unexpected token|문법/.test(text))return'SYNTAX';if(/test|assert|qa|회귀|regression/.test(text))return'TEST_OR_REGRESSION';if(/runtime|crash|exception|anr|segv|abort|실행/.test(text))return'RUNTIME';if(/protected|save|progression|balance|보존|세이브/.test(text))return'PROTECTED_STATE';if(/responsible|wrong file|책임|source/.test(text))return'RESPONSIBILITY';if(/performance|fps|memory|slow|렉|성능/.test(text))return'PERFORMANCE';return'UNKNOWN';}
