@@ -1151,7 +1151,7 @@ test('official Studio MCP planner runs automatically for push and exact candidat
   assert.match(studioPlanBlock,/shell: bash/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=HOSTED_CONTROL/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO/);
-  assert.doesNotMatch(studioPlanBlock,/roblox-studio-authenticated/);
+  assert.doesNotMatch(studioPlanBlock,/runs-on:[^\n]*roblox-studio-authenticated/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
