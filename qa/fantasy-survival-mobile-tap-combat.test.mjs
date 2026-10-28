@@ -399,3 +399,35 @@ test('mage default attack launches a real moving magic bolt and uses existing we
  assert.equal(state.projectiles.length,0,'projectile consumed exactly once');
  assert.equal(state.player.weapon,'stone-sword','equipment unchanged');
 });
+
+
+test('empty world tap swings without killing off-target crystal lizards or hitting in multiplayer',()=>{
+  assert.match(source,/function attack\(selectedTapTarget=null,emptyWorldTap=false\)/);
+  assert.match(source,/if\(!isCreative\(\)\)attack\(null,true\)/);
+  assert.match(source,/if\(!emptyWorldTap&&petMountedAttack\(\)\)return/);
+  const start=source.indexOf(' // 빈 땅 터치는'),end=source.indexOf(' // 무기 기술과 자동 전투',start);
+  assert.ok(start>0&&end>start,'real attack must have an early empty-target guard');
+  const execute=new Function('emptyWorldTap','p','now','w','state','playGameSfx',
+    'playCombatAudio','updateHud',source.slice(start,end)+';return "normal-target";');
+  const p={attackAt:1,attackFx:0},state={dirty:false},events=[];
+  assert.equal(execute(true,p,1000,{power:48},state,
+    value=>events.push(value),(name,weight)=>events.push([name,weight]),
+    ()=>events.push('hud')),undefined,'ground tap must exit before any damage or multiSend loop');
+  assert.equal(p.attackAt,1000);
+  assert.equal(p.attackFx,1150);
+  assert.equal(state.dirty,true);
+  assert.equal(events[0],'playerAttack');
+  assert.equal(events[1][0],'swing');
+  assert.equal(events[2],'hud');
+  const normal={attackAt:1,attackFx:0},normalState={dirty:false};
+  assert.equal(execute(false,normal,1000,{power:48},normalState,
+    ()=>{throw Error('normal attack unexpectedly sent early sound')},
+    ()=>{throw Error('normal attack unexpectedly used miss branch')},
+    ()=>{}),'normal-target','button, monster tap and existing auto attacks must retain normal combat');
+  assert.equal(normal.attackAt,1);
+  assert.equal(normalState.dirty,false);
+  const auto=source.split('function updateAutoCombat(now){')[1]?.split('function currentWeapon()')[0]||'';
+  assert.match(auto,/if\(e\.crystalHidden\|\|e\.hp<=0/);
+  assert.match(source,/function petStrike\(e,manual=false\)\{\s*if\(!petAlive\(\)\|\|!e\|\|e\.hp<=0\|\|e\.crystalHidden\)return false/);
+  assert.match(source,/function petTarget\(\)\{return state\.enemies\.find\(e=>e\.netId===state\.pet\.targetId&&!e\.crystalHidden/);
+});
