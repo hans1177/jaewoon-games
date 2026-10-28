@@ -8986,6 +8986,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     error.vibe2GenerationFailureClass='NO_MODEL_SOURCE_REPAIR_UNAVAILABLE';
     throw error;
   }
+  // V4 offline-only mode: use existing deterministic candidates or fail closed.
+  // Never silently invoke an external model for a task that forbids AI APIs.
+  if(!generated&&clean(process.env.VIBE2_V4_OFFLINE_ONLY).toLowerCase()==='true'){
+    const error=new Error('VIBE4_OFFLINE_PATTERN_UNAVAILABLE: no proven offline candidate for the requested owner scope');
+    error.vibe2GenerationFailureClass='VIBE4_OFFLINE_PATTERN_UNAVAILABLE';
+    throw error;
+  }
   if(!generated){
     let generationSourceRoot=sourceRoot,generationBootstrapRoot='';
     if(bootstrap&&target==='unity'){

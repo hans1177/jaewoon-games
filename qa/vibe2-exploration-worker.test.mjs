@@ -81,6 +81,17 @@ test('Vibe4 offline engine generates explicit speed threshold without touching g
   }),/VIBE4_UNIQUE_EXISTING_ANCHOR_REQUIRED/);
 });
 
+test('Vibe4 offline-only mode fails closed before model generation and keeps existing validators',()=>{
+  const code=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(code,/VIBE2_V4_OFFLINE_ONLY/);
+  assert.match(code,/VIBE4_OFFLINE_PATTERN_UNAVAILABLE/);
+  const guard=code.indexOf('VIBE4_OFFLINE_PATTERN_UNAVAILABLE');
+  const request=code.indexOf('generated=await generateCandidateWithRecovery',guard);
+  assert(guard>0&&request>guard);
+  assert.match(code,/const candidateValidation=candidateValidator\(candidate\);\s*generated=\{candidate,candidateValidation,generation:\{attempts:1,recoveryUsed:false,\s*modelUsed:false,vibe4PatternId:/);
+  assert.match(code,/applyExactEdits\(sourceRoot,candidate\.edits,\{dryRun:true\}\);/);
+});
+
 test('Vibe4 offline code generator supports grounded Roblox stat clamp with no AI',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'roblox-games/v4');
   write(path.join(root,'Combat.luau'),'local hp=100\nhp = rawHp\n');
