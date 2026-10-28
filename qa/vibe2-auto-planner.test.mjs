@@ -5199,7 +5199,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
     catalog:plannerCatalog,
     developmentQueue,
     // Internal library repairs have their own lane; exercise game BUILD_UP after those tasks are queued.
-    queue:createVibeContinuousQueue({tasks:[occupied,...findSafeTasks(robloxProject,repoRoot,emptyQueue).filter(task=>task.assetProductionLane)],maxConcurrentTasks:256}),
+    queue:createVibeContinuousQueue({tasks:[occupied,...findSafeTasks(robloxProject,repoRoot,emptyQueue).filter(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')],maxConcurrentTasks:256}),
     repoRoot,
     maxConcurrentTasks:20,
     queueMaxConcurrentTasks:256,
