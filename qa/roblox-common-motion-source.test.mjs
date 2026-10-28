@@ -634,3 +634,62 @@ test('deployed combat module and R15 consumer compile as complete Luau sources',
   assert.equal(result.status,0,relative+': '+(result.error?.message||result.stderr||result.stdout));
  }
 });
+
+
+test('Motion Forge 3 samples actual joint rotations for bipeds, beasts, NPCs, flyers, serpents and props', {skip:!binary&&'Native Luau executor required for authored source playback'},()=>{
+ const source=fs.readFileSync(new URL('../assets/roblox/common-motion-v1/RobloxCommonMotion.luau',import.meta.url),'utf8');
+ const exercise=String.raw\`
+local function frame(state,t,form,actor,available,profile,mobile)
+ local pose,ok=motion.SampleProceduralActorMotion(state,t,{
+  bodyPlan=form,actorClass=actor,availableJoints=available,profile=profile,mobileTier=mobile}, {})
+ assert(ok,state..":"..form.." REAL_SOURCE_POSE_REQUIRED")
+ assert(pose.Root==nil and pose.HumanoidRootPart==nil,"FORBIDDEN_ROOT_MOTION")
+ for _,joint in pairs(pose)do
+  for i=1,12 do assert(type(joint[i])=="number" and joint[i]==joint[i],"NONFINITE_JOINT") end
+ end
+ return pose
+end
+local b={Spine=true,Chest=true,Head=true,UpperArmL=true,UpperArmR=true,
+ ThighL=true,ThighR=true,ShinL=true,ShinR=true}
+local base=frame("ATTACK",.46,"BIPED","PLAYER",b,{attackStrike=1},"MID")
+local strong=frame("ATTACK",.46,"BIPED","PLAYER",b,{attackStrike=1.3},"MID")
+assert(base.UpperArmR~=nil and base.Chest~=nil,"ARTICULATED_HUMANOID_ATTACK_MISSING")
+local changed=false
+for i=1,12 do if math.abs(base.UpperArmR[i]-strong.UpperArmR[i])>0.00001 then changed=true end end
+assert(changed,"VERIFIED_PROFILE_PARAMETER_DID_NOT_AFFECT_POSE")
+local start=frame("WALK",0,"BIPED","PLAYER",b,nil,"MID")
+local finish=frame("WALK",1,"BIPED","PLAYER",b,nil,"MID")
+for joint,v in pairs(start)do
+ for i=1,12 do assert(math.abs(v[i]-finish[joint][i])<1e-7,"LOOP_SEAM_POSITION_DRIFT") end
+end
+local q={Spine=true,Chest=true,Head=true,FLHip=true,FRHip=true,BLHip=true,BRHip=true,
+ FLKnee=true,FRKnee=true,BLKnee=true,BRKnee=true,Jaw=true,Tail=true}
+local creature=frame("WALK",.25,"QUADRUPED","CREATURE",q,{limbArc=1.2},"MID")
+assert(creature.FLHip and creature.FRHip and creature.BLHip and creature.BRHip,"QUADRUPED_GAIT_MISSING")
+local bite=frame("ATTACK",.5,"QUADRUPED","ENEMY",q,{attackStrike=1.2},"MID")
+assert(bite.Jaw and bite.Chest,"BEAST_BITE_AND_WEIGHT_SHIFT_MISSING")
+local npc=frame("GESTURE",.5,"BIPED","NPC",b,{npcGesture=1.2},"MID")
+assert(npc.UpperArmR,"NPC_GESTURE_MISSING")
+local wings={WingL=true,WingR=true,Head=true,Spine=true}
+local flying=frame("FLY",.25,"FLYER","CREATURE",wings,nil,"HIGH")
+local low=frame("FLY",.25,"FLYER","CREATURE",wings,nil,"LOW")
+assert(flying.WingL and flying.WingR and low.WingL,"WING_CHANNELS_REQUIRED")
+assert(math.abs(low.WingL[6])<math.abs(flying.WingL[6]),"MOBILE_FLYING_SECONDARY_LOD_UNAPPLIED")
+local coils={Coil0=true,Coil1=true,Coil2=true,Coil3=true,Coil4=true,Coil5=true,Coil6=true}
+local serpent=frame("WALK",.25,"SERPENT","CREATURE",coils,nil,"MID")
+assert(serpent.Coil0 and serpent.Coil6,"SERPENT_WAVE_MISSING")
+local prop=frame("INTERACT",.75,"PROP","INTERACTIVE_PROP",{DoorHinge=true,MachineJoint=true},nil,"MID")
+assert(prop.DoorHinge,"PROCEDURAL_ANIMATED_PROP_MISSING")
+local empty,ok=motion.SampleProceduralActorMotion("ATTACK",.4,{bodyPlan="QUADRUPED",availableJoints={}}, {})
+assert(not ok and next(empty)==nil,"INVENTED_RIG_CHANNEL_ACCEPTED")
+print("MOTION_FORGE_V3_NATIVE_SAMPLE_PASS")
+\`;
+ const script=mock+'\nlocal motion=(function()\n'+source+'\nend)()\n'+exercise;
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'motion-forge-native-'));
+ try{
+  const file=path.join(dir,'sample.luau');fs.writeFileSync(file,script);
+  const result=spawnSync(binary,[file],{encoding:'utf8',timeout:20000,maxBuffer:2*1024*1024});
+  assert.equal(result.status,0,result.error?.message||result.stderr||result.stdout);
+  assert.match(result.stdout,/MOTION_FORGE_V3_NATIVE_SAMPLE_PASS/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
