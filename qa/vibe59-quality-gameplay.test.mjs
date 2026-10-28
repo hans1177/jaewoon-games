@@ -298,3 +298,21 @@ test('structure and save decisions reject active cooldown or concurrent save loc
    expectedEffects:{attempts:0,dirty:true,saving:false}}
  ]}).pass,true);
 });
+
+
+test('building rejects nonfinite and out-of-world coordinates before owner authorizer',()=>{
+ const row=cases[1],code=synthesizeVibe59QualityGameplay({
+  spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(code,/position\.X ~= position\.X/);
+ assert.match(code,/math\.abs\(position\.Z\) > 1000000/);
+ assert.ok(code.indexOf('math.abs(position.X)')<code.indexOf('canPlace(player, blueprintId'));
+});
+test('saving refuses shallow shared tables all the way through nested profile fields',()=>{
+ const row=cases[4],code=synthesizeVibe59QualityGameplay({
+  spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(code,/local function detachedTables\(original, copy, depth\)/);
+ assert.match(code,/copy\[key\] == value/);
+ assert.match(code,/inspectedTables > 512/);
+ assert.match(code,/depth > 8/);
+ assert.ok(code.indexOf('detachedTables(state, snapshot, 0)')<code.indexOf('state.save.saving = true'));
+});
