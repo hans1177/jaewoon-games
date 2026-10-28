@@ -21,7 +21,7 @@ button{font:inherit;cursor:pointer;touch-action:manipulation}
 #portalBar{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:max(92px,calc(env(safe-area-inset-top) + 87px));display:flex;gap:5px;max-width:98vw;overflow:auto;padding:3px 4px}
 .portal{flex:0 0 auto;background:#15283bdf;color:#d3ddff;border:1px solid #82a7ec8f;border-radius:11px;padding:7px 9px;min-height:36px;font-size:11px;font-weight:900;white-space:nowrap;box-shadow:0 2px 9px #0007}
 .portal.active{background:#6444b4e8;border-color:#d9baff}
-#gear{position:fixed;z-index:8;right:10px;top:max(12px,env(safe-area-inset-top));padding:10px;background:#273d62;color:white;border:1px solid #adc3ed;border-radius:11px;font-weight:900}
+#gear{position:fixed;z-index:8;right:10px;top:max(12px,env(safe-area-inset-top));min-width:48px;min-height:48px;padding:10px;background:#273d62;color:white;border:1px solid #adc3ed;border-radius:11px;font-weight:900}
 #boss{display:none;position:fixed;z-index:5;top:145px;left:50%;transform:translateX(-50%);width:min(340px,85vw);text-align:center;font-size:14px;font-weight:1000;color:#ffcad7;text-shadow:0 2px 6px #000;pointer-events:none}
 #bossBar{height:15px;border:2px solid #ffd3dc;border-radius:10px;background:#4a1624;margin-top:4px;overflow:hidden}#bossFill{height:100%;width:100%;background:#e43e61}
 #joystick{position:fixed;z-index:7;width:118px;height:118px;left:18px;bottom:calc(20px + env(safe-area-inset-bottom));background:#06102299;border:2px solid #e4eaff60;border-radius:50%;touch-action:none}
