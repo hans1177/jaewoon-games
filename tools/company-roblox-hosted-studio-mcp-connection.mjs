@@ -22,7 +22,9 @@ export function evaluateHostedStudioMcpConnection(state={}){
   if(state.studioRunning!==true)return 'BLOCKED_STUDIO_NOT_RUNNING';
   if(state.assistantSetting==='NO')return 'BLOCKED_MCP_DISABLED_IN_STUDIO';
   if(state.mcpInitialized!==true)return 'BLOCKED_MCP_TRANSPORT_NOT_CONNECTED';
-  if(state.requiredToolsReady!==true)return 'BLOCKED_OFFICIAL_MCP_TOOLS_UNAVAILABLE';
+  if(state.requiredToolsReady!==true)return state.errorCode==='OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT'
+    ?'BLOCKED_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT':'BLOCKED_OFFICIAL_MCP_TOOLS_UNAVAILABLE';
+  if(state.studioListQueried!==true)return 'BLOCKED_STUDIO_LIST_UNVERIFIED';
   if((state.studioCount||0)<1)return 'BLOCKED_NO_CONNECTED_STUDIO_PLACE';
   if(state.studioStateObserved!==true)return 'BLOCKED_STUDIO_SESSION_NOT_READY';
   return 'CONNECTED_OFFICIAL_STUDIO_MCP';
@@ -34,6 +36,7 @@ function safeFailure(error){
   const value=clean(error?.message||error);
   if(value.includes('MCP process exited'))return 'OFFICIAL_MCP_PROCESS_EXITED';
   if(value.includes('MCP timeout'))return 'OFFICIAL_MCP_PROTOCOL_TIMEOUT';
+  if(value.includes('stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'))return 'OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT';
   if(value.includes('ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY'))return 'OFFICIAL_MCP_TOOL_INVENTORY_MISSING';
   if(value.includes('ROBLOX_STUDIO_MCP_TOOL_ERROR'))return 'OFFICIAL_MCP_TOOL_ERROR';
   if(value.includes('ENOENT'))return 'OFFICIAL_MCP_FILE_NOT_FOUND';
@@ -78,7 +81,7 @@ export async function runHostedStudioMcpProbe({
     officialExeFallbackTrusted:toBool(trustedMcpExe),
     mcpLauncherAvailable:false,assistantSetting:setting.state,
     assistantSettingsMutation:false,robloxCredentialsUsed:false,
-    mcpInitialized:false,requiredToolsReady:false,studioCount:0,
+    mcpInitialized:false,requiredToolsReady:false,studioListQueried:false,studioCount:null,
     studioStateObserved:false,studioInstanceNames:[],availableOfficialTools:[],
     connectionAttempted:false,errorCode:null,
     gameplayExecuted:false,actualPlayVerified:false,screenVerified:false,
@@ -110,6 +113,7 @@ export async function runHostedStudioMcpProbe({
       state.availableOfficialTools=[...client.tools.keys()].sort();
       if(state.requiredToolsReady){
         const result=await client.call('list_roblox_studios',{});
+        state.studioListQueried=true;
         const studios=[...new Map(collectStudios(result,[]).map(s=>[s.studioId,s])).values()];
         state.studioCount=studios.length;
         // Identity-bearing details are not exported from an ephemeral shared runner.
@@ -128,6 +132,10 @@ export async function runHostedStudioMcpProbe({
   }finally{
     try{client?.close();}catch{}
   }
+  // A missing local settings file is not evidence that Studio MCP is disabled.
+  // No identity, account settings, or Studio UI is modified by this diagnostic.
+  state.operatorPrerequisite=state.mcpInitialized&&!state.requiredToolsReady
+    ?'VERIFY_STUDIO_SIGN_IN_AND_ASSISTANT_MCP_SERVER_ENABLEMENT_MANUALLY':'NONE';
   state.status=evaluateHostedStudioMcpConnection(state);
   state.connected=hostedConnectionIsVerified(state);
   if(output){
@@ -143,7 +151,9 @@ export async function runHostedStudioMcpProbe({
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_TOOLS_LISTED='+state.availableOfficialTools.length);
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_ERROR_CODE='+(state.errorCode||'NONE'));
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_TOOLS_READY='+state.requiredToolsReady);
-  console.log('ROBLOX_HOSTED_WINDOWS_CONNECTED_STUDIOS='+state.studioCount);
+  console.log('ROBLOX_HOSTED_WINDOWS_STUDIO_LIST_QUERIED='+state.studioListQueried);
+  console.log('ROBLOX_HOSTED_WINDOWS_CONNECTED_STUDIOS='+(state.studioListQueried?state.studioCount:'NOT_QUERIED'));
+  console.log('ROBLOX_HOSTED_WINDOWS_OPERATOR_PREREQUISITE='+state.operatorPrerequisite);
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_STATUS='+state.status);
   console.log('ROBLOX_HOSTED_WINDOWS_ACTUAL_PLAY=NOT_EXECUTED');
   if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,'connected='+String(state.connected)+'\nstatus='+state.status+'\n');
@@ -154,10 +164,11 @@ export async function runHostedStudioMcpProbe({
     '| Studio installed | '+state.studioInstalled+' |',
     '| Studio process | '+state.studioRunning+' |',
     '| Documented Roblox MCP launcher | '+state.mcpLauncherAvailable+' |',
-    '| Assistant MCP setting (read-only) | '+state.assistantSetting+' |',
+    '| Assistant MCP setting (read-only, missing is unverified) | '+state.assistantSetting+' |',
     '| stdio initialize | '+state.mcpInitialized+' |',
     '| Required official tools | '+state.requiredToolsReady+' |',
-    '| Open Studio instances | '+state.studioCount+' |',
+    '| Open Studio instances | '+(state.studioListQueried?state.studioCount:'NOT_QUERIED')+' |',
+    '| Operator prerequisite | '+state.operatorPrerequisite+' |',
     '| Verified official connection | '+state.connected+' |',
     '| Full play, screenshot or touch | **Not tested** |',
     '',
