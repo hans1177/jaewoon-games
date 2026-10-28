@@ -169142,7 +169142,7 @@
     },
     {
       "id": "recovery-recovery-e8a58ee7f077cfe452ca",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -169186,7 +169186,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:9c8afc75c1e0837dca3697decaee3fe124a5caf6:fantasy-survival"
       ],
-      "retries": 80,
+      "retries": 81,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
@@ -169200,12 +169200,12 @@
       "sourceMutationBaseline": "9c8afc75c1e0837dca3697decaee3fe124a5caf6",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40669165742:1",
-      "reservedAt": "2026-10-28T10:07:04.487Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:40106269194:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -169346,7 +169346,8 @@
         "actions-run:40665306966",
         "actions-run:40667095915",
         "system-ai-blocked-task-count:89",
-        "actions-run:40668090755"
+        "actions-run:40668090755",
+        "actions-run:40669165742"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2300,
@@ -169361,7 +169362,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T15:36:37.081Z",
-      "updatedAt": "2026-10-28T10:07:04.487Z"
+      "updatedAt": "2026-10-28T10:10:06.324Z"
     },
     {
       "id": "recovery-recovery-b8716091f58fe4ed0b65",
