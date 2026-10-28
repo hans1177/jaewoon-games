@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { exploreVibe2WorkOrder, explorationGuidance, extractVibeSourceImportRefs, explorationOrderFingerprint } from '../tools/vibe2-exploration-worker.mjs';
+import { analyzeVibe4CodeFlow } from '../tools/vibe2-v4-code-intelligence.mjs';
 import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
 import { requestVibe4LoopbackModel } from '../tools/vibe2-v4-loopback-model.mjs';
 import http from 'node:http';
@@ -175,6 +176,34 @@ test('Vibe4 offline code generator supports grounded Roblox stat clamp with no A
     order:{vibe4DeterministicRecipe:{...recipe,path:'../escape.lua'}},...args
   }),/VIBE4_UNAPPROVED_SOURCE/);
 });
+test('Vibe4 source intelligence maps state writes and bound event handlers',()=>{
+  const analysis=analyzeVibe4CodeFlow({target:'web',responsiblePaths:['src/actor.js'],files:[
+    {path:'src/actor.js',source:'let hp=100;\nfunction onHit(){hp -= 5;}\nbutton.addEventListener("click",onHit);\n'},
+    {path:'src/other.js',source:'// ignored = true\nfunction other(){}'}
+  ]});
+  assert.equal(analysis.authority,'advisory-code-flow-only');
+  assert.equal(analysis.runtimeVerified,false);
+  assert(analysis.sources[0].stateWrites.some(row=>row.symbol==='hp'));
+  assert(analysis.sources[0].events.some(row=>row.event==='click'&&row.handler==='onHit'&&row.handlerDeclared));
+  assert.equal(analysis.sources[1].stateWrites.length,0);
+  const native=analyzeVibe4CodeFlow({target:'roblox',files:[{path:'Combat.luau',
+    source:'local hp=100\nfunction onDamage() hp = hp - 5 end\npart.Touched:Connect(onDamage)\n'}]});
+  assert(native.sources[0].events.some(row=>row.source==='part.Touched'&&row.handlerDeclared));
+});
+test('Vibe4 flow reasoning appears in existing read-only coding guidance',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/v4-flow');
+  write(path.join(root,'src/actor.js'),
+    'let hp=100;\nfunction hurt(){ hp -= 5; }\nbutton.addEventListener("click",hurt);\n');
+  const order={run:true,taskId:'v4-flow',gameId:'v4-flow',target:'web',goal:'attack state',
+    source:{root:'web-games/v4-flow',responsibleFiles:['web-games/v4-flow/src/actor.js'],ignoredPaths:[]},
+    workPackage:{id:'v4-flow-pkg',sharedContext:{diagnosticEvidence:[]}}};
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.impactAnalysisSchemaVersion,5);
+  assert.equal(result.codeFlow.sourceWrite,false);
+  assert(result.codeFlow.sources[0].events.some(e=>e.handler==='hurt'));
+  assert.match(explorationGuidance(result),/Vibe4 코드 상태·이벤트=/);
+  assert.equal(result.sourceWrite,false);
+});
 test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
   assert.deepEqual(extractVibeSourceImportRefs([
     "import {hit} from './combat.js';",
@@ -227,7 +256,7 @@ test('cached exploration cannot carry changed owner goal or responsibility into 
     selectedTask:{goal:'fix combat',evidence:['original-bug']},
     workPackage:{id:'fingerprint-package',sharedContext:{diagnosticEvidence:[]}}};
   const saved=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(saved.impactAnalysisSchemaVersion,4);
+  assert.equal(saved.impactAnalysisSchemaVersion,5);
   assert.equal(saved.orderFingerprint,explorationOrderFingerprint(order));
   const artifact=path.join(cwd,'.vibe2/fingerprint.json');
   const old=process.env.VIBE2_EXPLORATION_FILE;
@@ -293,7 +322,7 @@ test('exploration cache invalidates QA-only changes and requires complete impact
     source:{root:'web-games/cache-impact',responsibleFiles:['web-games/cache-impact/src/combat.js'],ignoredPaths:[]},
     workPackage:{id:'cache-impact-wp',sharedContext:{diagnosticEvidence:[]}}};
   const first=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(first.impactAnalysisSchemaVersion,4);
+  assert.equal(first.impactAnalysisSchemaVersion,5);
   assert.equal(first.impactScanCoverage.runtimeVerified,false);
   assert(first.fileDigests.some(row=>row.path==='qa/weapon.test.js'));
   const artifact=path.join(cwd,'.vibe2/exploration.json');
@@ -327,7 +356,7 @@ test('Roblox module impact identifies required sibling Luau and native test with
     workPackage:{id:'rig-wp',sharedContext:{diagnosticEvidence:[]}}};
   const handoff=exploreVibe2WorkOrder({cwd,order});
   assert.equal(handoff.sourceImpact.runtimeVerified,false);
-  assert.equal(handoff.impactAnalysisSchemaVersion,4);
+  assert.equal(handoff.impactAnalysisSchemaVersion,5);
   assert(handoff.sourceImpact.impactedSources.some(row=>row.path==='shared/Effects.luau'));
   assert(handoff.sourceImpact.affectedTests.some(row=>row.path==='qa/combat.test.luau'));
   assert.deepEqual(handoff.responsibleFiles,['shared/Combat.luau']);
@@ -342,7 +371,7 @@ test('exploration cache invalidates added and edited previously unrelated module
     source:{root:'web-games/inventory-scan',responsibleFiles:['web-games/inventory-scan/src/combat.js'],ignoredPaths:[]},
     workPackage:{id:'scan-wp',sharedContext:{diagnosticEvidence:[]}}};
   const original=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(original.impactAnalysisSchemaVersion,4);
+  assert.equal(original.impactAnalysisSchemaVersion,5);
   assert.equal(original.fileDigests.length,2);
   const artifact=path.join(cwd,'.vibe2/scanned.json');
   const old=process.env.VIBE2_EXPLORATION_FILE;
