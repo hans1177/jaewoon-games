@@ -401,6 +401,12 @@ function qualityDecision(spec,facts){
  }
  throw Error('VIBE59_QUALITY_UNKNOWN_OPERATION');
 }
+function normalizedScenarioValue(value){
+ if(Array.isArray(value))return value.map(normalizedScenarioValue);
+ if(value&&typeof value==='object')return Object.fromEntries(
+   Object.keys(value).sort().map(key=>[key,normalizedScenarioValue(value[key])]));
+ return value;
+}
 export function verifyVibe59QualityScenarios({spec={},scenarios=[]}={}){
  const normalized=validate(spec);
  if(!Array.isArray(scenarios)||scenarios.length<2||scenarios.length>16)
@@ -414,7 +420,8 @@ export function verifyVibe59QualityScenarios({spec={},scenarios=[]}={}){
   if(row.expectedApplied)positive++;else negative++;
   return {name:String(row.name??i).slice(0,60),
    pass:observed.applied===row.expectedApplied
-      &&JSON.stringify(observed.effects)===JSON.stringify(expected),
+      &&JSON.stringify(normalizedScenarioValue(observed.effects))
+        ===JSON.stringify(normalizedScenarioValue(expected)),
    applied:observed.applied,effects:observed.effects};
  });
  if(!positive||!negative)throw Error('VIBE59_QUALITY_BOUNDARY_SCENARIOS');
