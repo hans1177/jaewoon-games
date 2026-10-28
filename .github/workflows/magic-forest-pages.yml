@@ -1017,10 +1017,30 @@ jobs:
         id: forest_native_3d_live_qa
         env:
           VIBE_SMOKE_LIVE_BASE: ${{ needs.publish-pages.outputs.page_url }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          node qa/vibe-browser-smoke.mjs
+          if node qa/vibe-browser-smoke.mjs; then
+            echo "POST_PUBLISH_BROWSER_QA_EXACT=PASS SOURCE=$GITHUB_SHA"
+          else
+            smoke_exit=$?
+            # 78은 검사 중 공개 소스 교체를 감지한 미검증 상태. 실제 게임 오류는 기존처럼 실패시킨다.
+            if [ "$smoke_exit" -ne 78 ]; then exit "$smoke_exit"; fi
+            manifest_url="${VIBE_SMOKE_LIVE_BASE%/}/web-games/publish-manifest.json"
+            live_sha="$(curl -fsSL --retry 2 --max-time 15 "$manifest_url" | node -e "let t='';process.stdin.on('data',d=>t+=d);process.stdin.on('end',()=>{try{const sha=JSON.parse(t).sourceSha;if(!/^[a-f0-9]{40}$/.test(sha))process.exit(1);process.stdout.write(sha)}catch{process.exit(1)}})")"
+            if [ "$live_sha" = "$GITHUB_SHA" ]; then
+              echo "::error::POST_PUBLISH_SUPERSEDED_UNCONFIRMED_SOURCE"
+              exit 1
+            fi
+            relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$live_sha" --jq .status)"
+            if [ "$relation" != ahead ]; then
+              echo "::error::POST_PUBLISH_SUPERSEDED_ANCESTRY_INVALID SOURCE=$GITHUB_SHA PUBLISHED=$live_sha RELATION=$relation"
+              exit 1
+            fi
+            echo "POST_PUBLISH_BROWSER_QA=SUPERSEDED_NOT_PASS SOURCE=$GITHUB_SHA PUBLISHED=$live_sha"
+            echo "브라우저 검증은 더 최신 공개판으로 교체되어 미완료(통과 아님). 원본=$GITHUB_SHA 공개=$live_sha" >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Keep naval battle mobile render evidence
         if: ${{ always() && steps.live_revision.outputs.exact == 'true' }}
         uses: actions/upload-artifact@v4

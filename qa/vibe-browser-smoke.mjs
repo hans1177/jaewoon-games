@@ -8,6 +8,16 @@ import assert from 'node:assert/strict';
 const port=Number(process.env.VIBE_SMOKE_PORT||8765);
 const root=process.env.VIBE_SMOKE_ROOT||'_site';
 const liveBase=String(process.env.VIBE_SMOKE_LIVE_BASE||'').trim();
+// 게시본이 검증 도중 교체되면 실제 게임 실패와 분리하여 상위 게시 검증에서 조상관계를 재확인한다.
+function requireLivePublicationSha(actual,stage){
+ const expected=String(process.env.GITHUB_SHA||'');
+ assert.match(expected,/^[a-f0-9]{40}$/,'POST_PUBLISH_EXPECTED_SHA_INVALID');
+ assert.match(actual,/^[a-f0-9]{40}$/,'POST_PUBLISH_ACTUAL_SHA_INVALID');
+ if(actual===expected)return;
+ const error=new Error('POST_PUBLISH_SOURCE_SUPERSEDED stage='+stage+' expected='+expected+' actual='+actual);
+ error.code='POST_PUBLISH_SOURCE_SUPERSEDED';
+ throw error;
+}
 if(liveBase){
  const pageUrl=new URL(liveBase);
  assert.equal(pageUrl.protocol,'https:','Post-publication browser QA requires HTTPS');
@@ -174,7 +184,7 @@ try{
   // 보석생존전: 실제 공개 커밋의 스테이지·월드·입력·일시정지를 검사한다.
   const response=await page.request.get(liveBase+'web-games/publish-manifest.json');
   assert.ok(response.ok(),'GEM_PUBLIC_MANIFEST_HTTP');
-  assert.equal((await response.json()).sourceSha,process.env.GITHUB_SHA,'GEM_PUBLIC_SOURCE_SHA');
+  requireLivePublicationSha((await response.json()).sourceSha,'GEM_PUBLIC_SOURCE_SHA');
    // 사후검증 체크아웃은 검사기만 포함하므로 동일 공개판의 실제 모듈을 검사한다.
    const speciesResponse=await page.request.get(liveBase+'web-games/gem-survivor/gem3d.mjs');
    assert.ok(speciesResponse.ok(),'GEM_PUBLIC_RENDERER_HTTP');
@@ -264,7 +274,7 @@ try{
   const manifestResponse=await page.request.get(liveBase+'web-games/publish-manifest.json');
   assert.equal(manifestResponse.ok(),true,'Published source manifest must be reachable');
   const manifest=await manifestResponse.json();
-  assert.equal(manifest.sourceSha,requiredRevision,'Only inspect the exact deployed source revision');
+  requireLivePublicationSha(manifest.sourceSha,'FOREST_PUBLIC_SOURCE_SHA');
 
   for(const viewport of [
    {name:'desktop',width:1100,height:720,mobile:false},
@@ -488,7 +498,7 @@ try{
   const res=await page.request.get(liveBase+'web-games/publish-manifest.json');
   assert.ok(res.ok(),'COZY_RTS_LIVE_MANIFEST_MISSING');
   const manifest=await res.json();
-  assert.equal(manifest.sourceSha,expected,'COZY_RTS_LIVE_REVISION_MISMATCH');
+  requireLivePublicationSha(manifest.sourceSha,'COZY_RTS_LIVE_REVISION_MISMATCH');
   assert.ok(manifest.routes.includes('web-games/cozy-island/'),'COZY_RTS_ROUTE_NOT_PUBLISHED');
   for(const view of [{name:'desktop',width:1100,height:720,mobile:false},
                      {name:'mobile',width:390,height:844,mobile:true}]){
@@ -708,5 +718,14 @@ try{
    console.log('WILD_SURVIVAL_LIVE_WEBGL_3D_AND_MOVEMENT=PASS');
    await game.close();
  }
+ if(liveBase){
+  const finalManifestResponse=await page.request.get(liveBase+'web-games/publish-manifest.json');
+  assert.ok(finalManifestResponse.ok(),'POST_PUBLISH_FINAL_MANIFEST_HTTP');
+  requireLivePublicationSha((await finalManifestResponse.json()).sourceSha,'FINAL_PUBLIC_SOURCE_SHA');
+ }
  console.log('VIBE_BROWSER_SMOKE_PASS');
+}catch(error){
+ if(error?.code!=='POST_PUBLISH_SOURCE_SUPERSEDED')throw error;
+ console.error(error.message);
+ process.exitCode=78;
 }finally{await browser?.close();server?.kill()}
