@@ -5804,7 +5804,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-28T06:21:46.306Z",
+      "updatedAt": "2026-10-28T06:24:10.249Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6547,7 +6547,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 4,
+      "robloxRuntimeRetryCount": 5,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -6570,9 +6570,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-open-cloud-engine-probe-transient-retry"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "6a21c806590f9899d1019c42de9d739d88e70d53",
@@ -7744,10 +7744,10 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-28T06:10:50.299Z"
+        "verifiedAt": "2026-10-28T06:24:10.249Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-28T04:51:25.424Z",
-      "robloxRuntimeLastObservationAttemptAt": "2026-10-28T05:41:07.606Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-10-28T06:24:10.249Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
         "sessionId": "40642458736:fantasy-survival:40629263779:2",
@@ -7768,7 +7768,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-28T06:22:50.863Z",
+  "updatedAt": "2026-10-28T06:24:10.249Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
