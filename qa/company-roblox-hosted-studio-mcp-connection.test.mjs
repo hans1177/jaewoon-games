@@ -215,7 +215,7 @@ test('free Windows Studio MCP runner requires genuine interactive Studio and pro
   assert.match(setup,/Roblox Corporation/);
   assert.match(setup,/Roblox\\mcp\.bat/);
   assert.match(setup,/Enable Studio as MCP server/);
-  assert.match(setup,/github\.com\/actions\/runner\/releases\/latest/);
+  assert.match(setup,/api\.github\.com\/repos\/actions\/runner\/releases\/latest/);
   assert.match(setup,/Get-FileHash -LiteralPath \$zip -Algorithm SHA256/);
   assert.match(setup,/Read-Host -Prompt .* -AsSecureString/);
   assert.match(setup,/ZeroFreeBSTR/);
