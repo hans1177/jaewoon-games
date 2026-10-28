@@ -1874,6 +1874,7 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
    and joint.Part0~=joint.Part1 then
    motors[#motors+1]=joint
    names[joint.Name]=true
+   if R15_PROCEDURAL_JOINTS[joint.Name] then names[R15_PROCEDURAL_JOINTS[joint.Name]]=true end
    local owner=joint.Part0.Name
    byParent[owner]=byParent[owner]or{}
    table.insert(byParent[owner],joint)
