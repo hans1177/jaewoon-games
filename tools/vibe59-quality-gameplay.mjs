@@ -419,18 +419,26 @@ function qualityDecision(spec,facts){
     throw Error('VIBE59_QUALITY_SAVE_SCENARIO');
   const started=expectedNumber(facts.revisionAtStart,'revisionAtStart');
   const current=expectedNumber(facts.revisionAfter,'revisionAfter');
-  let applied=false,attempts=0;
-  if(facts.playerValid===true&&!facts.saving){
-   if(!facts.dirty)applied=true;
-   else if(facts.snapshotValid===true)for(let i=0;i<spec.maxAttempts;i++){
-    attempts++;
-    if(facts.attemptResults[i]===true&&facts.staleWrite!==true){
-      applied=true;break
+  const persisted=facts.persistedRevision===null?null:
+    expectedNumber(facts.persistedRevision,'persistedRevision');
+  const merged=expectedNumber(facts.mergedRevision,'mergedRevision');
+  const casValid=(persisted===null?started===0:persisted===started)
+    &&merged===started+1;
+  let written=false,attempts=0;
+  if(facts.playerValid===true&&!facts.saving&&facts.dirty
+    &&facts.snapshotValid===true){
+    for(let i=0;i<spec.maxAttempts;i++){
+      attempts++;
+      if(facts.attemptResults[i]===true&&facts.staleWrite!==true&&casValid){
+        written=true;break;
+      }
     }
-   }
   }
-  return {applied,effects:{attempts,saving:false,
-    dirty:facts.dirty===true&&!(applied&&started===current)}};
+  const applied=facts.playerValid===true&&!facts.saving&&(!facts.dirty||
+    (written&&started===current));
+  return {applied,effects:{attempts,saving:facts.saving,
+    dirty:facts.dirty===true&&!applied,
+    revision:written&&current===started?started+1:current}};
  }
  if(op==='ai-throttled-chase'){
   const now=expectedNumber(facts.now,'now'),
