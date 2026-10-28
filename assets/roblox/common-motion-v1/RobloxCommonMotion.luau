@@ -1780,6 +1780,12 @@ local R15_PROCEDURAL_JOINTS=table.freeze({
  LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
  LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
  LeftAnkle="FootL",RightAnkle="FootR",
+ -- Match only approved real motor names from actual source rigs; do not synthesize bones.
+ BodyJoint="Chest",ChestJoint="Chest",SpineJoint="Spine",
+ NeckJoint="Neck",HeadJoint="Head",JawJoint="Jaw",
+ TailBaseJoint="Tail",TailTipJoint="Tail",
+ FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
+ RearLeftHip="BLHip",RearRightHip="BRHip",
 })
 local function forgeRot(targets,available,name,x,y,z)
  if available[name]~=true then return end
@@ -1888,7 +1894,8 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
    motors[#motors+1]=joint
    names[joint.Name]=true
    if R15_PROCEDURAL_JOINTS[joint.Name] then names[R15_PROCEDURAL_JOINTS[joint.Name]]=true end
-   local owner=joint.Part0.Name
+   -- Instance identity, not Part.Name: two different limbs can share the same part name.
+   local owner=joint.Part0
    byParent[owner]=byParent[owner]or{}
    table.insert(byParent[owner],joint)
   end
@@ -1940,7 +1947,7 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
   local seen={[root]=true}
   local function place(part,parentPose,depth)
    if depth>#motors+1 then return end
-   for _,joint in ipairs(byParent[part.Name]or{})do
+   for _,joint in ipairs(byParent[part]or{})do
     if not seen[joint.Part1] then
      seen[joint.Part1]=true
      local pose=Instance.new("Pose")
