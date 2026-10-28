@@ -59,7 +59,17 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(client,/SaveStatus/);
   assert.match(client,/임시 플레이 · 이번 접속의 진행은 저장되지 않음/);
   assert.match(config,/Label = "가까운 자원 채집"/);
-  assert.match(server,/CreatureParts.Create\(partId/);
+  // Creature visuals now come from validated native Roblox meshes rather than
+  // the legacy procedural CreatureParts source; retain strict source-level gates.
+  assert.match(server,/NativeCreatureAssets = require\(Shared:WaitForChild\("VisualAssetIds"\)\)/);
+  assert.match(server,/table\.find\(studioCreatureAtoms,anatomyAtom\) and NativeCreatureAssets\[partId\]/);
+  assert.match(server,/AssetService:LoadAssetAsync\(modelId\)/);
+  assert.match(server,/template:FindFirstChildWhichIsA\("MeshPart",true\)/);
+  assert.match(server,/error\("FANTASY_NATIVE_MESH_REQUIRED"\)/);
+  assert.match(server,/model:ScaleTo\(model:GetScale\(\)\*nativeScale\/nativeHeight\)/);
+  assert.match(server,/model:PivotTo\(CFrame\.new\(location\)\)/);
+  assert.match(server,/model\.Parent=gameWorld/);
+  assert.doesNotMatch(server,/CreatureParts\.Create\(partId/);
   assert.match(server,/WorldProps.Create\(id/);
   assert.match(server,/targetHuman:TakeDamage\(enemy.damage\)/);
   // The actual world creature must telegraph an authorized strike, and a dodge must cancel damage.
