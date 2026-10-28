@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -13,7 +14,7 @@ import {
   compileVibe59Requirements,composeVibe59Systems,synthesizeVibe59StateLogic,
   generateVibe59Tests,planVibe59Repairs,recallVibe59VerifiedSolutions,
   evaluateVibe59Completion,planVibe59SafeRefactor,createVibe59CodeCandidate,
-  buildVibe59AutonomyPlan
+  buildVibe59AutonomyPlan,synthesizeVibe59StateMachine,verifyVibe59GameScenarios
 } from '../tools/vibe2-v59-autonomy.mjs';
 import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
 import { requestVibe4LoopbackModel } from '../tools/vibe2-v4-loopback-model.mjs';
@@ -334,6 +335,91 @@ test('Vibe5.9 completion and system planning are delivered in current exploratio
   assert.match(explorationGuidance(result),/Vibe5\.9 명세=/);
   const plan=buildVibe59AutonomyPlan({order});
   assert.equal(plan.localModel,'Vibe4 loopback adapter available, inference unverified');
+});
+
+test('Vibe5.9 compiles event-driven enemy states in two JS strategies and Luau',()=>{
+  const machine={handlerName:'handleEnemyEvent',stateVariable:'enemyState',
+    states:['idle','chase','attack'],events:['spot','close','lost'],
+    transitions:[
+      {from:'idle',event:'spot',to:'chase',when:{kind:'compare',op:'lte',
+        left:{kind:'ref',name:'distance'},right:{kind:'number',value:12}},
+        actions:[{action:'assign',output:'speed',value:{kind:'number',value:6}}]},
+      {from:'chase',event:'close',to:'attack',
+        actions:[{action:'subtract',output:'stamina',value:{kind:'number',value:1}}]},
+      {from:'chase',event:'lost',to:'idle',actions:[]}
+    ]};
+  const oracle=verifyVibe59GameScenarios({machine,scenarios:[
+    {name:'spot attack',initialState:{enemyState:'idle',distance:9,speed:2,stamina:4},
+      events:['spot','close'],expectedState:{enemyState:'attack',speed:6,stamina:3},
+      expectedConsumed:[true,true]},
+    {name:'out of range',initialState:{enemyState:'idle',distance:99,speed:2},
+      events:['spot'],expectedState:{enemyState:'idle',speed:2},expectedConsumed:[false]}
+  ]});
+  assert.equal(oracle.pass,true);
+  assert.equal(oracle.runtimeVerified,false);
+  const native=synthesizeVibe59StateMachine({machine,target:'roblox'});
+  assert.match(native.source,/local function handleEnemyEvent\(eventName\)/);
+  assert.match(native.source,/enemyState == "idle"/);
+  for(const variant of ['chain','switch']){
+    const js=synthesizeVibe59StateMachine({machine,target:'web',variant});
+    const sandbox={enemyState:'idle',distance:9,speed:2,stamina:4};
+    vm.runInNewContext(js.source,sandbox,{timeout:1000});
+    assert.equal(sandbox.handleEnemyEvent('spot'),true);
+    assert.equal(sandbox.enemyState,'chase');
+    assert.equal(sandbox.speed,6);
+    assert.equal(sandbox.handleEnemyEvent('close'),true);
+    assert.equal(sandbox.enemyState,'attack');
+    assert.equal(sandbox.stamina,3);
+    assert.equal(sandbox.handleEnemyEvent('invalid'),false);
+  }
+});
+test('Vibe5.9 blocks incorrect scenarios, duplicate transitions and illegal state changes',()=>{
+  const machine={handlerName:'handleEnemyEvent',stateVariable:'enemyState',
+    states:['idle','chase'],events:['spot'],
+    transitions:[{from:'idle',event:'spot',to:'chase',actions:[]}]};
+  const mismatch=verifyVibe59GameScenarios({machine,scenarios:[{
+    initialState:{enemyState:'idle'},events:['spot'],expectedState:{enemyState:'idle'}
+  }]});
+  assert.equal(mismatch.pass,false);
+  assert.equal(mismatch.counterexamples[0].differences[0].field,'enemyState');
+  assert.throws(()=>synthesizeVibe59StateMachine({machine:{...machine,
+    transitions:[...machine.transitions,...machine.transitions]}}),/VIBE59_MACHINE_AMBIGUOUS_TRANSITION/);
+  assert.throws(()=>synthesizeVibe59StateMachine({machine:{...machine,handlerName:'unsafe()'}}),
+    /VIBE59_MACHINE_IDENTIFIERS/);
+  assert.throws(()=>synthesizeVibe59StateMachine({machine:{...machine,transitions:[
+    {...machine.transitions[0],actions:[{action:'assign',output:'enemyState',
+      value:{kind:'number',value:7}}]}]}}),/VIBE59_MACHINE_PROTECTED_STATE/);
+  const rule={when:{kind:'compare',op:'lte',left:{kind:'ref',name:'hp'},
+    right:{kind:'number',value:30}},then:[
+      {action:'assign',output:'mode',value:{kind:'number',value:2}}]};
+  const failed=verifyVibe59GameScenarios({rule,scenarios:[
+    {name:'wrong requirement',initialState:{hp:20},expectedState:{mode:1}}
+  ]});
+  assert.equal(failed.pass,false);
+});
+test('Vibe5.9 generated game event handler passes existing scoped candidate contract',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/v59-machine');
+  const file=path.join(root,'enemy.js');
+  write(file,'let enemyState="idle";\nfunction enemyEvent(eventName){return false;}\n');
+  const before=fs.readFileSync(file,'utf8');
+  const machine={handlerName:'enemyEvent',stateVariable:'enemyState',
+    states:['idle','chase'],events:['spot'],transitions:[{
+      from:'idle',event:'spot',to:'chase',actions:[]}]};
+  const req={ownerApproved:true,path:'enemy.js',find:'function enemyEvent(eventName){return false;}',
+    machine,scenarios:[{name:'spot',initialState:{enemyState:'idle'},events:['spot'],
+      expectedState:{enemyState:'chase'},expectedConsumed:[true]}]};
+  const args={sourceRoot:root,responsibleFiles:['enemy.js'],target:'web'};
+  const candidate=createVibe59CodeCandidate({order:{vibe59CodeRequest:req},...args});
+  assert.equal(candidate.vibe59CodeKind,'STATE_MACHINE');
+  assert.equal(candidate.vibe59TestPlan.pass,true);
+  assert.equal(fs.readFileSync(file,'utf8'),before);
+  assert.match(candidate.edits[0].replace,/function enemyEvent/);
+  const alt=createVibe59CodeCandidate({order:{
+    vibe59CodeRequest:{...req,codegenVariant:'switch'}},...args});
+  assert.match(alt.edits[0].replace,/switch \(enemyState\)/);
+  assert.throws(()=>createVibe59CodeCandidate({order:{
+    vibe59CodeRequest:{...req,scenarios:[{...req.scenarios[0],
+      expectedState:{enemyState:'idle'}}]}},...args}),/VIBE59_SCENARIO_COUNTEREXAMPLE/);
 });
 test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
   assert.deepEqual(extractVibeSourceImportRefs([

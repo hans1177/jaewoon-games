@@ -181,7 +181,8 @@ export function planVibe59SafeRefactor({source='',target='web'}={}){
 export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
   const req=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
   if(req==null)return null;
-  if(!req||req.ownerApproved!==true||!req.path||!req.find||!req.rule)
+  if(!req||req.ownerApproved!==true||!req.path||!req.find
+    ||Boolean(req.rule)===Boolean(req.machine))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
   const relative=clean(req.path).replaceAll('\\','/');
   if(!relative||relative.startsWith('/')||relative.includes('//')
@@ -198,13 +199,23 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
-  const compiled=synthesizeVibe59StateLogic({rule:req.rule,target});
+  const codeKind=req.machine?'STATE_MACHINE':'STATE_RULE';
+  const compiled=req.machine
+    ?synthesizeVibe59StateMachine({machine:req.machine,target,
+      variant:clean(req.codegenVariant)||'chain'})
+    :synthesizeVibe59StateLogic({rule:req.rule,target});
   if(compiled.source===find)throw Error('VIBE59_NOOP');
-  const tests=generateVibe59Tests({rule:req.rule,target,scenarios:req.scenarios||[]});
+  // Owner supplied expectations are interpreted independently of emitted code.
+  // A failing state-level case is a rejected candidate, never a runtime PASS.
+  const tests=verifyVibe59GameScenarios({rule:req.rule,machine:req.machine,
+    scenarios:req.scenarios||[]});
+  if(!tests.pass)throw Error('VIBE59_SCENARIO_COUNTEREXAMPLE:'+
+    tests.counterexamples.map(x=>x.name).join(','));
   return Object.freeze({summary:'Vibe5.9 composed offline code',
     expectedEffect:'Source-grounded, explicitly approved state transition',
     edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
-    tests:[],vibe59TestPlan:tests,ruleDigest:sha(JSON.stringify(req.rule)),
+    tests:[],vibe59TestPlan:tests,vibe59CodeKind:codeKind,
+    ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});
 }
 export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sourceImpact=null}={}){
@@ -227,4 +238,196 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
     refactorStrategy:'bounded-candidates-needing-existing-validation',
     localModel:'Vibe4 loopback adapter available, inference unverified',
     authority:'read-only-development-plan'});
+}
+
+
+// Vibe5.9 extension: event-driven state machines and owner-scenario counterexamples.
+// The interpreter checks only isolated state transitions, NOT game runtime.
+function state59Name(v){
+  if(typeof v!=='string'||!/^[A-Za-z][\w-]{0,47}$/.test(v))throw Error('VIBE59_STATE_NAME');
+  return v;
+}
+function machine59Spec(machine){
+  if(!machine||typeof machine!=='object'||Array.isArray(machine)
+    ||!validName(machine.handlerName)||!validName(machine.stateVariable)
+    ||machine.handlerName===machine.stateVariable||machine.stateVariable==='eventName')
+    throw Error('VIBE59_MACHINE_IDENTIFIERS');
+  const states=machine.states,events=machine.events,transitions=machine.transitions;
+  if(!Array.isArray(states)||states.length<2||states.length>20
+    ||!Array.isArray(events)||!events.length||events.length>24
+    ||!Array.isArray(transitions)||!transitions.length||transitions.length>64)
+    throw Error('VIBE59_MACHINE_BOUNDS');
+  for(const group of [states,events]){
+    group.forEach(state59Name);
+    if(new Set(group).size!==group.length)throw Error('VIBE59_MACHINE_DUPLICATE');
+  }
+  const seen=new Set();
+  for(const row of transitions){
+    if(!row||!states.includes(row.from)||!states.includes(row.to)
+      ||!events.includes(row.event))throw Error('VIBE59_MACHINE_UNKNOWN_TRANSITION');
+    const key=row.from+'|'+row.event;
+    if(seen.has(key))throw Error('VIBE59_MACHINE_AMBIGUOUS_TRANSITION');
+    seen.add(key);
+    if(row.when)expression(row.when,'web');
+    if(row.when&&!['boolean','compare','and','or','not'].includes(row.when.kind))
+      throw Error('VIBE59_MACHINE_GUARD_NOT_BOOLEAN');
+    if(!Array.isArray(row.actions??[])||(row.actions||[]).length>8)
+      throw Error('VIBE59_MACHINE_ACTION_LIMIT');
+    for(const item of row.actions||[]){
+      if(!item||item.output===machine.stateVariable||item.output==='eventName')
+        throw Error('VIBE59_MACHINE_PROTECTED_STATE');
+      action(item,'web');
+    }
+  }
+  return machine;
+}
+export function synthesizeVibe59StateMachine({machine={},target='web',variant='chain'}={}){
+  if(!['web','roblox'].includes(target)||!['chain','switch'].includes(variant)
+    ||target==='roblox'&&variant==='switch')throw Error('VIBE59_MACHINE_TARGET_VARIANT');
+  const m=machine59Spec(machine),lines=[];
+  const assignment=row=>[m.stateVariable+' = '+JSON.stringify(row.to)+(target==='web'?';':''),
+    ...(row.actions||[]).map(item=>action(item,target)),
+    target==='web'?'return true;':'return true'];
+  const predicate=(row,stateCheck=true)=>{
+    const e=target==='web'?' === ':' == ',and=target==='web'?' && ':' and ';
+    return (stateCheck?m.stateVariable+e+JSON.stringify(row.from)+and:'')
+      +'eventName'+e+JSON.stringify(row.event)
+      +(row.when?and+expression(row.when,target):'');
+  };
+  if(target==='roblox'){
+    lines.push('local function '+m.handlerName+'(eventName)');
+    for(const row of m.transitions){
+      lines.push('  if '+predicate(row)+' then',
+        ...assignment(row).map(x=>'    '+x),'  end');
+    }
+    lines.push('  return false','end');
+  }else if(variant==='chain'){
+    lines.push('function '+m.handlerName+'(eventName) {');
+    for(const row of m.transitions){
+      lines.push('  if ('+predicate(row)+') {',
+        ...assignment(row).map(x=>'    '+x),'  }');
+    }
+    lines.push('  return false;','}');
+  }else{
+    lines.push('function '+m.handlerName+'(eventName) {','  switch ('+m.stateVariable+') {');
+    for(const state of m.states){
+      const rows=m.transitions.filter(x=>x.from===state);
+      if(!rows.length)continue;
+      lines.push('    case '+JSON.stringify(state)+':');
+      for(const row of rows)lines.push('      if ('+predicate(row,false)+') {',
+        ...assignment(row).map(x=>'        '+x),'      }');
+      lines.push('      break;');
+    }
+    lines.push('  }','  return false;','}');
+  }
+  return Object.freeze({source:lines.join('\n'),target,variant,
+    eventCount:m.transitions.length,runtimeVerified:false,sourceWrite:false,
+    authority:'synthesized-event-handler-only'});
+}
+function eval59Expression(node,state,depth=0){
+  if(!node||typeof node!=='object'||depth>8)throw Error('VIBE59_ORACLE_EXPRESSION');
+  const recurse=n=>eval59Expression(n,state,depth+1);
+  if(node.kind==='ref'){
+    if(!validName(node.name))throw Error('VIBE59_ORACLE_REFERENCE');
+    let value=state;
+    for(const part of node.name.split('.')){
+      if(!value||typeof value!=='object'||!Object.hasOwn(value,part))
+        throw Error('VIBE59_ORACLE_MISSING_STATE:'+node.name);
+      value=value[part];
+    }
+    return value;
+  }
+  if(node.kind==='number')return finite(node.value,'oracle');
+  if(node.kind==='boolean')return Boolean(node.value);
+  if(node.kind==='compare'){
+    const x=recurse(node.left),y=recurse(node.right);
+    if(node.op==='eq')return x===y;if(node.op==='ne')return x!==y;
+    if(typeof x!=='number'||typeof y!=='number')throw Error('VIBE59_ORACLE_COMPARE_TYPES');
+    if(node.op==='gt')return x>y;if(node.op==='gte')return x>=y;
+    if(node.op==='lt')return x<y;if(node.op==='lte')return x<=y;
+    throw Error('VIBE59_ORACLE_COMPARE_OP');
+  }
+  if(node.kind==='and'||node.kind==='or'){
+    if(!Array.isArray(node.items)||node.items.length<2||node.items.length>6)
+      throw Error('VIBE59_ORACLE_BOOLEAN_ARGS');
+    return node.kind==='and'?node.items.every(x=>Boolean(recurse(x))):
+      node.items.some(x=>Boolean(recurse(x)));
+  }
+  if(node.kind==='not')return !Boolean(recurse(node.value));
+  throw Error('VIBE59_ORACLE_EXPRESSION_KIND');
+}
+function eval59Actions(items,state){
+  for(const a of items){
+    action(a,'web');
+    const value=eval59Expression(a.value,state),old=state[a.output];
+    let result=value;
+    if(a.action!=='assign'&&a.action!=='clamp'){
+      if(typeof old!=='number'||typeof value!=='number')throw Error('VIBE59_ORACLE_NUMERIC_STATE');
+      result=a.action==='add'?old+value:a.action==='subtract'?old-value:old*value;
+    }
+    if(a.action==='clamp'){
+      if(typeof value!=='number')throw Error('VIBE59_ORACLE_CLAMP_NUMBER');
+      result=Math.min(a.maximum,Math.max(a.minimum,value));
+    }
+    if(typeof result==='number')finite(result,'oracle-result');
+    state[a.output]=result;
+  }
+}
+function oracle59State(initial){
+  if(!initial||typeof initial!=='object'||Array.isArray(initial))throw Error('VIBE59_ORACLE_STATE');
+  const state=Object.create(null);
+  for(const [key,value] of Object.entries(initial)){
+    if(!validName(key)||!(typeof value==='boolean'||typeof value==='string'&&value.length<=120
+      ||typeof value==='number'&&Number.isFinite(value)))
+      throw Error('VIBE59_ORACLE_STATE_VALUE');
+    state[key]=value;
+  }
+  return state;
+}
+function oracle59Result(row,state,consumed){
+  if(!row.expectedState||typeof row.expectedState!=='object'||Array.isArray(row.expectedState))
+    throw Error('VIBE59_ORACLE_EXPLICIT_EXPECTATION');
+  const diffs=Object.entries(row.expectedState).filter(([key,value])=>{
+    if(!validName(key)||!['boolean','number','string'].includes(typeof value))
+      throw Error('VIBE59_ORACLE_EXPECTED_VALUE');
+    return !Object.hasOwn(state,key)||state[key]!==value;
+  }).map(([key,value])=>({field:key,expected:value,actual:state[key]??null}));
+  if(row.expectedConsumed!==undefined){
+    if(!Array.isArray(row.expectedConsumed)||row.expectedConsumed.length!==consumed.length
+      ||row.expectedConsumed.some(x=>typeof x!=='boolean'))
+      throw Error('VIBE59_ORACLE_EXPECTED_EVENTS');
+    if(row.expectedConsumed.some((x,i)=>x!==consumed[i]))
+      diffs.push({field:'events',expected:row.expectedConsumed,actual:consumed});
+  }
+  return {name:clean(row.name)||'scenario',pass:diffs.length===0,
+    differences:diffs,actualState:{...state},consumed};
+}
+export function verifyVibe59GameScenarios({rule=null,machine=null,scenarios=[]}={}){
+  if(Boolean(rule)===Boolean(machine))throw Error('VIBE59_ORACLE_KIND_REQUIRED');
+  if(!Array.isArray(scenarios)||scenarios.length>20)throw Error('VIBE59_ORACLE_CASE_LIMIT');
+  const m=machine?machine59Spec(machine):null;
+  if(rule)synthesizeVibe59StateLogic({rule,target:'web'});
+  const cases=scenarios.map(row=>{
+    if(!row||typeof row!=='object')throw Error('VIBE59_ORACLE_CASE');
+    const state=oracle59State(row.initialState),consumed=[];
+    if(m){
+      if(!m.states.includes(state[m.stateVariable])||!Array.isArray(row.events)
+        ||row.events.length>32||row.events.some(x=>typeof x!=='string'))
+        throw Error('VIBE59_ORACLE_EVENT_CASE');
+      for(const event of row.events){
+        const t=m.transitions.find(t=>t.from===state[m.stateVariable]&&t.event===event
+          &&(!t.when||Boolean(eval59Expression(t.when,state))));
+        if(t){state[m.stateVariable]=t.to;eval59Actions(t.actions||[],state);consumed.push(true)}
+        else consumed.push(false);
+      }
+    }else{
+      const items=Boolean(eval59Expression(rule.when,state))?rule.then:(rule.otherwise||[]);
+      eval59Actions(items,state);
+    }
+    return oracle59Result(row,state,consumed);
+  });
+  return Object.freeze({cases,counterexamples:cases.filter(x=>!x.pass),
+    pass:cases.every(x=>x.pass),explicitCases:cases.length,
+    sourceWrite:false,runtimeVerified:false,runnableAgainstRealGame:false,
+    authority:'isolated-semantic-oracle-only'});
 }
