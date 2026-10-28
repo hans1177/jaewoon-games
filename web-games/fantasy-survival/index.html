@@ -3493,7 +3493,7 @@ function updateAutoCombat(now){
  let target=null,best=Infinity;
  for(const e of state.enemies){
   if(isCreative()&&!(e.creativeOwned&&e.creativeAttackPlayer))continue;
-  if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless'||e.type.burrower&&!e.emerged||e.type.labBoss&&now<(e.submergedUntil||0))continue;
+  if(e.crystalHidden||e.hp<=0||e.area!==state.area||e.type.mood==='harmless'||e.type.burrower&&!e.emerged||e.type.labBoss&&now<(e.submergedUntil||0))continue;
   if(!(e.hostile||e.type.mood==='aggressive'||e.type.mood==='boss'||e.type.boss||e.type.labBoss))continue;
   const d=dist(p.x,p.y,e.x,e.y),range=mounted?150:currentRange()+(Number(e.type.r)||0);
   if((mounted?d<range:d<=range)&&d<best){target=e;best=d}
@@ -4007,7 +4007,7 @@ async function copyMultiplayerLink(){
  try{await navigator.clipboard.writeText(u.toString());showNotice('멀티 초대 링크 복사됨')}catch{showNotice('방 코드: '+multiplayer.room)}
 }
 function petAlive(){return state.pet.hatched&&state.pet.alive&&state.pet.hp>0}
-function petTarget(){return state.enemies.find(e=>e.netId===state.pet.targetId&&e.hp>0&&e.area===state.area)||null}
+function petTarget(){return state.enemies.find(e=>e.netId===state.pet.targetId&&!e.crystalHidden&&e.hp>0&&e.area===state.area)||null}
 function engagePet(e){if(petAlive()&&e&&e.hp>0)state.pet.targetId=e.netId}
 function enemyDetectRange(e,fallback=430){const base=Math.max(1,Number(e?.type?.detect)||fallback);return base>=800?base:base*.5}
 function markEnemyHitByPet(e){if(!e)return;e.hostile=true;e.allyTarget='pet';e.allyTargetAt=performance.now();if(e.type?.mood==='neutral')e.playerTargetId='pet'}
@@ -4091,7 +4091,7 @@ function hostApplyPetAttack(a){
  if(!multiIsHost()||!a)return;
  const remote=multiplayer.remote.get(a.ownerId),pet=remote?.pet,now=performance.now();
  if(!pet||Number(pet.hp)<=0||now-(remote.seenAt||0)>1500)return;
- const e=state.enemies.find(x=>x.netId===a.targetId&&x.hp>0&&x.area===remote.area);if(!e)return;
+ const e=state.enemies.find(x=>x.netId===a.targetId&&!x.crystalHidden&&x.hp>0&&x.area===remote.area);if(!e)return;
  const special=a.kind==='croc-special',croc=pet.form==='croc';
  if(special&&!croc)return;
  if(dist(Number(pet.x),Number(pet.y),e.x,e.y)>(special?120:105)+e.type.r)return;
@@ -4119,7 +4119,7 @@ function startPetSpecial(){
  showNotice('악어 특수공격 · 2초 준비');updateHud()
 }
 function petStrike(e,manual=false){
- if(!petAlive()||!e||e.hp<=0)return false;const now=performance.now();if(state.pet.special||now<(state.pet.stunnedUntil||0))return false;if(now-state.pet.attackAt<750)return false;
+ if(!petAlive()||!e||e.hp<=0||e.crystalHidden)return false;const now=performance.now();if(state.pet.special||now<(state.pet.stunnedUntil||0))return false;if(now-state.pet.attackAt<750)return false;
  if(dist(state.pet.x,state.pet.y,e.x,e.y)>105+e.type.r)return false;state.pet.attackAt=now;playGameSfx('petAttack');
  if(multiplayer.connected&&!multiIsHost())multiSend('pet-attack',{ownerId:multiplayer.playerId,targetId:e.netId});
  else{const dmg=enemyIncomingDamage(e,state.pet.form==='croc'?105:42,now);e.hp-=dmg;e.hitAt=now+110;markEnemyHitByPet(e);if(e.hp<=0)finishPetEnemyKill(e,multiplayer.playerId)}
@@ -4127,7 +4127,7 @@ function petStrike(e,manual=false){
 }
 function petMountedAttack(){
  if(!state.pet.mounted||!petAlive())return false;let best=null,bd=150;
- for(const e of state.enemies){if(e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable))continue;const d=dist(state.pet.x,state.pet.y,e.x,e.y);if(d<bd){best=e;bd=d}}
+ for(const e of state.enemies){if(e.crystalHidden||e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable))continue;const d=dist(state.pet.x,state.pet.y,e.x,e.y);if(d<bd){best=e;bd=d}}
  if(best){state.pet.targetId=best.netId;petStrike(best,true)}else showNotice('근처에 공격할 적이 없어');return true
 }
 function updatePet(dt,now){
@@ -4161,7 +4161,7 @@ function updatePet(dt,now){
  }
  if(pet.mounted){pet.x=p.x;pet.y=p.y;return}
  let target=petTarget();
- if(!target){let best=null,bd=430;for(const e of state.enemies){if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')continue;if(!e.raidId&&!e.hostile&&e.type.mood!=='aggressive'&&e.type.mood!=='boss')continue;const d=dist(pet.x,pet.y,e.x,e.y);if(d<bd){best=e;bd=d}}if(best){pet.targetId=best.netId;target=best}}
+ if(!target){let best=null,bd=430;for(const e of state.enemies){if(e.crystalHidden||e.hp<=0||e.area!==state.area||e.type.mood==='harmless')continue;if(!e.raidId&&!e.hostile&&e.type.mood!=='aggressive'&&e.type.mood!=='boss')continue;const d=dist(pet.x,pet.y,e.x,e.y);if(d<bd){best=e;bd=d}}if(best){pet.targetId=best.netId;target=best}}
  if(target){
   const d=dist(pet.x,pet.y,target.x,target.y);
   if(d>78){pet.x+=((target.x-pet.x)/(d||1))*245*dt;pet.y+=((target.y-pet.y)/(d||1))*245*dt}
@@ -4214,8 +4214,17 @@ function firePlayerArrow(now,p,w,arrow){
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2')multiSend('player-arrow',{ownerId:multiplayer.playerId,area:state.area,x:p.x,y:p.y,faceX:dirX,faceY:dirY,bowId:w.id,arrowId:arrow.id,targetId:aimed?aimTarget.netId:null});else state.projectiles.push(projectile);
  state.dirty=true;updateHud();saveGame(false)
 }
-function attack(selectedTapTarget=null){
- const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+function attack(selectedTapTarget=null,emptyWorldTap=false){
+ const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(!emptyWorldTap&&petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+ // 빈 땅 터치는 무기 휘두르기만 재생한다. 숨은 몬스터나 멀리 있는
+ // 몬스터를 화면 바깥에서 자동 조준·처치하거나 멀티 피해로 보내지 않는다.
+ // 공격 버튼과 실제 몬스터 터치, 기존 자동 전투는 그대로 유효 판정을 사용한다.
+ if(emptyWorldTap){
+  p.attackAt=now;p.attackFx=now+150;
+  playGameSfx('playerAttack');
+  playCombatAudio('swing',Math.max(0,Math.min(1,(Number(w?.power)||0)/180)));
+  state.dirty=true;updateHud();return
+ }
  // 무기 기술과 자동 전투는 같은 유효 표적에 조준하고 실제 공격 판정은 아래 기존 흐름을 쓴다.
  const aimed=selectedTapTarget||state.enemies.find(e=>e.netId===state.combat?.targetId);
  if(aimed&&aimed.hp>0&&aimed.area===state.area){const dx=aimed.x-p.x,dy=aimed.y-p.y,d=Math.hypot(dx,dy);if(d<=currentRange()+(Number(aimed.type.r)||0)){p.faceX=dx/(d||1);p.faceY=dy/(d||1)}}
@@ -4900,7 +4909,7 @@ function handleWorldTap(e){
  }
  if(state.area==='surface'&&!state.giantCrocEggTaken&&dist(wx,wy,GIANT_CROC_EGG.x,GIANT_CROC_EGG.y)<60){doubleTapTarget('giant-croc-egg',now,()=>{if(state.giantCrocEggTaken)return;state.giantCrocEggTaken=true;addInv('giant-croc-egg',1);state.dirty=true;showNotice('거대 악어 알 획득 · 부화기에서 10분 부화');saveGame(false)});return}
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
- const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
+ const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);
  let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=70;
  if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(cd,(Number(m.type.r)||20)+22)){closest=m;cd=d}}
  if(closest){
@@ -4953,7 +4962,7 @@ function handleWorldTap(e){
    }
  }
  lastWorldTap={target:null,at:0};
- if(!isCreative())attack();
+ if(!isCreative())attack(null,true);
 }
 function monsterTargetForIronSpirit(e){
   let best=null,bestD=e.type.detect||860;

@@ -20,10 +20,10 @@ test('mobile tap combat preserves parseable game script and native button input'
 });
 
 test('tapping a visible enemy fires only when target is attackable and within weapon range',()=>{
-  const start=source.indexOf('let closest=null,cd=70;');
+  const start=source.indexOf(' const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);');
   const end=source.indexOf("\n if(state.area==='surface'){",start);
   assert.ok(start>=0&&end>start,'live handleWorldTap enemy branch must exist');
-  const tap=new Function('visible','dist','wx','wy','now','state','doubleTapTarget',
+  const tap=new Function('state','dist','wx','wy','now','worldPoint','doubleTapTarget',
    'unlockBestiary','tapArrowAimTarget','currentWeapon','currentRange','showNotice','attack',source.slice(start,end));
   const cases=[
     {name:'in range',x:40,range:120,attacks:1,aim:1},
@@ -31,13 +31,14 @@ test('tapping a visible enemy fires only when target is attackable and within we
     {name:'unarmed',x:40,range:null,attacks:0,aim:0},
     {name:'harmless',x:40,range:120,mood:'harmless',attacks:0,aim:0},
     {name:'burrowed',x:40,range:120,burrowed:true,attacks:0,aim:0},
+    {name:'invisible crystal lizard',x:40,range:120,hidden:true,attacks:0,aim:0},
   ];
   for(const c of cases){
     const enemy={x:c.x,y:0,type:{id:'test',name:'시험 몬스터',r:20,
-      mood:c.mood||'hostile',burrower:!!c.burrowed},netId:'enemy-test',hp:100,area:'surface',emerged:!c.burrowed};
-    const state={player:{x:0,y:0,faceX:0,faceY:0}};
+      mood:c.mood||'hostile',burrower:!!c.burrowed},netId:'enemy-test',hp:100,area:'surface',emerged:!c.burrowed,crystalHidden:!!c.hidden};
+    const state={area:'surface',player:{x:0,y:0,faceX:0,faceY:0},enemies:[enemy]};
     let attacks=0,aim=0;
-    tap([enemy],(x,y,xx,yy)=>Math.hypot(x-xx,y-yy),c.x,0,1000,state,
+    tap(state,(x,y,xx,yy)=>Math.hypot(x-xx,y-yy),c.x,0,1000,{monsterId:enemy.netId},
       ()=>false,()=>{},()=>{aim++},()=>c.range===null?null:{range:c.range},()=>c.range||0,
       ()=>{},target=>{assert.equal(target,enemy);attacks++});
     assert.equal(attacks,c.attacks,c.name);
@@ -71,8 +72,8 @@ test('crystal dash uses three valid background taps and preserves single-tap fal
  const state={player:{accessory:'crystal-dash-accessory'},blueprint:null,creativePlacing:false,
    keys:new Set(['KeyD']),stick:{x:0,y:0}};
  const notices=[];
- const dash=new Function('state','combatTapTarget','showNotice',source.slice(begin,end)+';return maybeCrystalDashTripleTap;')(
-   state,()=>null,message=>notices.push(message));
+ const dash=new Function('state','combatTapTarget','showNotice','updateHud',source.slice(begin,end)+';return maybeCrystalDashTripleTap;')(
+   state,()=>null,message=>notices.push(message),()=>{});
  const p={x:20,y:20};
  assert.equal(dash(p,1000),false);
  assert.equal(dash(p,1150),false);
@@ -170,7 +171,7 @@ test('quest compass and map stay integrated with existing mobile controls',()=>{
  assert.match(source,/function updateQuestGuide\(now=performance\.now\(\)\)/);
  assert.match(source,/updateQuestGuide\(now\);draw\(\)/);
  assert.match(source,/getElementById\('questNavMap'\)\.addEventListener\('click',\(\)=>ui\.mapBtn\.click\(\)\)/);
- assert.match(source,/const guidance=questGuideData\(\)/);
+ assert.match(source,/const guidance=chosen\?\{\.\.\.chosen,area:state\.area\}:questGuideData\(\)/);
  assert.match(source,/m\.setLineDash\(\[4,5\]\)/);
  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
@@ -267,7 +268,7 @@ test('always-on auto gathering skips unmineable nearby ore and keeps authoritati
  const start=source.indexOf('function updateAutoGather('),end=source.indexOf('\nfunction ',start+20);
  const state={area:'surface',player:{x:0,y:0},gathering:{auto:false,target:null,nextAt:0,blockedUntil:0}};
  const ore={id:'ore',kind:'iron',x:5,y:0,hp:4},tree={id:'tree',kind:'tree',x:10,y:0,hp:4};let calls=[];
- const context=vm.createContext({state,AUTO_GATHER_RANGE:110,AUTO_GATHER_INTERVAL_MS:500,resourceNodes:()=>[tree,ore],playerCombatActive:()=>false,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),gather:(target,silent)=>{assert.equal(silent,true);calls.push(target.id);if(target===ore)return false;target.hp--;return true}});
+ const context=vm.createContext({state,AUTO_GATHER_RANGE:110,AUTO_GATHER_INTERVAL_MS:500,resourceNodes:()=>[tree,ore],resourceGatherRange:()=>110,playerCombatActive:()=>false,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),gather:(target,silent)=>{assert.equal(silent,true);calls.push(target.id);if(target===ore)return false;target.hp--;return true}});
  vm.runInContext(source.slice(start,end),context);vm.runInContext('updateAutoGather(1000)',context);
  assert.equal(state.gathering.auto,true);assert.deepEqual(calls,['ore','tree']);assert.equal(state.gathering.target,tree);assert.equal(state.gathering.nextAt,1500);
  vm.runInContext('updateAutoGather(1200)',context);assert.equal(calls.length,2,'no faster gathering through frame rate');
@@ -279,9 +280,9 @@ test('automatic combat selects only reachable hostile targets and delegates atta
  const enemy=(id,x,extra={})=>({netId:id,x,y:0,hp:100,area:'surface',type:{mood:'aggressive',r:20},...extra});
  const state={area:'surface',player:{x:0,y:0,attackAt:0},pet:{mounted:false,attackAt:0},combat:{targetId:null},settings:{autoCombat:true},enemies:[]};let hits=[];
  const nodes={hudGuide:{hidden:true},avatarPanel:{hidden:true},optionsPanel:{classList:{contains:()=>false}}};
- const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentWeapon:()=>({range:80}),currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
+ const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentRange:()=>80,currentWeapon:()=>({range:80}),currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
  vm.runInContext(source.slice(start,end),context);
- state.enemies=[enemy('neutral',1,{type:{mood:'neutral',r:20},hostile:false}),enemy('other-area',5,{area:'underwater'}),enemy('burrowed',6,{type:{mood:'aggressive',r:20,burrower:true},emerged:false}),enemy('far',500),enemy('near',50)];
+ state.enemies=[enemy('neutral',1,{type:{mood:'neutral',r:20},hostile:false}),enemy('other-area',5,{area:'underwater'}),enemy('burrowed',6,{type:{mood:'aggressive',r:20,burrower:true},emerged:false}),enemy('far',500),enemy('hidden-lizard',30,{crystalHidden:true}),enemy('near',50)];
  vm.runInContext('updateAutoCombat(1000)',context);assert.deepEqual(hits,['near']);assert.equal(state.combat.targetId,'near');
  vm.runInContext('updateAutoCombat(1100)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,'near','target status stays stable during cooldown');
  state.settings.autoCombat=false;vm.runInContext('updateAutoCombat(1500)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,null);
@@ -318,11 +319,11 @@ test('worldtree ground cave and reachable shoreline enter through the existing a
  assert.match(source,/const selectedPassage=regionPassages\(\)\.find/);
 });
 
-test('all 174 unchanged recipe identities and resource rows resolve verified installed CC0 icon files',()=>{
+test('all 175 current recipe identities including dash accessory resolve verified CC0 icon files',()=>{
  const a=source.indexOf('const recipes=['),b=source.indexOf('];',a);
  assert.ok(a>=0&&b>a);
  const recipes=vm.runInNewContext(source.slice(a,b+2)+';recipes');
- assert.equal(recipes.length,174);
+ assert.equal(recipes.length,175);assert.ok(recipes.some(r=>r.id==='crystal-dash-accessory'));
  assert.equal(new Set(recipes.map(r=>r.id)).size,recipes.length);
  const c=source.indexOf("const iconFor=(id,kind,name='')=>"),d=source.indexOf('const iconTag=',c);
  assert.ok(c>=0&&d>c);
@@ -341,7 +342,7 @@ test('all 174 unchanged recipe identities and resource rows resolve verified ins
 
 test('low-quality mobile mode reduces GPU cost without deleting the original native creature and dungeon source',()=>{
  const native=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
- assert.match(native,/mobileBudget\?\.9:1\.5/);
+ assert.match(native,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,mobileBudget\?\.82:\.95\)\*\(mobileBudget\?\.82:1\)\)/);
  assert.match(native,/let qualityFactor=mobileBudget\?\.82:1/);
  assert.match(native,/if\(mobileBudget\?hash%5===0:hash%3!==0\)/);
  assert.match(native,/mobileBudget\?650:1000/);
@@ -349,7 +350,7 @@ test('low-quality mobile mode reduces GPU cost without deleting the original nat
  assert.match(native,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
  assert.match(native,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
  assert.match(native,/updateInteriorWalls\(isInterior\?regionScene:null/);
- assert.match(source,/underwater:'underwater','underwater-dungeon':'underwater-dungeon'/);
+ assert.match(native,/'underwater-dungeon':\{floor:0x/);
 });
 
 
@@ -370,7 +371,7 @@ test('mage has 405 range but knights keep their equipped weapon reach and cooldo
 });
 
 test('mage default attack launches a real moving magic bolt and uses existing weapon damage',()=>{
- const a=source.indexOf('function attack(selectedTapTarget=null){'),b=source.indexOf('\nfunction ',a+20);
+ const a=source.indexOf('function attack(selectedTapTarget=null,emptyWorldTap=false){'),b=source.indexOf('\nfunction ',a+20);
  assert.ok(a>0&&b>a);
  const weapon={id:'stone-sword',range:75,cooldown:380,power:18};
  const enemy={netId:'e1',x:280,y:0,hp:100,area:'surface',type:{r:20,mood:'aggressive',name:'시험 몬스터'}};
@@ -398,4 +399,36 @@ test('mage default attack launches a real moving magic bolt and uses existing we
  assert.equal(enemy.hp,82,'damage belongs to existing weapon power');
  assert.equal(state.projectiles.length,0,'projectile consumed exactly once');
  assert.equal(state.player.weapon,'stone-sword','equipment unchanged');
+});
+
+
+test('empty world tap swings without killing off-target crystal lizards or hitting in multiplayer',()=>{
+  assert.match(source,/function attack\(selectedTapTarget=null,emptyWorldTap=false\)/);
+  assert.match(source,/if\(!isCreative\(\)\)attack\(null,true\)/);
+  assert.match(source,/if\(!emptyWorldTap&&petMountedAttack\(\)\)return/);
+  const start=source.indexOf(' // 빈 땅 터치는'),end=source.indexOf(' // 무기 기술과 자동 전투',start);
+  assert.ok(start>0&&end>start,'real attack must have an early empty-target guard');
+  const execute=new Function('emptyWorldTap','p','now','w','state','playGameSfx',
+    'playCombatAudio','updateHud',source.slice(start,end)+';return "normal-target";');
+  const p={attackAt:1,attackFx:0},state={dirty:false},events=[];
+  assert.equal(execute(true,p,1000,{power:48},state,
+    value=>events.push(value),(name,weight)=>events.push([name,weight]),
+    ()=>events.push('hud')),undefined,'ground tap must exit before any damage or multiSend loop');
+  assert.equal(p.attackAt,1000);
+  assert.equal(p.attackFx,1150);
+  assert.equal(state.dirty,true);
+  assert.equal(events[0],'playerAttack');
+  assert.equal(events[1][0],'swing');
+  assert.equal(events[2],'hud');
+  const normal={attackAt:1,attackFx:0},normalState={dirty:false};
+  assert.equal(execute(false,normal,1000,{power:48},normalState,
+    ()=>{throw Error('normal attack unexpectedly sent early sound')},
+    ()=>{throw Error('normal attack unexpectedly used miss branch')},
+    ()=>{}),'normal-target','button, monster tap and existing auto attacks must retain normal combat');
+  assert.equal(normal.attackAt,1);
+  assert.equal(normalState.dirty,false);
+  const auto=source.split('function updateAutoCombat(now){')[1]?.split('function currentWeapon()')[0]||'';
+  assert.match(auto,/if\(e\.crystalHidden\|\|e\.hp<=0/);
+  assert.match(source,/function petStrike\(e,manual=false\)\{\s*if\(!petAlive\(\)\|\|!e\|\|e\.hp<=0\|\|e\.crystalHidden\)return false/);
+  assert.match(source,/function petTarget\(\)\{return state\.enemies\.find\(e=>e\.netId===state\.pet\.targetId&&!e\.crystalHidden/);
 });

@@ -592,7 +592,11 @@ test('mobile game world taps use existing attack mechanics',()=>{
  assert.ok(!html.includes('.actions>#attack{display:none!important}'));
  assert.ok(html.includes('id="autoCombat"'));
  assert.ok(html.includes('root.dataset.playerAttackAt=Number(p.attackAt||0).toFixed(0)'));
- assert.ok(html.includes('if(!isCreative())attack();'));
+ assert.ok(html.includes('if(!isCreative())attack(null,true);'));
+ // Background taps animate a swing but must not hit a hidden/unselected lizard.
+ assert.ok(html.includes('function attack(selectedTapTarget=null,emptyWorldTap=false){'));
+ assert.ok(html.includes('if(emptyWorldTap){'));
+ assert.ok(html.includes("playCombatAudio('swing',"));
  assert.ok(html.includes('if(!isCreative()){'));
  assert.ok(html.includes('if(pendingCombatTap)return;'));
  assert.ok(html.includes('if(isCombatTapGesture(press,e,performance.now())){const point=worldPointerCoords(e);if(!maybeCrystalDashTripleTap(point,performance.now()))handleWorldTap(e)}'));
@@ -666,4 +670,51 @@ test('native action clips replay from real attack events without substitute anim
   assert.match(moduleSource,/motionRuntimeVerified:false/);
   assert.match(moduleSource,/getRenderStats:\(\)=>/);
   assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+
+test('all saved player buildings and all buildable ghost recipes display licensed 3D models',()=>{
+  const namesRaw=moduleSource.split('const MODEL_NAMES = Object.freeze([')[1]?.split(']);')[0];
+  const mapRaw=moduleSource.split('const STRUCTURE_MODEL_BY_ID=Object.freeze({')[1]?.split('});')[0];
+  assert.ok(namesRaw&&mapRaw,'one canonical existing-asset mapping must feed both placed and preview');
+  const assetNames=new Function('return ['+namesRaw+']')();
+  const models=new Function('return ({'+mapRaw+'})')();
+  const ids=['bench','furnace','toxic-furnace','iron-bench','gold-bench','jungle-bench',
+    'sunstone-bench','blacksmith-anvil','cooking-station','shadow-wolf-incubator',
+    'flag','storage-chest','wood-wall','wood-door','defense-tower','bed','garden-plot','portal'];
+  for(const id of ids){
+    assert.ok(models[id],'missing 3D preview for buildable '+id);
+    assert.ok(assetNames.includes(models[id]),'unlicensed/missing model source for '+id);
+    assert.ok(index.includes("'"+id+"'"),'no original recipe or building for '+id);
+  }
+  assert.match(moduleSource,/const blueprintKind=bp\?\(STRUCTURE_MODEL_BY_ID\[bp\.id\]\|\|'\'\):'\'/);
+  assert.match(moduleSource,/blueprintGhost\.visible=!!bp&&!!blueprintVisual/);
+  assert.match(moduleSource,/blueprintMaterial=new THREE\.MeshBasicMaterial\(\{color:0x80f5a3,transparent:true,opacity:\.78,depthTest:false/);
+  assert.match(moduleSource,/\['furnace',state\.furnace,'bench_B'\]/);
+  assert.match(moduleSource,/\['sunstoneBench',state\.sunstoneBench,'bench_B'\]/);
+  assert.match(moduleSource,/\['incubator',state\.incubator,'house'\]/);
+  assert.match(moduleSource,/\['tower',state\.towers,'house',1\.6\]/);
+  assert.match(moduleSource,/\['bed',state\.beds,'house',1\.1\]/);
+  assert.match(moduleSource,/\['garden',state\.gardens,'foliage_A',1\.2\]/);
+  assert.match(moduleSource,/\['portal',state\.portals,'gate_single',1\.5\]/);
+  assert.match(moduleSource,/addVisibleEntity\('built:'\+group\+':'\+\(placed\.id\|\|i\)/);
+  assert.match(index,/state\.walls/);
+  assert.match(index,/state\.doors/);
+  assert.match(index,/state\.chests/);
+  assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+});
+
+test('registered monster name tags remain sharply legible and disappear on save reset',()=>{
+  const nameplate=moduleSource.split('function syncBestiaryName(actor,e,state,height){')[1]
+    ?.split('  // 메인 · 기존 건축 청사진')[0]||'';
+  assert.ok(nameplate);
+  assert.match(nameplate,/if\(!state\.bestiary\?\.\[e\.type\?\.id\]\)/);
+  assert.match(nameplate,/actor\.anchor\.remove\(actor\.nameLabel\)/);
+  assert.match(nameplate,/actor\.nameLabel\.material\.dispose\(\)/);
+  assert.match(nameplate,/surface\.width=768;surface\.height=128/);
+  assert.match(nameplate,/pen\.strokeText\(e\.type\.name,384,65,710\)/);
+  assert.match(nameplate,/pen\.fillStyle='#ffffff'/);
+  assert.match(nameplate,/toneMapped:false/);
+  assert.match(nameplate,/label\.scale\.set\(Math\.min\(6\.5,Math\.max\(3\.2,e\.type\.name\.length\*\.56\)\),1\.2,1\)/);
+  assert.match(index,/state\.bestiary=s\.bestiary&&typeof s\.bestiary==='object'/);
 });
