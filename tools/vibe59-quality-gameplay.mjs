@@ -271,3 +271,104 @@ export function synthesizeVibe59QualityGameplay({spec={},source='',sourcePath=''
   generatedMechanic:true,modelUsed:false,sourceWrite:false,runtimeVerified:false,
   authority:'source-grounded-advanced-gameplay-candidate'});
 }
+
+
+// An independent bounded state/decision oracle for approved gameplay acceptance tests.
+// Facts are supplied by the owner; this does not execute Roblox Instances or DataStore.
+function scenarioFacts(input){
+ if(!input||typeof input!=='object'||Array.isArray(input))throw Error('VIBE59_QUALITY_SCENARIO_FACTS');
+ const json=JSON.stringify(input);
+ if(!json||json.length>10000)throw Error('VIBE59_QUALITY_SCENARIO_SIZE');
+ return JSON.parse(json);
+}
+function expectedNumber(value,name){
+ if(typeof value!=='number'||!Number.isFinite(value))throw Error('VIBE59_QUALITY_SCENARIO_NUMBER:'+name);
+ return value;
+}
+function qualityDecision(spec,facts){
+ const op=spec.operation;
+ if(op==='combat-authoritative-melee'){
+  const last=expectedNumber(facts.lastAttackAt,'lastAttackAt'),
+   now=expectedNumber(facts.now,'now'),distance=expectedNumber(facts.distance,'distance');
+  const allowed=facts.authorized===true&&facts.playerValid===true&&facts.targetValid===true
+   &&facts.targetAlive===true&&distance<=spec.range&&now-last>=spec.cooldown;
+  return {applied:allowed,effects:{damageDealt:allowed?spec.damage:0,
+    lastAttackAt:allowed?now:last}};
+ }
+ if(op==='building-authorized-placement'){
+  const material=expectedNumber(facts.materialCount,'materialCount');
+  const allowed=facts.playerValid===true&&facts.authorized===true&&facts.blueprintValid===true
+   &&facts.folderValid===true&&facts.withinRange===true&&facts.collisionFree===true
+   &&material>=spec.cost;
+  return {applied:allowed,effects:{materialCount:allowed?material-spec.cost:material,
+    modelPlaced:allowed}};
+ }
+ if(op==='crafting-atomic-recipe'){
+  const inventory=scenarioFacts(facts.inventory);
+  let allowed=true;
+  for(const input of spec.inputs){
+   if(expectedNumber(inventory[input.field],input.field)<input.amount)allowed=false;
+  }
+  const current=expectedNumber(inventory[spec.output],spec.output);
+  if(current<0||current+spec.outputAmount>spec.outputLimit)allowed=false;
+  if(allowed){
+   for(const input of spec.inputs)inventory[input.field]-=input.amount;
+   inventory[spec.output]+=spec.outputAmount;
+  }
+  return {applied:allowed,effects:{inventory}};
+ }
+ if(op==='bestiary-confirmed-death'){
+  const count=expectedNumber(facts.killCount,'killCount');
+  const allowed=facts.monsterValid===true&&facts.dead===true&&facts.speciesMatches===true
+   &&facts.killerMatches===true&&facts.alreadyCredited!==true&&count<spec.countLimit
+   &&typeof facts.discovered==='boolean';
+  return {applied:allowed,effects:{killCount:allowed?count+1:count,
+    discovered:allowed?true:facts.discovered,credited:allowed?true:facts.alreadyCredited===true}};
+ }
+ if(op==='saving-revisioned-update'){
+  if(typeof facts.dirty!=='boolean'||!Array.isArray(facts.attemptResults)
+    ||facts.attemptResults.length>3||facts.attemptResults.some(x=>typeof x!=='boolean'))
+    throw Error('VIBE59_QUALITY_SAVE_SCENARIO');
+  const started=expectedNumber(facts.revisionAtStart,'revisionAtStart');
+  const current=expectedNumber(facts.revisionAfter,'revisionAfter');
+  let applied=false,attempts=0;
+  if(facts.playerValid===true){
+   if(!facts.dirty)applied=true;
+   else for(let i=0;i<spec.maxAttempts;i++){
+    attempts++;
+    if(facts.attemptResults[i]===true){applied=true;break}
+   }
+  }
+  return {applied,effects:{attempts,
+    dirty:facts.dirty===true&&!(applied&&started===current)}};
+ }
+ if(op==='ai-throttled-chase'){
+  const now=expectedNumber(facts.now,'now'),
+   last=expectedNumber(facts.lastMoveAt,'lastMoveAt'),
+   distance=expectedNumber(facts.distance,'distance');
+  const allowed=facts.npcValid===true&&facts.targetValid===true&&facts.npcAlive===true
+   &&distance<=spec.range&&now-last>=spec.interval;
+  return {applied:allowed,effects:{lastMoveAt:allowed?now:last,moveIssued:allowed}};
+ }
+ throw Error('VIBE59_QUALITY_UNKNOWN_OPERATION');
+}
+export function verifyVibe59QualityScenarios({spec={},scenarios=[]}={}){
+ const normalized=validate(spec);
+ if(!Array.isArray(scenarios)||scenarios.length<2||scenarios.length>16)
+  throw Error('VIBE59_QUALITY_SCENARIOS_REQUIRED');
+ let positive=0,negative=0;
+ const results=scenarios.map((row,i)=>{
+  if(typeof row?.expectedApplied!=='boolean'||!row.expectedEffects)
+   throw Error('VIBE59_QUALITY_SCENARIO_EXPECTATION:'+i);
+  const observed=qualityDecision(normalized,scenarioFacts(row.facts));
+  const expected=scenarioFacts(row.expectedEffects);
+  if(row.expectedApplied)positive++;else negative++;
+  return {name:String(row.name??i).slice(0,60),
+   pass:observed.applied===row.expectedApplied
+      &&JSON.stringify(observed.effects)===JSON.stringify(expected),
+   applied:observed.applied,effects:observed.effects};
+ });
+ if(!positive||!negative)throw Error('VIBE59_QUALITY_BOUNDARY_SCENARIOS');
+ return Object.freeze({pass:results.every(x=>x.pass),cases:results,sourceWrite:false,
+  modelUsed:false,runtimeVerified:false,authority:'offline-gameplay-decision-oracle'});
+}
