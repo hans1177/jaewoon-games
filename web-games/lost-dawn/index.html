@@ -178,6 +178,13 @@ function makeWorld(){
   const type=zone?['tree','rock','rock','ore','plant','ore','tree','relic'][i%8]:['tree','tree','rock','plant','berry','tree','rock','berry'][i%8];
   objects.push({id:i,x,y,type,zone});
  }
+ // 시작 위치 근처에 실제 채집 가능한 원본 자산들을 배치해 초반 진행 막힘 방지
+ for(let i=0;i<36;i++){
+  const theta=i*2.39996,r=180+(i%6)*45;
+  const x=clamp(870+Math.cos(theta)*r,80,HALF-100),y=clamp(2560+Math.sin(theta)*r,80,WORLD.h-80);
+  if(places.some(p=>Math.hypot(x-p.x,y-p.y)<130)||npcs.some(p=>Math.hypot(x-p.x,y-p.y)<90))continue;
+  objects.push({id:600+i,x,y,type:['tree','rock','plant','berry'][i%4],zone:0});
+ }
  for(let i=0;i<90;i++){
   const species=SPECIES[i%SPECIES.length],zone=species.zones[i%species.zones.length];
   const x=zone?HALF+90+seeded(400+i)*3350:100+seeded(600+i)*3300;
@@ -205,7 +212,7 @@ function mobDrop(e,fromBow){
  if(fromBow)s.killsBow++;
  if(Math.random()<.13&&e.x>HALF)add('shard',1);
  if(Math.random()<.06&&e.x>HALF)add('relic',1);
- e.respawn=Date.now()+85000;e.hp=0;s.shots=undefined;
+ e.respawn=Date.now()+85000;e.hp=0;
  msg(d.name+' 처치 · 전리품 획득');
  save();
 }
@@ -316,8 +323,7 @@ function renderBag(el){
  const suit=PARTS.map(p=>p.name+': '+(s.armor[p.id]===null?'없음':SETS[s.armor[p.id]].name)).join(' · ');
  const detail=document.createElement('p');detail.textContent='근접: '+(s.weapon===null?'맨손':MELEE[s.weapon].name)+' · 원거리: '+(s.ranged.length?RANGED[s.ranged[s.ranged.length-1]].name:'없음')+' · 방어력 '+Math.round(armorDefense())+' / '+suit;el.append(detail);
  heading(el,'원거리 화살 선택');
- ARROWS.forEach((a,i)=>row(el,a.name,'남은 수량 '+(s.ammo[i]||0),'',false));
- // 화살 선택은 별도 버튼으로 제공한다.
+ // 화살 선택은 아래 버튼에서 직접 변경한다.
  for(let i=0;i<3;i++){
   const b=document.createElement('button');b.className='tab'+(s.arrowType===i?' selected':'');b.textContent=ARROWS[i].name+' '+(s.ammo[i]||0);
   b.onclick=()=>{s.arrowType=i;save();openPanel('bag')};el.append(b)
