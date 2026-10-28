@@ -8,6 +8,7 @@ import path from 'node:path';
 import {VIBE59_QUALITY_GAMEPLAY_ACTIONS,synthesizeVibe59QualityGameplay,
  verifyVibe59QualityScenarios} from '../tools/vibe59-quality-gameplay.mjs';
 import {createVibe59CodeCandidate,buildVibe59AutonomyPlan} from '../tools/vibe2-v59-autonomy.mjs';
+import {inspectVibe59LuauInsertionScope} from '../tools/vibe59-luau-scope.mjs';
 
 const slot=' -- VIBE59_QUALITY_SLOT\nend';
 const cases=[
@@ -187,7 +188,7 @@ test('insertion outside a completed Lua function is rejected instead of making b
  const finished=row.source.replace('\n -- VIBE59_QUALITY_SLOT',
   '\nend\n -- VIBE59_QUALITY_SLOT');
  assert.throws(()=>synthesizeVibe59QualityGameplay({spec:row.spec,source:finished,
-  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}),/FUNCTION_SCOPE_UNPROVEN/);
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}),/VIBE59_SCOPE_OUTSIDE_FUNCTION/);
 });
 test('combat does not emit damage before checking attacker alive; building uses rotated bounds',()=>{
  const combat=synthesizeVibe59QualityGameplay({spec:cases[0].spec,source:cases[0].source,
@@ -315,4 +316,48 @@ test('saving refuses shallow shared tables all the way through nested profile fi
  assert.match(code,/inspectedTables > 512/);
  assert.match(code,/depth > 8/);
  assert.ok(code.indexOf('detachedTables(state, snapshot, 0)')<code.indexOf('state.save.saving = true'));
+});
+
+
+test('balanced Luau scope accepts complete nested control blocks before insertion',()=>{
+ const fragments=[
+  'if state.flag then state.value = 1 else state.value = 2 end',
+  'for _, item in ipairs(items) do if item ~= nil then state.value = 1 end end',
+  'while state.flag do state.flag = false end',
+  'repeat state.value = state.value + 1 until state.value >= 2',
+  'local helper = function() if state.flag then return true end return false end',
+  'if state.flag then state.value = 1 elseif state.value == 0 then state.value = 2 end',
+  'do state.value = 5 end',
+  '--[[ function end return then if ]] local example = "end return function"'
+ ];
+ for(const fragment of fragments){
+  const source='local function handle(player)\n local state = profiles[player]\n'+
+   fragment+'\n -- VIBE59_QUALITY_SLOT\nend';
+  const result=inspectVibe59LuauInsertionScope({source,
+   anchor:'-- VIBE59_QUALITY_SLOT',functionName:'handle',signature:'player'});
+  assert.equal(result.ownerFunction,'handle');
+  assert.equal(result.nestedBlocks,0);
+  assert.equal(result.runtimeVerified,false);
+ }
+});
+test('Luau function scope blocks malicious or ambiguous insertion positions',()=>{
+ const start='local function handle(player)\n local state = profiles[player]\n';
+ const check=fragment=>inspectVibe59LuauInsertionScope({
+  source:start+fragment+'\n -- VIBE59_QUALITY_SLOT\nend',
+  anchor:'-- VIBE59_QUALITY_SLOT',functionName:'handle',signature:'player'});
+ for(const input of ['end','if state.flag then','local inner = function()',
+   'return true','repeat state.value = 0','end\nlocal function wrong()']){
+  assert.throws(()=>check(input),/VIBE59_SCOPE_/);
+ }
+ assert.throws(()=>check('local note = [[unfinished'),/UNTERMINATED_LONG_STRING/);
+ assert.throws(()=>check('--[=[ unfinished'),/UNTERMINATED_LONG_COMMENT/);
+});
+test('advanced building source is accepted after fully balanced valid conditional checks',()=>{
+ const row=cases[1];
+ const source=row.source.replace(' -- VIBE59_QUALITY_SLOT',
+  ' if state.inventory.wood > 0 then\n  state.inventory.wood = state.inventory.wood\n end\n -- VIBE59_QUALITY_SLOT');
+ const result=synthesizeVibe59QualityGameplay({spec:row.spec,source,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'});
+ assert.equal(result.operation,'building-authorized-placement');
+ assert.match(result.source,/built:GetBoundingBox/);
 });
