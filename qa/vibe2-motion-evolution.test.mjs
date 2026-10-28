@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {MOTION_FORGE_FEATURES,validateMotionEvolutionEvidence,recordVerifiedMotionEvolution,planVerifiedActorEvolution} from '../tools/vibe2-motion-evolution.mjs';
+import {MOTION_FORGE_FEATURES,MOTION_CRAFT_KNOBS,validateMotionCraftProfile,createVerifiedActorMotionVariants,validateMotionEvolutionEvidence,recordVerifiedMotionEvolution,planVerifiedActorEvolution} from '../tools/vibe2-motion-evolution.mjs';
 import {mergeNativeMotionEvolutionEvidence} from '../tools/vibe2-learning-motor.mjs';
 
 const base={
@@ -74,4 +74,51 @@ test('existing Vibe learning motor ingests only independently checked motion sam
     companyQueueInput:{motionEvolutionEvidence:[base]}});
   assert.equal(repeated.changed,false);
   assert.equal(repeated.records.length,1);
+});
+
+
+test('15 motion features generate bounded A/B/C candidates without model calls or gameplay authority',()=>{
+ assert.equal(Object.keys(MOTION_CRAFT_KNOBS).length,12);
+ assert.equal(validateMotionCraftProfile({damage:1000,attackStrike:1.2}),false);
+ assert.equal(validateMotionCraftProfile({footContact:1.2,recovery:.88}),true);
+ for(const featureId of MOTION_FORGE_FEATURES){
+  const plan=createVerifiedActorMotionVariants({
+   gameId:'P1001',actorClass:'BOSS',bodyPlan:'GIANT',featureId,generation:1,history:[],
+  });
+  assert.equal(plan.variants.length,3,featureId);
+  assert.equal(plan.status,'SOURCE_GROUNDED_EXPERIMENT',featureId);
+  assert.equal(plan.noProductionPromotionWithoutQA,true,featureId);
+  assert.ok(plan.variants.every(v=>validateMotionCraftProfile(v.profile)),featureId);
+  assert.equal(plan.variants[0].verified,false,featureId);
+ }
+});
+test('same-game same-actor native QA refines a proven baseline with increasingly smaller perturbations',()=>{
+ const featureId='FULL_BODY_WEIGHT_TRANSFER';
+ const proof={...base,bodyPlan:'GIANT',featureId,profile:{limbArc:1.1,headLead:.94}};
+ assert.equal(validateMotionEvolutionEvidence(proof).pass,true);
+ const initial=createVerifiedActorMotionVariants({gameId:'P1001',actorClass:'BOSS',bodyPlan:'GIANT',featureId,generation:2});
+ const learned=createVerifiedActorMotionVariants({gameId:'P1001',actorClass:'BOSS',bodyPlan:'GIANT',featureId,generation:2,history:[proof]});
+ assert.equal(initial.verifiedSamples,0);
+ assert.equal(learned.verifiedSamples,1);
+ assert.equal(learned.status,'VERIFIED_BASELINE_REFINEMENT');
+ assert.equal(learned.variants[0].verified,true);
+ assert.equal(learned.variants[0].profile.limbArc,1.1);
+ assert.equal(learned.baselineSourceEvidenceId,'real-replay-1');
+ assert.ok(learned.step<initial.step);
+ assert.equal(createVerifiedActorMotionVariants({gameId:'OTHER',actorClass:'BOSS',bodyPlan:'GIANT',featureId,history:[proof]}).verifiedSamples,0);
+ assert.equal(createVerifiedActorMotionVariants({gameId:'P1001',actorClass:'BOSS',bodyPlan:'QUADRUPED',featureId,history:[proof]}).verifiedSamples,0);
+ assert.equal(validateMotionEvolutionEvidence({...proof,profile:{health:99}}).pass,false);
+});
+test('procedural native actor clip authoring is bounded to real rig and preserves gameplay authority',()=>{
+ const code=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+ for(const api of ['SampleProceduralActorMotion','CreateProceduralActorSequence','RetargetExistingActorPose']){
+  assert.match(code,new RegExp('function RobloxCommonMotion\\.'+api+'\\('));
+ }
+ for(const state of ['IDLE','WALK','RUN','TURN','START','STOP','ATTACK','HIT','DEATH','INTERACT','GESTURE','FLY']){
+  assert.match(code,new RegExp('(?:^|\\n) '+state+'=\\{duration=', 'm'));
+ }
+ assert.match(code,/REAL_ACTOR_RIG_REQUIRED/);
+ assert.match(code,/REAL_ANIMATED_JOINTS_REQUIRED/);
+ assert.match(code,/RootMotionOwned",false/);
+ assert.match(code,/RuntimeVerificationState","PENDING_NATIVE_ACTOR_PLAYBACK/);
 });
