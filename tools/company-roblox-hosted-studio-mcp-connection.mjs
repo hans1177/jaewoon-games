@@ -32,6 +32,19 @@ export function evaluateHostedStudioMcpConnection(state={}){
 export function hostedConnectionIsVerified(state={}){
   return evaluateHostedStudioMcpConnection(state)==='CONNECTED_OFFICIAL_STUDIO_MCP';
 }
+// An ephemeral cloud image may start the signed proxy without a logged-in Studio
+// tool provider. Repeating this diagnostic cannot create a persistent user session.
+export function hostedCloudRecoveryAction(state={}){
+  const status=evaluateHostedStudioMcpConnection(state);
+  if([
+    'BLOCKED_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT',
+    'BLOCKED_OFFICIAL_MCP_TOOLS_UNAVAILABLE',
+    'BLOCKED_NO_CONNECTED_STUDIO_PLACE',
+    'BLOCKED_STUDIO_SESSION_NOT_READY',
+    'BLOCKED_MCP_DISABLED_IN_STUDIO'
+  ].includes(status))return 'REGISTER_PERSISTENT_INTERACTIVE_AUTHENTICATED_CLOUD_WINDOWS_RUNNER';
+  return 'NONE';
+}
 function safeFailure(error){
   const value=clean(error?.message||error);
   if(value.includes('MCP process exited'))return 'OFFICIAL_MCP_PROCESS_EXITED';
@@ -105,7 +118,7 @@ export async function runHostedStudioMcpProbe({
       // stdio server initializes. Re-query the provider before declaring it
       // unavailable, but never fabricate readiness when no Studio Place exists.
       try{
-        await client.waitForTools(HOSTED_MCP_REQUIRED_TOOLS,{attempts:12,delayMs:1500});
+        await client.waitForTools(HOSTED_MCP_REQUIRED_TOOLS,{attempts:4,delayMs:1500});
         state.requiredToolsReady=true;
       }catch(error){
         state.errorCode=safeFailure(error);
@@ -138,6 +151,7 @@ export async function runHostedStudioMcpProbe({
     ?'VERIFY_STUDIO_SIGN_IN_AND_ASSISTANT_MCP_SERVER_ENABLEMENT_MANUALLY':'NONE';
   state.status=evaluateHostedStudioMcpConnection(state);
   state.connected=hostedConnectionIsVerified(state);
+  state.cloudRecoveryAction=hostedCloudRecoveryAction(state);
   if(output){
     fs.mkdirSync(path.dirname(path.resolve(output)),{recursive:true});
     fs.writeFileSync(output,JSON.stringify(state,null,2)+'\n');
@@ -155,6 +169,7 @@ export async function runHostedStudioMcpProbe({
   console.log('ROBLOX_HOSTED_WINDOWS_CONNECTED_STUDIOS='+(state.studioListQueried?state.studioCount:'NOT_QUERIED'));
   console.log('ROBLOX_HOSTED_WINDOWS_OPERATOR_PREREQUISITE='+state.operatorPrerequisite);
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_STATUS='+state.status);
+  console.log('ROBLOX_HOSTED_WINDOWS_CLOUD_RECOVERY='+state.cloudRecoveryAction);
   console.log('ROBLOX_HOSTED_WINDOWS_ACTUAL_PLAY=NOT_EXECUTED');
   if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,'connected='+String(state.connected)+'\nstatus='+state.status+'\n');
   if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,[
@@ -169,6 +184,7 @@ export async function runHostedStudioMcpProbe({
     '| Required official tools | '+state.requiredToolsReady+' |',
     '| Open Studio instances | '+(state.studioListQueried?state.studioCount:'NOT_QUERIED')+' |',
     '| Operator prerequisite | '+state.operatorPrerequisite+' |',
+    '| Cloud recovery (no local PC; no login bypass) | '+state.cloudRecoveryAction+' |',
     '| Verified official connection | '+state.connected+' |',
     '| Full play, screenshot or touch | **Not tested** |',
     '',

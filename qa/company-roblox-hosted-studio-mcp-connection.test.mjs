@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   HOSTED_MCP_REQUIRED_TOOLS,evaluateHostedStudioMcpConnection,
-  hostedConnectionIsVerified,runHostedStudioMcpProbe,validateOfficialMcpPath
+  hostedConnectionIsVerified,hostedCloudRecoveryAction,runHostedStudioMcpProbe,validateOfficialMcpPath
 } from '../tools/company-roblox-hosted-studio-mcp-connection.mjs';
 
 const ready={
@@ -35,6 +35,21 @@ test('only authentic connected Studio state is accepted; no installation or proc
     assert.equal(hostedConnectionIsVerified(state),false);
   }
 });
+test('cloud MCP timeout stays blocked and identifies persistent authenticated cloud runner prerequisite',()=>{
+  const blocked={...ready,requiredToolsReady:false,errorCode:'OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT'};
+  assert.equal(hostedConnectionIsVerified(blocked),false);
+  assert.equal(hostedCloudRecoveryAction(blocked),'REGISTER_PERSISTENT_INTERACTIVE_AUTHENTICATED_CLOUD_WINDOWS_RUNNER');
+  for(const condition of [{...ready,studioListQueried:true,studioCount:0},
+    {...ready,studioStateObserved:false},
+    {...ready,assistantSetting:'NO'}]){
+    assert.equal(hostedCloudRecoveryAction(condition),'REGISTER_PERSISTENT_INTERACTIVE_AUTHENTICATED_CLOUD_WINDOWS_RUNNER');
+  }
+  assert.equal(hostedCloudRecoveryAction(ready),'NONE');
+  const probe=fs.readFileSync('tools/company-roblox-hosted-studio-mcp-connection.mjs','utf8');
+  assert.match(probe,/waitForTools\\(HOSTED_MCP_REQUIRED_TOOLS,\\{attempts:4,delayMs:1500\\}\\)/);
+  assert.doesNotMatch(probe,/attempts:12,delayMs:1500/);
+});
+
 test('official tool set contains Studio read, play, input and screenshot but no Player automation',()=>{
   for(const name of ['list_roblox_studios','get_studio_state','start_stop_play',
     'user_keyboard_input','user_mouse_input','screen_capture','execute_luau']){
