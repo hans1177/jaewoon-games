@@ -638,7 +638,7 @@ test('deployed combat module and R15 consumer compile as complete Luau sources',
 
 test('Motion Forge 3 samples actual joint rotations for bipeds, beasts, NPCs, flyers, serpents and props', {skip:!binary&&'Native Luau executor required for authored source playback'},()=>{
  const source=fs.readFileSync(new URL('../assets/roblox/common-motion-v1/RobloxCommonMotion.luau',import.meta.url),'utf8');
- const exercise=String.raw\`
+ const exercise=String.raw`
 local function frame(state,t,form,actor,available,profile,mobile)
  local pose,ok=motion.SampleProceduralActorMotion(state,t,{
   bodyPlan=form,actorClass=actor,availableJoints=available,profile=profile,mobileTier=mobile}, {})
@@ -683,7 +683,7 @@ assert(prop.DoorHinge,"PROCEDURAL_ANIMATED_PROP_MISSING")
 local empty,ok=motion.SampleProceduralActorMotion("ATTACK",.4,{bodyPlan="QUADRUPED",availableJoints={}}, {})
 assert(not ok and next(empty)==nil,"INVENTED_RIG_CHANNEL_ACCEPTED")
 print("MOTION_FORGE_V3_NATIVE_SAMPLE_PASS")
-\`;
+`;
  const script=mock+'\nlocal motion=(function()\n'+source+'\nend)()\n'+exercise;
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'motion-forge-native-'));
  try{
