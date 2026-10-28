@@ -23,7 +23,7 @@ test('tapping a visible enemy fires only when target is attackable and within we
   const start=source.indexOf('let closest=null,cd=70;');
   const end=source.indexOf("\n if(state.area==='surface'){",start);
   assert.ok(start>=0&&end>start,'live handleWorldTap enemy branch must exist');
-  const tap=new Function('visible','dist','wx','wy','now','state','doubleTapTarget',
+  const tap=new Function('visible','worldPoint','world3d','dist','wx','wy','now','state','doubleTapTarget',
    'unlockBestiary','tapArrowAimTarget','currentWeapon','currentRange','showNotice','attack',source.slice(start,end));
   const cases=[
     {name:'in range',x:40,range:120,attacks:1,aim:1},
@@ -37,12 +37,61 @@ test('tapping a visible enemy fires only when target is attackable and within we
       mood:c.mood||'hostile',burrower:!!c.burrowed},netId:'enemy-test',hp:100,area:'surface',emerged:!c.burrowed};
     const state={player:{x:0,y:0,faceX:0,faceY:0}};
     let attacks=0,aim=0;
-    tap([enemy],(x,y,xx,yy)=>Math.hypot(x-xx,y-yy),c.x,0,1000,state,
+    tap([enemy],null,{isActive:()=>false},(x,y,xx,yy)=>Math.hypot(x-xx,y-yy),c.x,0,1000,state,
       ()=>false,()=>{},()=>{aim++},()=>c.range===null?null:{range:c.range},()=>c.range||0,
       ()=>{},target=>{assert.equal(target,enemy);attacks++});
     assert.equal(attacks,c.attacks,c.name);
     assert.equal(aim,c.aim,c.name+' should preserve ranged tap-aim bounds');
   }
+});
+
+
+test('invisible lizards cannot be selected by automatic combat or an empty 3D ground tap',()=>{
+ const start=source.indexOf('let closest=null,cd=70;');
+ const end=source.indexOf("\n if(state.area==='surface'){",start);
+ assert.ok(start>=0&&end>start,'original tap-to-combat block is retained');
+ assert.match(source,/const visible=state\.enemies\.filter\(m=>m\.area===state\.area&&m\.hp>0&&!m\.crystalHidden\)/);
+ const tap=new Function('visible','worldPoint','world3d','dist','wx','wy','now','state','doubleTapTarget',
+  'unlockBestiary','tapArrowAimTarget','currentWeapon','currentRange','showNotice','attack',source.slice(start,end));
+ const enemy={netId:'lizard',x:40,y:0,area:'surface',hp:10,type:{id:'crystallizard',name:'크리스털 리자드',r:20,mood:'aggressive'}};
+ const state={player:{x:0,y:0,faceX:1,faceY:0}};
+ const attacks=[],run=(visible,point,native=true)=>tap(visible,point,{isActive:()=>native},
+  (x,y,xx,yy)=>Math.hypot(x-xx,y-yy),40,0,1000,state,()=>false,()=>{},()=>{},
+  ()=>({range:120}),()=>120,()=>{},target=>attacks.push(target.netId));
+ run([enemy],{x:40,y:0},true);
+ assert.deepEqual(attacks,[],'empty WebGL ground hit cannot lock an off-model monster');
+ run([],{x:40,y:0,monsterId:'lizard'},true);
+ assert.deepEqual(attacks,[],'hidden lizard is not in visible target list');
+ run([enemy],{x:40,y:0,monsterId:'lizard'},true);
+ assert.deepEqual(attacks,['lizard'],'actual visible 3D monster tap still attacks');
+ run([enemy],null,false);
+ assert.deepEqual(attacks,['lizard','lizard'],'legacy non-3D tap fallback is preserved');
+
+ const autoBody=source.split('function updateAutoCombat(now){')[1]?.split('\nfunction currentWeapon()')[0];
+ assert.ok(autoBody,'actual auto combat function must exist');
+ const getAuto=new Function('state','document','ui','isCreative','petAlive','currentWeapon',
+  'selectedArrow','currentRange','dist','currentCooldown','attack',
+  'return function updateAutoCombat(now){'+autoBody);
+ const visible={...enemy,netId:'visible',x:55,hp:10},hidden={...enemy,crystalHidden:true};
+ const combat={player:{x:0,y:0,attackAt:0},combat:{targetId:null},enemies:[hidden,visible],
+  settings:{autoCombat:true},blueprint:null,creativePlacing:false,pet:{mounted:false},area:'surface'};
+ const ui={sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},
+  smeltPanel:{classList:{contains:()=>false}}};
+ const document={hidden:false,getElementById:()=>({hidden:true,classList:{contains:()=>false}})};
+ const autoHits=[];
+ const auto=getAuto(combat,document,ui,()=>false,()=>false,()=>({range:140}),()=>true,()=>140,
+  (x,y,xx,yy)=>Math.hypot(x-xx,y-yy),()=>100,e=>autoHits.push(e.netId));
+ auto(1000);
+ assert.deepEqual(autoHits,['visible'],'automatic combat may choose only a visible monster');
+ visible.hp=0;
+ auto(1300);
+ assert.deepEqual(autoHits,['visible'],'only hidden lizard remains; no phantom attack');
+ assert.equal(combat.combat.targetId,null);
+ const attackBody=source.split('function attack(selectedTapTarget=null){')[1]?.split('\nfunction knockoutPlayer(')[0];
+ assert.ok(attackBody);
+ assert.match(attackBody,/const aimed=selectedTapTarget\?\.hp>0&&selectedTapTarget\.area===state\.area&&!selectedTapTarget\.crystalHidden\?selectedTapTarget:null/);
+ assert.doesNotMatch(attackBody,/state\.enemies\.find\(e=>e\.netId===state\.combat\?\.targetId\)/);
+ assert.match(attackBody,/state\.enemies\.filter\(e=>e\.hp>0&&!e\.crystalHidden&&e\.area===state\.area/);
 });
 
 test('tap combat waits for touch release and rejects swipes or holds',()=>{
