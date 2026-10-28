@@ -98,9 +98,16 @@ export async function runHostedStudioMcpProbe({
       });
       await client.connect();
       state.mcpInitialized=true;
-      const list=await client.refreshTools();
-      state.availableOfficialTools=list.map(row=>clean(row?.name)).filter(Boolean).sort();
-      state.requiredToolsReady=HOSTED_MCP_REQUIRED_TOOLS.every(name=>client.tools.has(name));
+      // Studio Assistant can register its official play/input tools after the
+      // stdio server initializes. Re-query the provider before declaring it
+      // unavailable, but never fabricate readiness when no Studio Place exists.
+      try{
+        await client.waitForTools(HOSTED_MCP_REQUIRED_TOOLS,{attempts:12,delayMs:1500});
+        state.requiredToolsReady=true;
+      }catch(error){
+        state.errorCode=safeFailure(error);
+      }
+      state.availableOfficialTools=[...client.tools.keys()].sort();
       if(state.requiredToolsReady){
         const result=await client.call('list_roblox_studios',{});
         const studios=[...new Map(collectStudios(result,[]).map(s=>[s.studioId,s])).values()];
@@ -132,6 +139,9 @@ export async function runHostedStudioMcpProbe({
   console.log('ROBLOX_HOSTED_WINDOWS_STUDIO_PROCESS='+state.studioRunning);
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_LAUNCHER='+state.mcpLauncherAvailable);
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_INITIALIZED='+state.mcpInitialized);
+  console.log('ROBLOX_HOSTED_WINDOWS_ASSISTANT_SETTING='+state.assistantSetting);
+  console.log('ROBLOX_HOSTED_WINDOWS_MCP_TOOLS_LISTED='+state.availableOfficialTools.length);
+  console.log('ROBLOX_HOSTED_WINDOWS_MCP_ERROR_CODE='+(state.errorCode||'NONE'));
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_TOOLS_READY='+state.requiredToolsReady);
   console.log('ROBLOX_HOSTED_WINDOWS_CONNECTED_STUDIOS='+state.studioCount);
   console.log('ROBLOX_HOSTED_WINDOWS_MCP_STATUS='+state.status);
