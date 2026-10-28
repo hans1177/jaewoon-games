@@ -1,0 +1,239 @@
+# Optional infrastructure probe; NOT a gameplay, Open Cloud, F0/F9 or Studio approval lane.
+# GitHub-hosted Windows is ephemeral. No Roblox identity, login cookie or MCP flag is injected.
+name: Official Roblox Studio MCP · GitHub Windows connectivity probe
+run-name: Roblox official Studio MCP hosted Windows connection (not gameplay)
+
+on:
+  # One attempt per PR revision; avoid installing Studio twice on the same disposable Windows image.
+  pull_request:
+    paths:
+      - '.github/workflows/company-roblox-hosted-studio-mcp-connect.yml'
+      - 'tools/company-roblox-hosted-studio-mcp-connection.*'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/company-roblox-hosted-studio-mcp-connection.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: official-studio-hosted-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-studio-mcp-connectivity:
+    name: Attempt signed Roblox Studio + built-in MCP on hosted Windows (diagnostic only)
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.head_ref == 'feat/roblox-hosted-studio-mcp-connect-20261028')
+    runs-on: windows-latest
+    timeout-minutes: 11
+    steps:
+      - name: Checkout exact tested source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js for existing official MCP harness
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify connection evidence semantics
+        shell: pwsh
+        run: |
+          node --check tools/company-roblox-hosted-studio-mcp-connection.mjs
+          node --test qa/company-roblox-hosted-studio-mcp-connection.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Hosted Studio MCP connection evidence contract failed' }
+      - name: Install official signed Roblox Studio and attempt documented MCP connection
+        id: connectivity
+        shell: pwsh
+        run: |
+          # GitHub-hosted Windows ONLY: attempt the official signed Roblox Studio installer,
+          # start the documented Studio executable, then probe the built-in stdio MCP.
+          # No credential injection, Studio settings edits, GUI macros, Player bots or undocumented CLI flags.
+          $OutputPath=Join-Path $env:RUNNER_TEMP 'official-roblox-studio-mcp-hosted-windows.json'
+          $ErrorActionPreference='Stop'
+          $ProgressPreference='SilentlyContinue'
+          $studioInstalled=$false
+          $studioRunning=$false
+          $installerVerified=$false
+          $signatureRejected=$false
+          $stage='NOT_STARTED'
+          $local=$env:LOCALAPPDATA
+          $installerUrl='https://setup.rbxcdn.com/RobloxStudioInstaller.exe'
+          
+          function Find-OfficialStudio {
+            # Official Roblox instructions also check Program Files (x86). Windows Actions
+            # sometimes installs outside LOCALAPPDATA, while the process appears later.
+            $patterns=@()
+            if ($local) { $patterns+=(Join-Path $local 'Roblox\Versions\*\RobloxStudioBeta.exe') }
+            $programX86=[Environment]::GetFolderPath('ProgramFilesX86')
+            if ($programX86) { $patterns+=(Join-Path $programX86 'Roblox\Versions\*\RobloxStudioBeta.exe') }
+            foreach ($pattern in $patterns) {
+              $candidate=Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending | Select-Object -First 1
+              if ($candidate) { return $candidate }
+            }
+            # The signed executable path of an actually running Studio is authoritative.
+            $process=Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue |
+              Select-Object -First 1
+            if ($process) {
+              try {
+                if ($process.Path -and (Test-Path -LiteralPath $process.Path)) {
+                  return Get-Item -LiteralPath $process.Path
+                }
+              } catch {}
+            }
+            return $null
+          }
+          function Test-RobloxSignature([string]$file) {
+            if (-not $file -or -not (Test-Path -LiteralPath $file)) { return $false }
+            $sig=Get-AuthenticodeSignature -FilePath $file
+            return ($sig.Status -eq 'Valid' -and
+              $null -ne $sig.SignerCertificate -and
+              $sig.SignerCertificate.Subject -like '*O=Roblox Corporation*')
+          }
+          function Get-StudioProcess {
+            @(Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue) |
+              Select-Object -First 1
+          }
+          
+          try {
+            if ($env:RUNNER_OS -ne 'Windows' -or $env:RUNNER_ENVIRONMENT -ne 'github-hosted') {
+              throw 'HOSTED_WINDOWS_ONLY'
+            }
+            if (-not $local) { throw 'LOCALAPPDATA_UNAVAILABLE' }
+            $stage='CHECK_EXISTING_INSTALLATION'
+            $studio=Find-OfficialStudio
+            if ($studio) {
+              if (-not (Test-RobloxSignature $studio.FullName)) {
+                $signatureRejected=$true
+                $stage='EXISTING_STUDIO_BINARY_UNTRUSTED'
+                $studio=$null
+              } else {
+                $installerVerified=$true
+                $stage='OFFICIAL_STUDIO_PREINSTALLED_SIGNED'
+              }
+            }
+            if (-not $studio -and -not $signatureRejected) {
+              $stage='OFFICIAL_INSTALLER_DOWNLOAD'
+              $installer=Join-Path $env:RUNNER_TEMP 'RobloxStudioInstaller.exe'
+              try {
+                Invoke-WebRequest -Uri $installerUrl -OutFile $installer -UseBasicParsing -TimeoutSec 75
+                if (-not (Test-RobloxSignature $installer)) {
+                  $signatureRejected=$true
+                  $stage='OFFICIAL_INSTALLER_SIGNATURE_REJECTED'
+                  Remove-Item $installer -Force -ErrorAction SilentlyContinue
+                } else {
+                  $installerVerified=$true
+                  $stage='SIGNED_OFFICIAL_INSTALLER_STARTED'
+                  # Roblox documents starting the signed .exe (not an undocumented Studio CLI).
+                  # Do not -Wait: the installer can launch Studio and remain running.
+                  Start-Process -FilePath $installer
+                  $deadline=(Get-Date).AddMinutes(4)
+                  do {
+                    Start-Sleep -Seconds 5
+                    $studio=Find-OfficialStudio
+                  } until ($studio -or (Get-Date) -ge $deadline)
+                  $stage=if ($studio) { 'STUDIO_INSTALLED_OFFICIAL_SIGNED' }
+                    else { 'INSTALLER_NOT_FINISHED_IN_HEADLESS_RUNNER' }
+                }
+              } catch {
+                $stage='OFFICIAL_INSTALLER_DOWNLOAD_OR_LAUNCH_FAILED'
+                Write-Host 'ROBLOX_HOSTED_STUDIO_INSTALL_ERROR=INSTALLER_UNAVAILABLE_OR_HEADLESS'
+              }
+            }
+          
+            if ($studio -and -not $signatureRejected) {
+              if (-not (Test-RobloxSignature $studio.FullName)) {
+                $signatureRejected=$true
+                $stage='NEW_STUDIO_BINARY_SIGNATURE_REJECTED'
+              } else {
+                $installerVerified=$true
+              }
+            }
+            if ($studio -and -not $signatureRejected) {
+              $studioInstalled=$true
+              $studioRunning=($null -ne (Get-StudioProcess))
+              if (-not $studioRunning) {
+                try {
+                  # Roblox's documented Windows open command; never use hidden CLI flags.
+                  Start-Process -FilePath $studio.FullName
+                  $stage='OFFICIAL_STUDIO_LAUNCH_REQUESTED'
+                  for($i=0;$i -lt 6;$i++) {
+                    Start-Sleep -Seconds 5
+                    if (Get-StudioProcess) { $studioRunning=$true; break }
+                  }
+                } catch {
+                  $stage='STUDIO_LAUNCH_BLOCKED_BY_NONINTERACTIVE_SESSION'
+                }
+              }
+              if ($studioRunning) {
+                $stage='STUDIO_PROCESS_STARTED_MCP_LOGIN_AND_PLACE_UNVERIFIED'
+              } elseif ($stage -ne 'STUDIO_LAUNCH_BLOCKED_BY_NONINTERACTIVE_SESSION') {
+                $stage='STUDIO_PROCESS_NOT_ACTIVE'
+              }
+            }
+          } catch {
+            if ($stage -eq 'NOT_STARTED' -or $stage -eq 'CHECK_EXISTING_INSTALLATION') {
+              $stage='HOSTED_RUNNER_OR_WINDOWS_PREREQUISITE_UNAVAILABLE'
+            }
+            Write-Host 'ROBLOX_HOSTED_STUDIO_INSTALL_OR_LAUNCH=BLOCKED'
+          }
+          
+          # Do not pass account paths, cookies, Roblox security tokens or Studio settings
+          # to the workflow artifact. The Node probe uses a known-local official batch only.
+          $command=if ($local) { Join-Path $local 'Roblox\mcp.bat' } else { '' }
+          $trustedMcpExe=$false
+          $launcherMode='DOCUMENTED_BATCH'
+          if (-not $command -or -not (Test-Path -LiteralPath $command)) {
+            $launcherMode='MISSING'
+            $mcpExe=$null
+            if ($studio -and $studio.FullName) {
+              $mcpExe=Join-Path (Split-Path $studio.FullName -Parent) 'StudioMCP.exe'
+            }
+            if (-not $mcpExe -or -not (Test-Path -LiteralPath $mcpExe)) {
+              $officialRoots=@()
+              if ($local) { $officialRoots+=(Join-Path $local 'Roblox\Versions') }
+              $programX86=[Environment]::GetFolderPath('ProgramFilesX86')
+              if ($programX86) { $officialRoots+=(Join-Path $programX86 'Roblox\Versions') }
+              foreach($root in $officialRoots) {
+                if (-not (Test-Path -LiteralPath $root)) { continue }
+                $found=Get-ChildItem -LiteralPath $root -File -Recurse -Filter 'StudioMCP.exe' -ErrorAction SilentlyContinue |
+                  Select-Object -First 1
+                if ($found) { $mcpExe=$found.FullName; break }
+              }
+            }
+            if ($mcpExe -and (Test-Path -LiteralPath $mcpExe) -and (Test-RobloxSignature $mcpExe)) {
+              $command=$mcpExe
+              $trustedMcpExe=$true
+              $launcherMode='SIGNED_OFFICIAL_STUDIOMCP_EXE'
+            }
+          }
+          Write-Host "ROBLOX_HOSTED_WINDOWS_MCP_LAUNCHER_MODE=$launcherMode"
+          $argv=@(
+            'tools/company-roblox-hosted-studio-mcp-connection.mjs',
+            "--studio-installed=$($studioInstalled.ToString().ToLowerInvariant())",
+            "--studio-running=$($studioRunning.ToString().ToLowerInvariant())",
+            "--trusted-mcp-exe=$($trustedMcpExe.ToString().ToLowerInvariant())",
+            "--installer-verified=$($installerVerified.ToString().ToLowerInvariant())",
+            "--installer-rejected=$($signatureRejected.ToString().ToLowerInvariant())",
+            "--installer-stage=$stage",
+            "--mcp-command=$command",
+            "--output=$OutputPath"
+          )
+          & node @argv
+          if ($LASTEXITCODE -ne 0) { throw 'OFFICIAL_STUDIO_MCP_PROBE_FAILED' }
+          if (-not (Test-Path -LiteralPath $OutputPath)) { throw 'OFFICIAL_STUDIO_MCP_REPORT_MISSING' }
+          $report=Get-Content -LiteralPath $OutputPath -Raw | ConvertFrom-Json
+          Write-Host "ROBLOX_HOSTED_WINDOWS_CONNECTION_RESULT=$($report.status)"
+          Write-Host 'ROBLOX_HOSTED_WINDOWS_RUNNER=EPHEMERAL_NO_CREDENTIALS_PERSISTED'
+          Write-Host 'ROBLOX_HOSTED_WINDOWS_ACTUAL_PLAY=NOT_EXECUTED'
+      - name: Upload diagnostic only (never a Studio or actual-play PASS)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-studio-mcp-hosted-windows-diagnostic
+          path: ${{ runner.temp }}/official-roblox-studio-mcp-hosted-windows.json
+          if-no-files-found: warn
+          retention-days: 7

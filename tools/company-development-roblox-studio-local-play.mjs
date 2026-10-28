@@ -2013,7 +2013,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   };
 }
 
-class McpStdioClient{
+export class McpStdioClient{
   constructor({command,args=[],env=process.env,timeoutMs=30000}={}){
     this.command=command;this.args=args;this.env=env;this.timeoutMs=timeoutMs;
     this.child=null;this.nextId=1;this.pending=new Map();this.tools=new Map();this.protocolVersion='';this.serverInfo={};this.stderrTail='';
