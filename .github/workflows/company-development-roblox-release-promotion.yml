@@ -108,8 +108,11 @@ jobs:
           if(!Array.isArray(jobs))throw Error('runtime QA jobs response missing');
           const active=new Set(['queued','pending','in_progress','requested','waiting']);
           const cloudJob='existing game tester and QA validate exact Roblox runtime candidate';
-          const cloudBusy=jobs.length===0||jobs.some(job=>
-            String(job.name||'')===cloudJob&&active.has(String(job.status||'').toLowerCase()));
+          const cloudJobs=jobs.filter(job=>String(job.name||'')===cloudJob);
+          // Until this job is enumerated, a fresh run may still be starting Cloud QA.
+          // A completed Cloud job no longer reserves capacity when only Studio remains.
+          const cloudBusy=cloudJobs.length===0||cloudJobs.some(job=>
+            active.has(String(job.status||'').toLowerCase()));
           if(cloudBusy)fs.appendFileSync('/tmp/roblox-active-cloud-qa-runs',process.env.RUN_ID+'\n');
           NODE
           done < /tmp/roblox-active-foundation-run-ids
