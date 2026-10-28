@@ -176,3 +176,23 @@ test('read-only planning distinguishes high-fidelity gameplay from simple state 
  assert.equal(plan.skillCatalog.total,109);
  assert.equal(plan.sourceWrite,false);
 });
+
+
+test('insertion outside a completed Lua function is rejected instead of making broken code',()=>{
+ const row=cases[0];
+ const finished=row.source.replace('\n -- VIBE59_QUALITY_SLOT',
+  '\nend\n -- VIBE59_QUALITY_SLOT');
+ assert.throws(()=>synthesizeVibe59QualityGameplay({spec:row.spec,source:finished,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}),/FUNCTION_SCOPE_UNPROVEN/);
+});
+test('combat does not emit damage before checking attacker alive; building uses rotated bounds',()=>{
+ const combat=synthesizeVibe59QualityGameplay({spec:cases[0].spec,source:cases[0].source,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(combat,/attackerHumanoid\.Health <= 0/);
+ assert.ok(combat.indexOf('attackerHumanoid.Health <= 0')<combat.indexOf(':TakeDamage('));
+ const build=synthesizeVibe59QualityGameplay({spec:cases[1].spec,source:cases[1].source,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(build,/built:GetBoundingBox\(\)/);
+ assert.match(build,/built:Destroy\(\); return false/);
+ assert.ok(build.indexOf('GetBoundingBox()')<build.indexOf('state.inventory.wood ='));
+});
