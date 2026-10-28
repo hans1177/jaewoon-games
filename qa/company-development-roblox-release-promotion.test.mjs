@@ -699,7 +699,12 @@ test('approved Roblox games including exact fantasy candidate auto-retry only du
  assert.ok(retry.includes('[[ "$GAME_ID" =~ ^(cozy-island|horror-escape-room|baeksu-war|daechung-rpg|fantasy-survival)$ ]]'));
  assert.ok(retry.includes('Number(failure.candidateVersionNumber)===Number(candidate.versionNumber)'));
  assert.ok(retry.includes("item.robloxFoundationF0Passed===true"));
- assert.ok(retry.includes("candidate.published===true&&candidate.validationOnly===true"));
+ assert.ok(retry.includes("candidate.published===true&&(candidate.validationOnly===true||("));
+ assert.ok(retry.includes("candidate.dedicated===true"));
+ assert.ok(retry.includes("candidate.authority==='roblox-open-cloud-dedicated-private-runtime-candidate'"));
+ assert.ok(retry.includes("candidate.exposure==='PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE'"));
+ assert.ok(retry.includes("candidate.visibilityIntent==='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'"));
+ assert.doesNotMatch(retry,/candidate\.published===true&&candidate\.validationOnly===true/);
  assert.ok(retry.includes("failure.authority==='roblox-open-cloud-engine-probe-failure'"));
  assert.ok(retry.includes("Number(failure.httpStatus)===429"));
  assert.ok(retry.includes("failure.sourceRevision===item.robloxSourceCommit"));
