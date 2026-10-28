@@ -663,11 +663,14 @@ local activeMotionStart = 0
 local motionTargets = {}
 local r15MotionTargets = {}
 local motionByWeapon = {
-  [0] = {profile = "UNARMED", action = "U:JAB_LEFT"},
-  [1] = {profile = "SPEAR", action = "W:SPEAR_JAB"},
-  [2] = {profile = "SWORD", action = "W:BLADE_SLASH_R"},
-  [3] = {profile = "GREATSWORD", action = "W:BLADE_OVERHEAD"},
+  [0] = {profile = "UNARMED", actions = {"U:JAB_LEFT", "U:CROSS_RIGHT", "U:FRONT_KICK_L"}},
+  [1] = {profile = "SPEAR", actions = {"W:SPEAR_JAB", "W:SPEAR_LONG_THRUST", "W:SPEAR_SWEEP"}},
+  [2] = {profile = "SWORD", actions = {"W:BLADE_SLASH_R", "W:BLADE_SLASH_L", "W:BLADE_THRUST"}},
+  [3] = {profile = "GREATSWORD", actions = {"W:BLADE_OVERHEAD", "W:BLADE_RISING", "W:BLADE_SLASH_L"}},
 }
+local previousApprovedHitAt = 0
+local previousMotionWeaponId = -1
+local approvedMotionComboStep = 0
 local function finishRpgCombatMotion()
   if activeMotionController then activeMotionController.Destroy(true) end
   if activeMotionCharacter and activeMotionCharacter.Parent then
@@ -704,14 +707,29 @@ local function playApprovedRpgCombatMotion()
     character:SetAttribute("CivNativeCombatMotionState", "R15_JOINTS_REQUIRED")
     return
   end
-  local ok, combo = pcall(commonMotion.CreateCombatCombo, motion.profile, {motion.action})
+  local now = os.clock()
+  if now-previousApprovedHitAt > 1.35 or weaponId ~= previousMotionWeaponId then
+    approvedMotionComboStep = 0
+  end
+  local nextStep = approvedMotionComboStep % #motion.actions + 1
+  local action = motion.actions[nextStep]
+  local ok, combo = pcall(commonMotion.CreateCombatCombo, motion.profile, {action})
   if not ok or not combo or not combo.steps or #combo.steps ~= 1 then return end
-  finishRpgCombatMotion()
+  -- Keep the same joint spring through consecutive confirmed hits. Destroying
+  -- and rebinding it on each strike snaps the arms back to their default pose.
+  if activeMotionCharacter ~= character or not activeMotionController then
+    finishRpgCombatMotion()
+    activeMotionController = commonMotion.BindJointPose(joints, {response = 28})
+  end
   activeMotionCharacter = character
   activeMotionCombo = combo
-  activeMotionStart = os.clock()
-  activeMotionController = commonMotion.BindJointPose(joints, {response = 32})
+  activeMotionStart = now
+  approvedMotionComboStep = nextStep
+  previousApprovedHitAt = now
+  previousMotionWeaponId = weaponId
   character:SetAttribute("CivNativeCombatMotionProfile", motion.profile)
+  character:SetAttribute("CivNativeCombatMotionAction", action)
+  character:SetAttribute("CivNativeCombatMotionComboStep", nextStep)
   character:SetAttribute("CivNativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
 end
 RunService.PreSimulation:Connect(function(dt)

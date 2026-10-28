@@ -10,6 +10,7 @@ import {pathToFileURL} from 'node:url';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
 import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
+import {buildRobloxHolisticQualityPlan,robloxHolisticQualityPromptLines} from './company-roblox-holistic-quality-buildup.mjs';
 import {planVerifiedActorEvolution,loadVerifiedMotionHistory} from './vibe2-motion-evolution.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -2578,6 +2579,7 @@ export function directivePrompt(d={}){
     `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
     `DATA_CAPACITY_BUDGET: state=${expansion.dataCapacityBudget?.state||'NORMAL'}; strategy=${expansion.dataCapacityBudget?.strategy||'CONTINUE_BUILD_UP'}; saveMax=${expansion.dataCapacityBudget?.limits?.savePersistedDataBytes||0}; webMax=${expansion.dataCapacityBudget?.limits?.webDownloadBytes||0}; singleFileMax=${expansion.dataCapacityBudget?.limits?.singleFileBytes||0}; mobileMemoryTarget=${expansion.dataCapacityBudget?.limits?.mobileMemoryTargetBytes||0}; mobileMinFps=${expansion.dataCapacityBudget?.limits?.mobileMinimumFps||0}; generationLimit=NONE; contentCountLimit=NONE`,
     expansion.dataCapacityBudget?.state==='NORMAL'?'DATA_CAPACITY_ACTION: 새 콘텐츠와 기존 시스템 심화 중 플레이어 가치가 높은 쪽을 선택한다.':'DATA_CAPACITY_ACTION: BUILD_UP을 멈추지 말고 새 원시 데이터 추가보다 기존 에셋/시스템 재사용·재조합, 압축, 스트리밍/LOD, 풀링, 수명 관리와 시스템 심화를 우선한다. 저장 진행/인벤토리/장비/해금/퀘스트 의미를 삭제해서 예산을 맞추지 않는다.',
+    ...robloxHolisticQualityPromptLines(d.robloxHolisticQualityPlan||{},10,(d.designedGameVolume?.items?.length||0)>48),
     `INTERNAL_ASSET_EVOLUTION: generation=${d.internalAssetEvolution?.generation||d.generation}; mode=${d.internalAssetEvolution?.replacementMode||'COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION'}; source=${d.sourceTreeFingerprint}; previousEffect=${d.internalAssetEvolution?.previousRuntimeEffect||'UNVERIFIED'}; everyCycle=REQUIRED; randomSwapOrMarkerOnly=FORBIDDEN; sourceAndContentGrowth=REQUIRED_WHEN_APPLICABLE; generationLimit=NONE`,
     'ASSET_EVOLUTION_ACTION: 매 반복에서 전체 라이브러리와 기존 책임 소스를 확인하고 누락·오래된 연결·품질 결함을 호환 자산 교체 또는 재조합으로 직접 개선한다. 이전 선택·교체 이유·실제 소스 변경·실행 결과를 남기고 기존 정체성·세이브·밸런스·권한을 보존한다. 자산 작업만 반복하며 코드 완성도와 승인된 콘텐츠 확장을 누락하지 않는다.',
     `EXISTING_COMPLETENESS_CHECK: ${expansion.existingCompletenessReview?.mode||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'}; dimensions=${(expansion.existingCompletenessReview?.dimensions||[]).join(',')}`,
@@ -3146,6 +3148,21 @@ export function buildGameSpecificBuildUpDirective({
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
     safeDesignlessMode,policy:verifiedRoadmap?.robloxStudioProductionFlowContract||{}
   }):null;
+  // Source-grounded suggestions only. A plan never counts as runtime or asset PASS.
+  // Quality inspection never follows another game's observed sourceRoot.
+  // Legacy cross-platform callers may carry a fixture/absolute sourceRoot, so
+  // inspect the canonical current Roblox game directory or fail closed as missing.
+  const canonicalRobloxSourceRoot='roblox-games/'+id;
+  const qualityObservedRoot=clean(sourceRoot).replaceAll('\\','/');
+  const qualitySourceRoot=qualityObservedRoot===canonicalRobloxSourceRoot
+    ||qualityObservedRoot.startsWith(canonicalRobloxSourceRoot+'/')
+      ?qualityObservedRoot:canonicalRobloxSourceRoot;
+  const robloxHolisticQualityPlan=clean(platform).toUpperCase()==='ROBLOX'
+    ?buildRobloxHolisticQualityPlan({repoRoot,gameId:id,sourceRoot:qualitySourceRoot,
+      sourceObservation:source,qualityGaps:states.filter(row=>row.state==='GAP'),
+      previousPlan:previousDirective?.robloxHolisticQualityPlan,
+      runtimeEvidence,sourceRevision:clean(runtimeEvidence?.sourceRevision)})
+    :null;
   return Object.freeze({
     version:2,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
@@ -3237,6 +3254,7 @@ export function buildGameSpecificBuildUpDirective({
     playableImprovementContract,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
+    robloxHolisticQualityPlan,
     internalAssetEvolution:{
       required:true,
       generation,

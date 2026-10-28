@@ -162,9 +162,24 @@ local function locomotionTargets(controller, targets, dt, requestedSpeed)
 	local cfg = controller.cfg
 	local speedFactor, strideDeg, kneeDeg, cadenceFactor = gaitTuning(cfg.gait)
 
+	-- Combat and damage reactions must not keep jogging the legs while the torso strikes.
+	-- This only affects joint animation; the authoritative server still moves the root.
+	local actingSpeed = requestedSpeed
+	if controller.state == "ATTACK" then
+		actingSpeed *= 0.14
+	elseif controller.state == "HIT" then
+		actingSpeed *= 0.08
+	elseif controller.state == "DEATH" then
+		actingSpeed = 0
+	end
 	controller.speed, controller.speedVelocity = springNumber(
 		controller.speed,
-		requestedSpeed,
+		actingSpeed,
+		controller.speedVelocity,
+		1.55,
+		dt
+	)
+
 		controller.speedVelocity,
 		1.55,
 		dt
@@ -408,12 +423,16 @@ local function step(controller, dt)
 	elseif state == "ATTACK" then
 		attackTargets(controller, targets)
 		if controller.stateTime >= controller.attackDuration then
-			controller:SetState("LOCOMOTION")
+			controller.state = "LOCOMOTION"
+			controller.stateTime = 0
+			controller.model:SetAttribute("WildlifeRenderedMotionState", "LOCOMOTION")
 		end
 	elseif state == "HIT" then
 		hitTargets(controller, targets)
 		if controller.stateTime >= 0.58 then
-			controller:SetState("LOCOMOTION")
+			controller.state = "LOCOMOTION"
+			controller.stateTime = 0
+			controller.model:SetAttribute("WildlifeRenderedMotionState", "LOCOMOTION")
 		end
 	elseif state == "DEATH" then
 		deathTargets(controller, targets)
@@ -443,25 +462,41 @@ local Controller = {}
 Controller.__index = Controller
 
 function Controller:SetState(state, options)
+	options = options or {}
 	local nextState = string.upper(tostring(state or "LOCOMOTION"))
-	if nextState == self.state and nextState ~= "ATTACK" and nextState ~= "HIT" then
+	local serial = tonumber(options.actionSerial)
+	local oneShot = nextState == "ATTACK" or nextState == "HIT"
+	local restartAction = oneShot and serial ~= nil and serial ~= self.lastActionSerial
+	-- Speed/duration attributes may arrive separately after the event, and the
+	-- rendered state may already have settled to LOCOMOTION. Neither event
+	-- should start an attack again without a fresh server action serial.
+	if oneShot and nextState == self.lastServerState and not restartAction then
+		if nextState == "ATTACK" and options.duration ~= nil then
+			self.attackDuration = math.max(0.58, tonumber(options.duration) or self.attackDuration)
+		end
 		return
 	end
+	if nextState == self.state and not restartAction then
+		self.lastServerState = nextState
+		if nextState == "ATTACK" and options.duration ~= nil then
+			self.attackDuration = math.max(0.58, tonumber(options.duration) or self.attackDuration)
+		end
+		return
+	end
+	self.lastServerState = nextState
 	self.state = nextState
 	self.stateTime = 0
-	options = options or {}
+	if serial ~= nil then self.lastActionSerial = serial end
 	if nextState == "ATTACK" then
 		self.attackDuration = math.max(0.58, tonumber(options.duration) or 0.92)
 	elseif nextState == "HIT" then
 		self.hitSide = math.clamp(tonumber(options.side) or 1, -1, 1)
 	elseif nextState == "DEATH" then
-		self.deathSide = (tonumber(options.side) or -1) >= 0 and 1 or -1
+		self.deathSide = (tonumber(options.deathSide) or tonumber(options.side) or -1) >= 0 and 1 or -1
 	end
-	-- [서버 권한] 클라이언트는 Motor6D만 연출한다. 서버가 보낸 상태 Attribute를
-	-- 로컬 완료/복귀로 덮지 않아야 공격 이벤트가 속도 갱신과 충돌하지 않는다.
-	if RunService:IsServer() then
-		self.model:SetAttribute("WildlifeMotionState", nextState)
-	end
+	-- WildlifeMotionState belongs exclusively to the server, even after the
+	-- presentation finishes its animation and returns to LOCOMOTION.
+	self.model:SetAttribute("WildlifeRenderedMotionState", nextState)
 end
 
 function Controller:SetSpeed(speed)
@@ -473,6 +508,10 @@ function Controller:Destroy()
 	if self.connection then
 		self.connection:Disconnect()
 		self.connection = nil
+	end
+	-- A pooled or re-bound creature must not inherit its previous dying/attack pose.
+	for _, joint in pairs(self.joints) do
+		if joint.Parent then joint.Transform = CFrame.identity end
 	end
 end
 
@@ -493,6 +532,8 @@ function Animator.bind(model, options)
 		earPhase = tonumber(options.earPhase) or (species:byte(1) or 1) * 0.17,
 		state = "LOCOMOTION",
 		stateTime = 0,
+		lastServerState = nil,
+		lastActionSerial = nil,
 		attackDuration = 0.92,
 		hitSide = 1,
 		deathSide = -1,
@@ -515,7 +556,8 @@ function Animator.bind(model, options)
 	controller.targets=zeroTargets(controller.joints)
 	controller.lastRootPosition=model.PrimaryPart.Position
 
-	model:SetAttribute("WildlifeMotionDriver", "CHARACTER_ANIMATION_SPRING_GAIT_V3")
+	model:SetAttribute("WildlifeRenderedMotionState", "LOCOMOTION")
+	model:SetAttribute("WildlifeMotionDriver", "CHARACTER_ANIMATION_SPRING_GAIT_V4")
 	model:SetAttribute("WildlifeMotionDimensionality", "FULL_3D")
 	model:SetAttribute("WildlifeFootPlant", true)
 	model:SetAttribute("WildlifeSecondaryMotion", true)
