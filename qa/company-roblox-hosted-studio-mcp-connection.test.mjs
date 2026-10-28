@@ -124,6 +124,11 @@ test('the workflow is diagnostic and cannot silently replace the disabled real-p
   assert.match(workflow,/runs-on: windows-latest/);
   assert.match(workflow,/contents: read/);
   assert.match(workflow,/official-studio-mcp-hosted-windows-diagnostic/);
+  assert.match(workflow,/GITHUB_STEP_SUMMARY/);
+  assert.match(workflow,/\*\*Actual gameplay:\*\* NOT_EXECUTED/);
+  assert.match(workflow,/\*\*F9 \/ canonical deployment approved:\*\* NO/);
+  assert.match(workflow,/roblox-studio-mcp-cloud-runner\.md/);
+  assert.match(workflow,/ROBLOX_HOSTED_WINDOWS_DEPLOYMENT_READY=NO/);
   assert.doesNotMatch(workflow,/ROBLOX_OPEN_CLOUD_API_KEY|ROBLOX_COOKIE|roblosecurity/i);
   assert.match(live,/if: \$\{\{ !cancelled\(\) \}\}/);
   assert.match(live,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
