@@ -315,6 +315,7 @@ local function bindNativeNpcVisual(rootPart,assetId,fallbackAssetId)
   end
  end
  if movableLimbCount>=2 then
+  rootPart:SetAttribute("NativeActorMissing",false)
   rootPart:SetAttribute("NativeActorMotionVisual","ARTICULATED_SOURCE_PRESERVED")
   return
  end
