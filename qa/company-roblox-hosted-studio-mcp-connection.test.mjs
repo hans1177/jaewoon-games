@@ -206,3 +206,21 @@ test('the workflow is diagnostic and cannot silently replace the disabled real-p
   assert.match(install,/OutputPath=Join-Path/);
   assert.doesNotMatch(install,/\.ROBLOSECURITY|Set-Content.*AssistantSettings|roblox-player|--headless/i);
 });
+
+test('free Windows Studio MCP runner requires genuine interactive Studio and protects registration token',()=>{
+  const setup=fs.readFileSync('tools/connect-roblox-studio-mcp-free-windows.ps1','utf8');
+  assert.match(setup,/ROBLOX_FREE_STUDIO_INTERACTIVE_DESKTOP_REQUIRED/);
+  assert.match(setup,/Get-Process -Name 'RobloxStudioBeta'/);
+  assert.match(setup,/Get-AuthenticodeSignature/);
+  assert.match(setup,/Roblox Corporation/);
+  assert.match(setup,/Roblox\\mcp\.bat/);
+  assert.match(setup,/Enable Studio as MCP server/);
+  assert.match(setup,/github\.com\/actions\/runner\/releases\/latest/);
+  assert.match(setup,/Get-FileHash -LiteralPath \$zip -Algorithm SHA256/);
+  assert.match(setup,/Read-Host -Prompt .* -AsSecureString/);
+  assert.match(setup,/ZeroFreeBSTR/);
+  assert.match(setup,/roblox-studio-authenticated/);
+  assert.match(setup,/Join-Path \$RunnerRoot 'run\.cmd'/);
+  assert.doesNotMatch(setup,/ROBLOX_ROBLOSECURITY|ROBLOX_SECURITY_COOKIE|Set-Content.*AssistantSettings|Set-ItemProperty.*AssistantSettings/i);
+  assert.doesNotMatch(setup,/--runasservice|--windowslogonaccount|paid-vm/i);
+});
