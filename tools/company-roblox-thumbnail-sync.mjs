@@ -19,7 +19,20 @@ export function resolveRobloxThumbnailTarget({catalog={},queue={},gameId=''}) {
   const canonical=game.canonical&&typeof game.canonical==='object'?game.canonical:{};
   const source=clean(canonical?.marketing?.thumbnail||game.marketingThumbnail||canonical?.identity?.image||game.image);
   if(!source)throw new Error('ROBLOX_THUMBNAIL_SOURCE_MISSING:'+id);
-  if(!source.startsWith('assets/roblox-thumbnails/'))throw new Error('ROBLOX_THUMBNAIL_SOURCE_NOT_CANONICAL:'+source);
+  // A game-owned, previously verified homepage cover is permitted only when the
+  // canonical catalog selects that exact approved artwork for both surfaces.
+  const art=canonical?.marketing?.robloxTitleArtwork||{};
+  const cover=canonical?.marketing?.homepageMedia?.cover||{};
+  const existingCover=source==='assets/homepage-covers/'+id+'.webp'
+    &&art.gameId===id&&art.src===source&&art.source==='EXISTING_GAME_TITLE_ARTWORK'
+    &&art.runtimeScreenshot===false&&art.sha256===cover.sha256
+    &&cover.src===source&&cover.width===960&&cover.height===540
+    &&Number.isSafeInteger(cover.bytes)&&cover.bytes>=512
+    &&/^[a-f0-9]{64}$/.test(clean(cover.sha256))
+    &&game.marketingThumbnail===source&&game.image===source
+    &&canonical?.identity?.image===source;
+  const dedicatedArt=source.startsWith('assets/roblox-thumbnails/'+id+'.');
+  if(!dedicatedArt&&!existingCover)throw new Error('ROBLOX_THUMBNAIL_SOURCE_NOT_CANONICAL:'+source);
   // 메인: Roblox 공식 서버에 검증된 해당 게임의 전용 universe/place만 업로드한다.
   const item=(queue.items||[]).find(row=>clean(row?.gameId)===id)||{};
   const target=item.robloxPublicationTarget||{};
@@ -28,24 +41,33 @@ export function resolveRobloxThumbnailTarget({catalog={},queue={},gameId=''}) {
     ||!validId(target.universeId)||!validId(target.placeId)){
     throw new Error('ROBLOX_THUMBNAIL_VERIFIED_DEDICATED_TARGET_MISSING:'+id);
   }
-  if(!source.startsWith('assets/roblox-thumbnails/'+id+'.')){
-    throw new Error('ROBLOX_THUMBNAIL_WRONG_GAME_SOURCE:'+id);
-  }
   return Object.freeze({
     gameId:id,source,universeId:clean(target.universeId),placeId:clean(target.placeId),
-    name:clean(canonical?.identity?.name||game.name||id)
+    name:clean(canonical?.identity?.name||game.name||id),
+    approvedExistingCover:existingCover,
+    coverSha256:existingCover?cover.sha256:null,
+    coverBytes:existingCover?cover.bytes:null
   });
 }
 
 export function validateCanonicalThumbnail({root='.',target={}}={}) {
   const sourcePath=path.resolve(root,target.source||'');
-  const rootPath=path.resolve(root,'assets/roblox-thumbnails');
+  const existingCover=target.approvedExistingCover===true
+    &&target.source==='assets/homepage-covers/'+target.gameId+'.webp';
+  const rootPath=path.resolve(root,existingCover?'assets/homepage-covers':'assets/roblox-thumbnails');
   if(!sourcePath.startsWith(rootPath+path.sep))throw new Error('ROBLOX_THUMBNAIL_SOURCE_OUTSIDE_CANONICAL_ROOT');
   if(!fs.existsSync(sourcePath))throw new Error('ROBLOX_THUMBNAIL_SOURCE_FILE_MISSING:'+target.source);
   const stat=fs.statSync(sourcePath);
   if(!stat.isFile()||stat.size<512)throw new Error('ROBLOX_THUMBNAIL_SOURCE_FILE_INVALID:'+target.source);
   const ext=path.extname(sourcePath).toLowerCase();
-  if(!['.svg','.png','.jpg','.jpeg'].includes(ext))throw new Error('ROBLOX_THUMBNAIL_SOURCE_FORMAT_UNSUPPORTED:'+ext);
+  if(!['.svg','.png','.jpg','.jpeg'].includes(ext)&&!(existingCover&&ext==='.webp'))
+    throw new Error('ROBLOX_THUMBNAIL_SOURCE_FORMAT_UNSUPPORTED:'+ext);
+  if(existingCover){
+    const bytes=fs.readFileSync(sourcePath);
+    if(bytes.length!==target.coverBytes||sha256(sourcePath)!==target.coverSha256
+      ||bytes.toString('ascii',0,4)!=='RIFF'||bytes.toString('ascii',8,12)!=='WEBP')
+      throw new Error('ROBLOX_THUMBNAIL_EXISTING_COVER_PROVENANCE_MISMATCH');
+  }
   if(ext==='.svg'){
     const text=fs.readFileSync(sourcePath,'utf8');
     if(!/viewBox=["']0\s+0\s+1920\s+1080["']/i.test(text)&&!/width=["']1920["'][^>]+height=["']1080["']/i.test(text)){
@@ -62,6 +84,10 @@ export function renderThumbnailPng({sourcePath,outputPath,command='rsvg-convert'
     fs.copyFileSync(sourcePath,outputPath);
   }else if(ext==='.jpg'||ext==='.jpeg'){
     const proc=spawnSync('convert',[sourcePath,'-resize','1920x1080^','-gravity','center','-extent','1920x1080',outputPath],{encoding:'utf8'});
+    if(proc.status!==0)throw new Error('ROBLOX_THUMBNAIL_RENDER_FAILED:'+clean(proc.stderr||proc.stdout));
+  }else if(ext==='.webp'){
+    const proc=spawnSync('ffmpeg',['-y','-hide_banner','-loglevel','error','-i',sourcePath,
+      '-vf','scale=1920:1080:flags=lanczos','-frames:v','1',outputPath],{encoding:'utf8'});
     if(proc.status!==0)throw new Error('ROBLOX_THUMBNAIL_RENDER_FAILED:'+clean(proc.stderr||proc.stdout));
   }else{
     const proc=spawnSync(command,['--width','1920','--height','1080','--format','png','--output',outputPath,sourcePath],{encoding:'utf8'});
@@ -128,12 +154,17 @@ export function renderRobloxConceptTrailer({
   ffmpegCommand='ffmpeg',ffprobeCommand='ffprobe',durationSeconds=12
 }={}){
   const gameId=clean(target.gameId),universeId=clean(target.universeId),placeId=clean(target.placeId);
+  const standardArt=clean(target.source).startsWith('assets/roblox-thumbnails/'+gameId+'.');
+  const approvedCover=target.approvedExistingCover===true
+    &&target.source==='assets/homepage-covers/'+gameId+'.webp'
+    &&target.coverSha256===validated.sha256;
   if(!/^[a-z0-9][a-z0-9-]*$/.test(gameId)||!validId(universeId)||!validId(placeId)
-    ||!clean(target.source).startsWith('assets/roblox-thumbnails/'+gameId+'.'))
+    ||(!standardArt&&!approvedCover))
     throw new Error('ROBLOX_CONCEPT_VERIFIED_GAME_TARGET_REQUIRED');
   if(!Number.isFinite(durationSeconds)||durationSeconds<3||durationSeconds>12)
     throw new Error('ROBLOX_CONCEPT_DURATION_INVALID');
-  const source=path.resolve(root,target.source),canonicalRoot=path.resolve(root,'assets/roblox-thumbnails');
+  const source=path.resolve(root,target.source);
+  const canonicalRoot=path.resolve(root,approvedCover?'assets/homepage-covers':'assets/roblox-thumbnails');
   const png=path.resolve(clean(rendered.outputPath)),renderRoot=path.resolve(root,'.tmp','roblox-thumbnails');
   if(!source.startsWith(canonicalRoot+path.sep)||source!==path.resolve(clean(validated.sourcePath))
     ||!fs.existsSync(source)||sha256(source)!==validated.sha256
