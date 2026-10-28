@@ -47,7 +47,11 @@ end
 -- 마력숲 생존기: 실제 게임 상태, 생물 파도, 수집 노드, 성장의 권한은 서버가 소유한다.
 -- 공용 외형 라이브러리는 표현만 담당하고 데미지·드랍·저장은 이 게임에서 계산한다.
 local RunService = game:GetService("RunService")
-local CreatureParts = require(Shared:WaitForChild("RobloxCommonCreatureParts"))
+local FANTASY_NATIVE_CREATURES_VERSION = 1
+local AssetService = game:GetService("AssetService")
+local NativeCreatureAssets = require(Shared:WaitForChild("VisualAssetIds"))
+local studioCreatureAtoms = studioAssetFamily("CREATURE")
+local nativeCreatureTemplates = {}
 local WorldProps = require(Shared:WaitForChild("RobloxCommonWorldProps"))
 local gameWorld = workspace:FindFirstChild("FantasySurvivalWorld")
 if not gameWorld then
@@ -164,17 +168,44 @@ local function spawnEnemy(isBoss, index)
   local theta = encounterSerial*2.399 + index*.31
   local radius = 51 + (index%3)*11
   local location = Vector3.new(math.cos(theta)*radius, 3, math.sin(theta)*radius)
-  local partId = isBoss and "GOLEM_CORE" or (index%3==0 and "INSECT_THORAX" or "QUADRUPED_TORSO")
-  local ok, model = pcall(function()
-    return CreatureParts.Create(partId,{
-      parent=gameWorld, quality="near", anchored=true,
-      scale=isBoss and 2.1 or 1.05, pivot=CFrame.new(location)
-    })
-  end)
-  if not ok or not model then
-    warn("마력숲 몬스터 자산 적용 실패: "..partId)
+  local partId = isBoss and "golem" or (index%3==0 and "bee" or "wolf")
+  local anatomyAtom = isBoss and "HEAD_GOLEM" or (index%3==0 and "HEAD_INSECT" or "HEAD_CANINE")
+  local modelId = table.find(studioCreatureAtoms,anatomyAtom) and NativeCreatureAssets[partId] or nil
+  local nativeScale = table.find(studioCreatureAtoms,anatomyAtom) and (isBoss and 6.3 or 3.15) or nil
+  if typeof(modelId)~="number" or modelId<1 or not nativeScale then
+    warn("마력숲 승인 생물 자산 선택 누락: "..partId)
     return false
   end
+  local ok, model = pcall(function()
+    local template=nativeCreatureTemplates[modelId]
+    if not template then
+      template=AssetService:LoadAssetAsync(modelId)
+      if not template:IsA("Model") or not template:FindFirstChildWhichIsA("MeshPart",true) then
+        template:Destroy()
+        error("FANTASY_NATIVE_MESH_REQUIRED")
+      end
+      for _,item in ipairs(template:GetDescendants()) do
+        if item:IsA("LuaSourceContainer") or item:IsA("RemoteEvent") or item:IsA("RemoteFunction") or item:IsA("Tool") then
+          item:Destroy()
+        elseif item:IsA("BasePart") then
+          item.Anchored=true;item.CanCollide=false;item.CanTouch=false;item.CanQuery=false
+        end
+      end
+      template.Parent=nil
+      nativeCreatureTemplates[modelId]=template
+    end
+    return template:Clone()
+  end)
+  if not ok or not model then
+    warn("마력숲 원본 생물 모델 적용 실패: "..partId)
+    return false
+  end
+  if not model:IsA("Model") then return nil end
+  local nativeHeight=model:GetExtentsSize().Y
+  if nativeHeight<=0 then model:Destroy();return false end
+  model:ScaleTo(model:GetScale()*nativeScale/nativeHeight)
+  model:PivotTo(CFrame.new(location))
+  model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
   model.Name = isBoss and "마력숲 보스" or "마력숲 야생 생물"
   model:SetAttribute("EnemyHealth",hitPoints)
