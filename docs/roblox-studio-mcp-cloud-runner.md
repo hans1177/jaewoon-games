@@ -2,30 +2,29 @@
 
 이 문서는 `hans1177/jaewoon-games`의 **필수 Roblox Studio MCP 실제 플레이** 게이트를 정상적으로 실행하는 방법을 설명합니다. 로컬 PC는 필수는 아니지만, **인증된 대화형 Windows 데스크톱**은 필요합니다. 현재의 단발성 GitHub-hosted `windows-latest` 연결 진단은 Roblox 계정·Studio 로그인 세션을 보존하지 않으며, 실제 플레이 증거가 아닙니다.
 
-## 비용 0원 경로 — 이미 가지고 있는 Windows 컴퓨터 사용
+## 클라우드 Windows 전용 경로 — 로컬 PC 불필요
 
-공식 Roblox Studio MCP 서버와 GitHub 자체 호스팅 러너 소프트웨어는 별도 유료 서비스가 필요하지 않습니다. **하지만 로그인 상태의 실제 Windows 데스크톱이 필요**하며, 컴퓨터/전기/인터넷 자체가 공짜로 제공되는 것은 아닙니다. 지속형 Windows VM을 새로 대여하거나 유료 AI API 키를 만들 필요는 없습니다.
+**실행 장소는 본인 PC가 아니라 원격 Windows 클라우드 VM**입니다. `self-hosted`는 GitHub Actions의 러너 분류명일 뿐, 로컬 PC를 뜻하지 않습니다. 클라우드 VM도 `[self-hosted, Windows, X64, roblox-studio-authenticated]` 조건을 만족할 수 있습니다.
 
-기존 Windows 컴퓨터에서 **공식 Roblox Studio에 로그인하고 테스트 Place를 연 다음**, Assistant → … → Manage MCP Servers → **Enable Studio as MCP server**를 직접 켜세요. 이 설정·계정 로그인은 자동화가 대신하거나 우회하지 않습니다.
+GitHub-hosted `windows-latest`는 일회용 작업자로 Studio 설치/연결 **진단**은 수행할 수 있지만, Roblox 계정의 인증된 대화형 Studio 세션을 다음 작업까지 유지하지 못합니다. 이를 실제 플레이 PASS로 표시하지 않습니다. 클라우드 VM 생성 및 과금은 자동 승인하지 않습니다.
 
-이후 본인의 Windows PowerShell에서 저장소의 무료 설정 스크립트를 실행합니다.
+1. **지속형 원격 Windows VM**을 준비하고 클라우드 제공업체 콘솔이나 보안 원격 데스크톱으로 접속합니다. 공개 RDP(3389) 포트를 전 세계에 열지 않고, 제공업체의 안전한 원격 접속 수단과 방화벽을 사용합니다.
+2. **그 VM 안에서** 공식 Roblox Studio를 설치하고 Roblox 계정으로 로그인한 뒤 테스트 Place를 열고 `Assistant → … → Manage MCP Servers → Enable Studio as MCP server`를 켭니다. 사용자의 로컬 PC에는 Studio·러너를 설치하지 않습니다.
+3. **같은 원격 Windows 데스크톱의 PowerShell**에서 아래 명령을 실행합니다.
 
 ```powershell
-# Clone the already-linked repository in any directory, or update the existing clone.
 git clone https://github.com/hans1177/jaewoon-games.git
 cd jaewoon-games
-
-# Validate signed Studio, same interactive desktop and built-in MCP launcher.
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\connect-roblox-studio-mcp-free-windows.ps1 -CheckOnly
-
-# Download SHA256-verified official Windows Actions runner, register once,
-# and run it in the SAME desktop as Studio (no Windows service).
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\connect-roblox-studio-mcp-free-windows.ps1
 ```
 
-GitHub 등록용 **일회용 토큰**은 [저장소 Actions Runners 설정](https://github.com/hans1177/jaewoon-games/settings/actions/runners) → **New self-hosted runner**에서 가져와 **본인 PC의 PowerShell에만** 붙여넣습니다. 토큰, Roblox 비밀번호, 쿠키를 ChatGPT나 GitHub 코드에 전송하지 않습니다. 스크립트는 공식 GitHub Actions Windows x64 최신 릴리스를 SHA-256으로 검증하고, `roblox-studio-authenticated` 라벨로 같은 Windows 사용자의 대화형 세션에서 실행합니다. 창을 닫거나 Studio 로그아웃 시 실행이 중단됩니다.
+스크립트의 파일명은 기존 무료 실행기 이름을 유지하지만 **클라우드 VM에서도 동작**합니다. 공식 GitHub Actions 러너의 다운로드/해시 검증, Roblox 서명 검증과 대화형 Studio 세션 확인을 수행합니다. 실행 중 표시되는 등록용 **1회용 GitHub 토큰은 원격 VM 콘솔에만** 입력합니다. 토큰/쿠키/비밀번호를 저장소, Actions Secrets, 채팅 또는 워크플로 로그에 복사하지 않습니다.
 
-**Windows PC가 전혀 없고 무료 임시 GitHub-hosted 작업자만 있는 경우에는 Studio MCP 실제 플레이를 인증된 상태로 지속 실행할 수 없습니다.** 무료 GitHub-hosted 연결 진단은 로그인된 Studio 플레이 통과 증거로 대체할 수 없습니다. Studio PASS와 독립 Open Cloud PASS가 없으면 F9 및 정식 배포는 계속 차단됩니다.
+4. VM에서 러너가 `Online/Idle`인지 [GitHub Actions 러너 설정](https://github.com/hans1177/jaewoon-games/settings/actions/runners)에서 확인합니다. Studio와 러너는 **동일한 원격 Windows 로그인 데스크톱 세션**에 있어야 하며, Session 0 Windows 서비스 형태는 허용하지 않습니다.
+5. 기존 `Official Studio MCP actual play` 작업이 활성 대기 중이면 러너 연결 시 자동 실행됩니다. 과거 실행이 **cancelled**인 경우 [기존 Roblox QA](https://github.com/hans1177/jaewoon-games/actions/workflows/company-development-roblox-post-runtime-qa.yml)에서 `Run workflow → game_id`로 정확한 게임을 다시 요청합니다. 후보·정적 검사만으로 F9를 통과 처리하지 않습니다.
+
+이 방식은 **클라우드 배포 자동화**이고, 본인 PC를 전혀 사용하지 않아도 됩니다. 단, 원격 VM의 최초 Studio 로그인/MCP 활성화는 계정 소유자가 실행해야 하며, VM 사용료는 클라우드 제공업체 조건에 따릅니다.
 
 ## 1. 먼저 준비할 것
 
