@@ -139,6 +139,22 @@ test('Studio evidence cannot self-certify all five scenarios or physical touch',
   assert.equal(plan.detailedChecks.find(row=>row.id==='UI_REAL_DEVICE_TOUCH').realDeviceTouchRequired,true);
 }));
 
+test('cross-platform source observations from another game cannot redirect the Roblox quality scan',()=>fixture(({dir,game,base})=>{
+  fs.writeFileSync(path.join(base,'client','Animal.client.luau'),'local animation = "walk attack"');
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:game,platform:'ROBLOX',repoRoot:dir,
+    sourceRoot:'roblox-games/not-this-game',
+    sourceObservation:{sourceRoot:'roblox-games/not-this-game',sourceTreeFingerprint:'fixture',
+      topFiles:[],observations:[],signals:{animation:1}},
+    designRecord:{content:{identity:'기존 야생동물',coreFun:'기존 행동 유지',coreLoop:['이동','공격']}}
+  });
+  assert.equal(d.robloxHolisticQualityPlan.sourceRoot,'roblox-games/'+game);
+  assert.equal(d.robloxHolisticQualityPlan.sourceOnly,true);
+  assert.equal(d.robloxHolisticQualityPlan.qualityComplete,false);
+  assert.ok(d.robloxHolisticQualityPlan.scan.sourceCount>=1);
+  assert.equal(d.robloxHolisticQualityPlan.detailedCheckCounts.actualPlayVerified,0);
+}));
+
 test('existing Roblox BUILD_UP feeds source-only whole asset and action plan to worker prompt',()=>fixture(({dir,game,base})=>{
   fs.writeFileSync(path.join(base,'client','Motion.client.luau'),'local animation="idle walk run attack"');
   const directive=buildGameSpecificBuildUpDirective({
