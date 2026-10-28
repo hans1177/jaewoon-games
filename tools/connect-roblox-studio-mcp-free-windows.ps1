@@ -1,5 +1,5 @@
-# Free Roblox Studio MCP runner using an already-owned interactive Windows desktop.
-# No paid VM/API, Roblox credentials, cookie export, or unattended Studio sign-in.
+# Official Roblox Studio MCP runner for a persistent interactive Windows cloud VM or equivalent trusted Windows desktop.
+# No provisioned VM implied, no Roblox credentials, cookie export, or unattended sign-in.
 # Run only on a trusted Windows machine for this repository.
 [CmdletBinding()]
 param(
@@ -99,7 +99,7 @@ if (Test-Path -LiteralPath $runnerConfig) {
   $config = Join-Path $RunnerRoot 'config.cmd'
   if (-not (Test-Path -LiteralPath $config)) { throw 'ROBLOX_FREE_STUDIO_CONFIG_MISSING' }
   Write-Host ('Open ' + $runnerUrl + '/settings/actions/runners and choose New self-hosted runner.')
-  Write-Host 'Copy the ONE-TIME registration token and paste it into the following local PowerShell prompt.'
+  Write-Host 'Copy the ONE-TIME token and paste it into this authenticated Windows cloud VM session.'
   Write-Host 'Never paste a GitHub token or a Roblox password into ChatGPT, files, or repository logs.'
   $tokenSecure = Read-Host -Prompt 'GitHub Actions registration token (not your password)' -AsSecureString
   $tokenPtr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenSecure)
@@ -123,7 +123,7 @@ if (-not (Test-Path -LiteralPath $runnerCmd)) { throw 'ROBLOX_FREE_STUDIO_RUN_CM
 Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_LABEL=roblox-studio-authenticated'
 Write-Host 'ROBLOX_FREE_STUDIO_RUNNER_MODE=SIGNED_IN_INTERACTIVE_DESKTOP_ONLY'
 Write-Host 'Keep Studio signed in, Assistant MCP enabled, and this PowerShell window open.'
-Write-Host 'Queued official Studio MCP jobs will run without a paid hosted VM.'
+Write-Host 'Queued official Studio MCP jobs will run here when this authenticated Windows session is online.'
 Push-Location $RunnerRoot
 try {
   & $runnerCmd
