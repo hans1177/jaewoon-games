@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-28T07:40:21.763Z",
+  "generatedAt": "2026-10-28T07:41:30.416Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -950,14 +950,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-10-28T07:34:02.075Z",
-            "checkedAt": "2026-10-28T07:34:02.075Z",
+            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
+            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
+            "verifiedAt": "2026-10-28T07:35:46.818Z",
+            "checkedAt": "2026-10-28T07:39:56.729Z",
             "lastFailureAt": null,
             "f0PassedAt": "2026-10-28T07:34:02.075Z",
-            "candidatePublishedAt": null,
+            "candidatePublishedAt": "2026-10-28T07:35:46.818Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -990,8 +990,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "5ea0489353f6a2b7d5fc97e99ec1aa1621d377b8",
+            "artifactIdentity": "sha256:073474f00c503b75c82c046da9a634bb8bfde6b5dda5d2faca5836d962265a1e",
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -1058,7 +1058,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-28T07:34:02.075Z"
+      "updatedAt": "2026-10-28T07:39:56.729Z"
     },
     {
       "gameId": "defense",
