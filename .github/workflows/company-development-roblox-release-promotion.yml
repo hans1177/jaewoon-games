@@ -130,7 +130,7 @@ jobs:
               &&item.robloxRuntimeFoundationPassed!==true
               &&item.currentStep==='TARGET_PLATFORM_RUNTIME_FOUNDATION'
               &&candidate.gameId===item.gameId
-              &&candidate.published===true&&candidate.validationOnly===true
+              &&candidate.published===true&&(candidate.validationOnly===true||(candidate.dedicated===true&&candidate.authority==='roblox-open-cloud-dedicated-private-runtime-candidate'&&candidate.exposure==='PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE'&&candidate.visibilityIntent==='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'))
               &&Number(candidate.versionNumber)>0
               &&failure.authority==='roblox-open-cloud-engine-probe-failure'
               &&Number(failure.httpStatus)===429
