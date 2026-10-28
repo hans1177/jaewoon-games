@@ -627,7 +627,7 @@
         "playMode": "COMPETITIVE",
         "playModeLabel": "경쟁",
         "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-10-28T05:12:17.141Z",
+        "updatedAt": "2026-10-28T05:18:41.319Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -803,7 +803,7 @@
             "playMode": "COMPETITIVE",
             "playModeLabel": "경쟁",
             "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-            "updatedAt": "2026-10-28T05:12:17.141Z",
+            "updatedAt": "2026-10-28T05:18:41.319Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -10858,6 +10858,178 @@
       }
     },
     {
+      "id": "portal-rpg",
+      "name": "포탈 RPG",
+      "description": "다섯 개 포탈 사냥터, 무기 8종, 방어구 6종, 다섯 번째 사냥터 중앙의 계윤찬 보스",
+      "genre": [
+        "RPG"
+      ],
+      "image": "",
+      "webPath": "web-games/portal-rpg",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_DIRECT_GAME_SOURCE",
+      "homepageCategory": "design-only",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/portal-rpg/index.html",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "WEB",
+        "platformLabel": "웹",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "RPG"
+        ],
+        "genreLabel": "RPG",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "개발 작업 정보 없음",
+        "updatedAt": "2026-10-28T05:20:50.706Z",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
+      },
+      "selectedPlatform": "WEB",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 49,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "portal-rpg",
+          "name": "포탈 RPG",
+          "description": "다섯 개 포탈 사냥터, 무기 8종, 방어구 6종, 다섯 번째 사냥터 중앙의 계윤찬 보스",
+          "genres": [
+            "RPG"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": {
+            "gameId": "portal-rpg",
+            "src": "assets/homepage-covers/portal-rpg-roblox.svg",
+            "sha256": "fd188a4b2b151e9f30c5a3aaa4731b7b49f9ca06f16bc157af46f76cc8774ad6",
+            "style": "ROBLOX_BLOCK_AVATAR_V1",
+            "source": "HOMEPAGE_MANAGER_TITLE_ARTWORK",
+            "runtimeScreenshot": false
+          }
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DESIGN_ONLY",
+          "classSource": "OWNER_DIRECT_GAME_SOURCE",
+          "target": "design-only",
+          "handling": "",
+          "selectedPlatform": "WEB",
+          "stage": "기획 · 아트북/컨셉/설계 최적화"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/portal-rpg",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "design-only",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "기획 · 아트북/컨셉/설계 최적화",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "RPG"
+            ],
+            "genreLabel": "RPG",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": "2026-10-28T05:20:50.706Z",
+            "status": "ACTIVE",
+            "productionClass": "DESIGN_ONLY"
+          }
+        }
+      },
+      "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
+      "web3dRedevelopmentRequired": true,
+      "ownerWebSourceRevision": "af5f4b783039de2944c67eb9106418ac0ddc4618b7f3e9a71354838c7f89aaba",
+      "webDevelopmentResetRequired": true,
+      "webPublishedRoute": "",
+      "webPublishedSourceTreeSha": "",
+      "productionTarget": "design-only",
+      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "catalogOrder": 49,
+      "robloxTitleArtwork": {
+        "gameId": "portal-rpg",
+        "src": "assets/homepage-covers/portal-rpg-roblox.svg",
+        "sha256": "fd188a4b2b151e9f30c5a3aaa4731b7b49f9ca06f16bc157af46f76cc8774ad6",
+        "style": "ROBLOX_BLOCK_AVATAR_V1",
+        "source": "HOMEPAGE_MANAGER_TITLE_ARTWORK",
+        "runtimeScreenshot": false
+      }
+    },
+    {
       "id": "survival2",
       "name": "숲의 생존자들",
       "description": "동료와 함께 살아남는 확장 생존 게임",
@@ -10907,7 +11079,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 49,
+        "catalogOrder": 50,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival2",
@@ -11018,7 +11190,7 @@
           }
         }
       },
-      "catalogOrder": 49,
+      "catalogOrder": 50,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -11103,7 +11275,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 50,
+        "catalogOrder": 51,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -11242,7 +11414,7 @@
           }
         }
       },
-      "catalogOrder": 50,
+      "catalogOrder": 51,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -11305,122 +11477,6 @@
       "webPublishedSourceTreeSha": "5aec9e0d823e892f64c5ecb3d7d3a7977c0af8f3",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
-    },
-    {
-      "id": "portal-rpg",
-      "name": "포탈 RPG",
-      "description": "다섯 개 포탈 사냥터, 무기 8종, 방어구 6종, 다섯 번째 사냥터 중앙의 계윤찬 보스",
-      "genre": [
-        "RPG"
-      ],
-      "image": "",
-      "webPath": "web-games/portal-rpg",
-      "hasWebArchive": true,
-      "homepageWebPlayable": false,
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "lifecycleState": "ACTIVE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_DIRECT_GAME_SOURCE",
-      "homepageCategory": "design-only",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-      "ownerWebEntryFile": "web-games/portal-rpg/index.html",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "developmentActive": true,
-        "platform": "WEB",
-        "platformLabel": "웹",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "genre": [
-          "RPG"
-        ],
-        "genreLabel": "RPG",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "신규 게임 소스 개발",
-        "updatedAt": "2026-10-28T05:00:00Z",
-        "status": "ACTIVE",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "selectedPlatform": "WEB",
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 50,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "portal-rpg",
-          "name": "포탈 RPG",
-          "description": "다섯 개 포탈 사냥터, 무기 8종, 방어구 6종, 다섯 번째 사냥터 중앙의 계윤찬 보스",
-          "genres": [
-            "RPG"
-          ],
-          "image": "",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "",
-          "source": "PENDING"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_DIRECT_GAME_SOURCE",
-          "target": "WEB",
-          "selectedPlatform": "WEB",
-          "stage": "소스 개발"
-        },
-        "sources": {
-          "web": {
-            "path": "web-games/portal-rpg",
-            "archive": true,
-            "playable": false,
-            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
-            "purpose": ""
-          }
-        },
-        "publication": {
-          "web": {
-            "route": "web-games/portal-rpg/",
-            "sourceTreeSha": ""
-          },
-          "roblox": {
-            "verified": false,
-            "published": false
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "stage": "개발 중",
-          "runtime": {
-            "authority": "company-runtime",
-            "developmentActive": true,
-            "platform": "WEB",
-            "platformLabel": "웹",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "genre": [
-              "RPG"
-            ],
-            "genreLabel": "RPG",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "신규 게임 소스 개발",
-            "updatedAt": "2026-10-28T05:00:00Z",
-            "status": "ACTIVE",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      }
     }
   ],
   "runtimeAuthority": "company-runtime",
