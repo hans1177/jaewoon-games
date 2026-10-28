@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { exploreVibe2WorkOrder, explorationGuidance, extractVibeSourceImportRefs } from '../tools/vibe2-exploration-worker.mjs';
+import { exploreVibe2WorkOrder, explorationGuidance, extractVibeSourceImportRefs, explorationOrderFingerprint } from '../tools/vibe2-exploration-worker.mjs';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch, beginVibeQueueBatch, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
@@ -61,6 +61,73 @@ test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/
   assert.deepEqual(extractVibeSourceImportRefs(luau,'web'),[]);
 });
 
+
+test('cached exploration cannot carry changed owner goal or responsibility into another implementation',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/order-fingerprint');
+  write(path.join(root,'src/combat.js'),'export function attack(){return 1;}\n');
+  write(path.join(root,'src/ui.js'),'export function render(){return 1;}\n');
+  const order={run:true,taskId:'same-id',gameId:'order-fingerprint',target:'web',
+    goal:'fix combat',source:{root:'web-games/order-fingerprint',
+      responsibleFiles:['web-games/order-fingerprint/src/combat.js'],ignoredPaths:[]},
+    selectedTask:{goal:'fix combat',evidence:['original-bug']},
+    workPackage:{id:'fingerprint-package',sharedContext:{diagnosticEvidence:[]}}};
+  const saved=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(saved.impactAnalysisSchemaVersion,4);
+  assert.equal(saved.orderFingerprint,explorationOrderFingerprint(order));
+  const artifact=path.join(cwd,'.vibe2/fingerprint.json');
+  const old=process.env.VIBE2_EXPLORATION_FILE;
+  process.env.VIBE2_EXPLORATION_FILE=artifact;
+  write(artifact,JSON.stringify(saved));
+  try{
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    const changedGoal={...order,goal:'fix the save load flow'};
+    const reevaluated=exploreVibe2WorkOrder({cwd,order:changedGoal});
+    assert.equal(reevaluated.reused,false);
+    assert.notEqual(reevaluated.orderFingerprint,saved.orderFingerprint);
+    const changedOwner={...order,source:{...order.source,
+      responsibleFiles:['web-games/order-fingerprint/src/ui.js']}};
+    const another=exploreVibe2WorkOrder({cwd,order:changedOwner});
+    assert.equal(another.reused,false);
+    assert.deepEqual(another.responsibleFiles,['src/ui.js']);
+    const changedEvidence={...order,selectedTask:{...order.selectedTask,evidence:['different-failure']}};
+    assert.equal(exploreVibe2WorkOrder({cwd,order:changedEvidence}).reused,false);
+    const changedIgnore={...order,source:{...order.source,ignoredPaths:['src/ui.js']}};
+    assert.equal(exploreVibe2WorkOrder({cwd,order:changedIgnore}).reused,false);
+    const tampered={...saved,orderFingerprint:'missing-order-check'};
+    write(artifact,JSON.stringify(tampered));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,false);
+  }finally{
+    if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=old;
+  }
+});
+
+test('saturated read-only source scan is reported and cannot reuse an incomplete impact graph',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/bounded-scan');
+  write(path.join(root,'src/index.js'),'export function attack(){return 1;}\n');
+  for(let i=0;i<181;i++)
+    write(path.join(root,'src/module-'+String(i).padStart(3,'0')+'.js'),
+      'export const value = '+i+';\n');
+  const order={run:true,taskId:'bounded-scan',gameId:'bounded-scan',target:'web',
+    goal:'fix attack',source:{root:'web-games/bounded-scan',
+      responsibleFiles:['web-games/bounded-scan/src/index.js'],ignoredPaths:[]},
+    workPackage:{id:'bounded-scan-pkg',sharedContext:{diagnosticEvidence:[]}}};
+  const first=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(first.impactScanCoverage.scanLimitReached,true);
+  assert.equal(first.fileDigests.length,180);
+  assert.equal(first.sourceWrite,false);
+  assert.match(explorationGuidance(first),/파일 스캔 상한 도달/);
+  const file=path.join(cwd,'.vibe2/bounded.json'),old=process.env.VIBE2_EXPLORATION_FILE;
+  process.env.VIBE2_EXPLORATION_FILE=file;
+  try{
+    write(file,JSON.stringify(first));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,false);
+  }finally{
+    if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=old;
+  }
+});
+
 test('exploration cache invalidates QA-only changes and requires complete impact digest coverage',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'web-games/cache-impact');
   write(path.join(root,'src/combat.js'),'export function hit(){ return 1; }\n');
@@ -71,7 +138,7 @@ test('exploration cache invalidates QA-only changes and requires complete impact
     source:{root:'web-games/cache-impact',responsibleFiles:['web-games/cache-impact/src/combat.js'],ignoredPaths:[]},
     workPackage:{id:'cache-impact-wp',sharedContext:{diagnosticEvidence:[]}}};
   const first=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(first.impactAnalysisSchemaVersion,3);
+  assert.equal(first.impactAnalysisSchemaVersion,4);
   assert.equal(first.impactScanCoverage.runtimeVerified,false);
   assert(first.fileDigests.some(row=>row.path==='qa/weapon.test.js'));
   const artifact=path.join(cwd,'.vibe2/exploration.json');
@@ -105,7 +172,7 @@ test('Roblox module impact identifies required sibling Luau and native test with
     workPackage:{id:'rig-wp',sharedContext:{diagnosticEvidence:[]}}};
   const handoff=exploreVibe2WorkOrder({cwd,order});
   assert.equal(handoff.sourceImpact.runtimeVerified,false);
-  assert.equal(handoff.impactAnalysisSchemaVersion,3);
+  assert.equal(handoff.impactAnalysisSchemaVersion,4);
   assert(handoff.sourceImpact.impactedSources.some(row=>row.path==='shared/Effects.luau'));
   assert(handoff.sourceImpact.affectedTests.some(row=>row.path==='qa/combat.test.luau'));
   assert.deepEqual(handoff.responsibleFiles,['shared/Combat.luau']);
@@ -120,7 +187,7 @@ test('exploration cache invalidates added and edited previously unrelated module
     source:{root:'web-games/inventory-scan',responsibleFiles:['web-games/inventory-scan/src/combat.js'],ignoredPaths:[]},
     workPackage:{id:'scan-wp',sharedContext:{diagnosticEvidence:[]}}};
   const original=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(original.impactAnalysisSchemaVersion,3);
+  assert.equal(original.impactAnalysisSchemaVersion,4);
   assert.equal(original.fileDigests.length,2);
   const artifact=path.join(cwd,'.vibe2/scanned.json');
   const old=process.env.VIBE2_EXPLORATION_FILE;

@@ -97,6 +97,25 @@ function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,respon
   return{...row,score,text,connections};
 }
 function compactFile(row){return{path:row.relative,hash:sha(row.text||safeRead(row.full)).slice(0,16),bytes:Buffer.byteLength(row.text||safeRead(row.full),'utf8')};}
+// Identity of the requested implementation, not only its task ID. Cached read-only
+// exploration must never carry a previous goal, selected task or write scope forward.
+export function explorationOrderFingerprint(order={}){
+  const context=order?.workPackage?.sharedContext||{};
+  return sha(JSON.stringify({
+    taskId:clean(order.taskId),gameId:clean(order.gameId),target:clean(order.target).toLowerCase(),
+    goal:clean(order.goal),originalGoal:clean(order.originalGoal),
+    source:order.source||{},
+    selectedTask:order.selectedTask||{},
+    workerPolicy:order.workerPolicy||{},
+    packageId:clean(order?.workPackage?.id),
+    diagnosticEvidence:context.diagnosticEvidence||[],
+    gameRepair:context.gameRepair||{},
+    studioQualityEvolution:context.studioQualityEvolution||{},
+    responsibilityCalibration:order.responsibilityCalibration||{},
+    regressionHotspotRisk:order.regressionHotspotRisk||{},
+    designIntelligence:order.designIntelligence||{}
+  }));
+}
 function reusableArtifact(cwd,order){
   const file=clean(process.env.VIBE2_EXPLORATION_FILE);
   if(!file)return null;
@@ -105,13 +124,14 @@ function reusableArtifact(cwd,order){
   const cached=readJson(resolved);
   if(cached?.role!=='exploration'||cached?.sourceWrite!==false||!clean(cached?.reuseKey))throw new Error('잘못된 exploration handoff artifact');
   if(clean(cached.taskId)!==clean(order.taskId))throw new Error('exploration handoff task 불일치');
+  if(!clean(cached.orderFingerprint)||cached.orderFingerprint!==explorationOrderFingerprint(order))return null;
   const expectedRoot=posix(order?.source?.root);
   if(posix(cached.sourceRoot)!==expectedRoot)throw new Error('exploration handoff source root 불일치');
   if(cached.codingAnalysisVersion!==CODING_ANALYSIS_VERSION)return null;
   // Old snapshots did not hash every dependency/test used by the Vibe3 graph.
   // They are unsafe to reuse after source or QA changes, even if the owner file is unchanged.
   if(cached.bootstrap!==true&&(
-    cached.impactAnalysisSchemaVersion!==3
+    cached.impactAnalysisSchemaVersion!==4
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
     ||!clean(cached.sourceImpact?.graphDigest)
     ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
@@ -122,7 +142,10 @@ function reusableArtifact(cwd,order){
   const root=path.resolve(cwd,expectedRoot);
   if(cached.bootstrap===true&&fs.existsSync(root))return null;
   if(cached.bootstrap!==true){
+    // A saturated scan omits later paths. Invalidate rather than claim a complete graph.
+    if(cached.impactScanCoverage?.scanLimitReached!==false)return null;
     const listed=listFiles(root,clean(order.target).toLowerCase(),order?.source?.ignoredPaths||[]);
+    if(listed.length>=MAX_SCAN_FILES)return null;
     if(!clean(cached.scanPathDigest)
       ||sha(JSON.stringify(listed.map(row=>row.relative)))!==cached.scanPathDigest
       ||cached.fileDigests.length!==listed.length)return null;
@@ -555,10 +578,11 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       reasons:['source-root-bootstrap-required','approved-development-queue-bootstrap'],
       evidence:{approvedScopeCoveragePct:100,gameplaySignalCount:0}
     };
-    const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,bootstrap:true})).slice(0,24);
+    const orderFingerprint=explorationOrderFingerprint(order);
+    const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,bootstrap:true,orderFingerprint})).slice(0,24);
     const handoff={
       version:1,codingAnalysisVersion:CODING_ANALYSIS_VERSION,role:'exploration',sourceWrite:false,reused:false,bootstrap:true,
-      taskId:clean(order.taskId)||null,packageId:clean(order?.workPackage?.id)||null,target,sourceRoot:rootRelative,baseMainSha,
+      taskId:clean(order.taskId)||null,packageId:clean(order?.workPackage?.id)||null,target,sourceRoot:rootRelative,baseMainSha,orderFingerprint,
       responsibleFiles:responsible,impactFiles:responsible,contextFiles:[],relatedFiles:[],testTargets:[],
       protectedScopeSignals:[],diagnosticEvidence,existingWebAssessment,fileDigests:[],editContract:bootstrapEditContract(order,responsible),reuseKey,generatedAt:new Date().toISOString()
     };
@@ -569,6 +593,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const responsibleNames=new Set(responsible.map(v=>path.basename(v)).filter(Boolean));
   const responsibleDirs=new Set(responsible.map(v=>posix(path.dirname(v))).filter(Boolean));
   const rows=listFiles(root,target,order?.source?.ignoredPaths||[]);
+  const scanLimitReached=rows.length>=MAX_SCAN_FILES;
   const responsibilityRows=responsible.map(relative=>{const full=path.join(root,relative),text=safeRead(full);return{relative,full,text,score:10000};}).filter(row=>fs.existsSync(row.full));
   const sourceFunctions=responsibilityRows.flatMap(row=>inspectSourceFunctions(row.text,{language:target}));
   const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
@@ -613,7 +638,8 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const editContract=target==='system'
     ?compileSystemEditContract({order,responsibleFiles:responsible,testTargets})
     :compileEditContract({cwd,order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline});
-  const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
+  const orderFingerprint=explorationOrderFingerprint(order);
+  const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,orderFingerprint,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
     version:1,
     codingAnalysisVersion:CODING_ANALYSIS_VERSION,
@@ -630,10 +656,11 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     contextFiles,
     sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
     sourceImpact,
-    impactAnalysisSchemaVersion:3,
+    impactAnalysisSchemaVersion:4,
     scanPathDigest,
+    orderFingerprint,
     impactScanCoverage:{scannedFileCount:graphRows.length,discoveredFileCount:rows.length,
-      bounded:true,completeRepositoryGraph:false,runtimeVerified:false},
+      bounded:true,scanLimitReached,completeRepositoryGraph:false,runtimeVerified:false},
     relatedFiles:related.map(row=>({path:row.relative,score:row.score})),
     testTargets,
     protectedScopeSignals,
@@ -659,6 +686,7 @@ export function explorationGuidance(handoff={}){
       `Vibe3 읽기 전용 영향=${handoff.sourceImpact.impactedSources.map(row=>row.path).join(', ')||'NONE'}`,
       `Vibe3 연관 테스트=${handoff.sourceImpact.affectedTests.map(row=>row.path).join(', ')||'NONE'}`,
       `Vibe3 탐색 범위=${handoff.impactScanCoverage?.scannedFileCount||0}/${handoff.impactScanCoverage?.discoveredFileCount||0} 파일 · 전체 저장소 그래프 아님`,
+      ...(handoff.impactScanCoverage?.scanLimitReached===true?['Vibe3 범위 한계: 파일 스캔 상한 도달 · 영향 분석 불완전 · 자동 캐시 재사용 금지']:[]),
       '읽기 전용 추천이며 책임 파일 수정 범위나 실제 런타임 통과를 확대하지 않는다.'
     ]:[]),
     `보호 신호=${(handoff.protectedScopeSignals||[]).join(', ')||'NONE'}`,
