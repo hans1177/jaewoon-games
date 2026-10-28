@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-16phagk",
+      "worker": "vibe2",
+      "taskId": "party-rpg-web-library-cc0-replacement-v1",
+      "gameId": "party-rpg",
+      "files": [
+        "web-games/party-rpg/index.html"
+      ],
+      "baseSha": "37240c9ef31d7756506a4e49146db1b9fdbc54ff",
+      "runId": "40640962828",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-28T06:21:21.724Z",
+      "expiresAt": "2026-10-28T07:06:21.724Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:party-rpg-web-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
