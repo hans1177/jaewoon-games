@@ -40,6 +40,10 @@ export function createVibe4OfflinePatternCandidate({order={},sourceRoot='',respo
   if(target==='roblox'&&!/\.(?:lua|luau)$/.test(relative))throw Error('VIBE4_LUAU_SOURCE_REQUIRED');
   const root=path.resolve(sourceRoot),full=path.resolve(root,relative);
   if(!full.startsWith(root+path.sep))throw Error('VIBE4_PATH_ESCAPE');
+  // A symlinked parent directory must not redirect a permitted relative path
+  // outside the authorized game root.
+  const canonicalRoot=fs.realpathSync(root),canonicalFile=fs.realpathSync(full);
+  if(!canonicalFile.startsWith(canonicalRoot+path.sep))throw Error('VIBE4_PATH_ESCAPE');
   const stat=fs.lstatSync(full);
   if(!stat.isFile()||stat.isSymbolicLink()||stat.size>260000)throw Error('VIBE4_UNSAFE_FILE');
   const contents=fs.readFileSync(full,'utf8'),digest=sha256(contents);

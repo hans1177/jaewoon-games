@@ -92,6 +92,21 @@ test('Vibe4 offline-only mode fails closed before model generation and keeps exi
   assert.match(code,/applyExactEdits\(sourceRoot,candidate\.edits,\{dryRun:true\}\);/);
 });
 
+test('Vibe4 rejects symlinked parent paths even when relative path looks permitted',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/link-scope');
+  const other=path.join(cwd,'other-game');
+  write(path.join(root,'src/local.luau'),'return true\n');
+  write(path.join(other,'Enemy.luau'),'hp = rawHp\n');
+  fs.symlinkSync(other,path.join(root,'src/external'),'dir');
+  const spec={kind:'bounded-stat',path:'src/external/Enemy.luau',
+    find:'hp = rawHp',value:'rawHp',output:'hp',minimum:0,maximum:100,
+    explicitOwnerParameters:true};
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:spec},sourceRoot:root,
+    responsibleFiles:['src/external/Enemy.luau'],target:'roblox'
+  }),/VIBE4_PATH_ESCAPE/);
+});
+
 test('Vibe4 offline code generator supports grounded Roblox stat clamp with no AI',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'roblox-games/v4');
   write(path.join(root,'Combat.luau'),'local hp=100\nhp = rawHp\n');
