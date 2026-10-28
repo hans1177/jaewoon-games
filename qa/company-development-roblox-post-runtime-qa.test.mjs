@@ -61,6 +61,20 @@ test('Roblox runtime foundation lane remains Open Cloud only while post-release 
   assert.doesNotMatch(workflow,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
 });
 
+test('final Roblox F9 rejects missing official Studio MCP actual play evidence for the exact candidate',()=>{
+  const finalWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(finalWorkflow,/const mandatoryStudioMcpActualPlay=/);
+  assert.match(finalWorkflow,/studioPlay\.pass===true/);
+  assert.match(finalWorkflow,/studioPlay\.actualPlay===true/);
+  assert.match(finalWorkflow,/studioPlay\.runtimeVerified===true/);
+  assert.match(finalWorkflow,/studioPlay\.officialStudioMcp===true/);
+  assert.match(finalWorkflow,/studioPlay\.sourceRevision===sourceRevision/);
+  assert.match(finalWorkflow,/studioPlay\.artifactIdentity===artifactIdentity/);
+  assert.match(finalWorkflow,/Number\(studioPlay\.versionNumber\)===Number\(candidate\.versionNumber\)/);
+  assert.match(finalWorkflow,/&&mandatoryStudioMcpActualPlay===true/);
+  assert.match(finalWorkflow,/ROBLOX_F9_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_REQUIRED/);
+  assert.match(finalWorkflow,/item\.robloxCanonicalPublishPending=false/);
+});
 test('runtime QA rescans when the private candidate producer workflow changes',()=>{
   assert.match(workflow,/\.github\/workflows\/company-development-roblox-release-promotion\.yml/);
 });
@@ -327,7 +341,7 @@ test('runtime foundation critical path reuses current-main contract QA instead o
 });
 
 
-test('Open Cloud runtime stays automatic while official Studio is exact opt-in',()=>{
+test('Open Cloud runtime stays automatic while official Studio is mandatory for F9',()=>{
   const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
   const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
   assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
@@ -337,7 +351,7 @@ test('Open Cloud runtime stays automatic while official Studio is exact opt-in',
   assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
   assert.match(studioPlan,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
-  assert.doesNotMatch(studioPlan,/github\.event_name == 'push'/);
+  assert.match(studioPlan,/github\.event_name == 'push'/);
 });
 
 
