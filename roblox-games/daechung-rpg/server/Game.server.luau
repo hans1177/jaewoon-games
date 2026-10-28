@@ -921,7 +921,19 @@ local function rock(parent,pos,scale,color)
  r.Orientation=Vector3.new(math.random(-10,10),math.random(0,180),math.random(-10,10))
 end
 local function teleportPlayer(p,pos)
- local r=root(p);if r then r.AssemblyLinearVelocity=Vector3.zero;r.CFrame=CFrame.new(pos+Vector3.new(0,4,0))end
+ local r=root(p);if not r then return end
+ local arrival=pos+Vector3.new(0,4,0)
+ -- Normal village respawn, manual return, and portal return share the same
+ -- actual platform height. Leave portal, trade, house and combat destinations
+ -- unchanged; Humanoid root clearance follows the current player's rig.
+ if foundationSpawn and foundationSpawn.Parent and (pos-C.VillageCenter).Magnitude<.05 then
+  local h=hum(p)
+  local feetClearance=(h and h.HipHeight or 2)+r.Size.Y*.5+.2
+  local spawnTop=foundationSpawn.Position.Y+foundationSpawn.Size.Y*.5
+  arrival=Vector3.new(foundationSpawn.Position.X,spawnTop+feetClearance,foundationSpawn.Position.Z)
+ end
+ r.AssemblyLinearVelocity=Vector3.zero
+ r.CFrame=CFrame.new(arrival)
 end
 local function setStats(p,heal)
  local level=math.clamp(n(p,"Level",1),1,C.LevelCap or 60);p:SetAttribute("Level",level)
@@ -1287,9 +1299,13 @@ end
 local function makeVillage()
  table.clear(livingResidents)
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
- foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Position=C.VillageCenter+Vector3.new(0,2,0);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
  ppart(f,"VillageGround",Vector3.new(300,2,300),Vector3.new(0,0,0),Color3.fromRGB(93,141,85),Enum.Material.Grass)
- ppart(f,"VillagePlaza",Vector3.new(96,2.3,96),Vector3.new(0,1.2,0),Color3.fromRGB(128,122,111),Enum.Material.Cobblestone)
+ local plaza=ppart(f,"VillagePlaza",Vector3.new(96,2.3,96),Vector3.new(0,1.2,0),Color3.fromRGB(128,122,111),Enum.Material.Cobblestone)
+ -- Ground the true Roblox SpawnLocation on the built plaza surface, not on a
+ -- fixed offset from the gameplay VillageCenter (which is not a floor Y).
+ foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12)
+ foundationSpawn.Position=Vector3.new(C.VillageCenter.X,plaza.Position.Y+plaza.Size.Y*.5+foundationSpawn.Size.Y*.5+.02,C.VillageCenter.Z)
+ foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
  -- 메인: 처음 입장한 플레이어가 즉시 마을임을 알아보도록 광장과 입구를 명확히 표시한다.
  local pathColor=Color3.fromRGB(176,147,107)
  for _,z in ipairs({-46,-30,-14,14,30,46})do
