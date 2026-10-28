@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import vm from 'node:vm';
 import {buildVibeVerifiedMemoryIndex,retrieveVibeVerifiedPatterns,classifyVibeRepairFailure} from '../assets/vibe-v3-engine.js';
 const sha=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
 const clean=x=>String(x??'').trim();
@@ -200,21 +201,36 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   const codeKind=req.machine?'STATE_MACHINE':'STATE_RULE';
-  const compiled=req.machine
-    ?synthesizeVibe59StateMachine({machine:req.machine,target,
-      variant:clean(req.codegenVariant)||'chain'})
-    :synthesizeVibe59StateLogic({rule:req.rule,target});
-  if(compiled.source===find)throw Error('VIBE59_NOOP');
   // Owner supplied expectations are interpreted independently of emitted code.
-  // A failing state-level case is a rejected candidate, never a runtime PASS.
   const tests=verifyVibe59GameScenarios({rule:req.rule,machine:req.machine,
     scenarios:req.scenarios||[]});
   if(!tests.pass)throw Error('VIBE59_SCENARIO_COUNTEREXAMPLE:'+
     tests.counterexamples.map(x=>x.name).join(','));
+  if(!req.machine&&req.codegenVariant)
+    throw Error('VIBE59_STRATEGY_REQUIRES_STATE_MACHINE');
+  const variants=req.machine&&target==='web'&&!req.codegenVariant
+    ?['chain','switch']:[clean(req.codegenVariant)||'chain'];
+  const candidates=variants.map(variant=>{
+    const result=req.machine
+      ?synthesizeVibe59StateMachine({machine:req.machine,target,variant})
+      :synthesizeVibe59StateLogic({rule:req.rule,target});
+    const replay=target==='web'?verifyVibe59GeneratedJavaScript({
+      source:result.source,rule:req.rule,machine:req.machine,scenarios:req.scenarios||[]
+    }):null;
+    return {variant,compiled:result,replay};
+  });
+  const selected=candidates.find(row=>row.replay?.pass!==false);
+  if(!selected)throw Error('VIBE59_ALL_GENERATED_STRATEGIES_REJECTED:'+
+    candidates.map(row=>row.variant+':'+(row.replay?.reason||row.replay?.counterexamples?.map(x=>x.name).join(','))).join('|'));
+  const {compiled}=selected;
+  if(compiled.source===find)throw Error('VIBE59_NOOP');
+  const codeReplay=selected.replay;
   return Object.freeze({summary:'Vibe5.9 composed offline code',
     expectedEffect:'Source-grounded, explicitly approved state transition',
     edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
     tests:[],vibe59TestPlan:tests,vibe59CodeKind:codeKind,
+    vibe59JsReplay:codeReplay,vibe59Strategy:selected.variant,
+    vibe59StrategiesChecked:candidates.map(row=>({variant:row.variant,pass:row.replay?.pass??null})),
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});
 }
@@ -430,4 +446,49 @@ export function verifyVibe59GameScenarios({rule=null,machine=null,scenarios=[]}=
     pass:cases.every(x=>x.pass),explicitCases:cases.length,
     sourceWrite:false,runtimeVerified:false,runnableAgainstRealGame:false,
     authority:'isolated-semantic-oracle-only'});
+}
+
+// Bounded JS syntax + replay checks for *generated* AST-backed code, not game runtime.
+// Run only owner-supplied scenarios in an isolated context with no external APIs.
+export function verifyVibe59GeneratedJavaScript({source='',rule=null,machine=null,scenarios=[]}={}){
+  if(typeof source!=='string'||!source||source.length>131072
+    ||Boolean(rule)===Boolean(machine)
+    ||!Array.isArray(scenarios)||scenarios.length>20)
+    throw Error('VIBE59_JS_REPLAY_INPUT');
+  if(machine)machine59Spec(machine);
+  else synthesizeVibe59StateLogic({rule,target:'web'});
+  let script;
+  try{script=new vm.Script(source,{filename:'vibe59-generated-source.js'});}
+  catch(error){return Object.freeze({pass:false,cases:[],reason:'SYNTAX:'+clean(error.message).slice(0,160),
+    syntaxPass:false,testsPass:false,runtimeVerified:false,sourceWrite:false,
+    authority:'isolated-generated-js-only'});}
+  const outcomes=[];
+  for(const row of scenarios){
+    if(!row||typeof row!=='object')throw Error('VIBE59_JS_REPLAY_SCENARIO');
+    const input=oracle59State(row.initialState);
+    // Code originates from a constrained AST, not arbitrary model-supplied source.
+    const sandbox=vm.createContext(input,{codeGeneration:{strings:false,wasm:false}});
+    const consumed=[];
+    try{
+      script.runInContext(sandbox,{timeout:250});
+      if(machine){
+        if(!Array.isArray(row.events)||row.events.length>32
+          ||row.events.some(x=>typeof x!=='string'||x.length>100))
+          throw Error('VIBE59_JS_REPLAY_EVENTS');
+        for(const event of row.events){
+          const invocation=new vm.Script(machine.handlerName+'('+JSON.stringify(event)+')');
+          consumed.push(Boolean(invocation.runInContext(sandbox,{timeout:250})));
+        }
+      }
+      const result=oracle59Result(row,sandbox,consumed);
+      outcomes.push(result);
+    }catch(error){
+      outcomes.push({name:clean(row.name)||'scenario',pass:false,
+        differences:[{field:'execution',reason:clean(error.message).slice(0,180)}]});
+    }
+  }
+  const failed=outcomes.filter(row=>!row.pass);
+  return Object.freeze({pass:failed.length===0,syntaxPass:true,testsPass:failed.length===0,
+    cases:outcomes,counterexamples:failed,sourceWrite:false,runtimeVerified:false,
+    authority:'isolated-generated-js-only'});
 }

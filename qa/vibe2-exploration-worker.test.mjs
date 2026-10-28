@@ -14,7 +14,8 @@ import {
   compileVibe59Requirements,composeVibe59Systems,synthesizeVibe59StateLogic,
   generateVibe59Tests,planVibe59Repairs,recallVibe59VerifiedSolutions,
   evaluateVibe59Completion,planVibe59SafeRefactor,createVibe59CodeCandidate,
-  buildVibe59AutonomyPlan,synthesizeVibe59StateMachine,verifyVibe59GameScenarios
+  buildVibe59AutonomyPlan,synthesizeVibe59StateMachine,verifyVibe59GameScenarios,
+  verifyVibe59GeneratedJavaScript
 } from '../tools/vibe2-v59-autonomy.mjs';
 import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
 import { requestVibe4LoopbackModel } from '../tools/vibe2-v4-loopback-model.mjs';
@@ -420,6 +421,48 @@ test('Vibe5.9 generated game event handler passes existing scoped candidate cont
   assert.throws(()=>createVibe59CodeCandidate({order:{
     vibe59CodeRequest:{...req,scenarios:[{...req.scenarios[0],
       expectedState:{enemyState:'idle'}}]}},...args}),/VIBE59_SCENARIO_COUNTEREXAMPLE/);
+});
+
+test('Vibe5.9 replays emitted JavaScript against independent owner-state expectations',()=>{
+  const rule={when:{kind:'compare',op:'lte',left:{kind:'ref',name:'hp'},
+    right:{kind:'number',value:30}},
+    then:[{action:'assign',output:'mode',value:{kind:'number',value:2}}],
+    otherwise:[{action:'assign',output:'mode',value:{kind:'number',value:1}}]};
+  const scenarios=[
+    {name:'low health',initialState:{hp:30,mode:0},expectedState:{mode:2}},
+    {name:'normal',initialState:{hp:31,mode:0},expectedState:{mode:1}}
+  ];
+  const generated=synthesizeVibe59StateLogic({rule,target:'web'});
+  const replay=verifyVibe59GeneratedJavaScript({source:generated.source,rule,scenarios});
+  assert.equal(replay.syntaxPass,true);
+  assert.equal(replay.testsPass,true);
+  assert.equal(replay.cases.length,2);
+  assert.equal(replay.runtimeVerified,false);
+  const broken=verifyVibe59GeneratedJavaScript({
+    source:generated.source.replace('mode = 2;','mode = 9;'),rule,scenarios});
+  assert.equal(broken.syntaxPass,true);
+  assert.equal(broken.pass,false);
+  assert.equal(broken.counterexamples[0].differences[0].field,'mode');
+  const syntax=verifyVibe59GeneratedJavaScript({source:'if (',rule,scenarios});
+  assert.equal(syntax.syntaxPass,false);
+});
+test('Vibe5.9 machine autoselect records two generated strategies and bounded replay evidence',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/v59-strategy');
+  write(path.join(root,'enemy.js'),'let phase="idle";\nfunction handleStep(eventName){return false;}\n');
+  const machine={handlerName:'handleStep',stateVariable:'phase',states:['idle','chase'],
+    events:['spot'],transitions:[{from:'idle',event:'spot',to:'chase',actions:[]}]};
+  const request={ownerApproved:true,path:'enemy.js',
+    find:'function handleStep(eventName){return false;}',machine,scenarios:[
+      {name:'spot',initialState:{phase:'idle'},events:['spot'],
+        expectedState:{phase:'chase'},expectedConsumed:[true]}
+    ]};
+  const candidate=createVibe59CodeCandidate({order:{vibe59CodeRequest:request},
+    sourceRoot:root,responsibleFiles:['enemy.js'],target:'web'});
+  assert.equal(candidate.vibe59Strategy,'chain');
+  assert.equal(candidate.vibe59StrategiesChecked.length,2);
+  assert(candidate.vibe59StrategiesChecked.every(x=>x.pass===true));
+  assert.equal(candidate.vibe59JsReplay.pass,true);
+  assert.equal(candidate.vibe59JsReplay.runtimeVerified,false);
 });
 test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
   assert.deepEqual(extractVibeSourceImportRefs([
