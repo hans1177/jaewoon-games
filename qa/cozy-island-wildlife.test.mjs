@@ -46,111 +46,90 @@ test('포근섬은 곰 없이 마을·멧돼지·야생동물 애니메이션 �
   assert.doesNotMatch(factory,/BillboardGui|ImageLabel/);
 });
 
-test('포근섬 웹게임 3D는 기존 좌표·원본 에셋·터치 입력·저장을 보존한다',()=>{
-  const html=read('web-games/cozy-island/index.html');
-  const css=read('web-games/cozy-island/style.css');
-  const renderer=read('web-games/cozy-island/render-v3.js');
-  const game=read('web-games/cozy-island/game-v3.js');
-  const world=read('web-games/cozy-island/world-upgrade-v3.js');
-  const joystick=read('web-games/cozy-island/joystick.js');
-  assert.match(html,/type="importmap"/);
-  assert.match(html,/"three":"\.\.\/\.\.\/assets\/roblox\/world-ghosts\/native\/mesh\/three\/three\.module\.js"/);
-  assert.match(html,/src="\.\/game-v3\.js"/);
-  for(const file of ['three.module.js','OBJLoader.js','FBXLoader.js','GLTFLoader.js','SkeletonUtils.js']){
-    assert.ok(renderer.includes(file),'missing source library '+file);
-  }
-  for(const token of ['new THREE.WebGLRenderer','this.draw3d(game)',
-   'this.camera3.lookAt','load3dModels()','this.instances3d','this.models3d',
-   'original.clone(true)','cloneRig(original)','game.world.h>1200',
-   "put('wolf:'+wolf.id,'wolf'", "put('boar:'+boar.id,'boar'",
-   "put('player','hero'", "put('fence:'+i,'fence'", "this.drawObjects(ctx,game)",
-   "this.drawUnits(ctx,game)"])assert.ok(renderer.includes(token),'native 3D hook missing '+token);
-  for(const token of ['homely-house/tree.obj','homely-house/house.obj',
-    'homely-house/cobblestones.obj','homely-house/foliage_A.obj',
-    'homely-house/gate_single.obj','forest:wolf.fbx','forest:hog.glb',
-    'actor:knight.glb','actor:barbarian.glb','actor:skeleton-warrior.glb']){
-    assert.ok(renderer.includes(token),'CC0 source missing '+token);
-  }
-  // 기존 전 지역 데이터를 자체 몬스터/전투 구조로 덮어쓰지 않고 읽기 전용 연결.
-  for(const label of ['this.north3','this.west3','this.volcano3','this.cave3',
-    'this.jungleWest3','production.lumberBuilt','production.mineBuilt',
-    'village.defenseTowerBuilt','village.townHallBuilt',
-    'game.northernMobs','game.volcanoEnemies','game.abyssEnemies',
-    'game.jungleCampEnemies','game.westBoss','black-ore:','abyss-crystal:'])
-    assert.ok(renderer.includes(label),'3D authored world segment missing '+label);
-  for(const [file,field] of [
-    ['north-region.js','game.northernMobs = mobs'],
-    ['darkness-flame-v19.js','game.volcanoEnemies=regionEnemies'],
-    ['abyss-cave-v23.js','game.abyssEnemies=enemies'],
-    ['jungle-west-camp.js','game.jungleCampEnemies=enemies'],
-    ['economy-west-v2.js','game.westBoss=westBoss']
-  ])assert.ok(read('web-games/cozy-island/'+file).includes(field),
-    'canonical 3D binding missing: '+file);
-  assert.match(renderer,/if\(path\.endsWith\('\.obj'\)\)/);
-  assert.match(renderer,/model=await new OBJLoader\(\)\.loadAsync\(url\.href\)/);
-  assert.match(renderer,/snake:'forest:monster-26\.obj'/);
-  assert.match(renderer,/spider:'forest:monster-53\.obj'/);
-  assert.match(renderer,/golem:'forest:monster-41\.obj'/);
-  assert.match(world,/currentGame\.boars=boars/);
-  assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
-  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
-  assert.match(game,/runtime\.bindTouchButton\(ui\.action,interact\)/);
-  assert.match(joystick,/setPointerCapture/);
-  assert.doesNotMatch(css,/(?:^|\n)\s*\/\/\s*3D/m);
-  assert.match(css,/\/\* 3D 화면만 표시/);
-  assert.match(css,/#island3d\s*\{/);
-  assert.match(css,/#game\s*\{\s*position:absolute/);
-  assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=/);
+
+test('포근섬은 실제 중세 픽셀 원본과 WebGL 3D 성채 지오메트리를 함께 렌더링한다',()=>{
+ const html=read('web-games/cozy-island/index.html');
+ const render=read('web-games/cozy-island/render-v3.js');
+ const css=read('web-games/cozy-island/style.css');
+ assert.match(html,/type="importmap"/);
+ assert.match(html,/id="webglStatus"/);
+ for(const marker of ['new THREE.WebGLRenderer','new THREE.Scene()',
+   'new THREE.OrthographicCamera','new THREE.ShapeGeometry(shape,6)',
+   'new THREE.BoxGeometry(w,h,d)','new THREE.CylinderGeometry(r,r,h,8)',
+   'new THREE.ConeGeometry(r,h,7)','makeFort3d(kind,height)',
+   'new THREE.TextureLoader()','new THREE.SpriteMaterial',
+   'this.models3d.set(kind','this.gl.render(this.scene3,this.camera3)']){
+  assert.ok(render.includes(marker),'native WebGL geometry/texture missing: '+marker);
+ }
+ for(const original of ['oaktree.png','house1-0.png','house2-0.png','keep.png',
+   'watchtower.png','castle.png','wal0000.png','wal0001.png','license.txt','sources.json']){
+  assert.ok(fs.existsSync('assets/shared/medieval/'+original),'medieval source bytes missing: '+original);
+ }
+ assert.match(render,/new URL\('\.\.\/\.\.\/assets\/shared\/medieval\/'\+spec\.file/);
+ assert.match(render,/this\.native3d=true;this\.load3dModels\(\)/);
+ assert.match(css,/\/\* 3D 화면만 표시/);
+ assert.match(css,/#island3d\s*\{[^}]*pointer-events\s*:\s*none\s*;/);
+ assert.match(css,/#game\s*\{[^}]*opacity\s*:\s*0\s*;/);
+ assert.match(css,/#game\s*\{[^}]*pointer-events\s*:\s*auto\s*;/);
 });
 
-test('포근섬은 2D 월드 출력 없이 WebGL 3D만 표시하고 기존 입력·저장은 유지한다',()=>{
-  const renderer=read('web-games/cozy-island/render-v3.js');
-  const perf=read('web-games/cozy-island/render-performance.js');
-  const css=read('web-games/cozy-island/style.css');
-  const html=read('web-games/cozy-island/index.html');
-  const game=read('web-games/cozy-island/game-v3.js');
-  assert.match(css,/#game\s*\{[^}]*opacity\s*:\s*0\s*;/);
-  assert.match(css,/#game\s*\{[^}]*pointer-events\s*:\s*auto\s*;/);
-  assert.match(css,/#island3d\s*\{[^}]*pointer-events\s*:\s*none\s*;/);
-  assert.match(html,/id="webglStatus"/);
-  assert.match(html,/id="game"/);
-  assert.match(renderer,/this\.canvas\.width\s*=\s*1/);
-  assert.match(renderer,/this\.canvas\.height\s*=\s*1/);
-  assert.match(renderer,/new THREE\.WebGLRenderer/);
-  assert.match(renderer,/this\.gl\.render\(this\.scene3,this\.camera3\)/);
-  assert.doesNotMatch(renderer,/3D 렌더 오류 · 기존 렌더러 유지|WebGL 시작 실패 · 기존 화면 유지/);
-  assert.match(perf,/this\.canvas\.width\s*=\s*1/);
-  assert.match(perf,/this\.gl\.setSize\(this\.width, this\.height, false\)/);
-  assert.match(perf,/this\.camera3\.updateProjectionMatrix\(\)/);
-  assert.match(perf,/proto\.drawSea\s*=\s*function optimizedSea\(\)\s*\{\}/);
-  assert.match(game,/canvas\.addEventListener\('pointerup'/);
-  assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
-  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
+test('포근섬의 3D 화면·지역·모바일 터치 입력은 기존 저장·전투 소유권을 유지한다',()=>{
+ const renderer=read('web-games/cozy-island/render-v3.js');
+ const game=read('web-games/cozy-island/game-v3.js');
+ const perf=read('web-games/cozy-island/render-performance.js');
+ const world=read('web-games/cozy-island/world-upgrade-v3.js');
+ const joystick=read('web-games/cozy-island/joystick.js');
+ for(const name of ['this.north3','this.west3','this.volcano3','this.cave3',
+   'this.jungleWest3','game.northernMobs','game.volcanoEnemies',
+   'game.abyssEnemies','game.jungleCampEnemies','game.westBoss',
+   'black-ore:','abyss-crystal:','this.instances3d','this.models3d']){
+  assert.ok(renderer.includes(name),'region/actor 3D state missing: '+name);
+ }
+ for(const [file,marker] of [
+   ['north-region.js','game.northernMobs = mobs'],
+   ['darkness-flame-v19.js','game.volcanoEnemies=regionEnemies'],
+   ['abyss-cave-v23.js','game.abyssEnemies=enemies'],
+   ['jungle-west-camp.js','game.jungleCampEnemies=enemies'],
+   ['economy-west-v2.js','game.westBoss=westBoss']
+ ])assert.ok(read('web-games/cozy-island/'+file).includes(marker),'lost region source: '+file);
+ assert.match(renderer,/this\.draw3d\(game\)/);
+ assert.match(renderer,/new THREE\.Raycaster\(\)/);
+ assert.match(renderer,/ray\.ray\.intersectPlane\(/);
+ assert.match(renderer,/return \{x:hit\.x\/SC,y:hit\.z\/SC\}/);
+ assert.match(game,/canvas\.addEventListener\('pointerup'/);
+ assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
+ assert.match(game,/runtime\.queueSaveProgress\(state\)/);
+ assert.match(world,/currentGame\.boars=boars/);
+ assert.match(joystick,/setPointerCapture/);
+ assert.match(perf,/proto\.drawSea\s*=\s*function optimizedSea\(\)\s*\{\}/);
+ assert.match(perf,/TARGET_FRAME_MS/);
+ assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=/);
 });
 
-test('포근섬 스트롱홀드식 저폴리 성채는 기존 WebGL 장면과 건설 상태에만 연결된다',()=>{
-  const renderer=read('web-games/cozy-island/render-v3.js');
-  const css=read('web-games/cozy-island/style.css');
-  const game=read('web-games/cozy-island/game-v3.js');
-  // 같은 WebGL 렌더러의 지오메트리/재질을 재사용하며 별도 2D 월드를 만들지 않는다.
-  assert.match(renderer,/this\.fortGeometry=\{/);
-  assert.match(renderer,/new THREE\.BoxGeometry\(1,1,1\)/);
-  assert.match(renderer,/new THREE\.ConeGeometry\(1,1,4\)/);
-  assert.match(renderer,/new THREE\.CylinderGeometry\(1,1,1,6\)/);
-  assert.match(renderer,/flatShading:true/);
-  assert.match(renderer,/if\(kind\.startsWith\('fort-'\)\)/);
-  for(const name of ['fort-road','fort-wall','fort-watchtower','fort-gatehouse',
-    'fort-keep','fort-cottage','fort-barracks','fort-workshop','fort-market']){
-    assert.ok(renderer.includes("kind==='"+name+"'"),'3D 구조물 제작 누락: '+name);
-  }
-  for(const ref of ["put('home','fort-cottage'","put('market','fort-market'",
-    "put('defense-tower','fort-watchtower'","put('townhall','fort-keep'",
-    "put('barracks',game.state.barracksBuilt?'fort-barracks'",
-    "if(village.townHallBuilt)","if(village.defenseTowerBuilt&&village.townHallBuilt)"]){
-    assert.ok(renderer.includes(ref),'기존 상태 연결 누락: '+ref);
-  }
-  assert.match(renderer,/this\.gl\.render\(this\.scene3,this\.camera3\)/);
-  assert.match(css,/#game\s*\{[^}]*opacity\s*:\s*0\s*;/);
-  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
-  assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=|state\.inventory\s*=/);
+test('포근섬 성벽·병영·거점 및 경제 건축은 실제 3D 메시와 게임 건설 상태를 연결한다',()=>{
+ const render=read('web-games/cozy-island/render-v3.js');
+ const game=read('web-games/cozy-island/game-v3.js');
+ const css=read('web-games/cozy-island/style.css');
+ for(const marker of ['ECONOMY_3D_LOOK','BUILDING_SIGNS',
+   "if(kind==='fort-wall'||kind==='fort-wall-side')",
+   "if(kind==='fort-watchtower')","if(kind==='fort-gatehouse')",
+   "if(kind==='fort-keep')","if(kind==='fort-road')",
+   'new THREE.Mesh(geo,m[mat])',
+   'village.townHallBuilt','village.defenseTowerBuilt',
+   'production.lumberBuilt','production.mineBuilt',
+   'game.state.barracksBuilt',
+   "put('home','fort-cottage'","put('market','fort-market'",
+   "put('defense-tower','fort-watchtower'",
+   "put('townhall','fort-keep'",
+   "put('barracks',game.state.barracksBuilt",
+   "put('economic:'+id+':'+i",
+   "put('custom-fort:'+i",
+   "const key='construction-preview:'+i",
+   'this.gl.render(this.scene3,this.camera3)']){
+  assert.ok(render.includes(marker),'3D fort/state mapping missing: '+marker);
+ }
+ assert.match(render,/g\.userData\.flags=\[\];g\.userData\.smoke=\[\]/);
+ assert.match(css,/#game\s*\{[^}]*opacity\s*:\s*0\s*;/);
+ assert.match(game,/runtime\.queueSaveProgress\(state\)/);
+ assert.doesNotMatch(render,/localStorage\.|state\.coins\s*[-+]=|state\.inventory\s*=/);
 });
