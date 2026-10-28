@@ -50,6 +50,13 @@ test('game-specific evolution alternates actor types and prioritizes verified we
   assert.deepEqual([first.actorClass,second.actorClass,third.actorClass],['BOSS','NPC','CREATURE']);
   assert.equal(first.runtimeVerified,false);
   assert.equal(first.evidenceCount,0);
+  assert.equal(first.bodyPlan,'UNCONFIRMED');
+  assert.equal(first.sourceVerifiedMotionVariantPlan.status,'ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED');
+  const rigConfirmed=planVerifiedActorEvolution({
+   gameId:'P1001',generation:1,actorCandidates:[{actorClass:'BOSS',bodyPlan:'GIANT',files:['server/Boss.server.luau']}]
+  });
+  assert.equal(rigConfirmed.bodyPlan,'GIANT');
+  assert.equal(rigConfirmed.sourceVerifiedMotionVariantPlan.variants.length,3);
   const event=recordVerifiedMotionEvolution([],{...base,featureId:MOTION_FORGE_FEATURES[0],afterScore:98});
   assert.equal(event.accepted,true);
   const plan=planVerifiedActorEvolution({gameId:'P1001',generation:5,actorCandidates:actors,history:event.records});
