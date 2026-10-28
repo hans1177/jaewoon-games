@@ -1033,28 +1033,111 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 end)
+-- [Motion Forge 3.0 · NPC] 실제 R15 관절의 이동·대기·피격 포즈를 공용 엔진으로 만든다.
+-- 이미 게시된 Animator 트랙을 우선하며, 타 플레이어·루트 이동·전투/저장 권한은 건드리지 않는다.
 local actorMotionTracks=setmetatable({}, {__mode="k"})
+local nativeNpcMotionReady=commonMotion
+ and type(commonMotion.SampleProceduralActorMotion)=="function"
+ and type(commonMotion.MapCombatPoseToR15)=="function"
+ and type(commonMotion.BindJointPose)=="function"
+local npcJointToChannel={
+ Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
+ LeftElbow="ForearmL",RightElbow="ForearmR",LeftHip="ThighL",RightHip="ThighR",
+ LeftKnee="ShinL",RightKnee="ShinR",LeftAnkle="FootL",RightAnkle="FootR",
+}
+local npcMotionDurations={IDLE=2.4,WALK=.9,RUN=.64,ATTACK=.75,HIT=.46,DEATH=1.32}
+RunService.PreSimulation:Connect(function(dt)
+ if not nativeNpcMotionReady then return end
+ local ownCharacter=p.Character
+ local center=ownCharacter and ownCharacter:FindFirstChild("HumanoidRootPart")
+ if not center then return end
+ local now=os.clock()
+ local count=0
+ for humanoid,item in pairs(actorMotionTracks)do
+  local rig=humanoid.Parent
+  local root=rig and rig:FindFirstChild("HumanoidRootPart")
+  if not root or not root:IsA("BasePart") or Players:GetPlayerFromCharacter(rig)
+   or not humanoid:IsDescendantOf(workspace) then
+   item.controller.Destroy()
+   actorMotionTracks[humanoid]=nil
+  elseif (root.Position-center.Position).Magnitude<110 and count<(touchEnabled and 16 or 32) then
+   count+=1
+   -- 기존 승인된 AnimationTrack이 시작되면 절차적 폴백을 해제한다.
+   if now>=(item.nextTrackCheck or 0) then
+    item.nextTrackCheck=now+.45
+    if #item.animator:GetPlayingAnimationTracks()>0 then
+     item.controller.Destroy()
+     actorMotionTracks[humanoid]=nil
+    end
+   end
+   if actorMotionTracks[humanoid] then
+    local horizontal=Vector3.new(root.AssemblyLinearVelocity.X,0,root.AssemblyLinearVelocity.Z).Magnitude
+    local moving=humanoid.MoveDirection.Magnitude>.08 or horizontal>.65
+    local marker=tostring(root:GetAttribute("MotionState") or rig:GetAttribute("MotionState") or "")
+    local state=humanoid.Health<=0 and "DEATH"
+     or marker=="HIT" and "HIT"
+     or marker=="ATTACK" and "ATTACK"
+     or moving and (horizontal>12 and "RUN" or "WALK") or "IDLE"
+    if state~=item.state then item.state=state;item.elapsed=0 end
+    local frameDt=math.clamp(dt or 1/60,0,.1)
+    local pace=moving and math.clamp(horizontal/8,.65,1.8) or 1
+    item.elapsed=(item.elapsed or 0)+frameDt*pace
+    local duration=npcMotionDurations[state]
+    local looping=state=="IDLE" or state=="WALK" or state=="RUN"
+    local phase=looping and ((item.elapsed/duration)%1) or math.min(1,item.elapsed/duration)
+    table.clear(item.sourcePose)
+    local _,usable=commonMotion.SampleProceduralActorMotion(state,phase,{
+     availableJoints=item.channels,bodyPlan="BIPED",actorClass=item.actorClass,
+     mobileTier=touchEnabled and "LOW" or "HIGH",
+     profile=item.profile,secondary=.65,
+    },item.sourcePose)
+    if usable then
+     commonMotion.MapCombatPoseToR15(item.sourcePose,item.r15Pose)
+     item.controller.Step(item.r15Pose,frameDt)
+     rig:SetAttribute("NativeNpcMotionState","SOURCE_POSE_PLAYING_UNVERIFIED")
+    end
+   end
+  else
+   item.controller.Reset()
+  end
+ end
+end)
 task.spawn(function()
  while gui.Parent do
-  if p.Character then
+  if nativeNpcMotionReady and p.Character then
    local center=p.Character:FindFirstChild("HumanoidRootPart")
    if center then
     local checked=0
     for _,actor in ipairs(workspace:GetDescendants())do
      if checked>=80 then break end
-     if actor:IsA("Humanoid") and actor.Parent~=p.Character and actor.RigType==Enum.HumanoidRigType.R15 then
-      local rig=actor.Parent;local ar=rig and rig:FindFirstChild("HumanoidRootPart")
-      if ar and (ar.Position-center.Position).Magnitude<110 then
+     if actor:IsA("Humanoid") and actor.Parent~=p.Character
+      and actor.RigType==Enum.HumanoidRigType.R15 then
+      local rig=actor.Parent
+      local root=rig and rig:FindFirstChild("HumanoidRootPart")
+      if root and (root.Position-center.Position).Magnitude<110
+       and not Players:GetPlayerFromCharacter(rig) then
        checked+=1
        local animator=actor:FindFirstChildOfClass("Animator")
-       if animator then
-        local moving=actor.MoveDirection.Magnitude>.08
-        local desired=actor.Health<=0 and "DEATH_FRONT" or moving and "WALK" or "IDLE_RELAXED"
-        local item=actorMotionTracks[actor]
-        if not item or item.name~=desired then
-         if item and item.track then pcall(function()item.track:Stop(.16);item.track:Destroy()end)end
-         local ok,track=false,nil -- Production animation upload not verified
-         actorMotionTracks[actor]={name=desired,track=ok and track or nil}
+       if animator and not actorMotionTracks[actor]
+        and #animator:GetPlayingAnimationTracks()==0 then
+        local joints,channels={},{}
+        for _,motor in ipairs(rig:GetDescendants())do
+         if motor:IsA("Motor6D") and motor.Part0 and motor.Part1
+          and npcJointToChannel[motor.Name] then
+          joints[motor.Name]=motor
+          channels[npcJointToChannel[motor.Name]]=true
+         end
+        end
+        if joints.Waist and joints.LeftShoulder and joints.RightShoulder
+         and joints.LeftHip and joints.RightHip then
+         local class=tostring(rig:GetAttribute("MotionActorClass") or "NPC")
+         if class~="NPC" and class~="ENEMY" and class~="BOSS" then class="NPC" end
+         actorMotionTracks[actor]={
+          animator=animator,controller=commonMotion.BindJointPose(joints,{response=14}),
+          channels=channels,sourcePose={},r15Pose={},actorClass=class,
+          profile={limbArc=1.06,footContact=1.08,secondaryMotion=.78,mobileDetail=touchEnabled and .6 or 1},
+          state="",elapsed=0,nextTrackCheck=0,
+         }
         end
        end
       end
