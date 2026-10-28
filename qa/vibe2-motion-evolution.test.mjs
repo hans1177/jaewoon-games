@@ -117,6 +117,9 @@ test('procedural native actor clip authoring is bounded to real rig and preserve
  for(const state of ['IDLE','WALK','RUN','TURN','START','STOP','ATTACK','HIT','DEATH','INTERACT','GESTURE','FLY']){
   assert.ok(code.includes(state+'={duration='),state+' native procedural state missing');
  }
+ for(const knob of Object.keys(MOTION_CRAFT_KNOBS))assert.ok(code.includes('profile.'+knob),knob+' must change real joint output');
+ assert.match(code,/ACTOR_RIG_MOTION_CHANNEL_MISMATCH/);
+ assert.match(code,/function RobloxCommonMotion\.PreviewProceduralActorMotion\(/);
  assert.match(code,/REAL_ACTOR_RIG_REQUIRED/);
  assert.match(code,/REAL_ANIMATED_JOINTS_REQUIRED/);
  assert.match(code,/RootMotionOwned",false/);
