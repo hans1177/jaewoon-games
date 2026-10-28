@@ -674,7 +674,7 @@ local wings={WingL=true,WingR=true,Head=true,Spine=true}
 local flying=frame("FLY",.25,"FLYER","CREATURE",wings,nil,"HIGH")
 local low=frame("FLY",.25,"FLYER","CREATURE",wings,nil,"LOW")
 assert(flying.WingL and flying.WingR and low.WingL,"WING_CHANNELS_REQUIRED")
-assert(math.abs(low.WingL[6])<math.abs(flying.WingL[6]),"MOBILE_FLYING_SECONDARY_LOD_UNAPPLIED")
+assert(math.abs(low.WingL[2])<math.abs(flying.WingL[2]),"MOBILE_FLYING_SECONDARY_LOD_UNAPPLIED")
 local coils={Coil0=true,Coil1=true,Coil2=true,Coil3=true,Coil4=true,Coil5=true,Coil6=true}
 local serpent=frame("WALK",.25,"SERPENT","CREATURE",coils,nil,"MID")
 assert(serpent.Coil0 and serpent.Coil6,"SERPENT_WAVE_MISSING")
