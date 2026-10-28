@@ -9,6 +9,12 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { exploreVibe2WorkOrder, explorationGuidance, extractVibeSourceImportRefs, explorationOrderFingerprint } from '../tools/vibe2-exploration-worker.mjs';
 import { analyzeVibe4CodeFlow } from '../tools/vibe2-v4-code-intelligence.mjs';
+import {
+  compileVibe59Requirements,composeVibe59Systems,synthesizeVibe59StateLogic,
+  generateVibe59Tests,planVibe59Repairs,recallVibe59VerifiedSolutions,
+  evaluateVibe59Completion,planVibe59SafeRefactor,createVibe59CodeCandidate,
+  buildVibe59AutonomyPlan
+} from '../tools/vibe2-v59-autonomy.mjs';
 import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
 import { requestVibe4LoopbackModel } from '../tools/vibe2-v4-loopback-model.mjs';
 import http from 'node:http';
@@ -198,11 +204,136 @@ test('Vibe4 flow reasoning appears in existing read-only coding guidance',()=>{
     source:{root:'web-games/v4-flow',responsibleFiles:['web-games/v4-flow/src/actor.js'],ignoredPaths:[]},
     workPackage:{id:'v4-flow-pkg',sharedContext:{diagnosticEvidence:[]}}};
   const result=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(result.impactAnalysisSchemaVersion,5);
+  assert.equal(result.impactAnalysisSchemaVersion,6);
   assert.equal(result.codeFlow.sourceWrite,false);
   assert(result.codeFlow.sources[0].events.some(e=>e.handler==='hurt'));
   assert.match(explorationGuidance(result),/Vibe4 코드 상태·이벤트=/);
   assert.equal(result.sourceWrite,false);
+});
+test('Vibe5.9 requirements compile explicit approval separately from language suggestions',()=>{
+  const r=compileVibe59Requirements({order:{goal:'평원 건축과 전투 몬스터',
+    vibe59Spec:{ownerApproved:true,systems:['combat','building']}}});
+  assert.deepEqual(r.explicitSystems,['combat','building']);
+  assert(r.suggestedOnly.includes('world')||r.suggestedOnly.includes('ai'));
+  assert.equal(r.sourceWrite,false);
+  assert.throws(()=>compileVibe59Requirements({order:{vibe59Spec:{systems:['unknown']}}}),
+    /VIBE59_SYSTEM_NOT_APPROVED/);
+});
+test('Vibe5.9 system composer keeps explicit events and exposes cycles',()=>{
+  const s=composeVibe59Systems({systems:['combat','bestiary','saving'],bindings:[
+    {from:'combat',to:'bestiary',event:'EnemyDefeated'},
+    {from:'bestiary',to:'saving',event:'RegistrySaved'}
+  ]});
+  assert.deepEqual(s.cycleWarnings,[]);
+  assert.equal(s.runtimeVerified,false);
+  assert.throws(()=>composeVibe59Systems({systems:['combat'],bindings:[
+    {from:'combat',to:'saving',event:'RegistrySaved'}
+  ]}),/VIBE59_BINDING_UNAPPROVED/);
+  const cycle=composeVibe59Systems({systems:['combat','saving'],bindings:[
+    {from:'combat',to:'saving',event:'DamageEvent'},
+    {from:'saving',to:'combat',event:'ReloadEvent'}
+  ]});
+  assert(cycle.cycleWarnings.length>0);
+});
+test('Vibe5.9 synthesizes composed multi-predicate behavior with bounded state updates',()=>{
+  const rule={when:{kind:'and',items:[
+    {kind:'compare',op:'lte',left:{kind:'ref',name:'hp'},right:{kind:'number',value:30}},
+    {kind:'compare',op:'gt',left:{kind:'ref',name:'energy'},right:{kind:'number',value:0}}
+  ]},then:[
+    {action:'assign',output:'mode',value:{kind:'number',value:2}},
+    {action:'subtract',output:'energy',value:{kind:'number',value:1}}
+  ],otherwise:[{action:'assign',output:'mode',value:{kind:'number',value:1}}]};
+  const web=synthesizeVibe59StateLogic({rule,target:'web'});
+  const lua=synthesizeVibe59StateLogic({rule,target:'roblox'});
+  assert.match(web.source,/hp <= 30/);
+  assert.match(web.source,/energy = energy - 1;/);
+  assert.match(lua.source,/ and /);
+  assert.match(lua.source,/energy = energy - 1/);
+  assert.throws(()=>synthesizeVibe59StateLogic({rule:{...rule,then:[
+    {action:'assign',output:'energy;evil',value:{kind:'number',value:0}}
+  ]}}),/VIBE59_ACTION_INVALID/);
+  const cases=generateVibe59Tests({rule,target:'web',scenarios:[
+    {name:'threshold',initialState:{hp:30,energy:1},expectedState:{mode:2,energy:0}},
+    {name:'energy zero',initialState:{hp:30,energy:0},expectedState:{mode:1}}
+  ]});
+  assert.equal(cases.cases.length,2);
+  assert.equal(cases.runnableAgainstRealGame,false);
+  assert.equal(generateVibe59Tests({rule}).cases.length,0);
+});
+test('Vibe5.9 repair planning and prior verified memory do not hallucinate passes',()=>{
+  const p=planVibe59Repairs({failures:['SyntaxError: unexpected token'],
+    attempts:[],maxAttempts:2});
+  assert.equal(p.automaticRetryPerformed,false);
+  assert(p.strategies.length>0&&p.strategies.length<=2);
+  const repeated=planVibe59Repairs({failures:['SyntaxError: unexpected token'],
+    attempts:[{fingerprint:p.strategies[0].fingerprint}],maxAttempts:2});
+  assert(repeated.strategies.every(x=>x.fingerprint!==p.strategies[0].fingerprint));
+  const m=recallVibe59VerifiedSolutions({request:'damage',samples:[
+    {id:'not-verified',request:'damage',testsPass:false,runtimePass:false}
+  ]});
+  assert.equal(m.positiveCount,0);
+  assert.equal(m.persistedByThisCall,false);
+});
+test('Vibe5.9 checks exact completion evidence rather than checking only source presence',()=>{
+  const outcome=evaluateVibe59Completion({requirements:['combat','saving'],evidence:[
+    {id:'combat',syntaxPass:true,testsPass:true,runtimePass:true,exactRevision:true,sourcePass:true},
+    {id:'saving',syntaxPass:true,testsPass:true,runtimePass:false,exactRevision:true,sourcePass:true}
+  ]});
+  assert.deepEqual(outcome.missing,['saving']);
+  assert.equal(outcome.complete,false);
+  const empty=evaluateVibe59Completion({requirements:[],evidence:[]});
+  assert.equal(empty.complete,false);
+});
+test('Vibe5.9 safe refactor returns conservative source edit only',()=>{
+  const proposal=planVibe59SafeRefactor({source:
+    'if (isVisible) { visible = true; } else { visible = false; }'});
+  assert.equal(proposal.available,true);
+  assert.equal(proposal.edits[0].replace,'visible = Boolean(isVisible);');
+  assert.equal(proposal.runtimeEquivalentVerified,false);
+  assert.equal(planVibe59SafeRefactor({target:'roblox',source:'if x then y = true end'}).available,false);
+});
+test('Vibe5.9 composed offline code candidate respects exact owner source and digest',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/v59-code');
+  const file=path.join(root,'src/player.js');
+  write(file,'function attack(){\n  mode = base;\n}\n');
+  const old=fs.readFileSync(file,'utf8');
+  const rule={when:{kind:'compare',op:'lte',
+    left:{kind:'ref',name:'hp'},right:{kind:'number',value:30}},
+    then:[{action:'assign',output:'mode',value:{kind:'number',value:2}}]};
+  const request={ownerApproved:true,path:'src/player.js',find:'  mode = base;',rule,
+    scenarios:[{name:'low HP',initialState:{hp:20},expectedState:{mode:2}}]};
+  const args={sourceRoot:root,responsibleFiles:['src/player.js'],target:'web'};
+  const generated=createVibe59CodeCandidate({order:{vibe59CodeRequest:request},...args});
+  assert.match(generated.edits[0].replace,/hp <= 30/);
+  assert.equal(generated.vibe59TestPlan.cases.length,1);
+  assert.equal(fs.readFileSync(file,'utf8'),old);
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{...request,path:'../other.js'}},...args}),
+    /VIBE59_UNAPPROVED_SOURCE/);
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{...request,sourceSha256:'0'.repeat(64)}},...args}),
+    /VIBE59_STALE_SOURCE/);
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{...request,ownerApproved:false}},...args}),
+    /VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED/);
+  write(file,'mode = base;\nmode = base;\n');
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{...request,find:'mode = base;'}},...args}),
+    /VIBE59_ANCHOR_NOT_UNIQUE/);
+});
+test('Vibe5.9 completion and system planning are delivered in current exploration handoff',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/v59-flow');
+  write(path.join(root,'src/combat.js'),'function hit(){return 10;}\n');
+  const order={run:true,taskId:'v59-flow',gameId:'v59-flow',target:'web',goal:'combat save',
+    vibe59Spec:{ownerApproved:true,systems:['combat','saving'],
+      bindings:[{from:'combat',to:'saving',event:'HitRecorded'}]},
+    source:{root:'web-games/v59-flow',responsibleFiles:['web-games/v59-flow/src/combat.js'],ignoredPaths:[]},
+    workPackage:{id:'v59-pkg',sharedContext:{diagnosticEvidence:[]}}};
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.impactAnalysisSchemaVersion,6);
+  assert.equal(result.autonomy59.version,'5.9');
+  assert.equal(result.autonomy59.assembly.bindings.length,1);
+  assert.equal(result.autonomy59.completion.complete,false);
+  assert.equal(result.sourceWrite,false);
+  assert.match(explorationGuidance(result),/Vibe5\.9 명세=/);
+  const plan=buildVibe59AutonomyPlan({order});
+  assert.equal(plan.localModel,'Vibe4 loopback adapter available, inference unverified');
 });
 test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
   assert.deepEqual(extractVibeSourceImportRefs([
@@ -256,7 +387,7 @@ test('cached exploration cannot carry changed owner goal or responsibility into 
     selectedTask:{goal:'fix combat',evidence:['original-bug']},
     workPackage:{id:'fingerprint-package',sharedContext:{diagnosticEvidence:[]}}};
   const saved=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(saved.impactAnalysisSchemaVersion,5);
+  assert.equal(saved.impactAnalysisSchemaVersion,6);
   assert.equal(saved.orderFingerprint,explorationOrderFingerprint(order));
   const artifact=path.join(cwd,'.vibe2/fingerprint.json');
   const old=process.env.VIBE2_EXPLORATION_FILE;
@@ -322,7 +453,7 @@ test('exploration cache invalidates QA-only changes and requires complete impact
     source:{root:'web-games/cache-impact',responsibleFiles:['web-games/cache-impact/src/combat.js'],ignoredPaths:[]},
     workPackage:{id:'cache-impact-wp',sharedContext:{diagnosticEvidence:[]}}};
   const first=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(first.impactAnalysisSchemaVersion,5);
+  assert.equal(first.impactAnalysisSchemaVersion,6);
   assert.equal(first.impactScanCoverage.runtimeVerified,false);
   assert(first.fileDigests.some(row=>row.path==='qa/weapon.test.js'));
   const artifact=path.join(cwd,'.vibe2/exploration.json');
@@ -356,7 +487,7 @@ test('Roblox module impact identifies required sibling Luau and native test with
     workPackage:{id:'rig-wp',sharedContext:{diagnosticEvidence:[]}}};
   const handoff=exploreVibe2WorkOrder({cwd,order});
   assert.equal(handoff.sourceImpact.runtimeVerified,false);
-  assert.equal(handoff.impactAnalysisSchemaVersion,5);
+  assert.equal(handoff.impactAnalysisSchemaVersion,6);
   assert(handoff.sourceImpact.impactedSources.some(row=>row.path==='shared/Effects.luau'));
   assert(handoff.sourceImpact.affectedTests.some(row=>row.path==='qa/combat.test.luau'));
   assert.deepEqual(handoff.responsibleFiles,['shared/Combat.luau']);
@@ -371,7 +502,7 @@ test('exploration cache invalidates added and edited previously unrelated module
     source:{root:'web-games/inventory-scan',responsibleFiles:['web-games/inventory-scan/src/combat.js'],ignoredPaths:[]},
     workPackage:{id:'scan-wp',sharedContext:{diagnosticEvidence:[]}}};
   const original=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(original.impactAnalysisSchemaVersion,5);
+  assert.equal(original.impactAnalysisSchemaVersion,6);
   assert.equal(original.fileDigests.length,2);
   const artifact=path.join(cwd,'.vibe2/scanned.json');
   const old=process.env.VIBE2_EXPLORATION_FILE;

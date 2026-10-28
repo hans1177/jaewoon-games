@@ -9,6 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
 import {createVibeSourceGraph,createVibeImpactPlan} from '../assets/vibe-v3-engine.js';
 import {analyzeVibe4CodeFlow} from './vibe2-v4-code-intelligence.mjs';
+import {buildVibe59AutonomyPlan} from './vibe2-v59-autonomy.mjs';
 import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
@@ -132,7 +133,7 @@ function reusableArtifact(cwd,order){
   // Old snapshots did not hash every dependency/test used by the Vibe3 graph.
   // They are unsafe to reuse after source or QA changes, even if the owner file is unchanged.
   if(cached.bootstrap!==true&&(
-    cached.impactAnalysisSchemaVersion!==5
+    cached.impactAnalysisSchemaVersion!==6
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
     ||!clean(cached.sourceImpact?.graphDigest)
     ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
@@ -627,6 +628,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const codeFlow=analyzeVibe4CodeFlow({target,responsiblePaths:responsible,
     files:graphRows.map(row=>({path:row.relative,source:row.text||safeRead(row.full)}))});
   // Prioritize observed graph-reachable regression tests, retaining existing fallback checks.
+  const autonomy59=buildVibe59AutonomyPlan({order,target,sourceImpact,codeFlow});
   testTargets=unique([...sourceImpact.affectedTests.map(row=>row.path),...testTargets]).slice(0,8);
   const impactFiles=unique([...responsible,...sourceImpact.impactedSources.map(row=>row.path),
     ...related.slice(0,8).map(row=>row.relative)]).slice(0,24);
@@ -661,7 +663,8 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
     sourceImpact,
     codeFlow,
-    impactAnalysisSchemaVersion:5,
+    autonomy59,
+    impactAnalysisSchemaVersion:6,
     scanPathDigest,
     orderFingerprint,
     impactScanCoverage:{scannedFileCount:graphRows.length,discoveredFileCount:rows.length,
@@ -688,6 +691,10 @@ export function explorationGuidance(handoff={}){
     `책임 파일=${(handoff.responsibleFiles||[]).join(', ')||'NONE'}`,
     `읽기 전용 영향 파일=${(handoff.impactFiles||[]).filter(x=>!(handoff.responsibleFiles||[]).includes(x)).join(', ')||'NONE'}`,
     `검증 후보=${(handoff.testTargets||[]).join(', ')||'NONE'}`,
+    ...(handoff.autonomy59?[
+      `Vibe5.9 명세=${handoff.autonomy59.requirement.explicitSystems.join(',')||'NONE'} · 추천만=${handoff.autonomy59.requirement.suggestedOnly.join(',')||'NONE'} · 검증완료=${handoff.autonomy59.completion.verified.length}/${handoff.autonomy59.completion.required}`,
+      'Vibe5.9 학습·설계·복구 정보는 실행 검증 및 승인되지 않은 코드 변경의 근거가 아니다.'
+    ]:[]),
     ...(handoff.codeFlow?[
       `Vibe4 코드 상태·이벤트=${handoff.codeFlow.sources.filter(row=>row.responsible)
         .map(row=>row.path+':writes='+row.stateWrites.slice(0,12).map(x=>x.symbol+'@'+x.line).join('/')+

@@ -21,6 +21,7 @@ import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
 import { createVibe4OfflinePatternCandidate } from './vibe2-v4-pattern-coder.mjs';
+import { createVibe59CodeCandidate } from './vibe2-v59-autonomy.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, executableText } from './company-vibe2-expert-development.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
@@ -8914,7 +8915,22 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       temperature:0,completionMode:'VIBE4_OFFLINE_PATTERN'}};
     console.log('VIBE4_OFFLINE_PATTERN=VALIDATED:'+offline.vibe4PatternId);
   }
-  const webInput=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicWebInputCandidate({order,sourceRoot,responsibleFiles}):null;
+  // Vibe5.9 bounded compositional synthesis: no cloud AI or source write.
+  // Owner-approved source scope and the original Vibe2 validator still decide admission.
+  if(!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
+    const v59=createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target});
+    if(v59){
+      const candidate=normalizeCandidate(v59,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
+      applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      const candidateValidation=candidateValidator(candidate);
+      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,
+        modelUsed:false,vibe59RuleDigest:v59.ruleDigest,vibe59TestCaseCount:v59.vibe59TestPlan.cases.length,
+        mode:'VIBE59_COMPOSED_LOGIC',maxPredict:0,timeoutMs:0,contextWindow:0,
+        temperature:0,completionMode:'VIBE59_COMPOSED_LOGIC'}};
+      console.log('VIBE59_COMPOSED_LOGIC=VALIDATED:'+v59.ruleDigest.slice(0,12));
+    }
+  }
+  const webInput=!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicWebInputCandidate({order,sourceRoot,responsibleFiles}):null;
   if(!generated&&webInput){
     try{
       const candidate=normalizeCandidate(webInput,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
