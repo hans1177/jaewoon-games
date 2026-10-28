@@ -48,20 +48,18 @@ function argumentsMap(argv=[]){
   }
   return out;
 }
-function validateOfficialMcpPath(command='',localAppData='',trustedExe=false){
+export function validateOfficialMcpPath(command='',localAppData='',trustedExe=false){
   if(!localAppData||!command)return false;
   const full=path.resolve(command);
   const normal=value=>path.resolve(value).toLowerCase();
   const documented=path.join(localAppData,'Roblox','mcp.bat');
   if(normal(full)===normal(documented))return true;
   if(!trustedExe||path.basename(full).toLowerCase()!=='studiomcp.exe')return false;
-  // Existing official MCP harness supports the Roblox-signed StudioMCP.exe as
-  // fallback for a missing/malformed documented batch, with zero CLI flags.
-  const roots=[
-    path.join(localAppData,'Roblox','Versions'),
-    process.env['ProgramFiles(x86)']?path.join(process.env['ProgramFiles(x86)'],'Roblox','Versions'):null
-  ].filter(Boolean);
-  return roots.some(root=>normal(full).startsWith(normal(root)+path.sep));
+  // The official signed Roblox installer may place its version directory
+  // outside LOCALAPPDATA/Program Files on ephemeral Windows images. Accept
+  // only a same-directory StudioMCP.exe next to the verified Studio binary,
+  // with its own Roblox Authenticode signature attested by PowerShell.
+  return fs.existsSync(path.join(path.dirname(full),'RobloxStudioBeta.exe'));
 }
 export async function runHostedStudioMcpProbe({
   platform=process.platform,installed=false,running=false,installerVerified=false,
