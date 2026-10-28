@@ -59,7 +59,21 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(client,/SaveStatus/);
   assert.match(client,/임시 플레이 · 이번 접속의 진행은 저장되지 않음/);
   assert.match(config,/Label = "가까운 자원 채집"/);
-  assert.match(server,/CreatureParts.Create\(partId/);
+  assert.match(server,/AssetService:LoadAssetAsync\(modelId\)/);
+  assert.match(server,/nativeCreatureTemplates\[modelId\]/);
+  assert.match(server,/return template:Clone\(\)/);
+  assert.match(server,/FindFirstChildWhichIsA\("MeshPart",true\)/);
+  assert.doesNotMatch(server,/CreatureParts\.Create\(/);
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  const ids=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+  assert.equal(registry.registrationVerified,true);
+  assert.equal(registry.grantRequiredAtPublish,true);
+  for(const role of ['wolf','bee','golem']){
+    assert.ok(Number.isSafeInteger(registry.models[role].assetId)&&registry.models[role].assetId>0);
+    assert.equal(registry.models[role].license,'CC0-1.0');
+    assert.equal(registry.models[role].sha256,registry.models[role].sourceSha256);
+    assert.ok(ids.includes(role+'='+registry.models[role].assetId));
+  }
   assert.match(server,/WorldProps.Create\(id/);
   assert.match(server,/targetHuman:TakeDamage\(enemy.damage\)/);
   // The actual world creature must telegraph an authorized strike, and a dodge must cancel damage.
