@@ -8,6 +8,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {
   validateLocalStudioPolicy,
+  mcpCommandArgs,
   detectStudioMcpAssistantSetting,
   collectStudios,
   collectImages,
@@ -37,6 +38,21 @@ const cozyServer=fs.readFileSync('roblox-games/cozy-island/server/Game.server.lu
 
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
+
+test('official Windows Studio MCP launcher runs from its signed install directory',()=>{
+  const root=path.win32.join('C:\\','Users','studio-runner','AppData','Local','Roblox');
+  const batch=path.win32.join(root,'mcp.bat');
+  assert.deepEqual(mcpCommandArgs(batch,'win32'),{
+    command:'cmd.exe',args:['/d','/c',batch],cwd:root
+  });
+  const exe=path.win32.join(root,'Versions','version-test','StudioMCP.exe');
+  assert.deepEqual(mcpCommandArgs(exe,'win32'),{
+    command:exe,args:[],cwd:path.win32.dirname(exe)
+  });
+  assert.throws(()=>mcpCommandArgs('mcp.bat','win32'),/ABSOLUTE_PATH_REQUIRED/);
+  assert.throws(()=>mcpCommandArgs(path.win32.join(root,'not-official.cmd'),'win32'),/EXTENSION_REQUIRED/);
+  assert.match(helper,/spawn\(this\.command,this\.args,\{stdio:\['pipe','pipe','pipe'\],windowsHide:true,cwd:this\.cwd/);
+});
 
 test('Studio commercial probe ignores zero-size platform controls',()=>{
   assert.match(helper,/local measurable=row\.width>=1 and row\.height>=1/);
