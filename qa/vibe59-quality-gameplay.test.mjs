@@ -143,7 +143,7 @@ test('crafting cannot partially consume when input fails and saving retains dirt
  assert.deepEqual(proof.cases[1].effects.inventory,craft.no.inventory);
  const saving=cases[4];
  const revisionChanged=verifyVibe59QualityScenarios({spec:saving.spec,scenarios:[
-  scenarioSet(saving)[1],
+  scenarioSet(saving)[0],
   {name:'revision changed while writing',facts:{...saving.yes,revisionAfter:5},
    expectedApplied:false,expectedEffects:{attempts:2,dirty:true,saving:false,revision:5}}
  ]});
@@ -258,8 +258,8 @@ test('bestiary only credits monsters owned by the server monster folder',()=>{
 });
 test('scenario evidence uses structural equivalence rather than object property order',()=>{
  const row=cases[4],proof=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
-  {...scenarioSet(row)[0],expectedEffects:{saving:false,dirty:false,attempts:2}},
-  {...scenarioSet(row)[1],expectedEffects:{dirty:true,saving:false,attempts:3}}]});
+  {...scenarioSet(row)[0],expectedEffects:{saving:false,revision:5,dirty:false,attempts:2}},
+  {...scenarioSet(row)[1],expectedEffects:{dirty:true,revision:4,saving:false,attempts:3}}]});
  assert.equal(proof.pass,true);
 });
 
