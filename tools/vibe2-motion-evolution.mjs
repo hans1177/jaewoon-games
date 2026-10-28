@@ -170,14 +170,24 @@ export function planVerifiedActorEvolution({
   ||candidates.find(row=>row.actor===fallbackActor)
   ||candidates[cycle%candidates.length];
  const file=selected.actor.files[cycle%selected.actor.files.length];
- const variants=createVerifiedActorMotionVariants({
+ // An NPC/creature name does not establish skeletal topology. Unknown rigs
+ // must be inspected before BIPED, QUADRUPED or other authored profiles are applied.
+ const supportedBodyPlans=new Set(['BIPED','QUADRUPED','GIANT','FLYER','CRAWLER','SERPENT','PROP']);
+ const bodyPlan=supportedBodyPlans.has(selected.actor.bodyPlan)?selected.actor.bodyPlan:null;
+ const variants=bodyPlan?createVerifiedActorMotionVariants({
   gameId,actorClass:selected.actor.actorClass,featureId:selected.feature,history,
-  bodyPlan:selected.actor.bodyPlan||'BIPED',generation
+  bodyPlan,generation
+ }):Object.freeze({
+  status:'ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED',
+  variants:Object.freeze([]),gameId,actorClass:selected.actor.actorClass,
+  featureId:selected.feature,requiresSameActorNativeRuntime:true,
+  noProductionPromotionWithoutQA:true,noGameplayAuthority:true
  });
  return Object.freeze({
   generation:cycle+1,actorClass:selected.actor.actorClass,sourceOwnerFile:file,
   qualityAxis:selected.feature,featureId:selected.feature,
   evidenceCount:selected.rows,previousVerifiedScore:selected.last?.afterScore??null,
+  bodyPlan:bodyPlan||'UNCONFIRMED',bodyPlanVerifiedFromSource:bodyPlan!==null,
   nativeAuthoringApi:'RobloxCommonMotion.CreateProceduralActorSequence',
   proceduralPoseApi:'RobloxCommonMotion.SampleProceduralActorMotion',
   sourceVerifiedMotionVariantPlan:variants,
