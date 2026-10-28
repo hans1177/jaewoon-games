@@ -1646,20 +1646,33 @@ function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
  local profile=type(options.profile)=="table" and options.profile or {}
  local attackGain=bounded(profile.attackStrike,.5,1.5,1)
  local inertiaGain=bounded(profile.secondaryMotion,.5,1.5,1)
- local footGain=bounded(profile.footContact,.5,1.5,1)
+ local footGain=bounded(profile.footContact,.7,1.3,1)
+ local headGain=bounded(profile.headLead,.6,1.35,1)
+ local recoveryGain=bounded(profile.recovery,.7,1.3,1)
+ local smoothGain=bounded(profile.poseSmoothing,.65,1.35,1)
+ local limbGain=bounded(profile.limbArc,.65,1.3,1)
+ local bossGain=bounded(profile.bossWeight,.7,1.3,1)
+ local npcGain=bounded(profile.npcGesture,.5,1.4,1)
+ local tailGain=bounded(profile.tailFollow,.5,1.4,1)
+ local hitGain=bounded(profile.hitRecoil,.65,1.35,1)
+ local mobileGain=bounded(profile.mobileDetail,.5,1.15,1)
+ poseBlend=math.clamp(poseBlend*smoothGain,0,1)
+ secondary=secondary*inertiaGain*mobileGain
+ signature=signature*bossGain
+ hit=hit*hitGain
  local windup=math.sin(math.pi*easeUnit(math.clamp(phase/.34,0,1)))
  local release=math.sin(math.pi*math.clamp((phase-.24)/.50,0,1))*impact
- local recovery=easeUnit((phase-.55)/.45)
- local load=(.09*windup-.16*release+.055*recovery)*anatomy.load*intensity*poseBlend
+ local recovery=math.sin(math.pi*math.clamp((phase-.55)/.45,0,1))
+ local load=(.09*windup-.16*release+.055*recovery*recoveryGain)*anatomy.load*intensity*poseBlend
  -- 01/02 원본 포즈에 얹는 부드러운 크로스페이드와 전신 관성.
  local curve=(load+hit*.16)*inertiaGain
  local yaw=direction*.045*poseBlend+gaze*.14
  applyActorRotation(targets,"Spine",curve*.62,yaw,-direction*.055,joints)
  applyActorRotation(targets,"Chest",curve*.85,-yaw*.65,direction*.065,joints)
- applyActorRotation(targets,"Head",-curve*anatomy.head*.38,gaze*anatomy.head+direction*.035,hit*direction*.04,joints)
+ applyActorRotation(targets,"Head",-curve*anatomy.head*.38*headGain,gaze*anatomy.head*headGain+direction*.035,hit*direction*.04,joints)
  -- 03/06 체형별 지지발·골반/어깨 체중 이동, 루트/피해 판정 불변.
  if anatomy.stride>0 and grounded then
-  local step=math.sin(phase*math.pi*2)*speed*anatomy.stride*.07*poseBlend
+  local step=math.sin(phase*math.pi*2)*speed*anatomy.stride*.07*poseBlend*limbGain
   applyActorRotation(targets,"ThighL",-step+support*.045,0,0,joints)
   applyActorRotation(targets,"ThighR",step-support*.045,0,0,joints)
   applyActorRotation(targets,"ShinL",math.max(0,step)*.48,0,0,joints)
@@ -1688,10 +1701,10 @@ function RobloxCommonMotion.RefineActorCinematicPose(targets,options)
  -- 08/09/10 NPC 몸짓, 몹 꼬리, 거대 보스의 느린 후행 연출.
  if role=="NPC" then
   applyActorRotation(targets,"Head",0,gaze*.45,0,joints)
-  applyActorRotation(targets,"UpperArmR",math.sin(phase*math.pi)*.06*secondary,0,0,joints)
+  applyActorRotation(targets,"UpperArmR",math.sin(phase*math.pi)*.06*secondary*npcGain,0,0,joints)
  end
  if anatomy.tail>0 then
-  applyActorRotation(targets,"Tail",0,direction*.13*anatomy.tail*secondary+math.sin(phase*math.pi*2)*.045*secondary,0,joints)
+  applyActorRotation(targets,"Tail",0,direction*.13*anatomy.tail*secondary*tailGain+math.sin(phase*math.pi*2)*.045*secondary*tailGain,0,joints)
  end
  if anatomy.wing>0 then
   applyActorRotation(targets,"WingL",0,0,math.sin(phase*math.pi*2)*.2*secondary,joints)
@@ -1786,7 +1799,7 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
  for name,yes in pairs(joints)do
   if yes==true and type(name)=="string" and name~="Root" and name~="HumanoidRootPart" then count+=1 end
  end
- if count<2 then return targets,false end
+ if count<(form=="PROP" and 1 or 2) then return targets,false end
  local t=bounded(phase,0,1,0)
  local cyc=t*math.pi*2
  local locomotion=mode=="WALK"or mode=="RUN"or mode=="FLY"
@@ -1880,7 +1893,7 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
    table.insert(byParent[owner],joint)
   end
  end
- assert(#motors>=2,"REAL_ANIMATED_JOINTS_REQUIRED")
+ assert(#motors>=(plan=="PROP" and 1 or 2),"REAL_ANIMATED_JOINTS_REQUIRED")
  -- A source-created clip must animate at least one approved real joint, not merely
  -- contain neutral poses when the selected body plan and rig do not match.
  local probeOptions={availableJoints=names,bodyPlan=plan,intensity=options.intensity,
