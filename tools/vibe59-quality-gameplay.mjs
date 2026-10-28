@@ -23,6 +23,10 @@ function positive(x,label,{min=0.0001,max=1e6}={}){
  return x;
 }
 function nLiteral(x){return String(x)}
+function finiteGuard(expr,{nonnegative=false}={}){
+ return 'if '+expr+' ~= '+expr+' or '+expr+' == math.huge or '+expr+' == -math.huge'+
+   (nonnegative?' or '+expr+' < 0':'')+' then return false end';
+}
 function sourceCode(text){
  // Reject possible escape hatches not safely parsed by this deliberately small lexer.
  if(/\x00/.test(text))throw Error('VIBE59_QUALITY_INVALID_SOURCE');
@@ -176,6 +180,7 @@ function qualitySource(s){
  case 'combat-authoritative-melee':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
   'if type(state.combat) ~= "table" or type(state.combat.lastAttackAt) ~= "number" then return false end',
+  finiteGuard('state.combat.lastAttackAt'),
   'if typeof(target) ~= "Instance" or not target:IsA("Model") or not target:IsDescendantOf(workspace) then return false end',
   'if not '+s.requiredBindings[0]+'(player, target) then return false end',
   'local character = player.Character',
@@ -199,7 +204,9 @@ function qualitySource(s){
  case 'building-authorized-placement':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
   'if type(state.inventory) ~= "table" or type(state.inventory.'+s.material+') ~= "number" then return false end',
+  finiteGuard('state.inventory.'+s.material,{nonnegative:true}),
   'if type(state.building) ~= "table" or type(state.building.lastPlaceAt) ~= "number" or type(state.building.lastPlacementKey) ~= "string" then return false end',
+  finiteGuard('state.building.lastPlaceAt'),
   'if type(blueprintId) ~= "string" or typeof(placementCFrame) ~= "CFrame" or type('+s.requiredBindings[0]+') ~= "table" then return false end',
   'if not '+s.requiredBindings[1]+'(player, blueprintId, placementCFrame) then return false end',
   'local template = '+s.requiredBindings[0]+'[blueprintId]',
@@ -235,15 +242,19 @@ function qualitySource(s){
   'return true'].join('\n');
  case 'crafting-atomic-recipe':return [
   ...stateGuard,'if type(state.inventory) ~= "table" then return false end',
-  ...s.inputs.map(x=>'if type(state.inventory.'+x.field+') ~= "number" or state.inventory.'+x.field+' < '+nLiteral(x.amount)+' then return false end'),
-  'if type(state.inventory.'+s.output+') ~= "number" or state.inventory.'+s.output+
-    ' < 0 or state.inventory.'+s.output+' + '+nLiteral(s.outputAmount)+' > '+nLiteral(s.outputLimit)+' then return false end',
+  ...s.inputs.map(x=>'if type(state.inventory.'+x.field+') ~= "number" then return false end'),
+  ...s.inputs.map(x=>finiteGuard('state.inventory.'+x.field,{nonnegative:true})),
+  ...s.inputs.map(x=>'if state.inventory.'+x.field+' < '+nLiteral(x.amount)+' then return false end'),
+  'if type(state.inventory.'+s.output+') ~= "number" then return false end',
+  finiteGuard('state.inventory.'+s.output,{nonnegative:true}),
+  'if state.inventory.'+s.output+' + '+nLiteral(s.outputAmount)+' > '+nLiteral(s.outputLimit)+' then return false end',
   ...s.inputs.map(x=>'state.inventory.'+x.field+' = state.inventory.'+x.field+' - '+nLiteral(x.amount)),
   'state.inventory.'+s.output+' = state.inventory.'+s.output+' + '+nLiteral(s.outputAmount),
   'return true'].join('\n');
  case 'bestiary-confirmed-death':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
   'if type(state.bestiary) ~= "table" or type(state.bestiary.kills) ~= "table" or type(state.bestiary.discovered) ~= "table" then return false end',
+  'if typeof('+s.requiredBindings[0]+') ~= "Instance" or not '+s.requiredBindings[0]+':IsDescendantOf(workspace) then return false end',
   'if typeof(monster) ~= "Instance" or not monster:IsA("Model") or not monster:IsDescendantOf('+s.requiredBindings[0]+') then return false end',
   'local humanoid = monster:FindFirstChildOfClass("Humanoid")',
   'if not humanoid or humanoid.Health > 0 then return false end',
@@ -251,6 +262,7 @@ function qualitySource(s){
   'if monster:GetAttribute("LastHitUserId") ~= player.UserId then return false end',
   'if monster:GetAttribute("DexCredited") == true then return false end',
   'if type(state.bestiary.kills.'+s.species+') ~= "number" or type(state.bestiary.discovered.'+s.species+') ~= "boolean" then return false end',
+  finiteGuard('state.bestiary.kills.'+s.species,{nonnegative:true}),
   'if state.bestiary.kills.'+s.species+' >= '+nLiteral(s.countLimit)+' then return false end',
   'monster:SetAttribute("DexCredited", true)',
   'state.bestiary.discovered.'+s.species+' = true',
@@ -259,12 +271,13 @@ function qualitySource(s){
  case 'saving-revisioned-update':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
   'if type(state.save) ~= "table" or type(state.save.revision) ~= "number" or type(state.save.dirty) ~= "boolean" or type(state.save.saving) ~= "boolean" then return false end',
+  finiteGuard('state.save.revision',{nonnegative:true}),
   'if state.save.saving then return false end',
   'if not state.save.dirty then return true end',
   'if type(player.UserId) ~= "number" or player.UserId <= 0 then return false end',
   'local revisionAtStart = state.save.revision',
   'local snapshot = '+s.requiredBindings[2]+'(state)',
-  'if type(snapshot) ~= "table" or type(snapshot.save) ~= "table" or snapshot.save.revision ~= revisionAtStart then return false end',
+  'if type(snapshot) ~= "table" or snapshot == state or type(snapshot.save) ~= "table" or snapshot.save == state.save or snapshot.save.revision ~= revisionAtStart then return false end',
   'state.save.saving = true',
   'local key = "player_" .. tostring(player.UserId)',
   'for attempt = 1, '+nLiteral(s.maxAttempts)+' do',
@@ -286,6 +299,7 @@ function qualitySource(s){
   'return false'].join('\n');
  case 'ai-throttled-chase':return [
   ...stateGuard,'if type(state.ai) ~= "table" or type(state.ai.lastMoveAt) ~= "number" then return false end',
+  finiteGuard('state.ai.lastMoveAt'),
   'if typeof(npc) ~= "Instance" or not npc:IsA("Model") or not npc:IsDescendantOf(workspace) then return false end',
   'if typeof(target) ~= "Instance" or not target:IsA("Model") or not target:IsDescendantOf(workspace) or target == npc then return false end',
   'local humanoid = npc:FindFirstChildOfClass("Humanoid")',
