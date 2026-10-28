@@ -634,6 +634,8 @@ test('next F0 is issued only when published Place version matches the exact curr
 test('CC0 registered models receive per-target Universe grants only after exact F9 candidate gate',()=>{
  const publish=workflow.slice(workflow.indexOf('      - name: Publish exact package'),
   workflow.indexOf('      - name: Persist publication retry requirement'));
+ assert.match(publish,/import crypto from 'node:crypto';[\s\S]*const sha256=bytes=>crypto\.createHash\('sha256'\)/,
+  'exact-model hash validation must import Node crypto in the ESM publish step');
  assert.ok(publish.includes('assertRobloxLatestPublishCandidate({'));
  const identity=publish.indexOf('assertRobloxLatestPublishCandidate({');
  const registry=publish.indexOf("revision+':assets/roblox/common-registered-external-assets-v1.json'");
