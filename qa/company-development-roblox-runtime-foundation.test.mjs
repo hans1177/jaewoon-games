@@ -879,7 +879,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,true);
  assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
  const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  assert.match(runtimeWorkflow,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
+  assert.match(runtimeWorkflow,/if: \$\{\{ !cancelled\(\) \}\}/);
  assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
  assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
@@ -912,7 +912,7 @@ test('runtime QA validates Cloud independently while optional Studio is exact op
  assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
-  assert.match(workflow,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
+  assert.match(workflow,/if: \$\{\{ !cancelled\(\) \}\}/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);
