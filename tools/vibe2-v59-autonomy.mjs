@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
+import {synthesizeVibe59RobloxServerAction} from './vibe59-roblox-coding.mjs';
 import {buildVibeVerifiedMemoryIndex,retrieveVibeVerifiedPatterns,classifyVibeRepairFailure} from '../assets/vibe-v3-engine.js';
 const sha=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
 const clean=x=>String(x??'').trim();
@@ -200,7 +201,9 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
-  const codeKind=req.machine?'STATE_MACHINE':'STATE_RULE';
+  const codeKind=req.robloxServerAction?'ROBLOX_SERVER_ACTION':req.machine?'STATE_MACHINE':'STATE_RULE';
+  if(req.robloxServerAction&&(target!=='roblox'||!req.machine||!Array.isArray(req.scenarios)||!req.scenarios.length))
+    throw Error('VIBE59_ROBLOX_AUTHORITY_AND_SCENARIOS_REQUIRED');
   // Owner supplied expectations are interpreted independently of emitted code.
   const tests=verifyVibe59GameScenarios({rule:req.rule,machine:req.machine,
     scenarios:req.scenarios||[]});
@@ -215,8 +218,10 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const variants=req.machine&&target==='web'&&!req.codegenVariant
     ?['chain','switch']:[clean(req.codegenVariant)||'chain'];
   const candidates=variants.map(variant=>{
-    const result=req.machine
-      ?synthesizeVibe59StateMachine({machine:req.machine,target,variant})
+    const result=req.robloxServerAction
+      ?synthesizeVibe59RobloxServerAction({machine:req.machine,binding:req.robloxServerAction,
+          source:content,replaceAnchor:find,sourcePath:relative})
+      :req.machine?synthesizeVibe59StateMachine({machine:req.machine,target,variant})
       :synthesizeVibe59StateLogic({rule:req.rule,target});
     const replay=target==='web'?verifyVibe59GeneratedJavaScript({
       source:result.source,rule:req.rule,machine:req.machine,scenarios:[...ownerScenarios,...probeCases]
@@ -234,7 +239,8 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
     tests:[],vibe59TestPlan:tests,vibe59CodeKind:codeKind,
     vibe59AutoTestPlan:generatedProbes,
-    vibe59JsReplay:codeReplay,vibe59Strategy:selected.variant,
+    vibe59JsReplay:codeReplay,vibe59Strategy:req.robloxServerAction?selected.compiled.strategy:selected.variant,
+    ...(req.robloxServerAction?{vibe59RobloxSafety:selected.compiled.safety}:{}),
     vibe59StrategiesChecked:candidates.map(row=>({variant:row.variant,pass:row.replay?.pass??null})),
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});

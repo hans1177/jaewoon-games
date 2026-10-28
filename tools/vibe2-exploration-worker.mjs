@@ -10,6 +10,7 @@ import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs
 import {createVibeSourceGraph,createVibeImpactPlan} from '../assets/vibe-v3-engine.js';
 import {analyzeVibe4CodeFlow} from './vibe2-v4-code-intelligence.mjs';
 import {buildVibe59AutonomyPlan} from './vibe2-v59-autonomy.mjs';
+import {inspectVibe59RobloxCoding} from './vibe59-roblox-coding.mjs';
 import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
@@ -134,6 +135,7 @@ function reusableArtifact(cwd,order){
   // They are unsafe to reuse after source or QA changes, even if the owner file is unchanged.
   if(cached.bootstrap!==true&&(
     cached.impactAnalysisSchemaVersion!==6
+    ||(clean(order.target).toLowerCase()==='roblox'&&cached.robloxCoding?.authority!=='roblox-luau-static-analysis')
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
     ||!clean(cached.sourceImpact?.graphDigest)
     ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
@@ -627,6 +629,9 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const sourceImpact=createVibeImpactPlan({graph:impactGraph,changedPaths:responsible,maxDepth:3,maxTests:8});
   const codeFlow=analyzeVibe4CodeFlow({target,responsiblePaths:responsible,
     files:graphRows.map(row=>({path:row.relative,source:row.text||safeRead(row.full)}))});
+  const robloxCoding=target==='roblox'?inspectVibe59RobloxCoding({
+    files:graphRows.map(row=>({path:row.relative,source:row.text||safeRead(row.full)})),
+    responsiblePaths:responsible}):null;
   // Prioritize observed graph-reachable regression tests, retaining existing fallback checks.
   const autonomy59=buildVibe59AutonomyPlan({order,target,sourceImpact,codeFlow});
   testTargets=unique([...sourceImpact.affectedTests.map(row=>row.path),...testTargets]).slice(0,8);
@@ -663,6 +668,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
     sourceImpact,
     codeFlow,
+    robloxCoding,
     autonomy59,
     impactAnalysisSchemaVersion:6,
     scanPathDigest,
@@ -694,6 +700,11 @@ export function explorationGuidance(handoff={}){
     ...(handoff.autonomy59?[
       `Vibe5.9 명세=${handoff.autonomy59.requirement.explicitSystems.join(',')||'NONE'} · 추천만=${handoff.autonomy59.requirement.suggestedOnly.join(',')||'NONE'} · 검증완료=${handoff.autonomy59.completion.verified.length}/${handoff.autonomy59.completion.required}`,
       'Vibe5.9 학습·설계·복구 정보는 실행 검증 및 승인되지 않은 코드 변경의 근거가 아니다.'
+    ]:[]),
+    ...(handoff.robloxCoding?[
+      `Vibe5.9 Roblox 책임 경로=${handoff.robloxCoding.files.filter(x=>x.responsible).map(x=>x.path+':'+x.side+':수신 '+x.events.map(e=>e.remote+'.'+e.signal).join('/')+':송신 '+x.calls.map(e=>e.remote+':'+e.method).join('/')+':상태 '+x.stateEffects.map(e=>e.method).join('/')).join(' | ')||'NONE'}`,
+      `Vibe5.9 Roblox 점검 신호=${handoff.robloxCoding.warnings.map(x=>x.path+':'+x.code+'@'+x.line).join(',')||'NONE'}`,
+      'Roblox 정적 분석은 실제 Studio 실행 또는 보안 검증 통과의 증거가 아니다.'
     ]:[]),
     ...(handoff.codeFlow?[
       `Vibe4 코드 상태·이벤트=${handoff.codeFlow.sources.filter(row=>row.responsible)
