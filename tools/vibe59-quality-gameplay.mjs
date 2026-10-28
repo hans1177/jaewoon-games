@@ -1,3 +1,4 @@
+import {inspectVibe59LuauInsertionScope} from './vibe59-luau-scope.mjs';
 // Vibe5.9 high-quality Roblox Luau gameplay synthesis.
 // Six distinct server-controlled mechanics; owner parameters, existing bindings and
 // source anchors required. This is source synthesis, not Studio runtime certification.
@@ -27,33 +28,6 @@ function finiteGuard(expr,{nonnegative=false}={}){
  return 'if '+expr+' ~= '+expr+' or '+expr+' == math.huge or '+expr+' == -math.huge'+
    (nonnegative?' or '+expr+' < 0':'')+' then return false end';
 }
-function sourceCode(text){
- // Reject possible escape hatches not safely parsed by this deliberately small lexer.
- if(/\x00/.test(text))throw Error('VIBE59_QUALITY_INVALID_SOURCE');
- let result='',i=0;const blank=x=>x==='\n'||x==='\r'?x:' ';
- while(i<text.length){
-  const c=text[i],next=text[i+1];
-  if(c==='"'||c==="'"){
-   const quote=c;result+=' ';i++;
-   while(i<text.length){const x=text[i++];result+=blank(x);
-    if(x==='\\'&&i<text.length){result+=blank(text[i++]);continue}
-    if(x===quote)break}
-  }else if(c==='-'&&next==='-'){
-   const match=/^\[(=*)\[/.exec(text.slice(i+2,i+18));
-   if(match){const close=']'+match[1]+']',end=text.indexOf(close,i+2+match[0].length);
-    const until=end<0?text.length:end+close.length;
-    while(i<until)result+=blank(text[i++]);
-   }else while(i<text.length&&text[i]!=='\n')result+=blank(text[i++]);
-  }else if(c==='['){
-   const match=/^\[(=*)\[/.exec(text.slice(i,i+18));
-   if(match){const close=']'+match[1]+']',end=text.indexOf(close,i+match[0].length);
-    const until=end<0?text.length:end+close.length;
-    while(i<until)result+=blank(text[i++]);
-   }else{result+=c;i++}
-  }else{result+=c;i++}
- }
- return result;
-}
 const SIGNATURES={
  'combat-authoritative-melee':'player, target',
  'building-authorized-placement':'player, blueprintId, placementCFrame',
@@ -78,13 +52,8 @@ function grounded(spec,{source,sourcePath,replaceAnchor}){
    ||source.split(replaceAnchor).length!==2
    ||!/(?:^|\n)[ \t]*-- VIBE59_QUALITY_SLOT[ \t]*(?:\r?\n|$)/.test(source))
   throw Error('VIBE59_QUALITY_EXACT_SLOT_REQUIRED');
- const before=source.slice(0,source.indexOf(replaceAnchor));
- const masked=sourceCode(before);
- const fn=new RegExp('(?:^|\\n)\\s*(?:local\\s+)?function\\s+'+
-   spec.functionName+'\\s*\\(\\s*'+SIGNATURES[spec.operation].replace(/, /g,'\\s*,\\s*')+'\\s*\\)');
- const matches=[...masked.matchAll(new RegExp(fn.source,'g'))];
- if(matches.length!==1)throw Error('VIBE59_QUALITY_EXACT_FUNCTION_REQUIRED');
- const body=masked.slice(matches[0].index);
+ const {ownerBody:body,masked}=inspectVibe59LuauInsertionScope({
+   source,anchor:replaceAnchor,functionName:spec.functionName,signature:SIGNATURES[spec.operation]});
  if(!/(?:^|\n)\s*local\s+state\s*=/.test(body))
   throw Error('VIBE59_QUALITY_EXISTING_STATE_REQUIRED');
  const required=REQUIRED[spec.operation].concat(
@@ -104,15 +73,7 @@ function grounded(spec,{source,sourcePath,replaceAnchor}){
   const re=new RegExp('(?:^|\\n)\\s*(?:local\\s+)?(?:function\\s+'+binding+'\\s*\\(|'+binding+'\\s*=)');
   if(!re.test(masked))throw Error('VIBE59_QUALITY_EXISTING_DEPENDENCY:'+binding);
  }
- // Reject accidental insertion into a different function. This conservative
- // check requires the slot before the next top-level function definition.
- const between=body.slice(matches[0][0].length);
- if(/(?:^|\n)(?:local\s+)?function\s+[A-Za-z_]\w*\s*\(/.test(between))
-  throw Error('VIBE59_QUALITY_AMBIGUOUS_FUNCTION');
- // Fail closed if a standalone end could have closed the owner function.
- // Put this explicit insert slot before nested Luau blocks, after existing bindings.
- if(/(?:^|\n)[ \t]*end[ \t]*(?:;)?[ \t]*(?=\n|$)/.test(between))
-  throw Error('VIBE59_QUALITY_FUNCTION_SCOPE_UNPROVEN');
+
 }
 function validate(spec){
  if(!spec||typeof spec!=='object'||Array.isArray(spec))throw Error('VIBE59_QUALITY_SPEC');
