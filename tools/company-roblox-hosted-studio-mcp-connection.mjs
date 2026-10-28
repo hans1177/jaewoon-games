@@ -41,15 +41,18 @@ export function hostedCloudRecoveryAction(state={}){
     'BLOCKED_OFFICIAL_MCP_TOOLS_UNAVAILABLE',
     'BLOCKED_NO_CONNECTED_STUDIO_PLACE',
     'BLOCKED_STUDIO_SESSION_NOT_READY',
-    'BLOCKED_MCP_DISABLED_IN_STUDIO'
+    'BLOCKED_MCP_DISABLED_IN_STUDIO',
+    'BLOCKED_MCP_TRANSPORT_NOT_CONNECTED',
+    'BLOCKED_STUDIO_NOT_RUNNING'
   ].includes(status))return 'REGISTER_PERSISTENT_INTERACTIVE_AUTHENTICATED_CLOUD_WINDOWS_RUNNER';
   return 'NONE';
 }
-function safeFailure(error){
+export function classifyHostedStudioMcpFailure(error){
   const value=clean(error?.message||error);
+  // Surface a blocked provider before a generic stdio timeout.
+  if(value.includes('stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'))return 'OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT';
   if(value.includes('MCP process exited'))return 'OFFICIAL_MCP_PROCESS_EXITED';
   if(value.includes('MCP timeout'))return 'OFFICIAL_MCP_PROTOCOL_TIMEOUT';
-  if(value.includes('stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'))return 'OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT';
   if(value.includes('ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY'))return 'OFFICIAL_MCP_TOOL_INVENTORY_MISSING';
   if(value.includes('ROBLOX_STUDIO_MCP_TOOL_ERROR'))return 'OFFICIAL_MCP_TOOL_ERROR';
   if(value.includes('ENOENT'))return 'OFFICIAL_MCP_FILE_NOT_FOUND';
@@ -121,7 +124,7 @@ export async function runHostedStudioMcpProbe({
         await client.waitForTools(HOSTED_MCP_REQUIRED_TOOLS,{attempts:4,delayMs:1500});
         state.requiredToolsReady=true;
       }catch(error){
-        state.errorCode=safeFailure(error);
+        state.errorCode=classifyHostedStudioMcpFailure(error);
       }
       state.availableOfficialTools=[...client.tools.keys()].sort();
       if(state.requiredToolsReady){
@@ -141,7 +144,7 @@ export async function runHostedStudioMcpProbe({
       }
     }
   }catch(error){
-    state.errorCode=clean(error?.message)==='HOSTED_MCP_WINDOWS_ONLY'?'HOSTED_MCP_WINDOWS_ONLY':safeFailure(error);
+    state.errorCode=clean(error?.message)==='HOSTED_MCP_WINDOWS_ONLY'?'HOSTED_MCP_WINDOWS_ONLY':classifyHostedStudioMcpFailure(error);
   }finally{
     try{client?.close();}catch{}
   }
@@ -206,5 +209,5 @@ async function main(){
   });
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){
-  main().catch(e=>{console.error('ROBLOX_HOSTED_MCP_PROBE_ERROR='+safeFailure(e));process.exitCode=1;});
+  main().catch(e=>{console.error('ROBLOX_HOSTED_MCP_PROBE_ERROR='+classifyHostedStudioMcpFailure(e));process.exitCode=1;});
 }

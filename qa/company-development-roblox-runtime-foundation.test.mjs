@@ -363,6 +363,16 @@ test('Open Cloud requests bound each attempt and retry request timeouts',async()
  assert.equal(result.state,'NO_IMAGE_METADATA');
 });
 
+test('provider-deferred 429 does not occupy the runner while checkpoint remains enforced',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/const capacityDeferredOnly=probes\.length>0&&probes\.every\(probe=>probe\?\.externalCapacityDeferred===true\)/);
+  assert.match(workflow,/if\(capacityDeferredOnly\)\{[\s\S]*?ROBLOX_OPEN_CLOUD_OWNER_CAPACITY_DEFERRED_NO_RUNNER_SLEEP=YES/);
+  assert.match(workflow,/else if\(probes\.some\(probe=>probe&&probe\.error/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_OWNER_CAPACITY_COOLDOWN_MS=180000/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_RATE_LIMIT_WAIT=/);
+  assert.match(workflow,/retryNotBefore/);
+});
+
 test('Open Cloud engine probe retries transient HTTP throttling without weakening persistent API failures',async()=>{
  let calls=0;
  const responses=[

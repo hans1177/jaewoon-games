@@ -5,7 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   HOSTED_MCP_REQUIRED_TOOLS,evaluateHostedStudioMcpConnection,
-  hostedConnectionIsVerified,hostedCloudRecoveryAction,runHostedStudioMcpProbe,validateOfficialMcpPath
+  hostedConnectionIsVerified,hostedCloudRecoveryAction,runHostedStudioMcpProbe,validateOfficialMcpPath,
+  classifyHostedStudioMcpFailure
 } from '../tools/company-roblox-hosted-studio-mcp-connection.mjs';
 
 const ready={
@@ -41,7 +42,9 @@ test('cloud MCP timeout stays blocked and identifies persistent authenticated cl
   assert.equal(hostedCloudRecoveryAction(blocked),'REGISTER_PERSISTENT_INTERACTIVE_AUTHENTICATED_CLOUD_WINDOWS_RUNNER');
   for(const condition of [{...ready,studioListQueried:true,studioCount:0},
     {...ready,studioStateObserved:false},
-    {...ready,assistantSetting:'NO'}]){
+    {...ready,assistantSetting:'NO'},
+    {...ready,mcpInitialized:false},
+    {...ready,studioRunning:false}]){
     assert.equal(hostedCloudRecoveryAction(condition),'REGISTER_PERSISTENT_INTERACTIVE_AUTHENTICATED_CLOUD_WINDOWS_RUNNER');
   }
   assert.equal(hostedCloudRecoveryAction(ready),'NONE');
@@ -50,6 +53,12 @@ test('cloud MCP timeout stays blocked and identifies persistent authenticated cl
   assert.doesNotMatch(probe,/attempts:12,delayMs:1500/);
 });
 
+test('provider hint takes precedence over generic timeout in cloud Studio MCP',()=>{
+  assert.equal(classifyHostedStudioMcpFailure(new Error('MCP timeout: stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT')),'OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT');
+  assert.equal(classifyHostedStudioMcpFailure(new Error('MCP timeout')),'OFFICIAL_MCP_PROTOCOL_TIMEOUT');
+  assert.equal(classifyHostedStudioMcpFailure(new Error('MCP process exited')),'OFFICIAL_MCP_PROCESS_EXITED');
+  assert.equal(classifyHostedStudioMcpFailure(new Error('ENOENT')),'OFFICIAL_MCP_FILE_NOT_FOUND');
+});
 test('official tool set contains Studio read, play, input and screenshot but no Player automation',()=>{
   for(const name of ['list_roblox_studios','get_studio_state','start_stop_play',
     'user_keyboard_input','user_mouse_input','screen_capture','execute_luau']){

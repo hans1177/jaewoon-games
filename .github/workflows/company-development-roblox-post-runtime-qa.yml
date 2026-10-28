@@ -549,7 +549,13 @@ jobs:
           await Promise.all(Array.from({length:probeConcurrency},()=>runProbeWorker()));
           // Keep the shared owner quota paced across independent Actions runs, not just inside this process.
           // A deferred request never consumed a new Luau task slot.
-          if(probes.some(probe=>probe&&probe.error!=='ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY')){
+          // Exact provider 429 retryNotBefore is already persisted per candidate.
+          // Deferred-only waves release this shared runner without a redundant sleep.
+          const capacityDeferredOnly=probes.length>0&&probes.every(probe=>probe?.externalCapacityDeferred===true);
+          if(capacityDeferredOnly){
+            console.log('ROBLOX_OPEN_CLOUD_OWNER_CAPACITY_DEFERRED_NO_RUNNER_SLEEP=YES');
+          }else if(probes.some(probe=>probe&&probe.error!=='ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY')){
+            // Retain spacing after non-deferred owner quota work.
             console.log('ROBLOX_OPEN_CLOUD_OWNER_CAPACITY_COOLDOWN_MS=180000');
             await new Promise(resolve=>setTimeout(resolve,180000));
           }
