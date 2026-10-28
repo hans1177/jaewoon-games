@@ -26,6 +26,7 @@ import {
   stopOwnedStudioMultiplayerTests,
   validateStudioPlaceArtifactPreOpen,
   evaluateStudioSaveRejoin,
+  evaluateDaechungCloudStudioChecks,
   deriveExactStaticMultiplayerEvidence,
   keyboardArgs,
   ROBLOX_STUDIO_HARNESS_VERSION
@@ -3583,4 +3584,36 @@ test('Studio-first deployment supports an authenticated cloud Windows VM without
   assert.match(bootstrap,/Windows cloud VM session/);
   assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(workflow,/ROBLOX_STUDIO_MCP_PLAN_IS_ACTUAL_PLAY_PASS=NO/);
+});
+
+test('Daechung actual cloud Studio input, visual, target damage and rejoin checks fail closed',()=>{
+  const initialClientProbe={player:{rootPresent:true,rootX:0,rootY:5,rootZ:0}};
+  const postActionClientProbe={player:{rootPresent:true,rootX:0,rootY:5,rootZ:5}};
+  const keys=['w','a','d','space'].map(key=>({id:'keyboard-'+key,type:'mcp-keyboard-input',dispatched:true,ok:true}));
+  const combat={id:'commercial-combat-action',type:'mcp-combat-action',dispatched:true,ok:true,effectObserved:true,effect:{mobDelta:{healthChanged:1}}};
+  const data={
+    gameId:'daechung-rpg',initialClientProbe,postActionClientProbe,actions:[...keys,combat],
+    beforeImages:[{data:Buffer.from('first rendered frame').toString('base64')}],
+    afterImages:[{data:Buffer.from('second rendered frame').toString('base64')}],
+    captureQuality:{before:{pass:true},after:{pass:true}},
+    auditProfile:'F9_SOAK',
+    saveRejoinSummary:{pass:true,restartOk:true,infrastructureFailure:false,progressionObserved:true,progressionPreserved:true,inventoryPreserved:true}
+  };
+  assert.equal(evaluateDaechungCloudStudioChecks(data).required,true);
+  assert.deepEqual(evaluateDaechungCloudStudioChecks(data).failed,[]);
+  const invalid=[
+    {...data,actions:[...keys]},
+    {...data,actions:[combat]},
+    {...data,postActionClientProbe:initialClientProbe},
+    {...data,beforeImages:data.afterImages},
+    {...data,afterImages:[]},
+    {...data,saveRejoinSummary:null},
+    {...data,auditProfile:'FAST_DEEP'},
+    {...data,saveRejoinSummary:{...data.saveRejoinSummary,progressionPreserved:false}},
+    {...data,actions:[...keys,{...combat,effect:{mobDelta:{healthChanged:0}}}]}
+  ];
+  for(const missing of invalid)assert.ok(evaluateDaechungCloudStudioChecks(missing).failed.length>0);
+  assert.equal(evaluateDaechungCloudStudioChecks({...data,gameId:'cozy-island'}).required,false);
+  assert.match(helper,/ROBLOX_DAECHUNG_CLOUD_STUDIO_CHECKS=/);
+  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });

@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=17;
+export const ROBLOX_STUDIO_HARNESS_VERSION=18;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -2566,6 +2566,44 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
   }
 }
 
+// 오너 지정 대청 RPG: 기존 공식 Studio MCP 결과에 입력/화면/피해/재진입 네 증거를 연결한다.
+// 실행되지 않은 클라우드 검사나 단순 UI 클릭을 전투/저장 통과로 치환할 수 없다.
+export function evaluateDaechungCloudStudioChecks({
+  gameId='',actions=[],initialClientProbe=null,postActionClientProbe=null,
+  beforeImages=[],afterImages=[],captureQuality=null,saveRejoinSummary=null,auditProfile=''
+}={}){
+  if(clean(gameId)!=='daechung-rpg')return{required:false,checks:[],failed:[],metrics:{}};
+  const keys=['w','a','d','space'];
+  const sent=keys.every(key=>actions.some(row=>
+    row?.id==='keyboard-'+key&&row?.type==='mcp-keyboard-input'&&row.dispatched===true&&row.ok===true));
+  const movement=pointDistance(initialClientProbe?.player||{},postActionClientProbe?.player||{});
+  const inputPass=sent&&initialClientProbe?.player?.rootPresent===true
+    &&postActionClientProbe?.player?.rootPresent===true&&movement>=0.5;
+  const digest=images=>images.map(row=>Buffer.from(String(row?.data||''),'base64'))
+    .filter(bytes=>bytes.length>0).map(hash).join('|');
+  const original=digest(beforeImages),later=digest(afterImages);
+  const changed=Boolean(original&&later&&original!==later);
+  const screenPass=captureQuality?.before?.pass===true&&captureQuality?.after?.pass===true&&changed;
+  const damage=actions.some(row=>row?.type==='mcp-combat-action'
+    &&row.dispatched===true&&row.ok===true&&row.effectObserved===true
+    &&Number(row?.effect?.mobDelta?.healthChanged||0)>0);
+  const saved=clean(auditProfile)==='F9_SOAK'&&saveRejoinSummary?.pass===true
+    &&saveRejoinSummary?.infrastructureFailure!==true
+    &&saveRejoinSummary?.restartOk===true
+    &&saveRejoinSummary?.progressionObserved===true
+    &&saveRejoinSummary?.progressionPreserved===true
+    &&saveRejoinSummary?.inventoryPreserved===true;
+  const checks=[
+    {id:'daechung-cloud-client-input',pass:inputPass,required:true,repairSurface:'INPUT_UI'},
+    {id:'daechung-cloud-screen-frame-change',pass:screenPass,required:true,repairSurface:'VISUAL_RUNTIME'},
+    {id:'daechung-cloud-combat-damage',pass:damage,required:true,repairSurface:'ACTION_IMPLEMENTATION'},
+    {id:'daechung-cloud-studio-save-rejoin',pass:saved,required:true,repairSurface:'SAVE_REJOIN'}
+  ];
+  return{required:true,checks,failed:checks.filter(row=>row.pass!==true),
+    metrics:{keysObserved:sent,movementDistance:movement,changedFrames:changed,
+      realTargetDamageObserved:damage,studioRejoinStatePreserved:saved}};
+}
+
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
   settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP',singleWindow=true,multiplayerSourceEvidence=null,runtimeIdentity={}
@@ -3349,6 +3387,28 @@ export async function runOfficialStudioMcpPlay({
       });
     }
     checkpoint('final-visual-capture-sane',finalVisualPass);
+    // 이 검사는 별도 릴리스 게이트가 아니라 기존 Studio MCP 세션의 게임별 필수 시나리오다.
+    const daechungCloud=evaluateDaechungCloudStudioChecks({
+      gameId:runtimeIdentity.gameId,actions,initialClientProbe,postActionClientProbe,
+      beforeImages,afterImages,captureQuality,saveRejoinSummary,auditProfile:auditMode
+    });
+    if(daechungCloud.required){
+      for(const row of daechungCloud.checks){
+        scenarioCoverage.push({id:row.id,pass:row.pass,required:true,verificationScope:'STUDIO_ACTUAL_PLAY'});
+        checkpoint('scenario-'+row.id,row.pass);
+        if(!row.pass){
+          qualityFailureKinds.push(row.id);
+          qualityFailureDetails.push({
+            id:row.id,repairSurface:row.repairSurface,priority:'CRITICAL',
+            hint:'Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.',
+            observed:daechungCloud.metrics
+          });
+        }
+      }
+      scenarioMetrics={...scenarioMetrics,daechungCloudStudio:daechungCloud.metrics};
+      console.log('ROBLOX_DAECHUNG_CLOUD_STUDIO_CHECKS='+JSON.stringify(
+        daechungCloud.checks.map(row=>({id:row.id,pass:row.pass}))));
+    }
     console.log('ROBLOX_STUDIO_MCP_FINAL_CAPTURE=LAST_STUDIO_AUDIT_ACTION');
 
     await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));
