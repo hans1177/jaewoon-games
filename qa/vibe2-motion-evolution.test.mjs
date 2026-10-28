@@ -133,3 +133,18 @@ test('procedural native actor clip authoring is bounded to real rig and preserve
  assert.match(code,/RootMotionOwned",false/);
  assert.match(code,/RuntimeVerificationState","PENDING_NATIVE_ACTOR_PLAYBACK/);
 });
+
+// [게임 실제 바인딩] Motion Forge 3가 대청 RPG NPC의 실제 관절로 연결되는지 회귀 확인한다.
+test('Daechung RPG NPCs consume native actor motion without replacing authored clips or player control',()=>{
+ const native=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ assert.match(native,/RunService\.PreSimulation:Connect\(function\(dt\)/);
+ assert.match(native,/commonMotion\.SampleProceduralActorMotion\(state,phase/);
+ assert.match(native,/commonMotion\.MapCombatPoseToR15\(item\.sourcePose,item\.r15Pose\)/);
+ assert.match(native,/commonMotion\.BindJointPose\(joints/);
+ assert.match(native,/actor\.RigType==Enum\.HumanoidRigType\.R15/);
+ assert.match(native,/Players:GetPlayerFromCharacter\(rig\)/);
+ assert.match(native,/GetPlayingAnimationTracks\(\)/);
+ assert.match(native,/availableJoints=item\.channels,bodyPlan="BIPED"/);
+ assert.match(native,/SOURCE_POSE_PLAYING_UNVERIFIED/);
+ assert.doesNotMatch(native,/ProductionVerified",true/);
+});
