@@ -191,13 +191,13 @@ jobs:
           fi
 
   runtime-foundation-qa:
+    needs: dedupe
+    if: needs.dedupe.outputs.run == 'true'
     # Account-owner Luau task creation is shared across exact games and other release QA.
     concurrency:
       group: roblox-open-cloud-luau-owner
       queue: max
       cancel-in-progress: false
-    needs: dedupe
-    if: needs.dedupe.outputs.run == 'true'
     name: existing game tester and QA validate exact Roblox runtime candidate
     # Remote Open Cloud probe + deterministic Node QA only. Studio execution remains on authenticated self-hosted Windows jobs.
     runs-on: ubuntu-24.04
