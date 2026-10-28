@@ -7321,7 +7321,13 @@ function drawCreature(e,cx,cy){
  if(state.arrowAim?.targetId===e.netId&&currentWeapon()?.ranged==='bow'){ctx.save();ctx.strokeStyle='#fff3a8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r+14,0,Math.PI*2);ctx.stroke();for(let a=0;a<4;a++){const ang=a*Math.PI/2,inner=e.type.r+7,outer=e.type.r+22;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*inner,y+Math.sin(ang)*inner);ctx.lineTo(x+Math.cos(ang)*outer,y+Math.sin(ang)*outer);ctx.stroke()}ctx.fillStyle='#fff3a8';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('조준',x,y-e.type.r-28);ctx.restore()}
  if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
  // 메인 · 도감에 등록된 종만 머리 위에 이름 표시.
-  if(state.bestiary[e.type.id]){ctx.fillStyle='#f4fff7';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText(e.type.name,x,y-e.type.r-27)}
+  if(state.bestiary[e.type.id]){
+   ctx.save();ctx.font='900 15px system-ui';ctx.textAlign='center';
+   const labelY=y-e.type.r-28,half=ctx.measureText(e.type.name).width/2;
+   ctx.fillStyle='#08150f';ctx.fillRect(x-half-7,labelY-15,half*2+14,21);
+   ctx.strokeStyle='#06110b';ctx.lineWidth=3;ctx.strokeText(e.type.name,x,labelY+1);
+   ctx.fillStyle='#fff';ctx.fillText(e.type.name,x,labelY+1);ctx.restore()
+  }
 }
 function drawSporeClouds(cx,cy){const now=performance.now();for(const g of state.sporeClouds){if(g.area!==state.area||now>=g.until)continue;const x=g.x-cx,y=g.y-cy,life=Math.max(0,Math.min(1,(g.until-now)/3000));ctx.save();ctx.globalAlpha=.18+.18*life;ctx.fillStyle='#8c68a9';ctx.beginPath();ctx.arc(x,y,g.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c99be5';ctx.lineWidth=2;ctx.stroke();ctx.restore()}for(const e of state.enemies){if(e.area!==state.area||!e.type.mushroomGas||now>=(e.sporeGasUntil||0))continue;const x=e.x-cx,y=e.y-cy;ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#7d5c94';ctx.beginPath();ctx.arc(x,y,145,0,Math.PI*2);ctx.fill();ctx.restore()}}
 function drawProjectiles(cx,cy){
