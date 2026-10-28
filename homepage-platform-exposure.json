@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-28T02:25:35.036Z",
+  "generatedAt": "2026-10-28T02:29:36.119Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -950,14 +950,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-10-28T02:18:51.756Z",
-            "checkedAt": "2026-10-28T02:18:51.756Z",
+            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
+            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
+            "verifiedAt": "2026-10-28T02:26:07.289Z",
+            "checkedAt": "2026-10-28T02:26:07.289Z",
             "lastFailureAt": null,
             "f0PassedAt": "2026-10-28T02:18:51.756Z",
-            "candidatePublishedAt": null,
+            "candidatePublishedAt": "2026-10-28T02:26:07.289Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -990,8 +990,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "f9b8b26b71844f9dbf946becd4c0030faccef588",
+            "artifactIdentity": "sha256:8fd23d8663048306077dd56959af6f14e6ea5d44bdbf03700a9ab9d8f38ad9ab",
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -1058,7 +1058,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-28T02:18:51.756Z"
+      "updatedAt": "2026-10-28T02:26:07.289Z"
     },
     {
       "gameId": "defense",
@@ -1610,9 +1610,9 @@
             "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-10-28T02:18:05.492Z",
-            "checkedAt": "2026-10-28T02:18:05.492Z",
-            "lastFailureAt": "2026-10-28T02:18:05.492Z",
+            "verifiedAt": "2026-10-28T02:26:14.321Z",
+            "checkedAt": "2026-10-28T02:26:14.321Z",
+            "lastFailureAt": "2026-10-28T02:26:14.321Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": "roblox-package-asset-binding-failed",
@@ -1716,7 +1716,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-28T02:18:05.492Z"
+      "updatedAt": "2026-10-28T02:26:14.321Z"
     },
     {
       "gameId": "fifty-days",
