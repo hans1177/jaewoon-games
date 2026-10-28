@@ -1,13 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory,validateRobloxPackageAssetThreshold} from '../tools/company-development-roblox-package.mjs';
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
-import {bindExistingServerStudioMaterial,buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {bindExistingFantasyNativeCreatures,bindExistingServerStudioMaterial,buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('selected Fantasy Survival motion reaches a server-authorized R15 frame sink, not just an asset list',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
@@ -824,4 +825,110 @@ test('new Roblox source bootstraps client directory before copying pinned MATERI
     'both output directories must exist before copying pinned material asset');
   assert.ok(fs.existsSync('assets/roblox/common-materials-v1/MaterialPresentation.client.luau'));
   assert.match(writer,/fs\.writeFileSync\(path\.join\(root,'client','Game\.client\.luau'\)/);
+});
+
+
+test('approved fantasy originals replace only the existing visual consumer after actual registration',()=>{
+  const manifest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));
+  const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const registry={gameId:manifest.gameId,registrationVerified:true,nativeRegistrationVersion:1,grantRequiredAtPublish:true,
+    models:Object.fromEntries(Object.entries(manifest.models).map(([role,row],index)=>[role,{assetId:123450+index,
+      sourceSha256:row.sourceSha256,sha256:row.sourceSha256,license:'CC0-1.0',licenseEvidence:row.licenseEvidence}]))};
+  const bound=bindExistingFantasyNativeCreatures({source,manifest,registry});
+  assert.equal(robloxStudioAssetFamilyBoundInText(bound,'CREATURE'),true);
+  assert.equal(bound.slice(bound.indexOf('  local hitPoints =')),source.slice(source.indexOf('  local hitPoints =')),
+    'health, AI, rewards, waves and persistence remain exact');
+  assert.doesNotMatch(bound,/CreatureParts\.Create\(/);
+  assert.match(bound,/AssetService:LoadAssetAsync\(modelId\)/);
+  assert.match(bound,/nativeCreatureTemplates\[modelId\]/);
+  assert.match(bound,/FindFirstChildWhichIsA\("MeshPart",true\)/);
+  assert.match(bound,/item:IsA\("LuaSourceContainer"\)/);
+  assert.equal(bindExistingFantasyNativeCreatures({source:bound,manifest,registry}),bound);
+  for(const field of ['assetId','sourceSha256','licenseEvidence']){
+    const broken=structuredClone(registry);broken.models.golem[field]=field==='assetId'?0:'invalid';
+    assert.throws(()=>bindExistingFantasyNativeCreatures({source,manifest,registry:broken}),/PROVENANCE_MISMATCH:golem/);
+  }
+  assert.throws(()=>bindExistingFantasyNativeCreatures({source,manifest:{...manifest,ownerApproved:false},registry}),/VERIFIED_REGISTRATION_REQUIRED/);
+});
+
+test('native registration stays behind current contract identity and exact publish Universe grants',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/nativeCreatureRepairPending=item.gameId==='fantasy-survival'/);
+  const native=workflow.indexOf('python3 tools/baeksu-war-author-meshes.py');
+  assert.ok(native>workflow.indexOf('ROBLOX_SOURCE_PLAN_CONTRACT_CURRENT='));
+  assert.ok(native>workflow.indexOf('ROBLOX_SOURCE_TREE_IDENTITY_CURRENT='));
+  assert.ok(native<workflow.indexOf('timeout 2m node tools/company-development-roblox-bootstrap.mjs'));
+  assert.match(workflow,/--native-creature-repair="\$NATIVE_CREATURE_REPAIR"/);
+  const release=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  const start=release.indexOf("          if(sourceRoot==='roblox-games/fantasy-survival'&&gameCode.includes");
+  const end=release.indexOf('          const assetIds=[...new Set(selected)];',start);
+  assert.ok(start>0&&end>start);
+  const block=release.slice(start,end);
+  const manifestBytes=fs.readFileSync('roblox-games/fantasy-survival/native-assets.json');
+  const manifest=JSON.parse(manifestBytes);
+  const registry={gameId:manifest.gameId,registrationVerified:true,nativeRegistrationVersion:1,grantRequiredAtPublish:true,
+    sourceManifestSha256:crypto.createHash('sha256').update(manifestBytes).digest('hex'),
+    models:Object.fromEntries(Object.entries(manifest.models).map(([role,row],index)=>[role,{assetId:123450+index,
+      sourceSha256:row.sourceSha256,sha256:row.sourceSha256,license:'CC0-1.0',licenseEvidence:row.licenseEvidence}]))};
+  const execute=(nativeRegistry=registry)=>{
+    const selected=[];
+    runInNewContext(block,{sourceRoot:'roblox-games/fantasy-survival',revision:'a'.repeat(40),
+      gameCode:'local FANTASY_NATIVE_CREATURES_VERSION = 1;123450;123451;123452;',selected,crypto,
+      execFileSync:(_cmd,args)=>args[1].endsWith('/native-assets.json')?manifestBytes:fs.readFileSync(args[1].slice(41)),
+      git:()=>JSON.stringify(nativeRegistry)});
+    return selected;
+  };
+  assert.deepEqual(execute(),[123450,123451,123452]);
+  const stale=structuredClone(registry);stale.sourceManifestSha256='0'.repeat(64);
+  assert.throws(()=>execute(stale),/PUBLISH_PROVENANCE_INVALID/);
+  const broken=structuredClone(registry);broken.models.golem.sha256='0'.repeat(64);
+  assert.throws(()=>execute(broken),/PUBLISH_MODEL_MISMATCH:golem/);
+});
+
+test('native uploader verifies all originals before registration and emits real returned IDs without guessing grants',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'fantasy-native-upload-'));
+  try{
+    const game=path.join(root,'roblox-games/fantasy-survival');fs.mkdirSync(path.join(game,'shared'),{recursive:true});
+    const manifestBytes=fs.readFileSync('roblox-games/fantasy-survival/native-assets.json');
+    const manifest=JSON.parse(manifestBytes);
+    // Small deterministic test FBX buffers keep the test independent of network and binary assets.
+    const roles={};let index=0;
+    for(const [role,row] of Object.entries(manifest.models)){
+      const bytes=Buffer.concat([Buffer.from('Kaydara FBX Binary'),Buffer.alloc(1200,++index)]);
+      row.sourceSha256=crypto.createHash('sha256').update(bytes).digest('hex');
+      fs.writeFileSync(path.join(root,role+'.fbx'),bytes);
+      roles[role]={sha256:row.sourceSha256,sourceSha256:row.sourceSha256,license:'CC0-1.0',licenseEvidence:row.licenseEvidence};
+    }
+    const input=Buffer.from(JSON.stringify(manifest));fs.writeFileSync(path.join(game,'native-assets.json'),input);
+    const provenance={version:5,gameId:'fantasy-survival',sourceManifestSha256:crypto.createHash('sha256').update(input).digest('hex'),roles};
+    fs.writeFileSync(path.join(root,'provenance.json'),JSON.stringify(provenance));
+    const preload=path.join(root,'api.mjs');
+    fs.writeFileSync(preload,`import fs from 'node:fs';
+let serial=0;globalThis.setTimeout=(callback)=>{callback();return 0};
+globalThis.fetch=async(url,options={})=>{
+ if(options.method==='POST'){
+  const request=JSON.parse(options.body.get('request'));const file=options.body.get('fileContent');
+  if(request.assetType!=='Model'||file.type!=='model/fbx'||!file.name.endsWith('.fbx'))throw Error('WRONG_UPLOAD');
+  fs.appendFileSync('requests.txt',request.displayName+'\\n');
+  return {ok:true,json:async()=>({path:'operations/'+(++serial)})};
+ }
+ if(options.method==='PATCH')throw Error('PREMATURE_UNIVERSE_GRANT');
+ return {ok:true,json:async()=>({done:true,response:{assetId:900000+Number(url.split('/').at(-1))}})};
+};`);
+    const args=['--import',preload,path.resolve('tools/baeksu-war-upload-meshes.mjs'),root,path.join(root,'receipt.json'),'--game-id=fantasy-survival'];
+    const env={...process.env,ROBLOX_OPEN_CLOUD_API_KEY:'mock-test-key',ROBLOX_CREATOR_USER_ID:'123',ROBLOX_ROBLOSECURITY:'',ROBLOX_SECURITY_COOKIE:''};
+    const broken=structuredClone(provenance);broken.roles.golem.sha256='0'.repeat(64);
+    fs.writeFileSync(path.join(root,'provenance.json'),JSON.stringify(broken));
+    const rejected=spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8'});
+    assert.notEqual(rejected.status,0);assert.match(rejected.stderr,/CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:golem/);
+    assert.equal(fs.existsSync(path.join(root,'requests.txt')),false,'all three hashes precede any external write');
+    fs.writeFileSync(path.join(root,'provenance.json'),JSON.stringify(provenance));
+    const accepted=spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8'});
+    assert.equal(accepted.status,0,accepted.stderr);
+    const registry=JSON.parse(fs.readFileSync(path.join(game,'CC0-ASSET-REGISTRY.json')));
+    assert.deepEqual(Object.values(registry.models).map(row=>row.assetId),[900001,900002,900003]);
+    assert.equal(registry.runtimeVerified,false);assert.equal(registry.grantRequiredAtPublish,true);
+    assert.ok(Object.values(registry.models).every(row=>row.universeId===null));
+    assert.match(fs.readFileSync(path.join(game,'shared/VisualAssetIds.luau'),'utf8'),/golem=900003/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

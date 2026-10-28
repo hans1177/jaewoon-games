@@ -236,6 +236,7 @@ jobs:
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import crypto from 'node:crypto';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           import {
             createRobloxDedicatedExperience,
@@ -879,6 +880,35 @@ jobs:
             if(git('rev-parse',revision+':'+row.originalPath).toLowerCase()!==row.gitBlobSha.toLowerCase())
               throw new Error('ROBLOX_CC0_REGISTERED_SOURCE_BLOB_MISMATCH:'+row.key);
             selected.push(Number(assetId));
+          }
+          // Approved fantasy originals are registered before source promotion; grant only this exact publish Universe.
+          if(sourceRoot==='roblox-games/fantasy-survival'&&gameCode.includes('local FANTASY_NATIVE_CREATURES_VERSION = 1')){
+            const manifestBytes=execFileSync('git',['show',revision+':'+sourceRoot+'/native-assets.json']);
+            const manifest=JSON.parse(manifestBytes);
+            const native=JSON.parse(git('show',revision+':'+sourceRoot+'/CC0-ASSET-REGISTRY.json'));
+            const sha256=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+            if(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
+              ||Object.keys(manifest.models||{}).sort().join(',')!=='bee,golem,wolf'
+              ||native.gameId!==manifest.gameId||native.registrationVerified!==true
+              ||native.nativeRegistrationVersion!==1||native.grantRequiredAtPublish!==true
+              ||native.sourceManifestSha256!==sha256(manifestBytes))throw new Error('FANTASY_NATIVE_PUBLISH_PROVENANCE_INVALID');
+            for(const role of ['wolf','bee','golem']){
+              const expected=manifest.models[role],row=native.models?.[role];
+              if(!row||!Number.isSafeInteger(row.assetId)||row.assetId<1||row.license!=='CC0-1.0'
+                ||row.sourceSha256!==expected.sourceSha256||row.sha256!==expected.sourceSha256
+                ||row.licenseEvidence!==expected.licenseEvidence
+                ||!new RegExp('(^|[^0-9])'+row.assetId+'([^0-9]|$)').test(gameCode))
+                throw new Error('FANTASY_NATIVE_PUBLISH_MODEL_MISMATCH:'+role);
+              if(expected.sourcePath){
+                if(!/^assets\/shared\/forest\/[a-z]+\.fbx$/.test(expected.sourcePath)
+                  ||sha256(execFileSync('git',['show',revision+':'+expected.sourcePath]))!==expected.sourceSha256)
+                  throw new Error('FANTASY_NATIVE_PUBLISH_SOURCE_MISMATCH:'+role);
+              }else if(role!=='golem'||!/^[a-f0-9]{64}$/.test(expected.archiveSha256||'')
+                ||expected.archiveEntry!=='Pok optimized.fbx'
+                ||expected.archiveUrl!=='https://opengameart.org/sites/default/files/pok_-_fbx_blend_textures_and_unity_setup.zip')
+                throw new Error('FANTASY_NATIVE_PUBLISH_ARCHIVE_INVALID');
+              selected.push(row.assetId);
+            }
           }
           const assetIds=[...new Set(selected)];
           if(assetIds.length){

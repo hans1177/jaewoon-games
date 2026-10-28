@@ -6,6 +6,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 const UNIVERSE='10773115989', PLACE='120481433333785';
+const fantasy=process.argv.includes('--game-id=fantasy-survival');
 const dir=process.argv[2]||'/tmp/baeksu-art';
 const receipt=process.argv[3]||'/tmp/baeksu-art-upload.json';
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
@@ -42,22 +43,33 @@ async function req(url,opts={}){
  if(!r.ok)throw Error('ROBLOX_ASSET_API_'+r.status+':'+JSON.stringify(data).slice(0,650));
  return data;
 }
-const names=['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
+const names=fantasy?['wolf','bee','golem']:['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
 const provenance=JSON.parse(await fs.readFile(path.join(dir,'provenance.json'),'utf8'));
-if(provenance.version!==4||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
-const ids={};const records={};
+const manifestBytes=fantasy?await fs.readFile('roblox-games/fantasy-survival/native-assets.json'):null;
+const manifest=fantasy?JSON.parse(manifestBytes):null;
+if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
+ ||Object.keys(manifest.models||{}).sort().join(',')!=='bee,golem,wolf'
+ ||provenance.gameId!=='fantasy-survival'||provenance.sourceManifestSha256!==crypto.createHash('sha256').update(manifestBytes).digest('hex')))throw Error('FANTASY_NATIVE_APPROVAL_OR_MANIFEST_MISMATCH');
+if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
+const ids={};const records={};const verifiedModels=new Map();
 for(const name of names){
- const file=path.join(dir,name+'.glb');
+ const extension=fantasy?'fbx':'glb';
+ const file=path.join(dir,name+'.'+extension);
  const bytes=await fs.readFile(file);
- if(bytes.length<1000||bytes.length>18*1024*1024||bytes.subarray(0,4).toString()!=='glTF')throw Error('BAD_NATIVE_GLB:'+name);
+ if(bytes.length<1000||bytes.length>18*1024*1024||(fantasy?!bytes.subarray(0,18).toString().startsWith('Kaydara FBX Binary'):bytes.subarray(0,4).toString()!=='glTF'))throw Error('BAD_NATIVE_MODEL:'+name);
  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
  const origin=provenance.roles[name];
- if(!origin||origin.glbSha256!==digest||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
+ if(!origin||(fantasy?origin.sha256!==digest||manifest.models[name]?.sourceSha256!==digest||origin.sourceSha256!==digest||origin.licenseEvidence!==manifest.models[name]?.licenseEvidence:origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
+ verifiedModels.set(name,{bytes,digest,origin,extension});
+}
+// Validate every original before the first irreversible Model registration.
+for(const name of names){
+ const {bytes,digest,origin,extension}=verifiedModels.get(name);
  const form=new FormData();
- form.set('request',JSON.stringify({assetType:'Model',displayName:'백수대전쟁 3D '+name,
-  description:'Licensed CC0 original 3D asset adapted for baeksu-war. Source '+origin.sourceFile+' sha256 '+origin.sourceSha256.slice(0,16)+'. Model sha256 '+digest.slice(0,16),
+ form.set('request',JSON.stringify({assetType:'Model',displayName:(fantasy?'마력숲 생존기':'백수대전쟁')+' 3D '+name,
+  description:'Licensed CC0 original 3D asset for '+(fantasy?'fantasy-survival':'baeksu-war')+'. Source sha256 '+origin.sourceSha256+'. Model sha256 '+digest,
   creationContext:{creator:{userId:Number(creator)}}}));
- form.set('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),name+'.glb');
+ form.set('fileContent',new Blob([bytes],{type:fantasy?'model/fbx':'model/gltf-binary'}),name+'.'+extension);
  const op=await req('https://apis.roblox.com/assets/v1/assets',{method:'POST',body:form});
  if(!/^operations\/[a-zA-Z0-9_/-]+$/.test(op.path||''))throw Error('ASSET_UPLOAD_NO_OPERATION:'+name);
  let id=null;
@@ -68,15 +80,17 @@ for(const name of names){
   if(info.done){id=Number(info.response?.assetId??info.response?.asset?.assetId);break;}
  }
  if(!Number.isSafeInteger(id)||id<1)throw Error('ASSET_ID_INVALID:'+name);
+ if(!fantasy){
  const grant=await req('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
   method:'PATCH',headers:{'content-type':'application/json'},
   body:JSON.stringify({subjectType:'Universe',subjectId:UNIVERSE,action:'Use',
     requests:[{assetId:id,grantToDependencies:true}]})
  });
  if(Array.isArray(grant.errors)&&grant.errors.length)throw Error('UNIVERSE_GRANT_FAILED:'+name+':'+JSON.stringify(grant.errors).slice(0,300));
- ids[name]=id;records[name]={assetId:id,sha256:digest,source:'VERIFIED_CC0_ORIGINAL',sourceFile:origin.sourceFile,sourceSha256:origin.sourceSha256,sourceModel:origin.sourceModel,license:origin.license,licenseEvidence:origin.licenseEvidence,universeId:UNIVERSE};
- console.log('BAEKSU_WAR_CC0_MESH_GRANTED='+name+':'+id);
- await fs.writeFile(receipt,JSON.stringify({version:4,universeId:UNIVERSE,placeId:PLACE,models:records},null,2)+'\n');
+ }
+ ids[name]=id;records[name]={assetId:id,sha256:digest,source:'VERIFIED_CC0_ORIGINAL',sourceFile:origin.sourceFile,sourceSha256:origin.sourceSha256,sourceModel:origin.sourceModel,license:origin.license,licenseEvidence:origin.licenseEvidence,universeId:fantasy?null:UNIVERSE};
+ console.log((fantasy?'FANTASY_NATIVE_MODEL_REGISTERED=':'BAEKSU_WAR_CC0_MESH_GRANTED=')+name+':'+id);
+ await fs.writeFile(receipt,JSON.stringify({version:fantasy?5:4,gameId:fantasy?'fantasy-survival':'baeksu-war',universeId:fantasy?null:UNIVERSE,placeId:fantasy?null:PLACE,models:records},null,2)+'\n');
 }
 const lua=[
  '-- V4: source-verified CC0 real-model IDs, with baeksu-war Universe permissions.',
@@ -86,5 +100,6 @@ const lua=[
  '}',
  ''
 ].join('\n');
-await fs.writeFile('roblox-games/baeksu-war/shared/VisualAssetIds.luau',lua);
-console.log('BAEKSU_WAR_VERIFIED_CC0_MODELS='+names.length);
+await fs.writeFile('roblox-games/'+(fantasy?'fantasy-survival':'baeksu-war')+'/shared/VisualAssetIds.luau',fantasy?lua.replace('-- V4: source-verified CC0 real-model IDs, with baeksu-war Universe permissions.','-- Source-verified original FBX models. Exact Universe grant is required by canonical publishing.'):lua);
+if(fantasy)await fs.writeFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',JSON.stringify({version:2,gameId:'fantasy-survival',nativeRegistrationVersion:1,registrationVerified:true,sourceManifestSha256:provenance.sourceManifestSha256,grantRequiredAtPublish:true,runtimeVerified:false,models:records},null,2)+'\n');
+console.log((fantasy?'FANTASY_NATIVE_REGISTERED_MODELS=':'BAEKSU_WAR_VERIFIED_CC0_MODELS=')+names.length);
