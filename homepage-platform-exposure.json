@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-28T03:11:55.187Z",
+  "generatedAt": "2026-10-28T03:36:07.091Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,15 +821,15 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0",
-            "stage": "ROBLOX_F0_SOURCE_PREFLIGHT",
-            "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-10-28T03:02:53.294Z",
-            "checkedAt": "2026-10-28T03:02:53.294Z",
+            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-10-28T03:33:51.745Z",
             "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
+            "failureCode": null,
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -929,7 +929,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-28T03:02:53.294Z"
+      "updatedAt": "2026-10-28T03:33:51.745Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -950,13 +950,13 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
-            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
             "verifiedAt": "2026-10-28T03:01:02.328Z",
-            "checkedAt": "2026-10-28T03:09:48.129Z",
+            "checkedAt": "2026-10-28T03:33:51.745Z",
             "lastFailureAt": null,
-            "f0PassedAt": "2026-10-28T02:55:38.109Z",
+            "f0PassedAt": null,
             "candidatePublishedAt": "2026-10-28T03:01:02.328Z",
             "failureCode": null,
             "completedCycles": 0
@@ -1058,7 +1058,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-28T03:09:48.129Z"
+      "updatedAt": "2026-10-28T03:33:51.745Z"
     },
     {
       "gameId": "defense",
@@ -2133,14 +2133,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
-            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "currentFloor": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+            "stage": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
             "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-28T02:34:44.678Z",
-            "checkedAt": "2026-10-28T03:10:58.226Z",
+            "verifiedAt": "2026-10-28T03:32:48.581Z",
+            "checkedAt": "2026-10-28T03:32:48.581Z",
             "lastFailureAt": null,
             "f0PassedAt": "2026-10-28T02:03:36.581Z",
-            "candidatePublishedAt": "2026-10-28T02:34:44.678Z",
+            "candidatePublishedAt": "2026-10-28T03:32:48.581Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -2236,7 +2236,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-28T03:10:58.226Z"
+      "updatedAt": "2026-10-28T03:32:48.581Z"
     },
     {
       "gameId": "human-go",
