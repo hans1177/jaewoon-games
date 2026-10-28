@@ -710,9 +710,9 @@ test('Daechung village SpawnLocation stays grounded on the real plaza and return
   // Initial spawn, death respawn and portal return need root clearance relative
   // to the exact spawn top (not the uncorrected C.VillageCenter + fixed Y).
   assert.match(server,/if foundationSpawn and foundationSpawn\.Parent and \(pos-C\.VillageCenter\)\.Magnitude<\.05 then/);
-  assert.match(server,/feetClearance=\(h and h\.HipHeight or 2\)\+r\.Size\.Y\*\.5\+\.2/);
-  assert.match(server,/spawnTop=foundationSpawn\.Position\.Y\+foundationSpawn\.Size\.Y\*\.5/);
-  assert.match(server,/arrival=Vector3\.new\(foundationSpawn\.Position\.X,spawnTop\+feetClearance,foundationSpawn\.Position\.Z\)/);
+  assert.match(server,/clearance=r\.Size\.Y\*\.5\+\(h and math\.max\(0,h\.HipHeight\) or 2\)/);
+  assert.match(server,/groundY=foundationSpawn\.Position\.Y\+foundationSpawn\.Size\.Y\*\.5/);
+  assert.match(server,/rootY=\(groundY or pos\.Y\)\+clearance\+\.12/);
   assert.match(server,/p\.RespawnLocation=foundationSpawn/);
   assert.match(server,/if hit and h\.FloorMaterial~=Enum\.Material\.Air then foundationCheckpoint\("GROUND_CONTACT"/);
   assert.match(server,/teleportPlayer\(p,spawnDestination\(\)\)/);
