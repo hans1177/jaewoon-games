@@ -82,17 +82,45 @@ jobs:
           set -euo pipefail
           gh api "repos/$GITHUB_REPOSITORY/contents/development-queue.json?ref=company-runtime" --jq '.content' | base64 --decode > /tmp/roblox-current-runtime-queue.json
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-foundation-runs.json
+          # Studio MCP uses a separate authenticated Windows runner. A run waiting
+          # only for Studio must not permanently block independent Open Cloud 429 recovery.
+          node <<'NODE' > /tmp/roblox-active-foundation-run-ids
+          const fs=require('fs');
+          const runs=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-runs.json','utf8'));
+          const active=new Set(['queued','pending','in_progress','requested','waiting']);
+          for(const run of runs.workflow_runs||[]){
+            if(String(run.display_title||'').startsWith('Roblox runtime foundation QA · ')
+              &&active.has(String(run.status||'').toLowerCase())){
+              if(!Number.isSafeInteger(Number(run.id))||Number(run.id)<=0)throw Error('invalid active runtime run id');
+              console.log(run.id);
+            }
+          }
+          NODE
+          : > /tmp/roblox-active-cloud-qa-runs
+          while IFS= read -r run_id; do
+            [ -n "$run_id" ] || continue
+            [[ "$run_id" =~ ^[0-9]+$ ]] || exit 1
+            # Fail closed if jobs are not yet enumerated; queued QA could start next.
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" > /tmp/roblox-foundation-active-run-jobs.json
+            RUN_ID="$run_id" node <<'NODE'
+          const fs=require('fs');
+          const jobs=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-active-run-jobs.json','utf8')).jobs;
+          if(!Array.isArray(jobs))throw Error('runtime QA jobs response missing');
+          const active=new Set(['queued','pending','in_progress','requested','waiting']);
+          const cloudJob='existing game tester and QA validate exact Roblox runtime candidate';
+          const cloudBusy=jobs.length===0||jobs.some(job=>
+            String(job.name||'')===cloudJob&&active.has(String(job.status||'').toLowerCase()));
+          if(cloudBusy)fs.appendFileSync('/tmp/roblox-active-cloud-qa-runs',process.env.RUN_ID+'\n');
+          NODE
+          done < /tmp/roblox-active-foundation-run-ids
           node <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('/tmp/roblox-current-runtime-queue.json','utf8'));
           const allowed=new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg','fantasy-survival']);
-          const runs=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-runs.json','utf8'));
-          const active=new Set(['queued','pending','in_progress','requested','waiting']);
-          // Roblox's quota is shared: never start a second Luau task while any
-          // canonical runtime foundation QA is queued or running.
-          const busy=(runs.workflow_runs||[]).some(run=>
-            String(run.display_title||'').startsWith('Roblox runtime foundation QA · ')
-            &&active.has(String(run.status||'').toLowerCase()));
+          // Cloud quota is shared, but Studio-only queued jobs consume no Cloud
+          // Luau execution session and must not starve an already-due retry.
+          const activeCloudRuns=fs.readFileSync('/tmp/roblox-active-cloud-qa-runs','utf8').trim().split(/\r?\n/).filter(Boolean);
+          const busy=activeCloudRuns.length>0;
           const eligible=(queue.items||[]).filter(item=>{
             if(!allowed.has(String(item?.gameId||'')))return false;
             const candidate=item.robloxRuntimeCandidateEvidence||{};
@@ -121,6 +149,8 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'game_id='+gameId+'\n');
           console.log('ROBLOX_OPEN_CLOUD_429_RETRY_ELIGIBLE='+eligible.map(row=>row.gameId).join(','));
           console.log('ROBLOX_OPEN_CLOUD_429_RETRY_GLOBAL_QA_BUSY='+(busy?'YES':'NO'));
+          console.log('ROBLOX_OPEN_CLOUD_429_RETRY_ACTIVE_CLOUD_RUNS='+activeCloudRuns.join(','));
+          console.log('ROBLOX_OPEN_CLOUD_429_RETRY_STUDIO_ONLY_RUNS_IGNORED=YES');
           console.log('ROBLOX_OPEN_CLOUD_429_RETRY_SELECTED='+(gameId||'NONE'));
           NODE
       - name: Resume one exact current private runtime foundation QA after Retry-After
