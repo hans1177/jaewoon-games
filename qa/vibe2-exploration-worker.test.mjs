@@ -387,6 +387,10 @@ test('Vibe5.9 blocks incorrect scenarios, duplicate transitions and illegal stat
     transitions:[...machine.transitions,...machine.transitions]}}),/VIBE59_MACHINE_AMBIGUOUS_TRANSITION/);
   assert.throws(()=>synthesizeVibe59StateMachine({machine:{...machine,handlerName:'unsafe()'}}),
     /VIBE59_MACHINE_IDENTIFIERS/);
+  assert.throws(()=>synthesizeVibe59StateMachine({machine:{...machine,stateVariable:'monster.state'}}),
+    /VIBE59_MACHINE_IDENTIFIERS/);
+  assert.throws(()=>synthesizeVibe59StateMachine({machine:{...machine,handlerName:'while'}}),
+    /VIBE59_MACHINE_IDENTIFIERS/);
   assert.throws(()=>synthesizeVibe59StateMachine({machine:{...machine,transitions:[
     {...machine.transitions[0],actions:[{action:'assign',output:'enemyState',
       value:{kind:'number',value:7}}]}]}}),/VIBE59_MACHINE_PROTECTED_STATE/);

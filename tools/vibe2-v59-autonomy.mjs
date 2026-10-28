@@ -269,9 +269,17 @@ function state59Name(v){
   return v;
 }
 function machine59Spec(machine){
+  // Event handlers and state variables must map to a single directly tracked
+  // binding. Dotted paths would otherwise diverge from the independent oracle.
+  const plain=/^[A-Za-z_$][\w$]*$/;
+  const reserved=new Set(['function','if','else','return','while','for','switch','case',
+    'local','end','then','nil','true','false','eventName',
+    'game','workspace','script','process','globalThis','window','document']);
   if(!machine||typeof machine!=='object'||Array.isArray(machine)
+    ||!plain.test(machine.handlerName)||!plain.test(machine.stateVariable)
     ||!validName(machine.handlerName)||!validName(machine.stateVariable)
-    ||machine.handlerName===machine.stateVariable||machine.stateVariable==='eventName')
+    ||reserved.has(machine.handlerName)||reserved.has(machine.stateVariable)
+    ||machine.handlerName===machine.stateVariable)
     throw Error('VIBE59_MACHINE_IDENTIFIERS');
   const states=machine.states,events=machine.events,transitions=machine.transitions;
   if(!Array.isArray(states)||states.length<2||states.length>20
