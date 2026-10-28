@@ -15,10 +15,28 @@ $local=$env:LOCALAPPDATA
 $installerUrl='https://setup.rbxcdn.com/RobloxStudioInstaller.exe'
 
 function Find-OfficialStudio {
-  if (-not $local) { return $null }
-  $pattern=Join-Path $local 'Roblox\Versions\*\RobloxStudioBeta.exe'
-  @(Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |
-    Sort-Object LastWriteTime -Descending | Select-Object -First 1) | Select-Object -First 1
+  # Official Roblox instructions also check Program Files (x86). Windows Actions
+  # sometimes installs outside LOCALAPPDATA, while the process appears later.
+  $patterns=@()
+  if ($local) { $patterns+=Join-Path $local 'Roblox\Versions\*\RobloxStudioBeta.exe' }
+  $programX86=[Environment]::GetFolderPath('ProgramFilesX86')
+  if ($programX86) { $patterns+=Join-Path $programX86 'Roblox\Versions\*\RobloxStudioBeta.exe' }
+  foreach ($pattern in $patterns) {
+    $candidate=Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |
+      Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if ($candidate) { return $candidate }
+  }
+  # The signed executable path of an actually running Studio is authoritative.
+  $process=Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue |
+    Select-Object -First 1
+  if ($process) {
+    try {
+      if ($process.Path -and (Test-Path -LiteralPath $process.Path)) {
+        return Get-Item -LiteralPath $process.Path
+      }
+    } catch {}
+  }
+  return $null
 }
 function Test-RobloxSignature([string]$file) {
   if (-not $file -or -not (Test-Path -LiteralPath $file)) { return $false }
@@ -64,7 +82,7 @@ try {
         # Roblox documents starting the signed .exe (not an undocumented Studio CLI).
         # Do not -Wait: the installer can launch Studio and remain running.
         Start-Process -FilePath $installer
-        $deadline=(Get-Date).AddMinutes(3)
+        $deadline=(Get-Date).AddMinutes(4)
         do {
           Start-Sleep -Seconds 5
           $studio=Find-OfficialStudio
@@ -78,6 +96,14 @@ try {
     }
   }
 
+  if ($studio -and -not $signatureRejected) {
+    if (-not (Test-RobloxSignature $studio.FullName)) {
+      $signatureRejected=$true
+      $stage='NEW_STUDIO_BINARY_SIGNATURE_REJECTED'
+    } else {
+      $installerVerified=$true
+    }
+  }
   if ($studio -and -not $signatureRejected) {
     $studioInstalled=$true
     $studioRunning=($null -ne (Get-StudioProcess))
