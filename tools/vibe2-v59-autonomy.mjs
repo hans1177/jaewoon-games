@@ -208,6 +208,10 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     tests.counterexamples.map(x=>x.name).join(','));
   if(!req.machine&&req.codegenVariant)
     throw Error('VIBE59_STRATEGY_REQUIRES_STATE_MACHINE');
+  const ownerScenarios=req.scenarios||[];
+  const generatedProbes=generateVibe59AutonomousProbes({rule:req.rule,machine:req.machine,
+    maxCases:Math.max(0,Math.min(10,20-ownerScenarios.length))});
+  const probeCases=generatedProbes.cases;
   const variants=req.machine&&target==='web'&&!req.codegenVariant
     ?['chain','switch']:[clean(req.codegenVariant)||'chain'];
   const candidates=variants.map(variant=>{
@@ -215,7 +219,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
       ?synthesizeVibe59StateMachine({machine:req.machine,target,variant})
       :synthesizeVibe59StateLogic({rule:req.rule,target});
     const replay=target==='web'?verifyVibe59GeneratedJavaScript({
-      source:result.source,rule:req.rule,machine:req.machine,scenarios:req.scenarios||[]
+      source:result.source,rule:req.rule,machine:req.machine,scenarios:[...ownerScenarios,...probeCases]
     }):null;
     return {variant,compiled:result,replay};
   });
@@ -229,6 +233,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     expectedEffect:'Source-grounded, explicitly approved state transition',
     edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
     tests:[],vibe59TestPlan:tests,vibe59CodeKind:codeKind,
+    vibe59AutoTestPlan:generatedProbes,
     vibe59JsReplay:codeReplay,vibe59Strategy:selected.variant,
     vibe59StrategiesChecked:candidates.map(row=>({variant:row.variant,pass:row.replay?.pass??null})),
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
@@ -491,4 +496,71 @@ export function verifyVibe59GeneratedJavaScript({source='',rule=null,machine=nul
   return Object.freeze({pass:failed.length===0,syntaxPass:true,testsPass:failed.length===0,
     cases:outcomes,counterexamples:failed,sourceWrite:false,runtimeVerified:false,
     authority:'isolated-generated-js-only'});
+}
+
+
+// Generate bounded boundary/transition probes automatically from explicit AST.
+// Their expectations are structural, never substituted for owner acceptance.
+export function generateVibe59AutonomousProbes({rule=null,machine=null,maxCases=10}={}){
+  if(Boolean(rule)===Boolean(machine))throw Error('VIBE59_PROBES_REQUIRE_ONE_SCHEMA');
+  const limit=Math.max(0,Math.min(12,Math.floor(Number(maxCases)||0))),probes=[];
+  function refs(node,into){
+    if(!node||typeof node!=='object'||Array.isArray(node))return;
+    if(node.kind==='ref'&&validName(node.name)&&!node.name.includes('.'))into.add(node.name);
+    for(const [key,value] of Object.entries(node)){
+      if(key==='ref'||key==='name')continue;
+      if(Array.isArray(value))value.forEach(x=>refs(x,into));
+      else if(value&&typeof value==='object')refs(value,into);
+    }
+  }
+  const referenceState=(guard,actions)=>{
+    const used=new Set();
+    refs(guard,used);
+    for(const item of actions||[]){refs(item.value,used);if(validName(item.output))used.add(item.output)}
+    return Object.fromEntries([...used].map(name=>[name,1]));
+  };
+  if(machine){
+    const m=machine59Spec(machine);
+    for(const [index,t] of m.transitions.entries()){
+      if(probes.length>=limit)break;
+      if(t.when)continue; // dynamic guards need owner-provided inputs
+      const initialState={...referenceState(null,t.actions||[]),[m.stateVariable]:t.from};
+      const result=oracle59State(initialState);
+      result[m.stateVariable]=t.to;
+      try{eval59Actions(t.actions||[],result)}catch{continue}
+      probes.push({name:'automatic-transition-'+index,
+        initialState,events:[t.event],expectedState:{...result},expectedConsumed:[true]});
+    }
+    if(probes.length<limit&&m.transitions.length){
+      const first=m.transitions[0];
+      const initialState={...referenceState(null,first.actions||[]),[m.stateVariable]:first.from};
+      probes.push({name:'automatic-unknown-event',initialState,
+        events:['__VIBE59_UNDECLARED_EVENT__'],expectedState:{...initialState},expectedConsumed:[false]});
+    }
+  }else{
+    synthesizeVibe59StateLogic({rule,target:'web'});
+    const condition=rule.when;
+    if(condition.kind==='compare'){
+      const ref=condition.left?.kind==='ref'&&condition.right?.kind==='number'
+        ?condition.left.name:condition.right?.kind==='ref'&&condition.left?.kind==='number'
+        ?condition.right.name:null;
+      const threshold=condition.left?.kind==='number'?condition.left.value:condition.right?.value;
+      if(ref&&validName(ref)&&!ref.includes('.')&&typeof threshold==='number'&&Number.isFinite(threshold)){
+        const state=referenceState(rule.when,[...rule.then,...(rule.otherwise||[])]);
+        for(const [index,v] of [threshold-1,threshold,threshold+1].entries()){
+          if(probes.length>=limit||Math.abs(v)>1e9)break;
+          const initialState={...state,[ref]:v},expected=oracle59State(initialState);
+          try{
+            const chosen=Boolean(eval59Expression(rule.when,expected))?rule.then:(rule.otherwise||[]);
+            eval59Actions(chosen,expected);
+          }catch{continue}
+          probes.push({name:'automatic-boundary-'+index,
+            initialState,expectedState:{...expected}});
+        }
+      }
+    }
+  }
+  return Object.freeze({cases:probes,generatedCaseCount:probes.length,
+    sourceWrite:false,runtimeVerified:false,ownerExpectationVerified:false,
+    authority:'generated-structural-probes-only'});
 }

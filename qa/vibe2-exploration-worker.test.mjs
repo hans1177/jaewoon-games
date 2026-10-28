@@ -15,7 +15,7 @@ import {
   generateVibe59Tests,planVibe59Repairs,recallVibe59VerifiedSolutions,
   evaluateVibe59Completion,planVibe59SafeRefactor,createVibe59CodeCandidate,
   buildVibe59AutonomyPlan,synthesizeVibe59StateMachine,verifyVibe59GameScenarios,
-  verifyVibe59GeneratedJavaScript
+  verifyVibe59GeneratedJavaScript,generateVibe59AutonomousProbes
 } from '../tools/vibe2-v59-autonomy.mjs';
 import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
 import { requestVibe4LoopbackModel } from '../tools/vibe2-v4-loopback-model.mjs';
@@ -463,6 +463,38 @@ test('Vibe5.9 machine autoselect records two generated strategies and bounded re
   assert(candidate.vibe59StrategiesChecked.every(x=>x.pass===true));
   assert.equal(candidate.vibe59JsReplay.pass,true);
   assert.equal(candidate.vibe59JsReplay.runtimeVerified,false);
+});
+
+test('Vibe5.9 generates boundary checks without inventing game design choices',()=>{
+  const rule={when:{kind:'compare',op:'lte',left:{kind:'ref',name:'hp'},
+    right:{kind:'number',value:30}},
+    then:[{action:'assign',output:'mode',value:{kind:'number',value:2}}],
+    otherwise:[{action:'assign',output:'mode',value:{kind:'number',value:1}}]};
+  const probes=generateVibe59AutonomousProbes({rule});
+  assert.equal(probes.generatedCaseCount,3);
+  assert.deepEqual(probes.cases.map(x=>x.initialState.hp),[29,30,31]);
+  assert.equal(probes.ownerExpectationVerified,false);
+  assert.equal(probes.runtimeVerified,false);
+  const emitted=synthesizeVibe59StateLogic({rule,target:'web'});
+  const replay=verifyVibe59GeneratedJavaScript({source:emitted.source,rule,scenarios:probes.cases});
+  assert.equal(replay.pass,true);
+  assert.equal(replay.cases.length,3);
+  assert.equal(replay.runtimeVerified,false);
+});
+test('Vibe5.9 automatically tests reachable unguarded transitions and unexpected events',()=>{
+  const machine={handlerName:'transition',stateVariable:'state',
+    states:['idle','running'],events:['start','stop'],
+    transitions:[{from:'idle',event:'start',to:'running',
+      actions:[{action:'assign',output:'speed',value:{kind:'number',value:5}}]},
+      {from:'running',event:'stop',to:'idle',actions:[]}]};
+  const probes=generateVibe59AutonomousProbes({machine});
+  assert.equal(probes.generatedCaseCount,3);
+  assert(probes.cases.some(x=>x.events[0]==='start'));
+  assert(probes.cases.some(x=>x.events[0]==='__VIBE59_UNDECLARED_EVENT__'));
+  assert.equal(verifyVibe59GameScenarios({machine,scenarios:probes.cases}).pass,true);
+  const js=synthesizeVibe59StateMachine({machine,target:'web'});
+  assert.equal(verifyVibe59GeneratedJavaScript({
+    source:js.source,machine,scenarios:probes.cases}).pass,true);
 });
 test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
   assert.deepEqual(extractVibeSourceImportRefs([

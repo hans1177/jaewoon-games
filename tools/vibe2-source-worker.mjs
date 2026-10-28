@@ -8927,6 +8927,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         modelUsed:false,vibe59RuleDigest:v59.ruleDigest,vibe59CodeKind:v59.vibe59CodeKind,
         vibe59TestCaseCount:v59.vibe59TestPlan.cases.length,vibe59ScenariosPass:v59.vibe59TestPlan.pass,
         vibe59JsReplayPass:v59.vibe59JsReplay?.pass??null,
+        vibe59AutoProbeCount:v59.vibe59AutoTestPlan?.generatedCaseCount||0,
         vibe59StrategiesChecked:v59.vibe59StrategiesChecked,vibe59SelectedStrategy:v59.vibe59Strategy,
         mode:v59.vibe59CodeKind==='STATE_MACHINE'?'VIBE59_STATE_MACHINE':'VIBE59_COMPOSED_LOGIC',maxPredict:0,timeoutMs:0,contextWindow:0,
         temperature:0,completionMode:'VIBE59_COMPOSED_LOGIC'}};
