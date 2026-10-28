@@ -37,6 +37,31 @@ test('current internal Roblox exposure games share one canonical thumbnail with 
   assert.equal(images.size,ids.length);
 });
 
+test('fantasy-survival reuses only its existing hash-verified game-owned cover across homepage and Roblox',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const game=catalog.games.find(row=>row.id==='fantasy-survival');
+  const source='assets/homepage-covers/fantasy-survival.webp';
+  assert.equal(game.image,source);
+  assert.equal(game.marketingThumbnail,source);
+  assert.equal(game.canonical.identity.image,source);
+  assert.equal(game.canonical.marketing.thumbnail,source);
+  assert.equal(game.canonical.marketing.homepageMedia.cover.src,source);
+  assert.equal(game.canonical.marketing.robloxTitleArtwork.src,source);
+  const queue={items:[{gameId:'fantasy-survival',robloxPublicationTarget:{
+    gameId:'fantasy-survival',universeId:'12345',placeId:'56789',verified:true,dedicated:true,shared:false
+  }}]};
+  const target=resolveRobloxThumbnailTarget({catalog,queue,gameId:'fantasy-survival'});
+  assert.equal(target.approvedExistingCover,true);
+  assert.equal(target.coverSha256,game.homepageMedia.cover.sha256);
+  assert.equal(validateCanonicalThumbnail({root:'.',target}).sha256,target.coverSha256);
+  assert.throws(()=>validateCanonicalThumbnail({root:'.',target:{...target,coverSha256:'0'.repeat(64)}}),
+    /ROBLOX_THUMBNAIL_EXISTING_COVER_PROVENANCE_MISMATCH/);
+  const changed=structuredClone(catalog);
+  changed.games.find(row=>row.id==='fantasy-survival').canonical.marketing.robloxTitleArtwork.sha256='0'.repeat(64);
+  assert.throws(()=>resolveRobloxThumbnailTarget({catalog:changed,queue,gameId:'fantasy-survival'}),
+    /ROBLOX_THUMBNAIL_SOURCE_NOT_CANONICAL/);
+});
+
 test('homepage renderer and manager prefer canonical marketing thumbnail',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
