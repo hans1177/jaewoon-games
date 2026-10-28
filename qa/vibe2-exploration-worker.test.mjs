@@ -71,7 +71,7 @@ test('exploration cache invalidates QA-only changes and requires complete impact
     source:{root:'web-games/cache-impact',responsibleFiles:['web-games/cache-impact/src/combat.js'],ignoredPaths:[]},
     workPackage:{id:'cache-impact-wp',sharedContext:{diagnosticEvidence:[]}}};
   const first=exploreVibe2WorkOrder({cwd,order});
-  assert.equal(first.impactAnalysisSchemaVersion,2);
+  assert.equal(first.impactAnalysisSchemaVersion,3);
   assert.equal(first.impactScanCoverage.runtimeVerified,false);
   assert(first.fileDigests.some(row=>row.path==='qa/weapon.test.js'));
   const artifact=path.join(cwd,'.vibe2/exploration.json');
@@ -105,11 +105,63 @@ test('Roblox module impact identifies required sibling Luau and native test with
     workPackage:{id:'rig-wp',sharedContext:{diagnosticEvidence:[]}}};
   const handoff=exploreVibe2WorkOrder({cwd,order});
   assert.equal(handoff.sourceImpact.runtimeVerified,false);
-  assert.equal(handoff.impactAnalysisSchemaVersion,2);
+  assert.equal(handoff.impactAnalysisSchemaVersion,3);
   assert(handoff.sourceImpact.impactedSources.some(row=>row.path==='shared/Effects.luau'));
   assert(handoff.sourceImpact.affectedTests.some(row=>row.path==='qa/combat.test.luau'));
   assert.deepEqual(handoff.responsibleFiles,['shared/Combat.luau']);
   assert(!handoff.editContract.allowedResponsibleFiles.includes('shared/Effects.luau'));
+});
+
+test('exploration cache invalidates added and edited previously unrelated modules',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/inventory-scan');
+  write(path.join(root,'src/combat.js'),'export function attack(){ return 5; }\n');
+  write(path.join(root,'src/helper.js'),'export function unrelated(){ return 1; }\n');
+  const order={run:true,taskId:'scan-inventory',gameId:'inventory-scan',target:'web',goal:'attack bug',
+    source:{root:'web-games/inventory-scan',responsibleFiles:['web-games/inventory-scan/src/combat.js'],ignoredPaths:[]},
+    workPackage:{id:'scan-wp',sharedContext:{diagnosticEvidence:[]}}};
+  const original=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(original.impactAnalysisSchemaVersion,3);
+  assert.equal(original.fileDigests.length,2);
+  const artifact=path.join(cwd,'.vibe2/scanned.json');
+  const old=process.env.VIBE2_EXPLORATION_FILE;
+  process.env.VIBE2_EXPLORATION_FILE=artifact;
+  try{
+    write(artifact,JSON.stringify(original));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    write(path.join(root,'src/helper.js'),'export function helper(){ return attack(); }\n');
+    const changed=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(changed.reused,false);
+    assert(changed.sourceImpact.impactedSources.some(row=>row.path==='src/helper.js'));
+    write(artifact,JSON.stringify(changed));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    write(path.join(root,'qa/combat.test.js'),
+      "import {attack} from '../src/combat.js'; if(attack()!==5)throw Error('fail');\n");
+    const added=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(added.reused,false);
+    assert(added.testTargets.includes('qa/combat.test.js'));
+    write(artifact,JSON.stringify(added));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    fs.unlinkSync(path.join(root,'qa/combat.test.js'));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,false);
+  }finally{
+    if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=old;
+  }
+});
+
+test('reverse-dependent regression tests are prioritized over unrelated test path order',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/qa-priority');
+  write(path.join(root,'src/combat.js'),'export function attack(){return 5;}\n');
+  write(path.join(root,'src/player.js'),"import {attack} from './combat.js'; export function player(){return attack()}\n");
+  write(path.join(root,'qa/a-unrelated.test.js'),'export function unrelated(){return 2;}\n');
+  write(path.join(root,'qa/z-combat.test.js'),"import {player} from '../src/player.js'; if(player()!==5)throw Error('attack');\n");
+  const order={run:true,taskId:'qa-priority',gameId:'qa-priority',target:'web',goal:'combat attack',
+    source:{root:'web-games/qa-priority',responsibleFiles:['web-games/qa-priority/src/combat.js'],ignoredPaths:[]},
+    workPackage:{id:'qa-priority-wp',sharedContext:{diagnosticEvidence:[]}}};
+  const out=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(out.testTargets[0],'qa/z-combat.test.js');
+  assert.equal(out.sourceWrite,false);
+  assert(!out.editContract.allowedResponsibleFiles.includes('qa/z-combat.test.js'));
 });
 
 test('coding explorer uses Vibe3 reverse dependencies without mutating unrelated source',()=>{

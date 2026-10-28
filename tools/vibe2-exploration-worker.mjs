@@ -111,7 +111,7 @@ function reusableArtifact(cwd,order){
   // Old snapshots did not hash every dependency/test used by the Vibe3 graph.
   // They are unsafe to reuse after source or QA changes, even if the owner file is unchanged.
   if(cached.bootstrap!==true&&(
-    cached.impactAnalysisSchemaVersion!==2
+    cached.impactAnalysisSchemaVersion!==3
     ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
     ||!clean(cached.sourceImpact?.graphDigest)
     ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
@@ -121,6 +121,12 @@ function reusableArtifact(cwd,order){
   try{const mode=readJson(path.join(cwd,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope;if(mode&&cached?.editContract?.gameRepair?.multiplayerLifecycle?.verificationScope!==mode)return null;}catch{}
   const root=path.resolve(cwd,expectedRoot);
   if(cached.bootstrap===true&&fs.existsSync(root))return null;
+  if(cached.bootstrap!==true){
+    const listed=listFiles(root,clean(order.target).toLowerCase(),order?.source?.ignoredPaths||[]);
+    if(!clean(cached.scanPathDigest)
+      ||sha(JSON.stringify(listed.map(row=>row.relative)))!==cached.scanPathDigest
+      ||cached.fileDigests.length!==listed.length)return null;
+  }
   for(const row of cached.fileDigests||[]){
     const file=path.resolve(root,row.path);
     if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||sha(safeRead(file)).slice(0,16)!==row.hash)return null;
@@ -568,7 +574,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   const related=scored.filter(row=>!responsibleSet.has(row.relative)&&row.score>0).slice(0,MAX_RELATED_FILES);
   const contextFiles=unique([...responsible,...related.map(row=>row.relative)]).slice(0,12);
-  const testTargets=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,8).map(row=>row.relative));
+  let testTargets=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,8).map(row=>row.relative));
   // Reuse the already scanned files: no extra model, source write, workflow or QA stage.
   const uniqueGraphRows=new Map();
   for(const row of [...responsibilityRows,...related,
@@ -591,11 +597,15 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     return {path:row.relative,symbols,imports,calls,tests};
   })});
   const sourceImpact=createVibeImpactPlan({graph:impactGraph,changedPaths:responsible,maxDepth:3,maxTests:8});
+  // Prioritize observed graph-reachable regression tests, retaining existing fallback checks.
+  testTargets=unique([...sourceImpact.affectedTests.map(row=>row.path),...testTargets]).slice(0,8);
   const impactFiles=unique([...responsible,...sourceImpact.impactedSources.map(row=>row.path),
     ...related.slice(0,8).map(row=>row.relative)]).slice(0,24);
   const protectedScopeSignals=unique(responsibilityRows.flatMap(row=>protectedSignals(row.text)));
   const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
-  const fileDigests=graphRows.map(compactFile);
+  // All bounded scan sources can become relevant after a code edit; hash each input.
+  const fileDigests=scored.map(compactFile);
+  const scanPathDigest=sha(JSON.stringify(rows.map(row=>row.relative)));
   const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
   const existingWebAssessment=target==='web'?assessExistingWebRepository({cwd,gameId:order.gameId,sourceRoot:rootRelative,order}):null;
   const sourceText=responsibilityRows.map(row=>row.text).filter(Boolean).join('\n\n');
@@ -620,7 +630,8 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     contextFiles,
     sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
     sourceImpact,
-    impactAnalysisSchemaVersion:2,
+    impactAnalysisSchemaVersion:3,
+    scanPathDigest,
     impactScanCoverage:{scannedFileCount:graphRows.length,discoveredFileCount:rows.length,
       bounded:true,completeRepositoryGraph:false,runtimeVerified:false},
     relatedFiles:related.map(row=>({path:row.relative,score:row.score})),
