@@ -10,6 +10,79 @@ export const MOTION_FORGE_FEATURES=Object.freeze([
  'COMPATIBLE_RIG_RETARGET','MOTION_EVOLUTION_PARAMETERS','MOBILE_LOD_AND_SECONDARY_MOTION'
 ]);
 const ACTOR_CLASSES=Object.freeze(['PLAYER','NPC','ENEMY','BOSS','CREATURE','COMPANION','MOUNT','INTERACTIVE_PROP']);
+
+export const MOTION_CRAFT_KNOBS=Object.freeze({
+ attackStrike:Object.freeze([.65,1.35]),secondaryMotion:Object.freeze([.3,1.3]),
+ footContact:Object.freeze([.7,1.3]),headLead:Object.freeze([.6,1.35]),
+ recovery:Object.freeze([.7,1.3]),poseSmoothing:Object.freeze([.65,1.35]),
+ limbArc:Object.freeze([.65,1.3]),bossWeight:Object.freeze([.7,1.3]),
+ npcGesture:Object.freeze([.5,1.4]),tailFollow:Object.freeze([.5,1.4]),
+ hitRecoil:Object.freeze([.65,1.35]),mobileDetail:Object.freeze([.5,1.15])
+});
+const FEATURE_KNOBS=Object.freeze({
+ NATIVE_RIG_BINDING:['poseSmoothing'],
+ POSE_VELOCITY_CROSSFADE:['poseSmoothing','recovery'],
+ BODY_PLAN_LOCOMOTION:['limbArc','headLead'],
+ CINEMATIC_ATTACK_ENVELOPE:['attackStrike','recovery'],
+ APPROVED_COMBO_CONTINUITY:['recovery','poseSmoothing'],
+ FULL_BODY_WEIGHT_TRANSFER:['limbArc','headLead'],
+ GROUNDED_FOOT_IK_HANDOFF:['footContact','poseSmoothing'],
+ NPC_GAZE_AND_GESTURE:['npcGesture','headLead'],
+ CREATURE_SPECIES_ACTING:['tailFollow','limbArc'],
+ BOSS_SIGNATURE_STAGING:['bossWeight','attackStrike'],
+ DIRECTIONAL_HIT_REACTION:['hitRecoil','recovery'],
+ WEAPON_ACTION_STYLE:['attackStrike','limbArc'],
+ COMPATIBLE_RIG_RETARGET:['poseSmoothing'],
+ MOTION_EVOLUTION_PARAMETERS:['recovery','headLead'],
+ MOBILE_LOD_AND_SECONDARY_MOTION:['mobileDetail','secondaryMotion']
+});
+const normProfile=profile=>{
+ const valid=profile&&typeof profile==='object'&&!Array.isArray(profile)?profile:{};
+ return Object.freeze(Object.fromEntries(Object.entries(MOTION_CRAFT_KNOBS).map(([key,[low,high]])=>{
+  const value=valid[key];return[key,typeof value==='number'&&Number.isFinite(value)?Math.max(low,Math.min(high,value)):1];
+ })));
+};
+export function validateMotionCraftProfile(profile={}){
+ if(!profile||typeof profile!=='object'||Array.isArray(profile))return false;
+ const keys=Object.keys(profile);
+ if(!keys.length||keys.some(k=>!Object.hasOwn(MOTION_CRAFT_KNOBS,k)))return false;
+ return keys.every(k=>typeof profile[k]==='number'&&Number.isFinite(profile[k])
+  &&profile[k]>=MOTION_CRAFT_KNOBS[k][0]&&profile[k]<=MOTION_CRAFT_KNOBS[k][1]);
+}
+// Native replay proof is required before learning any parameter; a source compile
+// or repeated build count alone cannot give a profile positive weight.
+export function createVerifiedActorMotionVariants({
+ gameId='',actorClass='',featureId='',history=[],bodyPlan='BIPED',generation=1,
+}={}){
+ if(!ACTOR_CLASSES.includes(actorClass)||!MOTION_FORGE_FEATURES.includes(featureId))
+  return Object.freeze({status:'NOT_APPLICABLE',variants:Object.freeze([])});
+ const proofs=history.filter(validRow).filter(row=>row.gameId===gameId&&row.actorClass===actorClass
+  &&row.featureId===featureId&&row.bodyPlan!==undefined&&row.bodyPlan===bodyPlan
+  &&validateMotionCraftProfile(row.profile));
+ const best=[...proofs].sort((a,b)=>b.afterScore-a.afterScore||a.evidenceId.localeCompare(b.evidenceId))[0];
+ const base=normProfile(best?.profile||{});
+ const knobs=FEATURE_KNOBS[featureId]||[];
+ const cursor=Math.max(0,Math.floor(Number(generation)||1)-1);
+ const knob=knobs[cursor%Math.max(1,knobs.length)];
+ if(!knob)return Object.freeze({status:'NO_SAFE_MOTION_KNOB',variants:Object.freeze([])});
+ const refinement=Number((.16/(1+Math.sqrt(proofs.length))).toFixed(4));
+ const limit=MOTION_CRAFT_KNOBS[knob];
+ const adjusted=sign=>Object.freeze({...base,[knob]:Math.max(limit[0],Math.min(limit[1],Number((base[knob]+refinement*sign).toFixed(4)))});
+ return Object.freeze({
+  status:best?'VERIFIED_BASELINE_REFINEMENT':'SOURCE_GROUNDED_EXPERIMENT',
+  gameId,actorClass,featureId,bodyPlan,generation:cursor+1,
+  verifiedSamples:proofs.length,baselineSourceEvidenceId:best?.evidenceId||null,
+  sourceRevision:best?.candidateRevision||null,selectedKnob:knob,
+  step:refinement,requiresSameActorNativeRuntime:true,
+  noProductionPromotionWithoutQA:true,noGameplayAuthority:true,
+  variants:Object.freeze([
+   Object.freeze({id:'A',profile:base,verified:best!==undefined,sourceEvidenceId:best?.evidenceId||null}),
+   Object.freeze({id:'B',profile:adjusted(1),verified:false}),
+   Object.freeze({id:'C',profile:adjusted(-1),verified:false}),
+  ])
+ });
+}
+
 const SHA=/^[0-9a-f]{40}$/i;
 const safeNumber=x=>typeof x==='number'&&Number.isFinite(x)&&x>=0&&x<=100;
 const safeId=x=>typeof x==='string'&&/^[a-zA-Z0-9_-]{1,80}$/.test(x);
@@ -22,6 +95,8 @@ function validRow(x){
     ||x.independentQaPassed!==true||x.gameplayAuthorityPreserved!==true
     ||x.sameActor!==true||x.sameScene!==true||x.sameDevice!==true
     ||x.sameInput!==true||x.sameFrameLimit!==true
+    ||(x.profile!==undefined&&!validateMotionCraftProfile(x.profile))
+    ||(x.bodyPlan!==undefined&&(!safeId(x.bodyPlan)||!/^(BIPED|QUADRUPED|GIANT|FLYER|CRAWLER|SERPENT|PROP)$/.test(x.bodyPlan)))
     ||!safeNumber(x.beforeScore)||!safeNumber(x.afterScore)||x.afterScore-x.beforeScore<3
     ||x.regressionCount!==0)return false;
  if(!safeId(x.evidenceId)||!safeId(x.platform)||!['ROBLOX','WEB'].includes(x.platform)
@@ -92,10 +167,17 @@ export function planVerifiedActorEvolution({
   ||candidates.find(row=>row.actor===fallbackActor)
   ||candidates[cycle%candidates.length];
  const file=selected.actor.files[cycle%selected.actor.files.length];
+ const variants=createVerifiedActorMotionVariants({
+  gameId,actorClass:selected.actor.actorClass,featureId:selected.feature,history,
+  bodyPlan:selected.actor.bodyPlan||'BIPED',generation
+ });
  return Object.freeze({
   generation:cycle+1,actorClass:selected.actor.actorClass,sourceOwnerFile:file,
   qualityAxis:selected.feature,featureId:selected.feature,
   evidenceCount:selected.rows,previousVerifiedScore:selected.last?.afterScore??null,
+  nativeAuthoringApi:'RobloxCommonMotion.CreateProceduralActorSequence',
+  proceduralPoseApi:'RobloxCommonMotion.SampleProceduralActorMotion',
+  sourceVerifiedMotionVariantPlan:variants,
   verifiedTransferGames:selected.last?null:(transferable.has(selected.feature)?3:0),
   decision:selected.rows?'VERIFIED_WEAK_AXIS_REVISIT':'SOURCE_GROUNDED_UNVERIFIED_EXPLORATION',
   intent:'REAL_NATIVE_ACTOR_ANIMATION_IMPLEMENTATION',
