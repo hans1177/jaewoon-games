@@ -370,6 +370,7 @@ jobs:
           import fs from 'node:fs';
           import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
+          import {execFileSync} from 'node:child_process';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
@@ -485,7 +486,8 @@ jobs:
               existingSourceLearningRebind,
               studioMaterialRepair:materialRepairPending,
               nativeCreatureRepair:nativeCreatureRepairPending,
-              reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||''),
+              reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||(nativeCreatureRepairPending
+                ?execFileSync('git',['rev-parse','HEAD:'+target],{encoding:'utf8'}).trim():'')),
               foundationRepair:f0FoundationRepair,
               knownSourceRepairDebt,
             });
