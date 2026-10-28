@@ -392,7 +392,7 @@ test('planner excludes only explicit disabled games rather than using currentSte
   assert.deepEqual(result.include.map(row=>row.gameId).sort(),['g1','g2']);
 });
 
-test('central contract keeps Studio optional and outside build-up F9 deployment gates',()=>{
+test('central contract requires official Studio MCP for F9 and release, without claiming play when unavailable',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
@@ -401,10 +401,10 @@ test('central contract keeps Studio optional and outside build-up F9 deployment 
   assert.equal(loop.studioRequired,true);
   assert.equal(loop.missingStudioAction,'HOLD_F9_AND_CANONICAL_RELEASE_KEEP_SOURCE_DEVELOPMENT');
   const studio=central.roblox?.studioExecution||{};
-  assert.equal(studio.required,false);
+  assert.equal(studio.required,true);
   assert.equal(studio.optionalDiagnostic,false);
-  assert.equal(studio.deploymentGate,false);
-  assert.equal(studio.f9Gate,false);
+  assert.equal(studio.deploymentGate,true);
+  assert.equal(studio.f9Gate,true);
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioPlan,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
@@ -1101,7 +1101,7 @@ test('Studio push trigger scopes exact revalidation from the actual before-to-he
   assert.doesNotMatch(studioPlanBlock,/github\.event\.head_commit\.(?:modified|added|removed)/);
 });
 
-test('official Studio MCP planner is exact-game opt-in while Cloud remains release authority',()=>{
+test('official Studio MCP planner runs automatically for push and exact candidate requests while Cloud remains release authority',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
@@ -1118,7 +1118,7 @@ test('official Studio MCP planner is exact-game opt-in while Cloud remains relea
   assert.match(studioPlanBlock,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,true);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,true);
-  assert.doesNotMatch(studioPlanBlock,/github\.event_name == 'push'/);
+  assert.match(studioPlanBlock,/github\.event_name == 'push'/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
@@ -1236,16 +1236,16 @@ test('MCP helper accepts bounded per-session readiness attempts from workflow ar
   assert.match(helper,/toolDelayMs:Number\(a\['tool-delay-ms'\]\|\|1000\)/);
 });
 
-test('central Studio policy keeps only nonblocking optional diagnostic recovery essentials',()=>{
+test('central Studio policy requires actual play and retains prerequisite recovery without fabricated PASS',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const studio=roadmap.roblox?.studioExecution||{};
   const recovery=studio.mcpUnavailableRecovery||{};
-  assert.equal(studio.required,false);
+  assert.equal(studio.required,true);
   assert.equal(studio.optionalDiagnostic,false);
-  assert.equal(studio.deploymentGate,false);
-  assert.equal(studio.f9Gate,false);
-  assert.equal(studio.requiredForInternalRelease,false);
-  assert.equal(studio.postBuildUpVerificationLevel,'CODE_AND_STATIC_QA');
+  assert.equal(studio.deploymentGate,true);
+  assert.equal(studio.f9Gate,true);
+  assert.equal(studio.requiredForInternalRelease,true);
+  assert.equal(studio.postBuildUpVerificationLevel,'CODE_STATIC_AND_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
   assert.equal(recovery.automaticResumeAfterPrerequisite,true);
   assert.equal(recovery.developmentContinuesWhileStudioUnavailable,true);
   for(const obsolete of [
