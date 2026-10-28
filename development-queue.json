@@ -3901,7 +3901,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-28T04:58:42.318Z",
+      "updatedAt": "2026-10-28T05:03:00.232Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3916,10 +3916,9 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-first-frame-grounding-unobserved",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -4549,7 +4548,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "sourceRevision": "90d268e68b5a32b3a9a031b32a2c977836281c73",
+        "artifactIdentity": "sha256:8302cb8cd3f982dfd9cf5242fb39f46f6dcdb203392fd006bd90520338a88659",
+        "artifactRunId": 40629263779,
+        "universeId": "10773091436",
+        "placeId": "127826577038785",
+        "candidateVersionNumber": 3,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 2619,
+        "retryNotBefore": "2026-10-28T05:46:38.709Z",
+        "observedAt": "2026-10-28T05:03:00.232Z",
+        "workflowRunId": 40635432263,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -5235,7 +5253,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-28T04:49:52.367Z"
+        "verifiedAt": "2026-10-28T05:03:00.232Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-28T04:02:32.933Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-28T04:49:52.367Z",
@@ -7328,7 +7346,7 @@
       "robloxRuntimeLastObservationAttemptAt": "2026-10-28T04:55:01.596Z"
     }
   ],
-  "updatedAt": "2026-10-28T05:02:47.174Z",
+  "updatedAt": "2026-10-28T05:03:00.232Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
