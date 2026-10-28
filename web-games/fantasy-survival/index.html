@@ -3493,7 +3493,7 @@ function updateAutoCombat(now){
  let target=null,best=Infinity;
  for(const e of state.enemies){
   if(isCreative()&&!(e.creativeOwned&&e.creativeAttackPlayer))continue;
-  if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless'||e.type.burrower&&!e.emerged||e.type.labBoss&&now<(e.submergedUntil||0))continue;
+  if(e.crystalHidden||e.hp<=0||e.area!==state.area||e.type.mood==='harmless'||e.type.burrower&&!e.emerged||e.type.labBoss&&now<(e.submergedUntil||0))continue;
   if(!(e.hostile||e.type.mood==='aggressive'||e.type.mood==='boss'||e.type.boss||e.type.labBoss))continue;
   const d=dist(p.x,p.y,e.x,e.y),range=mounted?150:currentRange()+(Number(e.type.r)||0);
   if((mounted?d<range:d<=range)&&d<best){target=e;best=d}
@@ -4195,7 +4195,7 @@ function fireSporeSeeker(now,p,w,target){
 }
 function currentArrowAimTarget(){
  const aim=state.arrowAim;if(!aim?.targetId)return null;
- const target=state.enemies.find(e=>e.netId===aim.targetId&&e.hp>0&&e.area===state.area&&!(e.type.mood==='harmless'&&!e.type.huntable));
+ const target=state.enemies.find(e=>e.netId===aim.targetId&&e.hp>0&&!e.crystalHidden&&e.area===state.area&&!(e.type.mood==='harmless'&&!e.type.huntable));
  if(!target)aim.targetId=null;
  return target||null
 }
@@ -4217,7 +4217,8 @@ function firePlayerArrow(now,p,w,arrow){
 function attack(selectedTapTarget=null){
  const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
  // 무기 기술과 자동 전투는 같은 유효 표적에 조준하고 실제 공격 판정은 아래 기존 흐름을 쓴다.
- const aimed=selectedTapTarget||state.enemies.find(e=>e.netId===state.combat?.targetId);
+ // 메인 · 허공 공격은 오래된 자동전투 표적을 향해 돌아가지 않는다. 은신 대상은 조준하지 않는다.
+  const aimed=selectedTapTarget?.hp>0&&selectedTapTarget.area===state.area&&!selectedTapTarget.crystalHidden?selectedTapTarget:null;
  if(aimed&&aimed.hp>0&&aimed.area===state.area){const dx=aimed.x-p.x,dy=aimed.y-p.y,d=Math.hypot(dx,dy);if(d<=currentRange()+(Number(aimed.type.r)||0)){p.faceX=dx/(d||1);p.faceY=dy/(d||1)}}
  // 공격 시 사용자 터치 중 새 전투곡을 시작하고 잠시 유지한다.
  if(state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.mood!=='harmless'&&dist(e.x,e.y,p.x,p.y)<Math.max(580,currentRange()+120))){
@@ -4237,7 +4238,7 @@ function attack(selectedTapTarget=null){
  // 기존 무기와 방어구의 공격력·쿨다운을 사용하고 아이템/저장/보스 판정은 기존 투사체 흐름을 따른다.
  if(avatarAppearance.model==='mage'&&!w?.ranged){
   const target=aimed&&aimed.hp>0&&aimed.area===state.area&&dist(aimed.x,aimed.y,p.x,p.y)<=currentRange()+(Number(aimed.type.r)||0)
-   ?aimed:state.enemies.filter(e=>e.hp>0&&e.area===state.area&&(e.type.mood!=='harmless'||e.type.huntable)
+   ?aimed:state.enemies.filter(e=>e.hp>0&&!e.crystalHidden&&e.area===state.area&&(e.type.mood!=='harmless'||e.type.huntable)
      &&!(e.type.labBoss&&now<(e.submergedUntil||0))
      &&dist(e.x,e.y,p.x,p.y)<=currentRange()+(Number(e.type.r)||0))
      .sort((a,b)=>dist(a.x,a.y,p.x,p.y)-dist(b.x,b.y,p.x,p.y))[0];
@@ -4900,9 +4901,12 @@ function handleWorldTap(e){
  }
  if(state.area==='surface'&&!state.giantCrocEggTaken&&dist(wx,wy,GIANT_CROC_EGG.x,GIANT_CROC_EGG.y)<60){doubleTapTarget('giant-croc-egg',now,()=>{if(state.giantCrocEggTaken)return;state.giantCrocEggTaken=true;addInv('giant-croc-egg',1);state.dirty=true;showNotice('거대 악어 알 획득 · 부화기에서 10분 부화');saveGame(false)});return}
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
- const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
- let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=70;
- if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(cd,(Number(m.type.r)||20)+22)){closest=m;cd=d}}
+ // 메인 · 화면에 보이지 않는 은신 몬스터는 도감 탭이나 자동 조준의 후보가 아니다.
+  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);
+ let closest=null,cd=70;
+ if(worldPoint?.monsterId)closest=visible.find(m=>String(m.netId)===String(worldPoint.monsterId))||null;
+ // 실제 3D 화면에서는 모델을 직접 터치했을 때만 몬스터 선택. 빈 공간 지면 투영값으로 유령 몹을 고르지 않는다.
+ if(!closest&&!world3d?.isActive())for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(cd,(Number(m.type.r)||20)+22)){closest=m;cd=d}}
  if(closest){
   // 터치 즉시 기존 공격 함수로 연결한다. 창/활/마법 피해와 판정 권한은 attack() 그대로 사용.
   // 기존 활 3회 탭 조준 보너스와 몬스터 도감 두 번 탭도 보존한다.
