@@ -21,6 +21,90 @@ const server=liveBase?null:spawn('python3',['-m','http.server',String(port),'--d
 let browser;
 try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
+ // 포탈 RPG: 공식 공개판에서 포탈·3D 캐릭터·실제 터치 이동·보스 피해·구매 및 저장을 확인한다.
+ if(liveBase){
+  for(const view of [
+   {name:'portrait',width:390,height:844},
+   {name:'landscape',width:844,height:390}
+  ]){
+   const context=await browser.newContext({viewport:{width:view.width,height:view.height},isMobile:true,hasTouch:true});
+   const portal=await context.newPage(),faults=[];
+   portal.on('pageerror',e=>faults.push(e.message));
+   try{
+    const route=await portal.goto(liveBase+'web-games/portal-rpg/',{waitUntil:'domcontentloaded',timeout:30000});
+    assert.equal(route?.status(),200,'PORTAL_RPG_HTTP_'+view.name);
+    await portal.waitForFunction(()=>document.getElementById('status')?.hidden===true,null,{timeout:75000});
+    const world=portal.locator('#world');
+    const proof=await world.evaluate(c=>({
+      webgl:!!(c.getContext('webgl2')||c.getContext('webgl')),
+      pixels:c.width*c.height,portalButtons:document.querySelectorAll('#portalBar .portal').length
+    }));
+    assert.equal(proof.webgl,true,'PORTAL_RPG_NATIVE_WEBGL_'+view.name);
+    assert.ok(proof.pixels>=100000,'PORTAL_RPG_VIEWPORT_EMPTY_'+view.name);
+    assert.equal(proof.portalButtons,5,'PORTAL_RPG_PORTAL_COUNT_'+view.name);
+    await portal.locator('#new').click();
+    await portal.waitForFunction(()=>document.querySelector('#world')?.dataset.playerX!==undefined);
+    for(const id of ['joystick','attack','gear']){
+     const box=await portal.locator('#'+id).boundingBox();
+     assert.ok(box&&box.width>=44&&box.height>=44&&box.x>=0&&box.y>=0
+       &&box.x+box.width<=view.width+1&&box.y+box.height<=view.height+1,
+       'PORTAL_RPG_MOBILE_CONTROL_CLIPPED_'+view.name+'_'+id);
+    }
+    await portal.locator('#portalBar .portal').nth(4).click();
+    assert.ok(await portal.locator('#boss').isVisible(),'PORTAL_RPG_FIFTH_PORTAL_BOSS_MISSING_'+view.name);
+    assert.match(await portal.locator('#place').textContent(),/다섯 번째 사냥터/,'PORTAL_RPG_PORTAL_ENTER_FAILED');
+    const x0=Number(await world.getAttribute('data-player-x'));
+    const bounds=await portal.locator('#joystick').boundingBox();
+    const cd=await context.newCDPSession(portal);
+    try{
+     const cx=bounds.x+bounds.width/2,cy=bounds.y+bounds.height/2;
+     await cd.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx+32,y:cy-32}]});
+     await portal.waitForFunction(x=>Number(document.getElementById('world')?.dataset.playerX)>x+3,x0,{timeout:6000});
+     await portal.waitForTimeout(1900);
+    }finally{
+     await cd.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+     await cd.detach();
+    }
+    const moved=Number(await world.getAttribute('data-player-x'));
+    assert.ok(moved>x0+4,'PORTAL_RPG_TOUCH_MOVEMENT_FAILED_'+view.name+' '+JSON.stringify({x0,moved}));
+    for(let attempt=0;attempt<4;attempt++){
+     await portal.locator('#attack').click();
+     if(parseFloat(await portal.locator('#bossFill').evaluate(e=>e.style.width))<100)break;
+     await portal.waitForTimeout(490);
+    }
+    const bossHp=parseFloat(await portal.locator('#bossFill').evaluate(e=>e.style.width));
+    assert.ok(bossHp<100,'PORTAL_RPG_BOSS_HIT_NOT_WORKING_'+view.name+' bossHp='+bossHp);
+    await portal.locator('#gear').click();
+    assert.equal(await portal.locator('.equipRow').count(),14,'PORTAL_RPG_EQUIPMENT_COUNT_'+view.name);
+    await portal.locator('#closeGear').click();
+    await portal.evaluate(()=>{
+      const key='portal-rpg-v1',saved=JSON.parse(localStorage.getItem(key));
+      if(!saved||saved.portal!==4)throw Error('PORTAL_RPG_PORTAL_SAVE_MISSING');
+      saved.gold=2000;localStorage.setItem(key,JSON.stringify(saved));
+    });
+    await portal.reload({waitUntil:'domcontentloaded'});
+    await portal.waitForFunction(()=>document.getElementById('status')?.hidden===true,null,{timeout:75000});
+    await portal.locator('#resume').click();
+    assert.match(await portal.locator('#place').textContent(),/다섯 번째 사냥터/,'PORTAL_RPG_SAVE_RESTORE_FAILED_'+view.name);
+    await portal.locator('#gear').click();
+    await portal.locator('.equipRow').nth(7).locator('button').click();
+    await portal.locator('.equipRow').nth(13).locator('button').click();
+    const inventory=await portal.evaluate(()=>JSON.parse(localStorage.getItem('portal-rpg-v1')));
+    assert.equal(inventory.weapon,7,'PORTAL_RPG_WEAPON_BUY_'+view.name);
+    assert.equal(inventory.armor,5,'PORTAL_RPG_ARMOR_BUY_'+view.name);
+    assert.equal(inventory.gold,275,'PORTAL_RPG_PURCHASE_PRICE_'+view.name);
+    await portal.locator('#closeGear').click();
+    await portal.reload({waitUntil:'domcontentloaded'});
+    await portal.waitForFunction(()=>document.getElementById('status')?.hidden===true,null,{timeout:75000});
+    await portal.locator('#resume').click();
+    const persisted=await portal.evaluate(()=>JSON.parse(localStorage.getItem('portal-rpg-v1')));
+    assert.equal(persisted.weapon,7,'PORTAL_RPG_WEAPON_RELOAD_'+view.name);
+    assert.equal(persisted.armor,5,'PORTAL_RPG_ARMOR_RELOAD_'+view.name);
+    assert.deepEqual(faults,[],'PORTAL_RPG_BROWSER_EXCEPTIONS_'+view.name);
+    console.log('PORTAL_RPG_LIVE_MOBILE_SAVE_BOSS_PASS '+JSON.stringify({view:view.name,...proof,x0,moved,bossHp,gold:persisted.gold}));
+   }finally{await context.close();}
+  }
+ }
  // 푸른항해: 공개판의 실제 저장 형식으로 교전을 시작하고 GLB·포격·복귀를 검증한다.
  if(liveBase){
   for(const viewport of [{width:390,height:844},{width:844,height:390}]){

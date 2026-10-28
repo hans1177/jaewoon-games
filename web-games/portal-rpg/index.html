@@ -78,7 +78,7 @@ const ARMORS=Array.from({length:6},(_,i)=>({name:'방어구 '+(i+1),def:i*3,pric
 const $=id=>document.getElementById(id);
 const saveDefault=()=>({level:1,xp:0,gold:0,weapon:0,armor:0,weapons:[0],armors:[0],hp:100,portal:0,wins:0});
 let data=saveDefault(),ready=false,paused=true,hero=null,scene=null,camera=null,renderer=null,shadowModel=null,bossModel=null,entities=[];
-let time=performance.now(),attackAt=0,nextSave=0,dead=false,portalLoaded=0;
+let time=performance.now(),attackAt=0,nextSave=0,nextEvidence=0,dead=false,portalLoaded=0;
 const keys=Object.create(null),joy={x:0,z:0};
 let messageTimer=0;
 function clamp(x,a,b){return Math.min(b,Math.max(a,x))}
@@ -259,6 +259,15 @@ function frame(now){
       if(d<1.7&&now-e.attackTime>(e.boss?1250:1550)){e.attackTime=now;damage(e.boss?21:9+data.portal*3)}
     }
     if(now>nextSave){nextSave=now+7000;save();}
+  }
+  // 로그·검증: 실제 3D 캐릭터 이동 좌표를 과도한 저장 없이 저빈도로 노출
+  if(now>=nextEvidence){
+    nextEvidence=now+250;
+    const surface=$('world');
+    surface.dataset.playerX=hero.position.x.toFixed(2);
+    surface.dataset.playerZ=hero.position.z.toFixed(2);
+    surface.dataset.portal=String(data.portal+1);
+    surface.dataset.enemies=String(entities.filter(e=>e.alive).length);
   }
   camera.position.lerp(new THREE.Vector3(hero.position.x,17,hero.position.z+18),.13);
   camera.lookAt(hero.position.x,0,hero.position.z-2);
