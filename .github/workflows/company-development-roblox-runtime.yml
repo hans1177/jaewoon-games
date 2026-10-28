@@ -2490,9 +2490,6 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 8
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -2505,7 +2502,7 @@ jobs:
           git config user.name 'jaewoon-roblox-artifact-reconcile'
           git config user.email 'actions@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
-            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             node <<'NODE'
           const fs=require('fs');
