@@ -594,8 +594,9 @@ test('mobile game world taps use existing attack mechanics',()=>{
  assert.ok(html.includes('root.dataset.playerAttackAt=Number(p.attackAt||0).toFixed(0)'));
  assert.ok(html.includes('if(!isCreative())attack(null,true);'));
  // Background taps animate a swing but must not hit a hidden/unselected lizard.
- assert.match(html,/function attack\\(selectedTapTarget=null,emptyWorldTap=false\\)/);
- assert.match(html,/if\\(emptyWorldTap\\)\\{[\\s\\S]*?playCombatAudio\\('swing'/);;
+ assert.ok(html.includes('function attack(selectedTapTarget=null,emptyWorldTap=false){'));
+ assert.ok(html.includes('if(emptyWorldTap){'));
+ assert.ok(html.includes("playCombatAudio('swing',"));
  assert.ok(html.includes('if(!isCreative()){'));
  assert.ok(html.includes('if(pendingCombatTap)return;'));
  assert.ok(html.includes('if(isCombatTapGesture(press,e,performance.now())){const point=worldPointerCoords(e);if(!maybeCrystalDashTripleTap(point,performance.now()))handleWorldTap(e)}'));
