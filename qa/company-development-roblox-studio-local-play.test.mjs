@@ -405,6 +405,9 @@ test('central contract requires official Studio MCP for F9 and release, without 
   assert.equal(studio.optionalDiagnostic,false);
   assert.equal(studio.deploymentGate,true);
   assert.equal(studio.f9Gate,true);
+  const canonical=central.roblox?.deploymentControl?.verifiedCyclePublication||{};
+  assert.equal(canonical.studioRequiredForCanonicalPublish,true);
+  assert.equal(canonical.postBuildUpVerificationLevel,'CODE_STATIC_AND_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
