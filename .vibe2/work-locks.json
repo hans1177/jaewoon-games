@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-2ringv",
+      "worker": "vibe2",
+      "taskId": "human-go-temp-existing-web-assessment-v1",
+      "gameId": "human-go-temp",
+      "files": [
+        "web-games/human-go-temp/index.html"
+      ],
+      "baseSha": "725bc39a3e74b1124ea69af738cba78785fde348",
+      "runId": "40611069920",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-28T00:52:08.120Z",
+      "expiresAt": "2026-10-28T01:37:08.120Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:human-go-temp-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
