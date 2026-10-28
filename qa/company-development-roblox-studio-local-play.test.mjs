@@ -977,6 +977,22 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
   assert.match(helper,/stderr=\$\{detail\}/);
 });
 
+test('Studio MCP release worker requires an interactive cloud Windows desktop and signed official Roblox binaries',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_RUNNER_WINDOWS_SESSION_ID=/);
+  assert.match(studioMcpBlock,/\$runnerSessionId -le 0/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_INTERACTIVE_SESSION_REQUIRED/);
+  assert.match(studioMcpBlock,/run\.cmd in signed-in Windows desktop/);
+  assert.match(studioMcpBlock,/GetFolderPath\('ProgramFilesX86'\)/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_OFFICIAL_INSTALL_REQUIRED/);
+  assert.match(studioMcpBlock,/Get-AuthenticodeSignature -FilePath \$studio/);
+  assert.match(studioMcpBlock,/Get-AuthenticodeSignature -FilePath \$mcpExe/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_SIGNED_INSTALL=VERIFIED/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SIGNED_EXE=VERIFIED/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_OFFICIAL_SIGNATURE_REQUIRED/);
+  assert.match(studioMcpBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+});
+
 test('Windows workflow uses documented mcp.bat only when its installed text is healthy and otherwise uses official StudioMCP.exe',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   const batCheck=studioMcpBlock.indexOf("if (Test-Path $mcpBat)");
