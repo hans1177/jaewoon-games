@@ -5639,6 +5639,49 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
   assert.ok(task.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
 
+  // 이미 대기 중인 작업에도 새 실패의 실제 책임 파일을 전달해야 한다.
+  // 지시문만 수리로 바꾸고 쓰기 범위를 옛 공용 설정에 묶으면 수리가 불가능하다.
+  const queuedRepair={...task,id:gameId+'-queued-repair',status:'queued',
+    responsibleFiles:[`roblox-games/${gameId}/shared/GameConfig.luau`],
+    studioQualityEvolution:{...task.studioQualityEvolution,focusPillar:'STABILITY'},
+    buildUpDirective:{...task.buildUpDirective,primaryFocus:'STABILITY',
+      responsibleSystemsAndFiles:{...task.buildUpDirective.responsibleSystemsAndFiles,
+        files:[`roblox-games/${gameId}/shared/GameConfig.luau`]},
+      playtestRuntimeFindings:{...task.buildUpDirective.playtestRuntimeFindings,studioQualityFailure:null}}};
+  const refreshedPlan=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue:{items:[item]},
+    queue:{maxConcurrentTasks:20,tasks:[queuedRepair]},repoRoot:root,maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
+  const refreshedTask=refreshedPlan.queue.tasks.find(row=>row.id===queuedRepair.id);
+  assert.ok(refreshedTask);
+  for(const file of [`roblox-games/${gameId}/server/Game.server.luau`,`roblox-games/${gameId}/client/Game.client.luau`]){
+    assert.ok(refreshedTask.responsibleFiles.includes(file),'queued repair must be allowed to edit its diagnosed owner: '+file);
+    assert.ok(refreshedTask.buildUpDirective.responsibleSystemsAndFiles.files.includes(file));
+  }
+  assert.ok(refreshedTask.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
+  const repeatedPlan=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue:{items:[item]},
+    queue:refreshedPlan.queue,repoRoot:root,maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
+  const repeatedTask=repeatedPlan.queue.tasks.find(row=>row.id===queuedRepair.id);
+  assert.deepEqual(repeatedTask.responsibleFiles,refreshedTask.responsibleFiles,'replanning must not duplicate repair owners');
+  const runningPlan=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue:{items:[item]},
+    queue:{maxConcurrentTasks:20,tasks:[{...queuedRepair,status:'running'}]},repoRoot:root,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
+  assert.deepEqual(runningPlan.queue.tasks.find(row=>row.id===queuedRepair.id).responsibleFiles,
+    queuedRepair.responsibleFiles,'a running worker must retain its reserved file scope');
+
+  const outsideFile=path.join(root,'outside.luau');
+  fs.writeFileSync(outsideFile,'return {}\n');
+  fs.symlinkSync(outsideFile,path.join(gameRoot,'shared','Outside.luau'));
+  const linkedEvidence={...evidence,assetThreshold:{...evidence.assetThreshold,
+    familyResults:[{family:'MATERIAL',responsibleFiles:['shared/Outside.luau','server/Game.server.luau']}]}};
+  const linkedPlan=planVibe2AutonomousTasks({status:{projects:[]},catalog,
+    developmentQueue:{items:[{...item,robloxQualityBuildUpEvidence:linkedEvidence}]},
+    queue:{maxConcurrentTasks:20,tasks:[queuedRepair]},repoRoot:root,maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
+  assert.ok(!linkedPlan.queue.tasks.find(row=>row.id===queuedRepair.id).responsibleFiles.includes(
+    `roblox-games/${gameId}/shared/Outside.luau`),'repair evidence cannot widen writes through an external symlink');
+  fs.unlinkSync(path.join(gameRoot,'shared','Outside.luau'));
+
   const contractEvidence={...evidence,authority:'roblox-source-static-contract-failure',assetThreshold:undefined,
     staticContract:{pass:false,blockers:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']},
     qualityFailureKinds:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']};

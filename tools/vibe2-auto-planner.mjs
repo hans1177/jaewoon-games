@@ -2826,6 +2826,32 @@ function approvedDesignFingerprintForProject(designRecord,project,platformLane=s
     .digest('hex');
 }
 
+function robloxQualityRepairFiles(project,repoRoot){
+  if(project?.queueRobloxQualityBuildUpRequired!==true)return [];
+  const failure=project.queueRobloxQualityBuildUpEvidence;
+  let files=[];
+  if(failure?.authority==='roblox-package-asset-binding-failure'){
+    const threshold=failure.assetThreshold||{};
+    const failedFamilies=new Set((threshold.blockers||[]).map(value=>clean(value).split(':').at(-1)));
+    files=(threshold.familyResults||[]).filter(row=>failedFamilies.has(row.family))
+      .flatMap(row=>row.responsibleFiles||[]);
+  }else if(failure?.authority==='roblox-source-static-contract-failure'){
+    files=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'];
+  }
+  const root=sourceFile(repoRoot,`roblox-games/${project.gameId}`);
+  return [...new Set(files.map(posix)
+    .filter(file=>/^(?:client|server|shared)\/(?!.*(?:^|\/)\.\.(?:\/|$)).+\.(?:lua|luau)$/.test(file))
+    .map(file=>`roblox-games/${project.gameId}/${file}`)
+    .filter(file=>{
+      try{
+        const actual=fs.realpathSync(sourceFile(repoRoot,file));
+        const relative=path.relative(fs.realpathSync(root),actual);
+        return relative!==''&&!relative.startsWith('..'+path.sep)&&relative!=='..'
+          &&!path.isAbsolute(relative)&&fs.statSync(actual).isFile();
+      }catch{return false;}
+    }))];
+}
+
 function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
   if(!taskInput||!project?.gameId)return taskInput;
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
@@ -2986,20 +3012,10 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const packageAssetFailure=qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-package-asset-binding-failure';
   // 패키지 실패의 실제 책임 소스를 기존 바이브 작업 범위에 연결한다.
   // 내부 자산 원본이나 다른 게임 파일은 수리 범위로 확장하지 않는다.
-  if(packageAssetFailure){
-    const threshold=project.queueRobloxQualityBuildUpEvidence.assetThreshold||{};
-    const failedFamilies=new Set((threshold.blockers||[]).map(value=>clean(value).split(':').at(-1)));
-    const repairFiles=(threshold.familyResults||[]).filter(row=>failedFamilies.has(row.family))
-      .flatMap(row=>row.responsibleFiles||[]).map(posix)
-      .filter(file=>/^(?:client|server|shared)\/(?!.*(?:^|\/)\.\.(?:\/|$)).+\.(?:lua|luau)$/.test(file))
-      .map(file=>`roblox-games/${project.gameId}/${file}`)
-      .filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
-    taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...repairFiles])]};
-  }
-  if(qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-source-static-contract-failure'){
-    const owners=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau']
-      .map(file=>`roblox-games/${project.gameId}/${file}`).filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
-    taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...owners])]};
+  if(qualityFailure){
+    taskInput={...taskInput,responsibleFiles:[...new Set([
+      ...(taskInput.responsibleFiles||[]),...robloxQualityRepairFiles(project,repoRoot)
+    ])]};
   }
   const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure','roblox-source-static-contract-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
   const runtimeEvidence={
@@ -3789,6 +3805,21 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure}
         },project,lane));
         changed+=1;
+      }
+      // 예약 전 작업도 새 작업과 같은 실제 수리 범위를 받는다.
+      // 실행 중 작업은 위 preReserveStatuses 검사에서 제외되어 잠금을 확장하지 않는다.
+      const repairFiles=robloxQualityRepairFiles(project,repoRoot);
+      if(repairFiles.length){
+        const responsibleFiles=[...new Set([...(candidate.responsibleFiles||[]),...repairFiles])];
+        const directiveFiles=[...new Set([...(candidate.buildUpDirective.responsibleSystemsAndFiles?.files||[]),...repairFiles])];
+        if(JSON.stringify(responsibleFiles)!==JSON.stringify(candidate.responsibleFiles||[])
+          ||JSON.stringify(directiveFiles)!==JSON.stringify(candidate.buildUpDirective.responsibleSystemsAndFiles?.files||[])){
+          candidate=bindSharedBuildUpDirective({...candidate,responsibleFiles},{
+            ...candidate.buildUpDirective,
+            responsibleSystemsAndFiles:{...candidate.buildUpDirective.responsibleSystemsAndFiles,files:directiveFiles}
+          });
+          changed+=1;
+        }
       }
     }
     const candidateEvidence=(candidate?.evidence||[]).map(clean);
