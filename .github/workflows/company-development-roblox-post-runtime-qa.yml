@@ -2405,7 +2405,8 @@ jobs:
           echo "trigger_changed=$trigger_changed" >> "$GITHUB_OUTPUT"
           echo "studio_harness_changed=$studio_harness_changed" >> "$GITHUB_OUTPUT"
 
-          existing_studio_run=''
+          active_studio_jobs="$RUNNER_TEMP/roblox-active-studio-jobs.json"
+          printf '%s\n' '[]' > "$active_studio_jobs"
           if [ -z "$requested" ] && [ "$trigger_changed" != 'true' ] && [ "$studio_harness_changed" != 'true' ] && [ -z "$CANDIDATE_CONTEXT" ]; then
             payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
             printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "
@@ -2424,28 +2425,24 @@ jobs:
             " > /tmp/roblox-existing-studio-run-ids
             while read -r run_id; do
               [ -n "$run_id" ] || continue
-              studio_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.name | startswith("Official Studio MCP actual play ")) | select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress")] | length' 2>/dev/null || echo 0)"
-              if [ "$studio_jobs" != '0' ]; then
-                existing_studio_run="$run_id"
-                break
-              fi
+              jobs_file="$RUNNER_TEMP/roblox-studio-jobs-$run_id.json"
+              # A failed inventory read fails this scan; it must not authorize duplicate execution.
+              gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '.jobs[] | select(.name | startswith("Official Studio MCP actual play "))' > "$jobs_file"
+              jq -s --slurpfile existing "$active_studio_jobs" '$existing[0] + .' "$jobs_file" > "$active_studio_jobs.next"
+              mv "$active_studio_jobs.next" "$active_studio_jobs"
             done < /tmp/roblox-existing-studio-run-ids
           fi
 
           plan_output="$RUNNER_TEMP/roblox-studio-mcp-matrix.json"
-          if [ -n "$existing_studio_run" ]; then
-            printf '%s\n' '{"include":[]}' > "$plan_output"
-            echo "ROBLOX_STUDIO_GENERIC_SCAN_DEFERRED_FOR_EXISTING_STUDIO_RUN=$existing_studio_run"
-          else
-            node tools/company-development-roblox-studio-local-play.mjs \
-              --mode=plan \
-              --queue=../runtime/development-queue.json \
-              --roadmap=company-learning/platform-release-roadmap.json \
-              --repo-root=. \
-              "--game-id=$requested" \
-              "--recheck-product-failure=$RECHECK_PRODUCT_FAILURE" \
-              "--output=$plan_output"
-          fi
+          node tools/company-development-roblox-studio-local-play.mjs \
+            --mode=plan \
+            --queue=../runtime/development-queue.json \
+            --roadmap=company-learning/platform-release-roadmap.json \
+            --repo-root=. \
+            "--game-id=$requested" \
+            "--recheck-product-failure=$RECHECK_PRODUCT_FAILURE" \
+            "--active-jobs=$active_studio_jobs" \
+            "--output=$plan_output"
           PLAN_OUTPUT="$plan_output" node <<'NODE'
           const fs=require('fs');
           const plan=JSON.parse(fs.readFileSync(process.env.PLAN_OUTPUT,'utf8'));

@@ -14,6 +14,7 @@ import {
   collectStudioConsoleEntries,
   classifyStudioConsoleOutput,
   planLocalStudioCandidates,
+  filterActiveStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult,
   evaluateStudioActualPlayContract,
@@ -1134,8 +1135,8 @@ test('Studio push trigger scopes exact revalidation from the actual before-to-he
   assert.match(studioPlanBlock,/git diff --quiet "\$PUSH_BEFORE" HEAD -- roblox-games\/\.company-runtime-trigger/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_TRIGGER_CHANGED=\$trigger_changed/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_REQUESTED_GAME_ID=\$\{requested:-ALL_PENDING\}/);
-  assert.match(studioPlanBlock,/ROBLOX_STUDIO_GENERIC_SCAN_DEFERRED_FOR_EXISTING_STUDIO_RUN=/);
-  assert.match(studioPlanBlock,/existing_studio_run=''/);
+  assert.match(studioPlanBlock,/--active-jobs=\$active_studio_jobs/);
+  assert.doesNotMatch(studioPlanBlock,/GENERIC_SCAN_DEFERRED_FOR_EXISTING_STUDIO_RUN/);
   assert.match(studioPlanBlock,/CURRENT_RUN_ID="\$GITHUB_RUN_ID"/);
   assert.match(studioPlanBlock,/startswith\("Official Studio MCP actual play "\)/);
   assert.match(studioPlanBlock,/echo "trigger_changed=\$trigger_changed" >> "\$GITHUB_OUTPUT"/);
@@ -3531,4 +3532,21 @@ test('cloud Studio playtest rejects player bots, public servers and external GUI
       unsafe.developmentLifecycleMachine.robloxStudioUsage.forbidden.filter(x=>x!==forbidden);
     assert.throws(()=>validateLocalStudioPolicy(unsafe),/ROBLOX_STUDIO_MCP_POLICY_MISMATCH/);
   }
+});
+
+
+test('queued Studio game cannot starve unrelated or newer candidates',()=>{
+  const row={gameId:'a',sourceRevision:source,artifactIdentity:artifact,artifactRunId:20,versionNumber:7};
+  const other={...row,gameId:'b'};
+  const queue={items:[{gameId:'a',robloxStudioRuntimeSession:{...row,candidateVersionNumber:7,workflowRunId:10}}]};
+  const job={run_id:10,name:'Official Studio MCP actual play a',status:'queued'};
+  const select=(activeJobs,rows=[row,other])=>filterActiveStudioCandidates({matrix:{include:rows},queue,activeJobs}).include;
+  assert.deepEqual(select([job]),[other]);
+  assert.deepEqual(select([{...job,status:'in_progress'}]),[other]);
+  assert.deepEqual(select([{...job,status:'completed'}]),[row,other]);
+  assert.deepEqual(select([{...job,run_id:11}]),[row,other]);
+  const newer={...row,sourceRevision:'c'.repeat(40)};
+  assert.deepEqual(select([job],[newer,other]),[newer,other]);
+  assert.deepEqual(select([job],[{...row,artifactRunId:21}]),[{...row,artifactRunId:21}]);
+  assert.deepEqual(select([job],[{...row,versionNumber:8}]),[{...row,versionNumber:8}]);
 });
