@@ -350,8 +350,8 @@ test('Open Cloud runtime stays automatic while official Studio is mandatory for 
   assert.match(foundation,/name: Probe exact Roblox Open Cloud engine execution/);
   assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
-  assert.match(studioPlan,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
-  assert.match(studioPlan,/github\.event_name == 'push'/);
+  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
 });
 
 
