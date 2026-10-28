@@ -707,6 +707,12 @@ test('approved Roblox games including exact fantasy candidate auto-retry only du
  assert.ok(retry.includes("Number(failure.candidateVersionNumber)===Number(candidate.versionNumber)"));
  assert.ok(retry.includes("dueAt<=Date.now()"));
  assert.ok(retry.includes("startsWith('Roblox runtime foundation QA · ')"));
+ assert.match(retry,/actions\/runs\/\$run_id\/jobs\?per_page=100/);
+ assert.match(retry,/const cloudJob='existing game tester and QA validate exact Roblox runtime candidate'/);
+ assert.match(retry,/const cloudBusy=jobs\.length===0\|\|jobs\.some/);
+ assert.match(retry,/const busy=activeCloudRuns\.length>0/);
+ assert.match(retry,/ROBLOX_OPEN_CLOUD_429_RETRY_STUDIO_ONLY_RUNS_IGNORED=YES/);
+ assert.doesNotMatch(retry,/const busy=\(runs\.workflow_runs\|\|\[\]\)\.some/);
  assert.ok(retry.includes("const gameId=!busy&&eligible.length?eligible[0].gameId:''"));
  assert.ok(retry.includes("at-bt||a.gameId.localeCompare(b.gameId)"));
  assert.ok(retry.includes("gh workflow run company-development-roblox-post-runtime-qa.yml"));
