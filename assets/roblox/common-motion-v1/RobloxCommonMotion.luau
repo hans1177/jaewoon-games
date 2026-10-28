@@ -1799,7 +1799,7 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
  for name,yes in pairs(joints)do
   if yes==true and type(name)=="string" and name~="Root" and name~="HumanoidRootPart" then count+=1 end
  end
- if count<2 then return targets,false end
+ if count<(form=="PROP" and 1 or 2) then return targets,false end
  local t=bounded(phase,0,1,0)
  local cyc=t*math.pi*2
  local locomotion=mode=="WALK"or mode=="RUN"or mode=="FLY"
@@ -1893,7 +1893,7 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
    table.insert(byParent[owner],joint)
   end
  end
- assert(#motors>=2,"REAL_ANIMATED_JOINTS_REQUIRED")
+ assert(#motors>=(plan=="PROP" and 1 or 2),"REAL_ANIMATED_JOINTS_REQUIRED")
  -- A source-created clip must animate at least one approved real joint, not merely
  -- contain neutral poses when the selected body plan and rig do not match.
  local probeOptions={availableJoints=names,bodyPlan=plan,intensity=options.intensity,
