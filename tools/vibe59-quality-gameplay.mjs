@@ -103,6 +103,10 @@ function grounded(spec,{source,sourcePath,replaceAnchor}){
  const between=body.slice(matches[0][0].length);
  if(/(?:^|\n)(?:local\s+)?function\s+[A-Za-z_]\w*\s*\(/.test(between))
   throw Error('VIBE59_QUALITY_AMBIGUOUS_FUNCTION');
+ // Fail closed if a standalone end could have closed the owner function.
+ // Put this explicit insert slot before nested Luau blocks, after existing bindings.
+ if(/(?:^|\n)[ \t]*end[ \t]*(?:;)?[ \t]*(?=\n|$)/.test(between))
+  throw Error('VIBE59_QUALITY_FUNCTION_SCOPE_UNPROVEN');
 }
 function validate(spec){
  if(!spec||typeof spec!=='object'||Array.isArray(spec))throw Error('VIBE59_QUALITY_SPEC');
@@ -172,9 +176,10 @@ function qualitySource(s){
   'if typeof(target) ~= "Instance" or not target:IsA("Model") or not target:IsDescendantOf(workspace) then return false end',
   'local character = player.Character',
   'local attackerRoot = character and character:FindFirstChild("HumanoidRootPart")',
+  'local attackerHumanoid = character and character:FindFirstChildOfClass("Humanoid")',
   'local targetRoot = target:FindFirstChild("HumanoidRootPart")',
   'local targetHumanoid = target:FindFirstChildOfClass("Humanoid")',
-  'if not attackerRoot or not attackerRoot:IsA("BasePart") or not targetRoot or not targetRoot:IsA("BasePart") or not targetHumanoid or targetHumanoid.Health <= 0 then return false end',
+  'if not attackerHumanoid or attackerHumanoid.Health <= 0 or not attackerRoot or not attackerRoot:IsA("BasePart") or not targetRoot or not targetRoot:IsA("BasePart") or not targetHumanoid or targetHumanoid.Health <= 0 then return false end',
   'if (attackerRoot.Position - targetRoot.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
   'local now = os.clock()',
   'if now - state.combat.lastAttackAt < '+nLiteral(s.cooldown)+' then return false end',
@@ -193,6 +198,7 @@ function qualitySource(s){
   'local root = character and character:FindFirstChild("HumanoidRootPart")',
   'if not root or not root:IsA("BasePart") or (root.Position - placementCFrame.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
   'local built = template:Clone()',
+  'if not built then return false end',
   'built:PivotTo(placementCFrame)',
   'local boundsCFrame, boundsSize = built:GetBoundingBox()',
   'local overlap = OverlapParams.new()',
@@ -257,7 +263,8 @@ function qualitySource(s){
   'local humanoid = npc:FindFirstChildOfClass("Humanoid")',
   'local root = npc:FindFirstChild("HumanoidRootPart")',
   'local targetRoot = target:FindFirstChild("HumanoidRootPart")',
-  'if not humanoid or humanoid.Health <= 0 or not root or not root:IsA("BasePart") or not targetRoot or not targetRoot:IsA("BasePart") then return false end',
+  'local targetHumanoid = target:FindFirstChildOfClass("Humanoid")',
+  'if not humanoid or humanoid.Health <= 0 or not targetHumanoid or targetHumanoid.Health <= 0 or not root or not root:IsA("BasePart") or not targetRoot or not targetRoot:IsA("BasePart") then return false end',
   'if (targetRoot.Position - root.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
   'local now = os.clock()',
   'if now - state.ai.lastMoveAt < '+nLiteral(s.interval)+' then return false end',
