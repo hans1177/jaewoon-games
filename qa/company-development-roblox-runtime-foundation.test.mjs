@@ -1036,11 +1036,12 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.doesNotMatch(workflow,/candidates\.slice\(0,4\)/);
   assert.doesNotMatch(workflow,/const throttlePressure=candidates\.some\(item=>/);
-  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
-  assert.match(workflow,/ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE/);
+  assert.match(workflow,/const probeConcurrency=1;/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_PARALLEL_MODE=SERIAL_OWNER_QUOTA_GUARD/);
   assert.match(workflow,/await Promise\.all\(Array\.from\(\{length:probeConcurrency\},\(\)=>runProbeWorker\(\)\)\)/);
   assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map\(async item=>/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT=/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_OWNER_CAPACITY_COOLDOWN_MS=180000/);
 });
 
 
@@ -1361,7 +1362,7 @@ test('Open Cloud world interaction markers absent never become a fabricated game
   assert.equal(result.worldEvidence.worldObjectBinding.gameplayInteractionVerified,false);
 });
 
-test('Open Cloud requested game is isolated while empty game_id keeps bounded cross-game parallel batch scanning',()=>{
+test('Open Cloud exact-game selection respects the owner's single-task capacity',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   const probeStart=workflow.indexOf("const candidates=(q.items||[]).filter(item=>{",workflow.indexOf('Probe exact Roblox Open Cloud engine execution'));
   const probeEnd=workflow.indexOf("fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json'",probeStart);
@@ -1374,7 +1375,7 @@ test('Open Cloud requested game is isolated while empty game_id keeps bounded cr
   assert.match(probeBlock,/if\(requested&&item\.gameId!==requested\)return false/);
   assert.match(persistBlock,/if\(requested&&item\.gameId!==requested\)return false/);
   assert.match(probeBlock,/retryOpenCloudOnly&&requested&&item\.gameId===requested/);
-  assert.match(probeBlock,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
+  assert.match(probeBlock,/const probeConcurrency=1;/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_REQUESTED_SCOPE=.*EXACT_GAME_ONLY.*ALL_PENDING_PARALLEL_BATCH/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_SCOPE=.*EXACT_GAME_ONLY.*ALL_PENDING_PARALLEL_BATCH/);
   assert.match(workflow,/if\(sharedRotationEnabled&&!requested\)\{/);
