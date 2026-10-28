@@ -2067,7 +2067,7 @@ export class McpStdioClient{
     for(const tool of listed?.tools||[])this.tools.set(clean(tool?.name),tool);
     return listed?.tools||[];
   }
-  async waitForTools(requiredNames=[],{attempts=24,delayMs=1500}={}){
+  async waitForTools(requiredNames=[],{attempts=24,delayMs=1500,fastFailOnProviderTimeout=false}={}){
     const required=[...new Set((requiredNames||[]).map(clean).filter(Boolean))];
     let names=[];
     for(let attempt=1;attempt<=Math.max(1,Number(attempts)||1);attempt++){
@@ -2079,6 +2079,15 @@ export class McpStdioClient{
         return names;
       }
       console.log('ROBLOX_STUDIO_MCP_TOOLS_WAIT='+attempt+':missing='+missing.join(',')+':available='+names.sort().join(','));
+      // On disposable hosted Windows, the official proxy can initialize with no
+      // authenticated Studio tool provider. Two provider timeouts are sufficient
+      // to diagnose the infrastructure blocker without dozens of duplicate polls.
+      // Other MCP clients retain their full retry budget; never infer connectivity.
+      if(fastFailOnProviderTimeout&&attempt>=2&&names.length===0
+        &&/timed out waiting for tools to become available/i.test(String(this.stderrTail||''))){
+        console.warn('ROBLOX_STUDIO_MCP_PROVIDER_TIMEOUT_FAST_FAIL_AFTER_ATTEMPT='+attempt);
+        break;
+      }
       if(attempt<Math.max(1,Number(attempts)||1))await wait(Math.max(100,Number(delayMs)||1500));
     }
     const missing=required.filter(name=>!this.tools.has(name));

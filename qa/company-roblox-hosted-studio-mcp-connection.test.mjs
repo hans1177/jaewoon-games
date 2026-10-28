@@ -8,6 +8,7 @@ import {
   hostedConnectionIsVerified,hostedCloudRecoveryAction,runHostedStudioMcpProbe,validateOfficialMcpPath,
   classifyHostedStudioMcpFailure
 } from '../tools/company-roblox-hosted-studio-mcp-connection.mjs';
+import {McpStdioClient} from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const ready={
   studioInstalled:true,mcpLauncherAvailable:true,studioRunning:true,
@@ -49,8 +50,58 @@ test('cloud MCP timeout stays blocked and identifies persistent authenticated cl
   }
   assert.equal(hostedCloudRecoveryAction(ready),'NONE');
   const probe=fs.readFileSync('tools/company-roblox-hosted-studio-mcp-connection.mjs','utf8');
-  assert.match(probe,/waitForTools\(HOSTED_MCP_REQUIRED_TOOLS,\{attempts:4,delayMs:1500\}\)/);
+  assert.match(probe,/waitForTools\(HOSTED_MCP_REQUIRED_TOOLS,\{attempts:4,delayMs:1500,fastFailOnProviderTimeout:true\}\)/);
   assert.doesNotMatch(probe,/attempts:12,delayMs:1500/);
+});
+
+
+test('hosted MCP diagnostic stops repeated provider timeouts without reporting connection',async()=>{
+  let refreshes=0;
+  const mock={
+    tools:new Map(),
+    stderrTail:'WARN studio_mcp_proxy: Timed out waiting for tools to become available',
+    protocolVersion:'2024-11-05',serverInfo:{name:'studio-mcp-proxy'},
+    async refreshTools(){refreshes++;return [];}
+  };
+  await assert.rejects(
+    ()=>McpStdioClient.prototype.waitForTools.call(mock,HOSTED_MCP_REQUIRED_TOOLS,{
+      attempts:4,delayMs:100,fastFailOnProviderTimeout:true
+    }),
+    /stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT/
+  );
+  assert.equal(refreshes,2,'Do not keep querying an unavailable hosted tool provider');
+  assert.equal(classifyHostedStudioMcpFailure(new Error('stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT')),
+    'OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT');
+});
+test('other MCP callers keep their retry budget and a provider that recovers remains eligible',async()=>{
+  let calls=0;
+  const unavailable={
+    tools:new Map(),stderrTail:'Timed out waiting for tools to become available',
+    protocolVersion:'2024-11-05',serverInfo:{},
+    async refreshTools(){calls++;return [];}
+  };
+  await assert.rejects(
+    ()=>McpStdioClient.prototype.waitForTools.call(unavailable,['execute_luau'],{
+      attempts:3,delayMs:100
+    }),
+    /ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/
+  );
+  assert.equal(calls,3,'Default interactive Studio retry attempts must remain unchanged');
+
+  let recovered=0;
+  const delayed={
+    tools:new Map(),stderrTail:'Timed out waiting for tools to become available',
+    protocolVersion:'2024-11-05',serverInfo:{},
+    async refreshTools(){
+      recovered++;
+      if(recovered===2)this.tools.set('execute_luau',{name:'execute_luau'});
+      return [...this.tools.values()];
+    }
+  };
+  assert.deepEqual(await McpStdioClient.prototype.waitForTools.call(delayed,['execute_luau'],{
+    attempts:4,delayMs:100,fastFailOnProviderTimeout:true
+  }),['execute_luau']);
+  assert.equal(recovered,2,'A registering provider should not be marked unavailable');
 });
 
 test('provider hint takes precedence over generic timeout in cloud Studio MCP',()=>{

@@ -121,7 +121,7 @@ export async function runHostedStudioMcpProbe({
       // stdio server initializes. Re-query the provider before declaring it
       // unavailable, but never fabricate readiness when no Studio Place exists.
       try{
-        await client.waitForTools(HOSTED_MCP_REQUIRED_TOOLS,{attempts:4,delayMs:1500});
+        await client.waitForTools(HOSTED_MCP_REQUIRED_TOOLS,{attempts:4,delayMs:1500,fastFailOnProviderTimeout:true});
         state.requiredToolsReady=true;
       }catch(error){
         state.errorCode=classifyHostedStudioMcpFailure(error);
