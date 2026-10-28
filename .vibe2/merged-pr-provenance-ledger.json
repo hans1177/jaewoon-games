@@ -117758,11 +117758,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8817a39c8b92e3b9ae4610e8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10886",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "f78ebfca0482b616393d09cb7494a1795302d928",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10886,
+        "baseBranch": "main",
+        "headBranch": "fix/roblox-fantasy-429-automatic-resume-20261028",
+        "baseSha": "f78ebfca0482b616393d09cb7494a1795302d928",
+        "headSha": "3b0bc70349cd7812e7c87f366ce3c2a9aa4fc111",
+        "mergeCommitSha": "85dc19159ad0cb03ea6dc498a83e57f42b210e12",
+        "mergedAt": "2026-10-28T05:27:14Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3d6a4559fadfb851c0353e0418f1e7a2f7aded5f3fb278548310cf337ae913e5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/roblox-fantasy-429-automatic-resume-20261028",
+        "candidateSha": "3b0bc70349cd7812e7c87f366ce3c2a9aa4fc111"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 318,
+        "deletedLineCount": 127,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          "assets/homepage-covers/portal-rpg-roblox.svg",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-release-promotion.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          "assets/homepage-covers/portal-rpg-roblox.svg",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-release-promotion.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10886",
+        "merge-commit:85dc19159ad0cb03ea6dc498a83e57f42b210e12",
+        "base-main:f78ebfca0482b616393d09cb7494a1795302d928"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 928
+    "total": 929
   }
 }
