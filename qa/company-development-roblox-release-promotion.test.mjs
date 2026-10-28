@@ -684,7 +684,7 @@ test('CC0 registered models receive per-target Universe grants only after exact 
  assert.ok(restart>actualPublish,'subsequent F0 must remain behind exact post-publish QA');
 });
 
-test('four owner-selected Roblox games auto-retry only due exact private 429 QA without republishing',()=>{
+test('approved Roblox games including exact fantasy candidate auto-retry only due private 429 QA without republishing',()=>{
  const head=workflow.slice(0,workflow.indexOf('\n'+'jobs:\n'));
  assert.ok(head.includes("cron: '17 2 * * *'"));
  assert.ok(head.includes("cron: '*/10 * * * *'"));
@@ -694,7 +694,9 @@ test('four owner-selected Roblox games auto-retry only due exact private 429 QA 
  const retry=workflow.slice(start,end);
  assert.ok(retry.includes('runs-on: ubuntu-slim'));
  assert.ok(retry.includes("github.event.schedule == '*/10 * * * *'"));
- assert.ok(retry.includes("new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg'])"));
+ assert.ok(retry.includes("new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg','fantasy-survival'])"));
+ assert.ok(retry.includes('[[ "$GAME_ID" =~ ^(cozy-island|horror-escape-room|baeksu-war|daechung-rpg|fantasy-survival)$ ]]'));
+ assert.ok(retry.includes('Number(failure.candidateVersionNumber)===Number(candidate.versionNumber)'));
  assert.ok(retry.includes("item.robloxFoundationF0Passed===true"));
  assert.ok(retry.includes("candidate.published===true&&candidate.validationOnly===true"));
  assert.ok(retry.includes("failure.authority==='roblox-open-cloud-engine-probe-failure'"));

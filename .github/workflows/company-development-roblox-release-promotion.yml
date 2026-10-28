@@ -85,7 +85,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('/tmp/roblox-current-runtime-queue.json','utf8'));
-          const allowed=new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg']);
+          const allowed=new Set(['cozy-island','horror-escape-room','baeksu-war','daechung-rpg','fantasy-survival']);
           const runs=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-runs.json','utf8'));
           const active=new Set(['queued','pending','in_progress','requested','waiting']);
           // Roblox's quota is shared: never start a second Luau task while any
@@ -131,7 +131,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$GAME_ID" =~ ^(cozy-island|horror-escape-room|baeksu-war|daechung-rpg)$ ]]
+          [[ "$GAME_ID" =~ ^(cozy-island|horror-escape-room|baeksu-war|daechung-rpg|fantasy-survival)$ ]]
           gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" -f retry_open_cloud_only=true
           echo "ROBLOX_OPEN_CLOUD_429_RETRY_DISPATCHED=$GAME_ID"
 
