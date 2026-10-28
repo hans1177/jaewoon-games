@@ -1367,6 +1367,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Some existing owner games publish exact packages without a launch-mvp.json.
+          # Do not invent title/description or report a Roblox metadata write for them.
+          if ! git cat-file -e "$SOURCE_REVISION:$SOURCE_ROOT/launch-mvp.json" 2>/dev/null; then
+            git cat-file -e "$SOURCE_REVISION^{commit}"
+            echo "ROBLOX_METADATA_SOURCE=NOT_DECLARED:$SOURCE_ROOT/launch-mvp.json"
+            echo 'ROBLOX_EXPERIENCE_METADATA_UPDATE=NOT_APPLICABLE_NO_DECLARED_METADATA'
+            exit 0
+          fi
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
