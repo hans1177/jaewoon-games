@@ -84,6 +84,9 @@ on:
       - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
       - 'tools/company-development-roblox-studio-local-play.mjs'
       - 'qa/company-development-roblox-studio-local-play.test.mjs'
+      - '.github/workflows/company-roblox-hosted-studio-mcp-connect.yml'
+      - 'tools/company-roblox-hosted-studio-mcp-connection.mjs'
+      - 'qa/company-roblox-hosted-studio-mcp-connection.test.mjs'
       - 'qa/company-development-roblox-post-runtime-qa.test.mjs'
       - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'qa/company-development-roblox-release-promotion.test.mjs'
@@ -163,6 +166,9 @@ on:
       - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
       - 'tools/company-development-roblox-studio-local-play.mjs'
       - 'qa/company-development-roblox-studio-local-play.test.mjs'
+      - '.github/workflows/company-roblox-hosted-studio-mcp-connect.yml'
+      - 'tools/company-roblox-hosted-studio-mcp-connection.mjs'
+      - 'qa/company-roblox-hosted-studio-mcp-connection.test.mjs'
       - 'qa/company-development-roblox-post-runtime-qa.test.mjs'
       - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'qa/company-development-roblox-release-promotion.test.mjs'
@@ -333,6 +339,8 @@ jobs:
           node --check tools/company-build-up-directive.mjs
           node --check tools/company-roblox-holistic-quality-buildup.mjs
           node --test qa/company-roblox-holistic-quality-buildup.test.mjs
+          node --check tools/company-roblox-hosted-studio-mcp-connection.mjs
+          node --test qa/company-roblox-hosted-studio-mcp-connection.test.mjs
           node --check tools/company-development-unity-evidence.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
