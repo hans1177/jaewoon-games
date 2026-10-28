@@ -4214,8 +4214,17 @@ function firePlayerArrow(now,p,w,arrow){
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2')multiSend('player-arrow',{ownerId:multiplayer.playerId,area:state.area,x:p.x,y:p.y,faceX:dirX,faceY:dirY,bowId:w.id,arrowId:arrow.id,targetId:aimed?aimTarget.netId:null});else state.projectiles.push(projectile);
  state.dirty=true;updateHud();saveGame(false)
 }
-function attack(selectedTapTarget=null){
- const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+function attack(selectedTapTarget=null,emptyWorldTap=false){
+ const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(!emptyWorldTap&&petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+ // 빈 땅 터치는 무기 휘두르기만 재생한다. 숨은 몬스터나 멀리 있는
+ // 몬스터를 화면 바깥에서 자동 조준·처치하거나 멀티 피해로 보내지 않는다.
+ // 공격 버튼과 실제 몬스터 터치, 기존 자동 전투는 그대로 유효 판정을 사용한다.
+ if(emptyWorldTap){
+  p.attackAt=now;p.attackFx=now+150;
+  playGameSfx('playerAttack');
+  playCombatAudio('swing',Math.max(0,Math.min(1,(Number(w?.power)||0)/180)));
+  state.dirty=true;updateHud();return
+ }
  // 무기 기술과 자동 전투는 같은 유효 표적에 조준하고 실제 공격 판정은 아래 기존 흐름을 쓴다.
  const aimed=selectedTapTarget||state.enemies.find(e=>e.netId===state.combat?.targetId);
  if(aimed&&aimed.hp>0&&aimed.area===state.area){const dx=aimed.x-p.x,dy=aimed.y-p.y,d=Math.hypot(dx,dy);if(d<=currentRange()+(Number(aimed.type.r)||0)){p.faceX=dx/(d||1);p.faceY=dy/(d||1)}}
@@ -4953,7 +4962,7 @@ function handleWorldTap(e){
    }
  }
  lastWorldTap={target:null,at:0};
- if(!isCreative())attack();
+ if(!isCreative())attack(null,true);
 }
 function monsterTargetForIronSpirit(e){
   let best=null,bestD=e.type.detect||860;
