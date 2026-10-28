@@ -230,6 +230,23 @@ jobs:
           Write-Host "ROBLOX_HOSTED_WINDOWS_CONNECTION_RESULT=$($report.status)"
           Write-Host 'ROBLOX_HOSTED_WINDOWS_RUNNER=EPHEMERAL_NO_CREDENTIALS_PERSISTED'
           Write-Host 'ROBLOX_HOSTED_WINDOWS_ACTUAL_PLAY=NOT_EXECUTED'
+          # Diagnostic workflow success is not an authenticated Studio or gameplay PASS.
+          $summary=@(
+            '## Hosted Windows Studio MCP diagnostic — not gameplay certification',
+            '',
+            ('**Official Studio MCP status:** ' + [string]$report.status),
+            '**Actual gameplay:** NOT_EXECUTED',
+            '**F9 / canonical deployment approved:** NO',
+            '',
+            'A GitHub-hosted runner cannot retain an authenticated interactive Studio desktop.',
+            'Connect a persistent Windows runner labeled roblox-studio-authenticated,',
+            'sign in to Studio and enable Studio as an MCP server in Assistant.',
+            '',
+            ('[Cloud Windows runner setup](https://github.com/' + $env:GITHUB_REPOSITORY + '/blob/main/docs/roblox-studio-mcp-cloud-runner.md)'),
+            ('[Register authenticated runner](https://github.com/' + $env:GITHUB_REPOSITORY + '/settings/actions/runners)')
+          )
+          Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Value ($summary -join [Environment]::NewLine) -Encoding utf8
+          Write-Host 'ROBLOX_HOSTED_WINDOWS_DEPLOYMENT_READY=NO'
       - name: Upload diagnostic only (never a Studio or actual-play PASS)
         if: always()
         uses: actions/upload-artifact@v4
