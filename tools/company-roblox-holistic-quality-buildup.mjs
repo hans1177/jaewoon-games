@@ -416,8 +416,17 @@ export function buildRobloxHolisticQualityPlan({
     }
   });
 }
-export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10){
+export function robloxHolisticQualityPromptLines(plan={},maxFamilies=10,compact=false){
   if(!plan?.gameId)return [];
+  // For high-volume authored content, never repeat 125 acceptance descriptions
+  // inside the already-large directive prompt. The complete check definitions
+  // remain in d.robloxHolisticQualityPlan for the existing source worker.
+  if(compact)return [
+    'ROBLOX_HOLISTIC_QUALITY_BUILD_UP: game='+plan.gameId+' sourceOnly=true COMPACT_VOLUME_INDEX; full evidence-specific source/asset plan in robloxHolisticQualityPlan.',
+    'DETAILED_QUALITY_CHECKS: total='+plan.detailedCheckCounts?.total+' motionActionRig='+plan.detailedCheckCounts?.motionActionRig+' executed=0; source edits are NOT runtime PASS.',
+    'MOTION_ACTION_BUILD_UP: real rig/Animator motion, anticipation-impact-recovery, hit/death, synced input/VFX/SFX, mobile LOD; only approved game-specific actor classes.',
+    'QUALITY_PROOF_RULE: only exact source runtime and licensed asset evidence; Studio / real device execution remains unverified until actually observed.'
+  ];
   const top=(plan.priorityWork||[]).slice(0,Math.max(1,Math.min(16,Number(maxFamilies)||10)));
   const states=(plan.motion?.states||[]).filter(row=>row.sourceMentioned!==true).map(row=>row.id);
   const targetFamilies=new Set(top.map(row=>row.id));
