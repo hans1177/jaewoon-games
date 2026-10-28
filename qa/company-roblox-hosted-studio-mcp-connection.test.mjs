@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   HOSTED_MCP_REQUIRED_TOOLS,evaluateHostedStudioMcpConnection,
-  hostedConnectionIsVerified,runHostedStudioMcpProbe
+  hostedConnectionIsVerified,runHostedStudioMcpProbe,validateOfficialMcpPath
 } from '../tools/company-roblox-hosted-studio-mcp-connection.mjs';
 
 const ready={
@@ -80,6 +80,23 @@ test('an existing authenticated process without documented official launcher sta
     assert.equal(state.studioCount,0);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
+test('the Roblox-signed MCP executable must accompany the official Studio binary',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'official-studio-mcp-allowed-'));
+  try{
+    const dir=path.join(temp,'alternate-studio-version');
+    fs.mkdirSync(dir,{recursive:true});
+    const exe=path.join(dir,'StudioMCP.exe');
+    const studio=path.join(dir,'RobloxStudioBeta.exe');
+    fs.writeFileSync(exe,'fake-exe-for-path-logic-only');
+    assert.equal(validateOfficialMcpPath(exe,temp,true),false);
+    fs.writeFileSync(studio,'fake-studio-for-path-logic-only');
+    assert.equal(validateOfficialMcpPath(exe,temp,false),false);
+    assert.equal(validateOfficialMcpPath(exe,temp,true),true);
+    assert.equal(validateOfficialMcpPath(path.join(dir,'arbitrary-tool.exe'),temp,true),false);
+    assert.equal(validateOfficialMcpPath(path.join(temp,'Roblox','mcp.bat'),temp,false),true);
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
 test('the workflow is diagnostic and cannot silently replace the disabled real-play lane',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-hosted-studio-mcp-connect.yml','utf8');
   const live=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
