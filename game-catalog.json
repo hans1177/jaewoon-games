@@ -1,6 +1,6 @@
 {
   "version": 33,
-  "updatedAt": "2026-10-27",
+  "updatedAt": "2026-10-28",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -11305,6 +11305,122 @@
       "webPublishedSourceTreeSha": "5aec9e0d823e892f64c5ecb3d7d3a7977c0af8f3",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
+    },
+    {
+      "id": "portal-rpg",
+      "name": "포탈 RPG",
+      "description": "다섯 개 포탈 사냥터, 무기 8종, 방어구 6종, 다섯 번째 사냥터 중앙의 계윤찬 보스",
+      "genre": [
+        "RPG"
+      ],
+      "image": "",
+      "webPath": "web-games/portal-rpg",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_DIRECT_GAME_SOURCE",
+      "homepageCategory": "design-only",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/portal-rpg/index.html",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "WEB",
+        "platformLabel": "웹",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "genre": [
+          "RPG"
+        ],
+        "genreLabel": "RPG",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "신규 게임 소스 개발",
+        "updatedAt": "2026-10-28T05:00:00Z",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
+      },
+      "selectedPlatform": "WEB",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 50,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "portal-rpg",
+          "name": "포탈 RPG",
+          "description": "다섯 개 포탈 사냥터, 무기 8종, 방어구 6종, 다섯 번째 사냥터 중앙의 계윤찬 보스",
+          "genres": [
+            "RPG"
+          ],
+          "image": "",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "",
+          "source": "PENDING"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DESIGN_ONLY",
+          "classSource": "OWNER_DIRECT_GAME_SOURCE",
+          "target": "WEB",
+          "selectedPlatform": "WEB",
+          "stage": "소스 개발"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/portal-rpg",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": ""
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/portal-rpg/",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "verified": false,
+            "published": false
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "design-only",
+          "displayMode": "",
+          "stage": "개발 중",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "genre": [
+              "RPG"
+            ],
+            "genreLabel": "RPG",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "신규 게임 소스 개발",
+            "updatedAt": "2026-10-28T05:00:00Z",
+            "status": "ACTIVE",
+            "productionClass": "DESIGN_ONLY"
+          }
+        }
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -11314,9 +11430,9 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 50,
-    "homepageInfo": 50,
-    "normalizedGames": 50,
+    "canonicalGames": 51,
+    "homepageInfo": 51,
+    "normalizedGames": 51,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0
