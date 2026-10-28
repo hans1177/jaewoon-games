@@ -100,7 +100,7 @@ test('the Roblox-signed MCP executable must accompany the official Studio binary
 test('the workflow is diagnostic and cannot silently replace the disabled real-play lane',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-hosted-studio-mcp-connect.yml','utf8');
   const live=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  const install=fs.readFileSync('tools/company-roblox-hosted-studio-mcp-connection.ps1','utf8');
+  const install=workflow;
   assert.match(workflow,/runs-on: windows-latest/);
   assert.match(workflow,/contents: read/);
   assert.match(workflow,/official-studio-mcp-hosted-windows-diagnostic/);
@@ -110,11 +110,14 @@ test('the workflow is diagnostic and cannot silently replace the disabled real-p
   assert.match(install,/https:\/\/setup\.rbxcdn\.com\/RobloxStudioInstaller\.exe/);
   assert.match(install,/Get-AuthenticodeSignature/);
   assert.match(install,/StudioMCP\.exe/);
+  assert.ok(!fs.existsSync('tools/company-roblox-hosted-studio-mcp-connection.ps1'),'unreviewed standalone executable forbidden');
   assert.match(install,/SIGNED_OFFICIAL_STUDIOMCP_EXE/);
   const connector=fs.readFileSync('tools/company-roblox-hosted-studio-mcp-connection.mjs','utf8');
   assert.match(connector,/trustedMcpExe/);
   assert.match(connector,/command:useOfficialExe\?mcpCommand:'cmd\.exe'/);
   assert.match(install,/Roblox Corporation/);
   assert.match(install,/Start-Process -FilePath \$studio\.FullName/);
+  assert.match(install,/Get-AuthenticodeSignature/);
+  assert.match(install,/OutputPath=Join-Path/);
   assert.doesNotMatch(install,/\.ROBLOSECURITY|Set-Content.*AssistantSettings|roblox-player|--headless/i);
 });
