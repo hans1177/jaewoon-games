@@ -22,7 +22,7 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
-          $expectedRunnerName = 'roblox-studio-local'
+          $expectedRunnerName = 'roblox-studio-' + $env:COMPUTERNAME
 
           function Get-RunnerMetadata([string]$root) {
             if (-not $root) { return $null }
@@ -34,8 +34,11 @@ jobs:
           function Test-RunnerRoot([string]$root) {
             if (-not $root) { return $false }
             if (-not (Test-Path -LiteralPath (Join-Path $root 'bin\Runner.Listener.exe'))) { return $false }
+            if (-not (Test-Path -LiteralPath (Join-Path $root 'run.cmd'))) { return $false }
+            if (-not (Test-Path -LiteralPath (Join-Path $root '.credentials'))) { return $false }
             $metadata = Get-RunnerMetadata $root
-            return $metadata -and [string]$metadata.agentName -eq $expectedRunnerName
+            return $metadata -and [string]$metadata.agentName -eq $expectedRunnerName -and
+              [string]$metadata.gitHubUrl -eq 'https://github.com/hans1177/jaewoon-games'
           }
 
           function Resolve-RobloxRunnerRoot {
@@ -71,6 +74,12 @@ jobs:
               }
             }
 
+            # The owner registered the authenticated Studio runner in the
+            # signed-in Windows profile, not in C:\actions-runner*.
+            # Exact known paths are considered only after .runner, .credentials,
+            # repository binding and the expected machine-specific name pass.
+            Add-Candidate (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner')
+            Add-Candidate (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner2')
             $patterns = @(
               'C:\actions-runner*','C:\github-actions-runner*',
               'D:\actions-runner*','D:\github-actions-runner*',
@@ -118,23 +127,42 @@ jobs:
           Write-Host "ROBLOX_RUNNER_ROOT=$runnerRoot"
           Write-Host 'ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA'
 
+          $hostSessionId = [int](Get-Process -Id $PID).SessionId
+          Write-Host "ROBLOX_RUNNER_RECOVERY_HOST_SESSION=$hostSessionId"
           $listener = @(Get-TargetListener $runnerRoot)
-          if ($listener.Count -eq 0) {
-            $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-            $startInfo.FileName = $listenerExe
-            $startInfo.Arguments = 'run'
-            $startInfo.WorkingDirectory = $runnerRoot
-            $startInfo.UseShellExecute = $false
-            $startInfo.CreateNoWindow = $true
-            $startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
-            $process = New-Object System.Diagnostics.Process
-            $process.StartInfo = $startInfo
-            [void]$process.Start()
-            Start-Sleep -Seconds 5
-            $listener = @(Get-TargetListener $runnerRoot)
+          if ($listener.Count -gt 0) {
+            $validListener = @($listener | Where-Object {
+              (Get-Process -Id ([int]$_.ProcessId) -ErrorAction SilentlyContinue).SessionId -eq $hostSessionId
+            })
+            if ($hostSessionId -le 0 -or $validListener.Count -eq 0) {
+              Write-Host 'ROBLOX_RUNNER_RECOVERY=EXISTING_LISTENER_WRONG_SESSION_PRESERVED'
+              exit 0
+            }
+            Write-Host "ROBLOX_RUNNER_RECOVERY=EXISTING_INTERACTIVE_LISTENER:$($validListener[0].ProcessId)"
+            exit 0
           }
-          if ($listener.Count -eq 0) { throw 'ROBLOX_RUNNER_LISTENER_NOT_RECOVERED' }
-          Write-Host "ROBLOX_RUNNER_RECOVERY=HIDDEN_LOGON_LISTENER_RUNNING:$($listener[0].ProcessId)"
+          # GitHub runners running as Windows services belong to session 0.
+          # Never start Studio's runner there: it cannot perform real input or captures.
+          if ($hostSessionId -le 0) {
+            Write-Host 'ROBLOX_RUNNER_RECOVERY=BLOCKED_SERVICE_SESSION_NO_INTERACTIVE_DESKTOP'
+            Write-Host 'ROBLOX_RUNNER_RECOVERY_NEXT=USE_REGISTERED_WINDOWS_LOGON_STARTUP'
+            exit 0
+          }
+          $console = (Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue).UserName
+          $identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+          if (-not $console -or $identity -ine $console) {
+            Write-Host 'ROBLOX_RUNNER_RECOVERY=BLOCKED_DIFFERENT_WINDOWS_USER'
+            exit 0
+          }
+          # Reuse the official, registered runner; never create new credentials.
+          # The existing run.cmd launches in exactly the same interactive session.
+          Start-Process -FilePath $env:ComSpec -ArgumentList @('/d','/c','run.cmd') -WorkingDirectory $runnerRoot -WindowStyle Hidden | Out-Null
+          Start-Sleep -Seconds 6
+          $listener = @(Get-TargetListener $runnerRoot | Where-Object {
+            (Get-Process -Id ([int]$_.ProcessId) -ErrorAction SilentlyContinue).SessionId -eq $hostSessionId
+          })
+          if ($listener.Count -eq 0) { throw 'ROBLOX_RUNNER_LISTENER_NOT_RECOVERED_IN_INTERACTIVE_SESSION' }
+          Write-Host "ROBLOX_RUNNER_RECOVERY=INTERACTIVE_LOGON_LISTENER_RUNNING:$($listener[0].ProcessId)"
           Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
 
   bootstrap:
@@ -146,7 +174,7 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
-          $expectedRunnerName = 'roblox-studio-local'
+          $expectedRunnerName = 'roblox-studio-' + $env:COMPUTERNAME
 
           function Get-RunnerMetadata([string]$root) {
             if (-not $root) { return $null }
@@ -158,12 +186,21 @@ jobs:
           function Test-RunnerRoot([string]$root) {
             if (-not $root) { return $false }
             if (-not (Test-Path -LiteralPath (Join-Path $root 'bin\Runner.Listener.exe'))) { return $false }
+            if (-not (Test-Path -LiteralPath (Join-Path $root 'run.cmd'))) { return $false }
+            if (-not (Test-Path -LiteralPath (Join-Path $root '.credentials'))) { return $false }
             $metadata = Get-RunnerMetadata $root
-            return $metadata -and [string]$metadata.agentName -eq $expectedRunnerName
+            return $metadata -and [string]$metadata.agentName -eq $expectedRunnerName -and
+              [string]$metadata.gitHubUrl -eq 'https://github.com/hans1177/jaewoon-games'
           }
 
           $listenerProcesses = @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue)
           $runnerRoot = $null
+          foreach ($known in @(
+            (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner'),
+            (Join-Path $env:LOCALAPPDATA 'JaewoonRobloxStudioRunner2')
+          )) {
+            if (Test-RunnerRoot $known) { $runnerRoot = $known; break }
+          }
           foreach ($process in $listenerProcesses) {
             if (-not $process.ExecutablePath) { continue }
             $candidate = Split-Path (Split-Path $process.ExecutablePath -Parent) -Parent
@@ -189,6 +226,15 @@ jobs:
           }
 
           $listenerExe = Join-Path $runnerRoot 'bin\Runner.Listener.exe'
+          if ([int](Get-Process -Id $PID).SessionId -le 0) {
+            Write-Host 'ROBLOX_RUNNER_STARTUP=BLOCKED_SERVICE_SESSION_PRESERVE_EXISTING_USER_LOGON_SHORTCUT'
+            exit 0
+          }
+          $console = (Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue).UserName
+          if (-not $console -or $console -ine [Security.Principal.WindowsIdentity]::GetCurrent().Name) {
+            Write-Host 'ROBLOX_RUNNER_STARTUP=BLOCKED_DIFFERENT_WINDOWS_USER'
+            exit 0
+          }
           $startupRoot = [Environment]::GetFolderPath('Startup')
           if (-not $startupRoot) { throw 'Windows Startup folder unavailable' }
           $startupPath = Join-Path $startupRoot 'Jaewoon-Roblox-Runner.vbs'
