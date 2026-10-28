@@ -2,8 +2,8 @@
 # 파일명: tools/baeksu-war-author-meshes.py
 # 역할: 임의 모델 생성이 아닌, 검증된 CC0 원본 메시를 그대로 Roblox GLB로 변환한다.
 # 실행: blender --background --disable-autoexec --python tools/baeksu-war-author-meshes.py -- /tmp/baeksu-art
-import bpy
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -17,6 +17,48 @@ import zipfile
 ROOT=Path(__file__).resolve().parent.parent
 OUT=Path(sys.argv[sys.argv.index('--')+1]) if '--' in sys.argv else Path('/tmp/baeksu-art')
 OUT.mkdir(parents=True,exist_ok=True)
+if '--game-id=fantasy-survival' in sys.argv:
+ # 공식 Model API가 받는 원본 FBX를 변형 없이 전달한다. Blender/도형 생성 없음.
+ manifest_path=ROOT/'roblox-games/fantasy-survival/native-assets.json'
+ manifest=json.loads(manifest_path.read_text())
+ if manifest.get('gameId')!='fantasy-survival' or manifest.get('ownerApproved') is not True or manifest.get('license')!='CC0-1.0' or set(manifest.get('models',{}))!={'bee','wolf','golem'}:
+  raise RuntimeError('FANTASY_NATIVE_APPROVED_MANIFEST_REQUIRED')
+ records={}
+ for role,row in manifest['models'].items():
+  if not re.fullmatch('[a-f0-9]{64}',row.get('sourceSha256','')) or not row.get('licenseEvidence','').startswith('https://opengameart.org/content/'):
+   raise RuntimeError('FANTASY_NATIVE_SOURCE_PROVENANCE_INVALID:'+role)
+  if row.get('sourcePath'):
+   source=(ROOT/row['sourcePath']).resolve()
+   if not source.is_relative_to((ROOT/'assets/shared/forest').resolve()) or source.suffix.lower()!='.fbx':
+    raise RuntimeError('FANTASY_NATIVE_SOURCE_PATH_INVALID:'+role)
+   data=source.read_bytes()
+  else:
+   url=row.get('archiveUrl','')
+   if not url.startswith('https://opengameart.org/sites/default/files/') or not url.endswith('.zip'):
+    raise RuntimeError('FANTASY_NATIVE_ARCHIVE_URL_INVALID')
+   with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Jaewoon-Game-Asset-Provenance/1.0'}),timeout=60) as response:
+    if not response.url.startswith('https://opengameart.org/'):
+     raise RuntimeError('FANTASY_NATIVE_ARCHIVE_REDIRECT_REJECTED')
+    archive=response.read(70*1024*1024+1)
+   if len(archive)>70*1024*1024 or hashlib.sha256(archive).hexdigest()!=row.get('archiveSha256'):
+    raise RuntimeError('FANTASY_NATIVE_ARCHIVE_HASH_MISMATCH')
+   with zipfile.ZipFile(io.BytesIO(archive)) as z:
+    info=z.getinfo(row['archiveEntry'])
+    if info.file_size>20*1024*1024 or '..' in Path(info.filename).parts or Path(info.filename).is_absolute():
+     raise RuntimeError('FANTASY_NATIVE_ARCHIVE_ENTRY_INVALID')
+    data=z.read(info)
+  if not data.startswith(b'Kaydara FBX Binary') or len(data)>20*1024*1024 or hashlib.sha256(data).hexdigest()!=row['sourceSha256']:
+   raise RuntimeError('FANTASY_NATIVE_ORIGINAL_HASH_MISMATCH:'+role)
+  (OUT/(role+'.fbx')).write_bytes(data)
+  records[role]={'sourceFile':row.get('sourcePath') or row['archiveUrl']+'#'+row['archiveEntry'],
+   'sourceSha256':row['sourceSha256'],'sha256':row['sourceSha256'],'format':'fbx',
+   'license':'CC0-1.0','licenseEvidence':row['licenseEvidence'],'bytes':len(data)}
+ (OUT/'provenance.json').write_text(json.dumps({'version':5,'gameId':'fantasy-survival',
+  'sourceManifestSha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),'roles':records},indent=2)+'\n')
+ print('FANTASY_NATIVE_ORIGINALS_VERIFIED=3')
+ sys.exit(0)
+
+import bpy
 ACTORS=json.loads((ROOT/'assets/roblox/actors/manifest.json').read_text())
 WILDLIFE=json.loads((ROOT/'assets/external/simple-rpg/wildlife/manifest.json').read_text())
 PRIORITY=json.loads((ROOT/'assets/external/simple-rpg/priority-v1/manifest.json').read_text())

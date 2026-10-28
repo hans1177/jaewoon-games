@@ -1293,7 +1293,67 @@ local function ${name}(character)
 end`;
 }
 
-export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,studioMaterialRepair=false,learning={}}={}){
+export function bindExistingFantasyNativeCreatures({source='',manifest={},registry={}}={}){
+  if(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
+    ||registry.gameId!=='fantasy-survival'||registry.registrationVerified!==true
+    ||registry.nativeRegistrationVersion!==1||registry.grantRequiredAtPublish!==true)
+    throw new Error('FANTASY_NATIVE_VERIFIED_REGISTRATION_REQUIRED');
+  for(const role of ['wolf','bee','golem']){
+    const row=registry.models?.[role],expected=manifest.models?.[role];
+    if(!expected||!row||!Number.isSafeInteger(row.assetId)||row.assetId<1||row.license!=='CC0-1.0'
+      ||row.sourceSha256!==expected.sourceSha256||row.sha256!==expected.sourceSha256
+      ||row.licenseEvidence!==expected.licenseEvidence)
+      throw new Error('FANTASY_NATIVE_MODEL_PROVENANCE_MISMATCH:'+role);
+  }
+  if(source.includes('local FANTASY_NATIVE_CREATURES_VERSION = 1'))return source;
+  const imported='local CreatureParts = require(Shared:WaitForChild("RobloxCommonCreatureParts"))';
+  const start=source.indexOf('  local partId = isBoss and "GOLEM_CORE"');
+  const end=source.indexOf('  local hitPoints =',start);
+  if(!source.includes(imported)||start<0||end<=start)throw new Error('FANTASY_NATIVE_EXISTING_CONSUMER_ANCHOR_MISSING');
+  const native=`  local partId = isBoss and "golem" or (index%3==0 and "bee" or "wolf")
+  local anatomyAtom = isBoss and "HEAD_GOLEM" or (index%3==0 and "HEAD_INSECT" or "HEAD_CANINE")
+  local modelId = table.find(studioCreatureAtoms,anatomyAtom) and NativeCreatureAssets[partId] or nil
+  local nativeScale = table.find(studioCreatureAtoms,anatomyAtom) and (isBoss and 6.3 or 3.15) or nil
+  if typeof(modelId)~="number" or modelId<1 or not nativeScale then
+    warn("마력숲 승인 생물 자산 선택 누락: "..partId)
+    return false
+  end
+  local ok, model = pcall(function()
+    local template=nativeCreatureTemplates[modelId]
+    if not template then
+      template=AssetService:LoadAssetAsync(modelId)
+      if not template:IsA("Model") or not template:FindFirstChildWhichIsA("MeshPart",true) then
+        template:Destroy()
+        error("FANTASY_NATIVE_MESH_REQUIRED")
+      end
+      for _,item in ipairs(template:GetDescendants()) do
+        if item:IsA("LuaSourceContainer") or item:IsA("RemoteEvent") or item:IsA("RemoteFunction") or item:IsA("Tool") then
+          item:Destroy()
+        elseif item:IsA("BasePart") then
+          item.Anchored=true;item.CanCollide=false;item.CanTouch=false;item.CanQuery=false
+        end
+      end
+      template.Parent=nil
+      nativeCreatureTemplates[modelId]=template
+    end
+    return template:Clone()
+  end)
+  if not ok or not model then
+    warn("마력숲 원본 생물 모델 적용 실패: "..partId)
+    return false
+  end
+  if not model:IsA("Model") then return nil end
+  local nativeHeight=model:GetExtentsSize().Y
+  if nativeHeight<=0 then model:Destroy();return false end
+  model:ScaleTo(model:GetScale()*nativeScale/nativeHeight)
+  model:PivotTo(CFrame.new(location))
+  model.Parent=gameWorld
+`;
+  return (source.slice(0,start)+native+source.slice(end)).replace(imported,
+    'local FANTASY_NATIVE_CREATURES_VERSION = 1\nlocal AssetService = game:GetService("AssetService")\nlocal NativeCreatureAssets = require(Shared:WaitForChild("VisualAssetIds"))\nlocal studioCreatureAtoms = studioAssetFamily("CREATURE")\nlocal nativeCreatureTemplates = {}');
+}
+
+export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,studioMaterialRepair=false,nativeCreatureRepair=false,learning={}}={}){
   const verifiedLearning=requireRobloxVerifiedExternalLearning(learning);
   const profile=robloxBuildProfileFromBaseline(baseline);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
@@ -1303,7 +1363,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const serverFile=path.join(root,'server','Game.server.luau');
   const projectFile=path.join(root,'default.project.json');
   for(const file of [configFile,clientFile,projectFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
-  if((foundationRepair===true||studioMaterialRepair===true)&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
+  if((foundationRepair===true||studioMaterialRepair===true||nativeCreatureRepair===true)&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
   const beforeServer=fs.existsSync(serverFile)?fs.readFileSync(serverFile,'utf8'):'';
@@ -1340,6 +1400,14 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   let afterServer=studioMaterialRepair===true
     ?bindExistingServerStudioMaterial({source:beforeServer,familyStatus:studioAssetFamilyStatus,selectedAtoms:studioAssets.families.MATERIAL})
     :beforeServer;
+  if(nativeCreatureRepair===true){
+    if(gameId!=='fantasy-survival')throw new Error('FANTASY_NATIVE_GAME_ID_REQUIRED');
+    const manifestBytes=fs.readFileSync(path.join(root,'native-assets.json'));
+    const registry=readJson(path.join(root,'CC0-ASSET-REGISTRY.json'));
+    if(registry.sourceManifestSha256!==crypto.createHash('sha256').update(manifestBytes).digest('hex'))
+      throw new Error('FANTASY_NATIVE_REGISTRY_MANIFEST_MISMATCH');
+    afterServer=bindExistingFantasyNativeCreatures({source:afterServer,manifest:JSON.parse(manifestBytes),registry});
+  }
   afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,verifiedLearning);
   afterClient=bindExistingClientVerifiedExternalLearning(afterClient,verifiedLearning);
 
@@ -1466,10 +1534,10 @@ task.defer(reportNativeFoundationReady)
   fs.writeFileSync(configFile,afterConfig,'utf8');
   fs.writeFileSync(clientFile,afterClient,'utf8');
   if(afterProject!==beforeProject)fs.writeFileSync(projectFile,afterProject,'utf8');
-  if((foundationRepair===true||studioMaterialRepair===true)&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
+  if((foundationRepair===true||studioMaterialRepair===true||nativeCreatureRepair===true)&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
   const changedFiles=[configFile,clientFile];
   if(afterProject!==beforeProject)changedFiles.push(projectFile);
-  if((foundationRepair===true||studioMaterialRepair===true)&&afterServer!==beforeServer)changedFiles.push(serverFile);
+  if((foundationRepair===true||studioMaterialRepair===true||nativeCreatureRepair===true)&&afterServer!==beforeServer)changedFiles.push(serverFile);
   return Object.freeze({
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
@@ -1926,6 +1994,7 @@ async function main(){
   const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
   const foundationRepair=clean(arg('foundation-repair','false')).toLowerCase()==='true';
   const studioMaterialRepair=clean(arg('studio-material-repair','false')).toLowerCase()==='true';
+  const nativeCreatureRepair=clean(arg('native-creature-repair','false')).toLowerCase()==='true';
   const buildUpDirectiveFile=clean(arg('build-up-directive'));
   if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile||!playbooksFile||!recombinationFile||!roadmapFile)throw new Error('required Roblox bootstrap argument missing');
   if(outputRoot!==`roblox-games/${gameId}`)throw new Error(`invalid Roblox output root: ${outputRoot}`);
@@ -1942,7 +2011,7 @@ async function main(){
   const existingLearning=requireRobloxVerifiedExternalLearning(createRobloxVibe3LearningContext({gameId,profile:robloxBuildProfileFromBaseline(baseline),artbook,playbooks,recombination}));
   if(buildUpDirectiveConsumed&&clean(buildUpDirective?.gameId)!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
   if(existingSource){
-    const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,studioMaterialRepair,learning:existingLearning});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,studioMaterialRepair,nativeCreatureRepair,learning:existingLearning});
     const staticContract=validateRobloxBootstrap({
       sharedConfig:fs.readFileSync(path.join(outputRoot,'shared','GameConfig.luau'),'utf8'),
       // Missing authority source is a repair gap, never an IO crash or a static PASS.
