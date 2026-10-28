@@ -586,7 +586,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     actor.anchor.add(label);actor.nameLabel=label;
   }
   // 메인 · 기존 건축 청사진을 3D 월드 위에서 직접 미리 보여준다.
-  const blueprintMaterial=new THREE.MeshBasicMaterial({color:0x80f5a3,transparent:true,opacity:.48,depthWrite:false});
+  const blueprintMaterial=new THREE.MeshBasicMaterial({color:0x80f5a3,transparent:true,opacity:.78,depthTest:false,depthWrite:false,toneMapped:false});
   // [건축] 청사진은 허가된 원본 모델만 표시하고 임시 상자를 만들지 않는다.
   const blueprintGhost=new THREE.Group();
   let blueprintSourceId='',blueprintVisual=null;
@@ -1279,7 +1279,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       nextOptionalSourceRetry=sampleNow+30000;
       // 첫 WebGL 프레임 이후 멀리 있는 장식 메시를 단계적으로 파싱한다.
       const priorityModels=(regionScene?.landmarks||[]).map(mark=>mark?.model).filter(Boolean);
-      if(!isInterior)priorityModels.push('bench_A','bench_B','fence_straight','gate_single','package');
+      if(!isInterior)priorityModels.push(STRUCTURE_MODEL_BY_ID[state.blueprint?.id], 'bench_A','bench_B','fence_straight','gate_single','package','house','foliage_A');
       setTimeout(()=>{if(!disposed)void stagedModels.loadRemaining(priorityModels).catch(error=>
         console.warn('CC0 optional scenery unavailable',error));},0);
     }else if(sampleNow>=nextOptionalSourceRetry&&stagedModels.getFailedOptionalCount()>0){
