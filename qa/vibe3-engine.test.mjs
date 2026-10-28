@@ -37,6 +37,14 @@ const impacted=createVibeImpactPlan({graph:dependencyGraph,changedPaths:['src/co
 assert.deepEqual(impacted.impactedSources.map(row=>row.path),['src/combat/damage.js','src/ai.js','src/combat/weapon.js','src/game.js']);
 assert.deepEqual(impacted.affectedTests.map(row=>row.path),['qa/damage.test.mjs','qa/ai.test.mjs','qa/weapon.test.mjs','qa/game.test.mjs']);
 assert.equal(impacted.runtimeVerified,false);
+const nativeImpactGraph=createVibeSourceGraph({files:[
+  {path:'shared/Combat.luau'},
+  {path:'shared/Effects.luau',imports:['./Combat']},
+  {path:'shared/combat.test.luau',imports:['./Effects']}
+]});
+const nativeImpact=createVibeImpactPlan({graph:nativeImpactGraph,changedPaths:['shared/Combat.luau']});
+assert(nativeImpact.affectedTests.some(row=>row.path==='shared/combat.test.luau'));
+
 assert.deepEqual(createVibeImpactPlan({graph:dependencyGraph,changedPaths:['src/missing.js']}).unknownPaths,['src/missing.js']);
 assert.equal(createVibeImpactPlan({graph:dependencyGraph,changedPaths:['src/combat/damage.js'],maxDepth:0}).impactedSources.length,1);
 const impactRanking=rankVibeResponsibleSources({graph:dependencyGraph,request:'damage',hints:['src/combat/damage.js']});

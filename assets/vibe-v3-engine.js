@@ -113,7 +113,7 @@ export function createVibeImpactPlan({graph,changedPaths=[],maxDepth=3,maxTests=
     const node=known.get(file);
     for(const test of node.tests||[])
       relatedTests.set(test,Math.min(relatedTests.get(test)??Infinity,depth));
-    if(/(?:^|\/)(?:qa|test|tests)\//i.test(file)||/\.(?:test|spec)\.[cm]?[jt]sx?$/i.test(file))
+    if(/(?:^|\/)(?:qa|test|tests)\//i.test(file)||/\.(?:test|spec)\.(?:[cm]?[jt]sx?|luau|lua|cs)$/i.test(file))
       relatedTests.set(file,Math.min(relatedTests.get(file)??Infinity,depth));
   }
   const max=Math.max(0,Math.min(100,Math.floor(finite(maxTests,20))));

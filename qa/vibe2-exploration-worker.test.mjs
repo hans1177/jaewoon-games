@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { exploreVibe2WorkOrder, explorationGuidance } from '../tools/vibe2-exploration-worker.mjs';
+import { exploreVibe2WorkOrder, explorationGuidance, extractVibeSourceImportRefs } from '../tools/vibe2-exploration-worker.mjs';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch, beginVibeQueueBatch, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
@@ -40,6 +40,75 @@ test('exploration worker collects reusable impact context without changing sourc
   assert.ok(result.contextFiles.includes('Assets/PlayerHelper.cs'));
   assert.deepEqual(result.diagnosticEvidence,['diagnostic:PLAYER_MOVE']);
   assert.equal(fs.readFileSync(player,'utf8'),before);
+});
+
+test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
+  assert.deepEqual(extractVibeSourceImportRefs([
+    "import {hit} from './combat.js';",
+    "export {save} from '../save/store.js';",
+    "import './boot.js';",
+    "const legacy = require('./legacy');",
+    "const optional = import('./async.js');"
+  ].join('\n'),'web'),['../save/store.js','./async.js','./boot.js','./combat.js','./legacy']);
+  const luau=[
+    'local Combat = require(script.Parent.Combat)',
+    'local Assets = require(script.Parent.Parent.Assets)',
+    'local Skills = require(script.Parent:WaitForChild("Skills"))',
+    'return Combat'
+  ].join('\n');
+  assert.deepEqual(extractVibeSourceImportRefs(luau,'roblox'),['../Assets','./Combat','./Skills']);
+  assert.deepEqual(extractVibeSourceImportRefs(luau,'web'),[]);
+});
+
+test('exploration cache invalidates QA-only changes and requires complete impact digest coverage',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/cache-impact');
+  write(path.join(root,'src/combat.js'),'export function hit(){ return 1; }\n');
+  write(path.join(root,'src/weapon.js'),"import {hit} from './combat.js'; export function attack(){return hit()}\n");
+  const testFile=path.join(root,'qa/weapon.test.js');
+  write(testFile,"import {attack} from '../src/weapon.js'; if(attack()!==1)throw Error('damage');\n");
+  const order={run:true,taskId:'cache-impact',gameId:'cache-impact',target:'web',goal:'combat hit',
+    source:{root:'web-games/cache-impact',responsibleFiles:['web-games/cache-impact/src/combat.js'],ignoredPaths:[]},
+    workPackage:{id:'cache-impact-wp',sharedContext:{diagnosticEvidence:[]}}};
+  const first=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(first.impactAnalysisSchemaVersion,2);
+  assert.equal(first.impactScanCoverage.runtimeVerified,false);
+  assert(first.fileDigests.some(row=>row.path==='qa/weapon.test.js'));
+  const artifact=path.join(cwd,'.vibe2/exploration.json');
+  write(artifact,JSON.stringify(first));
+  const old=process.env.VIBE2_EXPLORATION_FILE;
+  process.env.VIBE2_EXPLORATION_FILE=artifact;
+  try{
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    write(testFile,fs.readFileSync(testFile,'utf8')+'// new regression\n');
+    const changed=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(changed.reused,false);
+    assert.notEqual(changed.reuseKey,first.reuseKey);
+    assert.equal(changed.sourceWrite,false);
+    write(artifact,JSON.stringify({...changed,impactAnalysisSchemaVersion:1}));
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,false);
+  }finally{
+    if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=old;
+  }
+});
+
+test('Roblox module impact identifies required sibling Luau and native test without widening write scope',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/rig');
+  write(path.join(root,'shared/Combat.luau'),'local Combat={}; function Combat.Hit() return true end; return Combat\n');
+  write(path.join(root,'shared/Effects.luau'),
+    'local Combat=require(script.Parent.Combat); function EffectsAttack() return Combat.Hit() end\n');
+  write(path.join(root,'qa/combat.test.luau'),
+    'local Effects=require(script.Parent.Parent.shared.Effects); assert(true)\n');
+  const order={run:true,taskId:'roblox-impact',gameId:'rig',target:'roblox',goal:'Combat Hit motion',
+    source:{root:'roblox-games/rig',responsibleFiles:['roblox-games/rig/shared/Combat.luau'],ignoredPaths:[]},
+    workPackage:{id:'rig-wp',sharedContext:{diagnosticEvidence:[]}}};
+  const handoff=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(handoff.sourceImpact.runtimeVerified,false);
+  assert.equal(handoff.impactAnalysisSchemaVersion,2);
+  assert(handoff.sourceImpact.impactedSources.some(row=>row.path==='shared/Effects.luau'));
+  assert(handoff.sourceImpact.affectedTests.some(row=>row.path==='qa/combat.test.luau'));
+  assert.deepEqual(handoff.responsibleFiles,['shared/Combat.luau']);
+  assert(!handoff.editContract.allowedResponsibleFiles.includes('shared/Effects.luau'));
 });
 
 test('coding explorer uses Vibe3 reverse dependencies without mutating unrelated source',()=>{

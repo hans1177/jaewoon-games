@@ -57,6 +57,28 @@ function safeRead(file){try{const stat=fs.statSync(file);if(!stat.isFile()||stat
 function listFiles(root,target,ignored=[]){const allowed=extensions(target),ignore=ignored.map(posix).filter(Boolean),rows=[];const walk=current=>{if(rows.length>=MAX_SCAN_FILES)return;for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(rows.length>=MAX_SCAN_FILES)return;if(entry.isDirectory()&&IGNORED_DIRS.has(entry.name))continue;const full=path.join(current,entry.name),relative=posix(path.relative(root,full));if(ignore.some(v=>relative===v||relative.startsWith(`${v}/`)))continue;if(entry.isDirectory())walk(full);else{const ext=path.extname(entry.name).toLowerCase();if(allowed.has(ext)&&!BINARY_EXTENSIONS.has(ext))rows.push({full,relative,ext});}}};walk(root);return rows;}
 function goalTokens(goal=''){return unique(clean(goal).toLowerCase().split(/[^a-z0-9가-힣_]+/).filter(x=>x.length>=3)).slice(0,24);}
 function protectedSignals(text=''){const checks=[['save',/save|세이브|progress|진행/i],['combat-number',/damage|attack|health|hp|reward|drop|데미지|공격|체력|보상|드랍/i],['network',/fetch\(|axios|websocket|http:/i],['storage',/localStorage|PlayerPrefs|SaveGame|DataStore/i]];return checks.filter(([,re])=>re.test(text)).map(([name])=>name);}
+// Bounded static module dependency extraction for Vibe3 impact (not runtime proof).
+// Imports are references only: neither this helper nor the explorer may write target files.
+export function extractVibeSourceImportRefs(source='',target=''){
+  const text=String(source??''),refs=new Set();
+  for(const expression of [
+    /\bfrom\s+['"]([^'"]+)['"]/g,
+    /\bimport\s*['"]([^'"]+)['"]/g,
+    /\b(?:require|import)\s*\(\s*['"]([^'"]+)['"]\s*\)/g
+  ])for(const match of text.matchAll(expression))refs.add(match[1]);
+  if(['roblox','luau','lua'].includes(clean(target).toLowerCase())){
+    // script.Parent.Foo = sibling module; script.Parent.Parent.Foo = parent-directory module.
+    const expression=/\brequire\s*\(\s*script((?:\.Parent)+)(?:\.([A-Za-z_]\w*)|:WaitForChild\(\s*['"]([A-Za-z_]\w*)['"]\s*\))\s*\)/g;
+    for(const match of text.matchAll(expression)){
+      const parents=(match[1].match(/\.Parent/g)||[]).length;
+      if(parents<1)continue;
+      const moduleName=match[2]||match[3];
+      refs.add((parents===1?'./':'../'.repeat(parents-1))+moduleName);
+    }
+  }
+  return Object.freeze([...refs].filter(Boolean).sort());
+}
+
 function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs,sourceFunctions=[],target=''}){
   let score=0;const text=safeRead(row.full);
   if(responsible.has(row.relative))return{...row,score:10000,text,connections:[]};
@@ -86,8 +108,19 @@ function reusableArtifact(cwd,order){
   const expectedRoot=posix(order?.source?.root);
   if(posix(cached.sourceRoot)!==expectedRoot)throw new Error('exploration handoff source root 불일치');
   if(cached.codingAnalysisVersion!==CODING_ANALYSIS_VERSION)return null;
+  // Old snapshots did not hash every dependency/test used by the Vibe3 graph.
+  // They are unsafe to reuse after source or QA changes, even if the owner file is unchanged.
+  if(cached.bootstrap!==true&&(
+    cached.impactAnalysisSchemaVersion!==2
+    ||cached.sourceImpact?.authority!=='advisory-source-impact-only'
+    ||!clean(cached.sourceImpact?.graphDigest)
+    ||!Array.isArray(cached.fileDigests)||cached.fileDigests.length===0
+  ))return null;
+  const currentMain=clean(process.env.VIBE2_BASE_MAIN_SHA);
+  if(currentMain&&clean(cached.baseMainSha)!==currentMain)return null;
   try{const mode=readJson(path.join(cwd,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope;if(mode&&cached?.editContract?.gameRepair?.multiplayerLifecycle?.verificationScope!==mode)return null;}catch{}
   const root=path.resolve(cwd,expectedRoot);
+  if(cached.bootstrap===true&&fs.existsSync(root))return null;
   for(const row of cached.fileDigests||[]){
     const file=path.resolve(root,row.path);
     if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||sha(safeRead(file)).slice(0,16)!==row.hash)return null;
@@ -550,8 +583,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     const code=row.text||safeRead(row.full);
     const symbols=unique(inspectSourceFunctions(code,{language:target}).slice(0,64)
       .map(fn=>clean(fn.name).split(/[.:]/).at(-1)));
-    const imports=unique([...code.matchAll(/\bfrom\s+['"]([^'"]+)['"]/g),
-      ...code.matchAll(/\bimport\s+['"]([^'"]+)['"]/g)].map(m=>m[1]));
+    const imports=extractVibeSourceImportRefs(code,target);
     const calls=ownerSymbols.filter(name=>!responsibleSet.has(row.relative)&&code.includes(name+'('));
     const tests=testTargets.filter(file=>file!==row.relative&&
       ((testSourceByPath.get(file)||'').includes(path.basename(row.relative))
@@ -563,7 +595,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     ...related.slice(0,8).map(row=>row.relative)]).slice(0,24);
   const protectedScopeSignals=unique(responsibilityRows.flatMap(row=>protectedSignals(row.text)));
   const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
-  const fileDigests=[...responsibilityRows,...related.slice(0,6)].map(compactFile);
+  const fileDigests=graphRows.map(compactFile);
   const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
   const existingWebAssessment=target==='web'?assessExistingWebRepository({cwd,gameId:order.gameId,sourceRoot:rootRelative,order}):null;
   const sourceText=responsibilityRows.map(row=>row.text).filter(Boolean).join('\n\n');
@@ -588,6 +620,9 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     contextFiles,
     sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
     sourceImpact,
+    impactAnalysisSchemaVersion:2,
+    impactScanCoverage:{scannedFileCount:graphRows.length,discoveredFileCount:rows.length,
+      bounded:true,completeRepositoryGraph:false,runtimeVerified:false},
     relatedFiles:related.map(row=>({path:row.relative,score:row.score})),
     testTargets,
     protectedScopeSignals,
@@ -612,6 +647,7 @@ export function explorationGuidance(handoff={}){
     ...(handoff.sourceImpact?[
       `Vibe3 읽기 전용 영향=${handoff.sourceImpact.impactedSources.map(row=>row.path).join(', ')||'NONE'}`,
       `Vibe3 연관 테스트=${handoff.sourceImpact.affectedTests.map(row=>row.path).join(', ')||'NONE'}`,
+      `Vibe3 탐색 범위=${handoff.impactScanCoverage?.scannedFileCount||0}/${handoff.impactScanCoverage?.discoveredFileCount||0} 파일 · 전체 저장소 그래프 아님`,
       '읽기 전용 추천이며 책임 파일 수정 범위나 실제 런타임 통과를 확대하지 않는다.'
     ]:[]),
     `보호 신호=${(handoff.protectedScopeSignals||[]).join(', ')||'NONE'}`,
