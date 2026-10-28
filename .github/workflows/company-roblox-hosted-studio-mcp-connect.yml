@@ -1,0 +1,66 @@
+# Optional infrastructure probe; NOT a gameplay, Open Cloud, F0/F9 or Studio approval lane.
+# GitHub-hosted Windows is ephemeral. No Roblox identity, login cookie or MCP flag is injected.
+name: Official Roblox Studio MCP · GitHub Windows connectivity probe
+run-name: Roblox official Studio MCP hosted Windows connection (not gameplay)
+
+on:
+  push:
+    branches:
+      - feat/roblox-hosted-studio-mcp-connect-20261028
+    paths:
+      - '.github/workflows/company-roblox-hosted-studio-mcp-connect.yml'
+      - 'tools/company-roblox-hosted-studio-mcp-connection.*'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/company-roblox-hosted-studio-mcp-connection.test.mjs'
+  pull_request:
+    paths:
+      - '.github/workflows/company-roblox-hosted-studio-mcp-connect.yml'
+      - 'tools/company-roblox-hosted-studio-mcp-connection.*'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/company-roblox-hosted-studio-mcp-connection.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: official-studio-hosted-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-studio-mcp-connectivity:
+    name: Attempt signed Roblox Studio + built-in MCP on hosted Windows (diagnostic only)
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.head_ref == 'feat/roblox-hosted-studio-mcp-connect-20261028')
+    runs-on: windows-latest
+    timeout-minutes: 11
+    steps:
+      - name: Checkout exact tested source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js for existing official MCP harness
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify connection evidence semantics
+        shell: pwsh
+        run: |
+          node --check tools/company-roblox-hosted-studio-mcp-connection.mjs
+          node --test qa/company-roblox-hosted-studio-mcp-connection.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Hosted Studio MCP connection evidence contract failed' }
+      - name: Install official signed Roblox Studio and attempt documented MCP connection
+        id: connectivity
+        shell: pwsh
+        run: |
+          ./tools/company-roblox-hosted-studio-mcp-connection.ps1 -OutputPath "$env:RUNNER_TEMP\official-roblox-studio-mcp-hosted-windows.json"
+      - name: Upload diagnostic only (never a Studio or actual-play PASS)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-studio-mcp-hosted-windows-diagnostic
+          path: ${{ runner.temp }}/official-roblox-studio-mcp-hosted-windows.json
+          if-no-files-found: warn
+          retention-days: 7
