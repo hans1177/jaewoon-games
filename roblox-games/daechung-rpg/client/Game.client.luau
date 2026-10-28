@@ -1092,6 +1092,12 @@ RunService.Heartbeat:Connect(function(dt)
      local channel=byMotor[row.motor]
      local pose=channel and sampled[channel]
      if pose then
+      -- Idle breathing must remain visible even on minimal two-limb rigs.
+      if state=="IDLE" and (channel:match("^UpperArm") or channel:match("^Thigh")
+       or channel:match("Hip$")) then
+       local sign=channel:find("L",1,true) and -1 or 1
+       pose=pose*CFrame.Angles(math.sin(phase*math.pi*2)*.035*sign,0,0)
+      end
       local alpha=1-math.exp(-((state=="ATTACK" or state=="HIT") and 18 or 12)*frameDt)
       row.item.pose=(row.item.pose or CFrame.identity):Lerp(pose,alpha)
       row.motor.C0=row.item.base*row.item.pose
@@ -1115,6 +1121,19 @@ RunService.Heartbeat:Connect(function(dt)
    if item.reportedForm~="UNRIGGED" then
     item.reportedForm="UNRIGGED"
     host:SetAttribute("NativeNpcMotionState","ARTICULATED_RIG_REQUIRED")
+   end
+   -- Preserve the pre-existing safe visual fallback if Motion Forge is unavailable.
+   for _,row in ipairs(group.limbs)do
+    local role=string.lower(tostring(row.item.role or row.motor.Part1.Name))
+    local localPos=host.CFrame:PointToObjectSpace(row.motor.Part1.Position)
+    local side=localPos.X<0 and -1 or 1
+    local stride=(state=="RUN" or state=="WALK")and .25 or state=="ATTACK"and .32 or .04
+    local sway=math.sin(item.elapsed*7)*stride*side
+    if role:find("tail",1,true) then
+     row.motor.C0=row.item.base*CFrame.Angles(0,sway*.65,0)
+    else
+     row.motor.C0=row.item.base*CFrame.Angles(sway,0,math.cos(item.elapsed*7)*stride*.28)
+    end
    end
    for _,row in ipairs(group.pivots)do
     local sway=math.sin(item.elapsed*2)*.035
