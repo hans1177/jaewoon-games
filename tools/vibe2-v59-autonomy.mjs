@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
-import {synthesizeVibe59RobloxServerAction} from './vibe59-roblox-coding.mjs';
+import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding} from './vibe59-roblox-coding.mjs';
 import {buildVibeVerifiedMemoryIndex,retrieveVibeVerifiedPatterns,classifyVibeRepairFailure} from '../assets/vibe-v3-engine.js';
 const sha=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
 const clean=x=>String(x??'').trim();
@@ -240,7 +240,8 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     tests:[],vibe59TestPlan:tests,vibe59CodeKind:codeKind,
     vibe59AutoTestPlan:generatedProbes,
     vibe59JsReplay:codeReplay,vibe59Strategy:req.robloxServerAction?selected.compiled.strategy:selected.variant,
-    ...(req.robloxServerAction?{vibe59RobloxSafety:selected.compiled.safety}:{}),
+    ...(req.robloxServerAction?{vibe59RobloxSafety:selected.compiled.safety,
+      vibe59RobloxInspection:inspectVibe59RobloxCoding({files:[{path:relative,source:content}],responsiblePaths:[relative]})}:{}),
     vibe59StrategiesChecked:candidates.map(row=>({variant:row.variant,pass:row.replay?.pass??null})),
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});
