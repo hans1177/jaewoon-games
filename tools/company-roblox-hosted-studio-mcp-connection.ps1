@@ -18,9 +18,9 @@ function Find-OfficialStudio {
   # Official Roblox instructions also check Program Files (x86). Windows Actions
   # sometimes installs outside LOCALAPPDATA, while the process appears later.
   $patterns=@()
-  if ($local) { $patterns+=Join-Path $local 'Roblox\Versions\*\RobloxStudioBeta.exe' }
+  if ($local) { $patterns+=(Join-Path $local 'Roblox\Versions\*\RobloxStudioBeta.exe') }
   $programX86=[Environment]::GetFolderPath('ProgramFilesX86')
-  if ($programX86) { $patterns+=Join-Path $programX86 'Roblox\Versions\*\RobloxStudioBeta.exe' }
+  if ($programX86) { $patterns+=(Join-Path $programX86 'Roblox\Versions\*\RobloxStudioBeta.exe') }
   foreach ($pattern in $patterns) {
     $candidate=Get-ChildItem -Path $pattern -File -ErrorAction SilentlyContinue |
       Sort-Object LastWriteTime -Descending | Select-Object -First 1
