@@ -48,14 +48,24 @@ function argumentsMap(argv=[]){
   }
   return out;
 }
-function validateOfficialMcpPath(command='',localAppData=''){
+function validateOfficialMcpPath(command='',localAppData='',trustedExe=false){
   if(!localAppData||!command)return false;
-  const expected=path.resolve(localAppData,'Roblox','mcp.bat');
-  return path.resolve(command).toLowerCase()===expected.toLowerCase();
+  const full=path.resolve(command);
+  const normal=value=>path.resolve(value).toLowerCase();
+  const documented=path.join(localAppData,'Roblox','mcp.bat');
+  if(normal(full)===normal(documented))return true;
+  if(!trustedExe||path.basename(full).toLowerCase()!=='studiomcp.exe')return false;
+  // Existing official MCP harness supports the Roblox-signed StudioMCP.exe as
+  // fallback for a missing/malformed documented batch, with zero CLI flags.
+  const roots=[
+    path.join(localAppData,'Roblox','Versions'),
+    process.env['ProgramFiles(x86)']?path.join(process.env['ProgramFiles(x86)'],'Roblox','Versions'):null
+  ].filter(Boolean);
+  return roots.some(root=>normal(full).startsWith(normal(root)+path.sep));
 }
 export async function runHostedStudioMcpProbe({
   platform=process.platform,installed=false,running=false,installerVerified=false,
-  installerRejected=false,installerStatus='NOT_INSTALLED',mcpCommand='',
+  installerRejected=false,installerStatus='NOT_INSTALLED',mcpCommand='',trustedMcpExe=false,
   settingsRoot='',localAppData='',output='',transportTimeoutMs=12000
 }={}){
   const setting=detectStudioMcpAssistantSetting({settingsRoot});
@@ -67,6 +77,7 @@ export async function runHostedStudioMcpProbe({
     installerSignatureVerified:toBool(installerVerified),
     installerSignatureRejected:toBool(installerRejected),
     installerStage:clean(installerStatus)||'UNKNOWN',
+    officialExeFallbackTrusted:toBool(trustedMcpExe),
     mcpLauncherAvailable:false,assistantSetting:setting.state,
     assistantSettingsMutation:false,robloxCredentialsUsed:false,
     mcpInitialized:false,requiredToolsReady:false,studioCount:0,
@@ -79,11 +90,12 @@ export async function runHostedStudioMcpProbe({
   let client=null;
   try{
     if(platform!=='win32')throw new Error('HOSTED_MCP_WINDOWS_ONLY');
-    state.mcpLauncherAvailable=validateOfficialMcpPath(mcpCommand,localAppData)&&fs.existsSync(mcpCommand);
+    state.mcpLauncherAvailable=validateOfficialMcpPath(mcpCommand,localAppData,toBool(trustedMcpExe))&&fs.existsSync(mcpCommand);
     if(state.studioInstalled&&state.studioRunning&&state.mcpLauncherAvailable&&state.assistantSetting!=='NO'){
       state.connectionAttempted=true;
+      const useOfficialExe=path.extname(mcpCommand).toLowerCase()==='.exe';
       client=new McpStdioClient({
-        command:'cmd.exe',args:['/c',mcpCommand],
+        command:useOfficialExe?mcpCommand:'cmd.exe',args:useOfficialExe?[]:['/c',mcpCommand],
         timeoutMs:Math.max(2500,Math.min(20000,Number(transportTimeoutMs)||12000))
       });
       await client.connect();
@@ -150,7 +162,7 @@ async function main(){
   const a=argumentsMap(process.argv.slice(2));
   const local=process.env.LOCALAPPDATA||'';
   await runHostedStudioMcpProbe({
-    installed:a['studio-installed'],running:a['studio-running'],
+    installed:a['studio-installed'],running:a['studio-running'],trustedMcpExe:a['trusted-mcp-exe'],
     installerVerified:a['installer-verified'],installerRejected:a['installer-rejected'],
     installerStatus:a['installer-stage'],localAppData:local,
     settingsRoot:path.join(local,'Roblox','AssistantSettings'),
