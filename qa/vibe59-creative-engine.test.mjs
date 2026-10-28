@@ -100,3 +100,12 @@ test('read-only autonomy planning exposes creativity with no edit authority',()=
   assert.equal(plan.creativity.sourceWrite,false);
   assert.equal(plan.synthesisCandidateAvailable,true);
 });
+
+
+test('goal-filtered creative selection rejects unrelated approved operations',()=>{
+  const r=buildVibe59CreativityPlan({goal:'몬스터 AI',ownerApproved:true,
+    approvedOperations:[{spec,scenarios}]});
+  assert.equal(r.chosenOperation,null);
+  assert.equal(r.selectedApprovedSpec,null);
+  assert.ok(r.requestedSystems.includes('ai'));
+});

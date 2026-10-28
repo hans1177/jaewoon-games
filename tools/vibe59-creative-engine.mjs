@@ -162,7 +162,7 @@ export function buildVibe59CreativityPlan({goal='',approvedOperations=[],existin
     idea:DESCRIPTIONS[x.id],score:x.score,scenarioPass:x.scenarioPass,
     codeReady:x.codeReady,runtimeVerified:false}));
   apply('open-exploration',{searched:pool.length,maxSearch:40,returned:ideas.length});
-  const chosen=scored.find(x=>x.codeReady);
+  const chosen=scored.find(x=>x.codeReady&&(!requested.length||requested.includes(x.system)));
   const selected=chosen&&approved.get(chosen.id);
   return Object.freeze({
     capabilityCount:VIBE59_CREATIVITY_CAPABILITIES.length,

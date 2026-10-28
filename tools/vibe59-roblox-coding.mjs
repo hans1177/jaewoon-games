@@ -1,7 +1,7 @@
 // Vibe5.9 Roblox-native coding. Read-only Lua source analysis and bounded code synthesis.
 // Native Luau compiler, Studio gameplay, authorization and release still need independent QA.
 const ID=/^[A-Za-z_][A-Za-z0-9_]*$/;
-const BLOCKED=new Set(['player','eventName','state','script','game','workspace',
+const BLOCKED=new Set(['__proto__','constructor','prototype','player','eventName','state','script','game','workspace',
 'function','local','if','then','else','end','return','for','while','nil','true','false','not','and','or']);
 function identifier(x,label){if(typeof x!=='string'||!ID.test(x)||BLOCKED.has(x))
 throw Error('VIBE59_ROBLOX_BAD_IDENTIFIER:'+label);return x}

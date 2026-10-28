@@ -160,3 +160,13 @@ test('offline Roblox coding integrates with canonical source candidate without m
     approved.scenarios[0],{...approved.scenarios[1],expectedApplied:true}]}),
     /BOUNDARY_PROOF_REQUIRED|DOMAIN_TEST_COUNTEREXAMPLE/);
 });
+
+
+test('unsafe JavaScript prototype property names are never Luau state bindings',()=>{
+  const source='local function handler(player)\n local state = profiles[player]\n'+
+    ' if state.data.__proto__ then end\n -- ANCHOR\nend';
+  const spec={operation:'inventory-grant',collection:'data',field:'__proto__',
+    amount:2,limit:10,functionName:'handler'};
+  assert.throws(()=>synthesizeVibe59RobloxDomainAction({spec,source,
+    replaceAnchor:'-- ANCHOR',sourcePath:'server/Main.server.luau'}),/BAD_IDENTIFIER/);
+});
