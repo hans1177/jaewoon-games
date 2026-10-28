@@ -136,10 +136,38 @@ try {
 # Do not pass account paths, cookies, Roblox security tokens or Studio settings
 # to the workflow artifact. The Node probe uses a known-local official batch only.
 $command=if ($local) { Join-Path $local 'Roblox\mcp.bat' } else { '' }
+$trustedMcpExe=$false
+$launcherMode='DOCUMENTED_BATCH'
+if (-not $command -or -not (Test-Path -LiteralPath $command)) {
+  $launcherMode='MISSING'
+  $mcpExe=$null
+  if ($studio -and $studio.FullName) {
+    $mcpExe=Join-Path (Split-Path $studio.FullName -Parent) 'StudioMCP.exe'
+  }
+  if (-not $mcpExe -or -not (Test-Path -LiteralPath $mcpExe)) {
+    $officialRoots=@()
+    if ($local) { $officialRoots+=(Join-Path $local 'Roblox\Versions') }
+    $programX86=[Environment]::GetFolderPath('ProgramFilesX86')
+    if ($programX86) { $officialRoots+=(Join-Path $programX86 'Roblox\Versions') }
+    foreach($root in $officialRoots) {
+      if (-not (Test-Path -LiteralPath $root)) { continue }
+      $found=Get-ChildItem -LiteralPath $root -File -Recurse -Filter 'StudioMCP.exe' -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+      if ($found) { $mcpExe=$found.FullName; break }
+    }
+  }
+  if ($mcpExe -and (Test-Path -LiteralPath $mcpExe) -and (Test-RobloxSignature $mcpExe)) {
+    $command=$mcpExe
+    $trustedMcpExe=$true
+    $launcherMode='SIGNED_OFFICIAL_STUDIOMCP_EXE'
+  }
+}
+Write-Host "ROBLOX_HOSTED_WINDOWS_MCP_LAUNCHER_MODE=$launcherMode"
 $argv=@(
   'tools/company-roblox-hosted-studio-mcp-connection.mjs',
   "--studio-installed=$($studioInstalled.ToString().ToLowerInvariant())",
   "--studio-running=$($studioRunning.ToString().ToLowerInvariant())",
+  "--trusted-mcp-exe=$($trustedMcpExe.ToString().ToLowerInvariant())",
   "--installer-verified=$($installerVerified.ToString().ToLowerInvariant())",
   "--installer-rejected=$($signatureRejected.ToString().ToLowerInvariant())",
   "--installer-stage=$stage",
