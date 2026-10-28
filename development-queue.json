@@ -4458,7 +4458,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-28T01:53:25.344Z",
+      "updatedAt": "2026-10-28T02:13:28.768Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4473,14 +4473,14 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "1d76a9e1540051ee632f26d8e560bd23372a519d",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
       "robloxBuildPreflightPassed": false,
@@ -4539,16 +4539,16 @@
       "robloxReleasePublishedAt": null,
       "robloxSourceCommit": "1d76a9e1540051ee632f26d8e560bd23372a519d",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "6c9be373f7d8a2fbb74c2b0dd90c60aee061cd30",
+      "robloxQualityBuildUpSourceRevision": "1d76a9e1540051ee632f26d8e560bd23372a519d",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "cozy-island",
-        "sourceRevision": "6c9be373f7d8a2fbb74c2b0dd90c60aee061cd30",
+        "sourceRevision": "1d76a9e1540051ee632f26d8e560bd23372a519d",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 40611734177,
-        "testedAt": "2026-10-28T01:05:46.023Z",
+        "workflowRunId": 40617129342,
+        "testedAt": "2026-10-28T02:13:28.768Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CHARACTER"
         ],
@@ -5147,7 +5147,7 @@
           "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "fc94dfb1a0ff0d4886794a211dbaf029c648decb",
+        "sourceTreeSha": "a22390503b9bd45855b9ad13e848867c912e0d7b",
         "assetRepairContext": {
           "libraryFingerprint": "76d1db6abb7b922fcebf760109bf1de2d65de4442d384f88213c7693e45e0177",
           "baselineFingerprint": "eabbb66a578e191b0c7901fdcddbb80b71a7af42e275e3de15118d788aa91a75",
@@ -5722,7 +5722,7 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-28T02:13:28.768Z",
       "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxFastMvpPublished": false,
@@ -7184,7 +7184,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-28T02:03:36.581Z",
+  "updatedAt": "2026-10-28T02:13:28.768Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -7251,5 +7251,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
