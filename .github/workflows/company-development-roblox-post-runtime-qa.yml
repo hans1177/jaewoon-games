@@ -1263,6 +1263,11 @@ jobs:
                 ||Number(engineProbe.worldEvidence.floatingSpawns||0)>0
                 ||Number(engineProbe.worldEvidence.unsupportedSpawns||0)>0)){
               const groundingObserved=engineProbe.worldEvidence?.spawnGroundingObserved===true;
+              // A non-simulating Open Cloud Luau task does not run Game.server:
+              // zero generated spawns here are NOT evidence of a bad spawn height.
+              const simulationUnavailable=engineProbe.serverBootEvidence?.simulationRunningAfter!==true
+                &&engineProbe.serverBootObserved!==true
+                &&engineProbe.worldEvidence?.runtimeWorldReady!==true;
               const simulationStartCapabilityDenied=engineProbe.serverBootEvidence?.simulationStartCapabilityDenied===true;
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
@@ -1280,6 +1285,10 @@ jobs:
                 simulationRunningAfter:engineProbe.serverBootEvidence?.simulationRunningAfter===true,
                 simulationStartSucceeded:engineProbe.serverBootEvidence?.simulationStartSucceeded===true,
                 simulationStartCapabilityDenied,
+                simulationUnavailable,
+                observationCausalClass:simulationUnavailable&&!groundingObserved
+                  ?'NON_SIMULATING_OPEN_CLOUD_TASK':'RUNNING_ENGINE_WORLD_STRUCTURE',
+                actualSpawnHeightObserved:groundingObserved,
                 observedAt:stamp,
                 authority:'roblox-open-cloud-exact-first-frame-observation'
               };
@@ -1288,7 +1297,9 @@ jobs:
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.robloxFailureSignature=groundingObserved?'ROBLOX_FIRST_FRAME_GROUNDING_FAILED':'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED';
               item.routingBlockers=[
-                groundingObserved?'roblox-first-frame-grounding-failed':'roblox-first-frame-grounding-unobserved',
+                groundingObserved?'roblox-first-frame-grounding-failed'
+                  :simulationUnavailable?'roblox-first-frame-requires-simulating-runtime'
+                  :'roblox-first-frame-grounding-unobserved',
                 ...(simulationStartCapabilityDenied?['roblox-open-cloud-simulation-plugin-capability-denied']:[]),
               ];
               if(simulationStartCapabilityDenied)console.log('ROBLOX_FIRST_FRAME_SIMULATION_DIAGNOSTIC='+item.gameId+':OPEN_CLOUD_TASK_PLUGIN_CAPABILITY_DENIED');
@@ -1413,7 +1424,10 @@ jobs:
                   item.robloxFailureSignature=unobservedFirstFrame
                     ?'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED':'ROBLOX_RUNTIME_FOUNDATION_PENDING';
                   item.routingBlockers=unobservedFirstFrame
-                    ?['roblox-first-frame-grounding-unobserved','roblox-runtime-foundation-awaiting-observation']
+                    ?[item.robloxFirstFrameGroundingEvidence?.simulationUnavailable===true
+                        ?'roblox-first-frame-requires-simulating-runtime'
+                        :'roblox-first-frame-grounding-unobserved',
+                      'roblox-runtime-foundation-awaiting-observation']
                     :['roblox-runtime-foundation-awaiting-observation'];
                   console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}:attempt=${attempts}:retry=UNLIMITED_CAUSAL_REPAIR`);
                   item.updatedAt=stamp;
