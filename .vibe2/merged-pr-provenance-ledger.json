@@ -115128,11 +115128,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_38dbc02eec4f4fb7167e8156",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10813",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d311f02f35fd65a32604e5c996366b28e4e8d159",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10813,
+        "baseBranch": "main",
+        "headBranch": "motion-forge-3-npc-runtime-20261028",
+        "baseSha": "d311f02f35fd65a32604e5c996366b28e4e8d159",
+        "headSha": "534919490af05f9b2a7e8569d196f60a8c0a1c3e",
+        "mergeCommitSha": "99ef85779ddc9090ecbff9bd4cce0986181319f1",
+        "mergedAt": "2026-10-28T01:45:23Z",
+        "authorLogin": "hans1177",
+        "titleHash": "226765e4baf0ea31839ce98e004e51002b99f14434f11a30b306a481b8051bcd",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "motion-forge-3-npc-runtime-20261028",
+        "candidateSha": "534919490af05f9b2a7e8569d196f60a8c0a1c3e"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 167,
+        "deletedLineCount": 1756,
+        "changedFiles": [
+          ".github/workflows/motion-evolution-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-motion-evolution.test.mjs",
+          "roblox-games/baeksu-war/roblox-source-bootstrap.json",
+          "roblox-games/cozy-island/roblox-source-bootstrap.json",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/horror-escape-room/roblox-source-bootstrap.json"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/motion-evolution-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-motion-evolution.test.mjs",
+          "roblox-games/baeksu-war/roblox-source-bootstrap.json",
+          "roblox-games/cozy-island/roblox-source-bootstrap.json",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/horror-escape-room/roblox-source-bootstrap.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10813",
+        "merge-commit:99ef85779ddc9090ecbff9bd4cce0986181319f1",
+        "base-main:d311f02f35fd65a32604e5c996366b28e4e8d159"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 909
+    "total": 910
   }
 }
