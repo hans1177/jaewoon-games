@@ -91,6 +91,16 @@ const assetAppearanceFactor=key=>{
 };
 // Original, unchanged Tiny Treats mesh filenames; never fabricate an absent asset.
 const MODEL_NAMES = Object.freeze(['floor_base','tree','tree_large','foliage_A','foliage_B','cobblestones','bench_A','bench_B','fence_straight','house','gate_single','package']);
+// Every existing placeable uses an actual, licensed Homely House mesh in 3D.
+// Keep one mapping for both the placement ghost and saved/multiplayer structures.
+const STRUCTURE_MODEL_BY_ID=Object.freeze({
+  bench:'bench_A',furnace:'bench_B','toxic-furnace':'bench_B',
+  'iron-bench':'bench_B','gold-bench':'bench_B','jungle-bench':'bench_A',
+  'sunstone-bench':'bench_B','blacksmith-anvil':'bench_B','cooking-station':'bench_A',
+  'shadow-wolf-incubator':'house',flag:'fence_straight',
+  'storage-chest':'package','wood-wall':'fence_straight','wood-door':'gate_single',
+  'defense-tower':'house',bed:'house','garden-plot':'foliage_A',portal:'gate_single'
+});
 
 function parseDownloadedObj(text, modelName, materialText=''){
   // The tracked Tiny Treats CC0 OBJ vertices/faces remain the geometry authority.
@@ -545,22 +555,34 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // 메인 · 3D 도감 이름표: 등록한 종에만 기존 몬스터 머리 위 이름을 표시한다.
   const nameTextures=new Map();
   function syncBestiaryName(actor,e,state,height){
-    if(!state.bestiary?.[e.type?.id]||actor.nameLabel)return;
+    // Only a genuinely registered species has a label, including after save reset.
+    if(!state.bestiary?.[e.type?.id]){
+      if(actor.nameLabel){
+        actor.anchor.remove(actor.nameLabel);
+        actor.nameLabel.material.dispose();
+        actor.nameLabel=null;
+      }
+      return;
+    }
+    if(actor.nameLabel)return;
     let texture=nameTextures.get(e.type.id);
     if(!texture){
-      const surface=document.createElement('canvas');surface.width=512;surface.height=80;
+      const surface=document.createElement('canvas');surface.width=768;surface.height=128;
       const pen=surface.getContext('2d');
-      pen.fillStyle='rgba(8,24,16,.84)';pen.fillRect(5,4,502,72);
-      pen.strokeStyle='#a7ddb4';pen.lineWidth=3;pen.strokeRect(5,4,502,72);
-      pen.fillStyle='#f5fff7';pen.font='bold 34px sans-serif';pen.textAlign='center';pen.textBaseline='middle';
-      pen.fillText(e.type.name,256,40,475);
+      pen.fillStyle='rgba(3,14,12,.97)';pen.fillRect(5,5,758,118);
+      pen.strokeStyle='#ecffdd';pen.lineWidth=7;pen.strokeRect(5,5,758,118);
+      pen.font='900 64px system-ui,sans-serif';pen.textAlign='center';pen.textBaseline='middle';
+      pen.strokeStyle='#010c08';pen.lineWidth=9;pen.lineJoin='round';
+      pen.strokeText(e.type.name,384,65,710);
+      pen.fillStyle='#ffffff';pen.fillText(e.type.name,384,65,710);
       texture=new THREE.CanvasTexture(surface);texture.colorSpace=THREE.SRGBColorSpace;
+      texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
       nameTextures.set(e.type.id,texture);
     }
-    const material=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false});
+    const material=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false,toneMapped:false});
     const label=new THREE.Sprite(material);
-    label.scale.set(Math.min(4.8,Math.max(2.2,e.type.name.length*.38)),.65,1);
-    label.position.y=height+.55;label.renderOrder=30;
+    label.scale.set(Math.min(6.5,Math.max(3.2,e.type.name.length*.56)),1.2,1);
+    label.position.y=height+.7;label.renderOrder=30;
     actor.anchor.add(label);actor.nameLabel=label;
   }
   // 메인 · 기존 건축 청사진을 3D 월드 위에서 직접 미리 보여준다.
@@ -1153,6 +1175,32 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(!isInterior&&workbench&&Math.hypot(workbench.x-px,workbench.y-py)<1000)
         addVisibleEntity(key,modelName,workbench.x,workbench.y,1.7,seen);
     }
+    // Previously unrendered buildings must stay visible at their saved world
+    // coordinates. These meshes never mutate the authoritative building state.
+    for(const [key,placed,kind] of [
+      ['furnace',state.furnace,'bench_B'],
+      ['toxicFurnace',state.toxicFurnace,'bench_B'],
+      ['sunstoneBench',state.sunstoneBench,'bench_B'],
+      ['blacksmithAnvil',state.blacksmithAnvil,'bench_B'],
+      ['cookingStation',state.cookingStation,'bench_A'],
+      ['incubator',state.incubator,'house']
+    ]){
+      if(!isInterior&&placed&&Math.hypot(placed.x-px,placed.y-py)<1000)
+        addVisibleEntity('built:'+key,kind,placed.x,placed.y,1.7,seen);
+    }
+    for(const [group,list,kind,size] of [
+      ['flag',state.flags,'fence_straight',1.2],
+      ['tower',state.towers,'house',1.6],
+      ['bed',state.beds,'house',1.1],
+      ['garden',state.gardens,'foliage_A',1.2],
+      ['portal',state.portals,'gate_single',1.5]
+    ]){
+      for(const [i,placed] of (list||[]).entries()){
+        if(!isInterior&&placed&&Math.hypot(placed.x-px,placed.y-py)<1000)
+          addVisibleEntity('built:'+group+':'+(placed.id||i),kind,placed.x,placed.y,size,seen,
+            placed.vertical?Math.PI/2:0);
+      }
+    }
     for(const [i,wall] of (state.walls||[]).entries()){
       if(!isInterior&&Math.hypot(wall.x-px,wall.y-py)<1000)
         addVisibleEntity('wall:'+(wall.id||i),'fence_straight',wall.x,wall.y,1.2,seen,wall.vertical?Math.PI/2:0);
@@ -1200,11 +1248,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     for(let i=visibleBoltCount;i<mageBoltEffects.length;i++)mageBoltEffects[i].visible=false;
     const bp=state.area==='surface'?state.blueprint:null;
-    const blueprintKind=!bp?'':/door|gate/i.test(bp.id)?'gate_single'
-      :/wall|fence/i.test(bp.id)?'fence_straight'
-      :/bench|forge|work|craft|furnace/i.test(bp.id)?'bench_B'
-      :/chest|storage|crate|box/i.test(bp.id)?'package'
-      :/house|home|hut|shelter/i.test(bp.id)?'house':'';
+    const blueprintKind=bp?(STRUCTURE_MODEL_BY_ID[bp.id]||''):'';
     if(blueprintKind!==blueprintSourceId||(!blueprintVisual&&models.has(blueprintKind))){
       if(blueprintVisual){blueprintGhost.remove(blueprintVisual);blueprintVisual=null}
       blueprintSourceId=blueprintKind;
