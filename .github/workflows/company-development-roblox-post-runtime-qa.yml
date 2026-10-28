@@ -2566,6 +2566,9 @@ jobs:
                 const olderExact=String(process.env.OLDER_EXACT||'').toLowerCase()==='true';
                 const studio=jobs.filter(j=>String(j.name||'').startsWith(prefix));
                 if(studio.some(j=>String(j.status||'').toLowerCase()==='in_progress'))return process.stdout.write('PRESERVE_ACTIVE');
+                // Replan only idle pending sessions; never cancel a live Cloud tester
+                // or a Studio session merely because the MCP executor was repaired.
+                if(jobs.some(j=>String(j.name||'')==='existing game tester and QA validate exact Roblox runtime candidate'&&String(j.status||'').toLowerCase()==='in_progress'))return process.stdout.write('PRESERVE_ACTIVE');
                 const waiting=studio.filter(j=>['queued','pending','requested','waiting'].includes(String(j.status||'').toLowerCase()));
                 if(!waiting.length)return process.stdout.write('NONE');
                 if(ownerExact)return process.stdout.write('CANCEL');
