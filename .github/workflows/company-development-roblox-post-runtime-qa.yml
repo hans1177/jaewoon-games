@@ -191,6 +191,11 @@ jobs:
           fi
 
   runtime-foundation-qa:
+    # Account-owner Luau task creation is shared across exact games and other release QA.
+    concurrency:
+      group: roblox-open-cloud-luau-owner
+      queue: max
+      cancel-in-progress: false
     needs: dedupe
     if: needs.dedupe.outputs.run == 'true'
     name: existing game tester and QA validate exact Roblox runtime candidate
@@ -466,8 +471,8 @@ jobs:
           });
           const probes=new Array(candidates.length);
           const imageRequests=new Map(); // Coalesce image API reads for games sharing one universe.
-          const probeConcurrency=Math.max(1,Math.min(8,candidates.length||1));
-          console.log('ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE');
+          const probeConcurrency=1;
+          console.log('ROBLOX_OPEN_CLOUD_PARALLEL_MODE=SERIAL_OWNER_QUOTA_GUARD');
           console.log('ROBLOX_OPEN_CLOUD_REQUESTED_PRIORITY='+(requested||'NONE'));
           console.log('ROBLOX_OPEN_CLOUD_REQUESTED_SCOPE='+(requested?'EXACT_GAME_ONLY':'ALL_PENDING_PARALLEL_BATCH'));
           console.log('ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY');
@@ -542,6 +547,12 @@ jobs:
             }
           };
           await Promise.all(Array.from({length:probeConcurrency},()=>runProbeWorker()));
+          // Keep the shared owner quota paced across independent Actions runs, not just inside this process.
+          // A deferred request never consumed a new Luau task slot.
+          if(probes.some(probe=>probe&&probe.error!=='ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY')){
+            console.log('ROBLOX_OPEN_CLOUD_OWNER_CAPACITY_COOLDOWN_MS=180000');
+            await new Promise(resolve=>setTimeout(resolve,180000));
+          }
           console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT='+probeConcurrency);
           console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT='+probes.length);
           fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json',JSON.stringify(probes,null,2)+'\n');

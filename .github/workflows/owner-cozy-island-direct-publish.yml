@@ -30,6 +30,10 @@ env:
 
 jobs:
   publish:
+    concurrency:
+      group: roblox-open-cloud-luau-owner
+      queue: max
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

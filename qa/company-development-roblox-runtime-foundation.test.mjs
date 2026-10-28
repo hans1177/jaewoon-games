@@ -715,18 +715,25 @@ test('F9 canonical publish uses exact F9 released-game identity and immediately 
 });
 
 
-test('post-runtime Open Cloud engine probes keep bounded cross-game parallelism while retrying 429 per game',()=>{
+test('post-runtime Open Cloud probes preserve per-game evidence while respecting the shared owner rate limit',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const foundation=fs.readFileSync('tools/company-development-roblox-runtime-foundation.mjs','utf8');
  assert.doesNotMatch(workflow,/const throttlePressure=candidates\.some/);
- assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
- assert.match(workflow,/ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE/);
+ assert.match(workflow,/const probeConcurrency=1;/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_PARALLEL_MODE=SERIAL_OWNER_QUOTA_GUARD/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_OWNER_CAPACITY_COOLDOWN_MS=180000/);
+ assert.match(workflow,/runtime-foundation-qa:[\s\S]*?group: roblox-open-cloud-luau-owner\n      queue: max\n      cancel-in-progress: false/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY/);
  assert.match(workflow,/networkRetryAttempts:3,networkRetryDelayMs:1000/);
  assert.match(workflow,/networkRetryAttempts:2,networkRetryDelayMs:750/);
  assert.match(foundation,/const exponentialDelay=Math\.min\(30000,baseDelayMs\*Math\.max\(1,2\*\*Math\.max\(0,attempt-1\)\)\)/);
  assert.match(foundation,/openCloudEngineCreateAdmissionTail=Promise\.resolve\(\)/);
- assert.match(foundation,/createAdmissionIntervalMs=12500/);
+ assert.match(foundation,/createAdmissionIntervalMs=180000/);
+ assert.match(foundation,/Math\.min\(180000,Number\(minimumIntervalMs\)\|\|0\)/);
+ const release=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+ const cozy=fs.readFileSync('.github/workflows/owner-cozy-island-direct-publish.yml','utf8');
+ assert.match(release,/post-publish-qa:[\s\S]*?group: roblox-open-cloud-luau-owner\n      queue: max\n      cancel-in-progress: false/);
+ assert.match(cozy,/publish:\n    concurrency:\n      group: roblox-open-cloud-luau-owner/);
  assert.match(foundation,/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_ADMISSION_WAIT=/);
  assert.match(foundation,/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_CAPACITY_BLOCKED/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_RATE_LIMIT_WAIT=/);

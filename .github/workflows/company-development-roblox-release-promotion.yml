@@ -1452,6 +1452,10 @@ jobs:
           fi
 
   post-publish-qa:
+    concurrency:
+      group: roblox-open-cloud-luau-owner
+      queue: max
+      cancel-in-progress: false
     name: Verify canonical Place after publish then restart Roblox F0
     needs: release
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_stage == 'final' && inputs.thumbnail_only != true && needs.release.result == 'success' }}

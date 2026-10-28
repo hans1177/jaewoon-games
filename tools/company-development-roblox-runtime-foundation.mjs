@@ -40,7 +40,7 @@ async function withOpenCloudEngineCreateAdmission(request,{enabled=true,minimumI
       console.warn('ROBLOX_OPEN_CLOUD_ENGINE_CREATE_CAPACITY_BLOCKED:WAIT_MS='+retryAfterMs+':RETRY_NOT_BEFORE='+retryNotBefore);
       return Object.freeze({response:null,deferred:true,retryAfterMs,retryNotBefore});
     }
-    const intervalMs=Math.max(0,Math.min(60000,Number(minimumIntervalMs)||0));
+    const intervalMs=Math.max(0,Math.min(180000,Number(minimumIntervalMs)||0));
     const admissionWaitMs=Math.max(0,openCloudEngineCreateLastAtMs+intervalMs-Date.now());
     if(admissionWaitMs>0){
       console.warn('ROBLOX_OPEN_CLOUD_ENGINE_CREATE_ADMISSION_WAIT=WAIT_MS='+admissionWaitMs);
@@ -310,7 +310,7 @@ export async function probeRobloxOpenCloudImageEvidence({
 
 export async function probeRobloxOpenCloudEngine({
   universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,
-  networkRetryAttempts=4,networkRetryDelayMs=500,createAdmissionIntervalMs=12500,
+  networkRetryAttempts=4,networkRetryDelayMs=500,createAdmissionIntervalMs=180000,
 }={}){
   const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
   if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
