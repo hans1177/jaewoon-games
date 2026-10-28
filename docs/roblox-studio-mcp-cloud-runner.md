@@ -2,6 +2,31 @@
 
 이 문서는 `hans1177/jaewoon-games`의 **필수 Roblox Studio MCP 실제 플레이** 게이트를 정상적으로 실행하는 방법을 설명합니다. 로컬 PC는 필수는 아니지만, **인증된 대화형 Windows 데스크톱**은 필요합니다. 현재의 단발성 GitHub-hosted `windows-latest` 연결 진단은 Roblox 계정·Studio 로그인 세션을 보존하지 않으며, 실제 플레이 증거가 아닙니다.
 
+## 비용 0원 경로 — 이미 가지고 있는 Windows 컴퓨터 사용
+
+공식 Roblox Studio MCP 서버와 GitHub 자체 호스팅 러너 소프트웨어는 별도 유료 서비스가 필요하지 않습니다. **하지만 로그인 상태의 실제 Windows 데스크톱이 필요**하며, 컴퓨터/전기/인터넷 자체가 공짜로 제공되는 것은 아닙니다. 지속형 Windows VM을 새로 대여하거나 유료 AI API 키를 만들 필요는 없습니다.
+
+기존 Windows 컴퓨터에서 **공식 Roblox Studio에 로그인하고 테스트 Place를 연 다음**, Assistant → … → Manage MCP Servers → **Enable Studio as MCP server**를 직접 켜세요. 이 설정·계정 로그인은 자동화가 대신하거나 우회하지 않습니다.
+
+이후 본인의 Windows PowerShell에서 저장소의 무료 설정 스크립트를 실행합니다.
+
+```powershell
+# Clone the already-linked repository in any directory, or update the existing clone.
+git clone https://github.com/hans1177/jaewoon-games.git
+cd jaewoon-games
+
+# Validate signed Studio, same interactive desktop and built-in MCP launcher.
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\connect-roblox-studio-mcp-free-windows.ps1 -CheckOnly
+
+# Download SHA256-verified official Windows Actions runner, register once,
+# and run it in the SAME desktop as Studio (no Windows service).
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\connect-roblox-studio-mcp-free-windows.ps1
+```
+
+GitHub 등록용 **일회용 토큰**은 [저장소 Actions Runners 설정](https://github.com/hans1177/jaewoon-games/settings/actions/runners) → **New self-hosted runner**에서 가져와 **본인 PC의 PowerShell에만** 붙여넣습니다. 토큰, Roblox 비밀번호, 쿠키를 ChatGPT나 GitHub 코드에 전송하지 않습니다. 스크립트는 공식 GitHub Actions Windows x64 최신 릴리스를 SHA-256으로 검증하고, `roblox-studio-authenticated` 라벨로 같은 Windows 사용자의 대화형 세션에서 실행합니다. 창을 닫거나 Studio 로그아웃 시 실행이 중단됩니다.
+
+**Windows PC가 전혀 없고 무료 임시 GitHub-hosted 작업자만 있는 경우에는 Studio MCP 실제 플레이를 인증된 상태로 지속 실행할 수 없습니다.** 무료 GitHub-hosted 연결 진단은 로그인된 Studio 플레이 통과 증거로 대체할 수 없습니다. Studio PASS와 독립 Open Cloud PASS가 없으면 F9 및 정식 배포는 계속 차단됩니다.
+
 ## 1. 먼저 준비할 것
 
 1. 원격 접속 가능한 **지속형 Windows 클라우드 VM** 또는 보안이 유지되는 Windows 작업자 한 대를 준비합니다. 생성 및 요금은 사용자가 직접 확인·승인해야 합니다.
