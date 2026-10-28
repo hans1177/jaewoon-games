@@ -59,3 +59,51 @@ test('existing authorized Luau code synthesis stays intact',()=>{
   assert.throws(()=>synthesizeVibe59RobloxServerAction({machine,binding,source,
     replaceAnchor:'-- ANCHOR',sourcePath:'client/Main.client.luau'}),/SERVER_SOURCE_REQUIRED/);
 });
+
+
+// [직접 코딩 회귀] 24개 실제 Luau 동작의 생성·성공/거부 시나리오 검증.
+import {VIBE59_ROBLOX_DOMAIN_PATTERNS,synthesizeVibe59RobloxDomainAction,
+  verifyVibe59RobloxDomainScenarios} from '../tools/vibe59-roblox-coding.mjs';
+test('24 offline domain code generators preserve existing state and source authorization',()=>{
+  assert.equal(VIBE59_ROBLOX_DOMAIN_PATTERNS.length,24);
+  assert.equal(new Set(VIBE59_ROBLOX_DOMAIN_PATTERNS.map(x=>x.id)).size,24);
+  const cases=[
+    ['ai-aggro-enter','enter','flag',3,false,true],
+    ['combat-damage','damage','value',4,4,2],
+    ['building-count-place','add','value',4,4,6],
+    ['inventory-consume','sub','value',4,4,2],
+    ['bestiary-discover','confirm-true','flag',true,false,true],
+    ['saving-mark-dirty','true','flag',3,false,true]
+  ];
+  for(const [operation,kind,field,check,start,finish] of cases){
+    const spec={operation,collection:'data',field,conditionField:'check',
+      functionName:'handler',amount:2,limit:10,threshold:5};
+    const before={data:{value:field==='value'?start:4,flag:field==='flag'?start:false,check}};
+    const after=structuredClone(before);after.data[field]=finish;
+    const rejected=structuredClone(before);
+    if(kind==='enter')rejected.data.check=9;
+    else if(kind==='damage'||kind==='sub')rejected.data.value=0;
+    else if(kind==='add')rejected.data.value=10;
+    else if(kind==='confirm-true')rejected.data.check=false;
+    else rejected.data.flag=true;
+    const proof=verifyVibe59RobloxDomainScenarios({spec,scenarios:[
+      {initialState:before,expectedState:after,expectedApplied:true},
+      {initialState:rejected,expectedState:rejected,expectedApplied:false}
+    ]});
+    assert.equal(proof.pass,true,operation);
+    const source='local function handler(player)\n local state = profiles[player]\n'+
+      ' if state.data.value and state.data.flag and state.data.check then end\n -- ACTION\nend';
+    const code=synthesizeVibe59RobloxDomainAction({spec,source,
+      replaceAnchor:'-- ACTION',sourcePath:'server/Main.server.luau'});
+    assert.match(code.source,/return false/);
+    assert.equal(code.modelUsed,false);
+    assert.equal(code.sourceWrite,false);
+    assert.equal(code.runtimeVerified,false);
+    assert.throws(()=>synthesizeVibe59RobloxDomainAction({spec,source,
+      replaceAnchor:'-- ACTION',sourcePath:'client/Main.client.luau'}),/SERVER_SOURCE_REQUIRED/);
+    assert.throws(()=>synthesizeVibe59RobloxDomainAction({spec:{...spec,field:'missing'},
+      source,replaceAnchor:'-- ACTION',sourcePath:'server/Main.server.luau'}),/EXISTING_FIELDS_REQUIRED/);
+  }
+  assert.throws(()=>verifyVibe59RobloxDomainScenarios({spec:{operation:'inventory-grant',
+    collection:'data',field:'value',amount:2,limit:10},scenarios:[]}),/TWO_SCENARIOS_REQUIRED/);
+});

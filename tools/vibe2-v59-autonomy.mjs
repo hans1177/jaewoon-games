@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
-import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding} from './vibe59-roblox-coding.mjs';
+import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibeVerifiedMemoryIndex,retrieveVibeVerifiedPatterns,classifyVibeRepairFailure} from '../assets/vibe-v3-engine.js';
 const sha=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
 const clean=x=>String(x??'').trim();
@@ -184,7 +184,8 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const req=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
   if(req==null)return null;
   if(!req||req.ownerApproved!==true||!req.path||!req.find
-    ||Boolean(req.rule)===Boolean(req.machine))
+    ||(req.robloxDomainAction?(Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
+       Boolean(req.rule)===Boolean(req.machine)))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
   const relative=clean(req.path).replaceAll('\\','/');
   if(!relative||relative.startsWith('/')||relative.includes('//')
@@ -201,6 +202,21 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
+  if(req.robloxDomainAction){
+    const compiled=synthesizeVibe59RobloxDomainAction({spec:req.robloxDomainAction,
+      source:content,replaceAnchor:find,sourcePath:relative});
+    const cases=verifyVibe59RobloxDomainScenarios({spec:req.robloxDomainAction,
+      scenarios:req.scenarios});
+    if(!cases.pass)throw Error('VIBE59_DOMAIN_TEST_COUNTEREXAMPLE:'+
+      cases.cases.filter(x=>!x.pass).map(x=>x.name).join(','));
+    if(find===compiled.source)throw Error('VIBE59_NOOP');
+    return Object.freeze({summary:'Vibe5.9 Roblox offline direct domain coding',
+      expectedEffect:'Source-grounded existing server function behavior',
+      edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
+      tests:[],vibe59CodeKind:'ROBLOX_DOMAIN_OPERATION',vibe59DomainPattern:compiled.operation,
+      vibe59DomainSafety:compiled.safety,vibe59DomainOracle:cases,
+      sourceWrite:false,modelUsed:false,runtimeVerified:false});
+  }
   const codeKind=req.robloxServerAction?'ROBLOX_SERVER_ACTION':req.machine?'STATE_MACHINE':'STATE_RULE';
   if(req.robloxServerAction&&(target!=='roblox'||!req.machine||!Array.isArray(req.scenarios)||!req.scenarios.length))
     throw Error('VIBE59_ROBLOX_AUTHORITY_AND_SCENARIOS_REQUIRED');

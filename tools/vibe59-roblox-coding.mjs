@@ -158,6 +158,139 @@ function action(item,stateField){
   }
   return dest+' = '+rhs;
 }
+const PATTERN_ROWS=Object.freeze([["ai-aggro-enter","ai","enter"],["ai-aggro-exit","ai","exit"],["ai-attack-cooldown","ai","cooldown"],["ai-phase-advance","ai","add"],["combat-damage","combat","damage"],["combat-heal","combat","add"],["combat-shield","combat","add"],["combat-spend-energy","combat","sub"],["building-count-place","building","add"],["building-count-remove","building","sub"],["building-charge-material","building","sub"],["building-refund-material","building","add"],["inventory-grant","inventory","add"],["inventory-consume","inventory","sub"],["inventory-transfer","inventory","transfer"],["inventory-equip","inventory","equip"],["bestiary-discover","bestiary","confirm-true"],["bestiary-register-kill","bestiary","confirm-add"],["bestiary-register-sighting","bestiary","add"],["bestiary-rare-mark","bestiary","confirm-true"],["saving-mark-dirty","saving","true"],["saving-clear-dirty","saving","confirm-false"],["saving-checkpoint","saving","checkpoint"],["saving-retry-budget","saving","add"]]);
+
+// [Roblox Luau 직접 코딩] 24종. 기존 서버 함수·기존 데이터 필드만 변경하며 새 저장 키를 만들지 않는다.
+export const VIBE59_ROBLOX_DOMAIN_PATTERNS=Object.freeze(PATTERN_ROWS.map(
+  ([id,system,kind])=>Object.freeze({id,system,kind})
+));
+function domainSpec(spec){
+  const pattern=VIBE59_ROBLOX_DOMAIN_PATTERNS.find(row=>row.id===spec?.operation);
+  if(!pattern)throw Error('VIBE59_DOMAIN_PATTERN_UNSUPPORTED');
+  const collection=identifier(spec.collection,'collection'),field=identifier(spec.field,'field');
+  const condNeeded=['enter','exit','cooldown','equip','confirm-true','confirm-add','confirm-false'].includes(pattern.kind);
+  const conditionField=condNeeded?identifier(spec.conditionField,'conditionField'):null;
+  const toField=pattern.kind==='transfer'?identifier(spec.toField,'toField'):null;
+  if(conditionField===field||toField===field)throw Error('VIBE59_DOMAIN_FIELD_ALIAS');
+  const amountNeeded=['cooldown','add','sub','damage','confirm-add','transfer','checkpoint'].includes(pattern.kind);
+  const amount=amountNeeded?numeric(spec.amount):null;
+  if(amountNeeded&&amount<=0)throw Error('VIBE59_DOMAIN_AMOUNT');
+  const capNeeded=['add','confirm-add','transfer'].includes(pattern.kind);
+  const limit=capNeeded?numeric(spec.limit):null;
+  if(capNeeded&&limit<=0)throw Error('VIBE59_DOMAIN_CAP');
+  const threshold=['enter','exit'].includes(pattern.kind)?numeric(spec.threshold):null;
+  if(threshold!==null&&threshold<0)throw Error('VIBE59_DOMAIN_THRESHOLD');
+  return {pattern,collection,field,conditionField,toField,amount,limit,threshold};
+}
+function domainPlan(spec){
+  const p=domainSpec(spec),base='state.'+p.collection,f=base+'.'+p.field;
+  const c=p.conditionField?base+'.'+p.conditionField:null;
+  const to=p.toField?base+'.'+p.toField:null;
+  const isFlag=['enter','exit','equip','confirm-true','true','confirm-false'].includes(p.pattern.kind);
+  const condFlag=['confirm-true','confirm-add','confirm-false'].includes(p.pattern.kind);
+  const guards=['if type('+base+') ~= "table" then return false end',
+    'if type('+f+') ~= "'+(isFlag?'boolean':'number')+'" then return false end'];
+  if(c)guards.push('if type('+c+') ~= "'+(condFlag?'boolean':'number')+'" then return false end');
+  if(to)guards.push('if type('+to+') ~= "number" then return false end');
+  let check='',lines=[];
+  switch(p.pattern.kind){
+    case 'enter':check=c+' <= '+p.threshold+' and not '+f;lines=[f+' = true'];break;
+    case 'exit':check=c+' > '+p.threshold+' and '+f;lines=[f+' = false'];break;
+    case 'cooldown':check=c+' >= '+f;lines=[f+' = '+c+' + '+p.amount];break;
+    case 'add':check=f+' >= 0 and '+f+' < '+p.limit;
+      lines=[f+' = math.min('+p.limit+', '+f+' + '+p.amount+')'];break;
+    case 'sub':check=f+' >= '+p.amount;lines=[f+' = '+f+' - '+p.amount];break;
+    case 'damage':check=f+' > 0';lines=[f+' = math.max(0, '+f+' - '+p.amount+')'];break;
+    case 'transfer':check=f+' >= '+p.amount+' and '+to+' >= 0 and '+to+' + '+p.amount+' <= '+p.limit;
+      lines=[f+' = '+f+' - '+p.amount,to+' = '+to+' + '+p.amount];break;
+    case 'equip':check=c+' > 0 and not '+f;lines=[f+' = true'];break;
+    case 'confirm-true':check=c+' and not '+f;lines=[f+' = true'];break;
+    case 'confirm-add':check=c+' and '+f+' >= 0 and '+f+' < '+p.limit;
+      lines=[f+' = math.min('+p.limit+', '+f+' + '+p.amount+')'];break;
+    case 'true':check='not '+f;lines=[f+' = true'];break;
+    case 'confirm-false':check=c+' and '+f;lines=[f+' = false'];break;
+    case 'checkpoint':check=f+' < '+p.amount;lines=[f+' = math.max('+f+', '+p.amount+')'];break;
+    default:throw Error('VIBE59_DOMAIN_KIND');
+  }
+  return {p,code:[...guards,'if not ('+check+') then return false end',...lines].join('\n')};
+}
+export function synthesizeVibe59RobloxDomainAction({spec={},source='',replaceAnchor='',sourcePath=''}={}){
+  if(classifyVibe59RobloxScript(sourcePath)!=='SERVER')
+    throw Error('VIBE59_DOMAIN_SERVER_SOURCE_REQUIRED');
+  if(typeof source!=='string'||source.length>260000||typeof replaceAnchor!=='string'
+    ||!replaceAnchor||replaceAnchor.length>1024||source.split(replaceAnchor).length!==2)
+    throw Error('VIBE59_DOMAIN_ANCHOR_REQUIRED');
+  const {p,code}=domainPlan(spec),original=source.replace(replaceAnchor,'');
+  const owner=identifier(spec.functionName,'function');
+  if(!declared(original,owner,'function')||!declared(original,'state','variable'))
+    throw Error('VIBE59_DOMAIN_EXISTING_FUNCTION_REQUIRED');
+  for(const field of [p.field,p.conditionField,p.toField].filter(Boolean))
+    if(!new RegExp('\\bstate\\.'+p.collection+'\\.'+field+'\\b').test(original))
+      throw Error('VIBE59_DOMAIN_EXISTING_FIELDS_REQUIRED');
+  if(/(?:^|\n)\s*(?:local\s+)?(?:function\s+\w+|end)\b/.test(replaceAnchor))
+    throw Error('VIBE59_DOMAIN_FUNCTION_BODY_REQUIRED');
+  return Object.freeze({source:code,operation:p.pattern.id,system:p.pattern.system,
+    sourceWrite:false,modelUsed:false,runtimeVerified:false,
+    safety:{existingFunction:true,existingFields:true,serverOnly:true,
+      newTables:false,saveSchemaUnchanged:true,studioRuntimeVerified:false}});
+}
+function domainState(obj,collection){
+  if(!obj||typeof obj!=='object'||Array.isArray(obj)||JSON.stringify(obj).length>10000)
+    throw Error('VIBE59_DOMAIN_SCENARIO_STATE');
+  const result=JSON.parse(JSON.stringify(obj)),bucket=result[collection];
+  if(!bucket||typeof bucket!=='object'||Array.isArray(bucket))throw Error('VIBE59_DOMAIN_SCENARIO_COLLECTION');
+  if(Object.values(bucket).some(v=>typeof v!=='boolean'&&!(typeof v==='number'&&Number.isFinite(v))))
+    throw Error('VIBE59_DOMAIN_SCENARIO_FIELDS');
+  return result;
+}
+function executeDomain(p,state){
+  const data=state[p.collection],v=data[p.field],c=data[p.conditionField],to=data[p.toField],k=p.pattern.kind;
+  const flag=['enter','exit','equip','confirm-true','true','confirm-false'].includes(k);
+  if(typeof v!==(flag?'boolean':'number')||typeof v==='number'&&!Number.isFinite(v))return false;
+  if(p.conditionField&&(typeof c!==(
+    ['confirm-true','confirm-add','confirm-false'].includes(k)?'boolean':'number')
+    ||typeof c==='number'&&!Number.isFinite(c)))return false;
+  if(p.toField&&(typeof to!=='number'||!Number.isFinite(to)))return false;
+  switch(k){
+    case 'enter':if(c>p.threshold||v)return false;data[p.field]=true;break;
+    case 'exit':if(c<=p.threshold||!v)return false;data[p.field]=false;break;
+    case 'cooldown':if(c<v)return false;data[p.field]=c+p.amount;break;
+    case 'add':if(v<0||v>=p.limit)return false;data[p.field]=Math.min(p.limit,v+p.amount);break;
+    case 'sub':if(v<p.amount)return false;data[p.field]=v-p.amount;break;
+    case 'damage':if(v<=0)return false;data[p.field]=Math.max(0,v-p.amount);break;
+    case 'transfer':if(v<p.amount||to<0||to+p.amount>p.limit)return false;
+      data[p.field]=v-p.amount;data[p.toField]=to+p.amount;break;
+    case 'equip':if(c<=0||v)return false;data[p.field]=true;break;
+    case 'confirm-true':if(!c||v)return false;data[p.field]=true;break;
+    case 'confirm-add':if(!c||v<0||v>=p.limit)return false;
+      data[p.field]=Math.min(p.limit,v+p.amount);break;
+    case 'true':if(v)return false;data[p.field]=true;break;
+    case 'confirm-false':if(!c||!v)return false;data[p.field]=false;break;
+    case 'checkpoint':if(v>=p.amount)return false;data[p.field]=Math.max(v,p.amount);break;
+    default:throw Error('VIBE59_DOMAIN_KIND');
+  }
+  return true;
+}
+export function verifyVibe59RobloxDomainScenarios({spec={},scenarios=[]}={}){
+  const p=domainSpec(spec);
+  if(!Array.isArray(scenarios)||scenarios.length<2||scenarios.length>12)
+    throw Error('VIBE59_DOMAIN_TWO_SCENARIOS_REQUIRED');
+  let accepted=0,rejected=0;
+  const results=scenarios.map((row,i)=>{
+    if(typeof row?.expectedApplied!=='boolean')throw Error('VIBE59_DOMAIN_EXPECTATION_REQUIRED:'+i);
+    const state=domainState(row.initialState,p.collection);
+    const expected=domainState(row.expectedState,p.collection);
+    const applied=executeDomain(p,state);
+    if(row.expectedApplied)accepted++;else rejected++;
+    const pass=applied===row.expectedApplied&&JSON.stringify(state)===JSON.stringify(expected);
+    return {name:String(row.name||i).slice(0,80),pass,applied};
+  });
+  if(!accepted||!rejected)throw Error('VIBE59_DOMAIN_BOUNDARY_PROOF_REQUIRED');
+  return Object.freeze({pass:results.every(x=>x.pass),cases:results,
+    modelUsed:false,sourceWrite:false,runtimeVerified:false,
+    authority:'offline-domain-semantics-only'});
+}
+
 function declared(source,name,kind){
   const prefix='(?:^|\\n)\\s*';
   const re=kind==='function'
