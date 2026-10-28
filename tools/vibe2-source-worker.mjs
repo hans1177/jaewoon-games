@@ -19,6 +19,7 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
+import { createVibe4OfflinePatternCandidate } from './vibe2-v4-pattern-coder.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, executableText } from './company-vibe2-expert-development.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
@@ -8882,8 +8883,23 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   let generated=null;
+  // V4 optional owner-specific offline code generation. Never a model or runtime PASS.
+  const vibe4Recipe=order?.selectedTask?.vibe4DeterministicRecipe??order?.vibe4DeterministicRecipe;
+  if(vibe4Recipe!=null){
+    if(allowFullRewrite||verifiedExternalLearningContract.required===true)
+      throw new Error('VIBE4_PATTERN_INCOMPATIBLE_WITH_WORK_CONTRACT');
+    const offline=createVibe4OfflinePatternCandidate({order,sourceRoot,responsibleFiles,target});
+    const candidate=normalizeCandidate(offline,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
+    applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+    const candidateValidation=candidateValidator(candidate);
+    generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,
+      modelUsed:false,vibe4PatternId:offline.vibe4PatternId,
+      mode:'VIBE4_OFFLINE_PATTERN',maxPredict:0,timeoutMs:0,contextWindow:0,
+      temperature:0,completionMode:'VIBE4_OFFLINE_PATTERN'}};
+    console.log('VIBE4_OFFLINE_PATTERN=VALIDATED:'+offline.vibe4PatternId);
+  }
   const webInput=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicWebInputCandidate({order,sourceRoot,responsibleFiles}):null;
-  if(webInput){
+  if(!generated&&webInput){
     try{
       const candidate=normalizeCandidate(webInput,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});

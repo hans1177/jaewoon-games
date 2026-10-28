@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { exploreVibe2WorkOrder, explorationGuidance, extractVibeSourceImportRefs, explorationOrderFingerprint } from '../tools/vibe2-exploration-worker.mjs';
+import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch, beginVibeQueueBatch, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
@@ -42,6 +43,63 @@ test('exploration worker collects reusable impact context without changing sourc
   assert.equal(fs.readFileSync(player,'utf8'),before);
 });
 
+
+test('Vibe4 offline engine generates explicit speed threshold without touching game source',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/v4');
+  const file=path.join(root,'src/monster.js');
+  write(file,'function move(){\n  speed = baseSpeed;\n}\n');
+  const before=fs.readFileSync(file,'utf8');
+  const recipe={kind:'health-threshold-speed',path:'src/monster.js',find:'  speed = baseSpeed;',
+    currentHealth:'hp',maximumHealth:'maxHp',speedOutput:'speed',baseSpeed:'baseSpeed',
+    thresholdPercent:30,speedMultiplier:2,explicitOwnerParameters:true};
+  const args={sourceRoot:root,responsibleFiles:['src/monster.js'],target:'web'};
+  const result=createVibe4OfflinePatternCandidate({order:{vibe4DeterministicRecipe:recipe},...args});
+  assert.match(result.edits[0].replace,/hp \/ maxHp <= 0\.3/);
+  assert.match(result.edits[0].replace,/speed = baseSpeed \* 2;/);
+  assert.doesNotMatch(result.edits[0].replace,/speed = speed \*/);
+  assert.equal(result.proof.modelUsed,false);
+  assert.equal(result.proof.runtimeVerified,false);
+  assert.equal(fs.readFileSync(file,'utf8'),before);
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:{...recipe,baseSpeed:'speed'}},...args
+  }),/VIBE4_UNSAFE_SPEED_STATE/);
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:{...recipe,expectedSourceSha256:'0'.repeat(64)}},...args
+  }),/VIBE4_SOURCE_REVISION_MISMATCH/);
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:{...recipe,explicitOwnerParameters:false}},...args
+  }),/VIBE4_EXPLICIT_PARAMETERS_REQUIRED/);
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:{...recipe,currentHealth:'hp;unsafe()'}},...args
+  }),/VIBE4_INVALID_IDENTIFIER/);
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:recipe},...args,responsibleFiles:['src/other.js']
+  }),/VIBE4_UNAPPROVED_SOURCE/);
+  write(file,'speed = baseSpeed;\nspeed = baseSpeed;\n');
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:{...recipe,find:'speed = baseSpeed;'}},...args
+  }),/VIBE4_UNIQUE_EXISTING_ANCHOR_REQUIRED/);
+});
+
+test('Vibe4 offline code generator supports grounded Roblox stat clamp with no AI',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/v4');
+  write(path.join(root,'Combat.luau'),'local hp=100\nhp = rawHp\n');
+  const recipe={kind:'bounded-stat',path:'Combat.luau',find:'hp = rawHp',
+    value:'rawHp',output:'hp',minimum:0,maximum:100,explicitOwnerParameters:true};
+  const args={sourceRoot:root,responsibleFiles:['Combat.luau'],target:'roblox'};
+  const generated=createVibe4OfflinePatternCandidate({
+    order:{selectedTask:{vibe4DeterministicRecipe:recipe}},...args
+  });
+  assert.equal(generated.edits[0].replace,'hp = math.clamp(rawHp, 0, 100)');
+  assert.deepEqual(generated.newFiles,[]);
+  assert.equal(createVibe4OfflinePatternCandidate({order:{},...args}),null);
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:{...recipe,minimum:200}},...args
+  }),/VIBE4_INVALID_CLAMP_RANGE/);
+  assert.throws(()=>createVibe4OfflinePatternCandidate({
+    order:{vibe4DeterministicRecipe:{...recipe,path:'../escape.lua'}},...args
+  }),/VIBE4_UNAPPROVED_SOURCE/);
+});
 test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
   assert.deepEqual(extractVibeSourceImportRefs([
     "import {hit} from './combat.js';",
