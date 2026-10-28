@@ -180,11 +180,6 @@ local function locomotionTargets(controller, targets, dt, requestedSpeed)
 		dt
 	)
 
-		controller.speedVelocity,
-		1.55,
-		dt
-	)
-
 	local normalized = math.clamp(controller.speed / math.max(1, controller.nominalRunSpeed), 0, 1.35)
 	local runTarget = smooth01((normalized - 0.35) / 0.55)
 	controller.locomotionBlend, controller.locomotionBlendVelocity = springNumber(

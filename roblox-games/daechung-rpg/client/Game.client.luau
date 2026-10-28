@@ -1118,9 +1118,11 @@ RunService.Heartbeat:Connect(function(dt)
    end
   else
    -- A welded imported model's single pivot is NOT an articulated character pass.
-   if item.reportedForm~="UNRIGGED" then
-    item.reportedForm="UNRIGGED"
-    host:SetAttribute("NativeNpcMotionState","ARTICULATED_RIG_REQUIRED")
+   local report=#group.limbs>0 and "PARTIAL_RIG_FALLBACK_PLAYING_UNVERIFIED"
+    or "ARTICULATED_RIG_REQUIRED"
+   if item.reportedForm~=report then
+    item.reportedForm=report
+    host:SetAttribute("NativeNpcMotionState",report)
    end
    -- Preserve the pre-existing safe visual fallback if Motion Forge is unavailable.
    for _,row in ipairs(group.limbs)do

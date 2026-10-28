@@ -165,8 +165,22 @@ test('Daechung creature anatomy is automatically bound to real articulated motor
  assert.match(client,/ARTICULATED_RIG_REQUIRED/);
  assert.match(client,/SOURCE_POSE_PLAYING_UNVERIFIED/);
  assert.match(server,/motor\.Name=="ActorLimbMotor"/);
- assert.match(server,/if movableLimbCount>=2 then/);
+ assert.match(server,/if movableLimbCount>=1 then/);
  assert.match(server,/NativeActorMotionVisual","ARTICULATED_SOURCE_PRESERVED/);
  assert.doesNotMatch(client,/NativeNpcMotionState","RUNTIME_VERIFIED"/);
  assert.doesNotMatch(server,/NativeActorMotionVisual","RUNTIME_VERIFIED"/);
+});
+
+test('Daechung keeps head and single-tail enemy motion visible without certifying native playback',()=>{
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ for(const name of ['Head','Jaw','Neck'])
+  assert.ok(server.includes('name:find("'+name+'",1,true)'),name+' must be an actual joint');
+ assert.match(server,/motor\.Part0=rootPart;motor\.Part1=x/);
+ assert.match(server,/if movableLimbCount>=1 then/);
+ assert.match(server,/NativeActorMotionJointCount",movableLimbCount/);
+ assert.match(client,/#group\.limbs>0 and "PARTIAL_RIG_FALLBACK_PLAYING_UNVERIFIED"/);
+ assert.match(client,/if nativeMotionReady and #group\.limbs>=2 then/);
+ assert.match(client,/row\.motor\.C0=row\.item\.base\*CFrame\.Angles\(sway/);
+ assert.doesNotMatch(client,/NativeNpcMotionState","RUNTIME_VERIFIED"/);
 });
