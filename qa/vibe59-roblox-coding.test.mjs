@@ -117,3 +117,46 @@ test('comment-only and string-only fields cannot authorize domain source edits',
     replaceAnchor:'-- ACTION',sourcePath:'server/Main.server.luau'}),
     /EXISTING_FIELDS_REQUIRED/);
 });
+
+
+// [실제 기존 작업 흐름] 외부 모델 없이 코드 수정 후보가 생성되고 원본은 보존되는지 확인.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+
+test('offline Roblox coding integrates with canonical source candidate without modifying game files',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-domain-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));
+  const relative='server/Main.server.luau',filename=path.join(root,relative);
+  const original='local function handler(player)\n'+
+    ' local state = profiles[player]\n if state.inventory.wood then end\n -- ACTION\nend\n';
+  fs.writeFileSync(filename,original);
+  const spec={operation:'inventory-grant',collection:'inventory',field:'wood',
+    amount:2,limit:10,functionName:'handler'};
+  const approved={ownerApproved:true,path:relative,find:'-- ACTION',
+    robloxDomainAction:spec,scenarios:[
+      {initialState:{inventory:{wood:4}},expectedState:{inventory:{wood:6}},expectedApplied:true},
+      {initialState:{inventory:{wood:10}},expectedState:{inventory:{wood:10}},expectedApplied:false}
+    ]};
+  const run=code=>createVibe59CodeCandidate({order:{target:'roblox',vibe59CodeRequest:code},
+    target:'roblox',sourceRoot:root,responsibleFiles:[relative]});
+  const candidate=run(approved);
+  assert.equal(candidate.vibe59CodeKind,'ROBLOX_DOMAIN_OPERATION');
+  assert.equal(candidate.vibe59DomainPattern,'inventory-grant');
+  assert.equal(candidate.vibe59DomainOracle.pass,true);
+  assert.equal(candidate.modelUsed,false);
+  assert.equal(candidate.sourceWrite,false);
+  assert.deepEqual(candidate.newFiles,[]);
+  assert.equal(candidate.edits.length,1);
+  assert.equal(candidate.edits[0].path,relative);
+  assert.match(candidate.edits[0].replace,/state\.inventory\.wood = math\.min\(10/);
+  assert.equal(fs.readFileSync(filename,'utf8'),original);
+  assert.throws(()=>run({...approved,ownerApproved:false}),/OWNER_EXPLICIT_CODING_SPEC_REQUIRED/);
+  assert.throws(()=>run({...approved,sourceSha256:'0'.repeat(64)}),/STALE_SOURCE/);
+  assert.throws(()=>run({...approved,path:'../Main.server.luau'}),/UNAPPROVED_SOURCE/);
+  assert.throws(()=>run({...approved,scenarios:[
+    approved.scenarios[0],{...approved.scenarios[1],expectedApplied:true}]}),
+    /BOUNDARY_PROOF_REQUIRED|DOMAIN_TEST_COUNTEREXAMPLE/);
+});
