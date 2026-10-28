@@ -5,6 +5,23 @@ import {runInNewContext} from 'node:vm';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 
+test('official Studio MCP reclaims only old isolated QA sessions and refuses low disk capacity',()=>{
+  const start=workflow.indexOf('\n  studio-mcp-auto-play:');
+  const after=workflow.indexOf('\n      - name: Checkout central policy and helper',start);
+  const block=workflow.slice(start,after);
+  assert.ok(start>0&&after>start);
+  assert.match(block,/roblox-studio-shared-host/);
+  assert.match(block,/\$oldSessions = Join-Path \$env:RUNNER_TEMP 'studio-qa'/);
+  assert.match(block,/\$previous\.Name -notmatch/);
+  assert.match(block,/Remove-Item -LiteralPath \$previous\.FullName -Recurse -Force/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_OLD_TEMP_CLEARED/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_RUNNER_DISK_FREE_GIB/);
+  assert.match(block,/\$volume\.AvailableFreeSpace -lt 8GB/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_DISK_SPACE_REQUIRED/);
+  assert.ok(block.indexOf('ROBLOX_STUDIO_MCP_RUNNER_DISK_FREE_GIB')<block.indexOf('$sessionId = '));
+  assert.doesNotMatch(block,/Remove-Item.*\\Roblox\\Versions|Remove-Item.*E:\\jaewoon-games|Stop-Process/);
+});
+
 test('all-game multiplayer policy overrides legacy SINGLE design before static source validation',()=>{
   assert.match(workflow,/multiplayerPolicy\.required===true&&multiplayerPolicy\.scope==='ALL_ACTIVE_AND_NEW_GAMES'/);
   assert.match(workflow,/return\{known:true,required:true,mode:'POLICY_REQUIRED_STATIC_CODE'\}/);
