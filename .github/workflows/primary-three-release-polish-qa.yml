@@ -10,6 +10,8 @@ on:
       - 'qa/cozy-cc0-library-audit.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/primary-three-world-visual-qa.test.mjs'
+      - 'qa/primary-three-title-localization.test.mjs'
+      - '.github/workflows/owner-daechung-rpg-direct-publish.yml'
       - '.github/workflows/primary-three-release-polish-qa.yml'
   push:
     branches: [main]
@@ -21,6 +23,8 @@ on:
       - 'qa/cozy-cc0-library-audit.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/primary-three-world-visual-qa.test.mjs'
+      - 'qa/primary-three-title-localization.test.mjs'
+      - '.github/workflows/owner-daechung-rpg-direct-publish.yml'
       - '.github/workflows/primary-three-release-polish-qa.yml'
 
 permissions:
@@ -36,4 +40,4 @@ jobs:
           node-version: '22'
       - name: Validate primary-three release polish
         run: |
-          node --test qa/horror-escape-room-release.test.mjs qa/cozy-rpg-release-hardening.test.mjs qa/primary-three-world-visual-qa.test.mjs qa/cozy-cc0-library-audit.test.mjs
+          node --test qa/horror-escape-room-release.test.mjs qa/cozy-rpg-release-hardening.test.mjs qa/primary-three-world-visual-qa.test.mjs qa/cozy-cc0-library-audit.test.mjs qa/primary-three-title-localization.test.mjs
