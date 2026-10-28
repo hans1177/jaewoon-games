@@ -92,6 +92,11 @@ test('the workflow is diagnostic and cannot silently replace the disabled real-p
   assert.match(live,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(install,/https:\/\/setup\.rbxcdn\.com\/RobloxStudioInstaller\.exe/);
   assert.match(install,/Get-AuthenticodeSignature/);
+  assert.match(install,/StudioMCP\.exe/);
+  assert.match(install,/SIGNED_OFFICIAL_STUDIOMCP_EXE/);
+  const connector=fs.readFileSync('tools/company-roblox-hosted-studio-mcp-connection.mjs','utf8');
+  assert.match(connector,/trustedMcpExe/);
+  assert.match(connector,/command:useOfficialExe\?mcpCommand:'cmd\.exe'/);
   assert.match(install,/Roblox Corporation/);
   assert.match(install,/Start-Process -FilePath \$studio\.FullName/);
   assert.doesNotMatch(install,/\.ROBLOSECURITY|Set-Content.*AssistantSettings|roblox-player|--headless/i);
