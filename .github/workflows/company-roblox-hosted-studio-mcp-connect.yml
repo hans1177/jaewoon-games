@@ -4,14 +4,7 @@ name: Official Roblox Studio MCP · GitHub Windows connectivity probe
 run-name: Roblox official Studio MCP hosted Windows connection (not gameplay)
 
 on:
-  push:
-    branches:
-      - feat/roblox-hosted-studio-mcp-connect-20261028
-    paths:
-      - '.github/workflows/company-roblox-hosted-studio-mcp-connect.yml'
-      - 'tools/company-roblox-hosted-studio-mcp-connection.*'
-      - 'tools/company-development-roblox-studio-local-play.mjs'
-      - 'qa/company-roblox-hosted-studio-mcp-connection.test.mjs'
+  # One attempt per PR revision; avoid installing Studio twice on the same disposable Windows image.
   pull_request:
     paths:
       - '.github/workflows/company-roblox-hosted-studio-mcp-connect.yml'
