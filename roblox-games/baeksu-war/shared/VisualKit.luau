@@ -6,10 +6,21 @@ local IDs=require(script.Parent:WaitForChild("VisualAssetIds"))
 local Kit={}
 -- 실제 선택된 중앙 자산 atom만 실물 메시의 시각 효과에 적용한다.
 local selectedFamilies=(require(script.Parent:WaitForChild("GameConfig")).StudioAssets or {}).Families or {}
-local function hasStudioAssetAtom(family,atom)
+local function studioAssetFamily(family)
  local choices=selectedFamilies[family]
- return type(choices)=="table" and table.find(choices,atom)~=nil
+ return type(choices)=="table"and choices or {}
 end
+local function hasStudioAssetAtom(family,atom)
+ return table.find(studioAssetFamily(family),atom)~=nil
+end
+local creatureAtoms=studioAssetFamily("CREATURE")
+local environmentAtoms=studioAssetFamily("ENVIRONMENT")
+local propAtoms=studioAssetFamily("PROP")
+local motionAtoms=studioAssetFamily("MOTION")
+-- 원본 모델 ID/종류는 그대로 두고 선택된 해부·환경·자원 역할에 연결한다.
+local creatureAtomByModel=table.freeze({sparrow="WING_FEATHER",ant="HEAD_INSECT",
+ beetle="CARAPACE",wolf="HEAD_CANINE",turtle="CARAPACE",
+ golem="HEAD_GOLEM",dragon="WING_LEATHER"})
 local templates={}
 local expected={'sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'}
 -- 수입 메시마다 기준점이 다르므로 지형과 실제 발끝 높이를 기준으로 배치한다.
@@ -33,21 +44,24 @@ end
 -- 이 모델들은 일반적으로 R15/Motor6D가 아니므로 사람형 61종 모션을 강제로 적용하지 않는다.
 -- 서버 전투 판정과 X/Z 위치, 지형 발높이, 물리·충돌·저장값은 바꾸지 않는다.
 function Kit.PoseCreature(actor,x,z,yaw,motion)
+ if not actor:IsA("Model")then return end
  local offset=actor:GetAttribute("PivotAboveFeet")
  if type(offset)~="number" then
   offset=actor:GetPivot().Position.Y-baseY(actor)
   actor:SetAttribute("PivotAboveFeet",offset)
  end
  local bob,pitch,roll,lunge=0,0,0,0
+ local selectedWalk=table.find(motionAtoms,"WALK")~=nil
+ local selectedAttack=table.find(motionAtoms,"ATTACK_LIGHT_1")~=nil
  if type(motion)=="table" then
-  local age=tonumber(motion.attackElapsed)
+  local age=selectedAttack and tonumber(motion.attackElapsed)or nil
   if age and age>=0 and age<=.32 then
    -- 실제 서버 공격 데미지가 적용된 직후에만 작은 전진·반동 포즈.
    local strike=math.sin(math.pi*age/.32)
    bob=.055*strike
    pitch=-.055*strike
    lunge=(motion.facing==-1 and -1 or 1)*.24*strike
-  elseif motion.moving==true then
+  elseif motion.moving==true and selectedWalk then
    -- 프레임별 루트 이동이 아닌 기존 서버 이동 위치 위의 가벼운 보행 박자.
    local phase=tonumber(motion.phase) or 0
    bob=math.abs(math.sin(phase))*.085
@@ -125,9 +139,21 @@ local function finishMeshMaterials(mesh,creatureColor,team)
  if team=="ENEMY" then mesh.Color=mesh.Color:Lerp(Color3.fromRGB(190,74,71),.14) end
 end
 local function meshClone(key,parent,cf,size,team,creatureColor)
+ local selectedSize=size
+ local creatureAtom=creatureAtomByModel[key]
+ if creatureAtom then
+  selectedSize=table.find(creatureAtoms,creatureAtom)and size or nil
+ elseif key=="tree"or key=="rock"then
+  local environmentSelected=table.find(environmentAtoms,key=="tree"and"TREE_TRUNK_THICK"or"ROCK_MEDIUM")
+  local propSelected=table.find(propAtoms,key=="tree"and"RESOURCE_WOOD"or"RESOURCE_STONE")
+  selectedSize=environmentSelected and propSelected and size or nil
+ end
+ -- 선택되지 않은 모델을 임의 크기/파츠로 대체하지 않는다.
+ if size and not selectedSize then return nil end
  local source=templates[key]
  if not source then return nil end
  local root=source:Clone()
+ if not root:IsA("Model")then return nil end
  root.Name=key.."-native-mesh"
  root.Parent=parent
  -- 모델 로딩으로 받은 메시들의 물리는 서버 전투 계산과 분리한다.
@@ -141,8 +167,8 @@ local function meshClone(key,parent,cf,size,team,creatureColor)
  end
  -- 임포터에서 가져온 실물 메시의 Pivot을 보존하고 실제 크기만 조절한다.
  local largest=root:GetExtentsSize().Magnitude
- if largest>0 and size then
-  local target=math.max(size.X,size.Y,size.Z)
+ if largest>0 and selectedSize then
+  local target=math.max(selectedSize.X,selectedSize.Y,selectedSize.Z)
   local factor=math.clamp(target/math.max(root:GetExtentsSize().X,root:GetExtentsSize().Y,root:GetExtentsSize().Z),.02,60)
   root:ScaleTo(factor)
  end

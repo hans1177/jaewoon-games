@@ -123,6 +123,9 @@ CollectionService:GetInstanceRemovedSignal("VibeSurvivalWildlife"):Connect(unbin
 -- [메인: NPC·몬스터 실동작] 기존 CozyCombatActor의 현재 관절과 서버 상태를 그대로 사용한다.
 -- CC0 원본 리그/모션을 우선하며, 이 구간은 피해·충돌·이동권한·저장값을 변경하지 않는다.
 local combatActors=setmetatable({}, {__mode="k"})
+-- 선택된 사람형 몸체만 기존 NPC 원본 리그의 시선·상체 반응에 연결한다.
+-- 멧돼지 등 다른 체형에는 사람형 보정이나 새 외형을 추가하지 않는다.
+local npcBodyAtoms=studioAssetFamily("CHARACTER")
 local function bindCombatActor(actor)
  if not actor:IsA("BasePart")or combatActors[actor]then return end
  local joints={}
@@ -198,7 +201,7 @@ RunService.PreSimulation:Connect(function(dt)
     local recoil=state=="HIT"and math.sin(math.pi*math.clamp(progress,0,1))or 0
     local collapse=state=="DEATH"and progress*progress*(3-2*progress)or 0
     local boar=actorKind=="BOAR"
-    local npc=actorKind=="NPC"
+    local npc=actorKind=="NPC"and table.find(npcBodyAtoms,"BODY_STANDARD")~=nil
     local lookTarget=0
     if npc and state=="IDLE" and p.Character then
      local center=p.Character:FindFirstChild("HumanoidRootPart")
