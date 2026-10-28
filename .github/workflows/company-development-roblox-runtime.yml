@@ -2461,8 +2461,31 @@ jobs:
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT=$deduped_count"
 
-          # 이미 배포된 정확한 F0 후보는 다시 업로드하지 않고 기존 실행 검수로 인계한다.
-          if [ "$runtime_qa_ready" -gt 0 ]; then
+          # Official Studio MCP actual play is the independent, required F9 gate.
+          # Queue a byte-identical F0 Studio candidate even when Open Cloud publishing
+          # is delayed; this is only a QA request, never evidence or a release PASS.
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {planLocalStudioCandidates} from './tools/company-development-roblox-studio-local-play.mjs';
+          const queue=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const planned=planLocalStudioCandidates({
+            queue,roadmap,repoRoot:process.cwd(),
+            requestedGameId:String(process.env.REQUESTED_GAME_ID||'').trim()
+          });
+          const ids=[...new Set((planned.include||[]).map(row=>String(row.gameId||'').trim()))]
+            .filter(id=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(id)).sort();
+          fs.writeFileSync('/tmp/roblox-studio-mcp-auto-ready-ids',ids.join('\n')+(ids.length?'\n':''));
+          console.log('ROBLOX_STUDIO_MCP_AUTO_PLAN_COUNT='+ids.length);
+          console.log('ROBLOX_STUDIO_MCP_F9_GATE_REMAINS_REQUIRED=YES');
+          NODE
+          studio_qa_ready="$(grep -c . /tmp/roblox-studio-mcp-auto-ready-ids || true)"
+          cat /tmp/roblox-runtime-qa-ready-ids /tmp/roblox-studio-mcp-auto-ready-ids | sed '/^$/d' | sort -u > /tmp/roblox-native-qa-ready-ids
+          echo "ROBLOX_STUDIO_MCP_AUTO_READY_COUNT=$studio_qa_ready"
+
+          # Already published candidates continue to exact runtime checks; exact
+          # local F0 candidates join the same canonical Studio MCP QA workflow.
+          if [ "$runtime_qa_ready" -gt 0 ] || [ "$studio_qa_ready" -gt 0 ]; then
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-runtime-qa-active-runs.json
             node <<'NODE' > /tmp/roblox-runtime-qa-active-ids
           const fs=require('fs');
@@ -2480,7 +2503,7 @@ jobs:
               gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
               printf '%s\n' "$id" >> /tmp/roblox-runtime-qa-active-ids
               echo "ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=YES:$id"
-            done < /tmp/roblox-runtime-qa-ready-ids
+            done < /tmp/roblox-native-qa-ready-ids
           fi
 
   # Repair a stale provenance flag when owner-private Rojo publishing finished
