@@ -7,6 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
+import {createVibeSourceGraph,createVibeImpactPlan} from '../assets/vibe-v3-engine.js';
 import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
@@ -533,9 +534,33 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const sourceFunctions=responsibilityRows.flatMap(row=>inspectSourceFunctions(row.text,{language:target}));
   const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   const related=scored.filter(row=>!responsibleSet.has(row.relative)&&row.score>0).slice(0,MAX_RELATED_FILES);
-  const impactFiles=unique([...responsible,...related.slice(0,8).map(row=>row.relative)]);
   const contextFiles=unique([...responsible,...related.map(row=>row.relative)]).slice(0,12);
   const testTargets=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,8).map(row=>row.relative));
+  // Reuse the already scanned files: no extra model, source write, workflow or QA stage.
+  const uniqueGraphRows=new Map();
+  for(const row of [...responsibilityRows,...related,
+    ...scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,8)]){
+    if(!uniqueGraphRows.has(row.relative))uniqueGraphRows.set(row.relative,row);
+  }
+  const graphRows=[...uniqueGraphRows.values()];
+  const testSourceByPath=new Map(scored.filter(row=>testTargets.includes(row.relative))
+    .map(row=>[row.relative,row.text||safeRead(row.full)]));
+  const ownerSymbols=unique(sourceFunctions.map(fn=>clean(fn.name).split(/[.:]/).at(-1))).slice(0,64);
+  const impactGraph=createVibeSourceGraph({files:graphRows.map(row=>{
+    const code=row.text||safeRead(row.full);
+    const symbols=unique(inspectSourceFunctions(code,{language:target}).slice(0,64)
+      .map(fn=>clean(fn.name).split(/[.:]/).at(-1)));
+    const imports=unique([...code.matchAll(/\bfrom\s+['"]([^'"]+)['"]/g),
+      ...code.matchAll(/\bimport\s+['"]([^'"]+)['"]/g)].map(m=>m[1]));
+    const calls=ownerSymbols.filter(name=>!responsibleSet.has(row.relative)&&code.includes(name+'('));
+    const tests=testTargets.filter(file=>file!==row.relative&&
+      ((testSourceByPath.get(file)||'').includes(path.basename(row.relative))
+      ||symbols.some(symbol=>(testSourceByPath.get(file)||'').includes(symbol))));
+    return {path:row.relative,symbols,imports,calls,tests};
+  })});
+  const sourceImpact=createVibeImpactPlan({graph:impactGraph,changedPaths:responsible,maxDepth:3,maxTests:8});
+  const impactFiles=unique([...responsible,...sourceImpact.impactedSources.map(row=>row.path),
+    ...related.slice(0,8).map(row=>row.relative)]).slice(0,24);
   const protectedScopeSignals=unique(responsibilityRows.flatMap(row=>protectedSignals(row.text)));
   const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
   const fileDigests=[...responsibilityRows,...related.slice(0,6)].map(compactFile);
@@ -562,6 +587,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     impactFiles,
     contextFiles,
     sourceDependencies:related.flatMap(row=>row.connections||[]).slice(0,24),
+    sourceImpact,
     relatedFiles:related.map(row=>({path:row.relative,score:row.score})),
     testTargets,
     protectedScopeSignals,
@@ -583,6 +609,11 @@ export function explorationGuidance(handoff={}){
     `책임 파일=${(handoff.responsibleFiles||[]).join(', ')||'NONE'}`,
     `읽기 전용 영향 파일=${(handoff.impactFiles||[]).filter(x=>!(handoff.responsibleFiles||[]).includes(x)).join(', ')||'NONE'}`,
     `검증 후보=${(handoff.testTargets||[]).join(', ')||'NONE'}`,
+    ...(handoff.sourceImpact?[
+      `Vibe3 읽기 전용 영향=${handoff.sourceImpact.impactedSources.map(row=>row.path).join(', ')||'NONE'}`,
+      `Vibe3 연관 테스트=${handoff.sourceImpact.affectedTests.map(row=>row.path).join(', ')||'NONE'}`,
+      '읽기 전용 추천이며 책임 파일 수정 범위나 실제 런타임 통과를 확대하지 않는다.'
+    ]:[]),
     `보호 신호=${(handoff.protectedScopeSignals||[]).join(', ')||'NONE'}`,
     ...(handoff.existingWebAssessment?[`[EXISTING WEB STRATEGY] ${handoff.existingWebAssessment.strategy}`,`판단 근거=${(handoff.existingWebAssessment.reasons||[]).join(', ')||'NONE'}`,`설계 scope coverage=${handoff.existingWebAssessment.evidence?.approvedScopeCoveragePct??0}% · gameplay signals=${handoff.existingWebAssessment.evidence?.gameplaySignalCount??0}`,handoff.existingWebAssessment.strategy==='KEEP_AND_CONTINUE'?'기존 구조·세이브·작동 시스템을 보존하고 필요한 개발만 이어간다.':handoff.existingWebAssessment.strategy==='PARTIAL_REPAIR'?'기존 구조를 보존하고 확인된 결함 책임 영역만 수정한다.':handoff.existingWebAssessment.strategy==='MAJOR_REWORK'?'사용 가능한 시스템과 세이브 의미는 보존하고 큰 결함 영역을 재구성한다.':'전체 재구축은 허용되지만 승인 설계·게임 정체성·보존 가능한 세이브 의미는 유지한다.']:[]),
     ...(handoff.editContract?[

@@ -42,6 +42,27 @@ test('exploration worker collects reusable impact context without changing sourc
   assert.equal(fs.readFileSync(player,'utf8'),before);
 });
 
+test('coding explorer uses Vibe3 reverse dependencies without mutating unrelated source',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/impact');
+  write(path.join(root,'src/combat.js'),'export function resolveDamage(){ return 3; }\n');
+  write(path.join(root,'src/weapon.js'),
+    "import { resolveDamage } from './combat.js'; export function attack(){ return resolveDamage(); }\n");
+  write(path.join(root,'qa/weapon.test.js'),
+    "import { attack } from '../src/weapon.js'; if(attack()!==3) throw Error('damage');\n");
+  const order={run:true,taskId:'impact-code',gameId:'impact',target:'web',goal:'combat damage fix',
+    source:{root:'web-games/impact',responsibleFiles:['web-games/impact/src/combat.js'],ignoredPaths:[]},
+    workPackage:{id:'impact-wp',sharedContext:{diagnosticEvidence:[]}}};
+  const handoff=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(handoff.sourceWrite,false);
+  assert.equal(handoff.sourceImpact.authority,'advisory-source-impact-only');
+  assert.equal(handoff.sourceImpact.runtimeVerified,false);
+  assert(handoff.sourceImpact.impactedSources.some(row=>row.path==='src/weapon.js'));
+  assert(handoff.sourceImpact.affectedTests.some(row=>row.path==='qa/weapon.test.js'));
+  assert.deepEqual(handoff.responsibleFiles,['src/combat.js']);
+  assert(!handoff.editContract.allowedResponsibleFiles.includes('src/weapon.js'));
+  assert.match(explorationGuidance(handoff),/Vibe3 연관 테스트=/);
+});
+
 test('missing source root stays blocked unless explicit Web bootstrap authority is present',()=>{
   const cwd=tempRoot();
   const blocked=workOrder();
