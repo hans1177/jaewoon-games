@@ -267,6 +267,22 @@ function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   };
 }
 
+// Deduplicate only an active job bound to this exact persisted candidate.
+export function filterActiveStudioCandidates({matrix={include:[]},queue={},activeJobs=[]}={}){
+  const activeStates=new Set(['queued','pending','requested','waiting','in_progress']);
+  return {...matrix,include:(matrix.include||[]).filter(row=>{
+    const item=(queue.items||[]).find(item=>clean(item.gameId)===clean(row.gameId));
+    const session=item?.robloxStudioRuntimeSession;
+    if(!session||session.sourceRevision!==row.sourceRevision
+      ||session.artifactIdentity!==row.artifactIdentity
+      ||Number(session.artifactRunId||0)!==Number(row.artifactRunId||0)
+      ||Number(session.candidateVersionNumber||0)!==Number(row.versionNumber||0))return true;
+    return !activeJobs.some(job=>Number(job.run_id)===Number(session.workflowRunId)
+      &&job.name==='Official Studio MCP actual play '+row.gameId
+      &&activeStates.has(clean(job.status).toLowerCase()));
+  })};
+}
+
 export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot='',recheckProductFailure=false}={}){
 
   validateLocalStudioPolicy(roadmap);
@@ -4104,13 +4120,16 @@ async function main(){
     return;
   }
   if(mode==='plan'){
-    const matrix=planLocalStudioCandidates({
+    const planned=planLocalStudioCandidates({
       queue:readJson(a.queue),
       roadmap:readJson(a.roadmap),
       requestedGameId:clean(a['game-id']),
       recheckProductFailure:clean(a['recheck-product-failure'])==='true',
       repoRoot:clean(a['repo-root'])
     });
+    const matrix=clean(a['active-jobs'])
+      ?filterActiveStudioCandidates({matrix:planned,queue:readJson(a.queue),activeJobs:readJson(a['active-jobs'])})
+      :planned;
     writeJson(a.output,matrix);
     console.log('ROBLOX_STUDIO_MCP_PLAN_COUNT='+matrix.include.length);
     return;
