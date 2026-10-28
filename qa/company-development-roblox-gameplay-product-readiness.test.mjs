@@ -688,3 +688,33 @@ test('F0 preserves portal RPG native genre only with same-game proven original B
     creativeGrammar:{cGenres:[{role:'PRIMARY',name:'RPG'},{role:'SECONDARY',name:'공포'}]}}}})
     .preservedSourceGenreContractVerified,false,'C story-genre names alone cannot authorize a gameplay genre change');
 });
+
+test('Daechung village SpawnLocation stays grounded on the real plaza and returns clear the rig feet',()=>{
+  const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+  // The previous hardcoded position floated 1.15 studs above the plaza.
+  assert.doesNotMatch(server,/foundationSpawn\.Position=C\.VillageCenter\+Vector3\.new\(0,2,0\)/);
+  const plaza=server.match(/local plaza=ppart\(f,"VillagePlaza",Vector3\.new\(([\d.]+),([\d.]+),([\d.]+)\),Vector3\.new\(([\d.]+),([\d.]+),([\d.]+)\)/);
+  assert.ok(plaza,'derive spawn from the actual built plaza, not from VillageCenter nominal Y');
+  const top=Number(plaza[5])+Number(plaza[2])/2;
+  const spawnSize=server.match(/foundationSpawn\.Size=Vector3\.new\(([\d.]+),([\d.]+),([\d.]+)\)/);
+  assert.ok(spawnSize,'Roblox SpawnLocation must be a real physics part');
+  const gap=server.match(/plaza\.Position\.Y\+plaza\.Size\.Y\*\.5-foundationSpawn\.Size\.Y\*\.5\+(\.[\d]+)/);
+  assert.ok(gap,'spawn plate must derive its upper surface from the actual plaza');
+  const actualGap=Number(gap[1]);
+  const plateHeight=Number(spawnSize[2]);
+  const spawnCenterY=top-plateHeight/2+actualGap;
+  assert.ok(plateHeight>0&&plateHeight<=.25,'spawn plate must be thin enough to avoid visible floating');
+  assert.ok(actualGap>=0&&actualGap<=.1,'spawn top-to-plaza gap must stay below 0.1 studs');
+  assert.ok(Math.abs((spawnCenterY+plateHeight/2)-top-actualGap)<1e-9);
+  assert.match(server,/foundationSpawn\.Anchored=true;foundationSpawn\.Neutral=true;foundationSpawn\.Transparency=1;foundationSpawn\.CanCollide=true/);
+  // Initial spawn, death respawn and portal return need root clearance relative
+  // to the exact spawn top (not the uncorrected C.VillageCenter + fixed Y).
+  assert.match(server,/if foundationSpawn and foundationSpawn\.Parent and \(pos-C\.VillageCenter\)\.Magnitude<\.05 then/);
+  assert.match(server,/feetClearance=\(h and h\.HipHeight or 2\)\+r\.Size\.Y\*\.5\+\.2/);
+  assert.match(server,/spawnTop=foundationSpawn\.Position\.Y\+foundationSpawn\.Size\.Y\*\.5/);
+  assert.match(server,/arrival=Vector3\.new\(foundationSpawn\.Position\.X,spawnTop\+feetClearance,foundationSpawn\.Position\.Z\)/);
+  assert.match(server,/p\.RespawnLocation=foundationSpawn/);
+  assert.match(server,/if hit and h\.FloorMaterial~=Enum\.Material\.Air then foundationCheckpoint\("GROUND_CONTACT"/);
+  assert.match(server,/teleportPlayer\(p,spawnDestination\(\)\)/);
+  assert.match(server,/teleportPlayer\(p,C\.VillageCenter\)/);
+});
