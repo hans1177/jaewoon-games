@@ -407,7 +407,7 @@ test('central contract requires official Studio MCP for F9 and release, without 
   assert.equal(studio.f9Gate,true);
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlan,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
 });
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
@@ -1115,10 +1115,10 @@ test('official Studio MCP planner runs automatically for push and exact candidat
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
-  assert.match(studioPlanBlock,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
+  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) \}\}/);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,true);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,true);
-  assert.match(studioPlanBlock,/github\.event_name == 'push'/);
+  assert.match(studioPlanBlock,/if: \$\{\{ !cancelled\(\) \}\}/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
