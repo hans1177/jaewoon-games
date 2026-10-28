@@ -206,6 +206,12 @@ test('Roblox metadata scope failure cannot invalidate a successfully published r
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/name: Apply and verify Roblox title description and server size[\s\S]*?id: metadata[\s\S]*?continue-on-error: true/);
   assert.match(workflow,/METADATA_OUTCOME: \$\{\{ steps\.metadata\.outcome \}\}/);
+  const metadata=workflow.slice(workflow.indexOf('      - name: Apply and verify Roblox title description and server size'),
+    workflow.indexOf('      - name: Private runtime candidate deployment summary'));
+  assert.ok(metadata.includes('git cat-file -e "$SOURCE_REVISION:$SOURCE_ROOT/launch-mvp.json"'));
+  assert.match(metadata,/ROBLOX_EXPERIENCE_METADATA_UPDATE=NOT_APPLICABLE_NO_DECLARED_METADATA/);
+  assert.ok(metadata.indexOf('NOT_APPLICABLE_NO_DECLARED_METADATA')<metadata.indexOf("node --input-type=module"),
+    'no optional metadata source means no PATCH or invented metadata');
   assert.match(workflow,/ROBLOX_METADATA_SYNC=REPAIR_REQUIRED_NON_BLOCKING/);
   assert.match(workflow,/ROBLOX_METADATA_REQUIRED_OPEN_CLOUD_SCOPE=universe\.place:write/);
   assert.match(workflow,/ROBLOX_RUNTIME_CANDIDATE_INVALIDATED_BY_METADATA_FAILURE=NO/);
