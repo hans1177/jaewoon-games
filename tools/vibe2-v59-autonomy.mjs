@@ -6,6 +6,7 @@ import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
+import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,verifyVibe59LuauSkillScenarios} from './vibe59-luau-skills109.mjs';
 import {buildVibeVerifiedMemoryIndex,retrieveVibeVerifiedPatterns,classifyVibeRepairFailure} from '../assets/vibe-v3-engine.js';
 const sha=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
 const clean=x=>String(x??'').trim();
@@ -194,8 +195,9 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const req=explicit??(creativeChosen?{...creativeRequest,robloxDomainAction:creativeChosen.spec,
     scenarios:creativeChosen.scenarios}:null);
   if(req==null)return null;
+  const specialized=[req?.robloxDomainAction,req?.robloxSkill109].filter(Boolean);
   if(!req||req.ownerApproved!==true||!req.path||!req.find
-    ||(req.robloxDomainAction?(Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
+    ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
        Boolean(req.rule)===Boolean(req.machine)))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
   const relative=clean(req.path).replaceAll('\\','/');
@@ -213,6 +215,22 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
+  if(req.robloxSkill109){
+    const compiled=synthesizeVibe59LuauSkill({spec:req.robloxSkill109,
+      source:content,replaceAnchor:find,sourcePath:relative});
+    const verified=verifyVibe59LuauSkillScenarios({spec:req.robloxSkill109,
+      scenarios:req.scenarios});
+    if(!verified.pass)throw Error('VIBE59_SKILL_SCENARIO_COUNTEREXAMPLE:'+
+      verified.cases.filter(x=>!x.pass).map(x=>x.name).join(','));
+    if(compiled.source===find)throw Error('VIBE59_NOOP');
+    return Object.freeze({summary:'Vibe5.9 source-grounded Luau coding skill',
+      expectedEffect:'One of 109 bounded approved server state changes',
+      edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
+      tests:[],vibe59CodeKind:'ROBLOX_SKILL_109',vibe59Skill:compiled.operation,
+      vibe59SkillSystem:compiled.system,vibe59SkillSafety:compiled.safety,
+      vibe59TestPlan:verified,ruleDigest:sha(JSON.stringify(req.robloxSkill109)),
+      sourceWrite:false,modelUsed:false,runtimeVerified:false});
+  }
   if(req.robloxDomainAction){
     const compiled=synthesizeVibe59RobloxDomainAction({spec:req.robloxDomainAction,
       source:content,replaceAnchor:find,sourcePath:relative});
@@ -296,6 +314,9 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
     ownerApproved:false}):null;
   return Object.freeze({version:'5.9',sourceWrite:false,runtimeVerified:false,
     requirement,assembly,repair,memory,completion,creativity,
+    skillCatalog:{total:VIBE59_LUAU_CODING_SKILLS_109.length,
+      systems:[...new Set(VIBE59_LUAU_CODING_SKILLS_109.map(x=>x.system))],
+      codegen:'existing-owner-approved-server-state-only',runtimeVerified:false},
     sourceFlowCount:codeFlow?.sources?.length||0,
     sourceImpactCount:sourceImpact?.impactedSources?.length||0,
     synthesisCandidateAvailable:Boolean(order.vibe59CodeRequest||order.selectedTask?.vibe59CodeRequest
