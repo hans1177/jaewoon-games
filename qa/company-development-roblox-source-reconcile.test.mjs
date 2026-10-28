@@ -677,7 +677,7 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
 
 test('Roblox runtime persistence uses game source-tree identity instead of unrelated main SHA churn',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.match(workflow,/reconciliationSourceTreeSha:String\(reconciliationRow\?\.sourceTreeSha\|\|''\)/);
+  assert.match(workflow,/reconciliationSourceTreeSha:String\(reconciliationRow\?\.sourceTreeSha\|\|\(nativeCreatureRepairPending/);
   assert.match(workflow,/RECONCILIATION_SOURCE_TREE_SHA:/);
   assert.match(workflow,/ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER=/);
   assert.match(workflow,/git rev-parse "origin\/main:\$TARGET_SOURCE"/);
