@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
+import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {buildVibeVerifiedMemoryIndex,retrieveVibeVerifiedPatterns,classifyVibeRepairFailure} from '../assets/vibe-v3-engine.js';
 const sha=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
 const clean=x=>String(x??'').trim();
@@ -181,7 +182,17 @@ export function planVibe59SafeRefactor({source='',target='web'}={}){
     runtimeEquivalentVerified:false,requiresExistingValidation:true,authority:'refactor-candidate-only'});
 }
 export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
-  const req=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
+  const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
+  const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
+    goal:creativeRequest.goal||order.goal||'',approvedOperations:creativeRequest.approvedOperations,
+    existingMechanics:creativeRequest.existingMechanics,verifiedPatterns:creativeRequest.verifiedPatterns,
+    feedback:creativeRequest.feedback,seed:creativeRequest.seed||order.gameId||'vibe59',
+    maxIdeas:creativeRequest.maxIdeas??12,maxIterations:creativeRequest.maxIterations??2,
+    ownerApproved:creativeRequest.ownerApproved===true}):null;
+  const creativeChosen=creativePlan?.selectedApprovedSpec;
+  const explicit=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
+  const req=explicit??(creativeChosen?{...creativeRequest,robloxDomainAction:creativeChosen.spec,
+    scenarios:creativeChosen.scenarios}:null);
   if(req==null)return null;
   if(!req||req.ownerApproved!==true||!req.path||!req.find
     ||(req.robloxDomainAction?(Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
@@ -215,6 +226,10 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
       edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
       tests:[],vibe59CodeKind:'ROBLOX_DOMAIN_OPERATION',vibe59DomainPattern:compiled.operation,
       vibe59DomainSafety:compiled.safety,vibe59DomainOracle:cases,
+      vibe59TestPlan:cases,ruleDigest:sha(JSON.stringify(req.robloxDomainAction)),
+      ...(creativePlan?{vibe59Creativity:{capabilityCount:creativePlan.capabilityCount,
+        chosenOperation:creativePlan.chosenOperation,steps:creativePlan.steps,
+        modelUsed:false,runtimeVerified:false}}:{}),
       sourceWrite:false,modelUsed:false,runtimeVerified:false});
   }
   const codeKind=req.robloxServerAction?'ROBLOX_SERVER_ACTION':req.machine?'STATE_MACHINE':'STATE_RULE';
@@ -273,11 +288,18 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
     project:order.gameId||'',sourcePaths:order.source?.responsibleFiles||[]});
   const completion=evaluateVibe59Completion({requirements:requirement.explicitSystems,
     evidence:order.vibe59VerifiedImplementationEvidence||[]});
+  const creativeInput=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest??{};
+  const creativity=target==='roblox'?buildVibe59CreativityPlan({
+    goal:clean(creativeInput.goal||requirement.goal),approvedOperations:creativeInput.approvedOperations,
+    existingMechanics:creativeInput.existingMechanics,verifiedPatterns:creativeInput.verifiedPatterns,
+    feedback:creativeInput.feedback,seed:clean(order.gameId)||'vibe59',
+    ownerApproved:false}):null;
   return Object.freeze({version:'5.9',sourceWrite:false,runtimeVerified:false,
-    requirement,assembly,repair,memory,completion,
+    requirement,assembly,repair,memory,completion,creativity,
     sourceFlowCount:codeFlow?.sources?.length||0,
     sourceImpactCount:sourceImpact?.impactedSources?.length||0,
-    synthesisCandidateAvailable:Boolean(order.vibe59CodeRequest||order.selectedTask?.vibe59CodeRequest),
+    synthesisCandidateAvailable:Boolean(order.vibe59CodeRequest||order.selectedTask?.vibe59CodeRequest
+      ||order.vibe59CreativeRequest||order.selectedTask?.vibe59CreativeRequest),
     testStrategy:'explicit-scenarios-needing-existing-harness',
     refactorStrategy:'bounded-candidates-needing-existing-validation',
     localModel:'Vibe4 loopback adapter available, inference unverified',
