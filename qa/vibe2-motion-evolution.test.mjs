@@ -148,3 +148,25 @@ test('Daechung RPG NPCs consume native actor motion without replacing authored c
  assert.match(native,/SOURCE_POSE_PLAYING_UNVERIFIED/);
  assert.doesNotMatch(native,/ProductionVerified",true/);
 });
+
+test('Daechung creature anatomy is automatically bound to real articulated motors, never static imported pivots',()=>{
+ const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ assert.match(client,/local function nativeActorChannels\(host,limbs\)/);
+ assert.match(client,/motor\.Name=="ActorLimbMotor"/);
+ assert.match(client,/motor:GetAttribute\("LimbRole"\)/);
+ assert.match(client,/host\.CFrame:PointToObjectSpace\(motor\.Part1\.Position\)/);
+ for(const plan of ['FLYER','QUADRUPED','CRAWLER','SERPENT','GIANT','BIPED'])
+  assert.ok(client.includes('"'+plan+'"'),plan+' native actor auto-detection');
+ assert.match(client,/commonMotion\.SampleProceduralActorMotion\(state,phase,\{/);
+ assert.match(client,/availableJoints=channels,bodyPlan=form/);
+ assert.match(client,/row\.motor\.C0=row\.item\.base\*row\.item\.pose/);
+ assert.match(client,/host:GetAttribute\("MotionState"\)/);
+ assert.match(client,/ARTICULATED_RIG_REQUIRED/);
+ assert.match(client,/SOURCE_POSE_PLAYING_UNVERIFIED/);
+ assert.match(server,/motor\.Name=="ActorLimbMotor"/);
+ assert.match(server,/if movableLimbCount>=2 then/);
+ assert.match(server,/NativeActorMotionVisual","ARTICULATED_SOURCE_PRESERVED/);
+ assert.doesNotMatch(client,/NativeNpcMotionState","RUNTIME_VERIFIED"/);
+ assert.doesNotMatch(server,/NativeActorMotionVisual","RUNTIME_VERIFIED"/);
+});
