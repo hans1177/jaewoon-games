@@ -4,6 +4,7 @@
 
 import fs from 'node:fs';
 import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
+import {requestVibe4LoopbackModel} from './vibe2-v4-loopback-model.mjs';
 import crypto from 'node:crypto';
 import { inflateSync } from 'node:zlib';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
@@ -8062,12 +8063,27 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
 }
 export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
-  if(provider!=='GEMINI_API')throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: only Gemini API is authorized');
-  // Strictly test-only fixtures. Real candidates must call the external API.
+  // Strictly test-only fixtures. Live candidates must come from a selected provider.
   if(clean(responseFile)){
     if(!/^child-/.test(clean(process.env.NODE_TEST_CONTEXT)))throw new Error('MODEL_RESPONSE_FIXTURE_TEST_CONTEXT_REQUIRED');
     return fs.readFileSync(path.resolve(responseFile),'utf8');
   }
+  if(provider==='LOCAL_OLLAMA'){
+    if(images.length)throw new Error('VIBE4_LOCAL_IMAGE_INPUT_NOT_IMPLEMENTED');
+    const localModel=clean(process.env.VIBE2_LOCAL_MODEL_ID);
+    const result=await requestVibe4LoopbackModel({
+      prompt,model:localModel,port:process.env.VIBE2_LOCAL_OLLAMA_PORT||11434,
+      maxPredict,contextWindow,timeoutMs,temperature,
+      ownerApproved:clean(process.env.VIBE2_LOCAL_AI_OWNER_APPROVED).toLowerCase()==='true'
+    });
+    if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'
+      &&(/no_think|think|```/i).test(result))
+      throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:LOCAL_OUTPUT');
+    return result;
+  }
+  if(provider!=='GEMINI_API')throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: unsupported provider');
+  if(clean(process.env.VIBE2_V4_NO_EXTERNAL_API).toLowerCase()==='true')
+    throw new Error('VIBE4_EXTERNAL_AI_DISABLED:NO_REMOTE_MODEL_REQUEST');
   if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');
   const key=clean(process.env.GEMINI_API_KEY);
   if(!key)throw Object.assign(new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'),{vibe2InfrastructureFailure:true});

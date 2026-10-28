@@ -9,6 +9,8 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { exploreVibe2WorkOrder, explorationGuidance, extractVibeSourceImportRefs, explorationOrderFingerprint } from '../tools/vibe2-exploration-worker.mjs';
 import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
+import { requestVibe4LoopbackModel } from '../tools/vibe2-v4-loopback-model.mjs';
+import http from 'node:http';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch, beginVibeQueueBatch, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
@@ -43,6 +45,53 @@ test('exploration worker collects reusable impact context without changing sourc
   assert.equal(fs.readFileSync(player,'utf8'),before);
 });
 
+
+test('Vibe4 local model has no network fallback, requires approval and loopback address',async()=>{
+  let called=0,requestBody='';
+  const server=http.createServer(async(req,res)=>{
+    called++;
+    let input='';for await(const chunk of req)input+=chunk.toString('utf8');
+    requestBody=input;
+    if(req.url!=='/api/generate'||req.method!=='POST'){res.writeHead(404);res.end();return;}
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({response:'{"edits":[]}',done:true}));
+  });
+  await new Promise((resolve,reject)=>server.once('error',reject).listen(0,'127.0.0.1',resolve));
+  const port=server.address().port;
+  try{
+    await assert.rejects(requestVibe4LoopbackModel({model:'qwen2.5-coder:7b',prompt:'write code',port}),
+      /VIBE4_LOCAL_MODEL_OWNER_APPROVAL_REQUIRED/);
+    await assert.rejects(requestVibe4LoopbackModel({model:'qwen2.5-coder:7b',
+      prompt:'write code',port:80,ownerApproved:true}),/VIBE4_LOCAL_PORT_INVALID/);
+    await assert.rejects(requestVibe4LoopbackModel({model:'https://remote.example/a',
+      prompt:'write code',port,ownerApproved:true}),/VIBE4_LOCAL_MODEL_ID_REQUIRED/);
+    assert.equal(called,0);
+    const output=await requestVibe4LoopbackModel({
+      model:'qwen2.5-coder:7b',prompt:'write code',port,
+      ownerApproved:true,maxPredict:256,contextWindow:4096,timeoutMs:3000
+    });
+    assert.equal(output,'{"edits":[]}');
+    assert.equal(called,1);
+    const posted=JSON.parse(requestBody);
+    assert.equal(posted.model,'qwen2.5-coder:7b');
+    assert.equal(posted.stream,false);
+    assert.equal(posted.options.num_predict,256);
+    assert.equal(posted.options.num_ctx,4096);
+  }finally{
+    await new Promise(resolve=>server.close(resolve));
+  }
+});
+
+test('Vibe4 coding worker supports self-hosted-only provider without changing candidate checks',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/provider==='LOCAL_OLLAMA'/);
+  assert.match(source,/VIBE2_LOCAL_AI_OWNER_APPROVED/);
+  assert.match(source,/VIBE2_LOCAL_MODEL_ID/);
+  assert.match(source,/VIBE2_V4_NO_EXTERNAL_API/);
+  assert.match(source,/VIBE4_EXTERNAL_AI_DISABLED/);
+  assert.match(source,/const candidateValidation=candidateValidator\(candidate\)/);
+  assert.match(source,/generated=await generateCandidateWithRecovery/);
+});
 
 test('Vibe4 offline engine generates explicit speed threshold without touching game source',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'web-games/v4');
