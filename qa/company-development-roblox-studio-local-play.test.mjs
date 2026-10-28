@@ -977,6 +977,16 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
   assert.match(helper,/stderr=\$\{detail\}/);
 });
 
+test('Studio planning reports authenticated cloud Windows runner and fail-closed deployment requirements',()=>{
+  const plan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(plan,/Report Studio-first deployment prerequisites/);
+  assert.match(plan,/GITHUB_STEP_SUMMARY/);
+  assert.match(plan,/docs\/roblox-studio-mcp-cloud-runner\.md/);
+  assert.match(plan,/ROBLOX_STUDIO_MCP_DEPLOYMENT_PREREQUISITE=INTERACTIVE_AUTHENTICATED_WINDOWS_RUNNER/);
+  assert.match(plan,/ROBLOX_STUDIO_MCP_PLAN_IS_ACTUAL_PLAY_PASS=NO/);
+  assert.match(plan,/F9 and canonical deployment remain blocked/);
+});
+
 test('Studio MCP release worker requires an interactive cloud Windows desktop and signed official Roblox binaries',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_RUNNER_WINDOWS_SESSION_ID=/);
