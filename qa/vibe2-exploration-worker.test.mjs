@@ -18,6 +18,7 @@ import {
   verifyVibe59GeneratedJavaScript,generateVibe59AutonomousProbes
 } from '../tools/vibe2-v59-autonomy.mjs';
 import { createVibe4OfflinePatternCandidate } from '../tools/vibe2-v4-pattern-coder.mjs';
+import {inspectVibe59RobloxCoding} from '../tools/vibe59-roblox-coding.mjs';
 import { requestVibe4LoopbackModel } from '../tools/vibe2-v4-loopback-model.mjs';
 import http from 'node:http';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
@@ -502,6 +503,95 @@ test('Vibe5.9 automatically tests reachable unguarded transitions and unexpected
   assert.equal(verifyVibe59GeneratedJavaScript({
     source:js.source,machine,scenarios:probes.cases}).pass,true);
 });
+
+test('Vibe5.9 Roblox recognizes RemoteEvent routing and client-side authority mistakes',()=>{
+  const data=inspectVibe59RobloxCoding({responsiblePaths:['server/Combat.luau'],files:[
+    {path:'server/Combat.luau',source:'remote.OnServerEvent:Connect(function(player, action) end)\nremote:FireClient(player)\nstats:SetAttribute("Health", 70)'},
+    {path:'client/Hud.client.luau',source:'remote:FireServer("Attack")\nremote.OnServerEvent:Connect(function(player) end)\nlocal store=game:GetService("DataStoreService")'}
+  ]});
+  assert.equal(data.authority,'roblox-luau-static-analysis');
+  assert.equal(data.runtimeVerified,false);
+  assert.equal(data.files[0].side,'SERVER');
+  assert.equal(data.files[1].side,'CLIENT');
+  assert(data.files[0].events.some(x=>x.signal==='OnServerEvent'));
+  assert(data.files[0].stateEffects.some(x=>x.method==='SetAttribute'));
+  assert(data.files[1].calls.some(x=>x.method==='FireServer'));
+  assert(data.warnings.some(x=>x.code==='SERVER_HANDLER_IN_CLIENT'));
+  assert(data.warnings.some(x=>x.code==='CLIENT_DATASTORE_SERVICE'));
+});
+test('Vibe5.9 Roblox creates server-authoritative player-scoped Luau event code with original validation',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/source-generation');
+  const file=path.join(root,'server/Combat.luau');
+  write(file,'local remote=game.ReplicatedStorage.Remote\nlocal states={}\nlocal function mayAttack(player,eventName) return true end\n-- BIND');
+  const machine={handlerName:'onAttack',stateVariable:'phase',states:['idle','fighting'],
+    events:['hit'],transitions:[{from:'idle',to:'fighting',event:'hit',
+    when:{kind:'compare',op:'gt',left:{kind:'ref',name:'stamina'},
+      right:{kind:'number',value:0}},
+    actions:[{action:'subtract',output:'stamina',value:{kind:'number',value:1}}]}]};
+  const request={ownerApproved:true,path:'server/Combat.luau',find:'-- BIND',machine,
+    robloxServerAction:{remoteVariable:'remote',playerStateTable:'states',authorizeFunction:'mayAttack'},
+    scenarios:[{name:'hit',initialState:{phase:'idle',stamina:2},
+      events:['hit'],expectedState:{phase:'fighting',stamina:1},expectedConsumed:[true]}]};
+  const args={sourceRoot:root,responsibleFiles:['server/Combat.luau'],target:'roblox'};
+  const before=fs.readFileSync(file,'utf8');
+  const candidate=createVibe59CodeCandidate({order:{vibe59CodeRequest:request},...args});
+  assert.equal(candidate.vibe59CodeKind,'ROBLOX_SERVER_ACTION');
+  assert.equal(candidate.vibe59RobloxSafety.perPlayerState,true);
+  assert.equal(candidate.vibe59TestPlan.pass,true);
+  assert.equal(candidate.runtimeVerified,false);
+  assert.deepEqual(candidate.newFiles,[]);
+  assert.equal(fs.readFileSync(file,'utf8'),before);
+  assert.match(candidate.edits[0].replace,/remote.OnServerEvent:Connect\(function\(player, eventName\)/);
+  assert.match(candidate.edits[0].replace,/not mayAttack\(player, eventName\)/);
+  assert.match(candidate.edits[0].replace,/local state = states\[player\]/);
+  assert.match(candidate.edits[0].replace,/state.stamina = \(state.stamina - 1\)/);
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{...request,
+    robloxServerAction:{...request.robloxServerAction,authorizeFunction:'unknown'}}},...args}),
+    /VIBE59_ROBLOX_EXISTING_BINDING_REQUIRED/);
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{...request,
+    robloxServerAction:{...request.robloxServerAction,remoteVariable:'remote;evil()'}}},...args}),
+    /VIBE59_ROBLOX_BAD_IDENTIFIER/);
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{...request,
+    scenarios:[{...request.scenarios[0],expectedState:{phase:'idle'}}]}},...args}),
+    /VIBE59_SCENARIO_COUNTEREXAMPLE/);
+});
+test('Vibe5.9 Roblox refuses client source and second handler for the same server remote',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/safe-remote');
+  const file=path.join(root,'server/Actions.luau');
+  write(file,'local remote=game.ReplicatedStorage.Remote\nlocal states={}\nlocal function grant(player,eventName) return true end\n-- SLOT');
+  const machine={handlerName:'onEvent',stateVariable:'mode',states:['idle','active'],
+    events:['go'],transitions:[{from:'idle',to:'active',event:'go',actions:[]}]};
+  const spec={ownerApproved:true,path:'server/Actions.luau',find:'-- SLOT',machine,
+    robloxServerAction:{remoteVariable:'remote',playerStateTable:'states',authorizeFunction:'grant'},
+    scenarios:[{name:'go',initialState:{mode:'idle'},events:['go'],expectedState:{mode:'active'}}]};
+  const args={sourceRoot:root,responsibleFiles:['server/Actions.luau'],target:'roblox'};
+  write(file,fs.readFileSync(file,'utf8').replace('-- SLOT',
+    'remote.OnServerEvent:Connect(function(player) end)\n-- SLOT'));
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:spec},...args}),
+    /VIBE59_ROBLOX_DUPLICATE_REMOTE_HANDLER/);
+  const client=path.join(root,'client/Actions.client.luau');
+  write(client,'local remote=1\nlocal states={}\nlocal function grant() end\n-- SLOT');
+  assert.throws(()=>createVibe59CodeCandidate({order:{vibe59CodeRequest:{
+    ...spec,path:'client/Actions.client.luau'}},
+    sourceRoot:root,responsibleFiles:['client/Actions.client.luau'],target:'roblox'}),
+    /VIBE59_ROBLOX_SERVER_SOURCE_REQUIRED/);
+});
+test('Roblox exploration sends Luau remotes and server responsibility to the coding worker',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/luau-intelligence');
+  write(path.join(root,'server/Combat.luau'),
+    'local remote=game.ReplicatedStorage.Remote\nremote.OnServerEvent:Connect(function(player, action) end)\n');
+  const order={run:true,taskId:'roblox-code-intelligence',gameId:'luau-intelligence',
+    target:'roblox',goal:'combat RemoteEvent',source:{root:'roblox-games/luau-intelligence',
+      responsibleFiles:['roblox-games/luau-intelligence/server/Combat.luau'],ignoredPaths:[]},
+    workPackage:{id:'robot',sharedContext:{diagnosticEvidence:[]}}};
+  const handoff=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(handoff.robloxCoding.authority,'roblox-luau-static-analysis');
+  assert(handoff.robloxCoding.files.some(x=>x.path==='server/Combat.luau'&&x.side==='SERVER'));
+  assert.match(explorationGuidance(handoff),/Vibe5\.9 Roblox 책임 경로=/);
+  assert.deepEqual(handoff.responsibleFiles,['server/Combat.luau']);
+  assert.equal(handoff.sourceWrite,false);
+});
+
 test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/parent modules',()=>{
   assert.deepEqual(extractVibeSourceImportRefs([
     "import {hit} from './combat.js';",
