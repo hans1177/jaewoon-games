@@ -115616,11 +115616,165 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_85fc1018ffc86f98789a327d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10815",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "308e08f724365f9873ddf88e9d03a8640d6d0d55",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10815,
+        "baseBranch": "main",
+        "headBranch": "feat/roblox-hosted-studio-mcp-connect-20261028",
+        "baseSha": "308e08f724365f9873ddf88e9d03a8640d6d0d55",
+        "headSha": "2455d9c30474b2576d2504dc5ccc696ed8905de8",
+        "mergeCommitSha": "1c6aaacf23f1f8977b5a751f86bc5b80a716b5e6",
+        "mergedAt": "2026-10-28T02:19:51Z",
+        "authorLogin": "hans1177",
+        "titleHash": "4a110a84f05a9783da7e94465a2683347d5aad9140df8e3b3d6cdf4240a8fe60",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/roblox-hosted-studio-mcp-connect-20261028",
+        "candidateSha": "2455d9c30474b2576d2504dc5ccc696ed8905de8"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 20,
+        "addedLineCount": 892,
+        "deletedLineCount": 2918,
+        "changedFiles": [
+          ".github/workflows/company-roblox-hosted-studio-mcp-connect.yml",
+          ".github/workflows/motion-evolution-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-roblox-hosted-studio-mcp-connection.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-motion-evolution.test.mjs",
+          "roblox-games/baeksu-war/roblox-source-bootstrap.json",
+          "roblox-games/baeksu-war/shared/VisualKit.luau",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/roblox-source-bootstrap.json",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/roblox-source-bootstrap.json",
+          "roblox-games/fantasy-survival/roblox-source-bootstrap.json",
+          "roblox-games/horror-escape-room/roblox-source-bootstrap.json",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/company-roblox-hosted-studio-mcp-connection.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-roblox-hosted-studio-mcp-connect.yml",
+          ".github/workflows/motion-evolution-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-roblox-hosted-studio-mcp-connection.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-motion-evolution.test.mjs",
+          "roblox-games/baeksu-war/roblox-source-bootstrap.json",
+          "roblox-games/baeksu-war/shared/VisualKit.luau",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/roblox-source-bootstrap.json",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/roblox-source-bootstrap.json",
+          "roblox-games/fantasy-survival/roblox-source-bootstrap.json",
+          "roblox-games/horror-escape-room/roblox-source-bootstrap.json",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/company-roblox-hosted-studio-mcp-connection.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10815",
+        "merge-commit:1c6aaacf23f1f8977b5a751f86bc5b80a716b5e6",
+        "base-main:308e08f724365f9873ddf88e9d03a8640d6d0d55"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 913
+    "total": 914
   }
 }
