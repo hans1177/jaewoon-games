@@ -750,9 +750,9 @@ test('Roblox candidate static validation precedes promotion without claiming act
   assert.match(native,/ROBLOX_CANDIDATE_STUDIO_CANONICAL_WRITE=NO'[\s\S]*?exit 0[\s\S]*?git -C runtime config/);
   assert.match(native,/candidate_context == '' && steps\.studio_play/);
   const followup=native.slice(native.indexOf('      - name: Dispatch exact Studio MCP follow-up'),native.indexOf('      - name: Enforce persistent Open Cloud probe failures'));
-  assert.match(followup,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  assert.match(followup,/if: \$\{\{ false \}\} # EXPLICIT_AUTHENTICATED_STUDIO_OPT_IN_ONLY/);
   const studioPlan=native.slice(native.indexOf('  studio-local-plan:'),native.indexOf('  studio-mcp-auto-play:'));
-  assert.match(studioPlan,/if: \$\{\{ false \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
   assert.match(native,/const cloudApiOnly=true/);
 });
 

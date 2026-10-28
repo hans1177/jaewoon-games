@@ -1,5 +1,5 @@
 {
-  "version": 596,
+  "version": 597,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -1597,14 +1597,14 @@
         "studioFailureDoesNotBlockOwnerDirectPublish": true
       },
       "validationProviderContract": {
-        "version": 1,
-        "authority": "OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY",
+        "version": 2,
+        "authority": "OWNER_DIRECTIVE_2026-10-28_OFFICIAL_STUDIO_MCP_OPTIONAL_WITH_CLOUD_RELEASE_AUTHORITY",
         "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
         "engineExecution": "VERSION_PINNED_OPEN_CLOUD_LUAU_EXECUTION",
         "runtimeObservation": "OPEN_CLOUD_DATASTORE_EXACT_PLACE_VERSION_SENTINEL",
         "images": "OFFICIAL_THUMBNAIL_API_AND_AUTHENTICATED_RESPONSE_REFERENCED_ROBLOX_CDN",
-        "localStudioExecutionAllowed": false,
-        "studioMcpExecutionAllowed": false,
+        "localStudioExecutionAllowed": true,
+        "studioMcpExecutionAllowed": true,
         "localPlayerAutomationAllowed": false,
         "localScreenshotsAllowed": false,
         "cachedLocalEvidenceCannotSatisfyCloudValidation": true,
@@ -6639,7 +6639,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-24",
+  "updatedAt": "2026-10-28",
   "priorityTiers": [
     {
       "tier": 1,

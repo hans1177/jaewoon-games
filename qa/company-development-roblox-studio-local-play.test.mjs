@@ -407,7 +407,7 @@ test('central contract keeps Studio optional and outside build-up F9 deployment 
   assert.equal(studio.f9Gate,false);
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlan,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
 });
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
@@ -1101,7 +1101,7 @@ test('Studio push trigger scopes exact revalidation from the actual before-to-he
   assert.doesNotMatch(studioPlanBlock,/github\.event\.head_commit\.(?:modified|added|removed)/);
 });
 
-test('legacy Studio MCP planner stays disabled under the cloud-only owner directive',()=>{
+test('official Studio MCP planner is exact-game opt-in while Cloud remains release authority',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
@@ -1115,9 +1115,9 @@ test('legacy Studio MCP planner stays disabled under the cloud-only owner direct
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
-  assert.match(studioPlanBlock,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
-  assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,false);
-  assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,false);
+  assert.match(studioPlanBlock,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
+  assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,true);
+  assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,true);
   assert.doesNotMatch(studioPlanBlock,/github\.event_name == 'push'/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');

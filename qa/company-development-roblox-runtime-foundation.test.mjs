@@ -879,7 +879,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,false);
  assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
  const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(runtimeWorkflow,/OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  assert.match(runtimeWorkflow,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
  assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
  assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
@@ -905,14 +905,14 @@ test('F9 consumes exact deferred engine evidence without requiring Studio actual
 });
 
 
-test('runtime QA validates the private candidate through cloud APIs with local Studio disabled',()=>{
+test('runtime QA validates Cloud independently while optional Studio is exact opt-in',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/Probe exact Roblox Open Cloud engine execution/);
  assert.doesNotMatch(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
  assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
- assert.match(workflow,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  assert.match(workflow,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);

@@ -110,7 +110,7 @@ test('the workflow is diagnostic and cannot silently replace the disabled real-p
   assert.match(workflow,/contents: read/);
   assert.match(workflow,/official-studio-mcp-hosted-windows-diagnostic/);
   assert.doesNotMatch(workflow,/ROBLOX_OPEN_CLOUD_API_KEY|ROBLOX_COOKIE|roblosecurity/i);
-  assert.match(live,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  assert.match(live,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
   assert.match(live,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(install,/https:\/\/setup\.rbxcdn\.com\/RobloxStudioInstaller\.exe/);
   assert.match(install,/Get-AuthenticodeSignature/);

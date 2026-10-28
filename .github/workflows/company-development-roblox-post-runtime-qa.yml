@@ -2261,7 +2261,8 @@ jobs:
           echo "ROBLOX_F9_EXACT_DEDUPED_COUNT=$deduped_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
-        if: ${{ false }} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY
+        # Avoid unauthenticated automatic fanout; authenticated exact-game execution uses the existing planner.
+        if: ${{ false }} # EXPLICIT_AUTHENTICATED_STUDIO_OPT_IN_ONLY
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -2302,11 +2303,11 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
-    # Owner requires cloud API validation only; the legacy local lane is disabled.
+    # Cloud remains release authority. Authenticated official Studio MCP is optional per exact game request.
     # Planning is read-only control work. Only actual Studio execution consumes the shared Windows host.
     # A skipped job is never Studio actual-play PASS.
     # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
-    if: ${{ false }} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY
+    if: ${{ inputs.run_studio == true && inputs.game_id != '' }}
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
       group: roblox-studio-mcp-plan-${{ github.run_id }}

@@ -327,7 +327,7 @@ test('runtime foundation critical path reuses current-main contract QA instead o
 });
 
 
-test('Open Cloud runtime stays automatic while local Studio execution is disabled',()=>{
+test('Open Cloud runtime stays automatic while official Studio is exact opt-in',()=>{
   const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
   const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
   assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
@@ -336,7 +336,7 @@ test('Open Cloud runtime stays automatic while local Studio execution is disable
   assert.match(foundation,/name: Probe exact Roblox Open Cloud engine execution/);
   assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
-  assert.match(studioPlan,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
   assert.doesNotMatch(studioPlan,/github\.event_name == 'push'/);
 });
 
