@@ -33,6 +33,25 @@ test('Roblox native path is package -> shared preflight -> F0 -> private validat
   assert.ok(f9.includes('publish_stage=final'));
 });
 
+test('F0 candidates automatically enter the existing official Studio MCP QA flow without promotion shortcuts',()=>{
+  const marker=runtime.indexOf('# Official Studio MCP actual play is the independent, required F9 gate.');
+  const end=runtime.indexOf('  # Repair a stale provenance flag',marker);
+  assert.ok(marker>0&&end>marker,'automatic Studio dispatch must remain in the canonical continuation stage');
+  const auto=runtime.slice(marker,end);
+  assert.match(auto,/planLocalStudioCandidates/);
+  assert.match(auto,/roblox-continuation-dispatch-queue\.json/);
+  assert.match(auto,/company-learning\/platform-release-roadmap\.json/);
+  assert.match(auto,/requestedGameId:String\(process\.env\.REQUESTED_GAME_ID/);
+  assert.match(auto,/ROBLOX_STUDIO_MCP_AUTO_PLAN_COUNT=/);
+  assert.match(auto,/ROBLOX_STUDIO_MCP_F9_GATE_REMAINS_REQUIRED=YES/);
+  assert.match(auto,/cat \/tmp\/roblox-runtime-qa-ready-ids \/tmp\/roblox-studio-mcp-auto-ready-ids \| sed '\/\^\$\/d' \| sort -u/);
+  assert.match(auto,/if \[ "\$runtime_qa_ready" -gt 0 \] \|\| \[ "\$studio_qa_ready" -gt 0 \]; then/);
+  assert.match(auto,/DEDUPED_ACTIVE:/);
+  assert.match(auto,/gh workflow run company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(auto,/done < \/tmp\/roblox-native-qa-ready-ids/);
+  assert.doesNotMatch(auto,/robloxInternalVibePlayEvidence\s*=|ROBLOX_STUDIO_MCP_RUNTIME=PASS|publish_stage=final/);
+});
+
 test('shared preflight requires exact immutable build and preserves configured shared model',()=>{
   const item={
     gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
