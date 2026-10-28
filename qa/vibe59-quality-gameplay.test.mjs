@@ -111,7 +111,8 @@ test('independent offline game decision oracle validates six accepted and six de
   assert.equal(proof.runtimeVerified,false);
   assert.equal(proof.sourceWrite,false);
   const bad=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
-   scenarioSet(row)[0],{...scenarioSet(row)[1],expectedApplied:true}]});
+   scenarioSet(row)[0],{...scenarioSet(row)[1],
+    expectedEffects:scenarioSet(row)[0].expectedEffects}]});
   assert.equal(bad.pass,false,row.id);
  }
 });
@@ -197,7 +198,7 @@ test('combat does not emit damage before checking attacker alive; building uses 
   sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
  assert.match(build,/built:GetBoundingBox\(\)/);
  assert.match(build,/built:Destroy\(\); return false/);
- assert.ok(build.indexOf('GetBoundingBox()')<build.indexOf('state.inventory.wood ='));
+ assert.ok(build.indexOf('GetBoundingBox()')<build.indexOf('state.inventory.wood = state.inventory.wood -'));
 });
 
 
@@ -268,7 +269,7 @@ test('generated Lua refuses NaN, infinity and negative crafting or building reso
  assert.match(craft,/state\.inventory\.wood ~= state\.inventory\.wood/);
  assert.match(craft,/state\.inventory\.ore == math\.huge/);
  assert.match(craft,/state\.inventory\.sword < 0/);
- assert.ok(craft.indexOf('math.huge')<craft.indexOf('state.inventory.wood ='));
+ assert.ok(craft.indexOf('math.huge')<craft.indexOf('state.inventory.wood = state.inventory.wood -'));
  const building=synthesizeVibe59QualityGameplay({spec:cases[1].spec,source:cases[1].source,
   sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
  assert.match(building,/state\.inventory\.wood == math\.huge/);
