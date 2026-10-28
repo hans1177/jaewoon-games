@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1l1cp1g",
+      "worker": "vibe2",
+      "taskId": "tower-choice-rpg-web-startup-spatial-repair-v1",
+      "gameId": "tower-choice-rpg",
+      "files": [
+        "web-games/tower-choice-rpg/index.html"
+      ],
+      "baseSha": "a542ca02f8aba300af4388bbd0a2e02a7e078ae9",
+      "runId": "40641166792",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-28T06:31:54.013Z",
+      "expiresAt": "2026-10-28T07:16:54.013Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:tower-choice-rpg-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
