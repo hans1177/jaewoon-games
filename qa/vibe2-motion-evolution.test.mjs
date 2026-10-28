@@ -154,7 +154,7 @@ test('Daechung creature anatomy is automatically bound to real articulated motor
  const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
  assert.match(client,/local function nativeActorChannels\(host,limbs\)/);
  assert.match(client,/motor\.Name=="ActorLimbMotor"/);
- assert.match(client,/motor:GetAttribute\("LimbRole"\)/);
+ assert.match(client,/inst:GetAttribute\("LimbRole"\)/);
  assert.match(client,/host\.CFrame:PointToObjectSpace\(motor\.Part1\.Position\)/);
  for(const plan of ['FLYER','QUADRUPED','CRAWLER','SERPENT','GIANT','BIPED'])
   assert.ok(client.includes('"'+plan+'"'),plan+' native actor auto-detection');
