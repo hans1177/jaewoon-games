@@ -54,9 +54,10 @@ test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/
     'local Combat = require(script.Parent.Combat)',
     'local Assets = require(script.Parent.Parent.Assets)',
     'local Skills = require(script.Parent:WaitForChild("Skills"))',
+    'local Effects = require(script.Parent.Parent.shared.Effects)',
     'return Combat'
   ].join('\n');
-  assert.deepEqual(extractVibeSourceImportRefs(luau,'roblox'),['../Assets','./Combat','./Skills']);
+  assert.deepEqual(extractVibeSourceImportRefs(luau,'roblox'),['../Assets','../shared/Effects','./Combat','./Skills']);
   assert.deepEqual(extractVibeSourceImportRefs(luau,'web'),[]);
 });
 

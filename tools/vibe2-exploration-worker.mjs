@@ -68,12 +68,12 @@ export function extractVibeSourceImportRefs(source='',target=''){
   ])for(const match of text.matchAll(expression))refs.add(match[1]);
   if(['roblox','luau','lua'].includes(clean(target).toLowerCase())){
     // script.Parent.Foo = sibling module; script.Parent.Parent.Foo = parent-directory module.
-    const expression=/\brequire\s*\(\s*script((?:\.Parent)+)(?:\.([A-Za-z_]\w*)|:WaitForChild\(\s*['"]([A-Za-z_]\w*)['"]\s*\))\s*\)/g;
+    const expression=/\brequire\s*\(\s*script((?:\.Parent)+)((?:\.[A-Za-z_]\w*)+|:WaitForChild\(\s*['"]([A-Za-z_]\w*)['"]\s*\))\s*\)/g;
     for(const match of text.matchAll(expression)){
       const parents=(match[1].match(/\.Parent/g)||[]).length;
       if(parents<1)continue;
-      const moduleName=match[2]||match[3];
-      refs.add((parents===1?'./':'../'.repeat(parents-1))+moduleName);
+      const modulePath=match[2].startsWith('.')?match[2].slice(1).replaceAll('.','/'):match[3];
+      refs.add((parents===1?'./':'../'.repeat(parents-1))+modulePath);
     }
   }
   return Object.freeze([...refs].filter(Boolean).sort());
