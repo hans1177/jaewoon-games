@@ -1,5 +1,5 @@
 {
-  "version": 597,
+  "version": 598,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -1516,7 +1516,7 @@
         "sharedFastMvpSupersededField": "robloxFastMvpSupersededBy",
         "internalReleaseVisibilityRequired": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE"
       },
-      "studioRuntimeRequired": false,
+      "studioRuntimeRequired": true,
       "publicationTargetFromStudioForbidden": true,
       "postInternalReleaseActualVibePlayRequired": true,
       "verifiedCyclePublication": {
@@ -1563,7 +1563,7 @@
         "developmentGameNextCycleRequiresPublicationDispatch": true,
         "publicationDispatchRequirementScope": "ALL_GAMES_AFTER_VERIFIED_F9",
         "ownerDirectCanonicalPublishExceptionRef": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.ownerDirectCanonicalPublishException",
-        "studioRequiredForCanonicalPublish": false,
+        "studioRequiredForCanonicalPublish": true,
         "postBuildUpVerificationLevel": "CODE_AND_STATIC_QA",
         "developmentGameNextCycleRequiresPostPublishQaPass": true,
         "postPublishQaRequiredForNextF0": true,
@@ -1597,8 +1597,8 @@
         "studioFailureDoesNotBlockOwnerDirectPublish": true
       },
       "validationProviderContract": {
-        "version": 2,
-        "authority": "OWNER_DIRECTIVE_2026-10-28_OFFICIAL_STUDIO_MCP_OPTIONAL_WITH_CLOUD_RELEASE_AUTHORITY",
+        "version": 3,
+        "authority": "OWNER_DIRECTIVE_2026-10-28_STUDIO_MCP_REQUIRED_FOR_F9_AND_CANONICAL_RELEASE",
         "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
         "engineExecution": "VERSION_PINNED_OPEN_CLOUD_LUAU_EXECUTION",
         "runtimeObservation": "OPEN_CLOUD_DATASTORE_EXACT_PLACE_VERSION_SENTINEL",
@@ -1630,7 +1630,8 @@
           "CAMERA_INPUT_MOBILE_UI",
           "SAVE_AND_REMOTE_BOUNDARY",
           "MULTIPLAYER_CONTRACT_AND_RUNTIME_EVIDENCE_SCOPE",
-          "F9_EXACT_REVISION_REGRESSION"
+          "F9_EXACT_REVISION_REGRESSION",
+          "OFFICIAL_STUDIO_MCP_EXACT_ARTIFACT_ACTUAL_PLAY"
         ],
         "firstFrameGrounding": {
           "required": true,
@@ -1647,14 +1648,14 @@
     },
     "validationMode": "HEADLESS_FAST_MVP",
     "studioExecution": {
-      "version": 5,
+      "version": 6,
       "enabled": true,
-      "required": false,
-      "optionalDiagnostic": true,
-      "deploymentGate": false,
-      "f9Gate": false,
-      "requiredForInternalRelease": false,
-      "postBuildUpVerificationLevel": "CODE_AND_STATIC_QA",
+      "required": true,
+      "optionalDiagnostic": false,
+      "deploymentGate": true,
+      "f9Gate": true,
+      "requiredForInternalRelease": true,
+      "postBuildUpVerificationLevel": "CODE_STATIC_AND_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY",
       "officialStudioMcpOnly": true,
       "localPlaceFileRequired": true,
       "onlinePublishedPlaceDirectOpenForbidden": true,
@@ -1738,10 +1739,10 @@
         "STATIC_QA"
       ],
       "f0ToF9Mode": "IMPACT_SCOPED_CODE_AND_STATIC_QA",
-      "studio": "OPTIONAL_DIAGNOSTIC",
+      "studio": "REQUIRED_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY",
       "studioBlocksDevelopment": false,
-      "studioBlocksF9": false,
-      "studioBlocksDeployment": false,
+      "studioBlocksF9": true,
+      "studioBlocksDeployment": true,
       "exactSourceArtifactBindingRequired": true,
       "relevantSecurityGatesRemainRequired": true,
       "publicReleaseAuthorityUnchanged": true
@@ -3754,12 +3755,12 @@
       "saveCompatibilityCheckRequiredOnAffectedGame": true
     },
     "robloxStudioUsage": {
-      "version": 4,
-      "authority": "OWNER_DIRECTIVE_2026-10-03",
-      "optionalDiagnostic": true,
-      "deploymentGate": false,
+      "version": 5,
+      "authority": "OWNER_DIRECTIVE_2026-10-28",
+      "optionalDiagnostic": false,
+      "deploymentGate": true,
       "buildUpGate": false,
-      "f9Gate": false,
+      "f9Gate": true,
       "learningUseForbidden": false,
       "forbidden": [
         "ROBLOX_PLAYER_AUTOMATION",
@@ -4903,8 +4904,8 @@
         "explicitExternalExposureEvidenceRequired": true
       },
       "internalBuildupLoop": {
-        "version": 3,
-        "authority": "OWNER_DIRECTIVE_2026-10-03",
+        "version": 4,
+        "authority": "OWNER_DIRECTIVE_2026-10-28",
         "status": "ACTIVE_MINIMAL",
         "platform": "ROBLOX",
         "perpetual": true,
@@ -4912,12 +4913,12 @@
         "sequence": [
           "BUILD_UP",
           "CODE_AND_STATIC_QA",
-          "OPTIONAL_STUDIO_DIAGNOSTIC",
+          "REQUIRED_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY",
           "NEXT_BUILD_UP"
         ],
         "codeAndStaticQaRequired": true,
-        "studioRequired": false,
-        "missingStudioAction": "CONTINUE_DEVELOPMENT_AND_DEPLOYMENT",
+        "studioRequired": true,
+        "missingStudioAction": "HOLD_F9_AND_CANONICAL_RELEASE_KEEP_SOURCE_DEVELOPMENT",
         "failureAction": "ROUTE_RELEVANT_CODE_OR_STATIC_QA_FAILURE_TO_CAUSAL_REPAIR",
         "noArtificialRetryCap": true,
         "publicReleaseAuthorityUnchanged": true
@@ -5869,7 +5870,8 @@
           "PLACE_ID",
           "CANDIDATE_VERSION_NUMBER",
           "POST_RUNTIME_QA",
-          "CODE_AND_STATIC_QA"
+          "CODE_AND_STATIC_QA",
+          "OFFICIAL_STUDIO_MCP_EXACT_ACTUAL_PLAY"
         ],
         "sourceDriftInvalidation": {
           "scope": "ROBLOX_GAME_SOURCE_TREE_ONLY",
@@ -5929,7 +5931,7 @@
         "publicationStillRequiresExplicitOwnerApproval": true,
         "f9Mode": "EVIDENCE_FAN_IN_NO_DUPLICATE_RUNTIME_SESSION",
         "legacyExternalServerObservationNotAReleaseGate": true,
-        "studioRequiredForInternalRelease": false
+        "studioRequiredForInternalRelease": true
       },
       "failureRouting": {
         "foundationFailureIsCompanyWideHighImpactBlocker": true,

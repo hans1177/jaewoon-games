@@ -308,6 +308,18 @@ jobs:
               &&studioPlay.artifactIdentity===artifactIdentity
               &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
               &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+            const mandatoryStudioMcpActualPlay=
+              studioPlay.pass===true
+              &&studioPlay.actualPlay===true
+              &&studioPlay.runtimeVerified===true
+              &&studioPlay.officialStudioMcp===true
+              &&studioPlay.localPlaceFile===true
+              &&studioPlay.onlinePlaceDirectOpen===false
+              &&studioPlay.robloxPlayerAutomation===false
+              &&studioPlay.sourceRevision===sourceRevision
+              &&studioPlay.artifactIdentity===artifactIdentity
+              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
             const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance||internalRuntimeObservationDeferred||internalRuntimeFindingDeferred||internalStudioValidationAccepted;
             const publicRuntimeAcceptance=false; // External publication is separate from internal F0-F9 validation.
             const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
@@ -356,6 +368,7 @@ jobs:
             );
             const exact=
               productReadiness.pass===true
+              &&mandatoryStudioMcpActualPlay===true
               &&item.robloxFoundationF0Passed===true
               &&(item.robloxRuntimeFoundationPassed===true||internalRuntimeObservationDeferred||internalRuntimeFindingDeferred||internalStudioValidationAccepted)
               &&internalRuntimeAcceptance===true
@@ -395,9 +408,10 @@ jobs:
             const tickets=currentBlockingTickets.get(item.gameId)||[];
             if(!exact||tickets.length){
               const productBlocked=productReadiness.pass!==true;
-              const f9FailureSignature=productBlocked?'ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS_FAILED':(!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE');
-              const f9Blocker=productBlocked?'roblox-f9-gameplay-product-readiness-failed':(!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure');
-              const internalFlowNonBlocking=!productBlocked&&(
+              const studioPending=mandatoryStudioMcpActualPlay!==true;
+              const f9FailureSignature=studioPending?'ROBLOX_F9_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_REQUIRED':productBlocked?'ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS_FAILED':(!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE');
+              const f9Blocker=studioPending?'roblox-f9-official-studio-mcp-actual-play-required':productBlocked?'roblox-f9-gameplay-product-readiness-failed':(!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure');
+              const internalFlowNonBlocking=!studioPending&&!productBlocked&&(
                 item.robloxRuntimeFailureExternalReleaseOnly===true
                 ||item.robloxRuntimeFoundationInternalReleaseException===true
                 ||item.robloxInternalReleaseReady===true
@@ -437,6 +451,11 @@ jobs:
                 };
               }
               item.robloxFinalReviewPassed=false;
+              if(studioPending){
+                item.robloxInternalReleaseReady=false;
+                item.robloxCanonicalPublishPending=false;
+                console.log('ROBLOX_F9_STUDIO_MCP_REQUIRED='+item.gameId+':version='+Number(candidate.versionNumber));
+              }
               item.robloxF9PendingInParallel=internalFlowNonBlocking;
               item.robloxF9FailureSignature=f9FailureSignature;
               item.robloxF9Blockers=[f9Blocker];

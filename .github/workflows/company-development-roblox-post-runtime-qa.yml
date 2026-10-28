@@ -9,7 +9,7 @@ on:
         required: false
     inputs:
       run_studio:
-        description: Deprecated compatibility input; cloud API validation only.
+        description: Legacy input; authenticated Studio MCP actual play is required for eligible candidates.
         type: boolean
         default: false
       retry_open_cloud_only:
@@ -45,7 +45,7 @@ on:
   workflow_dispatch:
     inputs:
       run_studio:
-        description: Deprecated compatibility input; Studio execution is disabled.
+        description: Legacy input; authenticated Studio MCP actual play runs for eligible candidates.
         type: boolean
         default: false
       game_id:
@@ -2303,11 +2303,11 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
-    # Cloud remains release authority. Authenticated official Studio MCP is optional per exact game request.
+    # Official Studio MCP actual play is mandatory for F9; Open Cloud remains independently required.
     # Planning is read-only control work. Only actual Studio execution consumes the shared Windows host.
     # A skipped job is never Studio actual-play PASS.
     # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
-    if: ${{ inputs.run_studio == true && inputs.game_id != '' }}
+    if: ${{ github.event_name == 'push' || inputs.game_id != '' }}
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
       group: roblox-studio-mcp-plan-${{ github.run_id }}
@@ -3407,6 +3407,31 @@ jobs:
             Write-Host "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING=$env:GAME_ID"
           } else {
             throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
+          }
+
+      - name: Resume F9 review after verified Studio MCP actual play
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference='Stop'
+          $queue=Get-Content -LiteralPath 'runtime/development-queue.json' -Raw | ConvertFrom-Json
+          $item=@($queue.items | Where-Object { $_.gameId -eq $env:GAME_ID }) | Select-Object -First 1
+          if (-not $item) { throw 'ROBLOX_STUDIO_F9_GAME_MISSING' }
+          $e=$item.robloxInternalVibePlayEvidence
+          if ($e.pass -ne $true -or $e.actualPlay -ne $true -or $e.runtimeVerified -ne $true -or
+              $e.officialStudioMcp -ne $true -or $e.localPlaceFile -ne $true -or
+              $e.sourceRevision -ne $item.robloxSourceCommit -or $e.artifactIdentity -ne $item.robloxBuildArtifactIdentity) {
+            throw 'ROBLOX_STUDIO_F9_VERIFIED_EVIDENCE_REQUIRED'
+          }
+          if ($item.robloxRuntimePassed -eq $true -and $item.robloxIndependentQaPassed -eq $true -and $item.robloxRegressionPassed -eq $true) {
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo $env:GITHUB_REPOSITORY --ref main -f "game_id=$env:GAME_ID"
+            if ($LASTEXITCODE -ne 0) { throw 'ROBLOX_STUDIO_F9_DISPATCH_FAILED' }
+            Write-Host "ROBLOX_STUDIO_MCP_F9_DISPATCHED=$env:GAME_ID"
+          } else {
+            Write-Host "ROBLOX_STUDIO_MCP_F9_AWAITING_CLOUD=$env:GAME_ID"
           }
 
       - name: Upload Studio captures and runtime report
