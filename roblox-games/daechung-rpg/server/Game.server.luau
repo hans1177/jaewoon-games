@@ -920,20 +920,49 @@ local function rock(parent,pos,scale,color)
  local r=ppart(parent,"Rock",Vector3.new(5,4,5)*scale,pos+Vector3.new(0,2*scale,0),color or Color3.fromRGB(92,91,96),Enum.Material.Rock)
  r.Orientation=Vector3.new(math.random(-10,10),math.random(0,180),math.random(-10,10))
 end
+-- Server-owned landing surfaces keep teleport height grounded across village,
+-- five portals, trade plaza and private housing. Visual props never own collision.
+local teleportGroundParts={
+ VillagePlaza=true,VillageGround=true,MultiverseTradeSquare=true,
+ ZoneGround=true,ZoneInnerRoad=true,BossArena=true,ReturnPortal=true,
+ PrivatePlot=true,Floor=true,
+}
 local function teleportPlayer(p,pos)
  local r=root(p);if not r then return end
- local arrival=pos+Vector3.new(0,4,0)
- -- Normal village respawn, manual return, and portal return share the same
- -- actual platform height. Leave portal, trade, house and combat destinations
- -- unchanged; Humanoid root clearance follows the current player's rig.
- if foundationSpawn and foundationSpawn.Parent and (pos-C.VillageCenter).Magnitude<.05 then
-  local h=hum(p)
-  local feetClearance=(h and h.HipHeight or 2)+r.Size.Y*.5+.2
-  local spawnTop=foundationSpawn.Position.Y+foundationSpawn.Size.Y*.5
-  arrival=Vector3.new(foundationSpawn.Position.X,spawnTop+feetClearance,foundationSpawn.Position.Z)
+ local h=hum(p)
+ local clearance=r.Size.Y*.5+(h and math.max(0,h.HipHeight) or 2)
+ if h and h.RigType==Enum.HumanoidRigType.R6 then
+  local leg=p.Character and p.Character:FindFirstChild("Left Leg")
+  if leg and leg:IsA("BasePart")then clearance+=leg.Size.Y end
  end
- r.AssemblyLinearVelocity=Vector3.zero
- r.CFrame=CFrame.new(arrival)
+ local groundY=nil
+ -- Reuse the actual village spawn plate already aligned to the built plaza.
+ if foundationSpawn and foundationSpawn.Parent and (pos-C.VillageCenter).Magnitude<.05 then
+  groundY=foundationSpawn.Position.Y+foundationSpawn.Size.Y*.5
+ elseif world and world.Parent then
+  local walkable={}
+  for _,part in ipairs(world:GetDescendants())do
+   if part:IsA("BasePart") and part.Anchored and part.CanCollide and part.CanQuery
+    and part.CFrame.UpVector.Y>.97
+    and (teleportGroundParts[part.Name] or part.Name:match("^EmptyEstatePlot_"))then
+    table.insert(walkable,part)
+   end
+  end
+  if #walkable>0 then
+   local params=RaycastParams.new()
+   params.FilterType=Enum.RaycastFilterType.Include
+   params.FilterDescendantsInstances=walkable
+   local hit=workspace:Raycast(pos+Vector3.new(0,48,0),Vector3.new(0,-112,0),params)
+   if hit and hit.Normal.Y>.7 then groundY=hit.Position.Y end
+  end
+ end
+ -- If authored walkable ground is missing, record that failure. Never pretend
+ -- an automatic source/geometry check is a verified Roblox play session.
+ local rootY=(groundY or pos.Y)+clearance+.12
+ r.AssemblyLinearVelocity=Vector3.zero;r.AssemblyAngularVelocity=Vector3.zero
+ r.CFrame=CFrame.new(pos.X,rootY,pos.Z)
+ p:SetAttribute("SpawnGroundingState",groundY and "SOURCE_GROUND_PLACEMENT_UNVERIFIED" or "GROUND_SURFACE_NOT_FOUND")
+ if groundY then p:SetAttribute("SpawnGroundY",groundY);p:SetAttribute("SpawnRootY",rootY)end
 end
 local function setStats(p,heal)
  local level=math.clamp(n(p,"Level",1),1,C.LevelCap or 60);p:SetAttribute("Level",level)
