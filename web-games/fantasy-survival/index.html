@@ -4909,7 +4909,7 @@ function handleWorldTap(e){
  }
  if(state.area==='surface'&&!state.giantCrocEggTaken&&dist(wx,wy,GIANT_CROC_EGG.x,GIANT_CROC_EGG.y)<60){doubleTapTarget('giant-croc-egg',now,()=>{if(state.giantCrocEggTaken)return;state.giantCrocEggTaken=true;addInv('giant-croc-egg',1);state.dirty=true;showNotice('거대 악어 알 획득 · 부화기에서 10분 부화');saveGame(false)});return}
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
- const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
+ const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);
  let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=70;
  if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(cd,(Number(m.type.r)||20)+22)){closest=m;cd=d}}
  if(closest){
