@@ -67,7 +67,10 @@ export function createVerifiedActorMotionVariants({
  if(!knob)return Object.freeze({status:'NO_SAFE_MOTION_KNOB',variants:Object.freeze([])});
  const refinement=Number((.16/(1+Math.sqrt(proofs.length))).toFixed(4));
  const limit=MOTION_CRAFT_KNOBS[knob];
- const adjusted=sign=>Object.freeze({...base,[knob]:Math.max(limit[0],Math.min(limit[1],Number((base[knob]+refinement*sign).toFixed(4))))});
+ const adjusted=sign=>{
+  const value=Number((base[knob]+refinement*sign).toFixed(4));
+  return Object.freeze({...base,[knob]:Math.max(limit[0],Math.min(limit[1],value))});
+ };
  return Object.freeze({
   status:best?'VERIFIED_BASELINE_REFINEMENT':'SOURCE_GROUNDED_EXPERIMENT',
   gameId,actorClass,featureId,bodyPlan,generation:cursor+1,
