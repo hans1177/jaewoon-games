@@ -2712,20 +2712,58 @@ jobs:
           & node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8').replace(/^\\uFEFF/,''));const s=r?.roblox?.studioExecution||{};const ok=s.officialStudioMcpOnly===true&&s.robloxPlayerAutomationForbidden===true&&s.undocumentedStudioCliAutomationForbidden===true&&s.externalGuiAutomationForbidden===true&&s.localPlaceFileRequired===true;if(!ok){console.error('ROBLOX_STUDIO_MCP_POLICY_MISMATCH');process.exit(1)}console.log('ROBLOX_STUDIO_MCP_POLICY=PASS')"
           if ($LASTEXITCODE -ne 0) { throw 'official Studio MCP policy validation failed' }
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio MCP runner must be Windows' }
-          $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Directory -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending |
-            ForEach-Object { Join-Path $_.FullName 'RobloxStudioBeta.exe' } |
-            Where-Object { Test-Path $_ } |
-            Select-Object -First 1
-          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          # A Windows service runs in session 0 and cannot drive the actual Studio
+          # desktop. A cloud Windows VM is supported, but its runner must use the
+          # same signed-in interactive user session as the Roblox Studio client.
+          $runnerSessionId = [int](Get-Process -Id $PID).SessionId
+          Write-Host "ROBLOX_STUDIO_RUNNER_WINDOWS_SESSION_ID=$runnerSessionId"
+          if ($runnerSessionId -le 0) {
+            throw 'ROBLOX_STUDIO_INTERACTIVE_SESSION_REQUIRED: launch GitHub runner via run.cmd in signed-in Windows desktop, not as a service'
+          }
+          if (-not $env:LOCALAPPDATA) { throw 'ROBLOX_STUDIO_LOCALAPPDATA_REQUIRED' }
+          $studioRoots = @((Join-Path $env:LOCALAPPDATA 'Roblox\Versions'))
+          $programFilesX86 = [Environment]::GetFolderPath('ProgramFilesX86')
+          if ($programFilesX86) { $studioRoots += (Join-Path $programFilesX86 'Roblox\Versions') }
+          $studioCandidates = @(
+            foreach ($root in $studioRoots) {
+              if (Test-Path -LiteralPath $root) {
+                Get-ChildItem -Path (Join-Path $root '*\RobloxStudioBeta.exe') -File -ErrorAction SilentlyContinue
+              }
+            }
+          )
+          $studio = $studioCandidates | Sort-Object LastWriteTime -Descending |
+            Select-Object -ExpandProperty FullName -First 1
+          if (-not $studio) { throw 'ROBLOX_STUDIO_OFFICIAL_INSTALL_REQUIRED: RobloxStudioBeta.exe not found in user or Program Files (x86)' }
+          $studioSignature = Get-AuthenticodeSignature -FilePath $studio
+          if ($studioSignature.Status -ne 'Valid' -or
+              $null -eq $studioSignature.SignerCertificate -or
+              $studioSignature.SignerCertificate.Subject -notlike '*O=Roblox Corporation*') {
+            throw 'ROBLOX_STUDIO_OFFICIAL_SIGNATURE_REQUIRED'
+          }
+          Write-Host 'ROBLOX_STUDIO_SIGNED_INSTALL=VERIFIED'
 
           $mcpBat = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat'
           $studioDir = Split-Path -Parent $studio
           $mcpExe = Join-Path $studioDir 'StudioMCP.exe'
-          if (-not (Test-Path $mcpExe)) {
-            $mcpExe = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Recurse -File -Filter 'StudioMCP.exe' -ErrorAction SilentlyContinue |
-              Sort-Object LastWriteTime -Descending |
+          if (-not (Test-Path -LiteralPath $mcpExe)) {
+            $mcpCandidates = @(
+              foreach ($root in $studioRoots) {
+                if (Test-Path -LiteralPath $root) {
+                  Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'StudioMCP.exe' -ErrorAction SilentlyContinue
+                }
+              }
+            )
+            $mcpExe = $mcpCandidates | Sort-Object LastWriteTime -Descending |
               Select-Object -ExpandProperty FullName -First 1
+          }
+          if ($mcpExe -and (Test-Path -LiteralPath $mcpExe)) {
+            $mcpSignature = Get-AuthenticodeSignature -FilePath $mcpExe
+            if ($mcpSignature.Status -ne 'Valid' -or
+                $null -eq $mcpSignature.SignerCertificate -or
+                $mcpSignature.SignerCertificate.Subject -notlike '*O=Roblox Corporation*') {
+              throw 'ROBLOX_STUDIO_MCP_OFFICIAL_SIGNATURE_REQUIRED'
+            }
+            Write-Host 'ROBLOX_STUDIO_MCP_SIGNED_EXE=VERIFIED'
           }
           if (-not (Test-Path $mcpBat) -and -not ($mcpExe -and (Test-Path $mcpExe))) {
             throw 'Official Roblox Studio MCP launcher and StudioMCP.exe not found'
