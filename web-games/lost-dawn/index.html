@@ -1,0 +1,542 @@
+<!doctype html>
+<!-- 파일명: web-games/lost-dawn/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#101d19"><title>잊힌 새벽 | 2D 생존 RPG</title>
+<style>
+/* 스타일 */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101d19;color:#f1f6eb;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+#game{display:block;width:100vw;height:100dvh}
+#hud{position:fixed;left:7px;top:max(8px,env(safe-area-inset-top));z-index:4;pointer-events:none;text-shadow:0 2px 3px #000}
+#stats{display:flex;gap:4px;flex-wrap:wrap;max-width:calc(100vw - 124px)}
+.pill{background:#0a1715ea;border:1px solid #a1b9ac80;border-radius:7px;font-size:10px;font-weight:900;padding:5px 7px}
+.meter{width:min(220px,55vw);height:12px;border:1px solid #e6e7df8d;border-radius:7px;margin-top:5px;background:#14151a;overflow:hidden}
+.meter i{display:block;width:100%;height:100%;background:#df5b61}
+#foodMeter i{background:#cda456}#waterMeter i{background:#66b9dc}
+#place{margin-top:5px;font-size:11px;font-weight:800;color:#e8ebd5}
+#topMenu{position:fixed;z-index:9;right:7px;top:max(7px,env(safe-area-inset-top));display:flex;flex-direction:column;gap:5px}
+.menuBtn{min-width:84px;min-height:38px;border:1px solid #8ab3a0;border-radius:10px;background:#16352ef0;font-size:12px;font-weight:900;box-shadow:0 3px 9px #0008}
+#actionBar{position:fixed;z-index:8;right:9px;bottom:calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,72px);gap:8px}
+.act{width:72px;height:56px;border:1px solid #c3d3bf;border-radius:13px;background:#264a3cf0;font-size:12px;font-weight:900;box-shadow:0 5px 12px #0008}
+.act.primary{background:#9a4141}
+#joystick{position:fixed;z-index:8;left:12px;bottom:calc(18px + env(safe-area-inset-bottom));width:126px;height:126px;border:2px solid #e0f4e26e;background:#162c2466;border-radius:50%;touch-action:none;user-select:none}
+#stick{position:absolute;left:33px;top:33px;width:56px;height:56px;border:2px solid #efffe0a6;background:#d3e4cc88;border-radius:50%;pointer-events:none}
+#toast{position:fixed;z-index:15;top:28%;left:50%;transform:translateX(-50%);background:#0a1918f2;border:1px solid #cee9b7;border-radius:11px;padding:9px 13px;font-size:12px;font-weight:900;text-align:center;pointer-events:none;max-width:90vw;opacity:0;transition:opacity .2s}
+.overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:14px;background:#06120de8;overflow:auto;touch-action:pan-y}
+.overlay.show{display:flex}
+.panel{width:min(560px,98vw);max-height:92dvh;overflow:auto;padding:17px;background:#182820;border:2px solid #9aab8d;border-radius:18px;box-shadow:0 15px 60px #000c}
+h1,h2,h3{margin:0 0 10px}h1{font-size:30px;color:#f7d891}h2{font-size:20px;color:#ead59c}h3{font-size:15px;color:#d8e5bd;margin-top:16px}
+p{font-size:13px;line-height:1.75;color:#d3ddd0}
+small{font-size:11px;color:#abbca8}
+.row{display:flex;align-items:center;gap:9px;justify-content:space-between;padding:9px 0;border-bottom:1px solid #e6f4e022;font-size:13px}
+.row .desc{flex:1}.row .desc small{display:block}
+.row button{min-width:80px;min-height:38px;padding:7px;border:1px solid #bfd4a1;border-radius:9px;background:#426a4e;font-weight:900;font-size:12px}
+.row button:disabled{opacity:.43}
+.big{width:100%;min-height:48px;padding:10px;margin-top:9px;background:#cba860;color:#1b1b13;border:0;border-radius:12px;font-weight:1000}
+.secondary{background:#344a42;color:#fff}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.tab{border:1px solid #819c80;background:#213a2b;padding:8px;border-radius:9px;font-size:12px}
+.tab.selected{background:#638b60;color:white}
+#dialogChoices{display:grid;gap:6px;margin-top:13px}
+#minimap{width:100%;height:auto;max-height:50dvh;border:1px solid #9ba991;border-radius:10px;background:#273d29}
+#intro{display:flex}#intro.hidden{display:none}
+#intro .panel{text-align:center}
+#storyBox{max-height:28vh;overflow:auto;text-align:left;background:#0c211a;padding:10px;border:1px solid #8ba98e;border-radius:10px}
+#notice{color:#d9b785}
+@media(max-width:415px){#stats{max-width:calc(100vw - 100px)}.pill{font-size:9px;padding:4px}#topMenu .menuBtn{min-width:74px;font-size:11px;min-height:35px}#actionBar{grid-template-columns:repeat(2,65px);gap:5px}.act{width:65px;height:52px}#joystick{width:118px;height:118px}#stick{left:30px;top:30px;width:54px;height:54px}.panel{padding:12px}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="위에서 바라보는 넓은 생존 세계"></canvas>
+<div id="hud"><div id="stats"><span class="pill" id="areaHud">푸른들</span><span class="pill" id="dayHud">1일</span><span class="pill" id="timeHud">낮</span><span class="pill" id="killHud">처치 0</span></div>
+<div class="meter"><i id="hpFill"></i></div><div class="meter" id="foodMeter"><i id="foodFill"></i></div><div class="meter" id="waterMeter"><i id="waterFill"></i></div>
+<div id="place">체력 · 허기 · 수분</div></div>
+<div id="topMenu"><button class="menuBtn" data-panel="bag">가방·장비</button><button class="menuBtn" data-panel="craft">제작</button><button class="menuBtn" data-panel="journal">이야기</button><button class="menuBtn" data-panel="mapPanel">지도</button></div>
+<div id="joystick" aria-label="이동 조이스틱"><div id="stick"></div></div>
+<div id="actionBar"><button id="attack" class="act primary">공격</button><button id="gather" class="act">채집·대화</button><button id="eat" class="act">먹기</button><button id="toggle" class="act">무기 전환</button></div>
+<div id="toast" role="status"></div>
+<section id="intro" class="overlay"><div class="panel">
+<h1>잊힌 새벽</h1><p><b>위에서 내려다보는 2D 생존 이야기.</b><br>푸른들과 잿빛림, 두 지역으로 나뉜 광대한 땅에서 살아남아.</p>
+<div id="storyBox"><p>열세 번째 새벽, 마을 전체가 지도에서 사라졌다.<br>무전기에서는 이미 죽었다는 탐사대장의 목소리가 들려온다.<br><br>“북쪽 문을 열지 마. 내가 거기 있더라도.”<br><br>누가 거짓말을 하는 걸까? 기록의 마지막 장은 아직 발견되지 않았다.</p></div>
+<p>동물 7종 · 근접 무기 6종 · 원거리 무기 2종 · 화살 3종 · 방어구 4세트. 이야기 약 1시간, 생존과 탐험을 합쳐 약 2시간을 목표로 설계했어. 아직 엔딩은 없어.</p>
+<button class="big" id="startNew">새로 시작</button><button class="big secondary" id="resume" hidden>이어하기</button>
+<small>모바일: 왼쪽 이동, 오른쪽 공격·채집. 컴퓨터: 이동키 / 방향키, 공백 공격, 상호작용키, 지도키.</small>
+</div></section>
+<section id="modal" class="overlay"><div class="panel"><button id="close" class="tab" style="float:right">닫기</button><h2 id="modalTitle">가방</h2><div id="modalBody"></div></div></section>
+<script>
+// 파일명: web-games/lost-dawn/index.html
+// 설정
+'use strict';
+const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d',{alpha:false});
+const WORLD={w:7200,h:4900},HALF=3600,SAVE='lost-dawn-v1';
+const names=['푸른들','잿빛림'],places=[
+ {id:'camp',name:'버려진 야영지',x:800,y:2400,type:'camp',text:'불씨가 아직 따뜻하다. 기록은 새벽에 멈춰 있다.'},
+ {id:'watch',name:'무너진 관측대',x:2450,y:1350,type:'tower',text:'벽면에는 탈출 경로가 두 개 겹쳐 그려져 있다.'},
+ {id:'boundary',name:'붕괴된 경계석',x:3680,y:2350,type:'rock',text:'푸른들과 잿빛림 사이, 누군가 경계의 이름을 지웠다.'},
+ {id:'tree',name:'검은 나무',x:4950,y:1050,type:'tree',text:'나무껍질 속에서 탐사대의 식별표가 발견되었다.'},
+ {id:'archive',name:'기록의 탑',x:6150,y:3470,type:'tower',text:'지하 기록에는 아직 태어나지 않은 사람의 이름이 있다.'},
+ {id:'gate',name:'봉인된 북문',x:6670,y:660,type:'signal',text:'안쪽에서 누군가 손가락으로 문을 두드린다.'},
+ {id:'springA',name:'푸른 샘',x:1450,y:3970,type:'plant',text:'맑은 물을 마실 수 있다.'},
+ {id:'springB',name:'회색 샘',x:5150,y:4250,type:'plant',text:'차가운 물이 흘러나온다.'}
+];
+const npcs=[
+ {id:'seorin',name:'서린',x:930,y:2460,text:'아무도 믿지 마. 가장 먼저 돌아온 사람부터.'},
+ {id:'dojun',name:'도준',x:2420,y:1460,text:'관측대의 지도는 일부러 두 장이 겹쳐져 있어.'},
+ {id:'echo',name:'이름 없는 기록자',x:6050,y:3510,text:'너의 목소리를 기록하면, 네가 사라진 자리를 메꿀 수 있지.'}
+];
+const SPECIES=[
+ {id:'wolf',name:'회색 늑대',kind:'aggressive',icon:'🐺',hp:84,atk:12,speed:96,drop:{meat:2,hide:1},zones:[0,1]},
+ {id:'boar',name:'붉은 멧돼지',kind:'aggressive',icon:'🐗',hp:115,atk:17,speed:82,drop:{meat:3,bone:2,hide:1},zones:[0,1]},
+ {id:'spider',name:'독거미',kind:'aggressive',icon:'🕷️',hp:60,atk:9,speed:112,drop:{fiber:2,venom:1},zones:[1]},
+ {id:'deer',name:'사슴',kind:'neutral',icon:'🦌',hp:92,atk:8,speed:115,drop:{meat:2,hide:2},zones:[0]},
+ {id:'bear',name:'곰',kind:'neutral',icon:'🐻',hp:240,atk:25,speed:66,drop:{meat:5,hide:4,bone:3},zones:[1]},
+ {id:'rabbit',name:'토끼',kind:'harmless',icon:'🐇',hp:28,atk:0,speed:135,drop:{meat:1,hide:1},zones:[0]},
+ {id:'duck',name:'오리',kind:'harmless',icon:'🦆',hp:32,atk:0,speed:122,drop:{meat:1,feather:2},zones:[0,1]}
+];
+const ITEM={
+ wood:'나무',stone:'돌',fiber:'섬유',ore:'철광석',berry:'열매',meat:'생고기',cooked:'구운 고기',hide:'가죽',bone:'뼈',venom:'독낭',feather:'깃털',relic:'낡은 기록',shard:'금이 간 결정'
+};
+const MELEE=[
+ {name:'나무 곤봉',damage:12,reach:88,cool:.60,cost:{wood:7}},
+ {name:'돌칼',damage:19,reach:92,cool:.47,cost:{wood:5,stone:10,fiber:3}},
+ {name:'뼈창',damage:25,reach:145,cool:.71,cost:{wood:9,bone:6,fiber:4}},
+ {name:'철검',damage:34,reach:109,cool:.53,cost:{ore:14,wood:4,hide:2}},
+ {name:'전투도끼',damage:44,reach:105,cool:.78,cost:{ore:23,wood:11,bone:6}},
+ {name:'기록자의 검',damage:55,reach:125,cool:.56,cost:{ore:30,shard:4,relic:3}}
+];
+const RANGED=[
+ {name:'짧은 활',damage:12,range:470,cool:.7,cost:{wood:12,fiber:11}},
+ {name:'장궁',damage:21,range:650,cool:1.03,cost:{wood:22,fiber:18,ore:10,hide:3}}
+];
+const ARROWS=[
+ {name:'나무 화살',damage:5,speed:580,cost:{wood:5,fiber:3}},
+ {name:'뼈 화살',damage:11,speed:650,cost:{wood:4,bone:4,fiber:3}},
+ {name:'철 화살',damage:21,speed:700,cost:{wood:4,ore:8,fiber:3}}
+];
+const SETS=[
+ {name:'천 세트',def:2,cost:{fiber:7}},
+ {name:'가죽 세트',def:5,cost:{hide:6,fiber:3}},
+ {name:'철 세트',def:9,cost:{ore:14,hide:3}},
+ {name:'기록자 세트',def:14,cost:{ore:12,shard:3,relic:1}}
+];
+const PARTS=[{id:'head',name:'머리',factor:1},{id:'body',name:'몸통',factor:2},{id:'legs',name:'다리',factor:1}];
+const CHAPTERS=[
+ {title:'서장 — 사라진 아침',body:'어젯밤은 새벽이 두 번 왔다. 주변을 조사해 불을 피울 재료부터 마련해야 한다.',hint:'나무 8개와 돌 6개를 채집해.',ready:s=>s.inv.wood>=8&&s.inv.stone>=6},
+ {title:'1장 — 남겨진 불씨',body:'야영지의 불씨는 사라진 마을보다 오래되었다. 화톳불을 만들어 밤을 버티자.',hint:'제작 메뉴에서 모닥불을 설치해.',ready:s=>s.built.fire},
+ {title:'2장 — 두 개의 길',body:'서린은 관측대에 가기 전에는 도준의 말을 믿지 말라고 했다. 그런데 도준은 서린을 모른다.',hint:'무너진 관측대에 가서 기록을 조사해.',ready:s=>s.flags.watch===true},
+ {title:'3장 — 짐승의 경고',body:'늑대와 멧돼지가 검은 나무를 향해 달아난다. 동물이 적개심을 품는 데는 이유가 있을지 모른다.',hint:'공격적인 몬스터 5마리를 처치해.',ready:s=>s.killsAgg>=5},
+ {title:'4장 — 이름을 가리는 갑옷',body:'낯선 사람의 시선이 갑옷에 머물렀다. 기록자는 장비의 문양을 읽는다고 했다.',hint:'방어구를 부위별로 2개 이상 만들어.',ready:s=>s.craftedArmor.length>=2},
+ {title:'5장 — 경계에서',body:'두 지역의 경계석에는 같은 글씨가 서로 다른 날짜로 새겨져 있다.',hint:'붕괴된 경계석과 검은 나무를 조사해.',ready:s=>!!s.flags.boundary&&!!s.flags.tree},
+ {title:'6장 — 닿지 않는 목소리',body:'검은 나무 아래에서 화살이 발견됐다. 발사한 사람의 그림자가 화살보다 늦게 도착했다.',hint:'활을 만들고 화살을 제작한 뒤 원거리 공격으로 적 2마리를 처치해.',ready:s=>s.ranged.length>0&&s.arrowBatches>0&&s.killsBow>=2},
+ {title:'7장 — 거짓 기록',body:'기록의 탑에는 사라진 사람들이 살아 있는 날짜가 적혀 있었다. 무엇을 되찾아야 하는 걸까.',hint:'기록의 탑을 조사하고 오래된 기록 2개를 찾아.',ready:s=>!!s.flags.archive&&s.inv.relic>=2},
+ {title:'8장 — 열세 번째 새벽',body:'문을 두드리는 존재는 너의 목소리를 흉내 낸다. 서린과 도준 중 한 명의 이야기를 선택해야 한다.',hint:'서린 또는 도준과 대화해 선택하고, 봉인된 북문을 조사해.',ready:s=>!!s.flags.choice&&!!s.flags.gate},
+ {title:'9장 — 다음 기록은 비어 있다',body:'문에는 네 이름도, 탐사대장의 이름도 없다. 마지막 페이지를 펼치자 낯선 소리가 들렸다. “넌 아직 처음 장소에 있어.” 기록은 여기서 끊긴다. 다음 장은 아직 발견되지 않았다.',hint:'여기까지 공개된 이야기야. 결말 없이 두 지역을 계속 생존·탐험할 수 있어.',ready:()=>false}
+];
+// 상태
+const initial=()=>({version:1,started:false,player:{x:870,y:2560,dir:0},hp:120,maxHp:120,food:100,water:100,day:1,elapsed:0,inv:{wood:2,stone:0,fiber:3,ore:0,berry:3,meat:0,cooked:0,hide:0,bone:0,venom:0,feather:0,relic:0,shard:0},melee:[],ranged:[],craftedArmor:[],armor:{head:null,body:null,legs:null},weapon:null,ammo:[0,0,0],arrowType:0,arrowBatches:0,useBow:false,built:{fire:false,bed:false},home:{x:800,y:2400},kills:0,killsAgg:0,killsBow:0,chapter:0,flags:{},storyLog:['열세 번째 새벽, 사라진 마을에서 깨어났다.'],harvested:{},choices:[],lastSave:0});
+let s=initial(),objects=[],creatures=[],shots=[],floating=[],camera={x:0,y:0},sw=innerWidth,sh=innerHeight,dpr=1,last=performance.now(),running=false,paused=true,attackTimer=0,gatherTimer=0,damageTimer=0,saveTimer=0,mobTimer=0,noticeTimer=null;
+const pressed={},joy={x:0,y:0};
+const atlas=new Image();atlas.src='../survival2/assets/survival-atlas.svg';
+const ATLAS={player:[0,0],npc:[128,0],wolf:[256,0],boar:[384,0],camp:[896,0],tree:[0,128],rock:[128,128],plant:[256,128],berry:[384,128],chest:[512,128],tower:[768,128],signal:[896,128]};
+const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const width=()=>Math.max(1,sw),height=()=>Math.max(1,sh);
+function seeded(n){let x=(n*1664525+1013904223)>>>0;x^=x>>>16;x=Math.imul(x,2246822519)>>>0;x^=x>>>13;return (x>>>0)/4294967295}
+function msg(v){clearTimeout(noticeTimer);$('toast').textContent=v;$('toast').style.opacity='1';noticeTimer=setTimeout(()=>$('toast').style.opacity='0',2200)}
+function save(){try{s.lastSave=Date.now();localStorage.setItem(SAVE,JSON.stringify(s))}catch(e){console.warn('SAVE_STORAGE_UNAVAILABLE',e)}}
+function load(){
+ try{
+  const v=JSON.parse(localStorage.getItem(SAVE)||'null');
+  if(!v||v.version!==1||!v.started||typeof v.player?.x!=='number')return false;
+  s={...initial(),...v};
+  s.inv={...initial().inv,...(v.inv||{})};s.built={...initial().built,...(v.built||{})};
+  s.armor={...initial().armor,...(v.armor||{})};s.flags={...(v.flags||{})};s.harvested=v.harvested||{};
+  s.player.x=clamp(s.player.x,30,WORLD.w-30);s.player.y=clamp(s.player.y,30,WORLD.h-30);
+  s.hp=clamp(+s.hp||1,1,s.maxHp);s.food=clamp(+s.food||1,1,100);s.water=clamp(+s.water||1,1,100);
+  s.chapter=clamp(Math.floor(s.chapter)||0,0,9);s.melee=Array.isArray(s.melee)?s.melee:[];s.ranged=Array.isArray(s.ranged)?s.ranged:[];
+  s.craftedArmor=Array.isArray(s.craftedArmor)?s.craftedArmor:[];s.ammo=Array.isArray(s.ammo)?s.ammo.slice(0,3):[0,0,0];
+  if(!Array.isArray(s.choices))s.choices=[];if(!Array.isArray(s.storyLog))s.storyLog=[];
+  return true;
+ }catch(e){console.warn('SAVE_INVALID',e);return false}
+}
+function area(x){return x<HALF?0:1}
+function resprite(kind,x,y,size=48){
+ if(atlas.complete&&atlas.naturalWidth>0&&ATLAS[kind]){const [ax,ay]=ATLAS[kind];ctx.drawImage(atlas,ax,ay,128,128,x-size/2,y-size/2,size,size)}
+ else{ctx.font=(size*.7)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(({tree:'🌳',rock:'🪨',plant:'🌿',berry:'🍓',camp:'🔥',tower:'🏰',signal:'🚪',chest:'📜',player:'🧍',npc:'🧑'}[kind]||'🍃'),x,y)}
+}
+function resize(){sw=innerWidth;sh=innerHeight;dpr=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(sw*dpr));canvas.height=Math.max(1,Math.round(sh*dpr));ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+function makeWorld(){
+ objects=[];
+ for(let i=0;i<560;i++){
+  const zone=i%2,x=zone?HALF+100+seeded(i+14)*(WORLD.w-HALF-260):110+seeded(i+4)*(HALF-220);
+  const y=110+seeded(i+999)*(WORLD.h-220);
+  if(places.some(p=>Math.hypot(x-p.x,y-p.y)<170)||npcs.some(p=>Math.hypot(x-p.x,y-p.y)<110))continue;
+  const type=zone?['tree','rock','rock','ore','plant','ore','tree','relic'][i%8]:['tree','tree','rock','plant','berry','tree','rock','berry'][i%8];
+  objects.push({id:i,x,y,type,zone});
+ }
+ for(let i=0;i<90;i++){
+  const species=SPECIES[i%SPECIES.length],zone=species.zones[i%species.zones.length];
+  const x=zone?HALF+90+seeded(400+i)*3350:100+seeded(600+i)*3300;
+  const y=160+seeded(800+i)*4550;
+  if(places.some(p=>Math.hypot(x-p.x,y-p.y)<180))continue;
+  creatures.push({id:i,type:i%SPECIES.length,x,y,homeX:x,homeY:y,hp:species.hp,aggro:false,attackAt:0,respawn:0,step:seeded(i)*6.28});
+ }
+}
+function visible(x,y,margin=90){return x>camera.x-margin&&x<camera.x+sw+margin&&y>camera.y-margin&&y<camera.y+sh+margin}
+function remaining(o){return (s.harvested[o.id]||0)>Date.now()}
+function add(key,n){s.inv[key]=clamp((s.inv[key]||0)+n,0,9999)}
+function has(cost){return Object.entries(cost).every(([k,v])=>(s.inv[k]||0)>=v)}
+function pay(cost){if(!has(cost))return false;for(const [k,v] of Object.entries(cost))s.inv[k]-=v;return true}
+function costText(cost){return Object.entries(cost).map(([k,v])=>(ITEM[k]||k)+' '+v).join(' · ')}
+function armorDefense(){return PARTS.reduce((n,p)=>{const idx=s.armor[p.id];return n+(idx===null?0:SETS[idx].def*(p.id==='body'?1.5:1))},0)}
+function hitPlayer(n){
+ if(damageTimer>0||paused)return;
+ s.hp=Math.max(0,s.hp-Math.max(1,Math.round(n-armorDefense())));
+ damageTimer=.65;
+ if(s.hp<=0){s.hp=s.maxHp;s.food=Math.max(25,s.food);s.water=Math.max(25,s.water);s.player={...s.home,dir:0};s.inv.meat=Math.max(0,s.inv.meat-2);msg('기절했어. 야영지에서 다시 깨어났어.');save()}
+}
+function mobDrop(e,fromBow){
+ const d=SPECIES[e.type];for(const [key,n] of Object.entries(d.drop))add(key,n);
+ s.kills++;if(d.kind==='aggressive')s.killsAgg++;
+ if(fromBow)s.killsBow++;
+ if(Math.random()<.13&&e.x>HALF)add('shard',1);
+ if(Math.random()<.06&&e.x>HALF)add('relic',1);
+ e.respawn=Date.now()+85000;e.hp=0;s.shots=undefined;
+ msg(d.name+' 처치 · 전리품 획득');
+ save();
+}
+function attack(){
+ if(!running||paused||attackTimer>0)return;
+ const usingBow=s.useBow&&s.ranged.length>0&&s.ammo[s.arrowType]>0;
+ if(s.useBow&&!usingBow){msg('선택한 화살이 없거나 활이 없어.');return}
+ const facing={x:Math.sin(s.player.dir),y:Math.cos(s.player.dir)};
+ if(usingBow){
+  const id=s.ranged[s.ranged.length-1],bow=RANGED[id],arrow=ARROWS[s.arrowType];
+  const target=creatures.filter(e=>e.hp>0&&dist(e,s.player)<bow.range).sort((a,b)=>dist(a,s.player)-dist(b,s.player))[0];
+  const to=target?{x:(target.x-s.player.x)/Math.max(1,dist(target,s.player)),y:(target.y-s.player.y)/Math.max(1,dist(target,s.player))}:facing;
+  shots.push({x:s.player.x+to.x*30,y:s.player.y+to.y*30,vx:to.x*arrow.speed,vy:to.y*arrow.speed,range:bow.range,distance:0,damage:bow.damage+arrow.damage,kind:s.arrowType});
+  s.ammo[s.arrowType]--;attackTimer=bow.cool;save();return;
+ }
+ const weapon=s.weapon===null?{damage:5,reach:80,cool:.55}:MELEE[s.weapon];
+ const enemy=creatures.filter(e=>e.hp>0&&dist(e,s.player)<weapon.reach+15)
+  .sort((a,b)=>dist(a,s.player)-dist(b,s.player))[0];
+ attackTimer=weapon.cool;
+ if(!enemy){msg('적에게 다가가서 공격해.');return}
+ enemy.hp=Math.max(0,enemy.hp-weapon.damage);
+ if(SPECIES[enemy.type].kind==='neutral')enemy.aggro=true;
+ floating.push({x:enemy.x,y:enemy.y,text:'-'+weapon.damage,until:performance.now()+680});
+ if(enemy.hp===0)mobDrop(enemy,false);
+}
+function gather(){
+ if(!running||paused||gatherTimer>0)return;
+ gatherTimer=.42;
+ const p=s.player;
+ const landmark=places.filter(o=>dist(o,p)<115).sort((a,b)=>dist(a,p)-dist(b,p))[0];
+ const npc=npcs.filter(o=>dist(o,p)<115).sort((a,b)=>dist(a,p)-dist(b,p))[0];
+ if(npc&&(!landmark||dist(npc,p)<dist(landmark,p))){talk(npc);return}
+ if(landmark){landmarkEvent(landmark);return}
+ const nearest=objects.filter(o=>!remaining(o)&&dist(o,p)<110).sort((a,b)=>dist(a,p)-dist(b,p))[0];
+ if(!nearest){msg('나무·광석·식물이나 유적에 가까이 가.');return}
+ const reward=nearest.type==='tree'?{wood:3,fiber:1}:nearest.type==='rock'?{stone:3}:nearest.type==='ore'?{ore:2,stone:1}:nearest.type==='plant'?{fiber:3,berry:1}:nearest.type==='berry'?{berry:3}:nearest.type==='relic'?{relic:1,shard:1}:{wood:2};
+ for(const [k,n] of Object.entries(reward))add(k,n);
+ s.harvested[nearest.id]=Date.now()+120000;
+ if(Object.keys(s.harvested).length>500)for(const [k,v] of Object.entries(s.harvested))if(v<Date.now())delete s.harvested[k];
+ msg(costText(reward)+' 획득');save();
+}
+function landmarkEvent(p){
+ s.flags[p.id]=true;
+ if(p.id==='springA'||p.id==='springB'){s.water=100;s.hp=Math.min(s.maxHp,s.hp+8);msg('깨끗한 물을 마셨어. 수분과 체력이 회복됐어.')}
+ else if(p.id==='camp'){s.home={x:p.x,y:p.y};s.hp=Math.min(s.maxHp,s.hp+20);msg('야영지 발견 · 부활 지점 설정')}
+ else if(p.id==='tree'){add('shard',1);msg('검은 나무 아래의 금이 간 결정 +1')}
+ else if(p.id==='archive'){add('relic',1);msg('기록의 탑에서 낡은 기록 +1')}
+ else if(p.id==='watch'){add('relic',1);msg('관측대 지도에서 낡은 기록 +1')}
+ else if(p.id==='gate'){msg('북문은 아직 열리지 않아. 속삭임만 들린다.')}
+ else msg(p.name+' 발견');
+ if(!s.flags['lore-'+p.id]){s.flags['lore-'+p.id]=true;s.storyLog.push(p.name+': '+p.text)}
+ save();
+}
+function talk(n){
+ s.flags['met-'+n.id]=true;
+ const choices=n.id==='seorin'?
+ ['“지금은 서린을 믿어.”','“서린의 말을 기록만 해.”']:
+ n.id==='dojun'?['“도준의 지도를 따르겠어.”','“도준의 지도를 숨길게.”']:
+ ['“난 네 기록에 동의하지 않아.”','“그 기록의 원본을 보여줘.”'];
+ openModal('대화 · '+n.name,'<p>'+n.text+'</p><div id="dialogChoices"></div>');
+ const host=$('dialogChoices');
+ choices.forEach((label,i)=>{
+  const btn=document.createElement('button');btn.className='big secondary';btn.textContent=label;
+  btn.onclick=()=>{
+   if(n.id!=='echo'){s.flags.choice=n.id+'-'+i;s.choices.push({npc:n.id,option:i,at:s.elapsed});}
+   s.storyLog.push(n.name+'에게: '+label);save();closeModal();msg('대화 내용이 기록됐어.');
+  };
+  host.append(btn);
+ });
+}
+function eat(){
+ if(!running||paused)return;
+ if(s.inv.cooked>0){s.inv.cooked--;s.food=clamp(s.food+42,0,100);s.hp=Math.min(s.maxHp,s.hp+7);msg('구운 고기를 먹었어.')}
+ else if(s.inv.berry>0){s.inv.berry--;s.food=clamp(s.food+17,0,100);s.water=clamp(s.water+6,0,100);msg('열매를 먹었어.')}
+ else{msg('먹을 게 없어. 열매를 채집하거나 모닥불에서 고기를 구워.');return}
+ save();
+}
+function craft(kind,index=0,part=''){
+ let recipe,ownedKey;
+ if(kind==='melee'){recipe=MELEE[index];ownedKey='m'+index;if(s.melee.includes(index)){s.weapon=index;s.useBow=false;msg(recipe.name+' 장착');save();openPanel('bag');return}}
+ else if(kind==='ranged'){recipe=RANGED[index];ownedKey='r'+index;if(s.ranged.includes(index)){s.useBow=true;msg(recipe.name+' 장착');save();openPanel('bag');return}}
+ else if(kind==='armor'){recipe={name:SETS[index].name+' '+PARTS.find(x=>x.id===part).name,cost:Object.fromEntries(Object.entries(SETS[index].cost).map(([k,v])=>[k,v*(part==='body'?2:1)]))};ownedKey='a'+index+part;if(s.craftedArmor.includes(ownedKey)){s.armor[part]=index;msg(recipe.name+' 장착');save();openPanel('bag');return}}
+ else if(kind==='arrow'){recipe=ARROWS[index];ownedKey='arrow';}
+ else if(kind==='fire'){recipe={name:'모닥불',cost:{wood:15,stone:10}};ownedKey='fire';if(s.built.fire){msg('이미 모닥불을 만들었어.');return}}
+ else if(kind==='bed'){recipe={name:'침낭',cost:{fiber:15,hide:3,wood:5}};ownedKey='bed';if(s.built.bed){msg('이미 침낭을 만들었어.');return}}
+ else if(kind==='cook'){recipe={name:'구운 고기',cost:{meat:1,wood:1}};ownedKey='cook';if(!s.built.fire){msg('먼저 모닥불을 만들어.');return}}
+ if(!recipe||!pay(recipe.cost)){msg('재료가 부족해.');return}
+ if(kind==='melee'){s.melee.push(index);s.weapon=index;s.useBow=false;}
+ if(kind==='ranged'){s.ranged.push(index);s.useBow=true;}
+ if(kind==='armor'){s.craftedArmor.push(ownedKey);s.armor[part]=index;}
+ if(kind==='arrow'){s.ammo[index]=(s.ammo[index]||0)+10;s.arrowType=index;s.arrowBatches++;}
+ if(kind==='fire'||kind==='bed')s.built[kind]=true;
+ if(kind==='cook'){add('cooked',1)}
+ msg(recipe.name+(kind==='arrow'?' 10개 제작!':' 제작 완료'));save();openPanel('craft');
+}
+function row(container,label,detail,action,disabled=false){
+ const li=document.createElement('div');li.className='row';
+ const info=document.createElement('div');info.className='desc';
+ const strong=document.createElement('b');strong.textContent=label;
+ const small=document.createElement('small');small.textContent=detail;
+ info.append(strong,small);
+ const button=document.createElement('button');button.textContent=action.label;button.disabled=disabled;button.onclick=action.run;
+ li.append(info,button);container.append(li);
+}
+function heading(container,text){const h=document.createElement('h3');h.textContent=text;container.append(h)}
+function renderBag(el){
+ heading(el,'장착 중');
+ const suit=PARTS.map(p=>p.name+': '+(s.armor[p.id]===null?'없음':SETS[s.armor[p.id]].name)).join(' · ');
+ const detail=document.createElement('p');detail.textContent='근접: '+(s.weapon===null?'맨손':MELEE[s.weapon].name)+' · 원거리: '+(s.ranged.length?RANGED[s.ranged[s.ranged.length-1]].name:'없음')+' · 방어력 '+Math.round(armorDefense())+' / '+suit;el.append(detail);
+ heading(el,'원거리 화살 선택');
+ ARROWS.forEach((a,i)=>row(el,a.name,'남은 수량 '+(s.ammo[i]||0),'',false));
+ // 화살 선택은 별도 버튼으로 제공한다.
+ for(let i=0;i<3;i++){
+  const b=document.createElement('button');b.className='tab'+(s.arrowType===i?' selected':'');b.textContent=ARROWS[i].name+' '+(s.ammo[i]||0);
+  b.onclick=()=>{s.arrowType=i;save();openPanel('bag')};el.append(b)
+ }
+ heading(el,'재료');
+ const p=document.createElement('p');p.textContent=Object.entries(ITEM).map(([id,n])=>n+' '+(s.inv[id]||0)).join(' · ');el.append(p);
+ heading(el,'보유 장비');
+ for(const idx of s.melee)row(el,MELEE[idx].name,'근접 공격력 '+MELEE[idx].damage,{label:s.weapon===idx&&!s.useBow?'장착 중':'장착',run:()=>{s.weapon=idx;s.useBow=false;save();openPanel('bag')}},s.weapon===idx&&!s.useBow);
+ for(const idx of s.ranged)row(el,RANGED[idx].name,'원거리 사거리 '+RANGED[idx].range,{label:s.useBow&&s.ranged.at(-1)===idx?'사용 중':'장착',run:()=>{s.ranged=s.ranged.filter(x=>x!==idx).concat(idx);s.useBow=true;save();openPanel('bag')}},s.useBow&&s.ranged.at(-1)===idx);
+ PARTS.forEach(part=>SETS.forEach((set,i)=>{
+  if(!s.craftedArmor.includes('a'+i+part.id))return;
+  row(el,set.name+' '+part.name,'방어 '+set.def,{label:s.armor[part.id]===i?'장착 중':'장착',run:()=>{s.armor[part.id]=i;save();openPanel('bag')}},s.armor[part.id]===i);
+ }));
+}
+function renderCraft(el){
+ heading(el,'근접 무기 · 6종');
+ MELEE.forEach((v,i)=>row(el,v.name,'공격 '+v.damage+' · '+costText(v.cost),{label:s.melee.includes(i)?'장착':'제작',run:()=>craft('melee',i)},!s.melee.includes(i)&&!has(v.cost)));
+ heading(el,'원거리 무기 · 2종');
+ RANGED.forEach((v,i)=>row(el,v.name,'공격 '+v.damage+' · '+costText(v.cost),{label:s.ranged.includes(i)?'장착':'제작',run:()=>craft('ranged',i)},!s.ranged.includes(i)&&!has(v.cost)));
+ heading(el,'화살 3종 · 제작 1회당 10개');
+ ARROWS.forEach((v,i)=>row(el,v.name,'+10개 · '+costText(v.cost),{label:'10개 제작',run:()=>craft('arrow',i)},!has(v.cost)));
+ heading(el,'방어구 4세트 · 머리·몸통·다리 각각 제작');
+ SETS.forEach((set,i)=>PARTS.forEach(p=>{
+  const c=Object.fromEntries(Object.entries(set.cost).map(([k,v])=>[k,v*p.factor]));
+  const owned=s.craftedArmor.includes('a'+i+p.id);
+  row(el,set.name+' · '+p.name,'방어 '+set.def+' · '+costText(c),{label:owned?'장착':'제작',run:()=>craft('armor',i,p.id)},!owned&&!has(c));
+ }));
+ heading(el,'생존 시설');
+ row(el,'모닥불','나무 15 · 돌 10',{label:s.built.fire?'설치됨':'만들기',run:()=>craft('fire')},s.built.fire||!has({wood:15,stone:10}));
+ row(el,'침낭','섬유 15 · 가죽 3 · 나무 5',{label:s.built.bed?'설치됨':'만들기',run:()=>craft('bed')},s.built.bed||!has({fiber:15,hide:3,wood:5}));
+ row(el,'고기 굽기','생고기 1 · 나무 1',{label:'굽기',run:()=>craft('cook')},!s.built.fire||!has({meat:1,wood:1}));
+}
+function renderJournal(el){
+ const current=CHAPTERS[s.chapter],title=document.createElement('h3');title.textContent=current.title;el.append(title);
+ const p=document.createElement('p');p.textContent=current.body;el.append(p);
+ const target=document.createElement('p');target.textContent='현재 목표: '+current.hint;el.append(target);
+ if(s.chapter<CHAPTERS.length-1){
+  const can=current.ready(s),b=document.createElement('button');b.className='big';b.textContent=can?'다음 기록 읽기':'목표를 달성하면 다음 기록 열림';b.disabled=!can;
+  b.onclick=()=>{s.storyLog.push(current.title+' 완료 — '+current.body);s.chapter++;save();openPanel('journal');msg(CHAPTERS[s.chapter].title+' 시작')};el.append(b);
+ }
+ heading(el,'이야기의 단서');
+ s.storyLog.slice(-18).reverse().forEach(t=>{const p=document.createElement('p');p.textContent='✦ '+t;el.append(p)});
+ heading(el,'탐사 기록');
+ const status=document.createElement('p');status.textContent='현재 '+s.day+'일 · 플레이 '+Math.round(s.elapsed/60)+'분 · 공격 몬스터 '+s.killsAgg+'마리 · 활로 '+s.killsBow+'마리 처치 · 지나간 기록 '+s.chapter+'장 · 이야기 미완결';el.append(status);
+}
+function renderMap(el){
+ const cv=document.createElement('canvas');cv.id='minimap';cv.width=560;cv.height=380;el.append(cv);
+ const c=cv.getContext('2d');c.fillStyle='#476b51';c.fillRect(0,0,cv.width/2,cv.height);c.fillStyle='#534a3f';c.fillRect(cv.width/2,0,cv.width/2,cv.height);
+ c.strokeStyle='#c8e2a080';c.lineWidth=2;c.beginPath();c.moveTo(cv.width/2,0);c.lineTo(cv.width/2,cv.height);c.stroke();
+ places.forEach(p=>{const x=p.x/WORLD.w*cv.width,y=p.y/WORLD.h*cv.height;c.fillStyle=s.flags[p.id]?'#f6d583':'#a6acaa';c.font='17px sans-serif';c.textAlign='center';c.fillText(s.flags[p.id]?'◆':'?',x,y);c.font='10px sans-serif';c.fillText(s.flags[p.id]?p.name:'미발견',x,y+13)});
+ c.fillStyle='#ffdb80';c.beginPath();c.arc(s.player.x/WORLD.w*cv.width,s.player.y/WORLD.h*cv.height,7,0,Math.PI*2);c.fill();
+ const p=document.createElement('p');p.textContent='왼쪽 푸른들 · 오른쪽 잿빛림. ◆ 발견한 장소 · ? 미발견 · 노란 점 현재 위치';el.append(p);
+}
+function openModal(title,markup=''){
+ paused=true;$('modalTitle').textContent=title;$('modalBody').replaceChildren();$('modalBody').innerHTML=markup;$('modal').classList.add('show');
+}
+function closeModal(){$('modal').classList.remove('show');paused=false;last=performance.now()}
+function openPanel(kind){
+ if(!running)return;
+ if(kind==='bag')openModal('가방 · 장비');
+ if(kind==='craft')openModal('제작 · 작업대');
+ if(kind==='journal')openModal('사라진 새벽의 기록');
+ if(kind==='mapPanel')openModal('두 지역 지도');
+ const box=$('modalBody');
+ if(kind==='bag')renderBag(box);
+ if(kind==='craft')renderCraft(box);
+ if(kind==='journal')renderJournal(box);
+ if(kind==='mapPanel')renderMap(box);
+}
+// 입력
+function bindInput(){
+ $('close').onclick=closeModal;
+ document.querySelectorAll('[data-panel]').forEach(b=>b.onclick=()=>openPanel(b.dataset.panel));
+ $('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});
+ $('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});
+ $('eat').addEventListener('pointerdown',e=>{e.preventDefault();eat()});
+ $('toggle').onclick=()=>{
+  if(!s.ranged.length){msg('활을 먼저 제작해.');return}
+  s.useBow=!s.useBow;msg(s.useBow?'원거리 무기':'근접 무기');save();
+ };
+ const base=$('joystick'),stick=$('stick'),rad=43;
+ const input=e=>{
+  const r=base.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),d=Math.hypot(dx,dy);
+  joy.x=d>rad?dx/d:dx/rad;joy.y=d>rad?dy/d:dy/rad;
+  stick.style.transform='translate('+(joy.x*rad)+'px,'+(joy.y*rad)+'px)';
+ };
+ base.addEventListener('pointerdown',e=>{e.preventDefault();base.setPointerCapture(e.pointerId);input(e)});
+ base.addEventListener('pointermove',e=>{if(base.hasPointerCapture(e.pointerId))input(e)});
+ const end=e=>{if(base.hasPointerCapture(e.pointerId))base.releasePointerCapture(e.pointerId);joy.x=joy.y=0;stick.style.transform='translate(0,0)'};
+ base.addEventListener('pointerup',end);base.addEventListener('pointercancel',end);
+ addEventListener('keydown',e=>{
+  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
+  pressed[e.code]=true;
+  if(e.repeat)return;
+  if(e.code==='Space')attack();
+  if(e.code==='KeyE')gather();
+  if(e.code==='KeyI')openPanel('bag');
+  if(e.code==='KeyC')openPanel('craft');
+  if(e.code==='KeyJ')openPanel('journal');
+  if(e.code==='KeyM')openPanel('mapPanel');
+  if(e.code==='Escape'&&$('modal').classList.contains('show'))closeModal();
+ });
+ addEventListener('keyup',e=>pressed[e.code]=false);
+ addEventListener('blur',()=>{for(const k of Object.keys(pressed))pressed[k]=false;joy.x=joy.y=0;stick.style.transform='translate(0,0)'});
+}
+function start(newGame){
+ if(newGame)s=initial();else if(!load())s=initial();
+ s.started=true;running=true;paused=false;objects=[];creatures=[];shots=[];floating=[];makeWorld();save();
+ $('intro').classList.add('hidden');last=performance.now();msg('푸른들에서 깨어났어. 이야기를 열어 목표를 확인해.');
+}
+// 게임
+function update(dt){
+ if(paused||!running)return;
+ s.elapsed+=dt;
+ s.day=Math.floor(s.elapsed/840)+1;
+ s.food=clamp(s.food-dt*.031,0,100);s.water=clamp(s.water-dt*.044,0,100);
+ if(s.food<=0||s.water<=0){s.hp=Math.max(1,s.hp-dt*1.7)}
+ attackTimer=Math.max(0,attackTimer-dt);gatherTimer=Math.max(0,gatherTimer-dt);damageTimer=Math.max(0,damageTimer-dt);mobTimer-=dt;saveTimer-=dt;
+ const mx=joy.x+Number(!!pressed.KeyD||!!pressed.ArrowRight)-Number(!!pressed.KeyA||!!pressed.ArrowLeft);
+ const my=joy.y+Number(!!pressed.KeyS||!!pressed.ArrowDown)-Number(!!pressed.KeyW||!!pressed.ArrowUp);
+ const len=Math.hypot(mx,my);
+ if(len>.09){
+  const speed=s.food<10||s.water<10?142:214;
+  s.player.x=clamp(s.player.x+mx/Math.max(1,len)*speed*dt,38,WORLD.w-38);
+  s.player.y=clamp(s.player.y+my/Math.max(1,len)*speed*dt,38,WORLD.h-38);
+  s.player.dir=Math.atan2(mx,my);
+ }
+ for(const e of creatures){
+  if(e.hp<=0){
+   if(e.respawn<Date.now()){
+    const type=SPECIES[e.type];e.hp=type.hp;e.x=e.homeX;e.y=e.homeY;e.aggro=false;
+   }
+   continue;
+  }
+  const spec=SPECIES[e.type],distance=dist(e,s.player),hostile=spec.kind==='aggressive'||e.aggro;
+  if(hostile&&distance<460){
+   const mag=Math.max(1,distance),v=spec.speed*(s.elapsed%840>480&&spec.kind==='aggressive'?1.18:1);
+   if(distance>48){e.x+=(s.player.x-e.x)/mag*v*dt;e.y+=(s.player.y-e.y)/mag*v*dt}
+   if(distance<67&&s.elapsed-e.attackAt>1.5){e.attackAt=s.elapsed;hitPlayer(spec.atk)}
+  }else if(spec.kind==='harmless'&&distance<260){
+   const mag=Math.max(1,distance);e.x+=(e.x-s.player.x)/mag*spec.speed*dt;e.y+=(e.y-s.player.y)/mag*spec.speed*dt;
+  }else if(distance<800){
+   e.step+=dt*(.8+e.id%3*.2);e.x=clamp(e.x+Math.sin(e.step)*spec.speed*.14*dt,60,WORLD.w-60);
+   e.y=clamp(e.y+Math.cos(e.step)*spec.speed*.14*dt,60,WORLD.h-60);
+  }
+ }
+ for(let i=shots.length-1;i>=0;i--){
+  const a=shots[i],dx=a.vx*dt,dy=a.vy*dt;a.x+=dx;a.y+=dy;a.distance+=Math.hypot(dx,dy);
+  if(a.distance>a.range){shots.splice(i,1);continue}
+  const target=creatures.find(e=>e.hp>0&&dist(e,a)<34);
+  if(target){target.hp=Math.max(0,target.hp-a.damage);if(SPECIES[target.type].kind==='neutral')target.aggro=true;floating.push({x:target.x,y:target.y,text:'-'+a.damage,until:performance.now()+650});if(target.hp<=0)mobDrop(target,true);shots.splice(i,1)}
+ }
+ if(mobTimer<=0){mobTimer=5;for(const e of creatures)if(e.hp>0&&dist(e,s.player)>1400&&dist(e,{x:e.homeX,y:e.homeY})>500){e.x=e.homeX;e.y=e.homeY}}
+ if(saveTimer<=0){saveTimer=9;save()}
+}
+function renderWorld(){
+ camera.x=clamp(s.player.x-sw/2,0,Math.max(0,WORLD.w-sw));
+ camera.y=clamp(s.player.y-sh/2,0,Math.max(0,WORLD.h-sh));
+ ctx.save();ctx.fillStyle='#426748';ctx.fillRect(0,0,sw,sh);
+ ctx.translate(-camera.x,-camera.y);
+ ctx.fillStyle='#436f4e';ctx.fillRect(0,0,HALF,WORLD.h);
+ ctx.fillStyle='#504b40';ctx.fillRect(HALF,0,WORLD.w-HALF,WORLD.h);
+ ctx.fillStyle='#77684d';ctx.fillRect(HALF-35,0,70,WORLD.h);
+ const step=135,x0=Math.floor(camera.x/step)-1,x1=Math.ceil((camera.x+sw)/step)+1,y0=Math.floor(camera.y/step)-1,y1=Math.ceil((camera.y+sh)/step)+1;
+ for(let i=x0;i<x1;i++)for(let j=y0;j<y1;j++){
+  if(i<0||j<0||i*step>WORLD.w||j*step>WORLD.h)continue;
+  const x=i*step+seeded(i*57+j*9)*110,y=j*step+seeded(i*97+j*13)*100;
+  ctx.strokeStyle=x<HALF?'#a1cc7b30':'#c9ae7e33';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+4,y-12);ctx.moveTo(x+4,y);ctx.lineTo(x+10,y-8);ctx.stroke();
+ }
+ for(const p of places){
+  if(!visible(p.x,p.y,150))continue;
+  const sx=p.x,sy=p.y;
+  resprite(p.type,sx,sy,90);
+  ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff4d8';ctx.strokeStyle='#142315';ctx.lineWidth=4;ctx.strokeText(p.name,sx,sy+60);ctx.fillText(p.name,sx,sy+60);
+ }
+ for(const o of objects){if(remaining(o)||!visible(o.x,o.y,80))continue;
+  const icon=o.type==='ore'?'rock':o.type==='relic'?'chest':o.type==='berry'?'berry':o.type;
+  resprite(icon,o.x,o.y,o.type==='tree'?82:60)}
+ for(const n of npcs){if(!visible(n.x,n.y,95))continue;resprite('npc',n.x,n.y,63);
+  ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.strokeStyle='#101b16';ctx.lineWidth=4;ctx.fillStyle='#e9d9aa';ctx.strokeText(n.name,n.x,n.y-44);ctx.fillText(n.name,n.x,n.y-44)}
+ for(const e of creatures){if(e.hp<=0||!visible(e.x,e.y,100))continue;const spec=SPECIES[e.type];
+  ctx.font='43px "Noto Color Emoji", "Apple Color Emoji", sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(spec.icon,e.x,e.y);
+  if(e.hp<spec.hp){ctx.fillStyle='#331e1e';ctx.fillRect(e.x-24,e.y-39,48,6);ctx.fillStyle=spec.kind==='aggressive'?'#e35658':'#e3c979';ctx.fillRect(e.x-24,e.y-39,48*e.hp/spec.hp,6)}
+ }
+ for(const shot of shots){ctx.font='23px sans-serif';ctx.textAlign='center';ctx.fillText(shot.kind===2?'🏹':'➳',shot.x,shot.y)}
+ resprite('player',s.player.x,s.player.y,72);
+ if(s.built.fire){resprite('camp',s.home.x+90,s.home.y+30,65)}
+ if(s.built.bed){resprite('chest',s.home.x+145,s.home.y+40,52)}
+ for(const fx of floating.filter(fx=>fx.until>performance.now())){ctx.font='bold 19px system-ui';ctx.fillStyle='#ffe59f';ctx.textAlign='center';ctx.fillText(fx.text,fx.x,fx.y-52-(fx.until-performance.now())/30)}
+ floating=floating.filter(fx=>fx.until>performance.now());
+ ctx.restore();
+ // 밤은 장면을 어둡게 하지만 조작부는 가리지 않는다.
+ const phase=s.elapsed%840;
+ if(phase>525){ctx.fillStyle='rgba(3,13,31,'+(phase<630?.13:.29)+')';ctx.fillRect(0,0,sw,sh)}
+}
+function hud(){
+ const phase=s.elapsed%840,night=phase>525,region=area(s.player.x);
+ $('areaHud').textContent=names[region];$('dayHud').textContent=s.day+'일';
+ $('timeHud').textContent=night?'밤':'낮';$('killHud').textContent='처치 '+s.kills;
+ $('hpFill').style.width=100*s.hp/s.maxHp+'%';$('foodFill').style.width=s.food+'%';$('waterFill').style.width=s.water+'%';
+ $('place').textContent='체력 '+Math.ceil(s.hp)+' · 허기 '+Math.ceil(s.food)+' · 수분 '+Math.ceil(s.water)+' | '+CHAPTERS[s.chapter].title;
+ $('toggle').textContent=s.useBow?'활 '+(s.ammo[s.arrowType]||0):'무기 전환';
+ canvas.dataset.playerX=s.player.x.toFixed(1);canvas.dataset.playerY=s.player.y.toFixed(1);
+ canvas.dataset.region=names[region];canvas.dataset.chapter=String(s.chapter);
+ canvas.dataset.frame='rendered';
+}
+function frame(now){
+ const dt=Math.min(.05,(now-last)/1000||0);last=now;
+ if(running){update(dt);renderWorld();hud()}
+ else{ctx.fillStyle='#173322';ctx.fillRect(0,0,sw,sh)}
+ requestAnimationFrame(frame);
+}
+// 실행
+bindInput();
+$('startNew').onclick=()=>start(true);
+$('resume').hidden=!load();
+$('resume').onclick=()=>start(false);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

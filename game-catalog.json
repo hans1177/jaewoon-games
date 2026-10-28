@@ -11477,6 +11477,130 @@
       "webPublishedSourceTreeSha": "5aec9e0d823e892f64c5ecb3d7d3a7977c0af8f3",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
+    },
+    {
+      "id": "lost-dawn",
+      "name": "잊힌 새벽",
+      "description": "2D 탑뷰 넓은 지도 두 지역, 몬스터 7종, 근접무기 6종, 원거리 2종, 화살 3종, 제작형 방어구 4세트, 미완결 스토리",
+      "genre": [
+        "생존",
+        "RPG",
+        "스토리"
+      ],
+      "image": "",
+      "webPath": "web-games/lost-dawn",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_DIRECT_GAME_SOURCE",
+      "homepageCategory": "design-only",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/lost-dawn/index.html",
+      "selectedPlatform": "WEB",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "WEB",
+        "platformLabel": "웹",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "genre": [
+          "생존",
+          "RPG",
+          "스토리"
+        ],
+        "genreLabel": "생존 · RPG · 스토리",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "직접 구현된 2D 탑뷰 생존 게임",
+        "updatedAt": "2026-10-28T09:15:00Z",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 51,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "lost-dawn",
+          "name": "잊힌 새벽",
+          "description": "2D 탑뷰 넓은 지도 두 지역, 몬스터 7종, 근접무기 6종, 원거리 2종, 화살 3종, 제작형 방어구 4세트, 미완결 스토리",
+          "genres": [
+            "생존",
+            "RPG",
+            "스토리"
+          ],
+          "image": "",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "",
+          "source": "PENDING"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DESIGN_ONLY",
+          "classSource": "OWNER_DIRECT_GAME_SOURCE",
+          "target": "WEB",
+          "selectedPlatform": "WEB",
+          "stage": "소스 개발"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/lost-dawn",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": "오너가 요청한 2D 탑뷰 생존 게임"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/lost-dawn/",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "verified": false,
+            "published": false
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "design-only",
+          "displayMode": "",
+          "stage": "개발 중",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "genre": [
+              "생존",
+              "RPG",
+              "스토리"
+            ],
+            "genreLabel": "생존 · RPG · 스토리",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "직접 구현된 2D 탑뷰 생존 게임",
+            "updatedAt": "2026-10-28T09:15:00Z",
+            "status": "ACTIVE",
+            "productionClass": "DESIGN_ONLY"
+          }
+        }
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -11486,9 +11610,9 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 51,
-    "homepageInfo": 51,
-    "normalizedGames": 51,
+    "canonicalGames": 52,
+    "homepageInfo": 52,
+    "normalizedGames": 52,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0
