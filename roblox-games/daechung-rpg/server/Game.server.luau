@@ -152,7 +152,10 @@ local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  x.CFrame=rootPart.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
  if shape then x.Shape=shape end;x.Parent=rootPart
  -- 실제 애니메이션 가능한 팔다리/날개: 정적 용접 대신 Motor6D를 구성한다.
- local animated=name:find("Arm",1,true) or name:find("Leg",1,true) or name:find("Wing",1,true) or name:find("Tail",1,true) or name:find("Paw",1,true)
+ local animated=name:find("Arm",1,true) or name:find("Leg",1,true)
+  or name:find("Wing",1,true) or name:find("Tail",1,true)
+  or name:find("Paw",1,true) or name:find("Head",1,true)
+  or name:find("Jaw",1,true) or name:find("Neck",1,true)
  if animated then
   local motor=Instance.new("Motor6D");motor.Name="ActorLimbMotor"
   motor:SetAttribute("LimbRole",name)
@@ -314,8 +317,11 @@ local function bindNativeNpcVisual(rootPart,assetId,fallbackAssetId)
    movableLimbCount+=1
   end
  end
- if movableLimbCount>=2 then
+ -- A single articulated tail/head is enough to make a rigid whole-body
+ -- replacement misleading. Preserve that real moving part even on sparse rigs.
+ if movableLimbCount>=1 then
   rootPart:SetAttribute("NativeActorMissing",false)
+  rootPart:SetAttribute("NativeActorMotionJointCount",movableLimbCount)
   rootPart:SetAttribute("NativeActorMotionVisual","ARTICULATED_SOURCE_PRESERVED")
   return
  end
