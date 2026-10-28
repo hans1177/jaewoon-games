@@ -2306,6 +2306,7 @@ jobs:
     # Official Studio MCP actual play is mandatory for F9; Open Cloud remains independently required.
     # Planning is read-only control work. Only actual Studio execution consumes the shared Windows host.
     # A skipped job is never Studio actual-play PASS.
+    # On an official Studio executor repair, refresh pending old-control jobs on current main.
     # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
     if: ${{ !cancelled() }}
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
