@@ -1749,6 +1749,184 @@ function RobloxCommonMotion.RetargetExistingActorPose(sourcePose,approvedMapping
  return out,count
 end
 
+
+-- [Motion Forge 3] Source-authoring: sample real, approved joint names into native Roblox
+-- KeyframeSequences for NPCs, monsters, animals, bosses, companions and moving props.
+-- No root CFrame, server damage, hitbox, speed, invented bones, asset upload or publish.
+local ACTOR_MOTION_STATES=table.freeze({
+ IDLE={duration=2.4,looped=true},WALK={duration=.9,looped=true},
+ RUN={duration=.64,looped=true},TURN={duration=.45,looped=false},
+ START={duration=.36,looped=false},STOP={duration=.43,looped=false},
+ ATTACK={duration=.75,looped=false},HIT={duration=.46,looped=false},
+ DEATH={duration=1.32,looped=false},INTERACT={duration=.9,looped=false},
+ GESTURE={duration=1.1,looped=false},FLY={duration=.86,looped=true},
+})
+local R15_PROCEDURAL_JOINTS=table.freeze({
+ Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
+ LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
+ LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
+ LeftAnkle="FootL",RightAnkle="FootR",
+})
+local function forgeRot(targets,available,name,x,y,z)
+ if available[name]~=true then return end
+ targets[name]=CFrame.Angles(x or 0,y or 0,z or 0)
+end
+-- Generates bounded articulations only for the exact Motor6Ds reported by a real rig.
+-- Reusable as a live sampled actor pose; source compiler does not require Roblox Studio.
+function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targets)
+ options=options or {};targets=targets or {}
+ local mode=string.upper(tostring(state or "IDLE"))
+ local descriptor=ACTOR_MOTION_STATES[mode]
+ local form=string.upper(tostring(options.bodyPlan or "BIPED"))
+ local body=ACTOR_FORMS[form]
+ local joints=options.availableJoints
+ if not descriptor or not body or type(joints)~="table" then return targets,false end
+ local count=0
+ for name,yes in pairs(joints)do
+  if yes==true and type(name)=="string" and name~="Root" and name~="HumanoidRootPart" then count+=1 end
+ end
+ if count<2 then return targets,false end
+ local t=bounded(phase,0,1,0)
+ local cyc=t*math.pi*2
+ local locomotion=mode=="WALK"or mode=="RUN"or mode=="FLY"
+ local runScale=mode=="RUN" and 1.22 or 1
+ local rise=math.sin(cyc)
+ local lift=math.max(0,rise)
+ local load=easeUnit(math.clamp(t/.29,0,1))
+ local strike=easeUnit(math.clamp((t-.25)/.24,0,1))
+ local finish=1-easeUnit(math.clamp((t-.62)/.38,0,1))
+ local contact=math.clamp((strike-load*.14)*finish,0,1)
+ local impact=mode=="ATTACK" and contact or 0
+ local hit=mode=="HIT" and math.sin(math.pi*t) or 0
+ local fall=mode=="DEATH" and easeUnit(t) or 0
+ local interact=(mode=="GESTURE"or mode=="INTERACT")and math.sin(math.pi*t)or 0
+ local turn=mode=="TURN"and math.sin(math.pi*t)*.22 or 0
+ local transition=(mode=="START"or mode=="STOP")and math.sin(math.pi*t)*.10 or 0
+ local intensity=bounded(options.intensity,.35,1.3,1)
+ local secondary=bounded(options.secondary,0,1,.5)*(options.mobileTier=="LOW" and .42 or 1)
+ local gait=locomotion and rise*body.stride*intensity*runScale or 0
+ local counter=locomotion and math.sin(cyc+math.pi)*body.stride*intensity*runScale or 0
+ local chest=impact*.24*body.load-hit*.18-fall*.54+transition
+ forgeRot(targets,joints,"Spine",chest*.68,turn*.43,locomotion and gait*.038 or 0)
+ forgeRot(targets,joints,"Chest",chest,turn*.7,locomotion and -gait*.06 or 0)
+ forgeRot(targets,joints,"Head",-chest*.48+hit*.13-fall*.20,turn*.82,
+  math.sin(cyc)*.027*secondary*body.head)
+ forgeRot(targets,joints,"Neck",-chest*.33,turn*.6,0)
+ if form=="BIPED"or form=="GIANT"or form=="CRAWLER" then
+  forgeRot(targets,joints,"ThighL",gait*.35+impact*.14-fall*.21,0,0)
+  forgeRot(targets,joints,"ThighR",counter*.35-impact*.08-fall*.21,0,0)
+  forgeRot(targets,joints,"ShinL",math.max(0,gait)*.21+fall*.16,0,0)
+  forgeRot(targets,joints,"ShinR",math.max(0,counter)*.21+fall*.16,0,0)
+  forgeRot(targets,joints,"UpperArmL",-gait*.28+impact*.24+interact*.18,0,-impact*.13)
+  forgeRot(targets,joints,"UpperArmR",-counter*.28-impact*.48+interact*.45,0,impact*.11)
+  forgeRot(targets,joints,"ForearmL",impact*.14+interact*.24,0,0)
+  forgeRot(targets,joints,"ForearmR",impact*.30+interact*.25,0,0)
+ end
+ if form=="QUADRUPED"or form=="CRAWLER" then
+  for _,limb in ipairs({"FL","FR","BL","BR"})do
+   local diagonal=(limb=="FR"or limb=="BL")and -1 or 1
+   local signed=gait*diagonal
+   forgeRot(targets,joints,limb.."Hip",signed*.32-(limb:sub(1,1)=="F"and impact*.20 or -impact*.13),0,0)
+   forgeRot(targets,joints,limb.."Knee",math.max(0,signed)*.22+impact*.08,0,0)
+   forgeRot(targets,joints,limb.."Ankle",math.max(0,-signed)*.10,0,0)
+  end
+  forgeRot(targets,joints,"Jaw",impact*.34+hit*.07,0,0)
+ end
+ if form=="FLYER" then
+  local flap=math.sin(cyc)*.42*secondary*intensity
+  forgeRot(targets,joints,"WingL",0,0,flap+impact*.15)
+  forgeRot(targets,joints,"WingR",0,0,-flap-impact*.15)
+ end
+ if form=="SERPENT" then
+  for i=0,6 do
+   local fraction=i/6
+   forgeRot(targets,joints,"Coil"..i,0,math.sin(cyc-fraction*math.pi*1.2)*.17*secondary*intensity*(1-.4*fraction),0)
+  end
+ end
+ if body.tail>0 then
+  forgeRot(targets,joints,"Tail",0,math.sin(cyc-.55)*.13*body.tail*secondary+impact*.10,0)
+  forgeRot(targets,joints,"TailBaseJoint",0,math.sin(cyc-.55)*.10*body.tail*secondary,0)
+ end
+ if form=="PROP" then
+  local open=mode=="INTERACT"and easeUnit(t) or 0
+  forgeRot(targets,joints,"DoorHinge",0,open*math.pi*.43,0)
+  forgeRot(targets,joints,"MachineJoint",math.sin(cyc)*.16*secondary,0,0)
+ end
+ return targets,true
+end
+-- Author a temporary native KeyframeSequence from the actual Motor6D tree, not
+-- an invented R15 hierarchy. Upload/publish and real gameplay binding are separate gates.
+function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
+ assert(typeof(rig)=="Instance"and rig:IsA("Model"),"REAL_ACTOR_RIG_REQUIRED")
+ options=options or {}
+ local mode=string.upper(tostring(state or "IDLE"))
+ local descriptor=ACTOR_MOTION_STATES[mode]
+ assert(descriptor,"UNSUPPORTED_PROCEDURAL_MOTION_STATE")
+ local plan=string.upper(tostring(options.bodyPlan or "BIPED"))
+ assert(ACTOR_FORMS[plan],"UNSUPPORTED_ACTOR_BODY_PLAN")
+ local root=rig.PrimaryPart or rig:FindFirstChild("HumanoidRootPart")
+ assert(root and root:IsA("BasePart"),"RIG_ROOT_REQUIRED")
+ local motors,byParent,names={}, {}, {}
+ for _,joint in ipairs(rig:GetDescendants())do
+  if joint:IsA("Motor6D")and joint.Part0 and joint.Part1
+   and joint.Part0:IsDescendantOf(rig)and joint.Part1:IsDescendantOf(rig)
+   and joint.Part0~=joint.Part1 then
+   motors[#motors+1]=joint
+   names[joint.Name]=true
+   local owner=joint.Part0.Name
+   byParent[owner]=byParent[owner]or{}
+   table.insert(byParent[owner],joint)
+  end
+ end
+ assert(#motors>=2,"REAL_ANIMATED_JOINTS_REQUIRED")
+ local duration=bounded(options.duration,.2,4,descriptor.duration)
+ local fps=math.floor(bounded(options.fps,12,30,24))
+ local samples=math.max(4,math.ceil(duration*fps))
+ local source=Instance.new("KeyframeSequence")
+ source.Name="JG_Actor_"..plan.."_"..mode
+ source.Loop=descriptor.looped
+ source.Priority=(mode=="ATTACK"or mode=="HIT"or mode=="DEATH")
+  and Enum.AnimationPriority.Action or mode=="IDLE"and Enum.AnimationPriority.Idle or Enum.AnimationPriority.Movement
+ source:SetAttribute("CompanyMotionForgeVersion",3)
+ source:SetAttribute("BodyPlan",plan)
+ source:SetAttribute("MotionState",mode)
+ source:SetAttribute("RootMotionOwned",false)
+ source:SetAttribute("ProductionVerified",false)
+ source:SetAttribute("RuntimeVerificationState","PENDING_NATIVE_ACTOR_PLAYBACK")
+ local optionsPose={availableJoints=names,bodyPlan=plan,actorClass=options.actorClass,
+  intensity=options.intensity,secondary=options.secondary,mobileTier=options.mobileTier}
+ for frame=0,samples do
+  local t=frame/samples
+  local key=Instance.new("Keyframe")
+  key.Time=t*duration
+  key.Name="MotionForge_"..tostring(frame)
+  local targets={}
+  RobloxCommonMotion.SampleProceduralActorMotion(mode,t,optionsPose,targets)
+  local rootPose=Instance.new("Pose")
+  rootPose.Name=root.Name
+  rootPose.CFrame=CFrame.identity
+  key:AddPose(rootPose)
+  local seen={[root]=true}
+  local function place(part,parentPose,depth)
+   if depth>#motors+1 then return end
+   for _,joint in ipairs(byParent[part.Name]or{})do
+    if not seen[joint.Part1] then
+     seen[joint.Part1]=true
+     local pose=Instance.new("Pose")
+     pose.Name=joint.Part1.Name
+     pose.CFrame=targets[joint.Name]or targets[R15_PROCEDURAL_JOINTS[joint.Name]]or CFrame.identity
+     parentPose:AddSubPose(pose)
+     place(joint.Part1,pose,depth+1)
+    end
+   end
+  end
+  place(root,rootPose,0)
+  key:SetAttribute("AuthoredJointCount",#motors)
+  source:AddKeyframe(key)
+ end
+ return source
+end
+
 function RobloxCommonMotion.CreateSequence(atomId)
 	local id, row = resolve(atomId)
 	local builder = BUILDERS[row.mode]
