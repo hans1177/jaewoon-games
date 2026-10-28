@@ -1608,10 +1608,11 @@ local function applyActorRotation(targets,name,pitch,yaw,roll,available)
  targets[name]=(targets[name]or CFrame.identity)*CFrame.Angles(pitch,yaw,roll)
 end
 function RobloxCommonMotion.DescribeMotionForge()
- return table.freeze({version=2,features=MOTION_FORGE_FEATURES,featureCount=#MOTION_FORGE_FEATURES,
+ return table.freeze({version=3,features=MOTION_FORGE_FEATURES,featureCount=#MOTION_FORGE_FEATURES,
   actorForms=table.freeze({"BIPED","QUADRUPED","GIANT","FLYER","CRAWLER","SERPENT","PROP"}),
   nativeRigOnly=true,existingClipRequired=true,gameplayAuthority=false,rootMotionOwned=false,
-  autoUpload=false,productionVerified=false,runtimeVerificationRequired=true})
+  autoUpload=false,nativeProceduralKeyframeAuthoring=true,temporaryStudioPreviewOnly=true,
+   productionVerified=false,runtimeVerificationRequired=true})
 end
 -- 모든 입력은 이미 발생한 게임 상태/시각 이벤트에서 가져와야 한다.
 -- sourcePose는 불변 비교/처리를 위해 호출자가 매 프레임 제공하며 targets만 수정된다.
@@ -1879,6 +1880,22 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
   end
  end
  assert(#motors>=2,"REAL_ANIMATED_JOINTS_REQUIRED")
+ -- A source-created clip must animate at least one approved real joint, not merely
+ -- contain neutral poses when the selected body plan and rig do not match.
+ local probeOptions={availableJoints=names,bodyPlan=plan,intensity=options.intensity,
+  secondary=options.secondary,mobileTier=options.mobileTier}
+ local actualPoseMatch=false
+ for _,t in ipairs({.22,.5,.73})do
+  local sample={}
+  RobloxCommonMotion.SampleProceduralActorMotion(mode,t,probeOptions,sample)
+  for _,motor in ipairs(motors)do
+   if sample[motor.Name] or sample[R15_PROCEDURAL_JOINTS[motor.Name]] then
+    actualPoseMatch=true;break
+   end
+  end
+  if actualPoseMatch then break end
+ end
+ assert(actualPoseMatch,"ACTOR_RIG_MOTION_CHANNEL_MISMATCH")
  local duration=bounded(options.duration,.2,4,descriptor.duration)
  local fps=math.floor(bounded(options.fps,12,30,24))
  local samples=math.max(4,math.ceil(duration*fps))
@@ -1925,6 +1942,27 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
   source:AddKeyframe(key)
  end
  return source
+end
+
+-- Studio/native-authoring preview only. This does not upload an AnimationId and is
+-- not a production runtime binding. The caller owns and destroys track/sequence.
+function RobloxCommonMotion.PreviewProceduralActorMotion(animator,rig,state,options)
+ assert(typeof(animator)=="Instance"and animator:IsA("Animator"),"NATIVE_ANIMATOR_REQUIRED")
+ options=options or {}
+ local sequence=RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
+ local id=KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
+ local animation=Instance.new("Animation")
+ animation.Name=sequence.Name.."_TemporaryPreview"
+ animation.AnimationId=id
+ animation:SetAttribute("TemporaryPreviewOnly",true)
+ animation:SetAttribute("PersistentUploadRequiredForProduction",true)
+ animation:SetAttribute("ProductionVerified",false)
+ local track=animator:LoadAnimation(animation)
+ track.Priority=sequence.Priority
+ track.Looped=sequence.Loop
+ track:Play(bounded(options.fadeTime,0,.35,.12),bounded(options.weight,0,1,1),
+  bounded(options.speed,.5,1.6,1))
+ return track,animation,sequence
 end
 
 function RobloxCommonMotion.CreateSequence(atomId)
