@@ -945,6 +945,23 @@ local function stepEquippedCombatMotion(dt)
   row.weaponQueued=false;row.weaponStarted=os.clock();elapsed=0
  end
  local _,_,finished=commonMotion.SampleCombatCombo(row.weaponCombo,elapsed,row.weaponTargets)
+ -- Blend torso/arms into the already-authorized attack without altering server hit timing.
+ if type(commonMotion.RefineActorCinematicPose)=="function" and not row.weaponReleasing then
+  local combo=row.weaponCombo
+  local step=combo.steps[#combo.steps]
+  for _,candidate in ipairs(combo.steps)do
+   if elapsed<candidate.start+candidate.duration then step=candidate;break end
+  end
+  local phase=math.clamp((elapsed-step.start)/math.max(.05,step.duration),0,1)
+  commonMotion.RefineActorCinematicPose(row.weaponTargets,{
+   actorClass="PLAYER",bodyPlan="BIPED",weaponStyle=combo.profileId,
+   actionPhase=phase,authorizedImpact=true,
+   grounded=humanoid~=nil and humanoid.FloorMaterial~=Enum.Material.Air,
+   visualSpeed=humanoid and humanoid.MoveDirection.Magnitude or 0,
+   comboContinuity=#combo.steps>1 and .32 or 0,
+   mobileTier="MID",intensity=1,secondary=.55,
+  })
+ end
  commonMotion.MapCombatPoseToR15(row.weaponTargets,row.r15Targets)
  local alpha=1-math.exp(-32*math.clamp(dt or 1/60,0,.15))
  local settled=true
@@ -993,7 +1010,16 @@ RunService.Heartbeat:Connect(function(dt)
    if state=="IDLE" and moving then state="ROAM" end
    local stride=state=="ATTACK" and .55 or state=="HIT" and .52 or state=="CHASE" and .35 or state=="WALK" and .34 or state=="ROAM" and .25 or .075
    local speed=state=="ATTACK" and 13 or state=="HIT" and 10 or state=="CHASE" and 9 or state=="WALK" and 7 or state=="ROAM" and 5 or 2
-   local phase=now*speed+(host.Position.X+host.Position.Z)*.1
+   -- Source-owned visual gait: integrate actual delta time instead of
+   -- multiplying the absolute clock by speed (which pops on NPC/mob turns).
+   local frameDt=math.clamp(now-(item.lastPoseAt or now),0,.15)
+   item.lastPoseAt=now
+   item.phase=(item.phase or ((host.Position.X+host.Position.Z)*.1))+speed*frameDt
+   local response=((state=="HIT" or state=="ATTACK") and 17 or 11)
+   item.visualStride=(item.visualStride or stride)
+    +(stride-(item.visualStride or stride))*(1-math.exp(-frameDt*response))
+   stride=item.visualStride
+   local phase=item.phase
    if motor.Name=="ActorLimbMotor" then
     local role=item.role or ""
     local side=(role:find("Left",1,true)or role:find("ArmL",1,true)or role:find("LegR",1,true)or role:find("WingL",1,true)) and -1 or 1
