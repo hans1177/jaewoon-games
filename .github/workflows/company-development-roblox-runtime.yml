@@ -2482,3 +2482,98 @@ jobs:
               echo "ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=YES:$id"
             done < /tmp/roblox-runtime-qa-ready-ids
           fi
+
+  # Repair a stale provenance flag when owner-private Rojo publishing finished
+  # before exact-source F0 completed. Never promote actual play or F1 evidence.
+  dedicated-source-proof-reconcile:
+    name: reconcile exact native Roblox private publish provenance
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+      - name: Reconcile previously published private Place against canonical F0 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-artifact-reconcile'
+          git config user.email 'actions@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node <<'NODE'
+          const fs=require('fs');
+          const path='development-queue.json';
+          const queue=JSON.parse(fs.readFileSync(path,'utf8'));
+          let repaired=0;
+          const validId=value=>/^[1-9][0-9]*$/.test(String(value||''));
+          for(const item of queue.items||[]){
+            const d=item.robloxDedicatedExperience;
+            const target=item.robloxPublicationTarget;
+            const f0=item.robloxFoundationF0Evidence;
+            const source=String(item.robloxSourceCommit||'');
+            const artifact=String(item.robloxBuildArtifactIdentity||'');
+            const runId=Number(f0?.artifactRunId||0);
+            // Do not accept current-main-only provenance, a different game's
+            // private target, a hash mismatch or an unverified foundation build.
+            const exact=item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxFoundationF0Passed===true
+              &&f0?.pass===true
+              &&/^[a-f0-9]{40}$/i.test(source)
+              &&/^sha256:[a-f0-9]{64}$/i.test(artifact)
+              &&item.robloxBuildSourceRevision===source
+              &&f0.sourceRevision===source&&f0.artifactIdentity===artifact
+              &&Number.isInteger(runId)&&runId>0
+              &&d?.gameId===item.gameId&&d?.published===true&&d?.private===true
+              &&d?.authority==='owner-dedicated-roblox-experience-bootstrap'
+              &&d?.publisherMainRevision===source&&d?.artifactIdentity===artifact
+              &&d?.state==='REPAIR_REQUIRED'&&d?.stage==='EXACT_ARTIFACT_BINDING'
+              &&d?.error==='DEDICATED_PUBLISH_ARTIFACT_NOT_BOUND_TO_CANONICAL_GAME_SOURCE'
+              &&Number(d.versionNumber)>0
+              &&target?.dedicated===true&&target?.shared===false
+              &&target?.verified===true
+              &&validId(d.universeId)&&validId(d.placeId)
+              &&String(d.universeId)===String(target.universeId)
+              &&String(d.placeId)===String(target.placeId);
+            if(!exact)continue;
+            const stamp=new Date().toISOString();
+            item.robloxDedicatedExperience={
+              ...d,sourceRevision:source,artifactRunId:runId,
+              state:'PASS',stage:null,error:null,updatedAt:stamp,
+            };
+            item.robloxDedicatedExperiencePublished=true;
+            item.robloxDedicatedExperiencePublishedAt=stamp;
+            // Preserve the independent runtime candidate, F1, Studio evidence,
+            // internal play and public-release gates without modification.
+            item.updatedAt=stamp;
+            repaired++;
+            console.log('ROBLOX_DEDICATED_EXACT_F0_PROVENANCE_RECOVERED='+item.gameId+':v'+d.versionNumber);
+          }
+          if(repaired){
+            queue.updatedAt=new Date().toISOString();
+            fs.writeFileSync(path,JSON.stringify(queue,null,2)+'\n');
+          }
+          console.log('ROBLOX_DEDICATED_PROVENANCE_REPAIR_COUNT='+repaired);
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_DEDICATED_PROVENANCE=EXACT_OR_NOT_YET_ELIGIBLE'
+              exit 0
+            fi
+            git commit -m 'runtime: reconcile exact owner private Roblox publish F0 proof [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_DEDICATED_PROVENANCE_PERSIST=PASS:$attempt"
+              exit 0
+            fi
+            echo "ROBLOX_DEDICATED_PROVENANCE_CONFLICT_RETRY=$attempt"
+          done
+          echo 'ROBLOX_DEDICATED_PROVENANCE_PERSIST=FAILED'
+          exit 1
