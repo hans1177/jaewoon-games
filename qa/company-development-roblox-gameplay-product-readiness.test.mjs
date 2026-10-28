@@ -718,3 +718,23 @@ test('Daechung village SpawnLocation stays grounded on the real plaza and return
   assert.match(server,/teleportPlayer\(p,spawnDestination\(\)\)/);
   assert.match(server,/teleportPlayer\(p,C\.VillageCenter\)/);
 });
+
+test('Daechung spawn plate and portal landing remain grounded after Vibe changes',()=>{
+ const source=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ assert.match(source,/local plaza=ppart\(f,"VillagePlaza"/);
+ assert.match(source,/foundationSpawn\.Position=Vector3\.new\(C\.VillageCenter\.X,plaza\.Position\.Y\+plaza\.Size\.Y\*\.5-foundationSpawn\.Size\.Y\*\.5\+\.02,C\.VillageCenter\.Z\)/);
+ assert.match(source,/groundY=foundationSpawn\.Position\.Y\+foundationSpawn\.Size\.Y\*\.5/);
+ assert.match(source,/params\.FilterType=Enum\.RaycastFilterType\.Include/);
+ assert.match(source,/workspace:Raycast\(pos\+Vector3\.new\(0,48,0\),Vector3\.new\(0,-112,0\),params\)/);
+ for(const name of ['VillagePlaza','VillageGround','ZoneGround','ZoneInnerRoad','BossArena','ReturnPortal','MultiverseTradeSquare','PrivatePlot','Floor'])
+  assert.ok(source.includes(name+'=true'),name+' must remain walkable');
+ assert.match(source,/clearance=r\.Size\.Y\*\.5\+\(h and math\.max\(0,h\.HipHeight\) or 2\)/);
+ assert.match(source,/h\.RigType==Enum\.HumanoidRigType\.R6/);
+ assert.match(source,/r\.CFrame=CFrame\.new\(pos\.X,rootY,pos\.Z\)/);
+ assert.match(source,/GROUND_SURFACE_NOT_FOUND/);
+ assert.match(source,/SOURCE_GROUND_PLACEMENT_UNVERIFIED/);
+ assert.doesNotMatch(source,/local arrival=pos\+Vector3\.new\(0,4,0\)/);
+ assert.match(source,/teleportPlayer\(p,spawnDestination\(\)\)/);
+ assert.match(source,/teleportPlayer\(p,z\.Center\+Vector3\.new\(0,0,170\)\)/);
+ assert.match(source,/teleportPlayer\(p,C\.VillageCenter\)/);
+});
