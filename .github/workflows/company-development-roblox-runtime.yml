@@ -508,6 +508,12 @@ jobs:
     name: Roblox source ${{ matrix.gameId }}
     needs: source-plan
     if: needs.source-plan.outputs.count != '0'
+    # Batch and exact-game ingress share one native registration owner per game.
+    # The next worker rechecks the source tree after the first candidate promotes.
+    concurrency:
+      group: roblox-source-${{ matrix.nativeCreatureRepair && 'native-registration' || github.run_id }}-${{ matrix.gameId }}
+      queue: single
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.source-plan.outputs.matrix) }}
