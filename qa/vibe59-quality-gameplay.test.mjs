@@ -393,3 +393,18 @@ test('building placement locks before owner authorizer and releases after failur
  assert.match(code,/existingCount > 512/);
  assert.match(code,/built:SetAttribute\("PlacementKey", placementKey\)/);
 });
+
+
+test('generated DataStore snapshot is immutable and already next-version before UpdateAsync',()=>{
+ const row=cases[4];
+ const code=synthesizeVibe59QualityGameplay({spec:row.spec,source:row.source,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(code,/snapshot\.save\.revision = revisionAtStart \+ 1/);
+ assert.match(code,/snapshot\.save\.dirty = false/);
+ assert.match(code,/snapshot\.save\.saving = false/);
+ assert.match(code,/table\.freeze\(value\)/);
+ assert.match(code,/if merged == previous or type\(merged\) ~= "table"/);
+ assert.ok(code.indexOf('snapshot.save.revision = revisionAtStart + 1')<
+   code.indexOf('state.save.saving = true'));
+ assert.ok(code.indexOf('freezeSnapshot(snapshot)')<code.indexOf('UpdateAsync(key'));
+});
