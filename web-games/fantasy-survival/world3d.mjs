@@ -548,19 +548,22 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(!state.bestiary?.[e.type?.id]||actor.nameLabel)return;
     let texture=nameTextures.get(e.type.id);
     if(!texture){
-      const surface=document.createElement('canvas');surface.width=512;surface.height=80;
+      // 메인 · 모바일 저해상도 WebGL에서도 읽히도록 큰 원본 글리프와 불투명 이름판을 사용한다.
+      const surface=document.createElement('canvas');surface.width=1024;surface.height=192;
       const pen=surface.getContext('2d');
-      pen.fillStyle='rgba(8,24,16,.84)';pen.fillRect(5,4,502,72);
-      pen.strokeStyle='#a7ddb4';pen.lineWidth=3;pen.strokeRect(5,4,502,72);
-      pen.fillStyle='#f5fff7';pen.font='bold 34px sans-serif';pen.textAlign='center';pen.textBaseline='middle';
-      pen.fillText(e.type.name,256,40,475);
+      pen.fillStyle='#08150f';pen.fillRect(8,8,1008,176);
+      pen.strokeStyle='#d6f8d9';pen.lineWidth=8;pen.strokeRect(8,8,1008,176);
+      pen.font='900 96px system-ui,sans-serif';pen.textAlign='center';pen.textBaseline='middle';
+      pen.strokeStyle='#06110b';pen.lineWidth=14;pen.lineJoin='round';pen.strokeText(e.type.name,512,96,950);
+      pen.fillStyle='#ffffff';pen.fillText(e.type.name,512,96,950);
       texture=new THREE.CanvasTexture(surface);texture.colorSpace=THREE.SRGBColorSpace;
+      texture.minFilter=THREE.LinearFilter;texture.magFilter=THREE.LinearFilter;
       nameTextures.set(e.type.id,texture);
     }
     const material=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false});
     const label=new THREE.Sprite(material);
-    label.scale.set(Math.min(4.8,Math.max(2.2,e.type.name.length*.38)),.65,1);
-    label.position.y=height+.55;label.renderOrder=30;
+    label.scale.set(Math.min(6.5,Math.max(3.5,e.type.name.length*.53)),1.5,1);
+    label.position.y=height+.9;label.renderOrder=30;
     actor.anchor.add(label);actor.nameLabel=label;
   }
   // 메인 · 기존 건축 청사진을 3D 월드 위에서 직접 미리 보여준다.
