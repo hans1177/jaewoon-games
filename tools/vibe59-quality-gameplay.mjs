@@ -166,22 +166,24 @@ function qualitySource(s){
    'if type(state) ~= "table" then return false end'];
  switch(s.operation){
  case 'combat-authoritative-melee':return [
-  ...stateGuard,'if type(state.combat) ~= "table" or type(state.combat.lastAttackAt) ~= "number" then return false end',
+  ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
+  'if type(state.combat) ~= "table" or type(state.combat.lastAttackAt) ~= "number" then return false end',
   'if not '+s.requiredBindings[0]+'(player, target) then return false end',
   'if typeof(target) ~= "Instance" or not target:IsA("Model") or not target:IsDescendantOf(workspace) then return false end',
   'local character = player.Character',
   'local attackerRoot = character and character:FindFirstChild("HumanoidRootPart")',
   'local targetRoot = target:FindFirstChild("HumanoidRootPart")',
   'local targetHumanoid = target:FindFirstChildOfClass("Humanoid")',
-  'if not attackerRoot or not targetRoot or not targetHumanoid or targetHumanoid.Health <= 0 then return false end',
+  'if not attackerRoot or not attackerRoot:IsA("BasePart") or not targetRoot or not targetRoot:IsA("BasePart") or not targetHumanoid or targetHumanoid.Health <= 0 then return false end',
   'if (attackerRoot.Position - targetRoot.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
   'local now = os.clock()',
   'if now - state.combat.lastAttackAt < '+nLiteral(s.cooldown)+' then return false end',
   'state.combat.lastAttackAt = now',
   'targetHumanoid:TakeDamage('+nLiteral(s.damage)+')','return true'].join('\n');
  case 'building-authorized-placement':return [
-  ...stateGuard,'if type(state.inventory) ~= "table" or type(state.inventory.'+s.material+') ~= "number" then return false end',
-  'if type(blueprintId) ~= "string" or typeof(placementCFrame) ~= "CFrame" then return false end',
+  ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
+  'if type(state.inventory) ~= "table" or type(state.inventory.'+s.material+') ~= "number" then return false end',
+  'if type(blueprintId) ~= "string" or typeof(placementCFrame) ~= "CFrame" or type('+s.requiredBindings[0]+') ~= "table" then return false end',
   'if not '+s.requiredBindings[1]+'(player, blueprintId, placementCFrame) then return false end',
   'local template = '+s.requiredBindings[0]+'[blueprintId]',
   'if typeof(template) ~= "Instance" or not template:IsA("Model") or not template.PrimaryPart then return false end',
@@ -189,7 +191,7 @@ function qualitySource(s){
   'if state.inventory.'+s.material+' < '+nLiteral(s.cost)+' then return false end',
   'local character = player.Character',
   'local root = character and character:FindFirstChild("HumanoidRootPart")',
-  'if not root or (root.Position - placementCFrame.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
+  'if not root or not root:IsA("BasePart") or (root.Position - placementCFrame.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
   'local overlap = OverlapParams.new()',
   'overlap.FilterType = Enum.RaycastFilterType.Exclude',
   'overlap.FilterDescendantsInstances = {character}',
@@ -213,7 +215,8 @@ function qualitySource(s){
   'state.inventory.'+s.output+' = state.inventory.'+s.output+' + '+nLiteral(s.outputAmount),
   'return true'].join('\n');
  case 'bestiary-confirmed-death':return [
-  ...stateGuard,'if type(state.bestiary) ~= "table" or type(state.bestiary.kills) ~= "table" or type(state.bestiary.discovered) ~= "table" then return false end',
+  ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
+  'if type(state.bestiary) ~= "table" or type(state.bestiary.kills) ~= "table" or type(state.bestiary.discovered) ~= "table" then return false end',
   'if typeof(monster) ~= "Instance" or not monster:IsA("Model") or not monster:IsDescendantOf(workspace) then return false end',
   'local humanoid = monster:FindFirstChildOfClass("Humanoid")',
   'if not humanoid or humanoid.Health > 0 then return false end',
@@ -227,7 +230,8 @@ function qualitySource(s){
   'state.bestiary.kills.'+s.species+' = math.min('+nLiteral(s.countLimit)+', state.bestiary.kills.'+s.species+' + 1)',
   'return true'].join('\n');
  case 'saving-revisioned-update':return [
-  ...stateGuard,'if type(state.save) ~= "table" or type(state.save.revision) ~= "number" or type(state.save.dirty) ~= "boolean" then return false end',
+  ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
+  'if type(state.save) ~= "table" or type(state.save.revision) ~= "number" or type(state.save.dirty) ~= "boolean" then return false end',
   'if not state.save.dirty then return true end',
   'if not player or type(player.UserId) ~= "number" or player.UserId <= 0 then return false end',
   'local revisionAtStart = state.save.revision',
@@ -252,7 +256,7 @@ function qualitySource(s){
   'local humanoid = npc:FindFirstChildOfClass("Humanoid")',
   'local root = npc:FindFirstChild("HumanoidRootPart")',
   'local targetRoot = target:FindFirstChild("HumanoidRootPart")',
-  'if not humanoid or humanoid.Health <= 0 or not root or not targetRoot then return false end',
+  'if not humanoid or humanoid.Health <= 0 or not root or not root:IsA("BasePart") or not targetRoot or not targetRoot:IsA("BasePart") then return false end',
   'if (targetRoot.Position - root.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
   'local now = os.clock()',
   'if now - state.ai.lastMoveAt < '+nLiteral(s.interval)+' then return false end',
