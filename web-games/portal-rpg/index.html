@@ -1,0 +1,303 @@
+<!doctype html>
+<!-- 파일명: web-games/portal-rpg/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a101a">
+<title>포탈 RPG</title>
+<style>
+/* 화면 */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090f19;color:#f2f4fa;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
+canvas{display:block;width:100vw;height:100dvh}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+#hud{position:fixed;z-index:4;top:max(8px,env(safe-area-inset-top));left:8px;right:8px;pointer-events:none}
+.row{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.pill{padding:5px 8px;border:1px solid #7d92ac66;background:#07101ee8;border-radius:8px;font-size:11px;font-weight:800}
+#life{margin:6px 0 0;width:min(250px,62vw);height:15px;border:1px solid #f7bcc1a2;border-radius:8px;background:#391925;overflow:hidden}
+#life>i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#b72b48,#ff6d6d)}
+#place{margin-top:5px;font-size:12px;color:#d8e5ff;text-shadow:0 2px 6px #000}
+#portalBar{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:max(92px,calc(env(safe-area-inset-top) + 87px));display:flex;gap:5px;max-width:98vw;overflow:auto;padding:3px 4px}
+.portal{flex:0 0 auto;background:#15283bdf;color:#d3ddff;border:1px solid #82a7ec8f;border-radius:11px;padding:7px 9px;min-height:36px;font-size:11px;font-weight:900;white-space:nowrap;box-shadow:0 2px 9px #0007}
+.portal.active{background:#6444b4e8;border-color:#d9baff}
+#gear{position:fixed;z-index:8;right:10px;top:max(12px,env(safe-area-inset-top));padding:10px;background:#273d62;color:white;border:1px solid #adc3ed;border-radius:11px;font-weight:900}
+#boss{display:none;position:fixed;z-index:5;top:145px;left:50%;transform:translateX(-50%);width:min(340px,85vw);text-align:center;font-size:14px;font-weight:1000;color:#ffcad7;text-shadow:0 2px 6px #000;pointer-events:none}
+#bossBar{height:15px;border:2px solid #ffd3dc;border-radius:10px;background:#4a1624;margin-top:4px;overflow:hidden}#bossFill{height:100%;width:100%;background:#e43e61}
+#joystick{position:fixed;z-index:7;width:118px;height:118px;left:18px;bottom:calc(20px + env(safe-area-inset-bottom));background:#06102299;border:2px solid #e4eaff60;border-radius:50%;touch-action:none}
+#stick{position:absolute;width:52px;height:52px;left:31px;top:31px;border-radius:50%;background:#abc0ed91;border:2px solid #ebf3ff9c;pointer-events:none}
+#attack{position:fixed;z-index:7;right:20px;bottom:calc(23px + env(safe-area-inset-bottom));width:90px;height:90px;border-radius:50%;border:2px solid #ffcfbf;background:linear-gradient(#df6a44,#a62e32);color:white;font-size:19px;font-weight:1000;box-shadow:0 6px 18px #000a}
+#message{position:fixed;z-index:10;left:50%;top:50%;transform:translate(-50%,-50%);background:#07101eea;padding:10px 14px;border:1px solid #b5b8dd;border-radius:11px;max-width:90vw;text-align:center;font-size:13px;font-weight:900;pointer-events:none;opacity:0;transition:opacity .22s}
+#status{position:fixed;z-index:10;left:50%;bottom:165px;transform:translateX(-50%);max-width:92vw;background:#111927ee;border:1px solid #daa75c;border-radius:12px;padding:8px;font-size:12px;text-align:center}
+.overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:12px;background:#050912e6;overflow:auto;touch-action:pan-y}
+.overlay.show{display:flex}
+.panel{width:min(500px,96vw);max-height:90dvh;overflow:auto;background:#142132;border:2px solid #8698b8;border-radius:18px;padding:17px;box-shadow:0 16px 55px #000b}
+.panel h1{margin:0 0 7px;color:#ffdd8e;font-size:28px}.panel h2{margin:0 0 10px;font-size:21px}
+.panel p{font-size:13px;line-height:1.65;color:#c6d3e4}
+.mainBtn{min-height:46px;border:none;border-radius:11px;background:#e9b15a;color:#221305;font-size:15px;font-weight:950;padding:9px 14px}
+.wide{width:100%;margin-top:10px}.secondary{background:#31435c;color:#fff}
+.equipRow{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid #ffffff20;font-size:13px}
+.equipRow small{display:block;margin-top:3px;color:#a8bbd0}.equipRow button{min-width:76px;padding:8px;border:1px solid #b7cbe1;border-radius:8px;background:#446185;color:#fff;font-weight:900}
+.equipRow button:disabled{opacity:.45}
+#notice{color:#eed69f}
+@media(max-width:410px){#portalBar{top:max(104px,calc(env(safe-area-inset-top) + 99px))}.portal{padding:6px 7px;font-size:10px}#boss{top:150px}#joystick{left:10px;bottom:calc(10px + env(safe-area-inset-bottom))}#attack{right:12px;bottom:calc(15px + env(safe-area-inset-bottom))}#gear{padding:8px;font-size:12px}}
+</style>
+</head>
+<body>
+<canvas id="world" aria-label="삼차원 포탈 RPG 사냥터"></canvas>
+<div id="status" role="status">삼차원 캐릭터 불러오는 중…</div>
+<div id="hud"><div class="row"><span id="level" class="pill">레벨 1</span><span id="gold" class="pill">0 골드</span><span id="exp" class="pill">경험치 0</span></div><div id="life"><i id="lifeFill"></i></div><div id="place">포탈을 선택해 사냥터로 이동해.</div></div>
+<button id="gear">장비</button>
+<div id="portalBar"></div>
+<div id="boss">보스 계윤찬<div id="bossBar"><div id="bossFill"></div></div></div>
+<div id="joystick" aria-label="이동 조이스틱"><div id="stick"></div></div>
+<button id="attack" aria-label="공격">공격</button>
+<div id="message"></div>
+<div id="start" class="overlay show"><div class="panel" style="text-align:center">
+<h1>포탈 RPG</h1>
+<p>다섯 개 포탈을 탐험하고 골드를 모아 무기 여덟 종과 방어구 여섯 종을 장착해.<br>다섯 번째 사냥터 정중앙에는 <b>보스 계윤찬</b>이 기다리고 있어.</p>
+<button id="new" class="mainBtn wide">새 게임</button>
+<button id="resume" class="mainBtn wide secondary" hidden>이어하기</button>
+<p id="notice">모바일은 조이스틱과 공격 버튼, 컴퓨터는 방향키 또는 이동키와 스페이스바를 사용해.</p>
+</div></div>
+<div id="inventory" class="overlay"><div class="panel"><h2>무기 · 방어구</h2><p>골드로 구매하면 바로 장착돼. 구매한 장비는 다시 자유롭게 바꿀 수 있어.</p><div id="equipment"></div><button id="closeGear" class="mainBtn wide secondary">닫기</button></div></div>
+<div id="dead" class="overlay"><div class="panel" style="text-align:center"><h2 id="deadTitle">쓰러졌어!</h2><p id="deadDetail">사냥터 입구에서 다시 시작할 수 있어.</p><button id="retry" class="mainBtn wide">다시 도전</button><button id="toHub" class="mainBtn wide secondary">다른 포탈로 이동</button></div></div>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
+<script type="module">
+// 파일명: web-games/portal-rpg/index.html
+// 임포트
+import * as THREE from 'three';
+import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+import {clone as cloneRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
+
+// 게임 설정
+const SAVE='portal-rpg-v1';
+const PORTALS=['첫 번째 사냥터','두 번째 사냥터','세 번째 사냥터','네 번째 사냥터','다섯 번째 사냥터'];
+const WEAPONS=Array.from({length:8},(_,i)=>({name:'무기 '+(i+1),atk:9+i*5,price:i===0?0:25*i*i,reach:2.5+i*.12}));
+const ARMORS=Array.from({length:6},(_,i)=>({name:'방어구 '+(i+1),def:i*3,price:i===0?0:20*i*i}));
+const $=id=>document.getElementById(id);
+const saveDefault=()=>({level:1,xp:0,gold:0,weapon:0,armor:0,weapons:[0],armors:[0],hp:100,portal:0,wins:0});
+let data=saveDefault(),ready=false,paused=true,hero=null,scene=null,camera=null,renderer=null,shadowModel=null,bossModel=null,entities=[];
+let time=performance.now(),attackAt=0,nextSave=0,dead=false,portalLoaded=0;
+const keys=Object.create(null),joy={x:0,z:0};
+let messageTimer=0;
+function clamp(x,a,b){return Math.min(b,Math.max(a,x))}
+function xpNeed(){return 40+data.level*25}
+function maxHp(){return 100+(data.level-1)*13}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify(data))}catch(e){console.warn('저장할 수 없음',e)}}
+function load(){
+  try{
+    const stored=JSON.parse(localStorage.getItem(SAVE)||'null');
+    if(!stored||!Number.isFinite(stored.level))return false;
+    data={...saveDefault(),...stored};
+    data.level=clamp(Math.floor(data.level),1,99);
+    data.weapon=clamp(Math.floor(data.weapon),0,7);
+    data.armor=clamp(Math.floor(data.armor),0,5);
+    data.portal=clamp(Math.floor(data.portal),0,4);
+    data.weapons=Array.isArray(data.weapons)?data.weapons.filter(x=>Number.isInteger(x)&&x>=0&&x<8):[0];
+    data.armors=Array.isArray(data.armors)?data.armors.filter(x=>Number.isInteger(x)&&x>=0&&x<6):[0];
+    data.weapons.push(0);data.armors.push(0);
+    if(!data.weapons.includes(data.weapon))data.weapon=0;
+    if(!data.armors.includes(data.armor))data.armor=0;
+    data.gold=clamp(Number(data.gold)||0,0,99999999);data.xp=clamp(Number(data.xp)||0,0,1000000);
+    data.hp=clamp(Number(data.hp)||maxHp(),1,maxHp());
+    data.wins=clamp(Number(data.wins)||0,0,999);
+    return true;
+  }catch{return false}
+}
+function toast(msg){
+  clearTimeout(messageTimer);$('message').textContent=msg;$('message').style.opacity='1';
+  messageTimer=setTimeout(()=>$('message').style.opacity='0',1450);
+}
+function show(id,visible){$(id).classList.toggle('show',visible)}
+function hud(){
+  $('level').textContent='레벨 '+data.level;$('gold').textContent=Math.floor(data.gold)+' 골드';
+  $('exp').textContent='경험치 '+Math.floor(data.xp)+' / '+xpNeed();
+  $('lifeFill').style.width=(100*data.hp/maxHp())+'%';
+  $('place').textContent=PORTALS[data.portal]+(data.portal===4?' · 중앙 보스':' · 사냥터 몬스터');
+  [...$('portalBar').children].forEach((node,i)=>node.classList.toggle('active',i===data.portal));
+}
+function setWorldTheme(){
+  const colors=['#375345','#475a69','#695144','#453b62','#311927'];
+  const c=colors[data.portal];scene.background=new THREE.Color(c);scene.fog=new THREE.Fog(c,22,49);
+  scene.userData.floor.material.color.set(c);
+}
+function fitModel(source,height){
+  const group=new THREE.Group(),model=cloneRig(source),bounds=new THREE.Box3().setFromObject(model);
+  const h=Math.max(.05,bounds.max.y-bounds.min.y),k=height/h;
+  model.scale.setScalar(k);
+  model.position.set(-.5*(bounds.min.x+bounds.max.x)*k,-bounds.min.y*k,-.5*(bounds.min.z+bounds.max.z)*k);
+  group.add(model);return group;
+}
+function movePortal(n){
+  if(!ready)return;
+  data.portal=n;portalLoaded=n;dead=false;data.hp=Math.min(maxHp(),Math.max(1,data.hp));
+  hero.position.set(-11,0,10);
+  for(const e of entities)scene.remove(e.model);
+  entities=[];setWorldTheme();
+  const makeEnemy=(x,z,boss=false)=>{
+    const model=fitModel(boss?bossModel:shadowModel,boss?2.25:1.55);
+    model.position.set(x,0,z);scene.add(model);
+    const base=(boss?420:50)+data.portal*(boss?0:25);
+    entities.push({model,x,z,hp:base,maxHp:base,boss,alive:true,attackTime:0,respawnAt:0,phase:Math.random()*6});
+  };
+  if(n===4){makeEnemy(0,0,true)}else {
+    [[0,0],[5,6],[-2,-7],[9,-4]].forEach(([x,z])=>makeEnemy(x,z));
+  }
+  $('boss').style.display=n===4?'block':'none';
+  hud();save();
+  toast(n===4?'사냥터 중앙에 보스 계윤찬 등장!':PORTALS[n]+' 입장');
+}
+function gain(x,gold){
+  data.gold+=gold;data.xp+=x;
+  while(data.xp>=xpNeed()&&data.level<99){data.xp-=xpNeed();data.level++;data.hp=maxHp();toast('레벨 '+data.level+' 달성! 체력 회복');}
+  hud();save();
+}
+function strike(){
+  if(!ready||paused||dead||performance.now()-attackAt<460)return;
+  attackAt=performance.now();
+  const target=entities.filter(e=>e.alive&&Math.hypot(e.x-hero.position.x,e.z-hero.position.z)<WEAPONS[data.weapon].reach)
+    .sort((a,b)=>Math.hypot(a.x-hero.position.x,a.z-hero.position.z)-Math.hypot(b.x-hero.position.x,b.z-hero.position.z))[0];
+  if(!target){toast('적에게 가까이 가서 공격해!');return;}
+  target.hp=Math.max(0,target.hp-WEAPONS[data.weapon].atk);
+  target.model.position.y=.18;
+  if(target.boss)$('bossFill').style.width=(100*target.hp/target.maxHp)+'%';
+  if(target.hp<=0){
+    target.alive=false;target.model.visible=false;target.respawnAt=performance.now()+(target.boss?1e9:4100);
+    if(target.boss){data.wins++;gain(380,650);$('deadTitle').textContent='계윤찬 격파!';$('deadDetail').textContent='보스를 물리쳤어! 획득 골드 650 · 경험치 380';show('dead',true);paused=true;save();}
+    else{gain(14+data.portal*7,12+data.portal*10);toast('몬스터 처치! 골드 획득');}
+  }else if(target.boss){toast('계윤찬 남은 체력 '+Math.ceil(target.hp));}
+}
+function damage(n){
+  if(dead)return;
+  data.hp=Math.max(0,data.hp-Math.max(1,n-ARMORS[data.armor].def));hud();
+  if(data.hp<=0){dead=true;paused=true;$('deadTitle').textContent='쓰러졌어!';$('deadDetail').textContent='다시 도전하면 체력이 회복돼.';show('dead',true);save();}
+}
+function equipment(){
+  const box=$('equipment');box.replaceChildren();
+  const section=(title,items,owned,selected,key)=>{
+    const label=document.createElement('h3');label.textContent=title;box.append(label);
+    items.forEach((it,i)=>{
+      const row=document.createElement('div');row.className='equipRow';
+      const info=document.createElement('div'),b=document.createElement('b'),s=document.createElement('small');
+      b.textContent=it.name;
+      s.textContent=(key==='weapon'?'공격력 +'+it.atk+' · 사거리 '+it.reach.toFixed(1):'방어력 +'+it.def)+' · '+(i===0?'기본 장비':it.price+' 골드');
+      info.append(b,s);
+      const btn=document.createElement('button');
+      btn.textContent=selected===i?'장착 중':owned.includes(i)?'장착':'구매';
+      btn.disabled=selected===i||(!owned.includes(i)&&data.gold<it.price);
+      btn.onclick=()=>{
+        if(!owned.includes(i)){if(data.gold<it.price)return;data.gold-=it.price;owned.push(i)}
+        data[key]=i;save();hud();equipment();toast(it.name+' 장착');
+      };
+      row.append(info,btn);box.append(row);
+    });
+  };
+  section('무기 8종',WEAPONS,data.weapons,data.weapon,'weapon');
+  section('방어구 6종',ARMORS,data.armors,data.armor,'armor');
+}
+function resumeGame(reset){
+  if(reset){data=saveDefault();save();}
+  else load();
+  data.hp=clamp(data.hp,1,maxHp());paused=false;show('start',false);
+  if(ready)movePortal(data.portal);
+}
+function initUI(){
+  PORTALS.forEach((name,i)=>{
+    const btn=document.createElement('button');btn.className='portal';btn.textContent='◈ 포탈 '+(i+1);
+    btn.title=name;btn.onclick=()=>{if(!ready||paused)return;movePortal(i);};$('portalBar').append(btn);
+  });
+  $('gear').onclick=()=>{if(!ready||dead)return;paused=true;equipment();show('inventory',true)};
+  $('closeGear').onclick=()=>{show('inventory',false);paused=false;hud()};
+  $('attack').addEventListener('pointerdown',e=>{e.preventDefault();strike()});
+  $('new').onclick=()=>resumeGame(true);
+  $('resume').onclick=()=>resumeGame(false);
+  $('retry').onclick=()=>{show('dead',false);paused=false;data.hp=maxHp();movePortal(data.portal)};
+  $('toHub').onclick=()=>{show('dead',false);paused=false;data.hp=maxHp();movePortal(0)};
+  const j=$('joystick'),s=$('stick');
+  const update=e=>{
+    const rect=j.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+    const dx=e.clientX-cx,dz=e.clientY-cy,len=Math.hypot(dx,dz),r=43;
+    joy.x=clamp(dx/r,-1,1);joy.z=clamp(dz/r,-1,1);
+    if(len>r){joy.x=dx/len;joy.z=dz/len;}
+    s.style.transform='translate('+(joy.x*r)+'px,'+(joy.z*r)+'px)';
+  };
+  const end=e=>{if(j.hasPointerCapture(e.pointerId))j.releasePointerCapture(e.pointerId);joy.x=joy.z=0;s.style.transform='translate(0,0)'};
+  j.addEventListener('pointerdown',e=>{j.setPointerCapture(e.pointerId);update(e)});
+  j.addEventListener('pointermove',e=>{if(j.hasPointerCapture(e.pointerId))update(e)});
+  j.addEventListener('pointerup',end);j.addEventListener('pointercancel',end);
+  window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='Space'&&!e.repeat)strike()});
+  window.addEventListener('keyup',e=>keys[e.code]=false);
+  window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false;joy.x=joy.z=0;s.style.transform='translate(0,0)'});
+}
+function frame(now){
+  requestAnimationFrame(frame);
+  if(!ready)return;
+  const dt=Math.min(.05,Math.max(0,(now-time)/1000));time=now;
+  if(!paused){
+    const x=joy.x+(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0);
+    const z=joy.z+(keys.KeyS||keys.ArrowDown?1:0)-(keys.KeyW||keys.ArrowUp?1:0);
+    const length=Math.hypot(x,z);
+    if(length>.08){
+      hero.position.x=clamp(hero.position.x+x/Math.max(1,length)*5.2*dt,-15,15);
+      hero.position.z=clamp(hero.position.z+z/Math.max(1,length)*5.2*dt,-15,15);
+      hero.rotation.y=Math.atan2(x,z);
+    }
+    for(const e of entities){
+      if(!e.alive){
+        if(now>e.respawnAt){e.alive=true;e.hp=e.maxHp;e.model.visible=true;e.model.position.set(e.x,0,e.z);}
+        continue;
+      }
+      const dx=hero.position.x-e.x,dz=hero.position.z-e.z,d=Math.hypot(dx,dz);
+      if(d<11&&d>1.55){
+        const speed=e.boss?1.1:1.35+data.portal*.1;
+        e.x+=dx/d*speed*dt;e.z+=dz/d*speed*dt;
+        if(e.boss){e.x=clamp(e.x,-3,3);e.z=clamp(e.z,-3,3);}
+      }
+      e.model.position.set(e.x,Math.max(0,e.model.position.y-dt*2),e.z);
+      e.model.rotation.y=Math.atan2(dx,dz);
+      if(d<1.7&&now-e.attackTime>(e.boss?1250:1550)){e.attackTime=now;damage(e.boss?21:9+data.portal*3)}
+    }
+    if(now>nextSave){nextSave=now+7000;save();}
+  }
+  camera.position.lerp(new THREE.Vector3(hero.position.x,17,hero.position.z+18),.13);
+  camera.lookAt(hero.position.x,0,hero.position.z-2);
+  renderer.render(scene,camera);
+}
+// 메인
+async function boot(){
+  initUI();
+  $('resume').hidden=!load();
+  const canvas=$('world');
+  try{
+    renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'});
+    renderer.setPixelRatio(Math.min(1.5,devicePixelRatio||1));
+    renderer.outputColorSpace=THREE.SRGBColorSpace;
+    scene=new THREE.Scene();scene.background=new THREE.Color('#375345');
+    scene.add(new THREE.HemisphereLight(0xeaf5ff,0x637157,2.4));
+    const sun=new THREE.DirectionalLight(0xffe9c5,2.4);sun.position.set(-4,13,8);scene.add(sun);
+    const ground=new THREE.Mesh(new THREE.PlaneGeometry(34,34),new THREE.MeshStandardMaterial({color:0x375345,roughness:.98}));
+    ground.rotation.x=-Math.PI/2;scene.add(ground);scene.userData.floor=ground;
+    camera=new THREE.PerspectiveCamera(54,1,.1,90);
+    const resize=()=>{const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
+    addEventListener('resize',resize);resize();
+    const loader=new GLTFLoader();
+    const actors='../../assets/roblox/actors/native/';
+    const [heroAsset,enemyAsset]=await Promise.all([loader.loadAsync(actors+'knight.glb'),loader.loadAsync(actors+'skeleton-warrior.glb')]);
+    if(!heroAsset.scene||!enemyAsset.scene)throw new Error('등록된 캐릭터 모델이 없음');
+    hero=fitModel(heroAsset.scene,1.75);scene.add(hero);
+    bossModel=heroAsset.scene;shadowModel=enemyAsset.scene;
+    ready=true;$('status').hidden=true;
+    movePortal(data.portal);
+    paused=true;show('start',true);hud();
+    requestAnimationFrame(frame);
+  }catch(err){
+    $('status').textContent='캐릭터 모델 또는 삼차원 화면을 불러오지 못했어. 새로고침해 줘.';
+    console.error('PORTAL_RPG_START_FAILURE',err);
+    $('new').disabled=true;$('resume').disabled=true;
+  }
+}
+boot();
+</script>
+</body>
+</html>
