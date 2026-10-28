@@ -981,54 +981,163 @@ local function stepEquippedCombatMotion(dt)
   character:SetAttribute("WeaponMotionState",invalid and "CANCELLED"or "IDLE")
  end
 end
+-- [Motion Forge 3.0] Actual actor anatomy is discovered from the existing Motor6D limbs.
+-- The server owns enemy movement/combat; this client only changes visible joint C0.
 local nativePoseMotors=setmetatable({}, {__mode="k"})
+local nativeRigStates=setmetatable({}, {__mode="k"})
+local nativeMotionReady=commonMotion and type(commonMotion.SampleProceduralActorMotion)=="function"
 local function trackNativePose(inst)
- if inst:IsA("Motor6D") and (inst.Name=="NativePoseMotor" or inst.Name=="ActorLimbMotor") then nativePoseMotors[inst]={base=inst.C0,role=inst:GetAttribute("LimbRole")} end
+ if inst:IsA("Motor6D") and (inst.Name=="NativePoseMotor" or inst.Name=="ActorLimbMotor") then
+  nativePoseMotors[inst]={base=inst.C0,role=inst:GetAttribute("LimbRole")}
+ end
 end
 for _,desc in ipairs(workspace:GetDescendants())do trackNativePose(desc)end
 workspace.DescendantAdded:Connect(trackNativePose)
 workspace.DescendantRemoving:Connect(function(inst)nativePoseMotors[inst]=nil end)
 local lastNativePose=0
+local function nativeActorChannels(host,limbs)
+ local legs,arms,wings,tails=0,0,0,0
+ for _,row in ipairs(limbs)do
+  local role=string.lower(tostring(row.item.role or row.motor.Part1.Name))
+  if role:find("leg",1,true) or role:find("paw",1,true) then legs+=1
+  elseif role:find("arm",1,true) or role:find("tentacle",1,true)then arms+=1
+  elseif role:find("wing",1,true)then wings+=1
+  elseif role:find("tail",1,true)then tails+=1 end
+ end
+ local form=(wings>=2 and "FLYER")
+  or (legs>=4 and "QUADRUPED")
+  or (arms>=3 and "CRAWLER")
+  or (tails>0 and legs==0 and arms==0 and "SERPENT")
+  or (host.Size.Y>6 and "GIANT")or "BIPED"
+ local channels,byMotor={},{}
+ for _,row in ipairs(limbs)do
+  local motor=row.motor
+  local role=string.lower(tostring(row.item.role or motor.Part1.Name))
+  local localPos=host.CFrame:PointToObjectSpace(motor.Part1.Position)
+  local side=localPos.X<0 and "L" or "R"
+  local channel=nil
+  if role:find("wing",1,true) then channel="Wing"..side
+  elseif role:find("tail",1,true) then channel="Tail"
+  elseif role:find("jaw",1,true) then channel="Jaw"
+  elseif role:find("head",1,true) or role:find("neck",1,true) then channel="Head"
+  elseif role:find("leg",1,true) or role:find("paw",1,true) then
+   if form=="QUADRUPED" or form=="CRAWLER" then
+    local quadrant=(localPos.Z<0 and "F" or "B")..side
+    channel=quadrant..(role:find("paw",1,true) and "Ankle" or "Hip")
+   else
+    channel=(role:find("paw",1,true) and "Foot" or "Thigh")..side
+   end
+  elseif role:find("arm",1,true) or role:find("tentacle",1,true) then
+   channel="UpperArm"..side
+  elseif role:find("spine",1,true) then channel="Spine"
+  elseif role:find("body",1,true) or role:find("torso",1,true) then channel="Chest"
+  end
+  if channel then channels[channel]=true;byMotor[motor]=channel end
+ end
+ return form,channels,byMotor
+end
 RunService.Heartbeat:Connect(function(dt)
  stepEquippedCombatMotion(dt)
  local now=os.clock()
- if now-lastNativePose<.07 then return end
+ if now-lastNativePose<(touchEnabled and .06 or .034)then return end
+ local frameDt=math.clamp(now-lastNativePose,.001,.15)
  lastNativePose=now
- local c=p.Character
- local me=c and c:FindFirstChild("HumanoidRootPart")
- if not me then return end
- local processed=0
+ local character=p.Character
+ local center=character and character:FindFirstChild("HumanoidRootPart")
+ if not center then return end
+ local groups={}
  for motor,item in pairs(nativePoseMotors)do
-  if processed>=55 then break end
   local host=motor.Part0
-  if motor.Parent and host and host.Parent and (host.Position-me.Position).Magnitude<120 then
-   processed+=1
-   local state=tostring(host:GetAttribute("MotionState")or"IDLE")
-   local lastPos=item.lastPos or host.Position
-   local moving=(host.Position-lastPos).Magnitude>.015
-   item.lastPos=host.Position
-   if state=="IDLE" and moving then state="ROAM" end
-   local stride=state=="ATTACK" and .55 or state=="HIT" and .52 or state=="CHASE" and .35 or state=="WALK" and .34 or state=="ROAM" and .25 or .075
-   local speed=state=="ATTACK" and 13 or state=="HIT" and 10 or state=="CHASE" and 9 or state=="WALK" and 7 or state=="ROAM" and 5 or 2
-   -- Source-owned visual gait: integrate actual delta time instead of
-   -- multiplying the absolute clock by speed (which pops on NPC/mob turns).
-   local frameDt=math.clamp(now-(item.lastPoseAt or now),0,.15)
-   item.lastPoseAt=now
-   item.phase=(item.phase or ((host.Position.X+host.Position.Z)*.1))+speed*frameDt
-   local response=((state=="HIT" or state=="ATTACK") and 17 or 11)
-   item.visualStride=(item.visualStride or stride)
-    +(stride-(item.visualStride or stride))*(1-math.exp(-frameDt*response))
-   stride=item.visualStride
-   local phase=item.phase
-   if motor.Name=="ActorLimbMotor" then
-    local role=item.role or ""
-    local side=(role:find("Left",1,true)or role:find("ArmL",1,true)or role:find("LegR",1,true)or role:find("WingL",1,true)) and -1 or 1
-    local swing=math.sin(phase)*stride*side
-    if role:find("Wing",1,true) then swing*=2.4 end
-    if role:find("Tail",1,true) then motor.C0=item.base*CFrame.Angles(0,swing*.7,0)
-    else motor.C0=item.base*CFrame.Angles(swing,0,math.cos(phase)*stride*.35*side)end
-   else
-    motor.C0=item.base*CFrame.new(0,math.sin(phase)*stride*.45,0)*CFrame.Angles(math.sin(phase)*stride*.45,0,math.cos(phase*.7)*stride*.65)
+  if motor.Parent and host and host:IsDescendantOf(workspace)
+   and motor.Part1 and (host.Position-center.Position).Magnitude<120 then
+   local group=groups[host]
+   if not group then group={limbs={},pivots={}};groups[host]=group end
+   local row={motor=motor,item=item}
+   if motor.Name=="ActorLimbMotor" then table.insert(group.limbs,row)
+   else table.insert(group.pivots,row)end
+  end
+ end
+ local processed=0
+ for host,group in pairs(groups)do
+  if processed>=(touchEnabled and 15 or 30) then break end
+  processed+=1
+  local item=nativeRigStates[host]
+  if not item then item={state="",elapsed=0,lastPos=host.Position};nativeRigStates[host]=item end
+  local velocity=(host.Position-item.lastPos).Magnitude/frameDt
+  item.lastPos=host.Position
+  local marker=tostring(host:GetAttribute("MotionState")or "IDLE")
+  local state=(marker=="ATTACK" or marker=="HIT" or marker=="DEATH")and marker
+   or (marker=="CHASE" and "RUN")
+   or ((marker=="WALK" or marker=="ROAM" or velocity>1.0)and "WALK")or "IDLE"
+  if item.state~=state then item.state=state;item.elapsed=0 end
+  local pace=(state=="RUN" or state=="WALK")and math.clamp(velocity/7,.7,1.7)or 1
+  item.elapsed+=frameDt*pace
+  if nativeMotionReady and #group.limbs>=2 then
+   local form,channels,byMotor=nativeActorChannels(host,group.limbs)
+   local duration=state=="RUN" and .64 or state=="WALK" and .9
+    or state=="ATTACK" and .75 or state=="HIT" and .46
+    or state=="DEATH" and 1.32 or 2.4
+   local looping=state=="IDLE" or state=="WALK" or state=="RUN"
+   local phase=looping and ((item.elapsed/duration)%1) or math.min(1,item.elapsed/duration)
+   local sampled={}
+   local _,usable=commonMotion.SampleProceduralActorMotion(state,phase,{
+    availableJoints=channels,bodyPlan=form,
+    actorClass=host.Name:find("Boss",1,true) and "BOSS" or "ENEMY",
+    mobileTier=touchEnabled and "LOW" or "HIGH",
+    secondary=.65,profile={limbArc=1.07,footContact=1.08,secondaryMotion=.76},
+   },sampled)
+   local movingJointCount=0
+   if usable then
+    for _,row in ipairs(group.limbs)do
+     local channel=byMotor[row.motor]
+     local pose=channel and sampled[channel]
+     if pose then
+      -- Idle breathing must remain visible even on minimal two-limb rigs.
+      if state=="IDLE" and (channel:match("^UpperArm") or channel:match("^Thigh")
+       or channel:match("Hip$")) then
+       local sign=channel:find("L",1,true) and -1 or 1
+       pose=pose*CFrame.Angles(math.sin(phase*math.pi*2)*.035*sign,0,0)
+      end
+      local alpha=1-math.exp(-((state=="ATTACK" or state=="HIT") and 18 or 12)*frameDt)
+      row.item.pose=(row.item.pose or CFrame.identity):Lerp(pose,alpha)
+      row.motor.C0=row.item.base*row.item.pose
+      movingJointCount+=1
+     end
+    end
+   end
+   if movingJointCount>0 then
+    if item.reportedForm~=form or item.reportedJointCount~=movingJointCount then
+     item.reportedForm=form;item.reportedJointCount=movingJointCount
+     host:SetAttribute("NativeNpcMotionBodyPlan",form)
+     host:SetAttribute("NativeNpcMotionJointCount",movingJointCount)
+     host:SetAttribute("NativeNpcMotionState","SOURCE_POSE_PLAYING_UNVERIFIED")
+    end
+   elseif item.reportedForm~="UNSUPPORTED" then
+    item.reportedForm="UNSUPPORTED"
+    host:SetAttribute("NativeNpcMotionState","RIG_CHANNEL_MAPPING_REQUIRED")
+   end
+  else
+   -- A welded imported model's single pivot is NOT an articulated character pass.
+   if item.reportedForm~="UNRIGGED" then
+    item.reportedForm="UNRIGGED"
+    host:SetAttribute("NativeNpcMotionState","ARTICULATED_RIG_REQUIRED")
+   end
+   -- Preserve the pre-existing safe visual fallback if Motion Forge is unavailable.
+   for _,row in ipairs(group.limbs)do
+    local role=string.lower(tostring(row.item.role or row.motor.Part1.Name))
+    local localPos=host.CFrame:PointToObjectSpace(row.motor.Part1.Position)
+    local side=localPos.X<0 and -1 or 1
+    local stride=(state=="RUN" or state=="WALK")and .25 or state=="ATTACK"and .32 or .04
+    local sway=math.sin(item.elapsed*7)*stride*side
+    if role:find("tail",1,true) then
+     row.motor.C0=row.item.base*CFrame.Angles(0,sway*.65,0)
+    else
+     row.motor.C0=row.item.base*CFrame.Angles(sway,0,math.cos(item.elapsed*7)*stride*.28)
+    end
+   end
+   for _,row in ipairs(group.pivots)do
+    local sway=math.sin(item.elapsed*2)*.035
+    row.motor.C0=row.item.base*CFrame.Angles(sway,0,sway*.4)
    end
   end
  end
