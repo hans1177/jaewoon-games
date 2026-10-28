@@ -260,3 +260,40 @@ test('scenario evidence uses structural equivalence rather than object property 
   {...scenarioSet(row)[1],expectedEffects:{dirty:true,saving:false,attempts:3}}]});
  assert.equal(proof.pass,true);
 });
+
+
+test('generated Lua refuses NaN, infinity and negative crafting or building resources',()=>{
+ const craft=synthesizeVibe59QualityGameplay({spec:cases[2].spec,source:cases[2].source,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(craft,/state\.inventory\.wood ~= state\.inventory\.wood/);
+ assert.match(craft,/state\.inventory\.ore == math\.huge/);
+ assert.match(craft,/state\.inventory\.sword < 0/);
+ assert.ok(craft.indexOf('math.huge')<craft.indexOf('state.inventory.wood ='));
+ const building=synthesizeVibe59QualityGameplay({spec:cases[1].spec,source:cases[1].source,
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(building,/state\.inventory\.wood == math\.huge/);
+ assert.match(building,/state\.inventory\.wood < 0/);
+});
+test('saving rejects shallow snapshot aliases and unsafe revision counters',()=>{
+ const saving=synthesizeVibe59QualityGameplay({spec:cases[4].spec,
+  source:cases[4].source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(saving,/snapshot == state/);
+ assert.match(saving,/snapshot\.save == state\.save/);
+ assert.match(saving,/state\.save\.revision == math\.huge/);
+ const bestiary=synthesizeVibe59QualityGameplay({spec:cases[3].spec,
+  source:cases[3].source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(bestiary,/typeof\(monstersFolder\) ~= "Instance"/);
+});
+test('structure and save decisions reject active cooldown or concurrent save lock',()=>{
+ const build=cases[1],save=cases[4];
+ assert.equal(verifyVibe59QualityScenarios({spec:build.spec,scenarios:[
+  scenarioSet(build)[0],
+  {facts:{...build.yes,now:8.2},expectedApplied:false,
+   expectedEffects:{materialCount:7,modelPlaced:false,lastPlaceAt:8,placementRegistered:false}}
+ ]}).pass,true);
+ assert.equal(verifyVibe59QualityScenarios({spec:save.spec,scenarios:[
+  scenarioSet(save)[0],
+  {facts:{...save.yes,saving:true},expectedApplied:false,
+   expectedEffects:{attempts:0,dirty:true,saving:false}}
+ ]}).pass,true);
+});
