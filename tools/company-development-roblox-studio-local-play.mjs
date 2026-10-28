@@ -2030,12 +2030,12 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
 }
 
 export class McpStdioClient{
-  constructor({command,args=[],env=process.env,timeoutMs=30000}={}){
-    this.command=command;this.args=args;this.env=env;this.timeoutMs=timeoutMs;
+  constructor({command,args=[],cwd,env=process.env,timeoutMs=30000}={}){
+    this.command=command;this.args=args;this.cwd=cwd;this.env=env;this.timeoutMs=timeoutMs;
     this.child=null;this.nextId=1;this.pending=new Map();this.tools=new Map();this.protocolVersion='';this.serverInfo={};this.stderrTail='';
   }
   async connect(){
-    this.child=spawn(this.command,this.args,{stdio:['pipe','pipe','pipe'],windowsHide:true,env:this.env,shell:false});
+    this.child=spawn(this.command,this.args,{stdio:['pipe','pipe','pipe'],windowsHide:true,cwd:this.cwd,env:this.env,shell:false});
     console.log('ROBLOX_STUDIO_MCP_TRANSPORT_PROCESS='+JSON.stringify({processId:this.child.pid,parentProcessId:process.pid,startedAt:new Date().toISOString()}));
     this.child.stderr.setEncoding('utf8');
     this.child.stderr.on('data',chunk=>{
@@ -2177,11 +2177,18 @@ function chooseStudio(listResult,expectedName=''){
   return named||(local.length===1?local[0]:(unique.length===1?unique[0]:null))||(()=>{throw new Error('ROBLOX_STUDIO_MCP_AMBIGUOUS_STUDIO:'+JSON.stringify(unique));})();
 }
 
-function mcpCommandArgs(command=''){
+export function mcpCommandArgs(command='',platform=process.platform){
   const resolved=clean(command);
   if(!resolved)throw new Error('ROBLOX_STUDIO_MCP_COMMAND_MISSING');
-  if(process.platform==='win32'&&/\.exe$/i.test(resolved))return{command:resolved,args:[]};
-  if(process.platform==='win32')return{command:'cmd.exe',args:['/c',resolved]};
+  if(platform==='win32'){
+    if(!path.win32.isAbsolute(resolved))throw new Error('ROBLOX_STUDIO_MCP_OFFICIAL_LAUNCHER_ABSOLUTE_PATH_REQUIRED');
+    // The official Roblox mcp.bat resolves neighboring StudioMCP resources
+    // relative to its install folder. GitHub workspaces are not that folder.
+    const cwd=path.win32.dirname(resolved);
+    if(/\.exe$/i.test(resolved))return{command:resolved,args:[],cwd};
+    if(/\.bat$/i.test(resolved))return{command:'cmd.exe',args:['/d','/c',resolved],cwd};
+    throw new Error('ROBLOX_STUDIO_MCP_OFFICIAL_LAUNCHER_EXTENSION_REQUIRED');
+  }
   return{command:resolved,args:[]};
 }
 
