@@ -166,6 +166,41 @@ local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  end
  return x
 end
+-- Face accessories must follow their animated head rather than the root collider.
+-- Preserve the authored world-space positions while rebinding the existing rigid
+-- details. Only cosmetic welds move; damage, NPC AI and root replication do not.
+local actorHeadDetails={
+ WolfHead={"WolfMuzzle","WolfEyeL","WolfEyeR","WolfEarL","WolfEarR"},
+ BoarHead={"BoarSnout","TuskL","TuskR"},
+ DeerHead={"AntlerL","AntlerR","GoldenCrest"},
+ SnowBeastHead={"SnowBeastMuzzle","SnowBeastNose","SnowHornL","SnowHornR","SnowBeastEarL","SnowBeastEarR"},
+ BossHead={"BossHornL","BossHornR"},
+ BanditHead={"BanditHood"},
+}
+local function bindActorHeadDetails(rootPart)
+ for headName,details in pairs(actorHeadDetails)do
+  local head=rootPart:FindFirstChild(headName)
+  local motor=head and head:FindFirstChild("ActorLimbMotor")
+  if head and head:IsA("BasePart") and motor and motor:IsA("Motor6D")
+   and motor.Part0==rootPart and motor.Part1==head then
+   for _,detailName in ipairs(details)do
+    local detail=rootPart:FindFirstChild(detailName)
+    if detail and detail:IsA("BasePart") then
+     local weld=detail:FindFirstChildWhichIsA("WeldConstraint")
+     if weld and weld.Part0==rootPart and weld.Part1==detail then
+      -- The new WeldConstraint captures the current head-relative attachment.
+      local worldPose=detail.CFrame
+      weld:Destroy()
+      detail.CFrame=worldPose
+      local facialWeld=Instance.new("WeldConstraint")
+      facialWeld.Name="ActorFacialAttachment"
+      facialWeld.Part0=head;facialWeld.Part1=detail;facialWeld.Parent=detail
+     end
+    end
+   end
+  end
+ end
+end
 local function stripAsset(root)
  for _,d in ipairs(root:GetDescendants())do
   if d:IsA("LuaSourceContainer")or d:IsA("Tool")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")then d:Destroy()
@@ -1605,6 +1640,7 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
    add("KnightCape",Vector3.new(3.1,4.1,.2),Vector3.new(0,-1,.95),Color3.fromRGB(36,31,48),Enum.Material.Fabric)
    add("KnightShield",Vector3.new(.5,3.3,2.6),Vector3.new(-2.7,-1.2,0),Color3.fromRGB(67,60,83),Enum.Material.Metal)
  end
+ bindActorHeadDetails(rootPart)
  label(rootPart,boss and("BOSS · "..displayName)or displayName,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
  -- Reuse existing native-imported creature GLBs; preserve scripted root, combat and geometry fallback.
  local sharedEnemyId=not boss and Style.SharedEnemyModels and Style.SharedEnemyModels[z.Theme]
