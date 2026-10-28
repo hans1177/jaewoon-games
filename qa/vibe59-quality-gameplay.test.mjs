@@ -26,17 +26,17 @@ const cases=[
  {id:'building-authorized-placement',api:'GetBoundingBox()',
   spec:{operation:'building-authorized-placement',functionName:'place',
    bindings:{blueprints:'blueprints',authorizePlace:'canPlace',buildingsFolder:'buildingsFolder'},
-   material:'wood',cost:2,range:40},
+   material:'wood',cost:2,range:40,placeCooldown:1},
   source:'local blueprints = {}\nlocal buildingsFolder = workspace\n'+
    'local function canPlace(player, id, pos) return true end\n'+
    'local function place(player, blueprintId, placementCFrame)\n'+
-   ' local state = profiles[player]\n if state.inventory.wood then end\n'+slot,
+   ' local state = profiles[player]\n if state.inventory.wood and state.building.lastPlaceAt and state.building.lastPlacementKey then end\n'+slot,
   yes:{playerValid:true,authorized:true,blueprintValid:true,folderValid:true,
-   withinRange:true,collisionFree:true,materialCount:7},
-  yesEffect:{materialCount:5,modelPlaced:true},
+   withinRange:true,collisionFree:true,materialCount:7,now:12,lastPlaceAt:8,duplicatePlacement:false},
+  yesEffect:{materialCount:5,modelPlaced:true,lastPlaceAt:12,placementRegistered:true},
   no:{playerValid:true,authorized:true,blueprintValid:true,folderValid:true,
-   withinRange:true,collisionFree:false,materialCount:7},
-  noEffect:{materialCount:7,modelPlaced:false}},
+   withinRange:true,collisionFree:false,materialCount:7,now:12,lastPlaceAt:8,duplicatePlacement:false},
+  noEffect:{materialCount:7,modelPlaced:false,lastPlaceAt:8,placementRegistered:false}},
  {id:'crafting-atomic-recipe',api:'state.inventory.sword = state.inventory.sword + 1',
   spec:{operation:'crafting-atomic-recipe',functionName:'craft',
    inputs:[{field:'wood',amount:2},{field:'ore',amount:3}],
@@ -46,8 +46,10 @@ const cases=[
   yes:{inventory:{wood:5,ore:5,sword:0}},yesEffect:{inventory:{wood:3,ore:2,sword:1}},
   no:{inventory:{wood:5,ore:1,sword:0}},noEffect:{inventory:{wood:5,ore:1,sword:0}}},
  {id:'bestiary-confirmed-death',api:'GetAttribute("LastHitUserId")',
-  spec:{operation:'bestiary-confirmed-death',functionName:'credit',species:'Wolf',countLimit:99},
-  source:'local function credit(player, monster)\n local state = profiles[player]\n'+
+  spec:{operation:'bestiary-confirmed-death',functionName:'credit',species:'Wolf',countLimit:99,
+   bindings:{monstersFolder:'monstersFolder'}},
+  source:'local monstersFolder = workspace.Monsters\n'+
+   'local function credit(player, monster)\n local state = profiles[player]\n'+
    ' if state.bestiary.kills.Wolf and state.bestiary.discovered.Wolf then end\n'+slot,
   yes:{monsterValid:true,dead:true,speciesMatches:true,killerMatches:true,
    alreadyCredited:false,killCount:0,discovered:false},
@@ -57,16 +59,17 @@ const cases=[
   noEffect:{killCount:0,discovered:false,credited:false}},
  {id:'saving-revisioned-update',api:'UpdateAsync(key',
   spec:{operation:'saving-revisioned-update',functionName:'save',
-   bindings:{store:'store',mergeProfile:'mergeProfile'},maxAttempts:3},
+   bindings:{store:'store',mergeProfile:'mergeProfile',snapshotProfile:'snapshotProfile'},maxAttempts:3},
   source:'local store = dataStore\nlocal function mergeProfile(previous, state) return state end\n'+
+   'local function snapshotProfile(state) return table.clone(state) end\n'+
    'local function save(player)\n local state = profiles[player]\n'+
-   ' if state.save.revision and state.save.dirty then end\n'+slot,
-  yes:{dirty:true,playerValid:true,revisionAtStart:4,
-   revisionAfter:4,attemptResults:[false,true]},
-  yesEffect:{attempts:2,dirty:false},
-  no:{dirty:true,playerValid:true,revisionAtStart:4,
-   revisionAfter:4,attemptResults:[false,false,false]},
-  noEffect:{attempts:3,dirty:true}},
+   ' if state.save.revision and state.save.dirty and state.save.saving then end\n'+slot,
+  yes:{dirty:true,saving:false,playerValid:true,snapshotValid:true,staleWrite:false,
+   revisionAtStart:4,revisionAfter:4,attemptResults:[false,true]},
+  yesEffect:{attempts:2,dirty:false,saving:false},
+  no:{dirty:true,saving:false,playerValid:true,snapshotValid:true,staleWrite:false,
+   revisionAtStart:4,revisionAfter:4,attemptResults:[false,false,false]},
+  noEffect:{attempts:3,dirty:true,saving:false}},
  {id:'ai-throttled-chase',api:'MoveTo(targetRoot.Position)',
   spec:{operation:'ai-throttled-chase',functionName:'chase',range:30,interval:1},
   source:'local function chase(npc, target)\n local state = npcStates[npc]\n'+
@@ -140,7 +143,7 @@ test('crafting cannot partially consume when input fails and saving retains dirt
  const revisionChanged=verifyVibe59QualityScenarios({spec:saving.spec,scenarios:[
   scenarioSet(saving)[1],
   {name:'revision changed while writing',facts:{...saving.yes,revisionAfter:5},
-   expectedApplied:true,expectedEffects:{attempts:2,dirty:true}}
+   expectedApplied:true,expectedEffects:{attempts:2,dirty:true,saving:false}}
  ]});
  assert.equal(revisionChanged.pass,true);
 });
@@ -195,4 +198,65 @@ test('combat does not emit damage before checking attacker alive; building uses 
  assert.match(build,/built:GetBoundingBox\(\)/);
  assert.match(build,/built:Destroy\(\); return false/);
  assert.ok(build.indexOf('GetBoundingBox()')<build.indexOf('state.inventory.wood ='));
+});
+
+
+test('combat line of sight and self-target checks precede applying damage',()=>{
+ const row=cases[0],source=synthesizeVibe59QualityGameplay({
+  spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(source,/workspace:Raycast/);
+ assert.match(source,/attackerHumanoid == targetHumanoid/);
+ assert.ok(source.indexOf('workspace:Raycast')<source.indexOf(':TakeDamage('));
+ const denied=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
+  scenarioSet(row)[0],
+  {facts:{...row.yes,lineOfSight:false},expectedApplied:false,
+   expectedEffects:{damageDealt:0,lastAttackAt:0}}]});
+ assert.equal(denied.pass,true);
+});
+test('building duplicate and rapid click attempts do not consume resources',()=>{
+ const row=cases[1],source=synthesizeVibe59QualityGameplay({
+  spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(source,/lastPlacementKey/);
+ assert.match(source,/lastPlaceAt/);
+ assert.match(source,/built:GetBoundingBox/);
+ const proof=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
+  scenarioSet(row)[0],
+  {facts:{...row.yes,duplicatePlacement:true},expectedApplied:false,
+   expectedEffects:{materialCount:7,modelPlaced:false,lastPlaceAt:8,placementRegistered:false}}]});
+ assert.equal(proof.pass,true);
+ assert.throws(()=>synthesizeVibe59QualityGameplay({spec:row.spec,
+  source:row.source.replace('state.building.lastPlaceAt','state.building.missing'),
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}),/EXISTING_FIELD/);
+});
+test('snapshot-saving rejects concurrent writes and stale persisted revisions',()=>{
+ const row=cases[4],source=synthesizeVibe59QualityGameplay({
+  spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(source,/snapshotProfile\(state\)/);
+ assert.match(source,/state\.save\.saving = true/);
+ assert.match(source,/previous\.save\.revision > revisionAtStart/);
+ assert.ok(source.indexOf('snapshotProfile(state)')<source.indexOf('UpdateAsync'));
+ const proof=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
+  scenarioSet(row)[0],
+  {facts:{...row.yes,staleWrite:true},expectedApplied:false,
+   expectedEffects:{attempts:3,dirty:true,saving:false}}]});
+ assert.equal(proof.pass,true);
+ assert.throws(()=>synthesizeVibe59QualityGameplay({spec:row.spec,
+  source:row.source.replace('state.save.saving','state.save.missing'),
+  sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}),/EXISTING_FIELD/);
+});
+test('bestiary only credits monsters owned by the server monster folder',()=>{
+ const row=cases[3],source=synthesizeVibe59QualityGameplay({
+  spec:row.spec,source:row.source,sourcePath,replaceAnchor:'-- VIBE59_QUALITY_SLOT'}).source;
+ assert.match(source,/monster:IsDescendantOf\(monstersFolder\)/);
+ const proof=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
+  scenarioSet(row)[0],
+  {facts:{...row.yes,authorizedMonsterFolder:false},expectedApplied:false,
+   expectedEffects:{killCount:0,discovered:false,credited:false}}]});
+ assert.equal(proof.pass,true);
+});
+test('scenario evidence uses structural equivalence rather than object property order',()=>{
+ const row=cases[4],proof=verifyVibe59QualityScenarios({spec:row.spec,scenarios:[
+  {...scenarioSet(row)[0],expectedEffects:{saving:false,dirty:false,attempts:2}},
+  {...scenarioSet(row)[1],expectedEffects:{dirty:true,saving:false,attempts:3}}]});
+ assert.equal(proof.pass,true);
 });
