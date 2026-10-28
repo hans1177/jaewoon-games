@@ -184,3 +184,27 @@ test('Daechung keeps head and single-tail enemy motion visible without certifyin
  assert.match(client,/row\.motor\.C0=row\.item\.base\*CFrame\.Angles\(sway/);
  assert.doesNotMatch(client,/NativeNpcMotionState","RUNTIME_VERIFIED"/);
 });
+
+test('Daechung moving heads keep visible eyes, ears, tusks and antlers attached to the actual articulated head',()=>{
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const expected={
+  WolfHead:['WolfMuzzle','WolfEyeL','WolfEyeR','WolfEarL','WolfEarR'],
+  BoarHead:['BoarSnout','TuskL','TuskR'],
+  DeerHead:['AntlerL','AntlerR','GoldenCrest'],
+  SnowBeastHead:['SnowBeastMuzzle','SnowBeastNose','SnowHornL','SnowHornR','SnowBeastEarL','SnowBeastEarR'],
+  BossHead:['BossHornL','BossHornR'],
+  BanditHead:['BanditHood']
+ };
+ for(const [head,parts] of Object.entries(expected)){
+  assert.match(server,new RegExp(' '+head+'=\\{'));
+  for(const name of parts)assert.ok(server.includes('"'+name+'"'),'missing decorative head binding: '+name);
+ }
+ assert.match(server,/local function bindActorHeadDetails\(rootPart\)/);
+ assert.match(server,/motor\.Part0==rootPart and motor\.Part1==head/);
+ assert.match(server,/weld\.Part0==rootPart and weld\.Part1==detail/);
+ assert.match(server,/weld:Destroy\(\)/);
+ assert.match(server,/detail\.CFrame=worldPose/);
+ assert.match(server,/facialWeld\.Part0=head;facialWeld\.Part1=detail;facialWeld\.Parent=detail/);
+ assert.match(server,/bindActorHeadDetails\(rootPart\)\s+label\(rootPart/);
+ assert.doesNotMatch(server,/NativeActorMotionVisual","RUNTIME_VERIFIED"/);
+});
