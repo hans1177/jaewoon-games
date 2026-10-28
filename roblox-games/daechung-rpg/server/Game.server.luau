@@ -305,6 +305,19 @@ end
 
 local function bindNativeNpcVisual(rootPart,assetId,fallbackAssetId)
  if not assetId or not rootPart.Parent then return end
+ -- The imported library model is a rigid welded pivot, not an articulated retarget.
+ -- Never hide real animated enemy limbs behind an unmoving asset silhouette.
+ local movableLimbCount=0
+ for _,motor in ipairs(rootPart:GetDescendants())do
+  if motor:IsA("Motor6D") and motor.Name=="ActorLimbMotor"
+   and motor.Part0==rootPart and motor.Part1 and motor.Part1.Parent then
+   movableLimbCount+=1
+  end
+ end
+ if movableLimbCount>=2 then
+  rootPart:SetAttribute("NativeActorMotionVisual","ARTICULATED_SOURCE_PRESERVED")
+  return
+ end
  local sourceModel,loadFailure=loadAsset(assetId)
  if not sourceModel or not rootPart.Parent then
   rootPart:SetAttribute("NativeActorMissing",true)
