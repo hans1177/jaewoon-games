@@ -977,6 +977,18 @@ test('Windows Studio MCP transport keeps documented batch launch and supports in
   assert.match(helper,/stderr=\$\{detail\}/);
 });
 
+test('Studio executor code repair refreshes only queued outdated jobs and preserves running Cloud and Studio work',()=>{
+  const plan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(plan,/studio_harness_changed=false/);
+  assert.match(plan,/ROBLOX_STUDIO_HARNESS_CHANGED=/);
+  assert.match(plan,/studio_harness_changed=\$studio_harness_changed/);
+  assert.match(plan,/company-development-roblox-post-runtime-qa\.yml tools\/company-development-roblox-studio-local-play\.mjs/);
+  assert.match(plan,/\[ "\$studio_harness_changed" != 'true' \]/);
+  assert.match(plan,/existing game tester and QA validate exact Roblox runtime candidate/);
+  assert.match(plan,/PRESERVE_ACTIVE/);
+  assert.match(plan,/PRESERVE_UNRELATED/);
+});
+
 test('Studio planning reports authenticated cloud Windows runner and fail-closed deployment requirements',()=>{
   const plan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(plan,/Report Studio-first deployment prerequisites/);
