@@ -84,11 +84,13 @@ function grounded(spec,{source,sourcePath,replaceAnchor}){
  if(!/(?:^|\n)\s*local\s+state\s*=/.test(body))
   throw Error('VIBE59_QUALITY_EXISTING_STATE_REQUIRED');
  const required=REQUIRED[spec.operation].concat(
-  spec.operation==='building-authorized-placement'?['state.inventory.'+spec.material]:
+  spec.operation==='building-authorized-placement'?['state.inventory.'+spec.material,
+    'state.building.lastPlaceAt','state.building.lastPlacementKey']:
   spec.operation==='crafting-atomic-recipe'?spec.inputs.map(x=>'state.inventory.'+x.field)
     .concat('state.inventory.'+spec.output):
   spec.operation==='bestiary-confirmed-death'?
-    ['state.bestiary.kills.'+spec.species,'state.bestiary.discovered.'+spec.species]:[]);
+    ['state.bestiary.kills.'+spec.species,'state.bestiary.discovered.'+spec.species]:
+  spec.operation==='saving-revisioned-update'?['state.save.saving']:[]);
  for(const name of required){
   if(name==='state')continue;
   const pat=new RegExp('\\b'+name.replace(/\./g,'\\.')+'\\b');
@@ -132,6 +134,7 @@ function validate(spec){
  case 'building-authorized-placement':
   requireBinding(['blueprints','authorizePlace','buildingsFolder']);
   values.cost=positive(spec.cost,'cost',{min:1,max:100000});
+  values.placeCooldown=positive(spec.placeCooldown,'placeCooldown',{min:0.05,max:120});
   values.range=positive(spec.range,'range');
   values.material=id(spec.material,'material');
   break;
@@ -149,11 +152,12 @@ function validate(spec){
    throw Error('VIBE59_QUALITY_RECIPE_FIELD_ALIAS');
   break;
  case 'bestiary-confirmed-death':
+  requireBinding(['monstersFolder']);
   values.species=id(spec.species,'species');
   values.countLimit=positive(spec.countLimit,'countLimit',{min:1,max:1e9});
   break;
  case 'saving-revisioned-update':
-  requireBinding(['store','mergeProfile']);
+  requireBinding(['store','mergeProfile','snapshotProfile']);
   values.maxAttempts=positive(spec.maxAttempts,'maxAttempts',{min:1,max:3});
   if(!Number.isInteger(values.maxAttempts))throw Error('VIBE59_QUALITY_INTEGER_RETRIES');
   break;
@@ -172,15 +176,22 @@ function qualitySource(s){
  case 'combat-authoritative-melee':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
   'if type(state.combat) ~= "table" or type(state.combat.lastAttackAt) ~= "number" then return false end',
-  'if not '+s.requiredBindings[0]+'(player, target) then return false end',
   'if typeof(target) ~= "Instance" or not target:IsA("Model") or not target:IsDescendantOf(workspace) then return false end',
+  'if not '+s.requiredBindings[0]+'(player, target) then return false end',
   'local character = player.Character',
   'local attackerRoot = character and character:FindFirstChild("HumanoidRootPart")',
   'local attackerHumanoid = character and character:FindFirstChildOfClass("Humanoid")',
   'local targetRoot = target:FindFirstChild("HumanoidRootPart")',
   'local targetHumanoid = target:FindFirstChildOfClass("Humanoid")',
   'if not attackerHumanoid or attackerHumanoid.Health <= 0 or not attackerRoot or not attackerRoot:IsA("BasePart") or not targetRoot or not targetRoot:IsA("BasePart") or not targetHumanoid or targetHumanoid.Health <= 0 then return false end',
-  'if (attackerRoot.Position - targetRoot.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
+  'if character == target or attackerHumanoid == targetHumanoid then return false end',
+  'local delta = targetRoot.Position - attackerRoot.Position',
+  'if delta.Magnitude > '+nLiteral(s.range)+' then return false end',
+  'local rayParams = RaycastParams.new()',
+  'rayParams.FilterType = Enum.RaycastFilterType.Exclude',
+  'rayParams.FilterDescendantsInstances = {character}',
+  'local rayHit = workspace:Raycast(attackerRoot.Position, delta, rayParams)',
+  'if rayHit and not rayHit.Instance:IsDescendantOf(target) then return false end',
   'local now = os.clock()',
   'if now - state.combat.lastAttackAt < '+nLiteral(s.cooldown)+' then return false end',
   'state.combat.lastAttackAt = now',
@@ -188,6 +199,7 @@ function qualitySource(s){
  case 'building-authorized-placement':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
   'if type(state.inventory) ~= "table" or type(state.inventory.'+s.material+') ~= "number" then return false end',
+  'if type(state.building) ~= "table" or type(state.building.lastPlaceAt) ~= "number" or type(state.building.lastPlacementKey) ~= "string" then return false end',
   'if type(blueprintId) ~= "string" or typeof(placementCFrame) ~= "CFrame" or type('+s.requiredBindings[0]+') ~= "table" then return false end',
   'if not '+s.requiredBindings[1]+'(player, blueprintId, placementCFrame) then return false end',
   'local template = '+s.requiredBindings[0]+'[blueprintId]',
@@ -197,6 +209,11 @@ function qualitySource(s){
   'local character = player.Character',
   'local root = character and character:FindFirstChild("HumanoidRootPart")',
   'if not root or not root:IsA("BasePart") or (root.Position - placementCFrame.Position).Magnitude > '+nLiteral(s.range)+' then return false end',
+  'local now = os.clock()',
+  'if now - state.building.lastPlaceAt < '+nLiteral(s.placeCooldown)+' then return false end',
+  'local p = placementCFrame.Position',
+  'local placementKey = blueprintId .. ":" .. tostring(math.floor(p.X * 10 + 0.5)) .. ":" .. tostring(math.floor(p.Y * 10 + 0.5)) .. ":" .. tostring(math.floor(p.Z * 10 + 0.5))',
+  'if placementKey == state.building.lastPlacementKey then return false end',
   'local built = template:Clone()',
   'if not built then return false end',
   'built:PivotTo(placementCFrame)',
@@ -210,8 +227,11 @@ function qualitySource(s){
   'for _, part in ipairs(built:GetDescendants()) do',
   '  if part:IsA("BasePart") then part.Anchored = true end',
   'end',
-  'built.Parent = '+s.requiredBindings[2],
+  'local success = pcall(function() built.Parent = '+s.requiredBindings[2]+' end)',
+  'if not success then built:Destroy(); return false end',
   'state.inventory.'+s.material+' = state.inventory.'+s.material+' - '+nLiteral(s.cost),
+  'state.building.lastPlaceAt = now',
+  'state.building.lastPlacementKey = placementKey',
   'return true'].join('\n');
  case 'crafting-atomic-recipe':return [
   ...stateGuard,'if type(state.inventory) ~= "table" then return false end',
@@ -224,7 +244,7 @@ function qualitySource(s){
  case 'bestiary-confirmed-death':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
   'if type(state.bestiary) ~= "table" or type(state.bestiary.kills) ~= "table" or type(state.bestiary.discovered) ~= "table" then return false end',
-  'if typeof(monster) ~= "Instance" or not monster:IsA("Model") or not monster:IsDescendantOf(workspace) then return false end',
+  'if typeof(monster) ~= "Instance" or not monster:IsA("Model") or not monster:IsDescendantOf('+s.requiredBindings[0]+') then return false end',
   'local humanoid = monster:FindFirstChildOfClass("Humanoid")',
   'if not humanoid or humanoid.Health > 0 then return false end',
   'if monster:GetAttribute("SpeciesId") ~= '+JSON.stringify(s.species)+' then return false end',
@@ -238,28 +258,36 @@ function qualitySource(s){
   'return true'].join('\n');
  case 'saving-revisioned-update':return [
   ...stateGuard,'if typeof(player) ~= "Instance" or not player:IsA("Player") then return false end',
-  'if type(state.save) ~= "table" or type(state.save.revision) ~= "number" or type(state.save.dirty) ~= "boolean" then return false end',
+  'if type(state.save) ~= "table" or type(state.save.revision) ~= "number" or type(state.save.dirty) ~= "boolean" or type(state.save.saving) ~= "boolean" then return false end',
+  'if state.save.saving then return false end',
   'if not state.save.dirty then return true end',
-  'if not player or type(player.UserId) ~= "number" or player.UserId <= 0 then return false end',
+  'if type(player.UserId) ~= "number" or player.UserId <= 0 then return false end',
   'local revisionAtStart = state.save.revision',
+  'local snapshot = '+s.requiredBindings[2]+'(state)',
+  'if type(snapshot) ~= "table" or type(snapshot.save) ~= "table" or snapshot.save.revision ~= revisionAtStart then return false end',
+  'state.save.saving = true',
   'local key = "player_" .. tostring(player.UserId)',
   'for attempt = 1, '+nLiteral(s.maxAttempts)+' do',
   '  local ok, result = pcall(function()',
   '    return '+s.requiredBindings[0]+':UpdateAsync(key, function(previous)',
-  '      return '+s.requiredBindings[1]+'(previous, state)',
+  '      if previous ~= nil and (type(previous) ~= "table" or type(previous.save) ~= "table" or type(previous.save.revision) ~= "number") then return nil end',
+  '      if previous ~= nil and previous.save.revision > revisionAtStart then return nil end',
+  '      return '+s.requiredBindings[1]+'(previous, snapshot)',
   '    end)',
   '  end)',
-  '  if ok and result ~= nil then',
+  '  if ok and type(result) == "table" and type(result.save) == "table" and result.save.revision == revisionAtStart then',
+  '    state.save.saving = false',
   '    if state.save.revision == revisionAtStart then state.save.dirty = false end',
   '    return true',
   '  end',
   '  if attempt < '+nLiteral(s.maxAttempts)+' then task.wait(math.min(2 ^ attempt, 4)) end',
   'end',
+  'state.save.saving = false',
   'return false'].join('\n');
  case 'ai-throttled-chase':return [
   ...stateGuard,'if type(state.ai) ~= "table" or type(state.ai.lastMoveAt) ~= "number" then return false end',
   'if typeof(npc) ~= "Instance" or not npc:IsA("Model") or not npc:IsDescendantOf(workspace) then return false end',
-  'if typeof(target) ~= "Instance" or not target:IsA("Model") or not target:IsDescendantOf(workspace) then return false end',
+  'if typeof(target) ~= "Instance" or not target:IsA("Model") or not target:IsDescendantOf(workspace) or target == npc then return false end',
   'local humanoid = npc:FindFirstChildOfClass("Humanoid")',
   'local root = npc:FindFirstChild("HumanoidRootPart")',
   'local targetRoot = target:FindFirstChild("HumanoidRootPart")',
@@ -303,7 +331,9 @@ function qualityDecision(spec,facts){
   const last=expectedNumber(facts.lastAttackAt,'lastAttackAt'),
    now=expectedNumber(facts.now,'now'),distance=expectedNumber(facts.distance,'distance');
   const allowed=facts.authorized===true&&facts.playerValid===true&&facts.targetValid===true
-   &&facts.targetAlive===true&&distance<=spec.range&&now-last>=spec.cooldown;
+   &&facts.targetAlive===true&&facts.attackerAlive!==false
+   &&facts.lineOfSight!==false&&facts.selfTarget!==true
+   &&distance<=spec.range&&now-last>=spec.cooldown;
   return {applied:allowed,effects:{damageDealt:allowed?spec.damage:0,
     lastAttackAt:allowed?now:last}};
  }
@@ -311,9 +341,12 @@ function qualityDecision(spec,facts){
   const material=expectedNumber(facts.materialCount,'materialCount');
   const allowed=facts.playerValid===true&&facts.authorized===true&&facts.blueprintValid===true
    &&facts.folderValid===true&&facts.withinRange===true&&facts.collisionFree===true
-   &&material>=spec.cost;
+   &&material>=spec.cost
+   &&expectedNumber(facts.now,'now')-expectedNumber(facts.lastPlaceAt,'lastPlaceAt')>=spec.placeCooldown
+   &&facts.duplicatePlacement!==true;
   return {applied:allowed,effects:{materialCount:allowed?material-spec.cost:material,
-    modelPlaced:allowed}};
+    modelPlaced:allowed,lastPlaceAt:allowed?facts.now:facts.lastPlaceAt,
+    placementRegistered:allowed}};
  }
  if(op==='crafting-atomic-recipe'){
   const inventory=scenarioFacts(facts.inventory);
@@ -331,27 +364,31 @@ function qualityDecision(spec,facts){
  }
  if(op==='bestiary-confirmed-death'){
   const count=expectedNumber(facts.killCount,'killCount');
-  const allowed=facts.monsterValid===true&&facts.dead===true&&facts.speciesMatches===true
+  const allowed=facts.monsterValid===true&&facts.authorizedMonsterFolder!==false
+   &&facts.dead===true&&facts.speciesMatches===true
    &&facts.killerMatches===true&&facts.alreadyCredited!==true&&count<spec.countLimit
    &&typeof facts.discovered==='boolean';
   return {applied:allowed,effects:{killCount:allowed?count+1:count,
     discovered:allowed?true:facts.discovered,credited:allowed?true:facts.alreadyCredited===true}};
  }
  if(op==='saving-revisioned-update'){
-  if(typeof facts.dirty!=='boolean'||!Array.isArray(facts.attemptResults)
-    ||facts.attemptResults.length>3||facts.attemptResults.some(x=>typeof x!=='boolean'))
+  if(typeof facts.dirty!=='boolean'||typeof facts.saving!=='boolean'
+    ||!Array.isArray(facts.attemptResults)||facts.attemptResults.length>3
+    ||facts.attemptResults.some(x=>typeof x!=='boolean'))
     throw Error('VIBE59_QUALITY_SAVE_SCENARIO');
   const started=expectedNumber(facts.revisionAtStart,'revisionAtStart');
   const current=expectedNumber(facts.revisionAfter,'revisionAfter');
   let applied=false,attempts=0;
-  if(facts.playerValid===true){
+  if(facts.playerValid===true&&!facts.saving){
    if(!facts.dirty)applied=true;
-   else for(let i=0;i<spec.maxAttempts;i++){
+   else if(facts.snapshotValid===true)for(let i=0;i<spec.maxAttempts;i++){
     attempts++;
-    if(facts.attemptResults[i]===true){applied=true;break}
+    if(facts.attemptResults[i]===true&&facts.staleWrite!==true){
+      applied=true;break
+    }
    }
   }
-  return {applied,effects:{attempts,
+  return {applied,effects:{attempts,saving:false,
     dirty:facts.dirty===true&&!(applied&&started===current)}};
  }
  if(op==='ai-throttled-chase'){
