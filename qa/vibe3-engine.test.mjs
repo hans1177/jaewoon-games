@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
   createVibeSourceGraph,
+  createVibeImpactPlan,
   rankVibeResponsibleSources,
   runVibeCandidateTournament,
   createVibeRepairLoop,
@@ -26,6 +27,23 @@ assert.equal(graph.nodes.length,3);
 const ranked=rankVibeResponsibleSources({graph,request:'공격 데미지 combat damage 수정',hints:['game/combat.js']});
 assert.equal(ranked.candidates[0].path,'game/combat.js');
 
+const dependencyGraph=createVibeSourceGraph({files:[
+  {path:'src/combat/damage.js',symbols:['resolveDamage'],tests:['qa/damage.test.mjs']},
+  {path:'src/combat/weapon.js',imports:['./damage.js'],tests:['qa/weapon.test.mjs']},
+  {path:'src/game.js',imports:['./combat/weapon'],tests:['qa/game.test.mjs']},
+  {path:'src/ai.js',calls:['resolveDamage'],tests:['qa/ai.test.mjs']}
+]});
+const impacted=createVibeImpactPlan({graph:dependencyGraph,changedPaths:['src/combat/damage.js']});
+assert.deepEqual(impacted.impactedSources.map(row=>row.path),['src/combat/damage.js','src/ai.js','src/combat/weapon.js','src/game.js']);
+assert.deepEqual(impacted.affectedTests.map(row=>row.path),['qa/damage.test.mjs','qa/ai.test.mjs','qa/weapon.test.mjs','qa/game.test.mjs']);
+assert.equal(impacted.runtimeVerified,false);
+assert.deepEqual(createVibeImpactPlan({graph:dependencyGraph,changedPaths:['src/missing.js']}).unknownPaths,['src/missing.js']);
+assert.equal(createVibeImpactPlan({graph:dependencyGraph,changedPaths:['src/combat/damage.js'],maxDepth:0}).impactedSources.length,1);
+const impactRanking=rankVibeResponsibleSources({graph:dependencyGraph,request:'damage',hints:['src/combat/damage.js']});
+assert(impactRanking.impact.affectedTests.some(row=>row.path==='qa/weapon.test.mjs'));
+
+
+
 const passEvidence={syntaxPass:true,testsPass:true,runtimePass:true,regressionPass:true,protectedStatePreserved:true,exactRevision:true,responsibleSource:true,checkpoint:true,rollbackReady:true};
 const tournament=runVibeCandidateTournament({candidates:[
   {id:'a',changedFiles:4,diffBytes:8000,evidence:{...passEvidence,qualityScore:.82,performanceScore:.8}},
@@ -38,6 +56,20 @@ assert.equal(tournament.ready,true);
 assert.equal(tournament.requiredCandidateCount,5);
 assert.equal(tournament.winner.id,'b');
 assert.equal(tournament.evaluations.find(item=>item.id==='c').eligible,false);
+
+const duplicateTournament=runVibeCandidateTournament({requiredCandidateCount:3,candidates:[
+  {id:'patch-one',patchFingerprint:'identical-change',evidence:passEvidence},
+  {id:'patch-two',patchFingerprint:'identical-change',evidence:passEvidence},
+  {id:'patch-three',patchFingerprint:'different-change',evidence:passEvidence}
+]});
+assert.equal(duplicateTournament.ready,false);
+assert.equal(duplicateTournament.winner,null);
+assert.equal(duplicateTournament.independentCandidateCount,2);
+assert(duplicateTournament.blockedReasons.includes('duplicate-candidate-patch'));
+const shortTournament=runVibeCandidateTournament({requiredCandidateCount:5,candidates:[{id:'only',evidence:passEvidence}]});
+assert.equal(shortTournament.ready,false);
+assert.equal(shortTournament.winner,null);
+
 
 const repair=createVibeRepairLoop({attempts:[{candidateId:'c',state:'FAIL',failure:'runtime exception'}],maxAttempts:3});
 assert.equal(repair.state,'REPAIR_REQUIRED');
