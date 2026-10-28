@@ -9,7 +9,10 @@ export async function requestVibe4LoopbackModel({
   timeoutMs=120000,temperature=0.08,ownerApproved=false
 }={}){
   if(ownerApproved!==true)throw Error('VIBE4_LOCAL_MODEL_OWNER_APPROVAL_REQUIRED');
-  if(!/^[\w./:-]{1,100}$/.test(clean(model)))
+  // Ollama model ID is a name, never a URL, URI or local filesystem path.
+  // Allow optional namespace and tag, without permitting URL syntax or traversal.
+  if(!/^(?:[A-Za-z0-9][A-Za-z0-9._-]*\/)?[A-Za-z0-9][A-Za-z0-9._-]*(?::[A-Za-z0-9][A-Za-z0-9._-]*)?$/.test(clean(model))
+    ||clean(model).includes('..'))
     throw Error('VIBE4_LOCAL_MODEL_ID_REQUIRED');
   if(!Number.isInteger(Number(port))||Number(port)<1024||Number(port)>65535)
     throw Error('VIBE4_LOCAL_PORT_INVALID');

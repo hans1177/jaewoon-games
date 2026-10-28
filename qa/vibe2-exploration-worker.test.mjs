@@ -74,6 +74,8 @@ test('Vibe4 local model has no network fallback, requires approval and loopback 
       prompt:'write code',port:80,ownerApproved:true}),/VIBE4_LOCAL_PORT_INVALID/);
     await assert.rejects(requestVibe4LoopbackModel({model:'https://remote.example/a',
       prompt:'write code',port,ownerApproved:true}),/VIBE4_LOCAL_MODEL_ID_REQUIRED/);
+    await assert.rejects(requestVibe4LoopbackModel({model:'../escape:latest',
+      prompt:'write code',port,ownerApproved:true}),/VIBE4_LOCAL_MODEL_ID_REQUIRED/);
     assert.equal(called,0);
     const output=await requestVibe4LoopbackModel({
       model:'qwen2.5-coder:7b',prompt:'write code',port,
