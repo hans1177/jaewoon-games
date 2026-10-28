@@ -957,7 +957,7 @@ local function stepEquippedCombatMotion(dt)
    actorClass="PLAYER",bodyPlan="BIPED",weaponStyle=combo.profileId,
    actionPhase=phase,authorizedImpact=true,
    grounded=humanoid~=nil and humanoid.FloorMaterial~=Enum.Material.Air,
-   visualSpeed=humanoid and humanoid.MoveDirection.Magnitude or 0,
+   visualSpeed=humanoid and humanoid.MoveDirection and humanoid.MoveDirection.Magnitude or 0,
    comboContinuity=#combo.steps>1 and .32 or 0,
    mobileTier="MID",intensity=1,secondary=.55,
   })
