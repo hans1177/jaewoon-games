@@ -1806,6 +1806,21 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
   if yes==true and type(name)=="string" and name~="Root" and name~="HumanoidRootPart" then count+=1 end
  end
  if count<(form=="PROP" and 1 or 2) then return targets,false end
+ -- A/B/C refinement parameters are bounded visual controls, never gameplay changes.
+ local profile=type(options.profile)=="table"and options.profile or{}
+ local gain=function(key,low,high)return bounded(profile[key],low,high,1)end
+ local attackGain=gain("attackStrike",.65,1.35)
+ local secondaryGain=gain("secondaryMotion",.3,1.3)
+ local contactGain=gain("footContact",.7,1.3)
+ local headGain=gain("headLead",.6,1.35)
+ local recoverGain=gain("recovery",.7,1.3)
+ local smoothingGain=gain("poseSmoothing",.65,1.35)
+ local limbGain=gain("limbArc",.65,1.3)
+ local bossGain=string.upper(tostring(options.actorClass or ""))=="BOSS" and gain("bossWeight",.7,1.3) or 1
+ local gestureGain=string.upper(tostring(options.actorClass or ""))=="NPC" and gain("npcGesture",.5,1.4) or 1
+ local tailGain=gain("tailFollow",.5,1.4)
+ local hitGain=gain("hitRecoil",.65,1.35)
+ local detailGain=gain("mobileDetail",.5,1.15)
  local t=bounded(phase,0,1,0)
  local cyc=t*math.pi*2
  local locomotion=mode=="WALK"or mode=="RUN"or mode=="FLY"
@@ -1814,29 +1829,29 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
  local lift=math.max(0,rise)
  local load=easeUnit(math.clamp(t/.29,0,1))
  local strike=easeUnit(math.clamp((t-.25)/.24,0,1))
- local finish=1-easeUnit(math.clamp((t-.62)/.38,0,1))
+ local finish=1-easeUnit(math.clamp((t-.62)/(.38*recoverGain),0,1))
  local contact=math.clamp((strike-load*.14)*finish,0,1)
- local impact=mode=="ATTACK" and contact or 0
- local hit=mode=="HIT" and math.sin(math.pi*t) or 0
+ local impact=mode=="ATTACK" and contact*attackGain or 0
+ local hit=mode=="HIT" and math.sin(math.pi*t)*hitGain or 0
  local fall=mode=="DEATH" and easeUnit(t) or 0
- local interact=(mode=="GESTURE"or mode=="INTERACT")and math.sin(math.pi*t)or 0
+ local interact=(mode=="GESTURE"or mode=="INTERACT")and math.sin(math.pi*t)*gestureGain or 0
  local turn=mode=="TURN"and math.sin(math.pi*t)*.22 or 0
  local transition=(mode=="START"or mode=="STOP")and math.sin(math.pi*t)*.10 or 0
  local intensity=bounded(options.intensity,.35,1.3,1)
- local secondary=bounded(options.secondary,0,1,.5)*(options.mobileTier=="LOW" and .42 or 1)
- local gait=locomotion and rise*body.stride*intensity*runScale or 0
- local counter=locomotion and math.sin(cyc+math.pi)*body.stride*intensity*runScale or 0
- local chest=impact*.24*body.load-hit*.18-fall*.54+transition
+ local secondary=bounded(options.secondary,0,1,.5)*secondaryGain*detailGain*(options.mobileTier=="LOW" and .42 or 1)
+ local gait=locomotion and rise*body.stride*intensity*runScale*limbGain or 0
+ local counter=locomotion and math.sin(cyc+math.pi)*body.stride*intensity*runScale*limbGain or 0
+ local chest=(impact*.24*body.load*bossGain-hit*.18-fall*.54+transition)*smoothingGain
  forgeRot(targets,joints,"Spine",chest*.68,turn*.43,locomotion and gait*.038 or 0)
  forgeRot(targets,joints,"Chest",chest,turn*.7,locomotion and -gait*.06 or 0)
- forgeRot(targets,joints,"Head",-chest*.48+hit*.13-fall*.20,turn*.82,
+ forgeRot(targets,joints,"Head",-chest*.48+hit*.13-fall*.20,turn*.82*headGain,
   math.sin(cyc)*.027*secondary*body.head)
- forgeRot(targets,joints,"Neck",-chest*.33,turn*.6,0)
+ forgeRot(targets,joints,"Neck",-chest*.33,turn*.6*headGain,0)
  if form=="BIPED"or form=="GIANT"or form=="CRAWLER" then
   forgeRot(targets,joints,"ThighL",gait*.35+impact*.14-fall*.21,0,0)
   forgeRot(targets,joints,"ThighR",counter*.35-impact*.08-fall*.21,0,0)
-  forgeRot(targets,joints,"ShinL",math.max(0,gait)*.21+fall*.16,0,0)
-  forgeRot(targets,joints,"ShinR",math.max(0,counter)*.21+fall*.16,0,0)
+  forgeRot(targets,joints,"ShinL",math.max(0,gait)*.21*contactGain+fall*.16,0,0)
+  forgeRot(targets,joints,"ShinR",math.max(0,counter)*.21*contactGain+fall*.16,0,0)
   forgeRot(targets,joints,"UpperArmL",-gait*.28+impact*.24+interact*.18,0,-impact*.13)
   forgeRot(targets,joints,"UpperArmR",-counter*.28-impact*.48+interact*.45,0,impact*.11)
   forgeRot(targets,joints,"ForearmL",impact*.14+interact*.24,0,0)
@@ -1847,7 +1862,7 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
    local diagonal=(limb=="FR"or limb=="BL")and -1 or 1
    local signed=gait*diagonal
    forgeRot(targets,joints,limb.."Hip",signed*.32-(limb:sub(1,1)=="F"and impact*.20 or -impact*.13),0,0)
-   forgeRot(targets,joints,limb.."Knee",math.max(0,signed)*.22+impact*.08,0,0)
+   forgeRot(targets,joints,limb.."Knee",math.max(0,signed)*.22*contactGain+impact*.08,0,0)
    forgeRot(targets,joints,limb.."Ankle",math.max(0,-signed)*.10,0,0)
   end
   forgeRot(targets,joints,"Jaw",impact*.34+hit*.07,0,0)
@@ -1864,8 +1879,8 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
   end
  end
  if body.tail>0 then
-  forgeRot(targets,joints,"Tail",0,math.sin(cyc-.55)*.13*body.tail*secondary+impact*.10,0)
-  forgeRot(targets,joints,"TailBaseJoint",0,math.sin(cyc-.55)*.10*body.tail*secondary,0)
+  forgeRot(targets,joints,"Tail",0,math.sin(cyc-.55)*.13*body.tail*secondary*tailGain+impact*.10,0)
+  forgeRot(targets,joints,"TailBaseJoint",0,math.sin(cyc-.55)*.10*body.tail*secondary*tailGain,0)
  end
  if form=="PROP" then
   local open=mode=="INTERACT"and easeUnit(t) or 0
@@ -1903,8 +1918,9 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
  assert(#motors>=(plan=="PROP" and 1 or 2),"REAL_ANIMATED_JOINTS_REQUIRED")
  -- A source-created clip must animate at least one approved real joint, not merely
  -- contain neutral poses when the selected body plan and rig do not match.
- local probeOptions={availableJoints=names,bodyPlan=plan,intensity=options.intensity,
-  secondary=options.secondary,mobileTier=options.mobileTier}
+ local probeOptions={availableJoints=names,bodyPlan=plan,actorClass=options.actorClass,
+  intensity=options.intensity,secondary=options.secondary,mobileTier=options.mobileTier,
+  profile=options.profile}
  local actualPoseMatch=false
  for _,t in ipairs({.22,.5,.73})do
   local sample={}
@@ -1932,7 +1948,8 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
  source:SetAttribute("ProductionVerified",false)
  source:SetAttribute("RuntimeVerificationState","PENDING_NATIVE_ACTOR_PLAYBACK")
  local optionsPose={availableJoints=names,bodyPlan=plan,actorClass=options.actorClass,
-  intensity=options.intensity,secondary=options.secondary,mobileTier=options.mobileTier}
+  intensity=options.intensity,secondary=options.secondary,mobileTier=options.mobileTier,
+  profile=options.profile}
  for frame=0,samples do
   local t=frame/samples
   local key=Instance.new("Keyframe")
