@@ -854,6 +854,7 @@ test('approved fantasy originals replace only the existing visual consumer after
 test('native registration stays behind current contract identity and exact publish Universe grants',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(workflow,/nativeCreatureRepairPending=item.gameId==='fantasy-survival'/);
+  assert.match(workflow,/group: roblox-source-\$\{\{ matrix.nativeCreatureRepair && 'native-registration' \|\| github.run_id \}\}-\$\{\{ matrix.gameId \}\}/);
   const native=workflow.indexOf('python3 tools/baeksu-war-author-meshes.py');
   assert.ok(native>workflow.indexOf('ROBLOX_SOURCE_PLAN_CONTRACT_CURRENT='));
   assert.ok(native>workflow.indexOf('ROBLOX_SOURCE_TREE_IDENTITY_CURRENT='));
