@@ -46,7 +46,7 @@ test('cloud MCP timeout stays blocked and identifies persistent authenticated cl
   }
   assert.equal(hostedCloudRecoveryAction(ready),'NONE');
   const probe=fs.readFileSync('tools/company-roblox-hosted-studio-mcp-connection.mjs','utf8');
-  assert.match(probe,/waitForTools\\(HOSTED_MCP_REQUIRED_TOOLS,\\{attempts:4,delayMs:1500\\}\\)/);
+  assert.match(probe,/waitForTools\(HOSTED_MCP_REQUIRED_TOOLS,\{attempts:4,delayMs:1500\}\)/);
   assert.doesNotMatch(probe,/attempts:12,delayMs:1500/);
 });
 
