@@ -258,10 +258,11 @@ test('central native foundation policy locks spawn ordering candidate invalidati
   assert.equal(foundation.releaseGate.newCandidateInvalidation.clearPriorFinalReviewPass,true);
   assert.deepEqual(foundation.releaseGate.f9ExactBinding,[
     'SOURCE_REVISION','ARTIFACT_IDENTITY','UNIVERSE_ID','PLACE_ID',
-    'CANDIDATE_VERSION_NUMBER','POST_RUNTIME_QA','CODE_AND_STATIC_QA'
+    'CANDIDATE_VERSION_NUMBER','POST_RUNTIME_QA','CODE_AND_STATIC_QA',
+    'OFFICIAL_STUDIO_MCP_EXACT_ACTUAL_PLAY'
   ]);
   assert.equal(foundation.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
-  assert.equal(foundation.releaseGate.studioRequiredForInternalRelease,false);
+  assert.equal(foundation.releaseGate.studioRequiredForInternalRelease,true);
 });
 
 

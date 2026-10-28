@@ -121,11 +121,11 @@ function roadmap(){
   return {
     roblox:{studioExecution:{
       enabled:true,
-      required:false,
-      optionalDiagnostic:true,
-      deploymentGate:false,
-      f9Gate:false,
-      requiredForInternalRelease:false,
+      required:true,
+      optionalDiagnostic:false,
+      deploymentGate:true,
+      f9Gate:true,
+      requiredForInternalRelease:true,
       officialStudioMcpOnly:true,
       localPlaceFileRequired:true,
       onlinePublishedPlaceDirectOpenForbidden:true,
@@ -396,18 +396,18 @@ test('central contract keeps Studio optional and outside build-up F9 deployment 
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','OPTIONAL_STUDIO_DIAGNOSTIC','NEXT_BUILD_UP']);
+  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','REQUIRED_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY','NEXT_BUILD_UP']);
   assert.equal(loop.codeAndStaticQaRequired,true);
-  assert.equal(loop.studioRequired,false);
-  assert.equal(loop.missingStudioAction,'CONTINUE_DEVELOPMENT_AND_DEPLOYMENT');
+  assert.equal(loop.studioRequired,true);
+  assert.equal(loop.missingStudioAction,'HOLD_F9_AND_CANONICAL_RELEASE_KEEP_SOURCE_DEVELOPMENT');
   const studio=central.roblox?.studioExecution||{};
   assert.equal(studio.required,false);
-  assert.equal(studio.optionalDiagnostic,true);
+  assert.equal(studio.optionalDiagnostic,false);
   assert.equal(studio.deploymentGate,false);
   assert.equal(studio.f9Gate,false);
   assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
 });
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
@@ -1115,7 +1115,7 @@ test('official Studio MCP planner is exact-game opt-in while Cloud remains relea
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
-  assert.match(studioPlanBlock,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
+  assert.match(studioPlanBlock,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,true);
   assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,true);
   assert.doesNotMatch(studioPlanBlock,/github\.event_name == 'push'/);
@@ -1241,7 +1241,7 @@ test('central Studio policy keeps only nonblocking optional diagnostic recovery 
   const studio=roadmap.roblox?.studioExecution||{};
   const recovery=studio.mcpUnavailableRecovery||{};
   assert.equal(studio.required,false);
-  assert.equal(studio.optionalDiagnostic,true);
+  assert.equal(studio.optionalDiagnostic,false);
   assert.equal(studio.deploymentGate,false);
   assert.equal(studio.f9Gate,false);
   assert.equal(studio.requiredForInternalRelease,false);
@@ -3464,7 +3464,7 @@ test('reboot-safe Studio session settles only the exact reserved source and arti
 test('cloud Studio playtest rejects player bots, public servers and external GUI injection',()=>{
   const allowed={
     roblox:{studioExecution:{
-      enabled:true,required:false,optionalDiagnostic:true,deploymentGate:false,f9Gate:false,
+      enabled:true,required:true,optionalDiagnostic:false,deploymentGate:true,f9Gate:true,
       officialStudioMcpOnly:true,localPlaceFileRequired:true,
       onlinePublishedPlaceDirectOpenForbidden:true,robloxPlayerAutomationForbidden:true,
       externalGuiAutomationForbidden:true,undocumentedStudioCliAutomationForbidden:true,

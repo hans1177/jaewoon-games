@@ -131,15 +131,15 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.ok(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.forbidden?.includes('ROBLOX_PLAYER_AUTOMATION'));
   const studioQa=read('.github/workflows/company-development-roblox-post-runtime-qa.yml');
   const learningMotorSource=read('tools/vibe2-learning-motor.mjs');
-  assert.equal(roadmap.roblox.studioExecution.optionalDiagnostic,true);
+  assert.equal(roadmap.roblox.studioExecution.optionalDiagnostic,false);
   assert.match(studioQa,/studio-mcp-auto-play/);
   assert.match(learningMotorSource,/collectVerifiedRobloxStudioPlayExperience/);
   assert.equal(roadmap.roblox.studioExecution.officialStudioMcpOnly,true);
-  assert.equal(roadmap.roblox.studioExecution.deploymentGate,false);
-  assert.equal(roadmap.roblox.studioExecution.requiredForInternalRelease,false);
-  assert.equal(roadmap.roblox.studioExecution.f9Gate,false);
-  assert.equal(roadmap.roblox.studioExecution.postBuildUpVerificationLevel,'CODE_AND_STATIC_QA');
-  assert.equal(roadmap.roblox.studioExecution.required,false);
+  assert.equal(roadmap.roblox.studioExecution.deploymentGate,true);
+  assert.equal(roadmap.roblox.studioExecution.requiredForInternalRelease,true);
+  assert.equal(roadmap.roblox.studioExecution.f9Gate,true);
+  assert.equal(roadmap.roblox.studioExecution.postBuildUpVerificationLevel,'CODE_STATIC_AND_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY');
+  assert.equal(roadmap.roblox.studioExecution.required,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{

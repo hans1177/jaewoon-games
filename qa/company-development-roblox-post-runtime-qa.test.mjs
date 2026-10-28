@@ -336,7 +336,7 @@ test('Open Cloud runtime stays automatic while official Studio is exact opt-in',
   assert.match(foundation,/name: Probe exact Roblox Open Cloud engine execution/);
   assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
-  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.game_id != '' \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ github\.event_name == 'push' \|\| inputs\.game_id != '' \}\}/);
   assert.doesNotMatch(studioPlan,/github\.event_name == 'push'/);
 });
 
