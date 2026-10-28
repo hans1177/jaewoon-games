@@ -599,15 +599,16 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const scored=rows.map(row=>scoreRelated(row,{responsible:responsibleSet,goalTokens:goalTokens(order.goal),responsibleNames,responsibleDirs,sourceFunctions,target})).sort((a,b)=>b.score-a.score||a.relative.localeCompare(b.relative));
   const related=scored.filter(row=>!responsibleSet.has(row.relative)&&row.score>0).slice(0,MAX_RELATED_FILES);
   const contextFiles=unique([...responsible,...related.map(row=>row.relative)]).slice(0,12);
-  let testTargets=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,8).map(row=>row.relative));
+  const testCandidates=unique(scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,32).map(row=>row.relative));
+  let testTargets=testCandidates.slice(0,8);
   // Reuse the already scanned files: no extra model, source write, workflow or QA stage.
   const uniqueGraphRows=new Map();
   for(const row of [...responsibilityRows,...related,
-    ...scored.filter(row=>/(?:test|spec|qa|playmode|editmode)/i.test(row.relative)).slice(0,8)]){
+    ...scored.filter(row=>testCandidates.includes(row.relative))]){
     if(!uniqueGraphRows.has(row.relative))uniqueGraphRows.set(row.relative,row);
   }
   const graphRows=[...uniqueGraphRows.values()];
-  const testSourceByPath=new Map(scored.filter(row=>testTargets.includes(row.relative))
+  const testSourceByPath=new Map(scored.filter(row=>testCandidates.includes(row.relative))
     .map(row=>[row.relative,row.text||safeRead(row.full)]));
   const ownerSymbols=unique(sourceFunctions.map(fn=>clean(fn.name).split(/[.:]/).at(-1))).slice(0,64);
   const impactGraph=createVibeSourceGraph({files:graphRows.map(row=>{
@@ -616,7 +617,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       .map(fn=>clean(fn.name).split(/[.:]/).at(-1)));
     const imports=extractVibeSourceImportRefs(code,target);
     const calls=ownerSymbols.filter(name=>!responsibleSet.has(row.relative)&&code.includes(name+'('));
-    const tests=testTargets.filter(file=>file!==row.relative&&
+    const tests=testCandidates.filter(file=>file!==row.relative&&
       ((testSourceByPath.get(file)||'').includes(path.basename(row.relative))
       ||symbols.some(symbol=>(testSourceByPath.get(file)||'').includes(symbol))));
     return {path:row.relative,symbols,imports,calls,tests};
@@ -660,6 +661,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     scanPathDigest,
     orderFingerprint,
     impactScanCoverage:{scannedFileCount:graphRows.length,discoveredFileCount:rows.length,
+      testCandidatesConsidered:testCandidates.length,testCandidateLimitReached:testCandidates.length>=32,
       bounded:true,scanLimitReached,completeRepositoryGraph:false,runtimeVerified:false},
     relatedFiles:related.map(row=>({path:row.relative,score:row.score})),
     testTargets,

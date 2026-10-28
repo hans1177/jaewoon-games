@@ -62,6 +62,28 @@ test('static dependency parser identifies ESM, CommonJS and Roblox Luau sibling/
 });
 
 
+test('relevant regression after eight decoy tests still wins through observed import dependencies',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/deep-test-discovery');
+  write(path.join(root,'src/core.js'),'export function applyPatch(){return 17;}\n');
+  write(path.join(root,'src/wrapper.js'),
+    "import {applyPatch} from './core.js'; export function run(){return applyPatch()}\n");
+  for(let i=0;i<12;i++)write(path.join(root,'qa/core-decoy-'+String(i).padStart(2,'0')+'.test.js'),
+    'export function unrelated(){return 2;}\n');
+  write(path.join(root,'qa/zz-functional.test.js'),
+    "import {run} from '../src/wrapper.js'; if(run()!==17) throw Error('broken');\n");
+  const order={run:true,taskId:'deep-tests',gameId:'deep-test-discovery',target:'web',goal:'fix core',
+    source:{root:'web-games/deep-test-discovery',
+      responsibleFiles:['web-games/deep-test-discovery/src/core.js'],ignoredPaths:[]},
+    workPackage:{id:'deep-test-pkg',sharedContext:{diagnosticEvidence:[]}}};
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert(result.impactScanCoverage.testCandidatesConsidered>=13);
+  assert.equal(result.sourceWrite,false);
+  assert(result.sourceImpact.affectedTests.some(x=>x.path==='qa/zz-functional.test.js'));
+  assert.equal(result.testTargets[0],'qa/zz-functional.test.js');
+  assert.deepEqual(result.responsibleFiles,['src/core.js']);
+  assert(!result.editContract.allowedResponsibleFiles.includes('qa/zz-functional.test.js'));
+});
+
 test('cached exploration cannot carry changed owner goal or responsibility into another implementation',()=>{
   const cwd=tempRoot(),root=path.join(cwd,'web-games/order-fingerprint');
   write(path.join(root,'src/combat.js'),'export function attack(){return 1;}\n');
