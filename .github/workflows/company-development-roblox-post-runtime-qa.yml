@@ -2454,6 +2454,43 @@ jobs:
           console.log('ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO');
           NODE
 
+      - name: Report Studio-first deployment prerequisites
+        if: steps.plan.outputs.count != '0'
+        env:
+          PLANNED_MATRIX: ${{ steps.plan.outputs.matrix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const matrix=JSON.parse(process.env.PLANNED_MATRIX||'{"include":[]}');
+          const games=(matrix.include||[]).map(row=>String(row.gameId||'').trim())
+            .filter(value=>/^[a-z0-9-]+$/.test(value));
+          const repo=process.env.GITHUB_REPOSITORY;
+          const notes=[
+            '## Official Studio MCP required before Roblox F9 or deployment',
+            '',
+            '**Studio plan count:** '+games.length,
+            '**Exact games:** '+(games.join(', ')||'none'),
+            '',
+            'The plan is not gameplay verification. Jobs require an authenticated',
+            'interactive Windows desktop runner with labels `self-hosted`, `Windows`, `X64`,',
+            'and `roblox-studio-authenticated`. A session-0 runner service cannot',
+            'control Studio. GitHub-hosted Windows diagnostics cannot substitute for',
+            'an authenticated Studio actual-play report.',
+            '',
+            '- [Register cloud Windows runner](https://github.com/'+repo+'/settings/actions/runners)',
+            '- [Authenticated Studio MCP cloud runner guide](https://github.com/'+repo+'/blob/main/docs/roblox-studio-mcp-cloud-runner.md)',
+            '- [Official Roblox Studio MCP setup](https://create.roblox.com/docs/studio/mcp)',
+            '',
+            'F9 and canonical deployment remain blocked until exact Studio MCP',
+            'play evidence and independent Open Cloud QA both pass.'
+          ];
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,notes.join('\n')+'\n');
+          console.log('ROBLOX_STUDIO_MCP_DEPLOYMENT_PREREQUISITE=INTERACTIVE_AUTHENTICATED_WINDOWS_RUNNER');
+          console.log('ROBLOX_STUDIO_MCP_PLAN_IS_ACTUAL_PLAY_PASS=NO');
+          NODE
+
       - name: Cancel superseded pending Studio runs selected by this exact plan
         if: steps.plan.outputs.count != '0'
         env:
