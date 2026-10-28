@@ -96,6 +96,8 @@ local function syncWildlife(model,controller)
  controller:SetState(state,{
   side=state=="DEATH"and model:GetAttribute("WildlifeDeathSide")or model:GetAttribute("WildlifeHitSide"),
   duration=model:GetAttribute("WildlifeAttackDuration"),
+  actionSerial=serial,
+  deathSide=model:GetAttribute("WildlifeDeathSide"),
  })
 end
 local function bindWildlife(model)
