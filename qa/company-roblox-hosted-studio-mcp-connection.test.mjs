@@ -11,7 +11,7 @@ import {
 const ready={
   studioInstalled:true,mcpLauncherAvailable:true,studioRunning:true,
   assistantSetting:'YES',mcpInitialized:true,requiredToolsReady:true,
-  studioCount:1,studioStateObserved:true
+  studioListQueried:true,studioCount:1,studioStateObserved:true
 };
 
 test('only authentic connected Studio state is accepted; no installation or process-only PASS',()=>{
@@ -24,6 +24,8 @@ test('only authentic connected Studio state is accepted; no installation or proc
     [{assistantSetting:'NO'},'BLOCKED_MCP_DISABLED_IN_STUDIO'],
     [{mcpInitialized:false},'BLOCKED_MCP_TRANSPORT_NOT_CONNECTED'],
     [{requiredToolsReady:false},'BLOCKED_OFFICIAL_MCP_TOOLS_UNAVAILABLE'],
+    [{requiredToolsReady:false,errorCode:'OFFICIAL_MCP_TOOL_PROVIDER_TIMEOUT'},'BLOCKED_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT'],
+    [{studioListQueried:false,studioCount:null},'BLOCKED_STUDIO_LIST_UNVERIFIED'],
     [{studioCount:0},'BLOCKED_NO_CONNECTED_STUDIO_PLACE'],
     [{studioStateObserved:false},'BLOCKED_STUDIO_SESSION_NOT_READY'],
     [{installerSignatureRejected:true},'BLOCKED_UNTRUSTED_INSTALLER']
@@ -54,6 +56,8 @@ test('a hosted diagnostic without Windows or a signed installed Studio never gra
     assert.equal(state.status,'BLOCKED_STUDIO_NOT_INSTALLED');
     assert.equal(state.connected,false);
     assert.equal(state.mcpInitialized,false);
+    assert.equal(state.studioListQueried,false);
+    assert.equal(state.studioCount,null);
     assert.equal(state.gameplayExecuted,false);
     assert.equal(state.actualPlayVerified,false);
     assert.equal(state.screenVerified,false);
@@ -77,7 +81,8 @@ test('an existing authenticated process without documented official launcher sta
     assert.equal(state.status,'BLOCKED_OFFICIAL_MCP_LAUNCHER_MISSING');
     assert.equal(state.connectionAttempted,false);
     assert.equal(state.connected,false);
-    assert.equal(state.studioCount,0);
+    assert.equal(state.studioListQueried,false);
+    assert.equal(state.studioCount,null);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 test('the Roblox-signed MCP executable must accompany the official Studio binary',()=>{
