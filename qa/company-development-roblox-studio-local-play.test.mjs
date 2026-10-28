@@ -3567,3 +3567,20 @@ test('queued Studio game cannot starve unrelated or newer candidates',()=>{
   assert.deepEqual(select([job],[{...row,artifactRunId:21}]),[{...row,artifactRunId:21}]);
   assert.deepEqual(select([job],[{...row,versionNumber:8}]),[{...row,versionNumber:8}]);
 });
+
+
+test('Studio-first deployment supports an authenticated cloud Windows VM without a local PC',()=>{
+  const guide=fs.readFileSync('docs/roblox-studio-mcp-cloud-runner.md','utf8');
+  const bootstrap=fs.readFileSync('tools/connect-roblox-studio-mcp-free-windows.ps1','utf8');
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(guide,/로컬 PC 불필요/);
+  assert.match(guide,/원격 Windows 클라우드 VM/);
+  assert.match(guide,/Session 0 Windows 서비스 형태는 허용하지 않습니다/);
+  assert.match(guide,/Run workflow/);
+  assert.match(bootstrap,/ROBLOX_FREE_STUDIO_INTERACTIVE_DESKTOP_REQUIRED/);
+  assert.match(bootstrap,/roblox-studio-authenticated/);
+  assert.match(bootstrap,/Get-AuthenticodeSignature/);
+  assert.match(bootstrap,/Windows cloud VM session/);
+  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(workflow,/ROBLOX_STUDIO_MCP_PLAN_IS_ACTUAL_PLAY_PASS=NO/);
+});
