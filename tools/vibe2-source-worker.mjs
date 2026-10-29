@@ -8929,7 +8929,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         vibe59JsReplayPass:v59.vibe59JsReplay?.pass??null,
         vibe59AutoProbeCount:v59.vibe59AutoTestPlan?.generatedCaseCount||0,
         vibe59StrategiesChecked:v59.vibe59StrategiesChecked,vibe59SelectedStrategy:v59.vibe59Strategy,
-        mode:v59.vibe59CodeKind==='ROBLOX_CRAFTING_TRANSACTION'?'VIBE59_ROBLOX_CRAFTING_TRANSACTION':mode:v59.vibe59CodeKind==='ROBLOX_PATHFINDING'?'VIBE59_ROBLOX_PATHFINDING':mode:v59.vibe59CodeKind==='ROBLOX_ADVANCED_GAMEPLAY'?'VIBE59_ROBLOX_ADVANCED_GAMEPLAY':v59.vibe59CodeKind==='ROBLOX_SKILL_109'?'VIBE59_ROBLOX_SKILL_109':v59.vibe59CodeKind==='ROBLOX_DOMAIN_OPERATION'?'VIBE59_ROBLOX_DOMAIN_OPERATION':v59.vibe59CodeKind==='ROBLOX_SERVER_ACTION'?'VIBE59_ROBLOX_SERVER_ACTION':v59.vibe59CodeKind==='STATE_MACHINE'?'VIBE59_STATE_MACHINE':'VIBE59_COMPOSED_LOGIC',maxPredict:0,timeoutMs:0,contextWindow:0,
+        mode:v59.vibe59CodeKind==='ROBLOX_CRAFTING_TRANSACTION'?'VIBE59_ROBLOX_CRAFTING_TRANSACTION':v59.vibe59CodeKind==='ROBLOX_PATHFINDING'?'VIBE59_ROBLOX_PATHFINDING':v59.vibe59CodeKind==='ROBLOX_ADVANCED_GAMEPLAY'?'VIBE59_ROBLOX_ADVANCED_GAMEPLAY':v59.vibe59CodeKind==='ROBLOX_SKILL_109'?'VIBE59_ROBLOX_SKILL_109':v59.vibe59CodeKind==='ROBLOX_DOMAIN_OPERATION'?'VIBE59_ROBLOX_DOMAIN_OPERATION':v59.vibe59CodeKind==='ROBLOX_SERVER_ACTION'?'VIBE59_ROBLOX_SERVER_ACTION':v59.vibe59CodeKind==='STATE_MACHINE'?'VIBE59_STATE_MACHINE':'VIBE59_COMPOSED_LOGIC',maxPredict:0,timeoutMs:0,contextWindow:0,
         temperature:0,completionMode:'VIBE59_COMPOSED_LOGIC'}};
       console.log('VIBE59_COMPOSED_LOGIC=VALIDATED:'+v59.ruleDigest.slice(0,12));
     }
