@@ -9,6 +9,20 @@ import {synthesizeGameChangeAtom} from './vibe2-offline-game-operators.mjs';
 import {runCodegenCounterexampleRepair} from './vibe2-codegen-counterexample-repair.mjs';
 
 const protectedBehavior=/\b(?:save|persist|load|reset|reward|grant|purchase|buy|spend|delete|remove)\b/i;
+// [유틸] 런타임/엔진에서 실제 존재하는 인자만 전달한다. 추측된 타입/표현식은 거부한다.
+function explicitParameterNames(formals){
+  if(!formals.trim())return [];
+  const tokens=formals.split(',');
+  if(tokens.length>6)throw Error('VIBE2_COMPLEX_PARAMETER_CONTRACT');
+  const names=tokens.map(token=>{
+    const match=/^([A-Za-z_$][\w$]*)(?:\s*:\s*[A-Za-z_][\w.]*\??)?$/.exec(token.trim());
+    if(!match)throw Error('VIBE2_COMPLEX_PARAMETER_CONTRACT');
+    return match[1];
+  });
+  if(new Set(names).size!==names.length)throw Error('VIBE2_COMPLEX_PARAMETER_CONTRACT');
+  return names;
+}
+
 function uniqueFunction(index,name){
   const matches=index.functions.filter(row=>row.name===name);
   if(matches.length!==1||index.duplicateNames.includes(name))
@@ -51,11 +65,17 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
   for(const reqs of groups.values()){
     const trigger=uniqueFunction(index,reqs[0].trigger);
     const effects=reqs.map(req=>uniqueFunction(index,req.effect));
+    const formalArgs=explicitParameterNames(trigger.params);
+    const effectArgs=effects.map(row=>explicitParameterNames(row.params));
+    if(effectArgs.some(names=>names.some((name,i)=>formalArgs[i]!==name))||
+      formalArgs.some(name=>(trigger.locals||[]).includes(name)||
+        new RegExp('\\b(?:for|catch)\\s*\\(?\\s*'+name+'\\b').test(trigger.bodyCode)))
+      throw Error('VIBE2_COMPLEX_PARAMETER_BINDING_UNPROVEN');
     // Only existing calls in a single lexical file; cross-file imports/RemoteEvents are never invented.
     if(effects.some(row=>row.path!==trigger.path||JSON.stringify(row.lexicalScope)!==JSON.stringify(trigger.lexicalScope))||trigger.dynamicScope||
       trigger.unsafeControl||trigger.protectedState||
-      /\b(?:if|switch|while|for|try|catch|finally)\b/.test(trigger.bodyCode)||
-      effects.some(row=>row.params!==''||row.protectedState||row.dynamicScope||
+      (target==='web'&&/\b(?:if|switch|while|for|try|catch|finally)\b/.test(trigger.bodyCode))||
+      effects.some(row=>row.protectedState||row.dynamicScope||
         row.path!==trigger.path||target==='roblox'&&row.start>trigger.start)||
       [trigger,...effects].some(row=>protectedBehavior.test(row.name)||
         /\b(?:OnServerEvent|OnClientEvent|FireServer|FireClient|FireAllClients|DataStoreService)\b/.test(row.bodyCode))||
@@ -87,7 +107,7 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
     ranges.set(trigger.path,[...(ranges.get(trigger.path)||[]),{start,end}]);
     const lineStart=content.lastIndexOf('\n',trigger.insertOffset-1)+1;
     const indent=(content.slice(lineStart,trigger.insertOffset).match(/^\s*/)||[''])[0];
-    const lines=effects.map(row=>row.name+'()'+(target==='web'?';':''));
+    const lines=effects.map((row,i)=>row.name+'('+effectArgs[i].join(', ')+')'+(target==='web'?';':''));
     const insertion='\n'+lines.map(row=>indent+'  '+row).join('\n')+'\n'+indent;
     const replace=target==='web'?find.slice(0,-1)+insertion+'}':
       find.slice(0,-3)+insertion+'end';
@@ -103,6 +123,7 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
           start:effects[i].start,end:effects[i].end,parserConfidence:effects[i].parserConfidence},
         before:'handler-completion-without-'+effects[i].name,
         after:'one-call-per-handler-completion-'+effects[i].name,
+        forwardedArguments:effectArgs[i],parameterEvidence:'EXACT_ORIGINAL_FORMAL_PREFIX',
         acceptanceScenarios:req.acceptanceScenarios,
         sourceWrite:false,runtimeVerified:false
       });

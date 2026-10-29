@@ -184,11 +184,15 @@ export function indexVibe2GameSource({sourceRoot='',gameId='',target='',responsi
    if(!/^(?:async\s+)?(?:local\s+)?function\b/.test(header))continue;
    const params=/\(([^()]*)\)/.exec(header)?.[1]?.trim();if(params===undefined)continue;
    const bodyCode=file.code.slice(symbol.bodyStart,symbol.bodyEnd),body=file.source.slice(symbol.bodyStart,symbol.bodyEnd);
-   if(target==='roblox'&&/\b(?:if|for|while|repeat|until|function|do)\b/.test(bodyCode))continue;
+   // Luau의 구조화된 조건·반복은 기존 중첩 블록 검사기에서 닫는 end를 확인한다.
+   // 로컬/익명 중첩 함수는 실행 시점과 스코프를 증명할 수 없으므로 여전히 제외한다.
+   if(target==='roblox'&&/\bfunction\b/.test(bodyCode))continue;
    functions.push({name:symbol.name,path:file.path,sourceSha256:file.sourceSha256,
     start:symbol.start,end:symbol.end,bodyStart:symbol.bodyStart,insertOffset:symbol.bodyEnd,
-    params,bodyCode,calls:[...new Set(index.edges.filter(e=>e.from===symbol.id&&e.toName!==symbol.name).map(e=>e.toName))],
-    parserConfidence:target==='web'?'BOUNDED_DECLARATION_JS':'BOUNDED_LINEAR_LUAU',target,lexicalScope:symbol.lexicalScope,
+    params,bodyCode,locals:symbol.locals,calls:[...new Set(index.edges.filter(e=>e.from===symbol.id&&e.toName!==symbol.name).map(e=>e.toName))],
+    parserConfidence:target==='web'?'BOUNDED_DECLARATION_JS':
+      /\b(?:if|for|while|repeat|until|do)\b/.test(bodyCode)?'BOUNDED_NESTED_LUAU':'BOUNDED_LINEAR_LUAU',
+    target,lexicalScope:symbol.lexicalScope,
     protectedState:protectedPattern.test(body),
     unsafeControl:/\b(?:return|throw|yield|await|break|continue)\b/.test(bodyCode),
     dynamicScope:/\b(?:eval|with)\s*\(/.test(bodyCode)});
