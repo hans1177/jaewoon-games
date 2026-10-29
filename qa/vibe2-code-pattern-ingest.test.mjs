@@ -631,7 +631,7 @@ test('model-free Vibe crafts distinct real actor motion repairs with native rig 
 test('continuous verified pattern ingest learns, quarantines stale proof, and reactivates only verified source',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-learn-replay-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
-  const samplesDir=path.join(root,'training-samples');
+  const samplesDir=path.join(root,'company-learning','training-samples');
   fs.mkdirSync(samplesDir);
   const file=path.join(samplesDir,'verified.json');
   const sample={taskType:'coding',gameId:'magic',sourceRevision:'f'.repeat(40),
