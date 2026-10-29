@@ -733,7 +733,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   // [플랫폼별 성능 관측] 검증/최종실패 체크포인트와 소스 작업 시간을 플랫폼별로 분리한다.
   // 미완료 작업, 소스 마커, 추측한 시간은 성능·실행 PASS로 세지 않는다.
   // 최소 표본이 모이기 전에는 기존 6:2:1 중앙정책 가중치를 변경하지 않는다.
-  const platformHistory=Object.fromEntries(Object.keys(weights).map(name=>[name,[]]));
+  const performanceTargets=['roblox','web'];
+  const platformHistory=Object.fromEntries(performanceTargets.map(name=>[name,[]]));
   for(let i=queue.tasks.length-1;i>=0;i--){
     const task=queue.tasks[i];
     if(!isGamePrimaryTask(task)||!['verified','failed'].includes(task.status))continue;
@@ -743,7 +744,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     const duration=marker?Number(marker.slice('workload:cycle-ms:'.length)):0;
     platformHistory[name].push({passed:task.status==='verified',durationMs:duration>0&&Number.isSafeInteger(duration)?duration:null});
   }
-  const platformPerformance=Object.fromEntries(Object.keys(weights).map(name=>{
+  const platformPerformance=Object.fromEntries(performanceTargets.map(name=>{
     const history=platformHistory[name];
     const verified=history.filter(row=>row.passed).length;
     const failed=history.length-verified;
@@ -758,9 +759,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
       ?Math.max(-0.04,Math.min(0.04,(3600000/(observedMs/durations.length)-1)/100)):0;
     const multiplier=Math.max(0.9,Math.min(1.1,1+reliabilityAdjustment+throughputAdjustment));
     weights[name]=Math.round(weights[name]*multiplier*1000)/1000;
-    return freeze({sampleSize:history.length,verified,failed,successRatePct,
+    return [name,freeze({sampleSize:history.length,verified,failed,successRatePct,
       measuredVerifiedCycleCount:durations.length,serialVerifiedPerHour,
-      effectiveWeight:weights[name],evidence:'QUEUE_CHECKPOINTS_ONLY_NOT_GAME_RUNTIME_QA'});
+      effectiveWeight:weights[name],evidence:'QUEUE_CHECKPOINTS_ONLY_NOT_GAME_RUNTIME_QA'})];
   }));
   const service=Object.fromEntries(Object.keys(weights).map(name=>[name,0]));
   for(const task of running){
