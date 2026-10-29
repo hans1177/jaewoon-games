@@ -221,6 +221,18 @@ test('published WEB playtest intake rejects stale trees and deduplicates the sam
   const first=ingestTesterDebug({repoRoot:root,webPlaytestReport:report});
   assert.equal(first.ingested,1);assert.equal(first.tickets.webPlaytestObservations.length,1);
   assert.equal(first.tickets.tickets[0].surface,'WEB');
+  assert.equal(first.tickets.tickets[0].exactFailedStage,'WEB_POST_PUBLICATION_PLAYTEST');
+  assert.equal(first.recovery.tasks.length,1,'same-source Web failure uses the existing recovery queue');
+  assert.equal(first.recovery.tasks[0].recoveryStrategy,
+    'REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE');
+  for(const required of [
+    'VERIFY_EXACT_PUBLISHED_GAME_AND_SHARED_SOURCE_TREES',
+    'VERIFY_REAL_DESKTOP_KEYBOARD_AND_MOBILE_TOUCH_INPUT_TO_GAME_STATE',
+    'DISTINGUISH_WORLD_COLLISION_FROM_INPUT_FAILURE_USING_FOUR_DIRECTIONS',
+    'VERIFY_ORIGINAL_WEBGL_SCENE_AND_SAVED_PLAYER_XY_AFTER_RELOAD',
+    'RERUN_EXACT_FAILED_STAGE','INDEPENDENT_QA_WHEN_APPLICABLE',
+    'REGRESSION_WHEN_APPLICABLE','CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'
+  ])assert.ok(first.recovery.tasks[0].verificationPlan.includes(required),required);
   const repeated=ingestTesterDebug({repoRoot:root,webPlaytestReport:report,ticketQueue:first.tickets,recoveryQueue:first.recovery});
   assert.equal(repeated.ingested,0);assert.equal(repeated.tickets.tickets[0].occurrenceCount,1);
   const passed=ingestTesterDebug({repoRoot:root,webPlaytestReport:{...report,runId:'124',games:[{...game,runtimePassed:true}]},ticketQueue:first.tickets,recoveryQueue:first.recovery});
