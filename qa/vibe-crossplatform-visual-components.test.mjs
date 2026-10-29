@@ -197,3 +197,41 @@ test('web action HUD binds touch targets to original game callbacks without inve
   ctrl.destroy();
   assert.deepEqual(pressed,['attack','heal']);
 });
+
+
+// [VFX] 확인된 이벤트에 승인된 내부 이미지 파편만 사용한다. 화면 밖/중복/초과/외부 경로 차단.
+test('web impact VFX uses bounded approved sprite images without altering game state',()=>{
+  const {host,doc}=fakeDom(),shakes=[],ctrl=getWeb()({host,documentRef:doc,
+    maxVfxSprites:4,onCameraShake:args=>{shakes.push(args);return true;}});
+  const impact={eventId:'hit-1',x:130,y:190,spriteUrl:'./vfx/impact.webp',
+    spriteApproved:true,count:4};
+  assert.equal(ctrl.showImpactVfx({...impact,confirmed:false}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,spriteUrl:'https://example.com/external.png',confirmed:true}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,x:-10,confirmed:true}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,confirmed:true}),true);
+  assert.equal(ctrl.stats().activeVfxSprites,4);
+  assert.equal(ctrl.showImpactVfx({...impact,confirmed:true}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,eventId:'hit-2',confirmed:true}),false,
+    'sprite budget must not be exceeded');
+  const sprites=host.children[0].children.filter(n=>n.nodeName==='img');
+  assert.equal(sprites.length,4);
+  assert.ok(sprites.every(n=>n.attrs.src==='./vfx/impact.webp'&&n.attrs['aria-hidden']==='true'));
+  assert.equal(ctrl.requestCameraShake({eventId:'hit-1'}),false);
+  assert.equal(ctrl.requestCameraShake({eventId:'hit-1',confirmed:true,intensity:999,durationMs:999}),true);
+  assert.equal(ctrl.requestCameraShake({eventId:'hit-1',confirmed:true}),false);
+  assert.deepEqual(shakes,[{eventId:'hit-1',pixels:5,durationMs:220,presentationOnly:true}]);
+  ctrl.destroy();
+  assert.equal(ctrl.stats().activeVfxSprites,0);
+  assert.equal(host.children.length,0);
+});
+
+test('reduced motion keeps one real image for impact and disables camera shake',()=>{
+  const {host,doc}=fakeDom(),shakes=[],ctrl=getWeb()({host,documentRef:doc,
+    reducedMotion:true,maxVfxSprites:2,onCameraShake:args=>shakes.push(args)});
+  assert.equal(ctrl.showImpactVfx({eventId:'hit',confirmed:true,x:10,y:12,
+    spriteUrl:'./vfx/hit.png',spriteApproved:true,count:7}),true);
+  assert.equal(ctrl.stats().activeVfxSprites,1);
+  assert.equal(ctrl.requestCameraShake({eventId:'hit',confirmed:true}),false);
+  assert.equal(shakes.length,0);
+  ctrl.destroy();
+});
