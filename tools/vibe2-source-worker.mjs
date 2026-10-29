@@ -9255,8 +9255,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   };
   if(nativeStudioFirst)tryNativeCandidate();
   // Vibe5.9 bounded compositional synthesis: no cloud AI or source write.
+  // Exact observed Studio repair failures must remain repair failures; unrelated generic edits cannot mask them.
   // Owner-approved source scope and the original Vibe2 validator still decide admission.
-  if(!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
+  if(!generated&&!nativeStudioFirst&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
     const v59=createVibe59CodeCandidates({order,sourceRoot,responsibleFiles,target,
       repositoryRoot:cwd,
       verifiedCodePatterns:readVerifiedCodePatternsForSourceWorker().patterns});
@@ -9291,7 +9292,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_WEB_INPUT=REJECTED:'+generationFailureClass(error));
     }
   }
-  const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
+  const deterministicDiagnostic=!nativeStudioFirst&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
   if(!generated&&deterministicDiagnostic){
     try{
       const candidate=normalizeCandidate(deterministicDiagnostic,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES});
