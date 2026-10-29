@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -142,4 +143,43 @@ test('missing Unity assets stay 404 instead of a successful compressed homepage'
     assert.equal(response.headers.get('Cache-Control'),'no-store');
     if(method==='HEAD')assert.equal(await response.text(),'');
   }
+});
+
+test('홈페이지는 보조 상태·플랫폼 정보가 실패해도 원본 카탈로그로 게임 카드를 표시한다',async()=>{
+  const cards=[],nodes=new Map();
+  function element(id=''){
+    return {id,style:{setProperty(){}},dataset:{},innerHTML:'',textContent:'',hidden:false,parentNode:null,
+      setAttribute(){},addEventListener(){},querySelector(){return null},
+      appendChild(node){node.parentNode=this;cards.push(node);},
+      prepend(node){node.parentNode=this;cards.push(node);}};
+  }
+  const available=new Set(['hero','gameHub','gameGrid','recentUpdates','recentUpdateList',
+    'metricPlayable','metricDevelopment','metricRecent','mobileFavoritesList']);
+  const document={
+    readyState:'complete',documentElement:element(),head:element(),
+    addEventListener(){},querySelector(){return null},querySelectorAll(){return[];},
+    createElement(){return element();},
+    getElementById(id){if(!available.has(id))return null;
+      if(!nodes.has(id))nodes.set(id,element(id));return nodes.get(id);}
+  };
+  const catalog={runtimeInfoAuthority:'company-runtime',ownerStoppedGameIds:[],games:[{
+    id:'qa-game',name:'QA 게임',productionClass:'DEVELOPMENT_CONFIRMED',
+    canonical:{identity:{gameId:'qa-game',name:'QA 게임'},lifecycle:{state:'ACTIVE'},
+      production:{class:'DEVELOPMENT_CONFIRMED'},sources:{web:{state:'WEB_SOURCE_DEVELOPMENT_PENDING_QA',path:'web-games/qa-game'}},
+      homepage:{runtime:{developmentActive:true}}}
+  }]};
+  const storage={getItem(){return null},setItem(){},removeItem(){}};
+  const context={document,window:{addEventListener(){},alert(){}},localStorage:storage,
+    sessionStorage:storage,URL,AbortSignal,setInterval(){},location:{},navigator:{},
+    console:{error(error){throw new Error(String(error));}},
+    fetch:async url=>String(url).endsWith('/game-catalog.json')
+      ?{ok:true,json:async()=>catalog}:{ok:false,json:async()=>null}};
+  vm.runInNewContext(homepage.replaceAll('import.meta.url',
+    JSON.stringify('https://hans1177.github.io/jaewoon-games/assets/homepage-enhancements.js')),context);
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(nodes.get('metricDevelopment').textContent,'1');
+  const content=cards.map(card=>card.innerHTML).join('');
+  assert.match(content,/QA 게임/);
+  assert.match(content,/homeDeleteButton/);
+  assert.match(content,/homeFavoriteToggle/);
 });
