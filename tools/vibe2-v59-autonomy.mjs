@@ -908,7 +908,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     scenarios:creativeChosen.scenarios}:null);
   if(req==null)return createVibe59IntentStatCandidate({order,sourceRoot,responsibleFiles,target});
   const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction,req?.robloxCraftingAction].filter(Boolean);
-  if(!req||req.ownerApproved!==true||!req.path||!req.find
+  if(!req||req.ownerApproved!==true||!req.path||(!req.find&&!req.algorithmSpec)
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
        [Boolean(req.rule),Boolean(req.machine),Boolean(req.algorithmSpec)].filter(Boolean).length!==1))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
