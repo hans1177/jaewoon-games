@@ -116,6 +116,7 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
   const engine=engineOf(sample);
   // 공식 Studio 실패→기존 책임 함수 수정→동일 리비전 QA/런타임/회귀 PASS인 경우만
   // 학습 규칙을 축적한다. 실제 코드는 복제하지 않고 원인·함수·필수 검증만 저장한다.
+  const trace=sample.verification?.trace||sample.provenance?.verificationTrace;
   const studioRuleVerified=engine==='roblox'&&trace&&upper(trace.state)==='PASS'
     &&upper(trace.ci)==='PASS'&&upper(trace.independentQa)==='PASS'
     &&upper(trace.runtime)==='PASS'&&clean(trace.sourceRevision||trace.sha)===sourceRevision
