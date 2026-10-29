@@ -94,7 +94,7 @@ export function isApprovedPagesOidcGrant(before='',after=''){
   if(post<start)return false;
   const job=source.slice(start,post);
   if(grants[0].index<start||grants[0].index>=post)return false;
-  if(!/^    needs: deploy$/m.test(job)||!/^    if: github\.event_name != 'pull_request' && needs\.deploy\.outputs\.source_current == 'true'$/m.test(job))return false;
+  if(!/^    needs: deploy$/m.test(job)||!/^    if: github\.event_name != 'pull_request' && needs\.deploy\.outputs\.source_current == 'true'(?: && needs\.deploy\.outputs\.artifact_ready == 'true')?$/m.test(job))return false;
   if(!/^    permissions:\n      contents: read\n      actions: write\n      pages: write\n      id-token: write\n      issues: write\n/m.test(job))return false;
   if(!/^    concurrency:\n      group: magic-forest-pages-main-publish\n      cancel-in-progress: false$/m.test(job))return false;
   if(!/^    environment:\n      name: github-pages\n/m.test(job))return false;
