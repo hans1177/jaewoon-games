@@ -74,7 +74,7 @@ test('GitHub Pages 프로젝트 하위 경로에서 홈페이지 스크립트와
   assert.match(index,/src="assets\/homepage-enhancements\.js\?v=owner-only-20261030"/);
   assert.match(index,/navigator\.serviceWorker\.register\('sw\.js',\{scope:'\.\/'\}\)/);
   assert.match(index,/href="command\.html\?from=chatgpt-shortcut"/);
-  assert.match(client,/new URL\('\.\.\/',import\.meta\.url\)/);
+  assert.match(client,/new URL\('\.\/',document\.baseURI\)/);
   assert.match(client,/getJson\('\/game-catalog\.json'\)/);
 });
 
@@ -83,5 +83,5 @@ test('기기 등록과 개발 채팅은 프로젝트 페이지의 실제 경로�
   const register=fs.readFileSync('register.html','utf8');
   assert.match(command,/fetch\(`game-catalog\.json\?ts=/);
   assert.match(command,/fetch\(`company-status\.json\?ts=/);
-  assert.match(register,/location\.replace\('command\.html'\)/);
+  assert.match(register,/location\.replace\('\.\/'\)/);
 });

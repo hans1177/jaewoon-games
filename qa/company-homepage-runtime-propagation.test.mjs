@@ -439,7 +439,7 @@ test('homepage disables Unity Web browser links without affecting native platfor
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(renderer,/unityWebAction|bindAvailableUnityWebSurfaces|createUnityInstance/);
   assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
-  assert.match(renderer,/renderCatalog\(catalog\);/);
+  assert.match(renderer,/renderCatalog\(verifiedStatus\);/);
 });
 
 test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
