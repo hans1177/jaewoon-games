@@ -161,3 +161,61 @@ test('commercial web HUD uses confirmed read-only state, safe mobile reflow and 
   assert.equal(host.children.length,0,'destroy removes the original overlay and registered timers');
   assert.equal(ui.showDirectionWarning({eventId:'after',angle:0,confirmed:true}),false);
 });
+
+test('model-free graphics harmonizes real CC0 RGBA without mutating original or alpha',()=>{
+  const source={license:'CC0-1.0',sha256:'a'.repeat(64)};
+  const original=new Uint8ClampedArray([255,22,10,255,4,12,20,0,12,40,90,240,220,200,170,255]);
+  const before=[...original];
+  const style={palette:[[20,30,40],[110,130,150],[235,220,205]],pixelGrid:1};
+  const transformed=Graphics.harmonizeSourceRaster({width:2,height:2,pixels:original,source,style});
+  assert.deepEqual([...original],before,'original must remain immutable');
+  assert.deepEqual([...transformed.pixels].filter((_,i)=>i%4===3),[255,0,240,255]);
+  assert.equal(transformed.pixels[4],0,'transparent color must not leak from source');
+  for(let i=0;i<transformed.pixels.length;i+=4)if(transformed.pixels[i+3])
+    assert.ok(style.palette.some(rgb=>rgb.every((v,k)=>v===transformed.pixels[i+k])));
+  assert.equal(transformed.modelFree,true);
+  assert.equal(transformed.runtimeVerified,false);
+  assert.equal(transformed.productionVerified,false);
+});
+
+test('model-free palette grid enforces shared color blocks while preserving silhouette',()=>{
+  const source={license:'CC0',sourceSha256:'b'.repeat(64)};
+  const original=new Uint8Array([12,28,40,255,235,230,220,128,45,60,80,0,130,120,110,255]);
+  const transformed=Graphics.harmonizeSourceRaster({width:2,height:2,pixels:original,source,
+    style:{palette:[[10,20,30],[225,225,220]],pixelGrid:2}});
+  assert.deepEqual([...transformed.pixels.slice(0,3)],[...transformed.pixels.slice(4,7)]);
+  assert.equal(transformed.pixels[11],0);
+  assert.equal(transformed.visiblePixels,3);
+});
+
+test('model-free atlas composes only matching source-derived styles and rejects fake assets',()=>{
+  const source={license:'CC0',sha256:'a'.repeat(64)};
+  const base={width:1,height:1,source,style:{palette:[[0,0,0],[255,255,255]]}};
+  const white=Graphics.harmonizeSourceRaster({...base,pixels:new Uint8Array([250,250,250,255])});
+  const black=Graphics.harmonizeSourceRaster({...base,pixels:new Uint8Array([5,5,5,255])});
+  const atlas=Graphics.composeSourceSpriteAtlas({frames:[white,black],columns:2,padding:1});
+  assert.deepEqual([atlas.width,atlas.height],[6,3]);
+  assert.equal(atlas.pixels[(1*6+1)*4+3],255);
+  assert.equal(atlas.pixels[(1*6+4)*4+3],255);
+  assert.equal(atlas.pixels[3],0,'padding remains transparent');
+  assert.deepEqual(atlas.frames.map(frame=>frame.x),[1,4]);
+  assert.equal(atlas.runtimeVerified,false);
+  assert.throws(()=>Graphics.composeSourceSpriteAtlas({frames:[white,{...black,styleKey:'other'}]}),
+    /GRAPHICS_ATLAS_SOURCE_OR_STYLE_MISMATCH/);
+  assert.throws(()=>Graphics.composeSourceSpriteAtlas({frames:[{...white,modelFree:false}]}),
+    /GRAPHICS_ATLAS_SOURCE_OR_STYLE_MISMATCH/);
+});
+
+test('model-free graphics fails closed on licenses, invalid source pixels and unverifiable source hash',()=>{
+  const valid={width:1,height:1,pixels:new Uint8Array([10,20,30,255]),
+    style:{palette:[[0,0,0],[255,255,255]]}};
+  for(const license of ['CC-BY','NC','UNKNOWN','project-original'])
+    assert.throws(()=>Graphics.harmonizeSourceRaster({...valid,
+      source:{license,sha256:'a'.repeat(64)}}),/GRAPHICS_VERIFIED_CC0_SOURCE_REQUIRED/);
+  assert.throws(()=>Graphics.harmonizeSourceRaster({...valid,source:{license:'CC0',sha256:'bad'}}),
+    /GRAPHICS_VERIFIED_CC0_SOURCE_REQUIRED/);
+  assert.throws(()=>Graphics.harmonizeSourceRaster({...valid,width:2,source:{license:'CC0',sha256:'a'.repeat(64)}}),
+    /GRAPHICS_SOURCE_RGBA_INVALID/);
+  assert.throws(()=>Graphics.harmonizeSourceRaster({...valid,pixels:new Uint8Array([0,0,0,0]),
+    source:{license:'CC0',sha256:'a'.repeat(64)}}),/GRAPHICS_SOURCE_FULLY_TRANSPARENT/);
+});
