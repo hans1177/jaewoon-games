@@ -3745,7 +3745,10 @@ function BotAI.distributedSurvivorTarget(b)
  local vision=math.max(20,tonumber(C.AICombat and C.AICombat.VisionRange)or 78)
  local hearing=math.max(6,tonumber(C.AICombat and C.AICombat.HearingRange)or 18)
  local memory=math.max(1,tonumber(C.AICombat and C.AICombat.TargetMemorySeconds)or 4.5)
+ local lockedKey=b.currentTargetKey
+ local lockActive=lockedKey~=nil and now<(b.targetLockUntil or 0)
  local entries={}
+ local lockedTarget=nil
  for _,entry in ipairs(active())do
   local pos=BotAI.botTargetPosition(entry)
   if pos then
@@ -3761,33 +3764,36 @@ function BotAI.distributedSurvivorTarget(b)
     local blocked=visible and 0 or(tonumber(C.AICombat and C.AICombat.BlockedSightPenalty)or 52)
     local vulnerability=0
     if entry.p then
-     local ratio=Runtime.energyOf(entry.p)/Runtime.energyMax()
-     vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
+     vulnerability=Runtime.energyOf(entry.p)/Runtime.energyMax()*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
     elseif entry.b then
-     local ratio=math.clamp((entry.b.energy or Runtime.energyMax())/Runtime.energyMax(),0,1)
-     vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
+     vulnerability=math.clamp((entry.b.energy or Runtime.energyMax())/Runtime.energyMax(),0,1)*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
     end
-    table.insert(entries,{entry=entry,pos=predicted,rawPos=pos,distance=(predicted-b.part.Position).Magnitude,key=key,visible=visible,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+blocked+vulnerability})
+    local candidate={entry=entry,pos=predicted,rawPos=pos,distance=(predicted-b.part.Position).Magnitude,key=key,visible=visible,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+blocked+vulnerability}
+    table.insert(entries,candidate)
+    if lockActive and key==lockedKey then lockedTarget=candidate end
    end
   end
  end
  table.sort(entries,function(a,c)return a.score<c.score end)
- local chosen=entries[1]
+ -- 잠금 중에는 발견한 목표를 유지하고, 목격/청각/기억이 끊겼을 때만 재선정한다.
+ local chosen=lockedTarget or entries[1]
  if not chosen then
   b.currentTargetKey=nil
+  b.targetLockUntil=0
   if b.lastSeenPos and now-(b.lastSeenAt or 0)<=memory then return nil,b.lastSeenPos,(b.lastSeenPos-b.part.Position).Magnitude,false end
   return nil,nil,math.huge,false
  end
  local changed=b.currentTargetKey~=chosen.key
  b.currentTargetKey=chosen.key
- b.targetLockUntil=now+(tonumber(C.AICombat and C.AICombat.TargetLockSeconds)or 3.2)+((b.tacticSlot or 1)%3)*.45
+ if changed or now>=(b.targetLockUntil or 0)then
+  b.targetLockUntil=now+(tonumber(C.AICombat and C.AICombat.TargetLockSeconds)or 3.2)+((b.tacticSlot or 1)%3)*.45
+ end
  if chosen.visible and changed and b.lastCalloutTargetKey~=chosen.key then
   b.lastCalloutTargetKey=chosen.key
   BotAI.callout(b,chosen.distance<18 and"가까이 인간 발견. 내가 붙을게."or"인간 발견. 양쪽으로 몰아.")
  end
  return chosen.entry,chosen.pos,chosen.distance,chosen.visible
 end
-
 function BotAI.distributedMonsterTarget(b)
  local now=os.clock()
  if b.currentTargetKey and now<(b.targetLockUntil or 0)then
