@@ -13,6 +13,7 @@ import {indexVibe2GameSource} from '../tools/vibe2-game-source-index.mjs';
 import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
 import {createVibe59CodeCandidates,applyVibe59ApprovedGameSourceChange,inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
+import {applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
 import {execFileSync} from 'node:child_process';
 import {runVibe2SourceWorker,applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
@@ -95,6 +96,72 @@ test('canonical Vibe2 no-model worker edits actual game source on an isolated ca
   assert.equal(fs.readFileSync(path.resolve(relative),'utf8'),original,'production repository source remains unchanged by regression');
 });
 
+test('real existing survival2 SVG accepts Korean and English owner recolor and commits exact game art on candidate branch',t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-live-svg-'));
+ t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const gameId='survival2',relative='assets/survival-atlas.svg';
+ const production=path.resolve('web-games',gameId,relative),original=fs.readFileSync(production,'utf8');
+ const root=path.join(repo,'web-games',gameId),target=path.join(root,relative);
+ fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,original);
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
+  games:[{id:gameId,webPath:'web-games/survival2',lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]}));
+ const git=(...args)=>{const result=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});
+  assert.equal(result.status,0,result.stderr||result.error?.message);return result.stdout;};
+ git('init','-q');git('config','user.email','vibe59-tests@example.invalid');
+ git('config','user.name','Vibe59 Test');git('add','--','web-games/survival2');
+ git('commit','-qm','existing production game SVG');
+ git('switch','-q','-c','vibe2/candidate/svg-owner-recolor');
+ const options={sourceRoot:root,repositoryRoot:repo,responsibleFiles:[relative],target:'web'};
+ const ko='기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #81938b으로 바꿔';
+ const english='Recolor wolf in assets/survival-atlas.svg from #6d7773 to #81938b';
+ const order=goal=>({ownerApproved:true,selectedTask:{ownerDirective:true,gameId,goal}});
+ const candidate=createVibe59CodeCandidates({...options,order:order(ko)});
+ const translated=createVibe59CodeCandidates({...options,order:order(english)});
+ assert.equal(candidate.vibe59CodeKind,'SOURCE_BOUND_VISUAL_ASSET_EDIT');
+ assert.equal(candidate.vibe59TestPlan.pass,true);
+ assert.equal(candidate.vibe59TestPlan.cases.length,1);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+ assert.deepEqual(candidate.edits,translated.edits);
+ assert.equal(fs.readFileSync(target,'utf8'),original,'generation must not write original source');
+ const candidateRoot=path.join(repo,'.vibe2','candidates','svg-owner-recolor');
+ const applied=applyVibe2CandidateToSource({cwd:repo,sourceRoot:root,candidateRoot,candidate});
+ assert.deepEqual(applied.changedFiles,[relative]);
+ const after=fs.readFileSync(target,'utf8');
+ assert.equal(after,original.replace('fill="#6d7773"','fill="#81938b"'));
+ assert.match(after,/<g id="boar"[^>]*><ellipse[^>]*fill="#6a4935"/);
+ assert.equal(fs.readFileSync(production,'utf8'),original);
+ assert.equal(git('diff','--name-only').trim(),'web-games/survival2/'+relative);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:order('기존 assets/survival-atlas.svg의 ghost 색상 #6d7773을 #81938b으로 바꿔')}),/GROUP_NOT_UNIQUE/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:order('기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #nope으로 바꿔')}),/COLOR_INVALID|CAPABILITY_GAP/);
+ const notApproved=createVibe59CodeCandidates({...options,order:{selectedTask:{ownerDirective:false,gameId,goal:ko}}});
+ assert.notEqual(notApproved?.vibe59CodeKind,'SOURCE_BOUND_VISUAL_ASSET_EDIT');
+});
+test('Vibe visual source editor applies two independent changes in the SAME existing SVG atomically',t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-multi-actor-'));
+ t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const gameId='survival2',relative='assets/survival-atlas.svg',root=path.join(repo,'web-games',gameId);
+ fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+ const original=fs.readFileSync(path.resolve('web-games',gameId,relative),'utf8');
+ fs.writeFileSync(path.join(root,relative),original);
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
+  games:[{id:gameId,webPath:'web-games/survival2'}]}));
+ const sourceSha256=digest(original),wolf=original.match(/<g id="wolf"[^>]*>[\s\S]*?<\/g>/)?.[0],
+  boar=original.match(/<g id="boar"[^>]*>[\s\S]*?<\/g>/)?.[0];
+ assert.ok(wolf&&boar);
+ const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId,vibe59VisualAssetEdits:[
+  {path:relative,expectedSha256:sourceSha256,find:wolf,replace:wolf.replace('fill="#6d7773"','fill="#81938b"')},
+  {path:relative,expectedSha256:sourceSha256,find:boar,replace:boar.replace('fill="#6a4935"','fill="#826b4e"')}
+ ]}};
+ const opts={order,sourceRoot:root,repositoryRoot:repo,responsibleFiles:[relative],target:'web'};
+ const candidate=createVibe59CodeCandidates(opts);
+ assert.equal(candidate.edits.length,2);
+ assert.equal(candidate.vibe59TestPlan.cases.length,2);
+ const docs=new Map([[relative,original]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ assert.match(docs.get(relative),/fill="#81938b"/);
+ assert.match(docs.get(relative),/fill="#826b4e"/);
+ assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+});
 test('natural language becomes an ordered two-step DAG tied to exact existing source definitions',t=>{
   const {options,relative,source}=setup(t);
   const intent=compileVibe2ComplexIntent(options);
