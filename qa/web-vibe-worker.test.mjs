@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
-import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange} from '../tools/web-vibe-worker.mjs';
+import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
@@ -350,4 +350,64 @@ test('WEB model-less source compiler directly improves existing frame function a
   await assert.rejects(()=>proposeWebVibeChange({gameId:'demo',goal:'신규 보스 전투 전체 구현'},
     source,{cloud:true,apiKey:'',geminiImpl:async()=>{calls++;throw Error('MODEL_MUST_NOT_RUN');}}),/WEB_VIBE_FREE_MODEL_KEY_MISSING/);
   assert.equal(calls,0);
+});
+
+
+// [자동 학습] 후보 작성만으로는 학습되지 않으며 병합·공개판·게임별 독립 QA가 필요하다.
+test('WEB verified code evolution learns compact responsible-function changes and rejects unverified examples',()=>{
+ const task={id:'pwa-'+('a'.repeat(8))+'-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+  gameId:'demo',sourceRoot:'web-games/demo',goal:'3D 그래픽 시각 개선'};
+ const original='function drawLabel(){label.style.opacity=0.5;label.style.fontWeight="bold";}\n';
+ const source={relative:'web-games/demo/game.js',original};
+ const patch=safeWebVibeReplacement(original,JSON.stringify({
+  oldText:'label.style.opacity=0.5;',newText:'label.style.opacity=0.85;'
+ }),{relative:source.relative});
+ const recipe=webLearningCandidate(task,[{source,edit:patch}]);
+ assert.equal(recipe.length,1);
+ assert.equal(recipe[0].owner,'drawLabel');
+ assert.equal(recipe[0].topic,'SCENE_PRESENTATION');
+ assert.equal(recipe[0].source,source.relative);
+ assert.equal(recipe[0].baseSourceSha.length,64);
+ const proof={status:'VERIFIED',independentQaPassed:true,browserPassed:true,
+  runId:40816165612,sourceRevision:'a'.repeat(40),sourceTreeSha:'b'.repeat(40)};
+ const verified={...task,status:'merged',learningCandidates:recipe,learningVerification:proof};
+ const result=compileVerifiedWebLearning(task,source,[verified]);
+ assert.equal(result.deterministicWebLearned,true);
+ assert.match(result.updated,/opacity=0\.85/);
+ assert.equal(result.offlineSourceProof.runtimeVerified,false);
+ assert.equal(result.offlineSourceProof.verifiedBrowserRun,40816165612);
+ for(const bad of [
+  {...verified,status:'review'},
+  {...verified,learningVerification:{...proof,browserPassed:false}},
+  {...verified,learningVerification:{...proof,independentQaPassed:false}},
+  {...verified,learningVerification:{...proof,runId:0}},
+  {...verified,gameId:'foreign'}
+ ])assert.equal(compileVerifiedWebLearning(task,source,[bad]),null);
+ assert.equal(compileVerifiedWebLearning({...task,goal:'새로운 보스 전투 추가'},source,[verified]),null);
+ assert.equal(compileVerifiedWebLearning(task,{...source,original:patch.updated},[verified]),null);
+ assert.equal(compileVerifiedWebLearning(task,{...source,relative:'web-games/other/game.js'},[verified]),null);
+});
+test('WEB no-model worker actually replays browser-verified same-game learning without any model call',async()=>{
+ const source={relative:'web-games/demo/game.js',
+  original:'function drawLabel(){label.style.opacity=0.5;label.style.fontWeight="bold";}\n'};
+ const task={id:'pwa-11111111-2222-4333-8444-555555555555',
+  gameId:'demo',sourceRoot:'web-games/demo',goal:'3D 그래픽 시각 개선'};
+ const edit=safeWebVibeReplacement(source.original,JSON.stringify({
+  oldText:'label.style.opacity=0.5;',newText:'label.style.opacity=0.85;'
+ }),{relative:source.relative});
+ const prior={...task,id:'pwa-22222222-3333-4444-8555-666666666666',
+  status:'merged',learningCandidates:webLearningCandidate(task,[{source,edit}]),
+  learningVerification:{status:'VERIFIED',independentQaPassed:true,browserPassed:true,runId:40816165612,
+   sourceRevision:'a'.repeat(40),sourceTreeSha:'b'.repeat(40)}};
+ let modelCalls=0;
+ const produced=await proposeWebVibeChange(task,source,{cloud:true,apiKey:'',
+  previousVerified:[prior],geminiImpl:async()=>{modelCalls++;throw Error('MODEL_CALLED');}});
+ assert.equal(modelCalls,0);
+ assert.equal(produced.deterministicWebLearned,true);
+ assert.match(produced.updated,/opacity=0\.85/);
+ assert.equal(produced.offlineSourceProof.runtimeVerified,false);
+ await assert.rejects(()=>proposeWebVibeChange(task,source,{cloud:true,apiKey:'',
+  previousVerified:[{...prior,status:'review'}],geminiImpl:async()=>{modelCalls++;throw Error('MODEL_CALLED');}}),
+  /WEB_VIBE_FREE_MODEL_KEY_MISSING/);
+ assert.equal(modelCalls,0);
 });
