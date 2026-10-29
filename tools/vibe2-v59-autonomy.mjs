@@ -149,9 +149,11 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='floor')return Math.floor(x);
     if(op==='round')return Math.round(x);
     if(op==='neg')return -x;
+    // A conditional evaluates only the selected branch: an invalid unused
+    // branch is not a failed candidate or a hidden holdout counterexample.
+    if(op==='select')return evaluate(x>0?b:c,args);
     const y=evaluate(b,args);
     if(!valid(y))return NaN;
-    if(op==='select')return evaluate(x>0?b:c,args);
     switch(op){
       case '+':return x+y;case '-':return x-y;case '*':return x*y;
       case '/':return Math.abs(y)<1e-9?NaN:x/y;
@@ -299,7 +301,9 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
       valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
     function add(expr,values,cost,variables,depth,ast){
-      if(expr.length>170||values.some(v=>!valid(v)))return;
+      // Hidden holdouts must not influence candidate admission or semantic
+      // deduplication before a counterexample is explicitly activated.
+      if(expr.length>170||[...active].some(i=>!valid(values[i])))return;
       const key=signature(values),prev=semantic.get(key);
       if(prev&&prev.cost<=cost)return;
       const row={expr,values,cost,variables,depth,ast,error:error(values)};
