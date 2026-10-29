@@ -1550,6 +1550,7 @@ jobs:
       # The existing worker fails closed when no grounded local candidate exists.
       VIBE2_V4_OFFLINE_ONLY: 'true'
       VIBE2_ROBLOX_NO_MODEL_ONLY: 'true'
+      VIBE2_V4_NO_EXTERNAL_API: 'true'
       WORKER_CONTEXT_EXPECTED_POLICY_SHA256: ${{ needs.reserve.outputs.shared_policy_sha256 }}
       WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256: ${{ needs.reserve.outputs.shared_log_map_sha256 }}
       WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256: ${{ needs.reserve.outputs.shared_architecture_sha256 }}
