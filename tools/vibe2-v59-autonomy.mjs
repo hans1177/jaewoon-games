@@ -102,6 +102,118 @@ export function composeVibe59Systems({systems:chosen=[],bindings=[]}={}){
   return Object.freeze({systems:chosen,bindings:links,cycleWarnings:[...new Set(cycles)],
     runtimeVerified:false,authority:'assembly-plan-only'});
 }
+// [메인] Vibe5.9 범용 수치 함수 무모델 합성.
+// 문법 기반 유한 후보 탐색 + 입출력 의미 서명 중복 제거 + 반례 유도 재탐색.
+// 수치 예시로만 검증되는 순수 함수 후보이며 실제 게임 플레이 검증을 대체하지 않는다.
+export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
+  const params=spec?.parameters,examples=spec?.examples,holdouts=spec?.holdouts;
+  const legal=/^[A-Za-z_$][\w$]*$/,forbidden=new Set([
+    '__proto__','constructor','prototype','arguments','eval','Function','process',
+    'globalThis','window','document','this','NaN','Infinity','undefined'
+  ]);
+  if(!spec||!Array.isArray(params)||params.length<1||params.length>3
+    ||params.some(p=>typeof p!=='string'||!legal.test(p)||forbidden.has(p))
+    ||new Set(params).size!==params.length
+    ||!Array.isArray(examples)||examples.length<3||examples.length>18
+    ||!Array.isArray(holdouts)||holdouts.length<2||holdouts.length>12)
+    throw Error('VIBE59_ALGORITHM_EXPLICIT_EXAMPLES_REQUIRED');
+  const rows=[...examples,...holdouts],keys=new Set();
+  for(const row of rows){
+    if(!row||!Array.isArray(row.args)||row.args.length!==params.length
+      ||row.args.some(x=>typeof x!=='number'||!Number.isFinite(x)||Math.abs(x)>1e6)
+      ||typeof row.output!=='number'||!Number.isFinite(row.output)||Math.abs(row.output)>1e7)
+      throw Error('VIBE59_ALGORITHM_INVALID_ORACLE');
+    const key=JSON.stringify(row.args);
+    if(keys.has(key))throw Error('VIBE59_ALGORITHM_DUPLICATE_INPUT');
+    keys.add(key);
+  }
+  const constants=[0,1,-1,2,...(Array.isArray(spec.constants)?spec.constants:[])];
+  if(constants.length>12||constants.some(x=>typeof x!=='number'||!Number.isFinite(x)||Math.abs(x)>1000))
+    throw Error('VIBE59_ALGORITHM_CONSTANTS_INVALID');
+  const fixed=[...new Set(constants)];
+  const valid=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
+  const close=(a,b)=>valid(a)&&Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b));
+  const original=new Set(rows.map((row,i)=>i));
+  const active=new Set(examples.map((_,i)=>i));
+  const seenCounterexamples=[],maxDepth=Math.max(1,Math.min(4,Number.isInteger(spec.maxDepth)?spec.maxDepth:3));
+  let searched=0,passes=0,selected=null;
+  function attempt(){
+    const candidates=[],semantic=new Map();
+    const normalized=value=>valid(value)?Number(value.toPrecision(10)).toString():'invalid';
+    const signature=values=>[...active].map(i=>normalized(values[i])).join('|');
+    const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
+      valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
+    function add(expr,values,cost,variables,depth){
+      if(!variables||expr.length>170||values.some(v=>!valid(v)))return;
+      const key=signature(values),prev=semantic.get(key);
+      if(prev&&prev.cost<=cost)return;
+      const row={expr,values,cost,variables,depth,error:error(values)};
+      semantic.set(key,row);
+      candidates.push(row);searched++;
+    }
+    for(const [j,p] of params.entries())add(p,rows.map(row=>row.args[j]),1,1,0);
+    for(const c of fixed)add(String(c),rows.map(()=>c),1,0,0);
+    const operators=[
+      ['+', (a,b)=>a+b],['-',(a,b)=>a-b],['*',(a,b)=>a*b],
+      ['/',(a,b)=>b===0?NaN:a/b],['min',(a,b)=>Math.min(a,b)],
+      ['max',(a,b)=>Math.max(a,b)]
+    ];
+    function best(){
+      const eligible=[...semantic.values()].filter(x=>x.variables&&[...active].every(i=>close(x.values[i],rows[i].output)))
+        .sort((a,b)=>a.cost-b.cost||a.expr.localeCompare(b.expr));
+      return eligible[0]||null;
+    }
+    let winner=best();
+    if(winner)return winner;
+    for(let d=1;d<=maxDepth;d++){
+      const prior=[...semantic.values()].filter(x=>x.depth<d)
+        .sort((a,b)=>a.error-b.error||a.cost-b.cost||a.expr.localeCompare(b.expr));
+      const pool=[...new Map([...prior.filter(x=>x.depth===0).slice(0,14),
+        ...prior.slice(0,64)].map(x=>[x.expr,x])).values()].slice(0,76);
+      const newer=pool.filter(x=>x.depth===d-1);
+      for(const a of newer){
+        for(const [label,operation] of [['abs',Math.abs],['floor',Math.floor],['round',Math.round],['neg',n=>-n]]){
+          const vals=a.values.map(operation);
+          add(label==='neg'?'(-'+a.expr+')':'Math.'+label+'('+a.expr+')',vals,a.cost+1,a.variables,d);
+        }
+      }
+      for(const a of pool){
+        for(const b of pool){
+          if(Math.max(a.depth,b.depth)!==d-1||a.cost+b.cost>12)continue;
+          for(const [op,fn] of operators){
+            if(['+','*','min','max'].includes(op)&&a.expr>b.expr)continue;
+            const values=a.values.map((v,i)=>fn(v,b.values[i]));
+            const expr=['min','max'].includes(op)?'Math.'+op+'('+a.expr+','+b.expr+')':
+              '('+a.expr+op+b.expr+')';
+            add(expr,values,a.cost+b.cost+1,a.variables+b.variables,d);
+          }
+        }
+      }
+      winner=best();
+      if(winner)return winner;
+      if(searched>150000)break;
+    }
+    return null;
+  }
+  // 반례를 찾을 때마다 탐색 제약에 넣는다. 검증 예시는 탐색 초기 학습에 사용하지 않는다.
+  for(let round=0;round<=holdouts.length;round++){
+    const candidate=attempt();
+    if(!candidate)break;
+    const mismatch=[...original].find(i=>!close(candidate.values[i],rows[i].output));
+    if(mismatch===undefined){selected=candidate;passes=rows.length;break;}
+    if(active.has(mismatch))break;
+    active.add(mismatch);seenCounterexamples.push(mismatch-examples.length);
+  }
+  if(!selected)throw Error('VIBE59_ALGORITHM_NO_VERIFIED_CANDIDATE');
+  return Object.freeze({expression:selected.expr,parameters:Object.freeze([...params]),
+    source:'return '+selected.expr+';',complexity:selected.cost,
+    casesPassed:passes,trainingCases:examples.length,heldOutCases:holdouts.length,
+    counterexamples:Object.freeze(seenCounterexamples),
+    candidatesConsidered:searched,search:'BOUNDED_ENUMERATIVE_CEGIS',
+    modelUsed:false,sourceWrite:false,runtimeVerified:false,
+    exactGameQaRequired:true,authority:'owner-example-constrained-candidate-only'});
+}
+
 export function synthesizeVibe59StateLogic({rule={},target='web'}={}){
   if(!['web','roblox'].includes(target))throw Error('VIBE59_TARGET_UNSUPPORTED');
   if(!rule.when||!Array.isArray(rule.then)||!rule.then.length||rule.then.length>8)
