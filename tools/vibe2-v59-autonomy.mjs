@@ -199,6 +199,7 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='gt'||op==='lt')return target==='roblox'
       ?'(('+x+op.replace('gt','>').replace('lt','<')+y+') and 1 or 0)'
       :'('+x+(op==='gt'?'>':'<')+y+'?1:0)';
+    if(op==='%')return target==='roblox'?'math.fmod('+x+','+y+')':'('+x+'%'+y+')';
     if(op==='select'){
       const z=render(c,target);
       return target==='roblox'?'(('+x+'>0) and ('+y+') or ('+z+'))'
@@ -349,7 +350,8 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     }
     const operators=[
       ['+', (a,b)=>a+b],['-',(a,b)=>a-b],['*',(a,b)=>a*b],
-      ['/',(a,b)=>b===0?NaN:a/b],['min',(a,b)=>Math.min(a,b)],
+      ['/',(a,b)=>Math.abs(b)<1e-9?NaN:a/b],
+      ['%',(a,b)=>Math.abs(b)<1e-9?NaN:a%b],['min',(a,b)=>Math.min(a,b)],
       ['max',(a,b)=>Math.max(a,b)]
     ];
     function best(){
@@ -605,7 +607,9 @@ export function renderVibe59NumericLuaAST(node,params){
     if(op==='min'||op==='max')return 'math.'+op+'('+x+','+y+')';
     if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
     if(op==='select')return '(('+x+'>0) and ('+y+') or ('+render(c)+'))';
-    if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
+    // Lua's % uses floor-division remainder; fmod preserves JavaScript's
+    // truncation-toward-zero semantics for negative dividends and signed zero.
+    if(op==='%')return 'math.fmod('+x+','+y+')';
     return '('+x+op+y+')';
   }
   return render(ast);
