@@ -655,7 +655,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.anchor.position.z+=(destZ-actor.anchor.position.z)*glide;
         actor.anchor.rotation.y+=Math.atan2(Math.sin(turnTo-actor.anchor.rotation.y),Math.cos(turnTo-actor.anchor.rotation.y))*turnEase;
       }
-      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      actor.anchor.userData.worldPoint={x:e.x,y:e.y,monsterId:e.netId};
       syncBestiaryName(actor,e,state,2.35);
       // The game owns the tap-target/attack decision. Native skinned surfaces only
       // provide the correct original world coordinates to its existing handler.
@@ -777,7 +777,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.anchor.rotation.z=.20;
         if(actor.anchor.scale)actor.anchor.scale.y=.70;
       }else{actor.anchor.rotation.z=0;if(actor.anchor.scale)actor.anchor.scale.y=1}
-      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      actor.anchor.userData.worldPoint={x:e.x,y:e.y,monsterId:e.netId};
       syncBestiaryName(actor,e,state,Math.max(1.5,(Number(e.type?.r)||20)*SCALE*2.2)+.2);
       if(actor.anchor.visible)actor.model.traverse(child=>{
         if(!child.isMesh)return;
@@ -1293,6 +1293,25 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     const normalized=new THREE.Vector2(clientX/Math.max(1,lastW)*2-1,-(clientY/Math.max(1,lastH))*2+1);
     raycaster.setFromCamera(normalized,camera);
     const hits=raycaster.intersectObjects(interactables,false);
+    if(hits.length){
+      const hit=hits[0],point=hit.object.userData.worldPoints?.[hit.instanceId]||hit.object.userData.worldPoint;
+      if(point?.monsterId)return {...point};
+    }
+    // 메인 · 모바일 3D 몬스터 터치는 실제 리그의 화면 투영 위치까지 검사한다.
+    const projected=new THREE.Vector3();
+    let nearest=null,nearestDistance=52*52;
+    for(const actors of [nativeCreatureActors,undeadActors]){
+      for(const actor of actors.values()){
+        const target=actor.anchor.userData.worldPoint;
+        if(!actor.anchor.visible||!target?.monsterId)continue;
+        projected.copy(actor.anchor.position);projected.y+=1.1;projected.project(camera);
+        if(projected.z< -1||projected.z>1)continue;
+        const dx=(projected.x+1)*lastW/2-clientX,dy=(1-projected.y)*lastH/2-clientY;
+        const d=dx*dx+dy*dy;
+        if(d<nearestDistance){nearestDistance=d;nearest=target}
+      }
+    }
+    if(nearest)return {...nearest};
     if(hits.length){
       const hit=hits[0],point=hit.object.userData.worldPoints?.[hit.instanceId]||hit.object.userData.worldPoint;
       if(point)return {...point};
