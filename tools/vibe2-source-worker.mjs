@@ -9070,7 +9070,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   // Vibe5.9 bounded compositional synthesis: no cloud AI or source write.
   // Owner-approved source scope and the original Vibe2 validator still decide admission.
   if(!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
-    const v59=createVibe59CodeCandidates({order,sourceRoot,responsibleFiles,target});
+    const v59=createVibe59CodeCandidates({order,sourceRoot,responsibleFiles,target,
+      verifiedCodePatterns:readVerifiedCodePatternsForSourceWorker().patterns});
     if(v59){
       const candidate=normalizeCandidate(v59,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
