@@ -2,7 +2,7 @@
 // 임포트: 기존 Vibe 게임 생성기와 에셋 런타임의 CC0 GLB 연결 회귀 검사
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createHash, webcrypto} from 'node:crypto';
+import {createHash} from 'node:crypto';
 import {buildGeneratedGame, normalizeGeneratedGameAssets} from '../assets/game-generator.js';
 import {JaewoonVibeRuntime} from '../assets/vibe-runtime.js';
 
@@ -65,9 +65,7 @@ test('existing runtime verifies real GLB header and byte hash before scene cachi
   header.setUint32(16, 0x4e4f534a, true);
   const hash = createHash('sha256').update(new Uint8Array(glb)).digest('hex');
   const originalFetch = globalThis.fetch;
-  const originalCrypto = globalThis.crypto;
   try {
-    globalThis.crypto=webcrypto;
     globalThis.fetch=async()=>({ok:true,arrayBuffer:async()=>glb});
     const runtime=new JaewoonVibeRuntime({gameId:'glb-hash-test',assetBaseUrl:'https://example.test/'});
     const bytes=await runtime.readAsset({url:'https://example.test/actor.glb',type:'binary',format:'glb',sha256:hash});
@@ -78,6 +76,5 @@ test('existing runtime verifies real GLB header and byte hash before scene cachi
     runtime.destroy();
   } finally {
     globalThis.fetch=originalFetch;
-    globalThis.crypto=originalCrypto;
   }
 });
