@@ -28,7 +28,7 @@ test('owner plain-English WEB stat clamp synthesizes a real unique inline game e
  assert.equal(candidate.runtimeVerified,false);
  assert.equal(candidate.ruleDigest.length,64);
  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),html);
- const patched=new Map();
+ const patched=new Map([['index.html',html]]);
  applyExactEdits(root,candidate.edits,{documents:patched});
  assert.match(patched.get('index.html'),/Math\.min\(25, Math\.max\(0, baseSpeed\)\)/);
  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),html);
