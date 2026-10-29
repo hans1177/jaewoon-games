@@ -20,8 +20,8 @@ function generatedScriptForVm(source){
   "import {createVibeCanvasVfx} from '../../assets/vibe-game-world-runtime.mjs';",
   "import {VibePresentationEngine} from '../../assets/vibe-presentation-engine.mjs';"
  ];
- assert.deepEqual(source.match(/^import [^\\n]+;$/gm)||[],expected);
- return source.replace(/^import [^\\n]+;\\n/gm,'');
+ assert.deepEqual(source.match(/^import [^\n]+;$/gm)||[],expected);
+ return source.replace(/^import [^\n]+;\n/gm,'');
 }
 class MockGeneratedPresentation{
  constructor(){this.settings={reducedMotion:false}}
