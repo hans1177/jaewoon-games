@@ -1352,7 +1352,7 @@ test('one-shot volume pack draws facilities, RPG maps, backgrounds, sprites, act
  const generated=docs.get(filename),runtimeName=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
  assert.ok(runtimeName);assert.doesNotThrow(()=>new vm.Script(generated));
  const displayed=[],canvas={width:1000,height:800};
- const ctx={canvas,save(){},restore(){},translate(){},scale(){},beginPath(){},arc(){},
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},beginPath(){},arc(){},
   fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
   fillText(s){displayed.push(s);}};
  canvas.getContext=()=>ctx;
