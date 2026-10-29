@@ -214,6 +214,29 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     exactGameQaRequired:true,authority:'owner-example-constrained-candidate-only'});
 }
 
+// [메인] 생성된 수치 알고리즘은 기존 단일 책임 함수 본문을 정확히 교체한다.
+// 임의 함수 실행/새 저장값/외부 모델 코드는 허용하지 않는다.
+export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relative=''}={}){
+  const name=spec?.functionName,params=spec?.parameters;
+  if(spec?.ownerApproved!==true||typeof name!=='string'
+    ||!/^[A-Za-z_$][\w$]{0,59}$/.test(name)
+    ||!Array.isArray(params)||!params.length
+    ||typeof source!=='string'||source.length<18||source.length>260000
+    ||!/\.(?:js|mjs|cjs)$/i.test(relative))
+    throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
+  const declaration=new RegExp('\\bfunction\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\{\\s*return\\s+([^;{}]+);\\s*\\}', 'g');
+  const matches=[...source.matchAll(declaration)];
+  if(matches.length!==1||matches[0][1].split(',').map(x=>x.trim()).join(',')!==params.join(',')
+    ||/[^A-Za-z0-9_$+\-*/%().,\s]/.test(matches[0][2])
+    ||/\b(?:eval|Function|import|require|process|this|window|globalThis|localStorage|sessionStorage)\b/.test(matches[0][2]))
+    throw Error('VIBE59_ALGORITHM_EXISTING_PURE_FUNCTION_REQUIRED');
+  const result=synthesizeVibe59NumericAlgorithm({spec});
+  const oldText=matches[0][0],newText=oldText.replace(/return\s+[^;{}]+;/,'return '+result.expression+';');
+  if(oldText===newText)throw Error('VIBE59_ALGORITHM_NO_SOURCE_DELTA');
+  return Object.freeze({oldText,newText,search:result,
+    sourceWrite:false,modelUsed:false,runtimeVerified:false,
+    authority:'existing-exact-function-replacement-only'});
+}
 export function synthesizeVibe59StateLogic({rule={},target='web'}={}){
   if(!['web','roblox'].includes(target))throw Error('VIBE59_TARGET_UNSUPPORTED');
   if(!rule.when||!Array.isArray(rule.then)||!rule.then.length||rule.then.length>8)
@@ -314,7 +337,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction,req?.robloxCraftingAction].filter(Boolean);
   if(!req||req.ownerApproved!==true||!req.path||!req.find
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
-       Boolean(req.rule)===Boolean(req.machine)))
+       [Boolean(req.rule),Boolean(req.machine),Boolean(req.algorithmSpec)].filter(Boolean).length!==1))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
   const relative=clean(req.path).replaceAll('\\','/');
   if(!relative||relative.startsWith('/')||relative.includes('//')
@@ -332,6 +355,20 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
+  if(req.algorithmSpec){
+    if(target!=='web')throw Error('VIBE59_ALGORITHM_WEB_ONLY');
+    const generated=synthesizeVibe59NumericAlgorithmSource({spec:{...req.algorithmSpec,
+      ownerApproved:req.ownerApproved===true},source:content,relative});
+    if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
+    return Object.freeze({summary:'Vibe5.9 counterexample-guided invented numeric algorithm',
+      expectedEffect:'Verified owner examples and held-out cases bound the new existing-function algorithm',
+      edits:[{path:relative,find,replace:generated.newText}],newFiles:[],replaceFiles:[],
+      tests:[],vibe59CodeKind:'WEB_SYNTHESIZED_NUMERIC_ALGORITHM',
+      vibe59TestPlan:{pass:true,cases:[...req.algorithmSpec.examples,...req.algorithmSpec.holdouts],
+        trainingCases:generated.search.trainingCases,heldOutCases:generated.search.heldOutCases},
+      algorithmProof:generated.search,ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
+      sourceWrite:false,modelUsed:false,runtimeVerified:false});
+  }
   if(req.robloxCraftingAction){
     const generated=synthesizeVibe59CraftingTransaction({spec:req.robloxCraftingAction,
       source:content,sourcePath:relative,replaceAnchor:find});
