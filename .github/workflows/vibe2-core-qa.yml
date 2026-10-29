@@ -369,7 +369,8 @@ jobs:
           fi
           changed_web_games=ALL
           if [ "$EVENT_NAME" = 'pull_request' ]; then
-            changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
+            # Vibe Maker는 제작 도구이며 실제 게임 폴더가 아니다. 다른 미등록 게임은 계속 검증한다.
+            changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ && $2 != "vibe-maker" {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
             [ -n "$changed_web_games" ] || changed_web_games=NONE
             if grep -Eq '^(game-catalog\.json|tools/vibe2-existing-web-assessment\.mjs)$' /tmp/vibe2-core-qa-files.txt; then changed_web_games=ALL; fi
           fi
