@@ -842,7 +842,7 @@ test('Vibe5.9 Lua compiler fails closed on malformed, cyclic and injected AST',(
    ['unknown',['param',0],['param',1]],
    ['select',['param',0],['param',1]]
  ];
- for(const ast of cases.filter(row=>row?.kind!=='constant'))
+ for(const ast of cases)
    assert.throws(()=>renderVibe59NumericLuaAST(ast,['x','y']),/LUA_AST_REQUIRED/);
  assert.throws(()=>renderVibe59NumericLuaAST(['param',0],['__proto__']),
    /LUA_PARAMETERS_INVALID/);
