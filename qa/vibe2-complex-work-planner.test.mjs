@@ -485,6 +485,6 @@ test('Roblox server Luau chain preserves owned state, display, save and source w
   assert.equal(run.status,0,run.stderr);assert.match(run.stdout,/SERVER_CHAIN_LUAU=PASS/);
  }
  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
- fs.writeFileSync(path.join(root,file),source.replace('local function save()\n','local function save(actor: any)\n'));
+ fs.writeFileSync(path.join(root,file),source.replace('local function save()\n','local function save(missing: any)\n'));
  assert.equal(planComplexGameWork(options).status,'BLOCKED');
 });
