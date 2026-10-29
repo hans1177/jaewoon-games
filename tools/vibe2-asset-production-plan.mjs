@@ -2438,7 +2438,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   // [자동 파생 자산화] 기존 GRAPHICS_PRODUCTION 동기화가 실제 DCC 결과만 PREPARED 후보로 등록한다.
   // 원본 모델·게임 코드는 불변이며 native 런타임 QA 없이 productionVerified를 올리지 않는다.
   let organizationAssetsChanged=false;
-  const derivedSync={inspected:0,registered:0,rejected:0,failureCounts:{}};
+  const derivedSync={inspected:0,registered:0,duplicates:0,rejected:0,failureCounts:{}};
+  const verifiedDerivativeFingerprints=new Map();
   const derivedRoot=path.join(repoRoot,'assets','generated');
   let canonicalAssetRoot='',canonicalDerivedRoot='';
   try{
@@ -2558,7 +2559,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
             const masterQa=inspectVibeSourceGlb({repoRoot,source:{path:masterPath,sourceHash:masterHash}});
             if(staticQa.status!=='INSPECTED_RECONSTRUCTION_INPUT'||masterQa.status!=='INSPECTED_RECONSTRUCTION_INPUT')
               throw new Error('DERIVED_ASSET_GLB_STATIC_QA_FAILED');
+            // [중복 정리] 동일한 검증 바이트·권리·패밀리의 파생본은 하나의 정본을 가리킨다.
+            // 사용 중인 경로와 게임별 레시피는 삭제하거나 임의로 재연결하지 않는다.
+            const dedupFingerprint=[platform,family,license,artifactHash].join(':');
             const id='derived-'+platform+'-'+game.name+'-'+type.name,existing=registryAssetById.get(id);
+            const duplicateOf=verifiedDerivativeFingerprints.get(dedupFingerprint)||null;
+            if(!duplicateOf)verifiedDerivativeFingerprints.set(dedupFingerprint,id);
+            else derivedSync.duplicates++;
             if(existing?.productionVerified===true||existing?.verifiedCompanyReusable===true)continue;
             const candidate={
               id,title:clean(parent.title)||id,family,role:clean(parent.role)||null,
@@ -2567,6 +2574,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
               sourceFiles:[sourcePath,assetPath,masterPath],nativeArtifacts:[assetPath,masterPath],
               sourceHash:originalHash,sourceSha256:originalHash,artifactHash,masterGlbHash:masterHash,
               license:parent.license,sourceUrl:clean(parent.sourceUrl)||null,
+              licenseEvidenceUrl:clean(parent.licenseEvidenceUrl)||null,
+              duplicateOf,sourceDependencyIds:[clean(parent.id)],
               sourceCredit:clean(provenance.attribution)||null,parentSourceId:clean(parent.id),
               transformHistory:[...provenance.transformHistory],generator:evidence.generator,
               evidenceRef:evidencePath,applicationRef:applicationPath,
