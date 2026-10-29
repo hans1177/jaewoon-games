@@ -97,6 +97,9 @@ test('Roblox game-primary can request allowlisted free coding models without exp
     " && (vars.VIBE2_ROBLOX_NO_MODEL_ONLY || 'false') || 'true' }}"));
   assert.ok(workflow.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}"),
     'unverified Groq plan must not be treated as free');
+  const freeTierKeyGuard="GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}";
+  assert.equal(workflow.split(freeTierKeyGuard).length-1,2,
+    'both inference and practice paths must withhold credentials unless the owner verifies a free-tier project');
   assert.match(workflow,/VIBE2_PAID_API=NO/);
   assert.match(workflow,/VIBE2_OPENAI_PAID_API_ALLOWED.*false/);
   const provider=fs.readFileSync('tools/vibe2-gemini-free-rotation.mjs','utf8');
