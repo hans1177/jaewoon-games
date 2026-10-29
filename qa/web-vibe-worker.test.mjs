@@ -526,6 +526,7 @@ test('Vibe5.9 invents nontrivial arithmetic algorithms using counterexample-guid
  assert.equal(result.casesPassed,6);
  assert.equal(result.heldOutCases,2);
  assert.ok(result.counterexamples.length>=1,'initial x-only overfit must yield at least one holdout counterexample');
+ assert.ok(Number.isSafeInteger(result.candidatesConsidered));
  assert.ok(result.candidatesConsidered>2);
  assert.equal(result.runtimeVerified,false);
  assert.equal(result.sourceWrite,false);
