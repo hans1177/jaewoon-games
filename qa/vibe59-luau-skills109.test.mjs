@@ -120,6 +120,7 @@ test('autonomy planning lists 109 recipes as not runtime verified',()=>{
  assert.equal(plan.skillCatalog.systems.length,11);
  assert.equal(plan.skillCatalog.runtimeVerified,false);
  assert.equal(plan.sourceWrite,false);
+ assert.equal(plan.synthesisCandidateAvailable,false);
 });
 
 
@@ -137,6 +138,8 @@ test('Vibe5.9 complex offline design compiles dependency-ordered gameplay code a
   find:'-- INSERT',robloxSkill109:bestiary.spec,scenarios:bestiary.scenarios};
  const options={sourceRoot:root,responsibleFiles:files,target:'roblox'};
  const order={vibe59CodeRequests:[record,pick]};
+ assert.equal(buildVibe59AutonomyPlan({order,target:'roblox'}).synthesisCandidateAvailable,true);
+ assert.equal(buildVibe59AutonomyPlan({order:{selectedTask:order},target:'roblox'}).synthesisCandidateAvailable,true);
  const result=createVibe59CodeCandidates({...options,order});
  assert.equal(result.vibe59CodeKind,'COMPOSED_OFFLINE_SOURCE');
  assert.deepEqual(result.vibe59DesignSteps.map(row=>row.id),['pickup','record']);
