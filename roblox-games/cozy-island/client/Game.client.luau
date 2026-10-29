@@ -1,3 +1,14 @@
+-- [Vibe 공용 프레젠테이션] 기존 버튼 트윈/글로우 재사용. 전투·저장 불변.
+task.defer(function()
+ local player=game:GetService("Players").LocalPlayer
+ if not player then return end
+ local shared=game:GetService("ReplicatedStorage"):FindFirstChild("Shared") or game:GetService("ReplicatedStorage"):WaitForChild("Shared",8)
+ if not shared then return end
+ local module=shared:FindFirstChild("RobloxCommonPresentation")
+ if not module or not module:IsA("ModuleScript") then return end
+ local ok,presentation=pcall(require,module)
+ if ok and type(presentation.BindGameUiEffects)=="function" then presentation.BindGameUiEffects(player) end
+end)
 -- 파일명: roblox-games/cozy-island/client/Game.client.luau
 -- roblox-games/cozy-island/client/Game.client.luau
 -- 포근섬 모바일 우선 HUD / 채집·건설·전투 조작
