@@ -1131,6 +1131,7 @@ local function addObjectiveStation(f,name,pos,index)
    base:SetAttribute("ObjectiveRound",objectiveState.round)
    objectiveState.done=math.min(math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4),objectiveState.done+1)
    screen.Color=Color3.fromRGB(96,231,166)
+   prompt.ActionText="충전"
    syncObjectiveProgress()
    local total=math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4)
    for _,player in ipairs(Players:GetPlayers())do
@@ -2534,6 +2535,18 @@ local function startRound()
  local startingMonsters=selectStartingMonsters(h)
  objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount
  escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
+ -- 동일 맵의 기존 Arena를 재사용하면 지난 판의 출구 충돌/프롬프트와 단말 화면도 남는다.
+ -- 다음 라운드의 단말 4개를 다시 가동하기 전에는 출구를 반드시 잠근다.
+ for _,object in ipairs(arena:GetDescendants())do
+  if object:IsA("BasePart")then
+   if object.Name=="EmergencyGate"then object.CanCollide=true;object.Transparency=0
+   elseif object.Name=="EmergencySign"then object.Color=Color3.fromRGB(112,130,145)
+   elseif string.sub(object.Name,1,13)=="EnergyScreen_"then object.Color=Color3.fromRGB(84,181,235)end
+  elseif object:IsA("ProximityPrompt")then
+   if object.Name=="EscapePrompt"then object.Enabled=false
+   elseif object.Name=="EnergyPrompt"then object.ActionText="가동 / 충전"end
+  end
+ end
  local survivorOrder=Room.shuffledSpawns(survivorSpawns)
  local monsterOrder=Room.shuffledSpawns(monsterSpawns)
  -- Roblox 엔진 리스폰은 항상 bootstrap 하나만 사용한다. 실제 경기 위치는 아래 role teleport가 책임진다.
