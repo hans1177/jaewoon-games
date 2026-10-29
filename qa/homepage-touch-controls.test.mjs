@@ -169,15 +169,20 @@ test('홈페이지는 보조 상태·플랫폼 정보가 실패해도 원본 카
       homepage:{runtime:{developmentActive:true}}}
   }]};
   const storage={getItem(){return null},setItem(){},removeItem(){}};
+  const requests=[],errors=[];
   const context={document,window:{addEventListener(){},alert(){}},localStorage:storage,
     sessionStorage:storage,URL,AbortSignal,setInterval(){},location:{},navigator:{},
-    console:{error(error){throw new Error(String(error));}},
-    fetch:async url=>String(url).endsWith('/game-catalog.json')
-      ?{ok:true,json:async()=>catalog}:{ok:false,json:async()=>null}};
+    console:{error(...args){errors.push(args.map(String).join(' '));}},
+    fetch:async url=>{
+      requests.push(String(url));
+      return String(url).endsWith('/game-catalog.json')
+        ?{ok:true,json:async()=>catalog}:{ok:false,json:async()=>null};
+    }};
   vm.runInNewContext(homepage.replaceAll('import.meta.url',
     JSON.stringify('https://hans1177.github.io/jaewoon-games/assets/homepage-enhancements.js')),context);
   await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(nodes.get('metricDevelopment').textContent,'1');
+  assert.equal(nodes.get('metricDevelopment')?.textContent,'1',
+    'HOME_CATALOG_FETCH_DIAGNOSTIC '+JSON.stringify({requests,errors,created:[...nodes.keys()]}));
   const content=cards.map(card=>card.innerHTML).join('');
   assert.match(content,/QA 게임/);
   assert.match(content,/homeDeleteButton/);
