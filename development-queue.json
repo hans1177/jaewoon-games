@@ -3564,8 +3564,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -3584,14 +3584,14 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxSharedTargetCurrent": false,
+      "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-29T14:32:10.763Z",
+      "updatedAt": "2026-10-29T14:35:27.643Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3605,10 +3605,10 @@
       "robloxPublicReleaseReady": false,
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -4216,7 +4216,27 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "platform": "ROBLOX",
+        "sourceRevision": "788f1725aaf85fa58e9a809039c42dec50504644",
+        "artifactIdentity": "sha256:d21e37ed5661858aad867fa482b3425adb3bbea31da29e02c30cbdfe8a46d466",
+        "artifactRunId": 40890499941,
+        "universeId": "10773091436",
+        "placeId": "127826577038785",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "canonicalGameTarget": false,
+        "validationOnly": true,
+        "exposure": "PRIVATE_PRE_F9_VALIDATION_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 4,
+        "workflowRunId": 40892466920,
+        "publishedAt": "2026-10-29T14:35:27.643Z",
+        "authority": "roblox-open-cloud-pre-f9-validation-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxRuntimePassedAt": null,
@@ -4785,7 +4805,7 @@
       "robloxHeadlessPassedAt": null,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "37240c9ef31d7756506a4e49146db1b9fdbc54ff",
         "newSourceRevision": "3ab492e99050feb484ff5b92afcbe15bb9e59115",
@@ -4806,7 +4826,7 @@
         "placeId": "127826577038785",
         "verified": true,
         "verifiedAt": "2026-10-27T08:53:10.774Z",
-        "lastVerifiedAt": "2026-10-28T06:07:55.664Z",
+        "lastVerifiedAt": "2026-10-29T14:35:27.643Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-pre-f9-validation-target",
         "dedicated": true,
@@ -4883,7 +4903,7 @@
         }
       },
       "robloxCanonicalPublishPending": false,
-      "robloxReleaseVersionNumber": 3,
+      "robloxReleaseVersionNumber": 4,
       "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
@@ -7075,7 +7095,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-29T14:34:03.787Z",
+  "updatedAt": "2026-10-29T14:35:27.643Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
