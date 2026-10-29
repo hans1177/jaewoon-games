@@ -690,20 +690,20 @@ test('Vibe5.9 no-model ceiling synthesis preserves signed and integral holdouts 
   assert.equal(selected.modelUsed,false);
   assert.equal(selected.runtimeVerified,false);
   assert.equal(selected.sourceWrite,false);
-  assert.match(selected.source,/Math\\.ceil\\(x\\)/);
+  assert.match(selected.source,/Math\.ceil\(x\)/);
   const web=vm.runInNewContext('(function(x){'+selected.source+'})');
   for(const row of [...spec.examples,...spec.holdouts])
    assert.equal(web(...row.args),row.output);
   assert.equal(renderVibe59NumericLuaAST(selected.ast,['x']),'math.ceil(x)');
  }
- const original='local function roundUp(x)\\n return 0\\nend\\n';
+ const original='local function roundUp(x)\n return 0\nend\n';
  const compiled=synthesizeVibe59NumericAlgorithmSource({
   spec:{...spec,ownerApproved:true,functionName:'roundUp'},
   source:original,relative:'ServerScriptService/roundUp.luau',target:'roblox'});
- assert.match(compiled.newText,/return math\\.ceil\\(x\\)/);
+ assert.match(compiled.newText,/return math\.ceil\(x\)/);
  assert.equal(compiled.sourceWrite,false);
  assert.equal(compiled.runtimeVerified,false);
- assert.equal(original,'local function roundUp(x)\\n return 0\\nend\\n');
+ assert.equal(original,'local function roundUp(x)\n return 0\nend\n');
 });
 
 test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure function',()=>{
