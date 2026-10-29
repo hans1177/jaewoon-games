@@ -276,12 +276,12 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
      callees[0].parent&&!ancestors.has(callees[0].parent)){
     unresolved.push({id:r.id,code:'CALL_OWNERSHIP_UNPROVEN'});continue;
    }
-   // 인자는 원래 책임 함수의 동일 순서 매개변수만 전달한다. Luau 지역 선언은 끌어올려지지 않는다.
+   // 호출 대상 인자 이름을 원래 책임 함수의 고유 매개변수에 직접 결합한다. Luau 지역 선언은 끌어올려지지 않는다.
    const callee=callees[0];let forwardedArguments;
    try{
     const formals=symbol=>explicitParameterNames(/\(([^()]*)\)/.exec(file.code.slice(symbol.start,symbol.bodyStart))?.[1]??'...');
     const available=formals(owner);forwardedArguments=formals(callee);
-    if(forwardedArguments.some((name,i)=>available[i]!==name||owner.locals.includes(name))||
+    if(forwardedArguments.some(name=>!available.includes(name)||owner.locals.includes(name))||
       [...available,...owner.locals].includes(r.callee)||callee.unsupported.length||
       (target==='roblox'&&callee.start>=owner.start))throw Error('UNPROVEN_CALL');
    }catch{unresolved.push({id:r.id,code:'CALL_PARAMETER_BINDING_UNPROVEN'});continue}

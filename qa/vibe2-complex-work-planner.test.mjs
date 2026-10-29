@@ -265,6 +265,56 @@ test('existing-call blocks guessed, default, rest and shadowed argument bindings
  }
 });
 
+// 회귀: 순서가 다른 시그니처도 같은 이름의 기존 매개변수만 사용한다.
+test('existing-call forwards reordered verified WEB arguments and preserves original source',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={hp:0,shown:0};\nfunction give(){state.hp+=1;}\nfunction render(offset,actor){state.shown=state.hp+offset+actor.bias;}\nfunction collect(actor,offset){\n give();\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.match(candidate.edits[0].replace,/render\(offset, actor\);/);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const state=vm.runInNewContext(docs.get('game.js')+'collect({bias:2},3);collect({bias:4},5);state;');
+ assert.equal(state.hp,2);assert.equal(state.shown,11);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+ const subset=source.replace('render(offset,actor){state.shown=state.hp+offset+actor.bias;}',
+  'render(offset){state.shown=state.hp+offset;}');
+ fs.writeFileSync(path.join(root,'game.js'),subset);
+ const subsetCandidate=createVibe59CodeCandidates(options);
+ assert.match(subsetCandidate.edits[0].replace,/render\(offset\);/);
+ const subsetDocs=new Map([['game.js',subset]]);
+ applyExactEdits(root,subsetCandidate.edits,{documents:subsetDocs});
+ const subsetState=vm.runInNewContext(subsetDocs.get('game.js')+'collect({bias:9},5);state;');
+ assert.equal(subsetState.hp,1);assert.equal(subsetState.shown,6);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),subset);
+ fs.writeFileSync(path.join(root,'game.js'),source.replace('render(offset,actor)','render(offset,missing)'));
+ const blocked=planComplexGameWork({...options,baseRevisionSha:revision});
+ assert.equal(blocked.status,'BLOCKED');assert.equal(blocked.unresolved[0].code,'CALL_PARAMETER_BINDING_UNPROVEN');
+});
+
+test('server-local Luau forwards reordered typed parameter names without inventing values',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const file='server/Game.server.luau';
+ const source='local score = 0\nlocal function give()\n score += 1\nend\n'+
+  'local function render(offset: number, actor: any)\n actor.shown = score + offset\nend\n'+
+  'local function collect(actor: any, offset: number)\n give()\nend\n';
+ fs.writeFileSync(path.join(root,file),source);
+ const options={sourceRoot:root,responsibleFiles:[file],target:'roblox',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ const plan=planComplexGameWork(options);assert.equal(plan.status,'BOUND');
+ const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ assert.match(candidate.edits[0].replace,/render\(offset, actor\)/);
+ const docs=new Map([[file,source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ if(process.env.VIBE2_LUAU_BINARY){
+  const probe=path.join(root,'probe.luau');
+  fs.writeFileSync(probe,docs.get(file)+'\nlocal actor={shown=0}\ncollect(actor,3)\nassert(actor.shown==4)\ncollect(actor,5)\nassert(actor.shown==7)\nprint("REORDERED_LUAU=PASS")');
+  const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[probe],{encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/REORDERED_LUAU=PASS/);
+ }
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+});
+
 test('server-local native Luau existing-call preserves typed arguments and blocks later local declarations',t=>{
  const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
  const file='server/Game.server.luau';
