@@ -571,8 +571,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const pen=surface.getContext('2d');
       pen.fillStyle='rgba(3,14,12,.97)';pen.fillRect(5,5,758,118);
       pen.strokeStyle='#ecffdd';pen.lineWidth=7;pen.strokeRect(5,5,758,118);
-      pen.font='900 64px system-ui,sans-serif';pen.textAlign='center';pen.textBaseline='middle';
-      pen.strokeStyle='#010c08';pen.lineWidth=9;pen.lineJoin='round';
+      pen.font='900 76px system-ui,sans-serif';pen.textAlign='center';pen.textBaseline='middle';
+      pen.strokeStyle='#010c08';pen.lineWidth=11;pen.lineJoin='round';
       pen.strokeText(e.type.name,384,65,710);
       pen.fillStyle='#ffffff';pen.fillText(e.type.name,384,65,710);
       texture=new THREE.CanvasTexture(surface);texture.colorSpace=THREE.SRGBColorSpace;
