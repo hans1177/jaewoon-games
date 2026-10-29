@@ -143,12 +143,26 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
 export function ingestVerifiedCodePatterns({samplesDir='company-learning/training-samples',libraryInput={}}={}){
   const historical=(libraryInput?.patterns||[]).filter(x=>x?.verified===true);
   const byId=new Map(historical.map(x=>[clean(x.id),x]));
-  const freshIds=new Set();
+  const freshIds=new Set(),observedSamples=new Map();
   let examined=0,added=0;
   if(fs.existsSync(samplesDir)){
     for(const entry of fs.readdirSync(samplesDir,{withFileTypes:true}).filter(x=>x.isFile()&&x.name.endsWith('.json')).sort((a,b)=>a.name.localeCompare(b.name))){
-      const file=path.join(samplesDir,entry.name);let sample;try{sample=readJson(file,null);}catch{continue;} examined++;
-      for(const pattern of deriveVerifiedCodePatterns(sample,file)){
+      const file=path.join(samplesDir,entry.name);
+      let sample=null;
+      try{sample=readJson(file,null);}catch{}
+      examined++;
+      // Missing proof is not proof of a new regression; only an explicit
+      // failure, stale trace, replaced verified revision, or removed source
+      // can revoke previously accepted learning.
+      const runtime=upper(sample?.runtime||sample?.verification?.runtime||
+        sample?.verification?.trace?.runtime||sample?.provenance?.verificationTrace?.runtime);
+      const invalid=sample?.verification?.stale===true||sample?.verification?.flaky===true
+        ||sample?.verification?.trace?.stale===true||sample?.verification?.trace?.flaky===true
+        ||['FAIL','STALE','FLAKY','SHA_MISMATCH'].includes(runtime)
+        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.verification?.fullRegression));
+      const derived=sample?deriveVerifiedCodePatterns(sample,file):[];
+      observedSamples.set(entry.name,{invalid,hasFreshEvidence:derived.length>0});
+      for(const pattern of derived){
         if(!byId.has(pattern.id))added++;
         byId.set(pattern.id,pattern);
         freshIds.add(pattern.id);
@@ -166,7 +180,10 @@ export function ingestVerifiedCodePatterns({samplesDir='company-learning/trainin
   let quarantined=0,reactivated=0;
   for(const old of historical){
     if(!fromScannedFolder(old))continue;
-    if(!freshIds.has(old.id)){
+    const current=observedSamples.get(path.basename(clean(old.evidencePath)));
+    // Old samples without new native runtime attestations remain historical;
+    // do not mislabel an absent field as a newly observed failure.
+    if(!freshIds.has(old.id)&&(!current||current.invalid||current.hasFreshEvidence)){
       if(old.retrievalEligible!==false)quarantined++;
       byId.set(old.id,{...old,retrievalEligible:false,masteryEligible:false,
         quarantineReason:'SOURCE_SAMPLE_NOT_CURRENTLY_VERIFIED'});
