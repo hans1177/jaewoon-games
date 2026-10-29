@@ -404,7 +404,7 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     ||!/^[A-Za-z_$][\w$]{0,59}$/.test(name)
     ||!Array.isArray(params)||!params.length
     ||typeof source!=='string'||source.length<18||source.length>260000
-    ||typeof relative!=='string'||relative.startsWith('/')||relative.includes('\\\\')
+    ||typeof relative!=='string'||relative.startsWith('/')||relative.includes(String.fromCharCode(92))
     ||relative.split('/').some(part=>!part||part==='.'||part==='..')
     ||!/\.(?:js|mjs|cjs|lua|luau)$/i.test(relative))
     throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
