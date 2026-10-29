@@ -344,6 +344,75 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});
 }
+// Structured complex designs: independent verified changes to multiple functions
+// are compiled as one atomic candidate without any external model or main write.
+// A dependency cycle, stale anchor, missing proof or overlapping edit fails closed.
+export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
+  const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
+  if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target});
+  if(!Array.isArray(batch)||batch.length<2||batch.length>6)
+    throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
+  const indexed=batch.map((step,index)=>{
+    if(!step||typeof step!=='object'||Array.isArray(step)||step.ownerApproved!==true)
+      throw Error('VIBE59_COMPLEX_DESIGN_OWNER_APPROVAL_REQUIRED');
+    const id=clean(step.id||'step-'+(index+1));
+    if(!/^[A-Za-z][A-Za-z_0-9-]{0,63}$/.test(id))
+      throw Error('VIBE59_COMPLEX_DESIGN_INVALID_STEP_ID');
+    const deps=step.dependsOn||[];
+    if(!Array.isArray(deps)||deps.length>6||deps.some(item=>typeof item!=='string'))
+      throw Error('VIBE59_COMPLEX_DESIGN_DEPENDENCY_INVALID');
+    return{id,step,deps};
+  });
+  const byId=new Map(indexed.map(row=>[row.id,row]));
+  if(byId.size!==indexed.length)throw Error('VIBE59_COMPLEX_DESIGN_DUPLICATE_STEP');
+  const sorted=[],visiting=new Set(),visited=new Set();
+  function visit(id){
+    if(visited.has(id))return;
+    if(visiting.has(id))throw Error('VIBE59_COMPLEX_DESIGN_DEPENDENCY_CYCLE');
+    const row=byId.get(id);
+    if(!row)throw Error('VIBE59_COMPLEX_DESIGN_UNKNOWN_DEPENDENCY');
+    visiting.add(id);
+    for(const dependency of row.deps)visit(dependency);
+    visiting.delete(id);visited.add(id);sorted.push(row);
+  }
+  for(const row of indexed)visit(row.id);
+  const assembled=[],ranges=new Map(),originals=new Map();
+  for(const row of sorted){
+    const selectedTask={...(order.selectedTask||{}),vibe59CodeRequest:row.step};
+    const single=createVibe59CodeCandidate({
+      order:{...order,selectedTask,vibe59CodeRequest:row.step},sourceRoot,responsibleFiles,target
+    });
+    if(!single?.vibe59TestPlan?.pass||!Array.isArray(single.edits)||!single.edits.length
+      ||single.newFiles?.length||single.replaceFiles?.length)
+      throw Error('VIBE59_COMPLEX_DESIGN_UNVERIFIED_STEP:'+row.id);
+    for(const edit of single.edits){
+      let original=originals.get(edit.path);
+      if(original===undefined){
+        original=fs.readFileSync(path.resolve(sourceRoot,edit.path),'utf8');
+        originals.set(edit.path,original);
+      }
+      if(original.split(edit.find).length!==2)
+        throw Error('VIBE59_COMPLEX_DESIGN_ANCHOR_DRIFT:'+row.id);
+      const start=original.indexOf(edit.find),end=start+edit.find.length;
+      if((ranges.get(edit.path)||[]).some(pair=>start<pair.end&&end>pair.start))
+        throw Error('VIBE59_COMPLEX_DESIGN_OVERLAPPING_EDITS:'+row.id);
+      ranges.set(edit.path,[...(ranges.get(edit.path)||[]),{start,end}]);
+    }
+    assembled.push({id:row.id,dependsOn:[...row.deps],candidate:single});
+  }
+  const edits=assembled.flatMap(row=>row.candidate.edits),cases=assembled.flatMap(row=>
+    row.candidate.vibe59TestPlan.cases.map(item=>({...item,name:row.id+':'+item.name})));
+  return Object.freeze({
+    summary:'Vibe5.9 offline dependency-ordered complex design code synthesis',
+    expectedEffect:'Atomically implement '+assembled.length+' owner-approved, source-grounded game-system steps',
+    edits,newFiles:[],replaceFiles:[],tests:[],
+    vibe59CodeKind:'COMPOSED_OFFLINE_SOURCE',vibe59TestPlan:{pass:true,cases},
+    vibe59DesignSteps:assembled.map(row=>({id:row.id,dependsOn:row.dependsOn,
+      operation:row.candidate.vibe59CodeKind,ruleDigest:row.candidate.ruleDigest})),
+    ruleDigest:sha(JSON.stringify(assembled.map(row=>[row.id,row.dependsOn,row.candidate.ruleDigest]))),
+    sourceWrite:false,modelUsed:false,runtimeVerified:false
+  });
+}
 export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sourceImpact=null}={}){
   const requirement=compileVibe59Requirements({order,target});
   const spec=order.vibe59Spec??order.selectedTask?.vibe59Spec??{};
