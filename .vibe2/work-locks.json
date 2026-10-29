@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-19nv3hn",
+      "worker": "vibe2",
+      "taskId": "party-rpg-existing-web-assessment-v1",
+      "gameId": "party-rpg",
+      "files": [
+        "web-games/party-rpg/index.html"
+      ],
+      "baseSha": "0b227ac92cddb8ade5f2d9c7c5ac83e86606739c",
+      "runId": "40936570705",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-29T19:17:54.102Z",
+      "expiresAt": "2026-10-29T20:02:54.102Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:party-rpg-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
