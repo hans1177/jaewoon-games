@@ -782,3 +782,24 @@ test('Vibe5.9 canonical source candidate exposes extracted concepts without muta
  assert.equal(candidate.runtimeVerified,false);
  assert.equal(fs.readFileSync(path.join(root,'logic.js'),'utf8'),original);
 });
+
+
+test('Vibe5.9 enumerative provenance never masquerades as evolved AST',()=>{
+ const spec={parameters:['x','y'],
+  examples:[{args:[1,3],output:3},{args:[7,2],output:7},{args:[-4,-1],output:-1}],
+  holdouts:[{args:[9,8],output:9},{args:[0,5],output:5}]};
+ const enumerative=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(enumerative.search,'BOUNDED_ENUMERATIVE_CEGIS');
+ assert.equal(Array.isArray(enumerative.ast),false);
+ assert.equal(enumerative.ast.kind,'crossover');
+ assert.equal(enumerative.casesPassed,5);
+ assert.equal(enumerative.runtimeVerified,false);
+ assert.equal(enumerative.sourceWrite,false);
+ const lab=runVibe59CodeLaboratory({spec});
+ assert.equal(lab.winner.search,'BOUNDED_ENUMERATIVE_CEGIS');
+ assert.equal(lab.winner.runtimeVerified,false);
+ const concepts=extractVibe59AlgorithmConceptCandidates({search:enumerative});
+ assert.ok(concepts.concepts.length>0);
+ assert.equal(concepts.verified,false);
+ assert.equal(concepts.promotionAuthorized,false);
+});
