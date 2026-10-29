@@ -354,7 +354,10 @@ function sourceAnchorCandidates(text='',file=''){
       matched=true;break;
     }
     if(matched)continue;
-    const state=line.match(/\b(?:state|phase|mode|status)\s*(?:=|:)\s*["']([A-Za-z0-9_-]{3,})["']/i);
+    // Match the literal value in the original line only when executable code
+    // contains the state assignment; the lexical view intentionally masks strings.
+    const state=/\b(?:state|phase|mode|status)\s*(?:=|:)/i.test(line)
+      ?(lines[index]||'').match(/\b(?:state|phase|mode|status)\s*(?:=|:)\s*["']([A-Za-z0-9_-]{3,})["']/i):null;
     if(state)anchors.push({file,line:index+1,kind:'STATE',symbol:'STATE:'+clean(state[1]),context:clean(trimmed).slice(0,180),score:18});
   }
   return anchors.sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)||a.line-b.line).slice(0,24);
