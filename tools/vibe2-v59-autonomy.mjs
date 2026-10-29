@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
+import {inspectSourceFunctions,executableText} from './company-vibe2-expert-development.mjs';
 export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges,createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
