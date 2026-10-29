@@ -2527,8 +2527,15 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       const renderAt=clientText.indexOf('local function render()'),branchAt=clientText.indexOf(clientBranch);
       const resultAt=clientText.indexOf('local resultCode=',renderAt);
       const activeServer=executableText(serverText,'luau'),activeClient=executableText(clientText,'luau');
-      const active=(masked,source,token,at)=>at>=0&&masked.slice(at,at+token.length)===token
-        &&source.split(token).length===2;
+      const active=(masked,source,token,at)=>{
+        // The parser masks literal strings, so compare the executable leading
+        // identifier rather than unmasked attribute string arguments.
+        const offset=token.search(/[A-Za-z_]/);
+        const identifier=token.slice(offset).match(/^[A-Za-z_][A-Za-z_0-9]*/)?.[0]||'';
+        return at>=0&&offset>=0&&identifier.length>0
+          &&masked.slice(at+offset,at+offset+identifier.length)===identifier
+          &&source.split(token).length===2;
+      };
       if(roundStart>=0&&spawnAfter>roundStart&&resetAt>roundStart&&resetAt<spawnAfter
         &&stationAt>unlockedAt&&stationAt<gateAt
         &&renderAt>=0&&branchAt>renderAt&&branchAt<resultAt
