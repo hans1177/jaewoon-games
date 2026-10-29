@@ -156,7 +156,7 @@ export function ingestVerifiedCodePatterns({samplesDir='company-learning/trainin
       // can revoke previously accepted learning.
       const runtime=upper(sample?.runtime||sample?.verification?.runtime||
         sample?.verification?.trace?.runtime||sample?.provenance?.verificationTrace?.runtime);
-      const invalid=sample?.verification?.stale===true||sample?.verification?.flaky===true
+      const invalid=!sample||sample?.verification?.stale===true||sample?.verification?.flaky===true
         ||sample?.verification?.trace?.stale===true||sample?.verification?.trace?.flaky===true
         ||['FAIL','STALE','FLAKY','SHA_MISMATCH'].includes(runtime)
         ||['FAIL','STALE','FLAKY'].includes(upper(sample?.verification?.fullRegression))
@@ -165,7 +165,8 @@ export function ingestVerifiedCodePatterns({samplesDir='company-learning/trainin
         ||(sample?.verification?.trace?.state!=null&&
           upper(sample.verification.trace.state)!=='PASS');
       const derived=sample?deriveVerifiedCodePatterns(sample,file):[];
-      observedSamples.set(entry.name,{invalid,hasFreshEvidence:derived.length>0});
+      observedSamples.set(entry.name,{invalid,hasFreshEvidence:derived.length>0,
+        sourceRevision:clean(sample?.sourceRevision||sample?.sourceCommit||sample?.provenance?.sourceRevision)});
       for(const pattern of derived){
         if(!byId.has(pattern.id))added++;
         byId.set(pattern.id,pattern);
@@ -187,7 +188,8 @@ export function ingestVerifiedCodePatterns({samplesDir='company-learning/trainin
     const current=observedSamples.get(path.basename(clean(old.evidencePath)));
     // Old samples without new native runtime attestations remain historical;
     // do not mislabel an absent field as a newly observed failure.
-    if(!freshIds.has(old.id)&&(!current||current.invalid||current.hasFreshEvidence)){
+    if(!freshIds.has(old.id)&&(!current||current.invalid||current.hasFreshEvidence||
+      Boolean(current.sourceRevision&&current.sourceRevision!==clean(old.sourceRevision)))){
       if(old.retrievalEligible!==false)quarantined++;
       byId.set(old.id,{...old,retrievalEligible:false,masteryEligible:false,
         quarantineReason:'SOURCE_SAMPLE_NOT_CURRENTLY_VERIFIED'});
