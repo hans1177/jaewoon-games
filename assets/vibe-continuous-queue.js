@@ -924,6 +924,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const protectedPlatformReservations=[];
   if(laneMode==='game-primary'&&freeSlots>0&&freeSlots<=2){
     const eligible=['roblox','web'].filter(name=>(platformRows[name]||[]).length>0);
+    // A one-sided backlog must never override the canonical Unity/Web weighted
+    // rotation or owner release ordering just to claim an unnecessary floor.
+    if(eligible.length===2){
     const recentPlatform=queue.tasks.findLast(task=>isGamePrimaryTask(task)
       &&['verified','failed'].includes(task.status)
       &&['roblox','web'].includes(platform(task)));
@@ -953,6 +956,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
         protectedPlatformReservations.push(row.task.id);
         break;
       }
+    }
     }
   }
 
