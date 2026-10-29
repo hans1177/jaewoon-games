@@ -1795,6 +1795,8 @@ export function applyVerifiedAlgorithmEvolution(stateInput={},queueInput={}){
     const platform=upper(row.platform),strategy=clean(row.searchStrategy);
     if(!['WEB','ROBLOX'].includes(platform)||!['BOUNDED_AST_EVOLUTION_CEGIS','BOUNDED_ENUMERATIVE_CEGIS'].includes(strategy)
       ||!clean(row.gameId)||!clean(row.domain)||!capabilityProof(row,revision)
+      ||row.proof?.sourceRevision!==revision||row.proof?.evidenceId!==id
+      ||!Number.isSafeInteger(row.playtestRunId)||row.playtestRunId<=0
       ||row.gameSourceChanged!==true||row.playtestSourceRevision!==revision
       ||row.saveAndBalancePreserved!==true||row.actualGamePlaytest!==true
       ||!Number.isInteger(row.heldOutCases)||row.heldOutCases<2
