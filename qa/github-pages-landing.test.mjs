@@ -119,8 +119,8 @@ test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflar
   assert.match(html,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(html,/id="gameHub"/);
   assert.match(html,/class="mobileDock"/);
-  assert.ok(html.includes('src="'+pagesRoot+'assets/homepage-enhancements.js"'));
-  assert.ok(html.includes('href="'+pagesRoot+'manifest.webmanifest"'));
+  assert.ok(html.includes('src="assets/homepage-enhancements.js"'));
+  assert.ok(html.includes('href="manifest.webmanifest"'));
   assert.doesNotMatch(html,/data-jaewoon-pages-redirect|http-equiv="refresh"/i);
   assert.ok(!html.includes('url=https://jaewoon-games.pages.dev/'));
   assert.equal(webRoutes.length,manifest.gameCount);
@@ -155,11 +155,13 @@ test('homepage uses canonical runtime data and links without separate availabili
   assert.ok(script.includes('links.web||links.webSource'));
   assert.ok(script.includes(official));
   const pwa=JSON.parse(fs.readFileSync('_site/manifest.webmanifest','utf8'));
-  assert.equal(pwa.start_url,pagesRoot);
-  assert.equal(pwa.scope,pagesRoot);
-  assert.ok(pwa.icons.every(row=>row.src.startsWith(pagesRoot)));
+  const manifestUrl=official+'manifest.webmanifest';
+  assert.equal(new URL(pwa.start_url,manifestUrl).href,official);
+  assert.equal(new URL(pwa.scope,manifestUrl).href,official);
+  assert.ok(pwa.icons.every(row=>new URL(row.src,manifestUrl).href.startsWith(official)));
   const pwaScript=fs.readFileSync('_site/sw.js','utf8');
-  assert.ok(pwaScript.includes(pagesRoot+'command.html'));
+  assert.ok(pwaScript.includes("const APP_SHELL=['command.html'"));
+  assert.ok(pwaScript.includes('new URL(self.registration.scope).pathname'));
   const client=fs.readFileSync('_site/multiplayer/multiplayer-client.js','utf8');
   assert.ok(client.includes('https://jaewoon-multiplayer.anyanguy12.workers.dev'));
   assert.ok(client.includes('new WebSocket(url)'));
