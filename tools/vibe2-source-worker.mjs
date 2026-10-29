@@ -1761,7 +1761,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       ||order?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure||null;
     const studioUiFailure=studioFailure?.authority==='roblox-official-studio-mcp-product-quality-failure'
       &&(studioFailure.repairSurfaces||[]).includes('MOBILE_UI')
-      &&(studioFailure.qualityFailureKinds||[]).includes('adaptive-ui-commercial-quality');
+      &&((studioFailure.qualityFailureKinds||[]).includes('adaptive-ui-commercial-quality')
+        ||(studioFailure.qualityFailureDetails||[]).some(row=>clean(row?.id)==='adaptive-ui-commercial-quality'));
     const observedRows=(studioFailure?.qualityFailureDetails||[]).filter(row=>
       clean(row?.repairSurface).toUpperCase()==='MOBILE_UI');
     const observed=observedRows.map(row=>{
