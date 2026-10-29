@@ -151,8 +151,8 @@ test('free AI quota exhaustion waits for provider retry window without using gam
 });
 
 
-// [무모델] 기존 소스의 결정론적 후보가 없을 때만 실패를 안전 대기시킨다.
-test('model-free Roblox source misses defer without consuming retries or blocking independent work',()=>{
+// [무모델] 새 로블록스 원본 생성기 버전은 즉시 1회 재검토하고, 동일 버전 재실패는 차단한다.
+test('model-free Roblox source misses retry once per source worker revision without hourly delay',()=>{
   const first={id:'no-model-roblox',gameId:'island-a',target:'roblox',department:'development',type:'implementation',
     goal:'repair exact existing source',sourceRoot:'roblox-games/island-a',responsibleFiles:['server/Game.server.luau'],
     status:'running',retries:3,maxRetries:3,reservationId:'no-model-lease',
@@ -166,6 +166,7 @@ test('model-free Roblox source misses defer without consuming retries or blockin
   const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[first,second]}),[result]);
   const task=settled.queue.tasks.find(x=>x.id===first.id);
   assert.equal(settled.applied[0].outcome,'DEFERRED_NO_MODEL');
+  assert.equal(settled.applied[0].retryMode,'SOURCE_WORKER_REVISION');
   assert.equal(task.status,'blocked');
   assert.equal(task.blocker,'SOURCE_MODEL_UNAVAILABLE');
   assert.equal(task.lastOutcome,'MODEL_FREE_SOURCE_NOT_APPLICABLE');
@@ -173,17 +174,34 @@ test('model-free Roblox source misses defer without consuming retries or blockin
   assert.equal(task.reservationId,null);
   assert.equal(task.neuronExpectedVariants,0);
   assert.ok(task.evidence.includes('model-free-deterministic-unavailable:v1'));
-  assert.equal(task.evidence.filter(x=>x.startsWith('source-no-model-retry-at:')).length,1);
-  const retryAt=Date.parse(settled.applied[0].retryAt);
-  assert.ok(retryAt>Date.now());
-  assert.equal(recoverStaleRunningReservations(settled.queue,{nowMs:retryAt-1000}).recovered,0);
+  assert.ok(task.evidence.includes('source-no-model-failure-kind:DETERMINISTIC_ROBLOX'));
+  assert.ok(!task.evidence.some(x=>x.startsWith('source-no-model-retry-at:')),'native codegen should never get an artificial hourly retry');
   const selected=reserveVibeTaskBatch(settled.queue,{maxConcurrentTasks:1,lane:'game-primary'});
   assert.deepEqual(selected.tasks.map(t=>t.id),['independent-native']);
-  const recovered=recoverStaleRunningReservations(settled.queue,{nowMs:retryAt+1000});
-  assert.equal(recovered.queue.tasks.find(x=>x.id===first.id).status,'queued');
-  assert.equal(recovered.queue.tasks.find(x=>x.id===first.id).retries,3);
-  assert.equal(recovered.queue.tasks.find(x=>x.id===first.id).blocker,null);
-  assert.notEqual(recovered.queue.tasks.find(x=>x.id===first.id).status,'done');
+  const recovered=recoverStaleRunningReservations(settled.queue,{nowMs:Date.now()});
+  const next=recovered.queue.tasks.find(x=>x.id===first.id);
+  assert.equal(recovered.recovered,1);
+  assert.equal(next.status,'queued');
+  assert.equal(next.retries,3);
+  assert.equal(next.blocker,null);
+  assert.equal(next.lastOutcome,'MODEL_FREE_NATIVE_CODEGEN_RECHECK');
+  assert.notEqual(next.status,'done');
+  assert.equal(next.evidence.filter(x=>x.startsWith('source-no-model-codegen-sha256:')).length,1);
+  const replay={...next,status:'running',reservationId:'next-lease'};
+  const repeat=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[replay]}),
+    [{...result,reservationId:'next-lease'}]);
+  const unchanged=recoverStaleRunningReservations(repeat.queue,{nowMs:Date.now()+2*60*60*1000});
+  assert.equal(unchanged.recovered,0,'same generator revision must not cause an infinite retry cycle');
+  assert.equal(unchanged.queue.tasks.find(x=>x.id===first.id).status,'blocked');
+  const oldCodegen=repeat.queue.tasks[0];
+  const oldFingerprint='source-no-model-codegen-sha256:'+'0'.repeat(64);
+  const changed={...oldCodegen,evidence:[
+    ...(oldCodegen.evidence||[]).filter(v=>!v.startsWith('source-no-model-codegen-sha256:')),
+    oldFingerprint]};
+  const afterUpgrade=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[changed]}),{nowMs:Date.now()});
+  assert.equal(afterUpgrade.recovered,1,'changed source worker revision must immediately admit a new attempt');
+  assert.equal(afterUpgrade.queue.tasks[0].status,'queued');
+  assert.equal(afterUpgrade.queue.tasks[0].evidence.filter(v=>v.startsWith('source-no-model-codegen-sha256:')).length,1);
 });
 
 test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
@@ -252,6 +270,9 @@ test('missing model credentials defer exact source mutation but leave other queu
   assert.equal(settled.queue.tasks[0].status,'blocked');
   assert.equal(settled.queue.tasks[0].retries,1);
   assert.equal(settled.queue.tasks[0].blocker,'SOURCE_MODEL_UNAVAILABLE');
+  assert.ok(settled.queue.tasks[0].evidence.includes('source-no-model-failure-kind:EXTERNAL_AI'));
+  assert.equal(recoverStaleRunningReservations(settled.queue,{nowMs:Date.now()}).recovered,0,
+    'external model availability must still respect the existing provider cooldown');
   const replay={...settled.queue.tasks[0],status:'running',reservationId:'web-model-lease-2'};
   const repeat=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[replay]}),
     [{...result,reservationId:'web-model-lease-2'}]);
