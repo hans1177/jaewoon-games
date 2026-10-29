@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "cozy-island-build-up-g29-c33a379b9cc3",
-  "directiveFingerprint": "c33a379b9cc3b429ed2c54a47474f3ae85c3c59be15f4518a86e51aa459204e4",
-  "previousDirectiveFingerprint": "3f6deb2c0235cbac3dbd3a9dcc40b59bf8f22b4bc166b2530bfe79b53215889e",
-  "forbiddenRepeatFingerprint": "3f6deb2c0235cbac3dbd3a9dcc40b59bf8f22b4bc166b2530bfe79b53215889e",
+  "directiveId": "cozy-island-build-up-g30-2057df9756c4",
+  "directiveFingerprint": "2057df9756c49ef5196d83bad95b5f8768931c365d77a1ddfcb949c04834b0f0",
+  "previousDirectiveFingerprint": "c33a379b9cc3b429ed2c54a47474f3ae85c3c59be15f4518a86e51aa459204e4",
+  "forbiddenRepeatFingerprint": "c33a379b9cc3b429ed2c54a47474f3ae85c3c59be15f4518a86e51aa459204e4",
   "gameId": "cozy-island",
   "gameName": "포근섬",
-  "generation": 29,
+  "generation": 30,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cozy-island",
-  "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+  "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
   "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+        "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
-    "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+    "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -886,7 +886,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+    "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4359,9 +4359,9 @@
       "save": 202,
       "multiplayer": 29,
       "animation": 138,
-      "motionStates": 1179,
+      "motionStates": 1182,
       "gameFeel": 76,
-      "vfx": 79,
+      "vfx": 81,
       "camera": 111,
       "audio": 58,
       "audioDynamics": 18,
@@ -4385,7 +4385,7 @@
       "lighting": 113,
       "primitive": 55,
       "todo": 0,
-      "errorRecovery": 53
+      "errorRecovery": 54
     },
     "topFiles": [
       {
@@ -4394,7 +4394,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "score": 295
+        "score": 303
       },
       {
         "file": "roblox-games/cozy-island/shared/GameConfig.luau",
@@ -4664,7 +4664,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 88,
+        "line": 99,
         "kind": "FUNCTION",
         "symbol": "syncWildlife",
         "context": "local function syncWildlife(model,controller)",
@@ -4672,7 +4672,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 103,
+        "line": 114,
         "kind": "FUNCTION",
         "symbol": "bindWildlife",
         "context": "local function bindWildlife(model)",
@@ -4704,7 +4704,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 80,
+        "line": 91,
         "kind": "FUNCTION",
         "symbol": "unbindWildlife",
         "context": "local function unbindWildlife(model)",
@@ -4736,7 +4736,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 375,
+        "line": 386,
         "kind": "FUNCTION",
         "symbol": "makeButton",
         "context": "local function makeButton(parent,text,color)",
@@ -4744,7 +4744,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 590,
+        "line": 601,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
@@ -4816,7 +4816,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 131,
+        "line": 142,
         "kind": "FUNCTION",
         "symbol": "bindCombatActor",
         "context": "local function bindCombatActor(actor)",
@@ -4827,9 +4827,9 @@
   "previousVersionDelta": {
     "previousGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 28,
-    "previousSourceTreeFingerprint": "b2307c9bec946bc03e8679b7bf88cd1bb116af637d3cf0ea6dd5059b709fb665",
-    "currentSourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+    "previousGeneration": 29,
+    "previousSourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+    "currentSourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5929,9 +5929,9 @@
   ],
   "primaryFocus": "PRESENTATION",
   "thisLoopPrimaryGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독\", 현재 책임 소스는 roblox-games/cozy-island/client/Game.client.luau::syncWildlife, roblox-games/cozy-island/client/Game.client.luau::bindWildlife, roblox-games/cozy-island/server/Game.server.luau::supportPower, roblox-games/cozy-island/server/Game.server.luau::sceneryPart, roblox-games/cozy-island/client/Game.client.luau::unbindWildlife, roblox-games/cozy-island/server/Game.server.luau::broadcastMultiplayerSync, roblox-games/cozy-island/server/Game.server.luau::finishSession, roblox-games/cozy-island/client/Game.client.luau::makeButton이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독\", 현재 책임 소스는 roblox-games/cozy-island/server/BattleVisual.luau::makeActor, roblox-games/cozy-island/client/Game.client.luau::syncWildlife, roblox-games/cozy-island/client/Game.client.luau::bindWildlife, roblox-games/cozy-island/server/Game.server.luau::supportPower, roblox-games/cozy-island/server/Game.server.luau::sceneryPart, roblox-games/cozy-island/client/Game.client.luau::unbindWildlife, roblox-games/cozy-island/server/BattleVisual.luau::limb, roblox-games/cozy-island/server/Game.server.luau::broadcastMultiplayerSync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/cozy-island/client/Game.client.luau::syncWildlife, roblox-games/cozy-island/client/Game.client.luau::bindWildlife, roblox-games/cozy-island/server/Game.server.luau::supportPower, roblox-games/cozy-island/server/Game.server.luau::sceneryPart, roblox-games/cozy-island/client/Game.client.luau::unbindWildlife, roblox-games/cozy-island/server/Game.server.luau::broadcastMultiplayerSync, roblox-games/cozy-island/server/Game.server.luau::finishSession, roblox-games/cozy-island/client/Game.client.luau::makeButton에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/cozy-island/server/BattleVisual.luau::makeActor, roblox-games/cozy-island/client/Game.client.luau::syncWildlife, roblox-games/cozy-island/client/Game.client.luau::bindWildlife, roblox-games/cozy-island/server/Game.server.luau::supportPower, roblox-games/cozy-island/server/Game.server.luau::sceneryPart, roblox-games/cozy-island/client/Game.client.luau::unbindWildlife, roblox-games/cozy-island/server/BattleVisual.luau::limb, roblox-games/cozy-island/server/Game.server.luau::broadcastMultiplayerSync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "미지 공간과 지도 정보 수집 × 문화·언어와 번역가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"A 시작: RouteState·RiskState를 확인한 뒤 새 지역에서 지도 단서와 접근 가능 통로를 조사한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5958,9 +5958,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/shared/GameConfig.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -5973,9 +5973,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/shared/GameConfig.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -5988,9 +5988,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/shared/GameConfig.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6003,9 +6003,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/shared/GameConfig.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6018,9 +6018,9 @@
         "gameId": "cozy-island",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/client/Game.client.luau",
-          "roblox-games/cozy-island/shared/GameConfig.luau",
+          "roblox-games/cozy-island/server/BattleVisual.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
           "roblox-games/cozy-island/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6077,7 +6077,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 592526,
+        "sourceBytes": 593192,
         "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6110,12 +6110,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 6,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=4.",
+    "themeDepth": 7,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 6,
+        "WORLD_ECOLOGY_STORY_CHAIN": 7,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -6131,7 +6131,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6168,7 +6168,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 94,
+        "score": 76,
         "gapDomains": []
       },
       {
@@ -6286,7 +6286,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "cozy-island",
     "sourceRoot": "roblox-games/cozy-island",
-    "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+    "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -9977,11 +9977,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 29,
-    "previousGeneration": 28,
+    "generation": 30,
+    "previousGeneration": 29,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
-    "priorSourceFingerprint": "b2307c9bec946bc03e8679b7bf88cd1bb116af637d3cf0ea6dd5059b709fb665",
+    "sourceFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
+    "priorSourceFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -10000,7 +10000,7 @@
     "version": 1,
     "gameId": "cozy-island",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+    "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -10921,9 +10921,9 @@
       "gameId": "cozy-island",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 29,
-        "actorClass": "BOSS",
-        "sourceOwnerFile": "roblox-games/cozy-island/launch-mvp.json",
+        "generation": 30,
+        "actorClass": "CREATURE",
+        "sourceOwnerFile": "roblox-games/cozy-island/shared/WildlifeFactory.luau",
         "qualityAxis": "APPROVED_COMBO_CONTINUITY",
         "featureId": "APPROVED_COMBO_CONTINUITY",
         "evidenceCount": 0,
@@ -10936,7 +10936,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "cozy-island",
-          "actorClass": "BOSS",
+          "actorClass": "CREATURE",
           "featureId": "APPROVED_COMBO_CONTINUITY",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -11174,7 +11174,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+      "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11198,7 +11198,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+      "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
       "sourceFiles": [
         {
           "file": "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -11310,7 +11310,7 @@
     "gameId": "cozy-island",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+    "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -11640,14 +11640,14 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -11873,14 +11873,14 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -11888,8 +11888,17 @@
     ],
     "sourceSymbolsOrStateAnchors": [
       {
+        "file": "roblox-games/cozy-island/server/BattleVisual.luau",
+        "line": 28,
+        "kind": "FUNCTION",
+        "symbol": "makeActor",
+        "currentBehavior": "local function makeActor(folder,name,pos,baseColor,scale,defender,boss)",
+        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 makeActor의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cozy-island/server/BattleVisual.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 88,
+        "line": 99,
         "kind": "FUNCTION",
         "symbol": "syncWildlife",
         "currentBehavior": "local function syncWildlife(model,controller)",
@@ -11898,7 +11907,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 103,
+        "line": 114,
         "kind": "FUNCTION",
         "symbol": "bindWildlife",
         "currentBehavior": "local function bindWildlife(model)",
@@ -11925,12 +11934,21 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 80,
+        "line": 91,
         "kind": "FUNCTION",
         "symbol": "unbindWildlife",
         "currentBehavior": "local function unbindWildlife(model)",
         "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 unbindWildlife의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/cozy-island/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/cozy-island/server/BattleVisual.luau",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "limb",
+        "currentBehavior": "local function limb(model,root,name,offset,size,color,material)",
+        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 limb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cozy-island/server/BattleVisual.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/cozy-island/server/Game.server.luau",
@@ -11940,27 +11958,15 @@
         "currentBehavior": "local function broadcastMultiplayerSync(actor)",
         "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 broadcastMultiplayerSync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/cozy-island/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cozy-island/server/Game.server.luau",
-        "line": 856,
-        "kind": "FUNCTION",
-        "symbol": "finishSession",
-        "currentBehavior": "local function finishSession(p,reason)",
-        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 finishSession의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cozy-island/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 375,
-        "kind": "FUNCTION",
-        "symbol": "makeButton",
-        "currentBehavior": "local function makeButton(parent,text,color)",
-        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 makeButton의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cozy-island/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "roblox-games/cozy-island/server/BattleVisual.luau",
+        "symbol": "makeActor",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
         "symbol": "syncWildlife",
@@ -11992,21 +11998,15 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
+        "file": "roblox-games/cozy-island/server/BattleVisual.luau",
+        "symbol": "limb",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
         "file": "roblox-games/cozy-island/server/Game.server.luau",
         "symbol": "broadcastMultiplayerSync",
         "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/cozy-island/server/Game.server.luau",
-        "symbol": "finishSession",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "symbol": "makeButton",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -12081,14 +12081,14 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -12096,8 +12096,20 @@
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/cozy-island/server/BattleVisual.luau",
+        "line": 28,
+        "kind": "FUNCTION",
+        "symbol": "makeActor",
+        "context": "local function makeActor(folder,name,pos,baseColor,scale,defender,boss)",
+        "score": 82,
+        "currentBehavior": "local function makeActor(folder,name,pos,baseColor,scale,defender,boss)",
+        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 makeActor의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cozy-island/server/BattleVisual.luau::makeActor이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cozy-island/server/BattleVisual.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 88,
+        "line": 99,
         "kind": "FUNCTION",
         "symbol": "syncWildlife",
         "context": "local function syncWildlife(model,controller)",
@@ -12109,7 +12121,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 103,
+        "line": 114,
         "kind": "FUNCTION",
         "symbol": "bindWildlife",
         "context": "local function bindWildlife(model)",
@@ -12145,7 +12157,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 80,
+        "line": 91,
         "kind": "FUNCTION",
         "symbol": "unbindWildlife",
         "context": "local function unbindWildlife(model)",
@@ -12154,6 +12166,18 @@
         "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 unbindWildlife의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/cozy-island/client/Game.client.luau::unbindWildlife이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/cozy-island/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/cozy-island/server/BattleVisual.luau",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "limb",
+        "context": "local function limb(model,root,name,offset,size,color,material)",
+        "score": 66,
+        "currentBehavior": "local function limb(model,root,name,offset,size,color,material)",
+        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 limb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cozy-island/server/BattleVisual.luau::limb이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cozy-island/server/BattleVisual.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/cozy-island/server/Game.server.luau",
@@ -12166,30 +12190,6 @@
         "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 broadcastMultiplayerSync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/cozy-island/server/Game.server.luau::broadcastMultiplayerSync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/cozy-island/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cozy-island/server/Game.server.luau",
-        "line": 856,
-        "kind": "FUNCTION",
-        "symbol": "finishSession",
-        "context": "local function finishSession(p,reason)",
-        "score": 66,
-        "currentBehavior": "local function finishSession(p,reason)",
-        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 finishSession의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cozy-island/server/Game.server.luau::finishSession이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cozy-island/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "line": 375,
-        "kind": "FUNCTION",
-        "symbol": "makeButton",
-        "context": "local function makeButton(parent,text,color)",
-        "score": 58,
-        "currentBehavior": "local function makeButton(parent,text,color)",
-        "intendedBehavior": "PRESENTATION primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 makeButton의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cozy-island/client/Game.client.luau::makeButton이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cozy-island/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -12233,14 +12233,14 @@
     "gameId": "cozy-island",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/client/Game.client.luau",
-      "roblox-games/cozy-island/shared/GameConfig.luau",
+      "roblox-games/cozy-island/server/BattleVisual.luau",
+      "roblox-games/cozy-island/server/Game.server.luau",
       "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+      "roblox-games/cozy-island/shared/GameConfig.luau",
       "roblox-games/cozy-island/default.project.json",
       "roblox-games/cozy-island/shared/QACamera.luau",
       "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-      "roblox-games/cozy-island/server/BattleVisual.luau",
       "roblox-games/cozy-island/launch-mvp.json",
       "roblox-games/cozy-island/shared/SurvivalWildlife.luau",
       "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
@@ -12318,7 +12318,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2ba9853bfc9b526b6a05b617ca4ff34f6f4f0c5b8c8cb19d73233d364ec5ec8a",
+      "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
@@ -12380,7 +12380,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 30,
+    "nextGeneration": 31,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -12442,5 +12442,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-28T03:40:16.068Z"
+  "generatedAt": "2026-10-29T13:26:12.450Z"
 }
