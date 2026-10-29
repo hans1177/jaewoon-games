@@ -544,3 +544,28 @@ test('Vibe5.9 canonical source candidate accepts only owner-approved bounded alg
   ...order.vibe59CodeRequest,ownerApproved:false}},sourceRoot:root,
   responsibleFiles:['logic.js'],target:'web'}),/OWNER_EXPLICIT_CODING_SPEC_REQUIRED/);
 });
+
+
+// [학습] 새로 발견한 알고리즘도 실제 검증 전에는 숙련도나 코드 재사용 근거가 아니다.
+test('WEB generated algorithm is reusable only after exact merged browser verification',()=>{
+  const task={id:'pwa-11111111-2222-4333-8444-555555555555',
+    gameId:'demo',sourceRoot:'web-games/demo',goal:'새 계산 알고리즘 작성'};
+  const source={relative:'web-games/demo/game.js',
+    original:'function score(x,y){return 0;}\n'};
+  const change=safeWebVibeReplacement(source.original,JSON.stringify({
+    oldText:'function score(x,y){return 0;}',
+    newText:'function score(x,y){return Math.max(x,y);}'
+  }),{relative:source.relative});
+  const lesson=webLearningCandidate(task,[{source,edit:change}]);
+  assert.equal(lesson.length,1);
+  assert.equal(lesson[0].owner,'score');
+  assert.equal(lesson[0].topic,'ALGORITHM_SYNTHESIS');
+  const common={...task,status:'review',learningCandidates:lesson,
+    learningVerification:{status:'VERIFIED',sourceRevision:'a'.repeat(40),runId:123456,
+      independentQaPassed:true,browserPassed:true}};
+  assert.equal(compileVerifiedWebLearning(task,source,[common]),null);
+  const accepted=compileVerifiedWebLearning(task,source,[{...common,status:'merged'}]);
+  assert.equal(accepted.deterministicWebLearned,true);
+  assert.match(accepted.updated,/return Math\.max\(x,y\)/);
+  assert.equal(accepted.offlineSourceProof.runtimeVerified,false);
+});
