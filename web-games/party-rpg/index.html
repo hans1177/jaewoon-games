@@ -2340,5 +2340,11 @@ addEventListener('keydown',function(e){if(!modalOpen)return;if(activeEventScene&
 window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,view,combat,storyObjective,tacticalPaused,worldW,worldH,gameStarted,gameEnvironment});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>
