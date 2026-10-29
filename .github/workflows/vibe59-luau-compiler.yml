@@ -8,6 +8,8 @@ on:
       - 'tools/vibe2-v59-autonomy.mjs'
       - 'qa/vibe59-luau-compiler.mjs'
       - 'qa/vibe59-luau-runtime.mjs'
+      - 'qa/vibe59-crafting-runtime.mjs'
+      - 'qa/vibe59-crafting-transaction.test.mjs'
       - '.github/workflows/vibe59-luau-compiler.yml'
   workflow_dispatch:
 
@@ -43,7 +45,11 @@ jobs:
           test -n "$runtime"
           chmod +x "$runtime"
           echo "VIBE59_LUAU_RUNTIME=$runtime" >> "$GITHUB_ENV"
-      - name: Compile 116 complete generated Luau scripts and reject invalid syntax
+      - name: Verify crafting candidate and authorization rules with Node tests
+        run: node --test qa/vibe59-crafting-transaction.test.mjs
+      - name: Compile 117 complete generated Luau scripts and reject invalid syntax
         run: node qa/vibe59-luau-compiler.mjs
       - name: Execute 109 emitted Luau recipes and advanced crafting behavior
         run: node qa/vibe59-luau-runtime.mjs
+      - name: Execute real Luau crafting transaction and denial scenarios
+        run: node qa/vibe59-crafting-runtime.mjs

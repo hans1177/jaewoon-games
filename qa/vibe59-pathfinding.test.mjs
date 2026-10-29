@@ -109,7 +109,7 @@ test('approved pathfinding integrates with existing no-write Vibe candidate work
 });
 test('planner reports pathfinder as real seventh advanced option without claiming Studio tests',()=>{
  const plan=buildVibe59AutonomyPlan({target:'roblox',order:{goal:'monster chase'}});
- assert.equal(plan.advancedGameplay.count,7);
+ assert.equal(plan.advancedGameplay.count,8);
  assert.ok(plan.advancedGameplay.mechanics.includes('ai-pathfinding-chase'));
  assert.equal(plan.advancedGameplay.runtimeVerified,false);
 });

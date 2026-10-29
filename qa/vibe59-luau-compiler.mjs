@@ -8,6 +8,7 @@ import {spawnSync} from 'node:child_process';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill} from '../tools/vibe59-luau-skills109.mjs';
 import {VIBE59_QUALITY_GAMEPLAY_ACTIONS,synthesizeVibe59QualityGameplay} from '../tools/vibe59-quality-gameplay.mjs';
 import {synthesizeVibe59Pathfinding} from '../tools/vibe59-pathfinding.mjs';
+import {synthesizeVibe59CraftingTransaction} from '../tools/vibe59-crafting-transaction.mjs';
 
 const bin=process.env.VIBE59_LUAU_COMPILER||process.argv[2];
 if(!bin||!fs.existsSync(bin))throw Error('VIBE59_OFFICIAL_LUAU_COMPILER_REQUIRED');
@@ -73,7 +74,16 @@ const sourcePath='local pathfindingService = game:GetService("PathfindingService
 const pathOutput=synthesizeVibe59Pathfinding({spec:pathSpec,source:sourcePath,
  sourcePath:'server/Game.server.luau',replaceAnchor:slot});
 emitted.push({id:'pathfinding',source:sourcePath.replace(slot,pathOutput.source)});
-assert.equal(emitted.length,116);
+const batchSpec={operation:'crafting-verified-transaction',functionName:'craft',
+ recipes:'recipes',maxBatch:4,cooldown:1};
+const batchSource='local recipes={ingot={inputs={wood=2,ore=1},outputs={ingot=1},caps={ingot=5}}}\n'+
+ 'local function craft(player, recipeId, batch, requestId)\n local state = profiles[player]\n'+
+ ' if state.inventory.wood and state.crafting.lastAt and state.crafting.lastRequestId'+
+ ' and state.crafting.busy and state.save.saving and state.save.dirty then end\n '+slot+'\nend';
+const batchGenerated=synthesizeVibe59CraftingTransaction({spec:batchSpec,source:batchSource,
+ sourcePath:'server/Craft.server.luau',replaceAnchor:slot});
+emitted.push({id:'crafting-verified-transaction',source:batchSource.replace(slot,batchGenerated.source)});
+assert.equal(emitted.length,117);
 const directory=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-luau-compiler-'));
 try{
  let ok=0;
@@ -90,7 +100,7 @@ try{
  const reject=spawnSync(bin,['--null',bad],{encoding:'utf8',timeout:15000});
  assert.notEqual(reject.status,0,'invalid Luau syntax must cause a nonzero exit');
  console.log('VIBE59_LUAU_REAL_COMPILER=PASS',JSON.stringify({
-  compiled:ok,recipes:109,advanced:6,pathfinding:1,
+  compiled:ok,recipes:109,advanced:6,pathfinding:1,craftingTransaction:1,
   invalidSourceRejected:true,robloxStudioVerified:false
  }));
 }finally{

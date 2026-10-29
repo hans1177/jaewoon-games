@@ -175,8 +175,8 @@ test('advanced gameplay enters existing Vibe code worker with actual edit and ow
 });
 test('read-only planning distinguishes high-fidelity gameplay from simple state recipes',()=>{
  const plan=buildVibe59AutonomyPlan({target:'roblox',order:{goal:'monster combat'}});
- assert.equal(plan.advancedGameplay.count,7);
- assert.equal(plan.advancedGameplay.mechanics.length,7);
+ assert.equal(plan.advancedGameplay.count,8);
+ assert.equal(plan.advancedGameplay.mechanics.length,8);
  assert.equal(plan.advancedGameplay.runtimeVerified,false);
  assert.equal(plan.skillCatalog.total,109);
  assert.equal(plan.sourceWrite,false);
