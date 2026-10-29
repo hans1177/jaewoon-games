@@ -39,7 +39,7 @@ export function verifiedOwnerGameplayRequest({task={},centralPolicy={}}={}){
     ||rules?.existingGameplaySaveProgressionBalanceAndMultiplayerSemanticsMustBePreservedUnlessOwnerExplicitlyChangesThem!==true
     ||policy?.developmentAccess?.ROBLOX!=='ALWAYS_ALLOWED'
     ||!policy?.ownerActiveDevelopmentScope20261009?.activeTargets?.includes('ROBLOX')
-    ||!/^[-a-z0-9]{2,64}$/.test(gameId)
+    ||!/^[a-z0-9][a-z0-9-]{1,63}$/.test(gameId)
     ||clean(task.target).toLowerCase()!=='roblox'
     ||clean(task.sourceRoot)!==root
     ||task.ownerDirective!==true||task.protectedChange===true
@@ -1012,7 +1012,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
     workerPolicy:freeze({
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
-      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
+      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:verifiedOwnerGameplayChange,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
       isolatedPracticeArtifactAllowed:route.route==='learning-web-artifact',
       practiceArtifactRepositorySourceWrite:false,
