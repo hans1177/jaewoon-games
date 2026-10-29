@@ -2869,7 +2869,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-27T01:18:06.617Z"
       },
-      "updatedAt": "2026-10-29T14:42:02.216Z",
+      "updatedAt": "2026-10-29T14:50:18.468Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2890,16 +2890,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "80735735842f141bb4b19ee7818eabb4c81e2bea",
       "robloxBuildArtifactIdentity": "sha256:6fe392fde77880c49324ae2994b69d9fa65a5e3fc19c71e65e9d5a74a2ec0384",
-      "robloxBuildPassedAt": "2026-10-29T14:42:02.216Z",
+      "robloxBuildPassedAt": "2026-10-29T14:50:18.468Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-29T14:42:02.216Z",
+      "robloxBuildPreflightPassedAt": "2026-10-29T14:50:18.468Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "baeksu-war",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-29T14:39:12.694Z",
+        "checkedAt": "2026-10-29T14:46:25.898Z",
         "sourceRevision": "80735735842f141bb4b19ee7818eabb4c81e2bea",
         "artifactIdentity": "sha256:6fe392fde77880c49324ae2994b69d9fa65a5e3fc19c71e65e9d5a74a2ec0384",
         "secondaryOwnerFocus": false,
@@ -2937,7 +2937,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence parameters, including source validation and package identity checks, have successfully passed. The package is eligible to start runtime testing."
+            "note": "All required build evidence and deterministic package identity checks have successfully passed."
           }
         ],
         "blockers": [],
@@ -7096,7 +7096,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-29T14:48:50.856Z",
+  "updatedAt": "2026-10-29T14:50:18.468Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -7162,5 +7162,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
