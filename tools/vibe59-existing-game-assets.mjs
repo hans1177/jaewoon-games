@@ -145,13 +145,41 @@ export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',reposito
     sourceWrite:false,runtimeVerified:false,suggestionsRequireProvenance:true});
 }
 
-// Compile an explicitly approved recolor of one *existing* SVG object, not new art.
+// Bounded owner request: recolor an existing uniquely named SVG group only.
 function inferExistingSvgRecolor({order,root,responsibleFiles}){
-  const goal=String(order.selectedTask?.goal||order.goal||'').trim();
-  if(goal.length>260)return null;
-  const color='(#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?(?:[0-9a-fA-F]{2})?)';
-  const ko=new RegExp('^(?:기존\\s+)?(assets/[A-Za-z0-9_./-]+\\.svg)의\\s+([A-Za-z][\\w-]*)\\s+색상\\s+'+
-    color+'을\\s+'+color+'(?:으로)?\\s*(?:바꿔|변경해|수정해|변경|수정)[.!]?
+ const text=String(order.selectedTask?.goal||order.goal||'').trim();
+ const ko=/^(?:기존\s+)?(assets\/[\w./-]+\.svg)의\s+([\w-]+)\s+색상\s+(#[\da-fA-F]+)을\s+(#[\da-fA-F]+)(?:으로)?\s*(?:바꿔|변경해|수정해)[.!]?$/.exec(text);
+ const en=/^Recolor\s+([\w-]+)\s+in\s+(assets\/[\w./-]+\.svg)\s+from\s+(#[\da-fA-F]+)\s+to\s+(#[\da-fA-F]+)[.!]?$/i.exec(text);
+ if(!ko&&!en)return null;
+ const file=safePath(ko?ko[1]:en[2]),id=ko?ko[2]:en[1];
+ const from=ko?ko[3]:en[3],to=ko?ko[4]:en[4];
+ const valid=/^#(?:[\da-fA-F]{3}|[\da-fA-F]{6}|[\da-fA-F]{8})$/;
+ if(!valid.test(from)||!valid.test(to)||from.toLowerCase()===to.toLowerCase())
+   throw Error('VIBE59_GAME_ASSET_COLOR_INVALID');
+ if(!responsibleFiles.includes(file))throw Error('VIBE59_GAME_ASSET_RESPONSIBLE_FILE_REQUIRED');
+ const original=fs.readFileSync(verifiedFile(root,file)),source=original.toString('utf8');
+ checkSafeVisualDocument(source,file);
+ const names=[],stack=[],tags=/<\/?g\b[^>]*>/gi;let tag;
+ while((tag=tags.exec(source))){
+   if(tag[0].startsWith('</')){
+     const start=stack.pop();if(!start)throw Error('VIBE59_GAME_ASSET_GROUP_UNBALANCED');
+     if(start.id===id)names.push(source.slice(start.at,tags.lastIndex));
+   }else if(!/\/>$/.test(tag[0])){
+     const attr=/\bid\s*=\s*(["'])([^"']+)\1/.exec(tag[0]);
+     stack.push({at:tag.index,id:attr?.[2]});
+   }
+ }
+ if(stack.length)throw Error('VIBE59_GAME_ASSET_GROUP_UNBALANCED');
+ if(names.length!==1)throw Error('VIBE59_GAME_ASSET_GROUP_NOT_UNIQUE:'+id);
+ let changes=0;
+ const replace=names[0].replace(/\b(fill|stroke|stop-color)\s*=\s*(["'])(#[\da-fA-F]{3,8})\2/g,
+   (all,key,quote,value)=>{if(value.toLowerCase()!==from.toLowerCase())return all;
+    changes++;return key+'='+quote+to+quote;});
+ if(!changes)throw Error('VIBE59_GAME_ASSET_EXISTING_COLOR_NOT_FOUND:'+id);
+ return [{path:file,expectedSha256:sha(original),find:names[0],replace}];
+}
+
+// Existing Vibe source-worker consumes this ordinary exact-edit candidate through its
 // established normalization, independent QA, branch and release path. No direct writes.
 export function createVibe59ExistingGameVisualCandidate({
   order={},sourceRoot='',repositoryRoot=process.cwd(),responsibleFiles=[],target='web'
@@ -191,306 +219,11 @@ export function createVibe59ExistingGameVisualCandidate({
     expectedEffect:'Edit '+normalized.length+' actual game-owned visual source assets without replacing gameplay',
     edits:normalized,newFiles:[],replaceFiles:[],tests:[],
     vibe59CodeKind:'SOURCE_BOUND_VISUAL_ASSET_EDIT',
-    // Exact-source scenario proof only; no claim of runtime or release verification.
-    vibe59TestPlan:{pass:true,cases:normalized.map((row,index)=>({
-      name:'source-grounded-art-'+(index+1),path:row.path,
-      originalAnchorMatched:true,runtimeVerified:false
+    // Exact source matching is proven; rendered game runtime is NOT proven.
+    vibe59TestPlan:{pass:true,cases:normalized.map((edit,index)=>({
+      name:'source-exact-art-'+(index+1),path:edit.path,
+      exactAnchorVerified:true,runtimeVerified:false
     }))},
-    ruleDigest:sha(Buffer.from(JSON.stringify([gameId,target,normalized]))),
-    sourceWrite:false,modelUsed:false,runtimeVerified:false,releaseVerified:false
-  });
-}
-
-// Bounded modifications to an actual existing game's visuals. The original graphics asset
-// stays at its existing path, so existing runtime references remain valid.
-// Source and replacement digests must match current bytes; no new asset is invented.
-export function applyVibe59ApprovedGameAssetChanges({
-  order={},sourceRoot='',repositoryRoot=process.cwd(),target='web',
-  approvedAssetWrite=false,visualEdits=[],binaryReplacements=[]
-}={}){
-  const {repo,root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,approvedAssetWrite});
-  if(!Array.isArray(visualEdits)||!Array.isArray(binaryReplacements)
-    ||!visualEdits.length&&!binaryReplacements.length
-    ||visualEdits.length+binaryReplacements.length>MAX_ASSETS)
-    throw Error('VIBE59_GAME_ASSET_CHANGES_OUT_OF_BOUNDS');
-  const targets=new Map(),documents=new Map();
-  const register=(relative,expectedSha)=>{
-    safePath(relative);
-    if(!(relative.startsWith('assets/')||relative.startsWith('icons/')
-      ||relative.startsWith('audio/')||/^(?:style|graphics-upgrade)\.css$/.test(relative)))
-      throw Error('VIBE59_GAME_ASSET_OUTSIDE_VISUAL_SCOPE');
-    if(targets.has(relative))throw Error('VIBE59_GAME_ASSET_DUPLICATE_TARGET');
-    const abs=verifiedFile(root,relative),original=fs.readFileSync(abs);
-    checkOriginal(original,expectedSha);
-    targets.set(relative,{abs,original,after:null});
-    return original;
-  };
-  for(const edit of visualEdits){
-    if(!allowedText.test(edit?.path||'')||typeof edit.find!=='string'
-      ||typeof edit.replace!=='string'||!edit.find||edit.find===edit.replace
-      ||Buffer.byteLength(edit.find)+Buffer.byteLength(edit.replace)>64000)
-      throw Error('VIBE59_GAME_ASSET_VISUAL_EDIT_INVALID');
-    const original=register(edit.path,edit.expectedSha256);
-    const body=original.toString('utf8');
-    checkSafeVisualDocument(body,edit.path);
-    documents.set(edit.path,body);
-    applyExactEdits(root,[{path:edit.path,find:edit.find,replace:edit.replace}],{documents});
-    const next=documents.get(edit.path);
-    checkSafeVisualDocument(next,edit.path);
-    targets.get(edit.path).after=Buffer.from(next);
-  }
-  let ledger;
-  if(binaryReplacements.length){
-    const ledgerFile=verifiedFile(repo,'assets/asset-license-ledger.json');
-    ledger=JSON.parse(fs.readFileSync(ledgerFile,'utf8'));
-  }
-  for(const replace of binaryReplacements){
-    if(!allowedBinary.test(replace?.path||'')
-      ||!allowedBinary.test(replace?.sourcePath||'')
-      ||path.extname(replace.path).toLowerCase()!==path.extname(replace.sourcePath).toLowerCase()
-      ||!replace.ledgerId||!replace.assetRole||replace.mappingApproved!==true
-      ||!order.selectedTask.approvedAssetMappings?.some(mapping=>mapping.ownerApproved===true
-        &&mapping.path===replace.path&&mapping.sourcePath===replace.sourcePath
-        &&mapping.ledgerId===replace.ledgerId&&mapping.assetRole===replace.assetRole))
-      throw Error('VIBE59_GAME_ASSET_BINDING_NOT_APPROVED');
-    if(!(replace.sourcePath.startsWith('assets/shared/')
-      ||replace.sourcePath.startsWith('assets/roblox/')
-      ||replace.sourcePath.startsWith('web-games/'+gameId+'/assets/')
-      ||replace.sourcePath.startsWith('roblox-games/'+gameId+'/assets/')))
-      throw Error('VIBE59_GAME_ASSET_SOURCE_LIBRARY_NOT_ALLOWED');
-    const original=register(replace.path,replace.expectedSha256);
-    const sourceAbs=verifiedFile(repo,replace.sourcePath);
-    const replacement=fs.readFileSync(sourceAbs);
-    checkOriginal(replacement,replace.sourceSha256);
-    findLedgerSource(ledger,gameId,replace.ledgerId,replace.sourcePath,replace.sourceSha256);
-    if(replacement.equals(original))throw Error('VIBE59_GAME_ASSET_ALREADY_IDENTICAL');
-    targets.get(replace.path).after=replacement;
-  }
-  const changes=[...targets.entries()];
-  for(const [,row] of changes)
-    if(!row.after||row.after.equals(row.original))throw Error('VIBE59_GAME_ASSET_NO_CHANGE');
-  for(const [,row] of changes)
-    if(!fs.readFileSync(row.abs).equals(row.original))
-      throw Error('VIBE59_GAME_ASSET_SOURCE_CHANGED_CONCURRENTLY');
-  const written=[];
-  try{
-    for(const [,row] of changes){
-      fs.writeFileSync(row.abs,row.after,{flag:'w'});
-      written.push(row);
-      if(!fs.readFileSync(row.abs).equals(row.after))
-        throw Error('VIBE59_GAME_ASSET_WRITE_VERIFICATION_FAILED');
-    }
-  }catch(error){
-    for(const row of written.reverse())fs.writeFileSync(row.abs,row.original,{flag:'w'});
-    throw error;
-  }
-  return Object.freeze({gameId,target,changedAssets:changes.map(([name])=>name),
-    assetWrite:true,modelUsed:false,runtimeVerified:false,releaseVerified:false});
-}
-).exec(goal);
-  const en=new RegExp('^Recolor\\s+([A-Za-z][\\w-]*)\\s+in\\s+(assets/[A-Za-z0-9_./-]+\\.svg)\\s+from\\s+'+
-    color+'\\s+to\\s+'+color+'[.!]?
-// established normalization, independent QA, branch and release path. No direct writes.
-export function createVibe59ExistingGameVisualCandidate({
-  order={},sourceRoot='',repositoryRoot=process.cwd(),responsibleFiles=[],target='web'
-}={}){
-  const edits=order.selectedTask?.vibe59VisualAssetEdits??order.vibe59VisualAssetEdits;
-  if(edits==null)return null;
-  if(order.ownerApproved!==true||order.selectedTask?.ownerDirective!==true)
-    throw Error('VIBE59_GAME_ASSET_WRITE_NOT_APPROVED');
-  const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,readOnly:true});
-  if(!Array.isArray(edits)||edits.length<1||edits.length>MAX_ASSETS
-    ||!Array.isArray(responsibleFiles)||!responsibleFiles.length)
-    throw Error('VIBE59_GAME_ASSET_CHANGES_OUT_OF_BOUNDS');
-  const documents=new Map(),normalized=[];
-  for(const edit of edits){
-    const relative=safePath(edit?.path);
-    if(!allowedText.test(relative)||!responsibleFiles.includes(relative)
-      ||!(relative.startsWith('assets/')||relative.startsWith('icons/')
-        ||/^(?:style|graphics-upgrade)\.css$/.test(relative))
-      ||typeof edit.find!=='string'||!edit.find
-      ||typeof edit.replace!=='string'||edit.replace===edit.find
-      ||Buffer.byteLength(edit.find)+Buffer.byteLength(edit.replace)>64000
-      ||documents.has(relative))
-      throw Error('VIBE59_GAME_ASSET_VISUAL_EDIT_INVALID');
-    const original=fs.readFileSync(verifiedFile(root,relative));
-    checkOriginal(original,edit.expectedSha256);
-    checkSafeVisualDocument(original.toString('utf8'),relative);
-    const doc=new Map([[relative,original.toString('utf8')]]);
-    applyExactEdits(root,[{path:relative,find:edit.find,replace:edit.replace}],{documents:doc});
-    checkSafeVisualDocument(doc.get(relative),relative);
-    documents.set(relative,doc.get(relative));
-    normalized.push({path:relative,find:edit.find,replace:edit.replace});
-  }
-  return Object.freeze({
-    summary:'Vibe5.9 owner-scoped existing game visual asset improvements',
-    expectedEffect:'Edit '+normalized.length+' actual game-owned visual source assets without replacing gameplay',
-    edits:normalized,newFiles:[],replaceFiles:[],tests:[],
-    vibe59CodeKind:'SOURCE_BOUND_VISUAL_ASSET_EDIT',
-    ruleDigest:sha(Buffer.from(JSON.stringify([gameId,target,normalized]))),
-    sourceWrite:false,modelUsed:false,runtimeVerified:false,releaseVerified:false
-  });
-}
-
-// Bounded modifications to an actual existing game's visuals. The original graphics asset
-// stays at its existing path, so existing runtime references remain valid.
-// Source and replacement digests must match current bytes; no new asset is invented.
-export function applyVibe59ApprovedGameAssetChanges({
-  order={},sourceRoot='',repositoryRoot=process.cwd(),target='web',
-  approvedAssetWrite=false,visualEdits=[],binaryReplacements=[]
-}={}){
-  const {repo,root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,approvedAssetWrite});
-  if(!Array.isArray(visualEdits)||!Array.isArray(binaryReplacements)
-    ||!visualEdits.length&&!binaryReplacements.length
-    ||visualEdits.length+binaryReplacements.length>MAX_ASSETS)
-    throw Error('VIBE59_GAME_ASSET_CHANGES_OUT_OF_BOUNDS');
-  const targets=new Map(),documents=new Map();
-  const register=(relative,expectedSha)=>{
-    safePath(relative);
-    if(!(relative.startsWith('assets/')||relative.startsWith('icons/')
-      ||relative.startsWith('audio/')||/^(?:style|graphics-upgrade)\.css$/.test(relative)))
-      throw Error('VIBE59_GAME_ASSET_OUTSIDE_VISUAL_SCOPE');
-    if(targets.has(relative))throw Error('VIBE59_GAME_ASSET_DUPLICATE_TARGET');
-    const abs=verifiedFile(root,relative),original=fs.readFileSync(abs);
-    checkOriginal(original,expectedSha);
-    targets.set(relative,{abs,original,after:null});
-    return original;
-  };
-  for(const edit of visualEdits){
-    if(!allowedText.test(edit?.path||'')||typeof edit.find!=='string'
-      ||typeof edit.replace!=='string'||!edit.find||edit.find===edit.replace
-      ||Buffer.byteLength(edit.find)+Buffer.byteLength(edit.replace)>64000)
-      throw Error('VIBE59_GAME_ASSET_VISUAL_EDIT_INVALID');
-    const original=register(edit.path,edit.expectedSha256);
-    const body=original.toString('utf8');
-    checkSafeVisualDocument(body,edit.path);
-    documents.set(edit.path,body);
-    applyExactEdits(root,[{path:edit.path,find:edit.find,replace:edit.replace}],{documents});
-    const next=documents.get(edit.path);
-    checkSafeVisualDocument(next,edit.path);
-    targets.get(edit.path).after=Buffer.from(next);
-  }
-  let ledger;
-  if(binaryReplacements.length){
-    const ledgerFile=verifiedFile(repo,'assets/asset-license-ledger.json');
-    ledger=JSON.parse(fs.readFileSync(ledgerFile,'utf8'));
-  }
-  for(const replace of binaryReplacements){
-    if(!allowedBinary.test(replace?.path||'')
-      ||!allowedBinary.test(replace?.sourcePath||'')
-      ||path.extname(replace.path).toLowerCase()!==path.extname(replace.sourcePath).toLowerCase()
-      ||!replace.ledgerId||!replace.assetRole||replace.mappingApproved!==true
-      ||!order.selectedTask.approvedAssetMappings?.some(mapping=>mapping.ownerApproved===true
-        &&mapping.path===replace.path&&mapping.sourcePath===replace.sourcePath
-        &&mapping.ledgerId===replace.ledgerId&&mapping.assetRole===replace.assetRole))
-      throw Error('VIBE59_GAME_ASSET_BINDING_NOT_APPROVED');
-    if(!(replace.sourcePath.startsWith('assets/shared/')
-      ||replace.sourcePath.startsWith('assets/roblox/')
-      ||replace.sourcePath.startsWith('web-games/'+gameId+'/assets/')
-      ||replace.sourcePath.startsWith('roblox-games/'+gameId+'/assets/')))
-      throw Error('VIBE59_GAME_ASSET_SOURCE_LIBRARY_NOT_ALLOWED');
-    const original=register(replace.path,replace.expectedSha256);
-    const sourceAbs=verifiedFile(repo,replace.sourcePath);
-    const replacement=fs.readFileSync(sourceAbs);
-    checkOriginal(replacement,replace.sourceSha256);
-    findLedgerSource(ledger,gameId,replace.ledgerId,replace.sourcePath,replace.sourceSha256);
-    if(replacement.equals(original))throw Error('VIBE59_GAME_ASSET_ALREADY_IDENTICAL');
-    targets.get(replace.path).after=replacement;
-  }
-  const changes=[...targets.entries()];
-  for(const [,row] of changes)
-    if(!row.after||row.after.equals(row.original))throw Error('VIBE59_GAME_ASSET_NO_CHANGE');
-  for(const [,row] of changes)
-    if(!fs.readFileSync(row.abs).equals(row.original))
-      throw Error('VIBE59_GAME_ASSET_SOURCE_CHANGED_CONCURRENTLY');
-  const written=[];
-  try{
-    for(const [,row] of changes){
-      fs.writeFileSync(row.abs,row.after,{flag:'w'});
-      written.push(row);
-      if(!fs.readFileSync(row.abs).equals(row.after))
-        throw Error('VIBE59_GAME_ASSET_WRITE_VERIFICATION_FAILED');
-    }
-  }catch(error){
-    for(const row of written.reverse())fs.writeFileSync(row.abs,row.original,{flag:'w'});
-    throw error;
-  }
-  return Object.freeze({gameId,target,changedAssets:changes.map(([name])=>name),
-    assetWrite:true,modelUsed:false,runtimeVerified:false,releaseVerified:false});
-}
-,'i').exec(goal);
-  if(!ko&&!en)return null;
-  const relative=safePath(ko?ko[1]:en[2]),id=ko?ko[2]:en[1];
-  const beforeColor=ko?ko[3]:en[3],afterColor=ko?ko[4]:en[4];
-  const valid=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
-  if(!valid.test(beforeColor)||!valid.test(afterColor)
-    ||beforeColor.toLowerCase()===afterColor.toLowerCase())
-    throw Error('VIBE59_GAME_ASSET_COLOR_INVALID');
-  if(!responsibleFiles.includes(relative))throw Error('VIBE59_GAME_ASSET_RESPONSIBLE_FILE_REQUIRED');
-  const original=fs.readFileSync(verifiedFile(root,relative)),body=original.toString('utf8');
-  checkSafeVisualDocument(body,relative);
-  const matches=[],stack=[],groups=/<\/?g\b[^>]*>/gi;
-  let tag;
-  while((tag=groups.exec(body))){
-    if(/^<\//.test(tag[0])){
-      const open=stack.pop();
-      if(!open)throw Error('VIBE59_GAME_ASSET_GROUP_UNBALANCED');
-      if(open.id===id)matches.push(body.slice(open.start,groups.lastIndex));
-    }else if(!/\/>$/.test(tag[0])){
-      const attr=/\bid\s*=\s*(["'])([^"']+)\1/.exec(tag[0]);
-      stack.push({start:tag.index,id:attr?.[2]});
-    }
-  }
-  if(stack.length)throw Error('VIBE59_GAME_ASSET_GROUP_UNBALANCED');
-  if(matches.length!==1)throw Error('VIBE59_GAME_ASSET_GROUP_NOT_UNIQUE:'+id);
-  let changes=0;
-  const replace=matches[0].replace(/\b(fill|stroke|stop-color)\s*=\s*(["'])(#[0-9a-fA-F]{3,8})\2/g,
-    (whole,key,quote,value)=>{
-      if(value.toLowerCase()!==beforeColor.toLowerCase())return whole;
-      changes++;return key+'='+quote+afterColor+quote;
-    });
-  if(!changes)throw Error('VIBE59_GAME_ASSET_EXISTING_COLOR_NOT_FOUND:'+id);
-  return [{path:relative,expectedSha256:sha(original),find:matches[0],replace}];
-}
-
-// Existing Vibe source-worker consumes this ordinary exact-edit candidate through its
-// established normalization, independent QA, branch and release path. No direct writes.
-export function createVibe59ExistingGameVisualCandidate({
-  order={},sourceRoot='',repositoryRoot=process.cwd(),responsibleFiles=[],target='web'
-}={}){
-  const edits=order.selectedTask?.vibe59VisualAssetEdits??order.vibe59VisualAssetEdits;
-  if(edits==null)return null;
-  if(order.ownerApproved!==true||order.selectedTask?.ownerDirective!==true)
-    throw Error('VIBE59_GAME_ASSET_WRITE_NOT_APPROVED');
-  const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,readOnly:true});
-  if(!Array.isArray(edits)||edits.length<1||edits.length>MAX_ASSETS
-    ||!Array.isArray(responsibleFiles)||!responsibleFiles.length)
-    throw Error('VIBE59_GAME_ASSET_CHANGES_OUT_OF_BOUNDS');
-  const documents=new Map(),normalized=[];
-  for(const edit of edits){
-    const relative=safePath(edit?.path);
-    if(!allowedText.test(relative)||!responsibleFiles.includes(relative)
-      ||!(relative.startsWith('assets/')||relative.startsWith('icons/')
-        ||/^(?:style|graphics-upgrade)\.css$/.test(relative))
-      ||typeof edit.find!=='string'||!edit.find
-      ||typeof edit.replace!=='string'||edit.replace===edit.find
-      ||Buffer.byteLength(edit.find)+Buffer.byteLength(edit.replace)>64000
-      ||documents.has(relative))
-      throw Error('VIBE59_GAME_ASSET_VISUAL_EDIT_INVALID');
-    const original=fs.readFileSync(verifiedFile(root,relative));
-    checkOriginal(original,edit.expectedSha256);
-    checkSafeVisualDocument(original.toString('utf8'),relative);
-    const doc=new Map([[relative,original.toString('utf8')]]);
-    applyExactEdits(root,[{path:relative,find:edit.find,replace:edit.replace}],{documents:doc});
-    checkSafeVisualDocument(doc.get(relative),relative);
-    documents.set(relative,doc.get(relative));
-    normalized.push({path:relative,find:edit.find,replace:edit.replace});
-  }
-  return Object.freeze({
-    summary:'Vibe5.9 owner-scoped existing game visual asset improvements',
-    expectedEffect:'Edit '+normalized.length+' actual game-owned visual source assets without replacing gameplay',
-    edits:normalized,newFiles:[],replaceFiles:[],tests:[],
-    vibe59CodeKind:'SOURCE_BOUND_VISUAL_ASSET_EDIT',
     ruleDigest:sha(Buffer.from(JSON.stringify([gameId,target,normalized]))),
     sourceWrite:false,modelUsed:false,runtimeVerified:false,releaseVerified:false
   });
