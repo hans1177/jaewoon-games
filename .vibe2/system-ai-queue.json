@@ -118564,7 +118564,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -118606,12 +118606,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40848436921:1",
+      "reservedAt": "2026-10-29T09:23:05.460Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -119728,14 +119728,15 @@
         "failed-strategy-fingerprint:cb108401ce67767c47a68ac283a7fa9a51f5ef9c3943cf64a03021e6be9b2dfa",
         "model-output-sha256:1d1ae7b2d3e5b4cbc2b50ece4a30249b07ab42e3ea93f02e6b770190f5c422ff",
         "system-ai-handoff-to-reservation:system-ai:40846923617:1",
-        "actions-run:40846923617"
+        "actions-run:40846923617",
+        "system-ai-handoff-to-reservation:system-ai:40848436921:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 302,
+      "impactScore": 1722,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 0,
-        "recurrenceCount": 0,
+        "blockedTaskCount": 35,
+        "recurrenceCount": 35,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -119743,7 +119744,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-29T09:15:32.580Z"
+      "updatedAt": "2026-10-29T09:23:05.460Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
