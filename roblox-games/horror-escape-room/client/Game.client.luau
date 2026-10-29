@@ -3195,11 +3195,21 @@ local function render()
  roleLine.Text=string.format("%s · 인간 %d : 몬스터 %d",roleText,hc,mc)
  local objectivesDone=tonumber(p:GetAttribute("ObjectivesDone"))or 0
  local objectivesTotal=math.max(1,tonumber(p:GetAttribute("ObjectivesTotal"))or tonumber(C.ObjectiveCount)or 4)
+ local unlockAt=math.max(1,tonumber(C.EscapeUnlockObjectives)or objectivesTotal)
+ objectiveLine.TextColor3=Color3.fromRGB(230,218,190)
  if role=="MONSTER"then
   objectiveLine.Text="인간을 찾아 감염"
   skillGuideLine.Text=currentAbilityName()
  elseif role=="SURVIVOR"then
-  objectiveLine.Text=string.format("단말 %d/%d · 정화 후 탈출",objectivesDone,objectivesTotal)
+  if p:GetAttribute("Escaped")==true then
+   objectiveLine.Text="탈출 성공 · 팀 결과 대기"
+   objectiveLine.TextColor3=Color3.fromRGB(151,238,190)
+  elseif objectivesDone>=unlockAt then
+   objectiveLine.Text="탈출구 개방 · 비상 출구에서 탈출!"
+   objectiveLine.TextColor3=Color3.fromRGB(151,238,190)
+  else
+   objectiveLine.Text=string.format("단말 %d/%d · %d개 남음",objectivesDone,objectivesTotal,math.max(0,unlockAt-objectivesDone))
+  end
   skillGuideLine.Text=currentHumanAbilityName()
  elseif role=="ELIMINATED"then
   objectiveLine.Text="이번 판 탈락 · 팀 결과를 기다리는 중"
