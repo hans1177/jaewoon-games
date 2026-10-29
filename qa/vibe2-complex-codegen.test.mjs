@@ -411,7 +411,7 @@ test('existing survival2 production SVG receives owner Korean/English recolor th
     ...order.selectedTask,goal:'Recolor wolf in assets/other.svg from #6d7773 to #81938b'}}}),
     /VIBE59_GAME_ASSET_RESPONSIBLE_FILE_REQUIRED/);
   assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,selectedTask:{
-    ...order.selectedTask,goal:'Recolor wolf in assets/survival-atlas.svg from #6d7773 to #ffzzzz'}}}),
+    ...order.selectedTask,goal:'Recolor wolf in assets/survival-atlas.svg from #6d7773 to #abcd'}}}),
     /VIBE59_GAME_ASSET_COLOR_INVALID/);
 });
 test('Vibe5.9 existing source-worker synthesizes authorized in-game visual asset edits without direct writes',t=>{
