@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import http from 'node:http';
 import net from 'node:net';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
 import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
@@ -109,7 +110,12 @@ const server=http.createServer((req,res)=>{
       'content-type':mime(file),
       'cache-control':'no-store'
     });
-    fs.createReadStream(file).pipe(res);
+    if(relative==='web-games/line-defense/index.html'){
+      // 테스트 서버에만 책임 함수 참조를 노출한다. 게임 파일·배포본은 수정하지 않는다.
+      const source=fs.readFileSync(file,'utf8'),anchor='\n})();\n</script>';
+      assert.equal(source.split(anchor).length,2,'line-defense test probe requires exact original closure');
+      res.end(source.replace(anchor,'\nglobalThis.__vibe59CombatProbe={hit,team,getState:()=>s,setState:value=>s=value,persist,getSave:()=>save};'+anchor));
+    }else fs.createReadStream(file).pipe(res);
   }catch(error){
     res.writeHead(500).end(String(error?.message||error));
   }
@@ -122,6 +128,7 @@ assert.ok(address&&typeof address==='object','browser smoke server address missi
 const sitePort=address.port;
 
 function findChrome(){
+  if(process.env.VIBE2_CHROME_BINARY&&fs.existsSync(process.env.VIBE2_CHROME_BINARY))return process.env.VIBE2_CHROME_BINARY;
   for(const binary of ['google-chrome','google-chrome-stable','chromium','chromium-browser']){
     const probe=spawnSync(binary,['--version'],{encoding:'utf8'});
     if(!probe.error&&probe.status===0)return binary;
@@ -382,6 +389,58 @@ try{
         'party-rpg: expected all 34 current licensed GLB roles to load: '+JSON.stringify(evidence));
       assert.ok(evidence.loaded.every(row=>row.meshCount>0&&row.vertexCount>0),
         'party-rpg: loaded GLB must contain actual renderable 3D mesh geometry: '+JSON.stringify(evidence.loaded.filter(row=>!row.meshCount||!row.vertexCount)));
+    }
+    if(gameId==='line-defense'){
+      currentPhase='LINE_DEFENSE_MOBILE_INPUT_AND_COMPLEX_COMBAT';
+      await cdp.send('Emulation.setDeviceMetricsOverride',{width:393,height:852,deviceScaleFactor:2,mobile:true});
+      await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+      const ready=cdp.waitEvent('Page.loadEventFired',12000);await cdp.send('Page.navigate',{url});await ready;
+      const touch=async selector=>{
+        const point=await cdp.evaluate(`(()=>{const b=document.querySelector(${JSON.stringify(selector)});if(!b||b.disabled)return null;const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+        assert.ok(point,'line-defense touch target missing: '+selector);
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await delay(80);
+      };
+      await touch('#openMain');await touch('#start');
+      await delay(350);
+      const before=await cdp.evaluate("document.getElementById('game').toDataURL()");
+      await touch('#pause');
+      assert.equal(await cdp.evaluate("document.getElementById('phase').textContent"),'일시정지');
+      await touch('#pause');
+      assert.equal(await cdp.evaluate("document.getElementById('phase').textContent"),'전투 중');
+      const unit=await cdp.evaluate("(()=>{const b=[...document.querySelectorAll('#unitBar button')].find(x=>!x.disabled);if(!b)return null;b.id='vibe59-test-unit';return '#vibe59-test-unit'})()");
+      assert.ok(unit,'line-defense original summon button must be enabled');await touch(unit);await delay(150);
+      const realInputs=await cdp.evaluate(`(()=>({
+        active:__vibe59CombatProbe.getState()?.running===true,
+        summoned:__vibe59CombatProbe.getState()?.a.length||0,
+        after:document.getElementById('game').toDataURL(),
+        clipped:document.documentElement.scrollWidth>innerWidth+1
+      }))()`);
+      assert.equal(realInputs.active,true);assert.ok(realInputs.summoned>0);
+      assert.notEqual(realInputs.after,before,'native canvas must change after real touch summon');assert.equal(realInputs.clipped,false);
+      const combat=await cdp.evaluate(`(()=>{
+        const api=__vibe59CombatProbe,old=api.getState();
+        const state={time:10,stage:1,money:0,maxMoney:800,strikes:[],shake:0,ally:{hp:1200},enemy:{hp:1500}};
+        const unit=extra=>Object.assign({x:100,team:'enemy',dead:false,hp:100,cd:0,flash:0,atk:10,rate:1,range:50,speed:0,size:20},extra);
+        api.setState(state);
+        try{
+          const ally=unit({x:98,team:'ally'});api.team([unit({dead:true,hp:0})],[ally],'enemy',.016);
+          const a=unit({team:'ally'}),t=unit({hp:10,reward:5});api.hit(a,t,[t]);const money=state.money;
+          a.cd=0;api.hit(a,t,[t]);const living=unit();api.hit(unit({team:'ally'}),living,[living]);
+          api.team([unit({x:200,team:'ally',range:1})],[],'ally',.016);
+          return {deadAttackerHp:ally.hp,deadTargetHp:t.hp,firstReward:money,lastReward:state.money,livingHp:living.hp,missBaseHp:state.enemy.hp};
+        }finally{api.setState(old)}
+      })()`);
+      assert.deepEqual(combat,{deadAttackerHp:100,deadTargetHp:0,firstReward:5,lastReward:5,livingHp:90,missBaseHp:1500});
+      const saved=await cdp.evaluate("(()=>{__vibe59CombatProbe.persist();return JSON.stringify(__vibe59CombatProbe.getSave())})()");
+      const reloaded=cdp.waitEvent('Page.loadEventFired',12000);await cdp.send('Page.reload',{ignoreCache:true});await reloaded;
+      assert.equal(await cdp.evaluate('JSON.stringify(__vibe59CombatProbe.getSave())'),saved,'existing save must round-trip');
+      console.log('LINE_DEFENSE_COMPLEX_COMBAT='+JSON.stringify({
+        sourceSha256:createHash('sha256').update(fs.readFileSync(path.join(ROOT,'web-games/line-defense/index.html'))).digest('hex'),
+        combat,realTouch:true,canvasChanged:true,saveRoundTrip:true,testServerProbe:true,physicalMobileVerified:false
+      }));
+      await cdp.send('Emulation.clearDeviceMetricsOverride');
+      await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:false});
     }
     currentPhase='ASSERT';
     const missing=local404.slice(missingStart).filter(item=>item!=='/favicon.ico');

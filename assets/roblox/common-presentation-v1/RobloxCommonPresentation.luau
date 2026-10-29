@@ -156,6 +156,113 @@ function Presentation.CreateFailureRecoveryState(options)
   return root,parts
 end
 
+
+-- [Vibe Roblox] 기존 PlayerGui, UI 템플릿에만 트윈/글로우를 재사용한다.
+-- 게임 행동, 데미지, 저장, 카메라, 신규 모델은 이 함수가 소유하지 않는다.
+function Presentation.BindGameUiEffects(player, options)
+  options = options or {}
+  if not player or not player:IsA("Player") then return nil end
+  local gui = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 5)
+  if not gui then return nil end
+  local existing = gui:FindFirstChild("VibeSharedUiEffects")
+  if existing and existing:IsA("Folder") then return existing end
+  local scope = Instance.new("Folder")
+  scope.Name = "VibeSharedUiEffects"
+  scope:SetAttribute("VibePresentationOnly", true)
+  scope:SetAttribute("GameplayAuthority", false)
+  scope.Parent = gui
+  local TweenService = game:GetService("TweenService")
+  local touch = game:GetService("UserInputService").TouchEnabled
+  -- 프레임 비용이 낮은 네이티브 후가공. 기존 게임이 설정한 Bloom은 그대로 둔다.
+  if options.postProcessing ~= false and not touch then
+    local Lighting = game:GetService("Lighting")
+    if not Lighting:FindFirstChildOfClass("BloomEffect") then
+      local glow = Instance.new("BloomEffect")
+      glow.Name = "VibeSharedBloom"
+      glow.Intensity = 0.16
+      glow.Size = 18
+      glow.Threshold = 1.25
+      glow.Parent = Lighting
+    end
+  end
+  local reduced = options.reducedMotion == true
+  local connections = {}
+  local bound = {}
+  local count = 0
+  local function animate(button)
+    if reduced or not button.Parent or button.Active == false then return end
+    local scale = button:FindFirstChildOfClass("UIScale")
+    if not scale then
+      scale = Instance.new("UIScale")
+      scale.Name = "VibeButtonTween"
+      scale.Parent = button
+    elseif scale.Name ~= "VibeButtonTween" then
+      -- 기존 게임이 소유한 크기 연출과 충돌하지 않는다.
+      return
+    end
+    local initial = scale.Scale
+    scale.Scale = initial * .95
+    TweenService:Create(scale,TweenInfo.new(touch and .14 or .18,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=initial}):Play()
+    if button:FindFirstChildOfClass("UIStroke") then return end
+    local outline = Instance.new("UIStroke")
+    outline.Name = "VibeInputGlow"
+    outline.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    outline.Color = Color3.fromRGB(255,218,145)
+    outline.Thickness = 1.5
+    outline.Transparency = .18
+    outline.Parent = button
+    local tween = TweenService:Create(outline,TweenInfo.new(.22),{Transparency=1})
+    tween.Completed:Connect(function()
+      if outline.Parent then outline:Destroy() end
+    end)
+    tween:Play()
+  end
+  local function bind(node)
+    if not node:IsA("GuiButton") or bound[node] or count>=320 then return end
+    bound[node]=true
+    count+=1
+    table.insert(connections,node.Activated:Connect(function() animate(node) end))
+    table.insert(connections,node.Destroying:Connect(function() bound[node]=nil end))
+  end
+  for _,node in ipairs(gui:GetDescendants()) do bind(node) end
+  table.insert(connections,gui.DescendantAdded:Connect(bind))
+  -- [실제 적중] 서버 복제 Humanoid 체력 감소에만 기존 VFX 에셋을 발사한다.
+  -- 피해량·히트박스·전투 Remote는 전혀 다루지 않는다.
+  local shared = game:GetService("ReplicatedStorage"):FindFirstChild("Shared")
+  local vfxModule = shared and shared:FindFirstChild("RobloxCommonVFX")
+  if vfxModule and vfxModule:IsA("ModuleScript") and options.damageVfx ~= false then
+    local ok, VFX = pcall(require, vfxModule)
+    if ok and type(VFX.CreateVibePreset) == "function" then
+      local function bindCharacter(character)
+        local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 4)
+        if not humanoid then return end
+        local lastHealth = humanoid.Health
+        local lastEffectAt = -100
+        table.insert(connections, humanoid.HealthChanged:Connect(function(health)
+          if scope.Parent and health < lastHealth - 0.05 and time() - lastEffectAt >= 0.12 then
+            local root = character:FindFirstChild("HumanoidRootPart")
+            if root then
+              lastEffectAt = time()
+              pcall(VFX.CreateVibePreset, "impact", {
+                cframe = root.CFrame, count = touch and 4 or 8,
+                color = Color3.fromRGB(255, 112, 112), critical = false
+              })
+            end
+          end
+          lastHealth = health
+        end))
+      end
+      if player.Character then task.defer(bindCharacter,player.Character) end
+      table.insert(connections,player.CharacterAdded:Connect(bindCharacter))
+    end
+  end
+  scope.Destroying:Connect(function()
+    for _,connection in ipairs(connections) do connection:Disconnect() end
+    table.clear(connections)
+  end)
+  return scope
+end
+
 function Presentation.Audit()
   return table.freeze({
     version=2,packId="roblox-common-presentation-v1",

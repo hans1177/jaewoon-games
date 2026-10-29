@@ -81,3 +81,31 @@ test('core cron and main-push auto-only reserve yields; explicit manual and owne
   assert.match(core,/workflow_dispatch:/);
   assert.match(core,/github\.event\.action == 'vibe2-neuron-complete'/);
 });
+
+test('Roblox game-primary can request allowlisted free coding models without expanding the offline lanes or paid billing',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('\n  worker:\n');
+  const envEnd=workflow.indexOf('\n    steps:\n',start);
+  assert.ok(start>0&&envEnd>start,'existing worker owns the model selection');
+  const worker=workflow.slice(start,envEnd);
+  const nativeFree="matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary'";
+  for(const key of ['VIBE2_V4_OFFLINE_ONLY','VIBE2_V4_NO_EXTERNAL_API']){
+    assert.ok(worker.includes(key+': ${{ '+nativeFree+" && 'false' || 'true' }}"),
+      key+' must only enable free source inference for native Roblox game-primary');
+  }
+  assert.ok(worker.includes("VIBE2_ROBLOX_NO_MODEL_ONLY: ${{ "+nativeFree+
+    " && (vars.VIBE2_ROBLOX_NO_MODEL_ONLY || 'false') || 'true' }}"));
+  assert.ok(workflow.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}"),
+    'unverified Groq plan must not be treated as free');
+  const freeTierKeyGuard="GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}";
+  assert.equal(workflow.split(freeTierKeyGuard).length-1,2,
+    'both inference and practice paths must withhold credentials unless the owner verifies a free-tier project');
+  assert.match(workflow,/VIBE2_PAID_API=NO/);
+  assert.match(workflow,/VIBE2_OPENAI_PAID_API_ALLOWED.*false/);
+  const provider=fs.readFileSync('tools/vibe2-gemini-free-rotation.mjs','utf8');
+  const workerSource=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(provider,/GEMINI_FREE_MODEL_PAIR_INVALID/);
+  assert.match(provider,/GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK/);
+  assert.match(provider,/NONZERO_COST_RESPONSE_BLOCKED/);
+  assert.match(workerSource,/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
+});

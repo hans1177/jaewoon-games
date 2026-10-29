@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { ingestPwaTask, buildSyncPayload, validateLocalWebOwnerEvent, buildGithubDevelopmentFocus } from '../tools/pwa-command-vibe2-task.mjs';
 import { buildVibeContinuousWorkOrder } from '../tools/vibe2-continuous-runner.mjs';
+import { parseOwnerStopTask, permanentlyDeleteCatalog, stopCatalog } from '../tools/pwa-owner-stop.mjs';
 
 const UUID='11111111-2222-4333-8444-555555555555';
 function fixture(){
@@ -288,4 +289,51 @@ test('authenticated WEB issue comment scopes Github cloud onepatch to game text 
     assert.throws(()=>validateLocalWebOwnerEvent({...payload,client_payload:{...payload.client_payload,files}},context),
       /LOCAL_OWNER_WEB_FILE_SCOPE_INVALID/);
   }
+});
+
+
+test('인증된 PWA 게임 삭제 명령은 개발중단과 구별하고 게임 ID를 검증한다',()=>{
+  const original={id:UUID,game_id:'insect-survival',kind:'directive',body:'OWNER_DELETE_GAME:insect-survival'};
+  assert.deepEqual(parseOwnerStopTask({task:original}),{taskId:UUID,gameId:'insect-survival',mode:'delete'});
+  assert.equal(parseOwnerStopTask({task:{...original,body:'OWNER_STOP_GAME:insect-survival'}}).mode,'stop');
+  assert.throws(()=>parseOwnerStopTask({task:{...original,body:'OWNER_DELETE_GAME:daechung-rpg'}}),/IDENTITY_INVALID/);
+  assert.throws(()=>parseOwnerStopTask({task:{...original,kind:'feedback'}}),/IDENTITY_INVALID/);
+});
+
+test('게임 영구삭제는 원본 카탈로그와 자동복구 목록에 흔적을 남기지 않는다',()=>{
+  const input={games:[{id:'insect-survival',name:'곤충 생존기'},{id:'cozy-island',name:'코지 아일랜드'}],
+    ownerStoppedGameIds:['insect-survival'],permanentRemovalPolicy:{ids:[],reentryAllowed:false}};
+  const after=permanentlyDeleteCatalog(input,'insect-survival');
+  assert.deepEqual(after.games.map(g=>g.id),['cozy-island']);
+  assert.ok(after.permanentRemovalPolicy.ids.includes('insect-survival'));
+  assert.equal(after.permanentRemovalPolicy.automaticRecoveryAllowed,false);
+  assert.equal(after.permanentRemovalPolicy.sourceDeletionRequired,true);
+  assert.deepEqual(after.ownerStoppedGameIds,[]);
+  assert.throws(()=>stopCatalog(after,'insect-survival'),/UNKNOWN_GAME/);
+});
+
+test('홈페이지 삭제는 기존 기기 인증을 거쳐 영구삭제를 접수하고 임의의 게임 세이브를 삭제하지 않는다',()=>{
+  const client=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const flow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  assert.match(client,/const body='OWNER_DELETE_GAME:'\+id/);
+  // 공개 방문자에게는 삭제 버튼이 생성되지 않는다. 서버에서 인증된 기기만 활성화된다.
+  assert.match(client,/if\(!ownerDeleteVerified\)return '';/);
+  assert.match(client,/if\(!ownerDeleteVerified\)return;/);
+  assert.match(client,/valid=result\?\.ok===true&&Array\.isArray\(result\.tasks\)/);
+  assert.match(client,/body:JSON\.stringify\(\{action:'list'\}\)/);
+  assert.match(client,/void verifyOwnerDeleteAccess\(\)/);
+
+  const deleteHandler=client.split('async function requestPermanentGameDelete(id)')[1]?.split('let favoriteGameIds=new Set();')[0];
+  assert.ok(deleteHandler,'영구삭제 요청 함수가 존재해야 한다');
+  assert.ok(!['location.href','location.replace','window.location'].some(part=>deleteHandler.includes(part)),'삭제 버튼에서 기기 등록으로 자동 이동 금지');
+  assert.ok(deleteHandler.includes('if(!token)'),'인증 없는 원본 삭제 금지');
+  assert.ok(deleteHandler.indexOf('if(!token)')<deleteHandler.indexOf('if(!window.confirm('),'기존 인증 재사용 후 확인 1회');
+  assert.doesNotMatch(client,/const body='OWNER_STOP_GAME:'\+id/);
+  assert.match(client,/localStorage\.getItem\('jaewoon_command_device_v1'\)/);
+  assert.match(client,/reconcileConfirmedDeletions\(catalog\)/);
+  assert.match(client,/clearOwnedBrowserSaves\(id\)/);
+  assert.match(client,/function gameTitleActions\(id,name\)/);
+  assert.doesNotMatch(client,/data-stop-request=/);
+  assert.match(flow,/PWA_OWNER_GAME_PAGES_DEPLOYMENT=DISPATCHED_NOT_VERIFIED/);
+  assert.match(flow,/OWNER_DELETE_GAME:/);
 });

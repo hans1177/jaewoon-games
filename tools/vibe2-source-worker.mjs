@@ -8375,6 +8375,63 @@ function writeUnityWebBootstrapScaffold(root,sourceRootRelative){
 }
 function applyNewFiles(root,newFiles){const changed=[];for(const file of newFiles){const target=path.join(root,file.path);if(fs.existsSync(target))throw new Error(`newFiles 대상이 이미 존재함: ${file.path}`);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}return changed;}
 function applyReplaceFiles(root,replaceFiles,{allowCreate=false}={}){const changed=[];for(const file of replaceFiles){const target=path.join(root,file.path);const exists=fs.existsSync(target)&&fs.statSync(target).isFile();if(!exists&&!allowCreate)throw new Error(`replaceFiles 대상 없음: ${file.path}`);if(!exists)fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return changed;}
+// [메인] 기존 소스 작업자의 단일 실제 파일 적용 책임. 중앙 승인/검증을 통과한 후보만 호출한다.
+// 여러 책임 파일은 동일 후보 스냅샷으로 검증 후 한 번에 원본 작업트리에 반영한다.
+export function applyVibe2CandidateToSource({cwd=process.cwd(),sourceRoot,candidateRoot,candidate,target='web',bootstrap=false,unityBootstrapFiles=null}={}){
+    const branch=assertCandidateBranch(cwd);
+    // [원본 적용] 후보 전체를 먼저 기존 정밀 편집기로 검증한다. 실패한 두 번째 파일 때문에
+    // 첫 번째 운영 게임 원본만 반영되는 상황을 차단한다. 새 배포·검증 파이프라인은 만들지 않는다.
+    const scaffoldFiles=bootstrap&&target==='unity'?unityBootstrapFiles:null;
+    const staged=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
+    const newPaths=new Set(candidate.newFiles.map(row=>row.path));
+    const replacePaths=new Set(candidate.replaceFiles.map(row=>row.path));
+    const originals=new Map(),proposed=new Map();
+    for(const relative of staged){
+      const absolute=path.resolve(sourceRoot,relative);
+      if(!absolute.startsWith(sourceRoot+path.sep))throw new Error('VIBE2_SOURCE_APPLY_SCOPE_ESCAPE:'+relative);
+      const previous=fs.existsSync(absolute)?fs.readFileSync(absolute):null;
+      if(previous===null&&(!newPaths.has(relative)&&!bootstrap))throw new Error('VIBE2_SOURCE_APPLY_MISSING_ORIGINAL:'+relative);
+      if(previous!==null&&newPaths.has(relative))throw new Error('VIBE2_SOURCE_APPLY_NEW_FILE_COLLISION:'+relative);
+      if(previous===null&&replacePaths.has(relative)&&!bootstrap)throw new Error('VIBE2_SOURCE_APPLY_REPLACE_MISSING:'+relative);
+      if(previous!==null&&fs.lstatSync(absolute).isSymbolicLink())throw new Error('VIBE2_SOURCE_APPLY_SYMLINK:'+relative);
+      const next=fs.readFileSync(path.join(candidateRoot,'files',relative));
+      if(previous!==null&&previous.equals(next))throw new Error('VIBE2_SOURCE_APPLY_NO_DELTA:'+relative);
+      originals.set(relative,previous);proposed.set(relative,next);
+    }
+    const committed=[],temporary=[];
+    try{
+      for(const [relative,previous] of originals){
+        const absolute=path.resolve(sourceRoot,relative);
+        const actual=fs.existsSync(absolute)?fs.readFileSync(absolute):null;
+        if((actual===null)!==(previous===null)||(actual!==null&&!actual.equals(previous)))
+          throw new Error('VIBE2_SOURCE_APPLY_STALE_ORIGINAL:'+relative);
+      }
+      for(const [relative,next] of proposed){
+        const absolute=path.resolve(sourceRoot,relative);
+        fs.mkdirSync(path.dirname(absolute),{recursive:true});
+        const temp=absolute+'.vibe2-stage-'+process.pid;
+        temporary.push(temp);
+        fs.writeFileSync(temp,next,{flag:'wx'});
+      }
+      for(const relative of staged){
+        const absolute=path.resolve(sourceRoot,relative),temp=absolute+'.vibe2-stage-'+process.pid;
+        fs.renameSync(temp,absolute);
+        committed.push(relative);
+      }
+    }catch(error){
+      for(const relative of committed.reverse()){
+        const absolute=path.resolve(sourceRoot,relative),before=originals.get(relative);
+        if(before===null)fs.rmSync(absolute,{force:true});
+        else fs.writeFileSync(absolute,before);
+      }
+      throw error;
+    }finally{
+      for(const temp of temporary)fs.rmSync(temp,{force:true});
+    }
+    return {branch,changedFiles:staged};
+
+}
+
 function createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles=null}={}){
   const changed=[],filesRoot=path.join(candidateRoot,'files');
   if(scaffoldFiles){
@@ -9086,6 +9143,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   // Owner-approved source scope and the original Vibe2 validator still decide admission.
   if(!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
     const v59=createVibe59CodeCandidates({order,sourceRoot,responsibleFiles,target,
+      repositoryRoot:cwd,
       verifiedCodePatterns:readVerifiedCodePatternsForSourceWorker().patterns});
     if(v59){
       const candidate=normalizeCandidate(v59,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
@@ -9093,6 +9151,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const candidateValidation=candidateValidator(candidate);
       generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,
         modelUsed:false,vibe59RuleDigest:v59.ruleDigest,vibe59CodeKind:v59.vibe59CodeKind,
+        ...(v59.complexPlan?{complexRequirementCount:v59.complexPlan.requirementCount,
+          complexBoundSymbolCount:v59.complexPlan.boundSymbolCount,complexAtomCount:v59.complexPlan.atomCount,
+          complexPlanDigest:v59.complexPlan.digest,complexSourceDigest:v59.complexPlan.sourceDigest,
+          complexGameRuntimeVerified:false}:{}),
         vibe59TestCaseCount:v59.vibe59TestPlan.cases.length,vibe59ScenariosPass:v59.vibe59TestPlan.pass,
         vibe59JsReplayPass:v59.vibe59JsReplay?.pass??null,
         vibe59AutoProbeCount:v59.vibe59AutoTestPlan?.generatedCaseCount||0,
@@ -9265,9 +9327,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   fs.mkdirSync(candidateRoot,{recursive:true});
   let changedFiles,branch=null;
   if(applySource){
-    branch=assertCandidateBranch(cwd);
-    const scaffoldChanged=bootstrap&&target==='unity'?writeUnityWebBootstrapScaffold(sourceRoot,sourceRootRelative):[];
-    changedFiles=[...scaffoldChanged,...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles,{allowCreate:bootstrap})];
+    const applied=applyVibe2CandidateToSource({cwd,sourceRoot,candidateRoot,candidate,target,bootstrap,unityBootstrapFiles});
+    branch=applied.branch;
+    changedFiles=applied.changedFiles;
   }else{
     const scaffoldFiles=bootstrap&&target==='unity'?unityBootstrapFiles:null;
     changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
@@ -9411,7 +9473,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     deterministicWebInput:generation.deterministicWebInput===true,
     deterministicRobloxNativeRepair:clean(generation.deterministicRobloxNativeRepair)||null,
     deterministicNativeSelection,
-    sourceModelCallRequired:!generation.deterministicRobloxNativeRepair&&![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
+    sourceModelCallRequired:generation.modelUsed!==false&&!generation.deterministicRobloxNativeRepair&&![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };

@@ -11,8 +11,9 @@ import {mergeVertices} from '../../assets/roblox/world-ghosts/native/mesh/three/
 import {clone as cloneAnimatedRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
-import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
+import {createSurvivalPlayerMotionProfile,createVibeUpperBodyAnimationClip} from '../../assets/vibe-motion-director.js';
 import {planAssetApplication} from '../../assets/asset-selector.js';
+import {createVibeWorldVfx} from '../../assets/vibe-game-world-runtime.mjs';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
@@ -224,6 +225,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const modelsPromise=loadSourceModels();
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
   let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroAttackAt=0,lastHeroFrame=0;
+  let heroUpperAction=null,heroUpperClipCache=new Map(),heroLowerClipCache=new Map(),heroClipNames=[];
+  let lastHeroHp=null,heroHitUntil=0;
   let scene=null,disposed=false,heroLoadVersion=0;
   let selectedAppearance=null;
   async function setAvatarAppearance(requested){
@@ -235,10 +238,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       let gltf;
       if(typeof DecompressionStream==='function'){
         const compressed=new URL('./'+HERO_MODEL_FILES[choice.model]+'.gz',import.meta.url);
-        const response=await fetch(compressed,{cache:'force-cache'});
-        if(!response.ok)throw new Error('Compressed CC0 avatar unavailable: '+response.status);
-        const bytes=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-        gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',source).href);
+        try{
+          const response=await fetch(compressed,{cache:'force-cache'});
+          if(!response.ok)throw new Error('Compressed CC0 avatar unavailable: '+response.status);
+          const bytes=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+          gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',source).href);
+        }catch(error){
+          console.warn('Compressed CC0 avatar failed; retrying the identical approved GLB',error);
+          gltf=await new GLTFLoader().loadAsync(source.href);
+        }
       }else gltf=await new GLTFLoader().loadAsync(source.href);
       if(disposed||version!==heroLoadVersion)return false;
       const avatar=new THREE.Group(),model=gltf.scene;
@@ -249,13 +257,26 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       model.scale.setScalar(scaledHeight);
       model.position.y=-box.min.y*scaledHeight;
       avatar.add(model);
+      // 원본 GLB 컬러 텍스처는 sRGB, 표면 샘플링은 부드럽게 유지한다.
+      model.traverse(part=>{
+        if(!part.isMesh)return;
+        for(const material of (Array.isArray(part.material)?part.material:[part.material])){
+          for(const texture of [material?.map,material?.emissiveMap]){
+            if(!texture)continue;
+            texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.LinearFilter;
+            texture.minFilter=THREE.LinearMipmapLinearFilter;texture.needsUpdate=true;
+          }
+        }
+      });
       avatar.userData.source=source.href;
       const previous=hero,previousMixer=heroMixer;
       if(scene)scene.add(avatar);
       hero={avatar,model};
       heroClips=gltf.animations||[];
+      heroClipNames=heroClips.map(clip=>clip.name);
+      console.info('[Vibe] Original CC0 GLB clips',choice.model,heroClipNames);
       heroMixer=heroClips.length?new THREE.AnimationMixer(model):null;
-      heroAction=null;heroActionName='';lastHeroFrame=0;
+      heroAction=null;heroUpperAction=null;heroUpperClipCache=new Map();heroLowerClipCache=new Map();heroActionName='';lastHeroFrame=0;lastHeroHp=null;heroHitUntil=0;lastHeroAttackAt=0;
       selectedAppearance=choice;
       if(previous){
         previousMixer?.stopAllAction();
@@ -305,10 +326,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         let gltf;
         if(file==='barbarian.glb'&&typeof DecompressionStream==='function'){
           // 기존 압축 리그를 전송해 모바일 네트워크의 초기 부하를 줄인다.
-          const packed=await fetch(new URL('./barbarian.glb.gz',import.meta.url),{cache:'force-cache'});
-          if(!packed.ok)throw new Error('Original CC0 barbarian model unavailable: '+packed.status);
-          const bytes=await new Response(packed.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-          gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',url).href);
+          try{
+            const packed=await fetch(new URL('./barbarian.glb.gz',import.meta.url),{cache:'force-cache'});
+            if(!packed.ok)throw new Error('Original CC0 barbarian model unavailable: '+packed.status);
+            const bytes=await new Response(packed.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+            gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',url).href);
+          }catch(error){
+            // [3D 로딩] 압축 전송 실패도 동일한 승인 원본 GLB로 복구한다.
+            console.warn('Compressed CC0 barbarian unavailable; loading original GLB',error);
+            gltf=await new GLTFLoader().loadAsync(url.href);
+          }
         }else gltf=await new GLTFLoader().loadAsync(url.href);
         model=gltf.scene;clips=gltf.animations||[];
       }else{
@@ -386,12 +413,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   canvas.style.imageRendering='pixelated';
   const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'default'});
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.18;
+  renderer.toneMappingExposure=1.12;
   // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.82:.95)*(mobileBudget?.82:1));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
-  renderer.shadowMap.type=THREE.PCFShadowMap;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
   scene.fog=new THREE.Fog(0x244238,22,90);
@@ -399,13 +426,73 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // 3D models retain depth, but distance never shrinks or stretches the hero.
   const cameraViewHeight=mobileBudget?18:24;
   const camera=new THREE.OrthographicCamera(-12,12,12,-12,0.1,155);
-  const ambient=new THREE.HemisphereLight(0xe7f5d2,0x263428,2.25);
+  const ambient=new THREE.HemisphereLight(0xe7f5d2,0x263428,1.65);
   scene.add(ambient);
   const sun=new THREE.DirectionalLight(0xffe9b6,2.0);
   sun.position.set(-10,22,8);
   sun.castShadow=!mobileBudget;sun.shadow.mapSize.set(1024,1024);
+  sun.shadow.bias=-.00015;sun.shadow.normalBias=.025;sun.shadow.radius=2.2;
   sun.shadow.camera.left=-25;sun.shadow.camera.right=25;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;
   scene.add(sun);
+  // 실제 피격 이벤트가 있을 때만 기존 Vibe GPU 파티클을 방출한다.
+  const impactVfx=createVibeWorldVfx(THREE,scene,{maxParticles:mobileBudget?24:72});
+  const seenHitStamp=new WeakMap();let lastImpactFrame=0,impactShakeUntil=0;
+
+  // [후가공] 앱에 EffectComposer/UnrealBloomPass 모듈이 포함돼 있지 않으므로
+  // 같은 역할의 밝은 픽셀 추출 + 가우시안 합성 패스를 기존 렌더러 내부에 구현한다.
+  // 모바일에서는 GPU 과부하를 피하기 위해 원본 단일 패스를 유지한다.
+  function createNativeBloom(){
+    if(mobileBudget)return null;
+    const sceneTarget=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true,stencilBuffer:false});
+    const lightTarget=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:false,stencilBuffer:false});
+    const postScene=new THREE.Scene(),postCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+    const plane=new THREE.PlaneGeometry(2,2);
+    const vertexShader='varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}';
+    const brightMaterial=new THREE.ShaderMaterial({uniforms:{tScene:{value:sceneTarget.texture}},vertexShader,
+      fragmentShader:'uniform sampler2D tScene;varying vec2 vUv;void main(){vec3 c=texture2D(tScene,vUv).rgb;float light=smoothstep(.67,1.13,max(max(c.r,c.g),c.b));gl_FragColor=vec4(c*light,1.0);}',
+      toneMapped:false,depthWrite:false,depthTest:false});
+    const combineMaterial=new THREE.ShaderMaterial({uniforms:{tScene:{value:sceneTarget.texture},tGlow:{value:lightTarget.texture},stepSize:{value:new THREE.Vector2(1,1)},strength:{value:.46}},vertexShader,
+      fragmentShader:`uniform sampler2D tScene;uniform sampler2D tGlow;uniform vec2 stepSize;uniform float strength;varying vec2 vUv;
+       void main(){
+         vec3 glow=texture2D(tGlow,vUv).rgb*.20;
+         glow+=(texture2D(tGlow,vUv+vec2(stepSize.x,0.)).rgb+texture2D(tGlow,vUv-vec2(stepSize.x,0.)).rgb+
+           texture2D(tGlow,vUv+vec2(0.,stepSize.y)).rgb+texture2D(tGlow,vUv-vec2(0.,stepSize.y)).rgb)*.12;
+         glow+=(texture2D(tGlow,vUv+stepSize).rgb+texture2D(tGlow,vUv-stepSize).rgb+
+           texture2D(tGlow,vUv+vec2(stepSize.x,-stepSize.y)).rgb+
+           texture2D(tGlow,vUv+vec2(-stepSize.x,stepSize.y)).rgb)*.08;
+         gl_FragColor=vec4(texture2D(tScene,vUv).rgb+glow*strength,1.);
+         #include <tonemapping_fragment>
+         #include <colorspace_fragment>
+       }`,
+      depthWrite:false,depthTest:false,toneMapped:true});
+    const quad=new THREE.Mesh(plane,brightMaterial);quad.frustumCulled=false;postScene.add(quad);
+    let width=0,height=0,failed=false;
+    return{
+      render(scene,camera,quality){
+        if(failed||quality<.88){renderer.setRenderTarget(null);renderer.render(scene,camera);return}
+        try{
+          const w=Math.max(1,Math.round(renderer.domElement.clientWidth*renderer.getPixelRatio()));
+          const h=Math.max(1,Math.round(renderer.domElement.clientHeight*renderer.getPixelRatio()));
+          if(w!==width||h!==height){
+            width=w;height=h;
+            sceneTarget.setSize(w,h);
+            const lowW=Math.max(1,Math.floor(w/4)),lowH=Math.max(1,Math.floor(h/4));
+            lightTarget.setSize(lowW,lowH);
+            combineMaterial.uniforms.stepSize.value.set(1/lowW,1/lowH);
+          }
+          renderer.setRenderTarget(sceneTarget);renderer.clear();renderer.render(scene,camera);
+          renderer.setRenderTarget(lightTarget);quad.material=brightMaterial;renderer.clear();renderer.render(postScene,postCamera);
+          renderer.setRenderTarget(null);quad.material=combineMaterial;renderer.render(postScene,postCamera);
+        }catch(error){
+          failed=true;renderer.setRenderTarget(null);
+          console.warn('VIBE_BLOOM_DISABLED_RENDER_FALLBACK',error);
+          renderer.render(scene,camera);
+        }
+      },
+      dispose(){sceneTarget.dispose();lightTarget.dispose();quad.geometry.dispose();brightMaterial.dispose();combineMaterial.dispose();}
+    };
+  }
+  const bloom=createNativeBloom();
   // No generated floor mesh. Every visible ground tile is a clone of the
   // downloaded Tiny Treats CC0 floor_base.obj (including source silhouette).
   const sourceFloor=models.get('floor_base');
@@ -655,7 +742,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.anchor.position.z+=(destZ-actor.anchor.position.z)*glide;
         actor.anchor.rotation.y+=Math.atan2(Math.sin(turnTo-actor.anchor.rotation.y),Math.cos(turnTo-actor.anchor.rotation.y))*turnEase;
       }
-      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      actor.anchor.userData.worldPoint={x:e.x,y:e.y,monsterId:e.netId};
       syncBestiaryName(actor,e,state,2.35);
       // The game owns the tap-target/attack decision. Native skinned surfaces only
       // provide the correct original world coordinates to its existing handler.
@@ -674,19 +761,29 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       // [액션] 실제 원본 공격 클립을 찾지 못하면 대기 동작을 공격으로 위장하지 않는다.
-      const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
-      const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
+      const hitStamp=Number(e.hitAt)||0;
+      const freshHit=hitStamp>poseNow&&hitStamp!==actor.lastHitStamp;
+      if(freshHit){actor.lastHitStamp=hitStamp;actor.hitUntil=poseNow+250}
+      const reacting=poseNow<(actor.hitUntil||0);
+      const visualSpeed=moveDelta*1000/poseElapsed;
+      if(visualSpeed<75)actor.travelRole='walk';else if(visualSpeed>110)actor.travelRole='run';
+      const travelWords=actor.travelRole==='run'?['run','walk']:['walk','run'];
+      actor.enemy=e;
+      const intents=reacting?['hit','hurt','damage']:attacking?['attack','swing']:moving?travelWords:['idle','stand'];
+      const clip=intents.map(word=>undeadClips.find(c=>c.name.toLowerCase().includes(word))).find(Boolean)
         ||(!attacking?undeadClips.find(c=>/idle|walk/i.test(c.name)):null)||null;
-      if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
+      if(actor.mixer&&clip&&(clip.name!==actor.clipName||freshHit||!reacting&&attacking&&actor.lastAttackStamp!==e.attackAt)){
         const transitionSeconds=attacking?.10:moving?.16:.22;
-        actor.action?.fadeOut(transitionSeconds);
-        actor.action=actor.mixer.clipAction(clip).reset();
-        actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
-        actor.action.clampWhenFinished=attacking;
+        const nextAction=actor.mixer.clipAction(clip);
+        if(actor.action&&actor.action!==nextAction)actor.action.fadeOut(transitionSeconds);
+        else nextAction.stop();
+        actor.action=nextAction.reset().setEffectiveWeight(1);
+        actor.action.setLoop(attacking||reacting?THREE.LoopOnce:THREE.LoopRepeat,attacking||reacting?1:Infinity);
+        actor.action.clampWhenFinished=attacking||reacting;
         actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
-        if(attacking)actor.lastAttackStamp=e.attackAt;
+        if(attacking&&!reacting)actor.lastAttackStamp=e.attackAt;
       }
-      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
+      if(actor.action)actor.action.setEffectiveTimeScale(reacting?1:attacking?1.35:moving?1.25:1);
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
@@ -696,6 +793,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     for(const [key,actor] of undeadActors){
       if(actor.seen===stamp)continue;
+      const corpse=actor.enemy,now=performance.now();
+      // [사망 모션] 기존 처치 이벤트만 읽는다. 보상·판정·리스폰은 본편 그대로다.
+      if(corpse?.deathQueued&&corpse.hp<=0&&corpse.area===state.area&&actor.mixer){
+        if(!actor.deathUntil){
+          const deathClip=undeadClips.find(clip=>/death|die|dying/i.test(clip.name)&&!/pose/i.test(clip.name));
+          if(deathClip){
+            actor.action?.fadeOut(.09);
+            const deathAction=actor.mixer.clipAction(deathClip);
+            const duration=Math.min(1.5,Math.max(.25,deathClip.duration));
+            deathAction.reset().setEffectiveWeight(1).setDuration(duration).setLoop(THREE.LoopOnce,1);
+            deathAction.clampWhenFinished=true;deathAction.fadeIn(.09).play();
+            actor.deathUntil=now+duration*1000;actor.lastFrame=now;
+            actor.anchor.userData.worldPoint=null;
+            if(actor.nameLabel)actor.nameLabel.visible=false;
+          }
+        }
+        if(now<actor.deathUntil){
+          actor.mixer.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+          actor.lastFrame=now;continue;
+        }
+      }
       actor.mixer?.stopAllAction();
       scene.remove(actor.anchor);actor.nameLabel?.material.dispose();
       undeadActors.delete(key);
@@ -777,7 +895,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.anchor.rotation.z=.20;
         if(actor.anchor.scale)actor.anchor.scale.y=.70;
       }else{actor.anchor.rotation.z=0;if(actor.anchor.scale)actor.anchor.scale.y=1}
-      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      actor.anchor.userData.worldPoint={x:e.x,y:e.y,monsterId:e.netId};
       syncBestiaryName(actor,e,state,Math.max(1.5,(Number(e.type?.r)||20)*SCALE*2.2)+.2);
       if(actor.anchor.visible)actor.model.traverse(child=>{
         if(!child.isMesh)return;
@@ -794,19 +912,29 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       // [액션] 종별 실제 리그에서 공격/물기/베기 클립을 찾고 허위 공격 재생을 금지한다.
-      const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
-      const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
+      const hitStamp=Number(e.hitAt)||0;
+      const freshHit=hitStamp>poseNow&&hitStamp!==actor.lastHitStamp;
+      if(freshHit){actor.lastHitStamp=hitStamp;actor.hitUntil=poseNow+250}
+      const reacting=poseNow<(actor.hitUntil||0);
+      const visualSpeed=moveDelta*1000/poseElapsed;
+      if(visualSpeed<75)actor.travelRole='walk';else if(visualSpeed>110)actor.travelRole='run';
+      const travelWords=actor.travelRole==='run'?['run','walk']:['walk','run'];
+      actor.enemy=e;
+      const words=reacting?['hit','hurt','damage']:attacking?['attack','bite','swing']:moving?travelWords:['idle','stand'];
+      const clip=words.map(word=>actor.clips.find(c=>c.name.toLowerCase().includes(word))).find(Boolean)
         ||(!attacking?actor.clips.find(c=>/idle|walk/i.test(c.name)):null);
-      if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
+      if(actor.mixer&&clip&&(clip.name!==actor.clipName||freshHit||!reacting&&attacking&&actor.lastAttackStamp!==e.attackAt)){
         const transitionSeconds=attacking?.10:moving?.16:.22;
-        actor.action?.fadeOut(transitionSeconds);
-        actor.action=actor.mixer.clipAction(clip).reset();
-        actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
-        actor.action.clampWhenFinished=attacking;
+        const nextAction=actor.mixer.clipAction(clip);
+        if(actor.action&&actor.action!==nextAction)actor.action.fadeOut(transitionSeconds);
+        else nextAction.stop();
+        actor.action=nextAction.reset().setEffectiveWeight(1);
+        actor.action.setLoop(attacking||reacting?THREE.LoopOnce:THREE.LoopRepeat,attacking||reacting?1:Infinity);
+        actor.action.clampWhenFinished=attacking||reacting;
         actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
-        if(attacking)actor.lastAttackStamp=e.attackAt;
+        if(attacking&&!reacting)actor.lastAttackStamp=e.attackAt;
       }
-      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
+      if(actor.action)actor.action.setEffectiveTimeScale(reacting?1:attacking?1.35:moving?1.25:1);
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
@@ -815,6 +943,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     for(const [key,actor] of nativeCreatureActors){
       if(actor.seen===stamp)continue;
+      const corpse=actor.enemy,now=performance.now();
+      // [사망 모션] 기존 처치 이벤트만 읽는다. 보상·판정·리스폰은 본편 그대로다.
+      if(corpse?.deathQueued&&corpse.hp<=0&&corpse.area===state.area&&actor.mixer){
+        if(!actor.deathUntil){
+          const deathClip=actor.clips.find(clip=>/death|die|dying/i.test(clip.name)&&!/pose/i.test(clip.name));
+          if(deathClip){
+            actor.action?.fadeOut(.09);
+            const deathAction=actor.mixer.clipAction(deathClip);
+            const duration=Math.min(1.5,Math.max(.25,deathClip.duration));
+            deathAction.reset().setEffectiveWeight(1).setDuration(duration).setLoop(THREE.LoopOnce,1);
+            deathAction.clampWhenFinished=true;deathAction.fadeIn(.09).play();
+            actor.deathUntil=now+duration*1000;actor.lastFrame=now;
+            actor.anchor.userData.worldPoint=null;
+            if(actor.nameLabel)actor.nameLabel.visible=false;
+          }
+        }
+        if(now<actor.deathUntil){
+          actor.mixer.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+          actor.lastFrame=now;continue;
+        }
+      }
       actor.mixer?.stopAllAction();
       scene.remove(actor.anchor);actor.nameLabel?.material.dispose();nativeCreatureActors.delete(key);
     }
@@ -824,6 +973,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
 
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
   let playerTravelClip='run',actualPlayerClip='',unavailablePlayerClip='';
+  // 원본 CC0 공격 트랙 중 상체 본만 분리. 하체 이동은 원본 클립으로 유지한다.
+  function authoredUpperAttack(clip){
+    if(!clip)return null;
+    if(heroUpperClipCache.has(clip.name))return heroUpperClipCache.get(clip.name);
+    const upper=createVibeUpperBodyAnimationClip(THREE,clip);
+    heroUpperClipCache.set(clip.name,upper);
+    return upper;
+  }
   // [장비] 원본 캐릭터 GLB의 기본 장비·모션을 유지한다.
   // 검증된 무기별 원본이 없으므로 임의 상자·원통 모델은 생성하지 않는다.
   // 공격·장비·저장 판정은 기존 게임 본편이 그대로 담당한다.
@@ -1082,7 +1239,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(hero){
       hero.avatar.visible=true;
       hero.avatar.position.set(centerX,0,centerY);
-      hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      const heading=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      const turnElapsed=Math.min(80,Math.max(1,performance.now()-lastHeroPoseAt));
+      hero.avatar.rotation.y+=Math.atan2(Math.sin(heading-hero.avatar.rotation.y),Math.cos(heading-hero.avatar.rotation.y))
+        *(lastHeroPoseAt>0?1-Math.exp(-turnElapsed*.018):1);
       const tool=String(p.weapon||p.tool||'NONE').toLowerCase();
       updateEquippedVisual(tool);
       if(swingArc.parent!==hero.avatar)hero.avatar.add(swingArc);
@@ -1099,12 +1259,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>.06;
       lastHeroPoseX=px;lastHeroPoseY=py;lastHeroPoseAt=now;
       const attackingAge=now-(Number(p.attackAt)||0);
-      const pose=attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
+      if(lastHeroHp!==null&&Number(p.hp)<lastHeroHp)heroHitUntil=now+280;
+      lastHeroHp=Number(p.hp);
+      const incapacitated=Number(p.hp)<=0||Number(p.downedUntil)>now;
+      const pose=incapacitated?'death':now<heroHitUntil?'hit':attackingAge>=0&&Number(p.attackAt)>0&&attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
       // 기사 찌르기 / 전사 내려찍기 / 도적 빠른 베기 / 법사 시전의 시각 연출만 다르게 한다.
       const avatarStyle=selectedAppearance?.model||'knight';
       const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
       hero.avatar.rotation.z=avatarStyle==='barbarian'?-.11*attackPhase:avatarStyle.startsWith('rogue')?.08*attackPhase:avatarStyle==='mage'?.025*attackPhase:.045*attackPhase;
       hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:avatarStyle==='barbarian'?.06*attackPhase:0;
+      // 게임 물리 좌표가 아닌 프레젠테이션 루트에만 타격 전진을 적용한다.
+      hero.avatar.position.x+=(Number(p.faceX)||0)*.12*attackPhase;
+      hero.avatar.position.z+=(Number(p.faceY)||0)*.12*attackPhase;
       // 공격 이벤트와 동기화된 무기별 잔상·충격파. 데미지/쿨다운/범위 불변.
       const swingAge=Math.max(0,attackingAge),swinging=attackingAge>=0&&attackingAge<260;
       const heavy=/hammer|maul|greatsword|heavy|axe/.test(tool);
@@ -1128,30 +1294,56 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         if(visualSpeed<75)playerTravelClip='walk';
         else if(visualSpeed>110)playerTravelClip='run';
       }
-      const motionRole=pose==='move'?playerTravelClip:pose;
+      const attackClip=playerMotionProfile.cc0ClipCandidates.attack?.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
+      const upperAttack=authoredUpperAttack(attackClip);
+      const layeredAttack=pose==='attack'&&!!upperAttack;
+      const motionRole=layeredAttack?(moving?playerTravelClip:'idle'):pose==='move'?playerTravelClip:pose;
+      const oneShot=['attack','hit','death'].includes(motionRole);
       const clipName=playerMotionProfile.cc0Clips[motionRole];
       const candidates=playerMotionProfile.cc0ClipCandidates[motionRole]||[clipName];
-      const desired=candidates.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
+      let desired=candidates.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
+      if(layeredAttack&&desired){
+        if(!heroLowerClipCache.has(desired.name)){
+          const upperNames=new Set((authoredUpperAttack(desired)?.tracks||[]).map(track=>track.name));
+          heroLowerClipCache.set(desired.name,new THREE.AnimationClip(desired.name+'__lower',desired.duration,
+            desired.tracks.filter(track=>!upperNames.has(track.name)).map(track=>track.clone())));
+        }
+        desired=heroLowerClipCache.get(desired.name);
+      }
       actualPlayerClip=desired?.name||'';
       unavailablePlayerClip=desired?'':motionRole;
       const nextName=desired?.name||'';
       const attackAt=Number(p.attackAt)||0;
-      if(heroMixer&&(nextName!==heroActionName||(pose==='attack'&&attackAt!==lastHeroAttackAt))){
+      if(heroMixer&&(nextName!==heroActionName||(!layeredAttack&&pose==='attack'&&attackAt!==lastHeroAttackAt))){
         const nextAction=desired?heroMixer.clipAction(desired):null;
-        const heroTransition=pose==='attack'?.085:pose==='move'?.16:.22;
+        const heroTransition=oneShot?.085:moving?.16:.22;
         if(heroAction&&heroAction!==nextAction)heroAction.fadeOut(heroTransition);
-        else if(heroAction&&pose==='attack')heroAction.stop(); // 같은 원본 클립도 새 공격 이벤트마다 재시작한다.
+        else if(heroAction&&oneShot)heroAction.stop(); // 같은 원본 클립도 새 공격 이벤트마다 재시작한다.
         heroAction=nextAction;
         if(heroAction){
-          heroAction.reset().setLoop(pose==='attack'?THREE.LoopOnce:THREE.LoopRepeat,pose==='attack'?1:Infinity);
-          heroAction.clampWhenFinished=pose==='attack';
+          heroAction.reset().setEffectiveWeight(1).setLoop(oneShot?THREE.LoopOnce:THREE.LoopRepeat,oneShot?1:Infinity);
+          heroAction.clampWhenFinished=oneShot;
           // 실제 시각 애니메이션 시간만 변경한다. 이동 루트와 공격 판정은 건드리지 않는다.
-          if(pose==='attack')heroAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:selectedAppearance?.model?.startsWith('rogue')?.23:.32);
-          else heroAction.setEffectiveTimeScale(pose==='move'?1.3:1);
+          if(motionRole==='attack')heroAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:selectedAppearance?.model?.startsWith('rogue')?.23:.32);
+          else if(motionRole==='hit')heroAction.setDuration(.28);
+          else heroAction.setEffectiveTimeScale(moving?1.3:1);
           heroAction.fadeIn(heroTransition).play();
         }
         heroActionName=nextName;
-        if(pose==='attack')lastHeroAttackAt=attackAt;
+        if(pose==='attack'&&!layeredAttack)lastHeroAttackAt=attackAt;
+      }
+      if(layeredAttack&&heroMixer&&attackAt!==lastHeroAttackAt){
+        const nextUpper=heroMixer.clipAction(upperAttack);
+        if(heroUpperAction&&heroUpperAction!==nextUpper)heroUpperAction.fadeOut(.11);
+        else nextUpper.stop(); // 같은 액션에 남은 fadeOut 예약을 제거한 뒤 반복 타격을 시작한다.
+        heroUpperAction=nextUpper.reset().setEffectiveWeight(1);
+        heroUpperAction.setLoop(THREE.LoopOnce,1);
+        heroUpperAction.clampWhenFinished=false;
+        heroUpperAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:.32);
+        heroUpperAction.fadeIn(.11).play();
+        lastHeroAttackAt=attackAt;
+      }else if(!layeredAttack&&heroUpperAction){
+        heroUpperAction.fadeOut(.13);heroUpperAction=null;
       }
       if(heroMixer){heroMixer.update(Math.min(.12,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
     }
@@ -1272,7 +1464,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       blueprintGhost.rotation.y=bp.vertical?Math.PI/2:0;
       blueprintMaterial.color.setHex(bp.canPlace?0x80f5a3:0xff7373);
     }
-    renderer.render(scene,camera);
+    // 본편의 실제 피해 확인 기록(e.hitAt)과 교차할 때만 타격 파티클을 발생시킨다.
+    for(const enemy of state.enemies||[]){
+      if(!enemy||enemy.area!==state.area)continue;
+      const stamp=Number(enemy.hitAt)||0;
+      // hitAt은 타격 발생 시각이 아니라 110ms 피격 표시의 종료 시각이다.
+      if(stamp<=0||sampleNow>stamp+80||seenHitStamp.get(enemy)===stamp)continue;
+      seenHitStamp.set(enemy,stamp);
+      impactShakeUntil=sampleNow+65;
+      if(Number.isFinite(enemy.x)&&Number.isFinite(enemy.y))
+        impactVfx.burst({type:'impact',x:enemy.x*SCALE,y:1.1,z:enemy.y*SCALE,color:0xff6868,count:mobileBudget?6:12});
+    }
+    impactVfx.update(Math.min(.05,Math.max(0,(sampleNow-(lastImpactFrame||sampleNow))/1000)));
+    lastImpactFrame=sampleNow;
+    // 실제 피격 확인과 같은 프레임에만 짧고 작은 카메라 반응을 적용한다.
+    if(sampleNow<impactShakeUntil){
+      const strength=.035*(impactShakeUntil-sampleNow)/65;
+      camera.position.x+=Math.sin(sampleNow*.19)*strength;
+      camera.position.y+=Math.cos(sampleNow*.23)*strength;
+    }
+    if(bloom)bloom.render(scene,camera,qualityFactor);
+    else renderer.render(scene,camera);
     active=true;canvas.hidden=false;fallbackReason='';
     if(!extraModelsStarted){
       extraModelsStarted=true;
@@ -1293,6 +1505,25 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     const normalized=new THREE.Vector2(clientX/Math.max(1,lastW)*2-1,-(clientY/Math.max(1,lastH))*2+1);
     raycaster.setFromCamera(normalized,camera);
     const hits=raycaster.intersectObjects(interactables,false);
+    if(hits.length){
+      const hit=hits[0],point=hit.object.userData.worldPoints?.[hit.instanceId]||hit.object.userData.worldPoint;
+      if(point?.monsterId)return {...point};
+    }
+    // 메인 · 모바일 3D 몬스터 터치는 실제 리그의 화면 투영 위치까지 검사한다.
+    const projected=new THREE.Vector3();
+    let nearest=null,nearestDistance=52*52;
+    for(const actors of [nativeCreatureActors,undeadActors]){
+      for(const actor of actors.values()){
+        const target=actor.anchor.userData.worldPoint;
+        if(!actor.anchor.visible||!target?.monsterId)continue;
+        projected.copy(actor.anchor.position);projected.y+=1.1;projected.project(camera);
+        if(projected.z< -1||projected.z>1)continue;
+        const dx=(projected.x+1)*lastW/2-clientX,dy=(1-projected.y)*lastH/2-clientY;
+        const d=dx*dx+dy*dy;
+        if(d<nearestDistance){nearestDistance=d;nearest=target}
+      }
+    }
+    if(nearest)return {...nearest};
     if(hits.length){
       const hit=hits[0],point=hit.object.userData.worldPoints?.[hit.instanceId]||hit.object.userData.worldPoint;
       if(point)return {...point};
@@ -1319,6 +1550,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const mesh of mageBoltEffects)scene.remove(mesh);
     mageBoltEffects.length=0;mageBoltGeometry.dispose();mageBoltMaterial.dispose();
     arrowGeometry.dispose();arrowMaterial.dispose();sporeMaterial.dispose();sunOrbMaterial.dispose();
+    impactVfx.dispose();bloom?.dispose();
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
@@ -1360,9 +1592,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       nativeCreatures:nativeCreatureActors.size,undeadCreatures:undeadActors.size,
       resourceBatches:resourceBatches.size,loadingModels:loadingCreatureCount,loadedModels:nativeCreatureSources.size,
       measuredFps,pixelRatio:renderer.getPixelRatio(),
+      bloomAvailable:!!bloom,bloomActive:!!bloom&&qualityFactor>=.88,softShadows:renderer.shadowMap.type===THREE.PCFSoftShadowMap,
       // [모션 검증 입력] 클립 출처·누락 상태는 측정값이며 실제 런타임 합격이나 학습 승인으로 승격하지 않는다.
       motionSource:'CC0_AUTHORED_GLTF',motionClip:actualPlayerClip,missingMotionRole:unavailablePlayerClip,
-      motionSourceClipCount:heroClips.length,motionRuntimeVerified:false}),
+      motionSourceClipCount:heroClips.length,availableMotionClips:[...heroClipNames],
+      layeredAttackEnabled:heroUpperClipCache.size>0,motionRuntimeVerified:false}),
     productionReady:false
   };
 }
+

@@ -4250,3 +4250,26 @@ export function createMotionDirectorPlan({
     gameplayAuthority:false
   });
 }
+
+
+// [Vibe Web 3D] 승인된 GLB 원본 클립의 상체 트랙을 재사용해 이동/공격을 분리한다.
+// 애니메이션을 임의 제작하거나 루트 이동·게임플레이 피해 상태를 변형하지 않는다.
+export function createVibeUpperBodyAnimationClip(THREE,sourceClip){
+  if(!sourceClip?.tracks?.length||typeof THREE?.AnimationClip!=='function')return null;
+  const upper=sourceClip.tracks.filter(track=>
+    /(?:spine|chest|clavicle|shoulder|upperarm|lowerarm|forearm|wrist|hand|neck|head)/i.test(track?.name||'')
+    && !/(?:root|hips|pelvis)/i.test(track.name));
+  if(!upper.length)return null; // 원본에 상체 본이 없으면 허위 모션을 생성하지 않는다.
+  return new THREE.AnimationClip(sourceClip.name+'__upper',sourceClip.duration,upper.map(track=>track.clone()));
+}
+
+export function auditVibeAuthoredAnimationClips(clips=[],candidates={}){
+  const available=(Array.isArray(clips)?clips:[]).map(clip=>String(clip?.name||'')).filter(Boolean);
+  const names=new Set(available);
+  const resolved={},missing=[];
+  for(const [role,options] of Object.entries(candidates)){
+    const source=(Array.isArray(options)?options:[options]).find(name=>names.has(name));
+    if(source)resolved[role]=source;else missing.push(role);
+  }
+  return {available,resolved,missing,sourceClipCount:available.length,sourceVerified:missing.length===0};
+}

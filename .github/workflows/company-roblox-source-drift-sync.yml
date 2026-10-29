@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/company-roblox-source-drift-sync.yml
 name: Roblox Changed Source Runtime Sync
 
 on:
@@ -33,9 +34,11 @@ permissions:
   actions: write
   pull-requests: read
 
+# 같은 병합 소스의 push/PR 중복만 합친다. 다른 소스를 전역 FIFO에 가두지 않는다.
+# 공유 상태 충돌은 아래 기존 fetch/reset/regenerate/push 재시도로 해결한다.
+# 명시적 F0 재시작 요청은 별도 실행으로 보존한다.
 concurrency:
-  group: roblox-source-drift-runtime-writer-v2
-  queue: max
+  group: roblox-source-drift-${{ github.event_name == 'workflow_dispatch' && format('manual-{0}', github.run_id) || github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
   cancel-in-progress: false
 
 env:
@@ -107,7 +110,7 @@ jobs:
       - name: Fetch runtime state
         if: steps.changed.outputs.game_ids != ''
         run: |
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git worktree add -B changed-source-runtime /tmp/company-runtime "origin/$COMPANY_RUNTIME_BRANCH"
 
       - name: Revalidate changed source and invalidate stale downstream gates
@@ -242,8 +245,12 @@ jobs:
             echo "ROBLOX_SOURCE_SYNC_SOURCE_FRESH=$SOURCE_REVISION:$live_main"
           }
           regenerate_runtime_state() {
-            git -C /tmp/company-runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git -C /tmp/company-runtime fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
             git -C /tmp/company-runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            # 재시도는 runtime worktree 안에서 호출된다. 도구와 비교용 refs는 소스 checkout에서 읽는다.
+            git -C "$GITHUB_WORKSPACE" fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+            (
+            cd "$GITHUB_WORKSPACE"
             local force_args=()
             if [[ "$FORCE_F0_RESTART" == 'true' ]]; then force_args+=(--force-f0-restart=true); fi
             node tools/company-roblox-source-drift-sync.mjs \
@@ -266,6 +273,7 @@ jobs:
               cd /tmp/company-runtime
               node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json
               rm -f company-homepage-platform-exposure-sync.mjs company-platform-exposure-control.mjs
+            )
             )
           }
           cd /tmp/company-runtime
@@ -327,6 +335,7 @@ jobs:
           const eligible=new Set();
           for(const result of results){
             if(result?.pass!==true)continue;
+            if(result.metadataOnly===true&&result.requiresRuntime!==true)continue;
             const id=String(result.gameId||'');
             if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw Error('ROBLOX_CHANGED_GAME_ID_INVALID:'+id);
             if(!removed.has(id))eligible.add(id);
@@ -364,3 +373,4 @@ jobs:
           # create per-game shadow planning queues.
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'ROBLOX_POST_PUBLISH_BUILD_UP=EXISTING_VIBE2_PLANNER_AFTER_PERSISTED_F0'
+

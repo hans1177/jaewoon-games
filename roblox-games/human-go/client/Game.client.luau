@@ -1,3 +1,14 @@
+-- [Vibe 공용 프레젠테이션] 기존 GUI 버튼의 트윈·글로우만 연결한다. 게임 판정·저장 변경 없음.
+task.defer(function()
+  local player = game:GetService("Players").LocalPlayer
+  if not player then return end
+  local shared = game:GetService("ReplicatedStorage"):FindFirstChild("Shared") or game:GetService("ReplicatedStorage"):WaitForChild("Shared", 8)
+  if not shared then return end
+  local module = shared:FindFirstChild("RobloxCommonPresentation")
+  if not module or not module:IsA("ModuleScript") then return end
+  local ok, presentation = pcall(require, module)
+  if ok and type(presentation.BindGameUiEffects) == "function" then presentation.BindGameUiEffects(player) end
+end)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")

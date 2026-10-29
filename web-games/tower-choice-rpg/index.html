@@ -555,5 +555,11 @@ createTower3d({canvas,WORLD}).then(renderer=>{
  $('renderStatus').textContent='3D 실행 실패: '+String(error?.message||error)+' · WebGL 지원 브라우저에서 다시 열어 줘.';
 });
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>

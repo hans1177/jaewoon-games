@@ -4897,7 +4897,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   quick=RobloxCommonUI.CreatePrimaryButton({name="PrimaryGameAction",text=primary.label,minWidth=52,minHeight=56})
   quick.Parent=gui;quick.Activated:Connect(primary.activate)
  end
- local shade=Instance.new("Frame");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)
+ local shade=Instance.new("TextButton");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)
+ shade.Text="";shade.AutoButtonColor=false
  shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui
  root.ZIndex=41;list.ZIndex=42;close.ZIndex=43
  for _,item in ipairs(list:GetDescendants())do if item:IsA("GuiObject")then item.ZIndex=43 end end
@@ -4921,6 +4922,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  end
  menu.Activated:Connect(function()setOpen(true)end)
  close.Activated:Connect(function()setOpen(false)end)
+ -- [입력 복구] 메뉴 바깥을 터치하면 즉시 게임 화면으로 돌아간다.
+ shade.Activated:Connect(function()setOpen(false)end)
  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
  layout();setOpen(false)
  return {isOpen=function()return opened end,close=function()setOpen(false)end}

@@ -133,3 +133,139 @@ test('both native platform adapters expose concrete event-safe visual abilities'
   assert.match(worker,/visualCraftWorkerGuidance\(order,context\)/);
   assert.match(worker,/planVibePresentationAutopilot\(/);
 });
+
+
+// [모바일 HUD] 기존 게임에서 전달된 체력만 화면에 표시하고 목표·보스 레이어와 충돌하지 않는다.
+test('web player HUD is read-only, confirmed, safe-area-aware and separate from boss/objective',()=>{
+  const {host,doc}=fakeDom(),ctrl=getWeb()({host,documentRef:doc,
+    safeInsets:{top:24,left:8,bottom:30},reducedMotion:true});
+  const stage=host.children[0];
+  assert.equal(ctrl.updatePlayerHud({current:50,max:100}),false);
+  assert.equal(ctrl.updatePlayerHud({current:50,max:100,confirmed:true}),true);
+  assert.equal(ctrl.stats().playerVisible,true);
+  const player=stage.children.find(node=>node.attrs['data-vibe-player-hud']==='true');
+  assert.ok(player);
+  assert.equal(player.children[0].textContent,'HP  50 / 100');
+  assert.equal(player.children[1].children[0].style.width,'50.00%');
+  assert.equal(player.style.left,'16px');
+  assert.equal(player.style.top,'32px');
+  assert.equal(ctrl.updateObjectiveHud({id:'quest',title:'Quest',confirmed:true}),true);
+  const objective=stage.children.find(node=>node.attrs['data-vibe-objective-hud']==='true');
+  assert.equal(objective.style.top,'104px');
+  assert.equal(ctrl.updatePlayerHud({current:0,max:100,confirmed:true}),true);
+  assert.equal(player.children[1].children[0].style.width,'0.00%');
+  assert.equal(ctrl.updatePlayerHud({visible:false,confirmed:true}),true);
+  assert.equal(ctrl.stats().playerVisible,false);
+  assert.equal(objective.style.top,'32px');
+  ctrl.destroy();
+  assert.equal(host.children.length,0);
+});
+
+// [아이콘/입력] 승인된 게임 내부 자산만 배치하고 게임이 제공한 입력 함수만 호출한다.
+test('web action HUD binds touch targets to original game callbacks without inventing icons or rules',()=>{
+  const {host,doc}=fakeDom(),ctrl=getWeb()({host,documentRef:doc,
+    safeInsets:{bottom:24},reducedMotion:true});
+  const pressed=[];
+  assert.equal(ctrl.updateActionHud({actions:[{id:'attack'}]}),false);
+  assert.equal(ctrl.updateActionHud({actions:[{id:'a'},{id:'a'}],onAction:()=>{}}),false);
+  assert.equal(ctrl.updateActionHud({actions:[
+    {id:'attack',label:'Attack',shortcut:'Q',iconUrl:'./icons/attack.png',iconApproved:true},
+    {id:'heal',label:'Heal',iconUrl:'https://evil.example/icon.svg',iconApproved:true},
+    {id:'locked',label:'Locked',enabled:false}
+  ],onAction:id=>pressed.push(id)}),true);
+  const stage=host.children[0],bar=stage.children.find(x=>x.attrs['data-vibe-action-hud']==='true');
+  assert.ok(bar);
+  assert.equal(bar.style.bottom,'32px');
+  assert.equal(bar.attrs.role,'toolbar');
+  assert.equal(bar.children.length,3);
+  const [attack,heal,locked]=bar.children;
+  assert.equal(attack.style.minWidth,'44px');
+  assert.equal(attack.style.pointerEvents,'auto');
+  assert.equal(attack.children[0].nodeName,'img');
+  assert.equal(attack.children[0].attrs.src,'./icons/attack.png');
+  assert.equal(heal.children.length,0,'remote unapproved image must never be injected');
+  assert.equal(heal.textContent,'Heal');
+  assert.equal(locked.disabled,true);
+  attack.onclick();heal.onclick();locked.onclick();
+  assert.deepEqual(pressed,['attack','heal']);
+  assert.equal(ctrl.stats().actionButtons,3);
+  assert.equal(ctrl.updateActionHud({actions:[{id:'new',label:'New'}],onAction:id=>pressed.push(id)}),true);
+  attack.onclick();
+  assert.deepEqual(pressed,['attack','heal'],'detached action must not fire');
+  assert.equal(ctrl.updateActionHud({visible:false}),true);
+  assert.equal(ctrl.stats().actionButtons,0);
+  ctrl.destroy();
+  assert.deepEqual(pressed,['attack','heal']);
+});
+
+
+// [VFX] 확인된 이벤트에 승인된 내부 이미지 파편만 사용한다. 화면 밖/중복/초과/외부 경로 차단.
+test('web impact VFX uses bounded approved sprite images without altering game state',()=>{
+  const {host,doc}=fakeDom(),shakes=[],ctrl=getWeb()({host,documentRef:doc,
+    maxVfxSprites:4,onCameraShake:args=>{shakes.push(args);return true;}});
+  const impact={eventId:'hit-1',x:130,y:190,spriteUrl:'./vfx/impact.webp',
+    spriteApproved:true,count:4};
+  assert.equal(ctrl.showImpactVfx({...impact,confirmed:false}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,spriteUrl:'https://example.com/external.png',confirmed:true}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,x:-10,confirmed:true}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,confirmed:true}),true);
+  assert.equal(ctrl.stats().activeVfxSprites,4);
+  assert.equal(ctrl.showImpactVfx({...impact,confirmed:true}),false);
+  assert.equal(ctrl.showImpactVfx({...impact,eventId:'hit-2',confirmed:true}),false,
+    'sprite budget must not be exceeded');
+  const sprites=host.children[0].children.filter(n=>n.nodeName==='img');
+  assert.equal(sprites.length,4);
+  assert.ok(sprites.every(n=>n.attrs.src==='./vfx/impact.webp'&&n.attrs['aria-hidden']==='true'));
+  assert.equal(ctrl.requestCameraShake({eventId:'hit-1'}),false);
+  assert.equal(ctrl.requestCameraShake({eventId:'hit-1',confirmed:true,intensity:999,durationMs:999}),true);
+  assert.equal(ctrl.requestCameraShake({eventId:'hit-1',confirmed:true}),false);
+  assert.deepEqual(shakes,[{eventId:'hit-1',pixels:5,durationMs:220,presentationOnly:true}]);
+  ctrl.destroy();
+  assert.equal(ctrl.stats().activeVfxSprites,0);
+  assert.equal(host.children.length,0);
+});
+
+test('reduced motion keeps one real image for impact and disables camera shake',()=>{
+  const {host,doc}=fakeDom(),shakes=[],ctrl=getWeb()({host,documentRef:doc,
+    reducedMotion:true,maxVfxSprites:2,onCameraShake:args=>shakes.push(args)});
+  assert.equal(ctrl.showImpactVfx({eventId:'hit',confirmed:true,x:10,y:12,
+    spriteUrl:'./vfx/hit.png',spriteApproved:true,count:7}),true);
+  assert.equal(ctrl.stats().activeVfxSprites,1);
+  assert.equal(ctrl.requestCameraShake({eventId:'hit',confirmed:true}),false);
+  assert.equal(shakes.length,0);
+  ctrl.destroy();
+});
+
+test('every published Vibe web route binds shared effects without replacing the existing runtime',()=>{
+ const slugs='amusement-tycoon cat-step chess-battle core-clash-4v4 cozy-island daechung-rpg defense dice-battle-board egg-heist exorcist-office fantasy-survival fifty-days forgotten-continent gem-survivor horror-escape-room human-go-temp insect-survival island-village kingshot-ad line-defense lost-dawn mini-empire monster-adventure moon-ruins ocean-voyage party-rpg portal-rpg realistic-builder restaurant-tycoon seed-action-survival-rogu-echoes-of-the-lost-star star-frontier survival2 tekken territory-war tower-choice-rpg village-dungeons wild-survival zombie-survival'.split(' ');
+ assert.equal(slugs.length,38);
+ for(const slug of slugs){
+   const html=fs.readFileSync('web-games/'+slug+'/index.html','utf8');
+   assert.match(html,/data-vibe-common-screen/,slug);
+   assert.match(html,/mountVibeGameScreenEffects/,slug);
+ }
+ const browser=fs.readFileSync('assets/vibe-browser-presentation.mjs','utf8');
+ assert.match(browser,/createVibeCanvasVfx/);
+ assert.match(browser,/prefers-reduced-motion/);
+ assert.match(browser,/documentRef\.addEventListener\('pointerdown'/);
+});
+test('Roblox games share native Vibe presentation and confirmed-health impact effects',()=>{
+ const names=fs.readdirSync('roblox-games',{withFileTypes:true}).filter(row=>row.isDirectory()).map(row=>row.name);
+ let checked=0;
+ for(const name of names){
+   const project='roblox-games/'+name+'/default.project.json';
+   const client='roblox-games/'+name+'/client/Game.client.luau';
+   if(!fs.existsSync(project)||!fs.existsSync(client))continue;
+   const config=fs.readFileSync(project,'utf8');
+   if(!config.includes('RobloxCommonPresentation'))continue;
+   const code=fs.readFileSync(client,'utf8');
+   assert.match(code,/presentation\.BindGameUiEffects\(player\)/,name);
+   checked++;
+ }
+ assert.ok(checked>=40,'all registered Roblox gameplay clients must reuse the canonical presentation');
+ const common=fs.readFileSync('assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau','utf8');
+ assert.match(common,/function Presentation.BindGameUiEffects/);
+ assert.match(common,/Lighting:FindFirstChildOfClass\("BloomEffect"\)/);
+ assert.match(common,/humanoid.HealthChanged:Connect/);
+ assert.match(common,/health < lastHealth/);
+});

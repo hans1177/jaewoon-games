@@ -1,3 +1,14 @@
+-- [Vibe 공용 프레젠테이션] 기존 버튼에만 TweenService/글로우 적용 (세이브·판정 불변).
+task.defer(function()
+  local player = game:GetService("Players").LocalPlayer
+  if not player then return end
+  local shared = game:GetService("ReplicatedStorage"):FindFirstChild("Shared") or game:GetService("ReplicatedStorage"):WaitForChild("Shared", 8)
+  if not shared then return end
+  local module = shared:FindFirstChild("RobloxCommonPresentation")
+  if not module or not module:IsA("ModuleScript") then return end
+  local ok, presentation = pcall(require, module)
+  if ok and type(presentation.BindGameUiEffects) == "function" then presentation.BindGameUiEffects(player) end
+end)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -427,12 +438,17 @@ local activeCombatCombo = nil
 local activeCombatStartedAt = 0
 local combatPoseTargets = {}
 local combatR15Targets = {}
+-- 상체 공격만 소유하고 하체의 기존 걷기·달리기 Animator는 유지한다.
+local combatUpperJoints = {Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
+  LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true}
+local combatRecoveryUntil = nil
 local function finishNativeCombatMotion()
   if activeCombatController then activeCombatController.Destroy(true) end
   if activeCombatCharacter and activeCombatCharacter.Parent then
     activeCombatCharacter:SetAttribute("NativeCombatMotionState", "IDLE")
   end
   activeCombatController = nil
+  combatRecoveryUntil = nil
   activeCombatCombo = nil
   activeCombatCharacter = nil
   table.clear(combatPoseTargets)
@@ -471,7 +487,8 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   end
   local joints = {}
   for _, descendant in ipairs(character:GetDescendants()) do
-    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1 then
+    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1
+      and combatUpperJoints[descendant.Name] then
       joints[descendant.Name] = descendant
     end
   end
@@ -480,14 +497,19 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
     character:SetAttribute("NativeCombatMotionState", "COMPATIBLE_R15_JOINTS_REQUIRED")
     return
   end
-  finishNativeCombatMotion()
+  if activeCombatCharacter ~= character then finishNativeCombatMotion() end
   local ok, combo = pcall(combatMotionSource.CreateCombatCombo, profile)
   if not ok or not combo or not combo.steps or #combo.steps == 0 then return end
+  -- 서버 승인 1회당 실제 타격 모션 1회. 미승인 후속 콤보를 시각적으로 추가하지 않는다.
+  combo.steps = {combo.steps[1]}
+  combo.duration = combo.steps[1].start + combo.steps[1].duration
+  combatRecoveryUntil = nil
   activeCombatCharacter = character
   activeCombatCombo = combo
   activeCombatStartedAt = os.clock()
   -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
-  activeCombatController = combatMotionSource.BindJointPose(joints, {
+  activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
+    followAnimator = true,
     response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
   })
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
@@ -504,6 +526,11 @@ RunService.PreSimulation:Connect(function(dt)
   end
   table.clear(combatPoseTargets)
   table.clear(combatR15Targets)
+  if combatRecoveryUntil then
+    activeCombatController.Step(nil, dt) -- 중립 복귀는 공격 프레임 입력과 구분한다.
+    if os.clock() >= combatRecoveryUntil then finishNativeCombatMotion() end
+    return
+  end
   local _, _, finished = combatMotionSource.SampleCombatCombo(
     activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
   )
@@ -529,5 +556,6 @@ RunService.PreSimulation:Connect(function(dt)
   end
   combatMotionSource.MapCombatPoseToR15(combatPoseTargets, combatR15Targets)
   activeCombatController.Step(combatR15Targets, dt)
-  if finished then finishNativeCombatMotion() end
+  if finished then combatRecoveryUntil = os.clock() + .18 end
 end)
+

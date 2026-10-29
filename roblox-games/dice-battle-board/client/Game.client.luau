@@ -1,3 +1,14 @@
+-- [Vibe 공용 프레젠테이션] 기존 버튼에만 TweenService/글로우 적용 (세이브·판정 불변).
+task.defer(function()
+  local player = game:GetService("Players").LocalPlayer
+  if not player then return end
+  local shared = game:GetService("ReplicatedStorage"):FindFirstChild("Shared") or game:GetService("ReplicatedStorage"):WaitForChild("Shared", 8)
+  if not shared then return end
+  local module = shared:FindFirstChild("RobloxCommonPresentation")
+  if not module or not module:IsA("ModuleScript") then return end
+  local ok, presentation = pcall(require, module)
+  if ok and type(presentation.BindGameUiEffects) == "function" then presentation.BindGameUiEffects(player) end
+end)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")

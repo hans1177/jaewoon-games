@@ -1,4 +1,15 @@
 --!strict
+-- [Vibe 공용 프레젠테이션] 기존 GUI 버튼 트윈·발광만 연결. 게임 판정·저장 불변.
+task.defer(function()
+  local player = game:GetService("Players").LocalPlayer
+  if not player then return end
+  local shared = game:GetService("ReplicatedStorage"):FindFirstChild("Shared") or game:GetService("ReplicatedStorage"):WaitForChild("Shared", 8)
+  if not shared then return end
+  local module = shared:FindFirstChild("RobloxCommonPresentation")
+  if not module or not module:IsA("ModuleScript") then return end
+  local ok, presentation = pcall(require, module)
+  if ok and type(presentation.BindGameUiEffects) == "function" then presentation.BindGameUiEffects(player) end
+end)
 -- 대충알피지: delete old Vibe/basic Roblox GUI visuals, never synthesize placeholder UI.
 -- Display only an imported, licensed, owner-reviewed high-quality external ScreenGui.
 -- Gameplay remotes, saved attributes, combat input and imported creature follow are kept.

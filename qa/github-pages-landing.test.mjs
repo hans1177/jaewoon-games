@@ -119,8 +119,8 @@ test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflar
   assert.match(html,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(html,/id="gameHub"/);
   assert.match(html,/class="mobileDock"/);
-  assert.ok(html.includes('src="'+pagesRoot+'assets/homepage-enhancements.js"'));
-  assert.ok(html.includes('href="'+pagesRoot+'manifest.webmanifest"'));
+  assert.ok(html.includes('src="assets/homepage-enhancements.js?v=owner-only-20261030"'));
+  assert.ok(html.includes('href="manifest.webmanifest"'));
   assert.doesNotMatch(html,/data-jaewoon-pages-redirect|http-equiv="refresh"/i);
   assert.ok(!html.includes('url=https://jaewoon-games.pages.dev/'));
   assert.equal(webRoutes.length,manifest.gameCount);
@@ -140,7 +140,7 @@ test('homepage uses canonical runtime data and links without separate availabili
   const script=fs.readFileSync('_site/assets/homepage-enhancements.js','utf8');
   for(const file of [
     'game-catalog.json','company-status.json','homepage-platform-exposure.json',
-    'homepage-portfolio-status.json','manifest.webmanifest','sw.js',
+    'homepage-portfolio-status.json','manifest.webmanifest','sw.js','register.html',
     'multiplayer/multiplayer-client.js'
   ])assert.ok(fs.statSync('_site/'+file).size>50,file+' should be published');
   assert.ok(script.includes("getJson('"+pagesRoot+"game-catalog.json')"));
@@ -155,11 +155,13 @@ test('homepage uses canonical runtime data and links without separate availabili
   assert.ok(script.includes('links.web||links.webSource'));
   assert.ok(script.includes(official));
   const pwa=JSON.parse(fs.readFileSync('_site/manifest.webmanifest','utf8'));
-  assert.equal(pwa.start_url,pagesRoot);
-  assert.equal(pwa.scope,pagesRoot);
-  assert.ok(pwa.icons.every(row=>row.src.startsWith(pagesRoot)));
+  const manifestUrl=official+'manifest.webmanifest';
+  assert.equal(new URL(pwa.start_url,manifestUrl).href,official);
+  assert.equal(new URL(pwa.scope,manifestUrl).href,official);
+  assert.ok(pwa.icons.every(row=>new URL(row.src,manifestUrl).href.startsWith(official)));
   const pwaScript=fs.readFileSync('_site/sw.js','utf8');
-  assert.ok(pwaScript.includes(pagesRoot+'command.html'));
+  assert.ok(pwaScript.includes("const APP_SHELL=['command.html'"));
+  assert.ok(pwaScript.includes('new URL(self.registration.scope).pathname'));
   const client=fs.readFileSync('_site/multiplayer/multiplayer-client.js','utf8');
   assert.ok(client.includes('https://jaewoon-multiplayer.anyanguy12.workers.dev'));
   assert.ok(client.includes('new WebSocket(url)'));
@@ -202,4 +204,14 @@ test('catalog text and unverified external addresses are never injected into sta
   const output=buildPagesLanding({catalog:{...catalog,games},manifest,exposure:injected});
   assert.equal(output.html.includes('<script>alert(1)</script>'),false);
   assert.equal(output.html.includes('https://attacker.invalid/x'),false);
+});
+
+
+test('관리자 등록 링크는 Pages에 게시하되 비밀 코드를 HTML에 기록하지 않는다',()=>{
+  const register=fs.readFileSync('_site/register.html','utf8');
+  assert.match(register,/codeFromHash\(\)/);
+  assert.match(register,/action:'claim'/);
+  assert.match(register,/action:'list'/);
+  assert.match(register,/location\.replace\('\.\/'\)/);
+  assert.doesNotMatch(register,/bootstrapCode\s*=\s*['\"][a-z0-9]{16,}/i);
 });

@@ -2,24 +2,110 @@
 // 역할: Vibe Maker가 Web 게임 후보를 로컬 리소스까지 묶어 격리 실행하고 실제 런타임 관측 증거를 수집
 // 원칙: 소스 수정 없음, 게임 규칙 권한 없음, 브라우저 관측 사실만 반환. Godot 원본 실행을 가장하지 않는다.
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.freeze(v);for(const x of Object.values(v))freeze(x)}return v},text=v=>String(v??'').trim(),token=()=>`vibe-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
-const cleanPath=v=>text(v).replace(/^\.\//,'').replace(/\\/g,'/').split('/').reduce((a,x)=>{if(!x||x==='.')return a;if(x==='..')a.pop();else a.push(x);return a},[]).join('/'),dir=p=>{const x=cleanPath(p),i=x.lastIndexOf('/');return i<0?'':x.slice(0,i+1)},resolve=(base,ref)=>cleanPath(`${dir(base)}${ref}`),external=v=>/^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(text(v));
-const mime=p=>p.endsWith('.css')?'text/css':p.endsWith('.js')||p.endsWith('.mjs')?'text/javascript':p.endsWith('.json')?'application/json':p.endsWith('.svg')?'image/svg+xml':p.endsWith('.png')?'image/png':p.endsWith('.jpg')||p.endsWith('.jpeg')?'image/jpeg':p.endsWith('.webp')?'image/webp':p.endsWith('.gif')?'image/gif':p.endsWith('.wav')?'audio/wav':p.endsWith('.mp3')?'audio/mpeg':p.endsWith('.ogg')?'audio/ogg':'application/octet-stream';
-const localRefs=(source,re)=>[...String(source??'').matchAll(re)].map(m=>text(m[1])).filter(x=>x&&!external(x));
+// [경로] 작업 공간 밖으로 벗어나는 참조는 조용히 변경하지 않고 거부한다.
+const cleanPath=v=>text(v).replace(/\\/g,'/').replace(/^\.\//,'').replace(/\/+/g,'/').replace(/^\//,'');
+const dir=p=>{const x=cleanPath(p),i=x.lastIndexOf('/');return i<0?'':x.slice(0,i+1)};
+const external=v=>/^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(text(v));
+const resolve=(base,ref)=>{
+ const raw=text(ref).split(/[?#]/)[0].replace(/\\/g,'/');
+ const parts=raw.startsWith('/')?[]:dir(base).split('/').filter(Boolean);
+ for(const part of raw.split('/')){
+  if(!part||part==='.')continue;
+  if(part==='..'){if(!parts.length)throw new Error('web runtime asset outside workspace: '+ref);parts.pop()}
+  else parts.push(part);
+ }
+ return parts.join('/');
+};
+const mime=p=>p.endsWith('.css')?'text/css':p.endsWith('.js')||p.endsWith('.mjs')?'text/javascript':p.endsWith('.json')?'application/json':p.endsWith('.svg')?'image/svg+xml':p.endsWith('.ico')?'image/x-icon':p.endsWith('.png')?'image/png':p.endsWith('.jpg')||p.endsWith('.jpeg')?'image/jpeg':p.endsWith('.webp')?'image/webp':p.endsWith('.gif')?'image/gif':p.endsWith('.woff2')?'font/woff2':p.endsWith('.woff')?'font/woff':p.endsWith('.ttf')?'font/ttf':p.endsWith('.otf')?'font/otf':p.endsWith('.wav')?'audio/wav':p.endsWith('.mp3')?'audio/mpeg':p.endsWith('.ogg')?'audio/ogg':p.endsWith('.mp4')?'video/mp4':'application/octet-stream';
+const isTextAsset=p=>/\.(?:css|js|mjs|json|svg|txt)$/i.test(p);
 
 export async function createVibeWebRuntimeBundle(workspace,{entry='index.html'}={}){
- if(!workspace?.read||!workspace?.summary)throw new Error('workspace required');const summary=workspace.summary(),files=new Set((summary.files||[]).map(x=>cleanPath(x.path))),entryPath=cleanPath(entry);if(!files.has(entryPath))throw new Error(`web runtime entry missing: ${entryPath}`);let html=await workspace.read(entryPath);const urls=[];
- const unsupported=[];
- for(const m of html.matchAll(/<script\b([^>]*?)\bsrc=["']([^"']+)["']([^>]*)><\/script>/gi))if(!external(m[2])&&/\btype\s*=\s*["']module["']/i.test(m[0]))unsupported.push(`module-script:${m[2]}`);
- for(const ref of localRefs(html,/<(?:img|audio|video|source)\b[^>]*?\bsrc=["']([^"']+)["']/gi))unsupported.push(`media:${ref}`);
- for(const ref of localRefs(html,/<link\b[^>]*?\bhref=["']([^"']+)["'][^>]*>/gi))if(!new RegExp(`href=["']${ref.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}["'][^>]*rel\s*=\s*["']?stylesheet`,'i').test(html)&&!new RegExp(`rel\s*=\s*["']?stylesheet[^>]*href=["']${ref.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}["']`,'i').test(html))unsupported.push(`link:${ref}`);
- const cssLinks=[...html.matchAll(/<link\b([^>]*?)\bhref=["']([^"']+)["']([^>]*)>/gi)].filter(m=>!external(m[2])&&/rel\s*=\s*["']?stylesheet/i.test(m[0]));
- for(const m of cssLinks){const p=resolve(entryPath,m[2]);if(!files.has(p))continue;const css=await workspace.read(p);for(const ref of localRefs(css,/url\(\s*["']?([^"')]+)["']?\s*\)/gi))unsupported.push(`css-url:${p}:${ref}`)}
- if(unsupported.length)throw new Error(`web runtime unsupported local resources: ${[...new Set(unsupported)].join(', ')}`);
- const makeUrl=async(path)=>{const p=cleanPath(path);if(!files.has(p))throw new Error(`web runtime resource missing: ${p}`);const source=await workspace.read(p),url=URL.createObjectURL(new Blob([source],{type:mime(p)}));urls.push(url);return url};
- // 현재 안전 지원 범위는 classic local script + local stylesheet다. 그 밖의 로컬 의존성은 false pass 대신 명시적으로 차단한다.
- const scripts=[...html.matchAll(/<script\b([^>]*?)\bsrc=["']([^"']+)["']([^>]*)><\/script>/gi)];for(const m of scripts){if(external(m[2]))continue;const p=resolve(entryPath,m[2]),url=await makeUrl(p);html=html.replace(m[0],`<script${m[1]} src="${url}"${m[3]}></script>`)}
- for(const m of cssLinks){const p=resolve(entryPath,m[2]),url=await makeUrl(p);html=html.replace(m[0],`<link${m[1]} href="${url}"${m[3]}>`)}
- return freeze({version:1,entry:entryPath,html,resourceCount:urls.length,authority:'workspace-web-runtime-bundle',revoke(){for(const u of urls)URL.revokeObjectURL(u)}});
+ if(!workspace?.read||!workspace?.summary)throw new Error('workspace required');
+ const summary=workspace.summary(),files=new Set((summary.files||[]).map(x=>cleanPath(x.path)));
+ const entryPath=cleanPath(entry);
+ if(!files.has(entryPath))throw new Error('web runtime entry missing: '+entryPath);
+ let html=await workspace.read(entryPath);
+ const urls=[],cache=new Map(),unsupported=[];
+ // [지원 범위] 모듈의 상대 import, srcset, 외부 CSS @import는 확실히 처리하기 전에는 차단한다.
+ for(const m of html.matchAll(/<script\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1[^>]*><\/script>/gi)){
+  if(!external(m[2])&&/\btype\s*=\s*["']module["']/i.test(m[0]))unsupported.push('module-script:'+m[2]);
+ }
+ for(const m of html.matchAll(/\bsrcset\s*=\s*(["'])(.*?)\1/gi)){
+  if(m[2].split(',').some(row=>!external(row.trim().split(/\s+/)[0])))unsupported.push('srcset:'+m[2]);
+ }
+ const cssLinks=[...html.matchAll(/<link\b[^>]*>/gi)].filter(m=>/\brel\s*=\s*["']?stylesheet/i.test(m[0]) && /\bhref\s*=\s*(["'])(.*?)\1/i.test(m[0]));
+ const makeUrl=async(path)=>{
+  const p=cleanPath(path);
+  if(cache.has(p))return cache.get(p);
+  if(!files.has(p))throw new Error('web runtime resource missing: '+p);
+  const source=isTextAsset(p)?await workspace.read(p):await workspace.readBinary?.(p);
+  if(source===undefined)throw new Error('web runtime binary reader required: '+p);
+  const url=URL.createObjectURL(new Blob([source],{type:mime(p)}));
+  urls.push(url);cache.set(p,url);return url;
+ };
+ try {
+  // [CSS] 외부 스타일과 인라인 <style> 모두 원본 파일을 기준으로 경로를 확인한다.
+  const rewriteCss=async(css,path)=>{
+   if(/@import\s+(?:url\(\s*)?["']?(?!https?:|data:|\/\/)[^\s"')]/i.test(css))unsupported.push('css-import:'+path);
+   for(const item of [...css.matchAll(/url\(\s*(["']?)(.*?)\1\s*\)/gi)]){
+    if(external(item[2]))continue;
+    const assetUrl=await makeUrl(resolve(path,item[2]));
+    css=css.replace(item[0],'url("'+assetUrl+'")');
+   }
+   return css;
+  };
+  for(const tag of cssLinks){
+   const match=tag[0].match(/\bhref\s*=\s*(["'])(.*?)\1/i);
+   const ref=match?.[2];
+   if(!ref||external(ref))continue;
+   const p=resolve(entryPath,ref);
+   if(!files.has(p))throw new Error('web runtime stylesheet missing: '+p);
+   const css=await rewriteCss(await workspace.read(p),p);
+   const cssUrl=URL.createObjectURL(new Blob([css],{type:'text/css'}));
+   urls.push(cssUrl);cache.set(p,cssUrl);
+   html=html.replace(tag[0],tag[0].replace(match[0],match[0].replace(ref,cssUrl)));
+  }
+  // [인라인 스타일] HTML에 직접 작성된 CSS의 폰트·이미지 경로도 파일 기준으로 처리한다.
+  for(const tag of [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)]){
+   const css=await rewriteCss(tag[1],entryPath);
+   html=html.replace(tag[0],tag[0].replace(tag[1],css));
+  }
+  // [미디어] 원본 바이너리를 읽기만 하며 게임 에셋을 생성하거나 변경하지 않는다.
+  for(const tag of [...html.matchAll(/<(?:img|audio|video|source)\b[^>]*>/gi)]){
+   const match=tag[0].match(/\bsrc\s*=\s*(["'])(.*?)\1/i);
+   const ref=match?.[2];
+   if(!ref||external(ref))continue;
+   const url=await makeUrl(resolve(entryPath,ref));
+   html=html.replace(tag[0],tag[0].replace(match[0],match[0].replace(ref,url)));
+  }
+  for(const tag of [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1[^>]*><\/script>/gi)]){
+   const match=tag[0].match(/\bsrc\s*=\s*(["'])(.*?)\1/i);
+   const ref=match?.[2];
+   if(!ref||external(ref))continue;
+   const url=await makeUrl(resolve(entryPath,ref));
+   html=html.replace(tag[0],tag[0].replace(match[0],match[0].replace(ref,url)));
+  }
+  // [부가 링크] 아이콘은 이미지와 동일하게 처리하고 미지원 링크는 명시적으로 거절한다.
+  for(const tag of [...html.matchAll(/<link\b[^>]*>/gi)]){
+   if(/\brel\s*=\s*["']?stylesheet/i.test(tag[0]))continue;
+   const match=tag[0].match(/\bhref\s*=\s*(["'])(.*?)\1/i);
+   const ref=match?.[2];
+   if(!ref||external(ref))continue;
+   if(/\brel\s*=\s*["']?(?:shortcut\s+)?icon(?:["'\s>]|$)/i.test(tag[0])){
+    const url=await makeUrl(resolve(entryPath,ref));
+    html=html.replace(tag[0],tag[0].replace(match[0],match[0].replace(ref,url)));
+   }else unsupported.push('link:'+ref);
+  }
+  if(unsupported.length)throw new Error('web runtime unsupported local resources: '+[...new Set(unsupported)].join(', '));
+  let revoked=false;
+  return freeze({version:2,entry:entryPath,html,resourceCount:urls.length,authority:'workspace-web-runtime-bundle',revoke(){
+   if(revoked)return;revoked=true;
+   for(const url of urls)URL.revokeObjectURL(url);
+  }});
+ }catch(error){
+  for(const url of urls)URL.revokeObjectURL(url);
+  throw error;
+ }
 }
 
 export function createVibeWebRuntimeDocument(html,{runId='',revision=''}={}){const id=text(runId)||token(),rev=text(revision),probe=`<script>(function(){const RUN=${JSON.stringify(id)},REV=${JSON.stringify(rev)},send=(type,detail={})=>parent.postMessage({__vibeRuntime:true,runId:RUN,revision:REV,type,detail},'*');window.addEventListener('error',e=>send('error',{message:String(e.message||'runtime error'),source:String(e.filename||''),line:Number(e.lineno||0),column:Number(e.colno||0)}),true);window.addEventListener('unhandledrejection',e=>send('unhandledrejection',{message:String(e.reason?.message||e.reason||'unhandled rejection')}));document.addEventListener('DOMContentLoaded',()=>send('domcontentloaded',{title:document.title||''}),{once:true});window.addEventListener('load',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>send('stable-frame',{readyState:document.readyState,canvasCount:document.querySelectorAll('canvas').length,bodyChildren:document.body?.children.length||0}))),{once:true});send('boot',{readyState:document.readyState});})();<\/script>`;const source=String(html??'');return /<head[^>]*>/i.test(source)?source.replace(/<head([^>]*)>/i,`<head$1>${probe}`):`<!doctype html><html><head>${probe}</head><body>${source}</body></html>`}

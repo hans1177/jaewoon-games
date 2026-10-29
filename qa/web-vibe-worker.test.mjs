@@ -8,7 +8,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
-import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -461,20 +461,36 @@ test('WEB model-less evolution composes distinct playable routes from existing g
 
 
 // [코드 실험실/알고리즘 발명] 같은 승인 입력으로 제한 탐색과 반례 실험을 반복한다.
-test('Vibe2 offline code laboratory records AST mutations crossover and bounded strategy experiments',()=>{
+test('Vibe2 offline code laboratory ranks only actually played and independently attested strategies',()=>{
  const spec={parameters:['x','y'],maxDepth:3,strategy:'evolution',
   examples:[{args:[1,0],output:1},{args:[2,0],output:2},{args:[3,0],output:3}],
   holdouts:[{args:[2,3],output:5},{args:[4,5],output:9}]};
+ const attested=(strategy,revision,evidenceId,outcome='PASS')=>{
+   const sourceRevision=revision.repeat(40),playtestRunId=123456;
+   return {strategy,sourceRevision,evidenceId,outcome,
+    platform:'WEB',gameId:'sample',domain:'AI',modelUsed:false,
+    sourceChanged:true,gameSourceChanged:true,actualGamePlaytest:true,
+    saveAndBalancePreserved:true,independentQa:'PASS',
+    regression:'PASS',security:'PASS',runtime:'PASS',securityEvidenceId:'security-proof-'+evidenceId,
+    playtestSourceRevision:sourceRevision,playtestRunId,heldOutCases:3,
+    regressionCount:0,reproduced:outcome==='FAIL',counterexampleId:outcome==='FAIL'?'counter-'+evidenceId:null,
+    failureSignature:outcome==='FAIL'?'ALGORITHM_DISAGREEMENT':null,
+    proof:{evidenceId,sourceRevision,playtestRunId,securityEvidenceId:'security-proof-'+evidenceId,
+      independentQa:'PASS',regression:'PASS',security:'PASS',runtime:'PASS',
+      actualPlatformRuntime:true,actualGamePlaytest:true,gameSourceChanged:true}};
+ };
+ const balanced=attested('balanced','a','balanced-real-1');
+ const lean=attested('lean','b','lean-real-1','FAIL');
+ const counterfeit={...attested('balanced','c','unverified-1'),
+   proof:{...balanced.proof,evidenceId:'unverified-1',sourceRevision:'c'.repeat(40),runtime:'PENDING'}};
+ const badSource={...attested('balanced','d','mismatch-1'),playtestSourceRevision:'e'.repeat(40)};
+ const badSecurity={...attested('balanced','e','security-mismatch-1'),
+   securityEvidenceId:'not-the-proof-security-id'};
+ const unplayed={...attested('balanced','f','not-played-1'),actualGamePlaytest:false};
+ const duplicate={...balanced,strategy:'lean'};
  const lab=runVibe59CodeLaboratory({spec,verifiedHistory:[
-  {strategy:'balanced',modelUsed:false,sourceChanged:true,independentQa:'PASS',
-   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
-   sourceRevision:'a'.repeat(40)},
-  {strategy:'lean',modelUsed:false,sourceChanged:true,independentQa:'PASS',
-   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'FAIL',
-   sourceRevision:'b'.repeat(40)},
-  {strategy:'deep',modelUsed:false,sourceChanged:false,independentQa:'PASS',
-   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
-   sourceRevision:'c'.repeat(40)}
+  counterfeit,badSource,badSecurity,unplayed,balanced,duplicate,lean,
+  {...attested('balanced','g','stale-replay-1'),gameSourceChanged:false}
  ]});
  assert.equal(lab.modelUsed,false);
  assert.equal(lab.runtime,'NOT_RUN');
@@ -485,6 +501,16 @@ test('Vibe2 offline code laboratory records AST mutations crossover and bounded 
  assert.ok(Array.isArray(lab.winner.ast));
  assert.ok(lab.winner.inventionOperators.includes('MUTATION'));
  assert.ok(lab.experiments.every(x=>x.sourceChanged===false));
+ const verifiedOnly=runVibe59CodeLaboratory({spec,verifiedHistory:[balanced,lean]});
+ assert.equal(lab.selectedStrategy,verifiedOnly.selectedStrategy);
+ assert.equal(lab.strategyEvidenceCount,verifiedOnly.strategyEvidenceCount);
+ assert.equal(lab.independentQa,'NOT_RUN');
+ const missingAttestation=runVibe59CodeLaboratory({spec,verifiedHistory:[
+  {strategy:'balanced',modelUsed:false,sourceChanged:true,independentQa:'PASS',
+   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
+   sourceRevision:'a'.repeat(40)}
+ ]});
+ assert.equal(missingAttestation.strategyEvidenceCount,0);
  assert.throws(()=>runVibe59CodeLaboratory({spec:{...spec,holdouts:[]}}),/EXPLICIT_EXAMPLES_REQUIRED/);
 });
 // [로블록스 공통 코드 경로] 검증된 수치 후보만 기존 Luau 함수 본문에 제안한다.
@@ -802,6 +828,90 @@ test('Vibe5.9 enumerative provenance never masquerades as evolved AST',()=>{
  assert.ok(concepts.concepts.length>0);
  assert.equal(concepts.verified,false);
  assert.equal(concepts.promotionAuthorized,false);
+});
+
+
+test('Vibe5.9 Lua compiler accepts enumerative object AST and evolved array AST with the same bounded language',()=>{
+ const spec={parameters:['x','y'],
+   examples:[{args:[1,3],output:3},{args:[7,2],output:7},{args:[-4,-1],output:-1}],
+   holdouts:[{args:[9,8],output:9},{args:[0,5],output:5}]};
+ const enumerative=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(enumerative.search,'BOUNDED_ENUMERATIVE_CEGIS');
+ assert.equal(Array.isArray(enumerative.ast),false);
+ assert.equal(enumerative.casesPassed,5);
+ assert.equal(renderVibe59NumericLuaAST(enumerative.ast,enumerative.parameters),'math.max(x,y)');
+ const evolved=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy:'evolution',maxGenerations:5}});
+ assert.equal(evolved.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+ assert.ok(Array.isArray(evolved.ast));
+ assert.match(renderVibe59NumericLuaAST(evolved.ast,evolved.parameters),/^(?:math\.max\(|\()/);
+ assert.equal(renderVibe59NumericLuaAST(['%',['param',0],['param',1]],['x','y']),
+   '(x-math.modf(x/y)*y)');
+ assert.equal(renderVibe59NumericLuaAST({kind:'mutation',operator:'round',
+   operand:{kind:'reference',name:'x'}},['x']), 'math.floor((x)+0.5)');
+ assert.equal(enumerative.runtimeVerified,false);
+ assert.equal(evolved.runtimeVerified,false);
+});
+test('Vibe5.9 Lua compiler fails closed on malformed, cyclic and injected AST',()=>{
+ const cyclic={kind:'mutation',operator:'abs'};cyclic.operand=cyclic;
+ const deep=['param',0];let nested=deep;
+ for(let i=0;i<6;i++)nested=['neg',nested];
+ const cases=[
+   cyclic,nested,
+   ['+', ['param',0], ['param',2]],
+   ['+', ['param',0]],
+   ['const',Infinity],
+   ['const','game.Players:ClearAllChildren()'],
+   {kind:'constant',value:1,poison:'ignore'},
+   {kind:'crossover',operator:'; game:Destroy()',left:{kind:'reference',name:'x'},
+     right:{kind:'reference',name:'y'}},
+   {kind:'reference',name:'workspace'},
+   ['unknown',['param',0],['param',1]],
+   ['select',['param',0],['param',1]]
+ ];
+ for(const ast of cases)
+   assert.throws(()=>renderVibe59NumericLuaAST(ast,['x','y']),/LUA_AST_REQUIRED/);
+ assert.throws(()=>renderVibe59NumericLuaAST(['param',0],['__proto__']),
+   /LUA_PARAMETERS_INVALID/);
+ assert.throws(()=>renderVibe59NumericLuaAST(['param',0],['x','x']),
+   /LUA_PARAMETERS_INVALID/);
+ for(const illegal of ['x$','and','end','function','goto','type','export'])
+   assert.throws(()=>renderVibe59NumericLuaAST(['param',0],[illegal]),
+     /LUA_PARAMETERS_INVALID/);
+ const badLua='local function score$(x)\n return 0\nend\n';
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+   spec:{ownerApproved:true,functionName:'score$',parameters:['x'],
+     examples:[{args:[1],output:1},{args:[2],output:2},{args:[3],output:3}],
+     holdouts:[{args:[4],output:4},{args:[5],output:5}]},
+   source:badLua,relative:'roblox-games/demo/logic.luau',target:'roblox'
+ }),/LUA_PARAMETERS_INVALID/);
+});
+
+
+test('Vibe5.9 CEGIS isolates hidden invalid holdouts and lazily evaluates safe conditional AST branches',()=>{
+ const guardedReciprocal=['select',
+   ['gt',['param',0],['const',0]],
+   ['/', ['const',1],['param',0]],
+   ['const',0]];
+ const spec={parameters:['x'],maxDepth:3,maxGenerations:2,
+  examples:[{args:[1],output:1},{args:[2],output:0.5},{args:[4],output:0.25}],
+  holdouts:[{args:[0],output:0},{args:[8],output:0.125}],
+  verifiedConcepts:[{verified:true,
+    proof:{independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true},
+    ast:guardedReciprocal}]};
+ for(const strategy of ['evolution',undefined]){
+   const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy}});
+   assert.equal(result.casesPassed,5);
+   assert.equal(result.heldOutCases,2);
+   assert.ok(result.counterexamples.includes(0),
+     'the hidden zero-denominator holdout must become an explicit counterexample');
+   assert.equal(result.runtimeVerified,false);
+   assert.equal(result.sourceWrite,false);
+   const fn=vm.runInNewContext('(function(x){'+result.source+'})');
+   assert.equal(fn(0),0,'unselected 1/0 branch must not invalidate the result');
+   assert.equal(fn(8),0.125);
+   assert.equal(fn(4),0.25);
+   assert.equal(renderVibe59NumericLuaAST(result.ast,['x']).includes('game'),false);
+ }
 });
 
 

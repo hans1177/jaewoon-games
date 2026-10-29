@@ -134,5 +134,11 @@ document.addEventListener('keydown',e=>{if(!$('overlay').hidden){if(e.key==='Esc
 window.addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden){save();if(frame)cancelAnimationFrame(frame);frame=0;}});
 new ResizeObserver(resize).observe(canvas);state=makeState('normal',20261005);reveal(46,2);saved=readSave();render();showMenu();
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>

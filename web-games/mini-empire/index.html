@@ -241,4 +241,10 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)persist()})
 let prev=0;function frame(ms){const dt=Math.min(.06,(ms-prev)/1000||.016);prev=ms;now=ms/1000;camera();if(started)simulate(dt);try{drawScene()}catch(e){console.error("미니 제국 렌더 오류",e)}requestAnimationFrame(frame)}
 sync();menu();requestAnimationFrame(frame);
 })();
-</script></body></html>
+</script>
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
+</body></html>

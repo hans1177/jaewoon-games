@@ -30,6 +30,13 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .camera-zoom button { width:40px; height:40px; border:1px solid #b5a47c; border-radius:10px; background:rgba(35,48,39,.9); color:#fff0c6; font-size:25px; font-weight:900; box-shadow:0 3px 12px #23372d66; }
 #castleManageButton { display:none!important; }
 .panel { width: min(92vw, 430px); max-height: min(72vh, 600px); border: 0; border-radius: 22px; padding: 0; background: #fbfff9; box-shadow: 0 20px 60px rgba(24,52,44,.35); color: var(--ink); }
+/* [Vibe UI 트윈] 기존 게임 대화창만 부드럽게 표시한다. 입력·배치·저장 값은 바꾸지 않는다. */
+.panel[open] { animation: vibe-panel-enter .2s cubic-bezier(.2,.85,.2,1) both; }
+@keyframes vibe-panel-enter {
+  from { opacity:0; transform:translateY(10px) scale(.97); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .panel[open] { animation:none; } }
 .panel::backdrop { background: rgba(24,48,42,.35); backdrop-filter: blur(2px); }
 .panel-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; background: #fbfff9; }
 .panel-head h2 { margin: 0; font-size: 20px; }

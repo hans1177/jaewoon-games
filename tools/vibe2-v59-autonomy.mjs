@@ -5,6 +5,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
+export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges,createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
+import {createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
+import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
@@ -145,12 +148,13 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='const')return a;
     const x=evaluate(a,args);
     if(!valid(x))return NaN;
-    // Branch semantics are lazy: an unused arm may contain an undefined operation.
-    if(op==='select')return evaluate(x>0?b:c,args);
     if(op==='abs')return Math.abs(x);
     if(op==='floor')return Math.floor(x);
     if(op==='round')return Math.round(x);
     if(op==='neg')return -x;
+    // A conditional evaluates only the selected branch: an invalid unused
+    // branch is not a failed candidate or a hidden holdout counterexample.
+    if(op==='select')return evaluate(x>0?b:c,args);
     const y=evaluate(b,args);
     if(!valid(y))return NaN;
     switch(op){
@@ -300,7 +304,9 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
       valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
     function add(expr,values,cost,variables,depth,ast){
-      if(expr.length>170||values.some(v=>!valid(v)))return;
+      // Hidden holdouts must not influence candidate admission or semantic
+      // deduplication before a counterexample is explicitly activated.
+      if(expr.length>170||[...active].some(i=>!valid(values[i])))return;
       const key=signature(values),prev=semantic.get(key);
       if(prev&&prev.cost<=cost)return;
       const row={expr,values,cost,variables,depth,ast,error:error(values)};
@@ -465,22 +471,81 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
 }
 
 // [유틸] AST -> Luau. Roblox 런타임이나 서버 권한으로 간주하지 않는다.
-function renderVibe59NumericLuaAST(node,params){
-  if(!Array.isArray(node))throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
-  const [op,a,b,c]=node;
-  if(op==='param')return params[a];
-  if(op==='const')return String(a);
-  const x=renderVibe59NumericLuaAST(a,params);
-  if(op==='neg')return '(-'+x+')';
-  if(['abs','floor'].includes(op))return 'math.'+op+'('+x+')';
-  if(op==='round')return 'math.floor(('+x+')+0.5)';
-  const y=renderVibe59NumericLuaAST(b,params);
-  if(['min','max'].includes(op))return 'math.'+op+'('+x+','+y+')';
-  if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
-  if(op==='select')return '(('+x+'>0) and ('+y+') or ('+renderVibe59NumericLuaAST(c,params)+'))';
-  if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
-  if(['+','-','*','/'].includes(op))return '('+x+op+y+')';
-  throw Error('VIBE59_ALGORITHM_LUA_OPERATOR_REJECTED');
+// [공통 Luau 출력] 진화 배열 AST와 열거 객체 AST는 같은 검증된 문법으로 정규화한다.
+// 원본 AST를 코드 문자열로 직렬화하지 않으며, 실제 Roblox 런타임 통과로 표시하지 않는다.
+export function renderVibe59NumericLuaAST(node,params){
+  const legal=/^[A-Za-z_$][\w$]*$/,forbidden=new Set([
+    '__proto__','constructor','prototype','arguments','eval','Function','process',
+    'globalThis','window','document','this','NaN','Infinity','undefined'
+  ]);
+  const luaIdentifier=/^[A-Za-z_][A-Za-z0-9_]*$/;
+  const luaReserved=new Set(['and','break','do','else','elseif','end','false','for',
+    'function','goto','if','in','local','nil','not','or','repeat','return','then',
+    'true','until','while','continue','type','export']);
+  if(!Array.isArray(params)||params.length<1||params.length>3
+    ||new Set(params).size!==params.length
+    ||params.some(name=>typeof name!=='string'||!legal.test(name)||forbidden.has(name)
+      ||!luaIdentifier.test(name)||luaReserved.has(name)))
+    throw Error('VIBE59_ALGORITHM_LUA_PARAMETERS_INVALID');
+  const unary=new Set(['abs','floor','round','neg']);
+  const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
+  const state={nodes:0};
+  function normalize(part,depth,ancestors){
+    if(!part||typeof part!=='object'||ancestors.has(part)||depth>4
+      ||++state.nodes>39)throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
+    const next=new Set(ancestors);next.add(part);
+    if(Array.isArray(part)){
+      const op=part[0];
+      if(op==='param'&&part.length===2&&Number.isInteger(part[1])
+        &&part[1]>=0&&part[1]<params.length)return ['param',part[1]];
+      if(op==='const'&&part.length===2&&typeof part[1]==='number'
+        &&Number.isFinite(part[1])&&Math.abs(part[1])<=1000)return ['const',part[1]];
+      if(unary.has(op)&&part.length===2)
+        return [op,normalize(part[1],depth+1,next)];
+      if(binary.has(op)&&part.length===3)
+        return [op,normalize(part[1],depth+1,next),normalize(part[2],depth+1,next)];
+      if(op==='select'&&part.length===4)
+        return [op,normalize(part[1],depth+1,next),normalize(part[2],depth+1,next),
+          normalize(part[3],depth+1,next)];
+    }else if(Object.getPrototypeOf(part)===Object.prototype){
+      const fields={reference:['kind','name'],constant:['kind','value'],
+        mutation:['kind','operator','operand'],crossover:['kind','operator','left','right']};
+      const required=Object.hasOwn(fields,part.kind)?fields[part.kind]:null;
+      if(!required||Object.keys(part).length!==required.length
+        ||required.some(key=>!Object.hasOwn(part,key)))
+        throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
+      if(part.kind==='reference'&&typeof part.name==='string'){
+        const i=params.indexOf(part.name);
+        if(i>=0)return ['param',i];
+      }
+      if(part.kind==='constant'&&typeof part.value==='number'
+        &&Number.isFinite(part.value)&&Math.abs(part.value)<=1000)
+        return ['const',part.value];
+      if(part.kind==='mutation'&&unary.has(part.operator))
+        return [part.operator,normalize(part.operand,depth+1,next)];
+      if(part.kind==='crossover'&&binary.has(part.operator))
+        return [part.operator,normalize(part.left,depth+1,next),
+          normalize(part.right,depth+1,next)];
+    }
+    throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
+  }
+  const ast=normalize(node,0,new Set());
+  function render(part){
+    const [op,a,b,c]=part;
+    if(op==='param')return params[a];
+    if(op==='const')return String(a);
+    const x=render(a);
+    if(op==='neg')return '(-'+x+')';
+    if(['abs','floor'].includes(op))return 'math.'+op+'('+x+')';
+    if(op==='round')return 'math.floor(('+x+')+0.5)';
+    const y=render(b);
+    if(op==='min'||op==='max')return 'math.'+op+'('+x+','+y+')';
+    if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
+    if(op==='select')return '(('+x+'>0) and ('+y+') or ('+render(c)+'))';
+    if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
+    return '('+x+op+y+')';
+  }
+  return render(ast);
 }
 
 // [코드 실험실] 기존 수치 합성기를 반복 사용한다. 새 실행기나 별도 후보 쓰기는 없다.
@@ -497,12 +562,43 @@ export function runVibe59CodeLaboratory({spec={},verifiedHistory=[]}={}){
     {id:'deep',depth:maxDepth}
   ].filter((row,i,all)=>all.findIndex(other=>other.depth===row.depth)===i)
     .slice(0,maxExperiments);
-  const eligibleHistory=verifiedHistory.filter(row=>row&&
-    row.modelUsed===false&&row.sourceChanged===true&&
-    row.independentQa==='PASS'&&row.regression==='PASS'&&
-    row.security==='PASS'&&row.runtime==='PASS'&&
-    /^[a-f0-9]{40}$/i.test(clean(row.sourceRevision))&&
-    profiles.some(p=>p.id===row.strategy));
+  // A string-only PASS must never bias strategy learning. Reconcile game, source,
+  // independent QA, security and actual runtime evidence before counting any history.
+  const verifiedEvidence=new Set();
+  const eligibleHistory=verifiedHistory.filter(row=>{
+    const proof=row?.proof||{},revision=clean(row?.sourceRevision);
+    const evidenceId=clean(row?.evidenceId),outcome=clean(row?.outcome).toUpperCase();
+    if(!row||!evidenceId||verifiedEvidence.has(evidenceId)
+      ||!profiles.some(p=>p.id===row.strategy)
+      ||!['WEB','ROBLOX'].includes(clean(row.platform).toUpperCase())
+      ||!clean(row.gameId)||row.modelUsed!==false
+      ||row.sourceChanged!==true||row.gameSourceChanged!==true
+      ||row.actualGamePlaytest!==true||row.saveAndBalancePreserved!==true
+      ||row.independentQa!=='PASS'||row.regression!=='PASS'
+      ||row.security!=='PASS'||row.runtime!=='PASS'
+      ||!row.securityEvidenceId||!Number.isSafeInteger(row.playtestRunId)
+      ||row.playtestRunId<=0||!Number.isInteger(row.heldOutCases)
+      ||row.heldOutCases<2||!Number.isInteger(row.regressionCount)
+      ||row.regressionCount<0||!['PASS','FAIL'].includes(outcome)
+      ||!(/^[a-f0-9]{40}$/i.test(revision))
+      ||clean(row.playtestSourceRevision)!==revision
+      ||clean(proof.evidenceId)!==evidenceId
+      ||clean(proof.sourceRevision)!==revision
+      ||clean(proof.securityEvidenceId)!==clean(row.securityEvidenceId)
+      ||proof.playtestRunId!==row.playtestRunId
+      ||proof.actualGamePlaytest!==true||proof.gameSourceChanged!==true
+      ||proof.independentQa!=='PASS'||proof.regression!=='PASS'
+      ||proof.runtime!=='PASS'||proof.security!=='PASS'
+      ||proof.actualPlatformRuntime!==true
+      ||outcome==='PASS'&&row.regressionCount!==0
+      ||outcome==='FAIL'&&(row.reproduced!==true
+        ||!clean(row.counterexampleId)||!clean(row.failureSignature))
+      ||spec?.platform&&clean(spec.platform).toUpperCase()!==clean(row.platform).toUpperCase()
+      ||spec?.domain&&clean(spec.domain).toUpperCase()!==clean(row.domain).toUpperCase())
+      return false;
+    verifiedEvidence.add(evidenceId);
+    return true;
+  });
   const experiments=[];
   for(const profile of profiles){
     const measured=eligibleHistory.filter(row=>row.strategy===profile.id);
@@ -560,6 +656,11 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     ||!/\.(?:js|mjs|cjs|lua|luau)$/i.test(relative))
     throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
   const roblox=/\.(?:lua|luau)$/i.test(relative);
+  if(roblox&&(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)
+    ||new Set(['and','break','do','else','elseif','end','false','for','function',
+      'goto','if','in','local','nil','not','or','repeat','return','then','true',
+      'until','while','continue','type','export']).has(name)))
+    throw Error('VIBE59_ALGORITHM_LUA_PARAMETERS_INVALID');
   if(target&&target!==(roblox?'roblox':'web'))throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
   const declaration=roblox
     ?new RegExp('\\b(?:local\\s+)?function\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\n?\\s*return\\s+([^\\n;]+)\\s*\\n\\s*end','g')
@@ -694,6 +795,105 @@ export function planVibe59SafeRefactor({source='',target='web'}={}){
     edits:[{find:matches[0][0],replace:matches[0][2]+' = Boolean('+matches[0][1]+');'}],
     runtimeEquivalentVerified:false,requiresExistingValidation:true,authority:'refactor-candidate-only'});
 }
+// Strict, source-bound, model-free owner stat correction. Unclear goals return null.
+export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
+ const task=order.selectedTask||{},goal=clean(task.goal||order.goal);
+ if((task.ownerDirective!==true&&order.ownerApproved!==true)||!sourceRoot||
+    !['web','roblox'].includes(target)||!Array.isArray(responsibleFiles)||
+    goal.length>240||/[\r\n\x60{};]/.test(goal))return null;
+ const en=/^(?:please\s+)?(?:clamp|limit)\s+(?:(?:the|stat|variable)\s+)*([A-Za-z_]\w{0,39})\s+(?:between|from)\s+(-?\d+(?:\.\d+)?)\s*(?:and|to|~)\s*(-?\d+(?:\.\d+)?)[.!]?$/i;
+ const ko=/^변수\s+([A-Za-z_]\w{0,39})(?:을|를)?\s+(-?\d+(?:\.\d+)?)\s*(?:에서|부터|~)\s*(-?\d+(?:\.\d+)?)(?:까지)?\s*(?:로|사이로)?\s*제한(?:해|하라|해줘|해주세요)?[.]?$/;
+ const m=en.exec(goal)||ko.exec(goal);if(!m)return null;
+ const variable=m[1],min=Number(m[2]),max=Number(m[3]);
+ if(!Number.isFinite(min)||!Number.isFinite(max)||min>=max||
+    min< -1e6||max>1e6||/^(?:constructor|prototype|__proto__)$/.test(variable))return null;
+ let root;try{root=fs.realpathSync(sourceRoot)}catch{return null}
+ const gameId=clean(task.gameId||order.gameId);if(gameId&&path.basename(root)!==gameId)return null;
+ const found=[];let assignments=0;
+ for(const rel of new Set(responsibleFiles)){
+  if(typeof rel!=='string'||path.isAbsolute(rel)||rel.includes('\\')||
+     rel.split('/').some(x=>!x||x==='.'||x==='..')||
+     !(target==='web'?/\.(?:js|mjs|cjs|html?)$/i:/\.lua[u]?$/i).test(rel))continue;
+  const file=path.resolve(root,rel);if(!file.startsWith(root+path.sep))continue;
+  let stat,real;try{stat=fs.lstatSync(file);real=fs.realpathSync(file)}catch{continue}
+  if(!stat.isFile()||stat.isSymbolicLink()||stat.size>260000||!real.startsWith(root+path.sep))continue;
+  const source=fs.readFileSync(file,'utf8');
+  let script=source;
+  if(/\.html?$/i.test(rel)){
+   if(/<!--|<(?:template|textarea|noscript|plaintext|xmp)\b/i.test(source))continue;
+   const blocks=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+   if(blocks.length!==1||blocks[0][1].trim())continue;
+   // 속성값 안의 가짜 script 태그를 실제 실행 코드로 해석하지 않는다.
+   const prefix=source.slice(0,blocks[0].index);
+   if(prefix.replace(/<(?:[^<>"']|"[^"]*"|'[^']*')*>/g,'').includes('<'))continue;
+   script=blocks[0][2];
+  }
+  // 소스 분석: 문자열·주석은 위치를 보존해 가리고, 해석하지 않는 문법은 거부한다.
+  let masked='',offset=0;
+  const blank=text=>text.replace(/[^\r\n]/g,' ');
+  while(offset<script.length){
+   const rest=script.slice(offset),c=rest[0];let length=0;
+   if(c==='`')return null; // JS templates and Luau interpolation require a full parser.
+   if(c==='"'||c==="'"){
+    let end=offset+1,closed=false;
+    while(end<script.length){
+     const value=script[end++];
+     if(value==='\\'){end++;continue}
+     if(value===c){closed=true;break}
+    }
+    if(!closed)return null;
+    length=end-offset;
+   }else if(target==='web'&&rest.startsWith('/*')){
+    const end=script.indexOf('*/',offset+2);if(end<0)return null;
+    length=end+2-offset;
+   }else if(target==='web'&&rest.startsWith('//')){
+    const end=script.indexOf('\n',offset);length=(end<0?script.length:end)-offset;
+   }else if(target==='web'&&c==='/'){
+    return null; // Regex literals and division are outside this bounded lexical subset.
+   }else if(target==='roblox'){
+    const comment=rest.startsWith('--'),start=comment?2:0;
+    const long=/^\[(=*)\[/.exec(rest.slice(start));
+    if(long){
+     const closing=']'+long[1]+']',end=script.indexOf(closing,offset+start+long[0].length);
+     if(end<0)return null;
+     length=end+closing.length-offset;
+    }else if(comment){
+     const end=script.indexOf('\n',offset);length=(end<0?script.length:end)-offset;
+    }
+   }
+   if(length){masked+=blank(script.slice(offset,offset+length));offset+=length}
+   else{masked+=c;offset++}
+  }
+  // 권한 범위: 지원하지 않는 재대입도 집계해 임의의 한 곳을 선택하지 않는다.
+  const writes=new RegExp('(?<![\\w$.])'+variable+'\\s*(?:=(?!=|>)|[+*/%^-]=|\\+\\+|--)','g');
+  assignments+=[...masked.matchAll(writes)].length;
+  if(new RegExp('(?:\\+\\+|--)\\s*'+variable+'\\b|\\b'+variable+'\\s*[,\\]}]').test(masked))return null;
+  const builtin=target==='web'?'Math':'math';
+  if(new RegExp('\\b'+builtin+'\\b(?!\\s*\\.)').test(masked)||
+     new RegExp('\\b'+builtin+'\\s*\\.[\\w$]+\\s*=(?!=)').test(masked))return null;
+  const rhs='(?:[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*){0,2}|-?\\d+(?:\\.\\d+)?)';
+  const prefix=target==='web'?'(?:(?:let|const|var)\\s+)?':'(?:local\\s+)?';
+  const re=new RegExp('^([ \\t]*'+prefix+variable+'[ \\t]*=[ \\t]*)('+rhs+')([ \\t]*;?[ \\t]*)$','gm');
+  for(const item of masked.matchAll(re)){
+   if(script.slice(item.index,item.index+item[0].length)!==item[0])continue;
+   if(target==='roblox'&&/\$/.test(item[2]))continue;
+   if(source.split(item[0]).length!==2)continue;
+   const expression=target==='roblox'?'math.clamp('+item[2]+', '+min+', '+max+')':
+      'Math.min('+max+', Math.max('+min+', '+item[2]+'))';
+   found.push({rel,source,find:item[0],replace:item[1]+expression+item[3]});
+  }
+ }
+ if(found.length!==1||assignments!==1)return null;
+ const {rel,source,find,replace}=found[0];
+ const cases=[min-1,min,(min+max)/2,max,max+1].map((input,i)=>({
+   name:'boundary-'+i,input,expected:Math.min(max,Math.max(min,input))}));
+ return Object.freeze({summary:'source-bound owner stat clamp',expectedEffect:'Bound one original stat assignment',
+   edits:[{path:rel,find,replace}],newFiles:[],replaceFiles:[],tests:[],
+   vibe59CodeKind:target==='web'?'WEB_SOURCE_BOUND_STAT':'ROBLOX_SOURCE_BOUND_STAT',
+   vibe59TestPlan:{pass:true,cases},vibe59StrategiesChecked:[{variant:'bounded-stat',pass:true}],
+   ruleDigest:sha(JSON.stringify({sourceRevision:sha(source),rel,variable,min,max})),
+   sourceSha256:sha(source),modelUsed:false,sourceWrite:false,runtimeVerified:false});
+}
 export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null,verifiedCodePatterns=[]}={}){
   const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
   const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
@@ -706,7 +906,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const explicit=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
   const req=explicit??(creativeChosen?{...creativeRequest,robloxDomainAction:creativeChosen.spec,
     scenarios:creativeChosen.scenarios}:null);
-  if(req==null)return null;
+  if(req==null)return createVibe59IntentStatCandidate({order,sourceRoot,responsibleFiles,target});
   const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction,req?.robloxCraftingAction].filter(Boolean);
   if(!req||req.ownerApproved!==true||!req.path||!req.find
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
@@ -894,9 +1094,71 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // Structured complex designs use the existing exact-edit engine against a private
 // in-memory source snapshot. Dependent steps may consume earlier generated code,
 // but original files remain untouched until the canonical worker admits the batch.
-export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[]}={}){
+// 승인된 실제 게임 소스의 원자적 변경: 후보 생성과 원본 쓰기는 별개 권한이다.
+// 실제 원본을 먼저 읽어 후보를 검증하고, 같은 내용일 때만 기존 편집기로 기록한다.
+export function applyVibe59ApprovedGameSourceChange({order={},sourceRoot='',responsibleFiles=[],target='',repositoryRoot=process.cwd(),approvedSourceWrite=false}={}){
+  if(approvedSourceWrite!==true||order.ownerApproved!==true||order.selectedTask?.ownerDirective!==true)
+    throw Error('VIBE59_REAL_GAME_SOURCE_WRITE_NOT_APPROVED');
+  if(!['web','roblox'].includes(target))throw Error('VIBE59_REAL_GAME_TARGET_NOT_ALLOWED');
+  const root=path.resolve(sourceRoot),repository=path.resolve(repositoryRoot);
+  if(root===repository||!root.startsWith(repository+path.sep))
+    throw Error('VIBE59_REAL_GAME_ROOT_OUTSIDE_REPOSITORY');
+  const relativeRoot=path.relative(repository,root).replaceAll(path.sep,'/');
+  if(!/^(web-games|roblox-games)\/[a-z0-9][a-z0-9-]*$/.test(relativeRoot)
+    ||(target==='web'&&!relativeRoot.startsWith('web-games/'))
+    ||(target==='roblox'&&!relativeRoot.startsWith('roblox-games/')))
+    throw Error('VIBE59_REAL_GAME_ROOT_UNCLAIMED');
+  const files=[...new Set(responsibleFiles)];
+  if(!files.length||files.length>8||files.some(file=>typeof file!=='string'
+    ||!file||path.isAbsolute(file)||file.split(/[\\/]/).includes('..')
+    ||!fs.existsSync(path.join(root,file))||!fs.statSync(path.join(root,file)).isFile()))
+    throw Error('VIBE59_REAL_GAME_FILES_UNCLAIMED');
+  const originals=new Map(files.map(file=>[file,fs.readFileSync(path.join(root,file),'utf8')]));
+  const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:files,target,repositoryRoot:repository});
+  if(candidate?.modelUsed!==false||candidate?.sourceWrite!==false
+    ||!Array.isArray(candidate.edits)||!candidate.edits.length
+    ||candidate.newFiles?.length||candidate.replaceFiles?.length
+    ||candidate.edits.some(edit=>!originals.has(edit.path)))
+    throw Error('VIBE59_REAL_GAME_CANDIDATE_UNVERIFIED');
+  const staged=new Map(originals);
+  applyExactEdits(root,candidate.edits,{documents:staged});
+  const changed=[...staged].filter(([file,content])=>content!==originals.get(file));
+  if(!changed.length)throw Error('VIBE59_REAL_GAME_NO_EFFECT');
+  for(const [file,original] of originals)
+    if(fs.readFileSync(path.join(root,file),'utf8')!==original)
+      throw Error('VIBE59_REAL_GAME_SOURCE_CHANGED_CONCURRENTLY');
+  // 실제 소스 변경은 기존 편집기를 사용한다. 배포/운영 검증 권한은 별도이다.
+  applyExactEdits(root,candidate.edits);
+  for(const [file,content] of changed)
+    if(fs.readFileSync(path.join(root,file),'utf8')!==content)
+      throw Error('VIBE59_REAL_GAME_WRITE_VERIFICATION_FAILED');
+  return Object.freeze({gameRoot:relativeRoot,changedFiles:changed.map(([file])=>file),
+    sourceWrite:true,modelUsed:false,runtimeVerified:false,releaseVerified:false});
+}
+
+export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
+  // Existing assets are first-class Vibe worker edit candidates, not presentation-only notes.
+  const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
+    responsibleFiles,target,repositoryRoot});
+  if(visualAssetCandidate)return visualAssetCandidate;
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
-  if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
+  if(batch==null){
+    // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.
+    const explicit=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
+    if(explicit==null){
+      const linked=createVibe2ComplexCandidate({order,sourceRoot,responsibleFiles,target,
+        baseCommit:order.baseCommit||order.sourceRevision||''});
+      if(linked)return linked;
+      const complex=compileSourceBoundComplexRequest({order,sourceRoot,responsibleFiles,target,repositoryRoot});
+      if(complex.status==='CANDIDATE')return complex.candidate;
+      if(complex.status==='BLOCKED'){
+        const error=new Error('VIBE2_COMPLEX_CAPABILITY_GAP:'+complex.unresolved.map(row=>row.code).join('|'));
+        error.vibe2GenerationFailureClass='COMPLEX_CAPABILITY_GAP';error.vibe2GenerationAttempts=0;
+        throw error;
+      }
+    }
+    return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
+  }
   if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
   const indexed=batch.map((step,index)=>{

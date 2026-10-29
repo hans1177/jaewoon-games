@@ -2737,7 +2737,7 @@ export function findWebRecurringBuildUpTask(project,repoRoot,queue){
    &&!clean(t.goal).includes('[WEB_CAUSAL_REPAIR]')).length;
  const passed=Math.max(0,verifiedGrowthCount-(noSourceGrowth&&!clean(prev?.goal).includes('[WEB_CAUSAL_REPAIR]')?1:0));
  const domains=[
-  ['CORE_FUN','핵심 조작→행동→결과의 재미와 적 대응을 기존 게임 규칙 안에서 강화한다.'],
+  ['CORE_FUN','핵심 조작→행동→결과의 재미와 적 대응을 기존 게임 규칙 안에서 강화한다. 적·보스·NPC AI가 실제 존재하는 게임에서는 인식·거리 유지·추격·회피·측면 이동·협동·공격 시점의 실패를 기존 AI 책임 함수에서 수리하고 실제 플레이로 검증한다. 체력·공격력·드롭·보상·밸런스 수치·엔진 판정·저장은 변경하지 않는다.'],
   ['PROGRESSION','현재 존재하는 경제·성장·퀘스트·연구 중 막힌 해금·보상 연결을 실제 구현한다.'],
   ['WORLD_CONTENT','현재 게임의 지역·인물·건물·장르 시스템에서 파생된 새 사건과 상호작용을 승인 설계 안에서 구현한다.'],
   ['GRAPHICS_AUDIO','해당 게임 고유의 3D 모델·모션·음악·전투 피드백을 실제 렌더 함수에서 개선한다.'],
@@ -2873,7 +2873,7 @@ function approvedDesignFingerprintForProject(designRecord,project,platformLane=s
     .digest('hex');
 }
 
-function robloxQualityRepairFiles(project,repoRoot){
+export function robloxQualityRepairFiles(project,repoRoot){
   if(project?.queueRobloxQualityBuildUpRequired!==true)return [];
   const failure=project.queueRobloxQualityBuildUpEvidence;
   let files=[];
@@ -2884,6 +2884,17 @@ function robloxQualityRepairFiles(project,repoRoot){
       .flatMap(row=>row.responsibleFiles||[]);
   }else if(failure?.authority==='roblox-source-static-contract-failure'){
     files=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'];
+  }else if(failure?.authority==='roblox-official-studio-mcp-product-quality-failure'){
+    // A real Studio UI failure must be repairable by the next Vibe source worker.
+    // Never bind old play evidence to a new source or a different packaged artifact.
+    const exact=clean(failure.sourceRevision)&&clean(failure.sourceRevision)===clean(project.queueRobloxSourceCommit)
+      &&clean(failure.artifactIdentity)&&clean(failure.artifactIdentity)===clean(project.queueRobloxArtifactIdentity);
+    const surfaces=[...(failure.repairSurfaces||[]),
+      ...(failure.qualityFailureDetails||[]).map(row=>row?.repairSurface)].map(value=>clean(value).toUpperCase());
+    const kinds=(failure.qualityFailureKinds||[]).map(value=>clean(value).toLowerCase());
+    if(exact&&(surfaces.includes('MOBILE_UI')||kinds.includes('adaptive-ui-commercial-quality'))){
+      files=['client/Game.client.luau','shared/RobloxCommonUI.luau'];
+    }
   }
   const root=sourceFile(repoRoot,`roblox-games/${project.gameId}`);
   return [...new Set(files.map(posix)
@@ -3368,7 +3379,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     ?' 그래픽은 마커/상수/파티클 존재만으로 완료하지 않는다. 캐릭터·적 실루엣, 환경 깊이와 랜드마크, 애니메이션 상태, 공격/피격/사망 반응, VFX, 조명, UI 계층, 카메라/오디오 타이밍 중 현재 약한 부분을 실제 렌더 소스에서 여러 요소 함께 개선하고 전후 차이가 눈에 보여야 한다.'
     :'';
   const designInstruction=focusPillar==='CORE_FUN'
-    ?` 승인 설계의 coreFun/coreLoop/signatureSystems를 실제 입력→판단→상태 변화→피드백→다음 선택으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
+    ?` 승인 설계의 coreFun/coreLoop/signatureSystems를 실제 입력→판단→상태 변화→피드백→다음 선택으로 구현·심화한다. [APPROVED_TACTICAL_AI_DEEPENING] 이 게임 기존 몬스터·보스/NPC의 적 인식, 추격·회피, 거리·위치 선택, 집단 협동, 공격 타이밍, 전투 상태 반응에서 실제 플레이 근거로 약한 부분을 찾아 기존 AI 책임 함수에서 직접 개선한다. 적이 없는 게임에는 적용하지 않는다. 엔진의 체력·공격력·쿨다운·드롭·보상·밸런스 수치 및 서버 판정·저장은 바꾸지 않는다. A/B 전투 시나리오, 동일 소스 회귀검사, 배포 후 실제 플레이 증거를 확보한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
     :focusPillar==='PROGRESSION'
       ?` 승인 설계의 progressionDirection/coreLoop/signatureSystems를 실제 목표·보상·해금·웨이브·퀘스트·인벤토리·경제·콘텐츠 깊이 중 해당 게임에 존재하는 책임 시스템으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
       :(designContext?` 승인 설계 맥락을 모든 작업 축에서 실제 구현 기준으로 보존한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`:'');

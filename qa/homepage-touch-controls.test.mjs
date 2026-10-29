@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -141,5 +142,66 @@ test('missing Unity assets stay 404 instead of a successful compressed homepage'
     assert.equal(response.headers.get('Content-Encoding'),null);
     assert.equal(response.headers.get('Cache-Control'),'no-store');
     if(method==='HEAD')assert.equal(await response.text(),'');
+  }
+});
+
+test('공개 홈페이지는 게임을 표시하되 관리자 인증 응답 없이는 삭제 버튼을 노출하지 않는다',async()=>{
+  for(const verifiedOwner of [false,true]){
+    const cards=[],nodes=new Map(),requests=[];
+    function element(id=''){
+      return {id,style:{setProperty(){}},dataset:{},innerHTML:'',textContent:'',hidden:false,parentNode:null,
+        setAttribute(){},addEventListener(){},querySelector(){return null},
+        appendChild(node){node.parentNode=this;cards.push(node);},
+        prepend(node){node.parentNode=this;cards.push(node);},
+        remove(){}};
+    }
+    const available=new Set(['hero','gameHub','gameGrid','recentUpdates','recentUpdateList',
+      'metricPlayable','metricDevelopment','metricRecent','mobileFavoritesList']);
+    const document={
+      readyState:'complete',baseURI:'https://hans1177.github.io/jaewoon-games/',
+      documentElement:element(),head:element(),
+      addEventListener(){},querySelector(){return null},querySelectorAll(){return[];},
+      createElement(){return element();},
+      getElementById(id){if(!available.has(id))return null;
+        if(!nodes.has(id))nodes.set(id,element(id));return nodes.get(id);}
+    };
+    const catalog={runtimeInfoAuthority:'company-runtime',ownerStoppedGameIds:[],games:[{
+      id:'qa-game',name:'QA 게임',productionClass:'DEVELOPMENT_CONFIRMED',
+      canonical:{identity:{gameId:'qa-game',name:'QA 게임'},lifecycle:{state:'ACTIVE'},
+        production:{class:'DEVELOPMENT_CONFIRMED'},sources:{web:{state:'WEB_SOURCE_DEVELOPMENT_PENDING_QA',path:'web-games/qa-game'}},
+        homepage:{runtime:{developmentActive:true}}}
+    }]};
+    const storage={getItem(key){return verifiedOwner&&key==='jaewoon_command_device_v1'?'registered-test-device':null;},
+      setItem(){},removeItem(){}};
+    const errors=[];
+    const context={document,window:{addEventListener(){},alert(){},confirm(){return false;}},
+      localStorage:storage,sessionStorage:storage,URL,AbortSignal,setInterval(){},location:{},navigator:{},
+      console:{error(...args){errors.push(args.map(String).join(' '));}},
+      fetch:async (url,options)=>{
+        requests.push({url:String(url),action:options?.body?JSON.parse(options.body).action:null});
+        if(String(url).includes('/functions/v1/company-command'))
+          return {ok:true,json:async()=>({ok:true,tasks:[]})};
+        return String(url).endsWith('/game-catalog.json')
+          ?{ok:true,json:async()=>catalog}:{ok:false,json:async()=>null};
+      }};
+    vm.runInNewContext(homepage.replaceAll('import.meta.url',
+      JSON.stringify('https://hans1177.github.io/jaewoon-games/assets/homepage-enhancements.js')),context);
+    await new Promise(resolve=>setImmediate(resolve));
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.deepEqual(errors,[]);
+    assert.equal(nodes.get('metricDevelopment')?.textContent,'1',
+      'HOME_CATALOG_FETCH_DIAGNOSTIC '+JSON.stringify({requests,created:[...nodes.keys()]}));
+    const content=cards.map(card=>card.innerHTML).join('');
+    assert.match(content,/QA 게임/);
+    assert.match(content,/homeFavoriteToggle/);
+    if(verifiedOwner){
+      assert.ok(requests.some(req=>req.action==='list'),'관리자 권한을 서버에 확인해야 한다');
+      assert.match(content,/homeDeleteButton/);
+    }else{
+      assert.ok(!requests.some(req=>req.action==='list'),'공개 방문자는 인증 요청을 보내지 않는다');
+      assert.doesNotMatch(content,/homeDeleteButton|data-hide-game=/);
+      await vm.runInNewContext("requestPermanentGameDelete('qa-game')",context);
+      assert.ok(!requests.some(req=>req.action==='create'),'공개 방문자는 삭제 요청을 보낼 수 없다');
+    }
   }
 });

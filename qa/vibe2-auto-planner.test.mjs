@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks, robloxQualityRepairFiles } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
@@ -5969,4 +5969,65 @@ test('web recurring evolution repairs unchanged source and owns renderer after r
   assert.equal(findWebRecurringBuildUpTask({...project,ownerDevelopmentHold:true},root,{tasks:[]}),null);
   assert.equal(findWebRecurringBuildUpTask({...project,engine:'roblox'},root,{tasks:[]}),null);
  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('tactical AI deepening stays inside verified game design and preserves balance authority',()=>{
+  const root=tempRepo(),gameId='tactical-ai-only';
+  const source=path.join(root,'web-games',gameId);
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'game.js'),'function updateEnemyAI() {}','utf8');
+  writeStudioDesign(root,gameId);
+  const project={gameId,name:'Tactical AI Only',engine:'web',releaseState:'development-confirmed',projectPath:'web-games/'+gameId};
+  const core=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(core);
+  assert.match(core.goal,/APPROVED_TACTICAL_AI_DEEPENING/);
+  assert.match(core.goal,/집단 협동/);
+  assert.match(core.goal,/체력·공격력·쿨다운·드롭·보상·밸런스 수치/);
+  const progression=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION');
+  assert.ok(progression);
+  assert.doesNotMatch(progression.goal,/APPROVED_TACTICAL_AI_DEEPENING/);
+  const sourceText=fs.readFileSync(new URL('../tools/vibe2-auto-planner.mjs',import.meta.url),'utf8');
+  assert.match(sourceText,/추격·회피·측면 이동·협동·공격 시점의 실패/);
+  assert.match(sourceText,/체력·공격력·드롭·보상·밸런스 수치·엔진 판정·저장은 변경하지 않는다/);
+});
+
+test('exact Studio MCP HUD overlap makes Vibe own the actual client and shared UI sources, not a test bypass',()=>{
+  const root=tempRepo(),gameId='studio-hud-causal-repair';
+  const sourceRoot=path.join(root,'roblox-games',gameId);
+  for(const dir of ['client','server','shared'])fs.mkdirSync(path.join(sourceRoot,dir),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client','Game.client.luau'),'local function mountHud() return true end\n');
+  fs.writeFileSync(path.join(sourceRoot,'shared','RobloxCommonUI.luau'),'local UI={}\nfunction UI.AdaptActionMenu() return true end\nreturn UI\n');
+  fs.writeFileSync(path.join(sourceRoot,'server','Game.server.luau'),'return true\n');
+  writeStudioDesign(root,gameId,{coreFun:'실제 플레이 중 행동 입력과 상태 읽기'});
+  try{
+    const source='9'.repeat(40),artifact='sha256:'+'a'.repeat(64);
+    const failure={authority:'roblox-official-studio-mcp-product-quality-failure',
+      sourceRevision:source,artifactIdentity:artifact,workflowRunId:40901857206,
+      qualityFailureKinds:['adaptive-ui-commercial-quality'],repairSurfaces:['MOBILE_UI'],
+      qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
+        observed:{overlapPairs:8,largeBlockingOverlayCount:0}}]};
+    const project={gameId,engine:'roblox',releaseState:'development-confirmed',projectPath:'roblox-games/'+gameId,
+      queueRobloxSourceCommit:source,queueRobloxArtifactIdentity:artifact,
+      queueRobloxQualityBuildUpRequired:true,queueRobloxQualityBuildUpSourceRevision:source,
+      queueRobloxQualityBuildUpEvidence:failure,queueRobloxQualityFailureKinds:failure.qualityFailureKinds};
+    const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'USABILITY');
+    assert.ok(task);
+    assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
+    assert.equal(task.studioQualityEvolution.phase,'REPAIR');
+    assert.ok(task.responsibleFiles.includes('roblox-games/'+gameId+'/client/Game.client.luau'));
+    assert.ok(task.responsibleFiles.includes('roblox-games/'+gameId+'/shared/RobloxCommonUI.luau'));
+    assert.equal(task.buildUpDirective.playtestRuntimeFindings.studioQualityFailure.qualityFailureDetails[0].observed.overlapPairs,8);
+    assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
+    assert.ok(!task.responsibleFiles.some(file=>file.startsWith('web-games/')));
+    const repairPaths=robloxQualityRepairFiles(project,root);
+    assert.deepEqual(repairPaths.sort(),[
+      'roblox-games/'+gameId+'/client/Game.client.luau',
+      'roblox-games/'+gameId+'/shared/RobloxCommonUI.luau'
+    ]);
+    assert.deepEqual(robloxQualityRepairFiles({...project,queueRobloxSourceCommit:'b'.repeat(40)},root),[],
+      'old Studio evidence must never force ownership on a newer source');
+    assert.deepEqual(robloxQualityRepairFiles({...project,queueRobloxArtifactIdentity:'sha256:'+'b'.repeat(64)},root),[],
+      'different native build artifacts must not authorize a repair');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

@@ -446,6 +446,7 @@ function team(group,foes,side,dt){
   const dir=side==='ally'?1:-1,live=group.filter(o=>!o.dead);
   const frontX=live.length?(side==='ally'?Math.max(...live.map(o=>o.x)):Math.min(...live.map(o=>o.x))):0;
   group.forEach(f=>{
+  if (f.dead) return;
     f.cd=Math.max(0,f.cd-dt);f.flash=Math.max(0,f.flash-dt);
     if(f.stunUntil>s.time)return;
     let target=null,best=1e9;
@@ -482,6 +483,7 @@ function team(group,foes,side,dt){
   }
 }
 function hit(a,t,foes){
+  if ((a.dead || t.dead)) return;
   if(a.cd>0)return;
   if(a.doubleStrike){
     t.hp-=attackPower(a,300);t.flash=.2;t.boostUntil=s.time+2;t.weakUntil=0;
@@ -653,6 +655,12 @@ q('upKillReward').addEventListener('click',()=>upgradeMeta('killRewardLv'));
 
 buttons();updateMeta();draw();
 })();
+</script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
 </script>
 </body>
 </html>

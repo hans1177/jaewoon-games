@@ -327,6 +327,14 @@ jobs:
           node --test qa/simple-rpg-age-chain.test.mjs
           node --test qa/seed-action-survival-rogu-echoes-of-the-lost-star-touch-bottleneck.test.mjs
 
+      - name: Verify CC0 GLB game binding and provenance
+        run: node --test qa/vibe-glb-game-integration.test.mjs
+
+      - name: Verify CC0 source acquisition, native production and registry recovery
+        run: |
+          python -m py_compile assets/native-authoring/build-game-visual.py
+          node --test qa/vibe-cc0-chain.test.mjs
+
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
 

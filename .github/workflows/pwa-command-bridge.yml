@@ -236,8 +236,39 @@ jobs:
           fs.appendFileSync(out,`task_id=${data.task?.id||''}\n`);
           console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
           NODE
-      - name: Add owner instruction to Vibe2 control queue
+      - name: Classify authenticated owner stop or permanent deletion
+        id: owner_stop
         if: steps.next.outputs.has_work == 'true'
+        run: node tools/pwa-owner-stop.mjs classify --task=/tmp/pwa-next.json
+
+      - name: Apply authenticated owner management task
+        if: steps.owner_stop.outputs.owner_stop == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! node tools/pwa-owner-stop.mjs apply --task=/tmp/pwa-next.json; then
+            node - <<'NODE'
+          const fs=require('fs'),d=JSON.parse(fs.readFileSync('/tmp/pwa-next.json','utf8'));
+          fs.writeFileSync('/tmp/pwa-owner-stop-status.json',JSON.stringify({action:'sync',updates:[{taskId:d.task.id,status:'needs_input',blocker:d.task.body==='OWNER_DELETE_GAME:'+d.task.game_id?'영구삭제 카탈로그/원본 반영 실패 · 복구 필요':'개발중단 카탈로그 반영 실패 · 복구 필요'}]}));
+          NODE
+            curl -fsS -X POST "$COMPANY_BRIDGE_URL" -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" -H 'Content-Type: application/json' --data-binary @/tmp/pwa-owner-stop-status.json || true
+            exit 1
+          fi
+          gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+          node - <<'NODE'
+          const fs=require('fs'),d=JSON.parse(fs.readFileSync('/tmp/pwa-next.json','utf8'));
+          const deleting=d.task.body==='OWNER_DELETE_GAME:'+d.task.game_id;
+          fs.writeFileSync('/tmp/pwa-owner-stop-status.json',JSON.stringify({action:'sync',updates:[{taskId:d.task.id,status:deleting?'testing':'done',message:deleting?'게임 원본을 main에서 제거하고 영구삭제 목록에 등록했어. Pages 게시를 요청했으며 실제 공개 반영은 확인 중이야. 다른 기기의 저장 데이터는 별도야.':'게임 자동개발 중단을 main과 company-runtime에 반영했어. 원본과 저장 데이터는 유지했어. Pages 게시 요청 접수됨.'}]}));
+          NODE
+          curl -fsS -X POST "$COMPANY_BRIDGE_URL" -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" -H 'Content-Type: application/json' --data-binary @/tmp/pwa-owner-stop-status.json > /tmp/pwa-owner-stop-result.json
+          node -e "if(JSON.parse(require('fs').readFileSync('/tmp/pwa-owner-stop-result.json','utf8')).ok!==true)process.exit(1)"
+          echo 'PWA_OWNER_GAME_MANAGEMENT_SOURCE_APPLIED=PASS'
+          echo 'PWA_OWNER_GAME_PAGES_DEPLOYMENT=DISPATCHED_NOT_VERIFIED'
+
+      - name: Add owner instruction to Vibe2 control queue
+        if: steps.next.outputs.has_work == 'true' && steps.owner_stop.outputs.owner_stop != 'true'
         id: ingest
         env:
           TASK_ID: ${{ steps.next.outputs.task_id }}

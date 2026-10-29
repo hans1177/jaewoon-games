@@ -8,6 +8,9 @@ on:
       - vibe2-main-integration-20260916
     paths:
       - 'assets/roblox/common-motion-v1/**'
+      - 'assets/vibe-runtime.js'
+      - 'assets/vibe-web-runtime-runner.js'
+      - 'qa/vibe-asset-loading.test.mjs'
       - 'web-games/**'
       - 'tools/asset-health-check.mjs'
       - 'qa/insect-survival.test.mjs'
@@ -63,6 +66,10 @@ on:
       - 'tools/vibe2-existing-web-assessment.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
+      - 'tools/vibe2-complex-*.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-offline-game-operators.mjs'
+      - 'tools/vibe2-codegen-counterexample-repair.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
       - 'tools/vibe3-roblox-studio-lessons.mjs'
       - 'qa/vibe3-roblox-studio-lessons.test.mjs'
@@ -113,6 +120,13 @@ on:
       - 'qa/vibe59-roblox-coding.test.mjs'
       - 'qa/vibe59-creative-engine.test.mjs'
       - 'qa/vibe59-luau-skills109.test.mjs'
+      - 'qa/vibe2-complex-*.test.mjs'
+      - 'qa/vibe2-game-source-index.test.mjs'
+      - 'qa/vibe59-history.json.gz'
+      - 'qa/vibe2-complex-codegen.test.mjs'
+      - 'tools/vibe2-complex-intent.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-complex-work-planner.mjs'
       - 'qa/vibe59-quality-gameplay.test.mjs'
       - 'qa/vibe59-pathfinding.test.mjs'
       - 'qa/vibe59-crafting-transaction.test.mjs'
@@ -170,6 +184,9 @@ on:
       - vibe2-unreal-core
     paths:
       - 'assets/roblox/common-motion-v1/**'
+      - 'assets/vibe-runtime.js'
+      - 'assets/vibe-web-runtime-runner.js'
+      - 'qa/vibe-asset-loading.test.mjs'
       - 'web-games/**'
       - 'tools/asset-health-check.mjs'
       - 'qa/insect-survival.test.mjs'
@@ -212,6 +229,10 @@ on:
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
+      - 'tools/vibe2-complex-*.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-offline-game-operators.mjs'
+      - 'tools/vibe2-codegen-counterexample-repair.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
       - 'tools/vibe3-roblox-studio-lessons.mjs'
       - 'qa/vibe3-roblox-studio-lessons.test.mjs'
@@ -252,6 +273,13 @@ on:
       - 'qa/vibe-studio-asset-universe.test.mjs'
       - 'qa/vibe2-*.test.mjs'
       - 'qa/vibe59-luau-skills109.test.mjs'
+      - 'qa/vibe2-complex-*.test.mjs'
+      - 'qa/vibe2-game-source-index.test.mjs'
+      - 'qa/vibe59-history.json.gz'
+      - 'qa/vibe2-complex-codegen.test.mjs'
+      - 'tools/vibe2-complex-intent.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-complex-work-planner.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-merged-pr-provenance.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
@@ -341,7 +369,8 @@ jobs:
           fi
           changed_web_games=ALL
           if [ "$EVENT_NAME" = 'pull_request' ]; then
-            changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
+            # Vibe Maker는 제작 도구이며 실제 게임 폴더가 아니다. 다른 미등록 게임은 계속 검증한다.
+            changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ && $2 != "vibe-maker" {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
             [ -n "$changed_web_games" ] || changed_web_games=NONE
             if grep -Eq '^(game-catalog\.json|tools/vibe2-existing-web-assessment\.mjs)$' /tmp/vibe2-core-qa-files.txt; then changed_web_games=ALL; fi
           fi
@@ -609,6 +638,9 @@ jobs:
           node --test qa/vibe59-roblox-coding.test.mjs
           node --test qa/vibe59-creative-engine.test.mjs
           node --test qa/vibe59-luau-skills109.test.mjs
+          node --test qa/vibe2-complex-intent.test.mjs qa/vibe2-game-source-index.test.mjs qa/vibe2-complex-work-planner.test.mjs
+          node --test qa/vibe2-complex-codegen.test.mjs
+          node --test qa/vibe-asset-loading.test.mjs
           node --test qa/vibe59-quality-gameplay.test.mjs
           node --test qa/vibe59-pathfinding.test.mjs
           node --test qa/vibe59-crafting-transaction.test.mjs
@@ -694,6 +726,10 @@ jobs:
           npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
           node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
           echo "VIBE2_PLAYWRIGHT_MODULE=$practice_deps/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          # 기존 브라우저 실행기에서 실제 WEB 게임 수정 후보도 검증한다.
+          browser_binary="$(VIBE2_PLAYWRIGHT_MODULE="$practice_deps/node_modules/playwright/index.mjs" node --input-type=module -e 'const {chromium}=await import(process.env.VIBE2_PLAYWRIGHT_MODULE);console.log(chromium.executablePath())')"
+          test -x "$browser_binary"
+          echo "VIBE2_CHROME_BINARY=$browser_binary" >> "$GITHUB_ENV"
           # Unity is owner-held: C# executor is enabled only when the latest authorized platform scope resumes Unity Web.
           if node -e "const p=require('./company-learning/platform-release-roadmap.json');process.exit(p.ownerActiveDevelopmentScope20261009?.activeTargets?.includes('UNITY_WEB')?0:1)"; then
             docker pull mcr.microsoft.com/dotnet/sdk:8.0
@@ -714,6 +750,8 @@ jobs:
           node --test qa/roblox-common-motion-source.test.mjs
           VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler|no-model Roblox generated button|no-model Roblox gameplay generated server action|no-model Roblox native runtime generated code" qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-studio-lessons.test.mjs
+          node --test --test-name-pattern="server-local native Luau|server-local Luau forwards reordered" qa/vibe2-complex-work-planner.test.mjs
+          node --test qa/vibe2-complex-codegen.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test --test-name-pattern="managed spawn executes" qa/company-development-roblox-runtime-foundation.test.mjs
       - name: Execute native GLB authoring and platform material checks

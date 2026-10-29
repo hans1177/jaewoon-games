@@ -2762,6 +2762,11 @@ function drawMiniMap(now=performance.now()){
  m.fillStyle='#e9fff1';m.font='bold 8px system-ui';m.textAlign='center';m.fillText('N',cx,10)
 }
 const BESTIARY_INFO={
+ // 기존 늪지 몬스터 4종의 누락된 도감 항목만 복원한다.
+ toxicmycelium:{cat:'aggressive',desc:'늪에 서식하는 맹독 균사체 버섯. 강한 독성 공격을 한다.'},
+ toxicsporeorb:{cat:'aggressive',desc:'맹독 균사체가 소환하는 독성 포자 구슬.'},
+ swampgolem:{cat:'neutral',desc:'늪의 무거운 골렘. 공격을 받으면 몸을 단단하게 만든다.'},
+ fearbear:{cat:'aggressive',desc:'늪에 서식하는 공포 곰. 위험한 특수 공격을 사용한다.'},
  crystalbiter:{cat:'aggressive',desc:'수정 지역 3티어 · HP 666, 공격 55. 유도 산성 구슬 2발(4초 유도), 3연속 2배·3배·4배 직선 돌진, 3회 후 2초 탈진.'},
  crystallizard:{cat:'aggressive',desc:'수정 지역 3티어 · HP 450, 공격 45. 40% 확률 두 마리. 평소 투명, 근접 출현, 2초마다 30% 확률 3초 완전 은신.'},
  mossboar:{cat:'neutral',desc:'숲 바닥의 이끼와 흙을 헤집으며 먹이를 찾는 멧돼지. 먼저 자극하지 않으면 주변을 천천히 돌아다닌다.'},
@@ -4486,7 +4491,7 @@ function regionPassages(){
  return rows;
 }
 function doubleTapTarget(id,now,action){
- if(lastWorldTap.target===id&&now-lastWorldTap.at<(String(id).startsWith('monster:')?850:430)){lastWorldTap={target:null,at:0};action();return true}
+ if(lastWorldTap.target===id&&now-lastWorldTap.at<(String(id).startsWith('monster:')?1300:430)){lastWorldTap={target:null,at:0};action();return true}
  lastWorldTap={target:id,at:now};return false
 }
 function rootAvailable(){return Date.now()>=(state.rootRespawnAt||0)}
@@ -4841,7 +4846,12 @@ function handleWorldTap(e){
   const block=state.area==='surface'?state.creativeSpawners.find(b=>dist(wx,wy,b.x,b.y)<48):null;
   if(block){if(!doubleTapTarget('spawn:'+block.id,now,()=>openCreativeSpawner(block)))showNotice('스폰 블록 · 한 번 더 눌러 설정');return}
   const owned=state.enemies.filter(m=>m.creativeOwned&&m.hp>0&&m.area===state.area).sort((a,b)=>dist(wx,wy,a.x,a.y)-dist(wx,wy,b.x,b.y))[0];
-  if(owned&&dist(wx,wy,owned.x,owned.y)<Math.max(50,owned.type.r+18)){if(!doubleTapTarget('creative-monster:'+owned.netId,now,()=>selectCreativeMonster(owned)))showNotice(owned.type.name+' · 한 번 더 눌러 대결 대상 선택');return}
+  if(owned&&dist(wx,wy,owned.x,owned.y)<Math.max(50,owned.type.r+18)){
+   if(!owned.type.noBestiary&&BESTIARY_INFO[owned.type.id]&&!state.bestiary[owned.type.id]){
+    if(!doubleTapTarget('monster:'+owned.netId,now,()=>unlockBestiary(owned.type.id)))showNotice(owned.type.name+' · 한 번 더 눌러 도감 등록');
+   }else if(!doubleTapTarget('creative-monster:'+owned.netId,now,()=>selectCreativeMonster(owned)))showNotice(owned.type.name+' · 한 번 더 눌러 대결 대상 선택');
+   return
+  }
  }
  // 출입구 선택은 펫·자원·전투보다 먼저 처리한다.
  const passage=regionPassages().find(row=>dist(wx,wy,row.x,row.y)<row.tapRadius
@@ -4910,16 +4920,19 @@ function handleWorldTap(e){
  if(state.area==='surface'&&!state.giantCrocEggTaken&&dist(wx,wy,GIANT_CROC_EGG.x,GIANT_CROC_EGG.y)<60){doubleTapTarget('giant-croc-egg',now,()=>{if(state.giantCrocEggTaken)return;state.giantCrocEggTaken=true;addInv('giant-croc-egg',1);state.dirty=true;showNotice('거대 악어 알 획득 · 부화기에서 10분 부화');saveGame(false)});return}
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);
- let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=70;
- if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(cd,(Number(m.type.r)||20)+22)){closest=m;cd=d}}
+ let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=Infinity;
+ if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(70,(Number(m.type.r)||20)+24)&&d<cd){closest=m;cd=d}}
  if(closest){
-  // 터치 즉시 기존 공격 함수로 연결한다. 창/활/마법 피해와 판정 권한은 attack() 그대로 사용.
-  // 기존 활 3회 탭 조준 보너스와 몬스터 도감 두 번 탭도 보존한다.
+  // 메인 · 미등록 몬스터는 먼저 두 번 조사해 도감에 등록한다. 첫 터치에서 공격하지 않는다.
+  // 등록된 몬스터의 터치 공격과 활 3회 조준은 기존 attack() 판정을 유지한다.
+  const newDiscovery=typeof BESTIARY_INFO!=='undefined'&&!closest.type.noBestiary&&!!BESTIARY_INFO[closest.type.id]&&!state.bestiary?.[closest.type.id];
+  if(newDiscovery){
+   if(!doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id)))showNotice(closest.type.name+' · 한 번 더 눌러 도감 등록');
+   return
+  }
   const eligible=closest.type.mood!=='harmless'||!!closest.type.huntable;
   const interactable=!(closest.type.labBoss&&now<(closest.submergedUntil||0))&&!(closest.type.burrower&&!closest.emerged);
-  if(!eligible||!interactable){doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));return}
-  // 도감 두 번 누르기가 공격보다 우선한다.
-  if(doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id)))return;
+  if(!eligible||!interactable)return;
   const w=currentWeapon(),range=currentRange(),dx=closest.x-state.player.x,dy=closest.y-state.player.y;
   if(!w){showNotice('가방에서 무기를 장착해');return}
   if(Math.hypot(dx,dy)>range+(Number(closest.type.r)||0)){showNotice(closest.type.name+' · 공격 사거리 밖');return}
@@ -7826,6 +7839,12 @@ document.getElementById('optionsClose').addEventListener('click',()=>document.ge
 if(new URL(location.href).searchParams.get('reset')==='1'){try{localStorage.removeItem(SAVE_KEY)}catch{}}
 initWorld();resize();updateHud();requestAnimationFrame(loop);
 })();
+</script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
 </script>
 </body>
 </html>

@@ -237,6 +237,14 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
         results.push({gameId,pass:true,sourceRevision,forcedF0Restart:true,buildSourceChanged:verdict?.buildSourceChanged??null});
         continue;
       }
+      // 같은 main 소스를 push/병합 복구가 다시 수신해도 이미 저장한 F0 진행 상태를 초기화하지 않는다.
+      // 게시·런타임 성공을 합성하지 않고, 아직 패키지가 없으면 기존 런타임 경로로 복구한다.
+      if(clean(item.robloxSourceCommit)===sourceRevision
+        &&clean(item.robloxEvidenceInvalidatedBySourceChange?.newSourceRevision)===sourceRevision){
+        results.push({gameId,pass:true,sourceRevision,buildSourceChanged:false,metadataOnly:true,
+          alreadySynchronized:true,requiresRuntime:item.robloxBuildOrPackagePassed!==true});
+        continue;
+      }
       if(verdict?.buildSourceChanged==null){
         results.push({
           gameId,
@@ -250,7 +258,7 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
       }
       if(verdict?.buildSourceChanged===false){
         const restored=restoreMetadataOnlyRobloxInvalidation(item,{stamp});
-        results.push({gameId,pass:true,sourceRevision,buildSourceChanged:false,metadataOnly:true,restored});
+        results.push({gameId,pass:true,sourceRevision,buildSourceChanged:false,metadataOnly:true,restored,requiresRuntime:item.robloxBuildOrPackagePassed!==true});
         continue;
       }
       invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp});
@@ -317,3 +325,4 @@ function runCli(){
   console.log(`ROBLOX_F0_FORCE_RESTART=${forceF0Restart?'YES':'NO'}`);
 }
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href)runCli();
+

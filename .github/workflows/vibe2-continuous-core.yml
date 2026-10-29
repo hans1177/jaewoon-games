@@ -86,11 +86,11 @@ permissions:
   actions: write
 
 # 파일명: .github/workflows/vibe2-continuous-core.yml - 동시 실행
-# 결과 없는 리필은 같은 SHA·레인의 대기 신호를 실행 시작 전에 합치고, 다른 이벤트는 실행 ID별로 분리한다.
+# 결과 없는 리필은 레인별 대기 신호를 합친다. SHA가 바뀌어도 최신 main을 읽는 중복 예약은 쌓지 않는다.
 # 이미 실행 중인 예약과 결과 콜백(neuron-complete)은 취소하지 않는다.
 # 실행 중인 리필·개발 작업은 취소하지 않고 대기 중복 신호만 합친다. 공유 큐의 낙관적 재시도는 유지한다.
 concurrency:
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && format('{0}-{1}', 'vibe2-main-push-game-primary-wake', github.sha) || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}-{1}', github.sha, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && format('{0}-{1}', 'vibe2-main-push-game-primary-wake', github.sha) || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
@@ -1547,11 +1547,13 @@ jobs:
       max-parallel: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 63 || 256 }}
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
     env:
-      # Owner-directed game coding: internal source analysis/synthesis only.
-      # The existing worker fails closed when no grounded local candidate exists.
-      VIBE2_V4_OFFLINE_ONLY: 'true'
-      VIBE2_ROBLOX_NO_MODEL_ONLY: 'true'
-      VIBE2_V4_NO_EXTERNAL_API: 'true'
+      # Roblox game-primary keeps the existing local/deterministic-first candidate path,
+      # then permits ONLY the approved free-tier model pair when a real source edit is needed.
+      # Other lanes stay offline; free-tier billing MUST be verified before any Gemini key is exposed.
+      # Missing free-tier proof, credentials, quota or safe routes fail closed; no paid fallback.
+      VIBE2_V4_OFFLINE_ONLY: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && 'false' || 'true' }}
+      VIBE2_ROBLOX_NO_MODEL_ONLY: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && (vars.VIBE2_ROBLOX_NO_MODEL_ONLY || 'false') || 'true' }}
+      VIBE2_V4_NO_EXTERNAL_API: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && 'false' || 'true' }}
       WORKER_CONTEXT_EXPECTED_POLICY_SHA256: ${{ needs.reserve.outputs.shared_policy_sha256 }}
       WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256: ${{ needs.reserve.outputs.shared_log_map_sha256 }}
       WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256: ${{ needs.reserve.outputs.shared_architecture_sha256 }}
@@ -1817,11 +1819,11 @@ jobs:
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
           VARIANT: ${{ matrix.variant }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
-          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2010,11 +2012,11 @@ jobs:
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
-          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}
           VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
         run: |
@@ -2853,6 +2855,12 @@ jobs:
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
+            candidateGenerationAttempts:Number.isSafeInteger(manifest?.generation?.attempts)?manifest.generation.attempts:(/^\d+$/.test(clean(process.env.CANDIDATE_GENERATION_ATTEMPTS))?Number(process.env.CANDIDATE_GENERATION_ATTEMPTS):null),
+            complexRequirementCount:manifest?.generation?.complexRequirementCount??null,
+            complexBoundSymbolCount:manifest?.generation?.complexBoundSymbolCount??null,
+            complexAtomCount:manifest?.generation?.complexAtomCount??null,
+            complexPlanDigest:manifest?.generation?.complexPlanDigest??null,
+            complexSourceDigest:manifest?.generation?.complexSourceDigest??null,
             modelCacheRequired:clean(process.env.MODEL_CACHE_REQUIRED).toLowerCase()==='true',modelCacheReason:clean(process.env.MODEL_CACHE_REASON)||null,
             ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
           };

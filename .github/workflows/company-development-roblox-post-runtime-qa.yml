@@ -2741,7 +2741,45 @@ jobs:
             }
           }
           $volume = [System.IO.DriveInfo]::new([System.IO.Path]::GetPathRoot($env:RUNNER_TEMP))
+          # 이전 Actions 체크아웃의 누적 Git 객체가 실제 플레이 시작 전 디스크를 채울 수 있다.
+          # 현재 작업의 두 checkout 단계가 재생성하는 동일 저장소 캐시만, 공간 부족 때 정리한다.
+          if ($volume.AvailableFreeSpace -lt 8GB) {
+            if (-not $env:GITHUB_WORKSPACE) { throw 'ROBLOX_STUDIO_MCP_WORKSPACE_REQUIRED' }
+            $workspace = [System.IO.Path]::GetFullPath($env:GITHUB_WORKSPACE).TrimEnd([char[]]@(92,47))
+            if ($workspace -eq [System.IO.Path]::GetPathRoot($workspace).TrimEnd([char[]]@(92,47))) {
+              throw 'ROBLOX_STUDIO_MCP_WORKSPACE_ROOT_REJECTED'
+            }
+            foreach ($checkoutName in @('main','runtime')) {
+              $checkoutRoot = Join-Path $workspace $checkoutName
+              $gitRoot = Join-Path $checkoutRoot '.git'
+              if (-not (Test-Path -LiteralPath $gitRoot -PathType Container)) { continue }
+              $checkoutInfo = Get-Item -LiteralPath $checkoutRoot -Force
+              $gitInfo = Get-Item -LiteralPath $gitRoot -Force
+              if (($checkoutInfo.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -or
+                  ($gitInfo.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+                Write-Host "ROBLOX_STUDIO_MCP_CACHE_PRESERVED=REPARSE_POINT:$checkoutName"
+                continue
+              }
+              if ([System.IO.Path]::GetPathRoot($checkoutRoot) -ne $volume.Name) { continue }
+              if (-not (Get-Command git -ErrorAction SilentlyContinue)) { continue }
+              $origin = [string](& git -C $checkoutRoot config --get remote.origin.url 2>$null)
+              if ($LASTEXITCODE -ne 0 -or $origin.Trim() -notmatch '^(?:https://github\.com/|git@github\.com:)hans1177/jaewoon-games(?:\.git)?/?$') {
+                Write-Host "ROBLOX_STUDIO_MCP_CACHE_PRESERVED=UNVERIFIED_ORIGIN:$checkoutName"
+                continue
+              }
+              $topLevel = [string](& git -C $checkoutRoot rev-parse --show-toplevel 2>$null)
+              if ($LASTEXITCODE -ne 0 -or [System.IO.Path]::GetFullPath($topLevel.Trim()).TrimEnd([char[]]@(92,47)) -ne $checkoutRoot) {
+                Write-Host "ROBLOX_STUDIO_MCP_CACHE_PRESERVED=UNVERIFIED_ROOT:$checkoutName"
+                continue
+              }
+              Remove-Item -LiteralPath $checkoutRoot -Recurse -Force -ErrorAction Stop
+              Write-Host "ROBLOX_STUDIO_MCP_OLD_CHECKOUT_CLEARED=$checkoutName"
+              $volume = [System.IO.DriveInfo]::new([System.IO.Path]::GetPathRoot($env:RUNNER_TEMP))
+              if ($volume.AvailableFreeSpace -ge 8GB) { break }
+            }
+          }
           $freeGiB = [math]::Round($volume.AvailableFreeSpace / 1GB, 2)
+          Write-Host "ROBLOX_STUDIO_MCP_RUNNER_DISK_VOLUME=$($volume.Name)"
           Write-Host "ROBLOX_STUDIO_MCP_RUNNER_DISK_FREE_GIB=$freeGiB"
           if ($volume.AvailableFreeSpace -lt 8GB) {
             throw 'ROBLOX_STUDIO_MCP_DISK_SPACE_REQUIRED: free at least 8 GiB on the runner workspace volume'
@@ -2889,9 +2927,17 @@ jobs:
           # Retire only legacy QA windows that opened the former shared temporary package.
           $legacyRoot = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP 'company-roblox-studio-package')) + '\'
           $legacyPattern = '(?i)(?:"|\s)' + [regex]::Escape($legacyRoot) + '[^"]+\.rbxlx?(?:"|\s|$)'
+          # 현재 격리 QA 경로도 이전 자동 실행의 소유권 증거로 확인한다.
+          $qaRoot = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP 'studio-qa')) + '\'
+          $qaPattern = '(?i)(?:"|\s)' + [regex]::Escape($qaRoot) + '[0-9]{8,}-[0-9]+-[0-9a-f]{8}[\\/][^"]+\.rbxlx?(?:"|\s|$)'
           $legacyProcesses = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue)
           foreach ($legacy in $legacyProcesses) {
-            if ([string]$legacy.CommandLine -notmatch $legacyPattern) { continue }
+            $legacyOwned = [string]$legacy.CommandLine -match $legacyPattern
+            $isolatedQaOwned = [string]$legacy.CommandLine -match $qaPattern
+            if (-not $legacyOwned -and -not $isolatedQaOwned) {
+              Write-Host "ROBLOX_STUDIO_UNOWNED_PROCESS_PRESERVED=$($legacy.ProcessId):session=$($legacy.SessionId)"
+              continue
+            }
             $owned = Get-Process -Id ([int]$legacy.ProcessId) -ErrorAction SilentlyContinue
             if (-not $owned -or $owned.ProcessName -ne 'RobloxStudioBeta') { continue }
             if ([math]::Abs(($owned.StartTime.ToUniversalTime() - $legacy.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) { continue }
@@ -4013,4 +4059,5 @@ jobs:
           echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DEDUPED_COUNT=$deduped_count"
           echo 'ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO'
           echo 'ROBLOX_STUDIO_PC_REBOOT_RESTARTS_FROM_BLANK=NO'
+
 

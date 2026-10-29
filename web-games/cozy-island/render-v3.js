@@ -2,6 +2,7 @@
 // 임포트: 기존 월드 좌표·깊이 정렬은 유지하고 새 중세 픽셀 아트를 연결한다.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 import { findWorkerRoute } from './castle-layout.js';
+import { createVibeWorldVfx } from '../../assets/vibe-game-world-runtime.mjs';
 // 건물 외형: 경제 건물의 저장 구조를 바꾸지 않는 입체 모델 매핑.
 export const ECONOMY_3D_LOOK=Object.freeze({
  lumber:'fort-lumber',quarry:'fort-quarry',iron:'fort-iron',stockpile:'fort-stockpile',
@@ -280,8 +281,9 @@ const PIXEL_ART=Object.freeze({
   }
 });
 export class IslandRendererV3 {
-  constructor(canvas) {
+  constructor(canvas, assetRuntime = null) {
     this.canvas = canvas;
+    this.assetRuntime = assetRuntime;
     // 기존 2D 캔버스는 확장 모듈의 좌표·입력 처리 전용으로만 유지한다.
     // 실제 월드는 WebGL 3D만 표시하며 2D로 되돌아가지 않는다.
     this.ctx = canvas.getContext('2d', { alpha: true });
@@ -300,6 +302,8 @@ export class IslandRendererV3 {
       this.gl=new THREE.WebGLRenderer({canvas:layer,antialias:false,powerPreference:'high-performance'});
       this.gl.outputColorSpace=THREE.SRGBColorSpace;
       this.scene3=new THREE.Scene();this.scene3.background=new THREE.Color(0x6c9799);
+      // [VFX] 기존 Vibe 점 파티클 풀을 실제 3D 전장 렌더러에 연결한다.
+      this.vibeVfx=createVibeWorldVfx(THREE,this.scene3,{maxParticles:72});
       this.daySky3=new THREE.Color(0x92b9ad);this.nightSky3=new THREE.Color(0x263b49);
       this.camera3=new THREE.OrthographicCamera(-10,10,10,-10,.1,700);
       this.ambient3=new THREE.HemisphereLight(0xffedcd,0x4e5142,1.52);
@@ -374,6 +378,7 @@ export class IslandRendererV3 {
       this.native3d=true;this.load3dModels();
     }catch(error){
       console.error('포근섬 3D 초기화 실패',error);
+      this.vibeVfx?.dispose();this.vibeVfx=null;
       layer?.remove();this.native3d=false;
       const status=document.querySelector('#webglStatus');
       if(status){status.textContent='3D 화면을 시작할 수 없어. 이 브라우저의 WebGL 지원을 확인해 줘.';status.hidden=false}
@@ -416,14 +421,33 @@ export class IslandRendererV3 {
   // 자산: 같은 원본 이미지는 한 번만 적재하고 기존 모델·원시 도형은 생성하지 않는다.
   async load3dModels(){
     await new Promise(resolve=>requestAnimationFrame(resolve));
+    // [씬 에셋] 공통 원화는 기존 런타임에서 보유, 나머지는 기존 렌더러 책임을 유지한다.
+    let sharedTree=null;
+    if(this.assetRuntime){
+      try{
+        const lease=await this.assetRuntime.setScene('cozy-island-world',[
+          {id:'tree',path:'/assets/shared/medieval/oaktree.png'}
+        ]);
+        sharedTree=lease.assets.tree;
+      }catch(error){
+        if(this.assetRuntime.destroyed)return;
+        console.warn('포근섬 씬 원화 로딩 실패 · 기존 텍스처 경로 유지',error);
+      }
+    }
     const images=new Map(),loader=new THREE.TextureLoader();
     await Promise.all(Object.entries(PIXEL_ART).map(async ([kind,spec])=>{
       try{
         let texture;
         if(spec.procedural){texture=new THREE.CanvasTexture(this.paintPixelSprite(kind));}
         else{
-          if(!images.has(spec.file))images.set(spec.file,loader.loadAsync(
-            new URL('../../assets/shared/medieval/'+spec.file,import.meta.url).href));
+          if(!images.has(spec.file)){
+            if(spec.file==='oaktree.png'&&sharedTree){
+              const imageTexture=new THREE.Texture(sharedTree);
+              imageTexture.needsUpdate=true;
+              images.set(spec.file,Promise.resolve(imageTexture));
+            }else images.set(spec.file,loader.loadAsync(
+              new URL('../../assets/shared/medieval/'+spec.file,import.meta.url).href));
+          }
           texture=await images.get(spec.file);
         }
         texture.magFilter=texture.minFilter=THREE.NearestFilter;
@@ -1044,6 +1068,12 @@ export class IslandRendererV3 {
     });
   }
 
+  // [메인: 타격 이펙트] 전투 확정 좌표에 승인된 Vibe 화면 이펙트만 재생한다.
+  impact(x,y,{color=0xffc66a,count=7}={}){
+    if(!this.native3d||!Number.isFinite(x)||!Number.isFinite(y))return 0;
+    return this.vibeVfx?.burst({type:count>9?'explosion':'impact',x:x*SC,y:1.1,z:y*SC,color,count})||0;
+  }
+
   // 그래픽만 갱신하며 game.state/병력/자원/저장 값은 변경하지 않는다.
   draw3d(game){
     if(!this.native3d)return;
@@ -1058,6 +1088,7 @@ export class IslandRendererV3 {
       // 카메라 중심과 확대 비율을 짧게 감속시켜 드래그와 지역 전환의 끊김을 줄인다.
       const frameDt=Math.min(.08,Math.max(.016,(now-(this.lastCameraFrame||now-33))/1000));
       this.lastCameraFrame=now;
+      this.vibeVfx?.update(frameDt);
       const smoothing=1-Math.exp(-frameDt*12);
       this.displayFocus.x+=(focus.x-this.displayFocus.x)*smoothing;
       this.displayFocus.y+=(focus.y-this.displayFocus.y)*smoothing;
@@ -1444,6 +1475,11 @@ export class IslandRendererV3 {
       this.camera3.position.set(focusX+Math.sin(ISO_YAW)*groundDistance,
         distance*Math.sin(ISO_PITCH),focusZ+Math.cos(ISO_YAW)*groundDistance);
       this.camera3.lookAt(focusX,0,focusZ);
+      // [카메라] 타격 순간에만 화면이 미세하게 흔들리고, 게임 입력/월드 좌표는 그대로 둔다.
+      if(game.vibeShake){
+        this.camera3.position.x+=(Number(game.vibeShake.x)||0)*.45;
+        this.camera3.position.z+=(Number(game.vibeShake.y)||0)*.45;
+      }
       this.camera3.updateMatrixWorld();
       // 새벽·해질녘 조명과 하늘색을 자연스럽게 보간한다.
       const hour=((Number(game.state.minutes)||0)/60)%24;

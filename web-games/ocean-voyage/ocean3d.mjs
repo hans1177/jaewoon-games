@@ -1,6 +1,7 @@
 // 파일명: ocean3d.mjs · 항해 해도·항구·시설과 실제 GLB 해상 전투 렌더러
 // 임포트: 실제 해안선과 게임 규칙 공유. 저장·경제 규칙은 엔진이 담당한다.
 import {PORTS,SHIP_TYPES,PORT_SCENES,MERCHANT_CAPTAINS,merchantPosition,portStatus,canDock,SITES,CREW,windAt} from './engine.mjs';
+import {JaewoonVibeRuntime} from '../../assets/vibe-runtime.js';
 import {COUNTRIES} from './assets/countries.mjs';
 import {LAND} from './assets/world.mjs';
 const HARBOR_VIEWS=[[0,0,1,1],[0,0,.96,.90],[.03,0,.94,.94],[0,.025,1,.88],[.02,.015,.96,.93],[.01,0,.98,.96]];
@@ -61,7 +62,10 @@ export function drawFog(ctx,w,h,cx,cz,scale,charted,style='sea'){
 }
 export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{},onMerchant=()=>{},onMap=()=>{}}={}){
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
- const townArt=new Image();townArt.src='./assets/harbor.webp';
+ // [씬 에셋] 항구 진입 시에만 원화를 획득하고 출항·종료 시 임대를 해제한다.
+ const assetRuntime=new JaewoonVibeRuntime({gameId:'ocean-voyage-scene-assets'});
+ let assetSceneId=null,townArt=null;
+ window.addEventListener('pagehide',event=>{if(!event.persisted)assetRuntime.destroy()});
  let fxStarted=0,lastFxSerial=0,miniHit=null;
  let coopShips=[];
  let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=.3125,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraDistance=112;
@@ -538,7 +542,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  }
  function building(x,y,bw,bh,label,color){rect(x-3,y+bh-2,bw+6,6,'#493d2f');rect(x,y,bw,bh,'#d0b78b');rect(x-5,y-12,bw+10,14,color);rect(x+2,y-19,bw-4,9,color);rect(x+7,y+10,13,13,'#3e5960');rect(x+bw-20,y+10,13,13,'#3e5960');rect(x+bw/2-7,y+bh-23,14,23,'#634b36');rect(x+bw/2-2,y+bh-13,2,3,'#e7c27d');rect(x-8,y+bh+6,bw+16,20,'#332e28');text(label,x+bw/2,y+bh+20,11,'#f2d7a1','center');}
  function town(){
-  if(townArt.complete&&townArt.naturalWidth){
+  if(townArt?.complete&&townArt.naturalWidth){
    const townPort=canDock(state)||PORTS[0];
    const profile=PORT_SCENES[townPort.id],crop=HARBOR_VIEWS[profile.layout];
    ctx.drawImage(townArt,crop[0]*townArt.naturalWidth,crop[1]*townArt.naturalHeight,crop[2]*townArt.naturalWidth,crop[3]*townArt.naturalHeight,0,75,w,h-75);
@@ -561,7 +565,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   const p=canDock(state);text((p?.name||'항구')+' · 시설을 눌러 들어가',w/2,109,13,'#fff0cb','center');
  }
  function interior(){
-  if(townArt.complete&&townArt.naturalWidth){const crops={market:[.02,.10,.44,.24],crew:[.02,.28,.44,.24],jobs:[.02,.47,.44,.25],palace:[.55,.10,.44,.25],quests:[.55,.29,.44,.24],fleet:[.55,.46,.44,.27]},r=crops[facility]||crops.market;ctx.drawImage(townArt,r[0]*townArt.naturalWidth,r[1]*townArt.naturalHeight,r[2]*townArt.naturalWidth,r[3]*townArt.naturalHeight,0,75,w,h-75);rect(0,75,w,h-75,'#15252d44');text({market:'교역소 · 특산품 거래',crew:'선술집 · 동료와 소문',jobs:'길드 · 전직',palace:'왕궁 · 총독부',quests:'탐험가 사무실',fleet:'조선소 · 선박과 포대'}[facility]||'항구 시설',w/2,111,14,'#fff0c9','center');return;}
+  if(townArt?.complete&&townArt.naturalWidth){const crops={market:[.02,.10,.44,.24],crew:[.02,.28,.44,.24],jobs:[.02,.47,.44,.25],palace:[.55,.10,.44,.25],quests:[.55,.29,.44,.24],fleet:[.55,.46,.44,.27]},r=crops[facility]||crops.market;ctx.drawImage(townArt,r[0]*townArt.naturalWidth,r[1]*townArt.naturalHeight,r[2]*townArt.naturalWidth,r[3]*townArt.naturalHeight,0,75,w,h-75);rect(0,75,w,h-75,'#15252d44');text({market:'교역소 · 특산품 거래',crew:'선술집 · 동료와 소문',jobs:'길드 · 전직',palace:'왕궁 · 총독부',quests:'탐험가 사무실',fleet:'조선소 · 선박과 포대'}[facility]||'항구 시설',w/2,111,14,'#fff0c9','center');return;}
   const color={market:'#78674e',fleet:'#425e64',crew:'#5b4235',palace:'#47445a',quests:'#52604c',jobs:'#575441'}[facility]||'#5b4235';rect(0,0,w,h,color);
   // 시설별 전체 배경: 창·목조 들보·진열품·왕좌·해도 책상.
   for(let x=0;x<w;x+=55)rect(x,0,7,h,'#302d29');rect(0,120,w,9,'#302d29');
@@ -652,5 +656,16 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(80,Math.min(192,cameraDistance+Math.sign(e.deltaY)*8));}},{passive:false});
  canvas.addEventListener('click',e=>{if(mode==='sea'&&seaCamera!=='chart')return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);if(mode==='sea'&&!target&&miniHit&&x>=miniHit.x&&x<=miniHit.x+miniHit.w&&y>=miniHit.y&&y<=miniHit.y+miniHit.h)onMap();});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
- return {setCoopShips(list){coopShips=Array.isArray(list)?list.slice(0,3).filter(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.z)&&Number.isFinite(p.heading)):[];},setCameraMode(v){seaCamera=['chase','angle','chart'].includes(v)?v:'chase';return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(80,Math.min(192,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.16,Math.min(16,Number(v)||.3125));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
+ return {setCoopShips(list){coopShips=Array.isArray(list)?list.slice(0,3).filter(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.z)&&Number.isFinite(p.heading)):[];},setCameraMode(v){seaCamera=['chase','angle','chart'].includes(v)?v:'chase';return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(80,Math.min(192,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){
+  mode=next;facility=room;hit=[];
+  // [씬 전환] 준비 중인 항구 이미지는 출항 순간 취소하고 오래된 결과는 무시한다.
+  const nextScene=['town','interior','battle'].includes(next)?'ocean-port':null;
+  if(assetSceneId===nextScene)return;
+  assetSceneId=nextScene;
+  townArt=null;
+  if(!nextScene){assetRuntime.releaseScene();return;}
+  assetRuntime.setScene(nextScene,[{id:'harbor',path:'./assets/harbor.webp'}])
+   .then(lease=>{if(!destroyed&&assetSceneId===nextScene)townArt=lease.assets.harbor;else lease.release()})
+   .catch(error=>{if(!destroyed&&assetSceneId===nextScene)console.warn('대항해 항구 이미지 로딩 실패',error)});
+ },setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.16,Math.min(16,Number(v)||.3125));},getZoom(){return zoom;},dispose(){destroyed=true;assetRuntime.destroy();townArt=null;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
 }

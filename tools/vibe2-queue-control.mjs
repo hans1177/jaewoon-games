@@ -510,17 +510,20 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
     }
     // [무모델·할당량] 실제 게임 소스가 아닌 외부 모델 공급 장애만 유한 대기한다.
     // 대기 해제 후에도 동일한 기존 F0~F9·서버 판정·QA 검증을 반드시 통과해야 한다.
-    if(task.status==='blocked'&&['EXTERNAL_AI_QUOTA_COOLDOWN','SOURCE_MODEL_UNAVAILABLE'].includes(clean(task.blocker))){
+    if(task.status==='blocked'&&['EXTERNAL_AI_QUOTA_COOLDOWN','SOURCE_MODEL_UNAVAILABLE','OFFLINE_RECIPE_UNAVAILABLE'].includes(clean(task.blocker))){
       const noModel=clean(task.blocker)==='SOURCE_MODEL_UNAVAILABLE';
+      const offlinePattern=clean(task.blocker)==='OFFLINE_RECIPE_UNAVAILABLE';
       const evidence=Array.isArray(task.evidence)?task.evidence:[];
-      const prefix=noModel?'source-no-model-retry-at:':'external-ai-quota-retry-at:';
+      const prefix=offlinePattern?'source-offline-pattern-retry-at:'
+        :noModel?'source-no-model-retry-at:':'external-ai-quota-retry-at:';
       const marker=evidence.findLast(value=>clean(value).startsWith(prefix));
       const readyAt=Date.parse(clean(marker).slice(prefix.length));
       if(!Number.isFinite(readyAt)||Number(nowMs)<readyAt)return task;
       recovered+=1;
       return {...task,...clearedReservation(),status:'queued',blocker:null,
-        lastOutcome:noModel?'MODEL_FREE_SOURCE_RECHECK':'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
-        evidence:[...new Set([...evidence,noModel?'source-no-model-retry-resumed:v1':'external-ai-quota-wait-resumed:v1'])]};
+        lastOutcome:offlinePattern?'OFFLINE_RECIPE_CAPABILITY_RECHECK':noModel?'MODEL_FREE_SOURCE_RECHECK':'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
+        evidence:[...new Set([...evidence,offlinePattern?'source-offline-pattern-retry-resumed:v1'
+          :noModel?'source-no-model-retry-resumed:v1':'external-ai-quota-wait-resumed:v1'])]};
     }
     if (task.status !== 'running') return task;
     if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
@@ -837,9 +840,10 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   const platforms=focus.ownerFocusedGamePlatforms||{};
   const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
   const ownerStoppedIds=new Set((catalog?.ownerStoppedGameIds||[]).map(clean).filter(Boolean));
+  const permanentlyDeletedIds=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
     const game=games.get(clean(task.gameId));
-    const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
+    const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||permanentlyDeletedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
       ||['OWNER_STOPPED','STOPPED'].includes(clean(game?.lifecycleState||game?.canonical?.lifecycle?.state).toUpperCase());
     const retiredWeb=clean(task.target).toLowerCase()==='web'
       &&webSourceRetiredInCatalog(games.get(clean(task.gameId)));
@@ -1282,6 +1286,36 @@ export function applyVibeFanInResults(queueInput, results = []) {
     // [무모델] 기존 결정론적 코드 수리로도 해결하지 못한 실제 생성 작업만 예약 해제.
     // 외부 키 누락·검증된 모델 미존재를 게임 구현 실패나 PASS로 기록하지 않는다.
     // 다른 게임의 결정론적 작업과 QA·자산·배포 작업은 기존 큐에서 계속 실행된다.
+    const offlinePatternFailures=passes.length===0&&variants.length>0&&variants.every(row=>
+      clean(row.outcome).toUpperCase()==='FAIL'
+      &&((clean(row?.candidateFailure?.class).toUpperCase()==='VIBE4_OFFLINE_PATTERN_UNAVAILABLE'
+        &&clean(row?.candidateFailure?.message).startsWith('VIBE4_OFFLINE_PATTERN_UNAVAILABLE:'))
+        ||(clean(row?.candidateFailure?.class).toUpperCase()==='COMPLEX_CAPABILITY_GAP'
+          &&clean(row?.candidateFailure?.message).startsWith('VIBE2_COMPLEX_CAPABILITY_GAP:')))
+      &&(row?.metrics?.candidateGenerationAttempts==null||Number(row.metrics.candidateGenerationAttempts)===0)
+    );
+    if(offlinePatternFailures){
+      // A missing approved code recipe cannot be repaired by retrying the same worker
+      // immediately. Do not consume game retries, claim a model was used, or fabricate a
+      // patch. Release the lease for independent playable game work instead.
+      const retryAt=new Date(Date.now()+6*60*60*1000).toISOString();
+      queue=createVibeContinuousQueue({
+        maxConcurrentTasks:queue.maxConcurrentTasks,
+        tasks:queue.tasks.map(task=>{
+          if(task.id!==taskId)return task;
+          const retained=(task.evidence||[]).filter(value=>
+            !clean(value).startsWith('source-offline-pattern-retry-at:'));
+          return {...task,...clearedReservation(),status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE',
+            lastOutcome:'OFFLINE_RECIPE_CAPABILITY_GAP',
+            neuronExpectedVariants:0,neuronResults:[],
+            evidence:[...new Set([...retained,'offline-recipe-capability-gap:v1',
+              'source-offline-pattern-retry-at:'+retryAt])] };
+        })
+      });
+      applied.push({taskId,outcome:'DEFERRED_OFFLINE_RECIPE',retryAt,
+        capability:'VERIFIED_SOURCE_BOUND_RECIPE_REQUIRED'});
+      continue;
+    }
     const noModelFailures=passes.length===0&&variants.length>0&&variants.every(row=>{
       if(clean(row.outcome).toUpperCase()!=='FAIL')return false;
       const failureClass=clean(row?.candidateFailure?.class).toUpperCase();

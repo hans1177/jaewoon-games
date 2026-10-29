@@ -42,7 +42,28 @@ function actionRunIds(rows){
   return [...ids].sort();
 }
 function evidenceValues(row,prefix){return(Array.isArray(row?.evidence)?row.evidence:[]).map(clean).filter(value=>value.startsWith(prefix)).map(value=>value.slice(prefix.length)).filter(Boolean);}
+function unavailableOfflineSourceCapability(row={}){
+  if(clean(row?.outcome).toUpperCase()!=='FAIL')return'';
+  const kind=clean(row?.candidateFailure?.class).toUpperCase();
+  const message=clean(row?.candidateFailure?.message);
+  if(row?.metrics?.candidateGenerationAttempts!=null
+    &&(!Number.isSafeInteger(Number(row.metrics.candidateGenerationAttempts))
+      ||Number(row.metrics.candidateGenerationAttempts)!==0))return'';
+  // These are *zero-attempt* missing-capability reports, not attempted code edits
+  // which failed validation. Never treat generic source failures as unavailable.
+  if(kind==='VIBE4_OFFLINE_PATTERN_UNAVAILABLE'
+    &&message.startsWith('VIBE4_OFFLINE_PATTERN_UNAVAILABLE:'))return kind;
+  if(kind==='COMPLEX_CAPABILITY_GAP'
+    &&message.startsWith('VIBE2_COMPLEX_CAPABILITY_GAP:'))return kind;
+  if(kind==='NO_MODEL_SOURCE_REPAIR_UNAVAILABLE'
+    &&message.startsWith('ROBLOX_NO_MODEL_SOURCE_REPAIR_UNAVAILABLE:'))return kind;
+  if(kind==='EXTERNAL_AI_UNAVAILABLE'
+    &&/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK|GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK/.test(message)
+    &&!/NEXT_RETRY_AT=/.test(message))return kind;
+  return'';
+}
 function sourceGenerationFailureClass(row={}){
+  if(unavailableOfflineSourceCapability(row))return'';
   if(clean(row?.outcome).toUpperCase()!=='FAIL')return'';
   const direct=clean(row?.candidateFailure?.class).toUpperCase();
   if(direct==='CANDIDATE_BRANCH_PUBLISH')return'';
@@ -160,11 +181,20 @@ export function computeParallelismTelemetry(input={}){
   const firstCandidatePassRatePct=round(primaryRows.length?primaryPassCount/primaryRows.length*100:0);
   const verifiedCandidatesPerMinute=round(waveElapsedMinutes?passTaskIds.size/waveElapsedMinutes:0);
   const changedLinesPerMinute=round(waveElapsedMinutes?workload.changedLineCount/waveElapsedMinutes:0);
+  const unavailableCapabilityRows=rows.map(row=>({row,reason:unavailableOfflineSourceCapability(row)}))
+    .filter(entry=>Boolean(entry.reason));
+  const unavailableCapabilityClasses={};
+  for(const entry of unavailableCapabilityRows)
+    unavailableCapabilityClasses[entry.reason]=(unavailableCapabilityClasses[entry.reason]||0)+1;
+  const unavailableCapabilityCount=unavailableCapabilityRows.length;
+  const attemptedPrimaryRows=primaryRows.filter(row=>!unavailableOfflineSourceCapability(row));
+  const attemptedFirstCandidatePassRatePct=round(attemptedPrimaryRows.length
+    ?attemptedPrimaryRows.filter(row=>clean(row?.outcome).toUpperCase()==='PASS').length/attemptedPrimaryRows.length*100:0);
   const transientWorkLockDeferrals=rows.filter(row=>
     clean(row?.outcome).toUpperCase()==='BLOCKED'
     &&/^work-lock-conflict:(?:transient-state-update-race|file-lock-conflict)$/i.test(clean(row?.blocker))
   ).length;
-  const effectiveFailureCount=Math.max(0,outcomes.FAIL+outcomes.BLOCKED-transientWorkLockDeferrals);
+  const effectiveFailureCount=Math.max(0,outcomes.FAIL+outcomes.BLOCKED-transientWorkLockDeferrals-unavailableCapabilityCount);
   const failureRate=workerCount?effectiveFailureCount/workerCount:0;
   const sourceFailureClasses={};
   for(const row of rows){
@@ -201,6 +231,8 @@ export function computeParallelismTelemetry(input={}){
     &&sourceGenerationFailureCount>=Math.max(1,Math.ceil(failedWorkerCount*.5));
   if(sourceGenerationDominant)bottleneckCandidates.push('SOURCE_CANDIDATE_GENERATION');
   else if(directFailureCoverageSufficient)bottleneckCandidates.push(...rankedDirectFailureStages);
+  if(unavailableCapabilityCount>=Math.max(1,Math.ceil(workerCount*.5)))
+    bottleneckCandidates.unshift('OFFLINE_SOURCE_CAPABILITY_GAP');
   if(workerCount&&peak<targetPeak)bottleneckCandidates.push('RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION');
   if(cacheKnown.length&&cacheHits/cacheKnown.length<.8)bottleneckCandidates.push('OLLAMA_CACHE_MISS_RATE');
   if(qa.p95Ms>0&&qa.p95Ms>candidate.p95Ms*1.25)bottleneckCandidates.push('INCREMENTAL_QA');
@@ -219,6 +251,17 @@ export function computeParallelismTelemetry(input={}){
     effectiveMax,
     taskCount,
     workerCount,
+    codegenMeasurements:{
+      measuredWorkers:rows.filter(r=>Number.isSafeInteger(r.metrics?.candidateGenerationAttempts)&&r.metrics.candidateGenerationAttempts>=0).length,
+      zeroAttemptWorkers:rows.filter(r=>r.metrics?.candidateGenerationAttempts===0).length,
+      attemptedWorkers:rows.filter(r=>Number.isSafeInteger(r.metrics?.candidateGenerationAttempts)&&r.metrics.candidateGenerationAttempts>0).length,
+      complexRequirementCount:rows.reduce((n,r)=>n+(Number.isSafeInteger(r.metrics?.complexRequirementCount)&&r.metrics.complexRequirementCount>0?r.metrics.complexRequirementCount:0),0),
+      complexBoundSymbolCount:rows.reduce((n,r)=>n+(Number.isSafeInteger(r.metrics?.complexBoundSymbolCount)&&r.metrics.complexBoundSymbolCount>0?r.metrics.complexBoundSymbolCount:0),0),
+      runtimePassInferredFromWorkerPass:false,
+      cohorts:[...new Set(rows.map(r=>clean(r.gameId)).filter(Boolean))].map(gameId=>({gameId,
+        workers:rows.filter(r=>r.gameId===gameId).length,
+        attempted:rows.filter(r=>r.gameId===gameId&&Number.isSafeInteger(r.metrics?.candidateGenerationAttempts)&&r.metrics.candidateGenerationAttempts>0).length}))
+    },
     actualPeakConcurrency:peak,
     scheduledSlotUtilizationPct:round(requestedMax?workerCount/requestedMax*100:0),
     observedPeakUtilizationPct:round(requestedMax?peak/requestedMax*100:0),
@@ -229,6 +272,9 @@ export function computeParallelismTelemetry(input={}){
       verifiedCandidateCount:passTaskIds.size,
       verifiedCandidatesPerMinute,
       firstCandidatePassRatePct,
+      attemptedFirstCandidatePassRatePct,
+      attemptedPrimaryCandidateCount:attemptedPrimaryRows.length,
+      primaryCandidateCount:primaryRows.length,
       changedLinesPerMinute,
       sourceMutation
     },
@@ -240,6 +286,14 @@ export function computeParallelismTelemetry(input={}){
     ollamaCache:{known:cacheKnown.length,hits:cacheHits,hitRatePct:round(cacheKnown.length?cacheHits/cacheKnown.length*100:0)},
     outcomes,
     transientWorkLockDeferrals,
+    unavailableSourceCapabilities:{
+      count:unavailableCapabilityCount,
+      ratePct:round(workerCount?unavailableCapabilityCount/workerCount*100:0),
+      classes:unavailableCapabilityClasses,
+      attemptedCandidateCount:attemptedPrimaryRows.length,
+      requiresSourceBoundRecipe:true,
+      notCountedAsVerifiedSourceChanges:true
+    },
     effectiveFailureCount,
     failureRatePct:round(failureRate*100),
     pressureLevel,
@@ -257,7 +311,7 @@ export function computeParallelismTelemetry(input={}){
     bottleneck,
     secondaryBottlenecks,
     bottleneckCandidates:rankedBottlenecks,
-    pass:workerCount===0?true:(peak>=targetPeak&&failureRate<.2)
+    pass:workerCount===0?true:(peak>=targetPeak&&failureRate<.2&&unavailableCapabilityCount===0)
   };
 }
 
@@ -279,6 +333,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PARALLEL_FAILURE_RATE=${t.failureRatePct}`);
   console.log(`VIBE2_VERIFIED_CANDIDATES_PER_MINUTE=${t.throughput.verifiedCandidatesPerMinute}`);
   console.log(`VIBE2_FIRST_CANDIDATE_PASS_RATE=${t.throughput.firstCandidatePassRatePct}`);
+  console.log(`VIBE2_FIRST_CANDIDATE_ATTEMPTED_RATE=${t.throughput.attemptedPrimaryCandidateCount?t.throughput.attemptedFirstCandidatePassRatePct:'NOT_MEASURED_NO_ATTEMPTS'}`);
+  console.log(`VIBE2_SOURCE_CAPABILITY_GAP_COUNT=${t.unavailableSourceCapabilities.count}`);
+  console.log(`VIBE2_SOURCE_CAPABILITY_GAP_CLASSES=${Object.entries(t.unavailableSourceCapabilities.classes).map(([key,value])=>`${key}:${value}`).join(',')||'NONE'}`);
   console.log(`VIBE2_SOURCE_MUTATION_RATE=${t.throughput.sourceMutation.ratePct??'UNKNOWN'}`);
   console.log(`VIBE2_VERIFIED_SOURCE_MUTATION_RATE=${t.throughput.sourceMutation.verifiedRatePct??'UNKNOWN'}`);
   console.log(`VIBE2_SOURCE_MUTATION_MEASURED_WORKERS=${t.throughput.sourceMutation.measuredWorkerCount}`);

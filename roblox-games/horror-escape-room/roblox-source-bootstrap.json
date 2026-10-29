@@ -598,6 +598,10 @@
       {
         "module": "RobloxCommonMotion",
         "reason": "GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL"
+      },
+      {
+        "module": "RobloxCommonVFX",
+        "reason": "GAME_LOCAL_MODULE_DIFFERS_FROM_CANONICAL"
       }
     ],
     "libraryCoverage": {
@@ -619,8 +623,8 @@
         "assets/asset-license-ledger.json": "76bcae6c367d44a7280b87302133099472be50d36d6a903a3a4f0e6077eea6c2",
         "assets/roblox/common-registered-external-assets-v1.json": "f55af5886be2e7fe3031e7e7939a06274a28d1265fb0ab6356870e98b21fe05a"
       },
-      "sourceFingerprint": "4768f8e55f40e88f7ae42309e9ab0e78287bb180694c0ca5665469552fafe783",
-      "runtimeBindingFingerprint": "f0df539ab9d0537cd5ca464a97d120da827309338b8aeaf420f64ecf4feba94a"
+      "sourceFingerprint": "49e2b276a2b87ee3d1dab536e71995efaefb5f25866bb28a3e19154916d3c8e8",
+      "runtimeBindingFingerprint": "a779641e6a7922c84941fa76822f352bcc540108cb699facbc68db0f024823a3"
     }
   },
   "implementationNotes": [
@@ -628,14 +632,14 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "horror-escape-room-build-up-g19-d280ea81791e",
-  "buildUpGeneration": 19,
+  "buildUpDirectiveId": "horror-escape-room-build-up-g21-cd5c6f856194",
+  "buildUpGeneration": 21,
   "buildUpGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 심야 대탈출와 진영 전환과 추격 경로 × 증언과 합의된 현실가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "buildUpDirectiveFingerprint": "d280ea81791e39f4ccc9cc45a57b1e99b6ea4709f0dda722224b95d7b80eb9af",
+  "buildUpDirectiveFingerprint": "cd5c6f856194030cd7da91596cdf4c73c926a704ca80bca3410965ade42eb785",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-  "createdAt": "2026-10-28T01:39:59.839Z",
+  "createdAt": "2026-10-29T14:29:53.777Z",
   "semanticMappingVersion": 1,
   "semanticMappingFingerprint": "qpz20",
   "semanticVariant": "SURVIVAL_RISK",
@@ -1197,5 +1201,5 @@
   "verifiedExternalValidationOnlyPrincipleCount": 14,
   "verifiedExternalLearningGameDevelopmentAppliedCount": 9,
   "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-10-28T02:21:54.256Z"
+  "verifiedExternalLearningSweepAt": "2026-10-29T15:04:51.486Z"
 }

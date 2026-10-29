@@ -1,4 +1,5 @@
-// Non-invasive runtime asset browser for published games. Does not alter gameplay controls.
+// 파일명: assets/vibe-runtime-panel.js
+// [메인] Non-invasive runtime asset browser for published games. Does not alter gameplay controls.
 (()=>{'use strict';
 const script=document.currentScript;
 const base=script?.src?new URL(script.src):new URL('/assets/vibe-runtime-panel.js',location.href);
@@ -21,6 +22,17 @@ const panel=document.createElement('section');panel.id='vibe-assets-panel';panel
 const title=document.createElement('strong');title.textContent='게임 에셋 라이브러리';
 const close=document.createElement('button');close.type='button';close.textContent='닫기';close.style.cssText='float:right';
 const status=document.createElement('p');status.textContent='에셋 후보 불러오는 중';
+// [진단] 로딩·씬·메모리 상태를 기존 패널에서 읽기 전용으로 표시한다.
+const diagnostics=document.createElement('p');diagnostics.setAttribute('aria-live','polite');diagnostics.style.cssText='font-size:12px;white-space:pre-line;padding:8px;background:#ffffff12;border-radius:8px';
+diagnostics.textContent='에셋 사용량: 게임 로딩 대기 중';
+window.addEventListener('jaewoon:assets-stats',event=>{
+ const info=event.detail;if(!info||typeof info!=='object')return;
+ const mb=value=>(Math.max(0,Number(value)||0)/1048576).toFixed(1);
+ diagnostics.textContent='씬 '+(info.activeSceneId||'없음')+' · 준비 '+(info.ready||0)+' · 로딩 '+(info.loading||0)
+  +'\n추정 메모리 '+mb(info.estimatedBytes)+' / '+mb(info.memoryLimitBytes)+' MB'
+  +' · 참조 '+(info.references||0)+' · 미리 로딩 '+(info.preloadedSceneCount||0)
+  +(info.overBudget?'\n메모리 예산 초과(활성 게임 리소스 보호)':'');
+});
 const search=document.createElement('input');search.type='search';search.placeholder='에셋 이름·유형 검색';search.setAttribute('aria-label','에셋 검색');search.style.cssText='box-sizing:border-box;width:100%;margin:10px 0;padding:9px;border-radius:8px;border:1px solid #85baff;background:#0c1627;color:#fff';
 const kind=document.createElement('select');kind.setAttribute('aria-label','에셋 유형');kind.style.cssText='width:100%;padding:8px;border-radius:8px;background:#0c1627;color:#fff';
 for(const [value,label] of [['','전체'],['model','3D 모델'],['texture','이미지·텍스처'],['font','폰트'],['audio','오디오'],['ui','UI'],['data','데이터']]){const option=document.createElement('option');option.value=value;option.textContent=label;kind.append(option)}
@@ -30,7 +42,7 @@ const genre=document.createElement('select');genre.setAttribute('aria-label','�
 const themeInfo=document.createElement('p');themeInfo.setAttribute('aria-live','polite');themeInfo.style.cssText='font-size:12px;opacity:.8';
 fetch(new URL('assets/vibe-visual-design-system.json',root)).then(response=>response.ok?response.json():Promise.reject(Error('design system unavailable'))).then(design=>{const update=()=>{const preset=design.genres?.[genre.value];if(!preset)return;panel.style.borderColor=preset.palette.primary;panel.style.background='linear-gradient(145deg,'+preset.palette.surface+',#0b1324)';button.style.borderColor=preset.palette.accent;themeInfo.textContent='캐릭터: '+preset.character.material+' · 하우징: '+preset.housing.wall+' · 메뉴: '+preset.menu.style};genre.addEventListener('change',update);update()}).catch(()=>{themeInfo.textContent='장르 디자인 설정을 불러올 수 없습니다.'});
 const list=document.createElement('ul');
-panel.append(title,close,status,search,kind,genre,themeInfo,favoriteOnly,list);document.body.append(button,panel);
+panel.append(title,close,status,diagnostics,search,kind,genre,themeInfo,favoriteOnly,list);document.body.append(button,panel);
 function toggle(show){panel.hidden=!show;button.setAttribute('aria-expanded',String(show));if(show)close.focus();else button.focus()}
 button.addEventListener('click',()=>toggle(panel.hidden));close.addEventListener('click',()=>toggle(false));panel.addEventListener('keydown',e=>{if(e.key==='Escape')toggle(false)});
 fetch(manifestUrl).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(data=>{

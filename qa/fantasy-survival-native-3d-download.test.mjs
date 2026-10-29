@@ -718,3 +718,25 @@ test('registered monster name tags remain sharply legible and disappear on save 
   assert.match(nameplate,/label\.scale\.set\(Math\.min\(6\.5,Math\.max\(3\.2,e\.type\.name\.length\*\.56\)\),1\.2,1\)/);
   assert.match(index,/state\.bestiary=s\.bestiary&&typeof s\.bestiary==='object'/);
 });
+
+// [Vibe 상용 액션] 등록된 CC0 원본 클립을 검수하며, 플레이 중 이펙트는 기존 판정만 읽는다.
+test('live CC0 clip manifest and presentation pipeline use authored motions and bounded bloom',()=>{
+ const actorManifest=JSON.parse(fs.readFileSync('assets/roblox/actors/manifest.json','utf8'));
+ const knight=actorManifest.models.find(row=>row.id==='knight');
+ assert.ok(knight,'approved CC0 character must exist');
+ for(const name of ['Idle','Walking_A','Running_A','1H_Melee_Attack_Stab','Hit_A','Death_A'])
+   assert.ok(knight.animationNames.includes(name),'missing source clip '+name);
+ assert.match(moduleSource,/console\.info\('\[Vibe\] Original CC0 GLB clips'/);
+ assert.match(moduleSource,/const upperAttack=authoredUpperAttack\(attackClip\)/);
+ assert.match(moduleSource,/layeredAttack\?\(moving\?playerTravelClip:'idle'\)/);
+ assert.match(moduleSource,/heroUpperAction\.fadeIn\(\.11\)\.play\(\)/);
+ assert.match(moduleSource,/if\(stamp<=0\|\|stamp>sampleNow\|\|sampleNow-stamp>190/);
+ assert.match(moduleSource,/impactVfx\.burst\(\{type:'impact'/);
+ assert.match(moduleSource,/THREE\.PCFSoftShadowMap/);
+ assert.match(moduleSource,/texture\.colorSpace=THREE\.SRGBColorSpace/);
+ assert.match(moduleSource,/createNativeBloom\(\)/);
+ assert.match(moduleSource,/if\(bloom\)bloom\.render\(scene,camera,qualityFactor\)/);
+ assert.match(moduleSource,/bloom\?\.dispose\(\)/);
+ assert.match(moduleSource,/mobileBudget\)return null/);
+ assert.doesNotMatch(moduleSource,/hero\.avatar\.position\.(?:x|z)\s*=\s*p\./);
+});
