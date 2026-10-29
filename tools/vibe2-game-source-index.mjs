@@ -140,6 +140,18 @@ export function buildGameSourceIndex({sourceRoot,responsibleFiles=[],target='web
   for(const m of raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*(['"])([^'"\n]+)\1|GetDataStore\s*\(\s*(['"])([^'"\n]+)\3/g)){
    if(code.slice(m.index,m.index+8).trim())storage.push({key:m[2]||m[4],...evidence(source,relative,sha,m.index,m.index+m[0].length)});
   }
+  // [원본 근거] 기존 ReplicatedStorage의 정적 RemoteEvent 참조만 파일·SHA에 연결한다.
+  const remotes=[];
+  if(target==='roblox'){
+   const service=[...raw.matchAll(/\blocal\s+ReplicatedStorage\s*=\s*game:GetService\(\s*(['"])ReplicatedStorage\1\s*\)/g)]
+    .filter(m=>code.slice(m.index,m.index+5).trim()==='local'&&sourceScopeAt(code,m.index,'roblox').length===0);
+   if(service.length===1){
+    for(const m of raw.matchAll(/\blocal\s+([A-Za-z_][\w]*)\s*=\s*ReplicatedStorage:WaitForChild\(\s*(['"])([A-Za-z0-9_-]{1,64})\2\s*\)/g)){
+     if(code.slice(m.index,m.index+5).trim()!=='local'||sourceScopeAt(code,m.index,'roblox').length!==0)continue;
+     remotes.push({variable:m[1],eventName:m[3],...evidence(source,relative,sha,m.index,m.index+m[0].length)});
+    }
+   }
+  }
   const events=[];
   for(const m of raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*([A-Za-z_$][\w$]*)\b/g)){
    if(!code.slice(m.index,m.index+8).trim())continue;
@@ -152,7 +164,7 @@ export function buildGameSourceIndex({sourceRoot,responsibleFiles=[],target='web
   for(const m of raw.matchAll(/\.addEventListener\(\s*(['"])([^'"\n]+)\1\s*,\s*([A-Za-z_$][\w$]*)\s*\)|\b([A-Za-z_][\w.]*)\.(OnServerEvent|OnClientEvent)\s*:\s*Connect\(\s*([A-Za-z_][\w]*)\s*\)/g)){
    if(code.slice(m.index,m.index+8).trim())events.push({event:m[2]||m[5],handler:m[3]||m[6],...evidence(source,relative,sha,m.index,m.index+m[0].length)});
   }
-  files.push({path:relative,sourceSha256:sha,source,code,language,states,fields:[...new Set(fields)],storage,events});
+  files.push({path:relative,sourceSha256:sha,source,code,language,states,fields:[...new Set(fields)],storage,events,remotes});
  }
  for(const symbol of symbols){
   const parents=symbols.filter(s=>s!==symbol&&s.path===symbol.path&&s.start<symbol.start&&s.end>symbol.end).sort((a,b)=>(a.end-a.start)-(b.end-b.start));
