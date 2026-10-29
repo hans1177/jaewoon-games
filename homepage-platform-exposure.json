@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-29T18:16:56.246Z",
+  "generatedAt": "2026-10-29T18:22:35.482Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,15 +821,15 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-10-29T18:07:53.511Z",
-            "checkedAt": "2026-10-29T18:15:58.868Z",
-            "lastFailureAt": null,
+            "currentFloor": "REPAIR_REQUIRED",
+            "stage": "REPAIR_REQUIRED",
+            "result": "REPAIR_REQUIRED",
+            "verifiedAt": "2026-10-29T18:21:59.258Z",
+            "checkedAt": "2026-10-29T18:21:59.258Z",
+            "lastFailureAt": "2026-10-29T18:21:59.258Z",
             "f0PassedAt": "2026-10-29T18:07:53.511Z",
             "candidatePublishedAt": null,
-            "failureCode": null,
+            "failureCode": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -851,13 +851,12 @@
               "design": true,
               "publication": true,
               "exactRuntime": false,
-              "lobby": false,
+              "lobby": true,
               "movement": true,
               "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "lobby"
+              "exactRuntime"
             ],
             "sourceRevision": null,
             "artifactIdentity": null,
@@ -927,7 +926,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-29T18:15:58.868Z"
+      "updatedAt": "2026-10-29T18:21:59.258Z"
     },
     {
       "gameId": "daechung-rpg",
