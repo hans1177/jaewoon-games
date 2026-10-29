@@ -2330,3 +2330,53 @@ test('two designed C story genres require only one independently verified native
     sourceObservation:{sourceTreeFingerprint:tree,topFiles:[],sourceAnchors:[],observations:[],signals:{}},
     runtimeEvidence:complete}).creativeCGenreImplementation.satisfied,false);
 });
+
+test('one-shot BUILD_UP sends source-grounded mobile UI convenience repairs to the existing worker',()=>{
+  const id='ui-repair-demo',client='web-games/'+id+'/ui.js';
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:id,platform:'WEB',designRecord:design(),
+    sourceObservation:{sourceTreeFingerprint:'ui-src-1',sourceRoot:'web-games/'+id,
+      topFiles:[{file:client,score:20}],sourceAnchors:[
+        {file:client,line:14,kind:'FUNCTION',symbol:'openInventory',context:'show inventory modal button menu'}
+      ],observations:[],signals:{input:1,ui:2,uiFlow:1,feedback:1,inventory:3}},
+    responsibleFiles:[client],qualitySignals:['모바일 터치 버튼 작동안함','도감 이름 흐림 메뉴 스크롤 겹침']
+  });
+  assert.equal(d.primaryFocus,'USABILITY');
+  const plan=d.playerFacingUpgradePlan;
+  assert.equal(plan.stage,'EXISTING_BUILD_UP_F0_F9_ONLY');
+  assert.equal(plan.noNewWorkerOrPipeline,true);
+  assert.equal(plan.evidenceState,'UNVERIFIED_NOT_IMPLEMENTED');
+  assert.equal(plan.sourceTreeFingerprint,'ui-src-1');
+  assert.equal(plan.targets.length,3);
+  assert.ok(plan.targets.some(row=>row.id==='TOUCH_CONTROL'));
+  assert.ok(plan.targets.some(row=>row.id==='MENU_NAVIGATION'));
+  assert.ok(plan.targets.some(row=>row.id==='READABLE_FEEDBACK'));
+  assert.ok(plan.targets.every(row=>row.sourceOwnerFile===client&&row.proofStatus==='UNVERIFIED'));
+  assert.ok(plan.targets.every(row=>row.action==='INSPECT_AND_EDIT_EXISTING_RESPONSIBLE_FUNCTION'));
+  assert.ok(d.developmentImpact.requiredQa.includes('MOBILE_TOUCH_UI_QA'));
+  assert.match(directivePrompt(d),/PLAYER_UI_USABILITY_UPGRADE:/);
+  assert.match(directivePrompt(d),/DIRECT_SAME_GAME_RESPONSIBLE_FUNCTION_EDIT_AND_EXACT_REPLAY/);
+});
+
+test('UI convenience is mobile-QA relevant but unknown game ownership and runtime failure cannot be falsely passed',()=>{
+  const impact=classifyDevelopmentImpact({platform:'WEB',qualityGapMap:[{domain:'CONVENIENCE',state:'GAP'}]});
+  assert.ok(impact.categories.includes('UI'));
+  assert.ok(impact.requiredQa.includes('MOBILE_TOUCH_UI_QA'));
+  const id='ui-owner-unresolved',server='roblox-games/'+id+'/server/State.server.luau';
+  const args={gameId:id,platform:'ROBLOX',designRecord:design(),
+    sourceObservation:{sourceTreeFingerprint:'source-missing-ui',sourceRoot:'roblox-games/'+id,
+      topFiles:[{file:server,score:20}],sourceAnchors:[],observations:[],signals:{}},
+    responsibleFiles:[server],qualitySignals:['터치 버튼 작동 안됨']};
+  const d=buildGameSpecificBuildUpDirective(args);
+  assert.ok(d.playerFacingUpgradePlan.targets.length>0);
+  assert.equal(d.playerFacingUpgradePlan.targets[0].sourceOwnerFile,null);
+  assert.equal(d.playerFacingUpgradePlan.targets[0].action,'RESOLVE_SAME_GAME_SOURCE_OWNER_FIRST');
+  assert.ok(d.playerFacingUpgradePlan.targets.every(row=>row.proofStatus==='UNVERIFIED'));
+  const failed=buildGameSpecificBuildUpDirective({...args,
+    previousDirective:d,previousDirectiveOutcome:'FAIL',
+    runtimeEvidence:{runtimeObserved:true,runtimePassed:false,failureStage:'RUNTIME',failureSignature:'input button crash'}});
+  assert.equal(failed.primaryFocus,'STABILITY');
+  assert.equal(failed.playerFacingUpgradePlan.foundationRepairFirst,true);
+  assert.deepEqual(failed.playerFacingUpgradePlan.targets,[]);
+  assert.equal(failed.playerFacingUpgradePlan.nextAction,'REPAIR_VERIFIED_RUNTIME_FOUNDATION_FIRST');
+});

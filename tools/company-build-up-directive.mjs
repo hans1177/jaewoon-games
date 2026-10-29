@@ -84,7 +84,7 @@ export const DEVELOPMENT_IMPACT_CATEGORIES=Object.freeze(['GRAPHICS','MAP','UI',
 const IMPACT_DOMAINS=Object.freeze({
   GRAPHICS:Object.freeze(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION']),
   MAP:Object.freeze(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','SPAWN_ENCOUNTER_DIRECTOR','ENVIRONMENT','TERRAIN']),
-  UI:Object.freeze(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','UI_HUD']),
+  UI:Object.freeze(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','INTERACTION_DISCOVERABILITY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','UI_HUD']),
   GAMEPLAY:Object.freeze(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','EQUIPMENT_LOADOUT','CRAFTING','DIFFICULTY_PACING','GAME_FEEL']),
   SAVE:Object.freeze(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY']),
   MULTIPLAYER_SERVER:Object.freeze(['MULTIPLAYER_AND_SYNC'])
@@ -1287,10 +1287,10 @@ export function buildDesignToPlatformCodingTrace({
 function qualitySignalText(values=[]){return uniq(values).join(' | ').toLowerCase();}
 function focusFromSignals({signals=[],source={}}={}){
   const text=qualitySignalText(signals);
-  if(/crash|runtime|error|softlock|save|desync|broken|exception/.test(text))return'STABILITY';
+  if(/crash|runtime|error|softlock|save|desync|broken|exception|오류|먹통|멈춤|저장.?실패|저장.?안됨|불러오.?실패/.test(text))return'STABILITY';
   if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
   if(/progress|reward|unlock|quest|goal|economy|content/.test(text))return'PROGRESSION';
-  if(/mobile|touch|input|ui|hud|inventory|equipment|equip|menu|readability|navigation|accessib/.test(text))return'USABILITY';
+  if(/mobile|touch|input|ui|hud|inventory|equipment|equip|menu|readability|navigation|accessib|모바일|터치|버튼|조이스틱|메뉴|도감|인벤토리|장착|가독성|글자|텍스트|겹침|잘림|스크롤|닫기|조작|클릭|화면.?배치/.test(text))return'USABILITY';
   if(/visual|graphic|render|animation|motion|vfx|camera|lighting|material|silhouette|environment|placeholder|audio|music|bgm|sfx|sound|game.?feel/.test(text))return'PRESENTATION';
   const s=source?.signals||{};
   if(Number(s.ai||0)<2||Number(s.combat||0)<5)return'CORE_FUN';
@@ -2625,6 +2625,7 @@ export function directivePrompt(d={}){
       robloxRemoteProof:d.experienceBuildUpContract?.robloxExtra?.runtimeEvidence||null,
       details:'Full source-grounded experienceBuildUpContract and playerFacingInspectionContract remain canonical for each existing BUILD_UP task'
     })}`,
+    'PLAYER_UI_USABILITY_UPGRADE: '+JSON.stringify(d.playerFacingUpgradePlan||{evidenceState:'UNAVAILABLE',nextAction:'NO_UNVERIFIED_CLAIMS'}),
     `UX_INPUT: ${d.uxInputDirectives.join(' | ')}`,
     d.robloxNativeExecution?`ROBLOX_NATIVE_RESPONSIBLE_FILES: ${(d.robloxNativeExecution.responsibleFiles||[]).join(' | ')||'CURRENT_ALLOWED_ROBLOX_FILES'}`:'',
     d.robloxNativeExecution?`ROBLOX_NATIVE_SERVER_CLIENT: ${(d.robloxNativeExecution.serverClientResponsibility||[]).map(row=>row.file+':'+row.symbol+':'+row.role).join(' | ')}`:'',
@@ -3121,6 +3122,71 @@ export function buildGameSpecificBuildUpDirective({
     missingRuntimeEvidenceRemainsUnverified:true,
     noShadowPipeline:true
   });
+  // [빌드업·UI·편의성] 현재 게임 소스와 관측 결함을 한 번의 기존 BUILD_UP 작업에 묶는다.
+  // 관측/정적 GAP은 후보일 뿐이며 책임 함수·게임 런타임·독립 QA 없이 완료로 승격하지 않는다.
+  const uiQualityGaps=new Set(gaps.map(row=>row.domain));
+  const uiObservedSignals=signals.join(' | ').toLowerCase();
+  const uiCurrentRoots=['web-games/','roblox-games/','unity-games/'].map(root=>root+id+'/');
+  const uiCurrentFiles=topFiles.filter(file=>uiCurrentRoots.some(root=>posix(file).startsWith(root)));
+  const uiSpecifications=[
+    {id:'TOUCH_CONTROL',domains:['INPUT','MOBILE_UX'],signal:/touch|tap|joystick|pointer|input|터치|버튼|조이스틱|조작|클릭/i,
+      files:/client|input|control|ui|hud|screen|game\.js|index\.html|main\.js/i,
+      scenario:'실제 터치→동작 1회, 길게 누름/드래그 취소, 버튼과 이동 조작 중복 입력 방지'},
+    {id:'MENU_NAVIGATION',domains:['MENU_FLOW','CONVENIENCE'],signal:/menu|modal|popup|scroll|navigation|메뉴|팝업|스크롤|닫기|뒤로가기|겹침/i,
+      files:/client|ui|menu|screen|hud|interface|index\.html|game\.js|main\.js/i,
+      scenario:'열기→스크롤→선택→닫기→재열기, 팝업 뒤 공격/이동 입력 차단'},
+    {id:'READABLE_FEEDBACK',domains:['UI_HUD','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY'],signal:/hud|readab|feedback|text|ui|가독성|글자|텍스트|이름|도감|흐림|표시|안뜸/i,
+      files:/client|ui|hud|screen|render|view|interface|index\.html|game\.js|main\.js/i,
+      scenario:'모바일 작은 화면에서 실제 대상 이름·목표·상태를 판독하고 변화 직후 정확한 피드백 확인'},
+    {id:'INVENTORY_EQUIPMENT',domains:['INVENTORY_USABILITY','EQUIPMENT_LOADOUT'],signal:/inventory|equipment|equip|item|인벤토리|장비|장착|아이템/i,
+      files:/client|ui|inventory|equip|item|screen|index\.html|game\.js/i,
+      scenario:'획득→목록→선택→장착/해제→닫기→재열기→재접속, 기존 아이템 및 저장 의미 유지'},
+    {id:'SESSION_RECOVERY',domains:['SESSION_FLOW','ERROR_RECOVERY'],signal:/retry|restart|recovery|respawn|save|load|재시도|재시작|복구|저장|불러오기/i,
+      files:/client|ui|screen|menu|session|game\.js|index\.html|main\.js/i,
+      scenario:'실패/중단→재도전→복귀, 기존 진행도·저장키·보상·체력 불변 검증'}
+  ];
+  const priorUiPending=new Set((previousDirective?.playerFacingUpgradePlan?.targets||[])
+    .filter(row=>row?.proofStatus!=='VERIFIED_RUNTIME_AND_INDEPENDENT_QA')
+    .map(row=>clean(row?.id)));
+  const uiRepairTargets=uiSpecifications
+    .filter(spec=>spec.domains.some(domain=>uiQualityGaps.has(domain))||spec.signal.test(uiObservedSignals))
+    .filter(spec=>uiCurrentFiles.length>0||spec.signal.test(uiObservedSignals))
+    .map(spec=>{
+      const observed=spec.signal.test(uiObservedSignals);
+      const gapDomains=spec.domains.filter(domain=>uiQualityGaps.has(domain));
+      const anchored=sourceResponsibilities.find(row=>uiCurrentFiles.includes(row.file)
+        &&(spec.files.test(row.file)||spec.signal.test((row.symbol||'')+' '+(row.context||''))));
+      const ownerFile=anchored?.file||uiCurrentFiles.find(file=>spec.files.test(file))||null;
+      return Object.freeze({
+        id:spec.id,sourceRevision:clean(source.sourceTreeFingerprint)||null,
+        evidenceType:observed?'OBSERVED_SIGNAL_REQUIRES_EXACT_REPLAY':'SOURCE_INSPECTION_GAP',
+        triggeringGapDomains:Object.freeze(gapDomains),sourceOwnerFile:ownerFile,
+        sourceOwnerSymbol:anchored?.symbol||null,
+        sourceOwnerVerified:Boolean(anchored?.file&&anchored?.symbol),
+        action:ownerFile?'INSPECT_AND_EDIT_EXISTING_RESPONSIBLE_FUNCTION':'RESOLVE_SAME_GAME_SOURCE_OWNER_FIRST',
+        scenario:spec.scenario,proofStatus:'UNVERIFIED',
+        acceptedOnlyWith:'CURRENT_SOURCE_DELTA_AND_EXACT_INPUT_STATE_FEEDBACK_RUNTIME_AND_INDEPENDENT_QA',
+        priorityScore:(observed?100:0)+(priorUiPending.has(spec.id)?50:0)
+          +(gapDomains.length*10)+(focus==='USABILITY'?20:0)
+      });
+    })
+    .sort((left,right)=>right.priorityScore-left.priorityScore
+      ||uiSpecifications.findIndex(spec=>spec.id===left.id)-uiSpecifications.findIndex(spec=>spec.id===right.id));
+  const playerFacingUpgradePlan=Object.freeze({
+    version:1,gameId:id,platform:clean(platform).toUpperCase(),generation,
+    sourceTreeFingerprint:clean(source.sourceTreeFingerprint)||null,
+    stage:'EXISTING_BUILD_UP_F0_F9_ONLY',noNewWorkerOrPipeline:true,
+    foundationRepairFirst:foundationRepairRequired,
+    selectedBy:'OBSERVED_PLAYER_SYMPTOM_THEN_UNRESOLVED_PRIOR_CAUSE_THEN_SAME_GAME_SOURCE_GAP',
+    targets:Object.freeze(foundationRepairRequired?[]:uiRepairTargets.slice(0,3)),
+    deferredByFoundationRepair:Object.freeze(foundationRepairRequired?uiRepairTargets.map(row=>row.id):[]),
+    nextAction:foundationRepairRequired?'REPAIR_VERIFIED_RUNTIME_FOUNDATION_FIRST':
+      uiRepairTargets.length?'DIRECT_SAME_GAME_RESPONSIBLE_FUNCTION_EDIT_AND_EXACT_REPLAY':'CONTINUE_EXISTING_BUILD_UP',
+    completionRequires:['ACTUAL_GAME_SOURCE_DELTA','CURRENT_REVISION_EXACT_PLAYER_INPUT_AND_UI_STATE',
+      'MOBILE_TOUCH_MODAL_READABILITY_WHEN_APPLICABLE','INDEPENDENT_QA_AND_REGRESSION',
+      'PRESERVE_EXISTING_BALANCE_SAVE_PROGRESSION_AND_AUTHORITY'],
+    evidenceState:'UNVERIFIED_NOT_IMPLEMENTED'
+  });
   const productionPlatform=clean(platform).toUpperCase()==='WEB'&&sourceRoot.split('|').some(root=>posix(root)==='unity-games/'+id)?'UNITY_WEB':platform;
   // 현재 저장소의 모든 1차 게임용 코드 라이브러리를 기존 제작 지시에서 자동 인덱싱한다.
   // 실제 게임에 없는 시스템은 추가하지 않고 외부 코드를 임의로 설치하지 않는다.
@@ -3252,6 +3318,7 @@ export function buildGameSpecificBuildUpDirective({
     gameplayImplementationDirectives:[...effectiveGameplay,
       '모든 승인 게임 빌드업은 한 세대 최소 5개의 실제 플레이 가치 개선을 목표로 한다. 입력→상태 변화→화면/모션/사운드 피드백을 기존 책임 소스에서 연결하고 각 항목의 동일 빌드 검증 증거를 남긴다. 5번의 소스 수정이나 에셋 교체를 실제 플레이 통과로 계산하지 않는다. 실패·설계 누락은 기존 원인 수리 우선이며 F0~F9와 저장·밸런스·권한은 유지한다.'],
     playableImprovementContract,
+    playerFacingUpgradePlan,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
     robloxHolisticQualityPlan,
