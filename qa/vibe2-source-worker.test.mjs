@@ -10324,12 +10324,14 @@ test('Vibe offline generator makes a genuine native UI patch from current Studio
   const rel='shared/RobloxCommonUI.luau';
   const original=fs.readFileSync(path.join(root,rel),'utf8');
   const officialFailure={authority:'roblox-official-studio-mcp-product-quality-failure',
-    workflowRunId:40901857206,repairSurfaces:['MOBILE_UI'],
+    workflowRunId:40901857206,sourceRevision:'a'.repeat(40),
+    artifactIdentity:'sha256:'+'b'.repeat(64),repairSurfaces:['MOBILE_UI'],
     // The canonical planner may retain the specific failure in detail ids only.
     qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
       observed:JSON.stringify({overlapPairs:8,largeBlockingOverlayCount:0})}]};
-  const order={target:'roblox',goal:'actual Studio UI repair of overlapping HUD and mobile menu',
-    selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:officialFailure}}}};
+  const order={target:'roblox',goal:'studio-evolution: verified gameplay product-quality report',
+    selectedTask:{sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),
+      buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:officialFailure}}}};
   const generate=(request)=>deterministicRobloxNativeRepairCandidate({
     order:request,sourceRoot:root,responsibleFiles:[rel],sourceRootRelative:'roblox-games/fantasy-survival'
   });
@@ -10355,4 +10357,19 @@ test('Vibe offline generator makes a genuine native UI patch from current Studio
   assert.equal(generate({...order,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:{
     ...officialFailure,authority:'unverified-label'
   }}}}}),null,'unverified observations cannot generate a native repair');
+  assert.equal(generate({...order,selectedTask:{...order.selectedTask,sourceRevision:'c'.repeat(40)}}),
+    null,'Studio observation from another source revision cannot edit this code');
+  assert.equal(generate({...order,selectedTask:{...order.selectedTask,artifactIdentity:'sha256:'+'c'.repeat(64)}}),
+    null,'Studio observation from another artifact cannot edit this code');
+  assert.equal(generate({...order,selectedTask:{...order.selectedTask,
+    buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:{
+      ...officialFailure,qualityFailureDetails:{id:'adaptive-ui-commercial-quality'}
+    }}}}}),null,'malformed observations fail closed without crashing worker');
+  const checked=deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,
+    responsibleFiles:[rel],sourceRootRelative:'roblox-games/fantasy-survival',
+    candidateValidator:()=>({pass:true})});
+  assert.equal(checked.deterministicSelection.status,'CANDIDATE_VALIDATED',
+    'native validator must return source-bound selection for future feedback');
+  assert.equal(checked.deterministicSelection.attempts[0].status,'VALIDATED');
+  assert.equal(fs.readFileSync(path.join(root,rel),'utf8'),original);
 });
