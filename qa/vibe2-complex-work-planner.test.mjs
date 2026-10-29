@@ -1608,7 +1608,7 @@ test('one-shot keyboard never shadows the original event parameter name',t=>{
    'function handleClick(x,y){}',
    'function handleKeydown('+eventName+'){ordinary++;}',
    'function update(dt){}'
-  ].join('\\n');
+  ].join('\n');
   fs.writeFileSync(file,source);
   const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
    facilities:['관람차'],maps:['숲'],backgrounds:['낮'],actions:['점프'],motions:['걷기']}};
