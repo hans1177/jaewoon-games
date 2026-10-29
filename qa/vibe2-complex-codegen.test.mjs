@@ -31,6 +31,68 @@ function setup(t,target='web',html=false){
 }
 const digest=x=>crypto.createHash('sha256').update(x).digest('hex');
 
+test('Vibe modifies exact existing production game SVG actor colors without changing other assets',t=>{
+  const root=path.resolve('web-games/survival2'),relative='assets/survival-atlas.svg';
+  const source=fs.readFileSync(path.join(root,relative),'utf8');
+  const request={ownerApproved:true,operation:'recolor-existing-svg',
+    path:relative,elementId:'wolf',fromColor:'#6d7773',toColor:'#81938b',
+    sourceSha256:digest(source)};
+  const candidate=createVibe59CodeCandidates({order:{selectedTask:{ownerDirective:true,
+    vibe59AssetEdit:request}},sourceRoot:root,responsibleFiles:[relative],target:'web'});
+  assert.equal(candidate.vibe59CodeKind,'EXISTING_GAME_ASSET_RECOLOR');
+  assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+  assert.equal(candidate.edits.length,1);
+  assert.equal(candidate.assetEditProof[0].changedAttributes,1);
+  const docs=new Map([[relative,source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const modified=docs.get(relative);
+  assert.notEqual(modified,source);
+  assert.equal(modified,source.replace('fill="#6d7773"','fill="#81938b"'));
+  assert.match(modified,/<g id="boar"[^>]*><ellipse[^>]*fill="#6a4935"/);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
+  assert.throws(()=>createVibe59CodeCandidates({order:{vibe59AssetEdit:{
+    ...request,sourceSha256:'0'.repeat(64)}},sourceRoot:root,responsibleFiles:[relative],target:'web'}),
+    /VIBE59_ASSET_STALE_SOURCE/);
+  assert.throws(()=>createVibe59CodeCandidates({order:{vibe59AssetEdit:{
+    ...request,elementId:'unknown'}},sourceRoot:root,responsibleFiles:[relative],target:'web'}),
+    /VIBE59_ASSET_GROUP_NOT_UNIQUE/);
+  assert.throws(()=>createVibe59CodeCandidates({order:{vibe59AssetEdit:{
+    ...request,path:'other.svg'}},sourceRoot:root,responsibleFiles:[relative],target:'web'}),
+    /VIBE59_ASSET_RESPONSIBLE_FILE_REQUIRED/);
+  assert.throws(()=>createVibe59CodeCandidates({order:{vibe59AssetEdit:{
+    ...request,ownerApproved:false}},sourceRoot:root,responsibleFiles:[relative],target:'web'}),
+    /VIBE59_ASSET_OWNER_APPROVAL_REQUIRED/);
+});
+test('Vibe handles Korean existing asset request and ordered multi-actor edits in both game targets',t=>{
+  const root=path.resolve('web-games/survival2'),relative='assets/survival-atlas.svg';
+  const source=fs.readFileSync(path.join(root,relative),'utf8');
+  const korean='기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #81938b으로 바꿔';
+  const first=createVibe59CodeCandidates({order:{selectedTask:{ownerDirective:true,goal:korean}},
+    sourceRoot:root,responsibleFiles:[relative],target:'web'});
+  assert.equal(first.edits.length,1);
+  const english='Recolor wolf in assets/survival-atlas.svg from #6d7773 to #81938b';
+  const second=createVibe59CodeCandidates({order:{selectedTask:{ownerDirective:true,goal:english}},
+    sourceRoot:root,responsibleFiles:[relative],target:'web'});
+  assert.deepEqual(second.edits,first.edits);
+  const batch=createVibe59CodeCandidates({order:{vibe59AssetEdits:[
+    {ownerApproved:true,path:relative,elementId:'wolf',fromColor:'#6d7773',toColor:'#81938b'},
+    {ownerApproved:true,path:relative,elementId:'boar',fromColor:'#6a4935',toColor:'#826b4e'}
+  ]},sourceRoot:root,responsibleFiles:[relative],target:'roblox'});
+  assert.equal(batch.edits.length,2);
+  const docs=new Map([[relative,source]]);
+  applyExactEdits(root,batch.edits,{documents:docs});
+  assert.match(docs.get(relative),/fill="#81938b"/);
+  assert.match(docs.get(relative),/fill="#826b4e"/);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
+  assert.throws(()=>createVibe59CodeCandidates({order:{selectedTask:{
+    goal:korean,ownerDirective:false}},sourceRoot:root,responsibleFiles:[relative],target:'web'}),
+    /VIBE2_COMPLEX|SOURCE_BINDING|VIBE59_/);
+  for(const toColor of ['url(javascript:alert(1))','#ffzzzz','#abcdef0','transparent']){
+    assert.throws(()=>createVibe59CodeCandidates({order:{vibe59AssetEdit:{
+      ownerApproved:true,path:relative,elementId:'wolf',fromColor:'#6d7773',toColor}},
+      sourceRoot:root,responsibleFiles:[relative],target:'web'}),/VIBE59_ASSET_RECOLOR_SPEC_INVALID/);
+  }
+});
 test('natural language becomes an ordered two-step DAG tied to exact existing source definitions',t=>{
   const {options,relative,source}=setup(t);
   const intent=compileVibe2ComplexIntent(options);
