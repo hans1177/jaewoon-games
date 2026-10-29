@@ -327,6 +327,10 @@ function compileReservedHelperEdits({sourceRows=[],responsibleFiles=[],primaryTa
         edits.push(Object.freeze({
           file,symbol:dependent,primary:name,direction,
           sharedState:stateOverlap.slice(0,12),
+          observedStateWrites:Object.freeze((node.stateWrites||[]).slice(0,16)),
+          observedSaveKeys:Object.freeze((node.storageKeys||[]).slice(0,16)),
+          observedEvents:Object.freeze((node.events||[]).slice(0,16)),
+          observedTimers:Object.freeze({...node.timers}),
           reason:'STATIC_DIRECT_SAME_FILE_CALL_EDGE',
           writableWithinExistingReservation:true,
           preserveSaveBalanceAndAuthorityRequired:true,
@@ -482,7 +486,13 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
     directResponsibleSystemRepairRequired:repairRequired,
     authorityExpanded:false
   };
+  const helperEdits=reservedHelperEditPlan.reservedHelperEdits;
   const requiredFocusedChecks=unique([
+    ...(helperEdits.length?['RESERVED_HELPER_CALL_GRAPH_RECHECK']:[]),
+    ...(helperEdits.some(row=>row.observedStateWrites.length)?['RESERVED_HELPER_OWNED_STATE_RECHECK']:[]),
+    ...(helperEdits.some(row=>row.observedSaveKeys.length)?['RESERVED_HELPER_SAVE_KEY_COMPATIBILITY']:[]),
+    ...(helperEdits.some(row=>row.observedEvents.length)?['RESERVED_HELPER_EVENT_BINDING_RECHECK']:[]),
+    ...(helperEdits.some(row=>row.observedTimers.animationFrame||row.observedTimers.interval||row.observedTimers.timeout)?['RESERVED_HELPER_TIMER_LIFECYCLE_RECHECK']:[]),
     ...impactRows.flatMap(row=>row.requiredChecks||[]),
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
     ...hotspotChecks,
