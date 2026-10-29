@@ -1205,6 +1205,73 @@ export function applyVibe59ApprovedGameSourceChange({order={},sourceRoot='',resp
     sourceWrite:true,modelUsed:false,runtimeVerified:false,releaseVerified:false});
 }
 
+// [10능력 통합 증거] 새 실행기가 아닌 기존 Vibe5.9 후보의 함수·원인·성능·실패 증거.
+// 정적 분석은 실제 게임 QA와 무관하며 학습 승격 또는 원본 쓰기를 승인하지 않는다.
+export function evaluateVibe59OfflinePatchEvidence({candidate={},order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[]}={}){
+ if(!candidate||!Array.isArray(candidate.edits)||!candidate.edits.length||candidate.edits.length>24)
+   throw Error('VIBE59_CANDIDATE_AUDIT_SCOPE');
+ const root=fs.realpathSync(sourceRoot),allowed=new Set(responsibleFiles),files=new Map();
+ const owners=new Set(),callEdges=new Set(),hotPaths=[],touches=[],originals=[];
+ for(const edit of candidate.edits){
+  if(!allowed.has(edit.path)||typeof edit.find!=='string'||!edit.find
+    ||typeof edit.replace!=='string'||edit.find===edit.replace)
+    throw Error('VIBE59_CANDIDATE_AUDIT_UNOWNED_EDIT');
+  if(!files.has(edit.path)){
+   const full=path.resolve(root,edit.path);
+   if(!full.startsWith(root+path.sep)||fs.lstatSync(full).isSymbolicLink()
+     ||!fs.statSync(full).isFile()||!fs.realpathSync(full).startsWith(root+path.sep))
+     throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_ESCAPE');
+   const source=fs.readFileSync(full,'utf8');
+   if(source.length>260000)throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_LIMIT');
+   const functions=inspectSourceFunctions(source,{language:target==='roblox'?'luau':'javascript',maxFunctions:4096});
+   files.set(edit.path,{source,functions,hash:sha(source)});
+   originals.push({path:edit.path,sha256:sha(source)});
+  }
+  const file=files.get(edit.path),start=file.source.indexOf(edit.find);
+  const unique=start>=0&&file.source.indexOf(edit.find,start+edit.find.length)<0;
+  if(!unique&&candidate.vibe59CodeKind!=='COMPOSED_OFFLINE_SOURCE')
+    throw Error('VIBE59_CANDIDATE_AUDIT_STALE_ANCHOR');
+  if(unique){
+   const end=start+edit.find.length;
+   const bound=file.functions.filter(fn=>start>=fn.start&&end<=fn.end)
+     .sort((a,b)=>(a.end-a.start)-(b.end-b.start));
+   if(bound.length){
+    owners.add(edit.path+':'+bound[0].name);
+    for(const found of file.functions){
+     if(found!==bound[0]&&new RegExp('\\b'+found.name+'\\s*\\(').test(file.source.slice(start,end)))
+       callEdges.add(bound[0].name+'->'+found.name);
+    }
+   }
+  }
+  if(/(?:RenderStepped|Heartbeat|while\s+true|requestAnimationFrame|setInterval)/.test(edit.replace)
+     &&!/(?:RenderStepped|Heartbeat|while\s+true|requestAnimationFrame|setInterval)/.test(edit.find))
+    hotPaths.push(edit.path);
+  touches.push({path:edit.path,oldBytes:Buffer.byteLength(edit.find),newBytes:Buffer.byteLength(edit.replace),
+    sourceBound:unique});
+ }
+ const digest=sha(JSON.stringify([originals,touches,candidate.edits.map(x=>[x.path,x.find,x.replace])]));
+ const rejects=order.selectedTask?.vibe59RejectedCandidateFingerprints||order.vibe59RejectedCandidateFingerprints||[];
+ if(Array.isArray(rejects)&&rejects.length<=128&&rejects.includes(digest))
+   throw Error('VIBE59_REPEATED_FAILED_CANDIDATE');
+ const revision=clean(order.baseCommit||order.sourceRevision);
+ const gameId=clean(order.selectedTask?.gameId||order.gameId);
+ const ids=(Array.isArray(verifiedCodePatterns)?verifiedCodePatterns:[])
+  .filter(p=>p?.verified===true&&p?.retrievalEligible!==false&&!p?.quarantineReason
+    &&p?.rawCodeStored===false&&p?.independentQa==='PASS'&&p?.engine===target
+    &&clean(p?.sourceRevision)===revision&&revision&&gameId&&p?.gameId===gameId)
+  .map(p=>clean(p.id)).filter(Boolean).slice(0,8);
+ const staticEstimate={functionCount:owners.size,sourceFunctionOwners:[...owners],
+  existingCallEdges:[...callEdges],functionsAnalyzed:[...files.values()].reduce((n,f)=>n+f.functions.length,0),
+  changedBytes:touches.reduce((n,e)=>n+e.newBytes,0),
+  staticHotPathIntroductions:hotPaths,editCount:candidate.edits.length,
+  sourceEvidence:originals,dependentEdits:touches.filter(e=>!e.sourceBound).length,
+  verifiedPatternHints:ids,fingerprint:digest,
+  counterexampleCount:candidate.vibe59TestPlan?.counterexamples?.length||0,
+  generatedProbeCount:candidate.vibe59AutoTestPlan?.generatedCaseCount||0,
+  status:'STATIC_ONLY_QA_RUNTIME_REQUIRED',modelUsed:false,runtimeVerified:false};
+ return Object.freeze({...candidate,vibe59OfflineAudit:Object.freeze(staticEstimate)});
+}
+
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
   // Existing assets are first-class Vibe worker edit candidates, not presentation-only notes.
   const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
