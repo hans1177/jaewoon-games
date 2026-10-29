@@ -189,6 +189,9 @@ test('web action HUD binds touch targets to original game callbacks without inve
   attack.onclick();heal.onclick();locked.onclick();
   assert.deepEqual(pressed,['attack','heal']);
   assert.equal(ctrl.stats().actionButtons,3);
+  assert.equal(ctrl.updateActionHud({actions:[{id:'new',label:'New'}],onAction:id=>pressed.push(id)}),true);
+  attack.onclick();
+  assert.deepEqual(pressed,['attack','heal'],'detached action must not fire');
   assert.equal(ctrl.updateActionHud({visible:false}),true);
   assert.equal(ctrl.stats().actionButtons,0);
   ctrl.destroy();
