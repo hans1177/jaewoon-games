@@ -124,9 +124,9 @@ export function buildGameHtml({ packageData = {}, title = '재운게임즈 바�
         if(!Array.isArray(catalog.assets))throw new Error('공통 에셋 등록부 손상');
         for(const requested of declaredModels){
           const authorized=catalog.assets.find(asset=>
-            (asset.masterGlb||asset.path||'').replace(/^\/+/,'')===requested.path.replace(/^\/+/,'')
+            (asset.masterGlb||asset.path||'').replace(/^\\/+/,'')===requested.path.replace(/^\\/+/,'')
             && (asset.masterGlbHash||asset.sourceHash||'').toLowerCase()===requested.sha256
-            && /^CC0(?:-1\.0)?$/i.test(asset.license||'')
+            && /^CC0(?:-1\\.0)?$/i.test(asset.license||'')
             && asset.sourceUrl===requested.sourceUrl
             && asset.licenseEvidenceUrl===requested.licenseEvidenceUrl
             && asset.productionVerified===true
