@@ -68,3 +68,17 @@ test('Github-hosted WEB_VIBE_1 onepatch uses its own queue and existing bridge, 
   assert.match(worker,/requestGeminiFreePair/);
   assert.doesNotMatch(cloud,/OLLAMA_HOST|11435|WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED/);
 });
+
+// 회귀: 상태 동기화에 과거 큐/자산 이력 전체를 다운로드하지 않는다.
+test('existing PWA fetches current control snapshots without unbounded history',()=>{
+  const source=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  const fetches=source.split('\n').filter(line=>line.trim().startsWith('git fetch '));
+  assert.equal(fetches.length,3);
+  for(const line of fetches){
+    assert.match(line,/git fetch --depth=1 --filter=blob:none origin/);
+    assert.doesNotMatch(line,/--unshallow|--tags/);
+  }
+  assert.match(source,/git show "origin\/\$VIBE2_BRANCH:\.vibe2\/queue\.json"/);
+  assert.match(source,/storage-unpack --queue="\$work\/\.vibe2\/queue\.json"/);
+  assert.match(source,/storage-pack --queue=\.vibe2\/queue\.json/);
+});

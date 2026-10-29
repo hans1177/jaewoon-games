@@ -109,7 +109,7 @@ jobs:
           git config user.email 'pwa-vibe-bridge@users.noreply.github.com'
           success=0
           for attempt in 1 2 3; do
-            git fetch origin "$WEB_VIBE_BRANCH" main --quiet
+            git fetch --depth=1 --filter=blob:none origin "$WEB_VIBE_BRANCH" main --quiet
             work="/tmp/web-vibe-${GITHUB_RUN_ID}-${attempt}"
             rm -rf "$work"
             git worktree prune
@@ -206,7 +206,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin "$VIBE2_BRANCH" --quiet
+          # 현재 큐 스냅샷만 필요하다. 대형 제어 브랜치 전체 이력을 매 5분마다 복제하지 않는다.
+          git fetch --depth=1 --filter=blob:none origin "$VIBE2_BRANCH" --quiet
           git show "origin/$VIBE2_BRANCH:.vibe2/queue.json" > /tmp/vibe2-queue.json || printf '{"version":3,"tasks":[]}\n' > /tmp/vibe2-queue.json
           node tools/pwa-command-vibe2-task.mjs sync --queue=/tmp/vibe2-queue.json --output=/tmp/pwa-sync.json
           curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
@@ -247,7 +248,7 @@ jobs:
           git config user.email 'pwa-vibe-bridge@users.noreply.github.com'
           success=0
           for attempt in 1 2 3; do
-            git fetch origin "$VIBE2_BRANCH" main --quiet
+            git fetch --depth=1 --filter=blob:none origin "$VIBE2_BRANCH" main --quiet
             work="/tmp/pwa-vibe2-${GITHUB_RUN_ID}-${attempt}"
             rm -rf "$work"
             git worktree prune
