@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks, robloxQualityRepairFiles } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
@@ -6020,8 +6020,14 @@ test('exact Studio MCP HUD overlap makes Vibe own the actual client and shared U
     assert.equal(task.buildUpDirective.playtestRuntimeFindings.studioQualityFailure.qualityFailureDetails[0].observed.overlapPairs,8);
     assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
     assert.ok(!task.responsibleFiles.some(file=>file.startsWith('web-games/')));
-    const stale=findStudioContinuousImprovementTask({...project,queueRobloxSourceCommit:'b'.repeat(40)},root,{tasks:[]},'USABILITY');
-    assert.ok(stale);
-    assert.ok(!stale.responsibleFiles.includes('roblox-games/'+gameId+'/shared/RobloxCommonUI.luau'));
+    const repairPaths=robloxQualityRepairFiles(project,root);
+    assert.deepEqual(repairPaths.sort(),[
+      'roblox-games/'+gameId+'/client/Game.client.luau',
+      'roblox-games/'+gameId+'/shared/RobloxCommonUI.luau'
+    ]);
+    assert.deepEqual(robloxQualityRepairFiles({...project,queueRobloxSourceCommit:'b'.repeat(40)},root),[],
+      'old Studio evidence must never force ownership on a newer source');
+    assert.deepEqual(robloxQualityRepairFiles({...project,queueRobloxArtifactIdentity:'sha256:'+'b'.repeat(64)},root),[],
+      'different native build artifacts must not authorize a repair');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
