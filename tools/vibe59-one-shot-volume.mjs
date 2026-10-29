@@ -134,10 +134,10 @@ function generateInsertion(request,index){
  const pointerXAlias=id+'_pointerX',pointerYAlias=id+'_pointerY';
  const inputX=clickArg.length===2?clickArg[0]:clickArg[0]+'.offsetX';
  const inputY=clickArg.length===2?clickArg[1]:clickArg[0]+'.offsetY';
- const clickText='{\\nconst '+pointerXAlias+'='+inputX+';\\nconst '+pointerYAlias+'='+inputY+
-  ';\\nconst '+canvasAlias+'='+canvasRef+';\\n'+
+ const clickText='{\nconst '+pointerXAlias+'='+inputX+';\nconst '+pointerYAlias+'='+inputY+
+  ';\nconst '+canvasAlias+'='+canvasRef+';\n'+
   click.replaceAll('__INPUT_X__',pointerXAlias).replaceAll('__INPUT_Y__',pointerYAlias)+
-  '\\n}';
+  '\n}';
  const initial={
   facilities:request.facilities,maps:request.maps,backgrounds:request.backgrounds,
   sprites:request.sprites,actions:request.actions,motions:request.motions,
@@ -150,8 +150,8 @@ function generateInsertion(request,index){
   claimed:[false,false,false],pages:{},menuPage:0
  };
  const code='const '+id+' = '+JSON.stringify(initial)+';\n'+id+'.started = Date.now();\n';
- const draw='{\\nconst '+contextAlias+'='+ctx+';\\n'+
-  paint.replaceAll('__VOLUME__',id).replaceAll('ctx',contextAlias)+'\\n}';
+ const draw='{\nconst '+contextAlias+'='+ctx+';\n'+
+  paint.replaceAll('__VOLUME__',id).replaceAll('ctx',contextAlias)+'\n}';
  // These source-bound edits are independent functions; same-file atomic apply remains the canonical worker's job.
  const renderFind=file.source.slice(render.start,render.end);
  const cut=render.bodyEnd-render.start;
