@@ -272,10 +272,20 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
    while(parent){ancestors.add(parent);parent=index.symbols.find(s=>s.id===parent)?.parent}
    const scope=sourceScopeAt(file.code,owner.start,target);
    const calleeScope=callees.length===1?sourceScopeAt(file.code,callees[0].start,target):[];
-   if(callees.length!==1||callees[0].parameters.length||call.length!==1||r.callee===r.functionName||!calleeScope.every((x,i)=>scope[i]===x)||
+   if(callees.length!==1||call.length!==1||r.callee===r.functionName||!calleeScope.every((x,i)=>scope[i]===x)||
      callees[0].parent&&!ancestors.has(callees[0].parent)){
     unresolved.push({id:r.id,code:'CALL_OWNERSHIP_UNPROVEN'});continue;
    }
+   // 인자는 원래 책임 함수의 동일 순서 매개변수만 전달한다. Luau 지역 선언은 끌어올려지지 않는다.
+   const callee=callees[0];let forwardedArguments;
+   try{
+    const formals=symbol=>explicitParameterNames(/\(([^()]*)\)/.exec(file.code.slice(symbol.start,symbol.bodyStart))?.[1]??'...');
+    const available=formals(owner);forwardedArguments=formals(callee);
+    if(forwardedArguments.some((name,i)=>available[i]!==name||owner.locals.includes(name))||
+      [...available,...owner.locals].includes(r.callee)||callee.unsupported.length||
+      (target==='roblox'&&callee.start>=owner.start))throw Error('UNPROVEN_CALL');
+   }catch{unresolved.push({id:r.id,code:'CALL_PARAMETER_BINDING_UNPROVEN'});continue}
+   r.forwardedArguments=forwardedArguments;
   }
   nodes.push({...r,owner,file,boundSymbols:[{id:owner.id,path:owner.path,start:owner.start,end:owner.end,
    sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence}],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});

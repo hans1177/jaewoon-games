@@ -193,3 +193,59 @@ test('ordinary owner combat language discovers actual damage, caller and iterati
  assert.equal(c.complexPlan.atoms.flatMap(a=>a.requirementIds).length,3);
  assert.ok(c.complexPlan.atoms.some(a=>a.derivation==='CALL_ARGUMENT_TO_EXISTING_ITERATION_PARAMETER'));
 });
+
+// 회귀: 기존 호출 뒤 연결에서도 실제 인자와 Luau 선언 순서를 증명한다.
+test('existing-call forwards exact owner parameters and executes WEB state plus display',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={hp:0,shown:0};\nfunction give(){state.hp+=1;}\nfunction render(actor){state.shown=state.hp+actor.offset;}\nfunction collect(actor){\n give();\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.match(candidate.edits[0].replace,/render\(actor\);/);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const result=vm.runInNewContext(docs.get('game.js')+'collect({offset:4});collect({offset:7});state;');
+ assert.equal(result.hp,2);assert.equal(result.shown,9);
+ assert.equal(candidate.runtimeVerified,false);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+test('existing-call blocks guessed, default, rest and shadowed argument bindings',t=>{
+ const {root}=fixture(t);
+ const source='function give(){}\nfunction render(actor){}\nfunction collect(actor){\n give();\n}\n';
+ const options={sourceRoot:root,responsibleFiles:['game.js'],baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ for(const changed of [source.replace('render(actor)','render(other)'),
+  source.replace('render(actor)','render(actor=1)'),source.replace('render(actor)','render(...actor)'),
+  source.replace('give();','let actor={};\n give();'),
+  source.replace('collect(actor)','collect(render)')]){
+  fs.writeFileSync(path.join(root,'game.js'),changed);
+  const plan=planComplexGameWork(options);
+  assert.equal(plan.status,'BLOCKED');assert.equal(plan.unresolved[0].code,'CALL_PARAMETER_BINDING_UNPROVEN');
+  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),changed);
+ }
+});
+
+test('server-local native Luau existing-call preserves typed arguments and blocks later local declarations',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const file='server/Game.server.luau';
+ const give='local score = 0\nlocal function give()\n score += 1\nend\n';
+ const render='local function render(actor: any)\n actor.shown = score\nend\n';
+ const collect='local function collect(actor: any)\n give()\nend\n';
+ const options={sourceRoot:root,responsibleFiles:[file],target:'roblox',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ fs.writeFileSync(path.join(root,file),give+render+collect);
+ const plan=planComplexGameWork(options);assert.equal(plan.status,'BOUND');
+ const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ assert.match(candidate.edits[0].replace,/give\(\)\s+render\(actor\)/);
+ const docs=new Map([[file,give+render+collect]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ if(process.env.VIBE2_LUAU_BINARY){
+  const probe=path.join(root,'probe.luau');
+  fs.writeFileSync(probe,docs.get(file)+'\nlocal actor={shown=0}\ncollect(actor)\nassert(actor.shown==1)\ncollect(actor)\nassert(actor.shown==2)\nprint("EXISTING_CALL_LUAU=PASS")');
+  const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[probe],{encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/EXISTING_CALL_LUAU=PASS/);
+ }
+ fs.writeFileSync(path.join(root,file),give+collect+render);
+ const blocked=planComplexGameWork(options);
+ assert.equal(blocked.status,'BLOCKED');assert.equal(blocked.unresolved[0].code,'CALL_PARAMETER_BINDING_UNPROVEN');
+});

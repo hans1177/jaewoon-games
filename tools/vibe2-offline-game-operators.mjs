@@ -83,9 +83,11 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
  }else if(r.operation==='existing-call'){
   const re=new RegExp('(?<![\\w$.])'+r.after+'\\s*\\(\\s*\\)'+(target==='web'?'\\s*;':''),'g');
   const hits=[...body.matchAll(re)];if(hits.length!==1)throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
-  const at=owner.bodyStart+hits[0].index,find=source.slice(at,at+hits[0][0].length);
-  edit={path:file.path,find,replace:find+'\n'+indent+r.callee+'()'+(target==='web'?';':'')};
-  proof={pass:true,cases:[{name:'ordered-existing-call',after:r.after,callee:r.callee},{name:'unchanged-owner',symbol:owner.id}],
+  // Luau의 선언부에도 같은 name()이 있으므로 원본 책임 함수부터 호출까지 고유 앵커로 묶는다.
+  const at=owner.bodyStart+hits[0].index,find=source.slice(owner.start,at+hits[0][0].length);
+  const args=r.forwardedArguments||[];
+  edit={path:file.path,find,replace:find+'\n'+indent+r.callee+'('+args.join(', ')+')'+(target==='web'?';':'')};
+  proof={pass:true,cases:[{name:'ordered-existing-call',after:r.after,callee:r.callee,forwardedArguments:args},{name:'unchanged-owner',symbol:owner.id}],
    authority:'SOURCE_CALL_ORDER_ONLY',independentGameQa:false,actualGamePlaytest:false};effects=['CALL_EXISTING_FUNCTION:'+r.callee];
  }else if(r.operation==='clamp-assignment'){
   const escaped=r.output.replaceAll('.','\\.'),re=new RegExp('(?<![\\w$.])'+escaped+'[ \\t]*=[ \\t]*([A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*|-?\\d+(?:\\.\\d+)?)[ \\t]*'+(target==='web'?';':'(?=\\r?\\n|$)'),'g');
