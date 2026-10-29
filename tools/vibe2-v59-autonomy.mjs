@@ -1136,7 +1136,7 @@ export function createVibe59ExistingAssetCandidate({order={},sourceRoot='',respo
       throw Error('VIBE59_ASSET_RESPONSIBLE_FILE_REQUIRED');
     const elementId=clean(request.elementId);
     const from=clean(request.fromColor),to=clean(request.toColor);
-    const validColor=/^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?(?:[0-9a-fA-F]{2})?$/;
+    const validColor=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
     if(!/^[A-Za-z][\w-]{0,79}$/.test(elementId)||!validColor.test(from)||!validColor.test(to)
       ||from.toLowerCase()===to.toLowerCase())throw Error('VIBE59_ASSET_RECOLOR_SPEC_INVALID');
     const file=path.resolve(root,relative),actual=fs.realpathSync(file);
