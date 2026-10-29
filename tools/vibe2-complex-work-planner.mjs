@@ -194,21 +194,33 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
    for(const file of index.files){
     const owners=index.symbols.filter(row=>row.kind==='function'&&!row.ambiguous&&row.path===file.path&&!row.unsupported.length);
     const body=row=>file.code.slice(row.bodyStart,row.bodyEnd);
-    const mutations=owners.filter(row=>/\bstate\.[A-Za-z_$][\w$]*\s*(?:\+\+|--|[+\-*/%]?=(?!=))/.test(body(row))&&
-     !/\b(?:localStorage|sessionStorage)\b/.test(body(row)));
-    const views=owners.filter(row=>/\.(?:textContent|innerText|innerHTML)\s*=(?!=)/.test(body(row))&&/\bstate\.[A-Za-z_$]/.test(body(row)));
-    const saves=owners.filter(row=>/\b(?:localStorage|sessionStorage)\.setItem\s*\(/.test(body(row))&&
-     /\bJSON\.stringify\s*\(\s*state\s*\)/.test(body(row))&&
-     file.storage.some(record=>record.key&&record.start>=row.bodyStart&&record.end<=row.bodyEnd));
-    if(views.length!==1||saves.length!==1||mutations.length!==1)continue;
-    const [mutation]=mutations,[view]=views,[save]=saves;
-    const fields=file.states.filter(write=>write.start>=mutation.bodyStart&&write.end<=mutation.bodyEnd&&/^state\.[A-Za-z_$][\w$]*$/.test(write.name));
-    if(!fields.length||!fields.some(write=>body(view).includes(write.name))||
-      new Set([mutation.id,view.id,save.id]).size!==3)continue;
-    const triggers=owners.filter(row=>row.id!==mutation.id&&row.id!==view.id&&row.id!==save.id&&
-     index.edges.filter(edge=>edge.from===row.id&&edge.to===mutation.id).length===1&&
-     !index.edges.some(edge=>edge.from===row.id&&[view.id,save.id].includes(edge.to)));
-    for(const trigger of triggers)matches.push({file,trigger,mutation,view,save});
+    // 상태 객체 이름을 고정하지 않는다. 원래 파일의 최상위 객체와 필드 쓰기를 증명한다.
+    for(const mutation of owners){
+     if(/\b(?:localStorage|sessionStorage)\b/.test(body(mutation)))continue;
+     const writes=file.states.filter(write=>write.start>=mutation.bodyStart&&write.end<=mutation.bodyEnd&&
+      /^[A-Za-z_$][\w$]*\.[A-Za-z_$][\w$]*$/.test(write.name));
+     for(const stateName of new Set(writes.map(write=>write.name.split('.')[0]))){
+      const declarations=[...file.code.matchAll(new RegExp('\\b(?:const|let|var)\\s+'+stateName+'\\s*=\\s*\\{','g'))]
+       .filter(decl=>sourceScopeAt(file.code,decl.index,target).length===0);
+      if(declarations.length!==1||mutation.parameters.includes(stateName)||mutation.locals.includes(stateName))continue;
+      const relevantWrites=writes.filter(write=>write.name.startsWith(stateName+'.'));
+      const views=owners.filter(view=>view.id!==mutation.id&&
+       !view.parameters.includes(stateName)&&!view.locals.includes(stateName)&&
+       /\.(?:textContent|innerText|innerHTML)\s*=(?!=)/.test(body(view))&&
+       relevantWrites.some(write=>new RegExp('\\b'+write.name.replaceAll('.','\\.')+'\\b').test(body(view))));
+      const saves=owners.filter(save=>save.id!==mutation.id&&
+       !save.parameters.includes(stateName)&&!save.locals.includes(stateName)&&
+       /\b(?:localStorage|sessionStorage)\.setItem\s*\(/.test(body(save))&&
+       new RegExp('\\bJSON\\.stringify\\s*\\(\\s*'+stateName+'\\s*\\)').test(body(save))&&
+       file.storage.some(record=>record.key&&record.start>=save.bodyStart&&record.end<=save.bodyEnd));
+      if(views.length!==1||saves.length!==1||views[0].id===saves[0].id)continue;
+      const [view]=views,[save]=saves;
+      const triggers=owners.filter(row=>![mutation.id,view.id,save.id].includes(row.id)&&
+       index.edges.filter(edge=>edge.from===row.id&&edge.to===mutation.id).length===1&&
+       !index.edges.some(edge=>edge.from===row.id&&[view.id,save.id].includes(edge.to)));
+      for(const trigger of triggers)matches.push({file,trigger,mutation,view,save,stateName});
+     }
+    }
    }
    if(matches.length!==1){unresolved.push({id:requirement.id,code:'SEMANTIC_STATE_UI_SAVE_OWNER_UNPROVEN',matches:matches.length});continue}
    const {file,trigger,mutation,view,save}=matches[0];
