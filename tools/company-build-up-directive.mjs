@@ -513,10 +513,10 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const rankedAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>
     Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0));
   // A global top-N would silently erase complete responsibilities in sparse
-  // files. Keep one observed symbol per source file in addition to top-ranked
-  // symbols; assignment priority is resolved later from exact responsibleFiles.
+  // files. Preserve a bounded set of observed symbols per file, including
+  // lower-scoring failure owners, before exact responsibleFiles are selected.
   const sourceAnchors=[...new Map([...rankedAnchors.slice(0,48),
-    ...rows.map(row=>row.sourceAnchors?.[0]).filter(Boolean)]
+    ...rows.flatMap(row=>(row.sourceAnchors||[]).slice(0,3))]
     .map(row=>[row.file+'::'+row.line+'::'+row.symbol,row])).values()];
   return Object.freeze({
     sourceRoot:posix(sourceRoot),
@@ -561,7 +561,16 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
   for(const part of parts)for(const [key,value] of Object.entries(part.signals||{}))signals[key]=(signals[key]||0)+Number(value||0);
   const combinedFingerprint=sha(parts.map(part=>part.sourceTreeFingerprint).sort().join('|'));
   const topFiles=parts.flatMap(part=>part.topFiles||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)).slice(0,20);
-  const sourceAnchors=parts.flatMap(part=>part.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,64);
+  const rankedAnchors=parts.flatMap(part=>part.sourceAnchors||[]).sort((a,b)=>
+    Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0));
+  // Multi-root build-up must not silently drop lower-volume platform owners.
+  const perFileCounts=new Map();
+  const sourceAnchors=[...new Map([...rankedAnchors.slice(0,64),
+    ...rankedAnchors.filter(row=>{
+      const count=perFileCounts.get(row.file)||0;
+      perFileCounts.set(row.file,count+1);
+      return count<3;
+    })].map(row=>[row.file+'::'+row.line+'::'+row.symbol,row])).values()];
   return Object.freeze({
     sourceRoot:roots.join('|'),
     sourceRoots:Object.freeze(roots),
