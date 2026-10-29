@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-164vpta",
+      "worker": "vibe2",
+      "taskId": "wild-survival-studio-evolution-usability-v4",
+      "gameId": "wild-survival",
+      "files": [
+        "web-games/wild-survival/index.html",
+        "web-games/wild-survival/wild3d.mjs"
+      ],
+      "baseSha": "de150405331e8f8249b2ea3ba625db62b79a6ca4",
+      "runId": "40840071994",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-29T08:22:47.791Z",
+      "expiresAt": "2026-10-29T09:07:47.791Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:wild-survival-studio-evolution-usability-v4"
+      ]
+    }
+  ]
 }
