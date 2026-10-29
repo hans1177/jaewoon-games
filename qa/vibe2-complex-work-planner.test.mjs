@@ -1575,7 +1575,7 @@ test('one-shot five system panels perform real material, crafting, equipment, qu
  assert.equal(app.view().equipped,0);
  world();click(32,520);assert.equal(app.view().coins,2,'equipped action grants pack reward');
  click(32,520);assert.equal(app.view().coins,4);
- click(130,238);assert.equal(app.view().visitedMaps[1],true);
+ click(235,238);assert.equal(app.view().visitedMaps[1],true);
  click(40,348);assert.equal(app.view().rides,1);
  system(3);assert.match(screen(),/퀘스트 목록/);
  const before=app.view().coins;click(45,145);
