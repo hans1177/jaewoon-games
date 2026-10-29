@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-29T14:31:47.989Z",
+  "generatedAt": "2026-10-29T14:32:48.017Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,14 +821,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-28T06:07:55.664Z",
-            "checkedAt": "2026-10-29T14:21:30.511Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-10-29T14:32:10.763Z",
+            "checkedAt": "2026-10-29T14:32:10.763Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
-            "candidatePublishedAt": "2026-10-28T06:07:55.664Z",
+            "f0PassedAt": "2026-10-29T14:32:10.763Z",
+            "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
           },
@@ -861,8 +861,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "37240c9ef31d7756506a4e49146db1b9fdbc54ff",
-            "artifactIdentity": "sha256:8302cb8cd3f982dfd9cf5242fb39f46f6dcdb203392fd006bd90520338a88659",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -929,7 +929,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-29T14:21:30.511Z"
+      "updatedAt": "2026-10-29T14:32:10.763Z"
     },
     {
       "gameId": "daechung-rpg",
