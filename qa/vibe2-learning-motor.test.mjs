@@ -3,6 +3,7 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { buildPracticePrompt } from '../tools/vibe2-learning-practice-worker.mjs';
+import {applyVerifiedAlgorithmEvolution,retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from '../tools/vibe2-learning-motor.mjs';
 
 test('practice reuse resolves current verified implementation advice and drops revoked evidence',()=>{
   const pattern={id:'save-boundary',system:'SAVE_PERSISTENCE',verified:true,independentQa:'PASS',rawCodeStored:false,sourceRevision:'r1',pattern:'Commit memory only after durable save succeeds.'};
@@ -2456,4 +2457,63 @@ test('C06 linear winner tournament is deterministic for large candidate sets',()
   assert.equal(reordered.winnerId,result.winnerId);
   const blocked=chooseRegressionSafeVibeWinner([base,{...special,peakMemoryMb:101}],spec);
   assert.equal(blocked.verified,false);
+});
+
+
+// [학습 회귀] 검증 전/오래된 플레이테스트는 WEB/ROBLOX 공통 개념으로 승격하지 않는다.
+test('verified cross-platform algorithm concepts require actual matched game-play evidence',()=>{
+ const revision='b'.repeat(40);
+ const base={evidenceId:'qa-algorithm-1',gameId:'sample',platform:'WEB',domain:'AI',
+  sourceRevision:revision,playtestSourceRevision:revision,actualGamePlaytest:true,
+  gameSourceChanged:true,saveAndBalancePreserved:true,heldOutCases:3,
+  regressionCount:0,result:'PASS',license:'MIT',
+  searchStrategy:'BOUNDED_AST_EVOLUTION_CEGIS',
+  ast:['max',['param',0],['param',1]],
+  proof:{evidenceId:'qa-algorithm-1',sourceRevision:revision,independentQa:'PASS',
+    regression:'PASS',runtime:'PASS',actualPlatformRuntime:true}};
+ const blocked=applyVerifiedAlgorithmEvolution({},{
+  algorithmEvolutionEvidence:[{...base,proof:{...base.proof,runtime:'PENDING'}}]});
+ assert.equal(blocked.added,0);
+ assert.equal(retrieveVerifiedAlgorithmConcepts({
+   stateInput:blocked.state,platform:'ROBLOX',domain:'AI'}).length,0);
+ const accepted=applyVerifiedAlgorithmEvolution(blocked.state,{
+  algorithmEvolutionEvidence:[base]});
+ assert.equal(accepted.added,1);
+ assert.equal(accepted.state.algorithmEvolutionMemory.concepts.length,1);
+ const transfer=retrieveVerifiedAlgorithmConcepts({
+  stateInput:accepted.state,platform:'ROBLOX',domain:'AI'});
+ assert.equal(transfer.length,1);
+ assert.equal(transfer[0].requiresFreshHoldoutAndRuntimeQa,true);
+ assert.equal(transfer[0].sourceWriteAuthorized,false);
+ assert.equal(applyVerifiedAlgorithmEvolution(accepted.state,{
+  algorithmEvolutionEvidence:[base]}).added,0);
+ assert.equal(applyVerifiedAlgorithmEvolution(accepted.state,{
+  algorithmEvolutionEvidence:[{...base,evidenceId:'qa-algorithm-old',
+    playtestSourceRevision:'c'.repeat(40)}]}).added,0);
+ assert.equal(applyVerifiedAlgorithmEvolution(accepted.state,{
+  algorithmEvolutionEvidence:[{...base,evidenceId:'qa-algorithm-unlicensed',
+    license:'GPL-3.0'}]}).added,0);
+ const strategy=preferVerifiedAlgorithmStrategy({
+  stateInput:accepted.state,platform:'WEB',domain:'AI'});
+ assert.equal(strategy.eligible,false,'single success cannot self-certify strategy promotion');
+});
+test('algorithm concepts survive mastery refresh without becoming production or runtime PASS',()=>{
+ const revision='c'.repeat(40);
+ const evidence={evidenceId:'qa-roblox-algorithm',gameId:'demo',platform:'ROBLOX',
+  domain:'AI',searchStrategy:'BOUNDED_AST_EVOLUTION_CEGIS',
+  sourceRevision:revision,playtestSourceRevision:revision,
+  gameSourceChanged:true,actualGamePlaytest:true,saveAndBalancePreserved:true,
+  heldOutCases:2,regressionCount:0,result:'PASS',ast:['abs',['param',0]],
+  proof:{evidenceId:'qa-roblox-algorithm',sourceRevision:revision,
+   independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true}};
+ const refreshed=refreshLearningMotor({queueInput:{tasks:[],algorithmEvolutionEvidence:[evidence]},
+  companyQueueInput:{tasks:[]},roadmapInput:{}});
+ assert.equal(refreshed.addedVerifiedAlgorithms,1);
+ assert.equal(refreshed.state.algorithmEvolutionMemory.concepts.length,1);
+ assert.equal(refreshed.state.authorityExpanded,false);
+ const stable=refreshLearningMotor({stateInput:refreshed.state,
+  queueInput:{tasks:[],algorithmEvolutionEvidence:[evidence]},
+  companyQueueInput:{tasks:[]},roadmapInput:{}});
+ assert.equal(stable.addedVerifiedAlgorithms,0);
+ assert.equal(stable.state.algorithmEvolutionMemory.concepts.length,1);
 });
