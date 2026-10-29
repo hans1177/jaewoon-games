@@ -216,11 +216,13 @@ test('published WEB playtest intake rejects stale trees and deduplicates the sam
   git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@example.test','commit','-qm','fixture');
   const sourceTreeSha=git('rev-parse','HEAD:web-games/demo'),sourceRevision=git('rev-parse','HEAD');
   const game={gameId:'demo',target:'web',sourceRoot:'web-games/demo',sourceTreeSha,sourceRevision,
-    runtimeObserved:true,runtimePassed:false,failureSignature:'INPUT_UNUSABLE',failureStage:'WEB_POST_PUBLICATION_PLAYTEST'};
+    runtimeObserved:true,runtimePassed:false,failureSignature:'MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED desktop',failureStage:'WEB_POST_PUBLICATION_PLAYTEST'};
   const report={version:1,authority:'PUBLISHED_WEB_BROWSER_SMOKE',exactGameSources:true,runId:'123',sharedSourceTrees:{assets:git('rev-parse','HEAD:assets')},games:[game]};
   const first=ingestTesterDebug({repoRoot:root,webPlaytestReport:report});
   assert.equal(first.ingested,1);assert.equal(first.tickets.webPlaytestObservations.length,1);
   assert.equal(first.tickets.tickets[0].surface,'WEB');
+  assert.equal(first.tickets.tickets[0].category,'INPUT');
+  assert.equal(first.tickets.tickets[0].severity,'HIGH','real-world movement failure must enter the existing recovery lane');
   assert.equal(first.tickets.tickets[0].exactFailedStage,'WEB_POST_PUBLICATION_PLAYTEST');
   assert.equal(first.recovery.tasks.length,1,'same-source Web failure uses the existing recovery queue');
   assert.equal(first.recovery.tasks[0].recoveryStrategy,
@@ -233,6 +235,11 @@ test('published WEB playtest intake rejects stale trees and deduplicates the sam
     'RERUN_EXACT_FAILED_STAGE','INDEPENDENT_QA_WHEN_APPLICABLE',
     'REGRESSION_WHEN_APPLICABLE','CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'
   ])assert.ok(first.recovery.tasks[0].verificationPlan.includes(required),required);
+  const oldFailure=ingestTesterDebug({repoRoot:root,webPlaytestReport:{...report,runId:'126',
+    games:[{...game,failureSignature:'desktop: keyboard input failed to move original game state'}]}});
+  assert.equal(oldFailure.tickets.tickets[0].severity,'HIGH');
+  assert.equal(oldFailure.tickets.tickets[0].category,'INPUT');
+  assert.equal(oldFailure.recovery.tasks.length,1,'old published movement failure cannot silently remain LOW');
   const repeated=ingestTesterDebug({repoRoot:root,webPlaytestReport:report,ticketQueue:first.tickets,recoveryQueue:first.recovery});
   assert.equal(repeated.ingested,0);assert.equal(repeated.tickets.tickets[0].occurrenceCount,1);
   const passed=ingestTesterDebug({repoRoot:root,webPlaytestReport:{...report,runId:'124',games:[{...game,runtimePassed:true}]},ticketQueue:first.tickets,recoveryQueue:first.recovery});
