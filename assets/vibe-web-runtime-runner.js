@@ -16,7 +16,7 @@ const resolve=(base,ref)=>{
  }
  return parts.join('/');
 };
-const mime=p=>p.endsWith('.css')?'text/css':p.endsWith('.js')||p.endsWith('.mjs')?'text/javascript':p.endsWith('.json')?'application/json':p.endsWith('.svg')?'image/svg+xml':p.endsWith('.png')?'image/png':p.endsWith('.jpg')||p.endsWith('.jpeg')?'image/jpeg':p.endsWith('.webp')?'image/webp':p.endsWith('.gif')?'image/gif':p.endsWith('.woff2')?'font/woff2':p.endsWith('.woff')?'font/woff':p.endsWith('.ttf')?'font/ttf':p.endsWith('.otf')?'font/otf':p.endsWith('.wav')?'audio/wav':p.endsWith('.mp3')?'audio/mpeg':p.endsWith('.ogg')?'audio/ogg':p.endsWith('.mp4')?'video/mp4':'application/octet-stream';
+const mime=p=>p.endsWith('.css')?'text/css':p.endsWith('.js')||p.endsWith('.mjs')?'text/javascript':p.endsWith('.json')?'application/json':p.endsWith('.svg')?'image/svg+xml':p.endsWith('.ico')?'image/x-icon':p.endsWith('.png')?'image/png':p.endsWith('.jpg')||p.endsWith('.jpeg')?'image/jpeg':p.endsWith('.webp')?'image/webp':p.endsWith('.gif')?'image/gif':p.endsWith('.woff2')?'font/woff2':p.endsWith('.woff')?'font/woff':p.endsWith('.ttf')?'font/ttf':p.endsWith('.otf')?'font/otf':p.endsWith('.wav')?'audio/wav':p.endsWith('.mp3')?'audio/mpeg':p.endsWith('.ogg')?'audio/ogg':p.endsWith('.mp4')?'video/mp4':'application/octet-stream';
 const isTextAsset=p=>/\.(?:css|js|mjs|json|svg|txt)$/i.test(p);
 
 export async function createVibeWebRuntimeBundle(workspace,{entry='index.html'}={}){
@@ -44,23 +44,31 @@ export async function createVibeWebRuntimeBundle(workspace,{entry='index.html'}=
   urls.push(url);cache.set(p,url);return url;
  };
  try {
-  // [CSS] 로컬 폰트/이미지를 먼저 바인딩한 후 스타일시트를 만든다.
+  // [CSS] 외부 스타일과 인라인 <style> 모두 원본 파일을 기준으로 경로를 확인한다.
+  const rewriteCss=async(css,path)=>{
+   if(/@import\s+(?:url\(\s*)?["']?(?!https?:|data:|\/\/)[^\s"')]/i.test(css))unsupported.push('css-import:'+path);
+   for(const item of [...css.matchAll(/url\(\s*(["']?)(.*?)\1\s*\)/gi)]){
+    if(external(item[2]))continue;
+    const assetUrl=await makeUrl(resolve(path,item[2]));
+    css=css.replace(item[0],'url("'+assetUrl+'")');
+   }
+   return css;
+  };
   for(const tag of cssLinks){
    const match=tag[0].match(/\bhref\s*=\s*(["'])(.*?)\1/i);
    const ref=match?.[2];
    if(!ref||external(ref))continue;
    const p=resolve(entryPath,ref);
    if(!files.has(p))throw new Error('web runtime stylesheet missing: '+p);
-   let css=await workspace.read(p);
-   if(/@import\s+(?:url\(\s*)?["']?(?!https?:|data:|\/\/)[^\s"')]/i.test(css))unsupported.push('css-import:'+p);
-   for(const item of [...css.matchAll(/url\(\s*(["']?)(.*?)\1\s*\)/gi)]){
-    if(external(item[2]))continue;
-    const assetUrl=await makeUrl(resolve(p,item[2]));
-    css=css.replace(item[0],'url("'+assetUrl+'")');
-   }
+   const css=await rewriteCss(await workspace.read(p),p);
    const cssUrl=URL.createObjectURL(new Blob([css],{type:'text/css'}));
    urls.push(cssUrl);cache.set(p,cssUrl);
    html=html.replace(tag[0],tag[0].replace(match[0],match[0].replace(ref,cssUrl)));
+  }
+  // [인라인 스타일] HTML에 직접 작성된 CSS의 폰트·이미지 경로도 파일 기준으로 처리한다.
+  for(const tag of [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)]){
+   const css=await rewriteCss(tag[1],entryPath);
+   html=html.replace(tag[0],tag[0].replace(tag[1],css));
   }
   // [미디어] 원본 바이너리를 읽기만 하며 게임 에셋을 생성하거나 변경하지 않는다.
   for(const tag of [...html.matchAll(/<(?:img|audio|video|source)\b[^>]*>/gi)]){
@@ -77,13 +85,16 @@ export async function createVibeWebRuntimeBundle(workspace,{entry='index.html'}=
    const url=await makeUrl(resolve(entryPath,ref));
    html=html.replace(tag[0],tag[0].replace(match[0],match[0].replace(ref,url)));
   }
-  // [부가 링크] favicon 등의 로컬 파일 경로도 격리 실행 경로로 전환한다.
+  // [부가 링크] 아이콘은 이미지와 동일하게 처리하고 미지원 링크는 명시적으로 거절한다.
   for(const tag of [...html.matchAll(/<link\b[^>]*>/gi)]){
    if(/\brel\s*=\s*["']?stylesheet/i.test(tag[0]))continue;
    const match=tag[0].match(/\bhref\s*=\s*(["'])(.*?)\1/i);
    const ref=match?.[2];
    if(!ref||external(ref))continue;
-   unsupported.push('link:'+ref);
+   if(/\brel\s*=\s*["']?(?:shortcut\s+)?icon(?:["'\s>]|$)/i.test(tag[0])){
+    const url=await makeUrl(resolve(entryPath,ref));
+    html=html.replace(tag[0],tag[0].replace(match[0],match[0].replace(ref,url)));
+   }else unsupported.push('link:'+ref);
   }
   if(unsupported.length)throw new Error('web runtime unsupported local resources: '+[...new Set(unsupported)].join(', '));
   let revoked=false;
