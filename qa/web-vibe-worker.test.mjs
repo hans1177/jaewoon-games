@@ -1085,20 +1085,23 @@ test('WEB worker shares the canonical complex plan across files without any mode
  const sources=[
   {relative:'web-games/demo/combat.js',original:'const state={dead:false};\nfunction hit(a){\n a.hp -= 1;\n return true;\n}\n'},
   {relative:'web-games/demo/ui.js',original:'const state={dead:false};\nfunction updateUi(a){\n a.visible = true;\n}\n'},
+  {relative:'web-games/demo/count.js',original:'function remaining(a){\n return a.hp;\n}\n'},
   {relative:'web-games/demo/save.js',original:'function save(){\n localStorage.setItem("demo-save", "unchanged");\n}\n'}
  ];
  sources.forEach(row=>fs.writeFileSync(path.join(repo,row.relative),row.original));
  const task={gameId:'demo',ownerDirective:true,evidence:['owner-source-authenticated'],
-  goal:'함수 hit에서 a.dead이면 false를 반환해; 함수 updateUi에서 a.dead이면 중단해'};
+  goal:'함수 hit에서 a.dead이면 false를 반환해; 함수 updateUi에서 a.dead이면 중단해; 함수 remaining에서 a.hp < 0이면 0을 반환해'};
  const complexContext={repositoryRoot:repo,sourceRevision:'a'.repeat(40),sources};
  let externalCalls=0;
  const options={cloud:true,apiKey:'',complexContext,geminiImpl:async()=>{externalCalls++;throw Error('must not call model')}};
  const combat=await proposeWebVibeChange(task,sources[0],options),plan=complexContext.plan;
- const ui=await proposeWebVibeChange(task,sources[1],options);
+ const ui=await proposeWebVibeChange(task,sources[1],options),count=await proposeWebVibeChange(task,sources[2],options);
  assert.equal(complexContext.plan,plan,'one shared source index for the full task');
- assert.equal(await proposeWebVibeChange(task,sources[2],options),null);
+ assert.equal(await proposeWebVibeChange(task,sources[3],options),null);
  assert.equal(combat.deterministicWebComplex,true);assert.equal(ui.deterministicWebComplex,true);
- assert.equal(combat.offlineSourceProof.requirementCount,2);assert.equal(externalCalls,0);
+ assert.equal(combat.offlineSourceProof.requirementCount,3);assert.equal(externalCalls,0);
+ const remaining=vm.runInNewContext(count.updated+';remaining');
+ assert.equal(remaining({hp:-1}),0);assert.equal(remaining({hp:0}),0);assert.equal(remaining({hp:5}),5);
  const hit=vm.runInNewContext(combat.updated+';hit'),update=vm.runInNewContext(ui.updated+';updateUi');
  const dead={hp:0,dead:true,visible:false};assert.equal(hit(dead),false);update(dead);
  assert.equal(dead.hp,0);assert.equal(dead.visible,false);
