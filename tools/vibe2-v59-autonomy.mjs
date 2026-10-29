@@ -356,8 +356,13 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
   const completion=evaluateVibe59Completion({requirements:requirement.explicitSystems,
     evidence:order.vibe59VerifiedImplementationEvidence||[]});
   const creativeInput=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest??{};
+  // Work orders may include long owner goals. Keep the full requirement for coding,
+  // but bound this read-only creativity preview to its existing 800-char budget.
+  const creativeGoal=clean(creativeInput.goal||requirement.goal);
+  const boundedCreativeGoal=creativeGoal.length>800
+    ?creativeGoal.slice(0,560)+' '+creativeGoal.slice(-239):creativeGoal;
   const creativity=target==='roblox'?buildVibe59CreativityPlan({
-    goal:clean(creativeInput.goal||requirement.goal),approvedOperations:creativeInput.approvedOperations,
+    goal:boundedCreativeGoal,approvedOperations:creativeInput.approvedOperations,
     existingMechanics:creativeInput.existingMechanics,verifiedPatterns:creativeInput.verifiedPatterns,
     feedback:creativeInput.feedback,seed:clean(order.gameId)||'vibe59',
     ownerApproved:false}):null;
