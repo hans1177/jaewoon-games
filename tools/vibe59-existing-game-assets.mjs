@@ -145,6 +145,49 @@ export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',reposito
     sourceWrite:false,runtimeVerified:false,suggestionsRequireProvenance:true});
 }
 
+// Existing Vibe source-worker consumes this ordinary exact-edit candidate through its
+// established normalization, independent QA, branch and release path. No direct writes.
+export function createVibe59ExistingGameVisualCandidate({
+  order={},sourceRoot='',repositoryRoot=process.cwd(),responsibleFiles=[],target='web'
+}={}){
+  const edits=order.selectedTask?.vibe59VisualAssetEdits??order.vibe59VisualAssetEdits;
+  if(edits==null)return null;
+  if(order.ownerApproved!==true||order.selectedTask?.ownerDirective!==true)
+    throw Error('VIBE59_GAME_ASSET_WRITE_NOT_APPROVED');
+  const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,readOnly:true});
+  if(!Array.isArray(edits)||edits.length<1||edits.length>MAX_ASSETS
+    ||!Array.isArray(responsibleFiles)||!responsibleFiles.length)
+    throw Error('VIBE59_GAME_ASSET_CHANGES_OUT_OF_BOUNDS');
+  const documents=new Map(),normalized=[];
+  for(const edit of edits){
+    const relative=safePath(edit?.path);
+    if(!allowedText.test(relative)||!responsibleFiles.includes(relative)
+      ||!(relative.startsWith('assets/')||relative.startsWith('icons/')
+        ||/^(?:style|graphics-upgrade)\.css$/.test(relative))
+      ||typeof edit.find!=='string'||!edit.find
+      ||typeof edit.replace!=='string'||edit.replace===edit.find
+      ||Buffer.byteLength(edit.find)+Buffer.byteLength(edit.replace)>64000
+      ||documents.has(relative))
+      throw Error('VIBE59_GAME_ASSET_VISUAL_EDIT_INVALID');
+    const original=fs.readFileSync(verifiedFile(root,relative));
+    checkOriginal(original,edit.expectedSha256);
+    checkSafeVisualDocument(original.toString('utf8'),relative);
+    const doc=new Map([[relative,original.toString('utf8')]]);
+    applyExactEdits(root,[{path:relative,find:edit.find,replace:edit.replace}],{documents:doc});
+    checkSafeVisualDocument(doc.get(relative),relative);
+    documents.set(relative,doc.get(relative));
+    normalized.push({path:relative,find:edit.find,replace:edit.replace});
+  }
+  return Object.freeze({
+    summary:'Vibe5.9 owner-scoped existing game visual asset improvements',
+    expectedEffect:'Edit '+normalized.length+' actual game-owned visual source assets without replacing gameplay',
+    edits:normalized,newFiles:[],replaceFiles:[],tests:[],
+    vibe59CodeKind:'SOURCE_BOUND_VISUAL_ASSET_EDIT',
+    ruleDigest:sha(Buffer.from(JSON.stringify([gameId,target,normalized]))),
+    sourceWrite:false,modelUsed:false,runtimeVerified:false,releaseVerified:false
+  });
+}
+
 // Bounded modifications to an actual existing game's visuals. The original graphics asset
 // stays at its existing path, so existing runtime references remain valid.
 // Source and replacement digests must match current bytes; no new asset is invented.
