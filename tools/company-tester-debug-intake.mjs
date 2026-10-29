@@ -259,7 +259,13 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
       recurrenceCount:Math.max(1,Number(t.occurrenceCount||1)),
       evidence:uniq([...(t.evidence||[]),`tester-debug-ticket:${t.id}`,`tester-debug-category:${t.category}`,`tester-debug-severity:${t.severity}`,`tester-debug-occurrence-count:${Math.max(1,Number(t.occurrenceCount||1))}`]),
       recoveryStrategy:'REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE',
-      verificationPlan:['RERUN_EXACT_FAILED_STAGE','INDEPENDENT_QA_WHEN_APPLICABLE','REGRESSION_WHEN_APPLICABLE','CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'],
+      verificationPlan:[...(t.surface==='WEB'&&t.phase==='POST_PUBLICATION_PLAYTEST'
+        ?['VERIFY_EXACT_PUBLISHED_GAME_AND_SHARED_SOURCE_TREES',
+          'VERIFY_REAL_DESKTOP_KEYBOARD_AND_MOBILE_TOUCH_INPUT_TO_GAME_STATE',
+          'DISTINGUISH_WORLD_COLLISION_FROM_INPUT_FAILURE_USING_FOUR_DIRECTIONS',
+          'VERIFY_ORIGINAL_WEBGL_SCENE_AND_SAVED_PLAYER_XY_AFTER_RELOAD']
+        :[]),'RERUN_EXACT_FAILED_STAGE','INDEPENDENT_QA_WHEN_APPLICABLE',
+        'REGRESSION_WHEN_APPLICABLE','CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'],
       recoveryOwner:t.responsibleFiles.length?'SYSTEM_AI':'VIBE2_VIBE3'
     },{reactivateDispatched:Number(t.occurrenceCount||0)>1});
     recovery=rec.queue;if(rec.added||rec.reactivated)added.push(rec.id);
