@@ -120,7 +120,10 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
    }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return when (.+)$','i').exec(ownerText))){
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
-   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+') 호출하고 ('+name+')(?:을|를)? 호출(?:해|해줘|하라|해주세요)?
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+') 호출하고 ('+name+')(?:을|를)? 호출(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
+     (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+') then ('+name+')$','i').exec(ownerText))){
+    [,functionName,after,callee]=m;callees=[m[3],m[4]];operation='existing-call';
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+')(?:을|를) 호출(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
      (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+')$','i').exec(ownerText))){
     [,functionName,after,callee]=m;operation='existing-call';
    }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+'(?:\\.'+name+')*)(?:을|를) (-?\\d+(?:\\.\\d+)?)에서 (-?\\d+(?:\\.\\d+)?)(?:까지)? 제한(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
@@ -133,69 +136,6 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
    const id='req-'+sourceDigest(ownerText).slice(0,16);
    if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
    result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,callees,
-    dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
-    stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
-  }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}
- }
- if(!result.requirements.length&&!result.unresolved.length)result.unresolved.push({code:'NO_OWNER_SPEC'});
- return result;
-}
-).exec(ownerText))||
-     (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+') then ('+name+')
-     (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+')$','i').exec(ownerText))){
-    [,functionName,after,callee]=m;operation='existing-call';
-   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+'(?:\\.'+name+')*)(?:을|를) (-?\\d+(?:\\.\\d+)?)에서 (-?\\d+(?:\\.\\d+)?)(?:까지)? 제한(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
-     (m=new RegExp('^In (?:function )?('+name+'),? clamp ('+name+'(?:\\.'+name+')*) between (-?\\d+(?:\\.\\d+)?) and (-?\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
-    [,functionName,output]=m;minimum=Number(m[3]);maximum=Number(m[4]);operation='clamp-assignment';
-    if(!Number.isFinite(minimum)||!Number.isFinite(maximum)||minimum>=maximum||minimum< -1e6||maximum>1e6)throw Error('range');
-   }else if((m=new RegExp('^함수 ('+name+')에서 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) (true|false|-?\\d+(?:\\.\\d+)?)로 설정(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
-    functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
-   }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
-   const id='req-'+sourceDigest(ownerText).slice(0,16);
-   if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
-   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,
-    dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
-    stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
-  }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}
- }
- if(!result.requirements.length&&!result.unresolved.length)result.unresolved.push({code:'NO_OWNER_SPEC'});
- return result;
-}
-,'i').exec(ownerText))){
-    [,functionName,after,callee]=m;callees=[m[3],m[4]];operation='existing-call';
-   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+')(?:을|를) 호출(?:해|해줘|하라|해주세요)?
-     (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+')$','i').exec(ownerText))){
-    [,functionName,after,callee]=m;operation='existing-call';
-   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+'(?:\\.'+name+')*)(?:을|를) (-?\\d+(?:\\.\\d+)?)에서 (-?\\d+(?:\\.\\d+)?)(?:까지)? 제한(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
-     (m=new RegExp('^In (?:function )?('+name+'),? clamp ('+name+'(?:\\.'+name+')*) between (-?\\d+(?:\\.\\d+)?) and (-?\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
-    [,functionName,output]=m;minimum=Number(m[3]);maximum=Number(m[4]);operation='clamp-assignment';
-    if(!Number.isFinite(minimum)||!Number.isFinite(maximum)||minimum>=maximum||minimum< -1e6||maximum>1e6)throw Error('range');
-   }else if((m=new RegExp('^함수 ('+name+')에서 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) (true|false|-?\\d+(?:\\.\\d+)?)로 설정(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
-    functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
-   }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
-   const id='req-'+sourceDigest(ownerText).slice(0,16);
-   if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
-   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,
-    dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
-    stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
-  }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}
- }
- if(!result.requirements.length&&!result.unresolved.length)result.unresolved.push({code:'NO_OWNER_SPEC'});
- return result;
-}
-).exec(ownerText))||
-     (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+')$','i').exec(ownerText))){
-    [,functionName,after,callee]=m;operation='existing-call';
-   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+'(?:\\.'+name+')*)(?:을|를) (-?\\d+(?:\\.\\d+)?)에서 (-?\\d+(?:\\.\\d+)?)(?:까지)? 제한(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
-     (m=new RegExp('^In (?:function )?('+name+'),? clamp ('+name+'(?:\\.'+name+')*) between (-?\\d+(?:\\.\\d+)?) and (-?\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
-    [,functionName,output]=m;minimum=Number(m[3]);maximum=Number(m[4]);operation='clamp-assignment';
-    if(!Number.isFinite(minimum)||!Number.isFinite(maximum)||minimum>=maximum||minimum< -1e6||maximum>1e6)throw Error('range');
-   }else if((m=new RegExp('^함수 ('+name+')에서 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) (true|false|-?\\d+(?:\\.\\d+)?)로 설정(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
-    functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
-   }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
-   const id='req-'+sourceDigest(ownerText).slice(0,16);
-   if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
-   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,
     dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
     stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
   }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}
