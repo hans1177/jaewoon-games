@@ -1549,7 +1549,8 @@ jobs:
     env:
       # Roblox game-primary keeps the existing local/deterministic-first candidate path,
       # then permits ONLY the approved free-tier model pair when a real source edit is needed.
-      # Other lanes stay offline; missing keys, quota and billing errors fail closed.
+      # Other lanes stay offline; free-tier billing MUST be verified before any Gemini key is exposed.
+      # Missing free-tier proof, credentials, quota or safe routes fail closed; no paid fallback.
       VIBE2_V4_OFFLINE_ONLY: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && 'false' || 'true' }}
       VIBE2_ROBLOX_NO_MODEL_ONLY: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && (vars.VIBE2_ROBLOX_NO_MODEL_ONLY || 'false') || 'true' }}
       VIBE2_V4_NO_EXTERNAL_API: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && 'false' || 'true' }}
@@ -1818,7 +1819,7 @@ jobs:
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
           VARIANT: ${{ matrix.variant }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
@@ -2011,7 +2012,7 @@ jobs:
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
