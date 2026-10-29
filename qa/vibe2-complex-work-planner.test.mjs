@@ -1433,7 +1433,7 @@ test('one-shot Web volume UI has working status, facility info, minimap, objecti
   target:'web',repositoryRoot:repo});
  assert.equal(candidate.vibe59CodeKind,'ONE_SHOT_GAME_VOLUME');
  assert.equal(candidate.edits.length,4);
- assert.deepEqual(candidate.volumePack.uiPages,['월드','상태','시설','지도','목표']);
+ assert.deepEqual(candidate.volumePack.uiPages,['월드','상태','시설','지도','목표','가방','장비','제작','퀘스트','상점']);
  assert.equal(candidate.volumePack.saveSchemaChanged,false);
  assert.equal(candidate.runtimeVerified,false);
  const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
@@ -1534,4 +1534,89 @@ test('one-shot UI skips unknown keyboard sources and protects valued keyboard re
  assert.throws(()=>createVibe59OneShotVolumeCandidate(options),/VIBE59_VOLUME_KEYBOARD_RETURN_CONTRACT/);
  fs.writeFileSync(file,common);
  assert.equal(fs.readFileSync(file,'utf8'),common);
+});
+
+test('one-shot five system panels perform real material, crafting, equipment, quest and shop state transitions',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let outside=0;let originalKeys=0;',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(x,y){outside++;}',
+  'function handleKeydown(e){originalKeys++;}',
+  'function update(dt){}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차','회전목마'],maps:['숲','사막'],backgrounds:['낮'],actions:['점프','대시'],motions:['걷기']}};
+ const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo});
+ assert.equal(candidate.volumePack.gameplayBuildUp.length,5);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ assert.ok(symbol);assert.doesNotThrow(()=>new vm.Script(generated));
+ const labels=[],canvas={width:1000,height:800};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(value){labels.push(value);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(generated+';({render,handleClick,handleKeydown,view:()=>'+symbol+
+   ',outside:()=>outside,originalKeys:()=>originalKeys})',{document:{querySelector:()=>canvas},Date,Math,Number});
+ const click=(x,y)=>app.handleClick(560+x*420/440,32+y*720/600);
+ const world=()=>click(227,21);
+ const system=i=>{click(65,20);click(80,85+i*86+30);};
+ const screen=()=>{labels.length=0;app.render(ctx);return labels.join('|');};
+ world();click(30,238);click(30,238);assert.equal(app.view().materials[0],2);
+ system(2);assert.match(screen(),/제작창/);click(50,145);
+ assert.equal(app.view().materials[0],0);assert.equal(app.view().gearCounts[0],1);
+ click(50,145);assert.equal(app.view().gearCounts[0],1,'craft fails without material');
+ system(1);assert.match(screen(),/장비창/);click(60,145);
+ assert.equal(app.view().equipped,0);
+ world();click(32,520);assert.equal(app.view().coins,2,'equipped action grants pack reward');
+ click(32,520);assert.equal(app.view().coins,4);
+ click(130,238);assert.equal(app.view().visitedMaps[1],true);
+ click(40,348);assert.equal(app.view().rides,1);
+ system(3);assert.match(screen(),/퀘스트 목록/);
+ const before=app.view().coins;click(45,145);
+ assert.equal(app.view().coins,before+2);click(45,145);
+ assert.equal(app.view().coins,before+2,'quest reward cannot be claimed twice');
+ system(4);assert.match(screen(),/상점 UI/);
+ const balance=app.view().coins;click(70,145);
+ assert.equal(app.view().coins,balance-3);assert.equal(app.view().tickets[0],1);
+ system(0);assert.match(screen(),/인벤토리창/);
+ const rides=app.view().rides,coins=app.view().coins;
+ click(60,117+2*65+25);
+ assert.equal(app.view().tickets[0],0);assert.equal(app.view().rides,rides+1);
+ assert.equal(app.view().coins,coins,'ticket redeem cannot mint coins');
+ app.handleKeydown({altKey:true,key:'0'});assert.equal(app.view().tab,'상점');
+ assert.equal(app.originalKeys(),0,'Alt system navigation consumed');
+ app.handleKeydown({key:'z'});assert.equal(app.originalKeys(),1);
+ assert.equal(app.outside(),0);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.doesNotMatch(generated,/localStorage|sessionStorage|setItem|DataStore/);
+});
+test('mobile system menu switches between five legacy and five additional panels',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,source);
+ const candidate=createVibe59OneShotVolumeCandidate({order:{gameId:'rpg',ownerApproved:true,
+   baseRevisionSha:revision,vibe59VolumeRequest:{maps:['숲','사막'],facilities:['관람차'],actions:['점프']}},
+   sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ const labels=[],canvas={width:390,height:700};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(value){labels.push(value);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(generated+';({render,handleClick,view:()=>'+symbol+'})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ const touch=(x,y)=>app.handleClick(390*.05+x*(390*.90)/440,700*.06+y*(700*.86)/600);
+ touch(340,25);assert.equal(app.view().menuPage,0);
+ touch(80,560);assert.equal(app.view().menuPage,1);
+ labels.length=0;app.render(ctx);
+ assert.ok(labels.includes('가방 화면'));assert.ok(labels.includes('상점 화면'));
+ touch(80,85+4*86+25);assert.equal(app.view().tab,'상점');
+ labels.length=0;app.render(ctx);assert.ok(labels.includes('상점 UI'));
 });
