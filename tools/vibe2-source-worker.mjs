@@ -1727,6 +1727,28 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
 
 // 무모델 Roblox 코딩: 이미 구현된 네이티브 소스의 검증 가능한 책임 함수를 직접 보수한다.
 // 신규 규칙/보상/저장 키를 만들거나 확인되지 않은 UI·서버 API를 추측하지 않는다.
+// [실패 근거 기반 코딩 우선순위] 최신 빌드/작업 지시에 연결된 실제 Studio
+// 증거에만 높은 우선순위를 부여한다. 텍스트 목표나 추정만으로 우선권을 주지 않는다.
+export function prioritizeVerifiedStudioNativeRepair({order={},responsibleFiles=[]}={}){
+  if(clean(order?.target).toLowerCase()!=='roblox')return false;
+  if(!unique(responsibleFiles).some(file=>/^(?:shared\/RobloxCommonUI\.luau)$/.test(file)))return false;
+  const failure=order?.selectedTask?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure
+    ||order?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure||null;
+  if(failure?.authority!=='roblox-official-studio-mcp-product-quality-failure')return false;
+  if(!Number.isSafeInteger(Number(failure.workflowRunId))||Number(failure.workflowRunId)<=0)return false;
+  if(!/^[a-f0-9]{40}$/i.test(clean(failure.sourceRevision)))return false;
+  if(!/^sha256:[a-f0-9]{64}$/i.test(clean(failure.artifactIdentity)))return false;
+  const surfaces=(failure.repairSurfaces||[]).map(value=>clean(value).toUpperCase());
+  const details=(failure.qualityFailureDetails||[]).filter(row=>clean(row?.repairSurface).toUpperCase()==='MOBILE_UI'
+    &&clean(row?.id)==='adaptive-ui-commercial-quality');
+  if(!surfaces.includes('MOBILE_UI')||!details.length)return false;
+  return details.some(row=>{
+    let observed=row.observed||{};
+    if(typeof observed==='string'){try{observed=JSON.parse(observed);}catch{return false;}}
+    return Number(observed?.overlapPairs)>=2&&Number(observed?.largeBlockingOverlayCount)===0;
+  });
+}
+
 export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot='',responsibleFiles=[],sourceRootRelative='',candidateValidator=null}={}){
   if(clean(order?.target).toLowerCase()!=='roblox'||!sourceRoot||assetDevelopmentTask(order)||worldLobbySourceWorkRequired(order))return null;
   const intent=[order.goal,order?.selectedTask?.goal,order?.selectedTask?.title,order?.selectedTask?.description,
@@ -9206,6 +9228,32 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       temperature:0,completionMode:'VIBE4_OFFLINE_PATTERN'}};
     console.log('VIBE4_OFFLINE_PATTERN=VALIDATED:'+offline.vibe4PatternId);
   }
+  // [실측 우선] 검증된 동일 게임 Studio MCP 겹침 실패는 일반 Vibe5.9 생성보다
+  // 기존 원본 책임 함수의 정밀 수정부터 시도한다. 검증 실패를 일반 후보로 덮지 않는다.
+  let deterministicNativeSelection=null;
+  const nativeStudioFirst=prioritizeVerifiedStudioNativeRepair({order,responsibleFiles});
+  const tryNativeCandidate=()=>{
+    if(!generated&&target==='roblox'&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
+      try{
+        const native=deterministicRobloxNativeRepairCandidate({order,sourceRoot,responsibleFiles,sourceRootRelative,candidateValidator});
+        if(native){
+          deterministicNativeSelection=native.deterministicSelection;
+          generated={candidate:native.normalizedCandidate,candidateValidation:native.candidateValidation,
+            generation:{attempts:deterministicNativeSelection.attempts.length,
+              recoveryUsed:deterministicNativeSelection.attempts.some(row=>row.status==='REJECTED'),modelUsed:false,
+              deterministicRobloxNativeRepair:native.deterministicRobloxNativeRepair,
+              mode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR',maxPredict:0,timeoutMs:0,contextWindow:0,
+              temperature:0,completionMode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR'}};
+          console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=VALIDATED:'+native.deterministicRobloxNativeRepair);
+        }
+      }catch(error){
+        deterministicNativeSelection=error?.vibe2DeterministicSelection||null;
+        console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=REJECTED:'+generationFailureClass(error));
+      }
+      if(deterministicNativeSelection)console.log('VIBE2_ROBLOX_NO_MODEL_SELECTION='+JSON.stringify(deterministicNativeSelection));
+    }
+  };
+  if(nativeStudioFirst)tryNativeCandidate();
   // Vibe5.9 bounded compositional synthesis: no cloud AI or source write.
   // Owner-approved source scope and the original Vibe2 validator still decide admission.
   if(!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
@@ -9255,29 +9303,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=FALLBACK:'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
     }
   }
-  // 무모델 후보도 기존 정밀 편집·Luau 컴파일·인과 검증을 거친다.
-  // 소스에서 유일하게 확인된 원본 책임 함수만 직접 교체한다.
-  // 학습 원칙이 게임 소스에 실제로 적용돼야 하는 주문은 단순 교정으로 충족했다고 주장하지 않는다.
-  let deterministicNativeSelection=null;
-  if(!generated&&target==='roblox'&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
-    try{
-      const native=deterministicRobloxNativeRepairCandidate({order,sourceRoot,responsibleFiles,sourceRootRelative,candidateValidator});
-      if(native){
-        deterministicNativeSelection=native.deterministicSelection;
-        generated={candidate:native.normalizedCandidate,candidateValidation:native.candidateValidation,
-          generation:{attempts:deterministicNativeSelection.attempts.length,
-            recoveryUsed:deterministicNativeSelection.attempts.some(row=>row.status==='REJECTED'),modelUsed:false,
-            deterministicRobloxNativeRepair:native.deterministicRobloxNativeRepair,
-            mode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR',maxPredict:0,timeoutMs:0,contextWindow:0,
-            temperature:0,completionMode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR'}};
-        console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=VALIDATED:'+native.deterministicRobloxNativeRepair);
-      }
-    }catch(error){
-      deterministicNativeSelection=error?.vibe2DeterministicSelection||null;
-      console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=REJECTED:'+generationFailureClass(error));
-    }
-    if(deterministicNativeSelection)console.log('VIBE2_ROBLOX_NO_MODEL_SELECTION='+JSON.stringify(deterministicNativeSelection));
-  }
+  // [기존 네이티브 후보] Studio 실패 전용 작업은 위에서 먼저 검증했다.
+  // 다른 Roblox 작업은 기존 Vibe5.9 / 진단 후보를 확인한 뒤 기존 순서대로 수리한다.
+  if(!nativeStudioFirst&&!generated)tryNativeCandidate();
   // [기존 네이티브 빌드업] 현재 게임 소스에 등장하는 CC0 원본 역할이
   // 확보되어 있으면 장식용 HUD 단계보다 기존 게임 소비처의 실교체를 먼저 시도한다.
   // 모델이나 Roblox 업로드/권한 증거가 없으면 실패 단계로 남긴다.
