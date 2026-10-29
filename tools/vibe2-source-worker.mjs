@@ -9271,8 +9271,56 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   let changedFiles,branch=null;
   if(applySource){
     branch=assertCandidateBranch(cwd);
-    const scaffoldChanged=bootstrap&&target==='unity'?writeUnityWebBootstrapScaffold(sourceRoot,sourceRootRelative):[];
-    changedFiles=[...scaffoldChanged,...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles,{allowCreate:bootstrap})];
+    // [원본 적용] 후보 전체를 먼저 기존 정밀 편집기로 검증한다. 실패한 두 번째 파일 때문에
+    // 첫 번째 운영 게임 원본만 반영되는 상황을 차단한다. 새 배포·검증 파이프라인은 만들지 않는다.
+    const scaffoldFiles=bootstrap&&target==='unity'?unityBootstrapFiles:null;
+    const staged=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
+    const newPaths=new Set(candidate.newFiles.map(row=>row.path));
+    const replacePaths=new Set(candidate.replaceFiles.map(row=>row.path));
+    const originals=new Map(),proposed=new Map();
+    for(const relative of staged){
+      const absolute=path.resolve(sourceRoot,relative);
+      if(!absolute.startsWith(sourceRoot+path.sep))throw new Error('VIBE2_SOURCE_APPLY_SCOPE_ESCAPE:'+relative);
+      const previous=fs.existsSync(absolute)?fs.readFileSync(absolute):null;
+      if(previous===null&&(!newPaths.has(relative)&&!bootstrap))throw new Error('VIBE2_SOURCE_APPLY_MISSING_ORIGINAL:'+relative);
+      if(previous!==null&&newPaths.has(relative))throw new Error('VIBE2_SOURCE_APPLY_NEW_FILE_COLLISION:'+relative);
+      if(previous===null&&replacePaths.has(relative)&&!bootstrap)throw new Error('VIBE2_SOURCE_APPLY_REPLACE_MISSING:'+relative);
+      if(previous!==null&&fs.lstatSync(absolute).isSymbolicLink())throw new Error('VIBE2_SOURCE_APPLY_SYMLINK:'+relative);
+      const next=fs.readFileSync(path.join(candidateRoot,'files',relative));
+      if(previous!==null&&previous.equals(next))throw new Error('VIBE2_SOURCE_APPLY_NO_DELTA:'+relative);
+      originals.set(relative,previous);proposed.set(relative,next);
+    }
+    const committed=[],temporary=[];
+    try{
+      for(const [relative,previous] of originals){
+        const absolute=path.resolve(sourceRoot,relative);
+        const actual=fs.existsSync(absolute)?fs.readFileSync(absolute):null;
+        if((actual===null)!==(previous===null)||(actual!==null&&!actual.equals(previous)))
+          throw new Error('VIBE2_SOURCE_APPLY_STALE_ORIGINAL:'+relative);
+      }
+      for(const [relative,next] of proposed){
+        const absolute=path.resolve(sourceRoot,relative);
+        fs.mkdirSync(path.dirname(absolute),{recursive:true});
+        const temp=absolute+'.vibe2-stage-'+process.pid;
+        temporary.push(temp);
+        fs.writeFileSync(temp,next,{flag:'wx'});
+      }
+      for(const relative of staged){
+        const absolute=path.resolve(sourceRoot,relative),temp=absolute+'.vibe2-stage-'+process.pid;
+        fs.renameSync(temp,absolute);
+        committed.push(relative);
+      }
+    }catch(error){
+      for(const relative of committed.reverse()){
+        const absolute=path.resolve(sourceRoot,relative),before=originals.get(relative);
+        if(before===null)fs.rmSync(absolute,{force:true});
+        else fs.writeFileSync(absolute,before);
+      }
+      throw error;
+    }finally{
+      for(const temp of temporary)fs.rmSync(temp,{force:true});
+    }
+    changedFiles=staged;
   }else{
     const scaffoldFiles=bootstrap&&target==='unity'?unityBootstrapFiles:null;
     changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
