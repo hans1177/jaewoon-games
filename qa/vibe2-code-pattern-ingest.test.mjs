@@ -41,6 +41,29 @@ test('verified source-changing algorithm experiment is retained without raw code
  assert.deepEqual(noRuntime,[]);
 });
 
+test('canonical training sample stores only source-matched security-verified algorithm experiments',()=>{
+ const revision='e'.repeat(40);
+ const evidence={goal:'알고리즘 합성 구현',gameId:'lab',sourcePath:'web-games/lab',
+  changedFiles:['web-games/lab/logic.js'],role:'development',
+  codeLaboratory:{strategy:'balanced',sourceChanged:true,modelUsed:false,sourceRevision:revision},
+  securityScan:{sourceRevision:revision,conclusion:'PASS'},
+  verificationTrace:{state:'PASS',sourceRevision:revision,commitSha:revision,
+   pullRequest:11054,ci:'PASS',independentQa:'PASS',runtime:'PASS'}};
+ const make=(e)=>buildVerifiedTrainingSample({evidence:e,patch:'-return 0;\n+return Math.max(x,y);',
+  sourceRevision:revision,independentQa:'PASS',browserQa:'PASS',taskType:'coding'});
+ const valid=make(evidence);
+ assert.equal(valid.verification.security,'PASS');
+ assert.equal(valid.verification.codeLaboratory.strategy,'balanced');
+ const derived=deriveVerifiedCodePatterns(valid,'company-learning/training-samples/lab.json')
+  .find(row=>row.system==='ALGORITHM_SYNTHESIS');
+ assert.equal(derived?.verifiedAlgorithmStrategy?.strategy,'balanced');
+ assert.equal(make({...evidence,securityScan:{...evidence.securityScan,sourceRevision:'b'.repeat(40)}})
+  .verification.codeLaboratory,undefined);
+ assert.equal(make({...evidence,codeLaboratory:{...evidence.codeLaboratory,sourceChanged:false}})
+  .verification.codeLaboratory,undefined);
+ assert.equal(make({...evidence,changedFiles:['web-games/other/logic.js']})
+  .verification.codeLaboratory,undefined);
+});
 test('unverified sample is rejected',()=>{
   assert.deepEqual(deriveVerifiedCodePatterns({taskType:'coding',sourceRevision:'a'.repeat(40),independentQa:'FAIL'}),[]);
 });
