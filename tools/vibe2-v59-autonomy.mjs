@@ -895,6 +895,33 @@ export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsi
    ruleDigest:sha(JSON.stringify({sourceRevision:sha(source),rel,variable,min,max})),
    sourceSha256:sha(source),modelUsed:false,sourceWrite:false,runtimeVerified:false});
 }
+// [무모델 범용 함수 탐색] 기존 책임 함수의 정확한 문법 범위만 재작성한다.
+// 모호한 이름, 중첩 함수, 저장/권한/네트워크 경계는 원본 전체 교체 후보에서 제외한다.
+export function locateVibe59ExistingFunction({source='',functionName='',target=''}={}){
+ if(!['web','roblox'].includes(target)||typeof source!=='string'||source.length>260000
+   ||!/^[A-Za-z_][A-Za-z0-9_]{0,59}$/.test(functionName))
+   throw Error('VIBE59_FUNCTION_REWRITE_SCOPE');
+ const language=target==='roblox'?'luau':'javascript';
+ const names=inspectSourceFunctions(source,{language,maxFunctions:4096})
+   .filter(row=>row.name===functionName);
+ const symbol=new RegExp('\\bfunction\\s+'+functionName+'\\s*\\(','g');
+ const hits=[...executableText(source,language).matchAll(symbol)];
+ if(names.length!==1||hits.length!==1)throw Error('VIBE59_FUNCTION_OWNER_AMBIGUOUS');
+ const fn=names[0],original=source.slice(fn.start,fn.end);
+ if(original.length<20||original.length>24000||source.split(original).length!==2)
+   throw Error('VIBE59_FUNCTION_REWRITE_SCOPE');
+ const header=target==='roblox'
+   ?new RegExp('^(?:local\\s+)?function\\s+'+functionName+'\\s*\\(([^)]*)\\)')
+   :new RegExp('^function\\s+'+functionName+'\\s*\\(([^)]*)\\)\\s*\\{');
+ const match=header.exec(original);
+ if(!match||/\b(?:save|persist|load|reward|purchase|delete|remove|spend|grant)\b/i.test(functionName)
+   ||/\b(?:DataStoreService|GetDataStore|SetAsync|UpdateAsync|RemoveAsync|localStorage|sessionStorage|fetch|XMLHttpRequest|require|eval|Function|FireServer|FireClient|FireAllClients|OnServerEvent|OnClientEvent|http|https)\b/i.test(executableText(original,language))
+   ||inspectSourceFunctions(original,{language,maxFunctions:64}).some(row=>row.name!==functionName))
+   throw Error('VIBE59_FUNCTION_REWRITE_PROTECTED');
+ return Object.freeze({name:functionName,original,header:match[0],parameters:match[1].split(',').map(x=>x.trim()).filter(Boolean),
+   pathStart:fn.start,pathEnd:fn.end,sourceSha256:sha(source),sourceWrite:false,runtimeVerified:false});
+}
+
 export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null,verifiedCodePatterns=[]}={}){
   const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
   const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
