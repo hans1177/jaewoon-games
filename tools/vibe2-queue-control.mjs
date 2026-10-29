@@ -840,9 +840,10 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   const platforms=focus.ownerFocusedGamePlatforms||{};
   const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
   const ownerStoppedIds=new Set((catalog?.ownerStoppedGameIds||[]).map(clean).filter(Boolean));
+  const permanentlyDeletedIds=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
     const game=games.get(clean(task.gameId));
-    const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
+    const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||permanentlyDeletedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
       ||['OWNER_STOPPED','STOPPED'].includes(clean(game?.lifecycleState||game?.canonical?.lifecycle?.state).toUpperCase());
     const retiredWeb=clean(task.target).toLowerCase()==='web'
       &&webSourceRetiredInCatalog(games.get(clean(task.gameId)));
