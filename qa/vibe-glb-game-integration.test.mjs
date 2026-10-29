@@ -20,6 +20,10 @@ test('generated game accepts pinned internal CC0 GLB actors and wires animated c
   assert.equal(actor.license, 'CC0');
   assert.equal(actor.sha256, cc0.sha256);
   const html = buildGeneratedGame({packageData:{gameId:'glb-actor', assets:{enemyModel:cc0}}}).html;
+  const generatedModule = html.split('<script type="module">')[1]?.split('</script>')[0];
+  assert.ok(generatedModule, 'generated game module not found');
+  // Generated HTML embeds a module template. Parse it after stripping static import declarations.
+  assert.doesNotThrow(() => new Function(generatedModule.replace(/^import .*?;$/gm, '')));
   assert.match(html, /type="importmap"/);
   assert.match(html, /createVibeModelSprites/);
   assert.match(html, /공통 에셋 미검증/);
