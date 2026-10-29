@@ -5,8 +5,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
-import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel} from '../tools/web-vibe-worker.mjs';
+import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
+import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -455,4 +456,91 @@ test('WEB model-less evolution composes distinct playable routes from existing g
  assert.equal(synthesizeWebProgressionWithoutModel({...task,goal:'전투 공격력 변경 콘텐츠 확장'},source),null);
  assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('craftItem(route.recipeId);','') }),null);
  assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('const regionIds=["forest","desert"];','const regionIds=["forest"];')}),null);
+});
+
+
+// [Vibe5.9] 문법 기반 후보 탐색과 반례를 통한 재합성으로 새 계산 함수를 만든다.
+test('Vibe5.9 invents nontrivial arithmetic algorithms using counterexample-guided search',()=>{
+ const spec={parameters:['x','y'],
+  examples:[
+   {args:[1,0],output:1},{args:[2,0],output:2},{args:[3,0],output:3},
+   {args:[4,0],output:4}
+  ],
+  holdouts:[{args:[2,3],output:5},{args:[4,5],output:9}]};
+ const result=synthesizeVibe59NumericAlgorithm({spec});
+ assert.match(result.source,/^return [\s\S]+;$/);
+ assert.equal(result.casesPassed,6);
+ assert.equal(result.heldOutCases,2);
+ assert.ok(result.counterexamples.length>=1,'initial x-only overfit must yield at least one holdout counterexample');
+ assert.ok(result.candidatesConsidered>2);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(result.sourceWrite,false);
+ const source='function solve(x,y){return 0;}\n';
+ const compiled=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'solve'},source,relative:'web-games/demo/game.js'});
+ assert.ok(compiled.newText.includes(result.source));
+ assert.equal(compiled.search.modelUsed,false);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:false,functionName:'solve'},source,relative:'web-games/demo/game.js'}),
+  /SOURCE_SCOPE_REQUIRED/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithm({spec:{...spec,holdouts:[]}}),/EXPLICIT_EXAMPLES_REQUIRED/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithm({spec:{...spec,examples:[...spec.examples,spec.examples[0]]}}),
+  /DUPLICATE_INPUT/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'solve'},
+  source:'function solve(x,y){localStorage.setItem("save",x);return 0;}',
+  relative:'web-games/demo/game.js'}),/EXISTING_PURE_FUNCTION_REQUIRED/);
+});
+test('WEB existing owner task applies a synthesized numeric algorithm without model, retaining other source',async()=>{
+ const source={relative:'web-games/demo/game.js',
+  original:'const keepSave="save-v1";function resolve(x,y){return 0;}\n'};
+ const spec={source:source.relative,functionName:'resolve',parameters:['x','y'],
+  examples:[{args:[1,2],output:2},{args:[4,3],output:4},{args:[0,5],output:5}],
+  holdouts:[{args:[8,1],output:8},{args:[-2,-1],output:-1}]};
+ const task={gameId:'demo',goal:'기존 계산 함수를 새 알고리즘으로 작성',
+  ownerDirective:true,evidence:['owner-source-authenticated'],algorithmSpec:spec};
+ let calls=0;
+ const edit=await proposeWebVibeChange(task,source,{cloud:true,apiKey:'',
+  geminiImpl:async()=>{calls++;throw Error('MODEL_CALLED');}});
+ assert.equal(calls,0);
+ assert.equal(edit.deterministicWebAlgorithm,true);
+ assert.equal(edit.offlineSourceProof.modelUsed,false);
+ assert.equal(edit.offlineSourceProof.runtimeVerified,false);
+ assert.equal(edit.offlineSourceProof.heldOutCases,2);
+ assert.match(edit.updated,/const keepSave="save-v1"/);
+ assert.notEqual(edit.updated,source.original);
+ assert.equal(synthesizeWebAlgorithmWithoutModel({...task,ownerDirective:false},source),null);
+ assert.equal(synthesizeWebAlgorithmWithoutModel({...task,evidence:[]},source),null);
+ assert.equal(synthesizeWebAlgorithmWithoutModel({...task,algorithmSpec:{...spec,source:'web-games/other/game.js'}},source),null);
+ // 두 번째 파일을 임의로 바꾸지 않는다.
+ assert.equal(await proposeWebVibeChange(task,
+  {relative:'web-games/demo/other.js',original:'const status=1;'},
+  {cloud:true,apiKey:'',geminiImpl:async()=>{calls++;throw Error('MODEL_CALLED')}}),null);
+ assert.equal(calls,0);
+ const embedded={...task,algorithmSpec:undefined,
+   goal:'알고리즘 작성\n'+String.fromCharCode(96).repeat(3)+'json\n'+
+   JSON.stringify({algorithmSpec:spec})+'\n'+String.fromCharCode(96).repeat(3)};
+ const inline=synthesizeWebAlgorithmWithoutModel(embedded,source);
+ assert.equal(inline.deterministicWebAlgorithm,true);
+});
+test('Vibe5.9 canonical source candidate accepts only owner-approved bounded algorithm specs',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-algorithm-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.writeFileSync(path.join(root,'logic.js'),'function clamp(a,b){return 0;}\n');
+ const spec={functionName:'clamp',parameters:['a','b'],
+  examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
+  holdouts:[{args:[7,8],output:8},{args:[-1,-4],output:-1}]};
+ const order={gameId:'demo',vibe59CodeRequest:{
+  ownerApproved:true,path:'logic.js',find:'function clamp(a,b){return 0;}',
+  algorithmSpec:spec}};
+ const result=createVibe59CodeCandidate({order,sourceRoot:root,
+  responsibleFiles:['logic.js'],target:'web'});
+ assert.equal(result.vibe59CodeKind,'WEB_SYNTHESIZED_NUMERIC_ALGORITHM');
+ assert.equal(result.vibe59TestPlan.pass,true);
+ assert.equal(result.algorithmProof.runtimeVerified,false);
+ assert.match(result.edits[0].replace,/return Math\.max\(/);
+ assert.equal(fs.readFileSync(path.join(root,'logic.js'),'utf8'),'function clamp(a,b){return 0;}\n');
+ assert.throws(()=>createVibe59CodeCandidate({order:{...order,vibe59CodeRequest:{
+  ...order.vibe59CodeRequest,ownerApproved:false}},sourceRoot:root,
+  responsibleFiles:['logic.js'],target:'web'}),/OWNER_EXPLICIT_CODING_SPEC_REQUIRED/);
 });
