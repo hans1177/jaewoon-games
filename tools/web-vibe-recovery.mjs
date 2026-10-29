@@ -21,14 +21,21 @@ export function selectWebVibeRecoveryTask(queue,{now=new Date().toISOString(),ma
   // Prioritize never-attempted games over retry loops, then the least recently
   // failed game. This keeps an old repeatedly failing task from monopolizing
   // the 5-minute existing WEB watchdog without dropping its retry entitlement.
+  // One pass to exclude games with active leases, running edits, or pending
+  // cooldown. Do not allow a later task for the same game to overtake an
+  // earlier owner directive while it is actively leased or cooling down.
+  const busyGames=new Set();
+  for(const task of state.tasks){
+    if(task.status==='running'
+      ||(eligible(task)&&(
+        Math.max(0,Math.floor(Number(task.recoveryAttempts)||0))>=maxAttempts
+        ||(task.recoveryNextAt&&validTime(task.recoveryNextAt)>at)
+        ||(task.recoveryClaimUntil&&validTime(task.recoveryClaimUntil)>at))))
+      busyGames.add(task.gameId);
+  }
   const perGame=new Map();
   for(const [index,task] of state.tasks.entries()){
-    if(!eligible(task)
-      ||Math.max(0,Math.floor(Number(task.recoveryAttempts)||0))>=maxAttempts
-      ||(task.recoveryNextAt&&validTime(task.recoveryNextAt)>at)
-      ||(task.recoveryClaimUntil&&validTime(task.recoveryClaimUntil)>at)
-      ||state.tasks.some(other=>other.gameId===task.gameId&&other.status==='running'))
-      continue;
+    if(!eligible(task)||busyGames.has(task.gameId))continue;
     if(!perGame.has(task.gameId))perGame.set(task.gameId,{task,index});
   }
   const ranked=[...perGame.values()].sort((a,b)=>{
