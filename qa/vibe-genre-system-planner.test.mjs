@@ -1,6 +1,6 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
 import {planVibeGame,vibeCasualFive} from '../assets/vibe-genre-system-planner.mjs';
-import {calculateVibeCombatStats,createVibeSaveSlots,createVibeWorldVfx} from '../assets/vibe-game-world-runtime.mjs';
+import {calculateVibeCombatStats,createVibeSaveSlots,createVibeWorldVfx,createVibeCanvasVfx} from '../assets/vibe-game-world-runtime.mjs';
 import {createGenreGameplay} from '../assets/vibe-genre-gameplay.mjs';
 test('RPG and survival systems combine without duplicates',()=>{const plan=planVibeGame({primary:'rpg',secondary:['survival']});assert.ok(plan.systems.includes('hunger'));assert.ok(plan.systems.includes('quests'));assert.equal(plan.systems.length,new Set(plan.systems).size)});
 test('auto picks strategy when requested and casual set has five genres',()=>{assert.equal(planVibeGame({primary:'auto',preferences:{strategy:true}}).primary,'strategy4x');assert.equal(vibeCasualFive.length,5)});
@@ -35,4 +35,17 @@ test('existing game VFX shares a bounded disposable particle pool',()=>{
  assert.equal(added,1);assert.equal(removed,1);
  assert.equal(geometryDisposed,1);assert.equal(materialDisposed,1);
  assert.equal(vfx.burst({count:2}),0);
+});
+
+test('canvas VFX enforces budget and clears after rendering',()=>{
+ const calls=[];
+ const ctx={save(){},restore(){},fillRect(){calls.push('pixel')},set globalAlpha(v){},set fillStyle(v){},set shadowColor(v){},set shadowBlur(v){calls.push(v?'glow':'normal')}};
+ const effect=createVibeCanvasVfx({maxParticles:10});
+ assert.equal(effect.burst('magic',{x:0,y:0,count:8}),8);
+ assert.equal(effect.burst('explosion',{x:0,y:0,count:8}),2);
+ effect.update(.016);effect.draw(ctx);
+ assert.ok(calls.includes('glow'));assert.ok(calls.includes('pixel'));
+ for(let i=0;i<15;i++)effect.update(.1);
+ assert.equal(effect.count,0);effect.dispose();
+ assert.equal(effect.burst('dust',{count:3}),0);
 });
