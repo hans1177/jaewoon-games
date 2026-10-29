@@ -278,6 +278,9 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
    }
    // 호출 대상 인자 이름을 원래 책임 함수의 고유 매개변수에 직접 결합한다. Luau 지역 선언은 끌어올려지지 않는다.
    const callee=callees[0];let forwardedArguments;
+   if(!Array.isArray(call[0].arguments)||call[0].arguments.length>6){
+    unresolved.push({id:r.id,code:'CALL_ANCHOR_ARGUMENTS_UNPROVEN'});continue;
+   }
    try{
     const formals=symbol=>explicitParameterNames(/\(([^()]*)\)/.exec(file.code.slice(symbol.start,symbol.bodyStart))?.[1]??'...');
     const available=formals(owner);forwardedArguments=formals(callee);
@@ -286,6 +289,8 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
       (target==='roblox'&&callee.start>=owner.start))throw Error('UNPROVEN_CALL');
    }catch{unresolved.push({id:r.id,code:'CALL_PARAMETER_BINDING_UNPROVEN'});continue}
    r.forwardedArguments=forwardedArguments;
+   r.afterCallArguments=[...call[0].arguments];
+   r.afterCallStart=call[0].start;
   }
   nodes.push({...r,owner,file,boundSymbols:[{id:owner.id,path:owner.path,start:owner.start,end:owner.end,
    sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence}],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});
