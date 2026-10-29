@@ -13,13 +13,13 @@ test('homepage and installed app open the front door, with ChatGPT opening inter
   assert.equal(manifest.start_url,'/');
   assert.equal(manifest.id,'/command.html');
   assert.equal(manifest.display,'standalone');
-  assert.match(homepage,/<nav class="mobileDock"[\s\S]*?href="\/command\.html\?from=chatgpt-shortcut" data-chatgpt-launch/);
+  assert.match(homepage,/<nav class="mobileDock"[\s\S]*?href="command\.html\?from=chatgpt-shortcut" data-chatgpt-launch/);
   const open=homepage.match(/function openChatGpt\(\)\{[\s\S]*?\n\}/)?.[0];
   assert.ok(open);
   for(const userAgent of ['Android','iPhone','Desktop']){
     const context={location:{href:'https://jaewoon-games.pages.dev/'},navigator:{userAgent}};
     vm.runInNewContext(open+';openChatGpt();',context);
-    assert.equal(context.location.href,'/command.html?from=chatgpt-shortcut');
+    assert.equal(context.location.href,'command.html?from=chatgpt-shortcut');
   }
 });
 
@@ -63,4 +63,14 @@ test('inline command script parses and service worker cache is refreshed',()=>{
   assert.doesNotThrow(()=>new Function(inlineScript(command)));
   assert.match(sw,/jaewoon-pwa-v26/);
   assert.match(sw,/['"]\/emergency-ai\.js['"]/);
+});
+
+
+test('GitHub Pages 프로젝트 하위 경로에서 홈페이지 스크립트와 웹 카탈로그 경로를 유지한다',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const client=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(index,/src="assets\/homepage-enhancements\.js"/);
+  assert.match(index,/href="command\.html\?from=chatgpt-shortcut"/);
+  assert.match(client,/new URL\('\.\.\/',import\.meta\.url\)/);
+  assert.match(client,/getJson\('\/game-catalog\.json'\)/);
 });
