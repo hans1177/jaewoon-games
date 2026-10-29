@@ -40,7 +40,7 @@ export function createVibeWorldVfx(THREE,scene,{maxParticles=60}={}){
  geometry.setAttribute('position',positionAttribute);
  geometry.setAttribute('color',colorAttribute);
  geometry.setDrawRange(0,0);
- const material=new THREE.PointsMaterial({size:.23,vertexColors:true,transparent:true,opacity:.93,depthWrite:false,sizeAttenuation:true});
+ const material=new THREE.PointsMaterial({size:.23,vertexColors:true,transparent:true,opacity:.93,depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending});
  const points=new THREE.Points(geometry,material);
  points.frustumCulled=false;
  scene.add(points);
