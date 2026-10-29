@@ -417,3 +417,144 @@ test('Sprint3 real line-defense Roblox nested server handler produces source-bou
     assert.equal(result.status,0,'actual-source compilation: '+String(result.stderr).slice(-900));
   }
 });
+
+
+test('Sprint4 bounded Korean/English owner instructions compile exact 3–4 effect sequential DAGs',t=>{
+  const {options}=setup(t);
+  options.order.selectedTask.goal='When function event runs, call commitState then render then updateHud';
+  const three=compileVibe2ComplexIntent(options);
+  assert.deepEqual(three.requirements.map(r=>r.effect),['commitState','render','updateHud']);
+  assert.deepEqual(three.requirements[1].dependsOn,[three.requirements[0].id]);
+  assert.deepEqual(three.requirements[2].dependsOn,[three.requirements[1].id]);
+
+  options.order.selectedTask.goal='함수 event 실행 후 commitState 다음 render 다음 updateHud 그리고 recordHit 호출';
+  const four=compileVibe2ComplexIntent(options);
+  assert.deepEqual(four.requirements.map(r=>r.effect),
+    ['commitState','render','updateHud','recordHit']);
+  assert.deepEqual(four.requirements[3].dependsOn,[four.requirements[2].id]);
+  options.order.selectedTask.goal='When function event runs, call commitState then render then updateHud then recordHit then extraHit';
+  assert.equal(compileVibe2ComplexIntent(options),null,'five effects must fail closed');
+  options.order.selectedTask.goal='When function event runs, call commitState then render(); delete everything';
+  assert.equal(compileVibe2ComplexIntent(options),null,'unsupported second clause must fail closed');
+  options.order.selectedTask.goal='When function event runs, call commitState then render';
+  options.order.selectedTask.ownerDirective=false;
+  assert.throws(()=>compileVibe2ComplexIntent(options),/OWNER_DIRECTIVE_REQUIRED/);
+});
+
+test('Sprint4 WEB combat-to-bestiary-to-HUD chain forwards exact non-prefix arguments and runs in order',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-sprint4-web-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(root);
+  const relative='combat.js';
+  const original=[
+    'let kills=0, shown="", order=[];',
+    'function applyDamage(enemy, amount) { enemy.hp -= amount; order.push("damage"); }',
+    'function registerBestiary(enemy) { if(enemy.hp<=0) kills++; order.push("bestiary"); }',
+    'function render(player) { shown=player.id+":"+kills; order.push("render"); }',
+    'function onHit(player, enemy, amount) { player.hits++; order.push("hit"); }',''
+  ].join('\n');
+  fs.writeFileSync(path.join(root,relative),original);
+  const options={order:{selectedTask:{gameId:'game',ownerDirective:true,
+    goal:'When function onHit runs, call applyDamage then registerBestiary then render',
+    sourceSha256:digest(original)}},sourceRoot:root,responsibleFiles:[relative],target:'web'};
+  const plan=planVibe2ComplexWork(options);
+  assert.deepEqual(plan.steps.map(s=>s.forwardedArguments),
+    [['enemy','amount'],['enemy'],['player']]);
+  assert.ok(plan.steps.every(s=>s.parameterEvidence==='EXACT_ORIGINAL_FORMAL_NAME_SUBSET'));
+  const candidate=createVibe59CodeCandidates(options);
+  const documents=new Map([[relative,original]]);
+  applyExactEdits(root,candidate.edits,{documents});
+  const changed=documents.get(relative);
+  assert.match(changed,/applyDamage\(enemy, amount\);\s+registerBestiary\(enemy\);\s+render\(player\);/);
+  const game=vm.createContext({});
+  vm.runInContext(changed+'const player={id:7,hits:0},enemy={hp:3};onHit(player,enemy,4);',game);
+  assert.deepEqual(Array.from(vm.runInContext('[enemy.hp,kills,shown,player.hits,...order]',game)),
+    [-1,1,'7:1',1,'hit','damage','bestiary','render']);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+  fs.writeFileSync(path.join(root,relative),
+    original.replace('function registerBestiary(enemy)','function registerBestiary(monster)'));
+  assert.throws(()=>createVibe59CodeCandidates(options),/PARAMETER_BINDING_UNPROVEN/);
+  fs.writeFileSync(path.join(root,relative),
+    original.replace('player.hits++;','let enemy={hp:100};player.hits++;'));
+  assert.throws(()=>createVibe59CodeCandidates(options),/PARAMETER_BINDING_UNPROVEN/);
+});
+
+test('Sprint4 Luau server combat -> bestiary -> HUD -> journal code compiles, retains original, and optionally runs',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-sprint4-luau-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const relative='server/Game.server.luau';
+  const original=[
+    'local hits = 0','local kills = 0','local shown = 0','local journal = ""',
+    'local function applyDamage(enemy: any, amount: number)',
+    '  enemy.hp -= amount','end',
+    'local function registerBestiary(enemy: any)',
+    '  if enemy.hp <= 0 then kills += 1 end','end',
+    'local function render(player: any)',
+    '  shown = player.id','end',
+    'local function traceCombat(player: any, enemy: any)',
+    '  journal = tostring(player.id) .. ":" .. tostring(enemy.hp)','end',
+    'local function onHit(player: any, enemy: any, amount: number)',
+    '  for index = 1, 2 do hits += 1 end','end',''
+  ].join('\n');
+  fs.writeFileSync(path.join(root,relative),original);
+  const options={order:{selectedTask:{gameId:'game',ownerDirective:true,
+    sourceSha256:digest(original),
+    goal:'When function onHit runs, call applyDamage then registerBestiary then render then traceCombat'
+  }},sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
+  const plan=planVibe2ComplexWork(options);
+  assert.deepEqual(plan.steps.map(s=>s.forwardedArguments),
+    [['enemy','amount'],['enemy'],['player'],['player','enemy']]);
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.modelUsed,false);
+  assert.equal(candidate.runtimeVerified,false);
+  const docs=new Map([[relative,original]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const changed=docs.get(relative);
+  assert.match(changed,/applyDamage\(enemy, amount\)\s+registerBestiary\(enemy\)\s+render\(player\)\s+traceCombat\(player, enemy\)\s+end/);
+  const runnable=changed+
+    '\nlocal player = {id=7}\nlocal enemy = {hp=3}\nonHit(player,enemy,4)\n'+
+    'assert(hits==2 and kills==1 and shown==7 and journal=="7:-1")\n'+
+    'print("VIBE2_SPRINT4_COMBAT_BESTIARY_HUD=PASS")\n';
+  const generated=path.join(temp,'candidate.luau');fs.writeFileSync(generated,runnable);
+  const compiler=process.env.VIBE2_LUAU_COMPILER;
+  if(compiler&&fs.existsSync(compiler)){
+    const result=spawnSync(compiler,[generated],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'Luau compiler: '+String(result.stderr).slice(-800));
+  }
+  const runner=process.env.VIBE2_LUAU_BINARY;
+  if(runner&&fs.existsSync(runner)){
+    const result=spawnSync(runner,[generated],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'Luau runtime: '+String(result.stderr).slice(-800));
+    assert.match(result.stdout,/VIBE2_SPRINT4_COMBAT_BESTIARY_HUD=PASS/);
+  }
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+});
+
+test('Sprint4 real Roblox line-defense synthesizes read-only three-stage server candidate with exact SHA',t=>{
+  const root=path.resolve('roblox-games/line-defense');
+  const relative='server/Game.server.luau';
+  const original=fs.readFileSync(path.join(root,relative),'utf8');
+  // A synthetic candidate fixture, NOT an owner command to publish behavior into the game.
+  const options={order:{selectedTask:{gameId:'line-defense',ownerDirective:true,
+    sourceSha256:digest(original),
+    goal:'When function attackEnemy runs, call updateInventorySummary then startQuest then placeTower'
+  }},sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.sourceSha256,digest(original));
+  assert.equal(candidate.sourceWrite,false);
+  assert.equal(candidate.runtimeVerified,false);
+  const replay=new Map([[relative,original]]);
+  applyExactEdits(root,candidate.edits,{documents:replay});
+  assert.match(replay.get(relative),/updateInventorySummary\(player\)\s+startQuest\(player\)\s+placeTower\(player\)\s+end/);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+  const compiler=process.env.VIBE2_LUAU_COMPILER;
+  if(compiler&&fs.existsSync(compiler)){
+    const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-sprint4-real-'));
+    t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+    const source=path.join(temp,'Game.server.luau');
+    fs.writeFileSync(source,replay.get(relative));
+    const result=spawnSync(compiler,[source],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'Luau source compile: '+String(result.stderr).slice(-800));
+  }
+});
