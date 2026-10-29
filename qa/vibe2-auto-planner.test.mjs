@@ -6086,3 +6086,29 @@ test('standing owner tuning instructions are not added to Web recurring work wit
   assert.equal(task.evidence.some(value=>value.startsWith('owner-continuous-gameplay-improvement:')),false);
   assert.equal(authorizedContinuousGameplayImprovement({task,centralPolicy:{valid:true,document:{}},repoRoot:root}),false);
 });
+
+test('existing Web recurring CORE_FUN and PROGRESSION may tune balance after owner permission and verified design',()=>{
+  const root=tempRepo(),gameId='owner-recurring-full-game',pathRoot='web-games/'+gameId;
+  fs.mkdirSync(path.join(root,pathRoot),{recursive:true});
+  fs.writeFileSync(path.join(root,pathRoot,'index.html'),'<!doctype html><canvas id="game"></canvas>','utf8');
+  writeStudioDesign(root,gameId);
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  Object.assign(policy,{status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED',ROBLOX:'ALWAYS_ALLOWED'},
+    ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','WEB']},
+    fixedAutonomousDevelopmentOperatingContract:{ownerRequestedVibeOneShotPatch:{preservation:{existingGameBalanceOrContentMayChangeOnlyByOwnerDirection:true}}},
+    ownerCanonicalRules:{ownerExclusiveDevelopment:{rules:{existingGameplaySaveProgressionBalanceAndMultiplayerSemanticsMustBePreservedUnlessOwnerExplicitlyChangesThem:true}}}
+  });
+  fs.writeFileSync(policyPath,JSON.stringify(policy),'utf8');
+  const project={gameId,engine:'web',releaseState:'development-confirmed',projectPath:pathRoot};
+  const first=findWebRecurringBuildUpTask(project,root,{tasks:[]});
+  assert.ok(first);
+  assert.match(first.goal,/OWNER_APPROVED_CONTINUOUS_GAMEPLAY_IMPROVEMENT_20261030/);
+  assert.equal(authorizedContinuousGameplayImprovement({task:first,centralPolicy:{valid:true,document:policy},repoRoot:root}),true);
+  const next=findWebRecurringBuildUpTask(project,root,{tasks:[{...first,status:'verified'}]});
+  assert.ok(next);
+  assert.equal(next.autonomousEvolution.focus,'PROGRESSION');
+  assert.equal(authorizedContinuousGameplayImprovement({task:next,centralPolicy:{valid:true,document:policy},repoRoot:root}),true);
+  const isolated={...first,evidence:[...first.evidence,'web-recurring-focus:GRAPHICS_AUDIO'],autonomousEvolution:{...first.autonomousEvolution,focus:'GRAPHICS_AUDIO'}};
+  assert.equal(authorizedContinuousGameplayImprovement({task:{...isolated,evidence:isolated.evidence.filter(v=>v!=='web-recurring-focus:CORE_FUN')},centralPolicy:{valid:true,document:policy},repoRoot:root}),false);
+});
