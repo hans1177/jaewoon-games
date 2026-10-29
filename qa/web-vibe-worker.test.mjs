@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
+import crypto from 'node:crypto';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
@@ -461,7 +462,7 @@ test('WEB model-less evolution composes distinct playable routes from existing g
 
 // [코드 실험실/알고리즘 발명] 같은 승인 입력으로 제한 탐색과 반례 실험을 반복한다.
 test('Vibe2 offline code laboratory records AST mutations crossover and bounded strategy experiments',()=>{
- const spec={parameters:['x','y'],maxDepth:3,
+ const spec={parameters:['x','y'],maxDepth:3,strategy:'evolution',
   examples:[{args:[1,0],output:1},{args:[2,0],output:2},{args:[3,0],output:3}],
   holdouts:[{args:[2,3],output:5},{args:[4,5],output:9}]};
  const lab=runVibe59CodeLaboratory({spec,verifiedHistory:[
@@ -481,7 +482,7 @@ test('Vibe2 offline code laboratory records AST mutations crossover and bounded 
  assert.equal(lab.strategyEvidenceCount,2);
  assert.ok(lab.experiments.length>=2&&lab.experiments.length<=3);
  assert.equal(lab.winner.casesPassed,5);
- assert.equal(lab.winner.ast.kind,'crossover');
+ assert.ok(Array.isArray(lab.winner.ast));
  assert.ok(lab.winner.inventionOperators.includes('MUTATION'));
  assert.ok(lab.experiments.every(x=>x.sourceChanged===false));
  assert.throws(()=>runVibe59CodeLaboratory({spec:{...spec,holdouts:[]}}),/EXPLICIT_EXAMPLES_REQUIRED/);
@@ -621,4 +622,88 @@ test('WEB generated algorithm is reusable only after exact merged browser verifi
   assert.equal(accepted.deterministicWebLearned,true);
   assert.match(accepted.updated,/return Math\.max\(x,y\)/);
   assert.equal(accepted.offlineSourceProof.runtimeVerified,false);
+});
+
+
+// [회귀] 무모델 진화기는 WEB/ROBLOX 모두 명시적 수치 oracle과 소스 범위에서만 작동한다.
+test('Vibe5.9 AST mutation and crossover search passes new numeric holdouts without a model',()=>{
+ const spec={parameters:['x'],strategy:'evolution',maxGenerations:8,
+  examples:[{args:[1],output:1},{args:[2],output:0},{args:[3],output:1},{args:[4],output:0}],
+  holdouts:[{args:[7],output:1},{args:[8],output:0}]};
+ const result=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(result.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+ assert.ok(Array.isArray(result.ast));
+ assert.equal(result.casesPassed,6);
+ assert.equal(result.fitness.accuracy,1);
+ assert.ok(result.fitness.complexity>0);
+ assert.ok(result.candidatesConsidered>10);
+ assert.equal(result.runtimeVerified,false);
+ const program=vm.runInNewContext('(function(x){'+result.source+'})');
+ for(const row of [...spec.examples,...spec.holdouts])assert.equal(program(...row.args),row.output);
+ // Code alone is never a runtime verified proof.
+ assert.equal(result.sourceWrite,false);
+});
+
+test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure function',()=>{
+ const spec={ownerApproved:true,functionName:'resolve',parameters:['a','b'],
+  examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
+  holdouts:[{args:[7,8],output:8},{args:[-1,-4],output:-1}]};
+ const original='local function resolve(a,b)\n  return 0\nend\n';
+ const result=synthesizeVibe59NumericAlgorithmSource({
+  spec,source:original,relative:'ServerScriptService/score.server.luau'});
+ assert.match(result.newText,/math\.max\(a,b\)/);
+ assert.ok(result.search.ast);
+ assert.equal(result.search.casesPassed,5);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(original,'local function resolve(a,b)\n  return 0\nend\n');
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-luau-evolution-'));
+ try{
+  fs.writeFileSync(path.join(root,'score.server.luau'),original);
+  const candidate=createVibe59CodeCandidate({target:'roblox',sourceRoot:root,
+   responsibleFiles:['score.server.luau'],order:{vibe59CodeRequest:{
+    path:'score.server.luau',find:original.trimEnd(),ownerApproved:true,
+    algorithmSpec:spec}}});
+  assert.equal(candidate.vibe59CodeKind,'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM');
+  assert.equal(candidate.runtimeVerified,false);
+  assert.equal(fs.readFileSync(path.join(root,'score.server.luau'),'utf8'),original);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+   spec,source:'local function resolve(a,b)\n  game.Players:ClearAllChildren()\n  return 0\nend\n',
+   relative:'score.server.luau'}),/EXISTING_PURE_FUNCTION_REQUIRED/);
+});
+
+test('Vibe5.9 inherited AST concepts must be attested and acyclic before use',()=>{
+ const recursive=['abs'];recursive.push(recursive);
+ const spec={parameters:['x','y'],strategy:'evolution',maxGenerations:3,
+  examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
+  holdouts:[{args:[7,8],output:8},{args:[-1,-4],output:-1}],
+  verifiedConcepts:[{verified:true,proof:{independentQa:'PASS',
+   regression:'PASS',runtime:'PASS',actualPlatformRuntime:true},ast:recursive}]};
+ const result=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(result.casesPassed,5);
+ assert.equal(result.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+});
+
+
+test('Vibe5.9 uses only source-matched and independently replayed playtest counterexamples',()=>{
+ const source='function solve(x,y){return 0;}\n';
+ const sourceSha256=crypto.createHash('sha256').update(source).digest('hex');
+ const spec={ownerApproved:true,functionName:'solve',parameters:['x','y'],
+  examples:[{args:[2,5],output:5},{args:[8,1],output:8},{args:[-3,-1],output:-1}],
+  holdouts:[{args:[7,9],output:9},{args:[0,4],output:4}]};
+ const proof={evidenceId:'counterexample-actual-game',independentQa:'PASS',
+  regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+ const row={sourceSha256,actualGamePlaytest:true,gameSourceChanged:true,
+  reproduced:true,args:[11,3],output:11,proof};
+ const good=synthesizeVibe59NumericAlgorithmSource({spec:{...spec,verifiedCounterexamples:[row]},
+  source,relative:'web-games/demo/logic.js'});
+ assert.equal(good.acceptedRuntimeCounterexamples,1);
+ assert.equal(good.search.trainingCases,4);
+ assert.equal(good.search.casesPassed,6);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+   spec:{...spec,verifiedCounterexamples:[{...row,sourceSha256:'0'.repeat(64)}]},
+   source,relative:'web-games/demo/logic.js'}),/COUNTEREXAMPLE_UNVERIFIED/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+   spec:{...spec,verifiedCounterexamples:[{...row,proof:{...proof,runtime:'PENDING'}}]},
+   source,relative:'web-games/demo/logic.js'}),/COUNTEREXAMPLE_UNVERIFIED/);
 });

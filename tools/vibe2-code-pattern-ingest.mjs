@@ -152,22 +152,67 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
 }
 
 export function ingestVerifiedCodePatterns({samplesDir='company-learning/training-samples',libraryInput={}}={}){
-  const byId=new Map((libraryInput?.patterns||[]).filter(x=>x?.verified===true).map(x=>[clean(x.id),x]));
+  const historical=(libraryInput?.patterns||[]).filter(x=>x?.verified===true);
+  const byId=new Map(historical.map(x=>[clean(x.id),x]));
+  const freshIds=new Set(),observedSamples=new Map();
   let examined=0,added=0;
   if(fs.existsSync(samplesDir)){
     for(const entry of fs.readdirSync(samplesDir,{withFileTypes:true}).filter(x=>x.isFile()&&x.name.endsWith('.json')).sort((a,b)=>a.name.localeCompare(b.name))){
-      const file=path.join(samplesDir,entry.name);let sample;try{sample=readJson(file,null);}catch{continue;} examined++;
-      for(const pattern of deriveVerifiedCodePatterns(sample,file)){
+      const file=path.join(samplesDir,entry.name);
+      let sample=null;
+      try{sample=readJson(file,null);}catch{}
+      examined++;
+      // Missing proof is not proof of a new regression; only an explicit
+      // failure, stale trace, replaced verified revision, or removed source
+      // can revoke previously accepted learning.
+      const runtime=upper(sample?.runtime||sample?.verification?.runtime||
+        sample?.verification?.trace?.runtime||sample?.provenance?.verificationTrace?.runtime);
+      const invalid=!sample||sample?.verification?.stale===true||sample?.verification?.flaky===true
+        ||sample?.verification?.trace?.stale===true||sample?.verification?.trace?.flaky===true
+        ||['FAIL','STALE','FLAKY','SHA_MISMATCH'].includes(runtime)
+        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.verification?.fullRegression))
+        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.independentQa))
+        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.browserQa))
+        ||(sample?.verification?.trace?.state!=null&&
+          upper(sample.verification.trace.state)!=='PASS');
+      const derived=sample?deriveVerifiedCodePatterns(sample,file):[];
+      observedSamples.set(entry.name,{invalid,hasFreshEvidence:derived.length>0,
+        sourceRevision:clean(sample?.sourceRevision||sample?.sourceCommit||sample?.provenance?.sourceRevision)});
+      for(const pattern of derived){
         if(!byId.has(pattern.id))added++;
         byId.set(pattern.id,pattern);
+        freshIds.add(pattern.id);
       }
     }
   }
+  // Retain the original verified evidence for audit, but never reuse it after
+  // its exact source sample disappeared, became stale, or failed re-verification.
+  // A later independently verified copy of the same evidence reactivates it.
+  const folder=path.basename(path.resolve(samplesDir));
+  const fromScannedFolder=row=>{
+    const evidence=clean(row?.evidencePath).replaceAll('\\\\','/');
+    return evidence.includes('/'+folder+'/');
+  };
+  let quarantined=0,reactivated=0;
+  for(const old of historical){
+    if(!fromScannedFolder(old))continue;
+    const current=observedSamples.get(path.basename(clean(old.evidencePath)));
+    // Old samples without new native runtime attestations remain historical;
+    // do not mislabel an absent field as a newly observed failure.
+    if(!freshIds.has(old.id)&&(!current||current.invalid||current.hasFreshEvidence||
+      Boolean(current.sourceRevision&&current.sourceRevision!==clean(old.sourceRevision)))){
+      if(old.retrievalEligible!==false)quarantined++;
+      byId.set(old.id,{...old,retrievalEligible:false,masteryEligible:false,
+        quarantineReason:'SOURCE_SAMPLE_NOT_CURRENTLY_VERIFIED'});
+    }else if(old.retrievalEligible===false)reactivated++;
+  }
+  const patterns=[...byId.values()].sort((a,b)=>String(a.system).localeCompare(String(b.system))||String(a.id).localeCompare(String(b.id))).slice(-1000);
   return {
     version:1,kind:'vibe2-verified-code-pattern-library',
-    patterns:[...byId.values()].sort((a,b)=>String(a.system).localeCompare(String(b.system))||String(a.id).localeCompare(String(b.id))).slice(-1000),
-    policy:{verifiedEvidenceRequired:true,rawCodeStored:false,wholeGameCopyForbidden:true,unauthorizedExternalCodeForbidden:true},
-    stats:{examined,added,total:byId.size},
+    patterns,
+    policy:{...libraryInput?.policy,verifiedEvidenceRequired:true,rawCodeStored:false,wholeGameCopyForbidden:true,unauthorizedExternalCodeForbidden:true},
+    stats:{examined,added,total:byId.size,active:patterns.filter(row=>row.retrievalEligible!==false).length,
+      quarantined,reactivated},
     updatedAt:new Date().toISOString()
   };
 }

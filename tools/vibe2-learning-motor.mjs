@@ -7,6 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import {recordVerifiedMotionEvolution,loadVerifiedMotionHistory} from './vibe2-motion-evolution.mjs';
+import {ingestVerifiedCodePatterns} from './vibe2-code-pattern-ingest.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -570,6 +571,7 @@ export function createMasteryState(seed={}){
     productionConfidence:normalizeProductionConfidence(seed.productionConfidence),
     knowledgeAttribution:normalizeKnowledgeAttribution(seed.knowledgeAttribution),
     graphicsEvolutionMemory:normalizeGraphicsEvolutionMemory(seed.graphicsEvolutionMemory),
+    algorithmEvolutionMemory:normalizeAlgorithmEvolutionMemory(seed.algorithmEvolutionMemory),
     updatedAt:clean(seed.updatedAt)||null
   };
 }
@@ -607,7 +609,8 @@ export function applyVerifiedCodePatternsToMastery(stateInput={},libraryInput={}
   const seen=new Set(state.seenCodePatternIds||[]);
   let added=0;
   for(const pattern of libraryInput?.patterns||[]){
-    if(pattern?.verified!==true||pattern?.rawCodeStored===true)continue;
+    if(pattern?.verified!==true||pattern?.rawCodeStored===true||
+      pattern?.retrievalEligible===false||pattern?.quarantineReason)continue;
     if(pattern?.masteryEligible===false)continue;
     if(upper(pattern.independentQa)!=='PASS')continue;
     const id=clean(pattern.id);if(!id||seen.has(id))continue;
@@ -1755,6 +1758,111 @@ export function assessVibeCodingCapabilities({recipes=[],attempts=[],failures=[]
     authorityExpanded:false,sourceMutationAuthorized:false});
 }
 
+
+// [학습] WEB/ROBLOX 검증된 실제 게임 소스 변경과 플레이테스트에서만 AST 개념을 축적한다.
+// 결과가 없는 후보, 이전 소스의 테스트, 외부 원문, 라이선스가 불확실한 자료는 학습 승격 금지.
+function normalizeAlgorithmEvolutionMemory(input={}){
+  return {version:1,concepts:Array.isArray(input?.concepts)?input.concepts.slice(-128):[],
+    failures:Array.isArray(input?.failures)?input.failures.slice(-128):[],
+    seenEvidenceIds:uniq(input?.seenEvidenceIds||[]).slice(-1024)};
+}
+const ALGORITHM_LICENSES=new Set(['OWN_WORK','MIT','Apache-2.0','BSD-2-Clause','BSD-3-Clause','ISC','CC0-1.0','PUBLIC_DOMAIN']);
+function permittedAlgorithmAST(ast){
+  if(!Array.isArray(ast))return false;
+  const arity={param:2,const:2,'+':3,'-':3,'*':3,'/':3,'%':3,
+    min:3,max:3,gt:3,lt:3,abs:2,floor:2,round:2,neg:2,select:4};
+  let count=0;
+  const stack=[[ast,0]],seen=new Set();
+  while(stack.length){
+    const [node,level]=stack.pop(),op=node?.[0];
+    if(!Array.isArray(node)||seen.has(node)||node.length!==arity[op]||
+       level>4||++count>39)return false;
+    seen.add(node);
+    if(op==='param'&&(!Number.isInteger(node[1])||node[1]<0||node[1]>2))return false;
+    if(op==='const'&&(!Number.isFinite(node[1])||Math.abs(node[1])>1000))return false;
+    if(op!=='param'&&op!=='const')for(let i=1;i<node.length;i++)stack.push([node[i],level+1]);
+  }
+  return true;
+}
+export function applyVerifiedAlgorithmEvolution(stateInput={},queueInput={}){
+  const state=createMasteryState(stateInput);
+  const memory=normalizeAlgorithmEvolutionMemory(state.algorithmEvolutionMemory);
+  const seen=new Set(memory.seenEvidenceIds);
+  let added=0,negative=0,rejected=0;
+  const records=Array.isArray(queueInput?.algorithmEvolutionEvidence)
+    ?queueInput.algorithmEvolutionEvidence.slice(-500):[];
+  for(const row of records){
+    const id=clean(row?.evidenceId||row?.proof?.evidenceId),revision=clean(row?.sourceRevision);
+    if(!id||seen.has(id))continue;
+    const platform=upper(row.platform),strategy=clean(row.searchStrategy);
+    if(!['WEB','ROBLOX'].includes(platform)||!['BOUNDED_AST_EVOLUTION_CEGIS','BOUNDED_ENUMERATIVE_CEGIS'].includes(strategy)
+      ||!clean(row.gameId)||!clean(row.domain)||!capabilityProof(row,revision)
+      ||row.proof?.sourceRevision!==revision||row.proof?.evidenceId!==id
+      ||!Number.isSafeInteger(row.playtestRunId)||row.playtestRunId<=0
+      ||row.gameSourceChanged!==true||row.playtestSourceRevision!==revision
+      ||row.saveAndBalancePreserved!==true||row.actualGamePlaytest!==true
+      ||!Number.isInteger(row.heldOutCases)||row.heldOutCases<2
+      ||!Number.isInteger(row.regressionCount)||row.regressionCount<0
+      ||row.license&&!ALGORITHM_LICENSES.has(row.license)
+      ||row.referenceUrl&&(!/^https:\/\/(?:github\.com|arxiv\.org|doi\.org)\//.test(row.referenceUrl)
+        ||!row.license)||!['PASS','FAIL'].includes(upper(row.result))){
+      rejected++;continue;
+    }
+    const shared={id,gameId:clean(row.gameId),platform,domain:upper(row.domain),
+      searchStrategy:strategy,sourceRevision:revision,license:row.license||'OWN_WORK',
+      proof:{...row.proof,evidenceId:id,sourceRevision:revision},
+      benchmarkKey:clean(row.benchmarkKey),regressionCount:row.regressionCount};
+    if(upper(row.result)==='PASS'&&row.regressionCount===0&&permittedAlgorithmAST(row.ast)){
+      const concept={...shared,ast:row.ast,verified:true,
+        playtestRunId:row.playtestRunId||null};
+      memory.concepts=memory.concepts.filter(old=>old.id!==id&&!(old.gameId===concept.gameId
+        &&old.domain===concept.domain&&old.sourceRevision===concept.sourceRevision));
+      memory.concepts.push(concept);added++;
+    }else if(upper(row.result)==='FAIL'&&row.reproduced===true
+      &&clean(row.counterexampleId)&&clean(row.failureSignature)){
+      memory.failures.push({...shared,counterexampleId:clean(row.counterexampleId),
+        failureSignature:clean(row.failureSignature)});negative++;
+    }else{rejected++;continue;}
+    seen.add(id);
+  }
+  memory.concepts=memory.concepts.slice(-128);
+  memory.failures=memory.failures.slice(-128);
+  memory.seenEvidenceIds=[...seen].slice(-1024);
+  state.algorithmEvolutionMemory=memory;
+  if(added||negative)state.updatedAt=new Date().toISOString();
+  return {state,added,negative,rejected};
+}
+export function retrieveVerifiedAlgorithmConcepts({stateInput={},platform='',domain='',max=8}={}){
+  const memory=normalizeAlgorithmEvolutionMemory(stateInput?.algorithmEvolutionMemory);
+  const platformKey=upper(platform),domainKey=upper(domain);
+  if(!['WEB','ROBLOX'].includes(platformKey)||!domainKey)return [];
+  return memory.concepts.filter(row=>row.verified===true&&row.domain===domainKey
+    &&permittedAlgorithmAST(row.ast)&&capabilityProof(row,row.sourceRevision))
+    .sort((a,b)=>Number(b.platform===platformKey)-Number(a.platform===platformKey)
+      ||a.regressionCount-b.regressionCount||a.id.localeCompare(b.id))
+    .slice(0,Math.max(0,Math.min(8,max))).map(row=>({
+      verified:true,ast:row.ast,proof:row.proof,originPlatform:row.platform,
+      evidenceId:row.id,sourceRevision:row.sourceRevision,
+      requiresFreshHoldoutAndRuntimeQa:true,sourceWriteAuthorized:false
+    }));
+}
+export function preferVerifiedAlgorithmStrategy({stateInput={},platform='',domain=''}={}){
+  const memory=normalizeAlgorithmEvolutionMemory(stateInput?.algorithmEvolutionMemory);
+  const rows=[...memory.concepts.map(r=>({...r,passed:true})),
+    ...memory.failures.map(r=>({...r,passed:false}))].filter(r=>
+      r.platform===upper(platform)&&r.domain===upper(domain));
+  const scores=['BOUNDED_AST_EVOLUTION_CEGIS','BOUNDED_ENUMERATIVE_CEGIS'].map(strategy=>{
+    const samples=rows.filter(r=>r.searchStrategy===strategy);
+    const success=samples.filter(r=>r.passed).length;
+    return {strategy,samples:samples.length,success,
+      score:(success+1)/(samples.length+2)};
+  });
+  const eligible=scores.filter(row=>row.samples>=3).sort((a,b)=>b.score-a.score
+    ||a.strategy.localeCompare(b.strategy));
+  return {strategy:eligible[0]?.strategy||null,eligible:eligible.length>0,
+    evidenceOnly:true,sourceWriteAuthorized:false,scores};
+}
+
 // 메인 · 자율 고도화는 검증된 실패와 회귀의 원인별 연습·실험 과제만 기존 큐에 제공한다.
 // 추가 파이프라인/소스 쓰기/품질 게이트 우회 없이 고정 예산과 증거 기반으로 선택한다.
 export function planVibeAutonomousImprovement({stateInput={},capabilityEvidence=null,maxProposals=4}={}){
@@ -1798,6 +1906,19 @@ export function planVibeAutonomousImprovement({stateInput={},capabilityEvidence=
         'HYPOTHESIS_FALSIFICATION_DRILL',[domain],
         'MEASURED_UNDERPERFORMING_CAPABILITY',row.benchmarkVersion);
     }
+  }
+  const failures=state.algorithmEvolutionMemory?.failures||[];
+  const grouped=new Map();
+  for(const record of failures){
+    const key=record.platform+'|'+record.domain+'|'+record.failureSignature;
+    grouped.set(key,[...(grouped.get(key)||[]),record]);
+  }
+  for(const [key,records] of grouped){
+    if(records.length<2)continue;
+    add('algorithm-counterexample-'+hash(key),Math.min(94,45+records.length*9),
+      'COUNTEREXAMPLE_REPRODUCTION_DRILL',
+      state.domains[records[0].domain]?[records[0].domain]:['DEBUGGING'],
+      'REPEATED_ATTESTED_ALGORITHM_COUNTEREXAMPLE',records.at(-1).counterexampleId);
   }
   const ranked=[...suggestions.values()].sort((a,b)=>b.priority-a.priority||a.id.localeCompare(b.id));
   return Object.freeze({
@@ -3147,20 +3268,22 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const driftApplied=applyVerifiedArchitectureDriftOutcomes(calibrationApplied.state,queueInput);
   const knowledgeApplied=applyVerifiedKnowledgeOutcomes(driftApplied.state,queueInput);
   const graphicsApplied=applyVerifiedGraphicsEvolutionOutcomes(knowledgeApplied.state,queueInput);
-  const constitution=buildCodingConstitution(graphicsApplied.state);
-  graphicsApplied.state.codingConstitution=constitution;
-  graphicsApplied.state.updatedAt=new Date().toISOString();
-  const stateChanged=learningStateSemanticSnapshot(graphicsApplied.state)!==priorStateSemantic;
+  const algorithmApplied=applyVerifiedAlgorithmEvolution(graphicsApplied.state,queueInput);
+  const learningState=algorithmApplied.state;
+  const constitution=buildCodingConstitution(learningState);
+  learningState.codingConstitution=constitution;
+  learningState.updatedAt=new Date().toISOString();
+  const stateChanged=learningStateSemanticSnapshot(learningState)!==priorStateSemantic;
   if(!stateChanged){
-    graphicsApplied.state.updatedAt=clean(stateInput?.updatedAt)||null;
-    graphicsApplied.state.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
+    learningState.updatedAt=clean(stateInput?.updatedAt)||null;
+    learningState.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
   }
-  const benchmark=buildBenchmarkLadder(graphicsApplied.state,cloudExperience.memory,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark,externalRuntimeSamples,roadmapInput);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
+  const benchmark=buildBenchmarkLadder(learningState,cloudExperience.memory,companyQueueInput);
+  const idlePractice=buildIdlePracticeQueue(learningState,benchmark,externalRuntimeSamples,roadmapInput);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,learningState);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:graphicsApplied.state,
+    state:learningState,
     stateChanged,
     motionEvolution,
     addedExperience:(applied.added||0)+(cloudApplied.added||0),
@@ -3171,6 +3294,9 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     specializedVerifiedNegativeOutcomes:specializedApplied.negative||0,
     specializedVerifiedOutcomeCandidates:specializedApplied.candidates||0,
     addedCodePatterns:patternApplied.added,
+    addedVerifiedAlgorithms:algorithmApplied.added,
+    addedVerifiedAlgorithmCounterexamples:algorithmApplied.negative,
+    rejectedAlgorithmEvidence:algorithmApplied.rejected,
     addedCodingStrategyOutcomes:strategyApplied.added,
     addedCodingStrategyNegativeOutcomes:strategyApplied.negativeAdded||0,
     addedCodingCalibrationOutcomes:calibrationApplied.added||0,
@@ -3222,7 +3348,20 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
   const motionHistoryFile=clean(a['motion-history'])||'company-learning/motion-evolution-history.json';
   const motionHistoryInput=loadVerifiedMotionHistory(process.cwd());
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname),motionHistoryInput});
+  // This is the same verified-sample ingest used by the existing library CLI.
+  // New verified gameplay functions become reusable, and superseded proof is
+  // quarantined before both mastery accounting and the next source candidate.
+  const previousPatterns=readJson(codePatternsFile,{patterns:[]});
+  const refreshedPatterns=ingestVerifiedCodePatterns({
+    samplesDir:new URL('../company-learning/training-samples',import.meta.url).pathname,
+    libraryInput:previousPatterns
+  });
+  const patternDelta=JSON.stringify(refreshedPatterns.patterns)!==JSON.stringify(previousPatterns.patterns||[]);
+  const patternLibrary=patternDelta?{...previousPatterns,...refreshedPatterns}:previousPatterns;
+  if(patternDelta)writeJson(codePatternsFile,patternLibrary);
+  console.log('VIBE2_VERIFIED_PATTERN_REFRESH='+ (patternDelta?'EVIDENCE_DELTA':'NO_SUBSTANTIVE_CHANGE'));
+  console.log('VIBE2_VERIFIED_PATTERN_ACTIVE='+ (patternLibrary.patterns||[]).filter(row=>row.retrievalEligible!==false).length);
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:patternLibrary,companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname),motionHistoryInput});
   if(result.motionEvolution.changed){
     const candidatePath=path.resolve(motionHistoryFile),repoRoot=path.resolve('.');
     if(!candidatePath.startsWith(repoRoot+path.sep)||!candidatePath.endsWith('/company-learning/motion-evolution-history.json'))

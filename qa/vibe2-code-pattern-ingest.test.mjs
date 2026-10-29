@@ -1,7 +1,7 @@
 // 파일명: qa/vibe2-code-pattern-ingest.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {deriveVerifiedCodePatterns} from '../tools/vibe2-code-pattern-ingest.mjs';
+import {deriveVerifiedCodePatterns,ingestVerifiedCodePatterns} from '../tools/vibe2-code-pattern-ingest.mjs';
 import {buildVerifiedTrainingSample} from '../tools/vibe2-training-sample.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -668,4 +668,78 @@ test('model-free Vibe crafts distinct real actor motion repairs with native rig 
   fs.writeFileSync(absolute,scenarios[0].code.replace('local updateHz = 60','local updateHz = 30'));
   assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'fail closed without actual update cadence');
   assert.equal(deterministicRobloxNativeRepairCandidate({...args,responsibleFiles:['../outside.luau']}),null);
+});
+
+test('continuous verified pattern ingest learns, quarantines stale proof, and reactivates only verified source',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-learn-replay-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const samplesDir=path.join(root,'company-learning','training-samples');
+  fs.mkdirSync(samplesDir,{recursive:true});
+  const file=path.join(samplesDir,'verified.json');
+  const sample={taskType:'coding',gameId:'magic',sourceRevision:'f'.repeat(40),
+    independentQa:'PASS',browserQa:'PASS',
+    instruction:'모바일 버튼 data-gameplay-action="castSpell" 연결',
+    verification:{fullRegression:'PASS',runtime:'PASS'}};
+  fs.writeFileSync(file,JSON.stringify(sample));
+  const original={patterns:[]};
+  const trained=ingestVerifiedCodePatterns({samplesDir,libraryInput:original});
+  const learned=trained.patterns.find(row=>row.executableRecipe?.actions?.includes('castSpell'));
+  assert.ok(learned);
+  assert.notEqual(learned.retrievalEligible,false);
+  assert.equal(trained.stats.added>0,true);
+  const unchanged=ingestVerifiedCodePatterns({samplesDir,libraryInput:trained});
+  assert.deepEqual(unchanged.patterns,trained.patterns);
+  assert.equal(unchanged.stats.added,0);
+  const source='<button id="magic" data-gameplay-action="castSpell">마법</button><script>let mana=4;function castSpell(){mana-=1;}</script>';
+  fs.writeFileSync(path.join(root,'index.html'),source);
+  const args={order:{target:'web',goal:'모바일 버튼 입력'},sourceRoot:root,
+    responsibleFiles:['index.html']};
+  assert.equal(deterministicWebInputCandidate({...args,patternLibrary:trained})?.learnedCodePatternIds?.includes(learned.id),true);
+  // The production source worker gets its verified library from the state
+  // checkout, not from the main worktree.
+  const stateFile=path.join(root,'verified-state-patterns.json');
+  fs.writeFileSync(stateFile,JSON.stringify(trained));
+  const priorStore=process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH;
+  try{
+    process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH=stateFile;
+    assert.equal(deterministicWebInputCandidate(args)?.learnedCodePatternIds?.includes(learned.id),true);
+    fs.writeFileSync(stateFile,'{}');
+    assert.equal(deterministicWebInputCandidate(args),null);
+  }finally{
+    if(priorStore===undefined)delete process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH;
+    else process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH=priorStore;
+  }
+  fs.writeFileSync(file,JSON.stringify({...sample,verification:{...sample.verification,runtime:'FAIL'}}));
+  const stale=ingestVerifiedCodePatterns({samplesDir,libraryInput:trained});
+  const blocked=stale.patterns.find(row=>row.id===learned.id);
+  assert.ok(blocked);
+  assert.equal(blocked.verified,true);
+  assert.equal(blocked.retrievalEligible,false);
+  assert.equal(blocked.masteryEligible,false);
+  assert.equal(blocked.quarantineReason,'SOURCE_SAMPLE_NOT_CURRENTLY_VERIFIED');
+  assert.equal(deterministicWebInputCandidate({...args,patternLibrary:stale}),null);
+  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),source);
+  fs.writeFileSync(file,JSON.stringify(sample));
+  const restored=ingestVerifiedCodePatterns({samplesDir,libraryInput:stale});
+  assert.notEqual(restored.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
+  assert.equal(restored.stats.reactivated>0,true);
+  // Historical records without new runtime data are retained for audit and
+  // are not misrepresented as a newly failed playtest.
+  fs.writeFileSync(file,JSON.stringify({...sample,verification:{fullRegression:'PASS'}}));
+  const historical=ingestVerifiedCodePatterns({samplesDir,libraryInput:restored});
+  assert.notEqual(historical.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
+  // A source revision change invalidates the original learning even when
+  // the new revision has no verified native runtime evidence.
+  fs.writeFileSync(file,JSON.stringify({...sample,sourceRevision:'e'.repeat(40),
+    verification:{fullRegression:'PASS'}}));
+  const changedRevision=ingestVerifiedCodePatterns({samplesDir,libraryInput:historical});
+  assert.equal(changedRevision.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
+  // Corrupted source evidence must not keep an old executable recipe active.
+  fs.writeFileSync(file,'NOT_VALID_JSON');
+  const malformed=ingestVerifiedCodePatterns({samplesDir,libraryInput:historical});
+  assert.equal(malformed.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
+  fs.unlinkSync(file);
+  const removed=ingestVerifiedCodePatterns({samplesDir,libraryInput:restored});
+  assert.equal(removed.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
+  assert.equal(removed.patterns.find(row=>row.id===learned.id).verified,true);
 });

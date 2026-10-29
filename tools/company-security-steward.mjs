@@ -94,6 +94,8 @@ export function isApprovedPagesOidcGrant(before='',after=''){
   if(post<start)return false;
   const job=source.slice(start,post);
   if(grants[0].index<start||grants[0].index>=post)return false;
+  // Two exact approved admission conditions: historical gate or the strictly stronger
+  // gate requiring the existing deploy artifact to be ready. No arbitrary suffixes.
   if(!/^    needs: deploy$/m.test(job)||!/^    if: github\.event_name != 'pull_request' && needs\.deploy\.outputs\.source_current == 'true'(?: && needs\.deploy\.outputs\.artifact_ready == 'true')?$/m.test(job))return false;
   if(!/^    permissions:\n      contents: read\n      actions: write\n      pages: write\n      id-token: write\n      issues: write\n/m.test(job))return false;
   if(!/^    concurrency:\n      group: magic-forest-pages-main-publish\n      cancel-in-progress: false$/m.test(job))return false;
