@@ -384,3 +384,194 @@ test('scene transition disposes audio object URL and removes registered playback
    URL.revokeObjectURL=before.revoke;
  }
 });
+
+
+// [씬 취소] 첫 씬 로딩 전에도 명시적으로 해제할 수 있다.
+test('releaseScene cancels pending first scene without creating an active scene',async()=>{
+ const fetchBefore=globalThis.fetch;
+ let aborted=0;
+ globalThis.fetch=(url,{signal}={})=>new Promise((resolve,reject)=>{
+   signal.addEventListener('abort',()=>{aborted++;reject(Object.assign(new Error('cancelled'),{name:'AbortError'}))},{once:true});
+ });
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const pending=runtime.setScene('intro',[{id:'intro',path:'intro.json'}]);
+   assert.equal(runtime.getAssetStats().pendingSceneId,'intro');
+   assert.equal(runtime.releaseScene(),true);
+   await assert.rejects(pending,AggregateError);
+   assert.equal(aborted,1);
+   assert.equal(runtime.getAssetStats().total,0);
+   assert.equal(runtime.getAssetStats().pendingSceneId,null);
+   assert.equal(runtime.activeSceneId,null);
+   runtime.destroy();
+ } finally {globalThis.fetch=fetchBefore}
+});
+
+// [씬 취소] 다른 씬 ID를 취소 요청해도 현재 로딩에는 영향이 없다.
+test('cancelSceneLoading only cancels the matching pending scene',async()=>{
+ const before=globalThis.fetch;
+ let finish;
+ globalThis.fetch=()=>new Promise(resolve=>{finish=()=>resolve(new Response('{"ok":true}'))});
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const pending=runtime.setScene('scene-one',[{id:'a',path:'a.json'}]);
+   assert.equal(runtime.cancelSceneLoading('not-this-scene'),false);
+   finish();
+   const ready=await pending;
+   assert.equal(ready.assets.a.ok,true);
+   assert.equal(runtime.getAssetStats().pendingSceneId,null);
+   assert.equal(runtime.activeSceneId,'scene-one');
+   runtime.destroy();
+ } finally {globalThis.fetch=before}
+});
+
+// [씬 전환 취소] 기존 씬을 해제하면 다음 씬의 진행 중인 요청도 중단한다.
+test('release of active scene cancels pending replacement and clears all leases',async()=>{
+ const before=globalThis.fetch;
+ let cancelled=0;
+ globalThis.fetch=(url,{signal}={})=>String(url).includes('slow')?new Promise((resolve,reject)=>{
+   signal.addEventListener('abort',()=>{cancelled++;reject(Object.assign(new Error('abort'),{name:'AbortError'}))},{once:true});
+ }):Promise.resolve(new Response('{"ok":true}'));
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   await runtime.setScene('one',[{id:'main',path:'fast.json'}]);
+   const replacement=runtime.setScene('two',[{id:'next',path:'slow.json'}]);
+   assert.equal(runtime.releaseScene('one'),true);
+   await assert.rejects(replacement,AggregateError);
+   assert.equal(cancelled,1);
+   assert.equal(runtime.getAssetStats().total,0);
+   assert.equal(runtime.activeSceneId,null);
+   runtime.destroy();
+ } finally {globalThis.fetch=before}
+});
+
+// [캐시 통계] 중복 로딩과 씬 해제에 따라 실제 참조 횟수가 바뀐다.
+test('getAssetStats reports real loaded references and immutable type counts',async()=>{
+ const before=globalThis.fetch;
+ let calls=0;
+ globalThis.fetch=async()=>{calls++;return new Response('{"data":true}')};
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const a=await runtime.setScene('alpha',[{id:'shared',path:'shared.json'}]);
+   const b=await runtime.loadAssets([{id:'same',path:'shared.json'}]);
+   const snap=runtime.getAssetStats();
+   assert.equal(calls,1);
+   assert.equal(snap.total,1);
+   assert.equal(snap.ready,1);
+   assert.equal(snap.loading,0);
+   assert.equal(snap.references,2);
+   assert.equal(snap.sceneCount,1);
+   assert.equal(snap.activeSceneId,'alpha');
+   assert.equal(snap.byType.json,1);
+   assert.ok(Object.isFrozen(snap) && Object.isFrozen(snap.byType));
+   a.release();
+   assert.equal(runtime.getAssetStats().references,1);
+   b.release();
+   assert.equal(runtime.getAssetStats().total,0);
+   runtime.destroy();
+ } finally {globalThis.fetch=before}
+});
+
+// [일시 실패 복구] HTTP 429는 제한된 재시도로 회복할 수 있다.
+test('rate limit errors retry with bounded delay then succeed',async()=>{
+ const before=globalThis.fetch;
+ let count=0;
+ globalThis.fetch=async()=>{
+   count++;
+   return count<3?new Response('rate limited',{status:429}):new Response('{"ok":true}');
+ };
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const result=await runtime.loadAssets([{id:'config',path:'config.json'}],{retries:2,retryDelayMs:1});
+   assert.equal(count,3);
+   assert.equal(result.assets.config.ok,true);
+   result.release();
+   assert.equal(runtime.getAssetStats().total,0);
+   runtime.destroy();
+ } finally {globalThis.fetch=before}
+});
+
+// [영구 오류 차단] 손상된 JSON과 HTTP 404는 재시도하지 않는다.
+test('permanent 404 and invalid JSON stop without pointless repeated downloads',async()=>{
+ const before=globalThis.fetch;
+ let calls=0;
+ globalThis.fetch=async url=>{
+   calls++;
+   return String(url).includes('missing')?new Response('missing',{status:404}):new Response('invalid json');
+ };
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   await assert.rejects(runtime.loadAssets([{id:'missing',path:'missing.json'}],{retries:5,retryDelayMs:1}),AggregateError);
+   assert.equal(calls,1);
+   await assert.rejects(runtime.loadAssets([{id:'broken',path:'broken.json'}],{retries:5,retryDelayMs:1}),AggregateError);
+   assert.equal(calls,2);
+   assert.equal(runtime.getAssetStats().total,0);
+   runtime.destroy();
+ } finally {globalThis.fetch=before}
+});
+
+// [콜백 격리] 게임 UI의 진행률/완료 콜백 오류가 캐시 임대를 누수시키지 않는다.
+test('progress and completion callback exceptions do not leak assets or block success',async()=>{
+ const before=globalThis.fetch;
+ globalThis.fetch=async()=>new Response('{"ok":true}');
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   let completed=0;
+   const success=await runtime.loadAssets([{id:'a',path:'a.json'}],{
+     onProgress(){throw new Error('UI disposed')},
+     onComplete(){completed++;throw new Error('UI disposed')}
+   });
+   assert.equal(completed,1);
+   assert.equal(success.assets.a.ok,true);
+   success.release();
+   assert.equal(runtime.getAssetStats().total,0);
+   runtime.destroy();
+ } finally {globalThis.fetch=before}
+});
+
+// [대기 정리] 재시도 대기 중 취소되면 추가 네트워크 요청을 만들지 않는다.
+test('abort during retry delay stops subsequent attempts and clears cache',async()=>{
+ const before=globalThis.fetch;
+ const controller=new AbortController();
+ let count=0;
+ globalThis.fetch=async()=>{
+   count++;
+   queueMicrotask(()=>controller.abort());
+   return new Response('temporary',{status:503});
+ };
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   await assert.rejects(runtime.loadAssets([{id:'bad',path:'bad.json'}],{
+     signal:controller.signal,retries:5,retryDelayMs:100
+   }),AggregateError);
+   assert.equal(count,1);
+   assert.equal(runtime.getAssetStats().total,0);
+   runtime.destroy();
+ } finally {globalThis.fetch=before}
+});
+
+// [폰트 수명] 취소된 폰트 로딩은 FontFaceSet에 늦게 등록되지 않는다.
+test('aborted font load never registers a late FontFace or keeps a cached lease',async()=>{
+ const old={fetch:globalThis.fetch,FontFace:globalThis.FontFace,document:globalThis.document};
+ let finish,registered=0;
+ globalThis.fetch=async()=>new Response(new Uint8Array([0,1,2]));
+ globalThis.document={baseURI:'https://example.com/',fonts:{add(){registered++},delete(){registered--;return true}}};
+ globalThis.FontFace=class {constructor(){}load(){return new Promise(resolve=>{finish=()=>resolve(this)})}};
+ try {
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const loading=runtime.setScene('fonts',[{id:'ui',path:'font.woff2',family:'UI'}]);
+   await new Promise(resolve=>setImmediate(resolve));
+   assert.equal(typeof finish,'function');
+   assert.equal(runtime.releaseScene(),true);
+   await assert.rejects(loading,AggregateError);
+   finish();
+   await new Promise(resolve=>setImmediate(resolve));
+   assert.equal(registered,0);
+   assert.equal(runtime.getAssetStats().total,0);
+   runtime.destroy();
+ } finally {
+   globalThis.fetch=old.fetch;
+   globalThis.FontFace=old.FontFace;
+   globalThis.document=old.document;
+ }
+});
