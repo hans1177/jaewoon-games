@@ -58,7 +58,7 @@ function renderFavoriteGames(){
   const seen=new Set();
   const rows=favoriteDisplayRows.filter(row=>{
     const id=gameIdOf(row);
-    if(!favoriteGameIds.has(id)||seen.has(id))return false;
+    if(!favoriteGameIds.has(id)||hiddenGameIds.has(id)||seen.has(id))return false;
     seen.add(id);return true;
   });
   list.innerHTML=rows.length?rows.map(row=>{
@@ -368,7 +368,7 @@ function internalReleaseRows(catalog,status){
 function recentModificationRows(catalog){
   const generic=/^Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다\.$|^TARGET_PLATFORM_TECHNICAL_VALIDATION$/;
   return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(activeLifecycle)
+    .filter(game=>activeLifecycle(game)&&!hiddenGameIds.has(gameIdOf(game)))
     .map(game=>{
       const work=String(latestWork(game)||'').trim();
       const updated=String(runtimeInfo(game).updatedAt||homepageOf(game).updatedAt||'').trim();
@@ -409,7 +409,7 @@ function installStyles(){
 .homeStopButton{background:#fff6e9;color:#955918;border-color:#f3d7b3}
 .homeDeleteButton{background:#fff0f0;color:#a12e39;border-color:#f1c6c9}
 .homeManageButton:focus-visible,.homeRestoreButton:focus-visible{outline:2px solid #1677ff;outline-offset:2px}
-.homeRestoreBar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:0 0 14px;padding:12px;border:1px solid #dce4ee;background:#fff;border-radius:12px;font-size:12px;color:#53687b}
+.homeRestoreBar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:0 0 14px;padding:12px;border:1px solid #dce4ee;background:#fff;border-radius:12px;font-size:12px;color:#53687b}.homeRestoreBar[hidden]{display:none}
 .homeRestoreButton{min-height:44px;padding:0 14px;background:#edf5ff;color:#1769bf;border:0;border-radius:9px;font-weight:850;cursor:pointer}
 @media(max-width:380px){.homeGameTitleActions{gap:3px}.homeManageButton{padding:0 6px;font-size:10px}.homeFavoriteToggle{flex-basis:40px;width:40px;height:44px}}
 .foldGameCard{content-visibility:auto;contain-intrinsic-size:auto 420px}.homeGameGallery{height:100%;width:100%;position:relative}.homeGalleryTrack{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain;height:100%}.homeGalleryTrack::-webkit-scrollbar{display:none}.homeGallerySlide{flex:0 0 100%;scroll-snap-align:start;aspect-ratio:16/9;margin:0;position:relative}.homeGallerySlide img{display:block;width:100%;height:100%;object-fit:cover}.homeGallerySlide img.homeOriginalTitleLogo{object-fit:contain;padding:9% 7%;background:#20384f}
