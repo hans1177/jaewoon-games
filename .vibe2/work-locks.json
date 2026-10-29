@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-bbnt4e",
+      "worker": "vibe2",
+      "taskId": "core-clash-4v4-roblox-library-cc0-replacement-v1",
+      "gameId": "core-clash-4v4",
+      "files": [
+        "roblox-games/core-clash-4v4/client/Game.client.luau",
+        "roblox-games/core-clash-4v4/shared/GameConfig.luau",
+        "roblox-games/core-clash-4v4/server/Game.server.luau"
+      ],
+      "baseSha": "062fa5db0db7ac315af1529cb6520541d7a3f74d",
+      "runId": "40954566148",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-29T22:12:20.132Z",
+      "expiresAt": "2026-10-29T22:57:20.132Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:core-clash-4v4-roblox-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
