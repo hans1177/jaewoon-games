@@ -8216,6 +8216,11 @@ export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile
     if(!/^child-/.test(clean(process.env.NODE_TEST_CONTEXT)))throw new Error('MODEL_RESPONSE_FIXTURE_TEST_CONTEXT_REQUIRED');
     return fs.readFileSync(path.resolve(responseFile),'utf8');
   }
+  // An owner-selected autonomous offline run must never invoke a remote API
+  // or silently fall back to a localhost AI model when source synthesis fails.
+  if(['VIBE2_V4_OFFLINE_ONLY','VIBE2_ROBLOX_NO_MODEL_ONLY'].some(key=>
+    clean(process.env[key]).toLowerCase()==='true'))
+    throw new Error('VIBE59_OFFLINE_SOURCE_MODEL_CALL_FORBIDDEN');
   if(provider==='LOCAL_OLLAMA'){
     if(images.length)throw new Error('VIBE4_LOCAL_IMAGE_INPUT_NOT_IMPLEMENTED');
     const localModel=clean(process.env.VIBE2_LOCAL_MODEL_ID);
