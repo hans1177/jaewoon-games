@@ -144,7 +144,7 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
       valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
     function add(expr,values,cost,variables,depth){
-      if(!variables||expr.length>170||values.some(v=>!valid(v)))return;
+      if(expr.length>170||values.some(v=>!valid(v)))return;
       const key=signature(values),prev=semantic.get(key);
       if(prev&&prev.cost<=cost)return;
       const row={expr,values,cost,variables,depth,error:error(values)};
