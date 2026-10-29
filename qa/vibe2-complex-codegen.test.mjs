@@ -11,7 +11,7 @@ import {spawnSync} from 'node:child_process';
 import {compileVibe2ComplexIntent} from '../tools/vibe2-complex-intent.mjs';
 import {indexVibe2GameSource} from '../tools/vibe2-game-source-index.mjs';
 import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
-import {createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
+import {createVibe59CodeCandidates,applyVibe59ApprovedGameSourceChange} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 
 function setup(t,target='web',html=false){
@@ -192,6 +192,35 @@ test('real existing line-defense source candidate starts in a real Chromium brow
 });
 
 
+
+test('approved Vibe5.9 edits the actual game source file, not just a staged map',t=>{
+  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-live-source-'));
+  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+  const root=path.join(repo,'web-games','sample-game');fs.mkdirSync(root,{recursive:true});
+  const file='index.html';
+  const source='<script>\nlet score=0,state=0,text="";\nfunction event(){ score += 1; }\nfunction commitState(){ state=score; }\nfunction render(){ text=String(state); }\n</script>';
+  fs.writeFileSync(path.join(root,file),source);
+  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    goal:'When function event runs, call commitState then render'}};
+  assert.throws(()=>applyVibe59ApprovedGameSourceChange({order,sourceRoot:root,
+    responsibleFiles:[file],target:'web',repositoryRoot:repo}),/NOT_APPROVED/);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  const result=applyVibe59ApprovedGameSourceChange({order,sourceRoot:root,
+    responsibleFiles:[file],target:'web',repositoryRoot:repo,approvedSourceWrite:true});
+  assert.equal(result.sourceWrite,true);assert.equal(result.runtimeVerified,false);
+  assert.equal(result.releaseVerified,false);
+  assert.deepEqual(result.changedFiles,[file]);
+  const changed=fs.readFileSync(path.join(root,file),'utf8');
+  assert.notEqual(changed,source);assert.match(changed,/commitState\(\);\s*render\(\);/);
+  const ctx=vm.createContext({});vm.runInContext(changed.replace(/<\\/?script>/g,'')+'\nevent();event();',ctx);
+  assert.deepEqual(Array.from(vm.runInContext('[score,state,text]',ctx)),[2,2,'2']);
+  fs.writeFileSync(path.join(root,file),source);
+  assert.throws(()=>applyVibe59ApprovedGameSourceChange({order:{...order,selectedTask:{
+    ...order.selectedTask,goal:'When function event runs, call commitState then nonexistent'}},
+    sourceRoot:root,responsibleFiles:[file],target:'web',repositoryRoot:repo,
+    approvedSourceWrite:true}));
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+});
 
 test('Sprint2 multi-file ROBLOX server functions produce two source-grounded atomic edits and independent DAGs',t=>{
   const root=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-multi-luau-')),'game');
