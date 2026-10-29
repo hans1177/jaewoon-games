@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
-import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning} from '../tools/web-vibe-worker.mjs';
+import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
@@ -416,4 +416,43 @@ test('WEB no-model worker actually replays browser-verified same-game learning w
   previousVerified:[{...prior,status:'review'}],geminiImpl:async()=>{modelCalls++;throw Error('MODEL_CALLED');}}),
   /WEB_VIBE_FREE_MODEL_KEY_MISSING/);
  assert.equal(modelCalls,0);
+});
+
+
+// [무모델 성장] 기존 4개 카탈로그 및 실제 경로 실행 함수로만 콘텐츠를 늘린다.
+test('WEB model-less evolution composes distinct playable routes from existing game content without new balance values',async()=>{
+ const initial=[
+  'const questIds=["q1","q2"];',
+  'const recipeIds=["iron","stone"];',
+  'const enemyBehaviorIds=["guard","chase"];',
+  'const regionIds=["forest","desert"];',
+  'const questRoutes=[{"id":"route0","questId":"q1","regionId":"forest","enemyBehaviorId":"guard","recipeId":"iron","nextRegionId":"desert"}];',
+  'function selectQuest(){} function enterRegion(){} function setEnemyBehavior(){} function craftItem(){}',
+  'function startQuestRoute(id){const route=questRoutes.find(r=>r.id===id);',
+  'selectQuest(route.questId);enterRegion(route.regionId);',
+  'setEnemyBehavior(route.enemyBehaviorId);craftItem(route.recipeId);enterRegion(route.nextRegionId);}',
+  'questRoutes.forEach(row=>{if(row.id){} });'
+ ].join('\n');
+ const task={gameId:'demo',goal:'퀘스트 지역 전투 제작 콘텐츠 지속 확장'};
+ const source={relative:'web-games/demo/game.js',original:initial};
+ let calls=0;
+ const first=await proposeWebVibeChange(task,source,{cloud:true,apiKey:'',
+  geminiImpl:async()=>{calls++;throw Error('MODEL_MUST_NOT_RUN');}});
+ assert.equal(calls,0);
+ assert.equal(first.deterministicWebGrowth,true);
+ assert.equal(first.offlineSourceProof.roles[0],'VERIFIED_EXISTING_PROGRESS_ROUTE');
+ assert.equal(first.offlineSourceProof.runtimeVerified,false);
+ const rows=value=>JSON.parse(value.match(/const questRoutes=(\[[^\n\r;]*\]);/)[1]);
+ assert.equal(rows(first.updated).length,2);
+ assert.deepEqual(rows(first.updated)[0],rows(initial)[0]);
+ assert.equal(new Set(rows(first.updated).map(x=>x.id)).size,2);
+ const second=synthesizeWebProgressionWithoutModel(task,{...source,original:first.updated});
+ assert.equal(second.deterministicWebGrowth,true);
+ assert.equal(rows(second.updated).length,3);
+ assert.equal(new Set(rows(second.updated).map(x=>x.id)).size,3);
+ assert.equal(second.updated.includes('const recipeIds=["iron","stone"]'),true);
+ assert.equal(second.updated.includes('const enemyBehaviorIds=["guard","chase"]'),true);
+ assert.equal(synthesizeWebProgressionWithoutModel({...task,goal:'전투 공격력 변경 콘텐츠 확장'},source),null);
+ assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('craftItem(route.recipeId);','') }),null);
+ assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('"desert"','"desert","invalid"').replace('const regionIds=["forest","desert"];','const regionIds=[];')}),null);
 });
