@@ -115,5 +115,11 @@ $('attackBtn').addEventListener('pointerdown',attack);$('interactBtn').addEventL
 updateHud();toast('나무를 모으고 병사와 탑으로 성문을 지켜');requestAnimationFrame(loop);
 })();
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>

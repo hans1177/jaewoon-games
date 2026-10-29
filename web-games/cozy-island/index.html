@@ -117,5 +117,11 @@
   <script type="module" src="./game-v3.js"></script>
   <script type="module" src="./kingdom-system.js"></script>
   <script type="module" src="./fishing-limit-v9.js"></script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>

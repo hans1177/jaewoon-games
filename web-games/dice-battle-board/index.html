@@ -407,5 +407,11 @@ $('#rollBtn').onclick=()=>rollCurrent();
 $('#restartBtn').onclick=()=>{if(confirm('현재 게임을 지우고 처음부터 할까?'))restart()};
 if(localStorage.getItem(SAVE_KEY))$('#continueBtn').classList.remove('hidden');
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>
