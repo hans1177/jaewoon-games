@@ -13,6 +13,7 @@ import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,creat
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
 import {planAssetApplication} from '../../assets/asset-selector.js';
+import {createVibeWorldVfx} from '../../assets/vibe-game-world-runtime.mjs';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
@@ -224,6 +225,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const modelsPromise=loadSourceModels();
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
   let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroAttackAt=0,lastHeroFrame=0;
+  let heroUpperAction=null,heroUpperClipCache=new Map(),heroClipNames=[];
   let scene=null,disposed=false,heroLoadVersion=0;
   let selectedAppearance=null;
   async function setAvatarAppearance(requested){
@@ -249,13 +251,26 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       model.scale.setScalar(scaledHeight);
       model.position.y=-box.min.y*scaledHeight;
       avatar.add(model);
+      // 원본 GLB 컬러 텍스처는 sRGB, 표면 샘플링은 부드럽게 유지한다.
+      model.traverse(part=>{
+        if(!part.isMesh)return;
+        for(const material of (Array.isArray(part.material)?part.material:[part.material])){
+          for(const texture of [material?.map,material?.emissiveMap]){
+            if(!texture)continue;
+            texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.LinearFilter;
+            texture.minFilter=THREE.LinearMipmapLinearFilter;texture.needsUpdate=true;
+          }
+        }
+      });
       avatar.userData.source=source.href;
       const previous=hero,previousMixer=heroMixer;
       if(scene)scene.add(avatar);
       hero={avatar,model};
       heroClips=gltf.animations||[];
+      heroClipNames=heroClips.map(clip=>clip.name);
+      console.info('[Vibe] Original CC0 GLB clips',choice.model,heroClipNames);
       heroMixer=heroClips.length?new THREE.AnimationMixer(model):null;
-      heroAction=null;heroActionName='';lastHeroFrame=0;
+      heroAction=null;heroUpperAction=null;heroUpperClipCache=new Map();heroActionName='';lastHeroFrame=0;
       selectedAppearance=choice;
       if(previous){
         previousMixer?.stopAllAction();
@@ -386,12 +401,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   canvas.style.imageRendering='pixelated';
   const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'default'});
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.18;
+  renderer.toneMappingExposure=1.12;
   // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.82:.95)*(mobileBudget?.82:1));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
-  renderer.shadowMap.type=THREE.PCFShadowMap;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
   scene.fog=new THREE.Fog(0x244238,22,90);
@@ -399,13 +414,73 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // 3D models retain depth, but distance never shrinks or stretches the hero.
   const cameraViewHeight=mobileBudget?18:24;
   const camera=new THREE.OrthographicCamera(-12,12,12,-12,0.1,155);
-  const ambient=new THREE.HemisphereLight(0xe7f5d2,0x263428,2.25);
+  const ambient=new THREE.HemisphereLight(0xe7f5d2,0x263428,1.65);
   scene.add(ambient);
   const sun=new THREE.DirectionalLight(0xffe9b6,2.0);
   sun.position.set(-10,22,8);
   sun.castShadow=!mobileBudget;sun.shadow.mapSize.set(1024,1024);
+  sun.shadow.bias=-.00015;sun.shadow.normalBias=.025;sun.shadow.radius=2.2;
   sun.shadow.camera.left=-25;sun.shadow.camera.right=25;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;
   scene.add(sun);
+  // 실제 피격 이벤트가 있을 때만 기존 Vibe GPU 파티클을 방출한다.
+  const impactVfx=createVibeWorldVfx(THREE,scene,{maxParticles:mobileBudget?24:72});
+  const seenHitStamp=new WeakMap();let lastImpactFrame=0;
+
+  // [후가공] 앱에 EffectComposer/UnrealBloomPass 모듈이 포함돼 있지 않으므로
+  // 같은 역할의 밝은 픽셀 추출 + 가우시안 합성 패스를 기존 렌더러 내부에 구현한다.
+  // 모바일에서는 GPU 과부하를 피하기 위해 원본 단일 패스를 유지한다.
+  function createNativeBloom(){
+    if(mobileBudget)return null;
+    const sceneTarget=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true,stencilBuffer:false});
+    const lightTarget=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:false,stencilBuffer:false});
+    const postScene=new THREE.Scene(),postCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+    const plane=new THREE.PlaneGeometry(2,2);
+    const vertexShader='varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}';
+    const brightMaterial=new THREE.ShaderMaterial({uniforms:{tScene:{value:sceneTarget.texture}},vertexShader,
+      fragmentShader:'uniform sampler2D tScene;varying vec2 vUv;void main(){vec3 c=texture2D(tScene,vUv).rgb;float light=smoothstep(.67,1.13,max(max(c.r,c.g),c.b));gl_FragColor=vec4(c*light,1.0);}',
+      toneMapped:false,depthWrite:false,depthTest:false});
+    const combineMaterial=new THREE.ShaderMaterial({uniforms:{tScene:{value:sceneTarget.texture},tGlow:{value:lightTarget.texture},stepSize:{value:new THREE.Vector2(1,1)},strength:{value:.46}},vertexShader,
+      fragmentShader:`uniform sampler2D tScene;uniform sampler2D tGlow;uniform vec2 stepSize;uniform float strength;varying vec2 vUv;
+       void main(){
+         vec3 glow=texture2D(tGlow,vUv).rgb*.20;
+         glow+=(texture2D(tGlow,vUv+vec2(stepSize.x,0.)).rgb+texture2D(tGlow,vUv-vec2(stepSize.x,0.)).rgb+
+           texture2D(tGlow,vUv+vec2(0.,stepSize.y)).rgb+texture2D(tGlow,vUv-vec2(0.,stepSize.y)).rgb)*.12;
+         glow+=(texture2D(tGlow,vUv+stepSize).rgb+texture2D(tGlow,vUv-stepSize).rgb+
+           texture2D(tGlow,vUv+vec2(stepSize.x,-stepSize.y)).rgb+
+           texture2D(tGlow,vUv+vec2(-stepSize.x,stepSize.y)).rgb)*.08;
+         gl_FragColor=vec4(texture2D(tScene,vUv).rgb+glow*strength,1.);
+         #include <tonemapping_fragment>
+         #include <colorspace_fragment>
+       }`,
+      depthWrite:false,depthTest:false,toneMapped:true});
+    const quad=new THREE.Mesh(plane,brightMaterial);quad.frustumCulled=false;postScene.add(quad);
+    let width=0,height=0,failed=false;
+    return{
+      render(scene,camera,quality){
+        if(failed||quality<.88){renderer.setRenderTarget(null);renderer.render(scene,camera);return}
+        try{
+          const w=Math.max(1,Math.round(renderer.domElement.clientWidth*renderer.getPixelRatio()));
+          const h=Math.max(1,Math.round(renderer.domElement.clientHeight*renderer.getPixelRatio()));
+          if(w!==width||h!==height){
+            width=w;height=h;
+            sceneTarget.setSize(w,h);
+            const lowW=Math.max(1,Math.floor(w/4)),lowH=Math.max(1,Math.floor(h/4));
+            lightTarget.setSize(lowW,lowH);
+            combineMaterial.uniforms.stepSize.value.set(1/lowW,1/lowH);
+          }
+          renderer.setRenderTarget(sceneTarget);renderer.clear();renderer.render(scene,camera);
+          renderer.setRenderTarget(lightTarget);quad.material=brightMaterial;renderer.clear();renderer.render(postScene,postCamera);
+          renderer.setRenderTarget(null);quad.material=combineMaterial;renderer.render(postScene,postCamera);
+        }catch(error){
+          failed=true;renderer.setRenderTarget(null);
+          console.warn('VIBE_BLOOM_DISABLED_RENDER_FALLBACK',error);
+          renderer.render(scene,camera);
+        }
+      },
+      dispose(){sceneTarget.dispose();lightTarget.dispose();quad.geometry.dispose();brightMaterial.dispose();combineMaterial.dispose();}
+    };
+  }
+  const bloom=createNativeBloom();
   // No generated floor mesh. Every visible ground tile is a clone of the
   // downloaded Tiny Treats CC0 floor_base.obj (including source silhouette).
   const sourceFloor=models.get('floor_base');
@@ -824,6 +899,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
 
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
   let playerTravelClip='run',actualPlayerClip='',unavailablePlayerClip='';
+  // 원본 CC0 공격 트랙 중 상체 본만 분리. 하체 이동은 원본 클립으로 유지한다.
+  function authoredUpperAttack(clip){
+    if(!clip)return null;
+    if(heroUpperClipCache.has(clip.name))return heroUpperClipCache.get(clip.name);
+    const tracks=clip.tracks.filter(track=>/(spine|chest|clavicle|shoulder|upperarm|lowerarm|forearm|wrist|hand|neck|head)/i.test(track.name)&&!/root|hips|pelvis/i.test(track.name));
+    const upper=tracks.length?new THREE.AnimationClip(clip.name+'__upper',clip.duration,tracks.map(track=>track.clone())):null;
+    heroUpperClipCache.set(clip.name,upper);
+    return upper;
+  }
   // [장비] 원본 캐릭터 GLB의 기본 장비·모션을 유지한다.
   // 검증된 무기별 원본이 없으므로 임의 상자·원통 모델은 생성하지 않는다.
   // 공격·장비·저장 판정은 기존 게임 본편이 그대로 담당한다.
@@ -1105,6 +1189,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
       hero.avatar.rotation.z=avatarStyle==='barbarian'?-.11*attackPhase:avatarStyle.startsWith('rogue')?.08*attackPhase:avatarStyle==='mage'?.025*attackPhase:.045*attackPhase;
       hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:avatarStyle==='barbarian'?.06*attackPhase:0;
+      // 게임 물리 좌표가 아닌 프레젠테이션 루트에만 타격 전진을 적용한다.
+      hero.avatar.position.x+=(Number(p.faceX)||0)*.12*attackPhase;
+      hero.avatar.position.z+=(Number(p.faceY)||0)*.12*attackPhase;
       // 공격 이벤트와 동기화된 무기별 잔상·충격파. 데미지/쿨다운/범위 불변.
       const swingAge=Math.max(0,attackingAge),swinging=attackingAge>=0&&attackingAge<260;
       const heavy=/hammer|maul|greatsword|heavy|axe/.test(tool);
@@ -1128,7 +1215,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         if(visualSpeed<75)playerTravelClip='walk';
         else if(visualSpeed>110)playerTravelClip='run';
       }
-      const motionRole=pose==='move'?playerTravelClip:pose;
+      const attackClip=playerMotionProfile.cc0ClipCandidates.attack?.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
+      const upperAttack=authoredUpperAttack(attackClip);
+      const layeredAttack=pose==='attack'&&!!upperAttack;
+      const motionRole=layeredAttack?(moving?playerTravelClip:'idle'):pose==='move'?playerTravelClip:pose;
       const clipName=playerMotionProfile.cc0Clips[motionRole];
       const candidates=playerMotionProfile.cc0ClipCandidates[motionRole]||[clipName];
       const desired=candidates.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
@@ -1136,7 +1226,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       unavailablePlayerClip=desired?'':motionRole;
       const nextName=desired?.name||'';
       const attackAt=Number(p.attackAt)||0;
-      if(heroMixer&&(nextName!==heroActionName||(pose==='attack'&&attackAt!==lastHeroAttackAt))){
+      if(heroMixer&&(nextName!==heroActionName||(!layeredAttack&&pose==='attack'&&attackAt!==lastHeroAttackAt))){
         const nextAction=desired?heroMixer.clipAction(desired):null;
         const heroTransition=pose==='attack'?.085:pose==='move'?.16:.22;
         if(heroAction&&heroAction!==nextAction)heroAction.fadeOut(heroTransition);
@@ -1151,7 +1241,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           heroAction.fadeIn(heroTransition).play();
         }
         heroActionName=nextName;
-        if(pose==='attack')lastHeroAttackAt=attackAt;
+        if(pose==='attack'&&!layeredAttack)lastHeroAttackAt=attackAt;
+      }
+      if(layeredAttack&&heroMixer&&attackAt!==lastHeroAttackAt){
+        heroUpperAction?.fadeOut(.11);
+        heroUpperAction=heroMixer.clipAction(upperAttack).reset();
+        heroUpperAction.setLoop(THREE.LoopOnce,1);
+        heroUpperAction.clampWhenFinished=false;
+        heroUpperAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:.32);
+        heroUpperAction.fadeIn(.11).play();
+        lastHeroAttackAt=attackAt;
+      }else if(!layeredAttack&&heroUpperAction){
+        heroUpperAction.fadeOut(.13);heroUpperAction=null;
       }
       if(heroMixer){heroMixer.update(Math.min(.12,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
     }
@@ -1272,7 +1373,19 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       blueprintGhost.rotation.y=bp.vertical?Math.PI/2:0;
       blueprintMaterial.color.setHex(bp.canPlace?0x80f5a3:0xff7373);
     }
-    renderer.render(scene,camera);
+    // 본편의 실제 피해 확인 기록(e.hitAt)과 교차할 때만 타격 파티클을 발생시킨다.
+    for(const enemy of state.enemies||[]){
+      if(!enemy||enemy.area!==state.area)continue;
+      const stamp=Number(enemy.hitAt)||0;
+      if(stamp<=0||stamp>sampleNow||sampleNow-stamp>190||seenHitStamp.get(enemy)===stamp)continue;
+      seenHitStamp.set(enemy,stamp);
+      if(Number.isFinite(enemy.x)&&Number.isFinite(enemy.y))
+        impactVfx.burst({type:'impact',x:enemy.x*SCALE,y:1.1,z:enemy.y*SCALE,color:0xff6868,count:mobileBudget?6:12});
+    }
+    impactVfx.update(Math.min(.05,Math.max(0,(sampleNow-(lastImpactFrame||sampleNow))/1000)));
+    lastImpactFrame=sampleNow;
+    if(bloom)bloom.render(scene,camera,qualityFactor);
+    else renderer.render(scene,camera);
     active=true;canvas.hidden=false;fallbackReason='';
     if(!extraModelsStarted){
       extraModelsStarted=true;
@@ -1338,6 +1451,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const mesh of mageBoltEffects)scene.remove(mesh);
     mageBoltEffects.length=0;mageBoltGeometry.dispose();mageBoltMaterial.dispose();
     arrowGeometry.dispose();arrowMaterial.dispose();sporeMaterial.dispose();sunOrbMaterial.dispose();
+    impactVfx.dispose();bloom?.dispose();
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
@@ -1379,9 +1493,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       nativeCreatures:nativeCreatureActors.size,undeadCreatures:undeadActors.size,
       resourceBatches:resourceBatches.size,loadingModels:loadingCreatureCount,loadedModels:nativeCreatureSources.size,
       measuredFps,pixelRatio:renderer.getPixelRatio(),
+      bloomAvailable:!!bloom,bloomActive:!!bloom&&qualityFactor>=.88,softShadows:renderer.shadowMap.type===THREE.PCFSoftShadowMap,
       // [모션 검증 입력] 클립 출처·누락 상태는 측정값이며 실제 런타임 합격이나 학습 승인으로 승격하지 않는다.
       motionSource:'CC0_AUTHORED_GLTF',motionClip:actualPlayerClip,missingMotionRole:unavailablePlayerClip,
-      motionSourceClipCount:heroClips.length,motionRuntimeVerified:false}),
+      motionSourceClipCount:heroClips.length,availableMotionClips:[...heroClipNames],
+      layeredAttackEnabled:heroUpperClipCache.size>0,motionRuntimeVerified:false}),
     productionReady:false
   };
 }
