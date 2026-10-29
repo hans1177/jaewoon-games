@@ -3338,7 +3338,7 @@ test('game-local autonomous repair keeps every verified F0-F9 failure in existin
     assert.ok(unverified);
     assert.equal(applyRuntimeNeuralEventsToQueue({tasks:[originalTask]},[unverified]).mutationCount,0);
   }
-  for(const stage of ['F12_UNKNOWN','FAKE_F2_RUNTIME','UNRELATED_VALIDATION']){
+  for(const stage of ['F12_UNKNOWN','FAKE_F2_WORLD','UNRELATED_VALIDATION']){
     assert.equal(compileRuntimeNeuralEvent({
       gameId,engine:'roblox',queueRuntimeObserved:true,
       queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimePassed:false,
