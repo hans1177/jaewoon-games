@@ -404,6 +404,12 @@ jobs:
         with:
           node-version: '22'
 
+      # [Node 22] Validate the read-only global crypto regression under the pinned runtime.
+      - name: Verify Node 22 GLB crypto and source hash regression
+        run: |
+          node -e "if(process.versions.node.split('.')[0]!=='22')process.exit(1)"
+          node --test qa/vibe-glb-game-integration.test.mjs
+
       - name: Verify production-bound auto-coding preflight before broader regression
         run: node --test --test-name-pattern='^real production Roblox auto-coding preflight' qa/vibe2-central-work-contract.test.mjs
 
