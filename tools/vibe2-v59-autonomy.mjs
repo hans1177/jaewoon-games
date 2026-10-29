@@ -5,7 +5,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
-export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges} from './vibe59-existing-game-assets.mjs';
+export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges,createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
+import {createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
@@ -1136,6 +1137,10 @@ export function applyVibe59ApprovedGameSourceChange({order={},sourceRoot='',resp
 }
 
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
+  // Existing assets are first-class Vibe worker edit candidates, not presentation-only notes.
+  const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
+    responsibleFiles,target,repositoryRoot});
+  if(visualAssetCandidate)return visualAssetCandidate;
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null){
     // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.
