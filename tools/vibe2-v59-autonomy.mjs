@@ -1158,7 +1158,8 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     vibe59JsReplay:codeReplay,vibe59Strategy:req.robloxServerAction?selected.compiled.strategy:selected.variant,
     ...(req.robloxServerAction?{vibe59RobloxSafety:selected.compiled.safety,
       vibe59RobloxInspection:inspectVibe59RobloxCoding({files:[{path:relative,source:content}],responsiblePaths:[relative]})}:{}),
-    vibe59StrategiesChecked:candidates.map(row=>({variant:row.variant,pass:row.replay?.pass??null})),
+    vibe59StrategiesChecked:measured.map(row=>({variant:row.variant,pass:row.replay?.pass??null,
+      staticBranchCount:row.branchCount,sourceBytes:row.sourceBytes,selected:row.variant===selected.variant})),
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});
 }
