@@ -257,13 +257,10 @@ export function traceFailureResponsibility({failure='',responsibilityGraph={}}={
   const systems=failureSystems(failure),nodes=Array.isArray(responsibilityGraph.nodes)?responsibilityGraph.nodes:[];
   const ranked=nodes.map(node=>{
     let score=0;for(const system of systems)if((node.systems||[]).includes(system))score+=5;
-    // A named function in an observed stack trace is stronger evidence than
-    // unrelated keyword density. Boundaries prevent partial name collisions.
+    // Prefer the exact existing function named in an observed failure signature.
+    // Quoted names and partial identifiers may not claim unrelated source code.
     const exactSymbol=String(node.name||'').trim();
-    const escaped=exactSymbol.replace(/[.*+?^${}()|[\]\\]/g,'\\  const ranked=nodes.map(node=>{
-    let score=0;for(const system of systems)if((node.systems||[]).includes(system))score+=5;
-    score+=Math.min(4,tokenOverlap(failure,[node.name,...(node.stateWrites||[]),...(node.storageKeys||[])].join(' ')));
-');
+    const escaped=[...exactSymbol].map(ch=>'\\^$.*+?()[]{}|'.includes(ch)?'\\'+ch:ch).join('');
     const functionMention=exactSymbol.length>=4
       &&new RegExp('(^|[^A-Za-z0-9_$])'+escaped+'(?=$|[^A-Za-z0-9_$])','i').test(String(failure));
     if(functionMention)score+=24;
