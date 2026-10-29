@@ -108,6 +108,100 @@
     return externalReplacementReady ? 'REPLACE' : 'ENHANCE';
   }
 
+  // [메인: 무모델 2D 그래픽] 실제 CC0 원본 픽셀만 게임별 잠긴 팔레트로 재가공한다.
+  // 외부 추론, 임의 도형 생성, 원본 덮어쓰기, 게임플레이 변경은 수행하지 않는다.
+  function harmonizeSourceRaster({width,height,pixels,source={},style={}}={}) {
+    if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1
+       ||width*height>2048*2048||!(pixels instanceof Uint8Array)
+       ||pixels.length!==width*height*4)throw new Error('GRAPHICS_SOURCE_RGBA_INVALID');
+    const sourceHash=String(source.sha256||source.sourceSha256||'').toLowerCase();
+    const license=String(source.license||'').toUpperCase();
+    if(!/^([a-f0-9]{64})$/.test(sourceHash)||!['CC0','CC0-1.0'].includes(license)
+       ||source.quarantined===true||source.practiceOnly===true)
+      throw new Error('GRAPHICS_VERIFIED_CC0_SOURCE_REQUIRED');
+    const inputPalette=style.palette;
+    if(!Array.isArray(inputPalette)||inputPalette.length<2||inputPalette.length>32
+       ||inputPalette.some(rgb=>!Array.isArray(rgb)||rgb.length!==3
+         ||rgb.some(value=>!Number.isInteger(value)||value<0||value>255)))
+      throw new Error('GRAPHICS_STYLE_LOCK_PALETTE_REQUIRED');
+    const grid=style.pixelGrid===undefined?1:style.pixelGrid;
+    if(!Number.isInteger(grid)||grid<1||grid>8)
+      throw new Error('GRAPHICS_PIXEL_GRID_INVALID');
+    const palette=inputPalette.map(rgb=>rgb.slice());
+    const styleKey=JSON.stringify({palette,grid});
+    const lum=rgb=>rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+    const paletteLuma=palette.map(lum);
+    const original=new Uint8ClampedArray(pixels);
+    const result=new Uint8ClampedArray(original.length);
+    let visible=0,changes=0;
+    for(let y=0;y<height;y+=grid)for(let x=0;x<width;x+=grid){
+      let red=0,green=0,blue=0,weight=0;
+      const endY=Math.min(height,y+grid),endX=Math.min(width,x+grid);
+      for(let yy=y;yy<endY;yy++)for(let xx=x;xx<endX;xx++){
+        const i=(yy*width+xx)*4,a=original[i+3]/255;
+        red+=original[i]*a;green+=original[i+1]*a;blue+=original[i+2]*a;weight+=a;
+      }
+      if(weight<=0)continue;
+      const mean=[red/weight,green/weight,blue/weight],light=lum(mean);
+      let best=0,distance=Infinity;
+      for(let k=0;k<palette.length;k++){
+        const p=palette[k],brightness=light-paletteLuma[k];
+        const error=(mean[0]-p[0])**2*.27+(mean[1]-p[1])**2*.52
+          +(mean[2]-p[2])**2*.21+brightness**2*.8;
+        if(error<distance){distance=error;best=k;}
+      }
+      const color=palette[best];
+      for(let yy=y;yy<endY;yy++)for(let xx=x;xx<endX;xx++){
+        const i=(yy*width+xx)*4,a=original[i+3];
+        result[i+3]=a;
+        if(a===0)continue;
+        visible++;
+        for(let channel=0;channel<3;channel++){
+          result[i+channel]=color[channel];
+          if(result[i+channel]!==original[i+channel])changes++;
+        }
+      }
+    }
+    if(visible===0)throw new Error('GRAPHICS_SOURCE_FULLY_TRANSPARENT');
+    return Object.freeze({width,height,pixels:result,styleKey,sourceHash,
+      visiblePixels:visible,changedChannels:changes,modelFree:true,sourceImmutable:true,
+      license,productionVerified:false,runtimeVerified:false,
+      authority:'GRAPHICS_CC0_SOURCE_DERIVATIVE_CANDIDATE'});
+  }
+
+  // [메인: 아틀라스] 같은 Style Lock으로 변환한 실제 스프라이트만 시트에 정렬한다.
+  function composeSourceSpriteAtlas({frames=[],columns=4,padding=2}={}){
+    if(!Array.isArray(frames)||!frames.length||frames.length>64
+       ||!Number.isInteger(columns)||columns<1||columns>8
+       ||!Number.isInteger(padding)||padding<0||padding>8)
+      throw new Error('GRAPHICS_ATLAS_LAYOUT_INVALID');
+    const first=frames[0],w=first?.width,h=first?.height,key=first?.styleKey;
+    if(!Number.isInteger(w)||!Number.isInteger(h)||!key
+       ||frames.some(frame=>frame?.modelFree!==true||frame?.styleKey!==key
+         ||frame?.width!==w||frame?.height!==h
+         ||!(frame.pixels instanceof Uint8Array)
+         ||frame.pixels.length!==w*h*4
+         ||!/^([a-f0-9]{64})$/.test(frame.sourceHash||'')))
+      throw new Error('GRAPHICS_ATLAS_SOURCE_OR_STYLE_MISMATCH');
+    const cols=Math.min(columns,frames.length),rows=Math.ceil(frames.length/cols);
+    const strideX=w+padding*2,strideY=h+padding*2;
+    const width=cols*strideX,height=rows*strideY;
+    if(width>4096||height>4096||width*height>4096*4096)
+      throw new Error('GRAPHICS_ATLAS_SIZE_LIMIT');
+    const pixels=new Uint8ClampedArray(width*height*4),cells=[];
+    frames.forEach((frame,index)=>{
+      const x=(index%cols)*strideX+padding,y=Math.floor(index/cols)*strideY+padding;
+      for(let yy=0;yy<h;yy++){
+        const offset=4*((yy+y)*width+x);
+        pixels.set(frame.pixels.subarray(yy*w*4,(yy+1)*w*4),offset);
+      }
+      cells.push(Object.freeze({index,x,y,width:w,height:h,sourceHash:frame.sourceHash}));
+    });
+    return Object.freeze({width,height,pixels,frames:Object.freeze(cells),
+      styleKey:key,modelFree:true,productionVerified:false,runtimeVerified:false,
+      authority:'GRAPHICS_SOURCE_ONLY_SPRITE_ATLAS_CANDIDATE'});
+  }
+
   function createGraphicsProfile(options = {}) {
     const tier = String(options.deviceTier ?? 'MID').toUpperCase();
     if (!TIERS.includes(tier)) throw new Error(`unknown device tier: ${tier}`);
@@ -604,6 +698,8 @@
     DNA_LEVELS,
     SCORE_WEIGHTS,
     createGraphicsProfile,
+    harmonizeSourceRaster,
+    composeSourceSpriteAtlas,
     classifyAsset,
     validateAssetLicense,
     validateVisualCandidate,
