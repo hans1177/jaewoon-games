@@ -112,10 +112,11 @@ export function composeVibe59Systems({systems:chosen=[],bindings=[]}={}){
 // 기존 열거 탐색과 반례 루프를 공유한다. 외부 코드/논문 원문은 실행하거나 복제하지 않는다.
 function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
   const valid=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
-  const close=(a,b)=>valid(a)&&Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b));
+  const close=(a,b)=>valid(a)&&(b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
   const operators=['+','-','*','/','%','min','max','gt','lt'];
-  const unary=['abs','floor','ceil','round','neg'];
+  const unary=['abs','floor','ceil','trunc','sign','round','neg'];
   const terms=[...params.map((_,i)=>['param',i]),...constants.map(n=>['const',n])];
+  const signatureValue=value=>valid(value)?(Object.is(value,-0)?'-0':Number(value.toPrecision(8))):'invalid';
   const maxGenerations=Math.max(2,Math.min(48,Number.isInteger(spec.maxGenerations)?spec.maxGenerations:24));
   const maxNodes=Math.max(7,Math.min(39,Number.isInteger(spec.maxNodes)?spec.maxNodes:25));
   let seed=Number.parseInt(sha(JSON.stringify([params,constants,spec.seed||'VIBE59'])).slice(0,8),16)>>>0;
@@ -152,6 +153,8 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='abs')return Math.abs(x);
     if(op==='floor')return Math.floor(x);
     if(op==='ceil')return Math.ceil(x);
+    if(op==='trunc')return Math.trunc(x);
+    if(op==='sign')return Math.sign(x);
     if(op==='round')return Math.round(x);
     if(op==='neg')return -x;
     // A conditional evaluates only the selected branch: an invalid unused
@@ -174,6 +177,7 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='const')return String(a);
     const x=render(a,target),math=target==='roblox'?'math.':'Math.';
     if(op==='neg')return '(-'+x+')';
+    if(op==='trunc'&&target==='roblox')return '(math.modf('+x+'))';
     if(unary.includes(op))return math+op+'('+x+')';
     const y=render(b,target);
     if(op==='min'||op==='max')return math+op+'('+x+','+y+')';
@@ -204,7 +208,7 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     const error=activeRows.reduce((sum,i)=>sum+
       (valid(values[i])?Math.min(1000,Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output))):1000),0);
     const risk=(key.match(/"\/"|"%"|"select"/g)||[]).length;
-    const signature=activeRows.map(i=>valid(values[i])?Number(values[i].toPrecision(8)):'invalid').join('|');
+    const signature=activeRows.map(i=>signatureValue(values[i])).join('|');
     const novelty=semantic.has(signature)?0:1;
     semantic.add(signature);candidatesConsidered++;
     const row={ast,values,expr:render(ast),cost:size(ast),variables:key.includes('"param"')?1:0,
@@ -225,7 +229,7 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     const best=[...all].sort((a,b)=>a.error-b.error||a.risk-b.risk||a.cost-b.cost||a.expr.localeCompare(b.expr));
     const chosen=new Map();
     for(const row of best){
-      const signature=activeRows.map(i=>valid(row.values[i])?Number(row.values[i].toPrecision(8)):'x').join(',');
+      const signature=activeRows.map(i=>signatureValue(row.values[i])).join(',');
       if(chosen.has(signature)&&chosen.size>=16)continue;
       chosen.set(signature,row);
       if(chosen.size>=56)break;
@@ -285,7 +289,7 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
       ||row.args.some(x=>typeof x!=='number'||!Number.isFinite(x)||Math.abs(x)>1e6)
       ||typeof row.output!=='number'||!Number.isFinite(row.output)||Math.abs(row.output)>1e7)
       throw Error('VIBE59_ALGORITHM_INVALID_ORACLE');
-    const key=JSON.stringify(row.args);
+    const key=JSON.stringify(row.args.map(x=>Object.is(x,-0)?'-0':x));
     if(keys.has(key))throw Error('VIBE59_ALGORITHM_DUPLICATE_INPUT');
     keys.add(key);
   }
@@ -294,17 +298,18 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     throw Error('VIBE59_ALGORITHM_CONSTANTS_INVALID');
   const fixed=[...new Set(constants)];
   const valid=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
-  const close=(a,b)=>valid(a)&&Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b));
+  const close=(a,b)=>valid(a)&&(b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
   const original=new Set(rows.map((row,i)=>i));
   const active=new Set(examples.map((_,i)=>i));
   const seenCounterexamples=[],maxDepth=Math.max(1,Math.min(4,Number.isInteger(spec.maxDepth)?spec.maxDepth:3));
   let searched=0,passes=0,selected=null;
   function attempt(){
     const candidates=[],semantic=new Map();
-    const normalized=value=>valid(value)?Number(value.toPrecision(10)).toString():'invalid';
+    const normalized=value=>valid(value)?(Object.is(value,-0)?'-0':Number(value.toPrecision(10)).toString()):'invalid';
     const signature=values=>[...active].map(i=>normalized(values[i])).join('|');
     const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
-      valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
+      valid(values[i])?(values[i]===0&&rows[i].output===0&&!Object.is(values[i],rows[i].output)?1:
+        Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output))):100000),0);
     function add(expr,values,cost,variables,depth,ast){
       // Hidden holdouts must not influence candidate admission or semantic
       // deduplication before a counterexample is explicitly activated.
@@ -336,7 +341,7 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
         ...prior.slice(0,64)].map(x=>[x.expr,x])).values()].slice(0,76);
       const newer=pool.filter(x=>x.depth===d-1);
       for(const a of newer){
-        for(const [label,operation] of [['abs',Math.abs],['floor',Math.floor],['ceil',Math.ceil],['round',Math.round],['neg',n=>-n]]){
+        for(const [label,operation] of [['abs',Math.abs],['floor',Math.floor],['ceil',Math.ceil],['trunc',Math.trunc],['sign',Math.sign],['round',Math.round],['neg',n=>-n]]){
           const vals=a.values.map(operation);
           add(label==='neg'?'(-'+a.expr+')':'Math.'+label+'('+a.expr+')',vals,a.cost+1,a.variables,d,
             {kind:'mutation',operator:label,operand:a.ast});
@@ -407,7 +412,7 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
     ||search.trainingCases<3||!Number.isSafeInteger(search.heldOutCases)
     ||search.heldOutCases<2||search.casesPassed!==search.trainingCases+search.heldOutCases)
     return empty('INDEPENDENT_ORACLE_REQUIRED');
-  const unary=new Set(['neg','abs','floor','ceil','round']);
+  const unary=new Set(['neg','abs','floor','ceil','trunc','sign','round']);
   const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
   const budget={nodes:0};
   function normalize(node,depth,ancestors){
@@ -489,7 +494,7 @@ export function renderVibe59NumericLuaAST(node,params){
     ||params.some(name=>typeof name!=='string'||!legal.test(name)||forbidden.has(name)
       ||!luaIdentifier.test(name)||luaReserved.has(name)))
     throw Error('VIBE59_ALGORITHM_LUA_PARAMETERS_INVALID');
-  const unary=new Set(['abs','floor','ceil','round','neg']);
+  const unary=new Set(['abs','floor','ceil','trunc','sign','round','neg']);
   const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
   const state={nodes:0};
   function normalize(part,depth,ancestors){
@@ -538,7 +543,8 @@ export function renderVibe59NumericLuaAST(node,params){
     if(op==='const')return String(a);
     const x=render(a);
     if(op==='neg')return '(-'+x+')';
-    if(['abs','floor','ceil'].includes(op))return 'math.'+op+'('+x+')';
+    if(op==='trunc')return '(math.modf('+x+'))';
+    if(['abs','floor','ceil','sign'].includes(op))return 'math.'+op+'('+x+')';
     if(op==='round')return 'math.floor(('+x+')+0.5)';
     const y=render(b);
     if(op==='min'||op==='max')return 'math.'+op+'('+x+','+y+')';
