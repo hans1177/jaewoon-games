@@ -127038,11 +127038,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b6eb195c57b68f112fd706f6",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11178",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "5335e592bc396686ef5f316fc08c1779fa35f8e0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11178,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-owner-tuning-design-consistency-20261030",
+        "baseSha": "5335e592bc396686ef5f316fc08c1779fa35f8e0",
+        "headSha": "3f71500c7d38bd94e90b0f54ec3b0ed47af309e9",
+        "mergeCommitSha": "c3e5f8b1af959ef421ca3190061849df1e6fe329",
+        "mergedAt": "2026-10-29T16:15:16Z",
+        "authorLogin": "hans1177",
+        "titleHash": "4bc284d7e5e87946516e2379e2e5da1bf7f5fe9d637caa4f89e8c965013ae419",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-owner-tuning-design-consistency-20261030",
+        "candidateSha": "3f71500c7d38bd94e90b0f54ec3b0ed47af309e9"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 40,
+        "deletedLineCount": 18,
+        "changedFiles": [
+          "qa/vibe2-design-intelligence.test.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-design-intelligence.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe2-design-intelligence.test.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-design-intelligence.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11178",
+        "merge-commit:c3e5f8b1af959ef421ca3190061849df1e6fe329",
+        "base-main:5335e592bc396686ef5f316fc08c1779fa35f8e0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1003
+    "total": 1004
   }
 }
