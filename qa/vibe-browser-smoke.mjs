@@ -1,7 +1,7 @@
 // 파일명: qa/vibe-browser-smoke.mjs
 // Browser smoke test: run with `node qa/vibe-browser-smoke.mjs` after `npx playwright install chromium`.
 import {chromium} from 'playwright';
-import {spawn} from 'node:child_process';
+import {spawn,execFileSync} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -31,7 +31,7 @@ const server=liveBase?null:spawn('python3',['-m','http.server',String(port),'--d
 let browser;
 let activeGameId=null,runtimeFailure=null;
 const observedGames=new Set();
-let testedSourceTrees={};
+let testedSourceTrees={},sharedSourceTrees={};
 try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
  if(liveBase){
@@ -41,6 +41,10 @@ try{
    assert.ok(response.ok(),'POST_PUBLISH_IDENTITY_MANIFEST_HTTP');
    const manifest=await response.json();requireLivePublicationSha(manifest.sourceSha,'BROWSER_PLAYTEST_INITIAL_SOURCE');
    testedSourceTrees=manifest.sourceTreeShas||{};
+   for(const root of ['assets','multiplayer','web-games/_shared']){
+    try{const tree=execFileSync('git',['rev-parse','--verify','HEAD:'+root],{encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();
+     if(/^[a-f0-9]{40}$/.test(tree))sharedSourceTrees[root]=tree;}catch{}
+   }
   }finally{await identityPage.close();}
  }
  // 포탈 RPG: 공식 공개판에서 포탈·3D 캐릭터·실제 터치 이동·보스 피해·구매 및 저장을 확인한다.
@@ -773,7 +777,7 @@ try{
      coverage:'EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY'
    }));
    fs.writeFileSync('web-playtest-report.json',JSON.stringify({version:1,authority:'PUBLISHED_WEB_BROWSER_SMOKE',
-     runId:String(process.env.GITHUB_RUN_ID||''),exactPublishedRevision:exact,exactGameSources:games.length>0,games},null,2)+'\n');
+     runId:String(process.env.GITHUB_RUN_ID||''),exactPublishedRevision:exact,exactGameSources:games.length>0,sharedSourceTrees,games},null,2)+'\n');
   }catch(reportError){console.error('WEB_PLAYTEST_REPORT_UNVERIFIED='+reportError.message);}
  }
  await browser?.close();server?.kill();

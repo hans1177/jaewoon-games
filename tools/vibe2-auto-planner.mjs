@@ -810,7 +810,10 @@ for(const project of rows){
   const observed=(developmentQueue.webPlaytestObservations||[]).find(row=>row.gameId===project.gameId&&row.target==='web');
   if(!observed||observed.sourceRoot!==project.projectPath||observed.runtimeObserved!==true
     ||! /^[a-f0-9]{40}$/.test(clean(observed.sourceTreeSha))
-    ||currentSourceTreeSha({repoRoot,sourcePath:project.projectPath})!==observed.sourceTreeSha)continue;
+    ||currentSourceTreeSha({repoRoot,sourcePath:project.projectPath})!==observed.sourceTreeSha
+    ||! /^[a-f0-9]{40}$/.test(clean(observed.sharedSourceTrees?.assets))
+    ||Object.entries(observed.sharedSourceTrees).some(([root,tree])=>!['assets','multiplayer','web-games/_shared'].includes(root)
+      ||currentSourceTreeSha({repoRoot,sourcePath:root})!==tree))continue;
   Object.assign(project,{queueRuntimeEvidencePlatform:'WEB',queueRuntimeObserved:true,
     queueRuntimePassed:observed.runtimePassed===true,queueRuntimeSourceRevision:clean(observed.sourceRevision),
     queueRuntimeFailureStage:observed.runtimePassed===true?'':clean(observed.failureStage),

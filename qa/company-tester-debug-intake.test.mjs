@@ -212,17 +212,18 @@ test('published WEB playtest intake rejects stale trees and deduplicates the sam
  try{
   fs.mkdirSync(path.join(root,'web-games','demo'),{recursive:true});
   fs.writeFileSync(path.join(root,'web-games','demo','index.html'),'<html>existing game</html>');
+  fs.mkdirSync(path.join(root,'assets'));fs.writeFileSync(path.join(root,'assets','shared.js'),'export const existingAsset=1;');
   git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@example.test','commit','-qm','fixture');
   const sourceTreeSha=git('rev-parse','HEAD:web-games/demo'),sourceRevision=git('rev-parse','HEAD');
   const game={gameId:'demo',target:'web',sourceRoot:'web-games/demo',sourceTreeSha,sourceRevision,
     runtimeObserved:true,runtimePassed:false,failureSignature:'INPUT_UNUSABLE',failureStage:'WEB_POST_PUBLICATION_PLAYTEST'};
-  const report={version:1,authority:'PUBLISHED_WEB_BROWSER_SMOKE',exactGameSources:true,runId:'123',games:[game]};
+  const report={version:1,authority:'PUBLISHED_WEB_BROWSER_SMOKE',exactGameSources:true,runId:'123',sharedSourceTrees:{assets:git('rev-parse','HEAD:assets')},games:[game]};
   const first=ingestTesterDebug({repoRoot:root,webPlaytestReport:report});
   assert.equal(first.ingested,1);assert.equal(first.tickets.webPlaytestObservations.length,1);
   assert.equal(first.tickets.tickets[0].surface,'WEB');
   const repeated=ingestTesterDebug({repoRoot:root,webPlaytestReport:report,ticketQueue:first.tickets,recoveryQueue:first.recovery});
   assert.equal(repeated.ingested,0);assert.equal(repeated.tickets.tickets[0].occurrenceCount,1);
-  for(const altered of [{...report,exactGameSources:false},{...report,games:[{...game,target:'roblox'}]},
+  for(const altered of [{...report,sharedSourceTrees:{assets:'f'.repeat(40)}},{...report,exactGameSources:false},{...report,games:[{...game,target:'roblox'}]},
     {...report,games:[{...game,sourceTreeSha:'f'.repeat(40)}]}]){
     assert.equal(ingestTesterDebug({repoRoot:root,webPlaytestReport:altered}).ingested,0);
   }

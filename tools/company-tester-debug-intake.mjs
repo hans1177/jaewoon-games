@@ -198,7 +198,13 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
   const observations=new Map((ticketQueue.webPlaytestObservations||[]).filter(row=>row?.target==='web').map(row=>[row.gameId,row]));
   if(webPlaytestReport?.authority==='PUBLISHED_WEB_BROWSER_SMOKE'&&webPlaytestReport.exactGameSources===true
     &&/^[0-9]+$/.test(String(webPlaytestReport.runId||''))){
-    for(const row of (webPlaytestReport.games||[]).slice(0,64)){
+    const shared=webPlaytestReport.sharedSourceTrees||{};
+    const sharedEntries=Object.entries(shared);
+    const sharedExact=/^[a-f0-9]{40}$/.test(clean(shared.assets))&&sharedEntries.every(([root,tree])=>{
+      if(!['assets','multiplayer','web-games/_shared'].includes(root)||! /^[a-f0-9]{40}$/.test(clean(tree)))return false;
+      try{return clean(execFileSync('git',['rev-parse','--verify','HEAD:'+root],{cwd:repoRoot,encoding:'utf8',stdio:['ignore','pipe','ignore']}))===tree;}catch{return false;}
+    });
+    for(const row of (sharedExact?webPlaytestReport.games||[]:[]).slice(0,64)){
       if(row.target!=='web'||! /^[a-z0-9][a-z0-9-]{0,80}$/.test(clean(row.gameId))
         ||row.sourceRoot!=='web-games/'+row.gameId||row.runtimeObserved!==true||typeof row.runtimePassed!=='boolean'
         ||! /^[a-f0-9]{40}$/.test(clean(row.sourceRevision))||! /^[a-f0-9]{40}$/.test(clean(row.sourceTreeSha)))continue;
@@ -206,7 +212,7 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
       if(current!==row.sourceTreeSha)continue;
       const prior=observations.get(row.gameId);
       if(prior?.runId===String(webPlaytestReport.runId))continue;
-      const observed={...row,runId:String(webPlaytestReport.runId),observedAt:stamp};observations.set(row.gameId,observed);
+      const observed={...row,sharedSourceTrees:shared,runId:String(webPlaytestReport.runId),observedAt:stamp};observations.set(row.gameId,observed);
       if(row.runtimePassed===false&&clean(row.failureSignature))incoming.push({
         id:'bug-'+hash([row.gameId,'WEB',row.sourceTreeSha,row.failureSignature]),gameId:row.gameId,surface:'WEB',
         phase:'POST_PUBLICATION_PLAYTEST',severity:'HIGH',category:category(row.failureSignature),
