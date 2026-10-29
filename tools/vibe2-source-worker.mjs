@@ -2584,6 +2584,48 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       }
     }
   }
+  // [복합 소스 개발] 증명된 독립 수정들을 한 원자적 후보로 조합한다.
+  // 범위가 겹치거나 원본에 정확히 1번 존재하지 않는 앵커는 제외하고,
+  // 생성된 묶음 전체를 기존 source/syntax/semantic 검증기에 다시 전달한다.
+  // 여러 수정을 한꺼번에 실패하더라도 아래 개별 후보 검증 경로는 남긴다.
+  const composedIntent=/(?:복합|복잡|여러|다중|동시|통합|묶음|자동.?개발|multi[- ]?file|multi[- ]?step|complex|batch|compose|integrat)/i.test(intent);
+  if(composedIntent&&candidates.length>=2){
+    const selected=[],occupied=new Map();
+    for(const raw of [...candidates].sort((a,b)=>(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0))){
+      if(selected.length>=4)break;
+      if(!Array.isArray(raw.edits)||!raw.edits.length||raw.newFiles?.length||raw.replaceFiles?.length)continue;
+      const ranges=[],seenThisCandidate=new Map();
+      let disjoint=true;
+      for(const edit of raw.edits){
+        const original=sourceTexts.get(edit.path),find=edit.find;
+        if(typeof original!=='string'||typeof find!=='string'||!find||original.split(find).length!==2){disjoint=false;break;}
+        const start=original.indexOf(find),end=start+find.length;
+        const prior=[...(occupied.get(edit.path)||[]),...(seenThisCandidate.get(edit.path)||[])];
+        if(prior.some(row=>start<row.end&&end>row.start)){disjoint=false;break;}
+        ranges.push({path:edit.path,start,end});
+        seenThisCandidate.set(edit.path,[...(seenThisCandidate.get(edit.path)||[]),{start,end}]);
+      }
+      if(!disjoint)continue;
+      selected.push(raw);
+      for(const row of ranges)occupied.set(row.path,[...(occupied.get(row.path)||[]),row]);
+    }
+    if(selected.length>=2){
+      const edits=selected.flatMap(row=>row.edits);
+      const paths=unique([...selected.flatMap(row=>row.readDependencies||[]),...edits.map(row=>row.path)]);
+      candidates.push({
+        summary:'Vibe5.9 model-free composed native game source repair ('+selected.length+' independently grounded operations)',
+        expectedEffect:'Apply disjoint existing source interventions atomically with whole-candidate semantic and syntax checks',
+        edits,newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-150,
+        deterministicRobloxNativeRepair:'COMPOSED_SOURCE_GRAPH',
+        readDependencies:paths,dependencyHashes:Object.fromEntries(paths.map(file=>[file,sourceHashes.get(file)])),
+        semanticGrounding:{
+          recipes:selected.map(row=>row.deterministicRobloxNativeRepair),
+          sourceFiles:paths,sourceBound:true,uniqueOriginalAnchors:true,
+          noNewSaveKeys:true,modelUsed:false,runtimeVerified:false
+        }
+      });
+    }
+  }
   // [코딩 엔진] 실제 소스 후보를 전부 비교하고 작은 수정부터 독립 검증한다.
   // 첫 후보 실패가 다른 책임 함수/파일의 실행 가능한 후보까지 막지 않는다.
   const ranked=[...new Map(candidates.map(candidate=>[rejectedSourcePatchFingerprint(candidate),candidate])).values()]
