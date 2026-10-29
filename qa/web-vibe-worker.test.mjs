@@ -746,6 +746,32 @@ test('offline general function rewrite composes original Web event handler from 
  assert.throws(()=>run({...req,find:'return false;'}),/ANCHOR_MISMATCH/);
 });
 
+test('model-free Web rule rewrite executes its final original function, preserving caller contract',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-final-replay-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file='game.js',original='function refresh() { alive=false; }\n';
+ fs.writeFileSync(path.join(root,file),original);
+ const rule={when:{kind:'compare',op:'gte',left:{kind:'ref',name:'hp'},
+   right:{kind:'number',value:1}},
+  then:[{output:'alive',action:'assign',value:{kind:'boolean',value:true}}],
+  otherwise:[{output:'alive',action:'assign',value:{kind:'boolean',value:false}}]};
+ const scenarios=[{name:'living',initialState:{hp:2,alive:false},expectedState:{alive:true}},
+  {name:'dead',initialState:{hp:0,alive:true},expectedState:{alive:false}}];
+ const request={ownerApproved:true,path:file,rewriteExistingFunction:true,functionName:'refresh',rule,scenarios};
+ const run=req=>createVibe59CodeCandidate({target:'web',sourceRoot:root,
+  responsibleFiles:[file],order:{vibe59CodeRequest:req}});
+ const result=run(request);
+ assert.equal(result.sourceFunctionRewrite,true);
+ assert.equal(result.vibe59JsReplay.pass,true);
+ assert.equal(result.vibe59JsReplay.cases.length>=2,true);
+ assert.match(result.edits[0].replace,/function refresh\(\)/);
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
+ fs.writeFileSync(path.join(root,file),'function refresh(hp) { alive=false; }\n');
+ assert.throws(()=>run(request),/PARAMETER_CONTRACT/);
+ fs.writeFileSync(path.join(root,file),'function refresh() { return false; }\n');
+ assert.throws(()=>run(request),/RETURN_CONTRACT/);
+});
+
 test('offline Luau state function rewrite stays within original function and cannot alter saves',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-luau-function-'));
  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
