@@ -150,6 +150,19 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
       expectedObservationMet: true, gameplaySemanticsPreserved: true
     };
   });
+  // [검증된 자가학습] 승인된 CI 증거에 실제 소스 변경·보안 스캔이 결속될 때만 전략을 보존한다.
+  // 누락되거나 불일치하면 기존 학습 샘플은 유지하되 전략 증거는 기록하지 않는다.
+  const laboratory=evidence.codeLaboratory;
+  const strategyProof=laboratory&&
+    ['lean','balanced','deep'].includes(clean(laboratory.strategy))&&
+    laboratory.sourceChanged===true&&laboratory.modelUsed===false&&
+    clean(laboratory.sourceRevision)===revision&&
+    clean(evidence?.securityScan?.sourceRevision)===revision&&
+    upper(evidence?.securityScan?.conclusion)==='PASS'&&
+    Array.isArray(evidence.changedFiles)&&evidence.changedFiles.length>0&&
+    clean(evidence?.sourcePath)&&
+    evidence.changedFiles.some(file=>clean(file).startsWith(clean(evidence.sourcePath).replace(/\/+$/,'')+'/'))
+    ?{strategy:clean(laboratory.strategy),sourceChanged:true,modelUsed:false}:null;
   return {
     version: TRAINING_SAMPLE_VERSION, instruction, input: buildInput(evidence), output: buildOutput(evidence, verifiedPatch),
     taskType: resolvedTaskType, difficulty: inferDifficulty(evidence, resolvedTaskType), lifecycle: 'active', sourceKind: 'vibe2',
@@ -159,7 +172,8 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
     provenance: { sourceKind: 'vibe2', sourceRevision: revision, gameId: clean(evidence.gameId) || null, candidateId: clean(evidence.candidateId) || null, verificationTrace },
     verification: { independentQa: 'PASS', browserQa: normalizedBrowserQa, runtime: 'PASS', androidRuntimeRequired: requirements.androidRuntimeRequired, robloxRuntimeRequired: requirements.robloxRuntimeRequired, uefnRuntimeRequired: requirements.uefnRuntimeRequired, fullRegression: 'PASS', saveKeyValidation: clean(evidence.saveKeyValidation) || null,
       syntaxChecks: Array.isArray(evidence.syntaxChecks) ? evidence.syntaxChecks : [], proposedTests: Array.isArray(evidence.proposedTests) ? evidence.proposedTests : [], trace: verificationTrace,
-      ...(replayEvidence.length ? { replayEvidence } : {}) },
+      ...(replayEvidence.length ? { replayEvidence } : {}),
+      ...(strategyProof?{security:'PASS',codeLaboratory:strategyProof}:{}) },
   };
 }
 

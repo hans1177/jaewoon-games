@@ -23,6 +23,7 @@ const CLASSIFIERS=[
   ['FRAME_LOOP_PERFORMANCE',/requestAnimationFrame|setInterval|performance|pool|fps|frame/i],
   ['MOBILE_UI_FLOW',/mobile|touch|responsive|hud|menu|ui|button/i],
   ['REGRESSION_REPAIR',/regression|bug|repair|failure|fix|causal/i],
+  ['ALGORITHM_SYNTHESIS',/algorithm|synthes|알고리즘|코드.?합성|코드.?발명/i],
   ['DAMAGE_POPUP_POOL',/damage.?popup|damage.?number|floating.?combat.?text|데미지.?숫자|피해.?숫자/i],
   ['TOOLTIP_PLACEMENT',/tooltip.?placement|tooltip.?overlap|도움창.?위치|툴팁.?배치/i],
   ['ICON_STATE_MOTION',/animated.?icon|icon.?animation|moving.?icon|아이콘.?애니|움직이는.?아이콘/i],
@@ -120,6 +121,16 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     problem:clean(sample.instruction).slice(0,220),
     pattern:`VERIFIED_${system}_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION`,
     ...(VISUAL_CODING_RECIPES[system]?{implementationRecipe:VISUAL_CODING_RECIPES[system]}:{}),
+    // 이미 독립 런타임·회귀·보안을 통과한 변경만 다음 코드 실험의 전략 기억으로 쓴다.
+    ...(system==='ALGORITHM_SYNTHESIS'&&sample.verification?.security==='PASS'
+      &&sample.verification?.codeLaboratory?.sourceChanged===true
+      &&sample.verification?.codeLaboratory?.modelUsed===false
+      &&['lean','balanced','deep'].includes(sample.verification?.codeLaboratory?.strategy)
+      ?{verifiedAlgorithmStrategy:{
+        strategy:sample.verification.codeLaboratory.strategy,sourceRevision,
+        sourceChanged:true,modelUsed:false,outcome:'PASS',
+        independentQa:'PASS',runtime:'PASS',regression:'PASS',security:'PASS'
+      }}:{}),
     ...(system==='INPUT_EVENT_BINDING'&&engine==='web'&&verifiedActions.length?{executableRecipe:{
       kind:'BIND_EXISTING_BUTTON_ACTION',actions:verifiedActions,
       requiresExactSourceFunction:true,requiresTargetRuntimeQa:true

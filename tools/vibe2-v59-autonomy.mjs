@@ -298,16 +298,16 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     const signature=values=>[...active].map(i=>normalized(values[i])).join('|');
     const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
       valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
-    function add(expr,values,cost,variables,depth){
+    function add(expr,values,cost,variables,depth,ast){
       if(expr.length>170||values.some(v=>!valid(v)))return;
       const key=signature(values),prev=semantic.get(key);
       if(prev&&prev.cost<=cost)return;
-      const row={expr,values,cost,variables,depth,error:error(values)};
+      const row={expr,values,cost,variables,depth,ast,error:error(values)};
       semantic.set(key,row);
       candidates.push(row);searched++;
     }
-    for(const [j,p] of params.entries())add(p,rows.map(row=>row.args[j]),1,1,0);
-    for(const c of fixed)add(String(c),rows.map(()=>c),1,0,0);
+    for(const [j,p] of params.entries())add(p,rows.map(row=>row.args[j]),1,1,0,{kind:'reference',name:p});
+    for(const c of fixed)add(String(c),rows.map(()=>c),1,0,0,{kind:'constant',value:c});
     const operators=[
       ['+', (a,b)=>a+b],['-',(a,b)=>a-b],['*',(a,b)=>a*b],
       ['/',(a,b)=>b===0?NaN:a/b],['min',(a,b)=>Math.min(a,b)],
@@ -329,7 +329,8 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
       for(const a of newer){
         for(const [label,operation] of [['abs',Math.abs],['floor',Math.floor],['round',Math.round],['neg',n=>-n]]){
           const vals=a.values.map(operation);
-          add(label==='neg'?'(-'+a.expr+')':'Math.'+label+'('+a.expr+')',vals,a.cost+1,a.variables,d);
+          add(label==='neg'?'(-'+a.expr+')':'Math.'+label+'('+a.expr+')',vals,a.cost+1,a.variables,d,
+            {kind:'mutation',operator:label,operand:a.ast});
         }
       }
       for(const a of pool){
@@ -340,7 +341,8 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
             const values=a.values.map((v,i)=>fn(v,b.values[i]));
             const expr=['min','max'].includes(op)?'Math.'+op+'('+a.expr+','+b.expr+')':
               '('+a.expr+op+b.expr+')';
-            add(expr,values,a.cost+b.cost+1,a.variables+b.variables,d);
+            add(expr,values,a.cost+b.cost+1,a.variables+b.variables,d,
+              {kind:'crossover',operator:op,left:a.ast,right:b.ast});
           }
         }
       }
@@ -356,7 +358,8 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
       ?evolveVibe59NumericAST({params,constants:fixed,rows,active,maxDepth,spec}):null;
     const candidate=evolved||attempt()||evolveVibe59NumericAST({params,constants:fixed,rows,active,maxDepth,spec});
     if(evolved)searched+=evolved.candidatesConsidered;
-    else if(candidate?.ast)searched+=candidate.candidatesConsidered;
+    else if(Array.isArray(candidate?.ast)&&Number.isSafeInteger(candidate.candidatesConsidered))
+      searched+=candidate.candidatesConsidered;
     if(!candidate)break;
     const mismatch=[...original].find(i=>!close(candidate.values[i],rows[i].output));
     if(mismatch===undefined){selected=candidate;passes=rows.length;break;}
@@ -364,12 +367,15 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     active.add(mismatch);seenCounterexamples.push(mismatch-examples.length);
   }
   if(!selected)throw Error('VIBE59_ALGORITHM_NO_VERIFIED_CANDIDATE');
-  return Object.freeze({expression:selected.expr,parameters:Object.freeze([...params]),
+  return Object.freeze({expression:selected.expr,
+    inventionOperators:Object.freeze(['MUTATION','CROSSOVER','SEMANTIC_DEDUPLICATION','COUNTEREXAMPLE_REFINEMENT']),
+    parameters:Object.freeze([...params]),
     source:'return '+selected.expr+';',complexity:selected.cost,
     casesPassed:passes,trainingCases:examples.length,heldOutCases:holdouts.length,
     counterexamples:Object.freeze(seenCounterexamples),
     candidatesConsidered:searched,search:selected.ast?'BOUNDED_AST_EVOLUTION_CEGIS':'BOUNDED_ENUMERATIVE_CEGIS',
-    ast:selected.ast||null,fitness:Object.freeze({accuracy:passes/rows.length,
+    ast:selected.ast||null,
+    fitness:Object.freeze({accuracy:passes/rows.length,
       complexity:selected.cost,novelty:selected.novelty??0,
       regressionRisk:selected.regressionRisk??0,generations:selected.generations??0}),
     modelUsed:false,sourceWrite:false,runtimeVerified:false,
@@ -396,9 +402,73 @@ function renderVibe59NumericLuaAST(node,params){
   throw Error('VIBE59_ALGORITHM_LUA_OPERATOR_REJECTED');
 }
 
+// [코드 실험실] 기존 수치 합성기를 반복 사용한다. 새 실행기나 별도 후보 쓰기는 없다.
+// 실패 기록은 증거로 보존하지만 게임 QA·보안·런타임 PASS로 바꾸지 않는다.
+export function runVibe59CodeLaboratory({spec={},verifiedHistory=[]}={}){
+  if(!Array.isArray(verifiedHistory)||verifiedHistory.length>128)
+    throw Error('VIBE59_LAB_HISTORY_BOUNDS');
+  const maxDepth=Number.isInteger(spec?.maxDepth)?Math.max(1,Math.min(4,spec.maxDepth)):3;
+  const maxExperiments=Number.isInteger(spec?.maxExperiments)
+    ?Math.max(1,Math.min(3,spec.maxExperiments)):3;
+  const profiles=[
+    {id:'lean',depth:Math.min(2,maxDepth)},
+    {id:'balanced',depth:Math.min(3,maxDepth)},
+    {id:'deep',depth:maxDepth}
+  ].filter((row,i,all)=>all.findIndex(other=>other.depth===row.depth)===i)
+    .slice(0,maxExperiments);
+  const eligibleHistory=verifiedHistory.filter(row=>row&&
+    row.modelUsed===false&&row.sourceChanged===true&&
+    row.independentQa==='PASS'&&row.regression==='PASS'&&
+    row.security==='PASS'&&row.runtime==='PASS'&&
+    /^[a-f0-9]{40}$/i.test(clean(row.sourceRevision))&&
+    profiles.some(p=>p.id===row.strategy));
+  const experiments=[];
+  for(const profile of profiles){
+    const measured=eligibleHistory.filter(row=>row.strategy===profile.id);
+    const successes=measured.filter(row=>row.outcome==='PASS').length;
+    const failures=measured.filter(row=>row.outcome==='FAIL').length;
+    try{
+      const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,maxDepth:profile.depth}});
+      experiments.push({strategy:profile.id,searchDepth:profile.depth,
+        status:'EXAMPLES_AND_HOLDOUTS_PASS',sourceChanged:false,
+        candidatesConsidered:result.candidatesConsidered,
+        counterexampleCount:result.counterexamples.length,
+        complexity:result.complexity,verifiedHistoryWins:successes,
+        verifiedHistoryFailures:failures,result});
+    }catch(error){
+      if(!/^VIBE59_ALGORITHM_NO_VERIFIED_CANDIDATE$/.test(clean(error.message)))throw error;
+      experiments.push({strategy:profile.id,searchDepth:profile.depth,
+        status:'NO_VERIFIED_CANDIDATE',sourceChanged:false,
+        failureSignature:'VIBE59_ALGORITHM_NO_VERIFIED_CANDIDATE',
+        verifiedHistoryWins:successes,verifiedHistoryFailures:failures});
+    }
+  }
+  const successful=experiments.filter(x=>x.result).sort((a,b)=>
+    (a.complexity-b.complexity)||
+    ((b.verifiedHistoryWins-b.verifiedHistoryFailures)-
+      (a.verifiedHistoryWins-a.verifiedHistoryFailures))||
+    (a.candidatesConsidered-b.candidatesConsidered)||
+    a.strategy.localeCompare(b.strategy));
+  if(!successful.length)throw Error('VIBE59_ALGORITHM_NO_VERIFIED_CANDIDATE');
+  const chosen=successful[0];
+  const trail=experiments.map(({result,...row})=>row);
+  return Object.freeze({
+    winner:chosen.result,selectedStrategy:chosen.strategy,
+    experiments:Object.freeze(trail),
+    bottleneckDiagnosis:experiments.some(x=>x.status==='NO_VERIFIED_CANDIDATE')
+      ?'SEARCH_DEPTH_OR_OPERATOR_COVERAGE':'NONE_OBSERVED',
+    nextStrategy:chosen.strategy,
+    strategyEvidenceCount:eligibleHistory.length,
+    strategyLearning:'VERIFIED_HISTORY_RANKING_ONLY',
+    independentQa:'NOT_RUN',security:'NOT_RUN',regression:'NOT_RUN',
+    runtime:'NOT_RUN',sourceWrite:false,modelUsed:false,
+    authority:'bounded-offline-candidate-experiment-only'
+  });
+}
+
 // [메인] 생성된 수치 알고리즘은 기존 단일 책임 함수 본문을 정확히 교체한다.
 // 임의 함수 실행/새 저장값/외부 모델 코드는 허용하지 않는다.
-export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relative=''}={}){
+export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relative='',target=''}={}){
   const name=spec?.functionName,params=spec?.parameters;
   if(spec?.ownerApproved!==true||typeof name!=='string'
     ||!/^[A-Za-z_$][\w$]{0,59}$/.test(name)
@@ -409,6 +479,7 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     ||!/\.(?:js|mjs|cjs|lua|luau)$/i.test(relative))
     throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
   const roblox=/\.(?:lua|luau)$/i.test(relative);
+  if(target&&target!==(roblox?'roblox':'web'))throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
   const declaration=roblox
     ?new RegExp('\\b(?:local\\s+)?function\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\n?\\s*return\\s+([^\\n;]+)\\s*\\n\\s*end','g')
     :new RegExp('\\bfunction\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\{\\s*return\\s+([^;{}]+);\\s*\\}','g');
@@ -440,8 +511,10 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     }else merged.push({args,output:row.output});
   }
   if(merged.length>18)throw Error('VIBE59_ALGORITHM_COUNTEREXAMPLES_LIMIT');
-  const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,examples:merged,
-    strategy:roblox?'evolution':spec.strategy}});
+  const boundedSpec={...spec,examples:merged,strategy:roblox?'evolution':spec.strategy};
+  const laboratory=spec.codeLab===true
+    ?runVibe59CodeLaboratory({spec:boundedSpec,verifiedHistory:spec.verifiedStrategyHistory||[]}):null;
+  const result=laboratory?.winner||synthesizeVibe59NumericAlgorithm({spec:boundedSpec});
   if(roblox&&!result.ast)throw Error('VIBE59_ROBLOX_AST_PROOF_REQUIRED');
   const luaExpr=roblox?renderVibe59NumericLuaAST(result.ast,params):null;
   const oldText=matches[0][0];
@@ -451,6 +524,7 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
   if(oldText===newText)throw Error('VIBE59_ALGORITHM_NO_SOURCE_DELTA');
   return Object.freeze({oldText,newText,search:result,
     acceptedRuntimeCounterexamples:observed.length,
+    laboratory:laboratory?{...laboratory,winner:undefined}:null,
     sourceWrite:false,modelUsed:false,runtimeVerified:false,
     authority:'existing-exact-function-replacement-only'});
 }
@@ -538,7 +612,7 @@ export function planVibe59SafeRefactor({source='',target='web'}={}){
     edits:[{find:matches[0][0],replace:matches[0][2]+' = Boolean('+matches[0][1]+');'}],
     runtimeEquivalentVerified:false,requiresExistingValidation:true,authority:'refactor-candidate-only'});
 }
-export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null}={}){
+export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null,verifiedCodePatterns=[]}={}){
   const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
   const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
     goal:creativeRequest.goal||order.goal||'',approvedOperations:creativeRequest.approvedOperations,
@@ -583,15 +657,26 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
       verifiedConcepts:req.algorithmSpec.verifiedConcepts??order.vibe59VerifiedAlgorithmConcepts??inherited,
       strategy:req.algorithmSpec.strategy??(meta.strategy==='BOUNDED_AST_EVOLUTION_CEGIS'?'evolution':undefined),
       verifiedCounterexamples:req.algorithmSpec.verifiedCounterexamples??order.vibe59VerifiedAlgorithmFailures,
-      ownerApproved:req.ownerApproved===true},source:content,relative});
+      codeLab:req.algorithmSpec.codeLab!==false,
+      verifiedStrategyHistory:(Array.isArray(verifiedCodePatterns)?verifiedCodePatterns:[])
+        .filter(row=>row?.verified===true&&row?.retrievalEligible!==false
+          &&row?.rawCodeStored===false&&row?.independentQa==='PASS'
+          &&row?.verifiedAlgorithmStrategy?.sourceRevision===row?.sourceRevision
+          &&row?.verifiedAlgorithmStrategy?.modelUsed===false
+          &&row?.engine===target)
+        .slice(0,128).map(row=>row.verifiedAlgorithmStrategy),
+      ownerApproved:req.ownerApproved===true},source:content,relative,target});
     if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
     return Object.freeze({summary:'Vibe5.9 AST-evolved and counterexample-guided numeric algorithm',
       expectedEffect:'Verified owner examples and held-out cases bound the new existing-function algorithm',
       edits:[{path:relative,find,replace:generated.newText}],newFiles:[],replaceFiles:[],
       tests:[],vibe59CodeKind:target==='roblox'?'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM':'WEB_SYNTHESIZED_NUMERIC_ALGORITHM',
-      vibe59TestPlan:{pass:true,cases:[...req.algorithmSpec.examples,...req.algorithmSpec.holdouts],
+      vibe59TestPlan:{pass:true,cases:[...req.algorithmSpec.examples,...req.algorithmSpec.holdouts,
+        ...(Array.isArray(req.algorithmSpec.verifiedCounterexamples)?req.algorithmSpec.verifiedCounterexamples:[])
+          .map(row=>({args:row.args,output:row.output}))],
         trainingCases:generated.search.trainingCases,heldOutCases:generated.search.heldOutCases},
-      algorithmProof:generated.search,ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
+      algorithmProof:generated.search,codeLaboratory:generated.laboratory,
+      ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
       sourceWrite:false,modelUsed:false,runtimeVerified:false});
   }
   if(req.robloxCraftingAction){
@@ -726,9 +811,9 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // Structured complex designs use the existing exact-edit engine against a private
 // in-memory source snapshot. Dependent steps may consume earlier generated code,
 // but original files remain untouched until the canonical worker admits the batch.
-export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
+export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[]}={}){
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
-  if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target});
+  if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
   if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
   const indexed=batch.map((step,index)=>{
@@ -770,7 +855,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
     const selectedTask={...(order.selectedTask||{}),vibe59CodeRequest:row.step};
     const single=createVibe59CodeCandidate({
       order:{...order,selectedTask,vibe59CodeRequest:row.step},
-      sourceRoot,responsibleFiles,target,documents
+      sourceRoot,responsibleFiles,target,documents,verifiedCodePatterns
     });
     if(!single?.vibe59TestPlan?.pass||!Array.isArray(single.vibe59TestPlan.cases)
       ||single.vibe59TestPlan.cases.length<2||!Array.isArray(single.edits)||!single.edits.length
