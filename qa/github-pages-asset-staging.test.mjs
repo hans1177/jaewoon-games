@@ -434,7 +434,7 @@ test('published Cozy Island smoke initializes model-sign texture cache',()=>{
 test('published Gem Survivor movement smoke uses an initialized game frame',()=>{
  const smoke=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
  const start=smoke.indexOf("  for(const mobile of [false,true])");
- const end=smoke.indexOf(" if(liveBase){\n  // Post-deploy validation",start);
+ const end=smoke.indexOf("  // Post-deploy validation",start);
  assert.ok(start>0&&end>start);
  const block=smoke.slice(start,end);
  assert.match(block,/game\?\.running&&!game\.paused&&x>0/);
