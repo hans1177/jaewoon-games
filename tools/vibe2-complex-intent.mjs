@@ -116,6 +116,10 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
     operation='semantic-guard';semantic='dead-attacker';
    }else if(/^(?:죽은 (?:대상|적)(?:은|는) 다시 공격하지 않게 해|Do not damage dead targets)$/i.test(ownerText)){
     operation='semantic-guard';semantic='dead-target';
+   }else if(/^(?:상태 변경 후 화면 갱신하고 저장해|상태가 바뀌면 화면을 갱신하고 저장해|After changing state, refresh the UI and save|Update the UI and save after state changes)$/i.test(ownerText)){
+    operation='semantic-existing-chain';semantic='state-ui-save';
+   }else if(/^(?:서버의 모든 전투 함수에서 죽은 대상 공격 금지|모든 서버 공격 함수에서 죽은 대상을 공격하지 않게 해|Prevent attacking dead targets in all server combat functions)$/i.test(ownerText)){
+    operation='semantic-multi-guard';semantic='dead-target-server';
    }else if((m=new RegExp('^함수 ('+name+')(?:의 ('+name+') 반복)?에서 (.+?)(?:이면|일 때) 중단(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
    }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return when (.+)$','i').exec(ownerText))){

@@ -187,6 +187,61 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
  const nodes=[],unresolved=[];
  const lowered=[];
  for(const requirement of intent.requirements){
+  // [원본 탐색] 함수명 없이도 상태 쓰기, 화면 읽기, 기존 정적 저장키를 함께 증명한다.
+  if(requirement.operation==='semantic-existing-chain'){
+   if(target!=='web'){unresolved.push({id:requirement.id,code:'SEMANTIC_WEB_CHAIN_ONLY'});continue}
+   const matches=[];
+   for(const file of index.files){
+    const owners=index.symbols.filter(row=>row.kind==='function'&&!row.ambiguous&&row.path===file.path&&!row.unsupported.length);
+    const body=row=>file.code.slice(row.bodyStart,row.bodyEnd);
+    const mutations=owners.filter(row=>/\bstate\.[A-Za-z_$][\w$]*\s*(?:\+\+|--|[+\-*/%]?=(?!=))/.test(body(row))&&
+     !/\b(?:localStorage|sessionStorage)\b/.test(body(row)));
+    const views=owners.filter(row=>/\.(?:textContent|innerText|innerHTML)\s*=(?!=)/.test(body(row))&&/\bstate\.[A-Za-z_$]/.test(body(row)));
+    const saves=owners.filter(row=>/\b(?:localStorage|sessionStorage)\.setItem\s*\(/.test(body(row))&&
+     /\bJSON\.stringify\s*\(\s*state\s*\)/.test(body(row))&&
+     file.storage.some(record=>record.key&&record.start>=row.bodyStart&&record.end<=row.bodyEnd));
+    if(views.length!==1||saves.length!==1||mutations.length!==1)continue;
+    const [mutation]=mutations,[view]=views,[save]=saves;
+    const fields=file.states.filter(write=>write.start>=mutation.bodyStart&&write.end<=mutation.bodyEnd&&/^state\.[A-Za-z_$][\w$]*$/.test(write.name));
+    if(!fields.length||!fields.some(write=>body(view).includes(write.name))||
+      new Set([mutation.id,view.id,save.id]).size!==3)continue;
+    const triggers=owners.filter(row=>row.id!==mutation.id&&row.id!==view.id&&row.id!==save.id&&
+     index.edges.filter(edge=>edge.from===row.id&&edge.to===mutation.id).length===1&&
+     !index.edges.some(edge=>edge.from===row.id&&[view.id,save.id].includes(edge.to)));
+    for(const trigger of triggers)matches.push({file,trigger,mutation,view,save});
+   }
+   if(matches.length!==1){unresolved.push({id:requirement.id,code:'SEMANTIC_STATE_UI_SAVE_OWNER_UNPROVEN',matches:matches.length});continue}
+   const {file,trigger,mutation,view,save}=matches[0];
+   lowered.push({...requirement,operation:'existing-call',functionName:trigger.name,after:mutation.name,
+    callee:view.name,callees:[view.name,save.name],sourcePath:file.path,
+    derivation:'ORIGINAL_STATE_WRITE_UI_READ_STATIC_SAVE_CALL'});
+   continue;
+  }
+  // [Roblox 다중 파일] 여러 서버 소스에서 사망 상태와 HP 감소를 확인하고 함께 수정한다.
+  if(requirement.operation==='semantic-multi-guard'){
+   if(target!=='roblox'){unresolved.push({id:requirement.id,code:'SEMANTIC_ROBLOX_SERVER_ONLY'});continue}
+   const matches=[];
+   for(const symbol of index.symbols.filter(row=>row.kind==='function'&&!row.ambiguous&&!row.unsupported.length&&
+     /(?:^|\/)server\/|(?:^|\/)ServerScriptService\/|\.server\.lua[u]?$/i.test(row.path))){
+    const file=index.files.find(row=>row.path===symbol.path),body=file.code.slice(symbol.bodyStart,symbol.bodyEnd);
+    const targets=symbol.parameters.filter(name=>new RegExp('\\b'+name+'\\.hp\\s*-=').test(body));
+    if(targets.length!==1)continue;
+    const victim=targets[0];
+    if(!/\bdead\s*(?:=|:)\s*(?:true|false)\b/.test(file.code)){
+     unresolved.push({id:requirement.id,code:'SEMANTIC_DEATH_FIELD_UNPROVEN',path:file.path});continue;
+    }
+    if(new RegExp('\\bif\\s+'+victim+'\\.dead\\s+then').test(body))continue;
+    matches.push({symbol,victim});
+   }
+   if(unresolved.some(row=>row.id===requirement.id))continue;
+   if(matches.length<2||matches.length>12||new Set(matches.map(row=>row.symbol.path)).size<2){
+    unresolved.push({id:requirement.id,code:'SEMANTIC_MULTIFILE_OWNER_UNPROVEN',matches:matches.length});continue;
+   }
+   for(const [i,row] of matches.entries())lowered.push({...requirement,id:requirement.id+'-'+i,
+    operation:'guard-return',functionName:row.symbol.name,sourcePath:row.symbol.path,
+    condition:{kind:'ref',name:row.victim+'.dead'},derivation:'ORIGINAL_SERVER_HP_WRITE_MULTI_FILE'});
+   continue;
+  }
   if(requirement.operation!=='semantic-guard'){lowered.push(requirement);continue}
   // 의미 연결은 실제 HP 쓰기·공격자 상태·호출 인자·반복 소유자를 모두 확인해야 한다.
   const matches=[];
@@ -214,7 +269,7 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
  }
  for(const r of lowered){
   const wanted=r.functionName+(r.callback?'::'+r.callback:'');
-  const choices=index.symbols.filter(s=>s.name===wanted);
+  const choices=index.symbols.filter(s=>s.name===wanted&&(!r.sourcePath||s.path===r.sourcePath));
   if(choices.length!==1||choices[0].ambiguous){unresolved.push({id:r.id,code:'AMBIGUOUS_OR_MISSING_SYMBOL',symbol:wanted});continue}
   const owner={...choices[0]},file=index.files.find(f=>f.path===owner.path);
   if(owner.unsupported.length){unresolved.push({id:r.id,code:'UNSUPPORTED_OWNER_SYNTAX'});continue}
@@ -389,7 +444,7 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
 // 통합: 정식 catalog 경로와 기존 오너 주문이 없으면 후보를 생성하지 않는다.
 export function compileSourceBoundComplexRequest({order={},sourceRoot,responsibleFiles,target,repositoryRoot=process.cwd()}={}){
  const goal=String(order.selectedTask?.goal||order.originalGoal||order.goal||'');
- if(!/(?:^|[;\n])\s*(?:함수\s+|In\s+(?:function\s+)?[A-Za-z_$]|죽은 (?:유닛|공격자|대상|적)|Prevent dead attackers|Do not damage dead targets)/i.test(goal))return {status:'NOT_APPLICABLE'};
+ if(!/(?:^|[;\n])\s*(?:함수\s+|In\s+(?:function\s+)?[A-Za-z_$]|죽은 (?:유닛|공격자|대상|적)|Prevent dead attackers|Do not damage dead targets|상태 (?:변경 후|가 바뀌면)|After changing state|Update the UI and save|서버의 모든 전투 함수|모든 서버 공격 함수|Prevent attacking dead targets)/i.test(goal))return {status:'NOT_APPLICABLE'};
  const baseRevisionSha=String(order.baseRevisionSha||order.baseCommit||order.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||'');
  try{
   const catalog=JSON.parse(fs.readFileSync(path.join(repositoryRoot,'game-catalog.json'),'utf8'));
