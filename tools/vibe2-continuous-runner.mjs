@@ -56,18 +56,27 @@ export function authorizedContinuousGameplayImprovement({task={},centralPolicy={
     &&evidence.has('studio-quality-focus:'+clean(task.studioQualityEvolution.focusPillar))
     &&task.studioQualityEvolution.designVerified===true
     &&task.studioQualityEvolution.designContextAvailable===true;
+  const recurringFocus=[...evidence].filter(row=>row.startsWith('web-recurring-focus:'));
   const isWebRecurring=target==='WEB'
     &&evidence.has('web-autonomous-recurring-build-up:v1')
-    &&['CORE_FUN','PROGRESSION'].includes([...evidence].find(row=>row.startsWith('web-recurring-focus:'))?.split(':')[1])
-    &&/^[-a-z0-9]+-web-autonomous-build-up-v[1-9][0-9]*$/.test(clean(task.id))
-    &&task.autonomousEvolution?.existingLoopOnly===true;
+    &&recurringFocus.length===1
+    &&['CORE_FUN','PROGRESSION'].includes(recurringFocus[0].slice('web-recurring-focus:'.length))
+    &&clean(task.id).startsWith(gameId+'-web-autonomous-build-up-v')
+    &&/^[1-9][0-9]*$/.test(clean(task.id).slice((gameId+'-web-autonomous-build-up-v').length))
+    &&task.autonomousEvolution?.focus===recurringFocus[0].slice('web-recurring-focus:'.length)
+    &&task.autonomousEvolution?.existingLoopOnly===true
+    &&task.autonomousEvolution?.sourceMutationRequired===true
+    &&task.autonomousEvolution?.playtestAfterPublicationRequired===true
+    &&task.autonomousEvolution?.preserveSaveAndRules===true
+    &&task.autonomousEvolution?.nextCycleUsesVerifiedEffect===true;
   if(!isStudio&&!isWebRecurring)return false;
   let design=null;
   try{design=latestVerifiedDesign(repoRoot,gameId);}catch{return false;}
   if(!design?.file)return false;
   const sourcePath=posix(path.relative(repoRoot,design.file));
   if(!sourcePath.startsWith('design/'+gameId+'/')
-    ||!evidence.has('owner-continuous-gameplay-design:'+sourcePath))return false;
+    ||!evidence.has('owner-continuous-gameplay-design:'+sourcePath)
+    ||(isStudio&&posix(task.studioQualityEvolution?.designSource)!==sourcePath))return false;
   // This is not a measured success: the worker and all existing independent QA still run.
   return true;
 }
