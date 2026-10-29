@@ -159,7 +159,11 @@ export function ingestVerifiedCodePatterns({samplesDir='company-learning/trainin
       const invalid=sample?.verification?.stale===true||sample?.verification?.flaky===true
         ||sample?.verification?.trace?.stale===true||sample?.verification?.trace?.flaky===true
         ||['FAIL','STALE','FLAKY','SHA_MISMATCH'].includes(runtime)
-        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.verification?.fullRegression));
+        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.verification?.fullRegression))
+        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.independentQa))
+        ||['FAIL','STALE','FLAKY'].includes(upper(sample?.browserQa))
+        ||(sample?.verification?.trace?.state!=null&&
+          upper(sample.verification.trace.state)!=='PASS');
       const derived=sample?deriveVerifiedCodePatterns(sample,file):[];
       observedSamples.set(entry.name,{invalid,hasFreshEvidence:derived.length>0});
       for(const pattern of derived){
