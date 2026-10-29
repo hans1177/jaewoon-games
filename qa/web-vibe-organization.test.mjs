@@ -122,7 +122,7 @@ test('PWA cloud queue recovery keeps existing owner intake and independent QA',(
   assert.match(w,/web-recovery-select:/);
   assert.match(w,/github.event_name == 'schedule' \|\| github.event_name == 'workflow_dispatch'/);
   assert.match(w,/node tools\/web-vibe-recovery\.mjs select/);
-  assert.match(w,/web-recovery-onepatch:[\s\S]*?group: web-vibe-onepatch-\$\{\{ needs.web-recovery-select.outputs.task_id \}\}/);
+  assert.match(w,/web-recovery-onepatch:[\s\S]*?group: web-vibe-onepatch-\$\{\{ needs.web-recovery-select.outputs.game_id \}\}/);
   assert.match(w,/company-constitution-enforcer\.mjs --phase=worker-before-source-write/);
   assert.match(w,/node --test qa\/web-vibe-worker\.test\.mjs/);
   assert.match(w,/node tools\/web-vibe-worker\.mjs "--task=pwa-\$WEB_OWNER_TASK_ID"/);
