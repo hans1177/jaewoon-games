@@ -10234,3 +10234,48 @@ test('Vibe5.9 offline cross-function round exit lifecycle synthesizes atomic ser
     /ROBLOX_NO_MODEL_CANDIDATES_REJECTED/,
     'core validation rejection must block every candidate and source write');
 });
+
+
+test('Vibe5.9 offline complex intent composes unrelated gameplay repairs and falls back on validation rejection',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-compound-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'client'));
+ const files=['client/First.client.luau','client/Second.client.luau'];
+ const before=[
+  'local one = Instance.new("TextButton")\none.MouseButton1Click:Connect(function() print("first") end)',
+  'local two = Instance.new("TextButton")\ntwo.MouseButton1Click:Connect(function() print("second") end)'
+ ];
+ for(let i=0;i<files.length;i++)fs.writeFileSync(path.join(root,files[i]),before[i]);
+ const args={order:{target:'roblox',goal:'복잡한 복합 모바일 버튼 조작 연결'},sourceRoot:root,
+  sourceRootRelative:'roblox-games/test',responsibleFiles:files};
+ const raw=deterministicRobloxNativeRepairCandidate(args);
+ assert.ok(raw);
+ assert.equal(raw.deterministicRobloxNativeRepair,'COMPOSED_SOURCE_GRAPH');
+ assert.equal(raw.edits.length,2);
+ assert.deepEqual(raw.semanticGrounding.recipes,['GUI_BUTTON_NATIVE_ACTIVATED','GUI_BUTTON_NATIVE_ACTIVATED']);
+ assert.deepEqual(raw.readDependencies,files);
+ assert.ok(raw.edits.every(row=>row.replace.includes('.Activated:Connect(')));
+ for(let i=0;i<files.length;i++)assert.equal(fs.readFileSync(path.join(root,files[i]),'utf8'),before[i],
+  'native source worker returns a candidate but never edits original files here');
+ const tried=[];
+ const fallback=deterministicRobloxNativeRepairCandidate({...args,candidateValidator:candidate=>{
+  tried.push(candidate.edits.length);
+  if(candidate.edits.length>1)throw Error('TEST_COMPOSITE_CAUSAL_REJECTION');
+  return{pass:true};
+ }});
+ assert.deepEqual(tried,[2,1]);
+ assert.equal(fallback.deterministicRobloxNativeRepair,'GUI_BUTTON_NATIVE_ACTIVATED');
+ assert.deepEqual(fallback.deterministicSelection.attempts.map(x=>x.status),['REJECTED','VALIDATED']);
+ const selected=deterministicRobloxNativeRepairCandidate({...args,candidateValidator:()=>({pass:true})});
+ assert.equal(selected.deterministicRobloxNativeRepair,'COMPOSED_SOURCE_GRAPH');
+ assert.equal(selected.candidateValidation.pass,true);
+ assert.equal(deterministicRobloxNativeRepairCandidate({...args,responsibleFiles:[files[0]]}).deterministicRobloxNativeRepair,
+  'GUI_BUTTON_NATIVE_ACTIVATED','single file scope must not reach another file');
+ for(const edit of raw.edits){
+  const location=path.join(root,edit.path);
+  const text=fs.readFileSync(location,'utf8');
+  assert.equal(text.split(edit.find).length,2);
+  fs.writeFileSync(location,text.replace(edit.find,edit.replace));
+ }
+ assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'second pass has no speculative changes');
+});
