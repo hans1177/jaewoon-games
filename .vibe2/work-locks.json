@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-13c9nar",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-web-autonomous-build-up-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "web-games/village-dungeons/index.html"
+      ],
+      "baseSha": "15742f15d80d1f16a575c9ac61b30d53476103fd",
+      "runId": "40928232500",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-29T18:18:58.410Z",
+      "expiresAt": "2026-10-29T19:03:58.410Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-web-autonomous-build-up-v1"
+      ]
+    }
+  ]
 }
