@@ -22,6 +22,11 @@ test('existing Pages real browser QA checks legal movement in four directions an
   assert.match(source,/for\(const key of \['d','a','w','s'\]\)/);
   assert.match(source,/game\.keyboard\.down\(key\)/);
   assert.match(source,/game\.keyboard\.up\(key\)/);
+  assert.match(source,/game\\.context\\(\\)\\.newCDPSession\\(game\\)/);
+  assert.match(source,/Input\\.dispatchTouchEvent/);
+  assert.match(source,/game\\.locator\\('#stick'\\)\\.boundingBox\\(\\)/);
+  assert.match(source,/MAGIC_FOREST_TOUCH_WORLD_MOVEMENT_FAILED/);
+  assert.match(source,/real-chromium-touch/);
   assert.match(source,/Math\.hypot\(observed\.x-before\.x,observed\.y-before\.y\)/);
   assert.match(source,/MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED/);
   assert.match(source,/startingPosition,movementAttempts,sourceSha:requiredRevision,errors:gameErrors/);
