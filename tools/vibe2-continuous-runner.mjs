@@ -10,6 +10,7 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
+import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import {planVibeAgentHandoff,vibeAgentHandoffGuidance} from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
@@ -25,6 +26,41 @@ const freezeList = (values = []) => freeze([...new Set((values || []).map(clean)
 const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.rbxm', '.rbxmx', '.glb', '.gltf', '.fbx', '.png', '.webp', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
+ 
+// [오너 직접 지시] 보호된 수치 변경은 일반 자동개발/모델 주장/디자인 마커로 승인되지 않는다.
+// 이미 존재하는 오너 접수 ID + 동일 게임 검증 설계 + 최신 중앙 정책을 대조한다.
+export function verifiedOwnerGameplayChangeFromTask({task={},plan={},centralPolicy={},repoRoot=process.cwd()}={}){
+  const policy=centralPolicy?.document;
+  if(centralPolicy?.valid!==true || policy?.status!=='OWNER_DIRECT_LOCKED')return false;
+  if(policy?.fixedAutonomousDevelopmentOperatingContract?.ownerRequestedVibeOneShotPatch
+    ?.preservation?.existingGameBalanceOrContentMayChangeOnlyByOwnerDirection!==true)return false;
+  const id=clean(task.gameId),target=clean(plan.target).toUpperCase();
+  if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(id)||!['WEB','ROBLOX'].includes(target)
+    ||policy?.developmentAccess?.[target]!=='ALWAYS_ALLOWED'
+    ||task.ownerDirective!==true||task.protectedChange===true||task.requiresOwnerDecision===true
+    ||task.designChange===true||clean(task.department).toLowerCase()!=='development'
+    ||clean(task.type).toLowerCase()!=='implementation')return false;
+  const root=(target==='WEB'?'web-games/':'roblox-games/')+id;
+  if(posix(task.sourceRoot)!==root)return false;
+  const evidence=new Set((task.evidence||[]).map(clean));
+  let request='';
+  if(target==='WEB'){
+    const match=clean(task.id).match(/^pwa-([0-9a-f-]{36})$/i);
+    if(!match||!evidence.has('pwa-task:'+match[1]))return false;
+    request=clean(task.goal).match(/^사용자 (?:직접 지시|플레이 피드백):\s*([^\n]+)/m)?.[1]||'';
+  }else{
+    if(!/^owner-roblox-onepatch-[a-zA-Z0-9_-]+$/.test(clean(task.id))
+      ||!evidence.has('owner-request-instance:'+clean(task.id)))return false;
+    request=clean(task.goal).match(/^요청:\s*([^\n]+)/m)?.[1]||'';
+  }
+  // 현재 오너 요청문 그 자체가 보호된 수치에 대한 명시적 변경을 요구해야 한다.
+  if(!/(체력|공격력|피해량|데미지|보상|드롭|밸런스|난이도|health|damage|reward|drop rate|balance|difficulty)/i.test(request)
+    ||!/(개선|변경|조정|수정|올려|내려|튜닝|재설정|adjust|tune|rebalance|modify|change|improve)/i.test(request)
+    ||/(변경하지\s*마|수정하지\s*마|그대로\s*유지|바꾸지\s*마|수치\s*변경\s*금지)/i.test(request))return false;
+  // 최신 같은 게임의 baseline PASS + strict review PASS (>=80, hard failure 0)만 신뢰한다.
+  return latestVerifiedDesign(repoRoot,id)?.verified===true;
+}
+
 
 function currentLaneMaxWorkMinutes(runtime = {}) {
   const lane = clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase();
@@ -597,7 +633,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
-  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
+  const approvedOwnerNumericChange=verifiedOwnerGameplayChangeFromTask({task,plan,centralPolicy});
+  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience, verifiedOwnerGameplayChange:approvedOwnerNumericChange });
   if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
     return freeze({
       ...base,
@@ -968,7 +1005,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
     workerPolicy:freeze({
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
-      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
+      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:designIntelligence.implementationGate.protectedGameplayMutationAutomatic===true,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
       isolatedPracticeArtifactAllowed:route.route==='learning-web-artifact',
       practiceArtifactRepositorySourceWrite:false,
