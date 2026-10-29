@@ -714,3 +714,15 @@ test('homepage runtime shelves and PWA checks accept verified scoped implementat
       'missing critical homepage behavior must fail: '+name);
   }
 });
+
+test('post-publication browser smoke proves owner-deleted games are absent without weakening live gameplay smoke',()=>{
+  const browser=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+  assert.match(browser,/portalOwnerRemovalVerified=liveCatalog\.permanentRemovalPolicy\.ids\.includes\('portal-rpg'\)/);
+  assert.match(browser,/assert\.equal\(liveCatalog\.games\.some\(game=>game\.id==='portal-rpg'\),false/);
+  assert.match(browser,/assert\.equal\(manifest\.routes\.includes\('web-games\/portal-rpg\/'\),false/);
+  assert.match(browser,/assert\.ok\(manifest\.routes\.includes\('web-games\/portal-rpg\/'\)/);
+  assert.match(browser,/if\(liveBase&&!portalOwnerRemovalVerified\)/);
+  assert.match(browser,/PORTAL_RPG_TOUCH_MOVEMENT_FAILED/);
+  assert.match(browser,/PORTAL_RPG_SAVE_RESTORE_FAILED/);
+  assert.match(browser,/POST_PUBLISH_EXPECTED_SHA_INVALID/);
+});
