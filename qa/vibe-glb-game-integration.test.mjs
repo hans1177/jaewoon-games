@@ -10,7 +10,8 @@ const cc0 = Object.freeze({
   path:'/assets/roblox/actors/native/quaternius-skeleton/master.glb',
   type:'binary', license:'CC0',
   sha256:'497a736cf80fdaabd2c8804d3f44d08e25d3cb207820eee3155293b682b55e86',
-  sourceUrl:'https://opengameart.org/content/lowpoly-animated-monsters'
+  sourceUrl:'https://opengameart.org/content/lowpoly-animated-monsters',
+  licenseEvidenceUrl:'https://creativecommons.org/publicdomain/zero/1.0/'
 });
 
 test('generated game accepts pinned internal CC0 GLB actors and wires animated canvas rendering', () => {
@@ -21,6 +22,8 @@ test('generated game accepts pinned internal CC0 GLB actors and wires animated c
   const html = buildGeneratedGame({packageData:{gameId:'glb-actor', assets:{enemyModel:cc0}}}).html;
   assert.match(html, /type="importmap"/);
   assert.match(html, /createVibeModelSprites/);
+  assert.match(html, /공통 에셋 미검증/);
+  assert.match(html, /licenseEvidenceUrl/);
   assert.match(html, /modelSprites\?\.draw\(ctx/);
   assert.match(html, /modelSprites\?\.advance\(dt\)/);
   assert.match(html, /modelSprites\?\.dispose\(\)/);
@@ -30,7 +33,7 @@ test('generated game accepts pinned internal CC0 GLB actors and wires animated c
 
 test('unlicensed, remote, unpinned and role-mismatched models remain blocked', () => {
   for (const patch of [
-    {license:'CC-BY-NC-4.0'}, {sha256:''}, {sourceUrl:''},
+    {license:'CC-BY-NC-4.0'}, {sha256:''}, {sourceUrl:''}, {licenseEvidenceUrl:''},
     {path:'https://remote.example/model.glb'},
     {path:'../enemy.glb'}, {path:'/assets/shared/forest/monster.exe'}
   ]) {
