@@ -181,7 +181,7 @@ function webLearningTopic(goal=''){
   ];
   return topics.filter(([,subject,action])=>subject.test(value)&&action.test(value)).map(([id])=>id);
 }
-function webLearningCandidate(task,changed){
+export function webLearningCandidate(task,changed){
   const topic=webLearningTopic(task.goal);
   if(topic.length!==1)return [];
   const recipes=[];
