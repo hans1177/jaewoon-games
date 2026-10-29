@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import {JaewoonVibeRuntime} from '../assets/vibe-runtime.js';
 import {JaewoonVibeWorkspace} from '../assets/vibe-workspace.js';
 import {createVibeWebRuntimeBundle} from '../assets/vibe-web-runtime-runner.js';
+import {buildGeneratedGame,normalizeGeneratedGameAssets} from '../assets/game-generator.js';
+import {Script,createContext} from 'node:vm';
 
 // [메인] GitHub Pages 하위 배포 경로, 병렬 큐, 동일 에셋 캐시와 해제
 test('asset loader resolves GitHub Pages project root, emits progress, shares cache and releases references',async()=>{
@@ -112,4 +114,84 @@ test('canonical bundle rejects escaped workspace paths and unsupported module sc
  await assert.rejects(createVibeWebRuntimeBundle(workspace),/outside workspace/);
  workspace.read=async path=>path==='index.html'?'<script type="module" src="main.mjs"></script>':'console.log(1)';
  await assert.rejects(createVibeWebRuntimeBundle(workspace),/unsupported local resources/);
+});
+
+
+test('generated game honors explicit assets and rejects unsafe or unsupported sources',()=>{
+ const assets=normalizeGeneratedGameAssets({assets:{background:'/assets/authorized/bg.webp',player:'assets/player.png',enemy:'assets/enemy.webp',boss:'assets/boss.png',bgm:'audio/music.ogg'}});
+ assert.equal(assets.length,5);
+ assert.deepEqual(assets.map(x=>x.type),['image','image','image','image','audio']);
+ assert.throws(()=>normalizeGeneratedGameAssets({assets:{player:'../private.png'}}),/invalid game asset path/);
+ assert.throws(()=>normalizeGeneratedGameAssets({assets:{player:'javascript:alert(1).png'}}),/invalid game asset path/);
+ assert.throws(()=>normalizeGeneratedGameAssets({assets:{player:'assets/fake.glb'}}),/unsupported game image/);
+ assert.throws(()=>normalizeGeneratedGameAssets({assets:{bgm:'assets/icon.png'}}),/unsupported game audio/);
+ assert.throws(()=>normalizeGeneratedGameAssets({assets:[{id:'player',path:'assets/a.png'},{id:'player',path:'assets/b.png'}]}),/duplicate game asset/);
+ const basic=buildGeneratedGame({packageData:{gameId:'no-assets',content:{}}});
+ assert.ok(basic.html.includes('const ASSET_MANIFEST=[];'));
+ assert.ok(basic.html.includes("import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js'"));
+ const configured=buildGeneratedGame({packageData:{gameId:'approved',assets:{player:'assets/player.png',bgm:'audio/music.ogg'}}});
+ assert.ok(configured.html.includes('"path":"assets/player.png"'));
+ assert.ok(configured.html.includes('"path":"audio/music.ogg"'));
+ assert.ok(configured.html.includes('runtime.loadAssets(ASSET_MANIFEST'));
+ assert.ok(configured.html.includes('loadedAssets.player'));
+ assert.ok(configured.html.includes("runtime.registerAudio('generated-bgm'"));
+ assert.ok(!configured.html.includes('javascript:alert(1)'));
+});
+
+test('generated game gates startup on asset loading and draws provided assets',async()=>{
+ const html=buildGeneratedGame({packageData:{gameId:'qa-generated-assets',assets:{background:'assets/bg.png',player:'assets/player.png',enemy:'assets/enemy.png',bgm:'audio/bgm.ogg'}}}).html;
+ const scriptSource=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
+ assert.ok(scriptSource,'generated module script exists');
+ const body=scriptSource.replace(/^import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
+ let resolveAssets,loadedEntries,rafCount=0,frame=null,plays=0;
+ const drawCalls=[],listeners=new Map();
+ const canvasContext={clearRect(){},fillRect(){},fillText(){},beginPath(){},arc(){},fill(){},drawImage:(...args)=>drawCalls.push(args)};
+ const elements=new Map();
+ const getElementById=id=>{
+   if(!elements.has(id)) elements.set(id,{textContent:'',style:{},onclick:null,addEventListener(){},setPointerCapture(){},getBoundingClientRect:()=>({width:140,left:0,top:0})});
+   return elements.get(id);
+ };
+ const canvas=getElementById('game'); canvas.width=640; canvas.height=480;canvas.getContext=()=>canvasContext;
+ const doc={getElementById,addEventListener:(event,fn)=>listeners.set(event,fn),removeEventListener:(event)=>listeners.delete(event)};
+ class FakeRuntime{
+   constructor(){this.paused=false}
+   boot(){return this}
+   loadProgress(){return null}
+   loadAssets(entries,{onProgress}){loadedEntries=entries;onProgress({progress:0});return new Promise(resolve=>{resolveAssets=()=>{onProgress({progress:1});resolve({assets:{background:{kind:'bg'},player:{kind:'player'},enemy:{kind:'enemy'},bgm:{loop:false}},release(){}})}})}
+   registerAudio(name,audio,kind){assert.equal(name,'generated-bgm');assert.equal(kind,'music');this.audio=audio}
+   playAudio(name){assert.equal(name,'generated-bgm');plays++}
+   destroy(){}
+ }
+ const context=createContext({JaewoonVibeRuntime:FakeRuntime,document:doc,window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(fn){rafCount++;frame=fn},setTimeout:()=>0,clearTimeout(){},console});
+ new Script(body,{filename:'generated-game.js'}).runInContext(context);
+ assert.equal(rafCount,0,'game loop must wait for loading');
+ assert.equal(getElementById('status').textContent,'에셋 로딩 0%');
+ assert.equal(loadedEntries.length,4);
+ resolveAssets();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(getElementById('status').textContent,'플레이 중');
+ assert.equal(rafCount,1);
+ frame(116);
+ assert.ok(drawCalls.some(row=>row[0].kind==='bg'),'provided background must be drawn');
+ assert.ok(drawCalls.some(row=>row[0].kind==='player'),'provided player sprite must be drawn');
+ assert.ok(drawCalls.some(row=>row[0].kind==='enemy'),'provided enemy sprite must be drawn');
+ assert.equal(plays,0,'music must not autoplay before a user gesture');
+ listeners.get('pointerdown')();
+ assert.equal(plays,1,'user gesture starts approved music');
+});
+
+test('generated game reports missing asset failure instead of starting a broken scene',async()=>{
+ const html=buildGeneratedGame({packageData:{gameId:'qa-missing',assets:{player:'assets/missing.png'}}}).html;
+ const body=html.match(/<script type="module">([\s\S]*?)<\/script>/)[1].replace(/^import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
+ let rejectAssets,rafCount=0;
+ const ui=new Map();
+ const getElementById=id=>{if(!ui.has(id))ui.set(id,{textContent:'',style:{},addEventListener(){},setPointerCapture(){},getBoundingClientRect:()=>({width:140,left:0,top:0})});return ui.get(id)};
+ getElementById('game').width=640;getElementById('game').height=480;getElementById('game').getContext=()=>({});
+ class FakeRuntime{boot(){}loadAssets(){return new Promise((resolve,reject)=>{rejectAssets=reject})}loadProgress(){return null}destroy(){}}
+ const ctx=createContext({JaewoonVibeRuntime:FakeRuntime,document:{getElementById,addEventListener(){},removeEventListener(){}},window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(){rafCount++},setTimeout:()=>0,clearTimeout(){},console:{error(){}}});
+ new Script(body).runInContext(ctx);
+ rejectAssets(new Error('404'));
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(rafCount,0);
+ assert.equal(getElementById('status').textContent,'에셋 로딩 실패');
 });
