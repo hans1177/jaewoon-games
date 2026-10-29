@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-28T01:22:48.866Z",
+  "generatedAt": "2026-10-29T13:04:58.427Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -15,7 +15,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 21,
+          "activeTasks": 23,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -135,7 +135,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 9,
+          "activeTasks": 11,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -165,7 +165,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 8,
+          "activeTasks": 9,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -225,7 +225,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 8,
+          "activeTasks": 9,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -618,7 +618,7 @@
           "activeTasks": 17,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 26
+          "repeatedFailureSignal": 29
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -705,7 +705,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 11,
+          "activeTasks": 6,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -735,7 +735,7 @@
           "joint": "AWAITING_VIBE"
         },
         "development": {
-          "activeTasks": 11,
+          "activeTasks": 12,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -825,7 +825,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 10,
+          "activeTasks": 4,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -885,7 +885,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 6,
+          "activeTasks": 5,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -945,7 +945,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 9,
+          "activeTasks": 10,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -975,7 +975,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 10,
+          "activeTasks": 8,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -1065,7 +1065,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 12,
+          "activeTasks": 7,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -1095,7 +1095,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 8,
+          "activeTasks": 5,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -1159,6 +1159,36 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "card-grid-duel",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 2,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 53
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
