@@ -100,6 +100,7 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     clean(sample.output).split('검증된 패치:')[0]
   ].filter(Boolean).join(' ');
   const sourceRevision=clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision);
+  const trace=sample.verification?.trace||sample.provenance?.verificationTrace;
   // 실행 가능한 학습: 검증된 내부 결과에서 함수 식별자만 추출한다. 소스 패치는 저장하지 않는다.
   const verifiedActions=uniq([sample.instruction,sample.input].filter(Boolean)
     .flatMap(value=>[...String(value).matchAll(/\bdata-gameplay-action\s*=\s*["']([A-Za-z_$][\w$]{0,39})["']/g)].map(match=>match[1])))
