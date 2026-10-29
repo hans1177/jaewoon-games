@@ -98,6 +98,12 @@ function validate(spec){
   break;
  case 'building-authorized-placement':
   requireBinding(['blueprints','authorizePlace','buildingsFolder']);
+  // A surface exemption requires a separately verified owner server helper.
+  if(spec.bindings?.isPlacementSurface!==undefined){
+   values.placementSurface=id(spec.bindings.isPlacementSurface,'isPlacementSurface');
+   if(values.requiredBindings.includes(values.placementSurface))throw Error('VIBE59_QUALITY_BINDING_ALIAS');
+   values.requiredBindings.push(values.placementSurface);
+  }
   values.cost=positive(spec.cost,'cost',{min:1,max:100000});
   values.placeCooldown=positive(spec.placeCooldown,'placeCooldown',{min:0.05,max:120});
   values.range=positive(spec.range,'range');
@@ -201,7 +207,8 @@ function qualitySource(s){
   '  overlap.FilterType = Enum.RaycastFilterType.Exclude',
   '  overlap.FilterDescendantsInstances = {character}',
   '  for _, part in ipairs(workspace:GetPartBoundsInBox(boundsCFrame, boundsSize, overlap)) do',
-  '    if part.CanCollide then built:Destroy(); return false end',
+  '    if part.CanCollide'+(s.placementSurface?' and not '+s.placementSurface+'(player, part)':'')+
+    ' then built:Destroy(); return false end',
   '  end',
   '  for _, part in ipairs(built:GetDescendants()) do',
   '    if part:IsA("BasePart") then part.Anchored = true end',
