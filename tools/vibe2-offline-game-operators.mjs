@@ -81,10 +81,21 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   edit={path:file.path,find:prefix,replace:prefix+'\n'+indent+statement};
   proof=verifyIntentCondition(r.condition);effects=['CONTROL_FLOW_EARLY_RETURN'];
  }else if(r.operation==='existing-call'){
-  const re=new RegExp('(?<![\\w$.])'+r.after+'\\s*\\(\\s*\\)'+(target==='web'?'\\s*;':''),'g');
+  // 실제 소스 인덱스가 증명한 호출 위치와 단순 인자만 사용한다. 표현식이나 문자열 인자는 추측하지 않는다.
+  const at=r.afterCallStart,anchorArgs=r.afterCallArguments;
+  if(!Number.isSafeInteger(at)||at<owner.bodyStart||at>=owner.bodyEnd||!Array.isArray(anchorArgs))
+   throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
+  const literal=value=>value.replace(/[.$]/g,'\\  const re=new RegExp('(?<![\\w$.])'+r.after+'\\s*\\(\\s*\\)'+(target==='web'?'\\s*;':''),'g');
   const hits=[...body.matchAll(re)];if(hits.length!==1)throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
   // Luau의 선언부에도 같은 name()이 있으므로 원본 책임 함수부터 호출까지 고유 앵커로 묶는다.
   const at=owner.bodyStart+hits[0].index,find=source.slice(owner.start,at+hits[0][0].length);
+  const args=r.forwardedArguments||[];');
+  const re=new RegExp('^'+literal(r.after)+'\\s*\\(\\s*'+anchorArgs.map(literal).join('\\s*,\\s*')+
+   '\\s*\\)'+(target==='web'?'\\s*;':''));
+  const match=re.exec(source.slice(at,owner.bodyEnd));
+  if(!match)throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
+  // 기존 책임 함수의 선언까지 포함해 동일 이름의 다른 호출과 충돌하지 않게 한다.
+  const find=source.slice(owner.start,at+match[0].length);
   const args=r.forwardedArguments||[];
   edit={path:file.path,find,replace:find+'\n'+indent+r.callee+'('+args.join(', ')+')'+(target==='web'?';':'')};
   proof={pass:true,cases:[{name:'ordered-existing-call',after:r.after,callee:r.callee,forwardedArguments:args},{name:'unchanged-owner',symbol:owner.id}],

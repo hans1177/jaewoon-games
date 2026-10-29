@@ -315,6 +315,73 @@ test('server-local Luau forwards reordered typed parameter names without inventi
  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
 });
 
+// [회귀] 실제 기존 인자를 전달하는 호출 뒤에도 소스 근거를 보존하면서 기존 UI 함수를 연결한다.
+test('WEB existing-call anchors existing argument-bearing calls and preserves displayed state',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={hp:0,shown:0};\nfunction give(actor){state.hp+=actor.gain;}\nfunction render(actor){state.shown=state.hp+actor.offset;}\nfunction collect(actor){\n give(actor);\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.match(candidate.edits[0].replace,/give\(actor\);\s+render\(actor\);/);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const state=vm.runInNewContext(docs.get('game.js')+'collect({gain:2,offset:3});collect({gain:4,offset:5});state;');
+ assert.equal(state.hp,6);assert.equal(state.shown,11);
+ assert.equal(candidate.runtimeVerified,false);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+test('WEB existing-call anchors original property arguments without inventing values',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={hp:0,shown:0};\nfunction give(value){state.hp+=value;}\nfunction render(actor){state.shown=state.hp+actor.bias;}\nfunction collect(actor){\n give(actor.gain);\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ const candidate=createVibe59CodeCandidates(options),docs=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ assert.match(candidate.edits[0].replace,/give\(actor\.gain\);\s+render\(actor\);/);
+ const state=vm.runInNewContext(docs.get('game.js')+'collect({gain:3,bias:7});state;');
+ assert.equal(state.hp,3);assert.equal(state.shown,10);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+test('complex existing calls, duplicate anchors and string literals remain fail-closed',t=>{
+ const {root}=fixture(t);
+ const original='function give(v){}\nfunction render(actor){}\nfunction collect(actor){\n give(actor);\n}\n';
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ for(const modified of [
+  original.replace('give(actor);','give(calculate(actor));'),
+  original.replace('give(actor);','give("actor");'),
+  original.replace('give(actor);','give(actor);\n give(actor);')
+ ]){
+  fs.writeFileSync(path.join(root,'game.js'),modified);
+  const plan=planComplexGameWork(options);
+  if(plan.status==='BOUND')assert.throws(()=>createComplexGameCandidate({plan,sourceRoot:root}),/CALL_ANCHOR/);
+  else assert.ok(plan.unresolved.some(row=>/CALL_ANCHOR|CALL_OWNERSHIP/.test(row.code)));
+  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),modified);
+ }
+});
+test('server-local Luau connects verified parameterized call without changing source',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const file='server/Game.server.luau';
+ const source='local score=0\nlocal function give(actor: any)\n score += actor.gain\nend\n'+
+  'local function render(actor: any)\n actor.shown=score\nend\n'+
+  'local function collect(actor: any)\n give(actor)\nend\n';
+ fs.writeFileSync(path.join(root,file),source);
+ const options={sourceRoot:root,responsibleFiles:[file],target:'roblox',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 collect에서 give 호출 뒤 render를 호출해'}};
+ const plan=planComplexGameWork(options);assert.equal(plan.status,'BOUND');
+ const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ assert.match(candidate.edits[0].replace,/give\(actor\)\s+render\(actor\)/);
+ const docs=new Map([[file,source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ if(process.env.VIBE2_LUAU_BINARY){
+  const probe=path.join(root,'probe.luau');
+  fs.writeFileSync(probe,docs.get(file)+'\nlocal actor={gain=2,shown=0}\ncollect(actor)\nassert(actor.shown==2)\ncollect(actor)\nassert(actor.shown==4)');
+  const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[probe],{encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stderr);
+ }
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+});
+
 test('server-local native Luau existing-call preserves typed arguments and blocks later local declarations',t=>{
  const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
  const file='server/Game.server.luau';
