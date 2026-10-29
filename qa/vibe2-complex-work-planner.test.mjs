@@ -239,6 +239,16 @@ test('existing-call forwards reordered verified WEB arguments and preserves orig
  const state=vm.runInNewContext(docs.get('game.js')+'collect({bias:2},3);collect({bias:4},5);state;');
  assert.equal(state.hp,2);assert.equal(state.shown,11);
  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+ const subset=source.replace('render(offset,actor){state.shown=state.hp+offset+actor.bias;}',
+  'render(offset){state.shown=state.hp+offset;}');
+ fs.writeFileSync(path.join(root,'game.js'),subset);
+ const subsetCandidate=createVibe59CodeCandidates(options);
+ assert.match(subsetCandidate.edits[0].replace,/render\(offset\);/);
+ const subsetDocs=new Map([['game.js',subset]]);
+ applyExactEdits(root,subsetCandidate.edits,{documents:subsetDocs});
+ const subsetState=vm.runInNewContext(subsetDocs.get('game.js')+'collect({bias:9},5);state;');
+ assert.equal(subsetState.hp,1);assert.equal(subsetState.shown,6);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),subset);
  fs.writeFileSync(path.join(root,'game.js'),source.replace('render(offset,actor)','render(offset,missing)'));
  const blocked=planComplexGameWork(options);
  assert.equal(blocked.status,'BLOCKED');assert.equal(blocked.unresolved[0].code,'CALL_PARAMETER_BINDING_UNPROVEN');
