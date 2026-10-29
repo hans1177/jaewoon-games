@@ -127,7 +127,7 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
  const clauses=text.split(/[;\n]+/).map(x=>x.trim().replace(/[.!。]$/,'')).filter(Boolean);
  if(clauses.length>48){result.unresolved.push({code:'REQUIREMENT_BUDGET'});return result}
  for(const ownerText of clauses){
-  let m,operation,functionName,callback,condition,output,value,minimum,maximum,after,callee,callees,semantic,returnValue;
+  let m,operation,functionName,callback,condition,output,value,minimum,maximum,amount,after,callee,callees,semantic,returnValue;
   try{
    if(/^(?:죽은 (?:유닛|공격자)(?:은|는) 공격하지 않게 해|Prevent dead attackers from attacking)$/i.test(ownerText)){
     operation='semantic-guard';semantic='dead-attacker';
@@ -157,7 +157,52 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
      (m=new RegExp('^In (?:function )?('+name+'),? clamp ('+name+'(?:\\.'+name+')*) between (-?\\d+(?:\\.\\d+)?) and (-?\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
     [,functionName,output]=m;minimum=Number(m[3]);maximum=Number(m[4]);operation='clamp-assignment';
     if(!Number.isFinite(minimum)||!Number.isFinite(maximum)||minimum>=maximum||minimum< -1e6||maximum>1e6)throw Error('range');
-   }else if((m=new RegExp('^함수 ('+name+')에서 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) (true|false|-?\\d+(?:\\.\\d+)?)로 설정(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+'(?:\\.'+name+')*)(?:을|를) (\\d+(?:\\.\\d+)?) (증가|감소)시켜
+    functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
+   }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
+   const id='req-'+sourceDigest(ownerText).slice(0,16);
+   if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
+   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,returnValue,output,value,minimum,maximum,amount,after,callee,callees,
+    dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
+    stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
+  }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}
+ }
+ if(!result.requirements.length&&!result.unresolved.length)result.unresolved.push({code:'NO_OWNER_SPEC'});
+ return result;
+}
+).exec(ownerText))){
+    functionName=m[1];output=m[2];amount=Number(m[3])*(m[4]==='증가'?1:-1);operation='adjust-existing-counter';
+    if(!Number.isFinite(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
+   }else if((m=new RegExp('^In (?:function )?('+name+'),? (increase|decrease) ('+name+'(?:\\.'+name+')*) by (\\d+(?:\\.\\d+)?)
+    functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
+   }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
+   const id='req-'+sourceDigest(ownerText).slice(0,16);
+   if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
+   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,returnValue,output,value,minimum,maximum,after,callee,callees,
+    dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
+    stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
+  }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}
+ }
+ if(!result.requirements.length&&!result.unresolved.length)result.unresolved.push({code:'NO_OWNER_SPEC'});
+ return result;
+}
+,'i').exec(ownerText))){
+    functionName=m[1];output=m[3];amount=Number(m[4])*(m[2].toLowerCase()==='increase'?1:-1);operation='adjust-existing-counter';
+    if(!Number.isFinite(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
+   }else if((m=new RegExp('^함수 ('+name+')에서 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) (true|false|-?\\d+(?:\\.\\d+)?)로 설정(?:해|해줘|하라|해주세요)?
+    functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
+   }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
+   const id='req-'+sourceDigest(ownerText).slice(0,16);
+   if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
+   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,returnValue,output,value,minimum,maximum,after,callee,callees,
+    dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
+    stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
+  }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}
+ }
+ if(!result.requirements.length&&!result.unresolved.length)result.unresolved.push({code:'NO_OWNER_SPEC'});
+ return result;
+}
+).exec(ownerText))){
     functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
    }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
    const id='req-'+sourceDigest(ownerText).slice(0,16);
