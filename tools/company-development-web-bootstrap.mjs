@@ -44,7 +44,21 @@ function scriptBlockers(text,{allowScriptSrc=false}={}){
       }catch{out.push('IMPORT_MAP_JSON_INVALID');}
       continue;
     }
-    try{new Script(String(m[2]||''),{filename:`bootstrap-inline-${++i}.js`});
+    const body=String(m[2]||'');
+    // A module's import/export declarations are legal JavaScript but cannot be
+    // parsed in vm.Script (classic-script goal). Check with the native module
+    // syntax parser without loading its imports or executing gameplay code.
+    if(type==='module'){
+      try{execFileSync(process.execPath,['--input-type=module','--check'],{
+        input:body,timeout:10000,stdio:['pipe','ignore','ignore']
+      });}
+      catch{out.push('INLINE_SCRIPT_SYNTAX_INVALID');}
+      continue;
+    }
+    // JSON data islands and other non-executable script types are not JS code.
+    // An explicit unknown MIME type is inert in browsers.
+    if(type&& !/^(?:text|application)\/(?:javascript|ecmascript)$/.test(type))continue;
+    try{new Script(body,{filename:`bootstrap-inline-${++i}.js`});
     }catch{out.push('INLINE_SCRIPT_SYNTAX_INVALID');}
   }
   return out;
