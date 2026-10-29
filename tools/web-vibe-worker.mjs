@@ -150,7 +150,7 @@ function verifiedLocalMain({cloud=false}={}){
   // The WEB worker must not fall back to a native team's SSH key.
   if(!/^https:\/\/github\.com\/hans1177\/jaewoon-games(?:\.git)?$/i.test(origin))
     fail('WEB_VIBE_UNTRUSTED_REPOSITORY');
-  run('git',['fetch','--quiet','origin','main']);
+  run('git',['fetch','--quiet',...(cloud?['--depth=1','--filter=blob:none']:[]),'origin','main']);
   if(run('git',['rev-parse','HEAD'])!==run('git',['rev-parse','origin/main']))
     fail('WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST');
   const dirty=run('git',['status','--porcelain','--untracked-files=all']);
@@ -206,8 +206,9 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
       }
     }
     if(!chunks.length)fail('WEB_VIBE_RESPONSIBILITY_CONTEXT_REQUIRED:'+source.relative);
+    const moduleHeader=source.original.match(/<script\b[^>]*type=[\"']module[\"'][^>]*>([\s\S]*?)<\/script>/i)?.[1]||source.original;
     excerpt='FUNCTION INDEX (names are not implementation evidence): '+definitions.map(fn=>fn.name).join(', ')
-      +'\nREAD-ONLY FILE HEADER:\n'+source.original.slice(0,2400)+chunks.join('\n');
+      +'\nREAD-ONLY FILE HEADER:\n'+moduleHeader.slice(0,2400)+chunks.join('\n');
     contextComplete=false;
   }
   if(/\.html?$/i.test(source.relative)){
@@ -257,8 +258,9 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
     +'Otherwise return JSON {edits:[{oldText,newText}],reason} with up to 8 non-overlapping exact replacements in existing responsible functions. '
     +'Implement connected gameplay changes together; preserve function responsibilities and never append wrappers or overrides. '
     +'Never modify saves, security, deployment, tokens, Roblox/Unity, unrelated files, or run tools. '
-    +'Only edit exact source shown below; never guess missing code or claim runtime verification.';
-  const user='Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,2000)
+    +'Only edit exact source shown below; never guess missing code or claim runtime verification. '
+    +'Use existing approved assets only; never synthesize primitive stand-ins or invent unrequested game content.';
+  const user='Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,12000)
     +'\nPrior independently merged patches for this same WEB game (context only; recheck latest source):\n'
     +previousVerified.map(row=>row.id+': '+clean(row.goal).slice(0,300)).join('\n').slice(0,1300)
     +'\nContinue from current game source and preserve existing mechanics/saves. Do not reset previous build-up progress.'

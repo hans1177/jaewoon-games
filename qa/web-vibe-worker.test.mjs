@@ -271,9 +271,11 @@ test('WEB large file context reaches late responsible functions and exact depend
  const functions=Array.from({length:180},(_,i)=>'function idle'+i+'(){return '+i+';}').join('\n');
  const original=prefix+functions+'\nfunction combatDependency(){return 12;}\nfunction lateAttack(){return combatDependency()+1;}';
  let prompt='';
- const edit=await proposeWebVibeChange({gameId:'demo',goal:'lateAttack combat improvement',responsibleSymbols:['lateAttack']},
+ const edit=await proposeWebVibeChange({gameId:'demo',goal:'lateAttack combat improvement '+('owner detail '.repeat(210))+'TAIL_OWNER_REQUIREMENT',responsibleSymbols:['lateAttack']},
   {relative:'web-games/demo/game.mjs',original},{cloud:true,apiKey:'fixture',geminiImpl:async request=>{
     prompt=request.contents[0].parts[0].text;
+    assert.ok(prompt.includes('TAIL_OWNER_REQUIREMENT'));
+    assert.equal(request.maxOutputTokens,8192);
     return {text:JSON.stringify({edits:[{oldText:'function lateAttack(){return combatDependency()+1;}',newText:'function lateAttack(){return combatDependency()+2;}'}],reason:'actual existing function change'})};
   }});
  assert.ok(prompt.includes('COMPLETE FUNCTION lateAttack'));
