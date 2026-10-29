@@ -2927,9 +2927,17 @@ jobs:
           # Retire only legacy QA windows that opened the former shared temporary package.
           $legacyRoot = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP 'company-roblox-studio-package')) + '\'
           $legacyPattern = '(?i)(?:"|\s)' + [regex]::Escape($legacyRoot) + '[^"]+\.rbxlx?(?:"|\s|$)'
+          # 현재 격리 QA 경로도 이전 자동 실행의 소유권 증거로 확인한다.
+          $qaRoot = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP 'studio-qa')) + '\'
+          $qaPattern = '(?i)(?:"|\s)' + [regex]::Escape($qaRoot) + '[0-9]{8,}-[0-9]+-[0-9a-f]{8}[\\/][^"]+\.rbxlx?(?:"|\s|$)'
           $legacyProcesses = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue)
           foreach ($legacy in $legacyProcesses) {
-            if ([string]$legacy.CommandLine -notmatch $legacyPattern) { continue }
+            $legacyOwned = [string]$legacy.CommandLine -match $legacyPattern
+            $isolatedQaOwned = [string]$legacy.CommandLine -match $qaPattern
+            if (-not $legacyOwned -and -not $isolatedQaOwned) {
+              Write-Host "ROBLOX_STUDIO_UNOWNED_PROCESS_PRESERVED=$($legacy.ProcessId):session=$($legacy.SessionId)"
+              continue
+            }
             $owned = Get-Process -Id ([int]$legacy.ProcessId) -ErrorAction SilentlyContinue
             if (-not $owned -or $owned.ProcessName -ne 'RobloxStudioBeta') { continue }
             if ([math]::Abs(($owned.StartTime.ToUniversalTime() - $legacy.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) { continue }
