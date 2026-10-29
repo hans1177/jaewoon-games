@@ -587,9 +587,9 @@ test('gated game-local runtime repair is visible to the canonical bottleneck sen
      id,gameId,target:'roblox',department:'development',type:'implementation',
      status,lastOutcome:'RUNTIME_RESULT_GATED_REQUEUE',retries:0,
      sourceRoot:'roblox-games/'+gameId,responsibleFiles:[file],
-     goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\\n실패 단계: '+stage+
-       '\\n실패 식별자: '+signature+
-       '\\n[/VERIFIED_GAME_RUNTIME_BOTTLENECK]\\nrepair existing server logic',
+     goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\n실패 단계: '+stage+
+       '\n실패 식별자: '+signature+
+       '\n[/VERIFIED_GAME_RUNTIME_BOTTLENECK]\nrepair existing server logic',
      evidence:[
        'runtime-neural-ingress:gated-existing-task-requeue',
        'runtime-neural-ingress-event:'+gameId+'|RUNTIME_RESULT|ROBLOX|'+revision+'|FAIL|'+stage,
@@ -612,7 +612,7 @@ test('gated game-local runtime repair is visible to the canonical bottleneck sen
  const gameA=result.games.find(row=>row.gameId==='game-a');
  const gameB=result.games.find(row=>row.gameId==='game-b');
  assert.equal(gameA.causalRepairPending,1);
- assert.equal(gameA.verifiedRuntimeRepairPending,1);
+ assert.equal(gameA.gatedRuntimeRepairPending,1);
  assert.equal(gameA.causalRepairRunning,1);
  assert.equal(gameA.verifiedPackages,1);
  assert.deepEqual(gameA.runtimeRepairStages.map(x=>x.stage),['F2_WORLD_FOUNDATION','F8_REGRESSION']);
@@ -620,7 +620,7 @@ test('gated game-local runtime repair is visible to the canonical bottleneck sen
  assert.equal(gameA.runtimeRepairStages[0].outcome,'REPAIR_NOT_RUNTIME_PASS');
  assert.equal(gameB.causalRepairPending,1,'legacy failed repair remains visible');
  assert.equal(gameB.causalRepairBlocked,1);
- assert.equal(gameB.verifiedRuntimeRepairPending,0);
+ assert.equal(gameB.gatedRuntimeRepairPending,0);
  assert.equal(gameB.runtimeRepairStages.length,1,'obsolete unrelated goal is not an active repair');
  assert.equal(result.games.every(x=>!x.deploymentVerified&&!x.gameCompletionVerified),true);
  const snapshot=analyzeSystemAiBottlenecks({
@@ -643,11 +643,11 @@ test('gated game-local sensor refuses event markers with a stale or unproven cur
  }]});
  assert.equal(withoutGoal.games[0].causalRepairPending,0);
  const wrongSignature=summarizeVerifiedGameProduction({tasks:[{
-  ...base,goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\\n실패 단계: F3_CHARACTER_FOUNDATION\\n실패 식별자: another'
+  ...base,goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\n실패 단계: F3_CHARACTER_FOUNDATION\n실패 식별자: another'
  }]});
- assert.equal(wrongSignature.games[0].verifiedRuntimeRepairPending,0);
+ assert.equal(wrongSignature.games[0].gatedRuntimeRepairPending,0);
  const noEvent=summarizeVerifiedGameProduction({tasks:[{
-  ...base,goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\\n실패 단계: F3_CHARACTER_FOUNDATION\\n실패 식별자: real-failure',
+  ...base,goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\n실패 단계: F3_CHARACTER_FOUNDATION\n실패 식별자: real-failure',
   evidence:event.filter(x=>!x.startsWith('runtime-neural-ingress-event:'))
  }]});
  assert.equal(noEvent.games[0].causalRepairPending,0);
