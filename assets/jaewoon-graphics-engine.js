@@ -357,7 +357,8 @@
   // Web overlay for confirmed presentation events; the game retains its renderer.
   function createWebPresentationController({
     host,documentRef=(typeof document!=='undefined'?document:null),
-    reducedMotion=false,maxDamagePopups=36,maxToasts=3,safeInsets={},skin={}
+    reducedMotion=false,maxDamagePopups=36,maxToasts=3,maxVfxSprites=36,
+    onCameraShake=null,safeInsets={},skin={}
   }={}){
     if(!host||!documentRef||typeof documentRef.createElement!=='function'
       ||typeof host.appendChild!=='function')return Object.freeze({ready:false,reason:'EXISTING_DOM_HOST_REQUIRED'});
@@ -373,6 +374,8 @@
     stage.setAttribute('data-vibe-presentation-overlay','true');
     host.appendChild(stage);
     const damage=new Map(),toasts=[],timers=new Set(),icons=new Map(),seen=new Map();
+    const impactSprites=new Map(),impactSeen=new Map(),shakeSeen=new Map();
+    let activeImpactSprites=0;
     let tooltip=null,destroyed=false;
     const timer=(fn,ms)=>{const id=setTimeout(()=>{timers.delete(id);if(!destroyed)fn();},ms);timers.add(id);return id;};
     const dimensions=()=>({width:host.clientWidth||host.offsetWidth||1,height:host.clientHeight||host.offsetHeight||1});
@@ -423,6 +426,69 @@
         {opacity:0,transform:move(safeX+Math.min(12,Math.max(0,view.width-safeX-65)),Math.max(18,safeY-65),1)}
       ],isCrit?940:740,end);
       timer(end,1300);return true;
+    }
+    // [VFX: 공통 이미지 근거] 프로젝트 내부의 승인된 실제 이미지만 허용한다.
+    const localImagePath=value=>{
+      const name=String(value||'');
+      return /^(?:\.\/|\/assets\/|\/web-games\/|assets\/|web-games\/)[a-zA-Z0-9_./-]+\.(?:png|webp|svg|avif)(?:\?[a-zA-Z0-9_=&-]+)?$/.test(name)
+        &&!name.split(/[?#]/)[0].split('/').includes('..');
+    };
+    // [VFX: 이미지] 확정된 타격 이벤트에만 원본 이미지 파편을 짧게 렌더링한다.
+    // 임의 도형/원형 모델은 생성하지 않으며 최대 수량과 화면 범위를 제한한다.
+    function showImpactVfx({eventId,x,y,spriteUrl='',spriteApproved=false,
+      confirmed=false,count=6}={}){
+      if(destroyed||confirmed!==true||!String(eventId||'').trim()||
+        spriteApproved!==true||!localImagePath(spriteUrl))return false;
+      const px=Number(x),py=Number(y),view=dimensions(),now=Date.now();
+      if(!Number.isFinite(px)||!Number.isFinite(py)||px<0||py<0||
+        px>view.width||py>view.height)return false;
+      for(const [id,expiry] of impactSeen)if(expiry<=now)impactSeen.delete(id);
+      if(impactSeen.has(eventId))return false;
+      const cap=Math.max(0,Math.min(72,Math.floor(Number(maxVfxSprites)||0)));
+      const requested=Math.max(1,Math.min(8,Math.floor(Number(count)||1)));
+      const quantity=reducedMotion?1:requested;
+      if(activeImpactSprites+quantity>cap)return false;
+      const nodes=[],duration=reducedMotion?140:550,spread=Math.min(42,Math.max(16,view.width*.08));
+      for(let i=0;i<quantity;i++){
+        const angle=Math.PI*2*i/quantity,dx=Math.cos(angle)*spread,dy=Math.sin(angle)*spread;
+        const node=make('img',{position:'absolute',left:px+'px',top:py+'px',
+          width:'18px',height:'18px',objectFit:'contain',pointerEvents:'none',
+          transform:'translate(-50%,-50%)',filter:'drop-shadow(0 0 5px rgba(255,205,132,.65))',
+          willChange:'transform, opacity',opacity:'1'});
+        node.setAttribute('src',spriteUrl);node.setAttribute('alt','');
+        node.setAttribute('aria-hidden','true');nodes.push(node);
+        if(!reducedMotion)animate(node,[
+          {opacity:1,transform:'translate(-50%,-50%) scale(.85)'},
+          {opacity:0,transform:'translate(calc(-50% + '+dx.toFixed(1)+'px), calc(-50% + '+dy.toFixed(1)+'px)) scale(.35)'}
+        ],duration,()=>{});
+      }
+      impactSeen.set(eventId,now+4000);
+      if(impactSeen.size>250)impactSeen.delete(impactSeen.keys().next().value);
+      impactSprites.set(eventId,nodes);activeImpactSprites+=nodes.length;
+      timer(()=>{
+        if(impactSprites.get(eventId)!==nodes)return;
+        for(const node of nodes)remove(node);
+        activeImpactSprites-=nodes.length;impactSprites.delete(eventId);
+      },duration+40);
+      return true;
+    }
+    // [카메라] 렌더러가 제공한 화면 전용 함수에만 진동 신호를 넘긴다.
+    // 실제 카메라 좌표/충돌/터치 좌표는 기존 게임 렌더러가 소유한다.
+    function requestCameraShake({eventId,confirmed=false,intensity=1,durationMs=140}={}){
+      if(destroyed||confirmed!==true||reducedMotion||
+        !String(eventId||'').trim()||typeof onCameraShake!=='function')return false;
+      const now=Date.now();
+      for(const [id,expiry] of shakeSeen)if(expiry<=now)shakeSeen.delete(id);
+      if(shakeSeen.has(eventId))return false;
+      const n=Number(intensity),d=Number(durationMs);
+      if(!Number.isFinite(n)||!Number.isFinite(d)||n<=0||d<=0)return false;
+      const args=Object.freeze({eventId:String(eventId).slice(0,96),
+        pixels:Math.max(.5,Math.min(5,n)),durationMs:Math.max(60,Math.min(220,d)),
+        presentationOnly:true});
+      if(onCameraShake(args)===false)return false;
+      shakeSeen.set(eventId,now+3000);
+      if(shakeSeen.size>250)shakeSeen.delete(shakeSeen.keys().next().value);
+      return true;
     }
     function hideTooltip(){if(tooltip){remove(tooltip);tooltip=null;}}
     function showTooltip({text='',anchorRect,width=270,kind='INFO'}={}){
@@ -589,8 +655,7 @@
           touchAction:'manipulation',pointerEvents:'auto',userSelect:'none'});
         const path=String(action.iconUrl||'');
         // 호출자가 명시적으로 승인한 프로젝트 내부 원본 아이콘만 사용한다. 도형 대체 없음.
-        const localPath=/^(?:\.\/|\/assets\/|\/web-games\/|assets\/|web-games\/)[a-zA-Z0-9_./-]+\.(?:png|webp|svg|avif)(?:\?[a-zA-Z0-9_=&-]+)?$/.test(path)
-          &&!path.split(/[?#]/)[0].split('/').includes('..');
+        const localPath=localImagePath(path);
         if(action.iconApproved===true&&localPath){
           const icon=doc.createElement('img');
           icon.setAttribute('src',path);icon.setAttribute('alt','');
@@ -770,16 +835,19 @@
       if(destroyed)return;destroyed=true;
       for(const id of timers)clearTimeout(id);timers.clear();
       for(const animation of icons.values())if(animation&&animation.cancel)animation.cancel();
-      icons.clear();damage.clear();seen.clear();toasts.length=0;tooltip=null;
+      icons.clear();damage.clear();seen.clear();impactSprites.clear();impactSeen.clear();
+      shakeSeen.clear();activeImpactSprites=0;toasts.length=0;tooltip=null;
       rich.warnings.clear();rich.warningSeen.clear();rich.player=null;rich.actions=null;
       rich.boss=null;rich.objective=null;rich.status=null;remove(stage);
       if(changedHostPosition&&host.style.position==='relative')host.style.position='';
     }
-    return Object.freeze({ready:true,showDamage,showTooltip,hideTooltip,notify,animateIcon,
+    return Object.freeze({ready:true,showDamage,showImpactVfx,requestCameraShake,
+      showTooltip,hideTooltip,notify,animateIcon,
       updateStatusIcon,updatePlayerHud,updateActionHud,
       updateBossHud,clearBossHud,updateObjectiveHud,updateStatusTray,
       showDirectionWarning,destroy,
-      stats:()=>Object.freeze({activeDamage:damage.size,activeNotices:toasts.length,
+      stats:()=>Object.freeze({activeDamage:damage.size,activeVfxSprites:activeImpactSprites,
+        activeNotices:toasts.length,
         activeWarnings:rich.warnings.size,bossVisible:Boolean(rich.boss),
         objectiveVisible:Boolean(rich.objective),playerVisible:Boolean(rich.player),
         actionButtons:rich.actions?.count||0,
