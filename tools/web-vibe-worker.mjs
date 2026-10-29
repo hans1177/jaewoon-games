@@ -178,6 +178,7 @@ function webLearningTopic(goal=''){
     ['NAME_READABILITY',/(?:도감|이름표|nameplate|bestiary)/i,/(?:흐리|가독|선명|읽기|readab|contrast|blur)/i],
     ['FRAME_STABILITY',/(?:프레임|시간차|frame|delta|lag|버벅)/i,/(?:수정|개선|안정|제한|fix|stabili|clamp)/i],
     ['MOBILE_INPUT',/(?:터치|모바일|버튼|조이스틱|touch|mobile|input|button)/i,/(?:수정|연결|작동|fix|connect|repair)/i],
+    ['ALGORITHM_SYNTHESIS',/(?:알고리즘|algorithm|계산|연산|formula)/i,/(?:생성|작성|수정|개선|합성|synthes|develop|implement|generate|invent)/i],
     ['SCENE_PRESENTATION',/(?:3D|3차원|그래픽|시각|조명|camera|render|visual|lighting)/i,/(?:수정|개선|선명|fix|improv|readab)/i]
   ];
   return topics.filter(([,subject,action])=>subject.test(value)&&action.test(value)).map(([id])=>id);
@@ -193,7 +194,8 @@ export function webLearningCandidate(task,changed){
       const before=String(patch.oldText||''),after=String(patch.newText||'');
       if(before.length<16||before.length>12000||!after||before===after)continue;
       // 실제 게임 함수의 한 책임에 귀속되지 않는 임의 텍스트는 학습하지 않는다.
-      const owners=functions.filter(fn=>fn.body.includes(before));
+      const owners=functions.filter(fn=>fn.body.includes(before)
+        ||source.original.slice(fn.start,fn.end)===before);
       if(owners.length!==1)continue;
       let prefix=0;while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
       let suffix=0;while(suffix<before.length-prefix&&suffix<after.length-prefix
@@ -237,7 +239,8 @@ export function compileVerifiedWebLearning(task,source,previousVerified=[]){
         &&/\.(?:js|mjs)$/i.test(sourceSuffix)
         &&['NAME_READABILITY','FRAME_STABILITY','SCENE_PRESENTATION','MOBILE_INPUT'].includes(recipe.topic);
       if(!sameGame&&!crossGame)continue;
-      const owners=functions.filter(fn=>fn.name===recipe.owner&&fn.body.includes(recipe.from));
+      const owners=functions.filter(fn=>fn.name===recipe.owner
+        &&(fn.body.includes(recipe.from)||source.original.slice(fn.start,fn.end).includes(recipe.from)));
       if(owners.length!==1)continue;
       const guarded=safeWebVibeReplacement(source.original,JSON.stringify({
         oldText:recipe.from,newText:recipe.to,reason:'검증된 동일 게임 기존 소스 함수 학습 재사용'
