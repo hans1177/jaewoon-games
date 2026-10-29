@@ -403,6 +403,7 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
   const candidate=synthesizeVibe59NumericAlgorithmSource({
     spec:{...spec,verifiedConcepts:spec.verifiedConcepts??task.verifiedAlgorithmConcepts??inherited,
       strategy:spec.strategy??(strategy.strategy==='BOUNDED_AST_EVOLUTION_CEGIS'?'evolution':undefined),
+      verifiedCounterexamples:spec.verifiedCounterexamples??task.verifiedAlgorithmFailures,
       ownerApproved:true},source:source.original,relative:source.relative
   });
   const edited=safeWebVibeReplacement(source.original,JSON.stringify({
@@ -415,7 +416,9 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
       counterexamples:candidate.search.counterexamples,
       candidatesConsidered:candidate.search.candidatesConsidered,
       algorithmAst:candidate.search.ast,search:candidate.search.search,
-      fitness:candidate.search.fitness,runtimeVerified:false,
+      fitness:candidate.search.fitness,
+      acceptedRuntimeCounterexamples:candidate.acceptedRuntimeCounterexamples,
+      runtimeVerified:false,
       modelUsed:false,roles:['SYNTHESIZED_PURE_NUMERIC_ALGORITHM']}};
 }
 
