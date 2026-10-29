@@ -804,6 +804,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     &&tuningEvidence.has('owner-gameplay-tuning:VERIFIED_SAME_GAME_DESIGN')
     &&tuningEvidence.has('owner-gameplay-tuning:BEFORE_AFTER_AND_RUNTIME_QA_REQUIRED')
     &&['web','roblox','unity'].includes(clean(plan.target).toLowerCase())
+    &&centralPolicy?.document?.developmentAccess?.[clean(plan.target).toUpperCase()]==='ALWAYS_ALLOWED'
     &&task.protectedChange!==true && task.requiresOwnerDecision!==true
     &&task.designChange!==true;
   const codingConstitutionRule=codingConstitutionRuleForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
