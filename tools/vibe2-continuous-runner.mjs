@@ -597,22 +597,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
-  // [오너 승인 게임플레이] 계획의 명시적 근거와 최신 중앙 계약이 일치할 때만 수치·전투 AI 변경 후보를 허용한다.
-  // 승인 여부는 코드 작성 권한의 범위일 뿐 실제 피해·보상 판정이나 QA/게시 권한이 아니다.
-  const tuningAuthorization=centralPolicy?.document?.continuousGameplaySystemEvolutionContract?.ownerAuthorizedGameplayTuning;
-  const tuningEvidence=new Set((task.evidence||[]).map(clean));
-  const approvedGameplayTuning=centralPolicy?.valid===true
-    &&tuningAuthorization?.authority==='OWNER_DIRECTIVE_2026-10-30'
-    &&tuningAuthorization?.status==='OWNER_DIRECT_LOCKED'
-    &&tuningEvidence.has('owner-gameplay-tuning:OWNER_DIRECTIVE_2026-10-30')
-    &&tuningEvidence.has('owner-gameplay-tuning:VERIFIED_SAME_GAME_DESIGN')
-    &&tuningEvidence.has('owner-gameplay-tuning:BEFORE_AFTER_AND_RUNTIME_QA_REQUIRED')
-    &&['web','roblox','unity'].includes(clean(plan.target).toLowerCase())
-    &&centralPolicy?.document?.developmentAccess?.[clean(plan.target).toUpperCase()]==='ALWAYS_ALLOWED'
-    &&task.protectedChange!==true && task.requiresOwnerDecision!==true
-    &&task.designChange!==true;
-
-  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience, verifiedOwnerGameplayTuning:approvedGameplayTuning });
+  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
   if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
     return freeze({
       ...base,
@@ -983,7 +968,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
     workerPolicy:freeze({
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
-      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:approvedGameplayTuning,
+      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
       isolatedPracticeArtifactAllowed:route.route==='learning-web-artifact',
       practiceArtifactRepositorySourceWrite:false,
