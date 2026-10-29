@@ -706,6 +706,56 @@ test('Vibe5.9 no-model ceiling synthesis preserves signed and integral holdouts 
  assert.equal(original,'local function roundUp(x)\n return 0\nend\n');
 });
 
+// [무모델 수치 확장] 기존 AST 합성기에서 부호/0의 방향과 소수 자르기를 증명한다.
+test('Vibe5.9 synthesizes truncating integer parts on Web and Roblox without numeric sign loss',()=>{
+ const spec={parameters:['x'],maxDepth:2,
+  examples:[{args:[3.75],output:3},{args:[-3.75],output:-3},
+   {args:[0.75],output:0},{args:[-0.75],output:-0}],
+  holdouts:[{args:[11.42],output:11},{args:[-11.42],output:-11},
+   {args:[-2],output:-2}]};
+ for(const strategy of [undefined,'evolution']){
+  const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
+  assert.equal(result.casesPassed,7);
+  assert.equal(result.modelUsed,false);
+  assert.equal(result.sourceWrite,false);
+  assert.equal(result.runtimeVerified,false);
+  assert.match(result.source,/Math\.trunc\(x\)/);
+  const numeric=vm.runInNewContext('(function(x){'+result.source+'})');
+  for(const row of [...spec.examples,...spec.holdouts])
+   assert.ok(Object.is(numeric(...row.args),row.output),'exact zero sign and truncation required');
+  assert.equal(renderVibe59NumericLuaAST(result.ast,['x']),'(math.modf(x))');
+ }
+ const original='local function integerPart(x)\n return 0\nend\n';
+ const result=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'integerPart'},
+  source:original,relative:'ServerScriptService/integerPart.luau',target:'roblox'});
+ assert.match(result.newText,/return \(math\.modf\(x\)\)/);
+ assert.equal(result.search.casesPassed,7);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(original,'local function integerPart(x)\n return 0\nend\n');
+});
+
+test('Vibe5.9 model-free sign handles distinct positive and negative zero oracle inputs',()=>{
+ const spec={parameters:['x'],maxDepth:2,
+  examples:[{args:[-0],output:-0},{args:[0],output:0},
+   {args:[-2.4],output:-1},{args:[2.4],output:1}],
+  holdouts:[{args:[-17.25],output:-1},{args:[15.25],output:1},
+   {args:[0.1],output:1},{args:[-0.1],output:-1}]};
+ for(const strategy of [undefined,'evolution']){
+  const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
+  assert.equal(result.casesPassed,8);
+  assert.match(result.source,/Math\.sign\(x\)/);
+  const numeric=vm.runInNewContext('(function(x){'+result.source+'})');
+  for(const row of [...spec.examples,...spec.holdouts])
+   assert.ok(Object.is(numeric(...row.args),row.output),'sign oracle must reject negative-zero aliasing');
+  assert.equal(renderVibe59NumericLuaAST(result.ast,['x']),'math.sign(x)');
+  assert.equal(result.runtimeVerified,false);
+  assert.equal(result.modelUsed,false);
+  assert.equal(result.sourceWrite,false);
+ }
+});
+
 test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure function',()=>{
  const spec={ownerApproved:true,functionName:'resolve',parameters:['a','b'],
   examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
