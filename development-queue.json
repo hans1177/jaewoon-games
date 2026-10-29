@@ -1929,7 +1929,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-29T14:57:19.415Z",
+      "updatedAt": "2026-10-29T15:00:46.900Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2599,7 +2599,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "sourceRevision": "cabd31cd000e5f941fcf638dd01b5dd8584dd92f",
+        "artifactIdentity": "sha256:4eb88da3dfe41ef11c3a80916f38d32098453cca1ef1fa3ae404e4786c08053f",
+        "artifactRunId": 40893937658,
+        "universeId": "10773076775",
+        "placeId": "115056847915626",
+        "candidateVersionNumber": 9,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 1819,
+        "retryNotBefore": "2026-10-29T15:31:05.334Z",
+        "observedAt": "2026-10-29T15:00:46.900Z",
+        "workflowRunId": 40896333963,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
@@ -2670,9 +2689,9 @@
         "testedAt": "2026-10-26T00:36:00.324Z"
       },
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2896,7 +2915,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-29T14:55:31.573Z"
+        "verifiedAt": "2026-10-29T15:00:46.900Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-29T14:55:31.573Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-29T14:55:31.573Z",
@@ -8082,7 +8101,7 @@
       "robloxNativeFailureClass": "ROBLOX_UI_STATE"
     }
   ],
-  "updatedAt": "2026-10-29T14:59:54.517Z",
+  "updatedAt": "2026-10-29T15:00:46.900Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
