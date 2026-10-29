@@ -1107,6 +1107,10 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(autoFunctionRewrite&&req.machine&&(
     req.machine.handlerName!==originalFunction.name||originalFunction.parameters.join(',')!=='eventName'))
     throw Error('VIBE59_FUNCTION_REWRITE_HANDLER_SIGNATURE');
+  // 상태 규칙은 기존 무인자 함수만 재작성한다. 인자가 있으면 원래 호출 계약이
+  // 누락될 수 있으므로 추정하지 않고 거부한다. 상태머신은 eventName 하나만 허용.
+  if(autoFunctionRewrite&&!req.machine&&originalFunction.parameters.length)
+    throw Error('VIBE59_FUNCTION_REWRITE_PARAMETER_CONTRACT');
   const generatedProbes=generateVibe59AutonomousProbes({rule:req.rule,machine:req.machine,
     maxCases:Math.max(0,Math.min(10,20-ownerScenarios.length))});
   const probeCases=generatedProbes.cases;
