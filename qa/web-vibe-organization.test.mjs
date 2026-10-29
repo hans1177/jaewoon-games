@@ -329,6 +329,9 @@ test('WEB watchdog uses expiring exact-owner CAS claims to suppress duplicate 5-
     'another eligible WEB game must not be blocked by the first game claim');
   const one={...emptyWebVibeQueue(),tasks:[claim.queue.tasks[0]]};
   assert.equal(selectWebVibeRecoveryTask(one,{now:'2026-10-30T01:05:00Z'}),null);
+  const sameGame={...one,tasks:[one.tasks[0],{...one.tasks[0],id:other.id}]};
+  assert.equal(selectWebVibeRecoveryTask(sameGame,{now:'2026-10-30T01:05:00Z'}),null,
+    'leased owner repair blocks a younger edit of the same game, not unrelated games');
   assert.equal(selectWebVibeRecoveryTask(one,{now:'2026-10-30T02:15:00Z'}).id,item.id);
   assert.throws(()=>claimWebVibeRecoveryTask(one,item.id,{now:'2026-10-30T01:05:00Z',
     runId:40918533816}),/CLAIM_SELECTION_STALE/);
