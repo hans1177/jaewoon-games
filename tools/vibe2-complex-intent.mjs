@@ -11,15 +11,21 @@ const protectedNames=new Set(['constructor','prototype','__proto__','eval','Func
 export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',responsibleFiles=[],baseCommit=''}={}){
   const task=order.selectedTask||{};
   const goal=String(task.goal||order.originalGoal||order.goal||'').trim();
-  if(!['web','roblox'].includes(target)||!goal||goal.length>320||
-    /[\r\n\x00-\x1f\`{};]/.test(goal))return null;
-  const match=english.exec(goal)||korean.exec(goal);
-  if(!match)return null; // Unrecognized prose is not an approved coding recipe.
-  const [trigger,...effects]=match.slice(1);
+  if(!['web','roblox'].includes(target)||!goal||goal.length>640||
+    /[\r\n\x00-\x1f\`{}]/.test(goal))return null;
+  // [메인] 세미콜론으로 구분된 최대 4개 명시 지시만 해석한다. 임의 문장을 보완하지 않는다.
+  const clauses=goal.split(';').map(text=>text.trim());
+  if(clauses.length>4||clauses.some(text=>!text||text.length>320))return null;
+  const steps=clauses.map(text=>{
+    const match=english.exec(text)||korean.exec(text);
+    return match?{ownerText:text,trigger:match[1],effects:match.slice(2)}:null;
+  });
+  if(steps.some(step=>!step))return null; // 알 수 없는 자연어는 추정하지 않고 거절.
+  const names=steps.flatMap(step=>[step.trigger,...step.effects]);
   if(task.ownerDirective!==true&&order.ownerApproved!==true)
     throw Error('VIBE2_COMPLEX_OWNER_DIRECTIVE_REQUIRED');
-  if(new Set([trigger,...effects]).size!==3||
-    [trigger,...effects].some(name=>protectedNames.has(name)))
+  if(new Set(names).size!==names.length||
+    names.some(name=>protectedNames.has(name)))
     throw Error('VIBE2_COMPLEX_FUNCTIONS_INVALID');
   const gameId=String(task.gameId||order.gameId||'').trim();
   if(!gameId||!/^[a-z0-9][a-z0-9-]{0,70}$/.test(gameId)||
@@ -31,16 +37,17 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
     ownerDirectiveReference:{originalText:goal,verifiedFromOwnerOrder:true},
     allowedGameRoot:sourceRoot,authorizedFiles:[...responsibleFiles],
     baseCommit:String(baseCommit),sourceWrite:false,runtimeVerified:false,
-    requirements:effects.map((effect,index)=>({
-      id:hash(requestId+'|'+index+'|'+effect),ownerText:goal,
+    requirements:steps.flatMap((step,group)=>step.effects.map((effect,index)=>({
+      id:hash(requestId+'|'+group+'|'+index+'|'+effect),ownerText:step.ownerText,
       system:'existing-function-chain',event:'function-completion',
-      trigger, effect,dependsOn:index?[hash(requestId+'|0|'+effects[0])]:[],
-      actors:[trigger,effect],preconditions:['existing-original-function','unique-owner-scope'],
+      group,trigger:step.trigger,effect,
+      dependsOn:index?[hash(requestId+'|'+group+'|0|'+step.effects[0])]:[],
+      actors:[step.trigger,effect],preconditions:['existing-original-function','unique-owner-scope'],
       invariants:['no-save-schema-change','no-new-assets','no-unrelated-game-change'],
       acceptanceScenarios:['original-handler-preserved','once-per-completion','call-order'],
       stateOwnership:target==='roblox'?'ORIGINAL_LUAU_SCOPE':'ORIGINAL_WEB_SCOPE',
       boundSymbols:[],status:'UNBOUND'
-    })),
+    }))),
     unknowns:[],ambiguous:[],missingGrounding:[]
   });
 }

@@ -155,3 +155,133 @@ test('real existing line-defense source candidate starts in a real Chromium brow
   assert.match(result.stdout,/DEVELOPMENT_WEB_BROWSER_GAME=line-defense/);
   assert.equal(fs.readFileSync(path.join(liveRoot,relative),'utf8'),source);
 });
+
+
+
+test('Sprint2 multi-file ROBLOX server functions produce two source-grounded atomic edits and independent DAGs',t=>{
+  const root=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-multi-luau-')),'game');
+  t.after(()=>fs.rmSync(path.dirname(root),{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const combat='server/Combat.server.luau',inventory='server/Inventory.server.luau';
+  const sourceA='local hits = 0\nlocal shown = 0\n'+
+    'local function confirmHit()\n hits = hits + 1\nend\n'+
+    'local function updateHitState()\n shown = hits\nend\n'+
+    'local function onAttack()\n hits = hits + 1\nend\n';
+  const sourceB='local items = 0\nlocal visible = 0\n'+
+    'local function addItem()\n items = items + 1\nend\n'+
+    'local function showItems()\n visible = items\nend\n'+
+    'local function onCollect()\n items = items + 1\nend\n';
+  fs.writeFileSync(path.join(root,combat),sourceA);
+  fs.writeFileSync(path.join(root,inventory),sourceB);
+  const goal='When function onAttack runs, call confirmHit then updateHitState; '+
+    'When function onCollect runs, call addItem then showItems';
+  const options={order:{selectedTask:{gameId:'game',ownerDirective:true,goal,
+    sourceSha256ByPath:{[combat]:digest(sourceA),[inventory]:digest(sourceB)}}},
+    sourceRoot:root,responsibleFiles:[combat,inventory],target:'roblox'};
+  const intent=compileVibe2ComplexIntent(options);
+  assert.equal(intent.requirements.length,4);
+  assert.equal(new Set(intent.requirements.map(row=>row.group)).size,2);
+  const planned=planVibe2ComplexWork(options);
+  assert.equal(planned.steps.length,4);
+  assert.deepEqual(planned.steps.map(row=>row.dependsOn.length),[0,1,0,1]);
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.vibe59CodeKind,'SOURCE_BOUND_MULTI_FILE_CHAIN');
+  assert.deepEqual(candidate.edits.map(row=>row.path),[combat,inventory]);
+  assert.equal(candidate.sourceSha256ByPath[combat],digest(sourceA));
+  assert.equal(candidate.sourceSha256ByPath[inventory],digest(sourceB));
+  assert.equal(candidate.vibe59TestPlan.staticEvidenceOnly,true);
+  assert.equal(candidate.modelUsed,false);
+  assert.equal(candidate.runtimeVerified,false);
+  const docs=new Map([[combat,sourceA],[inventory,sourceB]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  assert.match(docs.get(combat),/confirmHit\(\)\s+updateHitState\(\)\s+end/);
+  assert.match(docs.get(inventory),/addItem\(\)\s+showItems\(\)\s+end/);
+  assert.equal(fs.readFileSync(path.join(root,combat),'utf8'),sourceA);
+  assert.equal(fs.readFileSync(path.join(root,inventory),'utf8'),sourceB);
+  const luauCompile=process.env.VIBE2_LUAU_COMPILER;
+  if(luauCompile&&fs.existsSync(luauCompile)){
+    for(const [relative,source] of docs){
+      const candidateFile=path.join(root,relative+'.compiled-test');
+      fs.writeFileSync(candidateFile,source);
+      const result=spawnSync(luauCompile,[candidateFile],{encoding:'utf8',timeout:12000});
+      assert.equal(result.status,0,String(result.stderr||'').slice(-800));
+    }
+  }
+});
+
+test('Sprint2 ROBLOX source cannot link client state, duplicate symbols, foreign/expired owner scope or unverified RemoteEvent',t=>{
+  const root=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-multi-guards-')),'game');
+  t.after(()=>fs.rmSync(path.dirname(root),{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const a='server/Combat.server.luau',b='server/Other.server.luau';
+  const sourceA='local function confirmHit()\n x = 1\nend\n'+
+    'local function updateHitState()\n y = 1\nend\n'+
+    'local function onAttack()\n x = 2\nend\n';
+  const sourceB='local function addItem()\n a = 1\nend\n'+
+    'local function showItems()\n b = 1\nend\n'+
+    'local function onCollect()\n a = 2\nend\n';
+  fs.writeFileSync(path.join(root,a),sourceA);fs.writeFileSync(path.join(root,b),sourceB);
+  const goal='When function onAttack runs, call confirmHit then updateHitState; '+
+    'When function onCollect runs, call addItem then showItems';
+  const input={order:{selectedTask:{gameId:'game',ownerDirective:true,goal}},
+    sourceRoot:root,responsibleFiles:[a,b],target:'roblox'};
+  const candidate=createVibe59CodeCandidates(input);
+  assert.equal(candidate.edits.length,2);
+  const original=new Map([[a,sourceA],[b,sourceB]]);
+  const modified=new Map(original);
+  modified.set(b,'local function different()\nend\n');
+  assert.throws(()=>applyExactEdits(root,candidate.edits,{documents:modified}),/edit find/);
+  assert.equal(modified.get(a),sourceA,'failed second step must not write first step');
+  assert.equal(modified.get(b),'local function different()\nend\n');
+
+  assert.throws(()=>createVibe59CodeCandidates({...input,order:{selectedTask:{
+    gameId:'game',ownerDirective:false,goal}}}),/OWNER_DIRECTIVE_REQUIRED/);
+  assert.throws(()=>createVibe59CodeCandidates({...input,order:{selectedTask:{
+    gameId:'game',ownerDirective:true,goal,sourceSha256ByPath:{[b]:'stale'}}}}),/STALE_SOURCE/);
+  fs.copyFileSync(path.join(root,b),path.join(root,'client/Other.client.luau'));
+  assert.throws(()=>createVibe59CodeCandidates({...input,responsibleFiles:[a,'client/Other.client.luau']}),/UNSUPPORTED_FUNCTION_CONTRACT/);
+  fs.writeFileSync(path.join(root,b),sourceB+'\nlocal function updateHitState()\n b = 3\nend\n');
+  assert.throws(()=>createVibe59CodeCandidates(input),/SOURCE_BINDING_NOT_UNIQUE/);
+  fs.writeFileSync(path.join(root,b),sourceB.replace(' a = 2',' remote:FireServer("DROP")'));
+  assert.throws(()=>createVibe59CodeCandidates(input),/UNSUPPORTED_FUNCTION_CONTRACT/);
+  assert.equal(fs.readFileSync(path.join(root,a),'utf8'),sourceA);
+});
+
+test('Sprint2 WEB multi-file existing source applies two independent event-state-view chains without touching original files',t=>{
+  const root=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-multi-web-')),'game');
+  t.after(()=>fs.rmSync(path.dirname(root),{recursive:true,force:true}));
+  fs.mkdirSync(root);
+  const a='combat.js',b='ui.js';
+  const left='let hp=0,shown=0;\nfunction hit(){hp+=1;}\nfunction paint(){shown=hp;}\nfunction attack(){hp+=1;}\n';
+  const right='let gold=0,display=0;\nfunction awardCoin(){gold+=1;}\nfunction refreshCoin(){display=gold;}\nfunction pickup(){gold+=1;}\n';
+  fs.writeFileSync(path.join(root,a),left);fs.writeFileSync(path.join(root,b),right);
+  const order={selectedTask:{gameId:'game',ownerDirective:true,goal:
+    'When function attack runs, call hit then paint; When function pickup runs, call awardCoin then refreshCoin'}};
+  const result=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:[a,b],target:'web'});
+  assert.equal(result.edits.length,2);
+  const docs=new Map([[a,left],[b,right]]);
+  applyExactEdits(root,result.edits,{documents:docs});
+  const contextLeft=vm.createContext({});
+  vm.runInContext(docs.get(a)+'attack();attack();',contextLeft);
+  assert.deepEqual(Array.from(vm.runInContext('[hp,shown]',contextLeft)),[4,4]);
+  const contextRight=vm.createContext({});
+  vm.runInContext(docs.get(b)+'pickup();pickup();',contextRight);
+  assert.deepEqual(Array.from(vm.runInContext('[gold,display]',contextRight)),[4,4]);
+  assert.equal(fs.readFileSync(path.join(root,a),'utf8'),left);
+  assert.equal(fs.readFileSync(path.join(root,b),'utf8'),right);
+});
+
+test('Sprint2 actual Roblox game server+client originals retain exact SHA and ownership boundary',()=>{
+  const root=path.resolve('roblox-games/line-defense');
+  const rels=['server/Game.server.luau','client/Game.client.luau'];
+  const original=rels.map(rel=>fs.readFileSync(path.join(root,rel),'utf8'));
+  const index=indexVibe2GameSource({sourceRoot:root,gameId:'line-defense',
+    target:'roblox',responsibleFiles:rels});
+  assert.deepEqual(index.files.map(row=>row.path),rels);
+  assert.deepEqual(index.files.map(row=>row.sourceSha256),original.map(digest));
+  assert.equal(index.target,'roblox');
+  assert.ok(index.functions.every(row=>rels.includes(row.path)));
+  assert.equal(index.sourceWrite,false);
+  assert.equal(index.runtimeVerified,false);
+});
