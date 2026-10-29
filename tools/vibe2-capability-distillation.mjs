@@ -70,6 +70,11 @@ function capabilityPatterns(trace={}){
   const execution=trace.execution||{};
   const patterns=[];
   if(decision.strategy)patterns.push(`CAPABILITY:CODING_STRATEGY:${decision.strategy}`);
+  // [자기 강화] 실제 fan-in 승인 이후에만 소스 검증을 통과한 네이티브 레시피를
+  // 재사용 가능한 코딩 전략으로 승격한다. 불합격·실행 미검증 후보는 절대 학습하지 않는다.
+  if(trace.verification?.fullRegressionPass===true&&decision.nativeRepair?.selectedRecipe){
+    patterns.push(`CAPABILITY:NATIVE_REPAIR_RECIPE:${decision.nativeRepair.selectedRecipe}`);
+  }
   if((decision.primarySystems||[]).length)patterns.push(`CAPABILITY:RESPONSIBILITY_LOCALIZATION:${decision.primarySystems.slice(0,3).join('+')}`);
   if(decision.contextMode)patterns.push(`CAPABILITY:CONTEXT_SELECTION:${decision.contextMode}`);
   if(execution.recoveryUsed===true)patterns.push('CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION');
@@ -85,6 +90,14 @@ function capabilityPatterns(trace={}){
 export function buildObservableCodingTrace({task={},result={}}={}){
   const evidence=safeArray(result.evidence,80);
   const coding=result.codingMethod&&typeof result.codingMethod==='object'?result.codingMethod:{};
+  const nativeSelection=coding.deterministicNativeSelection&&typeof coding.deterministicNativeSelection==='object'
+    ?coding.deterministicNativeSelection:null;
+  const nativeAttempts=Array.isArray(nativeSelection?.attempts)?nativeSelection.attempts.slice(0,12):[];
+  const selectedNative=nativeSelection?.status==='CANDIDATE_VALIDATED'
+    ?nativeAttempts.find(row=>row.status==='VALIDATED'
+      &&clean(row.fingerprint)===clean(nativeSelection.selectedFingerprint)):null;
+  const selectedNativeRecipe=/^[A-Z0-9_]{4,80}$/.test(clean(selectedNative?.recipe))
+    ?clean(selectedNative.recipe):null;
   const identity=result.candidateIdentity&&typeof result.candidateIdentity==='object'?result.candidateIdentity:{};
   const failure=result.candidateFailure&&typeof result.candidateFailure==='object'?result.candidateFailure:{};
   const contract=task.compiledWorkContract&&typeof task.compiledWorkContract==='object'?task.compiledWorkContract:{};
@@ -129,6 +142,15 @@ export function buildObservableCodingTrace({task={},result={}}={}){
         runtimeVerified:false,playerBenefitMeasured:false
       },
       strategy:clean(coding.strategy)||null,
+      nativeRepair:{
+        selectedRecipe:selectedNativeRecipe,
+        candidateCount:Math.max(0,Math.min(128,Number(nativeSelection?.candidateCount||0))),
+        attempts:nativeAttempts.length,
+        rejected:nativeAttempts.filter(row=>row.status==='REJECTED').length,
+        sourceBound:selectedNativeRecipe!==null,
+        runtimeVerified:false,
+        learningVerified:false
+      },
       responsibilityConfidence:clean(coding.responsibilityConfidence)||null,
       primaryTargets:safeArray(coding.primaryTargets,8),
       primarySystems:safeArray(coding.primarySystems,12),
