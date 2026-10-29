@@ -9,6 +9,7 @@ import {assertWebVibeQueue,assertWebVibeTask,WEB_VIBE_CONTROL_BRANCH} from './we
 import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import {inspectSourceFunctions} from './company-vibe2-expert-development.mjs';
 import {synthesizeVibe59NumericAlgorithmSource} from './vibe2-v59-autonomy.mjs';
+import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const REPO='hans1177/jaewoon-games';
 const clean=v=>String(v??'').trim();
@@ -394,8 +395,16 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
     ||spec.source.split('/').includes('..'))
     fail('WEB_VIBE_ALGORITHM_SPEC_SCOPE_INVALID');
   if(source.relative!==spec.source)return null;
+  const domain=clean(spec.domain).toUpperCase();
+  const inherited=retrieveVerifiedAlgorithmConcepts({stateInput:task.algorithmMemory||{},
+    platform:'WEB',domain});
+  const strategy=preferVerifiedAlgorithmStrategy({stateInput:task.algorithmMemory||{},
+    platform:'WEB',domain});
   const candidate=synthesizeVibe59NumericAlgorithmSource({
-    spec:{...spec,ownerApproved:true},source:source.original,relative:source.relative
+    spec:{...spec,verifiedConcepts:spec.verifiedConcepts??task.verifiedAlgorithmConcepts??inherited,
+      strategy:spec.strategy??(strategy.strategy==='BOUNDED_AST_EVOLUTION_CEGIS'?'evolution':undefined),
+      verifiedCounterexamples:spec.verifiedCounterexamples??task.verifiedAlgorithmFailures,
+      ownerApproved:true},source:source.original,relative:source.relative
   });
   const edited=safeWebVibeReplacement(source.original,JSON.stringify({
     oldText:candidate.oldText,newText:candidate.newText,
@@ -405,7 +414,11 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
     offlineSourceProof:{source:source.relative,algorithm:candidate.search.expression,
       trainingCases:candidate.search.trainingCases,heldOutCases:candidate.search.heldOutCases,
       counterexamples:candidate.search.counterexamples,
-      candidatesConsidered:candidate.search.candidatesConsidered,runtimeVerified:false,
+      candidatesConsidered:candidate.search.candidatesConsidered,
+      algorithmAst:candidate.search.ast,search:candidate.search.search,
+      fitness:candidate.search.fitness,
+      acceptedRuntimeCounterexamples:candidate.acceptedRuntimeCounterexamples,
+      runtimeVerified:false,
       modelUsed:false,roles:['SYNTHESIZED_PURE_NUMERIC_ALGORITHM']}};
 }
 

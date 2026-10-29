@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { scanSecurityPatch, scanExternalInstruction, isApprovedPagesOidcGrant } from '../tools/company-security-steward.mjs';
 import { compactPolicyReviewIncidents, recordSecurityReport, resolveSecurityIncident } from '../tools/company-security-incident.mjs';
 import { distillSecurityLearning } from '../tools/company-security-learning.mjs';
+import {synthesizeVibe59NumericAlgorithmSource} from '../tools/vibe2-v59-autonomy.mjs';
 
 const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immune.yml','utf8');
 const vibeCoreWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
@@ -596,4 +597,28 @@ test('local owner receiver approval allows only the exact advisory addition and 
   const unsafe=structuredClone(head);unsafe.localVibeWebChat.existingPwaOwnerCommentReceiver.actor='attacker';
   assert.throws(()=>execute(unsafe),/EXACT_CONTRACT_REQUIRED/);
   assert.throws(()=>execute(head,[...changes,'developmentAccess.WEB']),/EXACT_CONTRACT_REQUIRED/);
+});
+
+
+// [보안] 무모델 AST 후보는 기존 함수 외부/게임 서버 권한/외부 원문 실행을 허용하지 않는다.
+test('Vibe5.9 generated algorithm refuses unsafe Luau source replacement and unverified knowledge',()=>{
+ const spec={ownerApproved:true,functionName:'solve',parameters:['x','y'],strategy:'evolution',
+  examples:[{args:[2,3],output:3},{args:[5,1],output:5},{args:[-4,-1],output:-1}],
+  holdouts:[{args:[1,8],output:8},{args:[7,2],output:7}],
+  verifiedConcepts:[{verified:false,ast:['const',999],proof:{independentQa:'PASS',
+    regression:'PASS',runtime:'PASS',actualPlatformRuntime:true}}]};
+ const original='local function solve(x,y)\n  return 0\nend';
+ const result=synthesizeVibe59NumericAlgorithmSource({
+  spec,source:original,relative:'ServerScriptService/logic.server.luau'});
+ assert.equal(result.search.casesPassed,5);
+ assert.equal(result.runtimeVerified,false);
+ assert.ok(!result.newText.includes('999'));
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+  spec,source:'local function solve(x,y)\n  game.Players:ClearAllChildren()\n  return 0\nend',
+  relative:'ServerScriptService/logic.server.luau'}),/EXISTING_PURE_FUNCTION_REQUIRED/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:false},source:original,
+  relative:'ServerScriptService/logic.server.luau'}),/SOURCE_SCOPE_REQUIRED/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+  spec,source:original,relative:'../../forbidden.lua'}),/SOURCE_SCOPE_REQUIRED|SOURCE_SCOPE_ESCAPE/);
 });
