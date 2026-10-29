@@ -235,3 +235,37 @@ test('reduced motion keeps one real image for impact and disables camera shake',
   assert.equal(shakes.length,0);
   ctrl.destroy();
 });
+
+test('every published Vibe web route binds shared effects without replacing the existing runtime',()=>{
+ const slugs='amusement-tycoon cat-step chess-battle core-clash-4v4 cozy-island daechung-rpg defense dice-battle-board egg-heist exorcist-office fantasy-survival fifty-days forgotten-continent gem-survivor horror-escape-room human-go-temp insect-survival island-village kingshot-ad line-defense lost-dawn mini-empire monster-adventure moon-ruins ocean-voyage party-rpg portal-rpg realistic-builder restaurant-tycoon seed-action-survival-rogu-echoes-of-the-lost-star star-frontier survival2 tekken territory-war tower-choice-rpg village-dungeons wild-survival zombie-survival'.split(' ');
+ assert.equal(slugs.length,38);
+ for(const slug of slugs){
+   const html=fs.readFileSync('web-games/'+slug+'/index.html','utf8');
+   assert.match(html,/data-vibe-common-screen/,slug);
+   assert.match(html,/mountVibeGameScreenEffects/,slug);
+ }
+ const browser=fs.readFileSync('assets/vibe-browser-presentation.mjs','utf8');
+ assert.match(browser,/createVibeCanvasVfx/);
+ assert.match(browser,/prefers-reduced-motion/);
+ assert.match(browser,/documentRef\.addEventListener\('pointerdown'/);
+});
+test('Roblox games share native Vibe presentation and confirmed-health impact effects',()=>{
+ const names=fs.readdirSync('roblox-games',{withFileTypes:true}).filter(row=>row.isDirectory()).map(row=>row.name);
+ let checked=0;
+ for(const name of names){
+   const project='roblox-games/'+name+'/default.project.json';
+   const client='roblox-games/'+name+'/client/Game.client.luau';
+   if(!fs.existsSync(project)||!fs.existsSync(client))continue;
+   const config=fs.readFileSync(project,'utf8');
+   if(!config.includes('RobloxCommonPresentation'))continue;
+   const code=fs.readFileSync(client,'utf8');
+   assert.match(code,/presentation\.BindGameUiEffects\(player\)/,name);
+   checked++;
+ }
+ assert.ok(checked>=40,'all registered Roblox gameplay clients must reuse the canonical presentation');
+ const common=fs.readFileSync('assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau','utf8');
+ assert.match(common,/function Presentation.BindGameUiEffects/);
+ assert.match(common,/Lighting:FindFirstChildOfClass\("BloomEffect"\)/);
+ assert.match(common,/humanoid.HealthChanged:Connect/);
+ assert.match(common,/health < lastHealth/);
+});
