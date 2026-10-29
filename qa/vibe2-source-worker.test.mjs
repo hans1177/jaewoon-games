@@ -10279,3 +10279,21 @@ test('Vibe5.9 offline complex intent composes unrelated gameplay repairs and fal
  }
  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'second pass has no speculative changes');
 });
+
+
+test('Vibe5.9 canonical game worker is offline-only and rejects ungrounded source generation',()=>{
+ const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+ const worker=workflow.slice(workflow.indexOf('  worker:\n'),workflow.indexOf('  fan_in:\n'));
+ assert.ok(worker.length>1000,'original worker and fan-in path must remain in place');
+ assert.match(worker,/VIBE2_V4_OFFLINE_ONLY: 'true'/);
+ assert.match(worker,/VIBE2_ROBLOX_NO_MODEL_ONLY: 'true'/);
+ assert.match(worker,/tools\/vibe2-source-worker\.mjs/);
+ const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+ assert.match(source,/if\(!generated&&clean\(process\.env\.VIBE2_V4_OFFLINE_ONLY\)/);
+ assert.match(source,/VIBE4_OFFLINE_PATTERN_UNAVAILABLE/);
+ assert.match(source,/ROBLOX_NO_MODEL_SOURCE_REPAIR_UNAVAILABLE/);
+ assert.match(source,/CROSS_FUNCTION_ROUND_EXIT_LIFECYCLE/);
+ assert.match(source,/COMPOSED_SOURCE_GRAPH/);
+ assert.match(source,/applyExactEdits\(sourceRoot,candidate\.edits,\{dryRun:true\}\)/);
+ assert.match(source,/candidateValidation=candidateValidator\(candidate\)/);
+});
