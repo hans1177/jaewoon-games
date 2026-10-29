@@ -6,9 +6,37 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
-import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
+import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel,synthesizeWebSourceWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+
+test('WEB Vibe generates a bounded real-player movement candidate only for the observed public Wild Survival failure',()=>{
+  const original=fs.readFileSync('web-games/wild-survival/index.html','utf8');
+  const source={relative:'web-games/wild-survival/index.html',original};
+  const task={gameId:'wild-survival',goal:'Fix #11129 from run 40872553330: WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED'};
+  const candidate=synthesizeWebSourceWithoutModel(task,source);
+  assert.ok(candidate,'existing free WEB writer must generate a real game source edit');
+  assert.equal(candidate.deterministicWebSource,true);
+  assert.equal(candidate.offlineSourceProof.runtimeVerified,false,'candidate alone cannot attest public browser QA');
+  assert.equal(candidate.offlineSourceProof.observedRunId,40872553330);
+  assert.match(candidate.updated,/const dt=Math.min\(\.04,elapsed\);last=now;/);
+  assert.match(candidate.updated,/const movementDt=Math.min\(\.25,elapsed\);/);
+  assert.match(candidate.updated,/updatePlayer\(movementDt\);updateAnimals\(dt\);worldMinute\(dt\);respawnResources\(dt\);/);
+  assert.match(candidate.updated,/SAVE_KEY='jg-wild-survival-v1'/);
+  assert.match(candidate.updated,/keys\.d\|\|keys\.arrowright/);
+  assert.match(candidate.updated,/wild3d\.render\(S,performance\.now\(\)\)/);
+  assert.match(original,/updatePlayer\(dt\);updateAnimals\(dt\);worldMinute\(dt\);respawnResources\(dt\);/);
+  assert.equal(synthesizeWebSourceWithoutModel({...task,goal:'unrelated UI request'},source),null);
+  assert.equal(synthesizeWebSourceWithoutModel(task,{...source,relative:'web-games/another-game/index.html'}),null);
+  assert.equal(synthesizeWebSourceWithoutModel(task,{...source,original:original.replace(
+    'const dt=Math.min(.04,(now-last)/1000||0);last=now;',
+    'const dt=Math.min(.04,(now-last)/1000||0);last=now; // changed baseline'
+  )}),null);
+  // Mathematical unit check only; this is not a simulated or public browser PASS.
+  const elapsed=.18,speed=145;
+  assert.ok(speed*Math.min(.25,elapsed)>10);
+});
+
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
