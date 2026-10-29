@@ -124744,11 +124744,163 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4a2866ae42b5c64b335220f4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11138",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "13ea4de59653f40d4cdd2967975bfbd74fcef951",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11138,
+        "baseBranch": "main",
+        "headBranch": "vibe-cc0-glb-game-integration-20261029",
+        "baseSha": "13ea4de59653f40d4cdd2967975bfbd74fcef951",
+        "headSha": "7bd2be564e9dcd6eee5858e8c60db39279b12630",
+        "mergeCommitSha": "b57a09f6b1c6fc6d5067ee283acf1eecca9a8652",
+        "mergedAt": "2026-10-29T13:18:30Z",
+        "authorLogin": "hans1177",
+        "titleHash": "d0915df12ee2e455d242810c835b169811f25a823ff07a71f094889bd96f516d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe-cc0-glb-game-integration-20261029",
+        "candidateSha": "7bd2be564e9dcd6eee5858e8c60db39279b12630"
+      },
+      "changeStats": {
+        "changedFileCount": 19,
+        "codingRelevantFileCount": 19,
+        "addedLineCount": 597,
+        "deletedLineCount": 19,
+        "changedFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "assets/game-generator.js",
+          "assets/vibe-runtime.js",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-glb-game-integration.test.mjs",
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/monster-adventure/client/Game.client.luau",
+          "roblox-games/realistic-builder/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-survival-horror-es-doors/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/village-dungeons/client/Game.client.luau",
+          "web-games/fantasy-survival/world3d.mjs",
+          "web-games/vibe-maker/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "assets/game-generator.js",
+          "assets/vibe-runtime.js",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-glb-game-integration.test.mjs",
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/monster-adventure/client/Game.client.luau",
+          "roblox-games/realistic-builder/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+          "roblox-games/seed-roblox-survival-horror-es-doors/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/village-dungeons/client/Game.client.luau",
+          "web-games/fantasy-survival/world3d.mjs",
+          "web-games/vibe-maker/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11138",
+        "merge-commit:b57a09f6b1c6fc6d5067ee283acf1eecca9a8652",
+        "base-main:13ea4de59653f40d4cdd2967975bfbd74fcef951"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 984
+    "total": 985
   }
 }
