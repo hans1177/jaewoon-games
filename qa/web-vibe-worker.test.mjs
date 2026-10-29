@@ -708,7 +708,7 @@ test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure 
 test('offline general function rewrite composes original Web event handler from verified transition cases',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-general-web-'));
  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
- const original='const saved="save-v1";\nfunction advance(eventName) { return false; }\n';
+ const original='const saved="save-v1";\nfunction advance( eventName ) { return false; }\n';
  fs.writeFileSync(path.join(root,'game.js'),original);
  const machine={handlerName:'advance',stateVariable:'phase',
   states:['idle','active'],events:['start'],transitions:[{from:'idle',to:'active',event:'start'}]};
@@ -722,6 +722,7 @@ test('offline general function rewrite composes original Web event handler from 
  assert.equal(result.sourceFunctionRewrite,true);
  assert.equal(result.sourceFunction,'advance');
  assert.equal(result.sourceFunctionAutoLocated,true);
+ assert.match(result.edits[0].replace,/function advance\( eventName \) \{/);
  assert.equal(result.vibe59TestPlan.pass,true);
  assert.equal(result.vibe59JsReplay.pass,true);
  const audited=()=>createVibe59CodeCandidates({order:{vibe59CodeRequest:req},
