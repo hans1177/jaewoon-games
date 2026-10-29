@@ -1314,6 +1314,7 @@ jobs:
               .vibe2/queue.json
               .vibe2/parallelism-control.json
               .vibe2/learning-motor-state.json
+              .vibe2/code-pattern-library.json
               .vibe2/benchmark-ladder.json
               .vibe2/idle-practice-queue.json
               .vibe2/web-roblox-handoffs.json
@@ -3464,7 +3465,7 @@ jobs:
             node "$contract_root/tools/vibe2-queue-control.mjs" storage-pack --queue="$control_root/.vibe2/queue.json"
             if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json \
-              .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
+              .vibe2/learning-motor-state.json .vibe2/code-pattern-library.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
             node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
             test ! -d .vibe2/build-up-directives || git add .vibe2/build-up-directives
             test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json

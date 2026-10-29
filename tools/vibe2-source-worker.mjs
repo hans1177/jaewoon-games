@@ -1537,7 +1537,8 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   const learnedActions=new Map();
   for(const pattern of Array.isArray(library?.patterns)?library.patterns:[]){
     const recipe=pattern?.executableRecipe;
-    if(pattern?.verified!==true||pattern?.rawCodeStored!==false||clean(pattern?.authority)!=='verified-internal-code-pattern'||
+    if(pattern?.verified!==true||pattern?.retrievalEligible===false||pattern?.quarantineReason||
+      pattern?.rawCodeStored!==false||clean(pattern?.authority)!=='verified-internal-code-pattern'||
       clean(pattern?.system)!=='INPUT_EVENT_BINDING'||clean(pattern?.engine).toLowerCase()!=='web'||
       clean(pattern?.independentQa)!=='PASS'||!/^[a-f0-9]{40}$/i.test(clean(pattern?.sourceRevision))||
       !/(?:^|\/)company-learning\/training-samples\/[^/]+\.json$/.test(clean(pattern?.evidencePath))||
@@ -6031,7 +6032,8 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     let library;
     try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{});}catch{return[];}
     return (Array.isArray(library?.patterns)?library.patterns:[])
-      .filter(row=>row?.verified===true&&row?.rawCodeStored===false&&clean(row?.independentQa)==='PASS'
+      .filter(row=>row?.verified===true&&row?.retrievalEligible!==false&&!row?.quarantineReason
+        &&row?.rawCodeStored===false&&clean(row?.independentQa)==='PASS'
         &&clean(row?.sourceRevision)&&clean(row?.engine).toLowerCase()===clean(order.target).toLowerCase()
         &&requestedVisualSystems.has(clean(row?.system)))
       .sort((a,b)=>String(a.system).localeCompare(String(b.system))||String(a.id).localeCompare(String(b.id)))

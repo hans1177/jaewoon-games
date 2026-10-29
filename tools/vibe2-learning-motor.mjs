@@ -7,6 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import {recordVerifiedMotionEvolution,loadVerifiedMotionHistory} from './vibe2-motion-evolution.mjs';
+import {ingestVerifiedCodePatterns} from './vibe2-code-pattern-ingest.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -607,7 +608,8 @@ export function applyVerifiedCodePatternsToMastery(stateInput={},libraryInput={}
   const seen=new Set(state.seenCodePatternIds||[]);
   let added=0;
   for(const pattern of libraryInput?.patterns||[]){
-    if(pattern?.verified!==true||pattern?.rawCodeStored===true)continue;
+    if(pattern?.verified!==true||pattern?.rawCodeStored===true||
+      pattern?.retrievalEligible===false||pattern?.quarantineReason)continue;
     if(pattern?.masteryEligible===false)continue;
     if(upper(pattern.independentQa)!=='PASS')continue;
     const id=clean(pattern.id);if(!id||seen.has(id))continue;
@@ -3222,7 +3224,20 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
   const motionHistoryFile=clean(a['motion-history'])||'company-learning/motion-evolution-history.json';
   const motionHistoryInput=loadVerifiedMotionHistory(process.cwd());
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname),motionHistoryInput});
+  // This is the same verified-sample ingest used by the existing library CLI.
+  // New verified gameplay functions become reusable, and superseded proof is
+  // quarantined before both mastery accounting and the next source candidate.
+  const previousPatterns=readJson(codePatternsFile,{patterns:[]});
+  const refreshedPatterns=ingestVerifiedCodePatterns({
+    samplesDir:new URL('../company-learning/training-samples',import.meta.url).pathname,
+    libraryInput:previousPatterns
+  });
+  const patternDelta=JSON.stringify(refreshedPatterns.patterns)!==JSON.stringify(previousPatterns.patterns||[]);
+  const patternLibrary=patternDelta?{...previousPatterns,...refreshedPatterns}:previousPatterns;
+  if(patternDelta)writeJson(codePatternsFile,patternLibrary);
+  console.log('VIBE2_VERIFIED_PATTERN_REFRESH='+ (patternDelta?'EVIDENCE_DELTA':'NO_SUBSTANTIVE_CHANGE'));
+  console.log('VIBE2_VERIFIED_PATTERN_ACTIVE='+ (patternLibrary.patterns||[]).filter(row=>row.retrievalEligible!==false).length);
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:patternLibrary,companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname),motionHistoryInput});
   if(result.motionEvolution.changed){
     const candidatePath=path.resolve(motionHistoryFile),repoRoot=path.resolve('.');
     if(!candidatePath.startsWith(repoRoot+path.sep)||!candidatePath.endsWith('/company-learning/motion-evolution-history.json'))
