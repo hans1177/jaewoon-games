@@ -7637,13 +7637,31 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "cabd31cd000e5f941fcf638dd01b5dd8584dd92f",
+      "artifactIdentity": "sha256:4eb88da3dfe41ef11c3a80916f38d32098453cca1ef1fa3ae404e4786c08053f",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 40896333963,
+      "testedAt": "2026-10-29T15:11:24.086Z",
+      "repairSurfaces": [
+        "GAME_START"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-start-playability",
+          "repairSurface": "GAME_START",
+          "priority": "CRITICAL",
+          "hint": "The start action was unavailable or the observed class selection did not finish. Restore an actionable entry flow and confirm selection before full Studio QA.",
+          "observed": "{\"requiredButtonText\":\"대시\",\"visibleButtons\":0,\"largeBlockingOverlayCount\":0}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
       "roblox-source-bootstrap:source-generation-failed"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -15257,9 +15275,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 심야 대탈출의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "7146a802353cc8be63002c085ccb360842e303e4c4a333edca312e1ea0f2e83f",
@@ -15277,8 +15295,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
