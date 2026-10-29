@@ -120,13 +120,12 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
   const size=node=>1+node.slice(1).filter(Array.isArray).reduce((n,x)=>n+size(x),0);
   // Reject malformed/cyclic external knowledge before recursion, rendering or execution.
   function safe(node){
-    const stack=[{node,depth:0}],visited=new Set();
+    const stack=[{node,depth:0,ancestors:[]}];
     let count=0;
     while(stack.length){
       const frame=stack.pop(),part=frame.node,op=part?.[0];
-      if(!Array.isArray(part)||visited.has(part)||frame.depth>maxDepth||++count>maxNodes)
+      if(!Array.isArray(part)||frame.ancestors.includes(part)||frame.depth>maxDepth||++count>maxNodes)
         return false;
-      visited.add(part);
       if(op==='param'||op==='const'){
         if(part.length!==2||!(op==='param'?Number.isInteger(part[1])&&part[1]>=0&&part[1]<params.length:
           typeof part[1]==='number'&&Number.isFinite(part[1])&&Math.abs(part[1])<=1000))return false;
@@ -134,7 +133,8 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
       }
       const arity=unary.includes(op)?2:operators.includes(op)?3:op==='select'?4:0;
       if(!arity||part.length!==arity)return false;
-      for(let i=1;i<arity;i++)stack.push({node:part[i],depth:frame.depth+1});
+      for(let i=1;i<arity;i++)stack.push({node:part[i],depth:frame.depth+1,
+        ancestors:[...frame.ancestors,part]});
     }
     return true;
   }
