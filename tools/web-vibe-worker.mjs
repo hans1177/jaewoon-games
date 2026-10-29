@@ -395,7 +395,8 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
     fail('WEB_VIBE_ALGORITHM_SPEC_SCOPE_INVALID');
   if(source.relative!==spec.source)return null;
   const candidate=synthesizeVibe59NumericAlgorithmSource({
-    spec:{...spec,ownerApproved:true},source:source.original,relative:source.relative
+    spec:{...spec,verifiedConcepts:spec.verifiedConcepts??task.verifiedAlgorithmConcepts,
+      ownerApproved:true},source:source.original,relative:source.relative
   });
   const edited=safeWebVibeReplacement(source.original,JSON.stringify({
     oldText:candidate.oldText,newText:candidate.newText,
@@ -405,7 +406,9 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
     offlineSourceProof:{source:source.relative,algorithm:candidate.search.expression,
       trainingCases:candidate.search.trainingCases,heldOutCases:candidate.search.heldOutCases,
       counterexamples:candidate.search.counterexamples,
-      candidatesConsidered:candidate.search.candidatesConsidered,runtimeVerified:false,
+      candidatesConsidered:candidate.search.candidatesConsidered,
+      algorithmAst:candidate.search.ast,search:candidate.search.search,
+      fitness:candidate.search.fitness,runtimeVerified:false,
       modelUsed:false,roles:['SYNTHESIZED_PURE_NUMERIC_ALGORITHM']}};
 }
 
