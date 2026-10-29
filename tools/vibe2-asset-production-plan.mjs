@@ -3321,7 +3321,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   // Image-to-mesh takes precedence over an optional library model fallback.
   // An explicitly supplied model together with an image is still an invalid dual source.
   const explicitSourceModel=clean(task.assetAuthoring?.sourceModel);
-  const linkedSourceModel=imageRequested?'':clean(librarySource?.sourceModel);
+  const linkedSourceModel=imageRequested||Boolean(explicitSourceModel)?'':clean(librarySource?.sourceModel);
   const modelRequested=Boolean(explicitSourceModel||linkedSourceModel);
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
     :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
@@ -3454,6 +3454,12 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
 
 function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},registry={},assetSupplySummary=null,repoRoot=process.cwd(),explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
+  // [출처 경계] 명시된 미검증 원본을 내부 CC0 라이브러리 원본으로 가장할 수 없다.
+  // 게임·자산 종류 추론이 실패하더라도 요청 단계에서 먼저 차단한다.
+  if(task.assetAuthoring?.spriteAtlas===true&&(
+    clean(task.assetAuthoring?.sourceModel)||clean(task.assetAuthoring?.sourceImage)
+    ||task.imageToAsset===true))
+    throw new Error('SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED');
   const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
   if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
   const engineNativeTarget=['roblox','unity'].includes(targetName);
