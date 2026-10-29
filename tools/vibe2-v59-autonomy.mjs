@@ -953,17 +953,21 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
           &&row?.engine===target)
         .slice(0,128).map(row=>row.verifiedAlgorithmStrategy),
       ownerApproved:req.ownerApproved===true},source:content,relative,target});
-    if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
-    return Object.freeze({summary:'Vibe5.9 AST-evolved and counterexample-guided numeric algorithm',
-      expectedEffect:'Verified owner examples and held-out cases bound the new existing-function algorithm',
-      edits:[{path:relative,find,replace:generated.newText}],newFiles:[],replaceFiles:[],
+    // 원본 파서가 찾은 함수가 한 번만 존재하는지 최종 확인한다.
+    if(find!=null&&find!==''&&find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
+    if(content.split(generated.oldText).length!==2)throw Error('VIBE59_ALGORITHM_FUNCTION_AMBIGUOUS');
+    return Object.freeze({summary:'Vibe5.9 AST-evolved source-grounded whole numeric function rewrite',
+      expectedEffect:'Verified examples and held-out cases locate and rewrite the unique existing pure function',
+      edits:[{path:relative,find:generated.oldText,replace:generated.newText}],newFiles:[],replaceFiles:[],
       tests:[],vibe59CodeKind:target==='roblox'?'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM':'WEB_SYNTHESIZED_NUMERIC_ALGORITHM',
       vibe59TestPlan:{pass:true,cases:[...req.algorithmSpec.examples,...req.algorithmSpec.holdouts,
         ...(Array.isArray(req.algorithmSpec.verifiedCounterexamples)?req.algorithmSpec.verifiedCounterexamples:[])
           .map(row=>({args:row.args,output:row.output}))],
         trainingCases:generated.search.trainingCases,heldOutCases:generated.search.heldOutCases},
       algorithmProof:generated.search,algorithmConceptCandidates:generated.conceptCandidates,
-      codeLaboratory:generated.laboratory,
+      codeLaboratory:generated.laboratory,sourceFunction:clean(req.algorithmSpec.functionName),
+      sourceFunctionRewrite:true,sourceFunctionAutoLocated:!clean(find),
+      sourceBeforeSha256:sha(content),
       ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
       sourceWrite:false,modelUsed:false,runtimeVerified:false});
   }
