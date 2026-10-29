@@ -121266,11 +121266,161 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_924add5c1d8c71f07b02926b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11085",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8a5ea05e69dda53215e6320c3795e693f42721ec",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11085,
+        "baseBranch": "main",
+        "headBranch": "feat/vibe59-combat-causal-repair",
+        "baseSha": "8a5ea05e69dda53215e6320c3795e693f42721ec",
+        "headSha": "4310b04136182123b0c13257f5b33f0ca379ccde",
+        "mergeCommitSha": "546516febdafd96e68e044adace031127a67ed2b",
+        "mergedAt": "2026-10-29T09:09:34Z",
+        "authorLogin": "hans1177",
+        "titleHash": "66e9a3c2917c751d677640b34fb6c764d8fe1afd6ac4e4facdb62fc5e8a45855",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/vibe59-combat-causal-repair",
+        "candidateSha": "4310b04136182123b0c13257f5b33f0ca379ccde"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 18,
+        "addedLineCount": 1026,
+        "deletedLineCount": 119,
+        "changedFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/vibe2-complex-intent.test.mjs",
+          "qa/vibe2-complex-work-planner.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-game-source-index.test.mjs",
+          "qa/vibe2-parallelism-telemetry.test.mjs",
+          "qa/vibe59-history.json.gz",
+          "tools/vibe2-codegen-counterexample-repair.mjs",
+          "tools/vibe2-complex-intent.mjs",
+          "tools/vibe2-complex-work-planner.mjs",
+          "tools/vibe2-game-source-index.mjs",
+          "tools/vibe2-offline-game-operators.mjs",
+          "tools/vibe2-parallelism-telemetry.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "tools/vibe2-v59-autonomy.mjs",
+          "web-games/line-defense/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/vibe2-complex-intent.test.mjs",
+          "qa/vibe2-complex-work-planner.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-game-source-index.test.mjs",
+          "qa/vibe2-parallelism-telemetry.test.mjs",
+          "qa/vibe59-history.json.gz",
+          "tools/vibe2-codegen-counterexample-repair.mjs",
+          "tools/vibe2-complex-intent.mjs",
+          "tools/vibe2-complex-work-planner.mjs",
+          "tools/vibe2-game-source-index.mjs",
+          "tools/vibe2-offline-game-operators.mjs",
+          "tools/vibe2-parallelism-telemetry.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "tools/vibe2-v59-autonomy.mjs",
+          "web-games/line-defense/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11085",
+        "merge-commit:546516febdafd96e68e044adace031127a67ed2b",
+        "base-main:8a5ea05e69dda53215e6320c3795e693f42721ec"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 956
+    "total": 957
   }
 }
