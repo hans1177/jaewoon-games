@@ -1372,6 +1372,15 @@ test('one-shot volume pack draws facilities, RPG maps, backgrounds, sprites, act
  const before=app.view().time;app.update(0.03);assert.ok(app.view().time>before);
  app.handleClick(15,15);assert.equal(app.previous(),1,'existing outside click gameplay preserved');
  displayed.length=0;app.render(ctx);assert.ok(displayed.some(text=>text.includes('RPG 지역: 사막')));
+ // Mobile viewport: fully readable panel can be closed; original game input remains usable.
+ canvas.width=390;canvas.height=700;displayed.length=0;app.render(ctx);
+ assert.ok(displayed.some(text=>text.includes('GAME WORLD+')));
+ app.handleClick(350,20);displayed.length=0;app.render(ctx);
+ assert.ok(displayed.includes('WORLD+'));
+ assert.ok(!displayed.some(text=>text.includes('GAME WORLD+')));
+ app.handleClick(5,5);assert.equal(app.previous(),2,'closed mobile volume yields back to game controls');
+ app.handleClick(350,20);displayed.length=0;app.render(ctx);
+ assert.ok(displayed.some(text=>text.includes('GAME WORLD+')));
  assert.equal(fs.readFileSync(file,'utf8'),source,'candidate generation must not edit real files');
  assert.doesNotMatch(generated,/localStorage|setItem|DataStore/);
 });
