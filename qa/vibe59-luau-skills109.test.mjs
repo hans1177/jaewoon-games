@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,
   verifyVibe59LuauSkillScenarios} from '../tools/vibe59-luau-skills109.mjs';
-import {createVibe59CodeCandidate,buildVibe59AutonomyPlan} from '../tools/vibe2-v59-autonomy.mjs';
+import {createVibe59CodeCandidate,createVibe59CodeCandidates,buildVibe59AutonomyPlan} from '../tools/vibe2-v59-autonomy.mjs';
 const copy=x=>JSON.parse(JSON.stringify(x));
 const source='local function handler(player)\n local state = profiles[player]\n'+
  ' if state.data.value and state.data.flag and state.data.check and state.data.other then end\n'+
@@ -120,4 +120,46 @@ test('autonomy planning lists 109 recipes as not runtime verified',()=>{
  assert.equal(plan.skillCatalog.systems.length,11);
  assert.equal(plan.skillCatalog.runtimeVerified,false);
  assert.equal(plan.sourceWrite,false);
+});
+
+
+test('Vibe5.9 complex offline design compiles dependency-ordered gameplay code across files',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-complex-design-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'server'));
+ const files=['server/Inventory.server.luau','server/Bestiary.server.luau'];
+ for(const file of files)fs.writeFileSync(path.join(root,file),source);
+ const inventory=fixture(VIBE59_LUAU_CODING_SKILLS_109.find(row=>row.id==='inventory-pickup'));
+ const bestiary=fixture(VIBE59_LUAU_CODING_SKILLS_109.find(row=>row.id==='bestiary-sighting'));
+ const pick={id:'pickup',ownerApproved:true,path:files[0],find:'-- INSERT',
+  robloxSkill109:inventory.spec,scenarios:inventory.scenarios};
+ const record={id:'record',dependsOn:['pickup'],ownerApproved:true,path:files[1],
+  find:'-- INSERT',robloxSkill109:bestiary.spec,scenarios:bestiary.scenarios};
+ const options={sourceRoot:root,responsibleFiles:files,target:'roblox'};
+ const order={vibe59CodeRequests:[record,pick]};
+ const result=createVibe59CodeCandidates({...options,order});
+ assert.equal(result.vibe59CodeKind,'COMPOSED_OFFLINE_SOURCE');
+ assert.deepEqual(result.vibe59DesignSteps.map(row=>row.id),['pickup','record']);
+ assert.equal(result.vibe59TestPlan.pass,true);
+ assert.equal(result.vibe59TestPlan.cases.length,4);
+ assert.deepEqual(result.edits.map(row=>row.path),files);
+ assert.equal(result.modelUsed,false);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(result.runtimeVerified,false);
+ for(const file of files)assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+ for(const step of result.edits){
+  assert.equal(step.find,'-- INSERT');
+  assert.match(step.replace,/if not \(.+\) then return false end/);
+ }
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
+  {...record,dependsOn:['pickup']},{...pick,dependsOn:['record']} ]}}),
+  /DEPENDENCY_CYCLE/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
+  {...pick,dependsOn:['not-there']},record]}}),/UNKNOWN_DEPENDENCY/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
+  pick,{...record,path:files[0]}]}}),/OVERLAPPING_EDITS/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
+  pick,{...record,ownerApproved:false}]}}),/OWNER_APPROVAL_REQUIRED/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
+  {...pick,sourceSha256:'0'.repeat(64)},record]}}),/STALE_SOURCE/);
 });
