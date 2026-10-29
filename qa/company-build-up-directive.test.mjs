@@ -683,6 +683,7 @@ test('self source analysis keeps sparse exact owner symbols beyond 48 noisy scri
   '/* function phantomComment(){ return false; } */',
   '// function phantomSingle(){ return false; }',
   'const example="function phantomString(){}";',
+  'function renderHud(){const ui=1;return ui;}',
   'function applyDamage(amount){ return amount; }',
   'const state = "idle";'
  ].join('\n'));
@@ -700,7 +701,7 @@ test('self source analysis keeps sparse exact owner symbols beyond 48 noisy scri
  const selected=directive.responsibleSystemsAndFiles.sourceAnchors;
  assert.equal(selected[0].file,owner);
  assert.equal(selected[0].symbol,'applyDamage');
- assert.equal(selected[0].line,4);
+ assert.equal(selected[0].line,5);
  assert.match(directive.primaryGoalReason,/zCritical\.js::applyDamage/);
  assert.equal(directive.currentImplementationFindings.sourceAnchors.some(
   x=>x.file===owner&&x.symbol==='applyDamage'),true);
@@ -733,6 +734,28 @@ test('source analysis recognizes Luau module callbacks and Web assigned handlers
   assert.ok(all.includes(exact),'missing '+exact);
  assert.ok(all.every(x=>!x.startsWith('phantom')));
  assert.equal(report.fileCount,2);
+});
+
+test('multi-platform source inspection retains a sparse actual Luau responsibility behind 70 Web files',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-multi-root-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ for(let i=0;i<70;i++){
+  const relative='web-games/demo/logic/noise'+String(i).padStart(2,'0')+'.js';
+  fs.mkdirSync(path.dirname(path.join(root,relative)),{recursive:true});
+  fs.writeFileSync(path.join(root,relative),
+   'function uiInputHandler'+i+'(){return uiInputHandler'+i+';}\n');
+ }
+ const owner='roblox-games/demo/server/Book.server.luau';
+ fs.mkdirSync(path.dirname(path.join(root,owner)),{recursive:true});
+ fs.writeFileSync(path.join(root,owner),
+  'local updateBestiary = function(monster) return monster end\n');
+ const report=inspectGameSources({repoRoot:root,sourceRoots:[
+  'web-games/demo','roblox-games/demo'
+ ]});
+ assert.ok(report.sourceAnchors.some(x=>x.file===owner&&x.symbol==='updateBestiary'));
+ assert.equal(report.fileCount,71);
+ assert.ok(report.platformSourceFingerprints['web-games/demo']);
+ assert.ok(report.platformSourceFingerprints['roblox-games/demo']);
 });
 
 test('source fingerprint tracks real code and assets but ignores generated evidence metadata',()=>{
