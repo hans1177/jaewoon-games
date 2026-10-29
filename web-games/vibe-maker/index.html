@@ -78,7 +78,7 @@ $('useModel').onclick=()=>{
     const raw=$('assetPaths').value.trim();
     const chosen=raw?JSON.parse(raw):{};
     const path='/'+String(asset.masterGlb||asset.path).replace(/^\/+/,'');
-    chosen[role]={path,type:'binary',license:'CC0',sha256:asset.masterGlbHash||asset.sourceHash,sourceUrl:asset.sourceUrl};
+    chosen[role]={path,type:'binary',license:'CC0',sha256:asset.masterGlbHash||asset.sourceHash,sourceUrl:asset.sourceUrl,licenseEvidenceUrl:asset.licenseEvidenceUrl};
     $('assetPaths').value=JSON.stringify(chosen,null,2);
     modelStatus.textContent=(asset.title||asset.id)+' · 게임 파일에 원본 연결 예약 · 실제 재생 검증 필요';
   }catch(error){modelStatus.textContent='설정 오류: '+error.message;}
