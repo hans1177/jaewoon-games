@@ -9,6 +9,70 @@ import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,
   verifyVibe59LuauSkillScenarios} from '../tools/vibe59-luau-skills109.mjs';
 import {createVibe59CodeCandidate,createVibe59CodeCandidates,buildVibe59AutonomyPlan} from '../tools/vibe2-v59-autonomy.mjs';
 const copy=x=>JSON.parse(JSON.stringify(x));
+
+test('owner plain-English WEB stat clamp synthesizes a real unique inline game edit without model or source write',t=>{
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-intent-web-'));
+ t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
+ const root=path.join(tmp,'my-game');fs.mkdirSync(root);
+ const html='<!doctype html><script>\nlet speed = baseSpeed;\n</script><button id="start">Start</button>\n';
+ fs.writeFileSync(path.join(root,'index.html'),html);
+ const order={selectedTask:{ownerDirective:true,gameId:'my-game',goal:'Clamp speed between 0 and 25'}};
+ const run=()=>createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['index.html'],target:'web'});
+ const candidate=run();
+ assert.equal(candidate.vibe59CodeKind,'WEB_SOURCE_BOUND_STAT');
+ assert.equal(candidate.vibe59TestPlan.pass,true);
+ assert.equal(candidate.vibe59TestPlan.cases.length,5);
+ assert.deepEqual(candidate.edits.map(x=>x.path),['index.html']);
+ assert.match(candidate.edits[0].replace,/let speed = Math\.min\(25, Math\.max\(0, baseSpeed\)\);/);
+ assert.equal(candidate.modelUsed,false);
+ assert.equal(candidate.runtimeVerified,false);
+ assert.equal(candidate.ruleDigest.length,64);
+ assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),html);
+ const patched=new Map();
+ applyExactEdits(root,candidate.edits,{documents:patched});
+ assert.match(patched.get('index.html'),/Math\.min\(25, Math\.max\(0, baseSpeed\)\)/);
+ assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),html);
+});
+test('Korean owner Luau intent creates bounded source patch only for approved original variable',t=>{
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-intent-luau-'));
+ t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
+ const root=path.join(tmp,'rpg');fs.mkdirSync(path.join(root,'server'),{recursive:true});
+ const relative='server/Game.server.luau',source='local speed = targetSpeed\nprint(speed)\n';
+ fs.writeFileSync(path.join(root,relative),source);
+ const order={selectedTask:{ownerDirective:true,gameId:'rpg',goal:'변수 speed를 0에서 25까지 제한해'}};
+ const result=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:[relative],target:'roblox'});
+ assert.equal(result.vibe59CodeKind,'ROBLOX_SOURCE_BOUND_STAT');
+ assert.match(result.edits[0].replace,/local speed = math\.clamp\(targetSpeed, 0, 25\)/);
+ assert.equal(result.vibe59TestPlan.cases.length,5);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
+});
+test('offline owner intent synthesis rejects scope escape, ambiguous edits and invalid or vague requests',t=>{
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-intent-guard-'));
+ t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
+ const root=path.join(tmp,'rpg'),elsewhere=path.join(tmp,'elsewhere');
+ fs.mkdirSync(path.join(root,'server'),{recursive:true});fs.mkdirSync(elsewhere);
+ const relative='server/Game.server.luau',file=path.join(root,relative);
+ fs.writeFileSync(file,'local speed = baseSpeed\n');
+ const base={selectedTask:{ownerDirective:true,gameId:'rpg',goal:'Clamp speed between 0 and 25'}};
+ const run=(order=base,files=[relative],dir=root)=>createVibe59CodeCandidates({
+   order,sourceRoot:dir,responsibleFiles:files,target:'roblox'});
+ assert.ok(run());
+ assert.equal(run({selectedTask:{...base.selectedTask,ownerDirective:false}}),null);
+ assert.equal(run({selectedTask:{...base.selectedTask,gameId:'different'}}),null);
+ assert.equal(run({selectedTask:{...base.selectedTask,goal:'Improve the entire RPG game'}}),null);
+ assert.equal(run({selectedTask:{...base.selectedTask,goal:'Clamp speed between 50 and 25'}}),null);
+ assert.equal(run({selectedTask:{...base.selectedTask,goal:'Clamp speed between 0 and Infinity'}}),null);
+ assert.equal(run(base,['../elsewhere/foreign.luau']),null);
+ fs.writeFileSync(file,'local speed = baseSpeed\nspeed = bonusSpeed\n');
+ assert.equal(run(),null,'two existing assignments must not be arbitrarily selected');
+ fs.writeFileSync(file,'local speed = computeSpeed()\n');
+ assert.equal(run(),null,'function calls and side-effecting expressions are not inferred');
+ fs.writeFileSync(path.join(elsewhere,'outside.luau'),'local speed = baseSpeed\n');
+ fs.symlinkSync(path.join(elsewhere,'outside.luau'),path.join(root,'server','link.luau'));
+ assert.equal(run(base,['server/link.luau']),null,'linked external file cannot cross a game root');
+});
+
 const source='local function handler(player)\n local state = profiles[player]\n'+
  ' if state.data.value and state.data.flag and state.data.check and state.data.other then end\n'+
  ' -- INSERT\nend';
