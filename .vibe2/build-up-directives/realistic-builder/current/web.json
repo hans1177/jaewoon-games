@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "realistic-builder-build-up-g2-2732353a9345",
-  "directiveFingerprint": "2732353a93453f76a763c0b95e2404af75fc9fe42bc2bdf667a2be91cb260c20",
-  "previousDirectiveFingerprint": "2b5c4938b6e17a79ddfc1658b656e0bd7b84e6faeb831b28fec29f0509d3fad1",
-  "forbiddenRepeatFingerprint": "2b5c4938b6e17a79ddfc1658b656e0bd7b84e6faeb831b28fec29f0509d3fad1",
+  "directiveId": "realistic-builder-build-up-g3-81c89edd5be7",
+  "directiveFingerprint": "81c89edd5be70ca7d6ef9538ff7199f56a82cc617e0aa751c5333b02410c072c",
+  "previousDirectiveFingerprint": "2732353a93453f76a763c0b95e2404af75fc9fe42bc2bdf667a2be91cb260c20",
+  "forbiddenRepeatFingerprint": "2732353a93453f76a763c0b95e2404af75fc9fe42bc2bdf667a2be91cb260c20",
   "gameId": "realistic-builder",
   "gameName": "현실 건축가",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "cancelled",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/realistic-builder",
-  "sourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+  "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
   "designFingerprint": "f1d959dc9dc9908d3578ce66370701d93c03d9159c65c7a295028a85a03ccd75",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+        "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "f1d959dc9dc9908d3578ce66370701d93c03d9159c65c7a295028a85a03ccd75",
-    "sourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+    "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+    "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4395,7 +4395,6 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=1",
       "GAME_FEEL_SPARSE",
-      "VFX_IMPLEMENTATION_SPARSE",
       "AUDIO_IMPLEMENTATION_SPARSE",
       "AI_BEHAVIOR_DEPTH_SPARSE",
       "INVENTORY_EQUIPMENT_FLOW_SPARSE",
@@ -4413,7 +4412,7 @@
       "animation": 4,
       "motionStates": 74,
       "gameFeel": 0,
-      "vfx": 0,
+      "vfx": 2,
       "camera": 13,
       "audio": 0,
       "audioDynamics": 0,
@@ -4442,7 +4441,7 @@
     "topFiles": [
       {
         "file": "web-games/realistic-builder/index.html",
-        "score": 123
+        "score": 124
       }
     ],
     "sourceAnchors": [
@@ -4643,10 +4642,10 @@
   "previousVersionDelta": {
     "previousGoal": "현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현실 건축가를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
+    "previousGeneration": 2,
     "previousSourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
-    "currentSourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
-    "sourceChanged": false,
+    "currentSourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -5000,8 +4999,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CAMERA",
@@ -5632,8 +5631,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5804,11 +5803,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "AUDIO_VISUAL_TIMING",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -5949,8 +5943,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 26423,
-        "largestFileBytes": 26423,
+        "sourceBytes": 26706,
+        "largestFileBytes": 26706,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5982,12 +5976,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 2,
+        "WORLD_ECOLOGY_STORY_CHAIN": 3,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -5996,6 +5990,7 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
       ],
@@ -6032,7 +6027,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 214,
+        "score": 196,
         "gapDomains": [
           "MAP_EXPANSION",
           "WORLD_DENSITY",
@@ -6057,19 +6052,18 @@
         ]
       },
       {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 49,
-        "gapDomains": [
-          "VFX",
-          "AUDIO_VISUAL_TIMING"
-        ]
-      },
-      {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 46,
         "gapDomains": [
           "MULTIPLAYER_AND_SYNC",
           "SYSTEM_CONNECTION"
+        ]
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 37,
+        "gapDomains": [
+          "AUDIO_VISUAL_TIMING"
         ]
       },
       {
@@ -6162,10 +6156,10 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+    "sourceFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
     "priorSourceFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -6185,7 +6179,7 @@
     "version": 1,
     "gameId": "realistic-builder",
     "platform": "WEB",
-    "sourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+    "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6461,8 +6455,10 @@
       },
       {
         "id": "SKILL_VFX",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/realistic-builder/index.html"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6512,7 +6508,9 @@
         "web-games/realistic-builder/index.html"
       ],
       "AUDIO": [],
-      "SKILL_VFX": [],
+      "SKILL_VFX": [
+        "web-games/realistic-builder/index.html"
+      ],
       "NETWORK": [],
       "INTERACTION": [],
       "REWARD": [],
@@ -6638,6 +6636,29 @@
         "gameSourceMutationPerformed": false,
         "passed": false,
         "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "MISSING_REQUIRED_SOURCE_REVIEW",
+        "missingRoles": [
+          "AUDIO"
+        ],
+        "responsibleFiles": [
+          "web-games/realistic-builder/index.html"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
       }
     ],
     "actorMotion": {
@@ -6646,11 +6667,11 @@
       "gameId": "realistic-builder",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
+        "generation": 3,
         "actorClass": "PLAYER",
         "sourceOwnerFile": "web-games/realistic-builder/index.html",
-        "qualityAxis": "POSE_VELOCITY_CROSSFADE",
-        "featureId": "POSE_VELOCITY_CROSSFADE",
+        "qualityAxis": "BODY_PLAN_LOCOMOTION",
+        "featureId": "BODY_PLAN_LOCOMOTION",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6662,7 +6683,7 @@
           "variants": [],
           "gameId": "realistic-builder",
           "actorClass": "PLAYER",
-          "featureId": "POSE_VELOCITY_CROSSFADE",
+          "featureId": "BODY_PLAN_LOCOMOTION",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -6804,7 +6825,7 @@
     "gameId": "realistic-builder",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+    "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7197,7 +7218,7 @@
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "WORLD_VISUAL_COHESION",
@@ -7686,7 +7707,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f1e26aca72be322219e5400a092a8c2ad448be621ed3d9ef548e60cc1bdda803",
+      "sourceTreeFingerprint": "cf8c90e6759ef2d918f1a1a06d38ff396e9b300405a5f7d87ba39d36c53e4822",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7748,12 +7769,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7822,5 +7843,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T10:41:42.025Z"
+  "generatedAt": "2026-10-29T13:12:13.489Z"
 }

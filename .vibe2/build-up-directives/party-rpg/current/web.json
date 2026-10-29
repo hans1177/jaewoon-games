@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "party-rpg-build-up-g13-9cdeefce7154",
-  "directiveFingerprint": "9cdeefce71548b427cf50eccbb774dd2721e76230418180c44211ef46cb9c23c",
-  "previousDirectiveFingerprint": "67a783b7b7d997103266727c733f066a49369f4528131bdfb4c294b0a9f3d019",
-  "forbiddenRepeatFingerprint": "67a783b7b7d997103266727c733f066a49369f4528131bdfb4c294b0a9f3d019",
+  "directiveId": "party-rpg-build-up-g14-8bd246c90931",
+  "directiveFingerprint": "8bd246c90931c653d44e0041fae219fa3dc082a608a98a929d029ffc7cf1d997",
+  "previousDirectiveFingerprint": "9cdeefce71548b427cf50eccbb774dd2721e76230418180c44211ef46cb9c23c",
+  "forbiddenRepeatFingerprint": "9cdeefce71548b427cf50eccbb774dd2721e76230418180c44211ef46cb9c23c",
   "gameId": "party-rpg",
   "gameName": "파티 RPG",
-  "generation": 13,
+  "generation": 14,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/party-rpg",
-  "sourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+  "sourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
   "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+        "sourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
-    "sourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+    "sourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+    "sourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4362,7 +4362,7 @@
       "animation": 55,
       "motionStates": 820,
       "gameFeel": 20,
-      "vfx": 119,
+      "vfx": 121,
       "camera": 44,
       "audio": 56,
       "audioDynamics": 6,
@@ -4391,7 +4391,7 @@
     "topFiles": [
       {
         "file": "web-games/party-rpg/index.html",
-        "score": 1350
+        "score": 1351
       },
       {
         "file": "web-games/party-rpg/view.mjs",
@@ -4792,14 +4792,17 @@
   "previousVersionDelta": {
     "previousGoal": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "dcc7675aa34fe3f0d702c3435687033df92670be1832e0fe3e99fcaf7fa1a52c",
-    "currentSourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+    "previousGeneration": 13,
+    "previousSourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+    "currentSourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
+    "sourceRevision": "",
+    "playtestFinding": "",
+    "responsibleSource": "",
     "studioQualityFailure": null,
     "failureStage": "",
     "failureSignature": "",
@@ -6040,8 +6043,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 405908,
-        "largestFileBytes": 291339,
+        "sourceBytes": 406191,
+        "largestFileBytes": 291622,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -6073,8 +6076,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 4,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
+    "themeDepth": 5,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6082,7 +6085,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 4,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 5,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
@@ -6096,6 +6099,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6132,7 +6136,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 140,
+        "score": 122,
         "gapDomains": [
           "SYSTEM_CONNECTION"
         ]
@@ -6248,13 +6252,14 @@
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
+  "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 13,
-    "previousGeneration": 12,
+    "generation": 14,
+    "previousGeneration": 13,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
-    "priorSourceFingerprint": "dcc7675aa34fe3f0d702c3435687033df92670be1832e0fe3e99fcaf7fa1a52c",
+    "sourceFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
+    "priorSourceFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6273,7 +6278,7 @@
     "version": 1,
     "gameId": "party-rpg",
     "platform": "WEB",
-    "sourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+    "sourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6590,6 +6595,7 @@
         "id": "SKILL_VFX",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
+          "web-games/party-rpg/index.html",
           "web-games/party-rpg/view.mjs"
         ],
         "requiredByDesign": false,
@@ -6671,6 +6677,7 @@
         "web-games/party-rpg/audio.mjs"
       ],
       "SKILL_VFX": [
+        "web-games/party-rpg/index.html",
         "web-games/party-rpg/view.mjs"
       ],
       "NETWORK": [
@@ -6897,8 +6904,8 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "web-games/party-rpg/view.mjs",
           "web-games/party-rpg/index.html",
+          "web-games/party-rpg/view.mjs",
           "web-games/party-rpg/audio.mjs"
         ],
         "checks": [
@@ -6917,13 +6924,27 @@
       "gameId": "party-rpg",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 13,
-        "actorClass": "BOSS",
-        "sourceOwnerFile": "web-games/party-rpg/index.html",
+        "generation": 14,
+        "actorClass": "CREATURE",
+        "sourceOwnerFile": "web-games/party-rpg/view.mjs",
         "qualityAxis": "BODY_PLAN_LOCOMOTION",
         "featureId": "BODY_PLAN_LOCOMOTION",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
+        "bodyPlan": "UNCONFIRMED",
+        "bodyPlanVerifiedFromSource": false,
+        "nativeAuthoringApi": "RobloxCommonMotion.CreateProceduralActorSequence",
+        "proceduralPoseApi": "RobloxCommonMotion.SampleProceduralActorMotion",
+        "sourceVerifiedMotionVariantPlan": {
+          "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
+          "variants": [],
+          "gameId": "party-rpg",
+          "actorClass": "CREATURE",
+          "featureId": "BODY_PLAN_LOCOMOTION",
+          "requiresSameActorNativeRuntime": true,
+          "noProductionPromotionWithoutQA": true,
+          "noGameplayAuthority": true
+        },
         "verifiedTransferGames": 0,
         "decision": "SOURCE_GROUNDED_UNVERIFIED_EXPLORATION",
         "intent": "REAL_NATIVE_ACTOR_ANIMATION_IMPLEMENTATION",
@@ -7140,7 +7161,7 @@
     "gameId": "party-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+    "sourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8008,7 +8029,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "6239ec207329fed9dd02de0ca011dec24a8840f01e969e1e040ce9110af518dd",
+      "sourceTreeFingerprint": "6b2dab31f415450f9c9c7674791ac84acdc7b14a6e45409b98e3a709b1964141",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8070,7 +8091,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 15,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8133,5 +8154,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-27T18:11:26.912Z"
+  "generatedAt": "2026-10-29T13:12:13.393Z"
 }

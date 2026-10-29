@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g2-4eaa027a3ae9",
-  "directiveFingerprint": "4eaa027a3ae91759b002cc8d3b6c4400b3d75f713eba08110a9ad80bbd217627",
-  "previousDirectiveFingerprint": "fa5bf84ece8ae2bb0c218c63592ee6c1a0f43a85bb84bbf995ed25c6604fca8d",
-  "forbiddenRepeatFingerprint": "fa5bf84ece8ae2bb0c218c63592ee6c1a0f43a85bb84bbf995ed25c6604fca8d",
+  "directiveId": "village-dungeons-build-up-g3-85bd2d327cae",
+  "directiveFingerprint": "85bd2d327caeef50a655cc2ad6e324b9b11221b456a4ab320875bc98e7ed554b",
+  "previousDirectiveFingerprint": "4eaa027a3ae91759b002cc8d3b6c4400b3d75f713eba08110a9ad80bbd217627",
+  "forbiddenRepeatFingerprint": "4eaa027a3ae91759b002cc8d3b6c4400b3d75f713eba08110a9ad80bbd217627",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "cancelled",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/village-dungeons",
-  "sourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+  "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
   "designFingerprint": "cdad43d028171a1ced7694f48cb05b30c88afee3bd5b7d5c8cf1d16ca0e12e47",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+        "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "cdad43d028171a1ced7694f48cb05b30c88afee3bd5b7d5c8cf1d16ca0e12e47",
-    "sourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+    "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+    "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4361,7 +4361,6 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=1",
       "GAME_FEEL_SPARSE",
-      "VFX_IMPLEMENTATION_SPARSE",
       "AUDIO_STATE_TRANSITION_SPARSE",
       "UI_MENU_FLOW_SPARSE",
       "SESSION_FLOW_SPARSE"
@@ -4375,7 +4374,7 @@
       "animation": 4,
       "motionStates": 125,
       "gameFeel": 0,
-      "vfx": 0,
+      "vfx": 2,
       "camera": 15,
       "audio": 65,
       "audioDynamics": 0,
@@ -4404,7 +4403,7 @@
     "topFiles": [
       {
         "file": "web-games/village-dungeons/index.html",
-        "score": 363
+        "score": 364
       }
     ],
     "sourceAnchors": [
@@ -4605,10 +4604,10 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 마을 던전 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 마을 던전 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
+    "previousGeneration": 2,
     "previousSourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
-    "currentSourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
-    "sourceChanged": false,
+    "currentSourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -4962,8 +4961,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CAMERA",
@@ -4977,8 +4976,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENVIRONMENTAL_MOTION",
@@ -5594,8 +5593,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5621,8 +5620,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5722,16 +5721,6 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_VISUAL_TIMING",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
@@ -5871,8 +5860,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 37980,
-        "largestFileBytes": 37980,
+        "sourceBytes": 38263,
+        "largestFileBytes": 38263,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5904,20 +5893,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
@@ -5954,19 +5944,11 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 208,
+        "score": 190,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
           "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 49,
-        "gapDomains": [
-          "VFX",
-          "AUDIO_VISUAL_TIMING"
         ]
       },
       {
@@ -5983,6 +5965,11 @@
         "gapDomains": [
           "GAME_FEEL"
         ]
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 25,
+        "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6074,10 +6061,10 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+    "sourceFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
     "priorSourceFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -6097,7 +6084,7 @@
     "version": 1,
     "gameId": "village-dungeons",
     "platform": "WEB",
-    "sourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+    "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6389,8 +6376,10 @@
       },
       {
         "id": "SKILL_VFX",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/village-dungeons/index.html"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6450,7 +6439,9 @@
       "AUDIO": [
         "web-games/village-dungeons/index.html"
       ],
-      "SKILL_VFX": [],
+      "SKILL_VFX": [
+        "web-games/village-dungeons/index.html"
+      ],
       "NETWORK": [],
       "INTERACTION": [
         "web-games/village-dungeons/index.html"
@@ -6603,6 +6594,27 @@
         "gameSourceMutationPerformed": false,
         "passed": false,
         "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/village-dungeons/index.html"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
       }
     ],
     "actorMotion": {
@@ -6611,8 +6623,8 @@
       "gameId": "village-dungeons",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
-        "actorClass": "CREATURE",
+        "generation": 3,
+        "actorClass": "NPC",
         "sourceOwnerFile": "web-games/village-dungeons/index.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -6626,7 +6638,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "village-dungeons",
-          "actorClass": "CREATURE",
+          "actorClass": "NPC",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -6814,7 +6826,7 @@
     "gameId": "village-dungeons",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+    "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7207,7 +7219,7 @@
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "WORLD_VISUAL_COHESION",
@@ -7235,8 +7247,7 @@
     ],
     "weakestTracks": [
       "COMBAT_AND_PRIMARY_ACTION_FEEL",
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "VFX_CAMERA_AND_IMPACT_SYNC"
+      "AUDIO_MUSIC_AND_FEEDBACK"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -7606,7 +7617,6 @@
     "version": 1,
     "platform": "WEB",
     "categories": [
-      "GRAPHICS",
       "UI",
       "GAMEPLAY",
       "SAVE",
@@ -7618,8 +7628,7 @@
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
       "SECURITY_AUTHORITY_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "VISUAL_BINDING_QA"
+      "REMOTE_AUTHORITY_AND_SYNC_QA"
     ],
     "conditionalQa": [
       "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED",
@@ -7640,7 +7649,6 @@
       "version": 1,
       "platform": "WEB",
       "categories": [
-        "GRAPHICS",
         "UI",
         "GAMEPLAY",
         "SAVE",
@@ -7652,8 +7660,7 @@
         "GAMEPLAY_STATE_DELTA_QA",
         "SAVE_LOAD_MIGRATION_QA",
         "SECURITY_AUTHORITY_QA",
-        "REMOTE_AUTHORITY_AND_SYNC_QA",
-        "VISUAL_BINDING_QA"
+        "REMOTE_AUTHORITY_AND_SYNC_QA"
       ],
       "conditionalQa": [
         "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED",
@@ -7676,8 +7683,7 @@
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
       "SECURITY_AUTHORITY_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "VISUAL_BINDING_QA"
+      "REMOTE_AUTHORITY_AND_SYNC_QA"
     ],
     "conditionalQa": [
       "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED",
@@ -7696,7 +7702,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "d36f3e1699fb778d1d541e6f0a5e7163a58080bf78a9a84281c122f5c96c4a08",
+      "sourceTreeFingerprint": "7815cb3d80d804a44a76acd2701cd5464dff6445b5724176a66614a28bddccd4",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7758,12 +7764,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7826,5 +7832,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T08:36:58.949Z"
+  "generatedAt": "2026-10-29T13:12:08.585Z"
 }

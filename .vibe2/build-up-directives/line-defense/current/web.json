@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g3-508fff98fc7c",
-  "directiveFingerprint": "508fff98fc7c6bc71943cdb2b26ac49b82f42b5341c055a0f91cbe4a1d67ffe5",
-  "previousDirectiveFingerprint": "053e619a40201a7fbd47e32b57c9a04c785e977e665309fb929a2864449e50e2",
-  "forbiddenRepeatFingerprint": "053e619a40201a7fbd47e32b57c9a04c785e977e665309fb929a2864449e50e2",
+  "directiveId": "line-defense-build-up-g4-f6c78a62727c",
+  "directiveFingerprint": "f6c78a62727c8a36b7b1e9f16085966b8deb19428b3077f1fca8a6e1ce960aea",
+  "previousDirectiveFingerprint": "508fff98fc7c6bc71943cdb2b26ac49b82f42b5341c055a0f91cbe4a1d67ffe5",
+  "forbiddenRepeatFingerprint": "508fff98fc7c6bc71943cdb2b26ac49b82f42b5341c055a0f91cbe4a1d67ffe5",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 3,
+  "generation": 4,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/line-defense",
-  "sourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+  "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
   "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+        "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
-    "sourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+    "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+    "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4326,7 +4326,7 @@
       "animation": 6,
       "motionStates": 128,
       "gameFeel": 0,
-      "vfx": 17,
+      "vfx": 19,
       "camera": 0,
       "audio": 52,
       "audioDynamics": 0,
@@ -4355,7 +4355,7 @@
     "topFiles": [
       {
         "file": "web-games/line-defense/index.html",
-        "score": 228
+        "score": 229
       }
     ],
     "sourceAnchors": [
@@ -4556,9 +4556,9 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 골목 군단 대전를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "5a17f8b116fdcede96ec9dd40f72700f2a01713bc193820282cf8c4c197fdafe",
-    "currentSourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+    "previousGeneration": 3,
+    "previousSourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+    "currentSourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5822,8 +5822,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 46818,
-        "largestFileBytes": 46818,
+        "sourceBytes": 47101,
+        "largestFileBytes": 47101,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5855,20 +5855,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "2 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "2 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
@@ -5906,7 +5907,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 178,
+        "score": 160,
         "gapDomains": [
           "INVENTORY_USABILITY",
           "EQUIPMENT_LOADOUT"
@@ -6021,11 +6022,11 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 4,
+    "previousGeneration": 3,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
-    "priorSourceFingerprint": "5a17f8b116fdcede96ec9dd40f72700f2a01713bc193820282cf8c4c197fdafe",
+    "sourceFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
+    "priorSourceFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6044,7 +6045,7 @@
     "version": 1,
     "gameId": "line-defense",
     "platform": "WEB",
-    "sourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+    "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6324,8 +6325,10 @@
       },
       {
         "id": "SKILL_VFX",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/line-defense/index.html"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6375,7 +6378,9 @@
       "AUDIO": [
         "web-games/line-defense/index.html"
       ],
-      "SKILL_VFX": [],
+      "SKILL_VFX": [
+        "web-games/line-defense/index.html"
+      ],
       "NETWORK": [],
       "INTERACTION": [],
       "REWARD": [
@@ -6477,18 +6482,40 @@
       "runtimeVerified": false,
       "qaPassed": false
     },
-    "moduleConnections": [],
+    "moduleConnections": [
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/line-defense/index.html"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      }
+    ],
     "actorMotion": {
       "version": 2,
       "trigger": "CREATION_AND_EVERY_BUILD_UP",
       "gameId": "line-defense",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 3,
-        "actorClass": "COMPANION",
+        "generation": 4,
+        "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/line-defense/index.html",
-        "qualityAxis": "NATIVE_RIG_BINDING",
-        "featureId": "NATIVE_RIG_BINDING",
+        "qualityAxis": "POSE_VELOCITY_CROSSFADE",
+        "featureId": "POSE_VELOCITY_CROSSFADE",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6499,8 +6526,8 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "line-defense",
-          "actorClass": "COMPANION",
-          "featureId": "NATIVE_RIG_BINDING",
+          "actorClass": "BOSS",
+          "featureId": "POSE_VELOCITY_CROSSFADE",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -6671,7 +6698,7 @@
     "gameId": "line-defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+    "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7548,7 +7575,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5da357095d971e5934a36d893bee46dee931eae291ce03b77ee1897ef1a984e5",
+      "sourceTreeFingerprint": "2e7c74e28784a0ba9f6f381965fb13db32b1070b50f1d0bb02303455a6ae0a6d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7610,7 +7637,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 5,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7678,5 +7705,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T09:13:35.695Z"
+  "generatedAt": "2026-10-29T13:12:08.479Z"
 }

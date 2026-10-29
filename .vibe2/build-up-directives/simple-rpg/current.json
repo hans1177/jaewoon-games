@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "simple-rpg-build-up-g16-3185f302cea3",
-  "directiveFingerprint": "3185f302cea36ef842edcc0cc99e98fb9fe1693c7d578f435f7a693755f43cae",
-  "previousDirectiveFingerprint": "48c9d34052e0e56be1a8941f67b7fa6f9a62725a31db6a27a89bd63d938c5390",
-  "forbiddenRepeatFingerprint": "48c9d34052e0e56be1a8941f67b7fa6f9a62725a31db6a27a89bd63d938c5390",
+  "directiveId": "simple-rpg-build-up-g17-d7832a8a6ab2",
+  "directiveFingerprint": "d7832a8a6ab2f16408a5715a882ede93274fa5b2bb6b53c1dab2f621f5d82d5c",
+  "previousDirectiveFingerprint": "3185f302cea36ef842edcc0cc99e98fb9fe1693c7d578f435f7a693755f43cae",
+  "forbiddenRepeatFingerprint": "3185f302cea36ef842edcc0cc99e98fb9fe1693c7d578f435f7a693755f43cae",
   "gameId": "simple-rpg",
   "gameName": "대충알피지",
-  "generation": 16,
+  "generation": 17,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/simple-rpg",
-  "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+  "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
   "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+        "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
-    "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+    "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -972,7 +972,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+    "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4565,9 +4565,9 @@
       "save": 173,
       "multiplayer": 32,
       "animation": 87,
-      "motionStates": 712,
+      "motionStates": 715,
       "gameFeel": 31,
-      "vfx": 30,
+      "vfx": 32,
       "camera": 65,
       "audio": 1,
       "audioDynamics": 30,
@@ -4591,7 +4591,7 @@
       "lighting": 48,
       "primitive": 13,
       "todo": 0,
-      "errorRecovery": 45
+      "errorRecovery": 46
     },
     "topFiles": [
       {
@@ -4604,7 +4604,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "score": 394
+        "score": 403
       },
       {
         "file": "roblox-games/simple-rpg/server/WeatherSystem.luau",
@@ -4742,7 +4742,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 791,
+        "line": 802,
         "kind": "FUNCTION",
         "symbol": "reportFoundation",
         "context": "local function reportFoundation(): ()",
@@ -4862,7 +4862,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 686,
+        "line": 697,
         "kind": "FUNCTION",
         "symbol": "playApprovedRpgCombatMotion",
         "context": "local function playApprovedRpgCombatMotion()",
@@ -4870,7 +4870,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 803,
+        "line": 814,
         "kind": "FUNCTION",
         "symbol": "syncAutoCombat",
         "context": "local function syncAutoCombat(): ()",
@@ -4934,7 +4934,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 365,
+        "line": 376,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
@@ -4990,7 +4990,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 180,
+        "line": 191,
         "kind": "FUNCTION",
         "symbol": "bindExternalButton",
         "context": "local function bindExternalButton(descendant: Instance): ()",
@@ -4998,7 +4998,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 442,
+        "line": 453,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -5006,7 +5006,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 491,
+        "line": 502,
         "kind": "FUNCTION",
         "symbol": "artPanel",
         "context": "local function artPanel(name: string, pos: UDim2, size: UDim2, isShown: boolean, parent: Instance): ImageLabel",
@@ -5014,7 +5014,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 674,
+        "line": 685,
         "kind": "FUNCTION",
         "symbol": "finishRpgCombatMotion",
         "context": "local function finishRpgCombatMotion()",
@@ -5033,9 +5033,9 @@
   "previousVersionDelta": {
     "previousGoal": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 15,
-    "previousSourceTreeFingerprint": "a12e1aca9f547dfa9416f150128e069d7f0dd9bcace53525b71a9150073003a3",
-    "currentSourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+    "previousGeneration": 16,
+    "previousSourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+    "currentSourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6286,7 +6286,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 461202,
+        "sourceBytes": 461898,
         "largestFileBytes": 132656,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6319,8 +6319,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 5,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 6,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6328,7 +6328,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 5,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 6,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
       },
@@ -6341,7 +6341,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6379,7 +6379,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 110,
+        "score": 92,
         "gapDomains": []
       },
       {
@@ -6496,7 +6496,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "simple-rpg",
     "sourceRoot": "roblox-games/simple-rpg",
-    "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+    "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -6506,7 +6506,7 @@
       "assetReferences": 0,
       "missingReferences": 0
     },
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "sourceOnly": true,
     "qualityComplete": false,
     "evidenceScope": {
@@ -10202,11 +10202,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 16,
-    "previousGeneration": 15,
+    "generation": 17,
+    "previousGeneration": 16,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
-    "priorSourceFingerprint": "a12e1aca9f547dfa9416f150128e069d7f0dd9bcace53525b71a9150073003a3",
+    "sourceFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
+    "priorSourceFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -10225,7 +10225,7 @@
     "version": 1,
     "gameId": "simple-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+    "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -11115,9 +11115,9 @@
       "gameId": "simple-rpg",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 16,
-        "actorClass": "NPC",
-        "sourceOwnerFile": "roblox-games/simple-rpg/shared/TechTreeData.luau",
+        "generation": 17,
+        "actorClass": "COMPANION",
+        "sourceOwnerFile": "roblox-games/simple-rpg/server/CompanionAI.luau",
         "qualityAxis": "BODY_PLAN_LOCOMOTION",
         "featureId": "BODY_PLAN_LOCOMOTION",
         "evidenceCount": 0,
@@ -11130,7 +11130,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "simple-rpg",
-          "actorClass": "NPC",
+          "actorClass": "COMPANION",
           "featureId": "BODY_PLAN_LOCOMOTION",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -11350,7 +11350,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+      "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11374,7 +11374,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+      "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
       "sourceFiles": [],
       "missingAssetAction": "EXISTING_ASSET_DEVELOPMENT_GAP",
       "supportGeometryReplacementAllowed": true,
@@ -11447,7 +11447,7 @@
     "gameId": "simple-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+    "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -12462,7 +12462,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "8f9f05e6ab6382ced672ebec1065e5ed5ed27ca2079cbb851f8b2bc0d40d622f",
+      "sourceTreeFingerprint": "2e1368dacc13bb765f3ad3cfdc47849e7841d21b338bac17eb603bb21762dc27",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -12524,7 +12524,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 17,
+    "nextGeneration": 18,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -12586,5 +12586,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-28T02:32:27.516Z"
+  "generatedAt": "2026-10-29T13:12:11.102Z"
 }

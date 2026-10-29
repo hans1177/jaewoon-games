@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g2-97ba0520baf5",
-  "directiveFingerprint": "97ba0520baf5398bb226c124338100fd4a4194c4d375351aec564904c2817254",
-  "previousDirectiveFingerprint": "50173505c1a0b8873ff4b66e6d0e42336b380b1f6dfab41b530d1c0fbd92a736",
-  "forbiddenRepeatFingerprint": "50173505c1a0b8873ff4b66e6d0e42336b380b1f6dfab41b530d1c0fbd92a736",
+  "directiveId": "amusement-tycoon-build-up-g3-4b20ab407854",
+  "directiveFingerprint": "4b20ab4078543269b0b5f93c0b365687ca35f140187eb63882435962c7f86d34",
+  "previousDirectiveFingerprint": "97ba0520baf5398bb226c124338100fd4a4194c4d375351aec564904c2817254",
+  "forbiddenRepeatFingerprint": "97ba0520baf5398bb226c124338100fd4a4194c4d375351aec564904c2817254",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/amusement-tycoon",
-  "sourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+  "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
   "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "손님과 직원 운영의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+        "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
-    "sourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+    "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+    "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4293,7 +4293,6 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=1",
       "GAME_FEEL_SPARSE",
-      "VFX_IMPLEMENTATION_SPARSE",
       "AUDIO_STATE_TRANSITION_SPARSE",
       "UI_MENU_FLOW_SPARSE",
       "INTERACTION_DISCOVERABILITY_SPARSE",
@@ -4309,7 +4308,7 @@
       "animation": 3,
       "motionStates": 173,
       "gameFeel": 0,
-      "vfx": 0,
+      "vfx": 2,
       "camera": 18,
       "audio": 15,
       "audioDynamics": 0,
@@ -4338,7 +4337,7 @@
     "topFiles": [
       {
         "file": "web-games/amusement-tycoon/index.html",
-        "score": 206
+        "score": 207
       }
     ],
     "sourceAnchors": [
@@ -4539,10 +4538,10 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
+    "previousGeneration": 2,
     "previousSourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
-    "currentSourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
-    "sourceChanged": false,
+    "currentSourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -4896,8 +4895,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CAMERA",
@@ -4911,8 +4910,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENVIRONMENTAL_MOTION",
@@ -5528,8 +5527,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5555,8 +5554,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5691,16 +5690,6 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_VISUAL_TIMING",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
@@ -5840,8 +5829,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 48894,
-        "largestFileBytes": 48894,
+        "sourceBytes": 49177,
+        "largestFileBytes": 49177,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5873,20 +5862,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
@@ -5923,20 +5913,12 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 220,
+        "score": 202,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
           "EQUIPMENT_LOADOUT",
           "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 49,
-        "gapDomains": [
-          "VFX",
-          "AUDIO_VISUAL_TIMING"
         ]
       },
       {
@@ -5967,6 +5949,11 @@
         "gapDomains": [
           "GAME_FEEL"
         ]
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 25,
+        "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
@@ -6048,10 +6035,10 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+    "sourceFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
     "priorSourceFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -6071,7 +6058,7 @@
     "version": 1,
     "gameId": "amusement-tycoon",
     "platform": "WEB",
-    "sourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+    "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6345,8 +6332,10 @@
       },
       {
         "id": "SKILL_VFX",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/amusement-tycoon/index.html"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6394,7 +6383,9 @@
         "web-games/amusement-tycoon/index.html"
       ],
       "AUDIO": [],
-      "SKILL_VFX": [],
+      "SKILL_VFX": [
+        "web-games/amusement-tycoon/index.html"
+      ],
       "NETWORK": [],
       "INTERACTION": [],
       "REWARD": [],
@@ -6515,6 +6506,30 @@
         "gameSourceMutationPerformed": false,
         "passed": false,
         "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "MISSING_REQUIRED_SOURCE_REVIEW",
+        "missingRoles": [
+          "ACTION",
+          "AUDIO"
+        ],
+        "responsibleFiles": [
+          "web-games/amusement-tycoon/index.html"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
       }
     ],
     "actorMotion": {
@@ -6523,7 +6538,7 @@
       "gameId": "amusement-tycoon",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
+        "generation": 3,
         "actorClass": null,
         "sourceOwnerFile": null,
         "qualityAxis": null,
@@ -6644,7 +6659,7 @@
     "gameId": "amusement-tycoon",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+    "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7037,7 +7052,7 @@
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "WORLD_VISUAL_COHESION",
@@ -7066,7 +7081,7 @@
     "weakestTracks": [
       "COMBAT_AND_PRIMARY_ACTION_FEEL",
       "AUDIO_MUSIC_AND_FEEDBACK",
-      "VFX_CAMERA_AND_IMPACT_SYNC"
+      "MOBILE_TOUCH_AND_ACCESSIBILITY"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -7436,7 +7451,6 @@
     "version": 1,
     "platform": "WEB",
     "categories": [
-      "GRAPHICS",
       "MAP",
       "UI",
       "GAMEPLAY",
@@ -7450,8 +7464,7 @@
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
       "SECURITY_AUTHORITY_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "VISUAL_BINDING_QA"
+      "REMOTE_AUTHORITY_AND_SYNC_QA"
     ],
     "conditionalQa": [
       "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED",
@@ -7472,7 +7485,6 @@
       "version": 1,
       "platform": "WEB",
       "categories": [
-        "GRAPHICS",
         "MAP",
         "UI",
         "GAMEPLAY",
@@ -7486,8 +7498,7 @@
         "GAMEPLAY_STATE_DELTA_QA",
         "SAVE_LOAD_MIGRATION_QA",
         "SECURITY_AUTHORITY_QA",
-        "REMOTE_AUTHORITY_AND_SYNC_QA",
-        "VISUAL_BINDING_QA"
+        "REMOTE_AUTHORITY_AND_SYNC_QA"
       ],
       "conditionalQa": [
         "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED",
@@ -7511,8 +7522,7 @@
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
       "SECURITY_AUTHORITY_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "VISUAL_BINDING_QA"
+      "REMOTE_AUTHORITY_AND_SYNC_QA"
     ],
     "conditionalQa": [
       "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED",
@@ -7531,7 +7541,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
+      "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7593,12 +7603,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7667,5 +7677,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T09:13:47.882Z"
+  "generatedAt": "2026-10-29T13:12:08.224Z"
 }
