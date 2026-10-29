@@ -377,25 +377,48 @@ jobs:
               break
             fi
           done
-          # 학습 저장 충돌 시 이전 상태로 과거 합격을 위장하지 않고 최신 큐를 다시 읽는다.
-          gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-head.json
-          jq -r '.content' /tmp/web-recovery-head.json | base64 -d > /tmp/web-recovery-queue.json
-          node tools/web-vibe-recovery.mjs select /tmp/web-recovery-queue.json > /tmp/web-recovery-selection.json
-          if jq -e 'type=="object" and .taskId != null' /tmp/web-recovery-selection.json >/dev/null; then
+          # Claim the next eligible authenticated task on the existing WEB
+          # control branch before dispatch. SHA CAS prevents duplicate cron
+          # workers, and a 75-minute lease recovers abandoned runners.
+          claim_written=0
+          for claim_attempt in 1 2 3; do
+            gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-head.json
+            jq -r '.content' /tmp/web-recovery-head.json | base64 -d > /tmp/web-recovery-queue.json
+            node tools/web-vibe-recovery.mjs select /tmp/web-recovery-queue.json > /tmp/web-recovery-selection.json
+            if ! jq -e 'type=="object" and .taskId != null' /tmp/web-recovery-selection.json >/dev/null; then
+              echo "selected=false" >> "$GITHUB_OUTPUT"
+              echo 'WEB_VIBE_RECOVERY=NO_ELIGIBLE_OWNER_QUEUE'
+              exit 0
+            fi
             task_id="$(jq -r '.taskId' /tmp/web-recovery-selection.json)"
             files="$(jq -r '.files' /tmp/web-recovery-selection.json)"
             game_id="$(jq -r '.gameId' /tmp/web-recovery-selection.json)"
             [[ "$game_id" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$ ]] || exit 1
             [[ "$task_id" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$ ]] || exit 1
-            echo "selected=true" >> "$GITHUB_OUTPUT"
-            echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
-            echo "game_id=$game_id" >> "$GITHUB_OUTPUT"
-            echo "files=$files" >> "$GITHUB_OUTPUT"
-            echo 'WEB_VIBE_RECOVERY=EXACT_OWNER_TASK_SELECTED'
-          else
-            echo "selected=false" >> "$GITHUB_OUTPUT"
-            echo 'WEB_VIBE_RECOVERY=NO_ELIGIBLE_OWNER_QUEUE'
+            node tools/web-vibe-recovery.mjs claim /tmp/web-recovery-queue.json "pwa-$task_id" \
+              /tmp/web-recovery-claimed.json "$GITHUB_RUN_ID" > /tmp/web-recovery-claim.json
+            content="$(base64 -w0 /tmp/web-recovery-claimed.json)"
+            sha="$(jq -r '.sha' /tmp/web-recovery-head.json)"
+            jq -nc --arg message "web-vibe: bounded watchdog claim [skip ci]" \
+              --arg content "$content" --arg sha "$sha" \
+              '{message:$message,content:$content,sha:$sha,branch:"web-vibe-control"}' \
+              > /tmp/web-recovery-claim-payload.json
+            if gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json" \
+                --input /tmp/web-recovery-claim-payload.json >/dev/null; then
+              claim_written=1
+              break
+            fi
+          done
+          if [ "$claim_written" != 1 ]; then
+            echo 'WEB_VIBE_RECOVERY=CLAIM_CONFLICT_NOT_DISPATCHED' >&2
+            exit 1
           fi
+          echo "selected=true" >> "$GITHUB_OUTPUT"
+          echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
+          echo "game_id=$game_id" >> "$GITHUB_OUTPUT"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+          echo 'WEB_VIBE_RECOVERY=EXACT_OWNER_TASK_CLAIMED'
+
 
   web-recovery-onepatch:
     needs: web-recovery-select
