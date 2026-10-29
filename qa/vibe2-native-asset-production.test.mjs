@@ -224,6 +224,16 @@ test('existing native DCC automatically derives only role-matched internal sourc
     assert.equal(derived.args[derived.args.indexOf('--library-parent-id')+1],'shared-tree');
     assert.equal(derived.args[derived.args.indexOf('--library-source-sha256')+1],sha);
     assert.ok(derived.args.includes('--source-model'));
+    // 모델 없이 실제 3D GLB를 다시 렌더하는 2D 방향별 시트가 동일한 원본 증거를 상속한다.
+    assert.ok(derived.args.includes('--sprite-atlas'));
+    assert.ok(derived.outputs.some(output=>output.endsWith('/sprite-atlas.png')));
+    const optedOut=buildVibeAssetProductionPlan({repoRoot:root,target:'unity',
+      task:{...task,assetAuthoring:{spriteAtlas:false}},
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    const omitted=optedOut.nativeAuthoringExecution.dcc.executionRecipes.find(row=>row.sourceModel==='assets/shared/tree.obj');
+    assert.ok(omitted);
+    assert.equal(omitted.args.includes('--sprite-atlas'),false,'per-game sprite output remains optional');
+    assert.equal(omitted.outputs.some(output=>output.endsWith('/sprite-atlas.png')),false);
     assert.equal(derived.companyPromotionAllowed,false);
     assert.equal(derived.runtimeVerificationRequired,true);
     fs.appendFileSync(sourcePath,'# unauthorized source mutation\n');
@@ -2195,6 +2205,11 @@ test('canonical generic Blender visual recipe is syntax-valid and emits GLB prev
   assert.match(source,/evidence\.json/);
   assert.match(source,/STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING/);
   assert.match(source,/project-original/);
+  assert.match(source,/SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED/);
+  assert.match(source,/REIMPORTED_CC0_GLB_FOUR_VIEW_BLENDER_RENDER/);
+  assert.match(source,/sourceMeshSha256.*SOURCE_PROVENANCE/);
+  assert.match(source,/externalAiModelUsed.*False/);
+  assert.match(source,/runtimeVerified.*False/);
 });
 
 test('generic environment and prop authoring declares task-specific Blender outputs per native platform',t=>{
@@ -5762,4 +5777,12 @@ test('WEB/ROBLOX current game usage drives existing graphics detail and guarded 
   assert.match(worker,/libraryDownloadRequests:Object.freeze\(order.assetProduction.assetSupplySummary\?\.libraryDownloadRequests/);
   assert.match(worker,/usedAssetDetailActions:Object.freeze/);
   assert.match(worker,/Return verified failures to the existing learning motor/);
+});
+
+test('model-free sprite source rejects unregistered 3D inputs before native authoring',()=>{
+  const task={gameId:'atlas-source-guard',goal:'3D prop asset',
+    assetAuthoring:{spriteAtlas:true,sourceModel:'assets/shared/unregistered.obj',sourceLicense:'CC0'}};
+  assert.throws(()=>buildVibeAssetProductionPlan({
+    target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}
+  }),/SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED/);
 });
