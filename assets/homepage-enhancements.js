@@ -9,6 +9,37 @@ let platformExposure={games:[]};
 let publishedWebRoutes=new Set();
 // 메인: 즐겨찾기는 기기의 브라우저에만 저장한다. 서버 카탈로그·게임 저장 데이터는 변경하지 않는다.
 const FAVORITES_STORAGE_KEY='jaewoon-home-game-favorites-v1';
+const HIDDEN_GAMES_STORAGE_KEY='jaewoon-home-hidden-games-v1';
+let hiddenGameIds=new Set();
+// 메인: 목록 삭제는 기기별 표시 설정이다. 원본·세이브·서버의 개발상태는 변경하지 않는다.
+function loadHiddenGames(){
+  try{
+    const value=JSON.parse(localStorage.getItem(HIDDEN_GAMES_STORAGE_KEY)||'[]');
+    return new Set(Array.isArray(value)?value.filter(id=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)).slice(0,200):[]);
+  }catch{return new Set();}
+}
+function gameTitleActions(id,name){
+  return `<span class="homeGameTitleActions">${favoriteButton(id,name)}<button class="homeManageButton homeStopButton" type="button" data-stop-request="${esc(id)}" aria-label="${esc(name)} 개발중단 요청" title="개발중단 요청 · 오너 확인 필요">중단</button><button class="homeManageButton homeDeleteButton" type="button" data-hide-game="${esc(id)}" aria-label="${esc(name)} 홈 목록에서 삭제" title="이 기기의 홈 목록에서 삭제">삭제</button></span>`;
+}
+function hideGameFromHome(id){
+  const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
+  if(!row||!window.confirm((identityOf(row).name||row.name||id)+' 게임을 이 기기의 홈 목록에서 삭제할까? 게임 원본·저장·자동개발은 삭제되지 않아.'))return;
+  hiddenGameIds.add(id);
+  try{localStorage.setItem(HIDDEN_GAMES_STORAGE_KEY,JSON.stringify([...hiddenGameIds]));}catch{}
+  lastSignature='';
+  refresh();
+}
+function restoreHiddenGames(){
+  hiddenGameIds.clear();
+  try{localStorage.removeItem(HIDDEN_GAMES_STORAGE_KEY);}catch{}
+  lastSignature='';
+  refresh();
+}
+function requestDevelopmentStop(id){
+  const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
+  if(!row||!window.confirm((identityOf(row).name||row.name||id)+' 게임의 개발중단 요청 화면으로 이동할까? 실제 중단은 인증된 관리 지시가 반영돼야 적용돼.'))return;
+  location.href='/command.html?game='+encodeURIComponent(id)+'&manage=stop';
+}
 let favoriteGameIds=new Set();
 let favoriteDisplayRows=[];
 function loadFavorites(){
@@ -373,6 +404,14 @@ function installStyles(){
 .homeFavoriteToggle:focus-visible{outline:2px solid #1677ff;outline-offset:2px}
 .homeFocusTitleRow .homeFavoriteToggle{background:#0e2036bc;color:#f4f7fc;border-color:#ffffff70}
 .homeFocusTitleRow .homeFavoriteToggle[aria-pressed="true"]{background:#fff3d5;color:#bd7900;border-color:#f2d38c}
+.homeGameTitleActions{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto}
+.homeManageButton{min-height:44px;padding:0 9px;border:1px solid #d5e1ec;border-radius:10px;background:#f1f6fb;color:#526579;font-size:11px;font-weight:850;white-space:nowrap;cursor:pointer;touch-action:manipulation}
+.homeStopButton{background:#fff6e9;color:#955918;border-color:#f3d7b3}
+.homeDeleteButton{background:#fff0f0;color:#a12e39;border-color:#f1c6c9}
+.homeManageButton:focus-visible,.homeRestoreButton:focus-visible{outline:2px solid #1677ff;outline-offset:2px}
+.homeRestoreBar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:0 0 14px;padding:12px;border:1px solid #dce4ee;background:#fff;border-radius:12px;font-size:12px;color:#53687b}
+.homeRestoreButton{min-height:44px;padding:0 14px;background:#edf5ff;color:#1769bf;border:0;border-radius:9px;font-weight:850;cursor:pointer}
+@media(max-width:380px){.homeGameTitleActions{gap:3px}.homeManageButton{padding:0 6px;font-size:10px}.homeFavoriteToggle{flex-basis:40px;width:40px;height:44px}}
 .foldGameCard{content-visibility:auto;contain-intrinsic-size:auto 420px}.homeGameGallery{height:100%;width:100%;position:relative}.homeGalleryTrack{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain;height:100%}.homeGalleryTrack::-webkit-scrollbar{display:none}.homeGallerySlide{flex:0 0 100%;scroll-snap-align:start;aspect-ratio:16/9;margin:0;position:relative}.homeGallerySlide img{display:block;width:100%;height:100%;object-fit:cover}.homeGallerySlide img.homeOriginalTitleLogo{object-fit:contain;padding:9% 7%;background:#20384f}
 .homeTitlePending{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:28px 18px 44px;background:#1c2c3d;color:#eef3fb;text-align:center}
 .homeTitlePending strong{font-size:clamp(17px,2vw,23px);line-height:1.3;overflow-wrap:anywhere}
@@ -388,7 +427,7 @@ function buildFocus(catalog,status){
   if(!hero)return;
   const allRows=[...internalReleaseRows(catalog,status),...developmentRows(catalog,status)];
   const seen=new Set();
-  const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
+  const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id)||hiddenGameIds.has(id))return false;seen.add(id);return true;});
   const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)||rows[0];
   if(!row)return;
   const game=mergeGame(row),links=internalReleaseLinks(game);
@@ -396,7 +435,7 @@ function buildFocus(catalog,status){
   const actionLabel=links.web?'일반 웹게임 플레이':links.roblox?'Roblox 플레이':links.unity?'Unity 앱 플레이':links.webSource?'원본 게임 링크 열기':'게임 보기';
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.heroImage||'assets/page-bg-v4.webp').replaceAll("'","%27")}')`);
-  hero.innerHTML=`<div class="homeFocusInner"><div class="homeFocusTitleRow"><h1>${esc(game.name)}</h1>${favoriteButton(game.id,game.name)}</div>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
+  hero.innerHTML=`<div class="homeFocusInner"><div class="homeFocusTitleRow"><h1>${esc(game.name)}</h1>${gameTitleActions(game.id,game.name)}</div>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
 }
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
@@ -437,7 +476,7 @@ function buildCard(row){
   ];
   const controls=shots.length?`<div class="homeGalleryControls"><button type="button" data-gallery-step="-1" aria-label="이전 게임 사진">‹</button><span data-gallery-count>1/${slides.length}</span><button type="button" data-gallery-step="1" aria-label="다음 게임 사진">›</button></div>`:'';
   const gallery=`<div class="homeGameGallery" data-gallery-game="${esc(game.id)}"><div class="homeGalleryTrack" role="region" tabindex="0" aria-label="${esc(game.name)} 게임 사진 슬라이드">${slides.join('')}</div>${controls}</div>`;
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt">${gallery}</div><div class="foldGameBody"><div class="foldGameTitleRow"><h3>${esc(game.name)}</h3>${favoriteButton(game.id,game.name)}</div>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${videoMarkup}<div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt">${gallery}</div><div class="foldGameBody"><div class="foldGameTitleRow"><h3>${esc(game.name)}</h3>${gameTitleActions(game.id,game.name)}</div>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${videoMarkup}<div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   const wrapper=document.getElementById(id)||document.createElement('section');
@@ -468,9 +507,9 @@ function buildRecentUpdates(catalog){
   section.dataset.recentUpdateCount=String(rows.length);
 }
 function updateLiveSummary(catalog,status){
-  const available=internalReleaseRows(catalog,status);
+  const available=internalReleaseRows(catalog,status).filter(game=>!hiddenGameIds.has(gameIdOf(game)));
   const availableIds=new Set(available.map(gameIdOf));
-  const development=developmentRows(catalog,status).filter(game=>!availableIds.has(gameIdOf(game)));
+  const development=developmentRows(catalog,status).filter(game=>!hiddenGameIds.has(gameIdOf(game))&&!availableIds.has(gameIdOf(game)));
   const recent=recentModificationRows(catalog);
   const values={metricPlayable:available.length,metricDevelopment:development.length,metricRecent:recent.length};
   for(const [id,value] of Object.entries(values)){const node=document.getElementById(id);if(node)node.textContent=String(value);}
@@ -486,10 +525,17 @@ function buildGameCenter(catalog,status){
   for(const id of ['homeInternalReleaseFallback','homeReleaseGameCenter','homeRobloxDeploymentCenter','homeWebGameCenter'])document.getElementById(id)?.remove();
   // 오너 격리 게임은 개발·배포·과거 타이틀 카드에 자동 재노출하지 않는다.
   const stopped=new Set(catalog?.ownerStoppedGameIds||[]);
-  const available=internalReleaseRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game)));
+  const available=internalReleaseRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game))&&!hiddenGameIds.has(gameIdOf(game)));
   const availableIds=new Set(available.map(gameIdOf));
-  const development=developmentRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game))&&!availableIds.has(gameIdOf(game)));
-  favoriteDisplayRows=[...available,...development];
+  const development=developmentRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game))&&!hiddenGameIds.has(gameIdOf(game))&&!availableIds.has(gameIdOf(game)));
+  // 사용자 숨김과 별도로 관리 대상 원본 행은 유지한다.
+  favoriteDisplayRows=[...internalReleaseRows(catalog,status),...developmentRows(catalog,status)].filter(game=>!stopped.has(gameIdOf(game)));
+  const restore=document.getElementById('homeHiddenRestoreBar')||document.createElement('div');
+  restore.id='homeHiddenRestoreBar';
+  restore.className='homeRestoreBar';
+  restore.hidden=hiddenGameIds.size===0;
+  restore.innerHTML=`<span>이 기기에서 숨긴 게임 ${hiddenGameIds.size}개</span><button type="button" class="homeRestoreButton" data-restore-hidden>전체 복원</button>`;
+  hub.prepend(restore);
   buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임','입장 가능한 게임 · 로비 체험 또는 본게임 가능',available);
   buildShelf(hub,'homeDevelopmentGameCenter','개발 중','설계·로비 구현과 검증이 진행 중인 게임',development);
   document.documentElement.dataset.homePlatformAvailableCount=String(available.length);
@@ -530,6 +576,12 @@ function bindDirectGameLaunch(){
     if(counter)counter.textContent=(index+1)+'/'+total;
   },true);
   document.addEventListener('click',event=>{
+    const restore=event.target.closest('button[data-restore-hidden]');
+    if(restore){restoreHiddenGames();return;}
+    const hide=event.target.closest('button[data-hide-game]');
+    if(hide){hideGameFromHome(hide.dataset.hideGame);return;}
+    const stop=event.target.closest('button[data-stop-request]');
+    if(stop){requestDevelopmentStop(stop.dataset.stopRequest);return;}
     const favorite=event.target.closest('button[data-favorite-id]');
     if(favorite){toggleFavorite(favorite.dataset.favoriteId);return;}
     const control=event.target.closest('button[data-gallery-step]');
@@ -597,11 +649,14 @@ async function refresh(){
 }
 function main(){
   favoriteGameIds=loadFavorites();
+  hiddenGameIds=loadHiddenGames();
   window.addEventListener('storage',event=>{
-    if(event.key!==FAVORITES_STORAGE_KEY)return;
-    favoriteGameIds=loadFavorites();
-    updateFavoriteButtons();
-    renderFavoriteGames();
+    if(event.key===FAVORITES_STORAGE_KEY){
+      favoriteGameIds=loadFavorites();updateFavoriteButtons();renderFavoriteGames();
+    }
+    if(event.key===HIDDEN_GAMES_STORAGE_KEY){
+      hiddenGameIds=loadHiddenGames();lastSignature='';refresh();
+    }
   });
   installStyles();
   simplifyPage();
