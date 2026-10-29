@@ -3474,6 +3474,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
         throw new Error('RECONSTRUCTION_PART_SPEC_INVALID');
       const part=verifiedPartById.get(clean(item.assetId));
       if(!part||!['cc0','cc0-1.0'].includes(part.sourceLicense)
+        ||!/\.glb$/i.test(part.sourceModel)
         ||part.sourceAssetId===clean(librarySource?.sourceAssetId))
         throw new Error('RECONSTRUCTION_CC0_PART_UNVERIFIED:'+clean(item.assetId));
       const attach=clean(item.attach);
