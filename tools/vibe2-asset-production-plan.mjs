@@ -7350,8 +7350,8 @@ export async function produceRegisteredCc0Asset({
     try{
       const uri=new URL(clean(value));
       return uri.protocol==='https:'&&!uri.username&&!uri.password
-        &&!/(^localhost$|\\.localhost$|\\.local$|\\.internal$)/i.test(uri.hostname)
-        &&!/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(uri.hostname)
+        &&!/(^localhost$|\.localhost$|\.local$|\.internal$)/i.test(uri.hostname)
+        &&!/^(\d{1,3}\.){3}\d{1,3}$/.test(uri.hostname)
         &&!uri.hostname.includes(':');
     }catch{return false;}
   };
