@@ -691,7 +691,7 @@ test('name-free WEB object discovery refuses shadowed, unrelated and competing o
 
 
 test('Roblox original server HP event binds one client receiver to its existing UI renderer',t=>{
- const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'client'));
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'client'));
  const files=['server/Combat.server.luau','client/Hud.client.luau'];
  const server='local ReplicatedStorage = game:GetService("ReplicatedStorage")\n'+
   'local HealthChanged = ReplicatedStorage:WaitForChild("HEALTH_CHANGED")\n'+
@@ -706,12 +706,15 @@ test('Roblox original server HP event binds one client receiver to its existing 
   'HealthChanged.OnClientEvent:Connect(receive)\n';
  const sources=[server,client];files.forEach((file,i)=>fs.writeFileSync(path.join(root,file),sources[i]));
  const options={sourceRoot:root,responsibleFiles:files,target:'roblox',baseRevisionSha:revision,
-  order:{ownerApproved:true,goal:'로블록스 서버 체력 이벤트를 기존 클라이언트 화면에 연결해'}};
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'로블록스 서버 체력 이벤트를 기존 클라이언트 화면에 연결해'}};
  const plan=planComplexGameWork(options);
  assert.equal(plan.status,'BOUND',JSON.stringify(plan.unresolved));
  assert.equal(plan.index.files[0].remotes[0].eventName,'HEALTH_CHANGED');
  assert.equal(plan.nodes[0].boundSymbols.length,3);
  const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ const throughCanonical=createVibe59CodeCandidates({...options,repositoryRoot:repo});
+ assert.equal(throughCanonical.vibe59CodeKind,'COMPLEX_OWNER_INTENT');
+ assert.deepEqual(throughCanonical.edits,candidate.edits);
  assert.equal(candidate.edits.length,1);
  assert.equal(candidate.edits[0].path,files[1]);
  assert.match(candidate.edits[0].replace,/remember\(hp\)\s+draw\(hp\)/);
