@@ -4836,37 +4836,37 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "9726ffca46f565515dadcc824f32cc1909874c61",
+      "sourceRevision": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
       "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 40910370672,
-      "testedAt": "2026-10-29T16:36:15.665Z",
+      "workflowRunId": 40928571944,
+      "testedAt": "2026-10-29T18:21:59.258Z",
       "repairSurfaces": [
-        "GAME_START",
+        "MAP_ROUTEABILITY",
         "VFX_FEEDBACK",
-        "CHARACTER_RESPAWN"
+        "ROBLOX_OBSERVED_INTERACTION"
       ],
       "qualityFailureDetails": [
         {
-          "id": "adaptive-start-playability",
-          "repairSurface": "GAME_START",
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
           "priority": "CRITICAL",
-          "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
-          "observed": "{\"initialDead\":false,\"finalDead\":true,\"initialHealth\":100,\"finalHealth\":0,\"startGateVisible\":true,\"startGateActionOk\":true,\"startGateEffectObserved\":true}"
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"ok\":false,\"initialOk\":false,\"recoveredByInteraction\":false,\"moved\":0,\"fall\":0,\"floorBelow\":true}]}"
         },
         {
           "id": "adaptive-effects-surface",
           "repairSurface": "VFX_FEEDBACK",
           "priority": "MEDIUM",
           "hint": "Restore readable telegraphs, hit feedback, particles/trails/highlights without blocking play.",
-          "observed": "{\"interactionSurfaceCount\":40,\"progressionSurfaceCount\":28,\"combatSurfaceCount\":5,\"npcSurfaceCount\":8,\"companionSurfaceCount\":40,\"itemSurfaceCount\":4,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":0,\"promptCount\":34,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+          "observed": "{\"interactionSurfaceCount\":40,\"progressionSurfaceCount\":28,\"combatSurfaceCount\":5,\"npcSurfaceCount\":8,\"companionSurfaceCount\":40,\"itemSurfaceCount\":4,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":0,\"promptCount\":35,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
         },
         {
-          "id": "adaptive-death-respawn-recovery",
-          "repairSurface": "CHARACTER_RESPAWN",
-          "priority": "CRITICAL",
-          "hint": "A real death was observed during Studio play but the character did not return to a healthy playable state.",
-          "observed": "{\"deathObserved\":true,\"respawnObserved\":false}"
+          "id": "observed-action-bffe3be7e56e2b237f34",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-bffe3be7e56e2b237f34\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"targetIdentity\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"recoveredByInteraction\":false,\"attempts\":1}"
         }
       ]
     },
