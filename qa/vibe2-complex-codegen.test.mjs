@@ -152,9 +152,15 @@ test('existing line-defense game source is indexed without speculative edits to 
 
 
 test('real existing line-defense source candidate starts in a real Chromium browser without changing live game files',t=>{
-  const chrome=['google-chrome','google-chrome-stable','chromium','chromium-browser']
-    .some(bin=>spawnSync(bin,['--version'],{encoding:'utf8'}).status===0);
-  if(!chrome){t.skip('Chrome unavailable in core runner; mandatory Playwright practice-runtime checks actual mobile game');return}
+  // 기존 Playwright 실행기가 있는 practice-runtime에서는 실제 후보 브라우저 검사를 생략하지 않는다.
+  const browserBinary=String(process.env.VIBE2_CHROME_BINARY||'').trim();
+  const binaries=browserBinary?[browserBinary]:['google-chrome','google-chrome-stable','chromium','chromium-browser'];
+  const chrome=binaries.some(bin=>spawnSync(bin,['--version'],{encoding:'utf8'}).status===0);
+  if(!chrome){
+    assert.equal(Boolean(process.env.VIBE2_PLAYWRIGHT_MODULE),false,'VIBE2_REAL_GAME_BROWSER_REQUIRED');
+    t.skip('Chrome unavailable in core runner; practice-runtime must run this game browser proof');
+    return;
+  }
   const liveRoot=path.resolve('web-games/line-defense'),relative='index.html';
   const source=fs.readFileSync(path.join(liveRoot,relative),'utf8');
   const order={selectedTask:{ownerDirective:true,gameId:'line-defense',
@@ -180,7 +186,9 @@ test('real existing line-defense source candidate starts in a real Chromium brow
   assert.equal(result.status,0,(result.stdout||'').slice(-1800)+'\n'+(result.stderr||'').slice(-1800));
   assert.match(result.stdout,/DEVELOPMENT_WEB_BROWSER_SMOKE=PASS/);
   assert.match(result.stdout,/DEVELOPMENT_WEB_BROWSER_GAME=line-defense/);
+  assert.match(result.stdout,/LINE_DEFENSE_COMPLEX_COMBAT=/,'candidate must execute combat and save browser scenarios');
   assert.equal(fs.readFileSync(path.join(liveRoot,relative),'utf8'),source);
+  console.log('VIBE2_COMPLEX_REAL_GAME_CANDIDATE_BROWSER=PASS sourceWrite=false gameId=line-defense');
 });
 
 
