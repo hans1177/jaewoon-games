@@ -10144,3 +10144,93 @@ test('Roblox source-grounded UI icon inventory world craft improves native outpu
   assert.match(readOnly,/uiOwners=UNRESOLVED; worldOwners=UNRESOLVED/);
   assert.doesNotMatch(readOnly,/worldOwners=server\/Private/);
 });
+
+
+test('Vibe5.9 offline cross-function round exit lifecycle synthesizes atomic server and client gameplay edits',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-round-graph-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'client'));
+  const serverFile='server/Game.server.luau',clientFile='client/Game.client.luau';
+  const server=[
+    'local function syncObjectiveProgress()',
+    ' if done==total then',
+    '  if d.Name=="EmergencyGate"then d.CanCollide=false end',
+    '  if d.Name=="EscapePrompt"then d.Enabled=true end',
+    ' end',
+    'end',
+    'local function addObjectiveStation(f,name,pos,index)',
+    ' local prompt=Instance.new("ProximityPrompt")',
+    ' prompt.Name="EnergyPrompt"',
+    ' prompt.Triggered:Connect(function(p)',
+    '   base:SetAttribute("ObjectiveRound",objectiveState.round)',
+    '   objectiveState.done=math.min(math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4),objectiveState.done+1)',
+    '   screen.Color=Color3.fromRGB(96,231,166)',
+    '   syncObjectiveProgress()',
+    ' end)',
+    'end',
+    'local function addEscapeGate(f,mapId,pos)',
+    ' local prompt=Instance.new("ProximityPrompt");prompt.Name="EscapePrompt"',
+    'end',
+    'local function startRound()',
+    ' if existing and workspace:GetAttribute("MapReady")==true and workspace:GetAttribute("CurrentMapId")==map.Id then arena=existing else arena=ensureArena(map)end',
+    ' objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount',
+    ' escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)',
+    ' local survivorOrder=Room.shuffledSpawns(survivorSpawns)',
+    'end',
+    ''
+  ].join('\n');
+  const client=[
+    'local function render()',
+    ' local objectivesDone=tonumber(p:GetAttribute("ObjectivesDone"))or 0',
+    ' local objectivesTotal=math.max(1,tonumber(p:GetAttribute("ObjectivesTotal"))or tonumber(C.ObjectiveCount)or 4)',
+    ' if role=="MONSTER"then',
+    '  objectiveLine.Text="인간을 찾아 감염"',
+    ' elseif role=="SURVIVOR"then',
+    '  objectiveLine.Text=string.format("단말 %d/%d · 정화 후 탈출",objectivesDone,objectivesTotal)',
+    '  skillGuideLine.Text=currentHumanAbilityName()',
+    ' end',
+    ' local resultCode=round:match("^RESULT_(.+)$")',
+    'end',
+    ''
+  ].join('\n');
+  const save=(file,source)=>fs.writeFileSync(path.join(root,file),source);
+  save(serverFile,server);save(clientFile,client);
+  const options={order:{target:'roblox',goal:'같은 맵 연속 라운드 단말 목표와 비상구 탈출 초기화 구현'},
+    sourceRoot:root,responsibleFiles:[serverFile,clientFile]};
+  const candidate=deterministicRobloxNativeRepairCandidate(options);
+  assert.ok(candidate,'engine must synthesize real source edits from existing code');
+  assert.equal(candidate.deterministicRobloxNativeRepair,'CROSS_FUNCTION_ROUND_EXIT_LIFECYCLE');
+  assert.equal(candidate.edits.length,3);
+  assert.equal(candidate.semanticGrounding.modelUsed,false);
+  assert.deepEqual(candidate.readDependencies,[serverFile,clientFile]);
+  assert.equal(candidate.edits.filter(row=>row.path===serverFile).length,2);
+  assert.equal(candidate.edits.filter(row=>row.path===clientFile).length,1);
+  assert.match(candidate.edits[0].replace,/object.Name=="EscapePrompt"then object.Enabled=false/);
+  assert.match(candidate.edits[1].replace,/prompt.ActionText="충전"/);
+  assert.match(candidate.edits[2].replace,/탈출구 개방/);
+  assert.equal(fs.readFileSync(path.join(root,serverFile),'utf8'),server);
+  assert.equal(fs.readFileSync(path.join(root,clientFile),'utf8'),client);
+  const modified=new Map([[serverFile,server],[clientFile,client]]);
+  for(const edit of candidate.edits){
+    const before=modified.get(edit.path);
+    assert.equal(before.split(edit.find).length,2);
+    modified.set(edit.path,before.replace(edit.find,edit.replace));
+  }
+  for(const [file,text] of modified)save(file,text);
+  assert.equal(deterministicRobloxNativeRepairCandidate(options),null,'replay must not reapply the round repair');
+  save(serverFile,server);save(clientFile,client);
+  assert.equal(deterministicRobloxNativeRepairCandidate({...options,responsibleFiles:[serverFile]}),null,
+    'cross-file logic must not silently omit the actual HUD update');
+  save(serverFile,server+'\n'+server.slice(server.indexOf('local function addEscapeGate(')));
+  assert.equal(deterministicRobloxNativeRepairCandidate(options),null,
+    'ambiguous or duplicate server lifecycle must not authorize synthesis');
+  save(serverFile,server);
+  assert.equal(deterministicRobloxNativeRepairCandidate({...options,order:{target:'roblox',goal:'단순 그래픽 아이콘 추가'}}),null,
+    'unrelated work orders cannot trigger game-state changes');
+  const selected=deterministicRobloxNativeRepairCandidate({...options,candidateValidator:()=>({pass:true})});
+  assert.equal(selected.candidateValidation.pass,true);
+  assert.equal(selected.deterministicSelection.status,'CANDIDATE_VALIDATED');
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({...options,candidateValidator:()=>({pass:false})}),
+    /ROBLOX_NO_MODEL_CANDIDATES_REJECTED/,
+    'core validation rejection must block every candidate and source write');
+});
