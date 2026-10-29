@@ -112,7 +112,7 @@
   // 외부 추론, 임의 도형 생성, 원본 덮어쓰기, 게임플레이 변경은 수행하지 않는다.
   function harmonizeSourceRaster({width,height,pixels,source={},style={}}={}) {
     if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1
-       ||width*height>2048*2048||!(pixels instanceof Uint8Array)
+       ||width*height>2048*2048||!(pixels instanceof Uint8Array || pixels instanceof Uint8ClampedArray)
        ||pixels.length!==width*height*4)throw new Error('GRAPHICS_SOURCE_RGBA_INVALID');
     const sourceHash=String(source.sha256||source.sourceSha256||'').toLowerCase();
     const license=String(source.license||'').toUpperCase();
@@ -179,7 +179,7 @@
     if(!Number.isInteger(w)||!Number.isInteger(h)||!key
        ||frames.some(frame=>frame?.modelFree!==true||frame?.styleKey!==key
          ||frame?.width!==w||frame?.height!==h
-         ||!(frame.pixels instanceof Uint8Array)
+         ||!(frame.pixels instanceof Uint8Array || frame.pixels instanceof Uint8ClampedArray)
          ||frame.pixels.length!==w*h*4
          ||!/^([a-f0-9]{64})$/.test(frame.sourceHash||'')))
       throw new Error('GRAPHICS_ATLAS_SOURCE_OR_STYLE_MISMATCH');
