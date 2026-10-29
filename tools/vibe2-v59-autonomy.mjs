@@ -118,8 +118,26 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
   const pick=list=>list[Math.floor(rand()*list.length)];
   const depth=node=>node[0]==='param'||node[0]==='const'?0:1+Math.max(...node.slice(1).filter(Array.isArray).map(depth),0);
   const size=node=>1+node.slice(1).filter(Array.isArray).reduce((n,x)=>n+size(x),0);
-  const safe=node=>Array.isArray(node)&&node.length>=2&&depth(node)<=maxDepth
-    &&size(node)<=maxNodes;
+  // Reject malformed/cyclic external knowledge before recursion, rendering or execution.
+  function safe(node){
+    const stack=[{node,depth:0}],visited=new Set();
+    let count=0;
+    while(stack.length){
+      const frame=stack.pop(),part=frame.node,op=part?.[0];
+      if(!Array.isArray(part)||visited.has(part)||frame.depth>maxDepth||++count>maxNodes)
+        return false;
+      visited.add(part);
+      if(op==='param'||op==='const'){
+        if(part.length!==2||!(op==='param'?Number.isInteger(part[1])&&part[1]>=0&&part[1]<params.length:
+          typeof part[1]==='number'&&Number.isFinite(part[1])&&Math.abs(part[1])<=1000))return false;
+        continue;
+      }
+      const arity=unary.includes(op)?2:operators.includes(op)?3:op==='select'?4:0;
+      if(!arity||part.length!==arity)return false;
+      for(let i=1;i<arity;i++)stack.push({node:part[i],depth:frame.depth+1});
+    }
+    return true;
+  }
   function evaluate(node,args){
     const [op,a,b,c]=node;
     if(op==='param')return args[a];
@@ -372,7 +390,8 @@ function renderVibe59NumericLuaAST(node,params){
   if(['min','max'].includes(op))return 'math.'+op+'('+x+','+y+')';
   if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
   if(op==='select')return '(('+x+'>0) and ('+y+') or ('+renderVibe59NumericLuaAST(c,params)+'))';
-  if(['+','-','*','/','%'].includes(op))return '('+x+op+y+')';
+  if(['+','-','*','/','%'].includes(op))if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
+  if(['+','-','*','/'].includes(op))return '('+x+op+y+')';
   throw Error('VIBE59_ALGORITHM_LUA_OPERATOR_REJECTED');
 }
 
@@ -528,6 +547,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(req.algorithmSpec){
     if(!['web','roblox'].includes(target))throw Error('VIBE59_ALGORITHM_TARGET_INVALID');
     const generated=synthesizeVibe59NumericAlgorithmSource({spec:{...req.algorithmSpec,
+      verifiedConcepts:req.algorithmSpec.verifiedConcepts??order.vibe59VerifiedAlgorithmConcepts,
       ownerApproved:req.ownerApproved===true},source:content,relative});
     if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
     return Object.freeze({summary:'Vibe5.9 AST-evolved and counterexample-guided numeric algorithm',
