@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'COMPANY_FLOW.md'
+      - 'company-learning/platform-release-roadmap.json'
       - 'company-directive.json'
       - 'game-catalog.json'
       - 'tools/production-classification.mjs'
@@ -37,19 +37,25 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const contract=directive.classes?.RELEASE_CONFIRMED||{};
+          const owner=roadmap.fixedAutonomousDevelopmentOperatingContract?.ownerRequestedVibeOneShotPatch||{};
+          if(contract.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION')
+            throw new Error('CENTRAL_RELEASE_EXECUTION_MODE_INVALID');
+          for(const field of [
+            'sourceChangeInvalidatesOldBuildValidation',
+            'buildPreflightIsNotFinalApproval',
+            'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence',
+            'independentQaSeparatedFromVibe2SelfCheck',
+            'finalArtbookOnlyAfterReleaseReady'
+          ])if(contract[field]!==true)throw new Error('CENTRAL_RELEASE_SAFETY_MISSING:'+field);
+          for(const field of ['noPublicReleaseBypass','nativePlatformCanonicalPublicationGatesUnchanged',
+            'credentialsAuthorizationAndSaveCompatibilityPreserved','noSourceOrRuntimeWriteWhenCentralPreflightFails'])
+            if(owner.hardBoundaries?.[field]!==true)
+              throw new Error('OWNER_RELEASE_HARD_BOUNDARY_MISSING:'+field);
           const release=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
           const guard=fs.readFileSync('tools/company-release-stale-artifact-guard.mjs','utf8');
-          for(const token of [
-            'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
-            'sourceChangeInvalidatesOldBuildValidation: true',
-            'buildPreflightIsNotFinalApproval: true',
-            'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true',
-            'independentQaSeparatedFromVibe2SelfCheck: true',
-            'finalArtbookOnlyAfterReleaseReady: true'
-          ]){
-            if(!policy.includes(token))throw new Error(`central release safety policy missing: ${token}`);
-          }
           if(!release.includes('finalDepartmentReviewEvidenceBound:true'))throw new Error('current release baseline must bind final QA evidence');
           for(const token of ['release-history','preservedAsHistory:true','FINAL_RELEASE_ARTIFACTS_ACTIVE=NO']){
             if(!guard.includes(token))throw new Error(`release guard contract missing: ${token}`);
