@@ -78,7 +78,7 @@ export class JaewoonVibeRuntime {
   }
 
   // [에셋 로딩] 실제 네트워크·이미지 요청을 취소하고 부분 등록된 오디오·폰트를 남기지 않는다.
-  async readAsset({ url, type, family, signal = null }) {
+  async readAsset({ url, type, family, signal = null, sha256 = '', format = '' }) {
     const aborted = () => Object.assign(new Error('asset loading aborted'), { name: 'AbortError' });
     if (signal?.aborted) throw aborted();
     if (type === 'image') {
@@ -105,7 +105,22 @@ export class JaewoonVibeRuntime {
     const response = await this.fetchAsset(url, signal);
     if (type === 'json') return { value: await response.json() };
     if (type === 'text') return { value: await response.text() };
-    if (type === 'binary') return { value: await response.arrayBuffer() };
+    if (type === 'binary') {
+      const bytes = await response.arrayBuffer();
+      if (format === 'glb') {
+        if (bytes.byteLength < 20) throw new Error('invalid GLB: truncated header');
+        const header = new DataView(bytes);
+        if (header.getUint32(0, true) !== 0x46546c67 || header.getUint32(4, true) !== 2
+            || header.getUint32(8, true) !== bytes.byteLength) throw new Error('invalid GLB header');
+      }
+      if (sha256) {
+        if (!/^[a-f0-9]{64}$/i.test(sha256) || !globalThis.crypto?.subtle) throw new Error('asset sha256 verification unavailable');
+        const digest = await crypto.subtle.digest('SHA-256', bytes);
+        const actual = [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2, '0')).join('');
+        if (actual !== sha256.toLowerCase()) throw new Error('asset sha256 mismatch: ' + url);
+      }
+      return { value: bytes };
+    }
     if (type === 'audio') {
       const bytes = await response.blob();
       if (signal?.aborted) throw aborted();
@@ -134,14 +149,14 @@ export class JaewoonVibeRuntime {
   }
 
   // [에셋 캐시] 하나의 씬 또는 호출이 해제해도 다른 참조는 유지한다.
-  acquireAsset({ path, type, family }) {
+  acquireAsset({ path, type, family, sha256 = '', format = '' }) {
     if (this.destroyed) throw new Error('runtime destroyed');
     const url = this.resolveAssetUrl(path);
     const kind = type || this.assetType(path);
     if (!['image', 'audio', 'json', 'text', 'binary', 'font'].includes(kind)) throw new Error('unsupported asset type: ' + kind);
     const fontFamily = family || path;
     const revision = this.assetVersions.get(url) || 0;
-    const key = JSON.stringify([kind, url, kind === 'font' ? fontFamily : '', revision]);
+    const key = JSON.stringify([kind, url, kind === 'font' ? fontFamily : '', revision, sha256.toLowerCase(), format]);
     const requestUrl = revision && /^https?:/.test(url) ? (() => {
       const fresh = new URL(url);
       fresh.searchParams.set('_vibe_asset_revision', String(revision));
@@ -152,7 +167,7 @@ export class JaewoonVibeRuntime {
       const controller = new AbortController();
       entry = { key, refs: 0, resource: null, promise: null, controller, bytes: 0 };
       this.assetCache.set(key, entry);
-      entry.promise = this.readAsset({ url: requestUrl, type: kind, family: fontFamily, signal: controller.signal }).then(resource => {
+      entry.promise = this.readAsset({ url: requestUrl, type: kind, family: fontFamily, sha256, format, signal: controller.signal }).then(resource => {
         entry.resource = resource;
         const value = resource.value;
         entry.bytes = Math.max(0, Number(resource.bytes) || (kind === 'image'
@@ -828,3 +843,124 @@ export class JaewoonVibeRuntime {
 }
 
 if (typeof window !== 'undefined') window.JaewoonVibeRuntime = JaewoonVibeRuntime;
+
+
+// [게임 모델] 기존 CC0 GLB 바이너리 로더의 결과를 Three.js로 그려 2D 게임 위에 재사용한다.
+// 게임 체력·충돌·저장 구조를 변경하지 않고 실제 원본 메시와 클립만 렌더한다.
+export async function createVibeModelSprites(loadedAssets, manifest, assetRootUrl) {
+  const roles = ['playerModel', 'enemyModel', 'bossModel'].filter(id => loadedAssets?.[id]);
+  if (!roles.length) return null;
+  if (typeof document === 'undefined') throw new Error('3D asset renderer requires a browser');
+  const THREE = await import('./roblox/world-ghosts/native/mesh/three/three.module.js');
+  const { GLTFLoader } = await import('./roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js');
+  const renderer = new THREE.WebGLRenderer({alpha:true, antialias:false, preserveDrawingBuffer:true});
+  renderer.setSize(112, 112, false);
+  renderer.setPixelRatio(1);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(0, 0);
+  const camera = new THREE.OrthographicCamera(-1.55, 1.55, 1.55, -1.55, .1, 60);
+  camera.position.set(3.5, 2.3, 6.5);
+  camera.lookAt(0, 0, 0);
+  const loader = new GLTFLoader();
+  const models = new Map();
+  const frames = new Map();
+  let frame = 0;
+  try {
+    for (const role of roles) {
+      const declaration = manifest.find(item => item.id === role);
+      if (!declaration || declaration.format !== 'glb') throw new Error('missing GLB provenance: ' + role);
+      const uri = new URL(declaration.path.replace(/^\/+/, ''), assetRootUrl).href;
+      const gltf = await loader.parseAsync(loadedAssets[role], uri.slice(0, uri.lastIndexOf('/') + 1));
+      let triangles = 0;
+      gltf.scene.traverse(node => {
+        if (node.isMesh && node.geometry?.attributes?.position)
+          triangles += Math.floor((node.geometry.index?.count || node.geometry.attributes.position.count) / 3);
+      });
+      const clips = (gltf.animations || []).filter(clip => Number.isFinite(clip.duration) && clip.duration > 0);
+      if (!triangles || !clips.length) throw new Error('GLB actor requires geometry and motion: ' + role);
+      const bounds = new THREE.Box3().setFromObject(gltf.scene);
+      if (bounds.isEmpty()) throw new Error('invalid GLB geometry bounds: ' + role);
+      const size = bounds.getSize(new THREE.Vector3());
+      const extent = Math.max(size.x, size.y, size.z);
+      if (!(extent > 0) || !Number.isFinite(extent)) throw new Error('invalid GLB size: ' + role);
+      const pivot = new THREE.Group();
+      gltf.scene.position.sub(bounds.getCenter(new THREE.Vector3()));
+      pivot.scale.setScalar(2.25 / extent);
+      pivot.add(gltf.scene);
+      const scene = new THREE.Scene();
+      scene.add(pivot);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x404855, 2.3));
+      const sunlight = new THREE.DirectionalLight(0xffffff, 1.7);
+      sunlight.position.set(3, 5, 5);
+      scene.add(sunlight);
+      const mixer = new THREE.AnimationMixer(gltf.scene);
+      models.set(role, {scene, root:gltf.scene, clips, mixer, active:null, activeName:'', triangles});
+    }
+  } catch (error) {
+    dispose();
+    throw error;
+  }
+  function chooseAnimation(model, state) {
+    const hints = {idle:/idle|breath|stand/i, walk:/walk|run|move|locomotion/i,
+      attack:/attack|hit_?out|slash|strike|swing|shoot|punch/i,
+      hurt:/hurt|damage|hit_?in|stagger/i, death:/death|die|fall/i};
+    return model.clips.find(clip => hints[state]?.test(clip.name))
+      || model.clips.find(clip => hints.idle.test(clip.name))
+      || model.clips[0];
+  }
+  function select(model, state) {
+    const clip = chooseAnimation(model, state);
+    if (model.activeName === clip.name) return;
+    const next = model.mixer.clipAction(clip);
+    if (model.active && model.active !== next) model.active.fadeOut(.12);
+    next.reset().setEffectiveWeight(1).fadeIn(.12);
+    const once = state === 'attack' || state === 'hurt' || state === 'death';
+    next.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, once ? 1 : Infinity);
+    next.clampWhenFinished = once;
+    next.play();
+    model.active = next;
+    model.activeName = clip.name;
+  }
+  function advance(delta) {
+    frame++;
+    frames.clear();
+    const dt = Math.min(.05, Math.max(0, Number(delta) || 0));
+    for (const model of models.values()) model.mixer.update(dt);
+  }
+  function draw(ctx, role, x, y, width, height, state = 'idle') {
+    const model = models.get(role);
+    if (!model) return false;
+    select(model, state);
+    const key = role + ':' + model.activeName;
+    let picture = frames.get(key);
+    if (!picture) {
+      renderer.render(model.scene, camera);
+      picture = document.createElement('canvas');
+      picture.width = 112; picture.height = 112;
+      picture.getContext('2d').drawImage(renderer.domElement, 0, 0);
+      frames.set(key, picture);
+    }
+    ctx.drawImage(picture, x, y, width, height);
+    return true;
+  }
+  function dispose() {
+    for (const model of models.values()) {
+      model.mixer.stopAllAction();
+      model.mixer.uncacheRoot(model.root);
+      model.root.traverse(node => {
+        node.geometry?.dispose?.();
+        for (const material of (Array.isArray(node.material) ? node.material : [node.material])) {
+          if (!material) continue;
+          for (const value of Object.values(material)) if (value?.isTexture) value.dispose();
+          material.dispose();
+        }
+      });
+    }
+    models.clear();
+    frames.clear();
+    renderer.dispose();
+    renderer.forceContextLoss();
+  }
+  return Object.freeze({draw, advance, dispose, inspect: () => [...models].map(([id, model]) =>
+    Object.freeze({id, triangles:model.triangles, clips:model.clips.map(clip => clip.name)}))});
+}
