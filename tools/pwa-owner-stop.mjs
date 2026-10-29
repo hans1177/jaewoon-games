@@ -41,9 +41,12 @@ function stopOnBranch(branch,id){
     if(!/^[a-f0-9]{40}$/.test(String(remote.sha??''))||typeof remote.content!=='string')
       throw Error('OWNER_STOP_REMOTE_CATALOG_INVALID:'+branch);
     const before=Buffer.from(remote.content.replace(/\s/g,''),'base64').toString('utf8');
-    const catalog=stopCatalog(JSON.parse(before),id);
-    if(catalog.ownerStoppedGameIds.includes(id) &&
-       JSON.parse(before).games.some(g=>g.id===id&&g.ownerDevelopmentStopped===true&&g.lifecycleState==='OWNER_STOPPED')){
+    const original=JSON.parse(before);
+    const wasStopped=Array.isArray(original.ownerStoppedGameIds)
+      &&original.ownerStoppedGameIds.includes(id)
+      &&original.games?.some(g=>g.id===id&&g.ownerDevelopmentStopped===true&&g.lifecycleState==='OWNER_STOPPED');
+    const catalog=stopCatalog(original,id);
+    if(wasStopped){
       console.log('OWNER_STOP_ALREADY_APPLIED='+branch+':'+id);return;
     }
     const content=Buffer.from(JSON.stringify(catalog,null,2)+'\n').toString('base64');
