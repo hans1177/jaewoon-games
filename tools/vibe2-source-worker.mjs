@@ -1752,6 +1752,72 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     if(source.length>1000000)continue;
     sourceHashes.set(relative,crypto.createHash('sha256').update(source).digest('hex'));
     sourceTexts.set(relative,source);
+    // Vibe native source generation from an exact official Studio MCP HUD failure.
+    // A full-screen clickable dimmer intersects every menu action when the modal is open.
+    // Preserve visible dimming and outside-tap dismissal, but make the backdrop a
+    // noninteractive Frame with an actual accessible dismiss button. The Studio
+    // commercial UI gate stays unchanged and must verify the new real runtime.
+    const studioFailure=order?.selectedTask?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure
+      ||order?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure||null;
+    const studioUiFailure=studioFailure?.authority==='roblox-official-studio-mcp-product-quality-failure'
+      &&(studioFailure.repairSurfaces||[]).includes('MOBILE_UI')
+      &&(studioFailure.qualityFailureKinds||[]).includes('adaptive-ui-commercial-quality');
+    const observedRows=(studioFailure?.qualityFailureDetails||[]).filter(row=>
+      clean(row?.repairSurface).toUpperCase()==='MOBILE_UI');
+    const observed=observedRows.map(row=>{
+      try{return typeof row.observed==='string'?JSON.parse(row.observed):row.observed||{};}
+      catch{return{};}
+    });
+    const overlappingHud=studioUiFailure&&observed.some(row=>
+      Number(row?.overlapPairs)>=2&&Number(row?.largeBlockingOverlayCount)===0);
+    if(overlappingHud&&/^(?:shared\/).+\.luau$/i.test(relative)
+      &&source.includes('function RobloxCommonUI.AdaptActionMenu(')
+      &&!source.includes('OutsideActionsMenuClose')){
+      const shadeBefore=[
+        'local shade=Instance.new("TextButton");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)',
+        'shade.Text="";shade.AutoButtonColor=false',
+        'shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui'
+      ].join('\n');
+      const shadeAfter=[
+        'local shade=Instance.new("Frame");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)',
+        'shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=false;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui',
+        'local outsideClose=RobloxCommonUI.CreatePrimaryButton({name="OutsideActionsMenuClose",text="닫기",minWidth=64,minHeight=52})',
+        'outsideClose.Size=UDim2.fromOffset(72,52);outsideClose.Position=UDim2.fromOffset(8,8);outsideClose.ZIndex=40;outsideClose.Parent=shade'
+      ].join('\n');
+      const outsideBefore='shade.Activated:Connect(function()setOpen(false)end)';
+      const outsideAfter=[
+        'outsideClose.Activated:Connect(function()setOpen(false)end)',
+        'local outsideInput=game:GetService("UserInputService").InputBegan:Connect(function(inputObject)',
+        ' if not opened or gui.Parent==nil then return end',
+        ' local kind=inputObject.UserInputType',
+        ' if kind~=Enum.UserInputType.Touch and kind~=Enum.UserInputType.MouseButton1 then return end',
+        ' local point=inputObject.Position',
+        ' local topLeft=root.AbsolutePosition',
+        ' local bounds=root.AbsoluteSize',
+        ' if point.X<topLeft.X or point.X>topLeft.X+bounds.X or point.Y<topLeft.Y or point.Y>topLeft.Y+bounds.Y then',
+        '  setOpen(false)',
+        ' end',
+        'end)',
+        'gui.Destroying:Connect(function()outsideInput:Disconnect()end)'
+      ].join('\n');
+      if(source.split(shadeBefore).length===2&&source.split(outsideBefore).length===2
+        &&source.indexOf(shadeBefore)<source.indexOf(outsideBefore)
+        &&source.indexOf(outsideBefore)<source.indexOf('return {isOpen=function()return opened end')){
+        candidates.push({
+          summary:'Vibe free native Roblox modal UI repair grounded in actual Studio HUD overlap',
+          expectedEffect:'Remove the full-screen clickable button that overlaps menu controls while retaining an accessible outside-close control and touch outside dismissal',
+          edits:[
+            {path:relative,find:shadeBefore,replace:shadeAfter},
+            {path:relative,find:outsideBefore,replace:outsideAfter}
+          ],newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-180,
+          deterministicRobloxNativeRepair:'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION',
+          semanticGrounding:{studioRunId:Number(studioFailure.workflowRunId)||null,
+            failureKind:'adaptive-ui-commercial-quality',observedOverlapPairs:Math.max(...observed.map(row=>Number(row.overlapPairs)||0)),
+            originalSourceAnchors:true,sourceBound:true,preserveTouchDismissal:true,
+            noNewServerRules:true,noSaveMutation:true,modelUsed:false,runtimeVerified:false}
+        });
+      }
+    }
     // [게임별 실구현 · 무모델] 실제 동물 애니메이터가 '속도' Attribute 변경마다
     // 공격/피격 SetState를 재시작하면 한 동작이 끝나지 못한다. 원본 함수의 상태/옵션을
     // 그대로 두고 상태나 액션 옵션이 바뀐 경우에만 재생한다. 다른 함수/게임은 건드리지 않는다.
