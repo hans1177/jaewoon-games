@@ -71,7 +71,12 @@ export function verifyIntentCondition(condition){
 export function synthesizeGameChangeAtom({requirement,owner,file,target}){
  const r=requirement,source=file.source,body=file.code.slice(owner.bodyStart,owner.bodyEnd);
  if(owner.ambiguous||owner.unsupported.length)throw Error('VIBE2_OPERATOR_UNSUPPORTED_OWNER');
- if(target==='roblox'&&!/(?:^|\/)(?:server|ServerScriptService)\/|\.server\.lua[u]?$/i.test(file.path))throw Error('VIBE2_OPERATOR_SERVER_ONLY');
+ // Roblox 클라이언트 코드는 서버 원본의 RemoteEvent 송신까지 증명된 UI-only 연결일 때만 허용한다.
+ if(target==='roblox'&&!/(?:^|\/)(?:server|ServerScriptService)\/|\.server\.lua[u]?$/i.test(file.path)&&
+  !(r.operation==='existing-call'&&r.derivation==='EXISTING_REMOTE_SERVER_TO_CLIENT_UI'&&
+    /(?:^|\/)client\/|\.client\.lua[u]?$/i.test(file.path)&&
+    r.boundSymbols?.some(symbol=>/(?:^|\/)(?:server|ServerScriptService)\/|\.server\.lua[u]?$/i.test(symbol.path))))
+  throw Error('VIBE2_OPERATOR_SERVER_ONLY');
  const prefix=source.slice(owner.start,owner.insertionOffset??owner.bodyStart),indent='  ';
  let edit,proof,effects=[];
  if(r.operation==='guard-return'){
