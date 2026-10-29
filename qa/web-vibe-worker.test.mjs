@@ -822,6 +822,58 @@ test('Vibe5.9 clamp AST rejects inverted, dynamic and injected numeric limits',(
   'math.clamp(x,0,10)');
 });
 
+// [무모델 엔진 확장] JS의 음수 나머지 및 -0를 Luau math.fmod와 일치시킨다.
+test('Vibe5.9 no-model remainder synthesis preserves signed-zero and negative dividend Web/Luau semantics',()=>{
+ const spec={parameters:['x'],constants:[3],maxDepth:2,maxGenerations:6,
+  examples:[{args:[8],output:2},{args:[-8],output:-2},
+    {args:[10],output:1},{args:[-10],output:-1},
+    {args:[6],output:0},{args:[-6],output:-0}],
+  holdouts:[{args:[14],output:2},{args:[-14],output:-2},
+    {args:[9],output:0},{args:[-3],output:-0}]};
+ for(const strategy of [undefined,'evolution']){
+  const found=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy}});
+  assert.equal(found.casesPassed,10);
+  assert.equal(found.modelUsed,false);
+  assert.equal(found.sourceWrite,false);
+  assert.equal(found.runtimeVerified,false);
+  assert.equal(found.exactGameQaRequired,true);
+  assert.equal(found.expression,'(x%3)');
+  assert.equal(found.ast.operator??found.ast[0],'%');
+  assert.equal(renderVibe59NumericLuaAST(found.ast,['x']),'math.fmod(x,3)');
+  const generated=vm.runInNewContext('(function(x){'+found.source+'})');
+  for(const sample of [...spec.examples,...spec.holdouts])
+    assert.ok(Object.is(generated(...sample.args),sample.output),'holdout includes signed negative zero');
+  for(const n of [-100,-13,-6,-1,0,1,6,13,100])
+    assert.ok(Object.is(generated(n),n%3));
+  const concepts=extractVibe59AlgorithmConceptCandidates({search:found});
+  assert.equal(concepts.verified,false);
+  assert.equal(concepts.promotionAuthorized,false);
+ }
+ const originalWeb='function remainder(x){return x;}\n';
+ const web=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'remainder'},
+  source:originalWeb,relative:'web-games/test/math.js',target:'web'});
+ assert.match(web.newText,/return \(x%3\);/);
+ assert.equal(web.sourceWrite,false);
+ assert.equal(originalWeb,'function remainder(x){return x;}\n');
+ const originalLua='local function remainder(x)\n return x\nend\n';
+ const lua=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'remainder'},
+  source:originalLua,relative:'ServerScriptService/math.server.luau',target:'roblox'});
+ assert.match(lua.newText,/return math\.fmod\(x,3\)/);
+ assert.equal(lua.runtimeVerified,false);
+ assert.equal(lua.sourceWrite,false);
+ assert.equal(originalLua,'local function remainder(x)\n return x\nend\n');
+});
+
+test('Vibe5.9 Luau remainder safely uses fmod for negative divisors and rejects injected AST',()=>{
+ assert.equal(renderVibe59NumericLuaAST(
+  ['%',['param',0],['param',1]],['x','y']),'math.fmod(x,y)');
+ assert.throws(()=>renderVibe59NumericLuaAST(
+  ['%',['param',0],['const','game:Destroy()']],['x']),
+  /LUA_AST_REQUIRED/);
+});
+
 test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure function',()=>{
  const spec={ownerApproved:true,functionName:'resolve',parameters:['a','b'],
   examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
@@ -1131,7 +1183,7 @@ test('Vibe5.9 Lua compiler accepts enumerative object AST and evolved array AST 
  assert.ok(Array.isArray(evolved.ast));
  assert.match(renderVibe59NumericLuaAST(evolved.ast,evolved.parameters),/^(?:math\.max\(|\()/);
  assert.equal(renderVibe59NumericLuaAST(['%',['param',0],['param',1]],['x','y']),
-   '(x-math.modf(x/y)*y)');
+   'math.fmod(x,y)');
  assert.equal(renderVibe59NumericLuaAST({kind:'mutation',operator:'round',
    operand:{kind:'reference',name:'x'}},['x']), 'math.floor((x)+0.5)');
  assert.equal(enumerative.runtimeVerified,false);
