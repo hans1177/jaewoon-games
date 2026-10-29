@@ -2746,6 +2746,34 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       });
     }
   }
+  // [원본 책임 함수 재작성] 여러 검증된 부분 수정을 한 함수로 재조립한다.
+  for(const patch of [...candidates]){
+    if(!Array.isArray(patch.edits)||patch.edits.length<2||patch.edits.length>6
+      ||!patch.edits.every(edit=>edit.path===patch.edits[0].path))continue;
+    const relative=patch.edits[0].path,source=sourceTexts.get(relative);
+    if(!source||/SAVE|DATASTORE|SERVER_AUTHORITY/.test(clean(patch.deterministicRobloxNativeRepair)))continue;
+    const parts=patch.edits.map(edit=>({edit,start:source.indexOf(edit.find)}));
+    if(parts.some(row=>row.start<0||source.split(row.edit.find).length!==2))continue;
+    const functions=inspectSourceFunctions(source,{language:'luau',maxFunctions:4096});
+    const owners=functions.filter(fn=>parts.every(row=>
+      row.start>=fn.start&&row.start+row.edit.find.length<=fn.end));
+    if(owners.length!==1)continue;
+    const fn=owners[0],original=source.slice(fn.start,fn.end);
+    if(original.length>16000||source.split(original).length!==2)continue;
+    let revised=original,limit=fn.end;
+    for(const row of parts.sort((a,b)=>b.start-a.start)){
+      const end=row.start+row.edit.find.length;
+      if(end>limit){revised='';break;}
+      revised=revised.slice(0,row.start-fn.start)+row.edit.replace+revised.slice(end-fn.start);
+      limit=row.start;
+    }
+    if(!revised||revised===original)continue;
+    candidates.push({...patch,edits:[{path:relative,find:original,replace:revised}],
+      deterministicPriority:patch.deterministicRobloxNativeRepair==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION'?-220:10,
+      deterministicRobloxNativeRepair:'ORIGINAL_FUNCTION_REWRITE',
+      semanticGrounding:{...patch.semanticGrounding,originalRecipe:patch.deterministicRobloxNativeRepair,
+        sourceFunction:fn.name,originalEditCount:parts.length,exactFunctionRewrite:true,runtimeVerified:false}});
+  }
   // [코딩 엔진] 실제 소스 후보를 전부 비교하고 작은 수정부터 독립 검증한다.
   // 첫 후보 실패가 다른 책임 함수/파일의 실행 가능한 후보까지 막지 않는다.
   const ranked=[...new Map(candidates.map(candidate=>[rejectedSourcePatchFingerprint(candidate),candidate])).values()]
