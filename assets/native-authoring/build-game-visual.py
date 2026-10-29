@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument('--output', type=Path, required=True)
 PARSER.add_argument('--asset-id', required=True)
-PARSER.add_argument('--profile', choices=['background','environment','prop','item','weapon'], required=True)
+PARSER.add_argument('--profile', choices=['background','environment','prop','item','weapon','character','creature','building'], required=True)
 PARSER.add_argument('--target', choices=['web','roblox','unity'], required=True)
 PARSER.add_argument('--subject', choices=['generic','rock','crate'], default='generic')
 PARSER.add_argument('--style-json', default='{}')
@@ -53,6 +53,12 @@ if bool(ARGS.library_parent_id) != bool(ARGS.library_source_sha256) or (ARGS.lib
 if ARGS.library_parent_id and (not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,159}', ARGS.library_parent_id)
                                or not re.fullmatch(r'[0-9a-fA-F]{64}', ARGS.library_source_sha256)):
     raise RuntimeError('LIBRARY_DERIVATIVE_SOURCE_IDENTITY_INVALID')
+# [기존 CC0 원본 재제작] 임의 파츠·도형 대신 고정된 실제 원본 메시만 허용.
+if ARGS.profile in ('character','creature','building') and (
+    not ARGS.source_model or not ARGS.library_parent_id
+    or ARGS.source_license.strip().lower() not in ('cc0','cc0-1.0')
+):
+    raise RuntimeError('NATIVE_CC0_PROFILE_REQUIRES_VERIFIED_LIBRARY_SOURCE')
 if ARGS.sprite_atlas and (
     not ARGS.source_model or not ARGS.library_parent_id
     or ARGS.source_license.strip().lower() not in ('cc0','cc0-1.0')
@@ -764,6 +770,16 @@ def import_source_surface():
                     track.strips.new(clip.name,int(clip.frame_range[0]),clip)
                     animation.action=None
                 ASSET_ARMATURES.append(rig)
+    # [캐릭터·몬스터] 원본 리그/스킨을 재사용하되 실제 클립이 없는 정적 모델을 완성된 배우로 승격하지 않는다.
+    if ARGS.profile in ('character','creature'):
+        if not rigs or not any(
+                mod.type=='ARMATURE' and mod.object in rigs
+                for obj in imported for mod in obj.modifiers):
+            raise RuntimeError('CC0_ACTOR_RIG_AND_SKIN_REQUIRED')
+        if not any(rig.animation_data and (
+                rig.animation_data.action or len(rig.animation_data.nla_tracks)>0)
+                for rig in rigs):
+            raise RuntimeError('CC0_ACTOR_SOURCE_MOTION_REQUIRED')
     # GLB 자산은 제작 모듈이 'object'여도 이미 있는 스키닝/모션을 없애지 않는다.
     # 내부 라이브러리 원본의 연결된 리그만 그대로 내보내고 게임 판정은 수정하지 않는다.
     for rig in rigs:
@@ -1661,7 +1677,10 @@ evidence={
     'triangleCount':sum(sum(len(face.vertices)-2 for face in obj.data.polygons) for obj in ASSET_OBJECTS),
     'uvLayersVerified':all(bool(obj.data.uv_layers) for obj in ASSET_OBJECTS),
     'materialApplicationFile':'application.json',
-    'family':('CHARACTER' if MODULE_PROVENANCE and MODULE_PROVENANCE['kind']=='human' else 'ENVIRONMENT' if ARGS.profile in ('background','environment') else 'WEAPON' if ARGS.profile in ('item','weapon') else 'PROP'),
+    'family':('CHARACTER' if ARGS.profile=='character' or MODULE_PROVENANCE and MODULE_PROVENANCE['kind']=='human'
+              else 'CREATURE' if ARGS.profile=='creature' else 'BUILDING' if ARGS.profile=='building'
+              else 'ENVIRONMENT' if ARGS.profile in ('background','environment')
+              else 'WEAPON' if ARGS.profile in ('item','weapon') else 'PROP'),
     'generator':'assets/native-authoring/build-game-visual.py',
     'sourceHash':source_hash,
     'artifactHash':artifact_hash,
