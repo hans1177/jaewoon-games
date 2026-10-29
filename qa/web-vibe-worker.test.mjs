@@ -454,5 +454,5 @@ test('WEB model-less evolution composes distinct playable routes from existing g
  assert.equal(second.updated.includes('const enemyBehaviorIds=["guard","chase"]'),true);
  assert.equal(synthesizeWebProgressionWithoutModel({...task,goal:'전투 공격력 변경 콘텐츠 확장'},source),null);
  assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('craftItem(route.recipeId);','') }),null);
- assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('"desert"','"desert","invalid"').replace('const regionIds=["forest","desert"];','const regionIds=[];')}),null);
+ assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('const regionIds=["forest","desert"];','const regionIds=["forest"];')}),null);
 });
