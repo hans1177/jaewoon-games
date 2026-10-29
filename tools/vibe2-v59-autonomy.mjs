@@ -1107,6 +1107,10 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(autoFunctionRewrite&&req.machine&&(
     req.machine.handlerName!==originalFunction.name||originalFunction.parameters.join(',')!=='eventName'))
     throw Error('VIBE59_FUNCTION_REWRITE_HANDLER_SIGNATURE');
+  // 상태 규칙은 기존 무인자 함수만 재작성한다. 인자가 있으면 원래 호출 계약이
+  // 누락될 수 있으므로 추정하지 않고 거부한다. 상태머신은 eventName 하나만 허용.
+  if(autoFunctionRewrite&&!req.machine&&originalFunction.parameters.length)
+    throw Error('VIBE59_FUNCTION_REWRITE_PARAMETER_CONTRACT');
   const generatedProbes=generateVibe59AutonomousProbes({rule:req.rule,machine:req.machine,
     maxCases:Math.max(0,Math.min(10,20-ownerScenarios.length))});
   const probeCases=generatedProbes.cases;
@@ -1136,9 +1140,18 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(autoFunctionRewrite){
     if(req.robloxServerAction)throw Error('VIBE59_FUNCTION_REWRITE_SERVER_AUTHORITY');
     if(req.machine){
-      if(target==='roblox'&&originalFunction.header.startsWith('function '))
-        rewritten=rewritten.replace(/^local function /,'function ');
+      // 생성기의 헤더 표기(공백/local)가 달라도 원본 선언을 정확히 보존한다.
+      const generatedHeader=target==='roblox'
+        ?/^(?:local\\s+)?function\\s+[A-Za-z_]\\w*\\s*\\(\\s*eventName\\s*\\)/
+        :/^function\\s+[A-Za-z_]\\w*\\s*\\(\\s*eventName\\s*\\)\\s*\\{/;
+      const declared=generatedHeader.exec(rewritten)?.[0];
+      if(!declared)throw Error('VIBE59_FUNCTION_REWRITE_GENERATED_HEADER');
+      rewritten=originalFunction.header+rewritten.slice(declared.length);
     }else{
+      // 일반 규칙은 기존 반환 규약을 암묵적으로 지울 수 없다.
+      if(/\\breturn\\b/.test(executableText(originalFunction.original,
+        target==='roblox'?'luau':'javascript').slice(originalFunction.header.length)))
+        throw Error('VIBE59_FUNCTION_REWRITE_RETURN_CONTRACT');
       const body=compiled.source.split('\n').map(line=>'  '+line).join('\n');
       rewritten=originalFunction.header+'\n'+body+'\n'+(target==='roblox'?'end':'}');
     }
@@ -1146,7 +1159,19 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
       throw Error('VIBE59_FUNCTION_REWRITE_SIGNATURE_DRIFT');
   }
   if(rewritten===find)throw Error('VIBE59_NOOP');
-  const codeReplay=selected.replay;
+  // 생성 중간 산물이 아닌 최종 함수 전체를 제한된 JS 샌드박스에서 재실행한다.
+  // 규칙형 무인자 함수는 호출까지 포함해 상태 결과를 독립 오라클과 비교한다.
+  let codeReplay=selected.replay;
+  if(autoFunctionRewrite&&target==='web'){
+    const replaySource=req.machine?rewritten:rewritten+'\n'+originalFunction.name+'();';
+    codeReplay=verifyVibe59GeneratedJavaScript({
+      source:replaySource,rule:req.rule,machine:req.machine,
+      scenarios:[...ownerScenarios,...probeCases]
+    });
+    if(codeReplay.pass!==true)
+      throw Error('VIBE59_REWRITTEN_FUNCTION_REPLAY_REJECTED:'+
+        (codeReplay.reason||codeReplay.counterexamples?.map(row=>row.name).join(',')));
+  }
   return Object.freeze({summary:'Vibe5.9 composed offline code',
     expectedEffect:'Source-grounded, explicitly approved state transition',
     edits:[{path:relative,find,replace:rewritten}],newFiles:[],replaceFiles:[],
@@ -1256,9 +1281,17 @@ export function evaluateVibe59OfflinePatchEvidence({candidate={},order={},source
   touches.push({path:edit.path,oldBytes:Buffer.byteLength(edit.find),newBytes:Buffer.byteLength(edit.replace),
     sourceBound:unique});
  }
- const digest=sha(JSON.stringify([originals,touches,candidate.edits.map(x=>[x.path,x.find,x.replace])]));
+ // 독립 원본 수정은 편집 나열 순서와 상관없이 같은 실패 지문이다.
+ // 의존적 배치 수정은 적용 순서가 의미를 가지므로 기존 순서대로 해시한다.
+ const legacyDigest=sha(JSON.stringify([originals,touches,candidate.edits.map(x=>[x.path,x.find,x.replace])]));
+ const sortedOriginals=[...originals].sort((a,b)=>a.path.localeCompare(b.path));
+ const patches=candidate.edits.map(x=>[x.path,x.find,x.replace]);
+ if(candidate.vibe59CodeKind!=='COMPOSED_OFFLINE_SOURCE')
+   patches.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
+ const digest=sha(JSON.stringify([sortedOriginals,patches]));
  const rejects=order.selectedTask?.vibe59RejectedCandidateFingerprints||order.vibe59RejectedCandidateFingerprints||[];
- if(Array.isArray(rejects)&&rejects.length<=128&&rejects.includes(digest))
+ if(Array.isArray(rejects)&&rejects.length<=128
+   &&(rejects.includes(digest)||rejects.includes(legacyDigest)))
    throw Error('VIBE59_REPEATED_FAILED_CANDIDATE');
  const revision=clean(order.baseCommit||order.sourceRevision);
  const gameId=clean(order.selectedTask?.gameId||order.gameId);

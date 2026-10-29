@@ -8,7 +8,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
-import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate,createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
+import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate,createVibe59CodeCandidates,evaluateVibe59OfflinePatchEvidence} from '../tools/vibe2-v59-autonomy.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -708,7 +708,7 @@ test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure 
 test('offline general function rewrite composes original Web event handler from verified transition cases',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-general-web-'));
  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
- const original='const saved="save-v1";\nfunction advance(eventName) { return false; }\n';
+ const original='const saved="save-v1";\nfunction advance( eventName ) { return false; }\n';
  fs.writeFileSync(path.join(root,'game.js'),original);
  const machine={handlerName:'advance',stateVariable:'phase',
   states:['idle','active'],events:['start'],transitions:[{from:'idle',to:'active',event:'start'}]};
@@ -722,6 +722,7 @@ test('offline general function rewrite composes original Web event handler from 
  assert.equal(result.sourceFunctionRewrite,true);
  assert.equal(result.sourceFunction,'advance');
  assert.equal(result.sourceFunctionAutoLocated,true);
+ assert.match(result.edits[0].replace,/function advance\( eventName \) \{/);
  assert.equal(result.vibe59TestPlan.pass,true);
  assert.equal(result.vibe59JsReplay.pass,true);
  const audited=()=>createVibe59CodeCandidates({order:{vibe59CodeRequest:req},
@@ -744,6 +745,52 @@ test('offline general function rewrite composes original Web event handler from 
  assert.throws(()=>run({...req,sourceSha256:'0'.repeat(64)}),/STALE_SOURCE/);
  assert.throws(()=>run({...req,scenarios:scenarios.slice(0,1)}),/INDEPENDENT_SCENARIOS_REQUIRED/);
  assert.throws(()=>run({...req,find:'return false;'}),/ANCHOR_MISMATCH/);
+});
+
+test('model-free Web rule rewrite executes its final original function, preserving caller contract',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-final-replay-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file='game.js',original='function refresh() { alive=false; }\n';
+ fs.writeFileSync(path.join(root,file),original);
+ const rule={when:{kind:'compare',op:'gte',left:{kind:'ref',name:'hp'},
+   right:{kind:'number',value:1}},
+  then:[{output:'alive',action:'assign',value:{kind:'boolean',value:true}}],
+  otherwise:[{output:'alive',action:'assign',value:{kind:'boolean',value:false}}]};
+ const scenarios=[{name:'living',initialState:{hp:2,alive:false},expectedState:{alive:true}},
+  {name:'dead',initialState:{hp:0,alive:true},expectedState:{alive:false}}];
+ const request={ownerApproved:true,path:file,rewriteExistingFunction:true,functionName:'refresh',rule,scenarios};
+ const run=req=>createVibe59CodeCandidate({target:'web',sourceRoot:root,
+  responsibleFiles:[file],order:{vibe59CodeRequest:req}});
+ const result=run(request);
+ assert.equal(result.sourceFunctionRewrite,true);
+ assert.equal(result.vibe59JsReplay.pass,true);
+ assert.equal(result.vibe59JsReplay.cases.length>=2,true);
+ assert.match(result.edits[0].replace,/function refresh\(\)/);
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
+ fs.writeFileSync(path.join(root,file),'function refresh(hp) { alive=false; }\n');
+ assert.throws(()=>run(request),/PARAMETER_CONTRACT/);
+ fs.writeFileSync(path.join(root,file),'function refresh() { return false; }\n');
+ assert.throws(()=>run(request),/RETURN_CONTRACT/);
+});
+
+test('model-free failed independent patch dedupe ignores edit list ordering',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-fingerprint-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.writeFileSync(path.join(root,'game.js'),
+   'function render(){score = 1;}\nfunction update(){level = 1;}\n');
+ const a={path:'game.js',find:'score = 1;',replace:'score = 2;'};
+ const b={path:'game.js',find:'level = 1;',replace:'level = 2;'};
+ const audit=(edits,order={})=>evaluateVibe59OfflinePatchEvidence({
+  candidate:{edits,vibe59CodeKind:'STATE_RULE'},sourceRoot:root,
+  responsibleFiles:['game.js'],target:'web',order});
+ const forward=audit([a,b]);
+ const reverse=audit([b,a]);
+ assert.equal(forward.vibe59OfflineAudit.fingerprint,reverse.vibe59OfflineAudit.fingerprint);
+ assert.equal(forward.vibe59OfflineAudit.functionCount,2);
+ assert.throws(()=>audit([b,a],{
+  vibe59RejectedCandidateFingerprints:[forward.vibe59OfflineAudit.fingerprint]
+ }),/REPEATED_FAILED_CANDIDATE/);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8').includes('score = 1;'),true);
 });
 
 test('offline Luau state function rewrite stays within original function and cannot alter saves',t=>{
