@@ -225,7 +225,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const modelsPromise=loadSourceModels();
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
   let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroAttackAt=0,lastHeroFrame=0;
-  let heroUpperAction=null,heroUpperClipCache=new Map(),heroClipNames=[];
+  let heroUpperAction=null,heroUpperClipCache=new Map(),heroLowerClipCache=new Map(),heroClipNames=[];
+  let lastHeroHp=null,heroHitUntil=0;
   let scene=null,disposed=false,heroLoadVersion=0;
   let selectedAppearance=null;
   async function setAvatarAppearance(requested){
@@ -237,10 +238,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       let gltf;
       if(typeof DecompressionStream==='function'){
         const compressed=new URL('./'+HERO_MODEL_FILES[choice.model]+'.gz',import.meta.url);
-        const response=await fetch(compressed,{cache:'force-cache'});
-        if(!response.ok)throw new Error('Compressed CC0 avatar unavailable: '+response.status);
-        const bytes=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-        gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',source).href);
+        try{
+          const response=await fetch(compressed,{cache:'force-cache'});
+          if(!response.ok)throw new Error('Compressed CC0 avatar unavailable: '+response.status);
+          const bytes=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+          gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',source).href);
+        }catch(error){
+          console.warn('Compressed CC0 avatar failed; retrying the identical approved GLB',error);
+          gltf=await new GLTFLoader().loadAsync(source.href);
+        }
       }else gltf=await new GLTFLoader().loadAsync(source.href);
       if(disposed||version!==heroLoadVersion)return false;
       const avatar=new THREE.Group(),model=gltf.scene;
@@ -270,7 +276,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       heroClipNames=heroClips.map(clip=>clip.name);
       console.info('[Vibe] Original CC0 GLB clips',choice.model,heroClipNames);
       heroMixer=heroClips.length?new THREE.AnimationMixer(model):null;
-      heroAction=null;heroUpperAction=null;heroUpperClipCache=new Map();heroActionName='';lastHeroFrame=0;
+      heroAction=null;heroUpperAction=null;heroUpperClipCache=new Map();heroLowerClipCache=new Map();heroActionName='';lastHeroFrame=0;lastHeroHp=null;heroHitUntil=0;lastHeroAttackAt=0;
       selectedAppearance=choice;
       if(previous){
         previousMixer?.stopAllAction();
@@ -424,7 +430,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   scene.add(sun);
   // 실제 피격 이벤트가 있을 때만 기존 Vibe GPU 파티클을 방출한다.
   const impactVfx=createVibeWorldVfx(THREE,scene,{maxParticles:mobileBudget?24:72});
-  const seenHitStamp=new WeakMap();let lastImpactFrame=0;
+  const seenHitStamp=new WeakMap();let lastImpactFrame=0,impactShakeUntil=0;
 
   // [후가공] 앱에 EffectComposer/UnrealBloomPass 모듈이 포함돼 있지 않으므로
   // 같은 역할의 밝은 픽셀 추출 + 가우시안 합성 패스를 기존 렌더러 내부에 구현한다.
@@ -749,15 +755,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       // [액션] 실제 원본 공격 클립을 찾지 못하면 대기 동작을 공격으로 위장하지 않는다.
-      const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
+      const reacting=poseNow<(Number(e.hitAt)||0);
+      const intents=reacting?['hit','hurt','damage']:attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
         ||(!attacking?undeadClips.find(c=>/idle|walk/i.test(c.name)):null)||null;
       if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
         const transitionSeconds=attacking?.10:moving?.16:.22;
-        actor.action?.fadeOut(transitionSeconds);
-        actor.action=actor.mixer.clipAction(clip).reset();
-        actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
-        actor.action.clampWhenFinished=attacking;
+        const nextAction=actor.mixer.clipAction(clip);
+        if(actor.action&&actor.action!==nextAction)actor.action.fadeOut(transitionSeconds);
+        else nextAction.stop();
+        actor.action=nextAction.reset().setEffectiveWeight(1);
+        actor.action.setLoop(attacking||reacting?THREE.LoopOnce:THREE.LoopRepeat,attacking||reacting?1:Infinity);
+        actor.action.clampWhenFinished=attacking||reacting;
         actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
         if(attacking)actor.lastAttackStamp=e.attackAt;
       }
@@ -869,15 +878,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       // [액션] 종별 실제 리그에서 공격/물기/베기 클립을 찾고 허위 공격 재생을 금지한다.
-      const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
+      const reacting=poseNow<(Number(e.hitAt)||0);
+      const words=reacting?['hit','hurt','damage']:attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
         ||(!attacking?actor.clips.find(c=>/idle|walk/i.test(c.name)):null);
       if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
         const transitionSeconds=attacking?.10:moving?.16:.22;
-        actor.action?.fadeOut(transitionSeconds);
-        actor.action=actor.mixer.clipAction(clip).reset();
-        actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
-        actor.action.clampWhenFinished=attacking;
+        const nextAction=actor.mixer.clipAction(clip);
+        if(actor.action&&actor.action!==nextAction)actor.action.fadeOut(transitionSeconds);
+        else nextAction.stop();
+        actor.action=nextAction.reset().setEffectiveWeight(1);
+        actor.action.setLoop(attacking||reacting?THREE.LoopOnce:THREE.LoopRepeat,attacking||reacting?1:Infinity);
+        actor.action.clampWhenFinished=attacking||reacting;
         actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
         if(attacking)actor.lastAttackStamp=e.attackAt;
       }
@@ -1182,7 +1194,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>.06;
       lastHeroPoseX=px;lastHeroPoseY=py;lastHeroPoseAt=now;
       const attackingAge=now-(Number(p.attackAt)||0);
-      const pose=attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
+      if(lastHeroHp!==null&&Number(p.hp)<lastHeroHp)heroHitUntil=now+280;
+      lastHeroHp=Number(p.hp);
+      const incapacitated=Number(p.hp)<=0||Number(p.downedUntil)>now;
+      const pose=incapacitated?'death':now<heroHitUntil?'hit':attackingAge>=0&&Number(p.attackAt)>0&&attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
       // 기사 찌르기 / 전사 내려찍기 / 도적 빠른 베기 / 법사 시전의 시각 연출만 다르게 한다.
       const avatarStyle=selectedAppearance?.model||'knight';
       const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
@@ -1218,33 +1233,45 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const upperAttack=authoredUpperAttack(attackClip);
       const layeredAttack=pose==='attack'&&!!upperAttack;
       const motionRole=layeredAttack?(moving?playerTravelClip:'idle'):pose==='move'?playerTravelClip:pose;
+      const oneShot=['attack','hit','death'].includes(motionRole);
       const clipName=playerMotionProfile.cc0Clips[motionRole];
       const candidates=playerMotionProfile.cc0ClipCandidates[motionRole]||[clipName];
-      const desired=candidates.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
+      let desired=candidates.map(name=>heroClips.find(clip=>clip.name===name)).find(Boolean)||null;
+      if(layeredAttack&&desired){
+        if(!heroLowerClipCache.has(desired.name)){
+          const upperNames=new Set((authoredUpperAttack(desired)?.tracks||[]).map(track=>track.name));
+          heroLowerClipCache.set(desired.name,new THREE.AnimationClip(desired.name+'__lower',desired.duration,
+            desired.tracks.filter(track=>!upperNames.has(track.name)).map(track=>track.clone())));
+        }
+        desired=heroLowerClipCache.get(desired.name);
+      }
       actualPlayerClip=desired?.name||'';
       unavailablePlayerClip=desired?'':motionRole;
       const nextName=desired?.name||'';
       const attackAt=Number(p.attackAt)||0;
       if(heroMixer&&(nextName!==heroActionName||(!layeredAttack&&pose==='attack'&&attackAt!==lastHeroAttackAt))){
         const nextAction=desired?heroMixer.clipAction(desired):null;
-        const heroTransition=pose==='attack'?.085:pose==='move'?.16:.22;
+        const heroTransition=oneShot?.085:moving?.16:.22;
         if(heroAction&&heroAction!==nextAction)heroAction.fadeOut(heroTransition);
-        else if(heroAction&&pose==='attack')heroAction.stop(); // 같은 원본 클립도 새 공격 이벤트마다 재시작한다.
+        else if(heroAction&&oneShot)heroAction.stop(); // 같은 원본 클립도 새 공격 이벤트마다 재시작한다.
         heroAction=nextAction;
         if(heroAction){
-          heroAction.reset().setLoop(pose==='attack'?THREE.LoopOnce:THREE.LoopRepeat,pose==='attack'?1:Infinity);
-          heroAction.clampWhenFinished=pose==='attack';
+          heroAction.reset().setEffectiveWeight(1).setLoop(oneShot?THREE.LoopOnce:THREE.LoopRepeat,oneShot?1:Infinity);
+          heroAction.clampWhenFinished=oneShot;
           // 실제 시각 애니메이션 시간만 변경한다. 이동 루트와 공격 판정은 건드리지 않는다.
-          if(pose==='attack')heroAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:selectedAppearance?.model?.startsWith('rogue')?.23:.32);
-          else heroAction.setEffectiveTimeScale(pose==='move'?1.3:1);
+          if(motionRole==='attack')heroAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:selectedAppearance?.model?.startsWith('rogue')?.23:.32);
+          else if(motionRole==='hit')heroAction.setDuration(.28);
+          else heroAction.setEffectiveTimeScale(moving?1.3:1);
           heroAction.fadeIn(heroTransition).play();
         }
         heroActionName=nextName;
         if(pose==='attack'&&!layeredAttack)lastHeroAttackAt=attackAt;
       }
       if(layeredAttack&&heroMixer&&attackAt!==lastHeroAttackAt){
-        heroUpperAction?.fadeOut(.11);
-        heroUpperAction=heroMixer.clipAction(upperAttack).reset();
+        const nextUpper=heroMixer.clipAction(upperAttack);
+        if(heroUpperAction&&heroUpperAction!==nextUpper)heroUpperAction.fadeOut(.11);
+        else nextUpper.stop(); // 같은 액션에 남은 fadeOut 예약을 제거한 뒤 반복 타격을 시작한다.
+        heroUpperAction=nextUpper.reset().setEffectiveWeight(1);
         heroUpperAction.setLoop(THREE.LoopOnce,1);
         heroUpperAction.clampWhenFinished=false;
         heroUpperAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:.32);
@@ -1376,13 +1403,21 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const enemy of state.enemies||[]){
       if(!enemy||enemy.area!==state.area)continue;
       const stamp=Number(enemy.hitAt)||0;
-      if(stamp<=0||stamp>sampleNow||sampleNow-stamp>190||seenHitStamp.get(enemy)===stamp)continue;
+      // hitAt은 타격 발생 시각이 아니라 110ms 피격 표시의 종료 시각이다.
+      if(stamp<=0||sampleNow>stamp+80||seenHitStamp.get(enemy)===stamp)continue;
       seenHitStamp.set(enemy,stamp);
+      impactShakeUntil=sampleNow+65;
       if(Number.isFinite(enemy.x)&&Number.isFinite(enemy.y))
         impactVfx.burst({type:'impact',x:enemy.x*SCALE,y:1.1,z:enemy.y*SCALE,color:0xff6868,count:mobileBudget?6:12});
     }
     impactVfx.update(Math.min(.05,Math.max(0,(sampleNow-(lastImpactFrame||sampleNow))/1000)));
     lastImpactFrame=sampleNow;
+    // 실제 피격 확인과 같은 프레임에만 짧고 작은 카메라 반응을 적용한다.
+    if(sampleNow<impactShakeUntil){
+      const strength=.035*(impactShakeUntil-sampleNow)/65;
+      camera.position.x+=Math.sin(sampleNow*.19)*strength;
+      camera.position.y+=Math.cos(sampleNow*.23)*strength;
+    }
     if(bloom)bloom.render(scene,camera,qualityFactor);
     else renderer.render(scene,camera);
     active=true;canvas.hidden=false;fallbackReason='';
@@ -1500,3 +1535,4 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     productionReady:false
   };
 }
+
