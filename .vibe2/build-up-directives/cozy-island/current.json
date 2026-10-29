@@ -4835,13 +4835,31 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
+      "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 40901883894,
+      "testedAt": "2026-10-29T15:44:18.208Z",
+      "repairSurfaces": [
+        "VFX_FEEDBACK"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-effects-surface",
+          "repairSurface": "VFX_FEEDBACK",
+          "priority": "MEDIUM",
+          "hint": "Restore readable telegraphs, hit feedback, particles/trails/highlights without blocking play.",
+          "observed": "{\"interactionSurfaceCount\":39,\"progressionSurfaceCount\":28,\"combatSurfaceCount\":5,\"npcSurfaceCount\":8,\"companionSurfaceCount\":40,\"itemSurfaceCount\":4,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":0,\"promptCount\":34,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
     "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
     "blockers": [
       "roblox-build-package-revalidation-pending"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -12313,9 +12331,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
@@ -12333,8 +12351,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
