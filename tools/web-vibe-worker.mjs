@@ -1,6 +1,7 @@
 // 파일명: tools/web-vibe-worker.mjs
 // WEB_VIBE_1 웹 전용 작업: 기존 큐·모델·검증·PR 경로 유지, 로블록스 개발 금지.
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
@@ -168,6 +169,81 @@ function verifiedLocalMain({cloud=false}={}){
   if(remaining)fail('WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:'+remaining.split('\n').length);
   console.log('WEB_VIBE_CLOUD_CHECKOUT_REPAIRED=PASS');
 }
+// [학습] 기존 검증된 WEB 전용 PR에서 소스 함수 변경만 추출한다.
+// 리뷰 후보는 학습 증거가 아니며, 동일 게임의 실제 공개 플레이 검증 이후만 재사용한다.
+function webLearningTopic(goal=''){
+  const value=clean(goal);
+  const topics=[
+    ['NAME_READABILITY',/(?:도감|이름표|nameplate|bestiary)/i,/(?:흐리|가독|선명|읽기|readab|contrast|blur)/i],
+    ['FRAME_STABILITY',/(?:프레임|시간차|frame|delta|lag|버벅)/i,/(?:수정|개선|안정|제한|fix|stabili|clamp)/i],
+    ['MOBILE_INPUT',/(?:터치|모바일|버튼|조이스틱|touch|mobile|input|button)/i,/(?:수정|연결|작동|fix|connect|repair)/i],
+    ['SCENE_PRESENTATION',/(?:3D|3차원|그래픽|시각|조명|camera|render|visual|lighting)/i,/(?:수정|개선|선명|fix|improv|readab)/i]
+  ];
+  return topics.filter(([,subject,action])=>subject.test(value)&&action.test(value)).map(([id])=>id);
+}
+function webLearningCandidate(task,changed){
+  const topic=webLearningTopic(task.goal);
+  if(topic.length!==1)return [];
+  const recipes=[];
+  for(const {source,edit} of changed){
+    if(!/\.(?:html?|js|mjs|cjs)$/i.test(source.relative))continue;
+    const functions=inspectSourceFunctions(source.original,{language:'web',maxFunctions:4096});
+    for(const patch of edit.edits||[]){
+      const before=String(patch.oldText||''),after=String(patch.newText||'');
+      if(before.length<16||before.length>12000||!after||before===after)continue;
+      // 실제 게임 함수의 한 책임에 귀속되지 않는 임의 텍스트는 학습하지 않는다.
+      const owners=functions.filter(fn=>fn.body.includes(before));
+      if(owners.length!==1)continue;
+      let prefix=0;while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
+      let suffix=0;while(suffix<before.length-prefix&&suffix<after.length-prefix
+        &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
+      const start=Math.max(0,prefix-48),stop=before.length-suffix+48;
+      const from=before.slice(start,Math.min(before.length,stop));
+      const to=after.slice(start,Math.min(after.length,after.length-suffix+48));
+      if(from.length<16||to.length<16||from.length>2300||to.length>2300
+        ||source.original.split(from).length!==2||from===to
+        ||/(?:localStorage|sessionStorage|saveKey|SAVE_KEY|password|token|apiKey|damage|attackPower|dropRate|price|reward|health|hp\s*[=:])/i.test(from+'\n'+to))continue;
+      if(!source.original.includes(from))continue;
+      recipes.push({source:source.relative,owner:owners[0].name,topic:topic[0],
+        from,to,baseSourceSha:crypto.createHash('sha256').update(source.original).digest('hex')});
+      if(recipes.length>=8)return recipes;
+    }
+  }
+  return recipes;
+}
+export function compileVerifiedWebLearning(task,source,previousVerified=[]){
+  const topics=webLearningTopic(task?.goal);
+  if(topics.length!==1||/청사진|건축|보스|신규|전투|공격|처치|허공|blueprint|boss|new\s+enemy|combat/i.test(clean(task.goal)))return null;
+  const functions=inspectSourceFunctions(source.original,{language:'web',maxFunctions:4096}),found=[];
+  for(const row of previousVerified){
+    const proof=row.learningVerification;
+    if(row.status!=='merged'||row.gameId!==task.gameId||row.sourceRoot!==task.sourceRoot
+      ||proof?.status!=='VERIFIED'||proof?.browserPassed!==true||proof?.independentQaPassed!==true
+      ||! /^[a-f0-9]{40}$/.test(clean(proof.sourceRevision))||!Number.isSafeInteger(proof.runId)
+      ||proof.runId<=0)continue;
+    for(const recipe of (row.learningCandidates||[]).slice(0,8)){
+      if(recipe.topic!==topics[0]||! /^[a-zA-Z_$][\w$]*$/.test(recipe.owner||'')
+        ||typeof recipe.from!=='string'||typeof recipe.to!=='string'
+        ||recipe.from.length<16||recipe.to.length<16||recipe.from.length>2300||recipe.to.length>2300
+        ||!/^[a-f0-9]{64}$/.test(clean(recipe.baseSourceSha))
+        ||source.relative!==recipe.source||source.original.split(recipe.from).length!==2
+        ||recipe.from===recipe.to)continue;
+      const owners=functions.filter(fn=>fn.name===recipe.owner&&fn.body.includes(recipe.from));
+      if(owners.length!==1)continue;
+      const guarded=safeWebVibeReplacement(source.original,JSON.stringify({
+        oldText:recipe.from,newText:recipe.to,reason:'검증된 동일 게임 기존 소스 함수 학습 재사용'
+      }),{relative:source.relative});
+      found.push({guarded,priorTaskId:row.id,runId:proof.runId,owner:recipe.owner,topic:recipe.topic});
+    }
+  }
+  if(found.length!==1)return null;
+  const row=found[0];
+  return {...row.guarded,deterministicWebLearned:true,offlineSourceProof:{
+    source:source.relative,learnedFrom:row.priorTaskId,verifiedBrowserRun:row.runId,
+    changedFunctions:1,roles:[row.topic],runtimeVerified:false
+  }};
+}
+
 // [메인] 무모델 웹 코드 작성: 요청·원본 책임 함수·실제 실행 코드가 모두 일치할 때만 수정한다.
 // 3D 모델/몬스터/밸런스/세이브를 추측하지 않고, 부분 작업을 전체 개발로 위장하지 않는다.
 export function synthesizeWebSourceWithoutModel(task,source){
@@ -301,6 +377,8 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
   // 무료 모델이 없어도 원본 함수가 뒷받침하는 코드 수정은 바로 수행한다.
   const offline=synthesizeWebSourceWithoutModel(task,source);
   if(offline)return offline;
+  const learned=compileVerifiedWebLearning(task,source,previousVerified);
+  if(learned)return learned;
   if(cloud&&!clean(apiKey))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING:'+source.relative+':functions='+analysis.functions.length+':bytes='+analysis.bytes);
   const system='You are the independent WEB-only coding assistant. Inspect only the provided existing web-game file. '
     +'If no relevant change is needed, return JSON {"skip":true,"reason":"not affected"}. '
@@ -376,7 +454,7 @@ function createPr(task,changed,token,{cloud=false}={}){
 }
 // Persist the existing WEB-only queue checkpoint after the actual PR exists.
 // Do not mark a source candidate 'merged' or 'verified' without independent QA.
-function markWebVibeReview(task,pr,token){
+function markWebVibeReview(task,pr,token,changed=[]){
   const url=clean(pr);
   if(!/^https:\/\/github\.com\/hans1177\/jaewoon-games\/pull\/[0-9]+$/.test(url))
     fail('WEB_VIBE_REVIEW_PR_URL_UNVERIFIED');
@@ -389,7 +467,9 @@ function markWebVibeReview(task,pr,token){
     return;
   }
   const tasks=state.queue.tasks.map(row=>row.id===task.id
-    ?{...row,status:'review',reviewPrUrl:url,blocker:null,evidence:[...new Set([
+    ?{...row,status:'review',reviewPrUrl:url,blocker:null,
+      learningCandidates:webLearningCandidate(task,changed),
+      evidence:[...new Set([
         ...(row.evidence||[]),'web-vibe-pr-created:needs-independent-qa-and-owner-merge'
       ])]}:row);
   const queue=assertWebVibeQueue({...state.queue,tasks});
@@ -444,7 +524,7 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
     changePreview:changed.map(row=>({file:row.source.relative,oldText:row.edit.oldText,newText:row.edit.newText})),
     sourceWritten:false,qaVerified:false};
   const pr=createPr(task,changed,token,{cloud:args.cloud===true});
-  markWebVibeReview(task,pr,token);
+  markWebVibeReview(task,pr,token,changed);
   return {taskId:task.id,source:changed.map(row=>row.source.relative).join(','),
     selectedFiles:sources.length,changedFiles:changed.length,pr,
     sourceWritten:true,localQaVerified:true,merged:false,deployed:false};
