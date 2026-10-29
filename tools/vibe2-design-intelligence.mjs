@@ -692,7 +692,7 @@ export function evaluateVibeReferenceCapabilities(input={}){
     evidenceOnly:true,authorityExpanded:false,sourceMutationAuthorized:false});
 }
 
-export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {}, executionContext = 'IMPLEMENTATION' } = {}) {
+export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {}, executionContext = 'IMPLEMENTATION', verifiedOwnerGameplayChange = false } = {}) {
   const referenceCapabilities=evaluateVibeReferenceCapabilities(task.referenceStudy||{});
   const stability = evaluateStabilityTriage(task);
   const defectOwnership = evaluateDefectOwnership(task, stability);
@@ -716,11 +716,19 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     ...(task.defectDriven === true && defectOwnership.designRevisionAllowed === false ? [`DEFECT_OWNED_BY_${defectOwnership.owner}`] : []),
     ...(integrity.status === 'BLOCKING_CONTRADICTION' ? integrity.issues : [])
   ]);
+  // Only the existing execution runner may supply a separately verified, explicitly scoped owner request.
+  // A task's own ownerDirective or evidence alone never grants protected-gameplay authority.
+  const ownerGameplayChangeAllowed=verifiedOwnerGameplayChange===true
+    &&executionContext!=='GAME_DESIGNER_AUTHORING'
+    &&hardBlockers.length===0
+    &&task.protectedChange!==true
+    &&task.requiresOwnerDecision!==true
+    &&task.designChange!==true;
   const implementation = stage('IMPLEMENTATION', hardBlockers.length ? 'BLOCKED' : 'READY', {
     allowed:hardBlockers.length === 0,
     blockers:freezeList(hardBlockers),
-    sourceMutationAuthorized:executionContext!=='GAME_DESIGNER_AUTHORING'&&hardBlockers.length === 0,
-    protectedGameplayMutationAutomatic:false
+    sourceMutationAuthorized:executionContext!=='GAME_DESIGNER_AUTHORING'&&hardBlockers.length===0,
+    protectedGameplayMutationAutomatic:ownerGameplayChangeAllowed
   });
   const evidence = task.designEvidence || {};
   const autoPlayer = evidenceStage('AUTO_PLAYER', evidence.autoPlayer, '실제 입력 기반 플레이/진행/재시작/막힘 여부 증거');
@@ -744,6 +752,9 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     blueprint.materialDesignChange ? `설계 밑그림: Plan A/B 이상 비교=${blueprint.alternatives.length>=2?'READY':'MISSING'}; 선택안=${blueprint.selectedPlan||'UNSELECTED'}. 기본 컨셉은 기준점이며 검증 가능한 창의적 장르/구조 도전은 허용한다.` : '설계 밑그림: 물질적 설계 변경 아님.',
     `설계 도달성 검사: ${integrity.status}; 콘텐츠 다양성: ${diversity.status}.`,
     '설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.',
+    ownerGameplayChangeAllowed
+      ?'명시적인 오너 게임플레이 변경 요청이 기존 중앙 규칙과 작업 원본에서 확인됐다. 요청한 체력·공격력·보상·밸런스·전투·AI 항목만 기존 엔진 책임 소스에서 수정 후보로 다룬다. 실제 플레이·회귀검사·보안·F0~F9·배포 검증은 그대로 통과해야 한다.'
+      :'현재 작업에서 오너의 정확한 수치 변경 승인이 검증되지 않았다. 일반 자동 개선은 기존 게임 규칙·수치를 보존한다.',
     constraintText ? `보존 제약: ${constraintText}` : '명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.',
     critic.issues.length ? `비평 경고: ${critic.issues.join(', ')}` : '비평 게이트: 명시적 구조 문제 없음.',
     causality.status === 'UNVERIFIED' ? '인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.' : `인과 그래프 상태: ${causality.status}`,
@@ -770,7 +781,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     referenceHomage,
     referenceCapabilities,
     narrative,
-    implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers }),
+    implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers, protectedGameplayMutationAutomatic:implementation.protectedGameplayMutationAutomatic }),
     advisory:freezeList(advisory),
     guidance,
     planTarget:clean(plan?.target || task?.target),
