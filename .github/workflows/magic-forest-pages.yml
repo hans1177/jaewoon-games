@@ -770,62 +770,38 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          [[ "$GITHUB_SHA" =~ ^[a-f0-9]{40}$ ]] || { echo 'PAGES_SOURCE_SHA_INVALID' >&2; exit 1; }
           latest="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)"
-          # Two parallel builds can advance gh-pages while a Pages job waits.
-          # Never publish an older artifact over the newer shared snapshot.
-          staged="$(gh api "repos/$GITHUB_REPOSITORY/contents/web-games/publish-manifest.json?ref=gh-pages" \
-            --jq .content | base64 --decode | node -e "let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>{let m=JSON.parse(s);if(!/^[a-f0-9]{40}$/.test(m.sourceSha||''))process.exit(1);process.stdout.write(m.sourceSha)})")"
-          if [ "$staged" != "$GITHUB_SHA" ]; then
-            ancestry="$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$staged" --jq .status)"
-            if [ "$ancestry" != ahead ]; then
-              echo "PAGES_ATOMIC_SNAPSHOT_ANCESTRY_INVALID=$GITHUB_SHA STAGED=$staged" >&2
-              exit 1
-            fi
-            echo "PAGES_SUPERSEDED_ATOMIC_SNAPSHOT_SKIPPED=$GITHUB_SHA STAGED=$staged"
+          [[ "$latest" =~ ^[a-f0-9]{40}$ ]] || { echo 'PAGES_MAIN_SHA_INVALID' >&2; exit 1; }
+          main_relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$latest" --jq .status)"
+          case "$main_relation" in ahead|identical) ;; *) echo 'PAGES_SOURCE_NOT_CANONICAL_MAIN' >&2; exit 1 ;; esac
+          # 이 실행의 공식 업로드 아티팩트는 고정돼 있다. 앞서간 준비 브랜치 때문에 폐기하지 않는다.
+          # 게시 잠금을 보유한 상태에서 실제 공개 리비전만 비교해 역행과 무한 게시 건너뛰기를 막는다.
+          curl --fail --silent --show-error --retry 2 --retry-delay 1 --connect-timeout 10 --max-time 30 \
+            --header 'Cache-Control: no-cache' \
+            "https://hans1177.github.io/jaewoon-games/web-games/publish-manifest.json?publication_check=$GITHUB_RUN_ID" \
+            > "$RUNNER_TEMP/pages-public-manifest.json"
+          deployed="$(node -e "const m=require(process.argv[1]);if(!/^[a-f0-9]{40}$/.test(m.sourceSha||''))process.exit(1);process.stdout.write(m.sourceSha)" "$RUNNER_TEMP/pages-public-manifest.json")"
+          if [ "$deployed" = "$GITHUB_SHA" ]; then
             echo 'publish=false' >> "$GITHUB_OUTPUT"
+            echo "PAGES_ALREADY_PUBLIC=$GITHUB_SHA"
             exit 0
           fi
-          if [ "$latest" = "$GITHUB_SHA" ]; then
-            echo "publish=true" >> "$GITHUB_OUTPUT"
-          else
-            # 게임·에셋·홈페이지·배포 입력이 바뀌면 기존 최신판 보호를 유지한다.
-            # 작업자/검사만 앞서간 경우에는 이미 준비한 동일 게시물을 즉시 사용한다.
-            gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$latest" > "$RUNNER_TEMP/pages-main-diff.json"
-            # If newer main changes keep arriving, release the completed candidate
-            # only when gh-pages staging still points to this exact candidate SHA.
-            # Both the ancestry relation and shared branch monotonicity remain checked.
-            candidate_ahead="$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).status==='ahead'" "$RUNNER_TEMP/pages-main-diff.json")"
-            if [ "$staged" = "$GITHUB_SHA" ] && [ "$candidate_ahead" = true ]; then
-              echo "PAGES_MONOTONIC_STAGED_SOURCE=PASS SOURCE=$GITHUB_SHA LATEST=$latest"
+          public_relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$deployed...$GITHUB_SHA" --jq .status)"
+          case "$public_relation" in
+            ahead)
               echo 'publish=true' >> "$GITHUB_OUTPUT"
-            elif node --input-type=module - "$RUNNER_TEMP/pages-main-diff.json" <<'NODE'
-          import fs from 'node:fs';
-          const diff=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const unpublished=file=>file==='AGENTS.md'||/^roblox-games\//.test(file)||/^qa\//.test(file)||/^(?:tools\/(?:web-vibe-worker|web-vibe-organization|pwa-command-vibe2-task)\.mjs|README\.md)$/.test(file);
-          const safe=diff.status==='ahead'&&Array.isArray(diff.files)&&diff.files.length<300
-            &&Number.isSafeInteger(diff.total_commits)&&diff.total_commits>0&&diff.total_commits<=250
-            &&diff.files.every(row=>unpublished(row.filename)&&(!row.previous_filename||unpublished(row.previous_filename)));
-          process.exit(safe?0:1);
-          NODE
-            then
-              echo "PAGES_IDENTICAL_PUBLICATION_INPUTS=PASS SOURCE=$GITHUB_SHA CURRENT_MAIN=$latest"
-              echo "publish=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "STALE_PAGES_REVISION_SKIPPED=$GITHUB_SHA CURRENT_MAIN=$latest"
-              echo "publish=false" >> "$GITHUB_OUTPUT"
-              # 최신 main이 GITHUB_TOKEN 작업자 커밋이면 push 워크플로가 자동 실행되지 않는다.
-              # 기존 동일 Pages 워크플로를 최신 main으로 재요청하되 실행 중인 동일 SHA를 중복 예약하지 않는다.
-              [[ "$latest" =~ ^[a-f0-9]{40}$ ]] || { echo 'PAGES_LATEST_SHA_INVALID' >&2; exit 1; }
-              active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?head_sha=$latest&per_page=30" \
-                --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="requested" or .status=="pending")] | length')"
-              if [ "$active" = "0" ]; then
-                gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
-                echo "PAGES_LATEST_MAIN_CANONICAL_REQUEUED=$latest"
-              else
-                echo "PAGES_LATEST_MAIN_CANONICAL_ALREADY_RUNNING=$latest"
-              fi
-            fi
-          fi
+              echo "PAGES_MONOTONIC_PUBLICATION_ADMITTED=$deployed:$GITHUB_SHA MAIN=$latest"
+              ;;
+            behind|identical)
+              echo 'publish=false' >> "$GITHUB_OUTPUT"
+              echo "PAGES_PUBLIC_ROLLBACK_SKIPPED=$GITHUB_SHA PUBLIC=$deployed"
+              ;;
+            *)
+              echo "PAGES_PUBLIC_ANCESTRY_UNVERIFIED=$deployed:$GITHUB_SHA" >&2
+              exit 1
+              ;;
+          esac
       - name: Deploy GitHub Pages explicitly instead of relying on a GITHUB_TOKEN push
         if: steps.latest_main.outputs.publish == 'true'
         id: deployment
@@ -1078,3 +1054,4 @@ jobs:
           } > "$RUNNER_TEMP/forest-pages-3d-smoke-issue.md"
           gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$RUNNER_TEMP/forest-pages-3d-smoke-issue.md"
           echo "POST_PUBLISH_SMOKE_ISSUE=CREATED"
+
