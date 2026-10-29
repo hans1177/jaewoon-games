@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-29T14:34:51.664Z",
+  "generatedAt": "2026-10-29T14:36:15.911Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,14 +821,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-10-29T14:32:10.763Z",
-            "checkedAt": "2026-10-29T14:32:10.763Z",
+            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
+            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
+            "verifiedAt": "2026-10-29T14:35:27.643Z",
+            "checkedAt": "2026-10-29T14:35:27.643Z",
             "lastFailureAt": null,
             "f0PassedAt": "2026-10-29T14:32:10.763Z",
-            "candidatePublishedAt": null,
+            "candidatePublishedAt": "2026-10-29T14:35:27.643Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -861,8 +861,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "788f1725aaf85fa58e9a809039c42dec50504644",
+            "artifactIdentity": "sha256:d21e37ed5661858aad867fa482b3425adb3bbea31da29e02c30cbdfe8a46d466",
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -929,7 +929,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-29T14:32:10.763Z"
+      "updatedAt": "2026-10-29T14:35:27.643Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -2133,12 +2133,12 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_BEFORE_SOURCE_BIND",
-            "stage": "TARGET_PLATFORM_SOURCE_BIND",
+            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-10-29T13:51:15.362Z",
-            "checkedAt": "2026-10-29T14:21:30.511Z",
-            "lastFailureAt": "2026-10-29T13:51:15.362Z",
+            "verifiedAt": "2026-10-26T00:36:00.324Z",
+            "checkedAt": "2026-10-29T14:36:15.776Z",
+            "lastFailureAt": "2026-10-26T00:36:00.324Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": "existing-source-studio-asset-binding-required",
@@ -2236,7 +2236,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-29T14:21:30.511Z"
+      "updatedAt": "2026-10-29T14:36:15.776Z"
     },
     {
       "gameId": "human-go",
