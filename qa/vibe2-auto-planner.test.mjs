@@ -5991,3 +5991,37 @@ test('tactical AI deepening stays inside verified game design and preserves bala
   assert.match(sourceText,/추격·회피·측면 이동·협동·공격 시점의 실패/);
   assert.match(sourceText,/체력·공격력·드롭·보상·밸런스 수치·엔진 판정·저장은 변경하지 않는다/);
 });
+
+test('exact Studio MCP HUD overlap makes Vibe own the actual client and shared UI sources, not a test bypass',()=>{
+  const root=tempRepo(),gameId='studio-hud-causal-repair';
+  const sourceRoot=path.join(root,'roblox-games',gameId);
+  for(const dir of ['client','server','shared'])fs.mkdirSync(path.join(sourceRoot,dir),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'client','Game.client.luau'),'local function mountHud() return true end\n');
+  fs.writeFileSync(path.join(sourceRoot,'shared','RobloxCommonUI.luau'),'local UI={}\nfunction UI.AdaptActionMenu() return true end\nreturn UI\n');
+  fs.writeFileSync(path.join(sourceRoot,'server','Game.server.luau'),'return true\n');
+  writeStudioDesign(root,gameId,{coreFun:'실제 플레이 중 행동 입력과 상태 읽기'});
+  try{
+    const source='9'.repeat(40),artifact='sha256:'+'a'.repeat(64);
+    const failure={authority:'roblox-official-studio-mcp-product-quality-failure',
+      sourceRevision:source,artifactIdentity:artifact,workflowRunId:40901857206,
+      qualityFailureKinds:['adaptive-ui-commercial-quality'],repairSurfaces:['MOBILE_UI'],
+      qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
+        observed:{overlapPairs:8,largeBlockingOverlayCount:0}}]};
+    const project={gameId,engine:'roblox',releaseState:'development-confirmed',projectPath:'roblox-games/'+gameId,
+      queueRobloxSourceCommit:source,queueRobloxArtifactIdentity:artifact,
+      queueRobloxQualityBuildUpRequired:true,queueRobloxQualityBuildUpSourceRevision:source,
+      queueRobloxQualityBuildUpEvidence:failure,queueRobloxQualityFailureKinds:failure.qualityFailureKinds};
+    const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'USABILITY');
+    assert.ok(task);
+    assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
+    assert.equal(task.studioQualityEvolution.phase,'REPAIR');
+    assert.ok(task.responsibleFiles.includes('roblox-games/'+gameId+'/client/Game.client.luau'));
+    assert.ok(task.responsibleFiles.includes('roblox-games/'+gameId+'/shared/RobloxCommonUI.luau'));
+    assert.equal(task.buildUpDirective.playtestRuntimeFindings.studioQualityFailure.qualityFailureDetails[0].observed.overlapPairs,8);
+    assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
+    assert.ok(!task.responsibleFiles.some(file=>file.startsWith('web-games/')));
+    const stale=findStudioContinuousImprovementTask({...project,queueRobloxSourceCommit:'b'.repeat(40)},root,{tasks:[]},'USABILITY');
+    assert.ok(stale);
+    assert.ok(!stale.responsibleFiles.includes('roblox-games/'+gameId+'/shared/RobloxCommonUI.luau'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
