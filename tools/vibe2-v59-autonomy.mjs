@@ -400,7 +400,7 @@ export function planVibe59SafeRefactor({source='',target='web'}={}){
     edits:[{find:matches[0][0],replace:matches[0][2]+' = Boolean('+matches[0][1]+');'}],
     runtimeEquivalentVerified:false,requiresExistingValidation:true,authority:'refactor-candidate-only'});
 }
-export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null}={}){
+export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null,verifiedCodePatterns=[]}={}){
   const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
   const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
     goal:creativeRequest.goal||order.goal||'',approvedOperations:creativeRequest.approvedOperations,
@@ -436,7 +436,15 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     const generated=synthesizeVibe59NumericAlgorithmSource({spec:{...req.algorithmSpec,
-      codeLab:req.algorithmSpec.codeLab!==false,ownerApproved:req.ownerApproved===true},
+      codeLab:req.algorithmSpec.codeLab!==false,ownerApproved:req.ownerApproved===true,
+      // Trust only the verified canonical pattern library, not owner-task text.
+      verifiedStrategyHistory:(Array.isArray(verifiedCodePatterns)?verifiedCodePatterns:[])
+        .filter(row=>row?.verified===true&&row?.retrievalEligible!==false
+          &&row?.rawCodeStored===false&&row?.independentQa==='PASS'
+          &&row?.verifiedAlgorithmStrategy?.sourceRevision===row?.sourceRevision
+          &&row?.verifiedAlgorithmStrategy?.modelUsed===false
+          &&row?.engine===target)
+        .slice(0,128).map(row=>row.verifiedAlgorithmStrategy)},
       source:content,relative,target});
     if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
     return Object.freeze({summary:'Vibe5.9 counterexample-guided invented numeric algorithm',
@@ -581,9 +589,9 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // Structured complex designs use the existing exact-edit engine against a private
 // in-memory source snapshot. Dependent steps may consume earlier generated code,
 // but original files remain untouched until the canonical worker admits the batch.
-export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
+export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[]}={}){
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
-  if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target});
+  if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
   if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
   const indexed=batch.map((step,index)=>{
@@ -625,7 +633,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
     const selectedTask={...(order.selectedTask||{}),vibe59CodeRequest:row.step};
     const single=createVibe59CodeCandidate({
       order:{...order,selectedTask,vibe59CodeRequest:row.step},
-      sourceRoot,responsibleFiles,target,documents
+      sourceRoot,responsibleFiles,target,documents,verifiedCodePatterns
     });
     if(!single?.vibe59TestPlan?.pass||!Array.isArray(single.vibe59TestPlan.cases)
       ||single.vibe59TestPlan.cases.length<2||!Array.isArray(single.edits)||!single.edits.length
