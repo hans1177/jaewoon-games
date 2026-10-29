@@ -376,3 +376,27 @@ test('final model request stays bounded after a megabyte asset reference is reat
     assert.ok(prompt.includes(contract),'original work order remains unchanged');
   });
 });
+
+// 회귀: Gemini의 제한 시각을 지키면서 기존 무료 대체 제공자는 즉시 실행한다.
+test('known Gemini cooldown skips its slots but still runs approved free fallback',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.OPENROUTER_API_KEY='fixture-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?known-cooldown='+Date.now());
+    const calls=[];
+    const geminiRetryAt=new Date(Date.now()+3600_000).toISOString();
+    const result=await isolated({apiKey:'fixture-gemini',geminiRetryAt,
+      contents:[{role:'user',parts:[{text:'owner task'}]}],
+      fetchImpl:async(url)=>{
+        calls.push(String(url));
+        assert.equal(String(url),'https://openrouter.ai/api/v1/chat/completions');
+        return {ok:true,json:async()=>({choices:[{message:{content:'{}'}}],usage:{cost:0}})};
+      }});
+    assert.equal(result.text,'{}');
+    assert.equal(calls.length,1);
+    delete process.env.OPENROUTER_API_KEY;
+    await assert.rejects(isolated({apiKey:'fixture-gemini',geminiRetryAt,contents:[],
+      fetchImpl:async()=>{throw Error('must not call Gemini before Retry-After');}}),
+      err=>err.nextRetryAt===geminiRetryAt);
+  });
+});

@@ -220,7 +220,7 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
     +'\nExisting exact source excerpt:\n'+excerpt;
   let answer='';
   if(cloud){
-    const result=await geminiImpl({apiKey,
+    const result=await geminiImpl({apiKey,geminiRetryAt:task.geminiCooldownUntil||null,
       contents:[{role:'user',parts:[{text:system+'\n\n'+user}]}],
       maxOutputTokens:3072,temperature:0,responseMimeType:'application/json',timeoutMs:95000});
     answer=clean(result?.text);

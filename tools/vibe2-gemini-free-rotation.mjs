@@ -42,10 +42,15 @@ export function verifiedFreeGeminiModels(env=process.env){
   return models;
 }
 export async function requestGeminiFreePair({
-  apiKey,contents,maxOutputTokens=3072,temperature=.08,timeoutMs=240000,responseMimeType=null,fetchImpl=globalThis.fetch
+  apiKey,contents,maxOutputTokens=3072,temperature=.08,timeoutMs=240000,responseMimeType=null,fetchImpl=globalThis.fetch,geminiRetryAt=null
 }={}){
   if(!clean(apiKey))throw infrastructureFailure('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   const models=verifiedFreeGeminiModels();
+  // 메인: 기존 큐의 Gemini 제한 시각은 해당 두 슬롯에만 적용한다. 다른 무료 경로는 계속 실행한다.
+  const knownRetryAt=Date.parse(clean(geminiRetryAt));
+  if(Number.isFinite(knownRetryAt)&&knownRetryAt>Date.now()){
+    for(const model of models)cooldownUntil.set(model,Math.max(cooldownUntil.get(model)||0,knownRetryAt));
+  }
   const first=nextSlot++%models.length,failures=[];
   for(let offset=0;offset<models.length;offset++){
     const model=models[(first+offset)%models.length];
