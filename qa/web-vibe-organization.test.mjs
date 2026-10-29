@@ -167,3 +167,46 @@ test('WEB provider cooldown preserves source budget and allows other owner games
   assert.equal(noDate.queue.tasks[0].recoveryNextAt,'2026-10-29T03:16:46.000Z');
   assert.equal(recordWebVibeRecoveryFailure({...queue,tasks:[{...task,status:'review'}]},task.id,{now,failureLog}).changed,false);
 });
+
+
+// [자동 진화] 기존 WEB 제어 큐에서 공개 소스와 게임별 플레이 검증이 일치하는 PR만 승격한다.
+test('WEB autonomous evolution stays review-only until exact merged PR browser and game QA proof',async()=>{
+ const {reconcileVerifiedWebReviews}=await import('../tools/web-vibe-recovery.mjs');
+ const base=emptyWebVibeQueue();
+ const id='pwa-11111111-2222-4333-8444-555555555555';
+ const task={id,gameId:'demo',sourceRoot:'web-games/demo',target:'web',
+  status:'review',goal:'3D 그래픽 개선',ownerDirective:true,
+  reviewPrUrl:'https://github.com/hans1177/jaewoon-games/pull/12345',
+  evidence:['owner-source-authenticated'],learningCandidates:[{
+   source:'web-games/demo/game.js',owner:'drawLabel',topic:'SCENE_PRESENTATION',
+   from:'label.style.opacity=0.5;',to:'label.style.opacity=0.85;',baseSourceSha:'c'.repeat(64)
+  }]};
+ const state={...base,tasks:[task]};
+ const proof={status:'VERIFIED',gameId:'demo',reviewPrUrl:task.reviewPrUrl,
+  sourceRevision:'a'.repeat(40),sourceTreeSha:'b'.repeat(40),
+  runId:40816165612,browserPassed:true,independentQaPassed:true};
+ assert.equal(reconcileVerifiedWebReviews(state).changed,0);
+ for(const bad of [
+  {...proof,browserPassed:false},
+  {...proof,independentQaPassed:false},
+  {...proof,sourceRevision:''},
+  {...proof,sourceTreeSha:''},
+  {...proof,runId:0},
+  {...proof,gameId:'other'},
+  {...proof,reviewPrUrl:'https://github.com/hans1177/jaewoon-games/pull/99'}
+ ])assert.equal(reconcileVerifiedWebReviews(state,{[id]:bad}).changed,0);
+ const verified=reconcileVerifiedWebReviews(state,{[id]:proof});
+ assert.equal(verified.changed,1);
+ assert.equal(verified.queue.tasks[0].status,'merged');
+ assert.equal(verified.queue.tasks[0].learningVerification.runId,proof.runId);
+ assert.equal(verified.queue.tasks[0].learningVerification.scope,'EXACT_PUBLISHED_GAME_BROWSER_SCENARIOS_ONLY');
+ assert.equal(reconcileVerifiedWebReviews(verified.queue,{[id]:proof}).changed,0);
+ const w=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+ const recovery=fs.readFileSync('tools/web-vibe-recovery.mjs','utf8');
+ assert.match(w,/node tools\/web-vibe-recovery\.mjs reconcile/);
+ assert.match(w,/node tools\/web-vibe-recovery\.mjs select/);
+ assert.match(recovery,/post-publication-3d-smoke/);
+ assert.match(recovery,/web-playtest-report\.json/);
+ assert.match(recovery,/report\.exactPublishedRevision!==true/);
+ assert.match(recovery,/game\.sourceRevision===sha/);
+});
