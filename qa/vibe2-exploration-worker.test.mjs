@@ -106,7 +106,7 @@ test('no-model source build-up turns actual helper state and saved-key calls int
  t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
  const file=path.join(cwd,'web-games/demo/app.js');
  const source=[
-  'let health=12,retryCount=0;',
+  'let health=12; let retryCount=0;',
   'function saveHealth(){localStorage.setItem("health-v1",String(health));}',
   'function trackHit(){retryCount++;return retryCount;}',
   'function applyDamage(amount){health-=amount;saveHealth();trackHit();return health;}',
