@@ -250,7 +250,7 @@ test('existing-call forwards reordered verified WEB arguments and preserves orig
  assert.equal(subsetState.hp,1);assert.equal(subsetState.shown,6);
  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),subset);
  fs.writeFileSync(path.join(root,'game.js'),source.replace('render(offset,actor)','render(offset,missing)'));
- const blocked=planComplexGameWork(options);
+ const blocked=planComplexGameWork({...options,baseRevisionSha:revision});
  assert.equal(blocked.status,'BLOCKED');assert.equal(blocked.unresolved[0].code,'CALL_PARAMETER_BINDING_UNPROVEN');
 });
 
