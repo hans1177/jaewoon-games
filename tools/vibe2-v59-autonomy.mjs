@@ -112,7 +112,7 @@ export function composeVibe59Systems({systems:chosen=[],bindings=[]}={}){
 // 기존 열거 탐색과 반례 루프를 공유한다. 외부 코드/논문 원문은 실행하거나 복제하지 않는다.
 function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
   const valid=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
-  const close=(a,b)=>valid(a)&&(a===0&&b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
+  const close=(a,b)=>valid(a)&&(b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
   const operators=['+','-','*','/','%','min','max','gt','lt'];
   const unary=['abs','floor','ceil','trunc','sign','round','neg'];
   const terms=[...params.map((_,i)=>['param',i]),...constants.map(n=>['const',n])];
@@ -298,7 +298,7 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     throw Error('VIBE59_ALGORITHM_CONSTANTS_INVALID');
   const fixed=[...new Set(constants)];
   const valid=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
-  const close=(a,b)=>valid(a)&&(a===0&&b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
+  const close=(a,b)=>valid(a)&&(b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
   const original=new Set(rows.map((row,i)=>i));
   const active=new Set(examples.map((_,i)=>i));
   const seenCounterexamples=[],maxDepth=Math.max(1,Math.min(4,Number.isInteger(spec.maxDepth)?spec.maxDepth:3));
