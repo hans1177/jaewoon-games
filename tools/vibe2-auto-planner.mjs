@@ -2873,7 +2873,7 @@ function approvedDesignFingerprintForProject(designRecord,project,platformLane=s
     .digest('hex');
 }
 
-function robloxQualityRepairFiles(project,repoRoot){
+export function robloxQualityRepairFiles(project,repoRoot){
   if(project?.queueRobloxQualityBuildUpRequired!==true)return [];
   const failure=project.queueRobloxQualityBuildUpEvidence;
   let files=[];
