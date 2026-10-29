@@ -216,7 +216,9 @@ test('verified new Studio revision-bound observations can reopen a blocked nativ
     qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
       observed:JSON.stringify({overlapPairs:8,largeBlockingOverlayCount:0})}]
   });
-  const failure=(runId)=>({playtestRuntimeFindings:{studioQualityFailure:official(runId)}});
+  const failure=(runId)=>({directiveId:'studio-failure-'+runId,
+    gameId:'fantasy-survival',sourceRevision:rev,artifactIdentity:artifact,
+    playtestRuntimeFindings:{studioQualityFailure:official(runId)}});
   const sourceTask={
     id:'real-studio-evidence',gameId:'fantasy-survival',target:'roblox',
     department:'development',type:'implementation',
