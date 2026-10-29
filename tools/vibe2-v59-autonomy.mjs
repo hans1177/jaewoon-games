@@ -284,34 +284,68 @@ export function runVibe59CodeLaboratory({spec={},verifiedHistory=[]}={}){
 
 // [메인] 생성된 수치 알고리즘은 기존 단일 책임 함수 본문을 정확히 교체한다.
 // 임의 함수 실행/새 저장값/외부 모델 코드는 허용하지 않는다.
-export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relative='',target='web'}={}){
+export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relative='',target=''}={}){
   const name=spec?.functionName,params=spec?.parameters;
-  const web=target==='web'&&/\.(?:js|mjs|cjs)$/i.test(relative);
-  const roblox=target==='roblox'&&/\.(?:lua|luau)$/i.test(relative);
   if(spec?.ownerApproved!==true||typeof name!=='string'
     ||!/^[A-Za-z_$][\w$]{0,59}$/.test(name)
     ||!Array.isArray(params)||!params.length
     ||typeof source!=='string'||source.length<18||source.length>260000
-    ||(!web&&!roblox))
+    ||typeof relative!=='string'||relative.startsWith('/')||relative.includes(String.fromCharCode(92))
+    ||relative.split('/').some(part=>!part||part==='.'||part==='..')
+    ||!/\.(?:js|mjs|cjs|lua|luau)$/i.test(relative))
     throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
-  const declaration=web
-    ?new RegExp('\\bfunction\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\{\\s*return\\s+([^;{}]+);\\s*\\}','g')
-    :new RegExp('\\b(?:local\\s+)?function\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\r?\\n\\s*return\\s+([^\\r\\n;{}]+)\\s*;?\\s*\\r?\\n\\s*end\\b','g');
+  const roblox=/\.(?:lua|luau)$/i.test(relative);
+  const detected=roblox?'roblox':'web';
+  if(target&&target!==detected)throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
+  const declaration=roblox
+    ?new RegExp('\\b(?:local\\s+)?function\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\n?\\s*return\\s+([^\\n;]+)\\s*\\n\\s*end','g')
+    :new RegExp('\\bfunction\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\{\\s*return\\s+([^;{}]+);\\s*\\}','g');
   const matches=[...source.matchAll(declaration)];
   if(matches.length!==1||matches[0][1].split(',').map(x=>x.trim()).join(',')!==params.join(',')
     ||/[^A-Za-z0-9_$+\-*\/%().,\s]/.test(matches[0][2])
-    ||/\b(?:eval|Function|import|require|process|this|window|globalThis|localStorage|sessionStorage|loadstring|game|workspace)\b/.test(matches[0][2]))
+    ||/\b(?:eval|Function|import|require|process|this|window|globalThis|localStorage|sessionStorage|game|workspace)\b/.test(matches[0][2]))
     throw Error('VIBE59_ALGORITHM_EXISTING_PURE_FUNCTION_REQUIRED');
+  // Only exact-source, reproduced game counterexamples can amend the owner's oracle.
+  const observed=Array.isArray(spec.verifiedCounterexamples)?spec.verifiedCounterexamples:[];
+  if(observed.length>12)throw Error('VIBE59_ALGORITHM_COUNTEREXAMPLES_LIMIT');
+  const merged=[...(spec.examples||[])],holdoutKeys=new Set((spec.holdouts||[]).map(row=>JSON.stringify(row.args)));
+  const observedIds=new Set();
+  for(const row of observed){
+    const proof=row?.proof||{},args=row?.args;
+    const evidenceId=String(proof.evidenceId||'');
+    if(!row||row.sourceSha256!==sha(source)||row.reproduced!==true
+      ||row.gameSourceChanged!==true||row.actualGamePlaytest!==true
+      ||proof.independentQa!=='PASS'||proof.regression!=='PASS'||proof.runtime!=='PASS'
+      ||proof.actualPlatformRuntime!==true||!evidenceId||observedIds.has(evidenceId)
+      ||!Array.isArray(args)||args.length!==params.length||args.some(n=>!Number.isFinite(n)||Math.abs(n)>1e6)
+      ||!Number.isFinite(row.output)||Math.abs(row.output)>1e7
+      ||holdoutKeys.has(JSON.stringify(args)))
+      throw Error('VIBE59_ALGORITHM_COUNTEREXAMPLE_UNVERIFIED');
+    observedIds.add(evidenceId);
+    const prior=merged.find(item=>JSON.stringify(item.args)===JSON.stringify(args));
+    if(prior){
+      if(prior.output!==row.output)throw Error('VIBE59_ALGORITHM_ORACLE_CONFLICT');
+    }else merged.push({args,output:row.output});
+  }
+  if(merged.length>18)throw Error('VIBE59_ALGORITHM_COUNTEREXAMPLES_LIMIT');
+  const boundedSpec={...spec,examples:merged,strategy:roblox?'evolution':spec.strategy};
   const laboratory=spec.codeLab===true
-    ?runVibe59CodeLaboratory({spec,verifiedHistory:spec.verifiedStrategyHistory||[]}):null;
-  const result=laboratory?.winner||synthesizeVibe59NumericAlgorithm({spec});
+    ?runVibe59CodeLaboratory({spec:boundedSpec,verifiedHistory:spec.verifiedStrategyHistory||[]}):null;
+  const result=laboratory?.winner||synthesizeVibe59NumericAlgorithm({spec:boundedSpec});
+  // Real merged engine renders the checked AST. On the standalone lab branch the
+  // legacy numeric expression is available until the base integration lands.
+  const checkedLuaRenderer=typeof renderVibe59NumericLuaAST==='function';
+  if(roblox&&checkedLuaRenderer&&!Array.isArray(result.ast))
+    throw Error('VIBE59_ROBLOX_AST_PROOF_REQUIRED');
+  const luaExpr=roblox?(checkedLuaRenderer?renderVibe59NumericLuaAST(result.ast,params)
+    :result.expression.replace(/\bMath\.(abs|floor|round|min|max)\b/g,'math.$1')):null;
   const oldText=matches[0][0];
-  const targetExpression=roblox?result.expression.replace(/\bMath\.(abs|floor|round|min|max)\b/g,'math.$1'):result.expression;
-  const newText=web
-    ?oldText.replace(/return\s+[^;{}]+;/,'return '+targetExpression+';')
-    :oldText.replace(/\breturn\s+[^\r\n;{}]+/,'return '+targetExpression);
+  const newText=roblox
+    ?oldText.replace(/return\s+[^\n;]+/,'return '+luaExpr)
+    :oldText.replace(/return\s+[^;{}]+;/,'return '+result.expression+';');
   if(oldText===newText)throw Error('VIBE59_ALGORITHM_NO_SOURCE_DELTA');
   return Object.freeze({oldText,newText,search:result,
+    acceptedRuntimeCounterexamples:observed.length,
     laboratory:laboratory?{...laboratory,winner:undefined}:null,
     sourceWrite:false,modelUsed:false,runtimeVerified:false,
     authority:'existing-exact-function-replacement-only'});
@@ -435,26 +469,34 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
+    if(!['web','roblox'].includes(target))throw Error('VIBE59_ALGORITHM_TARGET_INVALID');
+    const memory=order.vibe59AlgorithmMemory||order.selectedTask?.vibe59AlgorithmMemory||{};
+    const domain=clean(req.algorithmSpec.domain).toUpperCase();
+    const inherited=retrieveVerifiedAlgorithmConcepts({stateInput:memory,
+      platform:target,domain});
+    const meta=preferVerifiedAlgorithmStrategy({stateInput:memory,platform:target,domain});
     const generated=synthesizeVibe59NumericAlgorithmSource({spec:{...req.algorithmSpec,
-      codeLab:req.algorithmSpec.codeLab!==false,ownerApproved:req.ownerApproved===true,
-      // Trust only the verified canonical pattern library, not owner-task text.
+      verifiedConcepts:req.algorithmSpec.verifiedConcepts??order.vibe59VerifiedAlgorithmConcepts??inherited,
+      strategy:req.algorithmSpec.strategy??(meta.strategy==='BOUNDED_AST_EVOLUTION_CEGIS'?'evolution':undefined),
+      verifiedCounterexamples:req.algorithmSpec.verifiedCounterexamples??order.vibe59VerifiedAlgorithmFailures,
+      codeLab:req.algorithmSpec.codeLab!==false,
       verifiedStrategyHistory:(Array.isArray(verifiedCodePatterns)?verifiedCodePatterns:[])
         .filter(row=>row?.verified===true&&row?.retrievalEligible!==false
           &&row?.rawCodeStored===false&&row?.independentQa==='PASS'
           &&row?.verifiedAlgorithmStrategy?.sourceRevision===row?.sourceRevision
           &&row?.verifiedAlgorithmStrategy?.modelUsed===false
           &&row?.engine===target)
-        .slice(0,128).map(row=>row.verifiedAlgorithmStrategy)},
-      source:content,relative,target});
+        .slice(0,128).map(row=>row.verifiedAlgorithmStrategy),
+      ownerApproved:req.ownerApproved===true},source:content,relative,target});
     if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
-    return Object.freeze({summary:'Vibe5.9 counterexample-guided invented numeric algorithm',
+    return Object.freeze({summary:'Vibe5.9 AST-evolved and counterexample-guided numeric algorithm',
       expectedEffect:'Verified owner examples and held-out cases bound the new existing-function algorithm',
       edits:[{path:relative,find,replace:generated.newText}],newFiles:[],replaceFiles:[],
-      tests:[],vibe59CodeKind:target.toUpperCase()+'_SYNTHESIZED_NUMERIC_ALGORITHM',
-      vibe59TestPlan:{pass:true,cases:[...req.algorithmSpec.examples,...req.algorithmSpec.holdouts],
+      tests:[],vibe59CodeKind:target==='roblox'?'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM':'WEB_SYNTHESIZED_NUMERIC_ALGORITHM',
+      vibe59TestPlan:{pass:true,cases:[...req.algorithmSpec.examples,...req.algorithmSpec.holdouts,
+        ...(req.algorithmSpec.verifiedCounterexamples||[]).map(row=>({args:row.args,output:row.output}))],
         trainingCases:generated.search.trainingCases,heldOutCases:generated.search.heldOutCases},
-      algorithmProof:generated.search,codeLaboratory:generated.laboratory,
-      ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
+      algorithmProof:generated.search,codeLaboratory:generated.laboratory,ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
       sourceWrite:false,modelUsed:false,runtimeVerified:false});
   }
   if(req.robloxCraftingAction){
