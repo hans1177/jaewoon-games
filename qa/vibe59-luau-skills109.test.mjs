@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,
   verifyVibe59LuauSkillScenarios} from '../tools/vibe59-luau-skills109.mjs';
 import {createVibe59CodeCandidate,createVibe59CodeCandidates,buildVibe59AutonomyPlan} from '../tools/vibe2-v59-autonomy.mjs';
@@ -120,6 +121,7 @@ test('autonomy planning lists 109 recipes as not runtime verified',()=>{
  assert.equal(plan.skillCatalog.systems.length,11);
  assert.equal(plan.skillCatalog.runtimeVerified,false);
  assert.equal(plan.sourceWrite,false);
+ assert.equal(plan.synthesisCandidateAvailable,false);
 });
 
 
@@ -137,6 +139,8 @@ test('Vibe5.9 complex offline design compiles dependency-ordered gameplay code a
   find:'-- INSERT',robloxSkill109:bestiary.spec,scenarios:bestiary.scenarios};
  const options={sourceRoot:root,responsibleFiles:files,target:'roblox'};
  const order={vibe59CodeRequests:[record,pick]};
+ assert.equal(buildVibe59AutonomyPlan({order,target:'roblox'}).synthesisCandidateAvailable,true);
+ assert.equal(buildVibe59AutonomyPlan({order:{selectedTask:order},target:'roblox'}).synthesisCandidateAvailable,true);
  const result=createVibe59CodeCandidates({...options,order});
  assert.equal(result.vibe59CodeKind,'COMPOSED_OFFLINE_SOURCE');
  assert.deepEqual(result.vibe59DesignSteps.map(row=>row.id),['pickup','record']);
@@ -162,4 +166,72 @@ test('Vibe5.9 complex offline design compiles dependency-ordered gameplay code a
   pick,{...record,ownerApproved:false}]}}),/OWNER_APPROVAL_REQUIRED/);
  assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
   {...pick,sourceSha256:'0'.repeat(64)},record]}}),/STALE_SOURCE/);
+});
+
+test('Vibe5.9 twelve-step offline complex design keeps all changes source-grounded and requires scenario proofs',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-twelve-step-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'server'));
+ const files=Array.from({length:8},(_,index)=>'server/Game'+index+'.server.luau');
+ const {spec,scenarios}=fixture(VIBE59_LUAU_CODING_SKILLS_109.find(row=>row.id==='inventory-pickup'));
+ for(const file of files)fs.writeFileSync(path.join(root,file),source);
+ const steps=files.map((file,index)=>({id:'step-'+index,
+  ...(index?{dependsOn:['step-'+(index-1)]}:{}),
+  ownerApproved:true,path:file,find:'-- INSERT',robloxSkill109:spec,scenarios}));
+ const options={target:'roblox',sourceRoot:root,responsibleFiles:files};
+ const result=createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[...steps].reverse()}});
+ assert.equal(result.vibe59DesignSteps.length,8);
+ assert.deepEqual(result.vibe59DesignSteps.map(step=>step.id),steps.map(step=>step.id));
+ assert.equal(result.vibe59TestPlan.cases.length,16);
+ assert.equal(result.edits.length,8);
+ assert.equal(result.modelUsed,false);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(result.runtimeVerified,false);
+ for(const file of files)assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:steps.map((step,index)=>
+  index===1?{...step,scenarios:scenarios.slice(0,1)}:step)}}),
+  /VIBE59_SKILL_POSITIVE_NEGATIVE_SCENARIOS_REQUIRED|VIBE59_COMPLEX_DESIGN_UNVERIFIED_STEP/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:
+  Array.from({length:13},(_,index)=>({...steps[0],id:'overflow-'+index}))}}),
+  /VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED/);
+});
+
+test('Vibe5.9 dependent edits use in-memory sources and replay atomically without original writes',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-staged-dependency-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'server'));
+ const file='server/State.server.luau',before='local health=5\n-- SLOT\n';
+ fs.writeFileSync(path.join(root,file),before);
+ const ref=name=>({kind:'ref',name});
+ const num=value=>({kind:'number',value});
+ const makeRule=(op,threshold,thenValue,otherwiseValue)=>({
+  when:{kind:'compare',op,left:ref('health'),right:num(threshold)},
+  then:[{action:'assign',output:'health',value:num(thenValue)}],
+  otherwise:[{action:'assign',output:'health',value:num(otherwiseValue)}]
+ });
+ const first={id:'first',ownerApproved:true,path:file,find:'-- SLOT',
+  rule:makeRule('gt',0,1,0),scenarios:[
+   {initialState:{health:5},expectedState:{health:1}},
+   {initialState:{health:0},expectedState:{health:0}}]};
+ const second={id:'second',dependsOn:['first'],ownerApproved:true,path:file,find:'health = 1',
+  rule:makeRule('gte',0,2,3),scenarios:[
+   {initialState:{health:1},expectedState:{health:2}},
+   {initialState:{health:-1},expectedState:{health:3}}]};
+ const options={target:'roblox',sourceRoot:root,responsibleFiles:[file]};
+ const result=createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[second,first]}});
+ assert.equal(result.edits.length,2);
+ assert.deepEqual(result.vibe59DesignSteps.map(row=>row.id),['first','second']);
+ assert.equal(result.vibe59TestPlan.cases.length,4);
+ assert.equal(result.vibe59TestPlan.pass,true);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),before);
+ const replay=new Map([[file,before]]);
+ applyExactEdits(root,result.edits,{documents:replay});
+ assert.match(replay.get(file),/health = 2/);
+ assert.doesNotMatch(replay.get(file),/-- SLOT/);
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),before);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
+  first,{...second,dependsOn:[]}
+ ]}}),/VIBE59_COMPLEX_DESIGN_ANCHOR_DRIFT/);
 });

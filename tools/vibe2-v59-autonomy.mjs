@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
+import {applyExactEdits} from './autonomous-safe-edit.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,verifyVibe59LuauSkillScenarios} from './vibe59-luau-skills109.mjs';
@@ -185,7 +186,7 @@ export function planVibe59SafeRefactor({source='',target='web'}={}){
     edits:[{find:matches[0][0],replace:matches[0][2]+' = Boolean('+matches[0][1]+');'}],
     runtimeEquivalentVerified:false,requiresExistingValidation:true,authority:'refactor-candidate-only'});
 }
-export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
+export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null}={}){
   const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
   const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
     goal:creativeRequest.goal||order.goal||'',approvedOperations:creativeRequest.approvedOperations,
@@ -213,7 +214,8 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const real=fs.realpathSync(full);
   if(!real.startsWith(root+path.sep)||!fs.lstatSync(full).isFile()
     ||fs.lstatSync(full).isSymbolicLink())throw Error('VIBE59_SOURCE_SCOPE_ESCAPE');
-  const content=fs.readFileSync(full,'utf8'),find=req.find;
+  const content=documents instanceof Map&&documents.has(relative)
+    ?documents.get(relative):fs.readFileSync(full,'utf8'),find=req.find;
   if(content.length>260000||typeof find!=='string'||!find||find.length>1024
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
@@ -347,10 +349,13 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // Structured complex designs: independent verified changes to multiple functions
 // are compiled as one atomic candidate without any external model or main write.
 // A dependency cycle, stale anchor, missing proof or overlapping edit fails closed.
+// Structured complex designs use the existing exact-edit engine against a private
+// in-memory source snapshot. Dependent steps may consume earlier generated code,
+// but original files remain untouched until the canonical worker admits the batch.
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target});
-  if(!Array.isArray(batch)||batch.length<2||batch.length>6)
+  if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
   const indexed=batch.map((step,index)=>{
     if(!step||typeof step!=='object'||Array.isArray(step)||step.ownerApproved!==true)
@@ -359,7 +364,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
     if(!/^[A-Za-z][A-Za-z_0-9-]{0,63}$/.test(id))
       throw Error('VIBE59_COMPLEX_DESIGN_INVALID_STEP_ID');
     const deps=step.dependsOn||[];
-    if(!Array.isArray(deps)||deps.length>6||deps.some(item=>typeof item!=='string'))
+    if(!Array.isArray(deps)||deps.length>12||deps.some(item=>typeof item!=='string'))
       throw Error('VIBE59_COMPLEX_DESIGN_DEPENDENCY_INVALID');
     return{id,step,deps};
   });
@@ -376,13 +381,25 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
     visiting.delete(id);visited.add(id);sorted.push(row);
   }
   for(const row of indexed)visit(row.id);
-  const assembled=[],ranges=new Map(),originals=new Map();
+  const assembled=[],ranges=new Map(),originals=new Map(),documents=new Map();
   for(const row of sorted){
+    // A prior replacement must not hide reuse of an already-consumed original anchor.
+    const requestedPath=clean(row.step.path).replaceAll('\\','/');
+    const originalText=originals.get(requestedPath);
+    const requestedFind=row.step.find;
+    if(originalText!==undefined&&typeof requestedFind==='string'&&requestedFind){
+      const start=originalText.indexOf(requestedFind);
+      if(start>=0&&(ranges.get(requestedPath)||[]).some(range=>
+        start<range.end&&start+requestedFind.length>range.start))
+        throw Error('VIBE59_COMPLEX_DESIGN_OVERLAPPING_EDITS:'+row.id);
+    }
     const selectedTask={...(order.selectedTask||{}),vibe59CodeRequest:row.step};
     const single=createVibe59CodeCandidate({
-      order:{...order,selectedTask,vibe59CodeRequest:row.step},sourceRoot,responsibleFiles,target
+      order:{...order,selectedTask,vibe59CodeRequest:row.step},
+      sourceRoot,responsibleFiles,target,documents
     });
-    if(!single?.vibe59TestPlan?.pass||!Array.isArray(single.edits)||!single.edits.length
+    if(!single?.vibe59TestPlan?.pass||!Array.isArray(single.vibe59TestPlan.cases)
+      ||single.vibe59TestPlan.cases.length<2||!Array.isArray(single.edits)||!single.edits.length
       ||single.newFiles?.length||single.replaceFiles?.length)
       throw Error('VIBE59_COMPLEX_DESIGN_UNVERIFIED_STEP:'+row.id);
     for(const edit of single.edits){
@@ -391,17 +408,35 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
         original=fs.readFileSync(path.resolve(sourceRoot,edit.path),'utf8');
         originals.set(edit.path,original);
       }
-      if(original.split(edit.find).length!==2)
+      const current=documents.get(edit.path)??original;
+      if(current.split(edit.find).length!==2)
         throw Error('VIBE59_COMPLEX_DESIGN_ANCHOR_DRIFT:'+row.id);
-      const start=original.indexOf(edit.find),end=start+edit.find.length;
-      if((ranges.get(edit.path)||[]).some(pair=>start<pair.end&&end>pair.start))
-        throw Error('VIBE59_COMPLEX_DESIGN_OVERLAPPING_EDITS:'+row.id);
-      ranges.set(edit.path,[...(ranges.get(edit.path)||[]),{start,end}]);
+      const start=original.indexOf(edit.find);
+      if(start>=0){
+        if(original.indexOf(edit.find,start+edit.find.length)>=0)
+          throw Error('VIBE59_COMPLEX_DESIGN_ANCHOR_DRIFT:'+row.id);
+        const end=start+edit.find.length;
+        if((ranges.get(edit.path)||[]).some(pair=>start<pair.end&&end>pair.start))
+          throw Error('VIBE59_COMPLEX_DESIGN_OVERLAPPING_EDITS:'+row.id);
+        ranges.set(edit.path,[...(ranges.get(edit.path)||[]),{start,end}]);
+      }else if(!assembled.some(previous=>row.deps.includes(previous.id)
+        &&previous.candidate.edits.some(candidateEdit=>
+          candidateEdit.path===edit.path&&candidateEdit.replace.includes(edit.find)))){
+        throw Error('VIBE59_COMPLEX_DESIGN_ANCHOR_DRIFT:'+row.id);
+      }
+      if(!documents.has(edit.path))documents.set(edit.path,original);
     }
+    // Canonical edit simulation is atomic and never mutates the repository source.
+    applyExactEdits(sourceRoot,single.edits,{documents});
     assembled.push({id:row.id,dependsOn:[...row.deps],candidate:single});
   }
   const edits=assembled.flatMap(row=>row.candidate.edits),cases=assembled.flatMap(row=>
     row.candidate.vibe59TestPlan.cases.map(item=>({...item,name:row.id+':'+item.name})));
+  // Replay from the untouched source with the same editor the source worker uses.
+  const replay=new Map([...originals]);
+  applyExactEdits(sourceRoot,edits,{documents:replay});
+  for(const [relative,content] of documents)
+    if(replay.get(relative)!==content)throw Error('VIBE59_COMPLEX_DESIGN_REPLAY_MISMATCH');
   return Object.freeze({
     summary:'Vibe5.9 offline dependency-ordered complex design code synthesis',
     expectedEffect:'Atomically implement '+assembled.length+' owner-approved, source-grounded game-system steps',
@@ -446,6 +481,7 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
     sourceFlowCount:codeFlow?.sources?.length||0,
     sourceImpactCount:sourceImpact?.impactedSources?.length||0,
     synthesisCandidateAvailable:Boolean(order.vibe59CodeRequest||order.selectedTask?.vibe59CodeRequest
+      ||order.vibe59CodeRequests||order.selectedTask?.vibe59CodeRequests
       ||order.vibe59CreativeRequest||order.selectedTask?.vibe59CreativeRequest),
     testStrategy:'explicit-scenarios-needing-existing-harness',
     refactorStrategy:'bounded-candidates-needing-existing-validation',
