@@ -142,7 +142,8 @@ test('autonomous bottleneck tuning measures verified throughput and rolls back a
     createParallelismControl({currentMax:256}),
     pressuredTelemetry({runId:'tune-1',workerCount:256,effectiveMax:256,
       queueWait:{p95Ms:35000},failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
-      throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4}})
+      throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4,
+        waveElapsedMs:60000,sourceMutation:{verifiedChangedWorkerCount:4}}})
   );
   assert.equal(first.currentMax,128);
   assert.equal(first.tuningTrial?.from,256);
@@ -151,7 +152,8 @@ test('autonomous bottleneck tuning measures verified throughput and rolls back a
     pressuredTelemetry({runId:'tune-2',workerCount:128,effectiveMax:128,
       actualPeakConcurrency:128,effectivePeakUtilizationPct:100,
       failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
-      throughput:{firstCandidatePassRatePct:70,verifiedCandidatesPerMinute:2}})
+      throughput:{firstCandidatePassRatePct:70,verifiedCandidatesPerMinute:2,
+        waveElapsedMs:60000,sourceMutation:{verifiedChangedWorkerCount:2}}})
   );
   assert.equal(second.currentMax,256);
   assert.equal(second.lastDecision,'UP');
@@ -164,7 +166,8 @@ test('autonomous bottleneck tuning measures verified throughput and rolls back a
     pressuredTelemetry({runId:'tune-3',workerCount:256,effectiveMax:256,
       actualPeakConcurrency:256,effectivePeakUtilizationPct:100,
       failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
-      throughput:{firstCandidatePassRatePct:50,verifiedCandidatesPerMinute:4}})
+      throughput:{firstCandidatePassRatePct:50,verifiedCandidatesPerMinute:4,
+        waveElapsedMs:60000,sourceMutation:{verifiedChangedWorkerCount:4}}})
   );
   assert.equal(cooldown.currentMax,256);
   assert.equal(cooldown.lastReason,'INEFFECTIVE_BOTTLENECK_TUNING_COOLDOWN');
@@ -173,7 +176,8 @@ test('autonomous bottleneck tuning measures verified throughput and rolls back a
     pressuredTelemetry({runId:'tune-4',workerCount:256,effectiveMax:256,
       actualPeakConcurrency:256,effectivePeakUtilizationPct:100,
       failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
-      throughput:{firstCandidatePassRatePct:50,verifiedCandidatesPerMinute:4}})
+      throughput:{firstCandidatePassRatePct:50,verifiedCandidatesPerMinute:4,
+        waveElapsedMs:60000,sourceMutation:{verifiedChangedWorkerCount:4}}})
   );
   assert.equal(afterCooldown.currentMax,128);
   assert.equal(afterCooldown.lastDecision,'DOWN');
@@ -183,12 +187,14 @@ test('gains require measured throughput and security pressure cannot be bypassed
   const initial=decideAdaptiveBackpressure(createParallelismControl({currentMax:256}),
     pressuredTelemetry({runId:'gain-1',workerCount:256,effectiveMax:256,
       queueWait:{p95Ms:35000},failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
-      throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4}}));
+      throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4,
+        waveElapsedMs:60000,sourceMutation:{verifiedChangedWorkerCount:4}}}));
   const gain=decideAdaptiveBackpressure(initial,
     pressuredTelemetry({runId:'gain-2',workerCount:128,effectiveMax:128,
       actualPeakConcurrency:128,effectivePeakUtilizationPct:100,
       failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
-      throughput:{firstCandidatePassRatePct:85,verifiedCandidatesPerMinute:5}}));
+      throughput:{firstCandidatePassRatePct:85,verifiedCandidatesPerMinute:5,
+        waveElapsedMs:60000,sourceMutation:{verifiedChangedWorkerCount:5}}}));
   assert.equal(gain.lastTuningEvaluation,'MEASURED_IMPROVEMENT');
   assert.equal(gain.tuningMemory,null);
   const missing=decideAdaptiveBackpressure(initial,
@@ -199,7 +205,8 @@ test('gains require measured throughput and security pressure cannot be bypassed
   const severe=decideAdaptiveBackpressure(initial,
     pressuredTelemetry({runId:'severe-2',workerCount:128,effectiveMax:128,
       failureRatePct:45,pressureLevel:'SEVERE',bottleneck:'SOURCE_CANDIDATE_GENERATION',
-      throughput:{firstCandidatePassRatePct:70,verifiedCandidatesPerMinute:2}}));
+      throughput:{firstCandidatePassRatePct:70,verifiedCandidatesPerMinute:2,
+        waveElapsedMs:60000,sourceMutation:{verifiedChangedWorkerCount:2}}}));
   assert.notEqual(severe.lastReason,'VERIFIED_THROUGHPUT_REGRESSION_ROLLBACK');
   assert.ok(severe.currentMax<=128);
 });
