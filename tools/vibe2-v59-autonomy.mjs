@@ -936,7 +936,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     scenarios:creativeChosen.scenarios}:null);
   if(req==null)return createVibe59IntentStatCandidate({order,sourceRoot,responsibleFiles,target});
   const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction,req?.robloxCraftingAction].filter(Boolean);
-  if(!req||req.ownerApproved!==true||!req.path||(!req.find&&!req.algorithmSpec)
+  if(!req||req.ownerApproved!==true||!req.path||(!req.find&&!req.algorithmSpec&&!req.rewriteExistingFunction)
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
        [Boolean(req.rule),Boolean(req.machine),Boolean(req.algorithmSpec)].filter(Boolean).length!==1))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
@@ -953,7 +953,17 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   // [함수 자동 지정] 알고리즘 합성은 기존 함수 파서가 원본 본문을 찾는다.
   // 그 외 작업은 기존 앵커 필수 규칙을 유지한다.
   const content=documents instanceof Map&&documents.has(relative)
-    ?documents.get(relative):fs.readFileSync(full,'utf8'),find=req.find;
+    ?documents.get(relative):fs.readFileSync(full,'utf8');
+  let find=req.find;
+  const autoFunctionRewrite=req.rewriteExistingFunction===true&&Boolean(req.rule||req.machine);
+  const functionName=req.functionName||req.machine?.handlerName;
+  const originalFunction=autoFunctionRewrite
+    ?locateVibe59ExistingFunction({source:content,functionName,target}):null;
+  if(originalFunction){
+    if(find!=null&&find!==''&&find!==originalFunction.original)
+      throw Error('VIBE59_FUNCTION_REWRITE_ANCHOR_MISMATCH');
+    find=originalFunction.original;
+  }
   if(content.length>260000)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
