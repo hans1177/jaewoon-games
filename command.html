@@ -198,7 +198,17 @@ $('genreRefresh').addEventListener('click',()=>readGenreLibrary(true).catch(()=>
 $('genreCompose').addEventListener('click',composeGenre);
 for(const id of ['genrePlatform','genreKind','genreMultiplayer'])$(id).addEventListener('change',renderGenrePreview);
 $('menuBtn').addEventListener('click',openMenu);$('menuShade').addEventListener('click',closeMenu);$('closeMenu').addEventListener('click',closeMenu);$('newChatBtn').addEventListener('click',newChat);$('autoGame').addEventListener('click',()=>selectGame(''));$('providerBtn').addEventListener('click',()=>{closeMenu();openSetup();});$('attachBtn').addEventListener('click',openAttach);$('attachShade').addEventListener('click',closeAttach);$('closeAttach').addEventListener('click',closeAttach);$('pickImage').addEventListener('click',()=>$('imageInput').click());$('pickFile').addEventListener('click',()=>$('fileInput').click());$('imageInput').addEventListener('change',e=>handleFiles(e.target.files));$('fileInput').addEventListener('change',e=>handleFiles(e.target.files));$('sendBtn').addEventListener('click',send);$('claimBtn').addEventListener('click',claim);$('closeSetup').addEventListener('click',closeSetup);$('setupShade').addEventListener('click',closeSetup);$('saveGemini').addEventListener('click',saveGeminiKey);$('geminiKey').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveGeminiKey();}});$('body').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});$('body').addEventListener('input',resizeComposer);$('body').addEventListener('focus',()=>{if(followLatest)setTimeout(scrollBottom,100);});$('jumpBottom').addEventListener('click',scrollBottom);$('chat').addEventListener('scroll',()=>{followLatest=isNearBottom();syncJumpBottom();},{passive:true});if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>{syncComposerMetrics();if(followLatest)setTimeout(scrollBottom,50);});}if('ResizeObserver'in window)new ResizeObserver(syncComposerMetrics).observe($('composer'));
-(async()=>{await loadCompanyContext();setRegistered(Boolean(token));registerPwa();resizeComposer();if(token){await checkProvider();await refresh();}else syncProviderUi();clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(!document.hidden)refresh();},7000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){registerPwa();loadCompanyContext();refresh();}});})();
+// 홈페이지 중단 버튼은 요청 내용을 정확한 게임에 연결하되 자동 전송하지 않는다.
+function applyHomeManagementDraft(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('manage')!=='stop')return;
+  const id=String(params.get('game')||'');
+  if(!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)||!gameNames.has(id))return;
+  selectGame(id);
+  $('body').value='게임 개발중단 요청: '+(gameNames.get(id)||id)+' ('+id+').\n이 게임의 자동개발을 중단하고 카탈로그 ownerStoppedGameIds 및 ownerDevelopmentStopped, lifecycleState=OWNER_STOPPED에 반영해줘. 기존 원본과 저장 데이터는 삭제하지 마. 실제 서버 반영 여부를 검증하고 확인된 결과만 보고해줘.';
+  resizeComposer();
+}
+(async()=>{await loadCompanyContext();applyHomeManagementDraft();setRegistered(Boolean(token));registerPwa();resizeComposer();if(token){await checkProvider();await refresh();}else syncProviderUi();clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(!document.hidden)refresh();},7000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){registerPwa();loadCompanyContext();refresh();}});})();
 </script>
 </body>
 </html>
