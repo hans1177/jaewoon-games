@@ -1796,7 +1796,7 @@ export function applyVerifiedAlgorithmEvolution(stateInput={},queueInput={}){
     if(!['WEB','ROBLOX'].includes(platform)||!['BOUNDED_AST_EVOLUTION_CEGIS','BOUNDED_ENUMERATIVE_CEGIS'].includes(strategy)
       ||!clean(row.gameId)||!clean(row.domain)||!capabilityProof(row,revision)
       ||row.gameSourceChanged!==true||row.playtestSourceRevision!==revision
-      ||row.saveAndBalancePreserved!==true||row.actualGamePlaytest===false
+      ||row.saveAndBalancePreserved!==true||row.actualGamePlaytest!==true
       ||!Number.isInteger(row.heldOutCases)||row.heldOutCases<2
       ||!Number.isInteger(row.regressionCount)||row.regressionCount<0
       ||row.license&&!ALGORITHM_LICENSES.has(row.license)
@@ -3265,20 +3265,21 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const knowledgeApplied=applyVerifiedKnowledgeOutcomes(driftApplied.state,queueInput);
   const graphicsApplied=applyVerifiedGraphicsEvolutionOutcomes(knowledgeApplied.state,queueInput);
   const algorithmApplied=applyVerifiedAlgorithmEvolution(graphicsApplied.state,queueInput);
-  const constitution=buildCodingConstitution(algorithmApplied.state);
-  algorithmApplied.state.codingConstitution=constitution;
-  graphicsApplied.state.updatedAt=new Date().toISOString();
-  const stateChanged=learningStateSemanticSnapshot(graphicsApplied.state)!==priorStateSemantic;
+  const learningState=algorithmApplied.state;
+  const constitution=buildCodingConstitution(learningState);
+  learningState.codingConstitution=constitution;
+  learningState.updatedAt=new Date().toISOString();
+  const stateChanged=learningStateSemanticSnapshot(learningState)!==priorStateSemantic;
   if(!stateChanged){
-    graphicsApplied.state.updatedAt=clean(stateInput?.updatedAt)||null;
-    graphicsApplied.state.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
+    learningState.updatedAt=clean(stateInput?.updatedAt)||null;
+    learningState.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
   }
-  const benchmark=buildBenchmarkLadder(graphicsApplied.state,cloudExperience.memory,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark,externalRuntimeSamples,roadmapInput);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
+  const benchmark=buildBenchmarkLadder(learningState,cloudExperience.memory,companyQueueInput);
+  const idlePractice=buildIdlePracticeQueue(learningState,benchmark,externalRuntimeSamples,roadmapInput);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,learningState);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:graphicsApplied.state,
+    state:learningState,
     stateChanged,
     motionEvolution,
     addedExperience:(applied.added||0)+(cloudApplied.added||0),
