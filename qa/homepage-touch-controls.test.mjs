@@ -156,7 +156,7 @@ test('홈페이지는 보조 상태·플랫폼 정보가 실패해도 원본 카
   const available=new Set(['hero','gameHub','gameGrid','recentUpdates','recentUpdateList',
     'metricPlayable','metricDevelopment','metricRecent','mobileFavoritesList']);
   const document={
-    readyState:'complete',documentElement:element(),head:element(),
+    readyState:'complete',baseURI:'https://hans1177.github.io/jaewoon-games/',documentElement:element(),head:element(),
     addEventListener(){},querySelector(){return null},querySelectorAll(){return[];},
     createElement(){return element();},
     getElementById(id){if(!available.has(id))return null;
