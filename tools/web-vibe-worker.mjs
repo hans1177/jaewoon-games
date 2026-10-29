@@ -8,6 +8,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {assertWebVibeQueue,assertWebVibeTask,WEB_VIBE_CONTROL_BRANCH} from './web-vibe-organization.mjs';
 import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import {inspectSourceFunctions} from './company-vibe2-expert-development.mjs';
+import {synthesizeVibe59NumericAlgorithmSource} from './vibe2-v59-autonomy.mjs';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const REPO='hans1177/jaewoon-games';
 const clean=v=>String(v??'').trim();
@@ -369,8 +370,51 @@ export function synthesizeWebSourceWithoutModel(task,source){
 
 // 클라우드/로컬은 같은 WEB_VIBE_1 파일 검증과 PR 경로를 사용한다.
 // 원격 모델 응답은 절대 권한이 아니며 기존 단일 bounded edit 검사만 통과한다.
+// [메인] 인증된 오너가 제공한 입출력 기대값에 대해 기존 함수 알고리즘을 직접 합성.
+// 모델의 자유 생성이 아니라 예시/반례로 제한된 프로그램 탐색이다.
+export function synthesizeWebAlgorithmWithoutModel(task,source){
+  if(task?.ownerDirective!==true||!task?.evidence?.includes('owner-source-authenticated'))return null;
+  let spec=task.algorithmSpec;
+  if(!spec){
+    const body=String(task.goal||'');
+    const chunks=[...body.matchAll(/`` ```(?:json)?\s*(\{[\s\S]{20,7500}?\})\s*```/gi)];
+    if(chunks.length!==1)return null;
+    let parsed;
+    try{parsed=JSON.parse(chunks[0][1]);}catch{return null;}
+    spec=parsed?.algorithmSpec;
+  }
+  if(spec==null)return null;
+  if(!spec||typeof spec!=='object'||Array.isArray(spec)
+    ||typeof spec.source!=='string'
+    ||!/^web-games\/[A-Za-z0-9_-]+\/[A-Za-z0-9_./-]+\.(?:js|mjs|cjs)$/i.test(spec.source)
+    ||!spec.source.startsWith('web-games/'+task.gameId+'/')
+    ||spec.source.split('/').includes('..'))
+    fail('WEB_VIBE_ALGORITHM_SPEC_SCOPE_INVALID');
+  if(source.relative!==spec.source)return null;
+  const candidate=synthesizeVibe59NumericAlgorithmSource({
+    spec:{...spec,ownerApproved:true},source:source.original,relative:source.relative
+  });
+  const edited=safeWebVibeReplacement(source.original,JSON.stringify({
+    oldText:candidate.oldText,newText:candidate.newText,
+    reason:'기존 책임 함수의 숫자 알고리즘을 입출력 예시와 반례로 생성'
+  }),{relative:source.relative});
+  return {...edited,deterministicWebAlgorithm:true,
+    offlineSourceProof:{source:source.relative,algorithm:candidate.search.expression,
+      trainingCases:candidate.search.trainingCases,heldOutCases:candidate.search.heldOutCases,
+      counterexamples:candidate.search.counterexamples,
+      candidatesConsidered:candidate.search.candidatesConsidered,runtimeVerified:false,
+      modelUsed:false,roles:['SYNTHESIZED_PURE_NUMERIC_ALGORITHM']}};
+}
+
 export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fetch,
   geminiImpl=requestGeminiFreePair,apiKey='',previousVerified=[]}={}){
+  // 정확한 합성 사양이 있는 오너 웹 작업은 외부 모델 없이 먼저 처리한다.
+  const algorithm=synthesizeWebAlgorithmWithoutModel(task,source);
+  if(algorithm)return algorithm;
+  if(task?.algorithmSpec||/```(?:json)?\s*\{\s*"algorithmSpec"/i.test(String(task?.goal||''))){
+    // 타 파일은 이 단일 책임 함수 작업의 실패로 취급하지 않는다.
+    return null;
+  }
   // [전체 코드 진단] 무모델 분석은 앞부분 발췌가 아닌 실제 파일 전체를 읽는다.
   const analysis={bytes:Buffer.byteLength(source.original),
     functions:[...source.original.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(row=>row[1]),
