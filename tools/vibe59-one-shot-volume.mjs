@@ -127,10 +127,17 @@ function generateInsertion(request,index){
  // New panel clicks may be handled locally only when the existing handler has no valued-return contract.
  if(/\breturn\s+(?![;\r\n}])\S/.test(file.code.slice(interact.bodyStart,interact.bodyEnd)))
   throw Error('VIBE59_VOLUME_CLICK_RETURN_CONTRACT');
- const clickText=clickArg.length===2
-  ?click.replaceAll('__INPUT_X__',clickArg[0]).replaceAll('__INPUT_Y__',clickArg[1])
-  :click.replaceAll('__INPUT_X__',clickArg[0]+'.offsetX').replaceAll('__INPUT_Y__',clickArg[0]+'.offsetY');
  const id='__vibeVolume_'+sourceDigest(JSON.stringify([file.path,request])).slice(0,12);
+ // Bind original parameters in a separate outer scope before generated locals
+ // (v, w, h, _x, _y and nested names) can shadow them.
+ const contextAlias=id+'_canvasContext',canvasAlias=id+'_canvas';
+ const pointerXAlias=id+'_pointerX',pointerYAlias=id+'_pointerY';
+ const inputX=clickArg.length===2?clickArg[0]:clickArg[0]+'.offsetX';
+ const inputY=clickArg.length===2?clickArg[1]:clickArg[0]+'.offsetY';
+ const clickText='{\\nconst '+pointerXAlias+'='+inputX+';\\nconst '+pointerYAlias+'='+inputY+
+  ';\\nconst '+canvasAlias+'='+canvasRef+';\\n'+
+  click.replaceAll('__INPUT_X__',pointerXAlias).replaceAll('__INPUT_Y__',pointerYAlias)+
+  '\\n}';
  const initial={
   facilities:request.facilities,maps:request.maps,backgrounds:request.backgrounds,
   sprites:request.sprites,actions:request.actions,motions:request.motions,
@@ -143,14 +150,14 @@ function generateInsertion(request,index){
   claimed:[false,false,false],pages:{},menuPage:0
  };
  const code='const '+id+' = '+JSON.stringify(initial)+';\n'+id+'.started = Date.now();\n';
- const substitutions=text=>text.replaceAll('__VOLUME__',id).replaceAll('ctx',ctx);
- const draw=substitutions(paint);
+ const draw='{\\nconst '+contextAlias+'='+ctx+';\\n'+
+  paint.replaceAll('__VOLUME__',id).replaceAll('ctx',contextAlias)+'\\n}';
  // These source-bound edits are independent functions; same-file atomic apply remains the canonical worker's job.
  const renderFind=file.source.slice(render.start,render.end);
  const cut=render.bodyEnd-render.start;
  const renderReplace=code+renderFind.slice(0,cut)+'\n'+draw+'\n'+renderFind.slice(cut);
  const edits=[{path:file.path,find:renderFind,replace:renderReplace},
-   makePatch(file,interact,clickText.replaceAll('__VOLUME__',id).replaceAll('__CANVAS__',canvasRef),'start')];
+   makePatch(file,interact,clickText.replaceAll('__VOLUME__',id).replaceAll('__CANVAS__',canvasAlias),'start')];
  if(update){
   edits.push(makePatch(file,update,tick.replaceAll('__VOLUME__',id).replaceAll('__DT__',update.parameters[0]),'start'));
  }
