@@ -331,6 +331,37 @@ export function synthesizeWebProgressionWithoutModel(task,source){
 export function synthesizeWebSourceWithoutModel(task,source){
   const goal=clean(task?.goal),original=String(source?.original||''),relative=clean(source?.relative);
   if(!/^web-games\/[a-zA-Z0-9_-]+\/.+\.(?:html?|js|mjs|cjs)$/i.test(relative)||!original||!goal)return null;
+  // Official Pages smoke #11129: at low WebGL FPS a 40ms simulation clamp
+  // can throttle keyboard/joystick movement. Keep world simulation capped,
+  // but integrate actual bounded wall time for the existing updatePlayer.
+  // This is a source candidate, not a browser QA pass or a license to bypass checks.
+  if(relative==='web-games/wild-survival/index.html'
+      &&goal.includes('WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED')
+      &&/(?:#11129|40872553330)/.test(goal)){
+    const oldText=[
+      'function loop(now){',
+      '  const dt=Math.min(.04,(now-last)/1000||0);last=now;',
+      '  if(S.started&&!S.dead){',
+      '    updatePlayer(dt);updateAnimals(dt);worldMinute(dt);respawnResources(dt);'
+    ].join('\n');
+    const newText=[
+      'function loop(now){',
+      '  // World/AI simulation remains bounded; player movement tracks elapsed time at low WebGL FPS.',
+      '  const elapsed=Math.max(0,(now-last)/1000||0);',
+      '  const dt=Math.min(.04,elapsed);last=now;',
+      '  const movementDt=Math.min(.25,elapsed);',
+      '  if(S.started&&!S.dead){',
+      '    updatePlayer(movementDt);updateAnimals(dt);worldMinute(dt);respawnResources(dt);'
+    ].join('\n');
+    if(original.split(oldText).length!==2)return null;
+    const edit=safeWebVibeReplacement(original,JSON.stringify({oldText,newText,
+      reason:'Fix the observed low-FPS movement shortfall using the existing player and loop functions'}),{relative});
+    return {...edit,deterministicWebSource:true,offlineSourceProof:{
+      source:relative,changedFunctions:1,roles:['WILD_3D_BOUNDED_ELAPSED_PLAYER_MOTION'],
+      failureSignature:'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED',
+      observedRunId:40872553330,runtimeVerified:false
+    }};
+  }
   const wantsLabel=/(?:도감|이름표|nameplate|bestiary)/i.test(goal)
     &&/(?:흐리|가독|안\s*보|잘\s*보|선명|읽기|readab|contrast|legib|blur)/i.test(goal);
   const wantsFrame=/(?:프레임|시간차|버벅|frame|delta|lag|프레임\s*드랍)/i.test(goal)
