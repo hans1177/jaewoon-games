@@ -758,6 +758,80 @@ test('multi-platform source inspection retains a sparse actual Luau responsibili
  assert.ok(report.platformSourceFingerprints['roblox-games/demo']);
 });
 
+test('build-up independently traces exact Web function callers and state writes into existing worker directives',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-dependency-build-up-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file='web-games/demo/logic.js';
+ fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});
+ fs.writeFileSync(path.join(root,file),[
+  'let health = 20;',
+  'function applyDamage(amount){health-=amount;return health;}',
+  'function onEnemyHit(){applyDamage(2);}',
+  'function renderMenu(){return false;}',
+  '// function fakeDamage(){health=999;}'
+ ].join('\n'));
+ const directive=buildGameSpecificBuildUpDirective({
+  repoRoot:root,sourceRoot:'web-games/demo',gameId:'demo',platform:'WEB',
+  designRecord:design(),responsibleFiles:[file],
+  runtimeEvidence:{runtimeObserved:true,runtimePassed:false,
+   failureSignature:'TypeError: applyDamage returned wrong health'}
+ });
+ const owners=directive.responsibleSystemsAndFiles.sourceAnchors;
+ assert.equal(owners[0].symbol,'applyDamage');
+ const proof=owners[0].sourceDependencyEvidence;
+ assert.equal(proof.authority,'BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE');
+ assert.ok(proof.calledBy.includes('onEnemyHit'));
+ assert.ok(proof.stateWrites.includes('health'));
+ assert.equal(proof.runtimeVerified,false);
+ assert.equal(proof.sourceWriteAuthorized,false);
+ assert.equal(proof.dependentFilesNotAuthorized,true);
+ assert.equal(owners.some(row=>row.symbol==='fakeDamage'),false);
+ const prompt=directivePrompt(directive);
+ assert.match(prompt,/STATIC_CALLERS=onEnemyHit/);
+ assert.match(prompt,/STATIC_STATE_WRITES=health/);
+ assert.match(prompt,/logic\.js/);
+ assert.equal(directive.playtestRuntimeFindings.runtimePassed,false);
+});
+
+test('build-up reads assigned Luau function dependencies only from the owned game root',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-luau-owned-dependencies-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file='roblox-games/demo/server/Game.server.luau';
+ const foreign='roblox-games/foreign/server/Hidden.server.luau';
+ for(const pathName of [file,foreign])
+  fs.mkdirSync(path.dirname(path.join(root,pathName)),{recursive:true});
+ fs.writeFileSync(path.join(root,file),[
+  'local visited = {}',
+  'local grantReward = function(id)',
+  '  table.insert(visited, id)',
+  'end',
+  'local function requestClaim(id)',
+  '  grantReward(id)',
+  'end'
+ ].join('\n'));
+ fs.writeFileSync(path.join(root,foreign),'local function stealData() return 42 end\n');
+ const scoped=buildGameSpecificBuildUpDirective({
+  repoRoot:root,sourceRoot:'roblox-games/demo',gameId:'demo',platform:'ROBLOX',
+  designRecord:design(),responsibleFiles:[file],
+  runtimeEvidence:{failureSignature:'grantReward failed'}
+ });
+ const row=scoped.responsibleSystemsAndFiles.sourceAnchors.find(x=>x.symbol==='grantReward');
+ assert.ok(row,'source owner must be found');
+ assert.deepEqual(row.sourceDependencyEvidence.calledBy,['requestClaim']);
+ assert.ok(row.sourceDependencyEvidence.stateWrites.includes('visited'));
+ assert.equal(row.sourceDependencyEvidence.runtimeVerified,false);
+ const sourceObservation={sourceRoot:'roblox-games/demo',sourceTreeFingerprint:'f'.repeat(64),
+  sourceAnchors:[{file:foreign,line:1,kind:'FUNCTION',symbol:'stealData',score:200}],
+  topFiles:[],observations:[],signals:{}};
+ const untrusted=buildGameSpecificBuildUpDirective({
+  repoRoot:root,sourceRoot:'roblox-games/demo',gameId:'demo',platform:'ROBLOX',
+  designRecord:design(),sourceObservation,responsibleFiles:[foreign]
+ });
+ assert.equal(untrusted.responsibleSystemsAndFiles.sourceAnchors[0].symbol,'stealData');
+ assert.equal(untrusted.responsibleSystemsAndFiles.sourceAnchors[0].sourceDependencyEvidence,undefined,
+  'foreign game content must not be inspected even if an observation claims it');
+});
+
 test('source fingerprint tracks real code and assets but ignores generated evidence metadata',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-source-'));
   const scripts=path.join(root,'unity-games','sample','Assets','Scripts');
