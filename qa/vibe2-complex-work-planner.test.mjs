@@ -1084,3 +1084,80 @@ test('model-free Luau counter growth rewrites the responsible integer delta only
  assert.match(candidate.edits[0].replace,/a\.coins \+= 1/);
  assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
 });
+
+
+// [빌드업] 기존 게임 행동에 점수 진행을 실제로 추가하고 원본 호출·중단 순서를 보존한다.
+test('model-free buildup adds new progress after an existing action without changing save structure',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const defaults={coins:0,dead:false,views:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){',
+  ' trace(a);',
+  ' return true;',
+  '}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 trace 호출 뒤 a.coins를 2 증가시켜'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.complexPlan.atomCount,2);
+ assert.equal(candidate.edits.length,1);
+ assert.ok(candidate.complexPlan.atoms.some(x=>x.operation==='counter-after-existing-call'));
+ const docs=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect');
+ const alive={dead:false,coins:1,views:0},dead={dead:true,coins:1,views:0};
+ assert.equal(collect(alive),true);assert.equal(alive.coins,3);assert.equal(alive.views,1);
+ assert.equal(collect(dead),false);assert.equal(dead.coins,1);assert.equal(dead.views,0);
+ assert.match(docs.get('game.js'),/trace\(a\);\s*a\.coins \+= 2;/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);
+});
+
+test('model-free new progress rejects ambiguous action or duplicate field reward',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const original=[
+  'const defaults={coins:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){trace(a);}'
+ ].join('\n');
+ fs.writeFileSync(file,original);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'In collect after trace increase a.coins by 3'};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const valid=createVibe59CodeCandidates(options);
+ assert.equal(valid.complexPlan.atomCount,1);
+ assert.match(valid.edits[0].replace,/a\.coins \+= 3;/);
+ assert.equal(valid.modelUsed,false);
+ fs.writeFileSync(file,original.replace('trace(a);}', 'trace(a);a.coins+=1;}'));
+ assert.throws(()=>createVibe59CodeCandidates(options),/COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN/);
+ fs.writeFileSync(file,original.replace('trace(a);}', 'other(a);}') );
+ assert.throws(()=>createVibe59CodeCandidates(options),/COUNTER_EVENT_CALL_UNPROVEN/);
+ fs.writeFileSync(file,original.replace('coins:0','coins:false'));
+ assert.throws(()=>createVibe59CodeCandidates(options),/COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN/);
+ assert.equal(valid.runtimeVerified,false);
+});
+
+test('model-free Luau buildup inserts a numeric gameplay effect after a verified native call',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source=[
+  'local defaults = { coins = 0, dead = false }',
+  'local function trace(a)',
+  ' a.views += 1',
+  'end',
+  'local function collect(a)',
+  ' trace(a)',
+  ' return true',
+  'end',
+  ''
+ ].join('\n');
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,
+  responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+   goal:'함수 collect에서 trace 호출 뒤 a.coins를 3 증가시켜'}});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/trace\(a\)\s*a\.coins \+= 3/);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+});
