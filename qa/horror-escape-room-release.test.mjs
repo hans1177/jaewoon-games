@@ -1016,7 +1016,7 @@ test('같은 맵을 연속 플레이해도 단말과 비상 출구가 새 라운
  assert.match(reset,/arena:GetDescendants\(\)/);
  assert.match(reset,/object\.Name=="EmergencyGate"then object\.CanCollide=true;object\.Transparency=0/);
  assert.match(reset,/object\.Name=="EmergencySign"then object\.Color=Color3\.fromRGB\(112,130,145\)/);
- assert.match(reset,/object\.Name=="EnergyScreen_"/);
+ assert.match(reset,/string\.sub\(object\.Name,1,13\)=="EnergyScreen_"/);
  assert.match(reset,/object\.Name=="EscapePrompt"then object\.Enabled=false/);
  assert.match(reset,/object\.Name=="EnergyPrompt"then object\.ActionText="가동 \/ 충전"/);
  assert.match(server,/base:SetAttribute\("ObjectiveRound",objectiveState\.round\)[\s\S]*?prompt\.ActionText="충전"/);
