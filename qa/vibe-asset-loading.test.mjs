@@ -7,6 +7,7 @@ import {JaewoonVibeWorkspace} from '../assets/vibe-workspace.js';
 import {createVibeWebRuntimeBundle} from '../assets/vibe-web-runtime-runner.js';
 import {buildGeneratedGame,normalizeGeneratedGameAssets} from '../assets/game-generator.js';
 import {Script,createContext} from 'node:vm';
+import {readFileSync} from 'node:fs';
 
 // [메인] GitHub Pages 하위 배포 경로, 병렬 큐, 동일 에셋 캐시와 해제
 test('asset loader resolves GitHub Pages project root, emits progress, shares cache and releases references',async()=>{
@@ -194,4 +195,12 @@ test('generated game reports missing asset failure instead of starting a broken 
  await new Promise(resolve=>setImmediate(resolve));
  assert.equal(rafCount,0);
  assert.equal(getElementById('status').textContent,'에셋 로딩 실패');
+});
+
+
+test('core browser smoke scopes real games without misclassifying the Vibe Maker authoring tool',()=>{
+ const workflow=readFileSync(new URL('../.github/workflows/vibe2-core-qa.yml',import.meta.url),'utf8');
+ assert.match(workflow,/\$1=="web-games" && \$2 ~ \/\^\[a-z0-9-\]\+\$\/ && \$2 != "vibe-maker"/);
+ assert.match(workflow,/changed_web_games=ALL/);
+ assert.match(workflow,/VIBE2_BROWSER_CHANGED_GAMES:/);
 });
