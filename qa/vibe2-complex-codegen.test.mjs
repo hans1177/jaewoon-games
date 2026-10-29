@@ -417,3 +417,141 @@ test('Sprint3 real line-defense Roblox nested server handler produces source-bou
     assert.equal(result.status,0,'actual-source compilation: '+String(result.stderr).slice(-900));
   }
 });
+
+
+test('Sprint4 WEB approved after-call chain executes only after real damage inside a conditional branch',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-after-web-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(root);
+  const relative='game.js';
+  const original=[
+    'let hits=0, hud=0;',
+    'function applyDamage(enemy){ enemy.hp-=3; }',
+    'function recordHit(enemy){ hits+=1; }',
+    'function refreshHud(enemy){ hud=enemy.hp; }',
+    'function attack(enemy){',
+    '  if (!enemy) return;',
+    '  if (enemy.hp>0){',
+    '    applyDamage(enemy);',
+    '  }',
+    '}',''
+  ].join('\n');
+  fs.writeFileSync(path.join(root,relative),original);
+  const goal='In function attack, after applyDamage call recordHit then refreshHud';
+  const order={selectedTask:{gameId:'game',goal,ownerDirective:true,sourceSha256:digest(original)}};
+  const options={order,sourceRoot:root,responsibleFiles:[relative],target:'web'};
+  const intent=compileVibe2ComplexIntent(options);
+  assert.equal(intent.requirements.length,2);
+  assert.equal(intent.requirements[0].after,'applyDamage');
+  assert.equal(intent.requirements[1].dependsOn[0],intent.requirements[0].id);
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.runtimeVerified,false);
+  assert.deepEqual(candidate.edits.map(e=>e.path),[relative]);
+  assert.equal(candidate.vibe59DesignSteps[0].placement,'AFTER_VERIFIED_CALL');
+  const docs=new Map([[relative,original]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const patched=docs.get(relative);
+  assert.match(patched,/applyDamage\(enemy\);\s*recordHit\(enemy\);\s*refreshHud\(enemy\);/);
+  const game=vm.createContext({});
+  vm.runInContext(patched+'const a={hp:10}, b={hp:0}; attack(a); attack(b); attack(null);',game);
+  assert.deepEqual(Array.from(vm.runInContext('[a.hp,b.hp,hits,hud]',game)),[7,0,1,7]);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+});
+
+test('Sprint4 ROBLOX nested after-call candidate compiles and executes only on a verified hit',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-after-luau-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const relative='server/Combat.server.luau';
+  const original=[
+    'local hits=0','local shown=0',
+    'local function applyDamage(player)',
+    '  player.hp-=3','end',
+    'local function recordHit(player)',
+    '  hits+=1','end',
+    'local function refreshHud(player)',
+    '  shown=player.hp','end',
+    'local function attack(player)',
+    '  if player.hp>0 then',
+    '    applyDamage(player)',
+    '  end','end',''
+  ].join('\n');
+  fs.writeFileSync(path.join(root,relative),original);
+  const goal='함수 attack에서 applyDamage 호출 뒤 recordHit 다음 refreshHud 호출';
+  const order={selectedTask:{gameId:'game',goal,ownerDirective:true}};
+  const options={order,sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
+  const plan=planVibe2ComplexWork(options);
+  assert.deepEqual(plan.steps.map(x=>x.forwardedArguments),[['player'],['player']]);
+  const candidate=createVibe59CodeCandidates(options);
+  const docs=new Map([[relative,original]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  assert.match(docs.get(relative),/applyDamage\(player\)\s+recordHit\(player\)\s+refreshHud\(player\)/);
+  const runnerText=docs.get(relative)+'\nlocal a={hp=10}\nlocal b={hp=0}\nattack(a)\nattack(b)\nassert(a.hp==7 and b.hp==0 and hits==1 and shown==7)\nprint("VIBE2_AFTER_CALL_RUNTIME=PASS")\n';
+  const file=path.join(temp,'candidate.luau');fs.writeFileSync(file,runnerText);
+  if(process.env.VIBE2_LUAU_COMPILER&&fs.existsSync(process.env.VIBE2_LUAU_COMPILER)){
+    const compiled=spawnSync(process.env.VIBE2_LUAU_COMPILER,[file],{encoding:'utf8',timeout:12000});
+    assert.equal(compiled.status,0,'compile '+String(compiled.stderr).slice(-900));
+  }
+  if(process.env.VIBE2_LUAU_BINARY&&fs.existsSync(process.env.VIBE2_LUAU_BINARY)){
+    const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[file],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'runtime '+String(result.stderr).slice(-900));
+    assert.match(result.stdout,/VIBE2_AFTER_CALL_RUNTIME=PASS/);
+  }
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+});
+
+test('Sprint4 fails closed on ambiguous call sites, expression calls, unapproved orders and recursive effects',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-after-guards-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(root);
+  const relative='game.js';
+  const base='function applyDamage(enemy){ enemy.hp-=1; }\n'+
+    'function recordHit(enemy){ enemy.recorded=true; }\n'+
+    'function refreshHud(enemy){ enemy.hud=enemy.hp; }\n';
+  const goal='In function attack, after applyDamage call recordHit then refreshHud';
+  const options={order:{selectedTask:{gameId:'game',goal,ownerDirective:true}},
+    sourceRoot:root,responsibleFiles:[relative],target:'web'};
+  function write(body){fs.writeFileSync(path.join(root,relative),base+'function attack(enemy){\n'+body+'\n}\n')}
+  write(' if(enemy.hp>0){\n  applyDamage(enemy);\n }');
+  assert.equal(createVibe59CodeCandidates(options).edits.length,1);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{selectedTask:{
+    gameId:'game',goal,ownerDirective:false}}}),/OWNER_DIRECTIVE_REQUIRED/);
+  write(' if(applyDamage(enemy)){\n  enemy.hp+=1;\n }');
+  assert.throws(()=>createVibe59CodeCandidates(options),/CALL_ANCHOR/);
+  write(' applyDamage(enemy);\n applyDamage(enemy);');
+  assert.throws(()=>createVibe59CodeCandidates(options),/CALL_ANCHOR_NOT_UNIQUE/);
+  write(' const outcome=applyDamage(enemy);');
+  assert.throws(()=>createVibe59CodeCandidates(options),/CALL_ANCHOR/);
+  write(' applyDamage(enemy.other());');
+  assert.throws(()=>createVibe59CodeCandidates(options),/CALL_ANCHOR/);
+  const cycle=base.replace('enemy.hud=enemy.hp;', 'attack(enemy);');
+  fs.writeFileSync(path.join(root,relative),cycle+'function attack(enemy){\n applyDamage(enemy);\n}\n');
+  assert.throws(()=>createVibe59CodeCandidates(options),/CALL_CYCLE/);
+  const invalidGoal='In function attack, after applyDamage call applyDamage then refreshHud';
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{selectedTask:{
+    gameId:'game',goal:invalidGoal,ownerDirective:true}}}),/CALL_ANCHOR_INVALID/);
+});
+
+test('Sprint4 actual line-defense Roblox combat hit after-call is source-bound and original remains unchanged',t=>{
+  const root=path.resolve('roblox-games/line-defense');
+  const relative='server/Game.server.luau',original=fs.readFileSync(path.join(root,relative),'utf8');
+  const goal='In function attackEnemy, after damageEnemy call updateInventorySummary then startQuest';
+  const order={selectedTask:{gameId:'line-defense',ownerDirective:true,goal,sourceSha256:digest(original)}};
+  const options={order,sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.vibe59CodeKind,'SOURCE_BOUND_COMPLEX_CHAIN');
+  const docs=new Map([[relative,original]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const changed=docs.get(relative);
+  assert.match(changed,/damageEnemy\(player, target, 12 \+ level \* 2\)\s+updateInventorySummary\(player\)\s+startQuest\(player\)/);
+  assert.equal(candidate.runtimeVerified,false);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+  const compiler=process.env.VIBE2_LUAU_COMPILER;
+  if(compiler&&fs.existsSync(compiler)){
+    const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-after-real-'));
+    t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+    const file=path.join(temp,'Game.server.luau');fs.writeFileSync(file,changed);
+    const result=spawnSync(compiler,[file],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'real-source compilation '+String(result.stderr).slice(-900));
+  }
+});

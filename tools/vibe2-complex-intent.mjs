@@ -9,6 +9,10 @@ const english=new RegExp('^when\\s+(?:function\\s+)?'+identifier+'\\s*(?:\\(\\))
 const korean=new RegExp('^함수\\s+'+identifier+'\\s+실행\\s*후\\s+'+identifier+'\\s+(?:다음|그리고)\\s+'+identifier+'\\s+호출(?:해|해줘|해주세요)?\\.?$');
 const protectedNames=new Set(['constructor','prototype','__proto__','eval','Function','require','import']);
 
+const englishAfter=new RegExp('^in\\s+(?:function\\s+)?'+identifier+'\\s*,?\\s*after\\s+'+identifier+'\\s+call\\s+'+identifier+'\\s+(?:then|and)\\s+'+identifier+'\\s*\\.?$','i');
+const koreanAfter=new RegExp('^함수\\s+'+identifier+'에서\\s+'+identifier+'\\s+호출\\s*뒤\\s+'+identifier+'\\s+(?:다음|그리고)\\s+'+identifier+'\\s+호출(?:해|해줘|해주세요)?\\.?$');
+
+
 export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',responsibleFiles=[],baseCommit=''}={}){
   const task=order.selectedTask||{};
   const goal=String(task.goal||order.originalGoal||order.goal||'').trim();
@@ -19,10 +23,17 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
   if(clauses.length>4||clauses.some(text=>!text||text.length>320))return null;
   const steps=clauses.map(text=>{
     const match=english.exec(text)||korean.exec(text);
-    return match?{ownerText:text,trigger:match[1],effects:match.slice(2)}:null;
+    if(match)return {ownerText:text,trigger:match[1],effects:match.slice(2),
+      placement:'AFTER_HANDLER_COMPLETION',after:null};
+    const callMatch=englishAfter.exec(text)||koreanAfter.exec(text);
+    return callMatch?{ownerText:text,trigger:callMatch[1],after:callMatch[2],
+      effects:callMatch.slice(3),placement:'AFTER_VERIFIED_CALL'}:null;
   });
   if(steps.some(step=>!step))return null; // 알 수 없는 자연어는 추정하지 않고 거절.
   const names=steps.flatMap(step=>[step.trigger,...step.effects]);
+  if(steps.some(step=>step.after&&(
+    protectedNames.has(step.after)||step.after===step.trigger||step.effects.includes(step.after))))
+    throw Error('VIBE2_COMPLEX_CALL_ANCHOR_INVALID');
   if(task.ownerDirective!==true&&order.ownerApproved!==true)
     throw Error('VIBE2_COMPLEX_OWNER_DIRECTIVE_REQUIRED');
   if(new Set(names).size!==names.length||
@@ -40,8 +51,8 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
     baseCommit:String(baseCommit),sourceWrite:false,runtimeVerified:false,
     requirements:steps.flatMap((step,group)=>step.effects.map((effect,index)=>({
       id:hash(requestId+'|'+group+'|'+index+'|'+effect),ownerText:step.ownerText,
-      system:'existing-function-chain',event:'function-completion',
-      group,trigger:step.trigger,effect,
+      system:'existing-function-chain',event:step.after?'existing-call-completion':'function-completion',
+      group,trigger:step.trigger,effect,placement:step.placement,after:step.after,
       dependsOn:index?[hash(requestId+'|'+group+'|0|'+step.effects[0])]:[],
       actors:[step.trigger,effect],preconditions:['existing-original-function','unique-owner-scope'],
       invariants:['no-save-schema-change','no-new-assets','no-unrelated-game-change'],

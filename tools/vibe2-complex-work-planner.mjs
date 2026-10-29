@@ -23,6 +23,33 @@ function explicitParameterNames(formals){
   return names;
 }
 
+// Verified original standalone call, not a condition, assignment or fabricated call.
+function boundStandaloneCall(trigger,callee,content){
+  if(!trigger.calls.includes(callee))throw Error('VIBE2_COMPLEX_CALL_ANCHOR_NOT_IN_HANDLER');
+  const re=new RegExp('^([ \\t]*)'+callee+'[ \\t]*\\([^()\\r\\n]*\\)[ \\t]*;?[ \\t]*$','gm');
+  const matches=[...trigger.bodyCode.matchAll(re)];
+  if(matches.length!==1)throw Error('VIBE2_COMPLEX_CALL_ANCHOR_NOT_UNIQUE');
+  const match=matches[0],absolute=trigger.bodyStart+match.index;
+  const lineStart=content.lastIndexOf('\n',absolute-1)+1;
+  const lineEnd=content.indexOf('\n',absolute);
+  if(lineEnd<0||lineEnd>trigger.insertOffset||content.slice(lineStart,absolute).trim()!=='')
+    throw Error('VIBE2_COMPLEX_CALL_ANCHOR_UNSUPPORTED');
+  const line=content.slice(lineStart,lineEnd).replace(/\r$/,'');
+  if(line.length>1024||!line.trim())throw Error('VIBE2_COMPLEX_CALL_ANCHOR_UNSUPPORTED');
+  return {find:line,indent:match[1],newline:content[lineEnd-1]==='\r'?'\r\n':'\n',start:lineStart,end:lineEnd};
+}
+function assertNoGeneratedCallCycle(index,trigger,effects){
+  const defs=new Map(index.functions.map(row=>[row.name,row]));
+  function reaches(name,seen=new Set()){
+    if(name===trigger.name)return true;
+    if(seen.has(name))return false;
+    seen.add(name);
+    const row=defs.get(name);
+    return !!row&&row.calls.some(next=>defs.has(next)&&reaches(next,seen));
+  }
+  if(effects.some(row=>reaches(row.name)))throw Error('VIBE2_COMPLEX_CALL_CYCLE');
+}
+
 function uniqueFunction(index,name){
   const matches=index.functions.filter(row=>row.name===name);
   if(matches.length!==1||index.duplicateNames.includes(name))
@@ -65,6 +92,15 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
   for(const reqs of groups.values()){
     const trigger=uniqueFunction(index,reqs[0].trigger);
     const effects=reqs.map(req=>uniqueFunction(index,req.effect));
+    const afterName=reqs[0].after;
+    const callOwner=afterName?uniqueFunction(index,afterName):null;
+    if(callOwner&&(
+      callOwner.path!==trigger.path||
+      JSON.stringify(callOwner.lexicalScope)!==JSON.stringify(trigger.lexicalScope)||
+      callOwner.protectedState||callOwner.dynamicScope||protectedBehavior.test(callOwner.name)||
+      /\b(?:OnServerEvent|OnClientEvent|FireServer|FireClient|FireAllClients|DataStoreService)\b/.test(callOwner.bodyCode)
+    ))throw Error('VIBE2_COMPLEX_CALL_ANCHOR_UNAUTHORIZED');
+    assertNoGeneratedCallCycle(index,trigger,effects);
     const formalArgs=explicitParameterNames(trigger.params);
     const effectArgs=effects.map(row=>explicitParameterNames(row.params));
     if(effectArgs.some(names=>names.some((name,i)=>formalArgs[i]!==name))||
@@ -73,8 +109,8 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
       throw Error('VIBE2_COMPLEX_PARAMETER_BINDING_UNPROVEN');
     // Only existing calls in a single lexical file; cross-file imports/RemoteEvents are never invented.
     if(effects.some(row=>row.path!==trigger.path||JSON.stringify(row.lexicalScope)!==JSON.stringify(trigger.lexicalScope))||trigger.dynamicScope||
-      trigger.unsafeControl||trigger.protectedState||
-      (target==='web'&&/\b(?:if|switch|while|for|try|catch|finally)\b/.test(trigger.bodyCode))||
+      (!afterName&&trigger.unsafeControl)||trigger.protectedState||
+      (target==='web'&&!afterName&&/\b(?:if|switch|while|for|try|catch|finally)\b/.test(trigger.bodyCode))||
       effects.some(row=>row.protectedState||row.dynamicScope||
         row.path!==trigger.path||target==='roblox'&&row.start>trigger.start)||
       [trigger,...effects].some(row=>protectedBehavior.test(row.name)||
@@ -95,21 +131,24 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
       throw Error('VIBE2_COMPLEX_STALE_SOURCE');
     originalDocuments.set(trigger.path,content);
     hashes[trigger.path]=sourceSha256;
-    // Use one short, original, unique anchor for each original responsible function.
-    const start=Math.max(trigger.start,trigger.insertOffset-160);
-    const end=trigger.insertOffset+(target==='web'?1:3);
-    const find=content.slice(start,end);
+    // A call-site is source-grounded; insert effects inside its original conditional branch.
+    const line=afterName?boundStandaloneCall(trigger,afterName,content):null;
+    const start=line?line.start:Math.max(trigger.start,trigger.insertOffset-160);
+    const end=line?line.end:trigger.insertOffset+(target==='web'?1:3);
+    const find=line?line.find:content.slice(start,end);
     if(!find||find.length>1024||content.indexOf(find)!==content.lastIndexOf(find)||
-      (target==='web'?!find.endsWith('}'):!find.endsWith('end')))
+      (!line&&(target==='web'?!find.endsWith('}'):!find.endsWith('end'))))
       throw Error('VIBE2_COMPLEX_ANCHOR_NOT_UNIQUE');
     if((ranges.get(trigger.path)||[]).some(row=>start<row.end&&end>row.start))
       throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT');
     ranges.set(trigger.path,[...(ranges.get(trigger.path)||[]),{start,end}]);
     const lineStart=content.lastIndexOf('\n',trigger.insertOffset-1)+1;
-    const indent=(content.slice(lineStart,trigger.insertOffset).match(/^\s*/)||[''])[0];
+    const indent=line?line.indent:(content.slice(lineStart,trigger.insertOffset).match(/^\s*/)||[''])[0]+'  ';
     const lines=effects.map((row,i)=>row.name+'('+effectArgs[i].join(', ')+')'+(target==='web'?';':''));
-    const insertion='\n'+lines.map(row=>indent+'  '+row).join('\n')+'\n'+indent;
-    const replace=target==='web'?find.slice(0,-1)+insertion+'}':
+    const newline=line?line.newline:'\n';
+    const insertion=newline+lines.map(row=>indent+row).join(newline)+(line?'':newline+indent.slice(0,-2));
+    const replace=line?find+insertion:
+      target==='web'?find.slice(0,-1)+insertion+'}':
       find.slice(0,-3)+insertion+'end';
     if(replace===find)throw Error('VIBE2_COMPLEX_NO_SOURCE_DELTA');
     edits.push({path:trigger.path,find,replace});
@@ -121,8 +160,10 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
           start:trigger.start,end:trigger.end,parserConfidence:trigger.parserConfidence},
         effect:{path:effects[i].path,sourceSha256,definition:effects[i].name,
           start:effects[i].start,end:effects[i].end,parserConfidence:effects[i].parserConfidence},
-        before:'handler-completion-without-'+effects[i].name,
-        after:'one-call-per-handler-completion-'+effects[i].name,
+        before:(afterName?'existing-call-completion':'handler-completion')+'-without-'+effects[i].name,
+        after:'one-call-after-'+(afterName||'handler-completion')+'-'+effects[i].name,
+        placement:afterName?'AFTER_VERIFIED_CALL':'AFTER_HANDLER_COMPLETION',
+        anchorCall:afterName||null,
         forwardedArguments:effectArgs[i],parameterEvidence:'EXACT_ORIGINAL_FORMAL_PREFIX',
         acceptanceScenarios:req.acceptanceScenarios,
         sourceWrite:false,runtimeVerified:false
@@ -163,7 +204,8 @@ export function createVibe2ComplexCandidate(options={}){
       {name:'atomic-in-memory-edit-replay',pass:true}
     ]},
     vibe59DesignSteps:steps.map(row=>({id:row.id,dependsOn:row.dependsOn,
-      source:row.source,effect:row.effect})),
+      source:row.source,effect:row.effect,placement:row.placement,
+      anchorCall:row.anchorCall,forwardedArguments:row.forwardedArguments})),
     vibe59SourceIndex:{gameId:intent.gameId,files:index.files,
       boundSymbols:steps.length+edits.length,unsupported:index.unsupported},
     ruleDigest:sourceDigest(JSON.stringify([intent.requestId,sourceSha256ByPath,edits])),
