@@ -2704,7 +2704,7 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
 
 // 메인: 기존 개발→F0~F9 검증 완료 뒤 새 아이디어를 기존 책임 코드에서 계속 구현한다.
 export function findWebRecurringBuildUpTask(project,repoRoot,queue){
- if(project.engine!=='web'||!['development-confirmed','release-confirmed'].includes(project.releaseState)
+ if(project.engine!=='web'||project.releaseState!=='development-confirmed'
    ||project.ownerDevelopmentHold===true||project.ownerDevelopmentStopped===true)return null;
  const root=posix(project.projectPath);
  if(!/^web-games\/[a-zA-Z0-9._-]+$/.test(root)||!fs.existsSync(sourceFile(repoRoot,root+'/index.html')))return null;

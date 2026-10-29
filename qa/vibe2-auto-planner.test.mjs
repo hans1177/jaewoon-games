@@ -5947,7 +5947,7 @@ test('web recurring evolution repairs unchanged source and owns renderer after r
   fs.writeFileSync(path.join(dir,'index.html'),'<script src="game.js"></script>');
   fs.writeFileSync(path.join(dir,'game.js'),'function tick(){return 1;}');
   fs.writeFileSync(path.join(dir,'world3d.mjs'),'export function render(){return 1;}');
-  const project={gameId:id,engine:'web',releaseState:'release-confirmed',projectPath:'web-games/'+id};
+  const project={gameId:id,engine:'web',releaseState:'development-confirmed',projectPath:'web-games/'+id};
   const first=findWebRecurringBuildUpTask(project,root,{tasks:[]});
   assert.ok(first.recurringSourceTreeFingerprint);
   assert.equal(first.autonomousEvolution.sourceMutationRequired,true);
