@@ -3275,6 +3275,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
     librarySourceAssetId:clean(recipe?.librarySourceAssetId)||null,
     librarySourceSha256:clean(recipe?.librarySourceSha256)||null,
     automaticLibraryDerivative:recipe?.automaticLibraryDerivative===true,
+    meshReconstruction:recipe?.meshReconstruction||null,
     cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
     cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,
     sourceSanitized:recipe?.sourceSanitized===true,
@@ -3289,7 +3290,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   });
 }
 const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','weapon','prop']);
-function genericNativeDccRecipeForType({target='',task={},type='',librarySource=null}={}){
+function genericNativeDccRecipeForType({target='',task={},type='',librarySource=null,verifiedPartById=new Map()}={}){
   const targetName=clean(target).toLowerCase();
   const typeName=clean(type).toLowerCase();
   if(!['web','roblox','unity'].includes(targetName))return null;
@@ -3400,6 +3401,57 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     module==='auto'?'auto':module;
   const actualProfile=GENERIC_NATIVE_DCC_TYPES.includes(typeName)?typeName:'prop';
   const resolvedLicense=(imageRequested||modelRequested)?sourceLicense:(module==='human'?'CC0':'project-original');
+  // [기존 자산 제작기] 스키마를 제한하고 실제 원본 파일·해시를 검증한 CC0 부위만 결합한다.
+  // 외부 모델, 선언만으로 통과, 임의 모델 파일 경로 허용은 전부 금지한다.
+  const requestedReconstruction=task.assetAuthoring?.reconstruction;
+  let meshReconstruction=null;
+  if(requestedReconstruction!==undefined&&requestedReconstruction!==null){
+    if(!linkedSourceModel||!['cc0','cc0-1.0'].includes(sourceLicense.toLowerCase()))
+      throw new Error('RECONSTRUCTION_VERIFIED_CC0_PARENT_REQUIRED');
+    if(typeof requestedReconstruction!=='object'||Array.isArray(requestedReconstruction)
+      ||Object.keys(requestedReconstruction).some(k=>!['bodyPlan','morph','add','remove','detail'].includes(k)))
+      throw new Error('RECONSTRUCTION_SCHEMA_INVALID');
+    const bodyPlan=clean(requestedReconstruction.bodyPlan||'HUMANOID').toUpperCase();
+    const detail=clean(requestedReconstruction.detail||'KEEP').toUpperCase();
+    if(!['HUMANOID','CREATURE'].includes(bodyPlan)||!['KEEP','LOW_POLY','SMOOTH'].includes(detail))
+      throw new Error('RECONSTRUCTION_MODE_UNSUPPORTED');
+    const morph=requestedReconstruction.morph||{};
+    if(!morph||typeof morph!=='object'||Array.isArray(morph)
+      ||Object.entries(morph).some(([k,v])=>!['head','torso','arms','legs','muscle','monster'].includes(k)
+        ||typeof v!=='number'||!Number.isFinite(v)
+        ||(k==='muscle'||k==='monster'?v<0||v>1:v<.65||v>1.45)))
+      throw new Error('RECONSTRUCTION_MORPH_INVALID');
+    const remove=requestedReconstruction.remove||[];
+    const add=requestedReconstruction.add||[];
+    const validPart=new Set(['HORN','WING','TAIL','ARMOR','CLAW']);
+    if(!Array.isArray(add)||add.length>4||!Array.isArray(remove)||remove.length>4
+      ||remove.some(k=>!validPart.has(k)))
+      throw new Error('RECONSTRUCTION_PART_SPEC_INVALID');
+    const verifiedAdd=add.map(item=>{
+      if(!item||typeof item!=='object'||Array.isArray(item)||!validPart.has(item.kind)
+        ||!['EXTRUDE','CC0_PART'].includes(item.mode))
+        throw new Error('RECONSTRUCTION_PART_SPEC_INVALID');
+      if(item.mode==='EXTRUDE'){
+        if(Object.keys(item).some(k=>!['kind','mode'].includes(k)))
+          throw new Error('RECONSTRUCTION_PART_SPEC_INVALID');
+        return {kind:item.kind,mode:'EXTRUDE'};
+      }
+      if(Object.keys(item).some(k=>!['kind','mode','assetId','attach'].includes(k)))
+        throw new Error('RECONSTRUCTION_PART_SPEC_INVALID');
+      const part=verifiedPartById.get(clean(item.assetId));
+      if(!part||!['cc0','cc0-1.0'].includes(part.sourceLicense)
+        ||part.sourceAssetId===clean(librarySource?.sourceAssetId))
+        throw new Error('RECONSTRUCTION_CC0_PART_UNVERIFIED:'+clean(item.assetId));
+      const attach=clean(item.attach);
+      if(attach&&!/^[A-Za-z0-9_.-]{1,80}$/.test(attach))
+        throw new Error('RECONSTRUCTION_PART_BONE_NAME_INVALID');
+      return {kind:item.kind,mode:'CC0_PART',path:part.sourceModel,
+        sha256:part.sourceSha256,assetId:part.sourceAssetId,...(attach?{attach}:{})};
+    });
+    meshReconstruction={bodyPlan,morph,detail,remove,add:verifiedAdd};
+    if(JSON.stringify(meshReconstruction).length>950)
+      throw new Error('RECONSTRUCTION_RECIPE_SIZE_LIMIT');
+  }
   const renderedViews=module!=='auto'||imageRequested||modelRequested;
   // [모델 없는 그래픽 자산화] CC0·원본 SHA가 검증된 내부 3D 자산에서만 방향별 2D 시트를 제작한다.
   // 3D 원본/리그/게임플레이는 그대로 유지하며 2D UI·아이콘·미리보기 파생물만 추가한다.
@@ -3413,7 +3465,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
     family,license:resolvedLicense,module:modelModule,
-    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',spriteAtlas,
+    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',spriteAtlas,meshReconstruction,
     internalAssetLibrary:'VIBE_STUDIO_ASSET_UNIVERSE',internalAssetState:'PREPARED_NATIVE_QA_PENDING',
     cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
     cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,sourceImage:imageRequested?sourceImage:null,
@@ -3438,6 +3490,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
       ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
       ...(module==='medical'?['--source-sanitized','yes']:[]),
       ...(spriteAtlas?['--sprite-atlas']:[]),
+      ...(meshReconstruction?['--reconstruct-json',JSON.stringify(meshReconstruction)]:[]),
       ...(module==='object'?['--object-kind',objectKind]:[]),
       ...(['animation','video'].includes(module)?['--motion-kind',clean(task.assetAuthoring?.motionKind).toLowerCase()||'sway',
         '--cinematic-style',cinematicStyle,'--cinematic-quality',cinematicQuality]:[])],
@@ -3460,6 +3513,10 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     clean(task.assetAuthoring?.sourceModel)||clean(task.assetAuthoring?.sourceImage)
     ||task.imageToAsset===true))
     throw new Error('SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED');
+  if(task.assetAuthoring?.reconstruction&&(
+    clean(task.assetAuthoring?.sourceModel)||clean(task.assetAuthoring?.sourceImage)
+    ||task.imageToAsset===true))
+    throw new Error('RECONSTRUCTION_VERIFIED_CC0_PARENT_REQUIRED');
   const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
   if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
   const engineNativeTarget=['roblox','unity'].includes(targetName);
@@ -3506,7 +3563,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const materialDerivationRequested=Boolean(clean(task.gameId)&&clean(assetSupplySummary?.gameId))
     &&!clean(task.assetAuthoring?.sourceModel)&&!clean(task.assetAuthoring?.sourceImage)
     &&task.assetAuthoring?.automaticLibraryDerivation!==false;
-  const librarySourceByFamily=new Map(),ambiguousLibraryFamilies=new Set();
+  const librarySourceByFamily=new Map(),verifiedPartById=new Map(),ambiguousLibraryFamilies=new Set();
   if(materialDerivationRequested){
     for(const row of assetSupplySummary?.nextActions||[]){
       if(row?.action!=='ADAPT'||row.roleEvidence?.verifiedRoleMatch!==true
@@ -3525,9 +3582,14 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
         const sourceAssetId=clean(row.libraryReuse.sourceAssetId);
         if(!/^[a-z0-9][a-z0-9._-]{0,159}$/i.test(sourceAssetId)
           ||sourceAssetId!==clean(row.assetId)
-          ||!['project-original','cc0','cc-by'].includes(license)
+          ||!['project-original','cc0','cc0-1.0','cc-by'].includes(license)
           ||(license==='cc-by'&&!clean(row.libraryReuse.sourceCredit)))continue;
         const family=clean(row.family).toUpperCase();
+        if(['cc0','cc0-1.0'].includes(license))
+          verifiedPartById.set(sourceAssetId,freeze({
+            sourceAssetId,sourceModel,sourceLicense:license,
+            sourceCredit:row.libraryReuse.sourceCredit,sourceSha256
+          }));
         if(ambiguousLibraryFamilies.has(family))continue;
         const previous=librarySourceByFamily.get(family);
         if(previous&&(previous.sourceAssetId!==sourceAssetId
@@ -3592,10 +3654,13 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const normalizedGeneric=uniqueDccTypes
     .filter(type=>!explicitRecipeTypes.includes(type)&&!concreteCovers(type))
     .map(type=>genericNativeDccRecipeForType({target:targetName,task,type,
-      librarySource:librarySourceByFamily.get(nativeDccFamilyForTypes([type]))||null}))
+      librarySource:librarySourceByFamily.get(nativeDccFamilyForTypes([type]))||null,
+      verifiedPartById}))
     .filter(Boolean)
     .map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{},target,uniqueDccTypes))
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch);
+  if(task.assetAuthoring?.reconstruction&&!normalizedGeneric.some(row=>row.meshReconstruction))
+    throw new Error('RECONSTRUCTION_NO_VERIFIED_CC0_SOURCE_RECIPE');
   const executionRecipeRows=[...concreteRecipes,...normalizedGeneric]
     .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index);
   const executionRecipes=freezeList(executionRecipeRows);
