@@ -6105,6 +6105,8 @@ test('existing Web recurring CORE_FUN and PROGRESSION may tune balance after own
   assert.ok(first);
   assert.match(first.goal,/OWNER_APPROVED_CONTINUOUS_GAMEPLAY_IMPROVEMENT_20261030/);
   assert.equal(authorizedContinuousGameplayImprovement({task:first,centralPolicy:{valid:true,document:policy},repoRoot:root}),true);
+  // A verified cycle must have a real source delta before the next regular cycle is eligible.
+  fs.appendFileSync(path.join(root,pathRoot,'index.html'),'\n<script>window.__gameplayCycle=1</script>','utf8');
   const next=findWebRecurringBuildUpTask(project,root,{tasks:[{...first,status:'verified'}]});
   assert.ok(next);
   assert.equal(next.autonomousEvolution.focus,'PROGRESSION');
