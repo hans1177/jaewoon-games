@@ -145,16 +145,53 @@ export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',reposito
     sourceWrite:false,runtimeVerified:false,suggestionsRequireProvenance:true});
 }
 
+// Bounded owner request: recolor an existing uniquely named SVG group only.
+function inferExistingSvgRecolor({order,root,responsibleFiles}){
+ const text=String(order.selectedTask?.goal||order.goal||'').trim();
+ const ko=/^(?:기존\s+)?(assets\/[\w./-]+\.svg)의\s+([\w-]+)\s+색상\s+(#[\da-fA-F]+)을\s+(#[\da-fA-F]+)(?:으로)?\s*(?:바꿔|변경해|수정해)[.!]?$/.exec(text);
+ const en=/^Recolor\s+([\w-]+)\s+in\s+(assets\/[\w./-]+\.svg)\s+from\s+(#[\da-fA-F]+)\s+to\s+(#[\da-fA-F]+)[.!]?$/i.exec(text);
+ if(!ko&&!en)return null;
+ const file=safePath(ko?ko[1]:en[2]),id=ko?ko[2]:en[1];
+ const from=ko?ko[3]:en[3],to=ko?ko[4]:en[4];
+ const valid=/^#(?:[\da-fA-F]{3}|[\da-fA-F]{6}|[\da-fA-F]{8})$/;
+ if(!valid.test(from)||!valid.test(to)||from.toLowerCase()===to.toLowerCase())
+   throw Error('VIBE59_GAME_ASSET_COLOR_INVALID');
+ if(!responsibleFiles.includes(file))throw Error('VIBE59_GAME_ASSET_RESPONSIBLE_FILE_REQUIRED');
+ const original=fs.readFileSync(verifiedFile(root,file)),source=original.toString('utf8');
+ checkSafeVisualDocument(source,file);
+ const names=[],stack=[],tags=/<\/?g\b[^>]*>/gi;let tag;
+ while((tag=tags.exec(source))){
+   if(tag[0].startsWith('</')){
+     const start=stack.pop();if(!start)throw Error('VIBE59_GAME_ASSET_GROUP_UNBALANCED');
+     if(start.id===id)names.push(source.slice(start.at,tags.lastIndex));
+   }else if(!/\/>$/.test(tag[0])){
+     const attr=/\bid\s*=\s*(["'])([^"']+)\1/.exec(tag[0]);
+     stack.push({at:tag.index,id:attr?.[2]});
+   }
+ }
+ if(stack.length)throw Error('VIBE59_GAME_ASSET_GROUP_UNBALANCED');
+ if(names.length!==1)throw Error('VIBE59_GAME_ASSET_GROUP_NOT_UNIQUE:'+id);
+ let changes=0;
+ const replace=names[0].replace(/\b(fill|stroke|stop-color)\s*=\s*(["'])(#[\da-fA-F]{3,8})\2/g,
+   (all,key,quote,value)=>{if(value.toLowerCase()!==from.toLowerCase())return all;
+    changes++;return key+'='+quote+to+quote;});
+ if(!changes)throw Error('VIBE59_GAME_ASSET_EXISTING_COLOR_NOT_FOUND:'+id);
+ return [{path:file,expectedSha256:sha(original),find:names[0],replace}];
+}
+
 // Existing Vibe source-worker consumes this ordinary exact-edit candidate through its
 // established normalization, independent QA, branch and release path. No direct writes.
 export function createVibe59ExistingGameVisualCandidate({
   order={},sourceRoot='',repositoryRoot=process.cwd(),responsibleFiles=[],target='web'
 }={}){
-  const edits=order.selectedTask?.vibe59VisualAssetEdits??order.vibe59VisualAssetEdits;
-  if(edits==null)return null;
+  const explicit=order.selectedTask?.vibe59VisualAssetEdits??order.vibe59VisualAssetEdits;
+  const goal=String(order.selectedTask?.goal||order.goal||'').trim();
+  if(explicit==null&&!/^(?:기존\s+)?assets\/|^Recolor\s+/i.test(goal))return null;
   if(order.ownerApproved!==true||order.selectedTask?.ownerDirective!==true)
     throw Error('VIBE59_GAME_ASSET_WRITE_NOT_APPROVED');
   const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,readOnly:true});
+  const edits=explicit??inferExistingSvgRecolor({order,root,responsibleFiles});
+  if(edits==null)return null;
   if(!Array.isArray(edits)||edits.length<1||edits.length>MAX_ASSETS
     ||!Array.isArray(responsibleFiles)||!responsibleFiles.length)
     throw Error('VIBE59_GAME_ASSET_CHANGES_OUT_OF_BOUNDS');
@@ -166,13 +203,12 @@ export function createVibe59ExistingGameVisualCandidate({
         ||/^(?:style|graphics-upgrade)\.css$/.test(relative))
       ||typeof edit.find!=='string'||!edit.find
       ||typeof edit.replace!=='string'||edit.replace===edit.find
-      ||Buffer.byteLength(edit.find)+Buffer.byteLength(edit.replace)>64000
-      ||documents.has(relative))
+      ||Buffer.byteLength(edit.find)+Buffer.byteLength(edit.replace)>64000)
       throw Error('VIBE59_GAME_ASSET_VISUAL_EDIT_INVALID');
     const original=fs.readFileSync(verifiedFile(root,relative));
     checkOriginal(original,edit.expectedSha256);
     checkSafeVisualDocument(original.toString('utf8'),relative);
-    const doc=new Map([[relative,original.toString('utf8')]]);
+    const doc=new Map([[relative,documents.get(relative)??original.toString('utf8')]]);
     applyExactEdits(root,[{path:relative,find:edit.find,replace:edit.replace}],{documents:doc});
     checkSafeVisualDocument(doc.get(relative),relative);
     documents.set(relative,doc.get(relative));
@@ -183,6 +219,11 @@ export function createVibe59ExistingGameVisualCandidate({
     expectedEffect:'Edit '+normalized.length+' actual game-owned visual source assets without replacing gameplay',
     edits:normalized,newFiles:[],replaceFiles:[],tests:[],
     vibe59CodeKind:'SOURCE_BOUND_VISUAL_ASSET_EDIT',
+    // Exact source matching is proven; rendered game runtime is NOT proven.
+    vibe59TestPlan:{pass:true,cases:normalized.map((edit,index)=>({
+      name:'source-exact-art-'+(index+1),path:edit.path,
+      exactAnchorVerified:true,runtimeVerified:false
+    }))},
     ruleDigest:sha(Buffer.from(JSON.stringify([gameId,target,normalized]))),
     sourceWrite:false,modelUsed:false,runtimeVerified:false,releaseVerified:false
   });
