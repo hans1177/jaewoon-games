@@ -308,7 +308,10 @@ test('WEB connected edits are atomic, source anchored and retain final save and 
 
 // [무모델 개발] 기존 게임의 실제 책임 함수를 읽고, 실행 코드 변화와 보존 범위를 함께 검증한다.
 test('WEB model-less source compiler updates existing 3D bestiary rendering without model calls',async()=>{
-  const original=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+  const released=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+  assert.match(released,/pen\.font='900 76px system-ui,sans-serif'/);
+  const original=released.replace("pen.font='900 76px system-ui,sans-serif'","pen.font='900 64px system-ui,sans-serif'")
+    .replace("pen.strokeStyle='#010c08';pen.lineWidth=11;","pen.strokeStyle='#010c08';pen.lineWidth=9;");
   const source={relative:'web-games/fantasy-survival/world3d.mjs',original};
   let calls=0;
   const candidate=await proposeWebVibeChange({
@@ -316,6 +319,7 @@ test('WEB model-less source compiler updates existing 3D bestiary rendering with
   },source,{cloud:true,apiKey:'',geminiImpl:async()=>{calls++;throw Error('MODEL_MUST_NOT_RUN');}});
   assert.equal(calls,0);
   assert.equal(candidate.deterministicWebSource,true);
+  assert.equal(candidate.updated,released,'무모델 생성 결과가 실제 main 소스 변경과 일치해야 한다');
   assert.equal(candidate.offlineSourceProof.runtimeVerified,false);
   assert.deepEqual(candidate.offlineSourceProof.roles,['EXISTING_BESTIARY_NAME_READABILITY']);
   assert.match(candidate.updated,/pen\.font='900 76px system-ui,sans-serif'/);
