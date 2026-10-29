@@ -6,6 +6,7 @@ on:
     paths:
       - "assets/jaewoon-graphics-engine.js"
       - "qa/jaewoon-graphics-engine.test.cjs"
+      - "qa/vibe-crossplatform-visual-components.test.mjs"
       - "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs"
       - "unity-games/monster-adventure/Assets/Materials/LibrarySurface.shader"
       - "qa/company-unity-web-first-stage.test.mjs"
@@ -14,6 +15,7 @@ on:
     paths:
       - "assets/jaewoon-graphics-engine.js"
       - "qa/jaewoon-graphics-engine.test.cjs"
+      - "qa/vibe-crossplatform-visual-components.test.mjs"
       - "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs"
       - "unity-games/monster-adventure/Assets/Materials/LibrarySurface.shader"
       - "qa/company-unity-web-first-stage.test.mjs"
@@ -36,6 +38,8 @@ jobs:
         run: node --check assets/jaewoon-graphics-engine.js
       - name: Graphics evolution safety tests
         run: node --test qa/jaewoon-graphics-engine.test.cjs
+      - name: Source-bound web HUD, action input and visual craft regression
+        run: node --test qa/vibe-crossplatform-visual-components.test.mjs
       - name: Unity Web triplanar material regression
         run: node --test --test-name-pattern="Unity monster adventure keeps real UV-less source meshes" qa/company-unity-web-first-stage.test.mjs
       - name: Fantasy Survival native asset and action-motion source regression
