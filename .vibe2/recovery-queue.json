@@ -202993,7 +202993,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-29T14:06:30.739Z"
+      "updatedAt": "2026-10-29T14:10:30.229Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203214,7 +203214,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-29T14:06:30.783Z"
+      "updatedAt": "2026-10-29T14:10:30.321Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -238207,7 +238207,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-29T14:06:30.873Z"
+      "updatedAt": "2026-10-29T14:10:30.442Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -239588,7 +239588,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-29T14:06:30.686Z"
+      "updatedAt": "2026-10-29T14:10:30.159Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -241980,7 +241980,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-29T14:06:30.851Z"
+      "updatedAt": "2026-10-29T14:10:30.418Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -244110,7 +244110,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-29T14:06:30.808Z"
+      "updatedAt": "2026-10-29T14:10:30.362Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -246802,7 +246802,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-29T14:06:30.899Z"
+      "updatedAt": "2026-10-29T14:10:30.476Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -248088,7 +248088,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-29T14:06:30.931Z"
+      "updatedAt": "2026-10-29T14:10:30.511Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
@@ -250652,7 +250652,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-25T08:09:24.576Z",
-      "updatedAt": "2026-10-29T14:06:30.956Z"
+      "updatedAt": "2026-10-29T14:10:30.530Z"
     },
     {
       "id": "recovery-a8e7c5b2447563afc90e",
@@ -256794,10 +256794,68 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-29T14:06:30.380Z",
-      "updatedAt": "2026-10-29T14:06:34.397Z",
+      "updatedAt": "2026-10-29T14:06:34.397Z"
+    },
+    {
+      "id": "recovery-67d3e2bfe940e85d3313",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/magic-forest-pages.yml:389c3cf157ac22ccdab54ff6a6270aa19c36f9a2:fantasy-survival",
+      "gameId": "fantasy-survival",
+      "responsibleFiles": [
+        ".github/workflows/magic-forest-pages.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/magic-forest-pages.yml",
+        "web-games/fantasy-survival"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE",
+      "failureSignature": "WORKFLOW_FAILED_VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE",
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "checkpoint": "389c3cf157ac22ccdab54ff6a6270aa19c36f9a2",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "389c3cf157ac22ccdab54ff6a6270aa19c36f9a2",
+      "evidence": [
+        "deployment-failure-run:40887815341:1",
+        "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:389c3cf157ac22ccdab54ff6a6270aa19c36f9a2",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:DEPLOY",
+        "deployment-failed-step:VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/40887815341",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-10-29T14:10:29.760Z",
+      "updatedAt": "2026-10-29T14:10:34.456Z",
       "dispatchEvidence": [
         "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-10-29T14:06:34.397Z"
+        "recovery-dispatched-at:2026-10-29T14:10:34.456Z"
       ]
     }
   ]
