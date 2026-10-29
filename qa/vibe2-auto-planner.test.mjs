@@ -4817,6 +4817,82 @@ test('stale quality-failure source does not force rebuilt source back through th
   assert.equal(project.queueRobloxQualityBuildUpRequired,false);
 });
 
+
+test('exact Roblox F0 preflight failure schedules causal source repair before generic polish',()=>{
+  const root=tempRepo(),gameId='f0-game-local-causal';
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server/Game.server.luau'),'return true\n');
+  writeStudioDesign(root,gameId);
+  const source='a'.repeat(40);
+  const project={gameId,engine:'roblox',projectPath:'roblox-games/'+gameId,
+    releaseState:'development-confirmed',
+    queueRobloxSourceCommit:source,queueCanonicalState:'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED',
+    queueCurrentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',queueRobloxFailureStage:'F0_SOURCE_INTEGRITY',
+    queueRobloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    queueRoutingBlockers:['roblox-f0-source-preflight-failed']};
+  try{
+    const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+    assert.ok(task);
+    assert.equal(task.studioQualityEvolution.phase,'REPAIR');
+    assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
+    assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
+    assert.equal(task.buildUpDirective.playtestRuntimeFindings.f0SourcePreflightFailure.sourceRevision,source);
+    assert.equal(task.buildUpDirective.playtestRuntimeFindings.f0SourcePreflightFailure.stage,'F0_SOURCE_INTEGRITY');
+    assert.match(task.goal,/F0_SOURCE_INTEGRITY/);
+    assert.match(task.goal,/ROBLOX_F0_SOURCE_PREFLIGHT_FAILED/);
+    assert.ok(task.responsibleFiles.every(file=>file.startsWith('roblox-games/'+gameId+'/')));
+    for(const patch of [
+      {queueCanonicalState:'F0_SOURCE_PREFLIGHT_PASSED'},
+      {queueCurrentStep:'VIBE_INTERNAL_PLAY'},
+      {queueRobloxFailureStage:'VIBE_INTERNAL_PLAY'},
+      {queueRobloxFailureSignature:'UNKNOWN_FAILURE'},
+      {queueRobloxSourceCommit:'non-sha'},
+      {queueRoutingBlockers:[]},
+      {ownerDevelopmentHold:true},
+      {ownerDevelopmentStopped:true}
+    ]){
+      const unproven=findStudioContinuousImprovementTask({...project,...patch},root,{tasks:[]},'PRESENTATION');
+      assert.ok(unproven);
+      assert.equal(unproven.buildUpDirective?.playtestRuntimeFindings?.f0SourcePreflightFailure,undefined);
+      assert.notEqual(unproven.buildUpDirective?.nextActionDecision?.reason?.includes('exact same-game F0_SOURCE_INTEGRITY'),true);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('existing queued game F0 build-up receives latest exact causal repair without duplicate task',()=>{
+  const root=tempRepo(),gameId='f0-existing-work',source='b'.repeat(40);
+  const sourceRoot='roblox-games/'+gameId;
+  fs.mkdirSync(path.join(root,sourceRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(root,sourceRoot,'server/Game.server.luau'),'return true\n');
+  writeStudioDesign(root,gameId);
+  const catalog={games:[{id:gameId,name:'Exact Existing F0',productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE',robloxProjectPath:sourceRoot}]};
+  const base={gameId,engine:'roblox',projectPath:sourceRoot,releaseState:'development-confirmed'};
+  try{
+    const existing=findStudioContinuousImprovementTask(base,root,{tasks:[]},'PRESENTATION');
+    assert.ok(existing?.buildUpDirective);
+    const queue={maxConcurrentTasks:20,tasks:[{...existing,status:'queued'}]};
+    const failure={items:[{gameId,gameName:'Exact Existing F0',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:sourceRoot,
+      currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',canonicalState:'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED',
+      robloxSourceCommit:source,robloxFailureStage:'F0_SOURCE_INTEGRITY',
+      robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+      routingBlockers:['roblox-f0-source-preflight-failed']}]};
+    const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue:failure,
+      queue,repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
+      planningBacklogTarget:1,planningBacklogMinimum:0});
+    const repaired=result.queue.tasks.find(task=>task.id===existing.id);
+    assert.ok(repaired,'same original Vibe task must remain the repair carrier');
+    assert.equal(repaired.buildUpNextAction,'CAUSAL_REPAIR');
+    assert.match(repaired.goal,/^\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]/);
+    assert.ok(repaired.goal.includes('실패한 소스 버전: '+source));
+    assert.ok(repaired.evidence.includes('roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE'));
+    assert.equal(result.queue.tasks.filter(task=>task.gameId===gameId&&task.id===existing.id).length,1);
+    assert.equal(repaired.buildUpDirective.playtestRuntimeFindings.f0SourcePreflightFailure.runtimeObserved,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('Roblox product-quality failure is projected into canonical planner buildup instead of internal-play replay',()=>{
   const planner=fs.readFileSync(path.join(process.cwd(),'tools','vibe2-auto-planner.mjs'),'utf8');
   assert.match(planner,/queueRobloxQualityBuildUpRequired/);
