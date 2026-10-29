@@ -7,6 +7,7 @@ import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
+import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,verifyVibe59LuauSkillScenarios} from './vibe59-luau-skills109.mjs';
 import {VIBE59_QUALITY_GAMEPLAY_ACTIONS,synthesizeVibe59QualityGameplay,verifyVibe59QualityScenarios} from './vibe59-quality-gameplay.mjs';
 import {synthesizeVibe59Pathfinding,verifyVibe59PathfindingScenarios} from './vibe59-pathfinding.mjs';
@@ -390,7 +391,7 @@ function renderVibe59NumericLuaAST(node,params){
   if(['min','max'].includes(op))return 'math.'+op+'('+x+','+y+')';
   if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
   if(op==='select')return '(('+x+'>0) and ('+y+') or ('+renderVibe59NumericLuaAST(c,params)+'))';
-  if(['+','-','*','/','%'].includes(op))if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
+  if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
   if(['+','-','*','/'].includes(op))return '('+x+op+y+')';
   throw Error('VIBE59_ALGORITHM_LUA_OPERATOR_REJECTED');
 }
@@ -546,8 +547,14 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     if(!['web','roblox'].includes(target))throw Error('VIBE59_ALGORITHM_TARGET_INVALID');
+    const memory=order.vibe59AlgorithmMemory||order.selectedTask?.vibe59AlgorithmMemory||{};
+    const domain=clean(req.algorithmSpec.domain).toUpperCase();
+    const inherited=retrieveVerifiedAlgorithmConcepts({stateInput:memory,
+      platform:target,domain});
+    const meta=preferVerifiedAlgorithmStrategy({stateInput:memory,platform:target,domain});
     const generated=synthesizeVibe59NumericAlgorithmSource({spec:{...req.algorithmSpec,
-      verifiedConcepts:req.algorithmSpec.verifiedConcepts??order.vibe59VerifiedAlgorithmConcepts,
+      verifiedConcepts:req.algorithmSpec.verifiedConcepts??order.vibe59VerifiedAlgorithmConcepts??inherited,
+      strategy:req.algorithmSpec.strategy??(meta.strategy==='BOUNDED_AST_EVOLUTION_CEGIS'?'evolution':undefined),
       ownerApproved:req.ownerApproved===true},source:content,relative});
     if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
     return Object.freeze({summary:'Vibe5.9 AST-evolved and counterexample-guided numeric algorithm',
