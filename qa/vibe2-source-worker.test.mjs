@@ -10281,6 +10281,37 @@ test('Vibe5.9 offline complex intent composes unrelated gameplay repairs and fal
 });
 
 
+test('offline native composition rewrites two distinct original functions atomically',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-native-multifunction-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'client'));
+ const file='client/Main.client.luau';
+ const original=[
+  'local function updateA()',
+  ' local a=Instance.new("TextButton")',
+  ' a.MouseButton1Click:Connect(function() print("a") end)',
+  'end',
+  'local function updateB()',
+  ' local b=Instance.new("TextButton")',
+  ' b.MouseButton1Click:Connect(function() print("b") end)',
+  'end',''].join('\n');
+ fs.writeFileSync(path.join(root,file),original);
+ const order={target:'roblox',goal:'복합 모바일 함수 원본 연쇄 수정'};
+ const opts={order,sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})};
+ const result=deterministicRobloxNativeRepairCandidate(opts);
+ assert.equal(result.deterministicRobloxNativeRepair,'MULTI_FUNCTION_REWRITE');
+ assert.equal(result.edits.length,2);
+ assert.deepEqual(result.semanticGrounding.sourceFunctions,['updateA','updateB']);
+ assert.equal(result.semanticGrounding.functionCount,2);
+ assert.ok(result.edits.every(x=>x.find.startsWith('local function ')&&x.replace.includes('.Activated:Connect(')));
+ assert.equal(result.deterministicSelection.status,'CANDIDATE_VALIDATED');
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
+ const fallback=deterministicRobloxNativeRepairCandidate({...opts,
+  candidateValidator:candidate=>{if(candidate.edits.length===2)throw Error('REJECTED_COMPOSITE');return{pass:true}}});
+ assert.equal(fallback.deterministicRobloxNativeRepair,'GUI_BUTTON_NATIVE_ACTIVATED');
+ assert.ok(fallback.deterministicSelection.attempts.some(x=>x.status==='REJECTED'));
+});
+
 test('Vibe5.9 canonical game worker is offline-only and rejects ungrounded source generation',()=>{
  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
  const worker=workflow.slice(workflow.indexOf('  worker:\n'),workflow.indexOf('  fan_in:\n'));
