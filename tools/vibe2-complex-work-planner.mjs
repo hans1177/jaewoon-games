@@ -396,18 +396,34 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
   if(r.output){
    const body=file.code.slice(owner.bodyStart,owner.bodyEnd),escaped=r.output.replaceAll('.','\\.');
    const writes=new RegExp('(?<![\\w$.])'+escaped+'\\s*[+*/%-]?=(?!=)');
-   if(r.operation==='counter-after-existing-call'){
-    // [기능 확장] 기존 숫자 필드만 사용하고 동일 함수의 보상 중복 쓰기는 막는다.
+   if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'){
+    // [기능 확장] 이미 정의된 필드에만 행동 결과를 연결한다. 새로운 저장 필드는 만들지 않는다.
     const field=r.output.split('.').at(-1);
-    const numericField=new RegExp('(?:\\{|,)\\s*'+field+'\\s*(?::|=)\\s*-?\\d+(?:\\.\\d+)?(?=\\s*[,}])');
-    if(!numericField.test(file.code)||writes.test(body)){
-     unresolved.push({id:r.id,code:'COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN'});continue;
+    const numericField=name=>new RegExp('(?:\\{|,)\\s*'+name+'\\s*(?::|=)\\s*-?\\d+(?:\\.\\d+)?(?=\\s*[,}])').test(file.code);
+    if(r.operation==='counter-after-existing-call'){
+     if(!numericField(field)||writes.test(body)){
+      unresolved.push({id:r.id,code:'COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN'});continue;
+     }
+    }else{
+     // 이미 있는 숫자 진행도가 문턱을 넘으면 기존 잠금 상태만 false -> true로 바꾼다.
+     const condition=r.condition,progress=condition?.left?.name;
+     const boolField=new RegExp('(?:\\{|,)\\s*'+field+'\\s*(?::|=)\\s*false(?=\\s*[,}])');
+     if(condition?.kind!=='compare'||!['>=','>'].includes(condition.op)
+       ||condition.left?.kind!=='ref'||condition.right?.kind!=='number'
+       ||!Number.isSafeInteger(condition.right.value)||condition.right.value<1
+       ||condition.right.value>1000000||typeof progress!=='string'
+       ||!progress.includes('.')||!r.output.includes('.')
+       ||progress.split('.')[0]!==r.output.split('.')[0]
+       ||progress===r.output||!numericField(progress.split('.').at(-1))
+       ||!boolField.test(file.code)||writes.test(body)){
+      unresolved.push({id:r.id,code:'UNLOCK_EXISTING_THRESHOLD_OR_FLAG_UNPROVEN'});continue;
+     }
     }
    }else if(!writes.test(body)){
     unresolved.push({id:r.id,code:'UNDECLARED_STATE_WRITE'});continue;
    }
   }
-  if(r.operation==='counter-after-existing-call'){
+  if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'){
    // [게임 기능] 원본 함수가 실제로 한 번 호출되는 지점 뒤에만 진행도 증가를 연결한다.
    const calls=index.edges.filter(e=>e.from===owner.id&&e.toName===r.after&&e.to);
    if(calls.length!==1||!Array.isArray(calls[0].arguments)||calls[0].arguments.length>6){
