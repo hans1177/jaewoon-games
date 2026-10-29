@@ -968,7 +968,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     if(find!=null&&typeof find!=='string')throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
-  }else if(typeof find!=='string'||!find||find.length>1024
+  }else if(typeof find!=='string'||!find||find.length>(autoFunctionRewrite?24000:1024)
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.algorithmSpec){
@@ -1101,6 +1101,11 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(!req.machine&&req.codegenVariant)
     throw Error('VIBE59_STRATEGY_REQUIRES_STATE_MACHINE');
   const ownerScenarios=req.scenarios||[];
+  if(autoFunctionRewrite&&(!Array.isArray(ownerScenarios)||ownerScenarios.length<2))
+    throw Error('VIBE59_FUNCTION_REWRITE_INDEPENDENT_SCENARIOS_REQUIRED');
+  if(autoFunctionRewrite&&req.machine&&(
+    req.machine.handlerName!==originalFunction.name||originalFunction.parameters.join(',')!=='eventName'))
+    throw Error('VIBE59_FUNCTION_REWRITE_HANDLER_SIGNATURE');
   const generatedProbes=generateVibe59AutonomousProbes({rule:req.rule,machine:req.machine,
     maxCases:Math.max(0,Math.min(10,20-ownerScenarios.length))});
   const probeCases=generatedProbes.cases;
