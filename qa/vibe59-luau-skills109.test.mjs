@@ -166,3 +166,31 @@ test('Vibe5.9 complex offline design compiles dependency-ordered gameplay code a
  assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
   {...pick,sourceSha256:'0'.repeat(64)},record]}}),/STALE_SOURCE/);
 });
+
+test('Vibe5.9 twelve-step offline complex design keeps all changes source-grounded and requires scenario proofs',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-twelve-step-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'server'));
+ const files=Array.from({length:8},(_,index)=>'server/Game'+index+'.server.luau');
+ const {spec,scenarios}=fixture(VIBE59_LUAU_CODING_SKILLS_109.find(row=>row.id==='inventory-pickup'));
+ for(const file of files)fs.writeFileSync(path.join(root,file),source);
+ const steps=files.map((file,index)=>({id:'step-'+index,
+  ...(index?{dependsOn:['step-'+(index-1)]}:{}),
+  ownerApproved:true,path:file,find:'-- INSERT',robloxSkill109:spec,scenarios}));
+ const options={target:'roblox',sourceRoot:root,responsibleFiles:files};
+ const result=createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[...steps].reverse()}});
+ assert.equal(result.vibe59DesignSteps.length,8);
+ assert.deepEqual(result.vibe59DesignSteps.map(step=>step.id),steps.map(step=>step.id));
+ assert.equal(result.vibe59TestPlan.cases.length,16);
+ assert.equal(result.edits.length,8);
+ assert.equal(result.modelUsed,false);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(result.runtimeVerified,false);
+ for(const file of files)assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:steps.map((step,index)=>
+  index===1?{...step,scenarios:scenarios.slice(0,1)}:step)}}),
+  /VIBE59_COMPLEX_DESIGN_UNVERIFIED_STEP/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:
+  Array.from({length:13},(_,index)=>({...steps[0],id:'overflow-'+index}))}}),
+  /VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED/);
+});
