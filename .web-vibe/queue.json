@@ -181,11 +181,28 @@
         "owner-source-authenticated",
         "qa-required-before-pr-merge"
       ]
+    },
+    {
+      "id": "pwa-a1c0d55a-b901-4c23-8c81-9287a745cd01",
+      "gameId": "wild-survival",
+      "target": "web",
+      "sourceRoot": "web-games/wild-survival",
+      "sourceFiles": "index.html;wild3d.mjs",
+      "goal": "GitHub Pages 공개판 3D 조작 실패 #11129를 기존 WEB_VIBE_1 원본 게임 코드 수정 경로에서 해결. 근거: Actions 40872553330, qa/vibe-browser-smoke.mjs:743, WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED. 시작 직후 ArrowRight 500ms 입력 시 x 증가 10 미만; 먼저 전후 좌표·프레임 간격·키 입력 및 플레이어 상태를 확인하여 지연 프레임인지 실제 입력 버그인지 분리. 실제 책임 함수 updatePlayer/loop/입력 또는 wild3d.render만 정확히 고치고 HTML의 SAVE_KEY=jg-wild-survival-v1, 저장/월드/전투/밸런스/3D WebGL은 유지. 새 우회 파이프라인/가짜 좌표/검사 완화/유료 API 금지. 후보 PR과 기존 QA·공개 배포 후 Playwright 실제 이동/메뉴·모바일 확인. 성공 증거 전 PASS 및 이슈 종료 금지.",
+      "responsibleFiles": [],
+      "priority": "owner-immediate",
+      "status": "queued",
+      "ownerDirective": true,
+      "evidence": [
+        "web-vibe-independent:v1",
+        "owner-source-authenticated",
+        "qa-required-before-pr-merge"
+      ]
     }
   ],
   "ingest": {
     "added": true,
-    "taskId": "pwa-b61ca5fe-1c8d-4cd5-8db9-282026102802",
+    "taskId": "pwa-a1c0d55a-b901-4c23-8c81-9287a745cd01",
     "reason": "WEB_VIBE_QUEUED"
   }
 }
