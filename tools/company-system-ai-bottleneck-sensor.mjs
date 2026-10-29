@@ -242,7 +242,7 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
     if(!id)continue;
     if(!games.has(id))games.set(id,{gameId:id,focused:false,ownerDirectTasks:0,
       queued:0,running:0,verifiedPackages:0,failed:0,causalRepairPending:0,
-      causalRepairRunning:0,causalRepairBlocked:0,verifiedRuntimeRepairPending:0,
+      causalRepairRunning:0,causalRepairBlocked:0,gatedRuntimeRepairPending:0,
       runtimeRepairStages:[],deploymentVerified:false,gameCompletionVerified:false});
     const g=games.get(id);
     if(t.ownerFocusedCaretaker===true||t.focusedCaretaker===true)g.focused=true;
@@ -256,7 +256,7 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
     const legacyRepair=status==='queued'&&clean(t.lastOutcome)==='FAIL'&&Number(t.retries)>0;
     if(status==='queued'&&(legacyRepair||gatedRepair))g.causalRepairPending++;
     if(gatedRepair){
-      if(status==='queued')g.verifiedRuntimeRepairPending++;
+      if(status==='queued')g.gatedRuntimeRepairPending++;
       if(status==='running')g.causalRepairRunning++;
       if(status==='blocked')g.causalRepairBlocked++;
       // These are observed repair intents, not verified game runtime or deployment results.
@@ -568,7 +568,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_VIBE_REPAIRS='+result.externalLearningApplications.nativeRepairCount);
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SYSTEM_REPAIRS='+result.externalLearningApplications.systemRepairCount);
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SECURITY_REVIEW='+result.externalLearningApplications.securityReviewRequiredCount);
-  console.log('SYSTEM_AI_GAME_GATED_REPAIR_PENDING='+result.productionOutcome.games.reduce((n,g)=>n+g.verifiedRuntimeRepairPending,0));
+  console.log('SYSTEM_AI_GAME_GATED_REPAIR_PENDING='+result.productionOutcome.games.reduce((n,g)=>n+g.gatedRuntimeRepairPending,0));
   console.log('SYSTEM_AI_GAME_GATED_REPAIR_RUNNING='+result.productionOutcome.games.reduce((n,g)=>n+g.causalRepairRunning,0));
   console.log('SYSTEM_AI_GAME_GATED_REPAIR_BLOCKED='+result.productionOutcome.games.reduce((n,g)=>n+g.causalRepairBlocked,0));
   console.log('SYSTEM_AI_BOTTLENECK_STALE_RESERVATIONS='+result.staleReservations.length);
