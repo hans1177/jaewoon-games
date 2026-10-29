@@ -2466,7 +2466,7 @@ test('verified cross-platform algorithm concepts require actual matched game-pla
  const base={evidenceId:'qa-algorithm-1',gameId:'sample',platform:'WEB',domain:'AI',
   sourceRevision:revision,playtestSourceRevision:revision,actualGamePlaytest:true,
   gameSourceChanged:true,saveAndBalancePreserved:true,heldOutCases:3,
-  regressionCount:0,result:'PASS',license:'MIT',
+  regressionCount:0,result:'PASS',license:'MIT',playtestRunId:123456,
   searchStrategy:'BOUNDED_AST_EVOLUTION_CEGIS',
   ast:['max',['param',0],['param',1]],
   proof:{evidenceId:'qa-algorithm-1',sourceRevision:revision,independentQa:'PASS',
@@ -2503,7 +2503,7 @@ test('algorithm concepts survive mastery refresh without becoming production or 
   domain:'AI',searchStrategy:'BOUNDED_AST_EVOLUTION_CEGIS',
   sourceRevision:revision,playtestSourceRevision:revision,
   gameSourceChanged:true,actualGamePlaytest:true,saveAndBalancePreserved:true,
-  heldOutCases:2,regressionCount:0,result:'PASS',ast:['abs',['param',0]],
+  heldOutCases:2,regressionCount:0,playtestRunId:123457,result:'PASS',ast:['abs',['param',0]],
   proof:{evidenceId:'qa-roblox-algorithm',sourceRevision:revision,
    independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true}};
  const refreshed=refreshLearningMotor({queueInput:{tasks:[],algorithmEvolutionEvidence:[evidence]},
