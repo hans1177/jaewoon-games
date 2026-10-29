@@ -162,5 +162,11 @@ $('restartBtn').onclick=()=>{clearSave();location.reload()};
 load();buildWorld();updateHud();toast('50일 동안 살아남아. 상자는 맵 곳곳에 있어.',3);requestAnimationFrame(loop);
 })();
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>
