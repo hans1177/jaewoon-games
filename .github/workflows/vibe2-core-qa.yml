@@ -633,6 +633,7 @@ jobs:
           node --test qa/vibe59-luau-skills109.test.mjs
           node --test qa/vibe2-complex-intent.test.mjs qa/vibe2-game-source-index.test.mjs qa/vibe2-complex-work-planner.test.mjs
           node --test qa/vibe2-complex-codegen.test.mjs
+          node --test qa/vibe-asset-loading.test.mjs
           node --test qa/vibe59-quality-gameplay.test.mjs
           node --test qa/vibe59-pathfinding.test.mjs
           node --test qa/vibe59-crafting-transaction.test.mjs
