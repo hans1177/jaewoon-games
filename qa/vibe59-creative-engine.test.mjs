@@ -109,3 +109,16 @@ test('goal-filtered creative selection rejects unrelated approved operations',()
   assert.equal(r.selectedApprovedSpec,null);
   assert.ok(r.requestedSystems.includes('ai'));
 });
+
+test('long Roblox owner goal does not abort source exploration creativity preview',()=>{
+  const goal='전투 '+ '기존 게임 소스를 보존하면서 실제 기능을 수정한다. '.repeat(40)+' 몬스터';
+  assert.ok(goal.length>800);
+  // The public creativity engine keeps its strict input budget and approval guard.
+  assert.throws(()=>buildVibe59CreativityPlan({goal}),/VIBE59_CREATIVE_BUDGET/);
+  const plan=buildVibe59AutonomyPlan({target:'roblox',order:{goal,gameId:'horror-escape-room'}});
+  assert.equal(plan.requirement.goal,goal);
+  assert.ok(plan.creativity.requestedSystems.includes('combat'));
+  assert.ok(plan.creativity.requestedSystems.includes('ai'));
+  assert.equal(plan.creativity.sourceWrite,false);
+  assert.equal(plan.creativity.selectedApprovedSpec,null);
+});
