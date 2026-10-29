@@ -2,6 +2,9 @@
 // 메인: 기존 PWA 복구에서 제공자 대기와 소스 실패를 분리한다.
 // Queue operations are bounded and never assert QA or publication success.
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {assertWebVibeQueue} from './web-vibe-organization.mjs';
 
@@ -53,10 +56,114 @@ export function recordWebVibeRecoveryFailure(queue,id,{now=new Date().toISOStrin
   });
   return {queue:assertWebVibeQueue({...state,tasks}),changed:true,attempts,exhausted};
 }
+
+// [학습] 같은 웹게임 공개 플레이·정확한 Git 소스·독립 검증이 일치한 PR만 학습으로 승격한다.
+// 기존 수동 검토/병합 권한은 바꾸지 않는다.
+export function reconcileVerifiedWebReviews(queue,proofByTaskId={}){
+  const state=assertWebVibeQueue(queue),changed=[];
+  const tasks=state.tasks.map(row=>{
+    if(row.status!=='review'||!row.reviewPrUrl)return row;
+    const proof=proofByTaskId[row.id];
+    if(!proof||proof.status!=='VERIFIED'||proof.gameId!==row.gameId
+      ||proof.reviewPrUrl!==row.reviewPrUrl||proof.browserPassed!==true
+      ||proof.independentQaPassed!==true
+      ||!Number.isSafeInteger(proof.runId)||proof.runId<=0
+      ||! /^[a-f0-9]{40}$/.test(String(proof.sourceRevision||''))||
+      ! /^[a-f0-9]{40}$/.test(String(proof.sourceTreeSha||'')))return row;
+    changed.push(row.id);
+    return {...row,status:'merged',blocker:null,
+      learningVerification:{status:'VERIFIED',browserPassed:true,independentQaPassed:true,
+        sourceRevision:proof.sourceRevision,sourceTreeSha:proof.sourceTreeSha,
+        runId:proof.runId,scope:'EXACT_PUBLISHED_GAME_BROWSER_SCENARIOS_ONLY'},
+      evidence:[...new Set([...(row.evidence||[]),
+        'web-vibe-verified-merged-pr:'+row.reviewPrUrl,
+        'web-vibe-verified-published-source:'+proof.sourceRevision,
+        'web-vibe-verified-browser-run:'+proof.runId])]};
+  });
+  return {queue:assertWebVibeQueue({...state,tasks}),changed:changed.length,verifiedTaskIds:changed};
+}
+function github(path){
+  return JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8',timeout:20000,maxBuffer:8*1024*1024,
+    stdio:['ignore','pipe','pipe']}));
+}
+function verifiedPublishedReview(task){
+  const match=String(task.reviewPrUrl||'').match(/^https:\/\/github\.com\/hans1177\/jaewoon-games\/pull\/([0-9]+)$/);
+  if(!match||task.ownerDirective!==true||!task.evidence?.includes('owner-source-authenticated'))return null;
+  const pr=github('repos/hans1177/jaewoon-games/pulls/'+match[1]);
+  const sha=String(pr.merge_commit_sha||''),expected='web-vibe/'+task.gameId+'-'+task.id.slice(4);
+  if(pr.merged!==true||pr.base?.ref!=='main'||pr.head?.ref!==expected
+    ||pr.head?.repo?.full_name!=='hans1177/jaewoon-games'
+    ||! /^[a-f0-9]{40}$/.test(sha))return null;
+  const files=github('repos/hans1177/jaewoon-games/pulls/'+match[1]+'/files?per_page=100');
+  if(!Array.isArray(files)||files.length<1||files.length>8||
+    files.some(row=>typeof row.filename!=='string'||!row.filename.startsWith(task.sourceRoot+'/')
+      ||!/^\w+(?:[-./]\w+)*\.(?:html?|js|mjs|cjs|json|css|svg)$/.test(row.filename)
+      ||!['modified','added'].includes(row.status)))return null;
+  const compare=github('repos/hans1177/jaewoon-games/compare/'+sha+'...main');
+  if(!['ahead','identical'].includes(compare.status))return null;
+  const runs=github('repos/hans1177/jaewoon-games/actions/workflows/magic-forest-pages.yml/runs?head_sha='+sha+'&per_page=20');
+  for(const run of (runs.workflow_runs||[]).filter(r=>r.head_sha===sha
+    &&r.status==='completed'&&r.conclusion==='success'
+    &&['push','workflow_dispatch'].includes(r.event)).slice(0,5)){
+    try{
+      const jobs=github('repos/hans1177/jaewoon-games/actions/runs/'+run.id+'/jobs?per_page=100').jobs||[];
+      const smoke=jobs.find(j=>j.name==='post-publication-3d-smoke'&&j.conclusion==='success');
+      if(!smoke||!['Bind browser QA to exact live published revision',
+        'Validate live published 3D model and game controls'].every(label=>
+        smoke.steps?.some(s=>s.name===label&&s.conclusion==='success')))continue;
+      const artifacts=github('repos/hans1177/jaewoon-games/actions/runs/'+run.id+'/artifacts?per_page=100').artifacts||[];
+      const artifact=artifacts.find(a=>a.name==='ocean-naval-mobile-render'&&a.expired!==true);
+      if(!Number.isSafeInteger(artifact?.id))continue;
+      const zip=execFileSync('gh',['api','repos/hans1177/jaewoon-games/actions/artifacts/'+artifact.id+'/zip'],
+        {encoding:null,timeout:45000,maxBuffer:32*1024*1024,stdio:['ignore','pipe','pipe']});
+      if(zip.length>32*1024*1024)continue;
+      const archive=path.join(os.tmpdir(),'web-vibe-proof-'+process.pid+'-'+artifact.id+'.zip');
+      let report;
+      try{
+        fs.writeFileSync(archive,zip,{mode:0o600,flag:'wx'});
+        report=JSON.parse(execFileSync('unzip',['-p',archive,'web-playtest-report.json'],
+          {encoding:'utf8',timeout:15000,maxBuffer:2*1024*1024,stdio:['ignore','pipe','pipe']}));
+      }finally{fs.rmSync(archive,{force:true});}
+      if(report.authority!=='PUBLISHED_WEB_BROWSER_SMOKE'||report.exactPublishedRevision!==true
+        ||String(report.runId)!==String(run.id))continue;
+      const game=(report.games||[]).find(g=>g.gameId===task.gameId&&g.target==='web'
+        &&g.sourceRoot===task.sourceRoot&&g.runtimeObserved===true&&g.runtimePassed===true
+        &&g.sourceRevision===sha&&/^[a-f0-9]{40}$/.test(g.sourceTreeSha||''));
+      if(!game)continue;
+      // 실시간 main에서 해당 게임 또는 공유 에셋이 바뀌었다면 과거 성공을 학습하지 않는다.
+      const local=rel=>execFileSync('git',['rev-parse','--verify','HEAD:'+rel],
+        {encoding:'utf8',timeout:10000,stdio:['ignore','pipe','ignore']}).trim();
+      if(local(task.sourceRoot)!==game.sourceTreeSha||local('assets')!==report.sharedSourceTrees?.assets)continue;
+      return {status:'VERIFIED',gameId:task.gameId,reviewPrUrl:task.reviewPrUrl,
+        browserPassed:true,independentQaPassed:true,runId:run.id,sourceRevision:sha,
+        sourceTreeSha:game.sourceTreeSha};
+    }catch(error){console.log('WEB_VIBE_LEARNING_PROOF_UNAVAILABLE='+task.id+':'+String(error.message||error).slice(0,90));}
+  }
+  return null;
+}
+export function reconcileWebVibeGitHubReviews(queue){
+  if(process.env.GITHUB_ACTIONS!=='true'
+    ||process.env.GITHUB_REPOSITORY!=='hans1177/jaewoon-games'
+    ||process.env.GITHUB_WORKFLOW!=='PWA Command Bridge'
+    ||!['schedule','workflow_dispatch'].includes(process.env.GITHUB_EVENT_NAME))
+    throw Error('WEB_VIBE_LEARNING_AUTHORITY_REQUIRED');
+  const proofs={};
+  for(const row of assertWebVibeQueue(queue).tasks.filter(t=>t.status==='review'&&t.reviewPrUrl).slice(0,12)){
+    try{const result=verifiedPublishedReview(row);if(result)proofs[row.id]=result;}
+    catch(error){console.log('WEB_VIBE_LEARNING_SKIP_UNVERIFIED='+row.id+':'+String(error.message||error).slice(0,90));}
+  }
+  return reconcileVerifiedWebReviews(queue,proofs);
+}
+
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const [command,queueFile,id,outputFile,failureFile]=process.argv.slice(2);
   const queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
   if(command==='select')console.log(JSON.stringify(selectWebVibeRecoveryTask(queue)));
+  else if(command==='reconcile'){
+    const result=reconcileWebVibeGitHubReviews(queue);
+    if(result.changed)fs.writeFileSync(id,JSON.stringify(result.queue,null,2)+'\n');
+    console.log(JSON.stringify({changed:result.changed,verifiedTaskIds:result.verifiedTaskIds}));
+  }
   else if(command==='failure'){
     const failureLog=failureFile&&fs.existsSync(failureFile)?fs.readFileSync(failureFile,'utf8'):'';
     const result=recordWebVibeRecoveryFailure(queue,id,{failureLog});
