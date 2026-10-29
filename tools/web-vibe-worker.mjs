@@ -166,9 +166,15 @@ function verifiedLocalMain({cloud=false}={}){
   // Actions checkout와 사전 검사가 남긴 임시 변경만 폐기한다. 실제 game main 소스는 HEAD 그대로다.
   console.log('WEB_VIBE_CLOUD_CHECKOUT_DIRTY='+dirty.split('\n').length);
   run('git',['restore','--source=HEAD','--staged','--worktree','--','.']);
-  run('git',['clean','-fd']);
+  // Only this verified ephemeral GitHub checkout may discard nested, untracked
+  // repositories left by test setup. Ignore-listed dependencies are preserved.
+  run('git',['clean','-ffd']);
   const remaining=run('git',['status','--porcelain','--untracked-files=all']);
-  if(remaining)fail('WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:'+remaining.split('\n').length);
+  if(remaining){
+    const paths=remaining.split('\n').map(row=>row.slice(3)).slice(0,30);
+    console.error('WEB_VIBE_CLOUD_CHECKOUT_REMAINING_PATHS='+JSON.stringify(paths));
+    fail('WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:'+remaining.split('\n').length);
+  }
   console.log('WEB_VIBE_CLOUD_CHECKOUT_REPAIRED=PASS');
 }
 // [학습] 기존 검증된 WEB 전용 PR에서 소스 함수 변경만 추출한다.
