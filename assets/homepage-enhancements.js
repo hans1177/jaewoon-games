@@ -11,6 +11,66 @@ let publishedWebRoutes=new Set();
 const FAVORITES_STORAGE_KEY='jaewoon-home-game-favorites-v1';
 const DELETE_PENDING_KEY='jaewoon-home-delete-pending-v1';
 let hiddenGameIds=new Set();
+const OWNER_DEVICE_TOKEN_KEY='jaewoon_command_device_v1';
+const OWNER_ACCESS_CHECK_MS=5*60*1000;
+let ownerDeleteVerified=false;
+let ownerAccessCheckedToken='';
+let ownerAccessCheckedAt=0;
+let ownerAccessPendingToken='';
+let ownerAccessCheckPending=null;
+let ownerUiRefreshPending=false;
+// 공개 방문자는 삭제 버튼을 볼 수 없다. 실제 권한은 서버의 등록 기기 인증으로만 확인한다.
+function rerenderOwnerControls(){
+  lastSignature='';
+  if(!ownerDeleteVerified){
+    document.querySelectorAll('button[data-hide-game]').forEach(button=>button.remove());
+  }
+  if(refreshInFlight){ownerUiRefreshPending=true;return;}
+  void refresh();
+}
+async function verifyOwnerDeleteAccess(){
+  const token=localStorage.getItem(OWNER_DEVICE_TOKEN_KEY)||'';
+  if(!token){
+    ownerAccessCheckedToken='';
+    ownerAccessCheckedAt=0;
+    if(ownerDeleteVerified){ownerDeleteVerified=false;rerenderOwnerControls();}
+    return false;
+  }
+  if(token!==ownerAccessCheckedToken && ownerDeleteVerified){
+    ownerDeleteVerified=false;
+    rerenderOwnerControls();
+  }
+  if(token===ownerAccessCheckedToken && Date.now()-ownerAccessCheckedAt<OWNER_ACCESS_CHECK_MS)
+    return ownerDeleteVerified;
+  if(ownerAccessCheckPending && ownerAccessPendingToken===token)return ownerAccessCheckPending;
+  ownerAccessPendingToken=token;
+  const task=(async()=>{
+    let valid=false;
+    try{
+      const response=await fetch('https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command',{
+        method:'POST',cache:'no-store',
+        headers:{'Content-Type':'application/json','apikey':'sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ','x-jaewoon-device':token},
+        body:JSON.stringify({action:'list'})
+      });
+      if(response.ok){
+        const result=await response.json();
+        valid=result?.ok===true&&Array.isArray(result.tasks);
+      }
+    }catch{}
+    if((localStorage.getItem(OWNER_DEVICE_TOKEN_KEY)||'')!==token)return false;
+    ownerAccessCheckedToken=token;
+    ownerAccessCheckedAt=Date.now();
+    if(ownerDeleteVerified!==valid){
+      ownerDeleteVerified=valid;
+      rerenderOwnerControls();
+    }
+    return valid;
+  })();
+  ownerAccessCheckPending=task;
+  try{return await task;}
+  finally{if(ownerAccessCheckPending===task){ownerAccessCheckPending=null;ownerAccessPendingToken='';}}
+}
+
 // 메인: 삭제 대기 게임만 현재 화면에서 숨긴다. 새로고침 후에는 서버 카탈로그가 진실이다.
 function loadHiddenGames(){
   try{
@@ -19,6 +79,7 @@ function loadHiddenGames(){
   }catch{return new Set();}
 }
 function gameDeleteButton(id,name){
+  if(!ownerDeleteVerified)return '';
   return '<button class="homeManageButton homeDeleteButton" type="button" data-hide-game="'+esc(id)+'" aria-label="'+esc(name)+' 게임 영구삭제" title="게임 영구삭제 · 개발중단">삭제</button>';
 }
 function gameTitleActions(id,name){
@@ -82,13 +143,15 @@ async function checkDeletionStatus(){
   }catch{}
 }
 async function requestPermanentGameDelete(id){
+  if(!ownerDeleteVerified)return;
   const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
   if(!row)return;
   const name=identityOf(row).name||row.name||id;
   // 메인: 공개 페이지에서 미인증 상태면 원본을 삭제하지 않고, 휴대폰 등록 화면으로 강제 이동하지 않는다.
   const token=localStorage.getItem('jaewoon_command_device_v1')||'';
   if(!token){
-    window.alert('삭제할 수 없어. 공개 홈페이지에서는 인증 없이 게임 원본을 영구삭제할 수 없어.\n휴대폰 등록 화면으로 자동 이동하지 않아.\n이 ChatGPT 대화에서 삭제할 게임 이름을 알려줘.');
+    ownerDeleteVerified=false;
+    rerenderOwnerControls();
     return;
   }
   // 등록된 오너 기기는 기존 인증을 재사용해 삭제 확인 한 번으로 요청한다.
@@ -754,7 +817,14 @@ async function refresh(){
       const hero=document.getElementById('hero');
       if(hero)hero.innerHTML='<div class="homeFocusInner"><h1>게임 표시 오류</h1><p>게임 데이터는 유지돼 있어. 새로고침 후 다시 확인해줘.</p></div>';
     }
-  }finally{refreshInFlight=false;checkDeletionStatus();}
+  }finally{
+    refreshInFlight=false;
+    checkDeletionStatus();
+    if(ownerUiRefreshPending){
+      ownerUiRefreshPending=false;
+      Promise.resolve().then(refresh);
+    }
+  }
 }
 function main(){
   favoriteGameIds=loadFavorites();
@@ -764,15 +834,33 @@ function main(){
       favoriteGameIds=loadFavorites();updateFavoriteButtons();renderFavoriteGames();
     }
     if(event.key===DELETE_PENDING_KEY){hiddenGameIds=loadHiddenGames();lastSignature='';refresh();}
+    if(event.key===OWNER_DEVICE_TOKEN_KEY)void verifyOwnerDeleteAccess();
   });
   installStyles();
   simplifyPage();
   bindDirectGameLaunch();
   refresh();
-  setInterval(()=>{if(!document.hidden)refresh();},SYNC_INTERVAL_MS);
-  window.addEventListener('focus',refresh);
-  window.addEventListener('online',refresh);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
+  void verifyOwnerDeleteAccess();
+  setInterval(()=>{
+    if(!document.hidden){
+      refresh();
+      void verifyOwnerDeleteAccess();
+    }
+  },SYNC_INTERVAL_MS);
+  window.addEventListener('focus',()=>{
+    refresh();
+    void verifyOwnerDeleteAccess();
+  });
+  window.addEventListener('online',()=>{
+    refresh();
+    void verifyOwnerDeleteAccess();
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden){
+      refresh();
+      void verifyOwnerDeleteAccess();
+    }
+  });
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
 
