@@ -705,6 +705,34 @@ test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure 
    relative:'score.server.luau'}),/EXISTING_PURE_FUNCTION_REQUIRED/);
 });
 
+test('offline general function rewrite composes original Web event handler from verified transition cases',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-general-web-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const original='const saved="save-v1";\nfunction advance(eventName) { return false; }\n';
+ fs.writeFileSync(path.join(root,'game.js'),original);
+ const machine={handlerName:'advance',stateVariable:'phase',
+  states:['idle','active'],events:['start'],transitions:[{from:'idle',to:'active',event:'start'}]};
+ const scenarios=[
+  {name:'start',initialState:{phase:'idle'},events:['start'],expectedState:{phase:'active'},expectedConsumed:[true]},
+  {name:'no-duplicate',initialState:{phase:'active'},events:['start'],expectedState:{phase:'active'},expectedConsumed:[false]}];
+ const req={path:'game.js',ownerApproved:true,rewriteExistingFunction:true,machine,scenarios};
+ const run=request=>createVibe59CodeCandidate({order:{vibe59CodeRequest:request},
+  target:'web',sourceRoot:root,responsibleFiles:['game.js']});
+ const result=run(req);
+ assert.equal(result.sourceFunctionRewrite,true);
+ assert.equal(result.sourceFunction,'advance');
+ assert.equal(result.sourceFunctionAutoLocated,true);
+ assert.equal(result.vibe59TestPlan.pass,true);
+ assert.equal(result.vibe59JsReplay.pass,true);
+ assert.equal(result.edits.length,1);
+ assert.match(result.edits[0].replace,/phase = "active"/);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),original);
+ assert.throws(()=>run({...req,sourceSha256:'0'.repeat(64)}),/STALE_SOURCE/);
+ assert.throws(()=>run({...req,scenarios:scenarios.slice(0,1)}),/INDEPENDENT_SCENARIOS_REQUIRED/);
+ assert.throws(()=>run({...req,find:'return false;'}),/ANCHOR_MISMATCH/);
+});
+
 test('Vibe5.9 inherited AST concepts must be attested and acyclic before use',()=>{
  const recursive=['abs'];recursive.push(recursive);
  const spec={parameters:['x','y'],strategy:'evolution',maxGenerations:3,
