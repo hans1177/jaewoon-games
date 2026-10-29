@@ -733,6 +733,35 @@ test('offline general function rewrite composes original Web event handler from 
  assert.throws(()=>run({...req,find:'return false;'}),/ANCHOR_MISMATCH/);
 });
 
+test('offline Luau state function rewrite stays within original function and cannot alter saves',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-luau-function-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const original='local keep="save-v1"\nlocal function advance(eventName)\n return false\nend\n';
+ fs.writeFileSync(path.join(root,'main.luau'),original);
+ const machine={handlerName:'advance',stateVariable:'phase',
+  states:['idle','active'],events:['start'],transitions:[{from:'idle',to:'active',event:'start'}]};
+ const scenarios=[{name:'start',initialState:{phase:'idle'},events:['start'],
+   expectedState:{phase:'active'},expectedConsumed:[true]},
+  {name:'repeat',initialState:{phase:'active'},events:['start'],
+   expectedState:{phase:'active'},expectedConsumed:[false]}];
+ const order={vibe59CodeRequest:{ownerApproved:true,path:'main.luau',
+  rewriteExistingFunction:true,machine,scenarios}};
+ const generate=()=>createVibe59CodeCandidate({order,sourceRoot:root,
+  responsibleFiles:['main.luau'],target:'roblox'});
+ const candidate=generate();
+ assert.equal(candidate.sourceFunction,'advance');
+ assert.equal(candidate.sourceFunctionAutoLocated,true);
+ assert.equal(candidate.edits[0].find,'local function advance(eventName)\n return false\nend');
+ assert.match(candidate.edits[0].replace,/local function advance\(eventName\)/);
+ assert.match(candidate.edits[0].replace,/phase = "active"/);
+ assert.equal(candidate.vibe59TestPlan.pass,true);
+ assert.equal(fs.readFileSync(path.join(root,'main.luau'),'utf8'),original);
+ fs.writeFileSync(path.join(root,'main.luau'),original+'local function advance(eventName)\n return false\nend\n');
+ assert.throws(generate,/FUNCTION_OWNER_AMBIGUOUS/);
+ fs.writeFileSync(path.join(root,'main.luau'),original.replace('return false','DataStoreService:UpdateAsync("key")'));
+ assert.throws(generate,/FUNCTION_REWRITE_PROTECTED/);
+});
+
 test('Vibe5.9 inherited AST concepts must be attested and acyclic before use',()=>{
  const recursive=['abs'];recursive.push(recursive);
  const spec={parameters:['x','y'],strategy:'evolution',maxGenerations:3,
