@@ -259,7 +259,8 @@ test('canonical Web/Roblox steps receive secrets without exposing values or alte
     const workflow=read(file);
     assert.ok(workflow.includes('GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}'),'required key is present only at the model call step');
     assert.ok(workflow.includes('OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}'),'required key is present only at the model call step');
-    assert.ok(workflow.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}"),'owner-confirmed free plan may be disabled by setting NO');
+    assert.ok(workflow.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}"),'free plan must be explicitly confirmed; missing approval defaults to NO');
+    assert.ok(!workflow.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES'"),'no call path may infer free billing approval');
     assert.match(workflow,/VIBE2_EXTERNAL_FREE_ROTATION: 'YES'/);
   }
   assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API/);
