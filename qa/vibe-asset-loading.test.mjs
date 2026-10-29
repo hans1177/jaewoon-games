@@ -644,3 +644,13 @@ test('asset change detection invalidates future requests without mutating active
    fresh.release();runtime.destroy();
  }finally{globalThis.fetch=previous}
 });
+
+
+// [시각화/감시] 기존 패널이 실측 진단 이벤트를 받아 모바일에서도 상태를 표시한다.
+test('asset diagnostics panel observes the existing runtime without modifying gameplay',()=>{
+ const panel=readFileSync(new URL('../assets/vibe-runtime-panel.js',import.meta.url),'utf8');
+ assert.match(panel,/jaewoon:assets-stats/);
+ assert.match(panel,/info\.estimatedBytes/);
+ assert.match(panel,/info\.preloadedSceneCount/);
+ assert.match(panel,/panel\.append\(title,close,status,diagnostics/);
+});
