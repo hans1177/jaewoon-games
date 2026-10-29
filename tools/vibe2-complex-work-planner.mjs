@@ -448,13 +448,15 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
    sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence},...(r.boundCalleeSymbols||[]),...(r.boundExtraSymbols||[])],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});
  }
  if(unresolved.length)return {status:'BLOCKED',intent,unresolved,sourceWrite:false,modelUsed:false,runtimeVerified:false};
- // 같은 기존 진입점의 중단 조건만 OR로 합성한다. 원시 편집 영역의 중복은 계속 거부한다.
+ // 같은 삽입점의 연속된 중단 조건만 OR로 합성한다. 중간 상태 변경을 앞지르지 않는다.
  for(let i=0;i<nodes.length;i++){
   const node=nodes[i];if(node.operation!=='guard-return')continue;
   node.requirementIds=[node.id];
   for(let j=nodes.length-1;j>i;j--){
    const other=nodes[j];
    if(other.operation==='guard-return'&&other.owner.id===node.owner.id&&
+     other.owner.insertionOffset===node.owner.insertionOffset&&
+     !nodes.slice(i+1,j).some(between=>between.owner.id===node.owner.id&&between.operation!=='guard-return')&&
      JSON.stringify(other.returnValue)===JSON.stringify(node.returnValue)){
     node.condition={kind:'or',items:[node.condition,other.condition]};node.requirementIds.push(other.id);
     node.ownerTexts=[...(node.ownerTexts||[node.ownerText]),other.ownerText];nodes.splice(j,1);

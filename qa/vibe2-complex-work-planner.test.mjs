@@ -970,3 +970,19 @@ test('same owner Luau source composes existing clamp and guard without changing 
  assert.match(candidate.edits[0].replace,/math\.clamp\(nextHp, 0, 100\)/);
  assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
 });
+
+// [회귀] 중간의 상태 변경 전후 조건은 같은 반환값이어도 앞쪽 OR 조건으로 이동하지 않는다.
+test('same owner guard composition never moves a predicate before an intervening state change',t=>{
+ const {repo,root}=fixture(t),source='const defaults={dead:false,ready:false,active:false};\nfunction act(a){\n a.active = true;\n return true;\n}';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 act에서 a.dead이면 false를 반환해; 함수 act에서 a.ready이면 a.active를 false로 설정해; 함수 act에서 a.active이면 false를 반환해'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.complexPlan.atomCount,3);assert.equal(candidate.edits.length,1);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({act})');
+ const changed={dead:false,ready:true,active:true};assert.equal(game.act(changed),true);assert.equal(changed.active,true);
+ const unchanged={dead:false,ready:false,active:true};assert.equal(game.act(unchanged),false);
+ const dead={dead:true,ready:true,active:true};assert.equal(game.act(dead),false);assert.equal(dead.active,true);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
