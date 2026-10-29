@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-29T22:45:00.742Z",
+  "updatedAt": "2026-10-29T23:18:53.822Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -11999,8 +11999,32 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-29T13:04:37.413Z",
-      "updatedAt": "2026-10-29T22:45:00.740Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-10-29T23:18:53.802Z",
+      "occurrenceCount": 7
+    },
+    {
+      "id": "bug-8ced1b71035aab94f819",
+      "gameId": "fantasy-survival",
+      "surface": "WEB",
+      "phase": "POST_PUBLICATION_PLAYTEST",
+      "severity": "HIGH",
+      "category": "INPUT",
+      "signature": "desktop: keyboard input failed to move original game state",
+      "reproduction": "RERUN_EXISTING_PUBLISHED_WEB_BROWSER_SMOKE_ON_THE_SAME_GAME_SOURCE",
+      "responsibleFiles": [
+        "web-games/fantasy-survival/index.html"
+      ],
+      "evidence": [
+        "web-browser-playtest-run:40971109952",
+        "web-browser-playtest-source:2a8d7b25dcc80e8956e785d55e893bdda50304ec",
+        "web-browser-playtest-tree:a0288c0efdbe734c5a52d2eacdd9000cea8286cf"
+      ],
+      "exactFailedStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "status": "OPEN",
+      "createdAt": "2026-10-29T23:18:53.802Z",
+      "updatedAt": "2026-10-29T23:18:53.802Z",
+      "occurrenceCount": 1
     }
   ],
   "webPlaytestObservations": [
@@ -12028,7 +12052,7 @@
       "target": "web",
       "sourceRoot": "web-games/ocean-voyage",
       "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
-      "sourceRevision": "9880601e135db1dede8eeba0646d11ddf48be6e7",
+      "sourceRevision": "2a8d7b25dcc80e8956e785d55e893bdda50304ec",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12037,8 +12061,8 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "40933467703",
-      "observedAt": "2026-10-29T19:07:36.674Z"
+      "runId": "40971109952",
+      "observedAt": "2026-10-29T23:18:53.802Z"
     },
     {
       "gameId": "gem-survivor",
@@ -12046,7 +12070,7 @@
       "target": "web",
       "sourceRoot": "web-games/gem-survivor",
       "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
-      "sourceRevision": "9880601e135db1dede8eeba0646d11ddf48be6e7",
+      "sourceRevision": "2a8d7b25dcc80e8956e785d55e893bdda50304ec",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12055,8 +12079,27 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "40933467703",
-      "observedAt": "2026-10-29T19:07:36.674Z"
+      "runId": "40971109952",
+      "observedAt": "2026-10-29T23:18:53.802Z"
+    },
+    {
+      "gameId": "fantasy-survival",
+      "runtimePassed": false,
+      "failureSignature": "desktop: keyboard input failed to move original game state",
+      "target": "web",
+      "sourceRoot": "web-games/fantasy-survival",
+      "sourceTreeSha": "a0288c0efdbe734c5a52d2eacdd9000cea8286cf",
+      "sourceRevision": "2a8d7b25dcc80e8956e785d55e893bdda50304ec",
+      "runtimeObserved": true,
+      "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
+      "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
+      "sharedSourceTrees": {
+        "assets": "2b3531c53a053ef717d3dd2ce28d2b2a8d5f801c",
+        "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
+        "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
+      },
+      "runId": "40971109952",
+      "observedAt": "2026-10-29T23:18:53.802Z"
     }
   ]
 }

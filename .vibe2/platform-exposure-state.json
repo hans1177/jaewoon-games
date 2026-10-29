@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-29T22:45:27.664Z",
+  "updatedAt": "2026-10-29T23:20:19.940Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -1030,7 +1030,8 @@
           "testerTickets": {
             "openBlocking": [
               "bug-cc0f8b50b5481b708817",
-              "bug-ab3b8c1925cf27f7cbaf"
+              "bug-ab3b8c1925cf27f7cbaf",
+              "bug-8ced1b71035aab94f819"
             ]
           },
           "publication": {
@@ -1085,7 +1086,9 @@
           "publicHardGate": null,
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-8ced1b71035aab94f819"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
