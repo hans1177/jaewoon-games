@@ -530,6 +530,8 @@ test('name-free WEB request locates state writer, UI reader and original save wi
  fs.writeFileSync(path.join(root,'game.js'),source);
  const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
   order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'상태 변경 후 화면 갱신하고 저장해'}};
+ const sourcePlan=planComplexGameWork({...options,baseRevisionSha:revision});
+ assert.equal(sourcePlan.status,'BOUND',JSON.stringify(sourcePlan.unresolved));
  const candidate=createVibe59CodeCandidates(options);
  assert.equal(candidate.edits.length,1);
  assert.match(candidate.edits[0].replace,/change\(actor\);\s+paint\(actor\);\s+persist\(\);/);
