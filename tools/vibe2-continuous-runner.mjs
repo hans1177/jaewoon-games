@@ -26,6 +26,47 @@ const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.rbxm', '.rbxmx', 
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 
+// A verified direct owner request is narrower than the standing game-primary BUILD_UP.
+// Only the existing GitHub owner-onepatch ingress can request protected gameplay numbers;
+// focus/caretaker flags, generated goals and a bare ownerDirective never qualify.
+export function verifiedOwnerGameplayRequest({task={},centralPolicy={}}={}){
+  const policy=centralPolicy?.document;
+  const rules=policy?.ownerCanonicalRules?.ownerExclusiveDevelopment?.rules;
+  const onePatch=policy?.fixedAutonomousDevelopmentOperatingContract?.ownerRequestedVibeOneShotPatch?.preservation;
+  const gameId=clean(task.gameId),root='roblox-games/'+gameId;
+  if(centralPolicy?.valid!==true
+    ||onePatch?.existingGameBalanceOrContentMayChangeOnlyByOwnerDirection!==true
+    ||rules?.existingGameplaySaveProgressionBalanceAndMultiplayerSemanticsMustBePreservedUnlessOwnerExplicitlyChangesThem!==true
+    ||policy?.developmentAccess?.ROBLOX!=='ALWAYS_ALLOWED'
+    ||!policy?.ownerActiveDevelopmentScope20261009?.activeTargets?.includes('ROBLOX')
+    ||!/^[-a-z0-9]{2,64}$/.test(gameId)
+    ||clean(task.target).toLowerCase()!=='roblox'
+    ||clean(task.sourceRoot)!==root
+    ||task.ownerDirective!==true||task.protectedChange===true
+    ||task.requiresOwnerDecision===true||task.designChange===true
+    ||clean(task.department).toLowerCase()!=='development'
+    ||clean(task.type).toLowerCase()!=='implementation')return false;
+  const files=task.responsibleFiles||[];
+  if(!Array.isArray(files)||!files.length
+    ||files.some(file=>!posix(file).startsWith(root+'/')))return false;
+  const evidence=new Set((task.evidence||[]).map(clean));
+  const ownerInstances=[...evidence].filter(value=>/^owner-request-instance:owner-roblox-onepatch-[0-9]{1,20}$/.test(value));
+  if(ownerInstances.length!==1
+    ||!evidence.has('roblox-organization:github-only')
+    ||!evidence.has('owner-roblox-onepatch:workflow-dispatch')
+    ||!evidence.has('existing-canonical-vibe2-queue')
+    ||!evidence.has('existing-f0-f9-qa-required')
+    ||files.some(file=>!evidence.has('scope-only:'+file)))return false;
+  const requestId=ownerInstances[0].slice('owner-request-instance:'.length);
+  if(clean(task.id)!==requestId
+    &&!evidence.has('owner-onepatch-merged-active-build-up'))return false;
+  const request=clean(task.goal).match(/(?:^|\n)\[OWNER_ROBLOX_ONEPATCH\]\r?\n요청:\s*([^\r\n]+)/)?.[1]||'';
+  if(!request||request.length>2000)return false;
+  const explicitlyRequested=/(체력|공격력|피해량|대미지|데미지|드롭률|보상|밸런스|난이도|전투\s*(?:기능|규칙|로직|AI|인공지능)|몬스터\s*(?:AI|인공지능)|보스\s*(?:AI|인공지능)|player\s*hp|enemy\s*hp|damage|reward|drop\s*rate|combat\s*ai|balance)/i.test(request);
+  const actionRequested=/(변경|개선|조정|수정|강화|약화|올려|내려|증가|감소|맞춰|바꿔|튜닝|tune|adjust|improve|change|fix)/i.test(request);
+  return explicitlyRequested&&actionRequested;
+}
+
 function currentLaneMaxWorkMinutes(runtime = {}) {
   const lane = clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase();
   const configured = lane === 'game-primary'
@@ -597,7 +638,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
-  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
+  const verifiedOwnerGameplayChange=verifiedOwnerGameplayRequest({task,centralPolicy});
+  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience, verifiedOwnerGameplayChange });
   if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
     return freeze({
       ...base,
