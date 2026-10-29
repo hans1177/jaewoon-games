@@ -1,5 +1,6 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
+import { VibePresentationEngine } from '../../assets/vibe-presentation-engine.mjs';
 import { snapFort,wallLine,siegeTargetForUnit,siegeBarrierClosed } from './castle-layout.js';
 import { ECONOMY_BUILDINGS,getEconomy,constructEconomyBuilding,upgradeEconomyBuilding,economyStaff,economyTechStatus } from './production-buildings.js';
 
@@ -136,7 +137,17 @@ const npcs=[
   {id:'momo',name:'모모',icon:'👩‍🦱',x:805,y:600,line:'연못에는 물고기가 있어.'},
   {id:'danbi',name:'단비',icon:'🧒',x:960,y:700,line:'농작물은 물을 준 뒤 20초면 자라.'}
 ];
-const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId,siegeOverview:true};
+const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId,siegeOverview:true,vibeShake:{x:0,y:0}};
+// [VFX] 기존 전투 판정이 확정한 공격에만 Vibe 시각효과를 재생한다. 세이브·공격력·AI는 건드리지 않는다.
+const impactEngine=new VibePresentationEngine({
+ adapter:{cameraShake:shake=>{game.vibeShake=shake}},
+ settings:{maxShake:.18,reducedMotion:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true}
+});
+function playImpact(target,heavy=false){
+ if(!target||!Number.isFinite(target.x)||!Number.isFinite(target.y))return;
+ renderer.impact(target.x,target.y,{color:heavy?0xffbc63:0xffe4a4,count:heavy?13:6});
+ impactEngine.cue(heavy?'siege-impact':'combat-impact',{shake:heavy?.32:.1,cooldown:heavy?.18:.09});
+}
 game.screenToWorld=(sx,sy)=>renderer.screenToWorld(game,sx,sy);
 game.centerStrategyView=()=>{game.siegeOverview=true;renderer.centerCamera()};
 const ui={
@@ -897,6 +908,7 @@ function updateOffensive(dt){
    if(distance<enemy.range){enemy.cool-=dt;if(enemy.cool<=0){
      const guarded=t.guardUntil>Date.now()||(t.kind==='knight'&&t.trait==='guardian');
      t.hp-=enemy.attack*(guarded?.78:1);enemy.cool=1.25;
+     playImpact(t);
      if(t.hp<=0&&t.kind==='knight')rivalCapture(t,lord.id);
    }}
  }
@@ -909,6 +921,7 @@ function updateOffensive(dt){
      else{unit.cool-=dt;if(unit.cool<=0){
        const charged=unit.trait==='charge'&&unit.skillBuffUntil>Date.now()?1.65:1;
        defender.hp-=unit.attack*charged;unit.cool=unit.rate||.85;
+       playImpact(defender,unit.kind==='knight');
        if(unit.kind==='knight')gainKnightXp(unit,8);
        if(defender.kind==='knight'&&defender.hp<=defender.maxHp*.22&&Math.random()<.62)
          takePrisoner(defender,lord.id);
@@ -928,6 +941,7 @@ function updateOffensive(dt){
        if(unit.kind!=='trebuchet'||unit.ammo>0){
          if(wallHit)lord.wallHp=Math.max(0,lord.wallHp-amount);
          else lord.hp=Math.max(0,lord.hp-amount);
+         playImpact(lord,unit.kind==='trebuchet'||unit.siegeDamage>0);
          if(unit.kind==='trebuchet')unit.ammo--;
          if(unit.kind==='knight')gainKnightXp(unit,5);
        }
@@ -1115,6 +1129,7 @@ function updateCombatUnit(u,targets,dt,hostile){
     const charged=u.trait==='charge'&&u.skillBuffUntil>Date.now()?1.65:1;
     const guarded=t.guardUntil>Date.now()||(t.kind==='knight'&&t.trait==='guardian');
     t.hp-=u.attack*bonus*charged*(guarded?.78:1);
+    playImpact(t,u.kind==='trebuchet'||u.siegeDamage>0);
     if(u.kind==='knight'&&!u.enemy)gainKnightXp(u,7);
     u.cool=u.rate||.85
   }
@@ -1133,8 +1148,8 @@ function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.lengt
 function makeWolf(id,x,y){return{id,x,y,homeX:x,homeY:y,hp:200,maxHp:200,attack:10,speed:68,cool:0,alive:true,respawnAt:0,wander:0,vx:0,vy:0}}
 function commandWolfAt(sx,sy){if(!state.expanded||raidActive)return;const p=renderer.screenToWorld(game,sx,sy);let best=null,bd=46;for(const w of wolves){if(!w.alive)continue;const d=Math.hypot(w.x-p.x,w.y-p.y);if(d<bd){best=w;bd=d}}if(!best)return;selectedWolfId=best.id;game.selectedWolfId=best.id;toast(`🐺 늑대 지정! 병사 ${countKind('soldier')}명 출동`)}
 function updateWolves(dt){const now=Date.now();for(const w of wolves){if(!w.alive){if(w.respawnAt&&now>=w.respawnAt){w.alive=true;w.hp=w.maxHp;w.x=w.homeX;w.y=w.homeY;w.respawnAt=0}continue}w.cool=Math.max(0,w.cool-dt);if(raidActive||selectedWolfId!==w.id){w.wander-=dt;if(w.wander<=0){const a=Math.random()*Math.PI*2;w.vx=Math.cos(a);w.vy=Math.sin(a);w.wander=1.5+Math.random()*2.5}const nx=w.x+w.vx*w.speed*.2*dt,ny=w.y+w.vy*w.speed*.2*dt;if(nx>1450&&nx<2800)w.x=nx;else w.vx*=-1;if(ny>220&&ny<980)w.y=ny;else w.vy*=-1;continue}
-    const soldiers=allies.filter(u=>u.kind==='soldier'&&u.hp>0&&!u._fortPost);for(const s of soldiers){s.cool=Math.max(0,s.cool-dt);const d=Math.hypot(w.x-s.x,w.y-s.y)||1;if(d>s.range)moveToward(s,w.x,w.y,dt);else if(s.cool<=0){w.hp-=s.attack;s.cool=.85}}
-    const target=nearestLiving(w,soldiers);if(target){const d=Math.hypot(target.x-w.x,target.y-w.y)||1;if(d>52)moveToward(w,target.x,target.y,dt);else if(w.cool<=0){target.hp-=w.attack;w.cool=.9}}
+    const soldiers=allies.filter(u=>u.kind==='soldier'&&u.hp>0&&!u._fortPost);for(const s of soldiers){s.cool=Math.max(0,s.cool-dt);const d=Math.hypot(w.x-s.x,w.y-s.y)||1;if(d>s.range)moveToward(s,w.x,w.y,dt);else if(s.cool<=0){w.hp-=s.attack;s.cool=.85;playImpact(w)}}
+    const target=nearestLiving(w,soldiers);if(target){const d=Math.hypot(target.x-w.x,target.y-w.y)||1;if(d>52)moveToward(w,target.x,target.y,dt);else if(w.cool<=0){target.hp-=w.attack;w.cool=.9;playImpact(target)}}
     if(w.hp<=0){w.alive=false;w.respawnAt=now+60000;selectedWolfId=null;game.selectedWolfId=null;toast('🐺 늑대를 처치했어!')}allies=allies.filter(u=>u.hp>0);game.allies=allies;saveArmyIfChanged()}}
 
 function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y;continue}if(['ram','trebuchet','siegeTower'].includes(u.kind))continue;if(wolf&&u.kind==='soldier')continue;u.wander-=dt;if(u.wander<=0){const a=Math.random()*Math.PI*2;u.vx=Math.cos(a);u.vy=Math.sin(a);u.wander=1.2+Math.random()*2.2}const nx=u.x+u.vx*u.speed*.28*dt,ny=u.y+u.vy*u.speed*.28*dt;if(nx>350&&nx<1280)u.x=nx;else u.vx*=-1;if(ny>450&&ny<900)u.y=ny;else u.vy*=-1}}
@@ -1181,7 +1196,7 @@ function updateCameraControl(dt){
 function updateHint(){
   ui.hint.textContent=raidActive?'공성전 진행 · 병영과 성채에서 전술 명령':'건물 터치: 강화 · 드래그: 이동 · 두 손가락: 확대';
 }
-function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open&&!state.keepDestroyed){updateCameraControl(dt);advanceClock(dt);updateRaid(dt);updateOffensive(dt);if(!raidActive&&!game.offensiveTarget){updatePeaceAllies(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
+function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open&&!state.keepDestroyed){updateCameraControl(dt);advanceClock(dt);updateRaid(dt);updateOffensive(dt);if(!raidActive&&!game.offensiveTarget){updatePeaceAllies(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();impactEngine.update(dt);renderer.draw(game);requestAnimationFrame(frame)}
 
 allies=state.army.map(x=>createUnit(x.kind,false,false,x));game.allies=allies;
 getEnemyLords();
