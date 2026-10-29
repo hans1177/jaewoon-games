@@ -6254,6 +6254,85 @@ test('exact Studio MCP HUD overlap makes Vibe own the actual client and shared U
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('exact Studio game-specific bottlenecks route each observed surface to existing game source files',()=>{
+  const root=tempRepo(),gameId='studio-causal-routing';
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  for(const dir of ['client','server','shared'])fs.mkdirSync(path.join(gameRoot,dir),{recursive:true});
+  for(const file of ['client/Game.client.luau','server/Game.server.luau',
+    'shared/GameConfig.luau','shared/RobloxCommonUI.luau']){
+    fs.writeFileSync(path.join(gameRoot,file),'return true\n','utf8');
+  }
+  const source='b'.repeat(40),artifact='sha256:'+'c'.repeat(64);
+  const base={gameId,queueRobloxQualityBuildUpRequired:true,
+    queueRobloxSourceCommit:source,queueRobloxArtifactIdentity:artifact};
+  const failure=surface=>({
+    authority:'roblox-official-studio-mcp-product-quality-failure',
+    sourceRevision:source,artifactIdentity:artifact,workflowRunId:1301,
+    repairSurfaces:[surface],
+    qualityFailureDetails:[{id:'observed-'+surface,repairSurface:surface,observed:{pass:false}}]
+  });
+  const cases=[
+    ['GAME_START',['client/Game.client.luau','server/Game.server.luau']],
+    ['MAP_ROUTEABILITY',['server/Game.server.luau','shared/GameConfig.luau']],
+    ['WORLD_GEOMETRY',['server/Game.server.luau','shared/GameConfig.luau']],
+    ['SAVE_REJOIN',['server/Game.server.luau','shared/GameConfig.luau']],
+    ['PERFORMANCE',['client/Game.client.luau','server/Game.server.luau']],
+    ['ACTION_IMPLEMENTATION',['client/Game.client.luau','server/Game.server.luau']],
+    ['ROBLOX_OBSERVED_INTERACTION',['client/Game.client.luau','server/Game.server.luau']],
+    ['VFX_FEEDBACK',['client/Game.client.luau','shared/RobloxCommonUI.luau']],
+    ['VISUAL_ASSET_LOADING',['client/Game.client.luau','server/Game.server.luau']],
+    ['MOBILE_UI',['client/Game.client.luau','shared/RobloxCommonUI.luau']]
+  ];
+  try{
+    for(const [surface,expected] of cases){
+      const actual=robloxQualityRepairFiles({...base,queueRobloxQualityBuildUpEvidence:failure(surface)},root);
+      assert.deepEqual(actual.sort(),expected.map(file=>'roblox-games/'+gameId+'/'+file).sort(),surface);
+      assert.ok(actual.every(file=>file.startsWith('roblox-games/'+gameId+'/')));
+    }
+    const multi=robloxQualityRepairFiles({...base,queueRobloxQualityBuildUpEvidence:{
+      ...failure('SAVE_REJOIN'),repairSurfaces:['SAVE_REJOIN','PERFORMANCE','VISUAL_ASSET_LOADING']
+    }},root);
+    assert.deepEqual(multi.sort(),[
+      'roblox-games/'+gameId+'/server/Game.server.luau',
+      'roblox-games/'+gameId+'/shared/GameConfig.luau',
+      'roblox-games/'+gameId+'/client/Game.client.luau'
+    ].sort());
+    const unknown=robloxQualityRepairFiles({...base,queueRobloxQualityBuildUpEvidence:failure('UNVERIFIED_UNKNOWN')},root);
+    assert.deepEqual(unknown,[],'unknown surface cannot invent a source owner');
+    fs.rmSync(path.join(gameRoot,'shared/GameConfig.luau'));
+    const withoutMissing=robloxQualityRepairFiles({...base,queueRobloxQualityBuildUpEvidence:failure('SAVE_REJOIN')},root);
+    assert.deepEqual(withoutMissing,['roblox-games/'+gameId+'/server/Game.server.luau']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Studio stage-to-file triage fails closed for stale builds, owner holds and unsupported provenance',()=>{
+  const root=tempRepo(),gameId='studio-safety-routing',gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server/Game.server.luau'),'return true\n');
+  const source='d'.repeat(40),artifact='sha256:'+'e'.repeat(64);
+  const failure={authority:'roblox-official-studio-mcp-product-quality-failure',
+    sourceRevision:source,artifactIdentity:artifact,
+    repairSurfaces:['SAVE_REJOIN'],qualityFailureKinds:['adaptive-save-rejoin-persistence']};
+  const project={gameId,queueRobloxQualityBuildUpRequired:true,
+    queueRobloxSourceCommit:source,queueRobloxArtifactIdentity:artifact,
+    queueRobloxQualityBuildUpEvidence:failure};
+  try{
+    assert.deepEqual(robloxQualityRepairFiles(project,root),['roblox-games/'+gameId+'/server/Game.server.luau']);
+    for(const patch of [
+      {queueRobloxSourceCommit:'f'.repeat(40)},
+      {queueRobloxArtifactIdentity:'sha256:'+'f'.repeat(64)},
+      {ownerDevelopmentHold:true},
+      {ownerDevelopmentStopped:true},
+      {queueRobloxQualityBuildUpEvidence:{...failure,sourceRevision:'not-a-sha'}},
+      {queueRobloxQualityBuildUpEvidence:{...failure,artifactIdentity:'not-an-artifact'}},
+      {queueRobloxQualityBuildUpEvidence:{...failure,authority:'UNVERIFIED_STUDIO_HINT'}},
+      {queueRobloxQualityBuildUpRequired:false}
+    ]){
+      assert.deepEqual(robloxQualityRepairFiles({...project,...patch},root),[],JSON.stringify(patch));
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('owner directive allows verified gameplay tuning on every active WEB and ROBLOX game, not visual or held targets',()=>{
   const root=tempRepo(),policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
   const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
