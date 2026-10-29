@@ -396,7 +396,7 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
   if(r.output){
    const body=file.code.slice(owner.bodyStart,owner.bodyEnd),escaped=r.output.replaceAll('.','\\.');
    const writes=new RegExp('(?<![\\w$.])'+escaped+'\\s*[+*/%-]?=(?!=)');
-   if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'){
+   if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'||r.operation==='quest-reward-after-existing-call'){
     // [기능 확장] 이미 정의된 필드에만 행동 결과를 연결한다. 새로운 저장 필드는 만들지 않는다.
     const field=r.output.split('.').at(-1);
     const numericField=name=>new RegExp('(?:\\{|,)\\s*'+name+'\\s*(?::|=)\\s*-?\\d+(?:\\.\\d+)?(?=\\s*[,}])').test(file.code);
@@ -405,17 +405,29 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
       unresolved.push({id:r.id,code:'COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN'});continue;
      }
     }else{
-     // 이미 있는 숫자 진행도가 문턱을 넘으면 기존 잠금 상태만 false -> true로 바꾼다.
+     // [빌드업] 완료 플래그·진행도·보상은 이미 정의된 동일 게임 상태만 사용한다.
      const condition=r.condition,progress=condition?.left?.name;
      const boolField=new RegExp('(?:\\{|,)\\s*'+field+'\\s*(?::|=)\\s*false(?=\\s*[,}])');
-     if(condition?.kind!=='compare'||!['>=','>'].includes(condition.op)
+     const isQuest=r.operation==='quest-reward-after-existing-call';
+     const actor=r.output.split('.')[0],reward=r.rewardField;
+     const commonInvalid=condition?.kind!=='compare'||!['>=','>'].includes(condition.op)
        ||condition.left?.kind!=='ref'||condition.right?.kind!=='number'
        ||!Number.isSafeInteger(condition.right.value)||condition.right.value<1
        ||condition.right.value>1000000||typeof progress!=='string'
        ||!progress.includes('.')||!r.output.includes('.')
-       ||progress.split('.')[0]!==r.output.split('.')[0]
+       ||progress.split('.')[0]!==actor||!owner.parameters.includes(actor)
        ||progress===r.output||!numericField(progress.split('.').at(-1))
-       ||!boolField.test(file.code)||writes.test(body)){
+       ||!boolField.test(file.code)||writes.test(body);
+     if(isQuest){
+      const rewardName=typeof reward==='string'?reward.split('.').at(-1):'';
+      const rewardBound=typeof reward==='string'&&reward.split('.').length===2
+       &&reward.split('.')[0]===actor&&reward!==progress&&reward!==r.output
+       &&numericField(rewardName)
+       &&!new RegExp('(?<![\\w$.])'+reward.replaceAll('.','\\.')+'\\s*(?:[+*/%-]?=(?!=)|\\+\\+|--)').test(body);
+      if(commonInvalid||!rewardBound||!Number.isSafeInteger(r.amount)||r.amount<1||r.amount>1000){
+       unresolved.push({id:r.id,code:'QUEST_REWARD_EXISTING_CONTRACT_UNPROVEN'});continue;
+      }
+     }else if(commonInvalid){
       unresolved.push({id:r.id,code:'UNLOCK_EXISTING_THRESHOLD_OR_FLAG_UNPROVEN'});continue;
      }
     }
@@ -423,7 +435,7 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
     unresolved.push({id:r.id,code:'UNDECLARED_STATE_WRITE'});continue;
    }
   }
-  if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'){
+  if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'||r.operation==='quest-reward-after-existing-call'){
    // [게임 기능] 원본 함수가 실제로 한 번 호출되는 지점 뒤에만 진행도 증가를 연결한다.
    const calls=index.edges.filter(e=>e.from===owner.id&&e.toName===r.after&&e.to);
    if(calls.length!==1||!Array.isArray(calls[0].arguments)||calls[0].arguments.length>6){
