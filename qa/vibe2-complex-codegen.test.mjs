@@ -332,6 +332,17 @@ test('real existing line-defense source candidate starts in a real Chromium brow
   const staged=path.join(tmp,'web-games','line-defense');fs.mkdirSync(staged,{recursive:true});
   fs.writeFileSync(path.join(staged,relative),documents.get(relative));
   fs.copyFileSync(path.resolve('game-catalog.json'),path.join(tmp,'game-catalog.json'));
+  // The candidate runs in an isolated HTTP root. Stage only the exact imported
+  // existing browser presentation modules, not a fake response or production edit.
+  for(const relativeModule of [
+    'assets/vibe-browser-presentation.mjs','assets/vibe-presentation-engine.mjs',
+    'assets/vibe-game-world-runtime.mjs','assets/vibe-genre-gameplay.mjs'
+  ]){
+    const sourceFile=path.resolve(relativeModule),dest=path.join(tmp,relativeModule);
+    assert.ok(fs.existsSync(sourceFile),'REAL_BROWSER_MODULE_MISSING:'+relativeModule);
+    fs.mkdirSync(path.dirname(dest),{recursive:true});
+    fs.copyFileSync(sourceFile,dest);
+  }
   const result=spawnSync(process.execPath,[path.resolve('qa/vibe2-development-web-browser-smoke.mjs')],{
     cwd:tmp,env:{...process.env,VIBE2_BROWSER_CHANGED_GAMES:'line-defense'},
     encoding:'utf8',timeout:110000,maxBuffer:8*1024*1024
