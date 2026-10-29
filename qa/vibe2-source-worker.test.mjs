@@ -10318,3 +10318,41 @@ test('Vibe5.9 offline source coding never calls external or localhost AI after s
   }
  }
 });
+
+test('Vibe offline generator makes a genuine native UI patch from current Studio MCP overlap without authoring game source directly',()=>{
+  const root=path.join(process.cwd(),'roblox-games/fantasy-survival');
+  const rel='shared/RobloxCommonUI.luau';
+  const original=fs.readFileSync(path.join(root,rel),'utf8');
+  const officialFailure={authority:'roblox-official-studio-mcp-product-quality-failure',
+    workflowRunId:40901857206,repairSurfaces:['MOBILE_UI'],
+    qualityFailureKinds:['adaptive-ui-commercial-quality'],
+    qualityFailureDetails:[{repairSurface:'MOBILE_UI',
+      observed:JSON.stringify({overlapPairs:8,largeBlockingOverlayCount:0})}]};
+  const order={target:'roblox',goal:'actual Studio UI repair of overlapping HUD and mobile menu',
+    selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:officialFailure}}}};
+  const generate=(request)=>deterministicRobloxNativeRepairCandidate({
+    order:request,sourceRoot:root,responsibleFiles:[rel],sourceRootRelative:'roblox-games/fantasy-survival'
+  });
+  const candidate=generate(order);
+  assert.ok(candidate,'Vibe must emit an actual source patch candidate from its existing native writer');
+  assert.equal(candidate.deterministicRobloxNativeRepair,'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
+  assert.equal(candidate.edits.length,2);
+  let next=original;
+  for(const edit of candidate.edits){
+    assert.equal(edit.path,rel);
+    assert.equal(next.split(edit.find).length,2,'original Luau edit anchor must exist exactly once');
+    next=next.replace(edit.find,edit.replace);
+  }
+  assert.match(next,/local shade=Instance\.new\("Frame"\);shade\.Name="ActionMenuShade"/);
+  assert.match(next,/OutsideActionsMenuClose/);
+  assert.match(next,/UserInputService"\)\.InputBegan:Connect/);
+  assert.match(next,/outsideInput:Disconnect\(\)/);
+  assert.ok(!next.includes('shade.Activated:Connect(function()setOpen(false)end)'));
+  assert.equal(fs.readFileSync(path.join(root,rel),'utf8'),original,'only existing worker candidates may alter source');
+  assert.equal(generate({...order,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:{
+    ...officialFailure,qualityFailureDetails:[{repairSurface:'MOBILE_UI',observed:{overlapPairs:0,largeBlockingOverlayCount:0}}]
+  }}}}}),null,'no Studio overlap means no speculative menu change');
+  assert.equal(generate({...order,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:{
+    ...officialFailure,authority:'unverified-label'
+  }}}}}),null,'unverified observations cannot generate a native repair');
+});
