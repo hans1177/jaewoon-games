@@ -90,7 +90,7 @@ async function requestPermanentGameDelete(id){
   const token=localStorage.getItem('jaewoon_command_device_v1')||'';
   if(!token){
     window.alert('영구삭제 요청에 오너 기기 인증이 필요해. 삭제하지 않았어. 개발 지시 화면에서 먼저 기기를 등록해줘.');
-    location.href=new URL('../command.html',import.meta.url).href;
+    location.href=new URL('command.html',document.baseURI).href;
     return;
   }
   const buttons=[...document.querySelectorAll('button[data-hide-game]')].filter(button=>button.dataset.hideGame===id);
@@ -180,7 +180,7 @@ function setFavoritesOpen(open){
 
 const getJson=async path=>{
   try{
-    const r=await fetch(new URL(path.replace(/^\/+(?:jaewoon-games\/)?/,''),new URL('../',import.meta.url)),{cache:'default',signal:AbortSignal.timeout(10000)});
+    const r=await fetch(new URL(path.replace(/^\/+(?:jaewoon-games\/)?/,''),new URL('./',document.baseURI)),{cache:'default',signal:AbortSignal.timeout(10000)});
     if(r.ok)return await r.json();
   }catch{}
   return null;
