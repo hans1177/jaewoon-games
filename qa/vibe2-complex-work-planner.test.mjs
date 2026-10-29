@@ -518,3 +518,115 @@ test('Roblox server Luau chain preserves owned state, display, save and source w
  fs.writeFileSync(path.join(root,file),source.replace('local function save()\n','local function save(missing: any)\n'));
  assert.equal(planComplexGameWork(options).status,'BLOCKED');
 });
+
+test('name-free WEB request locates state writer, UI reader and original save without changing save key',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={hp:0};\nconst hud={textContent:""};\nconst data={writes:[],values:{}};\n'+
+  'const localStorage={setItem(key,value){data.writes.push(key);data.values[key]=value;}};\n'+
+  'function change(actor){state.hp+=actor.gain;}\n'+
+  'function paint(actor){hud.textContent=String(state.hp+actor.bias);}\n'+
+  'function persist(){localStorage.setItem("keep-save-key",JSON.stringify(state));}\n'+
+  'function onClick(actor){\n change(actor);\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'상태 변경 후 화면 갱신하고 저장해'}};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/change\(actor\);\s+paint\(actor\);\s+persist\(\);/);
+ assert.equal(candidate.complexPlan.atoms[0].derivation,'ORIGINAL_STATE_WRITE_UI_READ_STATIC_SAVE_CALL');
+ assert.equal(candidate.complexPlan.atoms[0].inputSymbols.length,3);
+ const docs=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ const result=vm.runInNewContext(docs.get('game.js')+
+  'onClick({gain:2,bias:3});onClick({gain:4,bias:2});({hp:state.hp,text:hud.textContent,writes:data.writes,saved:JSON.parse(data.values["keep-save-key"])});');
+ assert.equal(result.hp,6);
+ assert.equal(result.text,'8');
+ assert.deepEqual([...result.writes],['keep-save-key','keep-save-key']);
+ assert.equal(result.saved.hp,6);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+test('name-free WEB discovery blocks ambiguous event owners, dynamic save keys and duplicate view functions',t=>{
+ const {root}=fixture(t),base='const state={hp:0};\nconst hud={textContent:""};\n'+
+  'function change(actor){state.hp+=actor.gain;}\n'+
+  'function paint(){hud.textContent=String(state.hp);}\n'+
+  'function persist(){localStorage.setItem("keep-key",JSON.stringify(state));}\n'+
+  'function click(actor){change(actor);}\n';
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'상태가 바뀌면 화면을 갱신하고 저장해'}};
+ for(const text of [
+  base+'function second(actor){change(actor);}\n',
+  base.replace('function persist()', 'function persist2()').replace('"keep-key"','unknownKey'),
+  base+'function extra(){hud.textContent=String(state.hp);}\n',
+  base.replace('function click(actor){change(actor);}','function click(actor){change(actor);paint();}')
+ ]){
+  fs.writeFileSync(path.join(root,'game.js'),text);
+  const plan=planComplexGameWork(options);
+  assert.equal(plan.status,'BLOCKED');
+  assert.ok(plan.unresolved.some(row=>row.code==='SEMANTIC_STATE_UI_SAVE_OWNER_UNPROVEN'),JSON.stringify(plan.unresolved));
+  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),text);
+ }
+});
+
+test('Roblox name-free instruction edits multiple server damage files atomically and ignores client code',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'client'));
+ const files=['server/Hit.server.luau','server/Combat.server.luau','client/Display.client.luau'];
+ const sources=[
+  'local defaults={dead=false}\nlocal function damage(victim: any)\n victim.hp -= 4\nend\n',
+  'local defaults={dead=false}\nlocal function strike(victim: any)\n victim.hp -= 2\nend\n',
+  'local defaults={dead=false}\nlocal function damage(victim: any)\n victim.hp -= 99\nend\n'
+ ];
+ files.forEach((file,i)=>fs.writeFileSync(path.join(root,file),sources[i]));
+ const options={sourceRoot:root,responsibleFiles:files,target:'roblox',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'서버의 모든 전투 함수에서 죽은 대상 공격 금지'}};
+ const plan=planComplexGameWork(options);
+ assert.equal(plan.status,'BOUND',JSON.stringify(plan.unresolved));
+ assert.equal(plan.nodes.length,2);
+ const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ assert.equal(candidate.edits.length,2);
+ assert.deepEqual(candidate.edits.map(row=>row.path).sort(),files.slice(0,2).sort());
+ assert.equal(candidate.complexPlan.atoms.every(atom=>atom.derivation==='ORIGINAL_SERVER_HP_WRITE_MULTI_FILE'),true);
+ const docs=new Map(files.map((file,i)=>[file,sources[i]]));
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ for(const file of files.slice(0,2))assert.match(docs.get(file),/if victim\.dead then return end/);
+ assert.equal(docs.get(files[2]),sources[2]);
+ for(let i=0;i<files.length;i++)assert.equal(fs.readFileSync(path.join(root,files[i]),'utf8'),sources[i]);
+ if(process.env.VIBE2_LUAU_BINARY){
+  for(let i=0;i<2;i++){
+   const probe=path.join(root,'probe'+i+'.luau');
+   fs.writeFileSync(probe,docs.get(files[i])+'\nlocal victim={dead=true,hp=10}\n'+
+    (i===0?'damage(victim)':'strike(victim)')+'\nassert(victim.hp==10)\n'+
+    'victim.dead=false\n'+(i===0?'damage(victim)':'strike(victim)')+
+    '\nassert(victim.hp=='+(i===0?'6':'8')+')\n');
+   const run=spawnSync(process.env.VIBE2_LUAU_BINARY,[probe],{encoding:'utf8',timeout:10000});
+   assert.equal(run.status,0,run.stderr);
+  }
+ }
+ fs.writeFileSync(path.join(root,files[1]),sources[1]+'-- stale source\n');
+ assert.throws(()=>createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'}),/STALE_SOURCE/);
+});
+
+test('Roblox multi-file guard blocks absent death state, client-only targets and more than twelve writes',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'client'));
+ const names=['server/A.server.luau','server/B.server.luau'];
+ const files=[...names,'client/C.client.luau'];
+ const source='local defaults={dead=false}\nlocal function hit(target: any)\n target.hp -= 1\nend\n';
+ files.forEach(file=>fs.writeFileSync(path.join(root,file),source));
+ const order={ownerApproved:true,goal:'모든 서버 공격 함수에서 죽은 대상을 공격하지 않게 해'};
+ const options={sourceRoot:root,responsibleFiles:files,target:'roblox',baseRevisionSha:revision,order};
+ assert.equal(planComplexGameWork(options).status,'BOUND');
+ fs.writeFileSync(path.join(root,names[1]),source.replace('dead=false','alive=true'));
+ const missing=planComplexGameWork(options);
+ assert.equal(missing.status,'BLOCKED');
+ assert.ok(missing.unresolved.some(row=>row.code==='SEMANTIC_DEATH_FIELD_UNPROVEN'));
+ const onlyClient=planComplexGameWork({...options,responsibleFiles:[files[2]]});
+ assert.equal(onlyClient.status,'BLOCKED');
+ for(let i=0;i<13;i++){
+  const name='server/D'+i+'.server.luau';files.push(name);
+  fs.writeFileSync(path.join(root,name),source);
+ }
+ fs.writeFileSync(path.join(root,names[1]),source);
+ const over=planComplexGameWork({...options,responsibleFiles:files});
+ assert.equal(over.status,'BLOCKED');
+ assert.ok(over.unresolved.some(row=>row.code==='SEMANTIC_MULTIFILE_OWNER_UNPROVEN'));
+});
