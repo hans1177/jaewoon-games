@@ -941,7 +941,10 @@ def reconstruct_verified_source():
             if not isinstance(sha,str) or not re.fullmatch(r'[a-f0-9]{64}',sha):
                 raise RuntimeError('RECONSTRUCTION_CC0_PART_HASH_REQUIRED')
             part_file=Path(relative).resolve()
-            if not part_file.is_file() or part_file.stat().st_size>64*1024*1024 or hashlib.sha256(part_file.read_bytes()).hexdigest()!=sha:
+            owned_root=Path.cwd().resolve()
+            if not part_file.is_relative_to(owned_root) or Path(relative).is_symlink():
+                raise RuntimeError('RECONSTRUCTION_CC0_PART_OUTSIDE_REPOSITORY')
+            if not part_file.is_file() or not 0<part_file.stat().st_size<=64*1024*1024 or hashlib.sha256(part_file.read_bytes()).hexdigest()!=sha:
                 raise RuntimeError('RECONSTRUCTION_CC0_PART_SOURCE_CHANGED')
             seen=set(bpy.data.objects)
             if part_file.suffix=='.glb': bpy.ops.import_scene.gltf(filepath=str(part_file))
@@ -968,7 +971,7 @@ def reconstruct_verified_source():
                     'ARMOR':Vector((center.x,center.y,lo.z+size.z*.56)),
                     'CLAW':Vector((center.x,center.y,lo.z+size.z*.30))}[kind]
             part_points=[obj.matrix_world@v.co for obj in meshes for v in obj.data.vertices]
-            part_center=sum(part_points,Vector())/len(part_points)
+            part_center=sum(part_points,Vector((0,0,0)))/len(part_points)
             shift=target-part_center
             for obj in meshes:
                 original_world=obj.matrix_world.copy()
@@ -978,6 +981,10 @@ def reconstruct_verified_source():
                     obj.parent_type='BONE'
                     obj.parent_bone=name
                 obj.matrix_world=original_world
+                obj.name=f'Vibe_{kind}_{asset_id}_{len(derived)}_{len(ASSET_OBJECTS)}'
+                obj.data.name='VibeVerifiedPartMesh_'+kind
+                if not obj.data.materials:
+                    obj.data.materials.append(MID)
                 ASSET_OBJECTS.append(obj)
                 obj['vibeDerivedPartSourceId']=asset_id
                 obj['vibeDerivedPartSourceSha256']=sha
