@@ -577,3 +577,11 @@ test('duplicate exact source notifications preserve F0 progress and failed sourc
   assert.equal(failed.results[0].pass,false);
   assert.equal(queue.items[0].robloxInternalReleasePublished,false);
 });
+
+// runtime 상태 브랜치의 전체 이력 다운로드 회귀를 막는다.
+test('runtime state fetch is bounded for initial sync and both conflict retry worktrees',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+ const fetches=workflow.split('\n').filter(line=>/git .*fetch/.test(line)&&line.includes('origin "$COMPANY_RUNTIME_BRANCH"'));
+ assert.equal(fetches.length,3);
+ assert.ok(fetches.every(line=>line.includes('--depth=1')));
+});

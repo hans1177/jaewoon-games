@@ -110,7 +110,7 @@ jobs:
       - name: Fetch runtime state
         if: steps.changed.outputs.game_ids != ''
         run: |
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git worktree add -B changed-source-runtime /tmp/company-runtime "origin/$COMPANY_RUNTIME_BRANCH"
 
       - name: Revalidate changed source and invalidate stale downstream gates
@@ -245,10 +245,10 @@ jobs:
             echo "ROBLOX_SOURCE_SYNC_SOURCE_FRESH=$SOURCE_REVISION:$live_main"
           }
           regenerate_runtime_state() {
-            git -C /tmp/company-runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git -C /tmp/company-runtime fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
             git -C /tmp/company-runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             # 재시도는 runtime worktree 안에서 호출된다. 도구와 비교용 refs는 소스 checkout에서 읽는다.
-            git -C "$GITHUB_WORKSPACE" fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git -C "$GITHUB_WORKSPACE" fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
             (
             cd "$GITHUB_WORKSPACE"
             local force_args=()
