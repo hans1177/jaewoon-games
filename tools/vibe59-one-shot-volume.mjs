@@ -157,7 +157,9 @@ function generateInsertion(request,index){
   edits.push(makePatch(file,keyboard,keyboardControl.replaceAll('__VOLUME__',id)
    .replaceAll('__KEY_EVENT__',keyboard.parameters[0]),'start'));
  }
- return {edits,ownerFunctions:owners.map(s=>s.name),gameFile:file.path,contentCounts:
+ const ownerOperations=['RENDER_PROCEDURAL_VOLUME','HANDLE_CONTENT_INTERACTION',
+  ...update?['UPDATE_EXISTING_ANIMATION']:[],...keyboard?['OPTIONAL_KEYBOARD_NAVIGATION']:[]];
+ return {edits,ownerOperations,ownerFunctions:owners.map(s=>s.name),gameFile:file.path,contentCounts:
   Object.fromEntries(Object.entries(LIMITS).map(([k])=>[k,request[k].length]))};
 }
 
@@ -174,7 +176,7 @@ export function createVibe59OneShotVolumeCandidate({order={},sourceRoot='',respo
  resolveGameSourceScope({repositoryRoot,sourceRoot,gameId,target,catalog});
  const index=buildGameSourceIndex({sourceRoot,responsibleFiles,target,
   baseRevisionSha:String(order.baseRevisionSha||order.baseCommit||order.sourceRevision||'')});
- const {edits,ownerFunctions,gameFile,contentCounts}=generateInsertion(spec,index);
+ const {edits,ownerOperations,ownerFunctions,gameFile,contentCounts}=generateInsertion(spec,index);
  const docs=new Map(index.files.map(file=>{
   const source=fs.readFileSync(safeSourceFile(sourceRoot,file.path),'utf8');
   if(sourceDigest(source)!==file.sourceSha256)throw Error('VIBE59_VOLUME_STALE_GAME_SOURCE');
@@ -190,10 +192,13 @@ export function createVibe59OneShotVolumeCandidate({order={},sourceRoot='',respo
   expectedEffect:'기존 게임 렌더링·입력·업데이트 함수에 플레이 가능한 벡터 월드 콘텐츠 확장',
   edits,newFiles:[],replaceFiles:[],tests:[],
   vibe59CodeKind:'ONE_SHOT_GAME_VOLUME',vibe59DesignSteps:ownerFunctions.map((name,i)=>({
-   id:'volume-'+name,operation:['RENDER_PROCEDURAL_VOLUME','HANDLE_CONTENT_INTERACTION','UPDATE_EXISTING_ANIMATION','OPTIONAL_KEYBOARD_NAVIGATION'][i]})),
+   id:'volume-'+name,operation:ownerOperations[i]})),
   vibe59TestPlan:{pass:true,authority:'LOCAL_SOURCE_SYNTAX_ONLY',
    cases:[{name:'content-count',contentCounts},{name:'source-owners',ownerFunctions}],independentGameQa:false},
   volumePack:{gameFile,ownerFunctions,contentCounts,graphics:'CANVAS_PROCEDURAL',
+   uiPages:['월드','상태','시설','지도','목표'],
+   convenience:['RESPONSIVE_MOBILE_PANEL','REDUCED_MOTION','EXISTING_KEYBOARD_WHEN_BOUND'],
+   objectives:['VISIT_REGIONS','EXPERIENCE_FACILITY','PERFORM_ACTIONS'],
    interaction:'EXISTING_INPUT_HANDLER',saveSchemaChanged:false},
   ruleDigest:sourceDigest(JSON.stringify(edits)),sourceWrite:false,modelUsed:false,runtimeVerified:false,
   releaseVerified:false};
