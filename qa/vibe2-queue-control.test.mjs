@@ -186,6 +186,59 @@ test('model-free Roblox source misses defer without consuming retries or blockin
   assert.notEqual(recovered.queue.tasks.find(x=>x.id===first.id).status,'done');
 });
 
+test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
+  const base={id:'owner-offline-missing',gameId:'owner-web-game',target:'web',
+    department:'development',type:'implementation',goal:'owner change requires a verified source recipe',
+    sourceRoot:'web-games/owner-web-game',responsibleFiles:['index.html'],
+    status:'running',retries:2,maxRetries:2,reservationId:'owner-offline-lease',
+    reservationRunId:'4083',reservedAt:new Date().toISOString(),evidence:[]};
+  const other={...base,id:'independent-game',gameId:'another-game',
+    status:'queued',reservationId:null,reservationRunId:null,reservedAt:null,retries:0};
+  const failed={taskId:base.id,reservationId:base.reservationId,variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'VIBE4_OFFLINE_PATTERN_UNAVAILABLE',
+      message:'VIBE4_OFFLINE_PATTERN_UNAVAILABLE: no proven offline candidate for the requested owner scope'},
+    metrics:{candidateGenerationAttempts:0}};
+  const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[base,other]}),[failed]);
+  assert.equal(settled.applied[0].outcome,'DEFERRED_OFFLINE_RECIPE');
+  assert.equal(settled.applied[0].capability,'VERIFIED_SOURCE_BOUND_RECIPE_REQUIRED');
+  const waiting=settled.queue.tasks.find(row=>row.id===base.id);
+  assert.equal(waiting.status,'blocked');
+  assert.equal(waiting.blocker,'OFFLINE_RECIPE_UNAVAILABLE');
+  assert.equal(waiting.retries,2);
+  assert.equal(waiting.lastOutcome,'OFFLINE_RECIPE_CAPABILITY_GAP');
+  assert.equal(waiting.reservationId,null);
+  assert.equal(waiting.neuronExpectedVariants,0);
+  assert.ok(!waiting.evidence.includes('source-qa-verified'));
+  assert.ok(waiting.evidence.includes('offline-recipe-capability-gap:v1'));
+  const retry=Date.parse(settled.applied[0].retryAt);
+  assert.ok(retry>Date.now()+5*60*60*1000);
+  assert.equal(recoverStaleRunningReservations(settled.queue,{nowMs:retry-1000}).recovered,0);
+  const independent=reserveVibeTaskBatch(settled.queue,{maxConcurrentTasks:1,lane:'game-primary'});
+  assert.deepEqual(independent.tasks.map(row=>row.id),['independent-game']);
+  const resumed=recoverStaleRunningReservations(settled.queue,{nowMs:retry+1000});
+  assert.equal(resumed.recovered,1);
+  assert.equal(resumed.queue.tasks.find(row=>row.id===base.id).status,'queued');
+  assert.equal(resumed.queue.tasks.find(row=>row.id===base.id).retries,2);
+  const replay={...waiting,status:'running',reservationId:'next-lease'};
+  const again=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[replay]}),
+    [{...failed,reservationId:'next-lease'}]);
+  assert.equal(again.queue.tasks[0].evidence.filter(v=>v.startsWith('source-offline-pattern-retry-at:')).length,1);
+});
+
+test('unverified offline failures cannot masquerade as recipe capability gaps',()=>{
+  const base={id:'invalid-offline',gameId:'game',target:'web',department:'development',type:'implementation',
+    goal:'repair game',responsibleFiles:['index.html'],sourceRoot:'web-games/game',status:'running',
+    retries:0,maxRetries:2,reservationId:'lease',evidence:[]};
+  const failed={taskId:base.id,reservationId:'lease',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'VIBE4_OFFLINE_PATTERN_UNAVAILABLE',message:'malformed result'},
+    metrics:{candidateGenerationAttempts:1}};
+  const result=applyVibeFanInResults(createVibeContinuousQueue({tasks:[base]}),[failed]);
+  assert.notEqual(result.applied[0].outcome,'DEFERRED_OFFLINE_RECIPE');
+  assert.notEqual(result.queue.tasks[0].blocker,'OFFLINE_RECIPE_UNAVAILABLE');
+});
+
 test('missing model credentials defer exact source mutation but leave other queued tasks runnable',()=>{
   const target={id:'missing-model-web',gameId:'browser-game',target:'web',department:'development',type:'implementation',
     goal:'existing file repair',sourceRoot:'web-games/browser-game',responsibleFiles:['index.html'],

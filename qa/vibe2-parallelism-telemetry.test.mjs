@@ -109,6 +109,49 @@ test('mixed direct worker failure stages stay classified instead of falling back
   assert.equal(t.pass,false);
 });
 
+test('missing offline recipe reports source capability gap, not failed attempts or severe runner failure',()=>{
+  const results=Array.from({length:5},(_,i)=>row(i,{
+    start:1000+i*3,end:5000+i*3,outcome:'FAIL',runId:'offline-no-model',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:i===0?{class:'NO_MODEL_SOURCE_REPAIR_UNAVAILABLE',
+      message:'ROBLOX_NO_MODEL_SOURCE_REPAIR_UNAVAILABLE: verified responsible-source edit required'}
+      :{class:'VIBE4_OFFLINE_PATTERN_UNAVAILABLE',
+        message:'VIBE4_OFFLINE_PATTERN_UNAVAILABLE: no proven offline candidate for the requested owner scope'}
+  }));
+  const report=computeParallelismTelemetry({results,requestedMax:5,effectiveMax:5,taskCount:5});
+  assert.equal(report.outcomes.FAIL,5,'raw errors remain visible');
+  assert.equal(report.unavailableSourceCapabilities.count,5);
+  assert.equal(report.unavailableSourceCapabilities.classes.VIBE4_OFFLINE_PATTERN_UNAVAILABLE,4);
+  assert.equal(report.unavailableSourceCapabilities.classes.NO_MODEL_SOURCE_REPAIR_UNAVAILABLE,1);
+  assert.equal(report.unavailableSourceCapabilities.ratePct,100);
+  assert.equal(report.unavailableSourceCapabilities.attemptedCandidateCount,0);
+  assert.equal(report.throughput.attemptedPrimaryCandidateCount,0);
+  assert.equal(report.sourceGenerationFailures.count,0);
+  assert.equal(report.effectiveFailureCount,0);
+  assert.equal(report.failureRatePct,0);
+  assert.equal(report.pressureLevel,'LOW');
+  assert.equal(report.bottleneck,'OFFLINE_SOURCE_CAPABILITY_GAP');
+  assert.equal(report.pass,false,'no verified output is not a production pass');
+});
+
+test('actual failed source edits remain failure pressure even alongside missing recipes',()=>{
+  const results=[
+    row(1,{outcome:'FAIL',blocker:'source-candidate-generation-failed',candidateFailure:{
+      class:'VIBE4_OFFLINE_PATTERN_UNAVAILABLE',
+      message:'VIBE4_OFFLINE_PATTERN_UNAVAILABLE: no proven offline candidate for the requested owner scope'}}),
+    row(2,{outcome:'FAIL',blocker:'source-candidate-generation-failed',
+      candidateFailure:{class:'EDIT_MATCH',message:'verified source anchor did not match'}})
+  ];
+  const report=computeParallelismTelemetry({results,requestedMax:2,effectiveMax:2,taskCount:2});
+  assert.equal(report.unavailableSourceCapabilities.count,1);
+  assert.equal(report.sourceGenerationFailures.count,1);
+  assert.equal(report.sourceGenerationFailures.classes.EDIT_MATCH,1);
+  assert.equal(report.effectiveFailureCount,1);
+  assert.equal(report.failureRatePct,50);
+  assert.equal(report.pressureLevel,'SEVERE');
+  assert.equal(report.pass,false);
+});
+
 test('source candidate failures are reported as the real saturated-wave bottleneck',()=>{
   const results=Array.from({length:20},(_,i)=>row(i,{
     start:1000+i*5,end:5000+i*5,outcome:'FAIL',runId:'125',
