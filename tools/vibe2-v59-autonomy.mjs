@@ -145,13 +145,14 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='const')return a;
     const x=evaluate(a,args);
     if(!valid(x))return NaN;
+    // Branch semantics are lazy: an unused arm may contain an undefined operation.
+    if(op==='select')return evaluate(x>0?b:c,args);
     if(op==='abs')return Math.abs(x);
     if(op==='floor')return Math.floor(x);
     if(op==='round')return Math.round(x);
     if(op==='neg')return -x;
     const y=evaluate(b,args);
     if(!valid(y))return NaN;
-    if(op==='select')return evaluate(x>0?b:c,args);
     switch(op){
       case '+':return x+y;case '-':return x-y;case '*':return x*y;
       case '/':return Math.abs(y)<1e-9?NaN:x/y;
