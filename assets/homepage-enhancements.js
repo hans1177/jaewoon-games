@@ -18,15 +18,15 @@ function loadHiddenGames(){
     return new Set(Array.isArray(value)?value.filter(id=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)).slice(0,200):[]);
   }catch{return new Set();}
 }
-function deleteFavoriteButton(id,name){
-  return `<button class="homeManageButton homeDeleteButton" type="button" data-hide-game="${esc(id)}" ${favoriteGameIds.has(id)?'':'hidden'} aria-label="${esc(name)} 즐겨찾기 게임 삭제" title="즐겨찾기 게임 삭제 · 개발도 중단">삭제</button>`;
+function gameDeleteButton(id,name){
+  return `<button class="homeManageButton homeDeleteButton" type="button" data-hide-game="${esc(id)}" aria-label="${esc(name)} 게임 삭제" title="게임 삭제 · 자동개발 중단">삭제</button>`;
 }
 function gameTitleActions(id,name){
-  return `<span class="homeGameTitleActions">${favoriteButton(id,name)}${deleteFavoriteButton(id,name)}</span>`;
+  return `<span class="homeGameTitleActions">${favoriteButton(id,name)}${gameDeleteButton(id,name)}</span>`;
 }
 async function hideGameFromHome(id){
   const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
-  if(!row||!favoriteGameIds.has(id))return;
+  if(!row)return;
   const name=identityOf(row).name||row.name||id;
   // 즐겨찾기 해제에는 확인창이 없고 삭제에만 확인창이 하나 있다.
   if(!window.confirm(name+' 게임을 삭제할까?\n즐겨찾기·홈 목록에서 사라지고 자동개발도 중단돼.\n기존 게임 파일과 저장 데이터는 보존돼.'))return;
@@ -94,12 +94,11 @@ function renderFavoriteGames(){
     const href=links.web||links.roblox||links.unity||links.webSource||'';
     const art=game.image?`<img class="mobileFavoriteArt" src="${esc(game.image)}" alt="" loading="lazy" decoding="async">`:'<span class="mobileFavoriteArt" aria-hidden="true"></span>';
     const body=`${art}<span class="mobileFavoriteText"><strong>${esc(game.name)}</strong><small>${href?'게임 열기':'플레이 준비 중'}</small></span>`;
-    return `<div class="mobileFavoriteRow">${href?`<a class="mobileFavoriteLink" href="${esc(href)}">${body}</a>`:`<div class="mobileFavoriteUnavailable">${body}</div>`}${deleteFavoriteButton(game.id,game.name)}</div>`;
+    return `<div class="mobileFavoriteRow">${href?`<a class="mobileFavoriteLink" href="${esc(href)}">${body}</a>`:`<div class="mobileFavoriteUnavailable">${body}</div>`}${gameDeleteButton(game.id,game.name)}</div>`;
   }).join(''):'<p class="mobileFavoriteEmpty">즐겨찾기한 게임이 없어. 게임 타이틀 옆 ☆을 눌러 추가해.</p>';
   list.dataset.favoriteCount=String(rows.length);
 }
 function updateFavoriteButtons(){
-  document.querySelectorAll('button[data-hide-game]').forEach(button=>{button.hidden=!favoriteGameIds.has(button.dataset.hideGame);});
   document.querySelectorAll('button[data-favorite-id]').forEach(button=>{
     const id=button.dataset.favoriteId,active=favoriteGameIds.has(id);
     const name=button.closest('.foldGameCard')?.querySelector('h3')?.textContent
@@ -436,7 +435,6 @@ function installStyles(){
 .homeGameTitleActions{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto}
 .homeManageButton{min-height:44px;padding:0 9px;border:1px solid #d5e1ec;border-radius:10px;background:#f1f6fb;color:#526579;font-size:11px;font-weight:850;white-space:nowrap;cursor:pointer;touch-action:manipulation}
 .homeDeleteButton{background:#fff0f0;color:#a12e39;border-color:#f1c6c9}
-.homeDeleteButton[hidden]{display:none!important}
 .mobileFavoriteRow{display:flex;align-items:center;gap:8px}.mobileFavoriteRow>.mobileFavoriteLink,.mobileFavoriteRow>.mobileFavoriteUnavailable{flex:1;min-width:0}
 .mobileFavoriteRow>.homeDeleteButton{flex:0 0 auto;margin-right:6px}
 .homeManageButton:focus-visible,.homeRestoreButton:focus-visible{outline:2px solid #1677ff;outline-offset:2px}
