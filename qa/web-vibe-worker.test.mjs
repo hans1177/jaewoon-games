@@ -682,7 +682,7 @@ test('Vibe5.9 no-model ceiling synthesis preserves signed and integral holdouts 
  const spec={parameters:['x'],maxDepth:2,
   examples:[{args:[1.2],output:2},{args:[-1.2],output:-1},
    {args:[0.3],output:1},{args:[2],output:2}],
-  holdouts:[{args:[-0.3],output:0},{args:[2.01],output:3},
+  holdouts:[{args:[-0.3],output:-0},{args:[2.01],output:3},
    {args:[-2],output:-2}]};
  for(const strategy of [undefined,'evolution']){
   const selected=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
