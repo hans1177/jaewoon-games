@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
+import crypto from 'node:crypto';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
@@ -628,4 +629,28 @@ test('Vibe5.9 inherited AST concepts must be attested and acyclic before use',()
  const result=synthesizeVibe59NumericAlgorithm({spec});
  assert.equal(result.casesPassed,5);
  assert.equal(result.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+});
+
+
+test('Vibe5.9 uses only source-matched and independently replayed playtest counterexamples',()=>{
+ const source='function solve(x,y){return 0;}\n';
+ const sourceSha256=crypto.createHash('sha256').update(source).digest('hex');
+ const spec={ownerApproved:true,functionName:'solve',parameters:['x','y'],
+  examples:[{args:[2,5],output:5},{args:[8,1],output:8},{args:[-3,-1],output:-1}],
+  holdouts:[{args:[7,9],output:9},{args:[0,4],output:4}]};
+ const proof={evidenceId:'counterexample-actual-game',independentQa:'PASS',
+  regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+ const row={sourceSha256,actualGamePlaytest:true,gameSourceChanged:true,
+  reproduced:true,args:[11,3],output:11,proof};
+ const good=synthesizeVibe59NumericAlgorithmSource({spec:{...spec,verifiedCounterexamples:[row]},
+  source,relative:'web-games/demo/logic.js'});
+ assert.equal(good.acceptedRuntimeCounterexamples,1);
+ assert.equal(good.search.trainingCases,4);
+ assert.equal(good.search.casesPassed,6);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+   spec:{...spec,verifiedCounterexamples:[{...row,sourceSha256:'0'.repeat(64)}]},
+   source,relative:'web-games/demo/logic.js'}),/COUNTEREXAMPLE_UNVERIFIED/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+   spec:{...spec,verifiedCounterexamples:[{...row,proof:{...proof,runtime:'PENDING'}}]},
+   source,relative:'web-games/demo/logic.js'}),/COUNTEREXAMPLE_UNVERIFIED/);
 });
