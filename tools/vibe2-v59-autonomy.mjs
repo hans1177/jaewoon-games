@@ -498,7 +498,7 @@ export function renderVibe59NumericLuaAST(node,params){
     }else if(Object.getPrototypeOf(part)===Object.prototype){
       const fields={reference:['kind','name'],constant:['kind','value'],
         mutation:['kind','operator','operand'],crossover:['kind','operator','left','right']};
-      const required=fields[part.kind];
+      const required=Object.hasOwn(fields,part.kind)?fields[part.kind]:null;
       if(!required||Object.keys(part).length!==required.length
         ||required.some(key=>!Object.hasOwn(part,key)))
         throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
