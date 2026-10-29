@@ -3160,6 +3160,12 @@ test('per-game autonomous runtime bottleneck repair isolates source revisions an
   assert.ok(repaired.evidence.includes('runtime-neural-ingress-failed-stage:TARGET_PLATFORM_RUNTIME'));
   assert.ok(repaired.evidence.includes('runtime-neural-ingress-failure-signature:server-boot-timeout'));
   assert.ok(repaired.evidence.includes('runtime-neural-ingress-source-revision:'+sourceRevision));
+  assert.ok(repaired.evidence.includes('runtime-neural-ingress-responsible-system:ROBLOX_RUNTIME'));
+  assert.match(repaired.goal,/\[VERIFIED_GAME_RUNTIME_BOTTLENECK\]/);
+  assert.match(repaired.goal,/검증된 책임 시스템: ROBLOX_RUNTIME/);
+  assert.match(repaired.goal,/실패 단계: TARGET_PLATFORM_RUNTIME/);
+  assert.match(repaired.goal,/실패 식별자: server-boot-timeout/);
+  assert.ok(repaired.goal.endsWith('repair exact runtime'));
   const retryQueue={...result.queue,tasks:result.queue.tasks.map(x=>
     x.id==='same-game-current'?{...x,status:'blocked'}:x)};
   const repeated=applyRuntimeNeuralEventsToQueue(retryQueue,[firstEvent]);
@@ -3171,6 +3177,10 @@ test('per-game autonomous runtime bottleneck repair isolates source revisions an
   assert.equal(next.mutationCount,1);
   assert.ok(next.queue.tasks.find(x=>x.id==='same-game-current').evidence
     .includes('runtime-neural-ingress-failure-signature:server-boot-new-cause'));
+  const nextGoal=next.queue.tasks.find(x=>x.id==='same-game-current').goal;
+  assert.match(nextGoal,/실패 식별자: server-boot-new-cause/);
+  assert.doesNotMatch(nextGoal,/실패 식별자: server-boot-timeout/);
+  assert.equal((nextGoal.match(/\[VERIFIED_GAME_RUNTIME_BOTTLENECK\]/g)||[]).length,1);
 });
 
 test('per-game runtime recovery does not reinterpret a stale build as the current source',()=>{
@@ -3192,6 +3202,34 @@ test('per-game runtime recovery does not reinterpret a stale build as the curren
   assert.equal(result.mutationCount,0);
   assert.equal(result.applied[0].reason,'SOURCE_REVISION_MISMATCH');
   assert.equal(result.queue.tasks[0].status,'blocked');
+});
+
+// [게임별 병목] 중단 권한·소스 충돌 시 기존 작업을 변경하지 않는다.
+test('per-game verified bottleneck never requeues owner-held work or a conflicting source identity',()=>{
+  const version='d'.repeat(40);
+  const project={gameId:'held-game',engine:'roblox',queueRuntimeObserved:true,
+    queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimePassed:false,
+    queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'verified-client-failure',queueRuntimeSourceRevision:version,
+    queueRuntimeRootCauseVerified:true,queueRuntimeResponsibleSystem:'ROBLOX_CLIENT'};
+  assert.equal(compileRuntimeNeuralEvent({...project,ownerDevelopmentHold:true}),null);
+  assert.equal(compileRuntimeNeuralEvent({...project,ownerDevelopmentStopped:true}),null);
+  const compiled=compileRuntimeNeuralEvent(project);
+  const original={id:'held-work',gameId:'held-game',target:'roblox',
+    department:'development',type:'implementation',goal:'original goal',
+    responsibleFiles:['roblox-games/held-game/client/Game.client.luau'],
+    sourceRoot:'roblox-games/held-game',releaseState:'development-confirmed',
+    status:'blocked',blocker:'owner-hold',ownerDevelopmentHold:true};
+  const held=applyRuntimeNeuralEventsToQueue({tasks:[original]},[compiled]);
+  assert.equal(held.mutationCount,0);
+  assert.equal(held.queue.tasks[0].status,'blocked');
+  assert.equal(held.queue.tasks[0].goal,'original goal');
+  const conflicting=applyRuntimeNeuralEventsToQueue({tasks:[{...original,
+    ownerDevelopmentHold:false,evidence:['source-revision:'+version,
+      'build-source-revision:'+'a'.repeat(40)]}]},[compiled]);
+  assert.equal(conflicting.mutationCount,0);
+  assert.equal(conflicting.applied[0].reason,'SOURCE_REVISION_MISMATCH');
+  assert.equal(conflicting.queue.tasks[0].goal,'original goal');
 });
 
 test('unobserved runtime state does not invent a runtime neural event',()=>{
