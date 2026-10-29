@@ -526,7 +526,7 @@ RunService.PreSimulation:Connect(function(dt)
   table.clear(combatPoseTargets)
   table.clear(combatR15Targets)
   if combatRecoveryUntil then
-    activeCombatController.Step(combatR15Targets, dt)
+    activeCombatController.Step(nil, dt) -- 중립 복귀는 공격 프레임 입력과 구분한다.
     if os.clock() >= combatRecoveryUntil then finishNativeCombatMotion() end
     return
   end
