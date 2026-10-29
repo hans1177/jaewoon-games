@@ -745,6 +745,10 @@ jobs:
     timeout-minutes: 15
     concurrency:
       group: magic-forest-pages-main-publish
+      # Keep ready-to-publish snapshots from cancelling one another while the
+      # shared Pages deploy runner is busy. The SHA admission below rejects
+      # superseded snapshots before deploy-pages touches the public site.
+      queue: max
       cancel-in-progress: false
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
