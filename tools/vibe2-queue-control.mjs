@@ -547,7 +547,11 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
           .update(nativeCodegenSha256+'|'+studioSignature).digest('hex');
         const tried=evidence.filter(value=>clean(value).startsWith('source-no-model-attempt-sha256:'));
         // 이전 큐 상태는 조합 키가 없으므로 기존 SHA 기반 차단을 유지한다.
-        if(tried.includes(attempt)||(!tried.length&&evidence.includes(fingerprint)))return task;
+        // Losing or spoofing official Studio observations cannot create a new
+        // "none" attempt for an unchanged native worker. A revised source worker
+        // still changes the codegen fingerprint and remains immediately eligible.
+        if(tried.includes(attempt)||(!officialStudio&&evidence.includes(fingerprint))
+          ||(!tried.length&&evidence.includes(fingerprint)))return task;
         recovered+=1;
         return {...task,...clearedReservation(),status:'queued',blocker:null,
           lastOutcome:officialStudio?'MODEL_FREE_NATIVE_STUDIO_EVIDENCE_RECHECK':'MODEL_FREE_NATIVE_CODEGEN_RECHECK',
