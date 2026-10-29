@@ -384,7 +384,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
   const assembled=[],ranges=new Map(),originals=new Map(),documents=new Map();
   for(const row of sorted){
     // A prior replacement must not hide reuse of an already-consumed original anchor.
-    const requestedPath=clean(row.step.path).replaceAll('\\\\','/');
+    const requestedPath=clean(row.step.path).replaceAll('\\','/');
     const originalText=originals.get(requestedPath);
     const requestedFind=row.step.find;
     if(originalText!==undefined&&typeof requestedFind==='string'&&requestedFind){
