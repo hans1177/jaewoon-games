@@ -10337,6 +10337,14 @@ test('Vibe offline generator makes a genuine native UI patch from current Studio
   assert.ok(candidate,'Vibe must emit an actual source patch candidate from its existing native writer');
   assert.equal(candidate.deterministicRobloxNativeRepair,'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
   assert.equal(candidate.edits.length,2);
+  assert.equal(candidate.semanticGrounding.responsibleFunction,'RobloxCommonUI.AdaptActionMenu');
+  const menuStart=original.indexOf('function RobloxCommonUI.AdaptActionMenu(');
+  const menuEnd=original.indexOf('return {isOpen=function()return opened end',menuStart);
+  assert.ok(menuStart>=0&&menuEnd>menuStart);
+  for(const edit of candidate.edits){
+    const at=original.indexOf(edit.find);
+    assert.ok(at>menuStart&&at<menuEnd,'Studio repair must edit inside its one original UI function');
+  }
   let next=original;
   for(const edit of candidate.edits){
     assert.equal(edit.path,rel);
