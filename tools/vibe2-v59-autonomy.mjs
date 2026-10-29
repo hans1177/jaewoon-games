@@ -806,7 +806,7 @@ export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsi
     min< -1e6||max>1e6||/^(?:constructor|prototype|__proto__)$/.test(variable))return null;
  let root;try{root=fs.realpathSync(sourceRoot)}catch{return null}
  const gameId=clean(task.gameId||order.gameId);if(gameId&&path.basename(root)!==gameId)return null;
- const found=[];
+ const found=[];let assignments=0;
  for(const rel of new Set(responsibleFiles)){
   if(typeof rel!=='string'||path.isAbsolute(rel)||rel.includes('\\')||
      rel.split('/').some(x=>!x||x==='.'||x==='..')||
@@ -821,10 +821,54 @@ export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsi
    if(blocks.length!==1||blocks[0][1].trim())continue;
    script=blocks[0][2];
   }
+  // 소스 분석: 문자열·주석은 위치를 보존해 가리고, 해석하지 않는 문법은 거부한다.
+  let masked='',offset=0;
+  const blank=text=>text.replace(/[^\r\n]/g,' ');
+  while(offset<script.length){
+   const rest=script.slice(offset),c=rest[0];let length=0;
+   if(c==='`')return null; // JS templates and Luau interpolation require a full parser.
+   if(c==='"'||c==="'"){
+    let end=offset+1,closed=false;
+    while(end<script.length){
+     const value=script[end++];
+     if(value==='\\'){end++;continue}
+     if(value===c){closed=true;break}
+    }
+    if(!closed)return null;
+    length=end-offset;
+   }else if(target==='web'&&rest.startsWith('/*')){
+    const end=script.indexOf('*/',offset+2);if(end<0)return null;
+    length=end+2-offset;
+   }else if(target==='web'&&rest.startsWith('//')){
+    const end=script.indexOf('\n',offset);length=(end<0?script.length:end)-offset;
+   }else if(target==='web'&&c==='/'){
+    return null; // Regex literals and division are outside this bounded lexical subset.
+   }else if(target==='roblox'){
+    const comment=rest.startsWith('--'),start=comment?2:0;
+    const long=/^\[(=*)\[/.exec(rest.slice(start));
+    if(long){
+     const closing=']'+long[1]+']',end=script.indexOf(closing,offset+start+long[0].length);
+     if(end<0)return null;
+     length=end+closing.length-offset;
+    }else if(comment){
+     const end=script.indexOf('\n',offset);length=(end<0?script.length:end)-offset;
+    }
+   }
+   if(length){masked+=blank(script.slice(offset,offset+length));offset+=length}
+   else{masked+=c;offset++}
+  }
+  // 권한 범위: 지원하지 않는 재대입도 집계해 임의의 한 곳을 선택하지 않는다.
+  const writes=new RegExp('(?<![\\w$.])'+variable+'\\s*(?:=(?!=|>)|[+*/%^-]=|\\+\\+|--)','g');
+  assignments+=[...masked.matchAll(writes)].length;
+  if(new RegExp('(?:\\+\\+|--)\\s*'+variable+'\\b|\\b'+variable+'\\s*[,\\]}]').test(masked))return null;
+  const builtin=target==='web'?'Math':'math';
+  if(new RegExp('\\b'+builtin+'\\b(?!\\s*\\.)').test(masked)||
+     new RegExp('\\b'+builtin+'\\s*\\.[\\w$]+\\s*=(?!=)').test(masked))return null;
   const rhs='(?:[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*){0,2}|-?\\d+(?:\\.\\d+)?)';
   const prefix=target==='web'?'(?:(?:let|const|var)\\s+)?':'(?:local\\s+)?';
   const re=new RegExp('^([ \\t]*'+prefix+variable+'[ \\t]*=[ \\t]*)('+rhs+')([ \\t]*;?[ \\t]*)$','gm');
-  for(const item of script.matchAll(re)){
+  for(const item of masked.matchAll(re)){
+   if(script.slice(item.index,item.index+item[0].length)!==item[0])continue;
    if(target==='roblox'&&/\$/.test(item[2]))continue;
    if(source.split(item[0]).length!==2)continue;
    const expression=target==='roblox'?'math.clamp('+item[2]+', '+min+', '+max+')':
@@ -832,7 +876,7 @@ export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsi
    found.push({rel,source,find:item[0],replace:item[1]+expression+item[3]});
   }
  }
- if(found.length!==1)return null;
+ if(found.length!==1||assignments!==1)return null;
  const {rel,source,find,replace}=found[0];
  const cases=[min-1,min,(min+max)/2,max,max+1].map((input,i)=>({
    name:'boundary-'+i,input,expected:Math.min(max,Math.max(min,input))}));
