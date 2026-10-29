@@ -569,3 +569,63 @@ test('WEB generated algorithm is reusable only after exact merged browser verifi
   assert.match(accepted.updated,/return Math\.max\(x,y\)/);
   assert.equal(accepted.offlineSourceProof.runtimeVerified,false);
 });
+
+
+// [회귀] 무모델 진화기는 WEB/ROBLOX 모두 명시적 수치 oracle과 소스 범위에서만 작동한다.
+test('Vibe5.9 AST mutation and crossover search passes new numeric holdouts without a model',()=>{
+ const spec={parameters:['x'],strategy:'evolution',maxGenerations:8,
+  examples:[{args:[1],output:1},{args:[2],output:0},{args:[3],output:1},{args:[4],output:0}],
+  holdouts:[{args:[7],output:1},{args:[8],output:0}]};
+ const result=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(result.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+ assert.ok(Array.isArray(result.ast));
+ assert.equal(result.casesPassed,6);
+ assert.equal(result.fitness.accuracy,1);
+ assert.ok(result.fitness.complexity>0);
+ assert.ok(result.candidatesConsidered>10);
+ assert.equal(result.runtimeVerified,false);
+ const program=vm.runInNewContext('(function(x){'+result.source+'})');
+ for(const row of [...spec.examples,...spec.holdouts])assert.equal(program(...row.args),row.output);
+ // Code alone is never a runtime verified proof.
+ assert.equal(result.sourceWrite,false);
+});
+
+test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure function',()=>{
+ const spec={ownerApproved:true,functionName:'resolve',parameters:['a','b'],
+  examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
+  holdouts:[{args:[7,8],output:8},{args:[-1,-4],output:-1}]};
+ const original='local function resolve(a,b)\n  return 0\nend\n';
+ const result=synthesizeVibe59NumericAlgorithmSource({
+  spec,source:original,relative:'ServerScriptService/score.server.luau'});
+ assert.match(result.newText,/math\.max\(a,b\)/);
+ assert.ok(result.search.ast);
+ assert.equal(result.search.casesPassed,5);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(original,'local function resolve(a,b)\n  return 0\nend\n');
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-luau-evolution-'));
+ try{
+  fs.writeFileSync(path.join(root,'score.server.luau'),original);
+  const candidate=createVibe59CodeCandidate({target:'roblox',sourceRoot:root,
+   responsibleFiles:['score.server.luau'],order:{vibe59CodeRequest:{
+    path:'score.server.luau',find:original.trimEnd(),ownerApproved:true,
+    algorithmSpec:spec}}});
+  assert.equal(candidate.vibe59CodeKind,'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM');
+  assert.equal(candidate.runtimeVerified,false);
+  assert.equal(fs.readFileSync(path.join(root,'score.server.luau'),'utf8'),original);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
+   spec,source:'local function resolve(a,b)\n  game.Players:ClearAllChildren()\n  return 0\nend\n',
+   relative:'score.server.luau'}),/EXISTING_PURE_FUNCTION_REQUIRED/);
+});
+
+test('Vibe5.9 inherited AST concepts must be attested and acyclic before use',()=>{
+ const recursive=['abs'];recursive.push(recursive);
+ const spec={parameters:['x','y'],strategy:'evolution',maxGenerations:3,
+  examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
+  holdouts:[{args:[7,8],output:8},{args:[-1,-4],output:-1}],
+  verifiedConcepts:[{verified:true,proof:{independentQa:'PASS',
+   regression:'PASS',runtime:'PASS',actualPlatformRuntime:true},ast:recursive}]};
+ const result=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(result.casesPassed,5);
+ assert.equal(result.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+});
