@@ -9,6 +9,7 @@ import {inspectSourceFunctions,executableText} from './company-vibe2-expert-deve
 export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges,createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
+import {createVibe59OneShotVolumeCandidate} from './vibe59-one-shot-volume.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
@@ -1393,6 +1394,9 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
   const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
     responsibleFiles,target,repositoryRoot});
   if(visualAssetCandidate)return visualAssetCandidate;
+  // [실제 빌드업] 기존 Vibe 후보→동일 안전 편집기 경로에서 월드·시설·그래픽·입력·모션을 일괄 생성한다.
+  const volumeCandidate=createVibe59OneShotVolumeCandidate({order,sourceRoot,responsibleFiles,target,repositoryRoot});
+  if(volumeCandidate)return audited(volumeCandidate);
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null){
     // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.
