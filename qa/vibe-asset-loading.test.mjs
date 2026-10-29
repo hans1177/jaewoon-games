@@ -143,7 +143,7 @@ test('generated game gates startup on asset loading and draws provided assets',a
  const html=buildGeneratedGame({packageData:{gameId:'qa-generated-assets',assets:{background:'assets/bg.png',player:'assets/player.png',enemy:'assets/enemy.png',bgm:'audio/bgm.ogg'}}}).html;
  const scriptSource=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
  assert.ok(scriptSource,'generated module script exists');
- const body=scriptSource.replace(/^import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
+ const body=scriptSource.replace(/^\s*import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
  let resolveAssets,loadedEntries,rafCount=0,frame=null,plays=0;
  const drawCalls=[],listeners=new Map();
  const canvasContext={clearRect(){},fillRect(){},fillText(){},beginPath(){},arc(){},fill(){},drawImage:(...args)=>drawCalls.push(args)};
@@ -183,7 +183,7 @@ test('generated game gates startup on asset loading and draws provided assets',a
 
 test('generated game reports missing asset failure instead of starting a broken scene',async()=>{
  const html=buildGeneratedGame({packageData:{gameId:'qa-missing',assets:{player:'assets/missing.png'}}}).html;
- const body=html.match(/<script type="module">([\s\S]*?)<\/script>/)[1].replace(/^import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
+ const body=html.match(/<script type="module">([\s\S]*?)<\/script>/)[1].replace(/^\s*import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
  let rejectAssets,rafCount=0;
  const ui=new Map();
  const getElementById=id=>{if(!ui.has(id))ui.set(id,{textContent:'',style:{},addEventListener(){},setPointerCapture(){},getBoundingClientRect:()=>({width:140,left:0,top:0})});return ui.get(id)};
