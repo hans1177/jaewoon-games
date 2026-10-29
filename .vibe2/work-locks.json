@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-c6qf8n",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-web-startup-spatial-repair-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "web-games/horror-escape-room/index.html"
+      ],
+      "baseSha": "352a6872f78eb64d886057970c5a7d2e30fa653d",
+      "runId": "40811103661",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-29T03:47:49.975Z",
+      "expiresAt": "2026-10-29T04:32:49.975Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
