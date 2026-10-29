@@ -1125,7 +1125,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   // [무모델 후보 경쟁] 같은 반례를 통과한 전략 중 조건 분기와 소스 비용 최소화.
   const measured=candidates.map((row,index)=>({...row,index,
     sourceBytes:Buffer.byteLength(row.compiled.source),
-    branchCount:(row.compiled.source.match(/\\b(?:if|switch|case|elseif)\\b/g)||[]).length}));
+    branchCount:(row.compiled.source.match(/\b(?:if|switch|case|elseif)\b/g)||[]).length}));
   const selected=measured.filter(row=>row.replay?.pass!==false)
     .sort((a,b)=>a.branchCount-b.branchCount||a.sourceBytes-b.sourceBytes||a.index-b.index)[0];
   if(!selected)throw Error('VIBE59_ALL_GENERATED_STRATEGIES_REJECTED:'+
