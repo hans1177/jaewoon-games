@@ -211,12 +211,21 @@ export function indexVibe2GameSource({sourceRoot='',gameId='',target='',responsi
  for(const file of index.files){
   if(/\.html?$/i.test(file.path)){
    const blocks=[...file.source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
-   if(blocks.length!==1||blocks[0][1].trim()){unsupported.push({path:file.path,reason:'HTML_SCRIPT_SCOPE'});continue}
+   // [실제 게임 연결] 순수한 Vibe 화면효과 모듈은 별개 JS 스코프다.
+   // 본편 스크립트는 하나만 허용하고, 다른 모듈은 승인된 무상태 화면효과 코드와 정확히 일치할 때만 무시한다.
+   const classic=blocks.filter(block=>!block[1].trim());
+   const commonScreen=blocks.filter(block=>
+     /^\s*type=["']module["']\s+data-vibe-common-screen\s*$/.test(block[1])
+     && /^\s*import\s*\{\s*mountVibeGameScreenEffects\s*\}\s*from\s*["']\.\.\/\.\.\/assets\/vibe-browser-presentation\.mjs["']\s*;\s*mountVibeGameScreenEffects\(\)\s*;\s*$/.test(block[2]));
+   if(classic.length!==1||blocks.length!==classic.length+commonScreen.length){
+     unsupported.push({path:file.path,reason:'HTML_SCRIPT_SCOPE'});continue;
+   }
+   // 보조 모듈의 심벌이 게임 함수로 잘못 승인되지 않게 범위를 고정한다.
+   const coreStart=classic[0].index+classic[0][0].indexOf('>')+1;
+   file.gameScriptRange=[coreStart,coreStart+classic[0][2].length];
   }
-  // [실소스 회복] 검사기 범위가 겹쳐 붙인 parent 표식보다 렉서의 실제 전역 스코프를 우선한다.
-  // 중첩 함수는 여전히 차단하고, 전역에서 선언된 원본 함수만 후보로 인정한다.
-  for(const symbol of index.symbols.filter(s=>s.path===file.path&&s.kind==='function'&&
-    (!s.parent||(target==='web'&&s.lexicalScope.length===0)))){
+  for(const symbol of index.symbols.filter(s=>s.path===file.path&&s.kind==='function'&&!s.parent
+    &&(!file.gameScriptRange||(s.start>=file.gameScriptRange[0]&&s.end<=file.gameScriptRange[1])))){
    const header=file.code.slice(symbol.start,symbol.bodyStart);
    if(!/^(?:async\s+)?(?:local\s+)?function\b/.test(header))continue;
    const params=/\(([^()]*)\)/.exec(header)?.[1]?.trim();if(params===undefined)continue;
