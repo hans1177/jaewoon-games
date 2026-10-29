@@ -597,3 +597,22 @@ test('asset-development runtime lane does not require game-source semantics for 
     else process.env.VIBE2_EXECUTION_LANE=old;
   }
 });
+
+
+test('owner combat tuning unlock stays limited to verified policy, design and normal QA',()=>{
+  const root=process.cwd();
+  const worker=fs.readFileSync(path.join(root,'tools/vibe2-continuous-runner.mjs'),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'));
+  const tuning=roadmap?.continuousGameplaySystemEvolutionContract?.ownerAuthorizedGameplayTuning;
+  assert.equal(tuning?.authority,'OWNER_DIRECTIVE_2026-10-30');
+  assert.equal(tuning?.requiresSameGameCurrentSourceAndLatestVerifiedDesign,true);
+  assert.equal(tuning?.normalF0ThroughF9AndReleaseGatesUnchanged,true);
+  assert.equal(tuning?.freeOnly,true);
+  assert.match(worker,/centralPolicy\?\.valid===true/);
+  assert.match(worker,/tuningEvidence\.has\('owner-gameplay-tuning:VERIFIED_SAME_GAME_DESIGN'\)/);
+  assert.match(worker,/tuningEvidence\.has\('owner-gameplay-tuning:BEFORE_AFTER_AND_RUNTIME_QA_REQUIRED'\)/);
+  assert.match(worker,/task\.protectedChange!==true && task\.requiresOwnerDecision!==true/);
+  assert.match(worker,/protectedGameplayMutationAutomatic:approvedGameplayTuning/);
+  assert.match(worker,/engineMustResolveGameplayResults:true/);
+  assert.match(worker,/paidAIAllowed:false, paidRunnerAllowed:false/);
+});
