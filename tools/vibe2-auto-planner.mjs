@@ -480,6 +480,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     queueRuntimeArtifactIdentity:clean(executionEvidence.artifactIdentity),
     queueRuntimeRootCauseVerified:executionEvidence.rootCauseVerified===true,
     queueRuntimeResponsibleSystem:clean(executionEvidence.responsibleSystem||executionEvidence.rootCauseSystem),
+    queueRuntimeResponsibleFile:executionEvidence.rootCauseVerified===true
+      ?posix(executionEvidence.responsibleFile||executionEvidence.rootCauseFile):'',
     queueRuntimeIndependentQaPassed:executionEvidence.independentQaPassed===true,
     queueRuntimeRegressionPassed:executionEvidence.regressionPassed===true
   }:{};
@@ -630,6 +632,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.runtimePassed===true),
       queueRobloxRootCauseVerified:executionEvidenceMatchesRoblox&&executionEvidence.rootCauseVerified===true,
       queueRobloxResponsibleSystem:executionEvidenceMatchesRoblox?clean(executionEvidence.responsibleSystem||executionEvidence.rootCauseSystem):'',
+      queueRobloxResponsibleFile:executionEvidenceMatchesRoblox&&executionEvidence.rootCauseVerified===true
+        ?posix(executionEvidence.responsibleFile||executionEvidence.rootCauseFile):'',
       queueRobloxIndependentQaPassed:item?.robloxIndependentQaPassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.independentQaPassed===true),
       queueRobloxRegressionPassed:item?.robloxRegressionPassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.regressionPassed===true),
       queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
@@ -1204,13 +1208,25 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
   const signature=clean(genericObserved?project?.queueRuntimeFailureSignature:project?.queueRobloxFailureSignature)||sourceRevision||null;
   const responsibleSystem=clean(genericObserved?project?.queueRuntimeResponsibleSystem:project?.queueRobloxResponsibleSystem);
   const rootCauseVerified=(genericObserved?project?.queueRuntimeRootCauseVerified===true:project?.queueRobloxRootCauseVerified===true)&&Boolean(responsibleSystem);
+  // 검증된 근본 원인의 책임 파일은 기존 게임 소스 내부의 정확한 파일만 사용한다.
+  // 오류 텍스트로 경로를 추정하거나 다른 게임의 쓰기 범위를 확보하지 않는다.
+  const rawResponsibleFile=posix(genericObserved?project?.queueRuntimeResponsibleFile:project?.queueRobloxResponsibleFile);
+  const authorizedPrefix=platform.toLowerCase()+'-games/'+clean(project?.gameId)+'/';
+  const responsibleParts=rawResponsibleFile.startsWith(authorizedPrefix)
+    ?rawResponsibleFile.slice(authorizedPrefix.length).split('/'):[];
+  const verifiedResponsibleFile=rootCauseVerified&&responsibleParts.length>0
+    &&responsibleParts.every(part=>/^[A-Za-z0-9._-]+$/.test(part)&&part!=='.'&&part!=='..')
+    ?rawResponsibleFile:null;
+  const failureIdentity=crypto.createHash('sha256')
+    .update(JSON.stringify([signature,rootCauseVerified?responsibleSystem:null,verifiedResponsibleFile]))
+    .digest('hex').slice(0,20);
   const rootCause=rootCauseVerified?{
     state:'ROOT_CAUSE_VERIFIED',
     rootCauseVerified:true,
     responsibleSystem
   }:null;
   const event={
-    id:[clean(project?.gameId)||'unknown','RUNTIME_RESULT',platform||'UNKNOWN_PLATFORM',sourceRevision||stage,passed?'PASS':'FAIL',stage,passed?'':crypto.createHash('sha256').update(signature||'NO_SIGNATURE').digest('hex').slice(0,20)].filter(Boolean).join('|'),
+    id:[clean(project?.gameId)||'unknown','RUNTIME_RESULT',platform||'UNKNOWN_PLATFORM',sourceRevision||stage,passed?'PASS':'FAIL',stage,passed?'':failureIdentity].filter(Boolean).join('|'),
     type:'RUNTIME_RESULT',
     gameId:clean(project?.gameId)||null,
     taskId:null,
@@ -1219,6 +1235,7 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
     stage,
     signature,
     verifiedResponsibleSystem:rootCauseVerified?responsibleSystem:null,
+    verifiedResponsibleFile,
     evidence:[
       'runtime-result-source:company-runtime',
       `runtime-platform:${platform||'UNKNOWN'}`,
@@ -1226,7 +1243,8 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
       `runtime-platform-match:${platformMatchesProject?'YES':'NO'}`,
       sourceRevision?`runtime-source-revision:${sourceRevision}`:'',
       rawStage?`runtime-observed-stage:${rawStage}`:'',
-      signature?`runtime-signature:${signature}`:''
+      signature?`runtime-signature:${signature}`:'',
+      verifiedResponsibleFile?`runtime-responsible-file:${verifiedResponsibleFile}`:''
     ].filter(Boolean)
   };
   const route=simulateNeuralEventRoute({
@@ -1313,11 +1331,20 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
     const exact=compatible.filter(({task})=>sourceRevision
       &&(declaredRevisions.get(clean(task.id))||[]).includes(sourceRevision));
     const unknown=compatible.filter(({task})=>!(declaredRevisions.get(clean(task.id))||[]).length);
-    const selected=exact.length===1?exact[0]:(exact.length===0&&unknown.length===1?unknown[0]:null);
+    // 실패 근거에 검증된 정확한 파일이 있다면, 기존 승인된 책임 파일이 그 파일을
+    // 이미 소유하는 작업만 선택한다. 다른 파일이나 추가 쓰기 권한을 추정하지 않는다.
+    const responsibleFile=posix(event.verifiedResponsibleFile);
+    const taskOwnsFailure=({task})=>!responsibleFile
+      ||(task.responsibleFiles||[]).map(posix).includes(responsibleFile);
+    const ownedExact=exact.filter(taskOwnsFailure),ownedUnknown=unknown.filter(taskOwnsFailure);
+    const selected=ownedExact.length===1?ownedExact[0]
+      :(ownedExact.length===0&&ownedUnknown.length===1?ownedUnknown[0]:null);
     if(!selected){
       applied.push({
         eventId,gameId,platform:platform.toUpperCase(),mutated:false,
-        reason:exact.length>1||unknown.length>1?'AMBIGUOUS_EXISTING_TASK'
+        reason:responsibleFile&&compatible.length>0&&!ownedExact.length&&!ownedUnknown.length
+          ?'VERIFIED_RESPONSIBLE_FILE_NOT_RESERVED'
+          :ownedExact.length>1||ownedUnknown.length>1?'AMBIGUOUS_EXISTING_TASK'
           :candidates.length&&compatible.length===0?'SOURCE_REVISION_MISMATCH':'NO_EXISTING_TASK'
       });
       continue;
@@ -1337,6 +1364,7 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
       '[VERIFIED_GAME_RUNTIME_BOTTLENECK]',
       '게임: '+gameId+' / 플랫폼: '+platform.toUpperCase(),
       '검증된 책임 시스템: '+clean(event.verifiedResponsibleSystem||'UNKNOWN').slice(0,120),
+      responsibleFile?'검증된 책임 파일: '+responsibleFile:'',
       '실패 단계: '+clean(event.stage).slice(0,120),
       '실패 식별자: '+clean(event.signature).slice(0,200),
       sourceRevision?'실패한 소스 버전: '+sourceRevision:'',
@@ -1367,6 +1395,7 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
           'runtime-neural-ingress-failed-stage:'+clean(event.stage).slice(0,100),
           'runtime-neural-ingress-failure-signature:'+clean(event.signature).slice(0,200),
           'runtime-neural-ingress-responsible-system:'+clean(event.verifiedResponsibleSystem||'UNKNOWN').slice(0,120),
+          responsibleFile?'runtime-neural-ingress-responsible-file:'+responsibleFile:'',
           sourceRevision?'runtime-neural-ingress-source-revision:'+sourceRevision:'',
           'neural-gated-queue-mutation:REQUEUE_REPRIORITIZE',
           'neural-gated-worker-refill-eligible'
