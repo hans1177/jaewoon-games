@@ -496,6 +496,12 @@ export function renderVibe59NumericLuaAST(node,params){
         return [op,normalize(part[1],depth+1,next),normalize(part[2],depth+1,next),
           normalize(part[3],depth+1,next)];
     }else if(Object.getPrototypeOf(part)===Object.prototype){
+      const fields={reference:['kind','name'],constant:['kind','value'],
+        mutation:['kind','operator','operand'],crossover:['kind','operator','left','right']};
+      const required=fields[part.kind];
+      if(!required||Object.keys(part).length!==required.length
+        ||required.some(key=>!Object.hasOwn(part,key)))
+        throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
       if(part.kind==='reference'&&typeof part.name==='string'){
         const i=params.indexOf(part.name);
         if(i>=0)return ['param',i];
