@@ -56,6 +56,88 @@ test('exploration worker collects reusable impact context without changing sourc
 });
 
 
+test('auto coding expands to direct source helpers only inside already reserved Web function owners',()=>{
+ const cwd=tempRoot(),primary=path.join(cwd,'web-games/demo/index.js');
+ const unrelated=path.join(cwd,'web-games/demo/other.js');
+ const code=[
+  'let health=12;',
+  'function updateHud(){return health;}',
+  'function applyDamage(amount){health-=amount;updateHud();return health;}',
+  'function handleHit(){return applyDamage(2);}',
+  'function unrelatedFeature(){return 77;}'
+ ].join('\n');
+ write(primary,code);
+ write(unrelated,'function otherGameFeature(){return 22;}\n');
+ const order={
+  run:true,taskId:'reserved-helper-web',gameId:'demo',target:'web',
+  goal:'applyDamage damage error repair with linked helpers',
+  source:{root:'web-games/demo',responsibleFiles:['web-games/demo/index.js'],ignoredPaths:[]},
+  workPackage:{id:'reserved-helper-wp',sharedContext:{diagnosticEvidence:[]}}
+ };
+ const result=exploreVibe2WorkOrder({cwd,order});
+ const contract=result.editContract,plan=contract.reservedHelperEditPlan;
+ assert.ok(contract.primaryTargets.includes('applyDamage'));
+ assert.equal(plan.mode,'PRIMARY_PLUS_CAUSALLY_LINKED_RESERVED_HELPERS');
+ assert.deepEqual(plan.allowedResponsibleFiles,['index.js']);
+ assert.equal(plan.maximumAdditionalWritableFiles,0);
+ assert.equal(plan.dependentFileRequiresNewCanonicalReservation,true);
+ assert.equal(plan.unreservedImpactFilesReadOnly,true);
+ assert.equal(result.sourceWrite,false);
+ const names=plan.reservedHelperEdits.map(x=>x.symbol);
+ assert.ok(names.includes('updateHud'));
+ assert.ok(names.includes('handleHit'));
+ assert.equal(names.includes('unrelatedFeature'),false);
+ assert.equal(names.includes('otherGameFeature'),false);
+ assert.ok(plan.reservedHelperEdits.every(x=>x.file==='index.js'
+   &&x.writableWithinExistingReservation===true
+   &&x.preserveSaveBalanceAndAuthorityRequired===true
+   &&x.runtimeVerified===false));
+ for(const helper of ['updateHud','handleHit'])
+  assert.ok(contract.allowedDependentSymbolsOrSystems.includes(helper));
+ assert.match(explorationGuidance(result),/예약된 파일 내 자동 수정 보조 함수=/);
+ assert.match(explorationGuidance(result),/예약되지 않은 영향 파일은 읽기 전용/);
+ assert.equal(fs.readFileSync(primary,'utf8'),code);
+ assert.equal(fs.readFileSync(unrelated,'utf8'),'function otherGameFeature(){return 22;}\n');
+ fs.rmSync(cwd,{recursive:true,force:true});
+});
+
+test('reserved helper analysis uses real Luau calls, excludes fake comments and never authorizes unreserved files',()=>{
+ const cwd=tempRoot();
+ const code=[
+  'local health = 10',
+  '-- local phantom = function() return health end',
+  'local renderHealth = function() return health end',
+  'local applyDamage = function(amount)',
+  ' health -= amount',
+  ' renderHealth()',
+  ' return health',
+  'end',
+  'local function takeHit() applyDamage(1) end',
+  'local function unrelated() return 9 end'
+ ].join('\n');
+ const file=path.join(cwd,'roblox-games/demo/server/Game.server.luau');
+ write(file,code);
+ write(path.join(cwd,'roblox-games/demo/server/Other.luau'),
+  'local function unreservedWriter() return 1 end\n');
+ const order={
+  run:true,taskId:'reserved-helper-roblox',gameId:'demo',target:'roblox',
+  goal:'applyDamage damage failure repair',
+  source:{root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Game.server.luau'],ignoredPaths:[]},
+  workPackage:{id:'reserved-roblox-wp',sharedContext:{diagnosticEvidence:[]}}
+ };
+ const result=exploreVibe2WorkOrder({cwd,order});
+ const plan=result.editContract.reservedHelperEditPlan;
+ assert.ok(result.editContract.primaryTargets.includes('applyDamage'));
+ assert.ok(plan.reservedHelperEdits.some(x=>x.symbol==='renderHealth'&&x.direction==='CALLEE'));
+ assert.ok(plan.reservedHelperEdits.some(x=>x.symbol==='takeHit'&&x.direction==='CALLER'));
+ assert.ok(plan.reservedHelperEdits.every(x=>x.file==='server/Game.server.luau'));
+ assert.ok(plan.reservedHelperEdits.every(x=>!['phantom','unreservedWriter','unrelated'].includes(x.symbol)));
+ assert.equal(plan.maximumAdditionalWritableFiles,0);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(fs.readFileSync(file,'utf8'),code);
+ fs.rmSync(cwd,{recursive:true,force:true});
+});
+
 test('Vibe4 local model has no network fallback, requires approval and loopback address',async()=>{
   let called=0,requestBody='';
   const server=http.createServer(async(req,res)=>{
