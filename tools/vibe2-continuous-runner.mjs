@@ -10,6 +10,7 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
+import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import {planVibeAgentHandoff,vibeAgentHandoffGuidance} from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
@@ -25,6 +26,51 @@ const freezeList = (values = []) => freeze([...new Set((values || []).map(clean)
 const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.rbxm', '.rbxmx', '.glb', '.gltf', '.fbx', '.png', '.webp', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
+
+// The owner explicitly authorized future gameplay and balance improvements on 2026-10-30.
+// This only recognizes the *canonical existing* studio or recurring Web task, its exact
+// verified same-game design and the still-valid, owner-controlled policy. No queue flag
+// alone can grant authority. Held platforms, presentation tasks and owner requests outside
+// the currently approved game source stay blocked.
+export function authorizedContinuousGameplayImprovement({task={},centralPolicy={},repoRoot=process.cwd()}={}){
+  const policy=centralPolicy?.document||{};
+  const target=clean(task.target).toUpperCase(),gameId=clean(task.gameId),root=posix(task.sourceRoot);
+  if(centralPolicy.valid!==true||policy.status!=='OWNER_DIRECT_LOCKED'
+    ||!['WEB','ROBLOX'].includes(target)
+    ||policy.developmentAccess?.[target]!=='ALWAYS_ALLOWED'
+    ||!policy.ownerActiveDevelopmentScope20261009?.activeTargets?.includes(target)
+    ||policy.fixedAutonomousDevelopmentOperatingContract?.ownerRequestedVibeOneShotPatch?.preservation?.existingGameBalanceOrContentMayChangeOnlyByOwnerDirection!==true
+    ||policy.ownerCanonicalRules?.ownerExclusiveDevelopment?.rules?.existingGameplaySaveProgressionBalanceAndMultiplayerSemanticsMustBePreservedUnlessOwnerExplicitlyChangesThem!==true
+    ||!(/^[a-z0-9][a-z0-9-]{1,79}$/.test(gameId))
+    ||root!==(target==='WEB'?'web-games/':'roblox-games/')+gameId
+    ||clean(task.department)!=='development'||clean(task.type)!=='implementation'
+    ||task.protectedChange===true||task.requiresOwnerDecision===true||task.designChange===true
+    ||task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
+    ||!Array.isArray(task.responsibleFiles)||!task.responsibleFiles.length
+    ||task.responsibleFiles.some(file=>!posix(file).startsWith(root+'/')))return false;
+  const evidence=new Set((task.evidence||[]).map(clean));
+  const directive='owner-continuous-gameplay-improvement:OWNER_DIRECTIVE_2026-10-30_ALL_AUTHORIZED_VIBE_GAMES';
+  if(!evidence.has(directive)||!evidence.has('owner-continuous-gameplay-regression-required'))return false;
+  const isStudio=evidence.has('studio-quality-loop:v1')
+    &&['CORE_FUN','PROGRESSION'].includes(clean(task.studioQualityEvolution?.focusPillar))
+    &&evidence.has('studio-quality-focus:'+clean(task.studioQualityEvolution.focusPillar))
+    &&task.studioQualityEvolution.designVerified===true
+    &&task.studioQualityEvolution.designContextAvailable===true;
+  const isWebRecurring=target==='WEB'
+    &&evidence.has('web-autonomous-recurring-build-up:v1')
+    &&['CORE_FUN','PROGRESSION'].includes([...evidence].find(row=>row.startsWith('web-recurring-focus:'))?.split(':')[1])
+    &&/^[-a-z0-9]+-web-autonomous-build-up-v[1-9][0-9]*$/.test(clean(task.id))
+    &&task.autonomousEvolution?.existingLoopOnly===true;
+  if(!isStudio&&!isWebRecurring)return false;
+  let design=null;
+  try{design=latestVerifiedDesign(repoRoot,gameId);}catch{return false;}
+  if(!design?.file)return false;
+  const sourcePath=posix(path.relative(repoRoot,design.file));
+  if(!sourcePath.startsWith('design/'+gameId+'/')
+    ||!evidence.has('owner-continuous-gameplay-design:'+sourcePath))return false;
+  // This is not a measured success: the worker and all existing independent QA still run.
+  return true;
+}
 
 function currentLaneMaxWorkMinutes(runtime = {}) {
   const lane = clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase();
@@ -597,7 +643,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
-  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
+  const gameplayImprovementAuthorized=authorizedContinuousGameplayImprovement({task,centralPolicy});
+  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience, gameplayImprovementAuthorized });
   if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
     return freeze({
       ...base,
@@ -968,7 +1015,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
     workerPolicy:freeze({
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
-      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
+      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:gameplayImprovementAuthorized,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
       isolatedPracticeArtifactAllowed:route.route==='learning-web-artifact',
       practiceArtifactRepositorySourceWrite:false,

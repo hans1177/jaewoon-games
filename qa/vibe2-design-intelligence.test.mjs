@@ -58,6 +58,28 @@ test('protected change blocks implementation and never expands authority',()=>{
   assert.equal(result.authorityExpanded,false);
 });
 
+test('owner-approved cross-game gameplay tuning is allowed only when the runtime verified its exact scope',()=>{
+  const task={type:'implementation',department:'development',goal:'기존 게임의 적 HP·보상 개선'};
+  const denied=buildVibeDesignIntelligence({task});
+  assert.equal(denied.implementationGate.protectedGameplayMutationAutomatic,false);
+  const allowed=buildVibeDesignIntelligence({task,gameplayImprovementAuthorized:true});
+  assert.equal(allowed.implementationGate.allowed,true);
+  assert.equal(allowed.implementationGate.protectedGameplayMutationAutomatic,true);
+  assert.equal(allowed.authorityExpanded,false);
+  assert.match(allowed.guidance,/2026-10-30 전게임/);
+  for(const key of ['protectedChange','requiresOwnerDecision','designChange']){
+    const blocked=buildVibeDesignIntelligence({task:{...task,[key]:true},gameplayImprovementAuthorized:true});
+    assert.equal(blocked.implementationGate.protectedGameplayMutationAutomatic,false,key);
+  }
+  const designer=buildVibeDesignIntelligence({task,executionContext:'GAME_DESIGNER_AUTHORING',gameplayImprovementAuthorized:true});
+  assert.equal(designer.implementationGate.protectedGameplayMutationAutomatic,false);
+  const conflict=buildVibeDesignIntelligence({task:{
+    ...task,designConstraints:[{id:'locked-save',rule:'save must remain stable',locked:true,proposedChange:'reset',preserves:false}]
+  },gameplayImprovementAuthorized:true});
+  assert.equal(conflict.implementationGate.allowed,false);
+  assert.equal(conflict.implementationGate.protectedGameplayMutationAutomatic,false);
+});
+
 test('locked artbook design change requires change request',()=>{
   const result=buildVibeDesignIntelligence({task:{goal:'핵심 루프 재설계',designChange:true,artbook:{locked:true}}});
   assert.equal(result.implementationGate.allowed,false);
