@@ -1,6 +1,8 @@
+// 파일명: tools/company-tester-debug-intake.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import { enqueueRecovery, normalizeRecoveryQueue } from './company-recovery-queue.mjs';
 
 const clean=v=>String(v??'').trim();
@@ -185,14 +187,38 @@ function mergeTickets(existing={},incoming=[]){
   }
   return{version:1,kind:'tester-debug-tickets',policy:'UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE',updatedAt:new Date().toISOString(),tickets:rows};
 }
-export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQueue={}}={}){
+export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQueue={},webPlaytestReport=null,repoRoot=process.cwd()}={}){
   const stamp=new Date().toISOString(),incoming=[];
   for(const item of developmentQueue.items||[]){
     if(clean(item.status).toUpperCase()==='REMOVED')continue;
     if(item.vibeWebImplementationRequired===true||upper(item.canonicalState)==='WEB_VIBE_REPAIR_REQUIRED')incoming.push(...webTickets(item,stamp));
     incoming.push(...platformTickets(item,stamp));
   }
+  // 웹 전용: 기존 Pages 브라우저 보고서만 수신하고 현재 게임 트리가 같은 관측만 인계한다.
+  const observations=new Map((ticketQueue.webPlaytestObservations||[]).filter(row=>row?.target==='web').map(row=>[row.gameId,row]));
+  if(webPlaytestReport?.authority==='PUBLISHED_WEB_BROWSER_SMOKE'&&webPlaytestReport.exactGameSources===true
+    &&/^[0-9]+$/.test(String(webPlaytestReport.runId||''))){
+    for(const row of (webPlaytestReport.games||[]).slice(0,64)){
+      if(row.target!=='web'||! /^[a-z0-9][a-z0-9-]{0,80}$/.test(clean(row.gameId))
+        ||row.sourceRoot!=='web-games/'+row.gameId||row.runtimeObserved!==true||typeof row.runtimePassed!=='boolean'
+        ||! /^[a-f0-9]{40}$/.test(clean(row.sourceRevision))||! /^[a-f0-9]{40}$/.test(clean(row.sourceTreeSha)))continue;
+      let current='';try{current=clean(execFileSync('git',['rev-parse','HEAD:'+row.sourceRoot],{cwd:repoRoot,encoding:'utf8',stdio:['ignore','pipe','ignore']}));}catch{continue;}
+      if(current!==row.sourceTreeSha)continue;
+      const prior=observations.get(row.gameId);
+      if(prior?.runId===String(webPlaytestReport.runId))continue;
+      const observed={...row,runId:String(webPlaytestReport.runId),observedAt:stamp};observations.set(row.gameId,observed);
+      if(row.runtimePassed===false&&clean(row.failureSignature))incoming.push({
+        id:'bug-'+hash([row.gameId,'WEB',row.sourceTreeSha,row.failureSignature]),gameId:row.gameId,surface:'WEB',
+        phase:'POST_PUBLICATION_PLAYTEST',severity:'HIGH',category:category(row.failureSignature),
+        signature:clean(row.failureSignature),reproduction:'RERUN_EXISTING_PUBLISHED_WEB_BROWSER_SMOKE_ON_THE_SAME_GAME_SOURCE',
+        responsibleFiles:[row.sourceRoot+'/index.html'],evidence:['web-browser-playtest-run:'+observed.runId,
+          'web-browser-playtest-source:'+row.sourceRevision,'web-browser-playtest-tree:'+row.sourceTreeSha],
+        exactFailedStage:'WEB_POST_PUBLICATION_PLAYTEST',route:'FOCUSED_REPAIR_AND_RECOVERY',status:'OPEN',createdAt:stamp,updatedAt:stamp
+      });
+    }
+  }
   const tickets=mergeTickets(ticketQueue,incoming);
+  tickets.webPlaytestObservations=[...observations.values()].slice(-64);
   let recovery=normalizeRecoveryQueue(recoveryQueue),added=[];
   for(const t of tickets.tickets){
     if(t.status!=='OPEN'||!['CRITICAL','HIGH','MEDIUM'].includes(t.severity)||t.repairEligible===false)continue;
@@ -212,7 +238,7 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
 }
 if(process.argv[1]===new URL(import.meta.url).pathname){
   const a=args(),dev=readJson(a['development-queue'],{items:[]}),tickets=readJson(a.tickets,{tickets:[]}),recovery=readJson(a.recovery,{tasks:[]});
-  const result=ingestTesterDebug({developmentQueue:dev,ticketQueue:tickets,recoveryQueue:recovery});
+  const result=ingestTesterDebug({developmentQueue:dev,ticketQueue:tickets,recoveryQueue:recovery,webPlaytestReport:readJson(a['web-playtest-report'],null),repoRoot:clean(a.root)||process.cwd()});
   writeJson(a.tickets,result.tickets);writeJson(a.recovery,result.recovery);
   if(a.output)writeJson(a.output,{version:1,ingested:result.ingested,recoveryTouched:result.recoveryTouched,updatedAt:new Date().toISOString()});
   console.log('TESTER_DEBUG_INGESTED='+result.ingested);

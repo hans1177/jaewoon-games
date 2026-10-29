@@ -5938,3 +5938,35 @@ test('focused Roblox build-up keeps every eligible responsibility file while ord
     assert.ok(normal.responsibleFiles.length<=6);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+// 회귀: 웹만 기존 플레이테스트 결과와 실제 렌더 소스를 다음 자동 코딩에 전달한다.
+test('web recurring evolution repairs unchanged source and owns renderer after real playtest',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-real-growth-'));
+ try{
+  const id='web-growth',dir=path.join(root,'web-games',id);fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),'<script src="game.js"></script>');
+  fs.writeFileSync(path.join(dir,'game.js'),'function tick(){return 1;}');
+  fs.writeFileSync(path.join(dir,'world3d.mjs'),'export function render(){return 1;}');
+  const project={gameId:id,engine:'web',releaseState:'release-confirmed',projectPath:'web-games/'+id};
+  const first=findWebRecurringBuildUpTask(project,root,{tasks:[]});
+  assert.ok(first.recurringSourceTreeFingerprint);
+  assert.equal(first.autonomousEvolution.sourceMutationRequired,true);
+  const unchanged=findWebRecurringBuildUpTask(project,root,{tasks:[{...first,status:'verified'}]});
+  assert.match(unchanged.goal,/NO_GAME_SOURCE_DELTA_AFTER_VERIFIED_CYCLE/);
+  assert.match(unchanged.goal,/WEB_CAUSAL_REPAIR/);
+  const history=Array.from({length:3},(_,i)=>({id:id+'-web-autonomous-build-up-v'+(i+1),
+    gameId:id,target:'web',department:'development',type:'implementation',status:'verified',goal:'implemented and tested'}));
+  const graphics=findWebRecurringBuildUpTask(project,root,{tasks:history});
+  assert.ok(graphics.responsibleFiles.includes('web-games/'+id+'/world3d.mjs'));
+  assert.equal(graphics.autonomousEvolution.focus,'GRAPHICS_AUDIO');
+  const observed={...project,queueRuntimeObserved:true,queueRuntimeEvidencePlatform:'WEB',
+    queueRuntimePassed:false,queueRuntimeFailureSignature:'REAL_TOUCH_NOT_MOVING',
+    queueRuntimePlaytestFinding:'joystick input produces no player movement',queueRuntimeResponsibleSource:'web-games/'+id+'/game.js'};
+  assert.match(findWebRecurringBuildUpTask(observed,root,{tasks:[]}).goal,/REAL_TOUCH_NOT_MOVING/);
+  const foreign=findWebRecurringBuildUpTask({...observed,queueRuntimeEvidencePlatform:'ROBLOX'},root,{tasks:[]});
+  assert.doesNotMatch(foreign.goal,/REAL_TOUCH_NOT_MOVING/);
+  assert.equal(foreign.autonomousEvolution.observedFeedback,false);
+  assert.equal(findWebRecurringBuildUpTask({...project,ownerDevelopmentHold:true},root,{tasks:[]}),null);
+  assert.equal(findWebRecurringBuildUpTask({...project,engine:'roblox'},root,{tasks:[]}),null);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

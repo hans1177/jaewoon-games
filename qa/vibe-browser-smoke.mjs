@@ -29,8 +29,20 @@ const model='assets/shared/humanoid-traveler.glb';
 if(!liveBase)assert.ok(fs.existsSync(path.join(root,model)),'Browser smoke must use a real staged GLB model');
 const server=liveBase?null:spawn('python3',['-m','http.server',String(port),'--directory',root],{stdio:'ignore'});
 let browser;
+let activeGameId=null,runtimeFailure=null;
+const observedGames=new Set();
+let testedSourceTrees={};
 try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
+ if(liveBase){
+  const identityPage=await browser.newPage();
+  try{
+   const response=await identityPage.request.get(liveBase+'web-games/publish-manifest.json',{timeout:15000});
+   assert.ok(response.ok(),'POST_PUBLISH_IDENTITY_MANIFEST_HTTP');
+   const manifest=await response.json();requireLivePublicationSha(manifest.sourceSha,'BROWSER_PLAYTEST_INITIAL_SOURCE');
+   testedSourceTrees=manifest.sourceTreeShas||{};
+  }finally{await identityPage.close();}
+ }
  // 포탈 RPG: 공식 공개판에서 포탈·3D 캐릭터·실제 터치 이동·보스 피해·구매 및 저장을 확인한다.
  if(liveBase){
   for(const view of [
@@ -41,6 +53,7 @@ try{
    const portal=await context.newPage(),faults=[];
    portal.on('pageerror',e=>faults.push(e.message));
    try{
+    activeGameId='portal-rpg';
     const route=await portal.goto(liveBase+'web-games/portal-rpg/',{waitUntil:'domcontentloaded',timeout:30000});
     assert.equal(route?.status(),200,'PORTAL_RPG_HTTP_'+view.name);
     await portal.waitForFunction(()=>document.getElementById('status')?.hidden===true,null,{timeout:75000});
@@ -111,6 +124,7 @@ try{
     assert.equal(persisted.weapon,7,'PORTAL_RPG_WEAPON_RELOAD_'+view.name);
     assert.equal(persisted.armor,5,'PORTAL_RPG_ARMOR_RELOAD_'+view.name);
     assert.deepEqual(faults,[],'PORTAL_RPG_BROWSER_EXCEPTIONS_'+view.name);
+    observedGames.add('portal-rpg');
     console.log('PORTAL_RPG_LIVE_MOBILE_SAVE_BOSS_PASS '+JSON.stringify({view:view.name,...proof,x0,moved,bossHp,gold:persisted.gold}));
    }finally{await context.close();}
   }
@@ -122,6 +136,7 @@ try{
    const ocean=await context.newPage(),faults=[];ocean.on('pageerror',e=>faults.push(e.message));
    await ocean.addInitScript(()=>{const raw=sessionStorage.getItem('ocean-smoke-next-save');if(raw){localStorage.setItem('jg-ocean-voyage-v1',raw);sessionStorage.removeItem('ocean-smoke-next-save');}});
    try{
+    activeGameId='ocean-voyage';
     await ocean.goto(liveBase+'web-games/ocean-voyage/',{waitUntil:'networkidle'});
     await ocean.evaluate(async()=>{
      const e=await import('./engine.mjs'),s=e.newGame();s.heroChosen=true;s.autoCombat=false;
@@ -158,10 +173,12 @@ try{
     await ocean.locator('#navalRetreat').click();await ocean.keyboard.down('ArrowUp');
     await ocean.locator('#navalEncounter').waitFor({state:'hidden',timeout:25000});await ocean.keyboard.up('ArrowUp');
     assert.deepEqual(faults,[],'OCEAN_RUNTIME_ERRORS');
+    observedGames.add('ocean-voyage');
     console.log('OCEAN_NAVAL_3D_VICTORY_SAVE_RETREAT_MOBILE=PASS '+JSON.stringify({viewport,...proof}));
    }finally{await context.close();}
   }
  }
+ activeGameId=null;
  const page=await browser.newPage({viewport:{width:1100,height:720}});
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  const url=(liveBase||'http://127.0.0.1:'+port+'/')+'assets/vibe-model-preview.html?asset='+encodeURIComponent(model);
@@ -201,6 +218,7 @@ try{
    gem.on('console',msg=>{if(msg.type()==='error'&&/THREE|shader|WebGL/i.test(msg.text()))gemErrors.push(msg.text())});
    try{
     for(const hero of ['guardian','ranger','wizard','rogue','cleric']){
+    activeGameId='gem-survivor';
      const route=await gem.goto(liveBase+'web-games/gem-survivor/',{waitUntil:'domcontentloaded'});
      assert.ok(route?.ok(),'GEM_ROUTE_HTTP');
      await gem.locator('#startBtn').waitFor({state:'visible'});
@@ -260,12 +278,14 @@ try{
      assert.equal(await canvas.getAttribute('data-rendered-frame'),'true');
      assert.equal(await canvas.getAttribute('data-fallback-enemy-assets'),'0');
      assert.deepEqual(gemErrors,[],'GEM_RUNTIME_ERRORS');
+    observedGames.add('gem-survivor');
      console.log('GEM_SURVIVOR_PUBLIC_PLAY_PASS '+JSON.stringify({sourceSha:process.env.GITHUB_SHA,mobile,hero,stage,first,moved}));
     }
    }finally{await context.close()}
   }
  }
  if(liveBase){
+  activeGameId='fantasy-survival';
   // Post-deploy validation of the REAL Magic Forest, not just the model viewer.
   // This block only runs against the official public GitHub Pages URL after
   // the deployment step has already published the exact current revision.
@@ -441,6 +461,7 @@ try{
       assert.equal(JSON.parse(await game.evaluate(()=>localStorage.getItem('jaewoon_fantasy_survival_avatar_v1'))).size,110,
         'CC0 visual size does not persist after reload');
     }
+    observedGames.add('fantasy-survival');
     console.log('MAGIC_FOREST_NATIVE_3D_LIVE_PASS '+viewport.name+' '+
      JSON.stringify({sourceSha:requiredRevision,metrics,savedPlayerX:restoredX}));
    }finally{await game.close()}
@@ -506,6 +527,7 @@ try{
      isMobile:view.mobile,hasTouch:view.mobile});
    const errors=[];cozy.on('pageerror',err=>errors.push(err.message));
    try{
+    activeGameId='cozy-island';
     const response=await cozy.goto(liveBase+'web-games/cozy-island/',
       {waitUntil:'domcontentloaded',timeout:35000});
     assert.ok(response?.ok(),view.name+': COZY_RTS_ROUTE_OFFLINE');
@@ -658,6 +680,7 @@ try{
     assert.ok(courtFlow.capacity>=4,view.name+': COZY_PRISON_NOT_BUILT');
     console.log('COZY_KNIGHT_PRISON_ECONOMY_RUNTIME=PASS '+view.name);
     assert.deepEqual(errors,[],view.name+': COZY_RTS_RUNTIME_ERRORS');
+    observedGames.add('cozy-island');
     console.log('COZY_RTS_PUBLIC_3D_ECONOMY_SIEGE_PASS '+view.name+' '+expected);
    }finally{await cozy.close()}
   }
@@ -674,6 +697,7 @@ try{
    const game=await browser.newPage({viewport:{width:1100,height:720}});
    const gameExceptions=[];
    game.on('pageerror',err=>gameExceptions.push(err.message));
+    activeGameId='wild-survival';
    const response=await game.goto(liveBase+'web-games/wild-survival/',{waitUntil:'domcontentloaded',timeout:25000});
    assert.equal(response?.status(),200,'WILD_SURVIVAL_LIVE_PAGE_NOT_200');
    await game.waitForFunction(()=>{
@@ -715,6 +739,7 @@ try{
      'WILD_SURVIVAL_CRAFT_UI_BROKEN');
    assert.equal(await game.locator('body').getAttribute('data-spatial-dimension'),'3d');
    assert.deepEqual(gameExceptions,[],'WILD_SURVIVAL_UNCAUGHT_PAGE_ERRORS');
+    observedGames.add('wild-survival');
    console.log('WILD_SURVIVAL_LIVE_WEBGL_3D_AND_MOVEMENT=PASS');
    await game.close();
  }
@@ -725,7 +750,31 @@ try{
  }
  console.log('VIBE_BROWSER_SMOKE_PASS');
 }catch(error){
+ runtimeFailure=error;
  if(error?.code!=='POST_PUBLISH_SOURCE_SUPERSEDED')throw error;
  console.error(error.message);
  process.exitCode=78;
-}finally{await browser?.close();server?.kill()}
+ }finally{
+ // 기존 공개 브라우저 검사 결과만 기록한다. 공개판 교체·실행환경 오류는 게임 통과로 승격하지 않는다.
+ if(liveBase&&browser){
+  try{
+   const proofPage=await browser.newPage();
+   const response=await proofPage.request.get(liveBase+'web-games/publish-manifest.json',{timeout:15000});
+   const manifest=response.ok()?await response.json():{};
+   await proofPage.close();
+   const exact=manifest.sourceSha===process.env.GITHUB_SHA;
+   const results=new Map([...observedGames].map(gameId=>[gameId,{gameId,runtimePassed:true}]));
+   if(runtimeFailure&&runtimeFailure.code!=='POST_PUBLISH_SOURCE_SUPERSEDED'&&activeGameId)results.set(activeGameId,{gameId:activeGameId,runtimePassed:false,
+     failureSignature:String(runtimeFailure.message||runtimeFailure).slice(0,1500)});
+   const games=[...results.values()].filter(row=>/^[a-f0-9]{40}$/.test(testedSourceTrees[row.gameId]||'')
+     &&testedSourceTrees[row.gameId]===manifest.sourceTreeShas?.[row.gameId]).map(row=>({
+     ...row,target:'web',sourceRoot:'web-games/'+row.gameId,sourceTreeSha:manifest.sourceTreeShas[row.gameId],
+     sourceRevision:process.env.GITHUB_SHA,runtimeObserved:true,failureStage:row.runtimePassed?null:'WEB_POST_PUBLICATION_PLAYTEST',
+     coverage:'EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY'
+   }));
+   fs.writeFileSync('web-playtest-report.json',JSON.stringify({version:1,authority:'PUBLISHED_WEB_BROWSER_SMOKE',
+     runId:String(process.env.GITHUB_RUN_ID||''),exactPublishedRevision:exact,exactGameSources:games.length>0,games},null,2)+'\n');
+  }catch(reportError){console.error('WEB_PLAYTEST_REPORT_UNVERIFIED='+reportError.message);}
+ }
+ await browser?.close();server?.kill();
+}

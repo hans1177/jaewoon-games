@@ -1,3 +1,7 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ingestTesterDebug} from '../tools/company-tester-debug-intake.mjs';
@@ -200,3 +204,27 @@ test('Roblox Open Cloud Luau permission denial becomes an external credential bl
  assert.equal(result.recovery.tasks.length,0);
 });
 
+
+// 회귀: 웹 공개 테스트는 같은 게임 트리일 때만 기존 버그 티켓/반복 개발에 반영한다.
+test('published WEB playtest intake rejects stale trees and deduplicates the same run',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-playtest-intake-'));
+ const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+ try{
+  fs.mkdirSync(path.join(root,'web-games','demo'),{recursive:true});
+  fs.writeFileSync(path.join(root,'web-games','demo','index.html'),'<html>existing game</html>');
+  git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@example.test','commit','-qm','fixture');
+  const sourceTreeSha=git('rev-parse','HEAD:web-games/demo'),sourceRevision=git('rev-parse','HEAD');
+  const game={gameId:'demo',target:'web',sourceRoot:'web-games/demo',sourceTreeSha,sourceRevision,
+    runtimeObserved:true,runtimePassed:false,failureSignature:'INPUT_UNUSABLE',failureStage:'WEB_POST_PUBLICATION_PLAYTEST'};
+  const report={version:1,authority:'PUBLISHED_WEB_BROWSER_SMOKE',exactGameSources:true,runId:'123',games:[game]};
+  const first=ingestTesterDebug({repoRoot:root,webPlaytestReport:report});
+  assert.equal(first.ingested,1);assert.equal(first.tickets.webPlaytestObservations.length,1);
+  assert.equal(first.tickets.tickets[0].surface,'WEB');
+  const repeated=ingestTesterDebug({repoRoot:root,webPlaytestReport:report,ticketQueue:first.tickets,recoveryQueue:first.recovery});
+  assert.equal(repeated.ingested,0);assert.equal(repeated.tickets.tickets[0].occurrenceCount,1);
+  for(const altered of [{...report,exactGameSources:false},{...report,games:[{...game,target:'roblox'}]},
+    {...report,games:[{...game,sourceTreeSha:'f'.repeat(40)}]}]){
+    assert.equal(ingestTesterDebug({repoRoot:root,webPlaytestReport:altered}).ingested,0);
+  }
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

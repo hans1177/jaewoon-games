@@ -1046,7 +1046,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ocean-naval-mobile-render
-          path: ocean-naval-*.png
+          path: |
+            ocean-naval-*.png
+            web-playtest-report.json
           if-no-files-found: ignore
           retention-days: 7
       - name: Register post-publication WebGL smoke failure

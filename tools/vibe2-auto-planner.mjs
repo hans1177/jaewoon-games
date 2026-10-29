@@ -684,8 +684,12 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   }
   // [웹게임] 폐기된 구형 웹 경로는 다시 생성하지 않고, 동일 게임의 네이티브 경로는 보존한다.
   if(webSourceRetiredInCatalog(game))continue;
+  const webRuntimePatch=executionPlatform==='WEB'?{...queueRuntimePatch,
+    queueRuntimePlaytestFinding:clean(executionEvidence.playtestFinding),
+    queueRuntimeResponsibleSource:posix(executionEvidence.responsibleSource)}:{};
   const existingWeb=rows.find(r=>r.gameId===id&&r.engine==='web');
   if(existingWeb){
+    Object.assign(existingWeb,webRuntimePatch);
     existingWeb.queueCurrentStep=clean(item?.currentStep);
     existingWeb.queueCanonicalState=clean(item?.canonicalState);
     existingWeb.queueRoutingBlockers=(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,4);
@@ -712,6 +716,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     releaseState:'development-confirmed',
     progress:Number(item?.progress||0),
     source:'company-development-queue',
+    ...webRuntimePatch,
     developmentBaseline:null,
     developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
     queueCurrentStep:clean(item?.currentStep),
@@ -798,6 +803,20 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
     targetWebEngine:generalWebSourceIntake?'HTML_CSS_JAVASCRIPT_WEBGL':'EXISTING_WEB',
     ownerWebSourceRevision:clean(game.ownerWebSourceRevision)
   });
+}
+// 기존 테스터 기록에서 웹 자신의 현재 Git 트리와 일치하는 실제 플레이 관측만 연결한다.
+for(const project of rows){
+  if(project.engine!=='web')continue;
+  const observed=(developmentQueue.webPlaytestObservations||[]).find(row=>row.gameId===project.gameId&&row.target==='web');
+  if(!observed||observed.sourceRoot!==project.projectPath||observed.runtimeObserved!==true
+    ||! /^[a-f0-9]{40}$/.test(clean(observed.sourceTreeSha))
+    ||currentSourceTreeSha({repoRoot,sourcePath:project.projectPath})!==observed.sourceTreeSha)continue;
+  Object.assign(project,{queueRuntimeEvidencePlatform:'WEB',queueRuntimeObserved:true,
+    queueRuntimePassed:observed.runtimePassed===true,queueRuntimeSourceRevision:clean(observed.sourceRevision),
+    queueRuntimeFailureStage:observed.runtimePassed===true?'':clean(observed.failureStage),
+    queueRuntimeFailureSignature:observed.runtimePassed===true?'':clean(observed.failureSignature),
+    queueRuntimePlaytestFinding:clean(observed.failureSignature),queueRuntimeIndependentQaPassed:false,
+    queueRuntimeRegressionPassed:false});
 }
 const ownerPolicy=centralPresentationPolicy(repoRoot)||{};
 const enrichedRows=rows.map(project=>{
@@ -2685,7 +2704,8 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
 
 // 메인: 기존 개발→F0~F9 검증 완료 뒤 새 아이디어를 기존 책임 코드에서 계속 구현한다.
 export function findWebRecurringBuildUpTask(project,repoRoot,queue){
- if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
+ if(project.engine!=='web'||!['development-confirmed','release-confirmed'].includes(project.releaseState)
+   ||project.ownerDevelopmentHold===true||project.ownerDevelopmentStopped===true)return null;
  const root=posix(project.projectPath);
  if(!/^web-games\/[a-zA-Z0-9._-]+$/.test(root)||!fs.existsSync(sourceFile(repoRoot,root+'/index.html')))return null;
  // 미완성 변경이 있으면 다음 세대를 시작하지 않는다. 검증·저장·배포 단계도 건너뛰지 않는다.
@@ -2702,9 +2722,17 @@ export function findWebRecurringBuildUpTask(project,repoRoot,queue){
  const pendingFailure=!prev?(queue.tasks||[]).filter(t=>clean(t.gameId)===project.gameId
    &&clean(t.target).toLowerCase()==='web'&&isDevelopmentImplementation(t)
    &&['failed','error','rejected'].includes(clean(t.status).toLowerCase())).at(-1):null;
- const failed=previousFailed||Boolean(pendingFailure),cause=previousFailed?prev:pendingFailure;
- const passed=history.filter(t=>['verified','done','completed'].includes(clean(t.status).toLowerCase())
+ const previousSource=clean(prev?.buildUpSourceTree||prev?.buildUpDirective?.sourceTreeFingerprint||prev?.recurringSourceTreeFingerprint);
+ const sourceNow=previousSource?inspectGameSources({repoRoot,sourceRoots:[root]}).sourceTreeFingerprint:'';
+ const noSourceGrowth=Boolean(prev&&['verified','done','completed'].includes(last)&&previousSource&&sourceNow===previousSource);
+ const ownPlaytest=project.queueRuntimeObserved===true&&clean(project.queueRuntimeEvidencePlatform).toUpperCase()==='WEB';
+ const playtestFailure=ownPlaytest&&project.queueRuntimePassed!==true&&Boolean(clean(project.queueRuntimeFailureSignature));
+ const failed=previousFailed||Boolean(pendingFailure)||noSourceGrowth||playtestFailure;
+ const cause=playtestFailure?{id:'recorded-web-playtest',blocker:clean(project.queueRuntimeFailureSignature)}
+   :noSourceGrowth?{id:prev.id,blocker:'NO_GAME_SOURCE_DELTA_AFTER_VERIFIED_CYCLE'}:previousFailed?prev:pendingFailure;
+ const verifiedGrowthCount=history.filter(t=>['verified','done','completed'].includes(clean(t.status).toLowerCase())
    &&!clean(t.goal).includes('[WEB_CAUSAL_REPAIR]')).length;
+ const passed=Math.max(0,verifiedGrowthCount-(noSourceGrowth&&!clean(prev?.goal).includes('[WEB_CAUSAL_REPAIR]')?1:0));
  const domains=[
   ['CORE_FUN','핵심 조작→행동→결과의 재미와 적 대응을 기존 게임 규칙 안에서 강화한다.'],
   ['PROGRESSION','현재 존재하는 경제·성장·퀘스트·연구 중 막힌 해금·보상 연결을 실제 구현한다.'],
@@ -2716,16 +2744,32 @@ export function findWebRecurringBuildUpTask(project,repoRoot,queue){
  // 큰 게임은 index.html을 장식하지 않고 실제 게임 모듈을 우선 수정한다.
  const owner=['game-v3.js','game.js','main.js','script.js','app.js','index.js','index.html']
    .map(name=>root+'/'+name).find(file=>fs.existsSync(sourceFile(repoRoot,file)))||root+'/index.html';
+ // 그래픽 회차에는 기존 렌더 파일을 실제 쓰기 책임 범위에 넣는다. 다른 게임·공용 자산으로 권한을 넓히지 않는다.
+ const presentationFiles=focus==='GRAPHICS_AUDIO'
+   ?['render-v3.js','world3d.mjs','gem3d.mjs','render.js','renderer.js','render.mjs','style.css']
+     .map(name=>root+'/'+name).filter(file=>fs.existsSync(sourceFile(repoRoot,file))):[];
+ const responsible=[...new Set([...presentationFiles,owner])];
+ const playtestContext=ownPlaytest
+   ?'\n기존 자동 플레이테스트 관측: '+JSON.stringify({sourceRevision:project.queueRuntimeSourceRevision||null,
+     runtimePassed:project.queueRuntimePassed===true,failureSignature:project.queueRuntimeFailureSignature||null,
+     finding:project.queueRuntimePlaytestFinding||null,responsibleSource:project.queueRuntimeResponsibleSource||null})
+   :'\n현재 회차 실제 플레이 효과는 미검증이다. 예측·정적 검사·타 게임 관측을 이 게임의 실제 플레이 통과로 기록하지 않는다.';
  const goal=failed
    ?'[WEB_CAUSAL_REPAIR] '+project.gameId+' 이전 '+cause.id+' 실패 원인과 정확한 QA 근거를 조사하고 같은 책임 함수에서 수정해 동일 검증을 재실행한다: '+[cause.blocker,cause.lastOutcome].map(clean).filter(Boolean).join(' | ').slice(0,300)
    :'[WEB_AUTONOMOUS_BUILD_UP] '+project.gameId+' 세대 '+version+' / '+focus+'\n'+idea+
      '\n검증된 전 세대·현재 소스·승인 설계·실제 플레이 문제를 비교해 한 가지 일관된 게임 기능 아이디어를 선택하고 기존 함수에 실제 구현한다. 문서·라벨·검증 버튼만 변경해 완료 처리하지 않는다. 기존 게임 정체성·밸런스·성벽/경제/동맹 같은 핵심 기능·저장 키와 저장 의미를 임의로 변경하지 않는다. 승인 근거 없는 신규 밸런스 변경은 금지한다. 해당 게임의 기존 BUILD_UP→F0~F9 후보·모바일 브라우저·저장·회귀·정확한 소스 revision 검증 후에만 다음 세대로 이어간다. 새 큐·워크플로·래퍼·우회 배포를 만들지 않는다.';
- let out=task(prefix+version,project,goal,[owner],failed?'high':'normal','medium',[
+ let out=task(prefix+version,project,goal+playtestContext,responsible,failed?'high':'normal','medium',[
    'web-autonomous-recurring-build-up:v1','web-recurring-focus:'+focus,
    'web-loop:EXISTING_BUILD_UP_F0_F9','real-source-diff-required','preserve-existing-save-and-rules',
+   'web-playtest-feedback:'+(ownPlaytest?'OBSERVED':'UNVERIFIED'),
+   ...(noSourceGrowth?['web-source-growth:NO_DELTA_REPAIR_REQUIRED']:[]),
    ...(failed?['failed-generation-repair:'+cause.id]:[])
  ]);
- return attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
+ out=attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
+ return {...out,recurringSourceTreeFingerprint:clean(out.buildUpSourceTree)||sourceNow
+   ||inspectGameSources({repoRoot,sourceRoots:[root]}).sourceTreeFingerprint,
+   autonomousEvolution:{existingLoopOnly:true,sourceMutationRequired:true,playtestAfterPublicationRequired:true,
+     preserveSaveAndRules:true,focus,observedFeedback:ownPlaytest,nextCycleUsesVerifiedEffect:true}};
 }
 function findRobloxInternalPlaytestTask(project,repoRoot,queue){
   if(project.engine!=='roblox'||project.releaseState!=='development-confirmed')return null;
@@ -3020,6 +3064,10 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure','roblox-source-static-contract-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
   const runtimeEvidence={
     platform,
+    ...(platform==='WEB'?{
+      sourceRevision:samePlatform?clean(project?.queueRuntimeSourceRevision):'',
+      playtestFinding:samePlatform?clean(project?.queueRuntimePlaytestFinding):'',
+      responsibleSource:samePlatform?posix(project?.queueRuntimeResponsibleSource):''}:{}),
     studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
     failureStage:clean((samePlatform?project?.queueRuntimeFailureStage:'')||(roblox?project?.queueRobloxFailureStage:'')),
     failureSignature:clean((samePlatform?project?.queueRuntimeFailureSignature:'')||(roblox?project?.queueRobloxFailureSignature:'')),
@@ -4678,7 +4726,8 @@ export function runVibe2AutoPlanner({
   const robloxDistillationLedger=readJson(resolvedRobloxDistillationFile,{version:1,records:[]});
   const robloxPlaybooks=readJson(path.join(repoRoot,'company-learning','vibe3-task-playbooks.json'),{});
   const queueBefore=readJson(resolvedQueueFile,{tasks:[]});
-  let result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:readJson(developmentQueueFile,{items:[]}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks,runnerPressure:readJson(resolvedControlFile,{})});
+  const webTesterState=readJson(path.join(path.dirname(path.resolve(resolvedQueueFile)),'tester-debug-tickets.json'),{});
+  let result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:{...readJson(developmentQueueFile,{items:[]}),webPlaytestObservations:webTesterState.webPlaytestObservations||[]},queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks,runnerPressure:readJson(resolvedControlFile,{})});
   if(ownerRobloxPatch){
     // 기존 중앙 문서 네 개가 검증되기 전에는 큐도 변경하지 않는다.
     const centralFiles=['platform-release-roadmap.json','company-log-map.json',

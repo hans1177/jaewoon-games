@@ -812,6 +812,15 @@ jobs:
               fi
             done < <(find /tmp/vibe2-main/company-learning/marketing -mindepth 2 -maxdepth 2 -name latest.json -type f 2>/dev/null | sort)
 
+            # 기존 공개 웹 플레이테스트 결과를 기존 테스터 인계로 읽는다. 다른 플랫폼 상태는 수정하지 않는다.
+            web_playtest_dir="$RUNNER_TEMP/web-playtest-$GITHUB_RUN_ID"
+            mkdir -p "$web_playtest_dir"
+            web_playtest_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=ocean-naval-mobile-render&per_page=10" \
+              --jq '[.artifacts[] | select(.expired==false and .workflow_run.head_branch=="main")] | .[0].workflow_run.id // empty' 2>/dev/null || true)"
+            if [[ "$web_playtest_run" =~ ^[0-9]+$ ]]; then
+              gh run download "$web_playtest_run" --repo "$GITHUB_REPOSITORY" --name ocean-naval-mobile-render \
+                --dir "$web_playtest_dir" >/dev/null 2>&1 || true
+            fi
             node --check /tmp/vibe2-main/tools/company-tester-debug-intake.mjs
             (
               cd /tmp/vibe2-main
@@ -819,6 +828,8 @@ jobs:
             )
             node /tmp/vibe2-main/tools/company-tester-debug-intake.mjs \
               --development-queue=/tmp/vibe2-company-runtime-queue.json \
+              --web-playtest-report="$web_playtest_dir/web-playtest-report.json" \
+              --root=/tmp/vibe2-main \
               --tickets=.vibe2/tester-debug-tickets.json \
               --recovery=.vibe2/recovery-queue.json \
               --output=/tmp/vibe2-tester-debug-intake.json | tee /tmp/vibe2-tester-debug-intake.log
