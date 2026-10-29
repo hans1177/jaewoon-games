@@ -205,6 +205,33 @@ function developmentFloorSnapshot(developmentQueue={}) {
 }
 
 
+// Observe the existing Vibe gated requeue contract instead of treating a runtime
+// failure as another passed QA result. Historical event markers alone are not
+// enough: the current repair goal must still carry the gated diagnosis.
+function gatedGameRepairObservation(task={}){
+  if(!['queued','running','blocked'].includes(clean(task.status).toLowerCase()))return null;
+  const goal=clean(task.goal);
+  if(!goal.startsWith('[VERIFIED_GAME_RUNTIME_BOTTLENECK]'))return null;
+  const evidence=(Array.isArray(task.evidence)?task.evidence:[]).map(clean);
+  if(!evidence.includes('runtime-neural-ingress:gated-existing-task-requeue')
+    ||!evidence.some(value=>value.startsWith('runtime-neural-ingress-event:')))return null;
+  const latest=prefix=>evidence.filter(value=>value.startsWith(prefix)).at(-1)?.slice(prefix.length)||'';
+  const stage=latest('runtime-neural-ingress-failed-stage:');
+  const signature=latest('runtime-neural-ingress-failure-signature:');
+  if(!stage||!signature||!goal.includes('실패 단계: '+stage)||!goal.includes('실패 식별자: '+signature))return null;
+  const revision=latest('runtime-neural-ingress-source-revision:');
+  const ownerFile=latest('runtime-neural-ingress-responsible-file:');
+  const ownedFiles=Array.isArray(task.responsibleFiles)?task.responsibleFiles.map(clean):[];
+  return{
+    taskId:clean(task.id),platform:clean(task.target).toUpperCase(),
+    status:clean(task.status).toLowerCase(),stage:stage.slice(0,100),
+    failureSignature:signature.slice(0,200),
+    sourceRevision:/^[0-9a-f]{40}$/i.test(revision)?revision:null,
+    responsibleFile:ownerFile&&ownedFiles.includes(ownerFile)?ownerFile:null,
+    outcome:'REPAIR_NOT_RUNTIME_PASS'
+  };
+}
+
 export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
   const tasks=Array.isArray(gameQueue?.tasks)?gameQueue.tasks:[];
   const games=new Map();
@@ -215,7 +242,8 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
     if(!id)continue;
     if(!games.has(id))games.set(id,{gameId:id,focused:false,ownerDirectTasks:0,
       queued:0,running:0,verifiedPackages:0,failed:0,causalRepairPending:0,
-      deploymentVerified:false,gameCompletionVerified:false});
+      causalRepairRunning:0,causalRepairBlocked:0,verifiedRuntimeRepairPending:0,
+      runtimeRepairStages:[],deploymentVerified:false,gameCompletionVerified:false});
     const g=games.get(id);
     if(t.ownerFocusedCaretaker===true||t.focusedCaretaker===true)g.focused=true;
     if(t.ownerDirective===true)g.ownerDirectTasks++;
@@ -224,7 +252,17 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
     // Only the canonical verified terminal task counts, not model prose or elapsed time.
     if(status==='verified')g.verifiedPackages++;
     if(status==='failed')g.failed++;
-    if(status==='queued'&&clean(t.lastOutcome)==='FAIL'&&Number(t.retries)>0)g.causalRepairPending++;
+    const gatedRepair=gatedGameRepairObservation(t);
+    const legacyRepair=status==='queued'&&clean(t.lastOutcome)==='FAIL'&&Number(t.retries)>0;
+    if(status==='queued'&&(legacyRepair||gatedRepair))g.causalRepairPending++;
+    if(gatedRepair){
+      if(status==='queued')g.verifiedRuntimeRepairPending++;
+      if(status==='running')g.causalRepairRunning++;
+      if(status==='blocked')g.causalRepairBlocked++;
+      // These are observed repair intents, not verified game runtime or deployment results.
+      // Bound evidence size without collapsing independent game or F0-F9 stages.
+      if(g.runtimeRepairStages.length<40)g.runtimeRepairStages.push(gatedRepair);
+    }
     if(!t.ownerDirective&&['queued','running'].includes(status)){
       const paths=[...new Set((t.responsibleFiles||[]).map(clean).filter(Boolean))].sort();
       if(!paths.length)continue;
@@ -236,7 +274,10 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
   }
   for(const ids of activeExact.values())if(ids.length>1)duplicateActiveGroups.push(ids);
   const byGame=[...games.values()].sort((a,b)=>Number(b.focused)-Number(a.focused)
-    ||b.causalRepairPending-a.causalRepairPending||b.verifiedPackages-a.verifiedPackages
+    ||b.causalRepairPending-a.causalRepairPending
+    ||b.causalRepairRunning-a.causalRepairRunning
+    ||b.causalRepairBlocked-a.causalRepairBlocked
+    ||b.verifiedPackages-a.verifiedPackages
     ||a.gameId.localeCompare(b.gameId));
   return {gameCount:byGame.length,focusedGameCount:byGame.filter(g=>g.focused).length,
     verifiedPackageCount:byGame.reduce((n,g)=>n+g.verifiedPackages,0),
@@ -427,7 +468,7 @@ export function analyzeSystemAiBottlenecks({
   if(pendingRuns>0)actions.push('REDUCE_SCHEDULER_PENDING_RUN_WAIT');
   if(duplicateWorkflowRuns>0)actions.push('COLLAPSE_EXACT_DUPLICATE_INGRESS');
   if(productionOutcome.duplicateActiveGroups.length)actions.push('COLLAPSE_EXACT_DUPLICATE_GAME_WORK');
-  if(productionOutcome.games.some(g=>g.causalRepairPending>0))
+  if(productionOutcome.games.some(g=>g.causalRepairPending>0||g.causalRepairRunning>0||g.causalRepairBlocked>0))
     actions.push('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH');
   if(productionOutcome.games.some(g=>g.focused&&(g.queued>0||g.running>0)))
     actions.push('FINISH_OWNER_FOCUSED_GAME_WITH_VERIFIED_RUNTIME_EVIDENCE');
@@ -527,6 +568,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_VIBE_REPAIRS='+result.externalLearningApplications.nativeRepairCount);
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SYSTEM_REPAIRS='+result.externalLearningApplications.systemRepairCount);
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SECURITY_REVIEW='+result.externalLearningApplications.securityReviewRequiredCount);
+  console.log('SYSTEM_AI_GAME_GATED_REPAIR_PENDING='+result.productionOutcome.games.reduce((n,g)=>n+g.verifiedRuntimeRepairPending,0));
+  console.log('SYSTEM_AI_GAME_GATED_REPAIR_RUNNING='+result.productionOutcome.games.reduce((n,g)=>n+g.causalRepairRunning,0));
+  console.log('SYSTEM_AI_GAME_GATED_REPAIR_BLOCKED='+result.productionOutcome.games.reduce((n,g)=>n+g.causalRepairBlocked,0));
   console.log('SYSTEM_AI_BOTTLENECK_STALE_RESERVATIONS='+result.staleReservations.length);
   console.log('SYSTEM_AI_BOTTLENECK_COMMON_FAILURE_COHORTS='+result.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_BATCH='+result.recommendedBatch);
