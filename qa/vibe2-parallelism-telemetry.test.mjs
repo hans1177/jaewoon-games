@@ -19,6 +19,22 @@ const row=(i,{start=1000,end=5000,cache=true,outcome='PASS',runId=null,evidence=
   }
 });
 
+test('complex codegen measures actual attempts separately from zero-attempt capability gaps and runtime',()=>{
+ const results=[
+  {...row(1,{outcome:'FAIL',candidateFailure:{class:'COMPLEX_CAPABILITY_GAP',message:'VIBE2_COMPLEX_CAPABILITY_GAP:UNSUPPORTED_OPERATOR'},metrics:{candidateGenerationAttempts:0}}),gameId:'rpg'},
+  {...row(2,{metrics:{candidateGenerationAttempts:1,complexRequirementCount:3,complexBoundSymbolCount:2}}),gameId:'rpg'},
+  {...row(3),gameId:'rpg'},
+ ];
+ const report=computeParallelismTelemetry({results});
+ assert.equal(report.codegenMeasurements.measuredWorkers,2);
+ assert.equal(report.codegenMeasurements.zeroAttemptWorkers,1);
+ assert.equal(report.codegenMeasurements.attemptedWorkers,1);
+ assert.equal(report.codegenMeasurements.complexRequirementCount,3);
+ assert.equal(report.codegenMeasurements.complexBoundSymbolCount,2);
+ assert.equal(report.codegenMeasurements.runtimePassInferredFromWorkerPass,false);
+ assert.equal(report.outcomes.FAIL,1);
+});
+
 test('20 overlapping workers report real peak 20 and full utilization',()=>{
   const results=Array.from({length:20},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'100'}));
   const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:20});

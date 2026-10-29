@@ -9086,6 +9086,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   // Owner-approved source scope and the original Vibe2 validator still decide admission.
   if(!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
     const v59=createVibe59CodeCandidates({order,sourceRoot,responsibleFiles,target,
+      repositoryRoot:cwd,
       verifiedCodePatterns:readVerifiedCodePatternsForSourceWorker().patterns});
     if(v59){
       const candidate=normalizeCandidate(v59,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
@@ -9093,6 +9094,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const candidateValidation=candidateValidator(candidate);
       generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,
         modelUsed:false,vibe59RuleDigest:v59.ruleDigest,vibe59CodeKind:v59.vibe59CodeKind,
+        ...(v59.complexPlan?{complexRequirementCount:v59.complexPlan.requirementCount,
+          complexBoundSymbolCount:v59.complexPlan.boundSymbolCount,complexAtomCount:v59.complexPlan.atomCount,
+          complexPlanDigest:v59.complexPlan.digest,complexSourceDigest:v59.complexPlan.sourceDigest,
+          complexGameRuntimeVerified:false}:{}),
         vibe59TestCaseCount:v59.vibe59TestPlan.cases.length,vibe59ScenariosPass:v59.vibe59TestPlan.pass,
         vibe59JsReplayPass:v59.vibe59JsReplay?.pass??null,
         vibe59AutoProbeCount:v59.vibe59AutoTestPlan?.generatedCaseCount||0,
@@ -9411,7 +9416,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     deterministicWebInput:generation.deterministicWebInput===true,
     deterministicRobloxNativeRepair:clean(generation.deterministicRobloxNativeRepair)||null,
     deterministicNativeSelection,
-    sourceModelCallRequired:!generation.deterministicRobloxNativeRepair&&![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
+    sourceModelCallRequired:generation.modelUsed!==false&&!generation.deterministicRobloxNativeRepair&&![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };

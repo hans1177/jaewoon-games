@@ -2853,6 +2853,12 @@ jobs:
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
+            candidateGenerationAttempts:Number.isSafeInteger(manifest?.generation?.attempts)?manifest.generation.attempts:(/^\d+$/.test(clean(process.env.CANDIDATE_GENERATION_ATTEMPTS))?Number(process.env.CANDIDATE_GENERATION_ATTEMPTS):null),
+            complexRequirementCount:manifest?.generation?.complexRequirementCount??null,
+            complexBoundSymbolCount:manifest?.generation?.complexBoundSymbolCount??null,
+            complexAtomCount:manifest?.generation?.complexAtomCount??null,
+            complexPlanDigest:manifest?.generation?.complexPlanDigest??null,
+            complexSourceDigest:manifest?.generation?.complexSourceDigest??null,
             modelCacheRequired:clean(process.env.MODEL_CACHE_REQUIRED).toLowerCase()==='true',modelCacheReason:clean(process.env.MODEL_CACHE_REASON)||null,
             ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
           };

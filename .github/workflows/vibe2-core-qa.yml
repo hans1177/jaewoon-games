@@ -63,6 +63,10 @@ on:
       - 'tools/vibe2-existing-web-assessment.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
+      - 'tools/vibe2-complex-*.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-offline-game-operators.mjs'
+      - 'tools/vibe2-codegen-counterexample-repair.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
       - 'tools/vibe3-roblox-studio-lessons.mjs'
       - 'qa/vibe3-roblox-studio-lessons.test.mjs'
@@ -113,6 +117,9 @@ on:
       - 'qa/vibe59-roblox-coding.test.mjs'
       - 'qa/vibe59-creative-engine.test.mjs'
       - 'qa/vibe59-luau-skills109.test.mjs'
+      - 'qa/vibe2-complex-*.test.mjs'
+      - 'qa/vibe2-game-source-index.test.mjs'
+      - 'qa/vibe59-history.json.gz'
       - 'qa/vibe2-complex-codegen.test.mjs'
       - 'tools/vibe2-complex-intent.mjs'
       - 'tools/vibe2-game-source-index.mjs'
@@ -216,6 +223,10 @@ on:
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
+      - 'tools/vibe2-complex-*.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-offline-game-operators.mjs'
+      - 'tools/vibe2-codegen-counterexample-repair.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
       - 'tools/vibe3-roblox-studio-lessons.mjs'
       - 'qa/vibe3-roblox-studio-lessons.test.mjs'
@@ -256,6 +267,9 @@ on:
       - 'qa/vibe-studio-asset-universe.test.mjs'
       - 'qa/vibe2-*.test.mjs'
       - 'qa/vibe59-luau-skills109.test.mjs'
+      - 'qa/vibe2-complex-*.test.mjs'
+      - 'qa/vibe2-game-source-index.test.mjs'
+      - 'qa/vibe59-history.json.gz'
       - 'qa/vibe2-complex-codegen.test.mjs'
       - 'tools/vibe2-complex-intent.mjs'
       - 'tools/vibe2-game-source-index.mjs'
@@ -617,6 +631,7 @@ jobs:
           node --test qa/vibe59-roblox-coding.test.mjs
           node --test qa/vibe59-creative-engine.test.mjs
           node --test qa/vibe59-luau-skills109.test.mjs
+          node --test qa/vibe2-complex-intent.test.mjs qa/vibe2-game-source-index.test.mjs qa/vibe2-complex-work-planner.test.mjs
           node --test qa/vibe2-complex-codegen.test.mjs
           node --test qa/vibe59-quality-gameplay.test.mjs
           node --test qa/vibe59-pathfinding.test.mjs
@@ -723,6 +738,7 @@ jobs:
           node --test qa/roblox-common-motion-source.test.mjs
           VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler|no-model Roblox generated button|no-model Roblox gameplay generated server action|no-model Roblox native runtime generated code" qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-studio-lessons.test.mjs
+          node --test --test-name-pattern="server-local native Luau" qa/vibe2-complex-work-planner.test.mjs
           node --test qa/vibe2-complex-codegen.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test --test-name-pattern="managed spawn executes" qa/company-development-roblox-runtime-foundation.test.mjs

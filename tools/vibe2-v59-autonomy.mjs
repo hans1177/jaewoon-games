@@ -5,7 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
-import {createVibe2ComplexCandidate} from './vibe2-complex-work-planner.mjs';
+import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
@@ -1092,7 +1092,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // Structured complex designs use the existing exact-edit engine against a private
 // in-memory source snapshot. Dependent steps may consume earlier generated code,
 // but original files remain untouched until the canonical worker admits the batch.
-export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[]}={}){
+export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null){
     // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.
@@ -1101,6 +1101,13 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
       const linked=createVibe2ComplexCandidate({order,sourceRoot,responsibleFiles,target,
         baseCommit:order.baseCommit||order.sourceRevision||''});
       if(linked)return linked;
+      const complex=compileSourceBoundComplexRequest({order,sourceRoot,responsibleFiles,target,repositoryRoot});
+      if(complex.status==='CANDIDATE')return complex.candidate;
+      if(complex.status==='BLOCKED'){
+        const error=new Error('VIBE2_COMPLEX_CAPABILITY_GAP:'+complex.unresolved.map(row=>row.code).join('|'));
+        error.vibe2GenerationFailureClass='COMPLEX_CAPABILITY_GAP';error.vibe2GenerationAttempts=0;
+        throw error;
+      }
     }
     return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
   }
