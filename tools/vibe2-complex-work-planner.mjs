@@ -2,7 +2,7 @@
 // [임포트] 원본 함수와 오너 지시에 연결된 변경 DAG 및 소스 후보를 생성한다.
 import fs from 'node:fs';
 import path from 'node:path';
-import {compileVibe2ComplexIntent,compileComplexOwnerIntent,expressionReferences,parseIntentExpression} from './vibe2-complex-intent.mjs';
+import {compileVibe2ComplexIntent,compileComplexOwnerIntent,expressionReferences,parseIntentExpression,readComplexOwnerInput} from './vibe2-complex-intent.mjs';
 import {indexVibe2GameSource,buildGameSourceIndex,safeSourceFile,sourceDigest,resolveGameSourceScope,sourceScopeAt} from './vibe2-game-source-index.mjs';
 import {applyExactEdits,normalizeExactEdits} from './autonomous-safe-edit.mjs';
 import {synthesizeGameChangeAtom} from './vibe2-offline-game-operators.mjs';
@@ -355,7 +355,7 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
 
 // 통합: 정식 catalog 경로와 기존 오너 주문이 없으면 후보를 생성하지 않는다.
 export function compileSourceBoundComplexRequest({order={},sourceRoot,responsibleFiles,target,repositoryRoot=process.cwd()}={}){
- const goal=String(order.selectedTask?.goal||order.originalGoal||order.goal||'');
+ const goal=readComplexOwnerInput({order,target}).text;
  if(!/(?:^|[;\n])\s*(?:함수\s+|In\s+(?:function\s+)?[A-Za-z_$]|죽은 (?:유닛|공격자|대상|적)|Prevent dead attackers|Do not damage dead targets)/i.test(goal))return {status:'NOT_APPLICABLE'};
  const baseRevisionSha=String(order.baseRevisionSha||order.baseCommit||order.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||'');
  try{

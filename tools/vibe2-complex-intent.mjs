@@ -9,9 +9,34 @@ const english=new RegExp('^when\\s+(?:function\\s+)?'+identifier+'\\s*(?:\\(\\))
 const korean=new RegExp('^함수\\s+'+identifier+'\\s+실행\\s*후\\s+'+identifier+'\\s+(?:다음|그리고)\\s+'+identifier+'\\s+호출(?:해|해줘|해주세요)?\\.?$');
 const protectedNames=new Set(['constructor','prototype','__proto__','eval','Function','require','import']);
 
+// [유틸] 기존 웹 접수기가 붙인 안내와 오너 원문을 구분한다. 원문으로 권한을 생성하지 않는다.
+export function readComplexOwnerInput({order={},target=''}={}){
+  const task=order.selectedTask||{},goal=String(task.goal||order.originalGoal||order.goal||'').trim();
+  const evidence=Array.isArray(task.evidence)?task.evidence:[];
+  const webTask=/^pwa-[0-9a-f-]{36}$/i.test(String(task.id||''))||evidence.includes('web-organization-boundary:v1')||evidence.includes('vibe-local-web-owner-directive');
+  if(!webTask)return {text:goal,source:'DIRECT_OWNER_ORDER',reference:null};
+  if(target!=='web'||String(task.target).toLowerCase()!=='web')throw Error('WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+  const id=/^pwa-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.exec(String(task.id||''));
+  const gameId=String(task.gameId||''),root=String(task.sourceRoot||'');
+  if(task.ownerDirective!==true||!id||!evidence.includes('pwa-task:'+id[1])||
+    !evidence.includes('web-organization-boundary:v1')||
+    !/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(gameId)||root!=='web-games/'+gameId)
+    throw Error('VIBE2_COMPLEX_OWNER_SCOPE_UNVERIFIED');
+  const marker='\n[GITHUB_DEVELOPMENT_FIRST]\n',parts=goal.split(marker);
+  if(goal.length>50000||parts.length!==2||
+    !parts[1].startsWith('대상 게임: '+gameId+' · 기존 소스: '+root+'\n'))
+    throw Error('VIBE2_COMPLEX_OWNER_WRAPPER_AMBIGUOUS');
+  const match=/^\[OWNER_IMMEDIATE_PWA\]\n게임: [^\n]+\n사용자 (?:직접 지시|플레이 피드백): ([\s\S]+)$/.exec(parts[0]);
+  if(!match||!match[1].trim()||match[1].includes('\n\n추가 지시:\n')){
+    const error=new Error('VIBE2_COMPLEX_CAPABILITY_GAP:OWNER_FOLLOWUP_SCOPE_UNRESOLVED');
+    error.vibe2GenerationFailureClass='COMPLEX_CAPABILITY_GAP';error.vibe2GenerationAttempts=0;throw error;
+  }
+  return {text:match[1].trim(),source:'EXISTING_PWA_OWNER_ORDER',reference:'pwa-task:'+id[1]};
+}
+
 export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',responsibleFiles=[],baseCommit=''}={}){
   const task=order.selectedTask||{};
-  const goal=String(task.goal||order.originalGoal||order.goal||'').trim();
+  const ownerInput=readComplexOwnerInput({order,target}),goal=ownerInput.text;
   if(!['web','roblox'].includes(target)||!goal||goal.length>640||
     /[\r\n\x00-\x1f\`{}]/.test(goal))return null;
   // [메인] 세미콜론으로 구분된 최대 4개 명시 지시만 해석한다. 임의 문장을 보완하지 않는다.
@@ -35,7 +60,7 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
   const requestId=hash([gameId,target,goal,baseCommit].join('|'));
   return Object.freeze({
     schemaVersion:'vibe2-complex-intent-v1',requestId,gameId,target,
-    ownerDirectiveReference:{originalText:goal,verifiedFromOwnerOrder:true},
+    ownerDirectiveReference:{originalText:goal,verifiedFromOwnerOrder:true,source:ownerInput.source,reference:ownerInput.reference},
     allowedGameRoot:sourceRoot,authorizedFiles:[...responsibleFiles],
     baseCommit:String(baseCommit),sourceWrite:false,runtimeVerified:false,
     requirements:steps.flatMap((step,group)=>step.effects.map((effect,index)=>({
@@ -84,14 +109,14 @@ export function expressionReferences(ast){
 
 // 메인: 승인 사실은 기존 오너 주문에서 복사한다. 해석 결과로 승인을 만들지 않는다.
 export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha=''}={}){
- const task=order.selectedTask||{},text=String(task.goal||order.originalGoal||order.goal||'').trim();
+ const task=order.selectedTask||{},ownerInput=readComplexOwnerInput({order,target}),text=ownerInput.text;
  const gameId=String(task.gameId||order.gameId||'');
  const approval=task.ownerDirective===true||order.ownerApproved===true;
  const reference=String(task.ownerDirectiveId||order.ownerDirectiveId||order.taskId||sourceDigest(text));
  const result={schemaVersion:'vibe2-complex-intent-v1',requestId:sourceDigest(JSON.stringify([gameId,target,text,reference])),
-  gameId,target,baseRevisionSha,ownerDirectiveReference:{originalText:String(order.originalGoal||text),
+  gameId,target,baseRevisionSha,ownerDirectiveReference:{originalText:ownerInput.reference?text:String(order.originalGoal||text),
    interpretedText:text,derivedFromOwnerRequest:Boolean(order.originalGoal&&order.originalGoal!==text),
-   verifiedFromOwnerOrder:approval,reference},
+   verifiedFromOwnerOrder:approval,reference:ownerInput.reference||reference,source:ownerInput.source},
   requirements:[],unresolved:[],sourceWrite:false,modelUsed:false,runtimeVerified:false};
  if(!approval)result.unresolved.push({code:'NO_OWNER_SPEC'});
  if(!text||text.length>16000||!['web','roblox'].includes(target))result.unresolved.push({code:'INVALID_REQUEST'});
