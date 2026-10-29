@@ -85,11 +85,7 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   const at=r.afterCallStart,anchorArgs=r.afterCallArguments;
   if(!Number.isSafeInteger(at)||at<owner.bodyStart||at>=owner.bodyEnd||!Array.isArray(anchorArgs))
    throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
-  const literal=value=>value.replace(/[.$]/g,'\\  const re=new RegExp('(?<![\\w$.])'+r.after+'\\s*\\(\\s*\\)'+(target==='web'?'\\s*;':''),'g');
-  const hits=[...body.matchAll(re)];if(hits.length!==1)throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
-  // Luau의 선언부에도 같은 name()이 있으므로 원본 책임 함수부터 호출까지 고유 앵커로 묶는다.
-  const at=owner.bodyStart+hits[0].index,find=source.slice(owner.start,at+hits[0][0].length);
-  const args=r.forwardedArguments||[];');
+  const literal=value=>value.replace(/[.$]/g,part=>'\\'+part);
   const re=new RegExp('^'+literal(r.after)+'\\s*\\(\\s*'+anchorArgs.map(literal).join('\\s*,\\s*')+
    '\\s*\\)'+(target==='web'?'\\s*;':''));
   const match=re.exec(source.slice(at,owner.bodyEnd));
