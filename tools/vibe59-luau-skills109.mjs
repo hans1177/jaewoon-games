@@ -38,6 +38,11 @@ function number(x){
 function parse(spec){
  const skill=catalog.get(spec?.operation);
  if(!skill)throw Error('VIBE59_SKILL_UNKNOWN_OPERATION');
+ // Reject unsafe numeric work orders even when the chosen skill does not use
+ // that optional field; otherwise malformed parameters silently pass the oracle.
+ for(const key of ['amount','cap','threshold']){
+  if(spec[key]!==undefined)number(spec[key]);
+ }
  const kind=skill.kind,collection=identifier(spec.collection),field=identifier(spec.field);
  const conditionField=condKinds.has(kind)?identifier(spec.conditionField):null;
  const toField=kind==='transfer'?identifier(spec.toField):null;
