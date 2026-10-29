@@ -164,6 +164,28 @@ export function buildGameSourceIndex({sourceRoot,responsibleFiles=[],target='web
   for(const m of raw.matchAll(/\.addEventListener\(\s*(['"])([^'"\n]+)\1\s*,\s*([A-Za-z_$][\w$]*)\s*\)|\b([A-Za-z_][\w.]*)\.(OnServerEvent|OnClientEvent)\s*:\s*Connect\(\s*([A-Za-z_][\w]*)\s*\)/g)){
    if(code.slice(m.index,m.index+8).trim())events.push({event:m[2]||m[5],handler:m[3]||m[6],...evidence(source,relative,sha,m.index,m.index+m[0].length)});
   }
+  // 익명 Roblox 수신자의 단순 원본 본문만 소스 인덱스에 포함한다. 중첩 블록은 차단한다.
+  if(target==='roblox'){
+   const inline=/\b([A-Za-z_][\w]*)\.OnClientEvent:Connect\s*\(\s*function\s*\(\s*([A-Za-z_][\w]*)(?:\s*:\s*[A-Za-z_][\w]*)?\s*\)\s*\r?\n([\s\S]{0,800}?)\r?\n[ \t]*end\s*\)/g;
+   for(const m of raw.matchAll(inline)){
+    const header=m[0].slice(0,m[0].indexOf('\n')),start=m.index+header.indexOf('function');
+    if(code.slice(m.index,m.index+m[1].length)!==m[1]||code.slice(start,start+8)!=='function'||
+     sourceScopeAt(code,m.index,'roblox').length||/\b(?:function|if|elseif|for|while|repeat|until|do|end)\b/.test(code.slice(m.index+m[0].indexOf('\n')+1,m.index+m[0].lastIndexOf('\n'))))continue;
+    const registration=remotes.filter(remote=>remote.variable===m[1]);
+    if(registration.length!==1)continue;
+    const bodyStart=m.index+m[0].indexOf('\n')+1,bodyEnd=m.index+m[0].lastIndexOf('\n');
+    const name='__inline_remote_receiver_'+start,id=relative+':'+name+':'+start;
+    const ev=evidence(source,relative,sha,start,m.index+m[0].lastIndexOf('end')+3);
+    symbols.push({id,name,kind:'function',parameters:[m[2]],bodyStart,bodyEnd,...ev,
+     lexicalScope:sourceScopeAt(code,start,'roblox'),ambiguous:false,unsupported:[],locals:[],inlineRemoteEvent:registration[0].eventName});
+    for(const call of code.slice(bodyStart,bodyEnd).matchAll(/\b([A-Za-z_][\w]*)\s*\(\s*([A-Za-z_][\w]*)\s*\)/g)){
+     edges.push({kind:'call',from:id,toName:call[1],arguments:[call[2]],
+      ...evidence(source,relative,sha,bodyStart+call.index,bodyStart+call.index+call[1].length+1)});
+    }
+    events.push({event:'OnClientEvent',handler:name,inline:true,
+     ...evidence(source,relative,sha,m.index,m.index+header.length)});
+   }
+  }
   files.push({path:relative,sourceSha256:sha,source,code,language,states,fields:[...new Set(fields)],storage,events,remotes});
  }
  for(const symbol of symbols){

@@ -61,3 +61,25 @@ test('Roblox source index binds only original ReplicatedStorage RemoteEvents and
  const blocked=buildGameSourceIndex({sourceRoot:root,responsibleFiles:[file],target:'roblox'});
  assert.equal(blocked.files[0].remotes.length,0);
 });
+
+
+test('bounded anonymous Roblox remote receiver is indexed only for a real top-level event',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-anonymous-event-'));t.after(()=>fs.rmSync(root,{force:true,recursive:true}));
+ fs.mkdirSync(path.join(root,'client'));const name='client/Hud.client.luau';
+ const text='local ReplicatedStorage = game:GetService("ReplicatedStorage")\n'+
+  'local remote = ReplicatedStorage:WaitForChild("UI_HP")\n'+
+  'local lastHp=0\nlocal function remember(hp: number)\n lastHp=hp\nend\n'+
+  'remote.OnClientEvent:Connect(function(hp: number)\n remember(hp)\nend)\n';
+ fs.writeFileSync(path.join(root,name),text);
+ const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:[name],target:'roblox'});
+ const callback=index.symbols.filter(x=>x.inlineRemoteEvent==='UI_HP');
+ assert.equal(callback.length,1);
+ assert.equal(callback[0].parameters.join(','),'hp');
+ assert.equal(callback[0].sourceSha256,index.files[0].sourceSha256);
+ assert.ok(index.events===undefined);
+ assert.ok(index.edges.some(x=>x.from===callback[0].id&&x.toName==='remember'&&x.to));
+ assert.ok(index.files[0].events.some(e=>e.handler===callback[0].name&&e.inline));
+ fs.writeFileSync(path.join(root,name),text.replace('local remote = ReplicatedStorage:WaitForChild("UI_HP")','local remote = nil'));
+ const rejected=buildGameSourceIndex({sourceRoot:root,responsibleFiles:[name],target:'roblox'});
+ assert.equal(rejected.symbols.some(x=>x.inlineRemoteEvent),false);
+});
