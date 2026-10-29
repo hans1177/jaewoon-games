@@ -177,7 +177,9 @@ test('model-free Roblox source misses retry once per source worker revision with
   assert.ok(task.evidence.includes('source-no-model-failure-kind:DETERMINISTIC_ROBLOX'));
   assert.ok(!task.evidence.some(x=>x.startsWith('source-no-model-retry-at:')),'native codegen should never get an artificial hourly retry');
   const selected=reserveVibeTaskBatch(settled.queue,{maxConcurrentTasks:1,lane:'game-primary'});
-  assert.deepEqual(selected.tasks.map(t=>t.id),['independent-native']);
+  assert.deepEqual(selected.tasks.map(t=>t.id),['no-model-roblox'],
+    'existing canonical reserve must immediately retry the native task after generator revision');
+  assert.equal(selected.queue.tasks.find(t=>t.id==='independent-native').status,'queued');
   const recovered=recoverStaleRunningReservations(settled.queue,{nowMs:Date.now()});
   const next=recovered.queue.tasks.find(x=>x.id===first.id);
   assert.equal(recovered.recovered,1);
