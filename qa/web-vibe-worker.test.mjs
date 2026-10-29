@@ -772,6 +772,26 @@ test('model-free Web rule rewrite executes its final original function, preservi
  assert.throws(()=>run(request),/RETURN_CONTRACT/);
 });
 
+test('model-free failed independent patch dedupe ignores edit list ordering',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-fingerprint-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.writeFileSync(path.join(root,'game.js'),
+   'function render(){score = 1;}\nfunction update(){level = 1;}\n');
+ const a={path:'game.js',find:'score = 1;',replace:'score = 2;'};
+ const b={path:'game.js',find:'level = 1;',replace:'level = 2;'};
+ const audit=(edits,order={})=>evaluateVibe59OfflinePatchEvidence({
+  candidate:{edits,vibe59CodeKind:'STATE_RULE'},sourceRoot:root,
+  responsibleFiles:['game.js'],target:'web',order});
+ const forward=audit([a,b]);
+ const reverse=audit([b,a]);
+ assert.equal(forward.vibe59OfflineAudit.fingerprint,reverse.vibe59OfflineAudit.fingerprint);
+ assert.equal(forward.vibe59OfflineAudit.functionCount,2);
+ assert.throws(()=>audit([b,a],{
+  vibe59RejectedCandidateFingerprints:[forward.vibe59OfflineAudit.fingerprint]
+ }),/REPEATED_FAILED_CANDIDATE/);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8').includes('score = 1;'),true);
+});
+
 test('offline Luau state function rewrite stays within original function and cannot alter saves',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-luau-function-'));
  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
