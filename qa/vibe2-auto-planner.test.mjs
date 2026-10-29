@@ -10,6 +10,7 @@ import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2Au
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
+import {authorizedContinuousGameplayImprovement} from '../tools/vibe2-continuous-runner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
@@ -6030,4 +6031,58 @@ test('exact Studio MCP HUD overlap makes Vibe own the actual client and shared U
     assert.deepEqual(robloxQualityRepairFiles({...project,queueRobloxArtifactIdentity:'sha256:'+'b'.repeat(64)},root),[],
       'different native build artifacts must not authorize a repair');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('owner directive allows verified gameplay tuning on every active WEB and ROBLOX game, not visual or held targets',()=>{
+  const root=tempRepo(),policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  Object.assign(policy,{
+    status:'OWNER_DIRECT_LOCKED',
+    developmentAccess:{WEB:'ALWAYS_ALLOWED',ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'},
+    ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','WEB']},
+    fixedAutonomousDevelopmentOperatingContract:{ownerRequestedVibeOneShotPatch:{preservation:{
+      existingGameBalanceOrContentMayChangeOnlyByOwnerDirection:true
+    }}},
+    ownerCanonicalRules:{ownerExclusiveDevelopment:{rules:{
+      existingGameplaySaveProgressionBalanceAndMultiplayerSemanticsMustBePreservedUnlessOwnerExplicitlyChangesThem:true
+    }}}
+  });
+  fs.writeFileSync(policyPath,JSON.stringify(policy),'utf8');
+  for(const engine of ['web','roblox']){
+    const gameId='owner-full-game-'+engine;
+    const projectPath=engine+'-games/'+gameId;
+    fs.mkdirSync(path.join(root,projectPath),{recursive:true});
+    fs.writeFileSync(path.join(root,projectPath,'game.js'),'function updateEnemy() {}','utf8');
+    writeStudioDesign(root,gameId);
+    const project={gameId,engine,releaseState:'development-confirmed',projectPath,name:gameId};
+    for(const focus of ['CORE_FUN','PROGRESSION']){
+      const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},focus);
+      assert.ok(generated,engine+focus);
+      assert.match(generated.goal,/OWNER_APPROVED_CONTINUOUS_GAMEPLAY_IMPROVEMENT_20261030/);
+      assert.ok(generated.evidence.some(value=>value.startsWith('owner-continuous-gameplay-design:')));
+      assert.equal(authorizedContinuousGameplayImprovement({task:generated,centralPolicy:{valid:true,document:policy},repoRoot:root}),true);
+      assert.equal(authorizedContinuousGameplayImprovement({task:generated,centralPolicy:{valid:false,document:policy},repoRoot:root}),false);
+      assert.equal(authorizedContinuousGameplayImprovement({task:{...generated,sourceRoot:'web-games/other'},centralPolicy:{valid:true,document:policy},repoRoot:root}),false);
+      assert.equal(authorizedContinuousGameplayImprovement({task:{...generated,evidence:['studio-quality-loop:v1']},centralPolicy:{valid:true,document:policy},repoRoot:root}),false);
+      assert.equal(authorizedContinuousGameplayImprovement({task:{...generated,protectedChange:true},centralPolicy:{valid:true,document:policy},repoRoot:root}),false);
+    }
+    const presentation=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+    assert.ok(presentation);
+    assert.equal(authorizedContinuousGameplayImprovement({task:presentation,centralPolicy:{valid:true,document:policy},repoRoot:root}),false);
+    const held={...policy,developmentAccess:{...policy.developmentAccess,[engine.toUpperCase()]:'OWNER_HOLD'}};
+    const protectedTask=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+    assert.equal(authorizedContinuousGameplayImprovement({task:protectedTask,centralPolicy:{valid:true,document:held},repoRoot:root}),false);
+  }
+});
+
+test('standing owner tuning instructions are not added to Web recurring work without verified design',()=>{
+  const root=tempRepo(),gameId='web-tuning-designless';
+  const projectPath='web-games/'+gameId;
+  fs.mkdirSync(path.join(root,projectPath),{recursive:true});
+  fs.writeFileSync(path.join(root,projectPath,'index.html'),'<!doctype html><canvas id="game"></canvas>','utf8');
+  const project={gameId,engine:'web',releaseState:'development-confirmed',projectPath};
+  const task=findWebRecurringBuildUpTask(project,root,{tasks:[]});
+  assert.ok(task);
+  assert.equal(task.evidence.some(value=>value.startsWith('owner-continuous-gameplay-improvement:')),false);
+  assert.equal(authorizedContinuousGameplayImprovement({task,centralPolicy:{valid:true,document:{}},repoRoot:root}),false);
 });
