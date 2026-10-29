@@ -46,6 +46,9 @@ function unavailableOfflineSourceCapability(row={}){
   if(clean(row?.outcome).toUpperCase()!=='FAIL')return'';
   const kind=clean(row?.candidateFailure?.class).toUpperCase();
   const message=clean(row?.candidateFailure?.message);
+  if(row?.metrics?.candidateGenerationAttempts!=null
+    &&(!Number.isSafeInteger(Number(row.metrics.candidateGenerationAttempts))
+      ||Number(row.metrics.candidateGenerationAttempts)!==0))return'';
   // These are *zero-attempt* missing-capability reports, not attempted code edits
   // which failed validation. Never treat generic source failures as unavailable.
   if(kind==='VIBE4_OFFLINE_PATTERN_UNAVAILABLE'
