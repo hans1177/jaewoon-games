@@ -462,6 +462,18 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
     // 타 파일은 이 단일 책임 함수 작업의 실패로 취급하지 않는다.
     return null;
   }
+  // This exact public smoke failure belongs to the original HTML simulation.
+  // The paired Three.js module is read-only evidence/renderer, not another edit.
+  // Do not force an unnecessary model call for the optional, unaffected file.
+  if(task?.gameId==='wild-survival'
+    &&source.relative==='web-games/wild-survival/wild3d.mjs'
+    &&clean(task.goal).includes('WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED')
+    &&/(?:#11129|40872553330)/.test(clean(task.goal))
+    &&source.original.includes('Movement flags are deliberately read-only')
+    &&source.original.includes("document.body.dataset.playerWorldX=Number(p.x).toFixed(2);")
+    &&source.original.includes("bindMovement(fn){if(typeof fn==='function')keysInput=fn;}")){
+    return null;
+  }
   // [전체 코드 진단] 무모델 분석은 앞부분 발췌가 아닌 실제 파일 전체를 읽는다.
   const analysis={bytes:Buffer.byteLength(source.original),
     functions:[...source.original.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(row=>row[1]),
