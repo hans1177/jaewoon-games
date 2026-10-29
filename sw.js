@@ -38,7 +38,7 @@ async function serveForestAsset(request,event){
   if(response.ok)event.waitUntil(cacheForestAsset(cache,request,response));
   return response;
 }
-const APP_SHELL=['/jaewoon-games/command.html','/jaewoon-games/emergency-ai.js','/jaewoon-games/install.html','/jaewoon-games/offline.html','/jaewoon-games/manifest.webmanifest','/jaewoon-games/assets/pwa-icon.svg','/jaewoon-games/assets/pwa-icon-192.png','/jaewoon-games/assets/pwa-icon-512.png'];
+const APP_SHELL=['command.html','emergency-ai.js','install.html','offline.html','manifest.webmanifest','assets/pwa-icon.svg','assets/pwa-icon-192.png','assets/pwa-icon-512.png'];
 const NETWORK_ONLY=/\/web-games\/_shared\/touch-controls\.js(?:\?|$)|\/assets\/homepage-enhancements\.js(?:\?|$)|\/(?:game-catalog|company-status|homepage-platform-exposure|homepage-portfolio-status|test-game-candidates|public-game-health|game-artbooks|public-release-baselines)\.json(?:\?|$)/;
 
 function injectEmergencyScript(response){
@@ -50,11 +50,11 @@ function injectEmergencyScript(response){
 }
 
 async function serveCommand(request){
-  const cached=await caches.match('/jaewoon-games/command.html');
+  const cached=await caches.match('command.html');
   const update=fetch(request,{cache:'no-store'}).then(async fresh=>{
     if(fresh.ok){
       const cache=await caches.open(CACHE_NAME);
-      await cache.put('/jaewoon-games/command.html',fresh.clone());
+      await cache.put('command.html',fresh.clone());
     }
     return fresh;
   }).catch(()=>null);
@@ -64,7 +64,7 @@ async function serveCommand(request){
   }
   const fresh=await update;
   if(fresh?.ok)return injectEmergencyScript(fresh);
-  return await caches.match('/jaewoon-games/offline.html')||Response.error();
+  return await caches.match('offline.html')||Response.error();
 }
 
 self.addEventListener('install',event=>{
@@ -78,20 +78,23 @@ self.addEventListener('activate',event=>{
 self.addEventListener('fetch',event=>{
   const request=event.request;if(request.method!=='GET')return;
   const url=new URL(request.url);if(url.origin!==self.location.origin)return;
-  if(isForestAsset(url.pathname)){event.respondWith(serveForestAsset(request,event));return;}
-  if(url.pathname==='/jaewoon-games/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
-  if(NETWORK_ONLY.test(url.pathname+url.search)){
+  const scopePath=new URL(self.registration.scope).pathname;
+  if(!url.pathname.startsWith(scopePath))return;
+  const localPath='/'+url.pathname.slice(scopePath.length);
+  if(isForestAsset(localPath)){event.respondWith(serveForestAsset(request,event));return;}
+  if(localPath==='/jaewoon-games/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
+  if(NETWORK_ONLY.test(localPath+url.search)){
     // 런타임 JSON은 서버가 선언한 짧은 HTTP 캐시만 사용한다. 오프라인 앱 저장소로 대체하지 않는다.
-    const runtimeMetadata=/^\/(game-catalog|company-status|homepage-platform-exposure|homepage-portfolio-status)\.json$/.test(url.pathname);
+    const runtimeMetadata=/^\/(game-catalog|company-status|homepage-platform-exposure|homepage-portfolio-status)\.json$/.test(localPath);
     event.respondWith(fetch(request,{cache:runtimeMetadata?'default':'no-store'}));return;
   }
   if(url.pathname.startsWith('/jaewoon-games/web-games/daechung-rpg/')){event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match(request)||Response.error()));return;}
   if(request.mode==='navigate'){
-    const isWebGame=url.pathname.startsWith('/jaewoon-games/web-games/');
+    const isWebGame=localPath.startsWith('/jaewoon-games/web-games/');
     event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>{
       if(isWebGame)return Response.error();
-      return await caches.match(request)||await caches.match('/jaewoon-games/offline.html')||Response.error();
+      return await caches.match(request)||await caches.match('offline.html')||Response.error();
     }));return;
   }
-  event.respondWith(caches.match(request).then(cached=>cached||fetch(request).then(response=>{if(response.ok&&APP_SHELL.includes(url.pathname)){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(request,copy));}return response;})));
+  event.respondWith(caches.match(request).then(cached=>cached||fetch(request).then(response=>{if(response.ok&&APP_SHELL.includes(localPath.slice(1))){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(request,copy));}return response;})));
 });

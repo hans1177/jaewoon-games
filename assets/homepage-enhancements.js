@@ -90,7 +90,7 @@ async function requestPermanentGameDelete(id){
   const token=localStorage.getItem('jaewoon_command_device_v1')||'';
   if(!token){
     window.alert('영구삭제 요청에 오너 기기 인증이 필요해. 삭제하지 않았어. 개발 지시 화면에서 먼저 기기를 등록해줘.');
-    location.href='/jaewoon-games/command.html';
+    location.href='command.html';
     return;
   }
   const buttons=[...document.querySelectorAll('button[data-hide-game]')].filter(button=>button.dataset.hideGame===id);
@@ -544,7 +544,7 @@ function buildCard(row){
   const direct=links.web||links.roblox||links.unity||links.webSource||'';
   const media=game.homepageMedia;
   const video=hasInternalRelease(game)&&media?.video?.runtimeVerification?.pass===true&&/^assets\/homepage-media\/[a-z0-9-]+\.mp4$/.test(media.video.src||'')?media.video:null;
-  const videoMarkup=video?`<details class="homeGameplayVideo"><summary>실제 플레이 · ${esc(video.platform==='WEB'?'웹':video.platform==='UNITY_WEB'?'Unity Web':'Unity 앱')}</summary><video controls playsinline preload="none" data-src="/jaewoon-games/${esc(video.src)}?v=${esc(video.sha256.slice(0,12))}" poster="${esc(mediaImageHref(media.small))}" aria-label="${esc(game.subtitle||game.name)} 실제 플레이"></video></details>`:'';
+  const videoMarkup=video?`<details class="homeGameplayVideo"><summary>실제 플레이 · ${esc(video.platform==='WEB'?'웹':video.platform==='UNITY_WEB'?'Unity Web':'Unity 앱')}</summary><video controls playsinline preload="none" data-src="${esc(video.src)}?v=${esc(video.sha256.slice(0,12))}" poster="${esc(mediaImageHref(media.small))}" aria-label="${esc(game.subtitle||game.name)} 실제 플레이"></video></details>`:'';
   // 대표 썸네일과 실제 플레이 동영상에서 검증된 장면을 슬라이드로 묶는다.
   const shots=Array.isArray(media?.screenshots)?media.screenshots:[];
   const firstCaption=game.serverTitleImage?'로블록스 서버 타이틀 이미지':game.generatedTitleArtwork?'게임 타이틀 아트':game.sharedRobloxThumbnail?'로블록스 동일 썸네일':game.originalLogo?'기존 게임 타이틀 로고':game.missingImage?'대표 이미지 준비 중':'게임 대표 이미지';
@@ -553,7 +553,7 @@ function buildCard(row){
     : `<img class="${game.originalLogo?'homeOriginalTitleLogo':''}" src="${esc(game.image)}" alt="${esc(game.name)} · ${esc(firstCaption)}" width="1920" height="1080" loading="lazy" decoding="async">`;
   const slides=[
     `<figure class="homeGallerySlide">${firstArt}<figcaption>${esc(firstCaption)}</figcaption></figure>`,
-    ...shots.map((shot,index)=>`<figure class="homeGallerySlide"><img src="/jaewoon-games/${esc(shot.src)}?v=${esc(shot.sha256.slice(0,12))}" alt="${esc(game.name)} · 실제 플레이 화면 ${index+1}" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>${shot.platform==='UNITY_WEB'?'Unity Web 실제 플레이':'웹게임 실제 플레이'} · ${index+1}</figcaption></figure>`)
+    ...shots.map((shot,index)=>`<figure class="homeGallerySlide"><img src="${esc(shot.src)}?v=${esc(shot.sha256.slice(0,12))}" alt="${esc(game.name)} · 실제 플레이 화면 ${index+1}" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>${shot.platform==='UNITY_WEB'?'Unity Web 실제 플레이':'웹게임 실제 플레이'} · ${index+1}</figcaption></figure>`)
   ];
   const controls=shots.length?`<div class="homeGalleryControls"><button type="button" data-gallery-step="-1" aria-label="이전 게임 사진">‹</button><span data-gallery-count>1/${slides.length}</span><button type="button" data-gallery-step="1" aria-label="다음 게임 사진">›</button></div>`:'';
   const gallery=`<div class="homeGameGallery" data-gallery-game="${esc(game.id)}"><div class="homeGalleryTrack" role="region" tabindex="0" aria-label="${esc(game.name)} 게임 사진 슬라이드">${slides.join('')}</div>${controls}</div>`;
@@ -697,7 +697,7 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,exposure,portfolio,webManifest]=await Promise.all([getJson('/jaewoon-games/game-catalog.json'),getJson('/jaewoon-games/company-status.json'),getJson('/jaewoon-games/homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('/jaewoon-games/homepage-portfolio-status.json'):Promise.resolve(null),getJson('/jaewoon-games/web-games/publish-manifest.json')]);
+    const [catalog,status,exposure,portfolio,webManifest]=await Promise.all([getJson('game-catalog.json'),getJson('company-status.json'),getJson('homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('homepage-portfolio-status.json'):Promise.resolve(null),getJson('web-games/publish-manifest.json')]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
     const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
     const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
