@@ -138,7 +138,17 @@ const CHAPTERS=[
 const initial=()=>({version:1,started:false,player:{x:870,y:2560,dir:0},hp:120,maxHp:120,food:100,water:100,day:1,elapsed:0,inv:{wood:2,stone:0,fiber:3,ore:0,berry:3,meat:0,cooked:0,hide:0,bone:0,venom:0,feather:0,relic:0,shard:0},melee:[],ranged:[],craftedArmor:[],armor:{head:null,body:null,legs:null},weapon:null,ammo:[0,0,0],arrowType:0,arrowBatches:0,useBow:false,built:{fire:false,bed:false},home:{x:800,y:2400},kills:0,killsAgg:0,killsBow:0,chapter:0,flags:{},storyLog:['열세 번째 새벽, 사라진 마을에서 깨어났다.'],harvested:{},choices:[],lastSave:0});
 let s=initial(),objects=[],creatures=[],shots=[],floating=[],camera={x:0,y:0},sw=innerWidth,sh=innerHeight,dpr=1,last=performance.now(),running=false,paused=true,attackTimer=0,gatherTimer=0,damageTimer=0,saveTimer=0,mobTimer=0,noticeTimer=null;
 const pressed={},joy={x:0,y:0};
-const atlas=new Image();atlas.src='../survival2/assets/survival-atlas.svg';
+// [씬 에셋] 기존 스프라이트 원화는 공통 관리자로 로딩하고 페이지 해제 시 취소한다.
+let atlas=null,atlasRuntime=null,atlasClosed=false;
+import('../../assets/vibe-runtime.js').then(({JaewoonVibeRuntime})=>{
+ if(atlasClosed)return;
+ atlasRuntime=new JaewoonVibeRuntime({gameId:'lost-dawn-scene-assets'});
+ return atlasRuntime.setScene('lost-dawn-world',[{id:'atlas',path:'../survival2/assets/survival-atlas.svg'}])
+  .then(lease=>{if(!atlasClosed)atlas=lease.assets.atlas;else lease.release()});
+}).catch(error=>{if(!atlasClosed)console.warn('잊힌 새벽 원화 로딩 실패',error)});
+window.addEventListener('pagehide',event=>{
+ if(!event.persisted){atlasClosed=true;atlasRuntime?.destroy();atlas=null}
+});
 const ATLAS={player:[0,0],npc:[128,0],wolf:[256,0],boar:[384,0],camp:[896,0],tree:[0,128],rock:[128,128],plant:[256,128],berry:[384,128],chest:[512,128],tower:[768,128],signal:[896,128]};
 const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);

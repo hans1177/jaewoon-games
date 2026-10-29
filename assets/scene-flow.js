@@ -49,7 +49,7 @@ export class JaewoonSceneFlow {
     return this.scenes.get(String(name)) || null;
   }
 
-  go(name, data = null, { recordHistory = true, replaceHistory = false } = {}) {
+  go(name, data = null, { recordHistory = true, replaceHistory = false, assets = null } = {}) {
     const target = this.scene(name);
     if (!target) throw new Error(`unknown scene: ${name}`);
 
@@ -70,14 +70,14 @@ export class JaewoonSceneFlow {
 
     this.current = target.name;
     this.currentData = clone(data);
-    if (target.enter) target.enter({ from: previousName, to: target.name, data: clone(data) });
+    if (target.enter) target.enter({ from: previousName, to: target.name, data: clone(data), ...(assets ? { assets } : {}) });
     return this.current;
   }
 
-  back(fallback = null) {
+  back(fallback = null, assets = null) {
     const previous = this.history.pop();
-    if (previous) return this.go(previous.name, previous.data, { recordHistory: false });
-    if (fallback) return this.go(fallback, null, { recordHistory: false });
+    if (previous) return this.go(previous.name, previous.data, { recordHistory: false, assets });
+    if (fallback) return this.go(fallback, null, { recordHistory: false, assets });
     return this.current;
   }
 
@@ -100,11 +100,11 @@ export class JaewoonSceneFlow {
     return clone(point);
   }
 
-  restoreCheckpoint(label = 'default') {
+  restoreCheckpoint(label = 'default', assets = null) {
     const key = String(label || 'default');
     const point = this.checkpoints.get(key);
     if (!point) return false;
-    if (point.current) this.go(point.current, point.currentData, { recordHistory: false });
+    if (point.current) this.go(point.current, point.currentData, { recordHistory: false, assets });
     const currentScene = this.current ? this.scene(this.current) : null;
     if (currentScene?.restore && point.sceneState != null) currentScene.restore(clone(point.sceneState));
     return clone(point);

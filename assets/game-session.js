@@ -116,8 +116,8 @@ export class JaewoonGameSession {
 
   // [씬 전환] 에셋이 선언된 씬만 비동기 로딩하고, 기존 동기 씬 API는 유지한다.
   goToScene(name, data = null, options = {}) {
-    const commit = () => {
-      const result = this.scenes.go(name, data, options);
+    const commit = (assets = null) => {
+      const result = this.scenes.go(name, data, assets ? { ...options, assets } : options);
       this.input.releaseAll();
       this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
       return result;
@@ -125,17 +125,19 @@ export class JaewoonGameSession {
     const target = this.scenes.scene(name);
     if (Array.isArray(target?.assets)) {
       return this.runtime.setScene(target.name, target.assets, target.assetOptions || {}).then(lease => {
-        try { return commit(); } catch (error) { lease.release(); throw error; }
+        try { return commit(lease.assets); } catch (error) { lease.release(); throw error; }
       });
     }
+    // [씬 취소] 에셋 없는 씬으로 이동하면 미완료 로딩도 무효화한다.
+    if (target) this.runtime.cancelSceneLoading();
     const result = commit();
     if (this.runtime.activeSceneId != null) this.runtime.releaseScene();
     return result;
   }
 
   backScene(fallback = null) {
-    const commit = () => {
-      const result = this.scenes.back(fallback);
+    const commit = (assets = null) => {
+      const result = this.scenes.back(fallback, assets);
       this.input.releaseAll();
       this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
       return result;
@@ -144,9 +146,10 @@ export class JaewoonGameSession {
     const target = this.scenes.scene(nextName);
     if (Array.isArray(target?.assets)) {
       return this.runtime.setScene(target.name, target.assets, target.assetOptions || {}).then(lease => {
-        try { return commit(); } catch (error) { lease.release(); throw error; }
+        try { return commit(lease.assets); } catch (error) { lease.release(); throw error; }
       });
     }
+    if (nextName) this.runtime.cancelSceneLoading();
     const result = commit();
     if (nextName && this.runtime.activeSceneId != null) this.runtime.releaseScene();
     return result;
@@ -157,8 +160,8 @@ export class JaewoonGameSession {
   }
 
   restoreSceneCheckpoint(label = 'default') {
-    const commit = () => {
-      const result = this.scenes.restoreCheckpoint(label);
+    const commit = (assets = null) => {
+      const result = this.scenes.restoreCheckpoint(label, assets);
       if (result) {
         this.input.releaseAll();
         this.emit('session-scene', { gameId: this.blueprint.gameId, scene: this.scenes.current });
@@ -169,9 +172,10 @@ export class JaewoonGameSession {
     const target = this.scenes.scene(checkpoint?.current);
     if (Array.isArray(target?.assets)) {
       return this.runtime.setScene(target.name, target.assets, target.assetOptions || {}).then(lease => {
-        try { return commit(); } catch (error) { lease.release(); throw error; }
+        try { return commit(lease.assets); } catch (error) { lease.release(); throw error; }
       });
     }
+    if (checkpoint) this.runtime.cancelSceneLoading();
     const result = commit();
     if (result && this.runtime.activeSceneId != null) this.runtime.releaseScene();
     return result;
