@@ -109,6 +109,12 @@ on:
       - 'qa/vibe-crossplatform-visual-components.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
+      - 'qa/vibe59-roblox-coding.test.mjs'
+      - 'qa/vibe59-creative-engine.test.mjs'
+      - 'qa/vibe59-luau-skills109.test.mjs'
+      - 'qa/vibe59-quality-gameplay.test.mjs'
+      - 'qa/vibe59-pathfinding.test.mjs'
+      - 'qa/vibe59-crafting-transaction.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'qa/vibe2-exploration-worker.test.mjs'
       - 'qa/vibe2-existing-web-assessment.test.mjs'
@@ -467,6 +473,12 @@ jobs:
           node --check qa/vibe2-neural-phase2-readiness.test.mjs
           node --check qa/vibe2-neural-fanin-root-cause.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
+          node --check qa/vibe59-roblox-coding.test.mjs
+          node --check qa/vibe59-creative-engine.test.mjs
+          node --check qa/vibe59-luau-skills109.test.mjs
+          node --check qa/vibe59-quality-gameplay.test.mjs
+          node --check qa/vibe59-pathfinding.test.mjs
+          node --check qa/vibe59-crafting-transaction.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
           node --check qa/vibe2-existing-web-assessment.test.mjs
@@ -591,6 +603,12 @@ jobs:
           node --test qa/vibe2-neural-phase2-readiness.test.mjs
           node --test qa/vibe2-neural-fanin-root-cause.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
+          node --test qa/vibe59-roblox-coding.test.mjs
+          node --test qa/vibe59-creative-engine.test.mjs
+          node --test qa/vibe59-luau-skills109.test.mjs
+          node --test qa/vibe59-quality-gameplay.test.mjs
+          node --test qa/vibe59-pathfinding.test.mjs
+          node --test qa/vibe59-crafting-transaction.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
           node --test qa/vibe2-existing-web-assessment.test.mjs
