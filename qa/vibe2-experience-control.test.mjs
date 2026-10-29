@@ -637,4 +637,7 @@ test('Vibe gameplay numbers require exact existing owner onepatch, allowed platf
   const source=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
   assert.ok(source.includes('verifiedOwnerGameplayRequest({task,centralPolicy})'));
   assert.ok(source.includes('experience:genericLearningExperience, verifiedOwnerGameplayChange'));
+  assert.ok(source.includes('protectedGameplayMutationAutomatic:verifiedOwnerGameplayChange'));
+  assert.ok(source.includes('protectedGameplayMutationAutomatic:false'));
+  assert.ok(source.includes('paidAIAllowed:false, paidRunnerAllowed:false'));
 });
