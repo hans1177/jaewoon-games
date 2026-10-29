@@ -62,7 +62,7 @@ for(const row of VIBE59_LUAU_CODING_SKILLS_109){
  const {spec,scenarios}=fixture(row);
  assert.equal(verifyVibe59LuauSkillScenarios({spec,scenarios}).pass,true,row.id);
  const original='local function handler(player)\n local state = profiles[player]\n'+
-  ' if state.data.value and state.data.flag and state.data.check and state.data.other then end\n -- INSERT\nend';
+  ' if state and type(state.data) == "table" and state.data.value and state.data.flag and state.data.check and state.data.other then end\n -- INSERT\nend';
  const out=synthesizeVibe59LuauSkill({spec,source:original,sourcePath:'server/Game.server.luau',
   replaceAnchor:'-- INSERT'});
  let code='local profiles = {}\n'+deepEqual+'\n'+original.replace('-- INSERT',out.source)+'\n';
@@ -71,6 +71,12 @@ for(const row of VIBE59_LUAU_CODING_SKILLS_109){
   code+='assert(handler(user'+index+') == '+String(c.expectedApplied)+', "apply '+row.id+':'+index+'")\n';
   code+='assert(deepEqual(profiles[user'+index+'], '+luaValue(c.expectedState)+'), "state '+row.id+':'+index+'")\n';
  }
+ // Explicitly execute each emitted recipe against absent state, corrupt container and poison value.
+ code+='local missing = {}\nassert(handler(missing) == false, "nil-state '+row.id+'")\n';
+ code+='local badContainer = {}\nprofiles[badContainer] = {data=false}\nassert(handler(badContainer) == false, "bad-collection '+row.id+'")\n';
+ code+='local poisoned = {}\nprofiles[poisoned] = '+luaValue(scenarios[0].initialState)+'\n';
+ code+='profiles[poisoned].data.'+(spec.field)+' = '+(spec.field==='flag'?'\"invalid\"':'math.huge')+'\n';
+ code+='assert(handler(poisoned) == false, "poison-field '+row.id+'")\n';
  files.push({name:'skill-'+row.id,code});
 }
 const spec={operation:'crafting-atomic-recipe',functionName:'craft',
@@ -103,7 +109,7 @@ try{
   assert.equal(result.status,0,item.name+': '+result.stdout+' '+result.stderr);
  }
  console.log('VIBE59_LUAU_EXECUTION=PASS',JSON.stringify({
-  executed:files.length,recipes:109,recipeBehaviorChecks:218,
+  executed:files.length,recipes:109,recipeBehaviorChecks:545,
   advancedCraftingCases:3,robloxStudioVerified:false
  }));
 }finally{fs.rmSync(directory,{recursive:true,force:true})}
