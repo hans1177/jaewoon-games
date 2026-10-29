@@ -43,6 +43,8 @@ PARSER.add_argument('--cinematic-quality', choices=['preview','high'], default='
 PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
 # [무모델 2D 파생] 검증된 CC0 메시만 실제 4방향 RGBA 스프라이트로 렌더한다.
 PARSER.add_argument('--sprite-atlas', action='store_true')
+# Same CC0 Blender source-authoring lane; no remote model or separately trusted generator.
+PARSER.add_argument('--reconstruct-json', default='')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
 # [내부 라이브러리] 실제 파일·부모 ID·원본 해시가 함께 고정된 자동 파생만 허용한다.
@@ -57,6 +59,15 @@ if ARGS.sprite_atlas and (
     or ARGS.module == 'medical'
 ):
     raise RuntimeError('SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED')
+if len(ARGS.reconstruct_json)>950:
+    raise RuntimeError('RECONSTRUCTION_RECIPE_SIZE_LIMIT')
+RECONSTRUCTION = json.loads(ARGS.reconstruct_json) if ARGS.reconstruct_json else None
+if RECONSTRUCTION is not None and (
+    not isinstance(RECONSTRUCTION,dict) or not ARGS.library_parent_id
+    or ARGS.source_license.strip().lower() not in ('cc0','cc0-1.0')
+    or ARGS.module in ('medical','mesh-ai') or ARGS.source_image
+):
+    raise RuntimeError('RECONSTRUCTION_VERIFIED_CC0_PARENT_REQUIRED')
 ARGS.output.mkdir(parents=True, exist_ok=True)
 STYLE = json.loads(ARGS.style_json)
 AXES = STYLE.get('axes', {})
@@ -778,8 +789,283 @@ def import_source_surface():
     }
 
 
+
+# 3D reconstruction is derivative editing of rights-verified source topology, not
+# creation of an independently authored primitive or a claim of generative AI.
+RECONSTRUCTION_EVIDENCE = None
+def reconstruct_verified_source():
+    global RECONSTRUCTION_EVIDENCE
+    import bmesh
+    if not SOURCE_PROVENANCE or SOURCE_PROVENANCE['libraryParentAssetId']!=ARGS.library_parent_id:
+        raise RuntimeError('RECONSTRUCTION_SOURCE_NOT_BOUND')
+    recipe=RECONSTRUCTION
+    permitted={'bodyPlan','morph','add','remove','detail'}
+    if set(recipe)-permitted: raise RuntimeError('RECONSTRUCTION_UNKNOWN_FIELD')
+    body_plan=recipe.get('bodyPlan','HUMANOID')
+    if body_plan not in ('HUMANOID','CREATURE'):
+        raise RuntimeError('RECONSTRUCTION_BODY_PLAN_UNSUPPORTED')
+    morph=recipe.get('morph',{})
+    if not isinstance(morph,dict) or set(morph)-{'head','torso','arms','legs','muscle','monster'}:
+        raise RuntimeError('RECONSTRUCTION_MORPH_INVALID')
+    for value in morph.values():
+        if not isinstance(value,(int,float)) or isinstance(value,bool) or not math.isfinite(value):
+            raise RuntimeError('RECONSTRUCTION_MORPH_INVALID')
+    if any(not .65<=float(value)<=1.45 for key,value in morph.items() if key not in ('muscle','monster')):
+        raise RuntimeError('RECONSTRUCTION_MORPH_OUT_OF_BOUNDS')
+    if any(not 0<=float(morph[key])<=1 for key in ('muscle','monster') if key in morph):
+        raise RuntimeError('RECONSTRUCTION_MORPH_OUT_OF_BOUNDS')
+    detail=recipe.get('detail','KEEP')
+    if detail not in ('KEEP','LOW_POLY','SMOOTH'):
+        raise RuntimeError('RECONSTRUCTION_DETAIL_UNSUPPORTED')
+    additions=recipe.get('add',[])
+    removals=recipe.get('remove',[])
+    if not isinstance(additions,list) or len(additions)>4 or not isinstance(removals,list) or len(removals)>4:
+        raise RuntimeError('RECONSTRUCTION_PART_COUNT_LIMIT')
+    allowed_parts={'HORN','WING','TAIL','ARMOR','CLAW'}
+    if any(not isinstance(kind,str) or kind not in allowed_parts for kind in removals):
+        raise RuntimeError('RECONSTRUCTION_REMOVE_ROLE_INVALID')
+    for row in additions:
+        if not isinstance(row,dict) or row.get('kind') not in allowed_parts:
+            raise RuntimeError('RECONSTRUCTION_PART_ROLE_INVALID')
+        if row.get('mode') not in ('EXTRUDE','CC0_PART'):
+            raise RuntimeError('RECONSTRUCTION_PART_MODE_INVALID')
+        if row['mode']=='CC0_PART' and set(row)-{'kind','mode','path','sha256','assetId','attach'}:
+            raise RuntimeError('RECONSTRUCTION_PART_UNKNOWN_FIELD')
+        if row['mode']=='EXTRUDE' and set(row)-{'kind','mode'}:
+            raise RuntimeError('RECONSTRUCTION_EXTRUSION_UNKNOWN_FIELD')
+    if any(row['mode']=='EXTRUDE' for row in additions) and ASSET_ARMATURES:
+        # Adding arbitrary topology to a skinned actor without weight provenance
+        # could create detached geometry; use a verified CC0 bone-compatible part instead.
+        raise RuntimeError('RECONSTRUCTION_RIGGED_EXTRUSION_UNSAFE')
+    if detail!='KEEP' and ASSET_ARMATURES:
+        raise RuntimeError('RECONSTRUCTION_RIGGED_LOD_REQUIRES_REVIEW')
+    original_meshes=list(ASSET_OBJECTS)
+    if not original_meshes: raise RuntimeError('RECONSTRUCTION_SOURCE_GEOMETRY_MISSING')
+    points=[obj.matrix_world @ vert.co for obj in original_meshes for vert in obj.data.vertices]
+    lo=Vector(tuple(min(p[i] for p in points) for i in range(3)))
+    hi=Vector(tuple(max(p[i] for p in points) for i in range(3)))
+    size=hi-lo
+    if min(size)<1e-6: raise RuntimeError('RECONSTRUCTION_SOURCE_BOUNDS_INVALID')
+    center=(lo+hi)/2
+    def smooth(t):
+        t=max(0.,min(1.,t))
+        return t*t*(3-2*t)
+    def transform(pos,intensity):
+        height=(pos.z-lo.z)/size.z
+        side=abs((pos.x-center.x)/(size.x*.5))
+        head=smooth((height-.66)/.23)
+        legs=1-smooth((height-.23)/.22)
+        torso=smooth((height-.22)/.19)*(1-smooth((height-.68)/.16))
+        arms=torso*smooth((side-.45)/.40)
+        torso*=1-arms
+        weights={'head':head,'torso':torso,'arms':arms,'legs':legs}
+        blend=sum((float(morph.get(key,1.))-1)*weight for key,weight in weights.items())
+        muscle=float(morph.get('muscle',0))*intensity
+        monster=float(morph.get('monster',0))*intensity
+        lateral=1+intensity*blend+muscle*(.19*torso+.12*arms)
+        depth=1+intensity*blend*.72+monster*.22*head
+        x=center.x+(pos.x-center.x)*(lateral+monster*.11*head)
+        y=center.y+(pos.y-center.y)*depth
+        z=pos.z+intensity*((float(morph.get('head',1))-1)*head*(pos.z-(lo.z+size.z*.81))
+             +(float(morph.get('legs',1))-1)*legs*(pos.z-(lo.z+size.z*.26)))
+        return Vector((x,y,z))
+    # Retry degraded amplitudes, always regenerating from original source vertices.
+    # This checks static geometry only; neither render quality nor native runtime passes.
+    original_coords=[(obj,[v.co.copy() for v in obj.data.vertices]) for obj in original_meshes]
+    max_face_count=450000
+    selected_factor=None
+    trials=[]
+    for factor in (1.,.8,.6):
+        for obj,positions in original_coords:
+            inv=obj.matrix_world.inverted_safe()
+            for vert,point in zip(obj.data.vertices,positions):
+                vert.co=inv @ transform(obj.matrix_world @ point,factor)
+            obj.data.update()
+        valid=True;triangles=0
+        for obj in original_meshes:
+            mesh=obj.data
+            mesh.calc_loop_triangles()
+            triangles+=len(mesh.loop_triangles)
+            if any(not all(math.isfinite(v) for v in vert.co) for vert in mesh.vertices):
+                valid=False
+            if any(tri.area<=1e-11 for tri in mesh.loop_triangles):
+                valid=False
+        trials.append({'factor':factor,'staticGeometryPass':valid and 4<=triangles<=max_face_count,
+                       'triangles':triangles})
+        if valid and 4<=triangles<=max_face_count:
+            selected_factor=factor;break
+    if selected_factor is None: raise RuntimeError('RECONSTRUCTION_MORPH_STATIC_QA_FAILED')
+    rig_adjusted=0
+    if ASSET_ARMATURES and morph:
+        for rig in ASSET_ARMATURES:
+            if rig.type!='ARMATURE': raise RuntimeError('RECONSTRUCTION_INVALID_RIG')
+            originals=[(bone.name,rig.matrix_world @ bone.head_local,
+                        rig.matrix_world @ bone.tail_local) for bone in rig.data.bones]
+            bpy.ops.object.select_all(action='DESELECT')
+            rig.select_set(True);bpy.context.view_layer.objects.active=rig
+            bpy.ops.object.mode_set(mode='EDIT')
+            try:
+                inverse=rig.matrix_world.inverted_safe()
+                for name,head,tail in originals:
+                    edit=rig.data.edit_bones.get(name)
+                    if not edit: raise RuntimeError('RECONSTRUCTION_RIG_BONE_LOST')
+                    new_head=inverse @ transform(head,selected_factor)
+                    new_tail=inverse @ transform(tail,selected_factor)
+                    if (new_tail-new_head).length<1e-5:
+                        raise RuntimeError('RECONSTRUCTION_RIG_BONE_COLLAPSED')
+                    edit.head=new_head;edit.tail=new_tail
+                    rig_adjusted+=1
+            finally:
+                bpy.ops.object.mode_set(mode='OBJECT')
+    removed=[]
+    for kind in removals:
+        candidates=[obj for obj in ASSET_OBJECTS if
+                    re.search(r'(^|[_ .-])'+re.escape(kind)+r'($|[_ .-])',obj.name,re.I)]
+        if not candidates or len(candidates)==len(ASSET_OBJECTS):
+            raise RuntimeError('RECONSTRUCTION_REMOVAL_NO_SEPARATE_SOURCE_PART:'+kind)
+        for obj in candidates:
+            ASSET_OBJECTS.remove(obj)
+            bpy.data.objects.remove(obj,do_unlink=True)
+            removed.append({'kind':kind,'sourceMesh':obj.name})
+    derived=[]
+    for row in additions:
+        kind=row['kind']
+        if row['mode']=='CC0_PART':
+            relative=row.get('path','')
+            sha=row.get('sha256','')
+            asset_id=row.get('assetId','')
+            if not isinstance(relative,str) or not re.fullmatch(r'assets/[A-Za-z0-9_./-]+\.(glb|obj|stl)',relative) or '..' in relative.split('/'):
+                raise RuntimeError('RECONSTRUCTION_CC0_PART_PATH_INVALID')
+            if not isinstance(asset_id,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,159}',asset_id):
+                raise RuntimeError('RECONSTRUCTION_CC0_PART_ID_INVALID')
+            if not isinstance(sha,str) or not re.fullmatch(r'[a-f0-9]{64}',sha):
+                raise RuntimeError('RECONSTRUCTION_CC0_PART_HASH_REQUIRED')
+            part_file=Path(relative).resolve()
+            if not part_file.is_file() or part_file.stat().st_size>64*1024*1024 or hashlib.sha256(part_file.read_bytes()).hexdigest()!=sha:
+                raise RuntimeError('RECONSTRUCTION_CC0_PART_SOURCE_CHANGED')
+            seen=set(bpy.data.objects)
+            if part_file.suffix=='.glb': bpy.ops.import_scene.gltf(filepath=str(part_file))
+            elif part_file.suffix=='.obj':
+                if hasattr(bpy.ops.wm,'obj_import'):bpy.ops.wm.obj_import(filepath=str(part_file))
+                else:bpy.ops.import_scene.obj(filepath=str(part_file))
+            else:
+                if hasattr(bpy.ops.wm,'stl_import'):bpy.ops.wm.stl_import(filepath=str(part_file))
+                else:bpy.ops.import_mesh.stl(filepath=str(part_file))
+            meshes=[obj for obj in bpy.data.objects if obj not in seen and obj.type=='MESH']
+            if not meshes or sum(len(obj.data.polygons) for obj in meshes)>max_face_count:
+                raise RuntimeError('RECONSTRUCTION_CC0_PART_GEOMETRY_INVALID')
+            if ASSET_ARMATURES:
+                if len(ASSET_ARMATURES)!=1: raise RuntimeError('RECONSTRUCTION_MULTIRIG_PART_UNSUPPORTED')
+                rig=ASSET_ARMATURES[0]
+                name=clean_attach=row.get('attach','')
+                if not isinstance(name,str) or not name or name not in rig.data.bones:
+                    raise RuntimeError('RECONSTRUCTION_PART_RIG_BONE_NOT_FOUND')
+            else:
+                rig=None
+            target={'HORN':Vector((center.x,center.y,hi.z)),
+                    'WING':Vector((center.x,hi.y,lo.z+size.z*.66)),
+                    'TAIL':Vector((center.x,hi.y,lo.z+size.z*.35)),
+                    'ARMOR':Vector((center.x,center.y,lo.z+size.z*.56)),
+                    'CLAW':Vector((center.x,center.y,lo.z+size.z*.30))}[kind]
+            part_points=[obj.matrix_world@v.co for obj in meshes for v in obj.data.vertices]
+            part_center=sum(part_points,Vector())/len(part_points)
+            shift=target-part_center
+            for obj in meshes:
+                original_world=obj.matrix_world.copy()
+                original_world.translation+=shift
+                if rig:
+                    obj.parent=rig
+                    obj.parent_type='BONE'
+                    obj.parent_bone=name
+                obj.matrix_world=original_world
+                ASSET_OBJECTS.append(obj)
+                obj['vibeDerivedPartSourceId']=asset_id
+                obj['vibeDerivedPartSourceSha256']=sha
+            derived.append({'kind':kind,'mode':'CC0_PART','sourceAssetId':asset_id,
+                            'sourceSha256':sha,'attachmentBone':name if rig else None,
+                            'meshCount':len(meshes),'runtimeVerified':False})
+        else:
+            # Create requested appendages from actual licensed mesh faces.
+            # Never substitute a fresh cube, cone, plane, or other standalone primitive.
+            mesh_obj=next((obj for obj in ASSET_OBJECTS if obj.type=='MESH' and
+                          len(obj.data.polygons)>=6),None)
+            if not mesh_obj: raise RuntimeError('RECONSTRUCTION_EXTRUSION_SOURCE_FACES_MISSING')
+            mesh_obj.data=mesh_obj.data.copy()
+            bm=bmesh.new()
+            try:
+                bm.from_mesh(mesh_obj.data)
+                bm.faces.ensure_lookup_table()
+                if len(bm.faces)<6: raise RuntimeError('RECONSTRUCTION_EXTRUSION_SOURCE_FACES_MISSING')
+                count=2 if kind in ('HORN','WING','CLAW') else 1
+                for side in range(count):
+                    sign=-1 if side==0 else 1
+                    anchor={'HORN':Vector((center.x+sign*size.x*.20,center.y,hi.z)),
+                            'WING':Vector((center.x+sign*size.x*.40,hi.y,lo.z+size.z*.68)),
+                            'TAIL':Vector((center.x,hi.y,lo.z+size.z*.34)),
+                            'ARMOR':Vector((center.x,center.y,hi.z-size.z*.42)),
+                            'CLAW':Vector((center.x+sign*size.x*.35,center.y,lo.z+size.z*.30))}[kind]
+                    normal={'HORN':Vector((0,0,1)), 'WING':Vector((sign,.5,.1)),
+                            'TAIL':Vector((0,1,-.35)), 'ARMOR':Vector((0,1,.25)),
+                            'CLAW':Vector((sign,.2,-.2))}[kind].normalized()
+                    eligible=[face for face in bm.faces if face.is_valid and face.calc_area()>1e-10]
+                    if not eligible: raise RuntimeError('RECONSTRUCTION_EXTRUSION_SOURCE_FACES_MISSING')
+                    face=min(eligible,key=lambda face:
+                             (mesh_obj.matrix_world@face.calc_center_median()-anchor).length
+                             +(.28*size.length)*(1-max(-1.,min(1.,face.normal.dot(normal)))))
+                    depth=.21*max(size.x,size.y,size.z)
+                    for stage,taper in enumerate((.80,.58,.40)):
+                        result=bmesh.ops.extrude_discrete_faces(bm,faces=[face])
+                        if not result['faces']: raise RuntimeError('RECONSTRUCTION_EXTRUSION_FAILED')
+                        face=result['faces'][0]
+                        center_local=face.calc_center_median()
+                        direction=mesh_obj.matrix_world.inverted_safe().to_3x3()@normal
+                        for vert in face.verts:
+                            vert.co=center_local+(vert.co-center_local)*taper+direction*(depth/3)
+                    derived.append({'kind':kind,'mode':'SOURCE_FACE_EXTRUSION',
+                                    'sourceAssetId':ARGS.library_parent_id,'side':sign,
+                                    'staticGeometryOnly':True,'runtimeVerified':False})
+                bm.to_mesh(mesh_obj.data)
+                mesh_obj.data.update()
+            finally:
+                bm.free()
+    if detail!='KEEP':
+        for obj in ASSET_OBJECTS:
+            bpy.ops.object.select_all(action='DESELECT')
+            obj.select_set(True);bpy.context.view_layer.objects.active=obj
+            if detail=='LOW_POLY':
+                modifier=obj.modifiers.new('VibeSourceTopologyLOD','DECIMATE')
+                modifier.ratio=.55
+            else:
+                modifier=obj.modifiers.new('VibeSourceSurfaceSmoothing','SUBSURF')
+                modifier.subdivision_type='CATMULL_CLARK'
+                modifier.levels=1
+                modifier.render_levels=1
+            bpy.ops.object.modifier_apply(modifier=modifier.name)
+    final_triangles=0
+    for obj in ASSET_OBJECTS:
+        obj.data.calc_loop_triangles()
+        final_triangles+=len(obj.data.loop_triangles)
+        if not obj.data.vertices or any(not all(math.isfinite(n) for n in v.co) for v in obj.data.vertices):
+            raise RuntimeError('RECONSTRUCTION_NONFINITE_OR_EMPTY_GEOMETRY')
+        if any(tri.area<=1e-11 for tri in obj.data.loop_triangles):
+            raise RuntimeError('RECONSTRUCTION_DEGENERATE_GEOMETRY')
+    if not 4<=final_triangles<=max_face_count:
+        raise RuntimeError('RECONSTRUCTION_TRIANGLE_BUDGET_EXCEEDED')
+    SOURCE_ENHANCEMENTS.append({'kind':'VERIFIED_SOURCE_MESH_RECONSTRUCTION',
+                                'morph':morph,'additions':len(derived),'removals':len(removed),
+                                'detail':detail,'staticQa':True})
+    RECONSTRUCTION_EVIDENCE={'method':'OFFLINE_CC0_SOURCE_MESH_RECONSTRUCTION',
+        'parentId':ARGS.library_parent_id,'parentSha256':SOURCE_PROVENANCE['sourceSha256'],
+        'bodyPlan':body_plan,'morph':morph,'detail':detail,'morphRetries':trials,
+        'selectedMorphIntensity':selected_factor,'adjustedRigBoneCount':rig_adjusted,
+        'additions':derived,'removals':removed,'finalTriangleCount':final_triangles,
+        'sourceFileImmutable':True,'externalAiModelUsed':False,
+        'meshStaticQaPass':True,'rigRuntimeVerified':False,'runtimeVerified':False}
+
 if ARGS.source_model:
     import_source_surface()
+    if RECONSTRUCTION is not None:
+        reconstruct_verified_source()
 elif ARGS.source_image:
     image_mesh_asset()
     if ARGS.module in ('clothing','design'):
@@ -1364,6 +1650,7 @@ evidence={
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
+    'meshReconstruction':RECONSTRUCTION_EVIDENCE,
     'internalAsset':application['internalAsset'],
     'pbrMeshQa':pbr_mesh_qa,
     'researchApplication':application['researchApplication'],
