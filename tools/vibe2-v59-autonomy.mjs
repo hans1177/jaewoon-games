@@ -788,6 +788,57 @@ export function planVibe59SafeRefactor({source='',target='web'}={}){
     edits:[{find:matches[0][0],replace:matches[0][2]+' = Boolean('+matches[0][1]+');'}],
     runtimeEquivalentVerified:false,requiresExistingValidation:true,authority:'refactor-candidate-only'});
 }
+// Strict, source-bound, model-free owner stat correction. Unclear goals return null.
+export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
+ const task=order.selectedTask||{},goal=clean(task.goal||order.goal);
+ if((task.ownerDirective!==true&&order.ownerApproved!==true)||!sourceRoot||
+    !['web','roblox'].includes(target)||!Array.isArray(responsibleFiles)||
+    goal.length>240||/[\r\n\x60{};]/.test(goal))return null;
+ const en=/^(?:please\s+)?(?:clamp|limit)\s+(?:(?:the|stat|variable)\s+)*([A-Za-z_]\w{0,39})\s+(?:between|from)\s+(-?\d+(?:\.\d+)?)\s*(?:and|to|~)\s*(-?\d+(?:\.\d+)?)[.!]?$/i;
+ const ko=/^변수\s+([A-Za-z_]\w{0,39})(?:을|를)?\s+(-?\d+(?:\.\d+)?)\s*(?:에서|부터|~)\s*(-?\d+(?:\.\d+)?)(?:까지)?\s*(?:로|사이로)?\s*제한(?:해|하라|해줘|해주세요)?[.]?$/;
+ const m=en.exec(goal)||ko.exec(goal);if(!m)return null;
+ const variable=m[1],min=Number(m[2]),max=Number(m[3]);
+ if(!Number.isFinite(min)||!Number.isFinite(max)||min>=max||
+    min< -1e6||max>1e6||/^(?:constructor|prototype|__proto__)$/.test(variable))return null;
+ let root;try{root=fs.realpathSync(sourceRoot)}catch{return null}
+ const gameId=clean(task.gameId||order.gameId);if(gameId&&path.basename(root)!==gameId)return null;
+ const found=[];
+ for(const rel of new Set(responsibleFiles)){
+  if(typeof rel!=='string'||path.isAbsolute(rel)||rel.includes('\\')||
+     rel.split('/').some(x=>!x||x==='.'||x==='..')||
+     !(target==='web'?/\.(?:js|mjs|cjs|html?)$/i:/\.lua[u]?$/i).test(rel))continue;
+  const file=path.resolve(root,rel);if(!file.startsWith(root+path.sep))continue;
+  let stat,real;try{stat=fs.lstatSync(file);real=fs.realpathSync(file)}catch{continue}
+  if(!stat.isFile()||stat.isSymbolicLink()||stat.size>260000||!real.startsWith(root+path.sep))continue;
+  const source=fs.readFileSync(file,'utf8');
+  let script=source;
+  if(/\.html?$/i.test(rel)){
+   const blocks=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+   if(blocks.length!==1||blocks[0][1].trim())continue;
+   script=blocks[0][2];
+  }
+  const rhs='(?:[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*){0,2}|-?\\d+(?:\\.\\d+)?)';
+  const prefix=target==='web'?'(?:(?:let|const|var)\\s+)?':'(?:local\\s+)?';
+  const re=new RegExp('^([ \\t]*'+prefix+variable+'[ \\t]*=[ \\t]*)('+rhs+')([ \\t]*;?[ \\t]*)$','gm');
+  for(const item of script.matchAll(re)){
+   if(target==='roblox'&&/\$/.test(item[2]))continue;
+   if(source.split(item[0]).length!==2)continue;
+   const expression=target==='roblox'?'math.clamp('+item[2]+', '+min+', '+max+')':
+      'Math.min('+max+', Math.max('+min+', '+item[2]+'))';
+   found.push({rel,source,find:item[0],replace:item[1]+expression+item[3]});
+  }
+ }
+ if(found.length!==1)return null;
+ const {rel,source,find,replace}=found[0];
+ const cases=[min-1,min,(min+max)/2,max,max+1].map((input,i)=>({
+   name:'boundary-'+i,input,expected:Math.min(max,Math.max(min,input))}));
+ return Object.freeze({summary:'source-bound owner stat clamp',expectedEffect:'Bound one original stat assignment',
+   edits:[{path:rel,find,replace}],newFiles:[],replaceFiles:[],tests:[],
+   vibe59CodeKind:target==='web'?'WEB_SOURCE_BOUND_STAT':'ROBLOX_SOURCE_BOUND_STAT',
+   vibe59TestPlan:{pass:true,cases},vibe59StrategiesChecked:[{variant:'bounded-stat',pass:true}],
+   ruleDigest:sha(JSON.stringify({sourceRevision:sha(source),rel,variable,min,max})),
+   sourceSha256:sha(source),modelUsed:false,sourceWrite:false,runtimeVerified:false});
+}
 export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null,verifiedCodePatterns=[]}={}){
   const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
   const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
@@ -800,7 +851,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const explicit=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
   const req=explicit??(creativeChosen?{...creativeRequest,robloxDomainAction:creativeChosen.spec,
     scenarios:creativeChosen.scenarios}:null);
-  if(req==null)return null;
+  if(req==null)return createVibe59IntentStatCandidate({order,sourceRoot,responsibleFiles,target});
   const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction,req?.robloxCraftingAction].filter(Boolean);
   if(!req||req.ownerApproved!==true||!req.path||!req.find
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
