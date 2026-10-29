@@ -358,7 +358,8 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
       ?evolveVibe59NumericAST({params,constants:fixed,rows,active,maxDepth,spec}):null;
     const candidate=evolved||attempt()||evolveVibe59NumericAST({params,constants:fixed,rows,active,maxDepth,spec});
     if(evolved)searched+=evolved.candidatesConsidered;
-    else if(candidate?.ast)searched+=candidate.candidatesConsidered;
+    else if(Array.isArray(candidate?.ast)&&Number.isSafeInteger(candidate.candidatesConsidered))
+      searched+=candidate.candidatesConsidered;
     if(!candidate)break;
     const mismatch=[...original].find(i=>!close(candidate.values[i],rows[i].output));
     if(mismatch===undefined){selected=candidate;passes=rows.length;break;}
@@ -374,7 +375,6 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     counterexamples:Object.freeze(seenCounterexamples),
     candidatesConsidered:searched,search:selected.ast?'BOUNDED_AST_EVOLUTION_CEGIS':'BOUNDED_ENUMERATIVE_CEGIS',
     ast:selected.ast||null,
-    inventionOperators:Object.freeze(['MUTATION','CROSSOVER','SEMANTIC_DEDUPLICATION','COUNTEREXAMPLE_REFINEMENT']),
     fitness:Object.freeze({accuracy:passes/rows.length,
       complexity:selected.cost,novelty:selected.novelty??0,
       regressionRisk:selected.regressionRisk??0,generations:selected.generations??0}),
