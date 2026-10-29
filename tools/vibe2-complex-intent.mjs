@@ -157,6 +157,12 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
      (m=new RegExp('^In (?:function )?('+name+'),? clamp ('+name+'(?:\\.'+name+')*) between (-?\\d+(?:\\.\\d+)?) and (-?\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
     [,functionName,output]=m;minimum=Number(m[3]);maximum=Number(m[4]);operation='clamp-assignment';
     if(!Number.isFinite(minimum)||!Number.isFinite(maximum)||minimum>=maximum||minimum< -1e6||maximum>1e6)throw Error('range');
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+'(?:\\.'+name+')*)(?:을|를) (\\d+(?:\\.\\d+)?) (증가|감소)시켜$').exec(ownerText))){
+    functionName=m[1];after=m[2];output=m[3];amount=Number(m[4])*(m[5]==='증가'?1:-1);operation='counter-after-existing-call';
+    if(!Number.isSafeInteger(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
+   }else if((m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') (increase|decrease) ('+name+'(?:\\.'+name+')*) by (\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
+    functionName=m[1];after=m[2];output=m[4];amount=Number(m[5])*(m[3].toLowerCase()==='increase'?1:-1);operation='counter-after-existing-call';
+    if(!Number.isSafeInteger(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
    }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+'(?:\\.'+name+')*)(?:을|를) (\\d+(?:\\.\\d+)?) (증가|감소)시켜$').exec(ownerText))){
     functionName=m[1];output=m[2];amount=Number(m[3])*(m[4]==='증가'?1:-1);operation='adjust-existing-counter';
     if(!Number.isFinite(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
