@@ -126550,11 +126550,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_55e81271c1974e0dd02a0f40",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11172",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a2c835bdd7063868c916db997ecbdedbab4ba890",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11172,
+        "baseBranch": "main",
+        "headBranch": "fix/scene-assets-20261030",
+        "baseSha": "a2c835bdd7063868c916db997ecbdedbab4ba890",
+        "headSha": "28f4c62fe4fb820f0f19cb43f286343119b3ac2a",
+        "mergeCommitSha": "cc45bef67c6df158ce812e89023092cda01ee99e",
+        "mergedAt": "2026-10-29T15:41:46Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0ad652d352dbc0867f129273493610949a62c36d13df9fdb618aa512aff2fcbc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/scene-assets-20261030",
+        "candidateSha": "28f4c62fe4fb820f0f19cb43f286343119b3ac2a"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 122,
+        "deletedLineCount": 21,
+        "changedFiles": [
+          "assets/game-session.js",
+          "assets/scene-flow.js",
+          "qa/vibe-asset-loading.test.mjs",
+          "web-games/lost-dawn/index.html",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/game-session.js",
+          "assets/scene-flow.js",
+          "qa/vibe-asset-loading.test.mjs",
+          "web-games/lost-dawn/index.html",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11172",
+        "merge-commit:cc45bef67c6df158ce812e89023092cda01ee99e",
+        "base-main:a2c835bdd7063868c916db997ecbdedbab4ba890"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 999
+    "total": 1000
   }
 }
