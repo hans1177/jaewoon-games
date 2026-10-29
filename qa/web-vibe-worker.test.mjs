@@ -7,7 +7,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
-import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -458,6 +458,59 @@ test('WEB model-less evolution composes distinct playable routes from existing g
  assert.equal(synthesizeWebProgressionWithoutModel(task,{...source,original:initial.replace('const regionIds=["forest","desert"];','const regionIds=["forest"];')}),null);
 });
 
+
+// [코드 실험실/알고리즘 발명] 같은 승인 입력으로 제한 탐색과 반례 실험을 반복한다.
+test('Vibe2 offline code laboratory records AST mutations crossover and bounded strategy experiments',()=>{
+ const spec={parameters:['x','y'],maxDepth:3,
+  examples:[{args:[1,0],output:1},{args:[2,0],output:2},{args:[3,0],output:3}],
+  holdouts:[{args:[2,3],output:5},{args:[4,5],output:9}]};
+ const lab=runVibe59CodeLaboratory({spec,verifiedHistory:[
+  {strategy:'balanced',modelUsed:false,sourceChanged:true,independentQa:'PASS',
+   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
+   sourceRevision:'a'.repeat(40)},
+  {strategy:'lean',modelUsed:false,sourceChanged:true,independentQa:'PASS',
+   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'FAIL',
+   sourceRevision:'b'.repeat(40)},
+  {strategy:'deep',modelUsed:false,sourceChanged:false,independentQa:'PASS',
+   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
+   sourceRevision:'c'.repeat(40)}
+ ]});
+ assert.equal(lab.modelUsed,false);
+ assert.equal(lab.runtime,'NOT_RUN');
+ assert.equal(lab.sourceWrite,false);
+ assert.equal(lab.strategyEvidenceCount,2);
+ assert.ok(lab.experiments.length>=2&&lab.experiments.length<=3);
+ assert.equal(lab.winner.casesPassed,5);
+ assert.equal(lab.winner.ast.kind,'crossover');
+ assert.ok(lab.winner.inventionOperators.includes('MUTATION'));
+ assert.ok(lab.experiments.every(x=>x.sourceChanged===false));
+ assert.throws(()=>runVibe59CodeLaboratory({spec:{...spec,holdouts:[]}}),/EXPLICIT_EXAMPLES_REQUIRED/);
+});
+// [로블록스 공통 코드 경로] 검증된 수치 후보만 기존 Luau 함수 본문에 제안한다.
+test('Vibe2 generated algorithm integrates with canonical Roblox candidate without fake runtime proof',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-luau-lab-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const original='local stateName = "unchanged"\nlocal function score(x,y)\n return 0\nend\n';
+ fs.writeFileSync(path.join(root,'logic.luau'),original);
+ const spec={functionName:'score',parameters:['x','y'],
+  examples:[{args:[1,2],output:2},{args:[4,3],output:4},{args:[0,5],output:5}],
+  holdouts:[{args:[8,1],output:8},{args:[-2,-1],output:-1}]};
+ const order={vibe59CodeRequest:{ownerApproved:true,path:'logic.luau',
+  find:'local function score(x,y)\n return 0\nend',algorithmSpec:spec}};
+ const candidate=createVibe59CodeCandidate({order,sourceRoot:root,
+  responsibleFiles:['logic.luau'],target:'roblox'});
+ assert.equal(candidate.vibe59CodeKind,'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM');
+ assert.equal(candidate.algorithmProof.runtimeVerified,false);
+ assert.equal(candidate.codeLaboratory.independentQa,'NOT_RUN');
+ assert.equal(candidate.codeLaboratory.runtime,'NOT_RUN');
+ assert.match(candidate.edits[0].replace,/return math\.max\(/);
+ assert.match(fs.readFileSync(path.join(root,'logic.luau'),'utf8'),/return 0/);
+ assert.throws(()=>createVibe59CodeCandidate({order,sourceRoot:root,
+  responsibleFiles:['logic.luau'],target:'web'}),/SOURCE_TARGET_MISMATCH/);
+ assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({spec:{...spec,ownerApproved:true},
+  target:'roblox',source:'function score(x,y)\n return game.Players\nend',
+  relative:'roblox-games/demo/logic.luau'}),/EXISTING_PURE_FUNCTION_REQUIRED/);
+});
 
 // [Vibe5.9] 문법 기반 후보 탐색과 반례를 통한 재합성으로 새 계산 함수를 만든다.
 test('Vibe5.9 invents nontrivial arithmetic algorithms using counterexample-guided search',()=>{
