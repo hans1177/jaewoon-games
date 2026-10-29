@@ -1547,11 +1547,12 @@ jobs:
       max-parallel: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 63 || 256 }}
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
     env:
-      # Owner-directed game coding: internal source analysis/synthesis only.
-      # The existing worker fails closed when no grounded local candidate exists.
-      VIBE2_V4_OFFLINE_ONLY: 'true'
-      VIBE2_ROBLOX_NO_MODEL_ONLY: 'true'
-      VIBE2_V4_NO_EXTERNAL_API: 'true'
+      # Roblox game-primary keeps the existing local/deterministic-first candidate path,
+      # then permits ONLY the approved free-tier model pair when a real source edit is needed.
+      # Other lanes stay offline; missing keys, quota and billing errors fail closed.
+      VIBE2_V4_OFFLINE_ONLY: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && 'false' || 'true' }}
+      VIBE2_ROBLOX_NO_MODEL_ONLY: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && (vars.VIBE2_ROBLOX_NO_MODEL_ONLY || 'false') || 'true' }}
+      VIBE2_V4_NO_EXTERNAL_API: ${{ matrix.target == 'roblox' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && 'false' || 'true' }}
       WORKER_CONTEXT_EXPECTED_POLICY_SHA256: ${{ needs.reserve.outputs.shared_policy_sha256 }}
       WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256: ${{ needs.reserve.outputs.shared_log_map_sha256 }}
       WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256: ${{ needs.reserve.outputs.shared_architecture_sha256 }}
@@ -1821,7 +1822,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
-          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2014,7 +2015,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
-          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'NO' }}
           VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
         run: |
