@@ -422,6 +422,18 @@ function RobloxCommonVFX.CreateMobileDensityPulse(options)
   })
 end
 
+-- [Vibe] 웹의 impact/explosion/fire/magic/dust와 동일한 역할 API.
+-- 기존 승인형 이미지 스프라이트/풀만 사용하며 실제 적중 확인은 게임 소스가 소유한다.
+function RobloxCommonVFX.CreateVibePreset(effectType, options)
+  local key = string.lower(tostring(effectType or "impact"))
+  if key == "explosion" then return RobloxCommonVFX.CreateDestructionBurst(options) end
+  if key == "fire" then return RobloxCommonVFX.CreateStatusPulse(options) end
+  if key == "magic" then return RobloxCommonVFX.CreateBuffPulse(options) end
+  if key == "dust" then return RobloxCommonVFX.CreateEnvironmentMotePulse(options) end
+  if key == "impact" then return RobloxCommonVFX.CreateImpactFlash(options) end
+  error("UNKNOWN_VIBE_PRESET:" .. key)
+end
+
 function RobloxCommonVFX.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "IMPACT_FLASH" then

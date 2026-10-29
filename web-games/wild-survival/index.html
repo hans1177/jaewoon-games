@@ -394,5 +394,11 @@ document.getElementById('restart').onclick=reset;
 if(S.inv.wood+S.inv.stone+S.inv.fiber+S.day>1)document.querySelector('#start p').textContent='저장된 생존 기록이 있어. 이어서 시작할 수 있어.';
 })();
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>
