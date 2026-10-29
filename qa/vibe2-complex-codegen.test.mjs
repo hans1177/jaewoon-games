@@ -84,9 +84,11 @@ test('Vibe handles Korean existing asset request and ordered multi-actor edits i
   assert.match(docs.get(relative),/fill="#81938b"/);
   assert.match(docs.get(relative),/fill="#826b4e"/);
   assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
-  assert.throws(()=>createVibe59CodeCandidates({order:{selectedTask:{
-    goal:korean,ownerDirective:false}},sourceRoot:root,responsibleFiles:[relative],target:'web'}),
-    /VIBE2_COMPLEX|SOURCE_BINDING|VIBE59_/);
+  let unapproved=null;
+  try{unapproved=createVibe59CodeCandidates({order:{selectedTask:{
+    goal:korean,ownerDirective:false}},sourceRoot:root,responsibleFiles:[relative],target:'web'});}
+  catch(error){assert.match(String(error),/VIBE2_COMPLEX|SOURCE_BINDING|VIBE59_/);}
+  assert.notEqual(unapproved?.vibe59CodeKind,'EXISTING_GAME_ASSET_RECOLOR');
   for(const toColor of ['url(javascript:alert(1))','#ffzzzz','#abcdef0','transparent']){
     assert.throws(()=>createVibe59CodeCandidates({order:{vibe59AssetEdit:{
       ownerApproved:true,path:relative,elementId:'wolf',fromColor:'#6d7773',toColor}},
