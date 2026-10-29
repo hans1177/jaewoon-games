@@ -31,13 +31,51 @@ export function createVibeSaveSlots({storage=null,prefix='vibe:game:',gameId='de
   remove(slot){backend.removeItem(slotKey(slot))}
  }
 }
+// [메인: VFX] 기존 미리보기와 실제 게임이 같은 점 파티클 풀을 사용한다. 게임 판정·저장에는 접근하지 않는다.
 export function createVibeWorldVfx(THREE,scene,{maxParticles=60}={}){
- const particles=[];
+ const limit=Math.max(1,Math.min(240,Math.floor(Number(maxParticles)||60)));
+ const positions=new Float32Array(limit*3),colors=new Float32Array(limit*3);
+ const geometry=new THREE.BufferGeometry();
+ const positionAttribute=new THREE.BufferAttribute(positions,3),colorAttribute=new THREE.BufferAttribute(colors,3);
+ geometry.setAttribute('position',positionAttribute);
+ geometry.setAttribute('color',colorAttribute);
+ geometry.setDrawRange(0,0);
+ const material=new THREE.PointsMaterial({size:.23,vertexColors:true,transparent:true,opacity:.93,depthWrite:false,sizeAttenuation:true});
+ const points=new THREE.Points(geometry,material);
+ points.frustumCulled=false;
+ scene.add(points);
+ const pool=Array.from({length:limit},()=>({x:0,y:0,z:0,vx:0,vy:0,vz:0,life:0,total:.55,r:1,g:1,b:1}));
+ let active=0,disposed=false;
  function burst({x=0,y=1,z=0,color=0xffc66a,count=8}={}){
-  const n=Math.min(Math.max(0,Math.floor(count)),maxParticles-particles.length);
-  for(let i=0;i<n;i++){const mesh=new THREE.Mesh(new THREE.SphereGeometry(.06,6,4),new THREE.MeshBasicMaterial({color,transparent:true,opacity:1}));
-   mesh.position.set(x,y,z);const a=i*2.39996;scene.add(mesh);particles.push({mesh,vx:Math.cos(a)*1.5,vy:1+Math.random(),vz:Math.sin(a)*1.5,life:.6})}
+  if(disposed||![x,y,z].every(Number.isFinite))return 0;
+  const tint=new THREE.Color(color),n=Math.max(0,Math.min(limit-active,Math.floor(Number(count)||0)));
+  for(let i=0;i<n;i++){
+   const p=pool[active++],angle=(i+active)*2.39996323,speed=1.1+((i%5)*.22);
+   p.x=x;p.y=y;p.z=z;p.vx=Math.cos(angle)*speed;p.vy=1.1+(i%4)*.36;p.vz=Math.sin(angle)*speed;
+   p.life=p.total=.45+(i%3)*.07;p.r=tint.r;p.g=tint.g;p.b=tint.b;
+  }
+  return n;
  }
- function update(dt){const delta=Math.max(0,Math.min(.1,dt));for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.life-=delta;p.mesh.position.x+=p.vx*delta;p.mesh.position.y+=p.vy*delta;p.mesh.position.z+=p.vz*delta;p.vy-=4*delta;p.mesh.material.opacity=Math.max(0,p.life/.6);if(p.life<=0){scene.remove(p.mesh);p.mesh.geometry.dispose();p.mesh.material.dispose();particles.splice(i,1)}}}
- return {burst,update,dispose(){for(const p of particles){scene.remove(p.mesh);p.mesh.geometry.dispose();p.mesh.material.dispose()}particles.length=0},get count(){return particles.length}}
+ function update(dt){
+  if(disposed)return;
+  const step=Math.max(0,Math.min(.1,Number(dt)||0));
+  let i=0;
+  while(i<active){
+   const p=pool[i];
+   p.life-=step;
+   if(p.life<=0){const last=pool[active-1];pool[active-1]=p;pool[i]=last;active--;continue}
+   p.x+=p.vx*step;p.y+=p.vy*step;p.z+=p.vz*step;p.vy-=4*step;
+   const fade=Math.max(0,p.life/p.total),j=i*3;
+   positions[j]=p.x;positions[j+1]=p.y;positions[j+2]=p.z;
+   colors[j]=p.r*fade;colors[j+1]=p.g*fade;colors[j+2]=p.b*fade;
+   i++;
+  }
+  geometry.setDrawRange(0,active);
+  positionAttribute.needsUpdate=true;colorAttribute.needsUpdate=true;
+ }
+ function dispose(){
+  if(disposed)return;
+  disposed=true;active=0;scene.remove(points);geometry.dispose();material.dispose();
+ }
+ return {burst,update,dispose,get count(){return active}};
 }
