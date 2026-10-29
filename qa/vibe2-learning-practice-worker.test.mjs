@@ -533,3 +533,7 @@ test('learning practice uses external Gemini API with no local server fallback',
     if(oldModel===undefined)delete process.env.VIBE2_GEMINI_MODEL;else process.env.VIBE2_GEMINI_MODEL=oldModel;
   }
 });
+
+// [독립 실행] 기존 브라우저가 준비된 정식 practice CI에서만 실제 게임 후보를 검증한다.
+if(process.env.VIBE2_PLAYWRIGHT_MODULE)
+  await import('./vibe2-complex-codegen-browser.test.mjs');
