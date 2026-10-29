@@ -126674,11 +126674,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_39649dd64deadc90e1583da3",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11174",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "af7b45a19c0acf0cfdece1ee6839c28b793cfa3d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11174,
+        "baseBranch": "main",
+        "headBranch": "fix/scene-assets-scope-20261030",
+        "baseSha": "af7b45a19c0acf0cfdece1ee6839c28b793cfa3d",
+        "headSha": "adf800265365bdc4febdb8e756c64eb69962a11e",
+        "mergeCommitSha": "9e0e5a95ceaa4e68e6ab4b94e1ef24edf03c8e2f",
+        "mergedAt": "2026-10-29T15:48:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7e7889af4bd6310bae947381eff41819a69cabb09f25cdcda1681df4d77619a0",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/scene-assets-scope-20261030",
+        "candidateSha": "adf800265365bdc4febdb8e756c64eb69962a11e"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 34,
+        "deletedLineCount": 20,
+        "changedFiles": [
+          "qa/vibe-asset-loading.test.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/lost-dawn/index.html"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe-asset-loading.test.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/lost-dawn/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11174",
+        "merge-commit:9e0e5a95ceaa4e68e6ab4b94e1ef24edf03c8e2f",
+        "base-main:af7b45a19c0acf0cfdece1ee6839c28b793cfa3d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1000
+    "total": 1001
   }
 }
