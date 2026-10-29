@@ -281,8 +281,9 @@ const PIXEL_ART=Object.freeze({
   }
 });
 export class IslandRendererV3 {
-  constructor(canvas) {
+  constructor(canvas, assetRuntime = null) {
     this.canvas = canvas;
+    this.assetRuntime = assetRuntime;
     // 기존 2D 캔버스는 확장 모듈의 좌표·입력 처리 전용으로만 유지한다.
     // 실제 월드는 WebGL 3D만 표시하며 2D로 되돌아가지 않는다.
     this.ctx = canvas.getContext('2d', { alpha: true });
@@ -420,14 +421,33 @@ export class IslandRendererV3 {
   // 자산: 같은 원본 이미지는 한 번만 적재하고 기존 모델·원시 도형은 생성하지 않는다.
   async load3dModels(){
     await new Promise(resolve=>requestAnimationFrame(resolve));
+    // [씬 에셋] 공통 원화는 기존 런타임에서 보유, 나머지는 기존 렌더러 책임을 유지한다.
+    let sharedTree=null;
+    if(this.assetRuntime){
+      try{
+        const lease=await this.assetRuntime.setScene('cozy-island-world',[
+          {id:'tree',path:'/jaewoon-games/assets/shared/medieval/oaktree.png'}
+        ]);
+        sharedTree=lease.assets.tree;
+      }catch(error){
+        if(this.assetRuntime.destroyed)return;
+        console.warn('포근섬 씬 원화 로딩 실패 · 기존 텍스처 경로 유지',error);
+      }
+    }
     const images=new Map(),loader=new THREE.TextureLoader();
     await Promise.all(Object.entries(PIXEL_ART).map(async ([kind,spec])=>{
       try{
         let texture;
         if(spec.procedural){texture=new THREE.CanvasTexture(this.paintPixelSprite(kind));}
         else{
-          if(!images.has(spec.file))images.set(spec.file,loader.loadAsync(
-            new URL('../../assets/shared/medieval/'+spec.file,import.meta.url).href));
+          if(!images.has(spec.file)){
+            if(spec.file==='oaktree.png'&&sharedTree){
+              const imageTexture=new THREE.Texture(sharedTree);
+              imageTexture.needsUpdate=true;
+              images.set(spec.file,Promise.resolve(imageTexture));
+            }else images.set(spec.file,loader.loadAsync(
+              new URL('../../assets/shared/medieval/'+spec.file,import.meta.url).href));
+          }
           texture=await images.get(spec.file);
         }
         texture.magFilter=texture.minFilter=THREE.NearestFilter;

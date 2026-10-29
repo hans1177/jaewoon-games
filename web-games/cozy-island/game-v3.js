@@ -39,7 +39,9 @@ const runtime=new JaewoonVibeRuntime({gameId:GAME_ID,autosaveDelay:350}).boot({e
 const state=normalizeState(runtime.loadProgress(DEFAULT_STATE));
 getEconomy(state); // 기존 세이브를 살리고 처음부터 건설/목재/석재/노동력이 가동되게 한다.
 const canvas=document.querySelector('#game');
-const renderer=new IslandRendererV3(canvas);
+const renderer=new IslandRendererV3(canvas,runtime);
+// [씬 해제] 기존 저장·일시정지 훅은 유지하고 브라우저 종료 시 에셋 소유권을 정리한다.
+window.addEventListener('pagehide',event=>{if(!event.persisted)runtime.destroy()});
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
 const BUILDABLE_AREA={minX:130,maxX:2320,minY:85,maxY:1580};
