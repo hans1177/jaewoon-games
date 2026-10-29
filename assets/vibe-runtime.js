@@ -282,6 +282,7 @@ export class JaewoonVibeRuntime {
       const state = Object.freeze({ loaded, failed, total, completed: loaded + failed, progress: total ? (loaded + failed) / total : 1 });
       try { onProgress?.(state); } catch {}
       notify('assets-progress', state);
+      notify('assets-stats', this.getAssetDiagnostics());
     };
     const wait = promise => new Promise((resolve, reject) => {
       let timer = null, settled = false;
@@ -409,6 +410,7 @@ export class JaewoonVibeRuntime {
       this.activeSceneId = id;
       old?.release();
       this.trimAssetCache();
+      if (typeof window !== 'undefined') this.emit('assets-stats', this.getAssetDiagnostics());
       return {
         sceneId: id,
         assets: lease.assets,
@@ -443,6 +445,7 @@ export class JaewoonVibeRuntime {
     this.sceneAssets.delete(sceneId);
     this.activeSceneId = null;
     lease?.release();
+    if (typeof window !== 'undefined') this.emit('assets-stats', this.getAssetDiagnostics());
     return Boolean(lease);
   }
 
@@ -495,12 +498,13 @@ export class JaewoonVibeRuntime {
       }
       this.preloadedScenes.set(id, { signature, entries, lease });
       this.trimAssetCache();
+      if (typeof window !== 'undefined') this.emit('assets-stats', this.getAssetDiagnostics());
       return Object.freeze({ sceneId: id, ready: this.preloadedScenes.has(id), assets: this.preloadedScenes.has(id) ? lease.assets : null });
     }).finally(() => {
       options.signal?.removeEventListener('abort', onAbort);
       if (this.preloadTasks.get(id)?.promise === promise) this.preloadTasks.delete(id);
     });
-    this.preloadTasks.set(id, { signature, controller, promise });
+    this.preloadTasks.set(id, { signature, entries, controller, promise });
     return promise;
   }
 
@@ -508,6 +512,9 @@ export class JaewoonVibeRuntime {
   invalidateAsset(path) {
     const url = this.resolveAssetUrl(path);
     this.assetVersions.set(url, (this.assetVersions.get(url) || 0) + 1);
+    for (const task of this.preloadTasks.values()) {
+      if (task.entries.some(item => this.resolveAssetUrl(typeof item === 'string' ? item : item.path) === url)) task.controller.abort();
+    }
     for (const [id, preload] of this.preloadedScenes) {
       if (!preload.entries || !preload.entries.some(item => this.resolveAssetUrl(typeof item === 'string' ? item : item.path) === url)) continue;
       this.preloadedScenes.delete(id);
@@ -537,6 +544,27 @@ export class JaewoonVibeRuntime {
       } catch (error) { errors.push(Object.freeze({ path, message: String(error.message || error) })); }
     }
     return Object.freeze({ checked: entries.length, changed: Object.freeze(changed), errors: Object.freeze(errors) });
+  }
+
+  // [자동 감시] 주기적 검사는 명시적으로 활성화된 게임 에셋만 확인한다.
+  watchAssetUpdates(entries, { intervalMs = 120000 } = {}) {
+    if (!Array.isArray(entries)) throw new Error('asset list required');
+    if (this.destroyed) throw new Error('runtime destroyed');
+    const delay = Number.isFinite(Number(intervalMs)) ? Math.max(30000, Number(intervalMs)) : 120000;
+    const check = () => {
+      if (this.destroyed) return;
+      this.checkAssetUpdates(entries).then(result => {
+        if (result.changed.length && typeof window !== 'undefined') {
+          this.emit('assets-updated', result);
+          this.emit('assets-stats', this.getAssetDiagnostics());
+        }
+      }).catch(() => {});
+    };
+    check();
+    const timer = setInterval(check, delay);
+    const off = () => clearInterval(timer);
+    this.cleanup.push(off);
+    return off;
   }
 
   // [진단] 실제 캐시와 씬 소유권만 읽으며 게임 데이터에는 접근하지 않는다.
