@@ -682,3 +682,34 @@ test('general web game title art runs after canonical runtime catalog reconcilia
   assert.match(manager,/scene==='SCHOOL'/);
   assert.match(manager,/ROBLOX_BLOCK_AVATAR_V1/);
 });
+
+
+test('homepage runtime shelves and PWA checks accept verified scoped implementation, not missing security behavior',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
+  const serviceWorker=fs.readFileSync('sw.js','utf8');
+  const includesAll=(value,parts)=>parts.every(part=>value.includes(part));
+  const names=[
+    'activeRuntimeLayoutManager','platformReadyAndDevelopmentShelvesDoNotDuplicate',
+    'pwaManifestCommandEntry','pwaManifestIconsPreserved','serviceWorkerPwaContractPreserved'
+  ];
+  for(const name of names){
+    const line=manager.split('\n').find(row=>row.startsWith('  '+name+':'));
+    assert.ok(line,'missing direct homepage contract: '+name);
+    const expression=line.slice(line.indexOf(':')+1).replace(/,$/,'');
+    const check=new Function('enhancementEntry','index','manifest','serviceWorker','includesAll',
+      'return ('+expression+')');
+    assert.equal(check(homepage,index,manifest,serviceWorker,includesAll),true,name);
+    const brokenHomepage=name==='activeRuntimeLayoutManager'
+      ?homepage.replace("const verifiedStatus=status?.runtimeAuthority==='company-runtime'?status:{};","")
+      :name==='platformReadyAndDevelopmentShelvesDoNotDuplicate'
+      ?homepage.replace('const development=developmentRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game))&&!hiddenGameIds.has(gameIdOf(game))&&!availableIds.has(gameIdOf(game)));','')
+      :homepage;
+    const brokenManifest=name==='pwaManifestCommandEntry'?{...manifest,scope:'../'}
+      :name==='pwaManifestIconsPreserved'?{...manifest,icons:[]}:manifest;
+    const brokenWorker=name==='serviceWorkerPwaContractPreserved'
+      ?serviceWorker.replace('if(!url.pathname.startsWith(scopePath))return;',''):serviceWorker;
+    assert.equal(check(brokenHomepage,index,brokenManifest,brokenWorker,includesAll),false,
+      'missing critical homepage behavior must fail: '+name);
+  }
+});
