@@ -74,6 +74,16 @@ export class JaewoonVibeWorkspace {
     return text;
   }
 
+  // [에셋 읽기] 텍스트 편집 권한과 별개로 승인된 작업 공간 안의 바이너리를 읽기 전용 제공한다.
+  async readBinary(path) {
+    if (!this.rootHandle) throw new Error('workspace not open');
+    if (!isSafeRelativePath(path)) throw new Error('invalid workspace asset path: ' + path);
+    const handle = await getFileHandle(this.rootHandle, path, false);
+    const file = await handle.getFile();
+    if (file.size > MAX_FILE_BYTES) throw new Error('asset too large for preview: ' + path);
+    return file.arrayBuffer();
+  }
+
   async write(path, content, { backup = true, expectedPrevious = null } = {}) {
     if (!this.rootHandle) throw new Error('workspace not open');
     if (!isTextPath(path)) throw new Error(`binary file write is not supported by text workspace: ${path}`);
