@@ -1199,7 +1199,7 @@ function RobloxCommonMotion.BindJointPose(joints, options)
  for name,joint in pairs(joints or {})do
   if typeof(joint)=="Instance"and(joint:IsA("Bone")or joint:IsA("Motor6D"))then
    rows[#rows+1]={name=name,joint=joint,base=joint.Transform,pose=CFrame.identity,
-    response=math.max(1,tonumber((options.responseByJoint or {})[name])or tonumber(options.response)or 18)}
+    response=math.max(1,tonumber((options.responseByJoint or {})[name])or tonumber(options.response)or 18),lastApplied=nil}
   end
  end
  local controller={jointCount=#rows}
@@ -1209,11 +1209,17 @@ function RobloxCommonMotion.BindJointPose(joints, options)
   local response=math.clamp(tonumber(responseScale)or 1,.1,4)
   for _,row in ipairs(rows)do
    if row.joint.Parent then
+    -- 기존 Animator가 이번 프레임에 쓴 포즈 위에만 액션을 혼합한다.
+    -- Animator가 없는 리그에서는 직전 적용값의 재누적을 막는다.
+    if options.followAnimator==true and row.joint.Transform~=row.lastApplied then
+     row.base=row.joint.Transform
+    end
     local target=targets and targets[row.name]
     if typeof(target)~="CFrame"then target=CFrame.identity end
     local alpha=1-math.exp(-row.response*response*elapsed)
     row.pose=row.pose:Lerp(target,alpha)
     row.joint.Transform=row.base*row.pose
+    row.lastApplied=row.joint.Transform
    end
   end
  end
