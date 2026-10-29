@@ -20,6 +20,8 @@ test('asset loader resolves GitHub Pages project root, emits progress, shares ca
  try{
   const game=new JaewoonVibeRuntime({gameId:'qa-asset-test',assetBaseUrl:'https://hans1177.github.io/jaewoon-games/'});
   assert.equal(game.resolveAssetUrl('/assets/hero.png'),'https://hans1177.github.io/jaewoon-games/assets/hero.png');
+  assert.equal(game.resolveAssetUrl('/jaewoon-games/assets/hero.png'),'https://hans1177.github.io/jaewoon-games/assets/hero.png');
+  assert.throws(()=>game.resolveAssetUrl('/../../escape.png'),/escapes project root/);
   assert.equal(game.resolveAssetUrl('web-games/demo/../hero.png'),'https://hans1177.github.io/jaewoon-games/web-games/hero.png');
   assert.throws(()=>game.resolveAssetUrl('javascript:alert(1)'),/unsafe asset URL/);
   const progress=[],complete=[];
@@ -72,11 +74,12 @@ test('workspace binary asset reader handles exact bytes and denies path traversa
 // [웹 미리보기] 미디어·폰트·CSS url·중복 파일을 단일 object URL에 연결
 test('canonical browser bundle rewrites local images, audio, fonts, CSS and scripts',async()=>{
  const files={
-  'pages/index.html':'<link rel="stylesheet" href="../styles/site.css"><img src="../media/hero.png"><audio src="../media/sound.ogg"></audio><script src="../scripts/game.js"></script>',
+  'pages/index.html':'<link rel="stylesheet" href="../styles/site.css"><link rel="icon" href="../media/icon.png"><style>main{background:url("../media/hero.png")}@font-face{font-family:game;src:url("../media/game.woff2")}</style><img src="../media/hero.png"><audio src="../media/sound.ogg"></audio><script src="../scripts/game.js"></script>',
   'styles/site.css':'@font-face{font-family:game;src:url("../media/game.woff2")}body{background:url("../media/hero.png")}',
   'scripts/game.js':'window.loaded=true;',
   'media/hero.png':new Uint8Array([137,80,78,71]),
   'media/sound.ogg':new Uint8Array([79,103,103,83]),
+  'media/icon.png':new Uint8Array([137,80,78,71]),
   'media/game.woff2':new Uint8Array([119,79,70,50])
  };
  const reads=[];
@@ -88,11 +91,14 @@ test('canonical browser bundle rewrites local images, audio, fonts, CSS and scri
  const bundle=await createVibeWebRuntimeBundle(workspace,{entry:'pages/index.html'});
  try{
   assert.equal(bundle.version,2);
-  assert.equal(bundle.resourceCount,5);
-  assert.equal((bundle.html.match(/blob:/g)||[]).length,4);
+  assert.equal(bundle.resourceCount,6);
+  assert.equal((bundle.html.match(/blob:/g)||[]).length,7);
   assert.ok(bundle.html.includes('<img src="blob:'));
   assert.ok(bundle.html.includes('<audio src="blob:'));
   assert.ok(bundle.html.includes('<script src="blob:'));
+  assert.ok(bundle.html.includes('<link rel="icon" href="blob:'));
+  assert.match(bundle.html,/<style>main\{background:url\("blob:[^"]+"\)\}@font-face/);
+
   assert.equal(reads.filter(path=>path==='media/hero.png').length,1);
  }finally{bundle.revoke();bundle.revoke()}
 });
