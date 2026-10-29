@@ -10221,7 +10221,7 @@ test('Vibe5.9 offline cross-function round exit lifecycle synthesizes atomic ser
   save(serverFile,server);save(clientFile,client);
   assert.equal(deterministicRobloxNativeRepairCandidate({...options,responsibleFiles:[serverFile]}),null,
     'cross-file logic must not silently omit the actual HUD update');
-  save(serverFile,server+'\n'+server.slice(server.indexOf('local function addEscapeGate(')));
+  save(serverFile,server+'\n'+server.split('\n').find(line=>line.includes('escapedPlayers={};workspace:SetAttribute("EscapeUnlocked"')));
   assert.equal(deterministicRobloxNativeRepairCandidate(options),null,
     'ambiguous or duplicate server lifecycle must not authorize synthesis');
   save(serverFile,server);
