@@ -68,7 +68,8 @@ test('WEB cloud checkout recovery is limited to authenticated ephemeral GitHub w
   assert.match(source,/if\(!isolatedCloudCheckout\)fail\('WEB_VIBE_LOCAL_UNCOMMITTED_CHANGES'\)/);
   assert.match(source,/WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST/);
   assert.match(source,/run\('git',\['restore','--source=HEAD'/);
-  assert.match(source,/run\('git',\['clean','-fd'\]\)/);
+  assert.match(source,/run\('git',\['clean','-ffd'\]\)/);
+  assert.match(source,/WEB_VIBE_CLOUD_CHECKOUT_REMAINING_PATHS/);
   assert.match(source,/WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY/);
   assert.match(source,/verifiedLocalMain\(\{cloud:args\.cloud===true\}\)/);
 });
