@@ -169,6 +169,22 @@ function normalizeStudioQualityEvolution(input=null){
     nextCycleRequired:input.nextCycleRequired!==false
   });
 }
+// Preserve only the known, read-only Web BUILD_UP context through serialized queue
+// round trips. Unknown fields are discarded; this is not a policy/QA authority grant.
+function normalizeAutonomousEvolution(input=null){
+  if(!input||typeof input!=='object'||Array.isArray(input))return null;
+  const focus=clean(input.focus).toUpperCase();
+  if(!['CORE_FUN','PROGRESSION','WORLD_CONTENT','GRAPHICS_AUDIO','MOBILE_SAVE'].includes(focus)
+    ||input.existingLoopOnly!==true||input.sourceMutationRequired!==true
+    ||input.playtestAfterPublicationRequired!==true||input.preserveSaveAndRules!==true
+    ||input.nextCycleUsesVerifiedEffect!==true)return null;
+  return freeze({
+    existingLoopOnly:true,sourceMutationRequired:true,
+    playtestAfterPublicationRequired:true,preserveSaveAndRules:true,
+    focus,observedFeedback:input.observedFeedback===true,
+    nextCycleUsesVerifiedEffect:true
+  });
+}
 function normalizePackageContext(input = {}) {
   const source=input&&typeof input==='object'?input:{};
   if(!clean(source.explorationMode)&&!clean(source.sourceRoot)&&!(source.responsibleFiles||[]).length)return null;
@@ -430,6 +446,9 @@ function normalizeTask(input = {}, index = 0) {
     ownerFocusedCaretaker: input.ownerFocusedCaretaker === true,
     packageContext: normalizePackageContext(input.packageContext),
     studioQualityEvolution:normalizeStudioQualityEvolution(input.studioQualityEvolution||input.packageContext?.studioQualityEvolution),
+    autonomousEvolution:clean(input.target).toLowerCase()==='web'
+      &&normalizedEvidence.includes('web-autonomous-recurring-build-up:v1')
+      ?normalizeAutonomousEvolution(input.autonomousEvolution):null,
     completionCriteria: freezeList(input.completionCriteria || [])
   };
   task.shard = inferShard(task);
