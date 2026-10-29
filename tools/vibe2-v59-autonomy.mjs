@@ -464,22 +464,70 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
 }
 
 // [유틸] AST -> Luau. Roblox 런타임이나 서버 권한으로 간주하지 않는다.
-function renderVibe59NumericLuaAST(node,params){
-  if(!Array.isArray(node))throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
-  const [op,a,b,c]=node;
-  if(op==='param')return params[a];
-  if(op==='const')return String(a);
-  const x=renderVibe59NumericLuaAST(a,params);
-  if(op==='neg')return '(-'+x+')';
-  if(['abs','floor'].includes(op))return 'math.'+op+'('+x+')';
-  if(op==='round')return 'math.floor(('+x+')+0.5)';
-  const y=renderVibe59NumericLuaAST(b,params);
-  if(['min','max'].includes(op))return 'math.'+op+'('+x+','+y+')';
-  if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
-  if(op==='select')return '(('+x+'>0) and ('+y+') or ('+renderVibe59NumericLuaAST(c,params)+'))';
-  if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
-  if(['+','-','*','/'].includes(op))return '('+x+op+y+')';
-  throw Error('VIBE59_ALGORITHM_LUA_OPERATOR_REJECTED');
+// [공통 Luau 출력] 진화 배열 AST와 열거 객체 AST는 같은 검증된 문법으로 정규화한다.
+// 원본 AST를 코드 문자열로 직렬화하지 않으며, 실제 Roblox 런타임 통과로 표시하지 않는다.
+export function renderVibe59NumericLuaAST(node,params){
+  const legal=/^[A-Za-z_$][\w$]*$/,forbidden=new Set([
+    '__proto__','constructor','prototype','arguments','eval','Function','process',
+    'globalThis','window','document','this','NaN','Infinity','undefined'
+  ]);
+  if(!Array.isArray(params)||params.length<1||params.length>3
+    ||new Set(params).size!==params.length
+    ||params.some(name=>typeof name!=='string'||!legal.test(name)||forbidden.has(name)))
+    throw Error('VIBE59_ALGORITHM_LUA_PARAMETERS_INVALID');
+  const unary=new Set(['abs','floor','round','neg']);
+  const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
+  const state={nodes:0};
+  function normalize(part,depth,ancestors){
+    if(!part||typeof part!=='object'||ancestors.has(part)||depth>4
+      ||++state.nodes>39)throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
+    const next=new Set(ancestors);next.add(part);
+    if(Array.isArray(part)){
+      const op=part[0];
+      if(op==='param'&&part.length===2&&Number.isInteger(part[1])
+        &&part[1]>=0&&part[1]<params.length)return ['param',part[1]];
+      if(op==='const'&&part.length===2&&typeof part[1]==='number'
+        &&Number.isFinite(part[1])&&Math.abs(part[1])<=1000)return ['const',part[1]];
+      if(unary.has(op)&&part.length===2)
+        return [op,normalize(part[1],depth+1,next)];
+      if(binary.has(op)&&part.length===3)
+        return [op,normalize(part[1],depth+1,next),normalize(part[2],depth+1,next)];
+      if(op==='select'&&part.length===4)
+        return [op,normalize(part[1],depth+1,next),normalize(part[2],depth+1,next),
+          normalize(part[3],depth+1,next)];
+    }else if(Object.getPrototypeOf(part)===Object.prototype){
+      if(part.kind==='reference'&&typeof part.name==='string'){
+        const i=params.indexOf(part.name);
+        if(i>=0)return ['param',i];
+      }
+      if(part.kind==='constant'&&typeof part.value==='number'
+        &&Number.isFinite(part.value)&&Math.abs(part.value)<=1000)
+        return ['const',part.value];
+      if(part.kind==='mutation'&&unary.has(part.operator))
+        return [part.operator,normalize(part.operand,depth+1,next)];
+      if(part.kind==='crossover'&&binary.has(part.operator))
+        return [part.operator,normalize(part.left,depth+1,next),
+          normalize(part.right,depth+1,next)];
+    }
+    throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
+  }
+  const ast=normalize(node,0,new Set());
+  function render(part){
+    const [op,a,b,c]=part;
+    if(op==='param')return params[a];
+    if(op==='const')return String(a);
+    const x=render(a);
+    if(op==='neg')return '(-'+x+')';
+    if(['abs','floor'].includes(op))return 'math.'+op+'('+x+')';
+    if(op==='round')return 'math.floor(('+x+')+0.5)';
+    const y=render(b);
+    if(op==='min'||op==='max')return 'math.'+op+'('+x+','+y+')';
+    if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
+    if(op==='select')return '(('+x+'>0) and ('+y+') or ('+render(c)+'))';
+    if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
+    return '('+x+op+y+')';
+  }
+  return render(ast);
 }
 
 // [코드 실험실] 기존 수치 합성기를 반복 사용한다. 새 실행기나 별도 후보 쓰기는 없다.
