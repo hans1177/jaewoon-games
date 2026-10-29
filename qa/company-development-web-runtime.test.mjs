@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
+import {validateBootstrapHtml,validatePreservedSourceHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,approvedScopeRequirement,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,summarizeCommercialReadinessEvidence,summarizePresentationRegression,buildWebPresentationHandoff,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
 
