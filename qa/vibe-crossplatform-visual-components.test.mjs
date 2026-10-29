@@ -133,3 +133,67 @@ test('both native platform adapters expose concrete event-safe visual abilities'
   assert.match(worker,/visualCraftWorkerGuidance\(order,context\)/);
   assert.match(worker,/planVibePresentationAutopilot\(/);
 });
+
+
+// [모바일 HUD] 기존 게임에서 전달된 체력만 화면에 표시하고 목표·보스 레이어와 충돌하지 않는다.
+test('web player HUD is read-only, confirmed, safe-area-aware and separate from boss/objective',()=>{
+  const {host,doc}=fakeDom(),ctrl=getWeb()({host,documentRef:doc,
+    safeInsets:{top:24,left:8,bottom:30},reducedMotion:true});
+  const stage=host.children[0];
+  assert.equal(ctrl.updatePlayerHud({current:50,max:100}),false);
+  assert.equal(ctrl.updatePlayerHud({current:50,max:100,confirmed:true}),true);
+  assert.equal(ctrl.stats().playerVisible,true);
+  const player=stage.children.find(node=>node.attrs['data-vibe-player-hud']==='true');
+  assert.ok(player);
+  assert.equal(player.children[0].textContent,'HP  50 / 100');
+  assert.equal(player.children[1].children[0].style.width,'50.00%');
+  assert.equal(player.style.left,'16px');
+  assert.equal(player.style.top,'32px');
+  assert.equal(ctrl.updateObjectiveHud({id:'quest',title:'Quest',confirmed:true}),true);
+  const objective=stage.children.find(node=>node.attrs['data-vibe-objective-hud']==='true');
+  assert.equal(objective.style.top,'104px');
+  assert.equal(ctrl.updatePlayerHud({current:0,max:100,confirmed:true}),true);
+  assert.equal(player.children[1].children[0].style.width,'0.00%');
+  assert.equal(ctrl.updatePlayerHud({visible:false,confirmed:true}),true);
+  assert.equal(ctrl.stats().playerVisible,false);
+  assert.equal(objective.style.top,'32px');
+  ctrl.destroy();
+  assert.equal(host.children.length,0);
+});
+
+// [아이콘/입력] 승인된 게임 내부 자산만 배치하고 게임이 제공한 입력 함수만 호출한다.
+test('web action HUD binds touch targets to original game callbacks without inventing icons or rules',()=>{
+  const {host,doc}=fakeDom(),ctrl=getWeb()({host,documentRef:doc,
+    safeInsets:{bottom:24},reducedMotion:true});
+  const pressed=[];
+  assert.equal(ctrl.updateActionHud({actions:[{id:'attack'}]}),false);
+  assert.equal(ctrl.updateActionHud({actions:[{id:'a'},{id:'a'}],onAction:()=>{}}),false);
+  assert.equal(ctrl.updateActionHud({actions:[
+    {id:'attack',label:'Attack',shortcut:'Q',iconUrl:'./icons/attack.png',iconApproved:true},
+    {id:'heal',label:'Heal',iconUrl:'https://evil.example/icon.svg',iconApproved:true},
+    {id:'locked',label:'Locked',enabled:false}
+  ],onAction:id=>pressed.push(id)}),true);
+  const stage=host.children[0],bar=stage.children.find(x=>x.attrs['data-vibe-action-hud']==='true');
+  assert.ok(bar);
+  assert.equal(bar.style.bottom,'32px');
+  assert.equal(bar.attrs.role,'toolbar');
+  assert.equal(bar.children.length,3);
+  const [attack,heal,locked]=bar.children;
+  assert.equal(attack.style.minWidth,'44px');
+  assert.equal(attack.style.pointerEvents,'auto');
+  assert.equal(attack.children[0].nodeName,'img');
+  assert.equal(attack.children[0].attrs.src,'./icons/attack.png');
+  assert.equal(heal.children.length,0,'remote unapproved image must never be injected');
+  assert.equal(heal.textContent,'Heal');
+  assert.equal(locked.disabled,true);
+  attack.onclick();heal.onclick();locked.onclick();
+  assert.deepEqual(pressed,['attack','heal']);
+  assert.equal(ctrl.stats().actionButtons,3);
+  assert.equal(ctrl.updateActionHud({actions:[{id:'new',label:'New'}],onAction:id=>pressed.push(id)}),true);
+  attack.onclick();
+  assert.deepEqual(pressed,['attack','heal'],'detached action must not fire');
+  assert.equal(ctrl.updateActionHud({visible:false}),true);
+  assert.equal(ctrl.stats().actionButtons,0);
+  ctrl.destroy();
+  assert.deepEqual(pressed,['attack','heal']);
+});
