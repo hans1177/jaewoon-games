@@ -13,8 +13,6 @@ import {indexVibe2GameSource} from '../tools/vibe2-game-source-index.mjs';
 import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
 import {createVibe59CodeCandidates,applyVibe59ApprovedGameSourceChange,inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
-import {applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
-import {applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
 import {execFileSync} from 'node:child_process';
 import {runVibe2SourceWorker,applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
