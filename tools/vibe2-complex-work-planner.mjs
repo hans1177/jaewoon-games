@@ -67,7 +67,7 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
     const effects=reqs.map(req=>uniqueFunction(index,req.effect));
     const formalArgs=explicitParameterNames(trigger.params);
     const effectArgs=effects.map(row=>explicitParameterNames(row.params));
-    if(effectArgs.some(names=>names.some((name,i)=>formalArgs[i]!==name))||
+    if(effectArgs.some(names=>names.some(name=>!formalArgs.includes(name)))||
       formalArgs.some(name=>(trigger.locals||[]).includes(name)||
         new RegExp('\\b(?:for|catch)\\s*\\(?\\s*'+name+'\\b').test(trigger.bodyCode)))
       throw Error('VIBE2_COMPLEX_PARAMETER_BINDING_UNPROVEN');
@@ -123,7 +123,7 @@ export function planVibe2ComplexWork({order={},sourceRoot='',responsibleFiles=[]
           start:effects[i].start,end:effects[i].end,parserConfidence:effects[i].parserConfidence},
         before:'handler-completion-without-'+effects[i].name,
         after:'one-call-per-handler-completion-'+effects[i].name,
-        forwardedArguments:effectArgs[i],parameterEvidence:'EXACT_ORIGINAL_FORMAL_PREFIX',
+        forwardedArguments:effectArgs[i],parameterEvidence:'EXACT_ORIGINAL_FORMAL_NAME_SUBSET',
         acceptanceScenarios:req.acceptanceScenarios,
         sourceWrite:false,runtimeVerified:false
       });
