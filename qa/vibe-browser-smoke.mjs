@@ -47,6 +47,41 @@ try{
    }
   }finally{await identityPage.close();}
  }
+ // 홈페이지: 게시 후 실제 모바일·데스크톱에서 게임별 즐겨찾기/삭제 노출과 확인 취소를 검증한다.
+ if(liveBase){
+  activeGameId='homepage';
+  for(const viewport of [{width:390,height:844},{width:1280,height:800}]){
+   const context=await browser.newContext({viewport,isMobile:viewport.width<700,hasTouch:viewport.width<700});
+   const home=await context.newPage(),errors=[];let confirmations=0,deleteRequests=0;
+   home.on('pageerror',error=>errors.push(error.message));
+   home.on('dialog',async dialog=>{
+    if(dialog.type()==='confirm'){
+     confirmations++;
+     assert.match(dialog.message(),/영구삭제/,'HOMEPAGE_DELETE_CONFIRM_TEXT');
+     await dialog.dismiss();
+    }else await dialog.dismiss();
+   });
+   await home.route('**/functions/v1/company-command',route=>{
+    deleteRequests++;return route.abort();
+   });
+   try{
+    const response=await home.goto(liveBase,{waitUntil:'domcontentloaded',timeout:30000});
+    assert.equal(response?.status(),200,'HOMEPAGE_HTTP');
+    await home.locator('.foldGameCard .homeDeleteButton').first().waitFor({state:'visible',timeout:30000});
+    const count=await home.locator('.foldGameCard').count();
+    const deletes=await home.locator('.foldGameCard .homeDeleteButton').count();
+    const favorites=await home.locator('.foldGameCard .homeFavoriteToggle').count();
+    assert.ok(count>0&&deletes===count&&favorites===count,'HOMEPAGE_GAME_ACTIONS_MISSING');
+    assert.equal(await home.locator('[data-stop-request]').count(),0,'HOMEPAGE_STOP_BUTTON_SHOULD_BE_REMOVED');
+    await home.locator('.foldGameCard .homeDeleteButton').first().click();
+    assert.equal(confirmations,1,'HOMEPAGE_DELETE_CONFIRM_ONCE');
+    assert.equal(deleteRequests,0,'HOMEPAGE_DELETE_CANCEL_MUST_NOT_CONTACT_SERVER');
+    assert.equal(await home.locator('.foldGameCard').count(),count,'HOMEPAGE_DELETE_CANCEL_MUST_RETAIN_GAMES');
+    assert.deepEqual(errors,[],'HOMEPAGE_BROWSER_SCRIPT_ERRORS');
+    console.log('HOMEPAGE_FAVORITE_DELETE_CANCEL_PASS '+JSON.stringify({viewport,count,deletes,favorites}));
+   }finally{await context.close();}
+  }
+ }
  // 포탈 RPG: 공식 공개판에서 포탈·3D 캐릭터·실제 터치 이동·보스 피해·구매 및 저장을 확인한다.
  if(liveBase){
   activeGameId='portal-rpg';
