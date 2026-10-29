@@ -1142,14 +1142,14 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     if(req.machine){
       // 생성기의 헤더 표기(공백/local)가 달라도 원본 선언을 정확히 보존한다.
       const generatedHeader=target==='roblox'
-        ?/^(?:local\\s+)?function\\s+[A-Za-z_]\\w*\\s*\\(\\s*eventName\\s*\\)/
-        :/^function\\s+[A-Za-z_]\\w*\\s*\\(\\s*eventName\\s*\\)\\s*\\{/;
+        ?/^(?:local\s+)?function\s+[A-Za-z_]\w*\s*\(\s*eventName\s*\)/
+        :/^function\s+[A-Za-z_]\w*\s*\(\s*eventName\s*\)\s*\{/;
       const declared=generatedHeader.exec(rewritten)?.[0];
       if(!declared)throw Error('VIBE59_FUNCTION_REWRITE_GENERATED_HEADER');
       rewritten=originalFunction.header+rewritten.slice(declared.length);
     }else{
       // 일반 규칙은 기존 반환 규약을 암묵적으로 지울 수 없다.
-      if(/\\breturn\\b/.test(executableText(originalFunction.original,
+      if(/\breturn\b/.test(executableText(originalFunction.original,
         target==='roblox'?'luau':'javascript').slice(originalFunction.header.length)))
         throw Error('VIBE59_FUNCTION_REWRITE_RETURN_CONTRACT');
       const body=compiled.source.split('\n').map(line=>'  '+line).join('\n');
