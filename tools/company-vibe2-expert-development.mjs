@@ -257,11 +257,21 @@ export function traceFailureResponsibility({failure='',responsibilityGraph={}}={
   const systems=failureSystems(failure),nodes=Array.isArray(responsibilityGraph.nodes)?responsibilityGraph.nodes:[];
   const ranked=nodes.map(node=>{
     let score=0;for(const system of systems)if((node.systems||[]).includes(system))score+=5;
+    // A named function in an observed stack trace is stronger evidence than
+    // unrelated keyword density. Boundaries prevent partial name collisions.
+    const exactSymbol=String(node.name||'').trim();
+    const escaped=exactSymbol.replace(/[.*+?^${}()|[\]\\]/g,'\\  const ranked=nodes.map(node=>{
+    let score=0;for(const system of systems)if((node.systems||[]).includes(system))score+=5;
+    score+=Math.min(4,tokenOverlap(failure,[node.name,...(node.stateWrites||[]),...(node.storageKeys||[])].join(' ')));
+');
+    const functionMention=exactSymbol.length>=4
+      &&new RegExp('(^|[^A-Za-z0-9_$])'+escaped+'(?=$|[^A-Za-z0-9_$])','i').test(String(failure));
+    if(functionMention)score+=24;
     score+=Math.min(4,tokenOverlap(failure,[node.name,...(node.stateWrites||[]),...(node.storageKeys||[])].join(' ')));
     if(systems.includes('SAVE')&&(node.storageKeys||[]).length)score+=3;
     if(systems.includes('INPUT')&&(node.events||[]).length)score+=2;
     if((node.stateWrites||[]).length)score+=1;
-    return{function:node.name,score,systems:node.systems,stateWrites:node.stateWrites,stateReads:node.stateReads,callers:node.calledBy,callees:node.calls,storageKeys:node.storageKeys,events:node.events};
+    return{function:node.name,score,exactFailureSymbolMention:functionMention,systems:node.systems,stateWrites:node.stateWrites,stateReads:node.stateReads,callers:node.calledBy,callees:node.calls,storageKeys:node.storageKeys,events:node.events};
   }).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.function.localeCompare(b.function)).slice(0,6);
   const primary=ranked[0]||null;
   return{failure:clean(failure),failureSystems:systems,primaryTarget:primary?.function||null,candidates:ranked,causalChain:primary?['FAILURE_EVIDENCE',...(primary.events?.length?['INPUT_OR_EVENT_ENTRY']:[]),`RESPONSIBLE_FUNCTION:${primary.function}`,...(primary.stateWrites||[]).slice(0,4).map(x=>`STATE_WRITE:${x}`),...(primary.callees||[]).slice(0,4).map(x=>`DOWNSTREAM:${x}`)]:['FAILURE_EVIDENCE','RESPONSIBILITY_NOT_RESOLVED'],rule:'PATCH_PRIMARY_RESPONSIBILITY_THEN_REPLAY_ORIGINAL_FAILURE'};
