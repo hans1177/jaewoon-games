@@ -18,9 +18,9 @@ function safePath(relative){
     ||!/^[A-Za-z0-9_.\/-]+$/.test(relative))throw Error('VIBE59_ASSET_PATH_UNSAFE');
   return relative;
 }
-function gameScope({order,repositoryRoot,sourceRoot,target,approvedAssetWrite}){
-  if(approvedAssetWrite!==true||order?.ownerApproved!==true
-    ||order?.selectedTask?.ownerDirective!==true)
+function gameScope({order,repositoryRoot,sourceRoot,target,approvedAssetWrite,readOnly=false}){
+  if(!readOnly&&(approvedAssetWrite!==true||order?.ownerApproved!==true
+    ||order?.selectedTask?.ownerDirective!==true))
     throw Error('VIBE59_GAME_ASSET_WRITE_NOT_APPROVED');
   if(!['web','roblox'].includes(target))throw Error('VIBE59_GAME_ASSET_TARGET_UNSUPPORTED');
   const gameId=String(order.selectedTask.gameId||'');
@@ -82,7 +82,7 @@ function findLedgerSource(ledger,gameId,entryId,sourcePath,sourceSha){
 // Report source-verified existing assets before deciding what the owner-scoped Vibe should improve.
 // An audit is not an approval to replace a model with an unrelated visual.
 export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',repositoryRoot=process.cwd(),target='web'}={}){
-  const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,approvedAssetWrite:true});
+  const {root,gameId}=gameScope({order,sourceRoot,repositoryRoot,target,readOnly:true});
   const found=[];
   function walk(dir,depth){
     if(depth>5||found.length>=256)return;
