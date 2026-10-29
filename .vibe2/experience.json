@@ -165890,72 +165890,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_57ac119c1a70d40022c786b0",
-          "taskId": "cat-step-web-startup-spatial-repair-v2",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0b50eb1b7d14dcfe4ba048d31b648a968b7bed49",
-            "actions-run:40826292455",
-            "reservation-id:40826292455:1",
-            "capability-application-sample:e6ec37595b9680fe675e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_06f0613557d863ddb36c6323",
-          "taskId": "dice-battle-board-web-startup-spatial-repair-v2",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:0b50eb1b7d14dcfe4ba048d31b648a968b7bed49",
-            "actions-run:40826292455",
-            "reservation-id:40826292455:1",
-            "capability-application-sample:3e51a3787b314ea01037"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_b040b74bbd46cb8d86d0cbfc",
           "taskId": "horror-escape-room-web-startup-spatial-repair-v3",
           "workKey": null,
@@ -167993,6 +167927,72 @@
             "actions-run:40893988851",
             "reservation-id:40893988851:1",
             "capability-application-sample:47074b9121d1eca2c2e5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c1b82ce16f01fda97ee850c9",
+          "taskId": "defense-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:2630ea49b3ab3cee330d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2b529849197ce1633e9edc6f",
+          "taskId": "horror-escape-room-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:6cde98c985fe44dd7a86"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172922,72 +172922,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_ece6b5a7793f0056d84c4946",
-          "taskId": "dice-battle-board-web-startup-spatial-repair-v1",
-          "workKey": null,
-          "gameId": "dice-battle-board",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:a24462d78835a2825f767ecd92cb94d84b4e1364",
-            "actions-run:40815666655",
-            "reservation-id:40815666655:1",
-            "capability-application-sample:db1576e58dfcb759b110"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_ebbbea1c69e93104e7f495df",
-          "taskId": "horror-escape-room-web-library-cc0-replacement-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:a24462d78835a2825f767ecd92cb94d84b4e1364",
-            "actions-run:40815666655",
-            "reservation-id:40815666655:1",
-            "capability-application-sample:112cb3b74aefd768d3b2"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_1ed5657faae75e5a8e41026c",
           "taskId": "horror-escape-room-web-library-cc0-replacement-v1",
           "workKey": null,
@@ -175025,6 +174959,72 @@
             "actions-run:40893988851",
             "reservation-id:40893988851:1",
             "capability-application-sample:47074b9121d1eca2c2e5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_59750759e1eb1291f192b16f",
+          "taskId": "defense-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:2630ea49b3ab3cee330d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9ea89661a81c1748eb9238dd",
+          "taskId": "horror-escape-room-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:6cde98c985fe44dd7a86"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189425,39 +189425,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_c59d5d1ed939e8aa5ba5603c",
-          "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:a24462d78835a2825f767ecd92cb94d84b4e1364",
-            "actions-run:40815666655",
-            "reservation-id:40815666655:1",
-            "capability-application-sample:c69b37f29c3143f2611b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_ffdee71724bf15fb563d80c5",
           "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
           "workKey": null,
@@ -191528,6 +191495,39 @@
             "actions-run:40893988851",
             "reservation-id:40893988851:1",
             "capability-application-sample:47074b9121d1eca2c2e5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b355c4552d8cbf69fb83d8b0",
+          "taskId": "defense-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:2630ea49b3ab3cee330d"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196476,39 +196476,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_2038c15a267326514531166a",
-          "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:a24462d78835a2825f767ecd92cb94d84b4e1364",
-            "actions-run:40815666655",
-            "reservation-id:40815666655:1",
-            "capability-application-sample:c69b37f29c3143f2611b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_e1f3d0d213629d191d49beb2",
           "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
           "workKey": null,
@@ -198579,6 +198546,39 @@
             "actions-run:40893988851",
             "reservation-id:40893988851:1",
             "capability-application-sample:47074b9121d1eca2c2e5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fb16496851260ac23063bbe5",
+          "taskId": "defense-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:2630ea49b3ab3cee330d"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201422,39 +201422,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_3ac08e524a914cf1d414789f",
-          "taskId": "cat-step-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "cat-step",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:a24462d78835a2825f767ecd92cb94d84b4e1364",
-            "actions-run:40815666655",
-            "reservation-id:40815666655:1",
-            "capability-application-sample:80c7c22e43518edee30d"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_faa39559c9e3cef735535540",
           "taskId": "cat-step-existing-web-assessment-v1",
           "workKey": null,
@@ -203525,6 +203492,39 @@
             "actions-run:40893988851",
             "reservation-id:40893988851:1",
             "capability-application-sample:47074b9121d1eca2c2e5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_605b703f9137c0e3c0cee1c1",
+          "taskId": "defense-web-startup-spatial-repair-v2",
+          "workKey": null,
+          "gameId": "defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:2630ea49b3ab3cee330d"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -253800,39 +253800,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_ece9a15ff57896a324c67a6a",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:5f22784b2c9a642583d0daeb3c4cf9356ba5c81b",
-            "actions-run:40588979443",
-            "reservation-id:40588979443:1",
-            "capability-application-sample:531939f7bbd768b90059"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_448e543ce01aeb347fbc6ec2",
           "taskId": "horror-escape-room-existing-web-assessment-v1",
           "workKey": null,
@@ -255903,6 +255870,39 @@
             "actions-run:40877912420",
             "reservation-id:40877912420:1",
             "capability-application-sample:8427ac56bf37a3361fd5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d492a036c032d5e8e7b0eaad",
+          "taskId": "horror-escape-room-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:6cde98c985fe44dd7a86"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -434904,39 +434904,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_ebd8bbc62e5458d2eab350f4",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:5f22784b2c9a642583d0daeb3c4cf9356ba5c81b",
-            "actions-run:40588979443",
-            "reservation-id:40588979443:1",
-            "capability-application-sample:531939f7bbd768b90059"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_83505bdf2546b41c204598b8",
           "taskId": "horror-escape-room-existing-web-assessment-v1",
           "workKey": null,
@@ -437007,6 +436974,39 @@
             "actions-run:40877912420",
             "reservation-id:40877912420:1",
             "capability-application-sample:8427ac56bf37a3361fd5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5c8a584e3ff57e12fd48c69b",
+          "taskId": "horror-escape-room-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:6cde98c985fe44dd7a86"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -439357,39 +439357,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_3259dfb0034cf50b5acc76d5",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:5f22784b2c9a642583d0daeb3c4cf9356ba5c81b",
-            "actions-run:40588979443",
-            "reservation-id:40588979443:1",
-            "capability-application-sample:531939f7bbd768b90059"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8a395e7e29746bd195a01050",
           "taskId": "horror-escape-room-existing-web-assessment-v1",
           "workKey": null,
@@ -441460,6 +441427,39 @@
             "actions-run:40877912420",
             "reservation-id:40877912420:1",
             "capability-application-sample:8427ac56bf37a3361fd5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_daa3006ac8b616f2ed931f2c",
+          "taskId": "horror-escape-room-web-startup-spatial-repair-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:c6ba7399a310079bf4276c9193bf5c76100a0e82",
+            "actions-run:40894797567",
+            "reservation-id:40894797567:1",
+            "capability-application-sample:6cde98c985fe44dd7a86"
           ],
           "observedAt": null,
           "rawCodeStored": false,
