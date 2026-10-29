@@ -316,6 +316,13 @@ test('홈페이지 삭제는 기존 기기 인증을 거쳐 영구삭제를 접�
   const client=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const flow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   assert.match(client,/const body='OWNER_DELETE_GAME:'\+id/);
+  // 공개 방문자에게는 삭제 버튼이 생성되지 않는다. 서버에서 인증된 기기만 활성화된다.
+  assert.match(client,/if\(!ownerDeleteVerified\)return '';/);
+  assert.match(client,/if\(!ownerDeleteVerified\)return;/);
+  assert.match(client,/valid=result\?\.ok===true&&Array\.isArray\(result\.tasks\)/);
+  assert.match(client,/body:JSON\.stringify\(\{action:'list'\}\)/);
+  assert.match(client,/void verifyOwnerDeleteAccess\(\)/);
+
   const deleteHandler=client.split('async function requestPermanentGameDelete(id)')[1]?.split('let favoriteGameIds=new Set();')[0];
   assert.ok(deleteHandler,'영구삭제 요청 함수가 존재해야 한다');
   assert.ok(!['location.href','location.replace','window.location'].some(part=>deleteHandler.includes(part)),'삭제 버튼에서 기기 등록으로 자동 이동 금지');
