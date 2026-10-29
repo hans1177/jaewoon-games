@@ -471,9 +471,14 @@ export function renderVibe59NumericLuaAST(node,params){
     '__proto__','constructor','prototype','arguments','eval','Function','process',
     'globalThis','window','document','this','NaN','Infinity','undefined'
   ]);
+  const luaIdentifier=/^[A-Za-z_][A-Za-z0-9_]*$/;
+  const luaReserved=new Set(['and','break','do','else','elseif','end','false','for',
+    'function','goto','if','in','local','nil','not','or','repeat','return','then',
+    'true','until','while','continue','type','export']);
   if(!Array.isArray(params)||params.length<1||params.length>3
     ||new Set(params).size!==params.length
-    ||params.some(name=>typeof name!=='string'||!legal.test(name)||forbidden.has(name)))
+    ||params.some(name=>typeof name!=='string'||!legal.test(name)||forbidden.has(name)
+      ||!luaIdentifier.test(name)||luaReserved.has(name)))
     throw Error('VIBE59_ALGORITHM_LUA_PARAMETERS_INVALID');
   const unary=new Set(['abs','floor','round','neg']);
   const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
@@ -613,6 +618,11 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     ||!/\.(?:js|mjs|cjs|lua|luau)$/i.test(relative))
     throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
   const roblox=/\.(?:lua|luau)$/i.test(relative);
+  if(roblox&&(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)
+    ||new Set(['and','break','do','else','elseif','end','false','for','function',
+      'goto','if','in','local','nil','not','or','repeat','return','then','true',
+      'until','while','continue','type','export']).has(name)))
+    throw Error('VIBE59_ALGORITHM_LUA_PARAMETERS_INVALID');
   if(target&&target!==(roblox?'roblox':'web'))throw Error('VIBE59_ALGORITHM_SOURCE_SCOPE_REQUIRED');
   const declaration=roblox
     ?new RegExp('\\b(?:local\\s+)?function\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\n?\\s*return\\s+([^\\n;]+)\\s*\\n\\s*end','g')
