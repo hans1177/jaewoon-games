@@ -378,9 +378,11 @@ jobs:
             const pathname=path.join(site,file);
             const original=fs.readFileSync(pathname,'utf8');
             // JS의 split('/')·join('/')·비율 표시는 경로가 아니므로 보존한다.
-            const adapted=file==='manifest.webmanifest'
-              ?original.replace(/(["'\x60])\/(?!\/)/g,'$1/jaewoon-games/')
-              :original.replace(/(["'\x60])\/(?!["'\x60\/])/g,'$1/jaewoon-games/');
+            const adapted=file==='sw.js'
+              ?original // 프로젝트 서비스 워커는 자신의 scope로 상대 경로를 계산한다. 절대주소 재작성 금지.
+              :file==='manifest.webmanifest'
+                ?original.replace(/(["'\x60])\/(?!\/)/g,'$1/jaewoon-games/')
+                :original.replace(/(["'\x60])\/(?!["'\x60\/])/g,'$1/jaewoon-games/');
             fs.writeFileSync(pathname,/\.html$/.test(file)
               ?adapted.replace(/(\b(?:href|src|action)=["'])\/(?=["'])/g,'$1/jaewoon-games/')
               :adapted);
@@ -619,7 +621,7 @@ jobs:
           node --test --test-concurrency=4 qa/vibe-fighting-engine.test.mjs qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-character-integration.test.mjs qa/vibe-gameplay-controller.test.mjs qa/vibe-game-input-physics.test.mjs
           test -s _site/index.html
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' _site/index.html
-          grep -q '/jaewoon-games/assets/homepage-enhancements.js' _site/index.html
+          grep -Fq 'src="assets/homepage-enhancements.js"' _site/index.html
           test -s _site/game-catalog.json
           test -s _site/company-status.json
           test -s _site/homepage-platform-exposure.json
@@ -886,7 +888,7 @@ jobs:
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' /tmp/jaewoon-pages-home-live.html || {
             echo 'WEB_PAGES_CANONICAL_HOMEPAGE_NOT_LIVE' >&2; exit 1;
           }
-          grep -q '/jaewoon-games/assets/homepage-enhancements.js' /tmp/jaewoon-pages-home-live.html || {
+          grep -Fq 'src="assets/homepage-enhancements.js"' /tmp/jaewoon-pages-home-live.html || {
             echo 'WEB_PAGES_HOME_RENDERER_PATH_MISMATCH' >&2; exit 1;
           }
           # Independent homepage dependencies: bounded concurrent HTTP checks.
