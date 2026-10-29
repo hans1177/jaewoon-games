@@ -1051,7 +1051,7 @@ export class IslandRendererV3 {
   // [메인: 타격 이펙트] 전투 확정 좌표에 승인된 Vibe 화면 이펙트만 재생한다.
   impact(x,y,{color=0xffc66a,count=7}={}){
     if(!this.native3d||!Number.isFinite(x)||!Number.isFinite(y))return 0;
-    return this.vibeVfx?.burst({x:x*SC,y:1.1,z:y*SC,color,count})||0;
+    return this.vibeVfx?.burst({type:count>9?'explosion':'impact',x:x*SC,y:1.1,z:y*SC,color,count})||0;
   }
 
   // 그래픽만 갱신하며 game.state/병력/자원/저장 값은 변경하지 않는다.
