@@ -310,7 +310,8 @@ function compileReservedHelperEdits({sourceRows=[],responsibleFiles=[],primaryTa
   const edits=[],seen=new Set();
   for(const row of sourceRows.slice(0,32)){
     const file=posix(row?.relative),source=String(row?.text||'');
-    if(!allowed.has(file)||!source||source.length>MAX_READ_BYTES)continue;
+    if(!allowed.has(file)||!file||path.isAbsolute(file)||file.split('/').some(part=>!part||part==='.'||part==='..')
+      ||!source||source.length>MAX_READ_BYTES)continue;
     const language=/\.luau?$/i.test(file)?'luau':/\.cs$/i.test(file)?'csharp':'javascript';
     const graph=buildResponsibilityGraph({source,language});
     const nodes=new Map((graph.nodes||[]).map(node=>[node.name,node]));
@@ -328,7 +329,7 @@ function compileReservedHelperEdits({sourceRows=[],responsibleFiles=[],primaryTa
           sharedState:stateOverlap.slice(0,12),
           reason:'STATIC_DIRECT_SAME_FILE_CALL_EDGE',
           writableWithinExistingReservation:true,
-          preservesSaveBalanceAndAuthority:true,
+          preserveSaveBalanceAndAuthorityRequired:true,
           runtimeVerified:false
         }));
         seen.add(key);
