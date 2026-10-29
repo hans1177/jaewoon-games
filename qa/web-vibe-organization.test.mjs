@@ -307,3 +307,39 @@ test('existing WEB direct and recovery jobs serialize per game, not all games gl
   assert.match(workflow,/WEB_VIBE_DIRECT_FAILURE_CHECKPOINT/);
   assert.doesNotMatch(workflow,/group: web-vibe-onepatch-\$\{\{ needs\.(?:bridge|web-recovery-select)\.outputs\.task_id \}\}/);
 });
+
+test('WEB watchdog uses expiring exact-owner CAS claims to suppress duplicate 5-minute dispatch',async()=>{
+  const {selectWebVibeRecoveryTask,claimWebVibeRecoveryTask,recordWebVibeRecoveryFailure}=
+    await import('../tools/web-vibe-recovery.mjs');
+  const item={id:'pwa-'+uuid,gameId:'wild-survival',target:'web',
+    sourceRoot:'web-games/wild-survival',status:'queued',goal:'public player movement repair',
+    ownerDirective:true,evidence:['owner-source-authenticated']};
+  const other={...item,id:'pwa-22222222-2222-4333-8444-555555555555',
+    gameId:'cozy-island',sourceRoot:'web-games/cozy-island'};
+  const queue={...emptyWebVibeQueue(),tasks:[item,other]};
+  const now='2026-10-30T01:00:00Z';
+  assert.equal(selectWebVibeRecoveryTask(queue,{now}).id,item.id);
+  assert.throws(()=>claimWebVibeRecoveryTask(queue,item.id,{now,runId:0}),/CLAIM_AUTHORITY_INVALID/);
+  assert.throws(()=>claimWebVibeRecoveryTask(queue,other.id,{now,runId:40918533815}),/CLAIM_SELECTION_STALE/);
+  const claim=claimWebVibeRecoveryTask(queue,item.id,{now,runId:40918533815});
+  assert.equal(claim.claimUntil,'2026-10-30T02:15:00.000Z');
+  assert.equal(claim.queue.tasks[0].status,'queued','claim does not forge a running or PASS checkpoint');
+  assert.equal(claim.queue.tasks[0].recoveryClaimRunId,40918533815);
+  assert.equal(selectWebVibeRecoveryTask(claim.queue,{now:'2026-10-30T01:05:00Z'}).id,other.id,
+    'another eligible WEB game must not be blocked by the first game claim');
+  const one={...emptyWebVibeQueue(),tasks:[claim.queue.tasks[0]]};
+  assert.equal(selectWebVibeRecoveryTask(one,{now:'2026-10-30T01:05:00Z'}),null);
+  assert.equal(selectWebVibeRecoveryTask(one,{now:'2026-10-30T02:15:00Z'}).id,item.id);
+  assert.throws(()=>claimWebVibeRecoveryTask(one,item.id,{now:'2026-10-30T01:05:00Z',
+    runId:40918533816}),/CLAIM_SELECTION_STALE/);
+  const failure=recordWebVibeRecoveryFailure(one,item.id,{now:'2026-10-30T01:10:00Z',
+    failureLog:'WEB_VIBE_WORKER_BLOCKED=WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:8'});
+  assert.equal(failure.queue.tasks[0].recoveryClaimUntil,null);
+  assert.equal(failure.queue.tasks[0].recoveryClaimRunId,null);
+  assert.equal(failure.queue.tasks[0].recoveryAttempts,undefined);
+  const workflow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  assert.match(workflow,/node tools\/web-vibe-recovery\.mjs claim/);
+  assert.match(workflow,/WEB_VIBE_RECOVERY=EXACT_OWNER_TASK_CLAIMED/);
+  assert.match(workflow,/WEB_VIBE_RECOVERY=CLAIM_CONFLICT_NOT_DISPATCHED/);
+  assert.match(workflow,/web-vibe: bounded watchdog claim \[skip ci\]/);
+});
