@@ -1086,6 +1086,107 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});
 }
+// Existing game asset changes use the same owner-scoped exact edits as gameplay code.
+// Never invent a creature, geometry, texture or replacement file.
+function vibe59OwnerSvgRecolorGoal(order={}){
+  const chosen=order.selectedTask||{};
+  if(chosen.ownerDirective!==true)return null;
+  const goal=clean(chosen.goal||order.goal);
+  const korean=/^(?:기존\s+)?(assets\/[A-Za-z0-9_./-]+\.svg)의\s+([A-Za-z][\w-]*)\s+색상\s+(#[0-9a-fA-F]{3,8})을\s+(#[0-9a-fA-F]{3,8})\s*(?:으로\s*)?(?:바꿔|변경해|수정해|변경|수정)[.!]?$/.exec(goal);
+  const english=/^Recolor\s+([A-Za-z][\w-]*)\s+in\s+(assets\/[A-Za-z0-9_./-]+\.svg)\s+from\s+(#[0-9a-fA-F]{3,8})\s+to\s+(#[0-9a-fA-F]{3,8})[.!]?$/i.exec(goal);
+  if(korean)return{ownerApproved:true,path:korean[1],elementId:korean[2],fromColor:korean[3],toColor:korean[4]};
+  if(english)return{ownerApproved:true,path:english[2],elementId:english[1],fromColor:english[3],toColor:english[4]};
+  return null;
+}
+function vibe59ExistingSvgGroup(source,elementId){
+  const groupTags=/<\/?g\b[^>]*>/gi,stack=[],found=[];
+  let match;
+  while((match=groupTags.exec(source))){
+    const tag=match[0],closing=/^<\//.test(tag);
+    if(closing){
+      const opened=stack.pop();
+      if(!opened)throw Error('VIBE59_ASSET_SVG_GROUP_UNBALANCED');
+      if(opened.elementId===elementId)found.push({start:opened.start,end:groupTags.lastIndex});
+    }else{
+      const id=/\bid\s*=\s*(["'])([^"']+)\1/.exec(tag)?.[2];
+      if(!/\/>$/.test(tag))stack.push({start:match.index,elementId:id});
+    }
+  }
+  if(stack.length)throw Error('VIBE59_ASSET_SVG_GROUP_UNBALANCED');
+  if(found.length!==1)throw Error('VIBE59_ASSET_GROUP_NOT_UNIQUE:'+elementId);
+  return found[0];
+}
+export function createVibe59ExistingAssetCandidate({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
+  const explicit=order.selectedTask?.vibe59AssetEdits??order.vibe59AssetEdits
+    ??order.selectedTask?.vibe59AssetEdit??order.vibe59AssetEdit;
+  const inferred=explicit===undefined?vibe59OwnerSvgRecolorGoal(order):null;
+  const raw=explicit??inferred;
+  if(raw==null)return null;
+  if(!['web','roblox'].includes(target))throw Error('VIBE59_ASSET_PLATFORM_NOT_ACTIVE');
+  const requests=Array.isArray(raw)?raw:[raw];
+  if(!requests.length||requests.length>12)throw Error('VIBE59_ASSET_EDIT_COUNT');
+  const root=fs.realpathSync(path.resolve(sourceRoot));
+  const documents=new Map(),initialHashes=new Map(),edits=[],proof=[];
+  for(const request of requests){
+    if(!request||request.ownerApproved!==true||request.operation&&request.operation!=='recolor-existing-svg')
+      throw Error('VIBE59_ASSET_OWNER_APPROVAL_REQUIRED');
+    const relative=clean(request.path).replaceAll('\\','/');
+    if(!/^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*\.svg$/i.test(relative)
+      ||relative.split('/').includes('..')||!responsibleFiles.includes(relative))
+      throw Error('VIBE59_ASSET_RESPONSIBLE_FILE_REQUIRED');
+    const elementId=clean(request.elementId);
+    const from=clean(request.fromColor),to=clean(request.toColor);
+    const validColor=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+    if(!/^[A-Za-z][\w-]{0,79}$/.test(elementId)||!validColor.test(from)||!validColor.test(to)
+      ||from.toLowerCase()===to.toLowerCase())throw Error('VIBE59_ASSET_RECOLOR_SPEC_INVALID');
+    const file=path.resolve(root,relative),actual=fs.realpathSync(file);
+    if(!actual.startsWith(root+path.sep)||fs.lstatSync(file).isSymbolicLink()
+      ||!fs.statSync(file).isFile()||fs.statSync(file).size>160000)
+      throw Error('VIBE59_ASSET_SCOPE_ESCAPE');
+    if(!documents.has(relative)){
+      const original=fs.readFileSync(file,'utf8');
+      if(!/<svg\b/i.test(original))throw Error('VIBE59_ASSET_SVG_SOURCE_REQUIRED');
+      documents.set(relative,original);initialHashes.set(relative,sha(original));
+    }
+    const source=documents.get(relative);
+    if(request.sourceSha256!=null&&request.sourceSha256!==initialHashes.get(relative))
+      throw Error('VIBE59_ASSET_STALE_SOURCE');
+    const group=vibe59ExistingSvgGroup(source,elementId);
+    const before=source.slice(group.start,group.end);
+    let changed=0;
+    const after=before.replace(/\b(fill|stroke|stop-color)\s*=\s*(["'])(#[0-9a-fA-F]{3,8})\2/g,
+      (whole,attribute,quote,color)=>{
+        if(color.toLowerCase()!==from.toLowerCase())return whole;
+        changed++;
+        return attribute+'='+quote+to+quote;
+      });
+    if(!changed||before===after)throw Error('VIBE59_ASSET_EXISTING_COLOR_NOT_FOUND:'+elementId);
+    const edit={path:relative,find:before,replace:after};
+    if(Buffer.byteLength(before)>16000||Buffer.byteLength(after)>32000)
+      throw Error('VIBE59_ASSET_EXACT_EDIT_TOO_LARGE');
+    applyExactEdits(root,[edit],{documents});
+    edits.push(edit);
+    proof.push({path:relative,elementId,fromColor:from,toColor:to,
+      changedAttributes:changed,sourceSha256:initialHashes.get(relative)});
+  }
+  // Replay the entire batch against the real original files, without writing them.
+  const replay=new Map([...initialHashes.keys()].map(relative=>
+    [relative,fs.readFileSync(path.resolve(root,relative),'utf8')]));
+  applyExactEdits(root,edits,{documents:replay});
+  for(const [relative,content] of documents)
+    if(replay.get(relative)!==content)throw Error('VIBE59_ASSET_BATCH_REPLAY_MISMATCH');
+  return Object.freeze({
+    summary:'Vibe5.9 modify existing approved game SVG asset groups',
+    expectedEffect:'Recolor existing source-grounded game art without inventing geometry or replacing asset identity',
+    edits,newFiles:[],replaceFiles:[],tests:[],vibe59CodeKind:'EXISTING_GAME_ASSET_RECOLOR',
+    vibe59TestPlan:{pass:true,cases:proof.flatMap(row=>[
+      {name:'existing-group:'+row.elementId,sourceSha256:row.sourceSha256,changedAttributes:row.changedAttributes},
+      {name:'unchanged-asset-identity:'+row.elementId,path:row.path,generatedAsset:false}
+    ])},
+    assetEditProof:proof,ruleDigest:sha(JSON.stringify(proof)),
+    sourceWrite:false,modelUsed:false,runtimeVerified:false
+  });
+}
 // Structured complex designs: independent verified changes to multiple functions
 // are compiled as one atomic candidate without any external model or main write.
 // A dependency cycle, stale anchor, missing proof or overlapping edit fails closed.
@@ -1093,6 +1194,13 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // in-memory source snapshot. Dependent steps may consume earlier generated code,
 // but original files remain untouched until the canonical worker admits the batch.
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
+  const existingAsset=createVibe59ExistingAssetCandidate({order,sourceRoot,responsibleFiles,target});
+  if(existingAsset){
+    if(order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest??
+       order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests)
+      throw Error('VIBE59_ASSET_MIXED_CODE_SCOPE_REQUIRES_SEPARATE_ATOMIC_ORDER');
+    return existingAsset;
+  }
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null){
     // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.
