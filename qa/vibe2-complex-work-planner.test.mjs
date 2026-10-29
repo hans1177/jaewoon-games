@@ -13,6 +13,7 @@ import {buildGameSourceIndex,sourceDigest} from '../tools/vibe2-game-source-inde
 import {createVibe59CodeCandidate,createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 import {runCodegenCounterexampleRepair} from '../tools/vibe2-codegen-counterexample-repair.mjs';
+import {applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
 const revision='a'.repeat(40);
 function fixture(t,target='web'){
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-complex-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
@@ -20,6 +21,35 @@ function fixture(t,target='web'){
  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'rpg',webPath:'web-games/rpg',robloxProjectPath:'roblox-games/rpg'}]}));
  return {repo,root};
 }
+test('canonical Vibe2 source worker physically applies an existing production SVG asset edit on an isolated game branch',t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-asset-source-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const relative='assets/survival-atlas.svg',project='web-games/survival2';
+ const originalFile=path.resolve(project,relative),original=fs.readFileSync(originalFile,'utf8');
+ const sourceRoot=path.join(repo,project),target=path.join(sourceRoot,relative);
+ fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,original);
+ const git=(...args)=>{const r=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});
+  assert.equal(r.status,0,r.stderr||r.error?.message);};
+ git('init','-q');git('config','user.email','vibe2-tests@example.invalid');
+ git('config','user.name','Vibe2 Test');git('add','--',project);
+ git('commit','-qm','original existing production SVG asset');
+ git('switch','-q','-c','vibe2/candidate/existing-svg-asset');
+ const old=original.match(/<g id="wolf"[^>]*>[\s\S]*?<\/g>/)?.[0];
+ assert.ok(old&&old.includes('fill="#6d7773"'));
+ const edit={path:relative,find:old,replace:old.replace('fill="#6d7773"','fill="#81938b"')};
+ const candidate={edits:[edit],newFiles:[],replaceFiles:[]};
+ const candidateRoot=path.join(repo,'.vibe2/candidates/existing-svg-asset');
+ assert.throws(()=>applyVibe2CandidateToSource({cwd:repo,sourceRoot,candidateRoot,candidate:{
+  ...candidate,edits:[edit,{path:relative,find:'nonexistent-svg-anchor',replace:'invalid'}]}}),
+  /edit find 불일치/);
+ assert.equal(fs.readFileSync(target,'utf8'),original,'atomic validation preserves original art on failure');
+ const applied=applyVibe2CandidateToSource({cwd:repo,sourceRoot,candidateRoot,candidate});
+ assert.equal(applied.branch,'vibe2/candidate/existing-svg-asset');
+ assert.deepEqual(applied.changedFiles,[relative]);
+ assert.equal(fs.readFileSync(target,'utf8'),original.replace(old,edit.replace));
+ assert.equal(fs.readFileSync(originalFile,'utf8'),original,'canonical live game source is not touched by isolated regression');
+ const diff=spawnSync('git',['diff','--name-only'],{cwd:repo,encoding:'utf8',timeout:15000});
+ assert.equal(diff.status,0);assert.equal(diff.stdout.trim(),project+'/'+relative);
+});
 test('natural owner request compiles two real source edits atomically through the existing V59 entry',t=>{
  const {repo,root}=fixture(t),source='const state={dead:false,hp:10};\nfunction hit(a){\n a.hp -= 1;\n}\nfunction reward(a){\n hit(a);\n a.hp += 1;\n}';
  fs.writeFileSync(path.join(root,'game.js'),source);
