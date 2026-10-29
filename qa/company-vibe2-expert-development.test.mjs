@@ -131,6 +131,29 @@ function claim() { if (canClaim()) grant(); }
   for(const fn of inspectSourceFunctions(code))assert.equal(code.slice(fn.start,fn.end).startsWith('function '+fn.name),true);
 });
 
+test('actual failure symbol outranks generic system keywords without partial-name collisions',()=>{
+ const code=[
+  'let hp=10;',
+  'let gold=30;',
+  'function saveCombatState(){localStorage.setItem("save-v1",String(gold));}',
+  'function applyDamageExtra(){gold+=1;saveCombatState();}',
+  'function applyDamage(){return hp;}'
+ ].join('\n');
+ const graph=buildResponsibilityGraph({source:code});
+ const trace=traceFailureResponsibility({
+  failure:'TypeError: applyDamage is not updating hp in combat save flow',
+  responsibilityGraph:graph
+ });
+ assert.equal(trace.primaryTarget,'applyDamage');
+ assert.equal(trace.candidates[0].exactFailureSymbolMention,true);
+ assert.equal(trace.candidates.find(row=>row.function==='applyDamageExtra')?.exactFailureSymbolMention,false);
+ const punctuation=traceFailureResponsibility({
+  failure:'at applyDamage() in web-games/demo/main.js:14:9',
+  responsibilityGraph:graph
+ });
+ assert.equal(punctuation.primaryTarget,'applyDamage');
+});
+
 test('causal debugger ranks the real responsibility boundary instead of only classifying failure text',()=>{
   const graph=buildResponsibilityGraph({source,sourceAnalysis:{storageKeys:['save-v1']}});
   const placement=traceFailureResponsibility({failure:'TOWER_PLACEMENT_RESULT_REQUIRED',responsibilityGraph:graph});
