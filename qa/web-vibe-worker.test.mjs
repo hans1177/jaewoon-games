@@ -386,6 +386,12 @@ test('WEB verified code evolution learns compact responsible-function changes an
  assert.equal(compileVerifiedWebLearning({...task,goal:'새로운 보스 전투 추가'},source,[verified]),null);
  assert.equal(compileVerifiedWebLearning(task,{...source,original:patch.updated},[verified]),null);
  assert.equal(compileVerifiedWebLearning(task,{...source,relative:'web-games/other/game.js'},[verified]),null);
+ const externalTask={...task,gameId:'other',sourceRoot:'web-games/other'};
+ const ported=compileVerifiedWebLearning(externalTask,{...source,relative:'web-games/other/game.js'},[verified]);
+ assert.equal(ported.deterministicWebLearned,true);
+ assert.match(ported.updated,/opacity=0\.85/);
+ assert.equal(ported.offlineSourceProof.runtimeVerified,false);
+ assert.equal(compileVerifiedWebLearning(externalTask,{...source,relative:'web-games/other/index.html'},[verified]),null);
 });
 test('WEB no-model worker actually replays browser-verified same-game learning without any model call',async()=>{
  const source={relative:'web-games/demo/game.js',
