@@ -479,21 +479,14 @@ test('Roblox no-model coding guards real DataStore read before writing and prese
   assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'unverified DataStore read must not fall through to unsafe shutdown save');
 });
 
-test('real survival2 uses guarded read-safe merged save across leave and shutdown',()=>{
-  const source=fs.readFileSync('roblox-games/survival2/server/Game.server.luau','utf8');
-  assert.match(source,/local verifiedSaveLoad = \{\}/);
-  assert.match(source,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
-  assert.match(source,/if verifiedSaveLoad\[player\] ~= true then return end/);
-  assert.match(source,/store:UpdateAsync\("player:" \.\. player.UserId, function\(current\)/);
-  assert.match(source,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/);
-  assert.match(source,/local merged = typeof\(current\) == "table" and table\.clone\(current\) or \{\}/);
-  assert.match(source,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*savePlayer\(player\)/);
-  assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
-  assert.doesNotMatch(source,/game:BindToClose\(function\(\) end\)/);
-  assert.equal(deterministicRobloxNativeRepairCandidate({
-    order:{target:'roblox',goal:'save stability shutdown'},
-    sourceRoot:'roblox-games/survival2',responsibleFiles:['server/Game.server.luau']
-  }),null,'existing corrected game cannot receive a duplicate patch');
+// [회귀] 오너가 삭제한 게임은 회귀 fixture 명목으로 복원하거나 자동 패치하지 않는다.
+// 실제 운영 중인 게임의 저장 안전성은 아래 gem-survivor 테스트에서 별도로 확인한다.
+test('retired survival2 is absent and cannot receive a no-model shutdown save patch',()=>{
+ assert.equal(fs.existsSync('roblox-games/survival2'),false);
+ assert.equal(deterministicRobloxNativeRepairCandidate({
+   order:{target:'roblox',goal:'save stability shutdown'},
+   sourceRoot:'roblox-games/survival2',responsibleFiles:['server/Game.server.luau']
+ }),null,'retired game must remain absent');
 });
 
 test('real gem survivor also preserves verified-read DataStore semantics without extra save keys',()=>{
