@@ -110,7 +110,7 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
    const statement=indent+r.output+(r.amount<0?' -= ':' += ')+Math.abs(r.amount)+(target==='web'?';':'');
    if(source.slice(at+match[0].length,owner.bodyEnd).trimStart().startsWith(statement.trim()))
     throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
-   edit={path:file.path,find,replace:find+'\\n'+statement};
+   edit={path:file.path,find,replace:find+'\n'+statement};
    proof={pass:true,cases:[-1,0,1,10,100].map(initial=>({event:'AFTER_EXISTING_CALL',
     existingCall:r.after,initial,expected:initial+r.amount})),
     authority:'SOURCE_BOUND_GAMEPLAY_PROGRESS_ORACLE',
