@@ -27,3 +27,18 @@ test('motion event bridge maps footsteps and restores original callback',()=>{
  assert.equal(original,1);assert.equal(sounds,1);
  disconnect();motion.adapter.onEvent({type:'footstep'});assert.equal(original,2);assert.equal(sounds,1);
 });
+
+// [UI 트윈] 열림/닫힘, 중도 교체, 움직임 감소, 종료 후 콜백 차단.
+test('UI tween interpolation stays bounded and completes exactly once',()=>{
+ const engine=new VibePresentationEngine();let done=0,values=[];
+ engine.tween('menu',{from:0,to:1,duration:.2,onUpdate:n=>values.push(n),onComplete:()=>done++});
+ engine.update(.1);engine.update(.1);
+ assert.equal(values.at(-1),1);assert.equal(done,1);assert.equal(engine.tweens.size,0);
+ engine.tween('menu',{from:1,to:0,duration:.3,onUpdate:n=>values.push(n),onComplete:()=>done++});
+ engine.update(.1);engine.setAccessibility({reducedMotion:true});
+ assert.equal(done,2);assert.equal(values.at(-1),0);
+ assert.equal(engine.tween('menu',{from:0,to:1,duration:.2,onUpdate:n=>values.push(n),onComplete:()=>done++}),false);
+ assert.equal(values.at(-1),1);assert.equal(done,3);
+ engine.dispose();
+ assert.equal(engine.tweens.size,0);
+});
