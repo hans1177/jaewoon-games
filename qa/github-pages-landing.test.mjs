@@ -140,7 +140,7 @@ test('homepage uses canonical runtime data and links without separate availabili
   const script=fs.readFileSync('_site/assets/homepage-enhancements.js','utf8');
   for(const file of [
     'game-catalog.json','company-status.json','homepage-platform-exposure.json',
-    'homepage-portfolio-status.json','manifest.webmanifest','sw.js',
+    'homepage-portfolio-status.json','manifest.webmanifest','sw.js','register.html',
     'multiplayer/multiplayer-client.js'
   ])assert.ok(fs.statSync('_site/'+file).size>50,file+' should be published');
   assert.ok(script.includes("getJson('"+pagesRoot+"game-catalog.json')"));
@@ -204,4 +204,14 @@ test('catalog text and unverified external addresses are never injected into sta
   const output=buildPagesLanding({catalog:{...catalog,games},manifest,exposure:injected});
   assert.equal(output.html.includes('<script>alert(1)</script>'),false);
   assert.equal(output.html.includes('https://attacker.invalid/x'),false);
+});
+
+
+test('관리자 등록 링크는 Pages에 게시하되 비밀 코드를 HTML에 기록하지 않는다',()=>{
+  const register=fs.readFileSync('_site/register.html','utf8');
+  assert.match(register,/codeFromHash\(\)/);
+  assert.match(register,/action:'claim'/);
+  assert.match(register,/action:'list'/);
+  assert.match(register,/location\.replace\('\.\/'\)/);
+  assert.doesNotMatch(register,/bootstrapCode\s*=\s*['\"][a-z0-9]{16,}/i);
 });

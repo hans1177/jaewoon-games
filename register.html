@@ -13,7 +13,7 @@
 <main class="card">
   <div class="eyebrow">JAEWOON COMPANY</div>
   <h1>기기 등록</h1>
-  <p>이 페이지에서 기기를 등록한 뒤 재운컴퍼니 채팅으로 자동 이동해.</p>
+  <p>이 브라우저를 재운게임즈 관리자로 등록하면 홈페이지로 자동 이동해. 등록 링크는 공유하지 마.</p>
   <div id="state" class="state">등록 준비 중…</div>
   <button id="retry" class="btn" type="button">다시 등록</button>
 </main>
@@ -28,16 +28,31 @@ if(location.hash)history.replaceState(null,'',location.pathname+location.search)
 function setState(text,type=''){state.textContent=text;state.className='state'+(type?' '+type:'');}
 async function register(){
   retry.classList.remove('show');
-  if(localStorage.getItem(TOKEN_KEY)){setState('이미 등록된 기기야. 채팅으로 이동 중…','ok');setTimeout(()=>location.replace('command.html'),250);return;}
-  if(!bootstrapCode){setState('등록코드가 링크에 없어. 새 등록 링크를 사용해.','bad');return;}
+  // 기존 기기 토큰이 있다면 서버에서 유효성을 확인한다. 단순 로컬 저장 여부는 관리자 증명이 아니다.
+  const existing=localStorage.getItem(TOKEN_KEY)||'';
+  if(existing){
+    try{
+      const verify=await fetch(API,{method:'POST',cache:'no-store',headers:{
+        'Content-Type':'application/json','apikey':API_KEY,'x-jaewoon-device':existing
+      },body:JSON.stringify({action:'list'})});
+      const proof=await verify.json().catch(()=>null);
+      if(verify.ok&&proof?.ok===true&&Array.isArray(proof.tasks)){
+        setState('이미 등록된 관리자 기기야. 홈페이지로 이동 중…','ok');
+        setTimeout(()=>location.replace('./'),300);
+        return;
+      }
+    }catch{}
+    localStorage.removeItem(TOKEN_KEY);
+  }
+  if(!bootstrapCode){setState('등록 링크가 필요해. 관리자 등록 링크를 열어줘.','bad');return;}
   setState('기기 등록 중…');
   try{
     const response=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','apikey':API_KEY},body:JSON.stringify({action:'claim',code:bootstrapCode,label:navigator.userAgent.slice(0,60)}),cache:'no-store'});
     const data=await response.json().catch(()=>({}));
     if(!response.ok||!data.token)throw new Error(data.error||`HTTP_${response.status}`);
     localStorage.setItem(TOKEN_KEY,data.token);
-    setState('등록 완료. 채팅으로 이동 중…','ok');
-    setTimeout(()=>location.replace('command.html'),350);
+    setState('관리자 등록 완료. 홈페이지로 이동 중…','ok');
+    setTimeout(()=>location.replace('./'),350);
   }catch(error){setState(`등록 실패: ${error.message}`,'bad');retry.classList.add('show');}
 }
 retry.addEventListener('click',register);
