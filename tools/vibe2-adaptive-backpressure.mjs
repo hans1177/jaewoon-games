@@ -38,7 +38,11 @@ export function createParallelismControl(input = {}) {
     lastReason: clean(input.lastReason) || `DEFAULT_ADAPTIVE_TARGET_${DEFAULT_ADAPTIVE_TARGET}`,
     lastRunId: clean(input.lastRunId) || null,
     lastUpdatedAt: clean(input.lastUpdatedAt) || null,
-    lastTelemetry: input.lastTelemetry && typeof input.lastTelemetry === 'object' ? input.lastTelemetry : null
+    lastTelemetry: input.lastTelemetry && typeof input.lastTelemetry === 'object' ? input.lastTelemetry : null,
+    // 기존 제어 상태에만 기록한다. 실제 다음 파동의 검증된 처리량으로 조정 효과를 재평가한다.
+    tuningTrial: input.tuningTrial && typeof input.tuningTrial === 'object' ? input.tuningTrial : null,
+    tuningMemory: input.tuningMemory && typeof input.tuningMemory === 'object' ? input.tuningMemory : null,
+    lastTuningEvaluation: clean(input.lastTuningEvaluation) || 'NOT_EVALUATED'
   });
 }
 
@@ -142,13 +146,56 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const strongPressure = ['SEVERE', 'HIGH'].includes(level) || reasons.length > 0;
   const mediumPressure = level === 'MEDIUM' && reasons.length === 0;
 
+  // [병목 자가교정] 조정 이전과 다음 파동의 실제 검증된 후보 처리량을 비교한다.
+  // 병목 이름만 같거나 PASS 문구만 있는 경우에는 개선으로 학습하지 않는다.
+  const trial=control.tuningTrial;
+  const comparable=trial?.direction==='DOWN' && runId && runId!==trial.runId
+    && workerCount>=4 && Number(trial.workerCount)>=4
+    && throughput>0 && Number(trial.verifiedPerMinute)>0;
+  const previousPass=num(trial?.firstCandidatePassRatePct);
+  const observedGain=comparable && throughput>=Number(trial.verifiedPerMinute)*1.1
+    && (firstPass===0||previousPass===0||firstPass>=previousPass);
+  const observedLoss=comparable && throughput<=Number(trial.verifiedPerMinute)*0.75
+    && (firstPass===0||previousPass===0||firstPass<=previousPass)
+    && num(telemetry.failureRatePct)>=num(trial.failureRatePct);
+  const trialEvaluation=!trial?'NOT_EVALUATED'
+    :!comparable?'INSUFFICIENT_VERIFIED_THROUGHPUT'
+    :observedGain?'MEASURED_IMPROVEMENT'
+    :observedLoss?'MEASURED_REGRESSION':'MEASURED_INCONCLUSIVE';
+  const previousMemory=control.tuningMemory||{};
+  const memoryCycles=Math.max(0,Math.floor(num(previousMemory.remainingCycles))-1);
+  let tuningMemory=memoryCycles>0?{...previousMemory,remainingCycles:memoryCycles}:null;
+  if(observedLoss){
+    tuningMemory={bottleneck:clean(trial.bottleneck)||'UNKNOWN',remainingCycles:2,
+      failedMax:Math.floor(num(trial.to)),knownBeforeMax:Math.floor(num(trial.from)),
+      sourceRunId:runId};
+  }
+
   let next = current;
   let healthyStreak = control.healthyStreak;
   let pressureStreak = control.pressureStreak;
   let decision = 'HOLD';
   let reason = 'LOW_LOAD';
 
-  if (localBackpressureActive) {
+  if (observedLoss && !['SEVERE','HIGH'].includes(level)
+    && num(telemetry.failureRatePct)<20
+    && !localBackpressureActive && trial.to===current) {
+    // 효과 없는 DOWN 시도는 한 번 되돌린다. 원래 값 이상으로 확장하지 않으며
+    // 다음 두 파동은 동일 병목의 무효 조정을 반복하지 않는다.
+    next=Math.min(DEFAULT_ADAPTIVE_MAX,Math.max(current,Math.floor(num(trial.from))));
+    healthyStreak=0;
+    pressureStreak=0;
+    decision=next>current?'UP':'HOLD';
+    reason='VERIFIED_THROUGHPUT_REGRESSION_ROLLBACK';
+  } else if(tuningMemory?.remainingCycles>0
+    && clean(telemetry.bottleneck)===clean(tuningMemory.bottleneck)
+    && !['SEVERE','HIGH'].includes(level)
+    && strongPressure && loaded && !localBackpressureActive) {
+    // 불확실한 재시도보다 반증된 조정의 쿨다운을 우선한다.
+    healthyStreak=0;
+    pressureStreak=0;
+    reason='INEFFECTIVE_BOTTLENECK_TUNING_COOLDOWN';
+  } else if (localBackpressureActive) {
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
@@ -221,6 +268,14 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     lastReason: reason,
     lastRunId: runId || control.lastRunId,
     lastUpdatedAt: now,
+    lastTuningEvaluation:trialEvaluation,
+    tuningMemory,
+    tuningTrial:decision==='DOWN' && next<current && throughput>0 && workerCount>=4
+      ? {direction:'DOWN',from:current,to:next,runId:runId||null,
+        bottleneck:clean(telemetry.bottleneck)||'UNKNOWN',
+        verifiedPerMinute:throughput,firstCandidatePassRatePct:firstPass,
+        failureRatePct:num(telemetry.failureRatePct),workerCount}
+      : null,
     lastTelemetry: {
       runId: runId || null,
       workerCount,
