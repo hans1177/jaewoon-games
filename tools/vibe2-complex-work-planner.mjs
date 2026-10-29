@@ -229,6 +229,73 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
     derivation:'ORIGINAL_STATE_WRITE_UI_READ_STATIC_SAVE_CALL'});
    continue;
   }
+  // [Roblox 서버→클라이언트] 이미 전송 중인 HP RemoteEvent와 고유 수신자를 결합한다.
+  if(requirement.operation==='semantic-remote-ui'){
+   if(target!=='roblox'){unresolved.push({id:requirement.id,code:'REMOTE_UI_ROBLOX_ONLY'});continue}
+   const serverBindings=[],clientBindings=[];
+   for(const file of index.files){
+    const server=/(?:^|\/)(?:server|ServerScriptService)\/|\.server\.lua[u]?$/i.test(file.path);
+    const client=/(?:^|\/)client\/|\.client\.lua[u]?$/i.test(file.path);
+    if(!server&&!client)continue;
+    const owners=index.symbols.filter(row=>row.kind==='function'&&row.path===file.path&&!row.ambiguous&&!row.unsupported.length);
+    for(const remote of file.remotes||[]){
+     if(server){
+      for(const owner of owners){
+       const body=file.code.slice(owner.bodyStart,owner.bodyEnd);
+       const writes=file.states.filter(row=>row.start>=owner.bodyStart&&row.end<=owner.bodyEnd&&
+        /^[A-Za-z_$][\w$]*\.hp$/.test(row.name));
+       for(const write of writes){
+        const fire=new RegExp('\\b'+remote.variable+':FireClient\\s*\\(\\s*([A-Za-z_$][\\w$]*)\\s*,\\s*'+write.name.replaceAll('.','\\.')+'\\s*\\)','g');
+        const calls=[...body.matchAll(fire)];
+        if(calls.length!==1||owner.bodyStart+calls[0].index<=write.start||
+         !owner.parameters.includes(calls[0][1]))continue;
+        serverBindings.push({file,owner,remote,write});
+       }
+      }
+     }
+     if(client){
+      const registrations=file.events.filter(e=>e.event==='OnClientEvent'&&
+       file.source.slice(e.start,e.end).startsWith(remote.variable+'.OnClientEvent:Connect('));
+      if(registrations.length!==1)continue;
+      const receivers=owners.filter(owner=>owner.name===registrations[0].handler);
+      if(receivers.length!==1)continue;
+      const receiver=receivers[0];
+      const calls=index.edges.filter(edge=>edge.from===receiver.id&&edge.to&&edge.arguments);
+      const tracks=calls.filter(edge=>{
+       const track=owners.find(row=>row.id===edge.to);
+       return track&&track.parameters.length===1&&receiver.parameters.includes(track.parameters[0])&&
+        new RegExp('\\b'+track.parameters[0]+'\\b').test(file.code.slice(track.bodyStart,track.bodyEnd))&&
+        !/:\s*FireServer\s*\(/.test(file.code.slice(track.bodyStart,track.bodyEnd));
+      });
+      if(tracks.length!==1)continue;
+      const track=owners.find(row=>row.id===tracks[0].to);
+      const views=owners.filter(row=>row.id!==receiver.id&&row.id!==track.id&&
+       row.parameters.length===1&&receiver.parameters.includes(row.parameters[0])&&
+       /\.Text\s*=(?!=)/.test(file.code.slice(row.bodyStart,row.bodyEnd))&&
+       new RegExp('\\btostring\\s*\\(\\s*'+row.parameters[0]+'\\s*\\)').test(file.code.slice(row.bodyStart,row.bodyEnd))&&
+       row.start<receiver.start);
+      if(views.length!==1||calls.some(edge=>edge.to===views[0].id))continue;
+      clientBindings.push({file,receiver,track,view:views[0],remote});
+     }
+    }
+   }
+   const connections=[];
+   for(const server of serverBindings)for(const client of clientBindings){
+    if(server.remote.eventName===client.remote.eventName)connections.push({server,client});
+   }
+   if(connections.length!==1){
+    unresolved.push({id:requirement.id,code:'REMOTE_UI_ORIGINAL_EVENT_BINDING_UNPROVEN',
+     serverBindings:serverBindings.length,clientBindings:clientBindings.length,connections:connections.length});continue;
+   }
+   const {server,client}=connections[0];
+   lowered.push({...requirement,operation:'existing-call',functionName:client.receiver.name,
+    after:client.track.name,callee:client.view.name,sourcePath:client.file.path,
+    derivation:'EXISTING_REMOTE_SERVER_TO_CLIENT_UI',
+    remoteEventName:server.remote.eventName,
+    boundExtraSymbols:[{id:server.owner.id,path:server.file.path,start:server.owner.start,end:server.owner.end,
+     sourceSha256:server.file.sourceSha256,parserConfidence:server.owner.parserConfidence}]});
+   continue;
+  }
   // [Roblox 다중 파일] 여러 서버 소스에서 사망 상태와 HP 감소를 확인하고 함께 수정한다.
   if(requirement.operation==='semantic-multi-guard'){
    if(target!=='roblox'){unresolved.push({id:requirement.id,code:'SEMANTIC_ROBLOX_SERVER_ONLY'});continue}
@@ -378,7 +445,7 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
    r.afterCallStart=call[0].start;
   }
   nodes.push({...r,owner,file,boundSymbols:[{id:owner.id,path:owner.path,start:owner.start,end:owner.end,
-   sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence},...(r.boundCalleeSymbols||[])],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});
+   sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence},...(r.boundCalleeSymbols||[]),...(r.boundExtraSymbols||[])],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});
  }
  if(unresolved.length)return {status:'BLOCKED',intent,unresolved,sourceWrite:false,modelUsed:false,runtimeVerified:false};
  // 같은 기존 진입점의 중단 조건만 OR로 합성한다. 원시 편집 영역의 중복은 계속 거부한다.
@@ -456,7 +523,7 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
 // 통합: 정식 catalog 경로와 기존 오너 주문이 없으면 후보를 생성하지 않는다.
 export function compileSourceBoundComplexRequest({order={},sourceRoot,responsibleFiles,target,repositoryRoot=process.cwd()}={}){
  const goal=String(order.selectedTask?.goal||order.originalGoal||order.goal||'');
- if(!/(?:^|[;\n])\s*(?:함수\s+|In\s+(?:function\s+)?[A-Za-z_$]|죽은 (?:유닛|공격자|대상|적)|Prevent dead attackers|Do not damage dead targets|상태 (?:변경 후|가 바뀌면)|After changing state|Update the UI and save|서버의 모든 전투 함수|모든 서버 공격 함수|Prevent attacking dead targets)/i.test(goal))return {status:'NOT_APPLICABLE'};
+ if(!/(?:^|[;\n])\s*(?:함수\s+|In\s+(?:function\s+)?[A-Za-z_$]|죽은 (?:유닛|공격자|대상|적)|Prevent dead attackers|Do not damage dead targets|상태 (?:변경 후|가 바뀌면)|After changing state|Update the UI and save|서버의 모든 전투 함수|모든 서버 공격 함수|Prevent attacking dead targets|로블록스 서버 체력 이벤트|기존 서버 체력 변경|Connect existing Roblox server health event)/i.test(goal))return {status:'NOT_APPLICABLE'};
  const baseRevisionSha=String(order.baseRevisionSha||order.baseCommit||order.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||'');
  try{
   const catalog=JSON.parse(fs.readFileSync(path.join(repositoryRoot,'game-catalog.json'),'utf8'));
