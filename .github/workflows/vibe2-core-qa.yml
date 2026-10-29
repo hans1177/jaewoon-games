@@ -718,6 +718,10 @@ jobs:
           npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
           node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
           echo "VIBE2_PLAYWRIGHT_MODULE=$practice_deps/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          # 기존 브라우저 실행기에서 실제 WEB 게임 수정 후보도 검증한다.
+          browser_binary="$(VIBE2_PLAYWRIGHT_MODULE="$practice_deps/node_modules/playwright/index.mjs" node --input-type=module -e 'const {chromium}=await import(process.env.VIBE2_PLAYWRIGHT_MODULE);console.log(chromium.executablePath())')"
+          test -x "$browser_binary"
+          echo "VIBE2_CHROME_BINARY=$browser_binary" >> "$GITHUB_ENV"
           # Unity is owner-held: C# executor is enabled only when the latest authorized platform scope resumes Unity Web.
           if node -e "const p=require('./company-learning/platform-release-roadmap.json');process.exit(p.ownerActiveDevelopmentScope20261009?.activeTargets?.includes('UNITY_WEB')?0:1)"; then
             docker pull mcr.microsoft.com/dotnet/sdk:8.0
