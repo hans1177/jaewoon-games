@@ -653,6 +653,20 @@ test('continuous verified pattern ingest learns, quarantines stale proof, and re
   const args={order:{target:'web',goal:'모바일 버튼 입력'},sourceRoot:root,
     responsibleFiles:['index.html']};
   assert.equal(deterministicWebInputCandidate({...args,patternLibrary:trained})?.learnedCodePatternIds?.includes(learned.id),true);
+  // The production source worker gets its verified library from the state
+  // checkout, not from the main worktree.
+  const stateFile=path.join(root,'verified-state-patterns.json');
+  fs.writeFileSync(stateFile,JSON.stringify(trained));
+  const priorStore=process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH;
+  try{
+    process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH=stateFile;
+    assert.equal(deterministicWebInputCandidate(args)?.learnedCodePatternIds?.includes(learned.id),true);
+    fs.writeFileSync(stateFile,'{}');
+    assert.equal(deterministicWebInputCandidate(args),null);
+  }finally{
+    if(priorStore===undefined)delete process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH;
+    else process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH=priorStore;
+  }
   fs.writeFileSync(file,JSON.stringify({...sample,verification:{...sample.verification,runtime:'FAIL'}}));
   const stale=ingestVerifiedCodePatterns({samplesDir,libraryInput:trained});
   const blocked=stale.patterns.find(row=>row.id===learned.id);

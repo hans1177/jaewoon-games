@@ -1507,6 +1507,19 @@ export function robloxDeterministicPresentationEligible(order={}){
     &&!worldLobbySourceWorkRequired(order);
 }
 
+// The canonical game worker runs in a fresh main worktree, while verified
+// learning is held in its separate durable state checkout. Only read that
+// explicit store; never write it into the candidate game tree or trust raw code.
+function readVerifiedCodePatternsForSourceWorker(){
+  const fromState=clean(process.env.VIBE2_VERIFIED_CODE_PATTERNS_PATH);
+  const file=fromState||path.join(process.cwd(),'.vibe2/code-pattern-library.json');
+  try{
+    if(!fs.statSync(file).isFile()||fs.lstatSync(file).isSymbolicLink())return {patterns:[]};
+    const library=readJson(file,{patterns:[]});
+    return library&&Array.isArray(library.patterns)?library:{patterns:[]};
+  }catch{return {patterns:[]};}
+}
+
 // 자체 코딩 · 현재 HTML이 명시한 동작과 같은 이름의 기존 함수를 직접 연결한다.
 // 새 게임 규칙/대리 입력/래퍼는 만들지 않으며, 모호한 소스는 기존 생성 경로에 남긴다.
 export function deterministicWebInputCandidate({order={},sourceRoot='',responsibleFiles=[],patternLibrary=null}={}){
@@ -1533,7 +1546,7 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   if(!generalInputIntent&&!gameplayFamilies.length&&!connectedIntent)return null;
   // 기존 학습 라이브러리의 검증된 식별자만 실행 레시피로 사용한다. 임의 코드는 실행하지 않는다.
   let library=patternLibrary;
-  if(!library){try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{patterns:[]});}catch{library={patterns:[]};}}
+  if(!library)library=readVerifiedCodePatternsForSourceWorker();
   const learnedActions=new Map();
   for(const pattern of Array.isArray(library?.patterns)?library.patterns:[]){
     const recipe=pattern?.executableRecipe;
@@ -6030,7 +6043,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
   const verifiedVisualPatterns=(()=>{ 
     if(!requestedVisualSystems.size||!['web','roblox'].includes(clean(order.target).toLowerCase()))return[];
     let library;
-    try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{});}catch{return[];}
+    library=readVerifiedCodePatternsForSourceWorker();
     return (Array.isArray(library?.patterns)?library.patterns:[])
       .filter(row=>row?.verified===true&&row?.retrievalEligible!==false&&!row?.quarantineReason
         &&row?.rawCodeStored===false&&clean(row?.independentQa)==='PASS'

@@ -2071,6 +2071,17 @@ jobs:
             echo 'VIBE2_LUAU_REGRESSION_AUTHORITY=CORE_QA_ONLY'
           fi
 
+          # The main worktree has no verified learning store. Read only the
+          # canonical, state-branch library instead of silently dropping lessons.
+          verified_pattern_store="$GITHUB_WORKSPACE/.vibe2/code-pattern-library.json"
+          if [ -s "$verified_pattern_store" ] && [ ! -L "$verified_pattern_store" ]; then
+            export VIBE2_VERIFIED_CODE_PATTERNS_PATH="$verified_pattern_store"
+            echo "VIBE2_VERIFIED_CODE_PATTERN_SHA256=$(sha256sum "$verified_pattern_store" | cut -d ' ' -f1)"
+            echo 'VIBE2_VERIFIED_CODE_PATTERN_SOURCE=CANONICAL_STATE_READ_ONLY'
+          else
+            echo 'VIBE2_VERIFIED_CODE_PATTERN_SOURCE=UNAVAILABLE_FAIL_CLOSED'
+          fi
+
           cd "$candidate_dir"
           verify_candidate_shared_context_sha() {
             local phase="$1"
