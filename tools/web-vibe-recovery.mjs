@@ -132,7 +132,8 @@ export function recordWebVibeRecoveryFailure(queue,id,{now=new Date().toISOStrin
     blocker:exhausted?'WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW':null,
     evidence:[...new Set([...(row.evidence||[]),'web-vibe-recovery-failure:needs-source-or-provider-recheck'])]
   });
-  return {queue:assertWebVibeQueue({...state,tasks}),changed:true,attempts,exhausted};
+  return {queue:assertWebVibeQueue({...state,tasks}),changed:true,attempts,exhausted,
+    failureClass:'SOURCE_OR_UNCLASSIFIED',nextRetryAt:exhausted?null:new Date(at+delayMs).toISOString()};
 }
 
 // [학습] 같은 웹게임 공개 플레이·정확한 Git 소스·독립 검증이 일치한 PR만 학습으로 승격한다.
