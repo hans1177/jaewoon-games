@@ -85,14 +85,14 @@ async function requestPermanentGameDelete(id){
   const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
   if(!row)return;
   const name=identityOf(row).name||row.name||id;
-  // 삭제 시에만 한 번 확인한다. 게임 원본·게시 목록을 삭제하되 다른 플랫폼 저장은 별개다.
-  if(!window.confirm(name+' 게임을 영구삭제할까?\n게임 원본 파일과 홈페이지 게시 경로가 삭제되고 개발도 중단돼.\n이 기기의 해당 게임 전용 저장도 삭제돼.\n다른 기기와 Roblox 클라우드 저장은 별도로 남을 수 있어.\n되돌릴 수 없어.'))return;
+  // 메인: 공개 페이지에서 미인증 상태면 원본을 삭제하지 않고, 휴대폰 등록 화면으로 강제 이동하지 않는다.
   const token=localStorage.getItem('jaewoon_command_device_v1')||'';
   if(!token){
-    window.alert('영구삭제 요청에 오너 기기 인증이 필요해. 삭제하지 않았어. 개발 지시 화면에서 먼저 기기를 등록해줘.');
-    location.href=new URL('command.html',document.baseURI).href;
+    window.alert('삭제할 수 없어. 공개 홈페이지에서는 인증 없이 게임 원본을 영구삭제할 수 없어.\n휴대폰 등록 화면으로 자동 이동하지 않아.\n이 ChatGPT 대화에서 삭제할 게임 이름을 알려줘.');
     return;
   }
+  // 등록된 오너 기기는 기존 인증을 재사용해 삭제 확인 한 번으로 요청한다.
+  if(!window.confirm(name+' 게임을 영구삭제할까?\n게임 원본 파일과 홈페이지 게시 경로가 삭제되고 개발도 중단돼.\n이 기기의 해당 게임 전용 저장도 삭제돼.\n다른 기기와 Roblox 클라우드 저장은 별도로 남을 수 있어.\n되돌릴 수 없어.'))return;
   const buttons=[...document.querySelectorAll('button[data-hide-game]')].filter(button=>button.dataset.hideGame===id);
   buttons.forEach(button=>button.disabled=true);
   try{

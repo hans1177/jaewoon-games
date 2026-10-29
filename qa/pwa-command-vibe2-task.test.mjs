@@ -316,6 +316,11 @@ test('홈페이지 삭제는 기존 기기 인증을 거쳐 영구삭제를 접�
   const client=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const flow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   assert.match(client,/const body='OWNER_DELETE_GAME:'\+id/);
+  const deleteHandler=client.split('async function requestPermanentGameDelete(id)')[1]?.split('let favoriteGameIds=new Set();')[0];
+  assert.ok(deleteHandler,'영구삭제 요청 함수가 존재해야 한다');
+  assert.doesNotMatch(deleteHandler,/location\\.href|location\\.replace|window\\.location/,'삭제 버튼에서 기기 등록으로 자동 이동 금지');
+  assert.match(deleteHandler,/if\\(!token\\)/,'인증 없는 원본 삭제 금지');
+  assert.ok(deleteHandler.indexOf('if(!token)')<deleteHandler.indexOf('if(!window.confirm('),'기존 인증 재사용 후 확인 1회');
   assert.doesNotMatch(client,/const body='OWNER_STOP_GAME:'\+id/);
   assert.match(client,/localStorage\.getItem\('jaewoon_command_device_v1'\)/);
   assert.match(client,/reconcileConfirmedDeletions\(catalog\)/);
