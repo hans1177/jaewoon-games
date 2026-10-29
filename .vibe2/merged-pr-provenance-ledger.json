@@ -127874,11 +127874,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_25ab8880af749b022547c736",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11187",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4b2da387bc5a4d6cd06daa6d2611701b9fad023f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11187,
+        "baseBranch": "main",
+        "headBranch": "feat/vibe-autonomous-all-game-improvement-20261030",
+        "baseSha": "4b2da387bc5a4d6cd06daa6d2611701b9fad023f",
+        "headSha": "60b7338988d4ffbd9ed435a8ecb0721e50a6a5b7",
+        "mergeCommitSha": "d8ee34441e7b2cfe31e67ff6064019c3a0ea5f1a",
+        "mergedAt": "2026-10-29T16:39:09Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7e2afdecc34f2c916e8457f7c3aeb0fba5b1a1ad95b731812b97d814ca5e5675",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/vibe-autonomous-all-game-improvement-20261030",
+        "candidateSha": "60b7338988d4ffbd9ed435a8ecb0721e50a6a5b7"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 234,
+        "deletedLineCount": 7,
+        "changedFiles": [
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-design-intelligence.test.mjs",
+          "qa/web-vibe-worker.test.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-design-intelligence.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-design-intelligence.test.mjs",
+          "qa/web-vibe-worker.test.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-design-intelligence.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11187",
+        "merge-commit:d8ee34441e7b2cfe31e67ff6064019c3a0ea5f1a",
+        "base-main:4b2da387bc5a4d6cd06daa6d2611701b9fad023f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1010
+    "total": 1011
   }
 }
