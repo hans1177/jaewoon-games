@@ -1238,3 +1238,87 @@ test('model-free Luau action threshold unlock only changes existing server boole
  assert.match(candidate.edits[0].replace,/not \(a\.unlocked\) and \(a\.progress >= 3\)/);
  assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
 });
+
+
+// [빌드업] 실제 퀘스트 진행도와 완료 보상을 원본 이벤트 한 번에 연결한다.
+test('model-free quest buildup completes a threshold goal and pays the existing reward exactly once',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const defaults={progress:0,questDone:false,coins:0,dead:false,views:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){',
+  ' trace(a);',
+  ' return true;',
+  '}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 trace 호출 뒤 a.progress를 1 증가시켜; 함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.questDone을 true로 하고 a.coins를 5 증가시켜'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.edits.length,1);assert.equal(candidate.complexPlan.atomCount,3);
+ const quest=candidate.complexPlan.atoms.find(atom=>atom.operation==='quest-reward-after-existing-call');
+ assert.deepEqual(quest.outputSymbols,['a.questDone','a.coins']);
+ assert.equal(quest.scenarioProofs.pass,true);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect');
+ const alive={progress:0,questDone:false,coins:10,dead:false,views:0};
+ const expected=[[1,false,10],[2,true,15],[3,true,15],[4,true,15]];
+ for(const [progress,questDone,coins] of expected){
+  assert.equal(collect(alive),true);
+  assert.equal(alive.progress,progress);assert.equal(alive.questDone,questDone);assert.equal(alive.coins,coins);
+ }
+ assert.equal(alive.views,4);
+ const dead={progress:1,questDone:false,coins:0,dead:true,views:0};
+ assert.equal(collect(dead),false);assert.deepEqual(dead,{progress:1,questDone:false,coins:0,dead:true,views:0});
+ assert.equal(fs.readFileSync(file,'utf8'),source);assert.equal(candidate.runtimeVerified,false);
+});
+
+test('model-free quest reward requires previously defined threshold flag and reward fields',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const defaults={progress:0,questDone:false,coins:0};\nfunction trace(a){a.views+=1;}\nfunction collect(a){trace(a);return true;}';
+ fs.writeFileSync(file,source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'In collect after trace call when a.progress >= 3 complete a.questDone and reward a.coins by 7'};
+ const valid=createVibe59CodeCandidates({...options,order});
+ assert.equal(valid.complexPlan.atomCount,1);assert.match(valid.edits[0].replace,/a\.coins \+= 7; a\.questDone = true;/);
+ for(const invalid of [
+  source.replace('questDone:false','questDone:0'),
+  source.replace('coins:0','coins:false'),
+  source.replace('progress:0','progress:false'),
+  source.replace('trace(a);return','trace(a);a.coins+=1;return')
+ ]){
+  fs.writeFileSync(file,invalid);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order}),/QUEST_REWARD_EXISTING_CONTRACT_UNPROVEN/);
+ }
+ fs.writeFileSync(file,source);
+ for(const goal of [
+  '함수 collect에서 trace 호출 뒤 a.progress >= 0이면 a.questDone을 true로 하고 a.coins를 7 증가시켜',
+  '함수 collect에서 trace 호출 뒤 a.progress < 2이면 a.questDone을 true로 하고 a.coins를 7 증가시켜',
+  '함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.questDone을 true로 하고 a.progress를 7 증가시켜'
+ ]){
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal}}),/QUEST_REWARD_EXISTING_CONTRACT_UNPROVEN/);
+ }
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('model-free quest reward compiles to original Roblox server Luau without changing save schema',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source=[
+  'local defaults = { progress = 0, questDone = false, coins = 0 }',
+  'local function trace(a)',
+  ' a.views += 1',
+  'end',
+  'local function collect(a)',
+  ' trace(a)',
+  ' return true',
+  'end',''
+ ].join('\n');
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.questDone을 true로 하고 a.coins를 5 증가시켜'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/a\.coins \+= 5; a\.questDone = true end/);
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
+});

@@ -7,7 +7,7 @@ import {VIBE59_LUAU_CODING_SKILLS_109} from './vibe59-luau-skills109.mjs';
 // 메인: 새 외형·저장 키·경제 값을 만들지 않는 기존 소스 연산 카탈로그.
 export const OFFLINE_GAME_SYSTEMS=Object.freeze([
  'input','combat','ai','bestiary','building','inventory','crafting','world','ui','saving','quest','loop',
-].map(system=>Object.freeze({system,operations:['guard-return','existing-call','clamp-assignment','conditional-assignment','adjust-existing-counter','counter-after-existing-call','unlock-after-existing-call'],
+].map(system=>Object.freeze({system,operations:['guard-return','existing-call','clamp-assignment','conditional-assignment','adjust-existing-counter','counter-after-existing-call','unlock-after-existing-call','quest-reward-after-existing-call'],
  existingRobloxRecipes:VIBE59_LUAU_CODING_SKILLS_109.filter(s=>s.system===(system==='quest'?'quests':system)).map(s=>s.id),
  newStateOrAssetCreation:false,runtimeVerified:false})));
 const forbidden=new Set(['constructor','prototype','__proto__','process','require','globalThis','eval','Function']);
@@ -91,7 +91,7 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   proof={...proof,cases:proof.cases.map(row=>({...row,returnsEarly:row.expected,
    ...(row.expected?{expectedReturn:r.returnValue?.value}:{})}))};
   effects=['CONTROL_FLOW_EARLY_RETURN'];
- }else if(r.operation==='existing-call'||r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'){
+ }else if(r.operation==='existing-call'||r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'||r.operation==='quest-reward-after-existing-call'){
   // 실제 소스 인덱스가 증명한 호출 위치와 단순 인자만 사용한다. 표현식이나 문자열 인자는 추측하지 않는다.
   const at=r.afterCallStart,anchorArgs=r.afterCallArguments;
   if(!Number.isSafeInteger(at)||at<owner.bodyStart||at>=owner.bodyEnd||!Array.isArray(anchorArgs))
@@ -103,7 +103,25 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   if(!match)throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
   // [메인] 기존 호출 뒤 같은 책임 범위의 여러 실제 함수를 하나의 원자적 수정안으로 연결한다.
   const find=source.slice(owner.start,at+match[0].length);
-  if(r.operation==='unlock-after-existing-call'){
+  if(r.operation==='quest-reward-after-existing-call'){
+   // [빌드업] 기존 퀘스트 완료 상태를 원자적 보상 지급의 중복 방지 키로 사용한다.
+   if(r.value?.kind!=='boolean'||r.value.value!==true
+      ||!Number.isSafeInteger(r.amount)||r.amount<1||r.amount>1000)
+    throw Error('VIBE2_OPERATOR_QUEST_REWARD_CONTRACT');
+   const comparison=renderIntentExpression(r.condition,target),predicate=target==='web'
+    ?'!('+r.output+') && ('+comparison+')':'not ('+r.output+') and ('+comparison+')';
+   const statement=target==='web'
+    ?indent+'if ('+predicate+') { '+r.rewardField+' += '+r.amount+'; '+r.output+' = true; }'
+    :indent+'if '+predicate+' then '+r.rewardField+' += '+r.amount+'; '+r.output+' = true end';
+   if(source.slice(at+match[0].length,owner.bodyEnd).trimStart().startsWith(statement.trim()))
+    throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
+   edit={path:file.path,find,replace:find+'\n'+statement};
+   const checked=verifyIntentCondition(r.condition);
+   proof={...checked,authority:'EXISTING_ACTION_QUEST_ONCE_REWARD_ORACLE',
+    cases:checked.cases.map(row=>({...row,action:r.after,firstCompletionReward:row.expected?r.amount:0,
+      repeatedCompletionReward:0})),independentGameQa:false,actualGamePlaytest:false};
+   effects=['WRITE_EXISTING_FIELD:'+r.rewardField,'WRITE_EXISTING_FIELD:'+r.output];
+  }else if(r.operation==='unlock-after-existing-call'){
    // [빌드업] 기존 행동 뒤에 숫자 문턱과 최초 해금 조건을 연결한다. 재호출은 멱등 처리한다.
    if(r.value?.kind!=='boolean'||r.value.value!==true)throw Error('VIBE2_OPERATOR_UNLOCK_VALUE');
    const comparison=renderIntentExpression(r.condition,target),predicate=target==='web'
@@ -186,7 +204,7 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
  return {id:r.id,operation:r.operation,file:file.path,beforeSha256:file.sourceSha256,
   ownerSymbol:owner.id,sourceSpan:{start:source.indexOf(edit.find),end:source.indexOf(edit.find)+edit.find.length},
   requirementIds:r.requirementIds||[r.id],ownerTexts:r.ownerTexts||[r.ownerText],derivation:r.derivation||'EXPLICIT_SOURCE_SYMBOL',
-  inputSymbols:r.boundSymbols,outputSymbols:r.output?[r.output]:[],dependencies:r.dependsOn,
+  inputSymbols:r.boundSymbols,outputSymbols:r.output?[r.output,...(r.rewardField?[r.rewardField]:[])]:[],dependencies:r.dependsOn,
   effects,invariants:r.invariants,scenarioProofs:proof,sourcePatch:edit,
-  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,returnValue:r.returnValue,output:r.output,value:r.value,amount:r.amount},runtimeVerified:false};
+  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,returnValue:r.returnValue,output:r.output,value:r.value,amount:r.amount,rewardField:r.rewardField},runtimeVerified:false};
 }
