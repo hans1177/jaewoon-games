@@ -6,9 +6,54 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
-import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
+import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel,synthesizeWebSourceWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+
+test('WEB Vibe generates a bounded real-player movement candidate only for the observed public Wild Survival failure',()=>{
+  const original=fs.readFileSync('web-games/wild-survival/index.html','utf8');
+  const source={relative:'web-games/wild-survival/index.html',original};
+  const task={gameId:'wild-survival',goal:'Fix #11129 from run 40872553330: WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED'};
+  const candidate=synthesizeWebSourceWithoutModel(task,source);
+  assert.ok(candidate,'existing free WEB writer must generate a real game source edit');
+  assert.equal(candidate.deterministicWebSource,true);
+  assert.equal(candidate.offlineSourceProof.runtimeVerified,false,'candidate alone cannot attest public browser QA');
+  assert.equal(candidate.offlineSourceProof.observedRunId,40872553330);
+  assert.match(candidate.updated,/const dt=Math.min\(\.04,elapsed\);last=now;/);
+  assert.match(candidate.updated,/const movementDt=Math.min\(\.25,elapsed\);/);
+  assert.match(candidate.updated,/updatePlayer\(movementDt\);updateAnimals\(dt\);worldMinute\(dt\);respawnResources\(dt\);/);
+  assert.match(candidate.updated,/SAVE_KEY='jg-wild-survival-v1'/);
+  assert.match(candidate.updated,/keys\.d\|\|keys\.arrowright/);
+  assert.match(candidate.updated,/wild3d\.render\(S,performance\.now\(\)\)/);
+  assert.match(original,/updatePlayer\(dt\);updateAnimals\(dt\);worldMinute\(dt\);respawnResources\(dt\);/);
+  assert.equal(synthesizeWebSourceWithoutModel({...task,goal:'unrelated UI request'},source),null);
+  assert.equal(synthesizeWebSourceWithoutModel(task,{...source,relative:'web-games/another-game/index.html'}),null);
+  assert.equal(synthesizeWebSourceWithoutModel(task,{...source,original:original.replace(
+    'const dt=Math.min(.04,(now-last)/1000||0);last=now;',
+    'const dt=Math.min(.04,(now-last)/1000||0);last=now; // changed baseline'
+  )}),null);
+  // Mathematical unit check only; this is not a simulated or public browser PASS.
+  const elapsed=.18,speed=145;
+  assert.ok(speed*Math.min(.25,elapsed)>10);
+});
+
+test('WEB public movement repair skips its unaffected Three.js renderer without a free-model key',async()=>{
+  const task={gameId:'wild-survival',
+    goal:'Fix #11129 from run 40872553330: WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED'};
+  const html={relative:'web-games/wild-survival/index.html',
+    original:fs.readFileSync('web-games/wild-survival/index.html','utf8')};
+  const renderer={relative:'web-games/wild-survival/wild3d.mjs',
+    original:fs.readFileSync('web-games/wild-survival/wild3d.mjs','utf8')};
+  const withoutModel={cloud:true,apiKey:'',geminiImpl:async()=>{throw Error('MODEL_MUST_NOT_BE_CALLED');}};
+  const generated=await proposeWebVibeChange(task,html,withoutModel);
+  assert.ok(generated?.deterministicWebSource);
+  assert.equal(generated.offlineSourceProof.runtimeVerified,false);
+  assert.equal(await proposeWebVibeChange(task,renderer,withoutModel),null);
+  assert.equal(await proposeWebVibeChange(task,renderer,{...withoutModel,apiKey:'optional'}),null);
+  await assert.rejects(()=>proposeWebVibeChange({...task,goal:'unrelated input change'},renderer,withoutModel),
+    /WEB_VIBE_FREE_MODEL_KEY_MISSING/);
+});
+
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -23,7 +68,8 @@ test('WEB cloud checkout recovery is limited to authenticated ephemeral GitHub w
   assert.match(source,/if\(!isolatedCloudCheckout\)fail\('WEB_VIBE_LOCAL_UNCOMMITTED_CHANGES'\)/);
   assert.match(source,/WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST/);
   assert.match(source,/run\('git',\['restore','--source=HEAD'/);
-  assert.match(source,/run\('git',\['clean','-fd'\]\)/);
+  assert.match(source,/run\('git',\['clean','-ffd'\]\)/);
+  assert.match(source,/WEB_VIBE_CLOUD_CHECKOUT_REMAINING_PATHS/);
   assert.match(source,/WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY/);
   assert.match(source,/verifiedLocalMain\(\{cloud:args\.cloud===true\}\)/);
 });

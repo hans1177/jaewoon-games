@@ -1179,6 +1179,27 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "DRAFT_PR_CANDIDATE_PARTIAL_3D_MOBILE_BROWSER_QA_VERIFIED;LOCAL_SYNC_UNTESTED_ON_OWNER_MACHINE;NO_MAIN_MERGE_OR_MODEL_PROMOTION"
+    },
+    {
+      "id": "assistant_wild_survival_web_vibe_bottleneck_20261030",
+      "date": "2026-10-30",
+      "gameId": "wild-survival",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Owner-authenticated WEB_VIBE_1 #11129 onepatch failed before source generation (GitHub run 40915032301, cloud checkout dirty=8). The exact 3D movement candidate also risked an unnecessary paid/blocked model route for an unchanged renderer. Vibe2 Core QA on PR #11190 exposed an independent line-defense Chromium fixture error: the actual shared presentation module was not staged (run 40916649445).",
+      "decision": "Repair only the existing authenticated ephemeral checkout cleanup and exact Wild Survival deterministic source-candidate path. Keep the original game/save, model-free path, security/owner gates and independent public runtime QA. Stage real production module dependencies in the existing Chromium fixture, not mocks. Do not promote before exact-head QA and public browser evidence.",
+      "change": "PR #11190 updated tools/web-vibe-worker.mjs and qa/web-vibe-worker.test.mjs to skip the unchanged wild3d renderer and safely clean nested test repositories only in the authenticated cloud checkout; qa/vibe2-gemini-free-rotation.test.mjs now respects the existing fail-closed free-plan default. qa/vibe2-complex-codegen.test.mjs stages four existing real presentation dependency modules in its isolated Chromium fixture. No game source was directly changed or published.",
+      "evidence": [
+        "issue:11129",
+        "pull-request:11190",
+        "actions-run:40915032301:web-cloud-onepatch:failure:WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:8",
+        "actions-run:40916649553:Independent-Web-Vibe-QA:success",
+        "actions-run:40916649445:Practice-fault-cards-runtime:failure:missing-shared-presentation-asset",
+        "source-commit:6b51d7c8c313ff9b32f5a0799d84145da7b25787",
+        "qa:latest-head-Vibe2-Core-QA:QUEUED_NOT_VERIFIED",
+        "runtime:public-GitHub-Pages-WebGL-movement:NOT_VERIFIED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "PR_CANDIDATE_ONLY;NO_MAIN_MERGE;NO_PUBLIC_RUNTIME_PASS"
     }
   ]
 }

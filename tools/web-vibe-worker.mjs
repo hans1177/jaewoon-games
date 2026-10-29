@@ -166,9 +166,15 @@ function verifiedLocalMain({cloud=false}={}){
   // Actions checkout와 사전 검사가 남긴 임시 변경만 폐기한다. 실제 game main 소스는 HEAD 그대로다.
   console.log('WEB_VIBE_CLOUD_CHECKOUT_DIRTY='+dirty.split('\n').length);
   run('git',['restore','--source=HEAD','--staged','--worktree','--','.']);
-  run('git',['clean','-fd']);
+  // Only this verified ephemeral GitHub checkout may discard nested, untracked
+  // repositories left by test setup. Ignore-listed dependencies are preserved.
+  run('git',['clean','-ffd']);
   const remaining=run('git',['status','--porcelain','--untracked-files=all']);
-  if(remaining)fail('WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:'+remaining.split('\n').length);
+  if(remaining){
+    const paths=remaining.split('\n').map(row=>row.slice(3)).slice(0,30);
+    console.error('WEB_VIBE_CLOUD_CHECKOUT_REMAINING_PATHS='+JSON.stringify(paths));
+    fail('WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:'+remaining.split('\n').length);
+  }
   console.log('WEB_VIBE_CLOUD_CHECKOUT_REPAIRED=PASS');
 }
 // [학습] 기존 검증된 WEB 전용 PR에서 소스 함수 변경만 추출한다.
@@ -331,6 +337,37 @@ export function synthesizeWebProgressionWithoutModel(task,source){
 export function synthesizeWebSourceWithoutModel(task,source){
   const goal=clean(task?.goal),original=String(source?.original||''),relative=clean(source?.relative);
   if(!/^web-games\/[a-zA-Z0-9_-]+\/.+\.(?:html?|js|mjs|cjs)$/i.test(relative)||!original||!goal)return null;
+  // Official Pages smoke #11129: at low WebGL FPS a 40ms simulation clamp
+  // can throttle keyboard/joystick movement. Keep world simulation capped,
+  // but integrate actual bounded wall time for the existing updatePlayer.
+  // This is a source candidate, not a browser QA pass or a license to bypass checks.
+  if(relative==='web-games/wild-survival/index.html'
+      &&goal.includes('WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED')
+      &&/(?:#11129|40872553330)/.test(goal)){
+    const oldText=[
+      'function loop(now){',
+      '  const dt=Math.min(.04,(now-last)/1000||0);last=now;',
+      '  if(S.started&&!S.dead){',
+      '    updatePlayer(dt);updateAnimals(dt);worldMinute(dt);respawnResources(dt);'
+    ].join('\n');
+    const newText=[
+      'function loop(now){',
+      '  // World/AI simulation remains bounded; player movement tracks elapsed time at low WebGL FPS.',
+      '  const elapsed=Math.max(0,(now-last)/1000||0);',
+      '  const dt=Math.min(.04,elapsed);last=now;',
+      '  const movementDt=Math.min(.25,elapsed);',
+      '  if(S.started&&!S.dead){',
+      '    updatePlayer(movementDt);updateAnimals(dt);worldMinute(dt);respawnResources(dt);'
+    ].join('\n');
+    if(original.split(oldText).length!==2)return null;
+    const edit=safeWebVibeReplacement(original,JSON.stringify({oldText,newText,
+      reason:'Fix the observed low-FPS movement shortfall using the existing player and loop functions'}),{relative});
+    return {...edit,deterministicWebSource:true,offlineSourceProof:{
+      source:relative,changedFunctions:1,roles:['WILD_3D_BOUNDED_ELAPSED_PLAYER_MOTION'],
+      failureSignature:'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED',
+      observedRunId:40872553330,runtimeVerified:false
+    }};
+  }
   const wantsLabel=/(?:도감|이름표|nameplate|bestiary)/i.test(goal)
     &&/(?:흐리|가독|안\s*보|잘\s*보|선명|읽기|readab|contrast|legib|blur)/i.test(goal);
   const wantsFrame=/(?:프레임|시간차|버벅|frame|delta|lag|프레임\s*드랍)/i.test(goal)
@@ -429,6 +466,18 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
   if(algorithm)return algorithm;
   if(task?.algorithmSpec||/```(?:json)?\s*\{\s*"algorithmSpec"/i.test(String(task?.goal||''))){
     // 타 파일은 이 단일 책임 함수 작업의 실패로 취급하지 않는다.
+    return null;
+  }
+  // This exact public smoke failure belongs to the original HTML simulation.
+  // The paired Three.js module is read-only evidence/renderer, not another edit.
+  // Do not force an unnecessary model call for the optional, unaffected file.
+  if(task?.gameId==='wild-survival'
+    &&source.relative==='web-games/wild-survival/wild3d.mjs'
+    &&clean(task.goal).includes('WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED')
+    &&/(?:#11129|40872553330)/.test(clean(task.goal))
+    &&source.original.includes('Movement flags are deliberately read-only')
+    &&source.original.includes("document.body.dataset.playerWorldX=Number(p.x).toFixed(2);")
+    &&source.original.includes("bindMovement(fn){if(typeof fn==='function')keysInput=fn;}")){
     return null;
   }
   // [전체 코드 진단] 무모델 분석은 앞부분 발췌가 아닌 실제 파일 전체를 읽는다.
