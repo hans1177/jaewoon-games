@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-29T03:24:11.706Z",
+  "generatedAt": "2026-10-29T03:36:51.176Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -2133,14 +2133,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
-            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-28T03:32:48.581Z",
-            "checkedAt": "2026-10-29T03:21:49.347Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-10-29T03:36:42.188Z",
+            "checkedAt": "2026-10-29T03:36:42.188Z",
             "lastFailureAt": null,
-            "f0PassedAt": "2026-10-28T02:03:36.581Z",
-            "candidatePublishedAt": "2026-10-28T03:32:48.581Z",
+            "f0PassedAt": "2026-10-29T03:36:42.188Z",
+            "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
           },
@@ -2153,7 +2153,7 @@
             "version": 1,
             "ready": true,
             "homepageReady": true,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": true,
@@ -2236,7 +2236,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-29T03:21:49.347Z"
+      "updatedAt": "2026-10-29T03:36:42.188Z"
     },
     {
       "gameId": "human-go",
