@@ -531,26 +531,46 @@ try{
     const startingPosition={x:metrics.playerX,y:metrics.playerY};
     const movementAttempts=[];
     let movedPosition=null;
+    // 모바일은 키보드 에뮬레이션으로 통과시키지 않는다. 실제 Chromium 터치 패킷이
+    // 원본 #stick 포인터 핸들러와 게임 상태로 이어지는지 별도로 검사한다.
+    const touchSession=viewport.mobile?await game.context().newCDPSession(game):null;
+    const stickBox=viewport.mobile?await game.locator('#stick').boundingBox():null;
+    if(viewport.mobile)assert.ok(stickBox?.width>30&&stickBox?.height>30,
+      'MAGIC_FOREST_TOUCH_JOYSTICK_MISSING');
+    const directions={d:[1,0],a:[-1,0],w:[0,-1],s:[0,1]};
     for(const key of ['d','a','w','s']){
       const before=await game.evaluate(()=>({
        x:Number(document.body.dataset.playerX),y:Number(document.body.dataset.playerY)
       }));
-      await game.keyboard.down(key);
-      await game.waitForTimeout(850);
-      const observed=await game.evaluate(()=>({
-       x:Number(document.body.dataset.playerX),y:Number(document.body.dataset.playerY),
-       motion:document.body.dataset.motionState||'',
-       area:document.body.dataset.area||'',
-       nativeBlocked:document.body.dataset.nativeBlocked||'',
-       activeElement:document.activeElement?.id||document.activeElement?.tagName||''
-      }));
-      await game.keyboard.up(key);
+      let touchPoint=null;
+      if(viewport.mobile){
+        const [dx,dy]=directions[key],centerX=stickBox.x+stickBox.width/2,
+          centerY=stickBox.y+stickBox.height/2;
+        const start={x:centerX,y:centerY,id:1};
+        touchPoint={x:centerX+dx*stickBox.width*.25,y:centerY+dy*stickBox.height*.25,id:1};
+        await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[start]});
+        await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[touchPoint]});
+      }else await game.keyboard.down(key);
+      let observed;
+      try{
+        await game.waitForTimeout(850);
+        observed=await game.evaluate(()=>({
+         x:Number(document.body.dataset.playerX),y:Number(document.body.dataset.playerY),
+         motion:document.body.dataset.motionState||'',
+         area:document.body.dataset.area||'',
+         nativeBlocked:document.body.dataset.nativeBlocked||'',
+         activeElement:document.activeElement?.id||document.activeElement?.tagName||''
+        }));
+      }finally{
+        if(viewport.mobile)await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+        else await game.keyboard.up(key);
+      }
       const delta=Math.hypot(observed.x-before.x,observed.y-before.y);
-      movementAttempts.push({key,from:before,to:observed,delta});
+      movementAttempts.push({key,input:viewport.mobile?'real-chromium-touch':'keyboard',from:before,to:observed,delta});
       if(delta>1){movedPosition=observed;break;}
     }
     assert.ok(movedPosition,
-     'MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED '+viewport.name+' '+
+     (viewport.mobile?'MAGIC_FOREST_TOUCH_WORLD_MOVEMENT_FAILED ':'MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED ')+viewport.name+' '+
      JSON.stringify({startingPosition,movementAttempts,sourceSha:requiredRevision,errors:gameErrors}));
     const lastX=String(movedPosition.x),lastY=String(movedPosition.y);
     assert.equal(movedPosition.nativeBlocked,'false',
