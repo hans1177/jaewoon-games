@@ -1126,11 +1126,28 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(!selected)throw Error('VIBE59_ALL_GENERATED_STRATEGIES_REJECTED:'+
     candidates.map(row=>row.variant+':'+(row.replay?.reason||row.replay?.counterexamples?.map(x=>x.name).join(','))).join('|'));
   const {compiled}=selected;
-  if(compiled.source===find)throw Error('VIBE59_NOOP');
+  let rewritten=compiled.source;
+  if(autoFunctionRewrite){
+    if(req.robloxServerAction)throw Error('VIBE59_FUNCTION_REWRITE_SERVER_AUTHORITY');
+    if(req.machine){
+      if(target==='roblox'&&originalFunction.header.startsWith('function '))
+        rewritten=rewritten.replace(/^local function /,'function ');
+    }else{
+      const body=compiled.source.split('\n').map(line=>'  '+line).join('\n');
+      rewritten=originalFunction.header+'\n'+body+'\n'+(target==='roblox'?'end':'}');
+    }
+    if(!rewritten.startsWith(originalFunction.header)||rewritten.length>24000)
+      throw Error('VIBE59_FUNCTION_REWRITE_SIGNATURE_DRIFT');
+  }
+  if(rewritten===find)throw Error('VIBE59_NOOP');
   const codeReplay=selected.replay;
   return Object.freeze({summary:'Vibe5.9 composed offline code',
     expectedEffect:'Source-grounded, explicitly approved state transition',
-    edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
+    edits:[{path:relative,find,replace:rewritten}],newFiles:[],replaceFiles:[],
+    ...(originalFunction?{sourceFunctionRewrite:true,sourceFunction:originalFunction.name,
+      sourceBeforeSha256:originalFunction.sourceSha256,
+      sourceFunctionAutoLocated:!clean(req.find),sourceFunctionOriginalBytes:Buffer.byteLength(find),
+      sourceFunctionRewrittenBytes:Buffer.byteLength(rewritten)}:{}),
     tests:[],vibe59TestPlan:tests,vibe59CodeKind:codeKind,
     vibe59AutoTestPlan:generatedProbes,
     vibe59JsReplay:codeReplay,vibe59Strategy:req.robloxServerAction?selected.compiled.strategy:selected.variant,
