@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-29T15:35:37.048Z",
+  "generatedAt": "2026-10-29T15:40:49.404Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -953,15 +953,15 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
-            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-29T15:28:11.015Z",
-            "checkedAt": "2026-10-29T15:34:40.521Z",
-            "lastFailureAt": null,
+            "currentFloor": "REPAIR_REQUIRED",
+            "stage": "REPAIR_REQUIRED",
+            "result": "REPAIR_REQUIRED",
+            "verifiedAt": "2026-10-29T15:36:42.194Z",
+            "checkedAt": "2026-10-29T15:36:42.194Z",
+            "lastFailureAt": "2026-10-29T15:36:42.194Z",
             "f0PassedAt": "2026-10-29T15:24:45.215Z",
             "candidatePublishedAt": "2026-10-29T15:28:11.015Z",
-            "failureCode": null,
+            "failureCode": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -975,27 +975,22 @@
             "homepageReady": false,
             "technicalReady": false,
             "designReady": true,
-            "lobbyReady": false,
+            "lobbyReady": true,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": false,
-              "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
+              "exactRuntime": true,
+              "lobby": true,
+              "movement": true,
+              "noRuntimeErrors": true
             },
-            "blockers": [
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
+            "blockers": [],
             "sourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
             "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
-            "verifiedAt": null
+            "verifiedAt": "2026-10-29T15:36:42.194Z"
           },
           "executionAvailable": true,
           "historicalInternalRelease": true,
@@ -1061,7 +1056,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-29T15:34:40.521Z"
+      "updatedAt": "2026-10-29T15:36:42.194Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -1742,7 +1737,7 @@
             "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
             "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
             "verifiedAt": "2026-10-29T15:25:48.917Z",
-            "checkedAt": "2026-10-29T15:31:10.853Z",
+            "checkedAt": "2026-10-29T15:36:29.422Z",
             "lastFailureAt": null,
             "f0PassedAt": "2026-10-29T15:25:48.917Z",
             "candidatePublishedAt": null,
@@ -1845,7 +1840,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-29T15:31:10.853Z"
+      "updatedAt": "2026-10-29T15:36:29.422Z"
     },
     {
       "gameId": "fifty-days",
