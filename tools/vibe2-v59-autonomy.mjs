@@ -1281,9 +1281,17 @@ export function evaluateVibe59OfflinePatchEvidence({candidate={},order={},source
   touches.push({path:edit.path,oldBytes:Buffer.byteLength(edit.find),newBytes:Buffer.byteLength(edit.replace),
     sourceBound:unique});
  }
- const digest=sha(JSON.stringify([originals,touches,candidate.edits.map(x=>[x.path,x.find,x.replace])]));
+ // 독립 원본 수정은 편집 나열 순서와 상관없이 같은 실패 지문이다.
+ // 의존적 배치 수정은 적용 순서가 의미를 가지므로 기존 순서대로 해시한다.
+ const legacyDigest=sha(JSON.stringify([originals,touches,candidate.edits.map(x=>[x.path,x.find,x.replace])]));
+ const sortedOriginals=[...originals].sort((a,b)=>a.path.localeCompare(b.path));
+ const patches=candidate.edits.map(x=>[x.path,x.find,x.replace]);
+ if(candidate.vibe59CodeKind!=='COMPOSED_OFFLINE_SOURCE')
+   patches.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
+ const digest=sha(JSON.stringify([sortedOriginals,patches]));
  const rejects=order.selectedTask?.vibe59RejectedCandidateFingerprints||order.vibe59RejectedCandidateFingerprints||[];
- if(Array.isArray(rejects)&&rejects.length<=128&&rejects.includes(digest))
+ if(Array.isArray(rejects)&&rejects.length<=128
+   &&(rejects.includes(digest)||rejects.includes(legacyDigest)))
    throw Error('VIBE59_REPEATED_FAILED_CANDIDATE');
  const revision=clean(order.baseCommit||order.sourceRevision);
  const gameId=clean(order.selectedTask?.gameId||order.gameId);
