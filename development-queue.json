@@ -5152,8 +5152,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -5179,7 +5179,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-29T18:15:58.868Z",
+      "updatedAt": "2026-10-29T18:21:59.258Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5193,10 +5193,10 @@
       "robloxPublicReleaseReady": false,
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -5829,34 +5829,41 @@
       "robloxReleasePublishedAt": null,
       "robloxSourceCommit": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "9726ffca46f565515dadcc824f32cc1909874c61",
+      "robloxQualityBuildUpSourceRevision": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
       "robloxQualityFailureClass": "PRODUCT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "9726ffca46f565515dadcc824f32cc1909874c61",
+        "sourceRevision": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
         "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
-        "versionNumber": 40906897483,
+        "versionNumber": 40926109104,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
-          "adaptive-start-playability",
+          "adaptive-map-route-coverage",
           "adaptive-effects-surface",
-          "adaptive-death-respawn-recovery"
+          "observed-action-bffe3be7e56e2b237f34"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-start-playability",
-            "repairSurface": "GAME_START",
+            "id": "adaptive-map-route-coverage",
+            "repairSurface": "MAP_ROUTEABILITY",
             "priority": "CRITICAL",
-            "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
+            "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
             "observed": {
-              "initialDead": false,
-              "finalDead": true,
-              "initialHealth": 100,
-              "finalHealth": 0,
-              "startGateVisible": true,
-              "startGateActionOk": true,
-              "startGateEffectObserved": true
+              "routeAttemptCount": 1,
+              "routePassCount": 0,
+              "routeRequired": 1,
+              "routes": [
+                {
+                  "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt",
+                  "ok": false,
+                  "initialOk": false,
+                  "recoveredByInteraction": false,
+                  "moved": 0,
+                  "fall": 0,
+                  "floorBelow": true
+                }
+              ]
             }
           },
           {
@@ -5874,7 +5881,7 @@
               "remoteCount": 17,
               "soundCount": 0,
               "effectCount": 0,
-              "promptCount": 34,
+              "promptCount": 35,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
               "maxActualPlayerCount": 1,
@@ -5883,24 +5890,32 @@
             }
           },
           {
-            "id": "adaptive-death-respawn-recovery",
-            "repairSurface": "CHARACTER_RESPAWN",
-            "priority": "CRITICAL",
-            "hint": "A real death was observed during Studio play but the character did not return to a healthy playable state.",
+            "id": "observed-action-bffe3be7e56e2b237f34",
+            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+            "priority": "HIGH",
+            "hint": "Replay the exact observed action and verify its real state change after repair.",
             "observed": {
-              "deathObserved": true,
-              "respawnObserved": false
+              "id": "observed-action-bffe3be7e56e2b237f34",
+              "pass": false,
+              "required": true,
+              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
+              "actionId": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt",
+              "targetIdentity": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt",
+              "actionType": "mcp-map-route-audit",
+              "effectRequired": false,
+              "recoveredByInteraction": false,
+              "attempts": 1
             }
           }
         ],
         "repairSurfaces": [
-          "GAME_START",
+          "MAP_ROUTEABILITY",
           "VFX_FEEDBACK",
-          "CHARACTER_RESPAWN"
+          "ROBLOX_OBSERVED_INTERACTION"
         ],
-        "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-10-29T16:36:15.665Z",
-        "workflowRunId": 40910370672,
+        "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
+        "testedAt": "2026-10-29T18:21:59.258Z",
+        "workflowRunId": 40928571944,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "sourceRootBootstrapRequired": false,
@@ -6551,7 +6566,7 @@
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
         "failureClass": "STUDIO_PRODUCT_QUALITY_FAILURE",
-        "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
+        "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
         "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
@@ -6562,12 +6577,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "9726ffca46f565515dadcc824f32cc1909874c61",
+        "sourceRevision": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
         "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
-        "artifactRunId": 40906897483,
+        "artifactRunId": 40926109104,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 40906897483,
+        "versionNumber": 40926109104,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -6622,25 +6637,7 @@
             "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt",
             "type": "mcp-map-route-audit",
             "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "map-route-spawn:FoundationSpawn",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode2.ProximityPrompt",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode4.ProximityPrompt",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": true
+            "ok": false
           },
           {
             "id": "prompt-ProximityPrompt",
@@ -6658,7 +6655,7 @@
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": true
+            "ok": false
           },
           {
             "id": "prompt-ProximityPrompt",
@@ -6894,7 +6891,7 @@
             "id": "scenario-adaptive-start-playability",
             "name": "scenario-adaptive-start-playability",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-visual-capture-sane",
@@ -6936,7 +6933,7 @@
             "id": "scenario-adaptive-map-route-coverage",
             "name": "scenario-adaptive-map-route-coverage",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-adaptive-spawn-safety",
@@ -7098,7 +7095,7 @@
             "id": "scenario-adaptive-death-respawn-recovery",
             "name": "scenario-adaptive-death-respawn-recovery",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-multiplayer-sync-surface",
@@ -7128,25 +7125,7 @@
             "id": "scenario-observed-action-bffe3be7e56e2b237f34",
             "name": "scenario-observed-action-bffe3be7e56e2b237f34",
             "required": true,
-            "pass": true
-          },
-          {
-            "id": "scenario-observed-action-4a86a88c8d41a0434188",
-            "name": "scenario-observed-action-4a86a88c8d41a0434188",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "scenario-observed-action-365681f8b2605ff0b67d",
-            "name": "scenario-observed-action-365681f8b2605ff0b67d",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "scenario-observed-action-825ddc5ed78e570fad5b",
-            "name": "scenario-observed-action-825ddc5ed78e570fad5b",
-            "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-observed-action-2e4e2ff2958630bc2c9e",
@@ -7163,12 +7142,6 @@
           {
             "id": "scenario-observed-action-2301e15277691a547071",
             "name": "scenario-observed-action-2301e15277691a547071",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "scenario-observed-action-28a5d01cabeed379ed6c",
-            "name": "scenario-observed-action-28a5d01cabeed379ed6c",
             "required": true,
             "pass": true
           },
@@ -7236,14 +7209,14 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 3,
-          "primaryActionDisplacement": 1.496364143291786,
-          "primaryActionVelocity": 0.000026127299188812914,
+          "primaryActionDisplacement": 1.8571404566729874,
+          "primaryActionVelocity": 0.000026024054690304074,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 66,
-            "routePlanningProbeCount": 18,
-            "lightweightProbeCount": 48,
+            "timelineProbeCount": 23,
+            "routePlanningProbeCount": 11,
+            "lightweightProbeCount": 12,
             "progressChanged": true,
             "inventoryChanged": false,
             "timelineProgressChanged": true,
@@ -7269,7 +7242,7 @@
               "remoteCount": 17,
               "soundCount": 0,
               "effectCount": 0,
-              "promptCount": 34,
+              "promptCount": 35,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
               "maxActualPlayerCount": 1,
@@ -7277,8 +7250,8 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 3325.67578125,
-              "descendantCount": 4862
+              "memoryMb": 3340.76171875,
+              "descendantCount": 4620
             },
             "multiplayer": {
               "version": 2,
@@ -7300,7 +7273,7 @@
                 "clientReceive": true,
                 "twoParticipantCapablePath": true
               },
-              "sourceRevision": "9726ffca46f565515dadcc824f32cc1909874c61",
+              "sourceRevision": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
               "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
               "sameUserRejoinVerified": false
             },
@@ -7327,7 +7300,6 @@
           "mcp-mouse-input",
           "mcp-keyboard-input",
           "mcp-combat-action",
-          "mcp-map-route-audit",
           "mcp-world-interaction",
           "mcp-ui-exploration",
           "official-studio-mcp-connected",
@@ -7337,7 +7309,12 @@
           "play-mode-started",
           "actual-play-initial-client-probe",
           "initial-character-playable",
-          "ROBLOX_CHARACTER_RESPAWN_STATE"
+          "floating-character-map-readiness",
+          "adaptive-start-gate-input-dispatched",
+          "actual-play-pre-action-client-probe",
+          "initial-character-spawned",
+          "initial-ui-playability",
+          "ROBLOX_STUDIO_RUNTIME"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -7352,7 +7329,7 @@
           },
           {
             "id": "adaptive-start-playability",
-            "pass": false
+            "pass": true
           },
           {
             "id": "visual-capture-sane",
@@ -7380,7 +7357,7 @@
           },
           {
             "id": "adaptive-map-route-coverage",
-            "pass": true
+            "pass": false
           },
           {
             "id": "adaptive-spawn-safety",
@@ -7488,7 +7465,7 @@
           },
           {
             "id": "adaptive-death-respawn-recovery",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-multiplayer-sync-surface",
@@ -7509,19 +7486,7 @@
           },
           {
             "id": "observed-action-bffe3be7e56e2b237f34",
-            "pass": true
-          },
-          {
-            "id": "observed-action-4a86a88c8d41a0434188",
-            "pass": true
-          },
-          {
-            "id": "observed-action-365681f8b2605ff0b67d",
-            "pass": true
-          },
-          {
-            "id": "observed-action-825ddc5ed78e570fad5b",
-            "pass": true
+            "pass": false
           },
           {
             "id": "observed-action-2e4e2ff2958630bc2c9e",
@@ -7533,10 +7498,6 @@
           },
           {
             "id": "observed-action-2301e15277691a547071",
-            "pass": true
-          },
-          {
-            "id": "observed-action-28a5d01cabeed379ed6c",
             "pass": true
           },
           {
@@ -7558,24 +7519,31 @@
         ],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
-          "adaptive-start-playability",
+          "adaptive-map-route-coverage",
           "adaptive-effects-surface",
-          "adaptive-death-respawn-recovery"
+          "observed-action-bffe3be7e56e2b237f34"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-start-playability",
-            "repairSurface": "GAME_START",
+            "id": "adaptive-map-route-coverage",
+            "repairSurface": "MAP_ROUTEABILITY",
             "priority": "CRITICAL",
-            "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
+            "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
             "observed": {
-              "initialDead": false,
-              "finalDead": true,
-              "initialHealth": 100,
-              "finalHealth": 0,
-              "startGateVisible": true,
-              "startGateActionOk": true,
-              "startGateEffectObserved": true
+              "routeAttemptCount": 1,
+              "routePassCount": 0,
+              "routeRequired": 1,
+              "routes": [
+                {
+                  "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt",
+                  "ok": false,
+                  "initialOk": false,
+                  "recoveredByInteraction": false,
+                  "moved": 0,
+                  "fall": 0,
+                  "floorBelow": true
+                }
+              ]
             }
           },
           {
@@ -7593,7 +7561,7 @@
               "remoteCount": 17,
               "soundCount": 0,
               "effectCount": 0,
-              "promptCount": 34,
+              "promptCount": 35,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
               "maxActualPlayerCount": 1,
@@ -7602,13 +7570,21 @@
             }
           },
           {
-            "id": "adaptive-death-respawn-recovery",
-            "repairSurface": "CHARACTER_RESPAWN",
-            "priority": "CRITICAL",
-            "hint": "A real death was observed during Studio play but the character did not return to a healthy playable state.",
+            "id": "observed-action-bffe3be7e56e2b237f34",
+            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+            "priority": "HIGH",
+            "hint": "Replay the exact observed action and verify its real state change after repair.",
             "observed": {
-              "deathObserved": true,
-              "respawnObserved": false
+              "id": "observed-action-bffe3be7e56e2b237f34",
+              "pass": false,
+              "required": true,
+              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
+              "actionId": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt",
+              "targetIdentity": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt",
+              "actionType": "mcp-map-route-audit",
+              "effectRequired": false,
+              "recoveredByInteraction": false,
+              "attempts": 1
             }
           }
         ],
@@ -7619,8 +7595,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-29T16:36:15.665Z",
-        "workflowRunId": 40910370672,
+        "testedAt": "2026-10-29T18:21:59.258Z",
+        "workflowRunId": 40928571944,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -7635,9 +7611,9 @@
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "cozy-island",
-        "sourceRevision": "9726ffca46f565515dadcc824f32cc1909874c61",
+        "sourceRevision": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
         "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
-        "candidateVersionNumber": 40906897483,
+        "candidateVersionNumber": 40926109104,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -7649,7 +7625,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-29T16:36:15.665Z"
+        "verifiedAt": "2026-10-29T18:21:59.258Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-29T15:34:40.521Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-29T15:34:40.521Z",
@@ -7722,14 +7698,18 @@
         "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
         "artifactRunId": 40926109104,
         "candidateVersionNumber": 40926109104,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "COMPLETED_PRODUCT_FAILURE",
         "queuedAt": "2026-10-29T18:15:58.868Z",
         "interruptionRetryCount": 17,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "completedAt": "2026-10-29T18:21:59.258Z",
+        "resultPass": false,
+        "infrastructureFailure": false,
+        "currentSourceArtifactBinding": true
       },
-      "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
+      "robloxNativeFailureClass": "ROBLOX_STUDIO_RUNTIME",
       "robloxF9PendingInParallel": false
     },
     {
@@ -10056,7 +10036,7 @@
       "robloxNativeFailureClass": "ROBLOX_UI_STATE"
     }
   ],
-  "updatedAt": "2026-10-29T18:20:32.870Z",
+  "updatedAt": "2026-10-29T18:21:59.258Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
