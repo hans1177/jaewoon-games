@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,
   verifyVibe59LuauSkillScenarios} from '../tools/vibe59-luau-skills109.mjs';
 import {createVibe59CodeCandidate,createVibe59CodeCandidates,buildVibe59AutonomyPlan} from '../tools/vibe2-v59-autonomy.mjs';
@@ -193,4 +194,44 @@ test('Vibe5.9 twelve-step offline complex design keeps all changes source-ground
  assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:
   Array.from({length:13},(_,index)=>({...steps[0],id:'overflow-'+index}))}}),
   /VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED/);
+});
+
+test('Vibe5.9 dependent edits use in-memory sources and replay atomically without original writes',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-staged-dependency-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'server'));
+ const file='server/State.server.luau',before='local health=5\n-- SLOT\n';
+ fs.writeFileSync(path.join(root,file),before);
+ const ref=name=>({kind:'ref',name});
+ const num=value=>({kind:'number',value});
+ const makeRule=(op,threshold,thenValue,otherwiseValue)=>({
+  when:{kind:'compare',op,left:ref('health'),right:num(threshold)},
+  then:[{action:'assign',output:'health',value:num(thenValue)}],
+  otherwise:[{action:'assign',output:'health',value:num(otherwiseValue)}]
+ });
+ const first={id:'first',ownerApproved:true,path:file,find:'-- SLOT',
+  rule:makeRule('gt',0,1,0),scenarios:[
+   {initialState:{health:5},expectedState:{health:1}},
+   {initialState:{health:0},expectedState:{health:0}}]};
+ const second={id:'second',dependsOn:['first'],ownerApproved:true,path:file,find:'health = 1',
+  rule:makeRule('gte',0,2,3),scenarios:[
+   {initialState:{health:1},expectedState:{health:2}},
+   {initialState:{health:-1},expectedState:{health:3}}]};
+ const options={target:'roblox',sourceRoot:root,responsibleFiles:[file]};
+ const result=createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[second,first]}});
+ assert.equal(result.edits.length,2);
+ assert.deepEqual(result.vibe59DesignSteps.map(row=>row.id),['first','second']);
+ assert.equal(result.vibe59TestPlan.cases.length,4);
+ assert.equal(result.vibe59TestPlan.pass,true);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),before);
+ const replay=new Map([[file,before]]);
+ applyExactEdits(root,result.edits,{documents:replay});
+ assert.match(replay.get(file),/health = 2/);
+ assert.doesNotMatch(replay.get(file),/-- SLOT/);
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),before);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:[
+  first,{...second,dependsOn:[]}
+ ]}}),/VIBE59_COMPLEX_DESIGN_ANCHOR_DRIFT/);
 });
