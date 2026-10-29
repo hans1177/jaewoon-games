@@ -986,3 +986,19 @@ test('same owner guard composition never moves a predicate before an intervening
  const dead={dead:true,ready:true,active:true};assert.equal(game.act(dead),false);assert.equal(dead.active,true);
  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
 });
+
+// [회귀] 겹친 호출 연결로 같은 저장·화면 함수를 두 번 실행하지 않는다.
+test('same owner composition rejects duplicate call effects while retaining distinct ordered calls',t=>{
+ const {repo,root}=fixture(t),source='const state={count:0};\nfunction trace(a){a.count+=1;}\nfunction refresh(a){a.count+=10;}\nfunction render(a){a.count+=100;}\nfunction act(a){\n trace(a);\n}';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 act에서 trace 호출 뒤 refresh를 호출해; 함수 act에서 trace 호출 뒤 refresh 호출하고 render를 호출해'};
+ assert.throws(()=>createVibe59CodeCandidates({...options,order}),/OVERLAPPING_EDIT:DUPLICATE_CALL/);
+ const candidate=createVibe59CodeCandidates({...options,order:{...order,
+  goal:'함수 act에서 trace 호출 뒤 refresh를 호출해; 함수 act에서 trace 호출 뒤 render를 호출해'}});
+ assert.equal(candidate.edits.length,1);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({act})'),actor={count:0};game.act(actor);
+ assert.equal(actor.count,111);assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
