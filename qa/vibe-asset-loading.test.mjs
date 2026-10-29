@@ -10,6 +10,26 @@ import {JaewoonGameSession} from '../assets/game-session.js';
 import {Script,createContext} from 'node:vm';
 import {readFileSync} from 'node:fs';
 
+// Browser runs module imports natively. The Node VM harness substitutes only
+// these three exact already-verified dependencies; it must not silently strip
+// unknown module imports or treat static HTML as an executed browser proof.
+function generatedScriptForVm(source){
+ const expected=[
+  "import { JaewoonVibeRuntime, createVibeModelSprites } from '../../assets/vibe-runtime.js';",
+  "import {createVibeCanvasVfx} from '../../assets/vibe-game-world-runtime.mjs';",
+  "import {VibePresentationEngine} from '../../assets/vibe-presentation-engine.mjs';"
+ ];
+ assert.deepEqual(source.match(/^import [^\n]+;$/gm)||[],expected);
+ return source.replace(/^import [^\n]+;\n/gm,'');
+}
+class MockGeneratedPresentation{
+ constructor(){this.settings={reducedMotion:false}}
+ update(){}
+ tween(){}
+ dispose(){}
+}
+const mockGeneratedVfx=()=>({burst(){},draw(){},update(){},dispose(){}});
+
 // [메인] GitHub Pages 하위 배포 경로, 병렬 큐, 동일 에셋 캐시와 해제
 test('asset loader resolves GitHub Pages project root, emits progress, shares cache and releases references',async()=>{
  const original={fetch:globalThis.fetch,Image:globalThis.Image};
@@ -144,7 +164,7 @@ test('generated game gates startup on asset loading and draws provided assets',a
  const html=buildGeneratedGame({packageData:{gameId:'qa-generated-assets',assets:{background:'assets/bg.png',player:'assets/player.png',enemy:'assets/enemy.png',bgm:'audio/bgm.ogg'}}}).html;
  const scriptSource=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
  assert.ok(scriptSource,'generated module script exists');
- const body=scriptSource.replace(/^import \{[^\n]+\} from '[^']+';$/gm,'');
+ const body=generatedScriptForVm(scriptSource);
  let resolveAssets,loadedEntries,rafCount=0,frame=null,plays=0;
  const drawCalls=[],listeners=new Map();
  const canvasContext={clearRect(){},fillRect(){},fillText(){},beginPath(){},arc(){},fill(){},drawImage:(...args)=>drawCalls.push(args)};
@@ -164,7 +184,9 @@ test('generated game gates startup on asset loading and draws provided assets',a
    playAudio(name){assert.equal(name,'generated-bgm');plays++}
    destroy(){}
  }
- const context=createContext({JaewoonVibeRuntime:FakeRuntime,createVibeCanvasVfx:()=>({burst(){},draw(){},update(){},dispose(){}}),VibePresentationEngine:class {constructor(){this.settings={reducedMotion:false}}update(){}tween(){}dispose(){}},document:doc,window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(fn){rafCount++;frame=fn},setTimeout:()=>0,clearTimeout(){},console});
+ const context=createContext({JaewoonVibeRuntime:FakeRuntime,VibePresentationEngine:MockGeneratedPresentation,
+  createVibeCanvasVfx:mockGeneratedVfx,createVibeModelSprites:async()=>null,
+  document:doc,window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(fn){rafCount++;frame=fn},setTimeout:()=>0,clearTimeout(){},console});
  new Script(body,{filename:'generated-game.js'}).runInContext(context);
  assert.equal(rafCount,0,'game loop must wait for loading');
  assert.equal(getElementById('status').textContent,'에셋 로딩 0%');
@@ -184,13 +206,15 @@ test('generated game gates startup on asset loading and draws provided assets',a
 
 test('generated game reports missing asset failure instead of starting a broken scene',async()=>{
  const html=buildGeneratedGame({packageData:{gameId:'qa-missing',assets:{player:'assets/missing.png'}}}).html;
- const body=html.match(/<script type="module">([\s\S]*?)<\/script>/)[1].replace(/^import \{[^\n]+\} from '[^']+';$/gm,'');
+ const body=generatedScriptForVm(html.match(/<script type="module">([\s\S]*?)<\/script>/)[1]);
  let rejectAssets,rafCount=0;
  const ui=new Map();
  const getElementById=id=>{if(!ui.has(id))ui.set(id,{textContent:'',style:{},addEventListener(){},setPointerCapture(){},getBoundingClientRect:()=>({width:140,left:0,top:0})});return ui.get(id)};
  getElementById('game').width=640;getElementById('game').height=480;getElementById('game').getContext=()=>({});
  class FakeRuntime{boot(){}setScene(){return new Promise((resolve,reject)=>{rejectAssets=reject})}loadProgress(){return null}destroy(){}}
- const ctx=createContext({JaewoonVibeRuntime:FakeRuntime,createVibeCanvasVfx:()=>({burst(){},draw(){},update(){},dispose(){}}),VibePresentationEngine:class {constructor(){this.settings={reducedMotion:false}}update(){}tween(){}dispose(){}},document:{getElementById,addEventListener(){},removeEventListener(){}},window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(){rafCount++},setTimeout:()=>0,clearTimeout(){},console:{error(){}}});
+ const ctx=createContext({JaewoonVibeRuntime:FakeRuntime,VibePresentationEngine:MockGeneratedPresentation,
+  createVibeCanvasVfx:mockGeneratedVfx,createVibeModelSprites:async()=>null,
+  document:{getElementById,addEventListener(){},removeEventListener(){}},window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(){rafCount++},setTimeout:()=>0,clearTimeout(){},console:{error(){}}});
  new Script(body).runInContext(ctx);
  rejectAssets(new Error('404'));
  await new Promise(resolve=>setImmediate(resolve));

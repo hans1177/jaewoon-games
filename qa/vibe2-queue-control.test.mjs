@@ -244,6 +244,8 @@ test('official Studio evidence change retries one native causal candidate, same 
     playtestRuntimeFindings:{studioQualityFailure:{
       ...failure(5,4080),authority:'unverified-label'}}}};
   assert.equal(recover(spoof).recovered,0,'unverified metadata cannot reopen a blocked native task');
+  const missing={...blocked,buildUpDirective:{...blocked.buildUpDirective,playtestRuntimeFindings:{}}};
+  assert.equal(recover(missing).recovered,0,'missing Studio evidence must not create another attempt for unchanged codegen');
 });
 
 test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
