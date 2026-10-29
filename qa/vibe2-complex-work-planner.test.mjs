@@ -66,7 +66,7 @@ test('natural owner request compiles two real source edits atomically through th
  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
  assert.equal(candidate.runtimeVerified,false);
 });
-test('stale source, overlapping owner spans, cycle and ungrounded fields block unchanged originals',t=>{
+test('stale source, conflicting writes, cycle and ungrounded fields block unchanged originals',t=>{
  const {root}=fixture(t),source='const state={dead:false};\nfunction hit(a){\n a.hp-=1;\n}';
  const file=path.join(root,'game.js');fs.writeFileSync(file,source);
  const order={ownerApproved:true,baseRevisionSha:revision,goal:'함수 hit에서 a.dead이면 중단해'};
@@ -75,7 +75,7 @@ test('stale source, overlapping owner spans, cycle and ungrounded fields block u
  fs.appendFileSync(file,'\n// new revision');assert.throws(()=>createComplexGameCandidate({plan,sourceRoot:root}),/STALE_SOURCE/);
  assert.equal(planComplexGameWork({...options,sourceIndex:plan.index}).status,'BLOCKED');
  fs.writeFileSync(file,source);
- const overlap=planComplexGameWork({...options,order:{...order,goal:order.goal+'; 함수 hit에서 a.hp < 0이면 a.hp를 0로 설정해'}});
+ const overlap=planComplexGameWork({...options,order:{...order,goal:'함수 hit에서 a.hp < 0이면 a.hp를 0로 설정해; 함수 hit에서 a.hp > 100이면 a.hp를 100로 설정해'}});
  assert.throws(()=>createComplexGameCandidate({plan:overlap,sourceRoot:root}),/OVERLAPPING/);
  const cycle=planComplexGameWork({...options,order:{...order,vibe59ComplexDependencies:{hit:['hit']}}});
  assert.equal(cycle.unresolved[0].code,'DEPENDENCY_CYCLE');
@@ -911,4 +911,62 @@ test('canonical source generation edits a large game file with long build-up con
  assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
  fs.writeFileSync(path.join(root,'game.js'),'// '+'x'.repeat(2*1024*1024));
  assert.throws(()=>buildGameSourceIndex({sourceRoot:root,responsibleFiles:['game.js']}),/SOURCE_SIZE/);
+});
+
+// [회귀] 원본 함수 하나의 중단·값 제한·기존 호출 연결을 하나의 실제 소스 변경으로 합친다.
+test('same owner guard clamp and UI call synthesize one canonical executable source edit',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={dead:false,hp:10,views:0};\nfunction refresh(a){a.views+=1;}\nfunction trace(a){a.traces+=1;}\nfunction update(a,nextHp){\n a.hp = nextHp;\n trace(a);\n return true;\n}';
+ const file=path.join(root,'game.js');fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 update에서 a.dead이면 false를 반환해; 함수 update에서 a.hp를 0에서 100까지 제한해; 함수 update에서 trace 호출 뒤 refresh를 호출해'};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.equal(candidate.edits.length,1);assert.equal(candidate.complexPlan.atomCount,3);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({update})');
+ for(const [input,expected] of [[-5,0],[0,0],[50,50],[100,100],[105,100]]){
+  const actor={dead:false,hp:10,views:0,traces:0};
+  assert.equal(game.update(actor,input),true);assert.equal(actor.hp,expected);
+  assert.equal(actor.traces,1);assert.equal(actor.views,1);
+ }
+ const dead={dead:true,hp:7,views:0,traces:0};assert.equal(game.update(dead,50),false);
+ assert.deepEqual(dead,{dead:true,hp:7,views:0,traces:0});
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ // 정식 물리 적용 경로에서도 같은 수정안 한 개를 그대로 사용한다.
+ const git=(...args)=>{const result=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});assert.equal(result.status,0,result.stderr)};
+ git('init','-q');git('config','user.email','vibe2-tests@example.invalid');git('config','user.name','Vibe2 Test');
+ git('add','.');git('commit','-qm','original game');git('switch','-q','-c','vibe2/candidate/composed-source');
+ const applied=applyVibe2CandidateToSource({cwd:repo,sourceRoot:root,candidateRoot:path.join(repo,'.vibe2/candidates/composed-source'),candidate});
+ assert.deepEqual(applied.changedFiles,['game.js']);assert.equal(fs.readFileSync(file,'utf8'),docs.get('game.js'));
+});
+
+test('same insertion point preserves approved condition and guard order without accepting conflicting contracts',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const state={dead:false,ready:false,active:false};\nfunction act(a){\n a.active = true;\n return true;\n}';
+ fs.writeFileSync(file,source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ for(const [goal,expected] of [
+  ['함수 act에서 a.dead이면 false를 반환해; 함수 act에서 a.ready이면 a.active를 false로 설정해',true],
+  ['함수 act에서 a.ready이면 a.active를 false로 설정해; 함수 act에서 a.dead이면 false를 반환해',false]
+ ]){
+  const candidate=createVibe59CodeCandidates({...options,order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal}});
+  assert.equal(candidate.edits.length,1);
+  const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+  const game=vm.runInNewContext(docs.get('game.js')+';({act})'),actor={dead:true,ready:true,active:true};
+  assert.equal(game.act(actor),false);assert.equal(actor.active,expected);
+ }
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('same owner Luau source composes existing clamp and guard without changing server authority',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { dead = false, hp = 10 }\nlocal function update(a,nextHp)\n a.hp = nextHp\n return true\nend\n';
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 update에서 a.dead이면 false를 반환해; 함수 update에서 a.hp를 0에서 100까지 제한해'}});
+ assert.equal(candidate.edits.length,1);assert.match(candidate.edits[0].replace,/if a\.dead then return false end/);
+ assert.match(candidate.edits[0].replace,/math\.clamp\(nextHp, 0, 100\)/);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
 });

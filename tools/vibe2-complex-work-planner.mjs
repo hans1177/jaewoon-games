@@ -495,7 +495,7 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
 
 export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
  if(plan?.status!=='BOUND')return null;
- const selected=plan.nodes.slice(0,12),atoms=[],ranges=new Map(),originals=new Map();
+ const selected=plan.nodes.slice(0,12),atoms=[],ranges=new Map(),originals=new Map(),byOwner=new Map();
  for(const file of plan.index.files){
   const actual=fs.readFileSync(safeSourceFile(sourceRoot,file.path),'utf8');
   if(sourceDigest(actual)!==file.sourceSha256)throw Error('VIBE2_COMPLEX_STALE_SOURCE');
@@ -503,11 +503,50 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
  }
  for(const node of selected){
   const atom=synthesizeGameChangeAtom({requirement:node,owner:node.owner,file:node.file,target});
-  const old=ranges.get(atom.file)||[],span=atom.sourceSpan;
-  if(old.some(p=>span.start<p.end&&span.end>p.start))throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT');
-  old.push(span);ranges.set(atom.file,old);atoms.push(atom);
+  atoms.push(atom);
+  const group=byOwner.get(atom.ownerSymbol)||[];
+  group.push(atom);byOwner.set(atom.ownerSymbol,group);
  }
- const edits=normalizeExactEdits(atoms.map(a=>a.sourcePatch));
+ // [원자 합성] 같은 함수의 공통 앵커는 겹칠 수 있다. 실제 변경 구간만 비교해
+ // 기존 함수 하나의 수정안으로 합친다. 서로 다른 책임 함수와 실제 값 충돌은 거부한다.
+ const combined=[];
+ for(const group of byOwner.values()){
+  const first=group[0],original=originals.get(first.file);
+  const start=Math.min(...group.map(atom=>atom.sourceSpan.start));
+  const end=Math.max(...group.map(atom=>atom.sourceSpan.end));
+  const old=ranges.get(first.file)||[];
+  if(old.some(span=>start<span.end&&end>span.start))throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT');
+  old.push({start,end});ranges.set(first.file,old);
+  if(group.length===1){combined.push(first.sourcePatch);continue}
+  const guards=group.filter(atom=>atom.operation==='guard-return');
+  if(new Set(guards.map(atom=>JSON.stringify(atom.typedAst.returnValue))).size>1)
+   throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:RETURN_CONTRACT');
+  const writes=group.flatMap(atom=>atom.outputSymbols);
+  if(new Set(writes).size!==writes.length)throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:STATE_WRITE');
+  const changes=group.map((atom,index)=>{
+   const {find,replace}=atom.sourcePatch;
+   let prefix=0,suffix=0;
+   while(prefix<find.length&&prefix<replace.length&&find[prefix]===replace[prefix])prefix++;
+   while(suffix<find.length-prefix&&suffix<replace.length-prefix&&
+    find[find.length-1-suffix]===replace[replace.length-1-suffix])suffix++;
+   return {start:atom.sourceSpan.start+prefix,end:atom.sourceSpan.end-suffix,
+    replacement:replace.slice(prefix,replace.length-suffix),index};
+  });
+  for(let i=0;i<changes.length;i++)for(let j=i+1;j<changes.length;j++){
+   const a=changes[i],b=changes[j];
+   if((a.start<b.end&&a.end>b.start)||
+    (a.start===a.end&&a.start>b.start&&a.start<b.end)||
+    (b.start===b.end&&b.start>a.start&&b.start<a.end))
+    throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:SOURCE_DELTA');
+  }
+  const find=original.slice(start,end);let replace=find;
+  // 원본 오프셋을 유지하며 뒤에서 적용한다. 같은 위치의 삽입은 승인 지시 순서다.
+  changes.sort((a,b)=>b.start-a.start||b.end-a.end||b.index-a.index);
+  for(const change of changes)replace=replace.slice(0,change.start-start)+change.replacement+replace.slice(change.end-start);
+  if(original.split(find).length!==2||find===replace)throw Error('VIBE2_COMPLEX_NONUNIQUE_COMPOSED_ANCHOR');
+  combined.push({path:first.file,find,replace});
+ }
+ const edits=normalizeExactEdits(combined);
  if(!edits.length)throw Error('VIBE2_COMPLEX_NO_SOURCE_DELTA');
  const documents=new Map(originals);applyExactEdits(sourceRoot,edits,{documents});
  const cases=atoms.flatMap(a=>a.scenarioProofs.cases.map(c=>({...c,name:a.id+':'+(c.name||'boundary')})));
