@@ -58,6 +58,22 @@ test('protected change blocks implementation and never expands authority',()=>{
   assert.equal(result.authorityExpanded,false);
 });
 
+test('verified owner gameplay tuning is advisory only within unblocked implementation',()=>{
+  const task={goal:'검증된 전투 체력 보상 개선',type:'implementation',protectedChange:false};
+  const baseline=buildVibeDesignIntelligence({task});
+  assert.equal(baseline.implementationGate.protectedGameplayMutationAutomatic,false);
+  const approved=buildVibeDesignIntelligence({task,verifiedOwnerGameplayTuning:true});
+  assert.equal(approved.implementationGate.allowed,true);
+  assert.equal(approved.implementationGate.protectedGameplayMutationAutomatic,true);
+  assert.match(approved.guidance,/오너의 2026-10-30/);
+  assert.equal(approved.authorityExpanded,false);
+  const blocked=buildVibeDesignIntelligence({task:{...task,protectedChange:true},verifiedOwnerGameplayTuning:true});
+  assert.equal(blocked.implementationGate.allowed,false);
+  assert.equal(blocked.implementationGate.protectedGameplayMutationAutomatic,false);
+  const designer=buildVibeDesignIntelligence({task,verifiedOwnerGameplayTuning:true,executionContext:'GAME_DESIGNER_AUTHORING'});
+  assert.equal(designer.implementationGate.protectedGameplayMutationAutomatic,false);
+});
+
 test('locked artbook design change requires change request',()=>{
   const result=buildVibeDesignIntelligence({task:{goal:'핵심 루프 재설계',designChange:true,artbook:{locked:true}}});
   assert.equal(result.implementationGate.allowed,false);
