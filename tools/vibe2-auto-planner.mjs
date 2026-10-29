@@ -2873,7 +2873,7 @@ function approvedDesignFingerprintForProject(designRecord,project,platformLane=s
     .digest('hex');
 }
 
-function robloxQualityRepairFiles(project,repoRoot){
+export function robloxQualityRepairFiles(project,repoRoot){
   if(project?.queueRobloxQualityBuildUpRequired!==true)return [];
   const failure=project.queueRobloxQualityBuildUpEvidence;
   let files=[];
@@ -2884,6 +2884,17 @@ function robloxQualityRepairFiles(project,repoRoot){
       .flatMap(row=>row.responsibleFiles||[]);
   }else if(failure?.authority==='roblox-source-static-contract-failure'){
     files=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'];
+  }else if(failure?.authority==='roblox-official-studio-mcp-product-quality-failure'){
+    // A real Studio UI failure must be repairable by the next Vibe source worker.
+    // Never bind old play evidence to a new source or a different packaged artifact.
+    const exact=clean(failure.sourceRevision)&&clean(failure.sourceRevision)===clean(project.queueRobloxSourceCommit)
+      &&clean(failure.artifactIdentity)&&clean(failure.artifactIdentity)===clean(project.queueRobloxArtifactIdentity);
+    const surfaces=[...(failure.repairSurfaces||[]),
+      ...(failure.qualityFailureDetails||[]).map(row=>row?.repairSurface)].map(value=>clean(value).toUpperCase());
+    const kinds=(failure.qualityFailureKinds||[]).map(value=>clean(value).toLowerCase());
+    if(exact&&(surfaces.includes('MOBILE_UI')||kinds.includes('adaptive-ui-commercial-quality'))){
+      files=['client/Game.client.luau','shared/RobloxCommonUI.luau'];
+    }
   }
   const root=sourceFile(repoRoot,`roblox-games/${project.gameId}`);
   return [...new Set(files.map(posix)
