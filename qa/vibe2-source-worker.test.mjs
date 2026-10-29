@@ -7,11 +7,40 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,prioritizeVerifiedStudioNativeRepair,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,prioritizeVerifiedStudioNativeRepair,focusedSymbolContext,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {PLAYABLE_IMPROVEMENT_IDS,evaluatePlayableImprovementSourceProof} from '../tools/company-playable-improvement-source-proof.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
+
+test('source coder keeps reserved helper functions ahead of noisy graph evidence without widening file writes',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-helper-focus-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file=path.join(root,'core.js');
+ const source=[
+  'function primary(){return targetHelper();}',
+  ...Array.from({length:30},(_,i)=>'function noise'+i+'(){return '+i+';}'),
+  'function targetHelper(){return 42;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const graphNodes=Array.from({length:22},(_,i)=>({name:'noise'+i}));
+ const contract={
+  responsibilityConfidence:'HIGH',
+  primaryTargets:['primary'],
+  responsibilityGraph:{relevantNodes:graphNodes},
+  reservedHelperEditPlan:{reservedHelperEdits:[
+   {file:'core.js',symbol:'targetHelper',writableWithinExistingReservation:true},
+   {file:'outside.js',symbol:'unreservedHelper',writableWithinExistingReservation:true}
+  ]},
+  allowedDependentSymbolsOrSystems:['targetHelper','unreservedHelper']
+ };
+ const focused=focusedSymbolContext(root,'web',['core.js'],{editContract:contract});
+ assert.ok(focused&&focused.files.length>0);
+ assert.ok(focused.files.some(x=>x.content.includes('function targetHelper()')));
+ assert.ok(focused.files.every(x=>x.path==='core.js'&&x.editable===true));
+ assert.equal(focused.exactSourceWindows,true);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
 
 // [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
 test('no-model Roblox generates touch controls from exact existing native action callbacks',t=>{

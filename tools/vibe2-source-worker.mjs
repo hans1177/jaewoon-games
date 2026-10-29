@@ -280,6 +280,11 @@ export function focusedSymbolContext(root,target,responsibleFiles=[],exploration
   const confidence=clean(contract.responsibilityConfidence).toUpperCase();
   const symbolCandidates=unique([
     ...(contract.primaryTargets||[]),
+    // Bounded direct-call helpers inside the existing write reservation are actionable.
+    // Keep them ahead of noisy graph context so the first 16 focused symbols retain them.
+    ...(contract.reservedHelperEditPlan?.reservedHelperEdits||[])
+      .filter(row=>row?.writableWithinExistingReservation===true&&responsibleFiles.includes(row.file))
+      .map(row=>row.symbol),
     ...(contract.responsibilityGraph?.relevantNodes||[]).map(row=>row?.name),
     ...(contract.allowedDependentSymbolsOrSystems||[]),
     ...(exploration.sourceDependencies||[]).map(row=>row.symbol)
