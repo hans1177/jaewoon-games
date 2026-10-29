@@ -7,8 +7,8 @@ import {buildGameSourceIndex,resolveGameSourceScope,safeSourceFile,sourceDigest,
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
 
 const CATEGORIES=Object.freeze({
- facilities:['시설','놀이시설','타이쿤시설','facility','facilities'],
- maps:['맵','지역','RPG맵','rpg맵','map','maps','biome'],
+ facilities:['타이쿤 놀이 시설','타이쿤 놀이시설','타이쿤 시설','놀이 시설','놀이시설','타이쿤시설','시설','facility','facilities'],
+ maps:['RPG 맵','rpg map','RPG맵','rpg맵','맵','지역','map','maps','biome'],
  backgrounds:['배경','background','backgrounds'],
  sprites:['그래픽','장식','오브젝트','sprite','sprites','graphics'],
  actions:['액션','행동','action','actions'],
@@ -22,7 +22,7 @@ const FUNCTION_DEFAULTS=Object.freeze({
 const LIMITS=Object.freeze({facilities:12,maps:8,backgrounds:6,sprites:8,actions:8,motions:8});
 const SAFE_NAME=/^[\p{L}\p{N} _-]{1,24}$/u;
 const SAFE_IDENTIFIER=/^[A-Za-z_$][A-Za-z0-9_$]{0,63}$/;
-const HEAD=/^(?:웹\s*)?(?:게임\s*)?볼륨\s*(?:한번에\s*)?(?:추가|확장)\s*:\s*/i;
+const HEAD=/^(?:(?:한\s*번에|한\s*방에)\s*)?(?:웹\s*)?(?:게임\s*)?볼륨\s*(?:한\s*번에\s*)?(?:추가|확장)\s*:\s*/i;
 
 function readRequest(order){
  const spec=order.selectedTask?.vibe59VolumeRequest??order.vibe59VolumeRequest;
