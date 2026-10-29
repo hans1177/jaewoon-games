@@ -13,6 +13,9 @@ import {indexVibe2GameSource} from '../tools/vibe2-game-source-index.mjs';
 import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
 import {createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
+import {execFileSync} from 'node:child_process';
+import {runVibe2SourceWorker} from '../tools/vibe2-source-worker.mjs';
+import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
 
 function setup(t,target='web',html=false){
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-complex-'));
@@ -30,6 +33,56 @@ function setup(t,target='web',html=false){
   return {root,relative,source:original,options,order};
 }
 const digest=x=>crypto.createHash('sha256').update(x).digest('hex');
+
+// 원본 게임 파일과 기존 소스 작업자의 단일 적용 경로를 사용한다.
+test('canonical Vibe2 no-model worker edits actual game source on an isolated candidate branch',async t=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-real-source-write-'));
+  t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const relative='web-games/line-defense/index.html';
+  const original=fs.readFileSync(path.resolve(relative),'utf8');
+  const destination=path.join(cwd,relative);
+  fs.mkdirSync(path.dirname(destination),{recursive:true});
+  fs.writeFileSync(destination,original);
+  for(const policy of [
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ]){
+    const dest=path.join(cwd,policy);
+    fs.mkdirSync(path.dirname(dest),{recursive:true});
+    fs.copyFileSync(path.resolve(policy),dest);
+  }
+  const taskId='vibe59-real-line-defense-source-write';
+  const snapshot=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
+  assert.equal(snapshot.valid,true);
+  const responsibleFiles=[relative];
+  const contract=compileVibeCentralWorkContract({snapshot,
+    task:{id:taskId,gameId:'line-defense',target:'web'},plan:{target:'web'},responsibleFiles});
+  const goal='When function buttons runs, call updateMeta then hud';
+  const workOrder={run:true,workMode:'source-change-candidate',taskId,
+    gameId:'line-defense',target:'web',goal,department:'development',
+    source:{root:'web-games/line-defense',responsibleFiles},
+    workerPolicy:{directMainWrite:false},compiledWorkContract:contract,
+    selectedTask:{id:taskId,gameId:'line-defense',target:'web',ownerDirective:true,goal}};
+  fs.mkdirSync(path.join(cwd,'.vibe2'),{recursive:true});
+  fs.writeFileSync(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder));
+  const git=(...args)=>execFileSync('git',args,{cwd,encoding:'utf8',timeout:15000});
+  git('init','-q');git('config','user.email','vibe2-tests@example.invalid');
+  git('config','user.name','Vibe2 Test');
+  git('add','--',relative);git('commit','-qm','original game source');
+  git('switch','-q','-c','vibe2/candidate/'+taskId);
+  const result=await runVibe2SourceWorker({cwd,applySource:true});
+  assert.equal(result.branch,'vibe2/candidate/'+taskId);
+  assert.ok(result.changedFiles.includes('index.html'));
+  const after=fs.readFileSync(destination,'utf8');
+  assert.notEqual(after,original,'canonical worker must change the game file, not just snapshot');
+  assert.match(after,/updateMeta\(\);\s*hud\(\);\s*\}/);
+  assert.equal(fs.readFileSync(path.resolve(relative),'utf8'),original,'real repository source is never mutated by regression');
+  assert.equal(result.generation.modelUsed,false);
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.runtimeVerified,false);
+});
 
 test('natural language becomes an ordered two-step DAG tied to exact existing source definitions',t=>{
   const {options,relative,source}=setup(t);
