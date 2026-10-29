@@ -26,7 +26,7 @@ test('actual Roblox PathfindingService code is source-grounded and releases plan
  assert.equal(x.operation,'ai-pathfinding-chase');
  assert.match(x.source,/:CreatePath\(\{AgentRadius = 2/);
  assert.match(x.source,/:ComputeAsync\(root.Position, targetRoot.Position\)/);
- assert.match(x.source,/path\.Status/); // no blind straight-line path
+ assert.match(x.source,/planned\.Status/); // no blind straight-line path
  assert.match(x.source,/if #waypoints < 2 or #waypoints > 24/);
  assert.match(x.source,/state\.ai\.planning = false/);
  assert.match(x.source,/humanoid:MoveTo\(waypoint.Position\)/);
