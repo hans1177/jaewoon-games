@@ -198,7 +198,8 @@ test('model-free Roblox source misses retry once per source worker revision with
   const oldCodegen=repeat.queue.tasks[0];
   const oldFingerprint='source-no-model-codegen-sha256:'+'0'.repeat(64);
   const changed={...oldCodegen,evidence:[
-    ...(oldCodegen.evidence||[]).filter(v=>!v.startsWith('source-no-model-codegen-sha256:')),
+    ...(oldCodegen.evidence||[]).filter(v=>!v.startsWith('source-no-model-codegen-sha256:')
+      &&!v.startsWith('source-no-model-attempt-sha256:')),
     oldFingerprint]};
   const afterUpgrade=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[changed]}),{nowMs:Date.now()});
   assert.equal(afterUpgrade.recovered,1,'changed source worker revision must immediately admit a new attempt');
@@ -217,7 +218,8 @@ test('official Studio evidence change retries one native causal candidate, same 
     sourceRoot:'roblox-games/fantasy-survival',responsibleFiles:['shared/RobloxCommonUI.luau'],
     status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE',retries:5,maxRetries:5,
     evidence:['source-no-model-failure-kind:DETERMINISTIC_ROBLOX'],
-    selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure(8,4077)}}}};
+    buildUpDirective:{directiveId:'native-studio-quality',gameId:'fantasy-survival',
+      playtestRuntimeFindings:{studioQualityFailure:failure(8,4077)}}};
   const recover=task=>recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[task]}),{nowMs:Date.now()});
   const initial=recover(task);
   assert.equal(initial.recovered,1);
@@ -225,19 +227,22 @@ test('official Studio evidence change retries one native causal candidate, same 
   assert.ok(first.evidence.some(x=>x.startsWith('source-no-model-attempt-sha256:')));
   const blocked={...first,status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE'};
   assert.equal(recover(blocked).recovered,0,'identical cause and worker must remain blocked');
-  const same={...blocked,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure(8,4078)}}}};
+  const same={...blocked,buildUpDirective:{...blocked.buildUpDirective,
+    playtestRuntimeFindings:{studioQualityFailure:failure(8,4078)}}};
   assert.equal(recover(same).recovered,0,'new run id alone is not improved evidence');
-  const improved={...blocked,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure(5,4079)}}}};
+  const improved={...blocked,buildUpDirective:{...blocked.buildUpDirective,
+    playtestRuntimeFindings:{studioQualityFailure:failure(5,4079)}}};
   const second=recover(improved);
   assert.equal(second.recovered,1,'new official actionable UI observation reopens the same original source');
   assert.equal(second.queue.tasks[0].lastOutcome,'MODEL_FREE_NATIVE_STUDIO_EVIDENCE_RECHECK');
   assert.equal(second.queue.tasks[0].retries,5,'evidence recheck does not consume retries');
   assert.equal(second.queue.tasks[0].evidence.filter(x=>x.startsWith('source-no-model-attempt-sha256:')).length,2);
   const back={...second.queue.tasks[0],status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE',
-    selectedTask:task.selectedTask};
+    buildUpDirective:task.buildUpDirective};
   assert.equal(recover(back).recovered,0,'old attempted observation must not restart a failure loop');
-  const spoof={...blocked,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:{
-    ...failure(5,4080),authority:'unverified-label'}}}}};
+  const spoof={...blocked,buildUpDirective:{...blocked.buildUpDirective,
+    playtestRuntimeFindings:{studioQualityFailure:{
+      ...failure(5,4080),authority:'unverified-label'}}}};
   assert.equal(recover(spoof).recovered,0,'unverified metadata cannot reopen a blocked native task');
 });
 
