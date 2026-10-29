@@ -30,6 +30,16 @@ function gameScope({order,repositoryRoot,sourceRoot,target,approvedAssetWrite,re
   if(root!==expected||!fs.existsSync(root)||!fs.statSync(root).isDirectory()
     ||fs.realpathSync(root)!==root||fs.realpathSync(repo)!==repo)
     throw Error('VIBE59_GAME_ASSET_ROOT_UNCLAIMED');
+  const catalogPath=path.join(repo,'game-catalog.json');
+  if(!fs.existsSync(catalogPath)||!fs.lstatSync(catalogPath).isFile())
+    throw Error('VIBE59_GAME_ASSET_CATALOG_REQUIRED');
+  const catalog=JSON.parse(fs.readFileSync(catalogPath,'utf8'));
+  const game=catalog.games?.find(row=>row.id===gameId);
+  if(!game||catalog.ownerStoppedGameIds?.includes(gameId)
+    ||game.ownerDevelopmentStopped===true||game.lifecycleState==='OWNER_STOPPED')
+    throw Error('VIBE59_GAME_ASSET_CATALOG_GAME_NOT_ACTIVE');
+  if(target==='web'&&game.webPath&&game.webPath!=='web-games/'+gameId)
+    throw Error('VIBE59_GAME_ASSET_CATALOG_PATH_MISMATCH');
   return {repo,root,gameId};
 }
 function verifiedFile(base,relative){
@@ -148,7 +158,10 @@ export function applyVibe59ApprovedGameAssetChanges({
     if(!allowedBinary.test(replace?.path||'')
       ||!allowedBinary.test(replace?.sourcePath||'')
       ||path.extname(replace.path).toLowerCase()!==path.extname(replace.sourcePath).toLowerCase()
-      ||!replace.ledgerId||!replace.assetRole||replace.mappingApproved!==true)
+      ||!replace.ledgerId||!replace.assetRole||replace.mappingApproved!==true
+      ||!order.selectedTask.approvedAssetMappings?.some(mapping=>mapping.ownerApproved===true
+        &&mapping.path===replace.path&&mapping.sourcePath===replace.sourcePath
+        &&mapping.ledgerId===replace.ledgerId&&mapping.assetRole===replace.assetRole))
       throw Error('VIBE59_GAME_ASSET_BINDING_NOT_APPROVED');
     const original=register(replace.path,replace.expectedSha256);
     const sourceAbs=verifiedFile(repo,replace.sourcePath);
