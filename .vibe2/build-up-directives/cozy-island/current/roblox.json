@@ -4835,7 +4835,41 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "9726ffca46f565515dadcc824f32cc1909874c61",
+      "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 40910370672,
+      "testedAt": "2026-10-29T16:36:15.665Z",
+      "repairSurfaces": [
+        "GAME_START",
+        "VFX_FEEDBACK",
+        "CHARACTER_RESPAWN"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-start-playability",
+          "repairSurface": "GAME_START",
+          "priority": "CRITICAL",
+          "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
+          "observed": "{\"initialDead\":false,\"finalDead\":true,\"initialHealth\":100,\"finalHealth\":0,\"startGateVisible\":true,\"startGateActionOk\":true,\"startGateEffectObserved\":true}"
+        },
+        {
+          "id": "adaptive-effects-surface",
+          "repairSurface": "VFX_FEEDBACK",
+          "priority": "MEDIUM",
+          "hint": "Restore readable telegraphs, hit feedback, particles/trails/highlights without blocking play.",
+          "observed": "{\"interactionSurfaceCount\":40,\"progressionSurfaceCount\":28,\"combatSurfaceCount\":5,\"npcSurfaceCount\":8,\"companionSurfaceCount\":40,\"itemSurfaceCount\":4,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":0,\"promptCount\":34,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-death-respawn-recovery",
+          "repairSurface": "CHARACTER_RESPAWN",
+          "priority": "CRITICAL",
+          "hint": "A real death was observed during Studio play but the character did not return to a healthy playable state.",
+          "observed": "{\"deathObserved\":true,\"respawnObserved\":false}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
     "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
     "blockers": [
