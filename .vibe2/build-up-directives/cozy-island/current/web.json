@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "cozy-island-build-up-g1-e7f6e548a1af",
-  "directiveFingerprint": "e7f6e548a1af20c0691b27cf14ef11663c8e2ee7f59b969ddad7f3a1684d82ab",
+  "directiveId": "cozy-island-build-up-g1-444514034ff6",
+  "directiveFingerprint": "444514034ff67e4f7b3ff5b6e943a5075e92326c91a10488d787f71543a0561d",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "cozy-island",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/cozy-island",
-  "sourceTreeFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+  "sourceTreeFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
   "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+        "sourceTreeFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
-    "sourceTreeFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+    "sourceTreeFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+    "sourceTreeFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4254,10 +4254,10 @@
       "combat": 1933,
       "progression": 1816,
       "ai": 346,
-      "save": 625,
+      "save": 626,
       "multiplayer": 20,
       "animation": 39,
-      "motionStates": 2393,
+      "motionStates": 2395,
       "gameFeel": 15,
       "vfx": 22,
       "camera": 53,
@@ -4268,7 +4268,7 @@
       "entryFlow": 0,
       "loadingFlow": 93,
       "input": 53,
-      "map": 1375,
+      "map": 1377,
       "landmark": 280,
       "interaction": 200,
       "inventory": 300,
@@ -4276,14 +4276,14 @@
       "settings": 40,
       "feedback": 707,
       "session": 188,
-      "content": 2267,
+      "content": 2270,
       "choice": 1182,
       "connection": 2,
-      "performance": 22,
+      "performance": 23,
       "lighting": 60,
       "primitive": 2,
       "todo": 0,
-      "errorRecovery": 82
+      "errorRecovery": 84
     },
     "topFiles": [
       {
@@ -4338,7 +4338,7 @@
     "sourceAnchors": [
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 754,
+        "line": 756,
         "kind": "FUNCTION",
         "symbol": "openDecor",
         "context": "function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.",
@@ -4346,7 +4346,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 753,
+        "line": 755,
         "kind": "FUNCTION",
         "symbol": "buyWorker",
         "context": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
@@ -4354,7 +4354,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 752,
+        "line": 754,
         "kind": "FUNCTION",
         "symbol": "renderWorkerShop",
         "context": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
@@ -4362,7 +4362,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 756,
+        "line": 758,
         "kind": "FUNCTION",
         "symbol": "updateCrops",
         "context": "function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}",
@@ -4370,7 +4370,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 755,
+        "line": 757,
         "kind": "FUNCTION",
         "symbol": "usePlot",
         "context": "function usePlot(index,tool){const p=state.plots[index];if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.inventory.crop++;state.inventory.food+=10;save",
@@ -4378,7 +4378,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 751,
+        "line": 753,
         "kind": "FUNCTION",
         "symbol": "openWorkerShop",
         "context": "function openWorkerShop(){window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}}))}",
@@ -4386,7 +4386,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 763,
+        "line": 765,
         "kind": "FUNCTION",
         "symbol": "updateWorkers",
         "context": "function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer",
@@ -4394,7 +4394,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 757,
+        "line": 759,
         "kind": "FUNCTION",
         "symbol": "expandIsland",
         "context": "function expandIsland(){if(state.coins<120){toast('120골드가 필요해');return}state.coins-=120;state.expanded=true;saveSoon();updateHUD();toast('🏝️ 동쪽 야생지대가 크게 열렸어!')}",
@@ -4418,7 +4418,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 456,
+        "line": 458,
         "kind": "FUNCTION",
         "symbol": "talkTo",
         "context": "function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class=\"choice\" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=",
@@ -4442,7 +4442,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 454,
+        "line": 456,
         "kind": "FUNCTION",
         "symbol": "openBuildingContentRefresh",
         "context": "function openBuildingContentRefresh(id,siteIndex=0){ui.panel.close();openBuilding(id,siteIndex);}",
@@ -4450,7 +4450,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 455,
+        "line": 457,
         "kind": "FUNCTION",
         "symbol": "collectNode",
         "context": "function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){sta",
@@ -4458,7 +4458,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 457,
+        "line": 459,
         "kind": "FUNCTION",
         "symbol": "openBarracks",
         "context": "function openBarracks(){ui.panelTitle.textContent=state.barracksBuilt?'병영':'병영 건설';renderBarracks();ui.panel.showModal()}",
@@ -4466,7 +4466,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 761,
+        "line": 763,
         "kind": "FUNCTION",
         "symbol": "stopFishing",
         "context": "function stopFishing(){fishing=null;cancelAnimationFrame(fishingFrame);fishingFrame=0;if(ui.fishing.open)ui.fishing.close()}",
@@ -4506,7 +4506,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 760,
+        "line": 762,
         "kind": "FUNCTION",
         "symbol": "catchFish",
         "context": "function catchFish(){if(!fishing)return;const ok=fishing.pos>=42&&fishing.pos<=62;stopFishing();if(ok){state.inventory.fish++;saveSoon();toast('🐟 물고기 +1')}else toast('놓쳤어')}",
@@ -4530,7 +4530,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 458,
+        "line": 460,
         "kind": "FUNCTION",
         "symbol": "renderBarracks",
         "context": "function renderBarracks(){",
@@ -4538,7 +4538,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 759,
+        "line": 761,
         "kind": "FUNCTION",
         "symbol": "startFishing",
         "context": "function startFishing(){if(fishing)return;fishing={pos:0,dir:1,speed:.7};pressed.clear();ui.fishing.showModal();const tick=()=>{if(!fishing)return;fishing.pos+=fishing.dir*fishing.",
@@ -4546,7 +4546,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 1158,
+        "line": 1160,
         "kind": "FUNCTION",
         "symbol": "updateHUD",
         "context": "function updateHUD(){",
@@ -4578,7 +4578,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 485,
+        "line": 487,
         "kind": "FUNCTION",
         "symbol": "buildBarracks",
         "context": "function buildBarracks(){",
@@ -4586,7 +4586,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 1157,
+        "line": 1159,
         "kind": "FUNCTION",
         "symbol": "seededWeather",
         "context": "function seededWeather(day){return Math.abs(Math.sin(day*91.731)*10000)%1<.28?'비':'맑음'}",
@@ -4618,7 +4618,7 @@
       },
       {
         "file": "web-games/cozy-island/render-v3.js",
-        "line": 1579,
+        "line": 1599,
         "kind": "METHOD",
         "symbol": "drawHouse",
         "context": "drawHouse(ctx,g){ctx.fillStyle='#f5d9a8';ctx.fillRect(660,250,210,145);ctx.fillStyle='#d98265';ctx.beginPath();ctx.moveTo(635,270);ctx.lineTo(765,175);ctx.lineTo(895,270);ctx.close",
@@ -4642,7 +4642,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 178,
+        "line": 180,
         "kind": "FUNCTION",
         "symbol": "toast",
         "context": "function toast(msg){clearTimeout(toastTimer);ui.toast.textContent=msg;ui.toast.classList.add('show');toastTimer=setTimeout(()=>ui.toast.classList.remove('show'),1900)}",
@@ -4650,7 +4650,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 179,
+        "line": 181,
         "kind": "FUNCTION",
         "symbol": "itemCard",
         "context": "function itemCard(n,c){return `<div class=\"item-card\">${n}<span>${Math.floor(Number(c)||0)}개</span></div>`}",
@@ -4674,7 +4674,7 @@
       },
       {
         "file": "web-games/cozy-island/render-v3.js",
-        "line": 1580,
+        "line": 1600,
         "kind": "METHOD",
         "symbol": "drawFarm",
         "context": "drawFarm(ctx,g){ctx.fillStyle='#b4875d';ctx.fillRect(910,350,260,190);g.state.plots.forEach((p,i)=>{const x=930+(i%3)*78,y=375+Math.floor(i/3)*78;ctx.fillStyle=p.watered?'#6b5549':",
@@ -4682,7 +4682,7 @@
       },
       {
         "file": "web-games/cozy-island/render-v3.js",
-        "line": 1581,
+        "line": 1601,
         "kind": "METHOD",
         "symbol": "drawBarracks",
         "context": "drawBarracks(ctx,g){const{x,y}=g.barracks;if(!g.state.barracksBuilt){ctx.setLineDash([8,7]);ctx.strokeStyle='#6d725d';ctx.strokeRect(x-58,y-46,116,92);ctx.setLineDash([]);ctx.font=",
@@ -4690,7 +4690,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 1155,
+        "line": 1157,
         "kind": "FUNCTION",
         "symbol": "updatePeaceAllies",
         "context": "function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(u._fortPost){u.x=u._fortPost.x;u.y=u._fortPo",
@@ -4698,7 +4698,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 1156,
+        "line": 1158,
         "kind": "FUNCTION",
         "symbol": "advanceClock",
         "context": "function advanceClock(dt){clockCarry+=dt;if(clockCarry<.5)return;const ticks=Math.floor(clockCarry/.5);clockCarry-=ticks*.5;state.minutes+=ticks*5;state.playMinutes+=ticks*2.5/60;w",
@@ -5945,8 +5945,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 801743,
-        "largestFileBytes": 85482,
+        "sourceBytes": 802838,
+        "largestFileBytes": 86363,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -6138,7 +6138,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+    "sourceFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -6158,7 +6158,7 @@
     "version": 1,
     "gameId": "cozy-island",
     "platform": "WEB",
-    "sourceTreeFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+    "sourceTreeFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6349,6 +6349,7 @@
         "id": "SAVE",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
+          "web-games/cozy-island/game-v3.js",
           "web-games/cozy-island/balance-reset.js",
           "web-games/cozy-island/bounty-fix-v10.js"
         ],
@@ -6705,6 +6706,7 @@
         "web-games/cozy-island/bounty-tax-v6.js"
       ],
       "SAVE": [
+        "web-games/cozy-island/game-v3.js",
         "web-games/cozy-island/balance-reset.js",
         "web-games/cozy-island/bounty-fix-v10.js"
       ],
@@ -6849,6 +6851,7 @@
           "id": "SAVE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
+            "web-games/cozy-island/game-v3.js",
             "web-games/cozy-island/balance-reset.js",
             "web-games/cozy-island/bounty-fix-v10.js"
           ],
@@ -6858,9 +6861,9 @@
           "id": "RECONNECT_RESTORE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
+            "web-games/cozy-island/game-v3.js",
             "web-games/cozy-island/balance-reset.js",
             "web-games/cozy-island/bounty-fix-v10.js",
-            "web-games/cozy-island/game-v3.js",
             "web-games/cozy-island/village-defense.js",
             "web-games/cozy-island/darkness-flame-v19.js"
           ],
@@ -7343,7 +7346,7 @@
     "gameId": "cozy-island",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+    "sourceTreeFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7843,7 +7846,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 754,
+        "line": 756,
         "kind": "FUNCTION",
         "symbol": "openDecor",
         "currentBehavior": "function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.",
@@ -7852,7 +7855,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 753,
+        "line": 755,
         "kind": "FUNCTION",
         "symbol": "buyWorker",
         "currentBehavior": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
@@ -7861,7 +7864,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 752,
+        "line": 754,
         "kind": "FUNCTION",
         "symbol": "renderWorkerShop",
         "currentBehavior": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
@@ -7870,7 +7873,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 756,
+        "line": 758,
         "kind": "FUNCTION",
         "symbol": "updateCrops",
         "currentBehavior": "function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}",
@@ -7879,7 +7882,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 755,
+        "line": 757,
         "kind": "FUNCTION",
         "symbol": "usePlot",
         "currentBehavior": "function usePlot(index,tool){const p=state.plots[index];if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.inventory.crop++;state.inventory.food+=10;save",
@@ -7888,7 +7891,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 751,
+        "line": 753,
         "kind": "FUNCTION",
         "symbol": "openWorkerShop",
         "currentBehavior": "function openWorkerShop(){window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}}))}",
@@ -7897,7 +7900,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 763,
+        "line": 765,
         "kind": "FUNCTION",
         "symbol": "updateWorkers",
         "currentBehavior": "function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer",
@@ -7906,7 +7909,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 757,
+        "line": 759,
         "kind": "FUNCTION",
         "symbol": "expandIsland",
         "currentBehavior": "function expandIsland(){if(state.coins<120){toast('120골드가 필요해');return}state.coins-=120;state.expanded=true;saveSoon();updateHUD();toast('🏝️ 동쪽 야생지대가 크게 열렸어!')}",
@@ -8052,7 +8055,7 @@
     "sourceAnchors": [
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 754,
+        "line": 756,
         "kind": "FUNCTION",
         "symbol": "openDecor",
         "context": "function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.",
@@ -8064,7 +8067,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 753,
+        "line": 755,
         "kind": "FUNCTION",
         "symbol": "buyWorker",
         "context": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
@@ -8076,7 +8079,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 752,
+        "line": 754,
         "kind": "FUNCTION",
         "symbol": "renderWorkerShop",
         "context": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
@@ -8088,7 +8091,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 756,
+        "line": 758,
         "kind": "FUNCTION",
         "symbol": "updateCrops",
         "context": "function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}",
@@ -8100,7 +8103,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 755,
+        "line": 757,
         "kind": "FUNCTION",
         "symbol": "usePlot",
         "context": "function usePlot(index,tool){const p=state.plots[index];if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.inventory.crop++;state.inventory.food+=10;save",
@@ -8112,7 +8115,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 751,
+        "line": 753,
         "kind": "FUNCTION",
         "symbol": "openWorkerShop",
         "context": "function openWorkerShop(){window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}}))}",
@@ -8124,7 +8127,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 763,
+        "line": 765,
         "kind": "FUNCTION",
         "symbol": "updateWorkers",
         "context": "function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer",
@@ -8136,7 +8139,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 757,
+        "line": 759,
         "kind": "FUNCTION",
         "symbol": "expandIsland",
         "context": "function expandIsland(){if(state.coins<120){toast('120골드가 필요해');return}state.coins-=120;state.expanded=true;saveSoon();updateHUD();toast('🏝️ 동쪽 야생지대가 크게 열렸어!')}",
@@ -8241,7 +8244,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5139be1734e823aaa2787bbc23c9b933c2b045e6bd0887d2339e593565f162ae",
+      "sourceTreeFingerprint": "bad2bcf9e5122c883510f6fdb09f0a18214a1c02aae6bfd597dfc03c72799877",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8365,5 +8368,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:06.576Z"
+  "generatedAt": "2026-10-29T16:02:35.333Z"
 }
