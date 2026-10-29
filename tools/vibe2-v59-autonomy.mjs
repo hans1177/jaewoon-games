@@ -555,12 +555,43 @@ export function runVibe59CodeLaboratory({spec={},verifiedHistory=[]}={}){
     {id:'deep',depth:maxDepth}
   ].filter((row,i,all)=>all.findIndex(other=>other.depth===row.depth)===i)
     .slice(0,maxExperiments);
-  const eligibleHistory=verifiedHistory.filter(row=>row&&
-    row.modelUsed===false&&row.sourceChanged===true&&
-    row.independentQa==='PASS'&&row.regression==='PASS'&&
-    row.security==='PASS'&&row.runtime==='PASS'&&
-    /^[a-f0-9]{40}$/i.test(clean(row.sourceRevision))&&
-    profiles.some(p=>p.id===row.strategy));
+  // A string-only PASS must never bias strategy learning. Reconcile game, source,
+  // independent QA, security and actual runtime evidence before counting any history.
+  const verifiedEvidence=new Set();
+  const eligibleHistory=verifiedHistory.filter(row=>{
+    const proof=row?.proof||{},revision=clean(row?.sourceRevision);
+    const evidenceId=clean(row?.evidenceId),outcome=clean(row?.outcome).toUpperCase();
+    if(!row||!evidenceId||verifiedEvidence.has(evidenceId)
+      ||!profiles.some(p=>p.id===row.strategy)
+      ||!['WEB','ROBLOX'].includes(clean(row.platform).toUpperCase())
+      ||!clean(row.gameId)||row.modelUsed!==false
+      ||row.sourceChanged!==true||row.gameSourceChanged!==true
+      ||row.actualGamePlaytest!==true||row.saveAndBalancePreserved!==true
+      ||row.independentQa!=='PASS'||row.regression!=='PASS'
+      ||row.security!=='PASS'||row.runtime!=='PASS'
+      ||!row.securityEvidenceId||!Number.isSafeInteger(row.playtestRunId)
+      ||row.playtestRunId<=0||!Number.isInteger(row.heldOutCases)
+      ||row.heldOutCases<2||!Number.isInteger(row.regressionCount)
+      ||row.regressionCount<0||!['PASS','FAIL'].includes(outcome)
+      ||!(/^[a-f0-9]{40}$/i.test(revision))
+      ||clean(row.playtestSourceRevision)!==revision
+      ||clean(proof.evidenceId)!==evidenceId
+      ||clean(proof.sourceRevision)!==revision
+      ||clean(proof.securityEvidenceId)!==clean(row.securityEvidenceId)
+      ||proof.playtestRunId!==row.playtestRunId
+      ||proof.actualGamePlaytest!==true||proof.gameSourceChanged!==true
+      ||proof.independentQa!=='PASS'||proof.regression!=='PASS'
+      ||proof.runtime!=='PASS'||proof.security!=='PASS'
+      ||proof.actualPlatformRuntime!==true
+      ||outcome==='PASS'&&row.regressionCount!==0
+      ||outcome==='FAIL'&&(row.reproduced!==true
+        ||!clean(row.counterexampleId)||!clean(row.failureSignature))
+      ||spec?.platform&&clean(spec.platform).toUpperCase()!==clean(row.platform).toUpperCase()
+      ||spec?.domain&&clean(spec.domain).toUpperCase()!==clean(row.domain).toUpperCase())
+      return false;
+    verifiedEvidence.add(evidenceId);
+    return true;
+  });
   const experiments=[];
   for(const profile of profiles){
     const measured=eligibleHistory.filter(row=>row.strategy===profile.id);
