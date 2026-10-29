@@ -730,6 +730,39 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   // Roblox:Unity:Web 비율과 Unity Web의 독립 플랫폼 몫을 그대로 유지한다.
   const hasUnityWeb=[...capacityRunning,...candidates.map(row=>row.task)].some(task=>platform(task)==='unity-web');
   const weights=hasUnityWeb?{roblox:6,'unity-web':6,unity:0,web:1}:{roblox:6,unity:2,web:1};
+  // [플랫폼별 성능 관측] 검증/최종실패 체크포인트와 소스 작업 시간을 플랫폼별로 분리한다.
+  // 미완료 작업, 소스 마커, 추측한 시간은 성능·실행 PASS로 세지 않는다.
+  // 최소 표본이 모이기 전에는 기존 6:2:1 중앙정책 가중치를 변경하지 않는다.
+  const performanceTargets=['roblox','web'];
+  const platformHistory=Object.fromEntries(performanceTargets.map(name=>[name,[]]));
+  for(let i=queue.tasks.length-1;i>=0;i--){
+    const task=queue.tasks[i];
+    if(!isGamePrimaryTask(task)||!['verified','failed'].includes(task.status))continue;
+    const name=platform(task);
+    if(!platformHistory[name]||platformHistory[name].length>=32)continue;
+    const marker=(task.evidence||[]).filter(row=>/^workload:cycle-ms:[0-9]+$/.test(row)).at(-1);
+    const duration=marker?Number(marker.slice('workload:cycle-ms:'.length)):0;
+    platformHistory[name].push({passed:task.status==='verified',durationMs:duration>0&&Number.isSafeInteger(duration)?duration:null});
+  }
+  const platformPerformance=Object.fromEntries(performanceTargets.map(name=>{
+    const history=platformHistory[name];
+    const verified=history.filter(row=>row.passed).length;
+    const failed=history.length-verified;
+    const durations=history.filter(row=>row.passed&&row.durationMs!==null).map(row=>row.durationMs);
+    const observedMs=durations.reduce((total,ms)=>total+ms,0);
+    const successRatePct=history.length?Math.round(100*verified/history.length):null;
+    const serialVerifiedPerHour=durations.length>=4&&observedMs>0
+      ?Math.round(100*durations.length*3600000/observedMs)/100:null;
+    // 성능 정보는 최근 완료된 동일 플랫폼 체크포인트만 사용하며, 플랫폼을 굶기지 않도록 ±10%로 제한한다.
+    const reliabilityAdjustment=history.length>=8?(verified/history.length-0.75)*0.2:0;
+    const throughputAdjustment=durations.length>=4&&observedMs>0
+      ?Math.max(-0.04,Math.min(0.04,(3600000/(observedMs/durations.length)-1)/100)):0;
+    const multiplier=Math.max(0.9,Math.min(1.1,1+reliabilityAdjustment+throughputAdjustment));
+    weights[name]=Math.round(weights[name]*multiplier*1000)/1000;
+    return [name,freeze({sampleSize:history.length,verified,failed,successRatePct,
+      measuredVerifiedCycleCount:durations.length,serialVerifiedPerHour,
+      effectiveWeight:weights[name],evidence:'QUEUE_CHECKPOINTS_ONLY_NOT_GAME_RUNTIME_QA'})];
+  }));
   const service=Object.fromEntries(Object.keys(weights).map(name=>[name,0]));
   for(const task of running){
     if(!taskMatchesExecutionLane(task,laneMode))continue;
@@ -885,6 +918,49 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     postReleaseFocusedTaskIds.push(task.id);
   };
 
+  // [한방패치] 소규모 회수 슬롯은 웹과 로블록스 간 공정한 재진입을 보장한다.
+  // 이미 실행 중인 다른 플랫폼 작업을 종료시키지 않으며, owner/출시 우선순위와 파일 락을 침범하지 않는다.
+  // 한쪽에 후보가 없다면 해당 슬롯은 다른 쪽이 즉시 빌린다(기존 work stealing).
+  // 대규모 웨이브는 원래 6:2:1 및 웹 2게임 바닥 배정이 계속 지배한다.
+  const protectedPlatformReservations=[];
+  if(laneMode==='game-primary'&&freeSlots>0&&freeSlots<=2){
+    const eligible=['roblox','web'].filter(name=>(platformRows[name]||[]).length>0);
+    // A one-sided backlog must never override the canonical Unity/Web weighted
+    // rotation or owner release ordering just to claim an unnecessary floor.
+    if(eligible.length===2){
+    const recentPlatform=queue.tasks.findLast(task=>isGamePrimaryTask(task)
+      &&['verified','failed'].includes(task.status)
+      &&['roblox','web'].includes(platform(task)));
+    const lastPlatform=recentPlatform?platform(recentPlatform):'';
+    const activeCounts=Object.fromEntries(['roblox','web'].map(name=>[
+      name,capacityRunning.filter(task=>platform(task)===name).length
+    ]));
+    const order=eligible.sort((a,b)=>activeCounts[a]-activeCounts[b]
+      ||Number(a===lastPlatform)-Number(b===lastPlatform)
+      ||(a==='roblox'?-1:1));
+    for(const name of order){
+      if(selected.length>=freeSlots)break;
+      if(capacityRunning.some(task=>platform(task)===name)
+        ||selected.some(task=>platform(task)===name))continue;
+      for(const row of schedulingCandidates.filter(candidate=>platform(candidate.task)===name)){
+        const higherPending=schedulingCandidates.filter(candidate=>
+          !selected.some(task=>task.id===candidate.task.id)
+          &&candidate.task.id!==row.task.id
+          &&strictlyHigherPlatformPriority(candidate.task,row.task)
+        ).length;
+        if(selected.length+higherPending>=freeSlots)continue;
+        const conflict=reservationConflictFor(row.task);
+        if(conflict)continue;
+        selected.push(row.task);active.push(row.task);
+        shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
+        noteFocusedSelection(row.task);
+        protectedPlatformReservations.push(row.task.id);
+        break;
+      }
+    }
+    }
+  }
+
   if(webTarget&&freeSlots>0){
     for(const row of schedulingCandidates.filter(row=>platform(row.task)===webPlatform)){
       if(selected.length>=freeSlots||webGames().size>=webTarget)break;
@@ -994,6 +1070,11 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     lane: laneMode,
     laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
     robloxFirstMode: robloxCandidateAvailable,
+    platformReservations: freeze({mode:'SHARED_QUEUE_PLATFORM_ISOLATED_FREE_SLOT_FAIRNESS',
+      protectedTaskIds:freeze([...protectedPlatformReservations]),borrowIdleSlots:true,
+      noCrossPlatformWorkerFailureBlock:true,
+      physicalHostedRunnerSlotsNotGuaranteed:true}),
+    platformPerformance: freeze(platformPerformance),
     robloxFirstDeferred: freeze(robloxFirstDeferred),
     webGameFlow:freeze({target:webTarget,activeGameIds:freeze([...webGames()]),shortfall:Math.max(0,webTarget-webGames().size),countsTasksAsGames:false}),
     running: freeze(running),
@@ -1174,6 +1255,8 @@ export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = 
     longWorkProtectedSlotUsed: next.longWorkProtectedSlotUsed,
     longWorkOwnerTaskId: next.longWorkOwnerTaskId,
     shardUse: next.shardUse,
+    platformReservations: next.platformReservations,
+    platformPerformance: next.platformPerformance,
     workStealingUsed: next.workStealingUsed
   });
 }
