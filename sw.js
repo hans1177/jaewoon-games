@@ -43,7 +43,7 @@ const NETWORK_ONLY=/\/web-games\/_shared\/touch-controls\.js(?:\?|$)|\/assets\/h
 
 function injectEmergencyScript(response){
   return response.text().then(html=>{
-    if(!html.includes('/jaewoon-games/emergency-ai.js'))html=html.replace('</body>','<script src="/jaewoon-games/emergency-ai.js"></script></body>');
+    if(!html.includes('/emergency-ai.js'))html=html.replace('</body>','<script src="/emergency-ai.js"></script></body>');
     const headers=new Headers(response.headers);headers.delete('Content-Length');headers.set('Cache-Control','no-store, no-cache, must-revalidate');
     return new Response(html,{status:response.status,statusText:response.statusText,headers});
   });
@@ -82,15 +82,15 @@ self.addEventListener('fetch',event=>{
   if(!url.pathname.startsWith(scopePath))return;
   const localPath='/'+url.pathname.slice(scopePath.length);
   if(isForestAsset(localPath)){event.respondWith(serveForestAsset(request,event));return;}
-  if(localPath==='/jaewoon-games/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
+  if(localPath==='/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
   if(NETWORK_ONLY.test(localPath+url.search)){
     // 런타임 JSON은 서버가 선언한 짧은 HTTP 캐시만 사용한다. 오프라인 앱 저장소로 대체하지 않는다.
     const runtimeMetadata=/^\/(game-catalog|company-status|homepage-platform-exposure|homepage-portfolio-status)\.json$/.test(localPath);
     event.respondWith(fetch(request,{cache:runtimeMetadata?'default':'no-store'}));return;
   }
-  if(url.pathname.startsWith('/jaewoon-games/web-games/daechung-rpg/')){event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match(request)||Response.error()));return;}
+  if(url.pathname.startsWith('/web-games/daechung-rpg/')){event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match(request)||Response.error()));return;}
   if(request.mode==='navigate'){
-    const isWebGame=localPath.startsWith('/jaewoon-games/web-games/');
+    const isWebGame=localPath.startsWith('/web-games/');
     event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>{
       if(isWebGame)return Response.error();
       return await caches.match(request)||await caches.match('offline.html')||Response.error();

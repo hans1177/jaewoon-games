@@ -180,7 +180,7 @@ function setFavoritesOpen(open){
 
 const getJson=async path=>{
   try{
-    const r=await fetch(new URL(path.replace(/^\/+/,''),new URL('../',import.meta.url)),{cache:'default',signal:AbortSignal.timeout(10000)});
+    const r=await fetch(new URL(path.replace(/^\/+(?:jaewoon-games\/)?/,''),new URL('../',import.meta.url)),{cache:'default',signal:AbortSignal.timeout(10000)});
     if(r.ok)return await r.json();
   }catch{}
   return null;
