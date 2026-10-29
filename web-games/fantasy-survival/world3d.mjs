@@ -326,10 +326,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         let gltf;
         if(file==='barbarian.glb'&&typeof DecompressionStream==='function'){
           // 기존 압축 리그를 전송해 모바일 네트워크의 초기 부하를 줄인다.
-          const packed=await fetch(new URL('./barbarian.glb.gz',import.meta.url),{cache:'force-cache'});
-          if(!packed.ok)throw new Error('Original CC0 barbarian model unavailable: '+packed.status);
-          const bytes=await new Response(packed.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-          gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',url).href);
+          try{
+            const packed=await fetch(new URL('./barbarian.glb.gz',import.meta.url),{cache:'force-cache'});
+            if(!packed.ok)throw new Error('Original CC0 barbarian model unavailable: '+packed.status);
+            const bytes=await new Response(packed.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+            gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',url).href);
+          }catch(error){
+            // [3D 로딩] 압축 전송 실패도 동일한 승인 원본 GLB로 복구한다.
+            console.warn('Compressed CC0 barbarian unavailable; loading original GLB',error);
+            gltf=await new GLTFLoader().loadAsync(url.href);
+          }
         }else gltf=await new GLTFLoader().loadAsync(url.href);
         model=gltf.scene;clips=gltf.animations||[];
       }else{
@@ -755,11 +761,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       // [액션] 실제 원본 공격 클립을 찾지 못하면 대기 동작을 공격으로 위장하지 않는다.
-      const reacting=poseNow<(Number(e.hitAt)||0);
-      const intents=reacting?['hit','hurt','damage']:attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
-      const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
+      const hitStamp=Number(e.hitAt)||0;
+      const freshHit=hitStamp>poseNow&&hitStamp!==actor.lastHitStamp;
+      if(freshHit){actor.lastHitStamp=hitStamp;actor.hitUntil=poseNow+250}
+      const reacting=poseNow<(actor.hitUntil||0);
+      const visualSpeed=moveDelta*1000/poseElapsed;
+      if(visualSpeed<75)actor.travelRole='walk';else if(visualSpeed>110)actor.travelRole='run';
+      const travelWords=actor.travelRole==='run'?['run','walk']:['walk','run'];
+      actor.enemy=e;
+      const intents=reacting?['hit','hurt','damage']:attacking?['attack','swing']:moving?travelWords:['idle','stand'];
+      const clip=intents.map(word=>undeadClips.find(c=>c.name.toLowerCase().includes(word))).find(Boolean)
         ||(!attacking?undeadClips.find(c=>/idle|walk/i.test(c.name)):null)||null;
-      if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
+      if(actor.mixer&&clip&&(clip.name!==actor.clipName||freshHit||!reacting&&attacking&&actor.lastAttackStamp!==e.attackAt)){
         const transitionSeconds=attacking?.10:moving?.16:.22;
         const nextAction=actor.mixer.clipAction(clip);
         if(actor.action&&actor.action!==nextAction)actor.action.fadeOut(transitionSeconds);
@@ -768,9 +781,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.action.setLoop(attacking||reacting?THREE.LoopOnce:THREE.LoopRepeat,attacking||reacting?1:Infinity);
         actor.action.clampWhenFinished=attacking||reacting;
         actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
-        if(attacking)actor.lastAttackStamp=e.attackAt;
+        if(attacking&&!reacting)actor.lastAttackStamp=e.attackAt;
       }
-      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
+      if(actor.action)actor.action.setEffectiveTimeScale(reacting?1:attacking?1.35:moving?1.25:1);
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
@@ -780,6 +793,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     for(const [key,actor] of undeadActors){
       if(actor.seen===stamp)continue;
+      const corpse=actor.enemy,now=performance.now();
+      // [사망 모션] 기존 처치 이벤트만 읽는다. 보상·판정·리스폰은 본편 그대로다.
+      if(corpse?.deathQueued&&corpse.hp<=0&&corpse.area===state.area&&actor.mixer){
+        if(!actor.deathUntil){
+          const deathClip=undeadClips.find(clip=>/death|die|dying/i.test(clip.name)&&!/pose/i.test(clip.name));
+          if(deathClip){
+            actor.action?.fadeOut(.09);
+            const deathAction=actor.mixer.clipAction(deathClip);
+            const duration=Math.min(1.5,Math.max(.25,deathClip.duration));
+            deathAction.reset().setEffectiveWeight(1).setDuration(duration).setLoop(THREE.LoopOnce,1);
+            deathAction.clampWhenFinished=true;deathAction.fadeIn(.09).play();
+            actor.deathUntil=now+duration*1000;actor.lastFrame=now;
+            actor.anchor.userData.worldPoint=null;
+            if(actor.nameLabel)actor.nameLabel.visible=false;
+          }
+        }
+        if(now<actor.deathUntil){
+          actor.mixer.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+          actor.lastFrame=now;continue;
+        }
+      }
       actor.mixer?.stopAllAction();
       scene.remove(actor.anchor);actor.nameLabel?.material.dispose();
       undeadActors.delete(key);
@@ -878,11 +912,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       // [액션] 종별 실제 리그에서 공격/물기/베기 클립을 찾고 허위 공격 재생을 금지한다.
-      const reacting=poseNow<(Number(e.hitAt)||0);
-      const words=reacting?['hit','hurt','damage']:attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
-      const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
+      const hitStamp=Number(e.hitAt)||0;
+      const freshHit=hitStamp>poseNow&&hitStamp!==actor.lastHitStamp;
+      if(freshHit){actor.lastHitStamp=hitStamp;actor.hitUntil=poseNow+250}
+      const reacting=poseNow<(actor.hitUntil||0);
+      const visualSpeed=moveDelta*1000/poseElapsed;
+      if(visualSpeed<75)actor.travelRole='walk';else if(visualSpeed>110)actor.travelRole='run';
+      const travelWords=actor.travelRole==='run'?['run','walk']:['walk','run'];
+      actor.enemy=e;
+      const words=reacting?['hit','hurt','damage']:attacking?['attack','bite','swing']:moving?travelWords:['idle','stand'];
+      const clip=words.map(word=>actor.clips.find(c=>c.name.toLowerCase().includes(word))).find(Boolean)
         ||(!attacking?actor.clips.find(c=>/idle|walk/i.test(c.name)):null);
-      if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
+      if(actor.mixer&&clip&&(clip.name!==actor.clipName||freshHit||!reacting&&attacking&&actor.lastAttackStamp!==e.attackAt)){
         const transitionSeconds=attacking?.10:moving?.16:.22;
         const nextAction=actor.mixer.clipAction(clip);
         if(actor.action&&actor.action!==nextAction)actor.action.fadeOut(transitionSeconds);
@@ -891,9 +932,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.action.setLoop(attacking||reacting?THREE.LoopOnce:THREE.LoopRepeat,attacking||reacting?1:Infinity);
         actor.action.clampWhenFinished=attacking||reacting;
         actor.action.fadeIn(transitionSeconds).play();actor.clipName=clip.name;
-        if(attacking)actor.lastAttackStamp=e.attackAt;
+        if(attacking&&!reacting)actor.lastAttackStamp=e.attackAt;
       }
-      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
+      if(actor.action)actor.action.setEffectiveTimeScale(reacting?1:attacking?1.35:moving?1.25:1);
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
@@ -902,6 +943,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     for(const [key,actor] of nativeCreatureActors){
       if(actor.seen===stamp)continue;
+      const corpse=actor.enemy,now=performance.now();
+      // [사망 모션] 기존 처치 이벤트만 읽는다. 보상·판정·리스폰은 본편 그대로다.
+      if(corpse?.deathQueued&&corpse.hp<=0&&corpse.area===state.area&&actor.mixer){
+        if(!actor.deathUntil){
+          const deathClip=actor.clips.find(clip=>/death|die|dying/i.test(clip.name)&&!/pose/i.test(clip.name));
+          if(deathClip){
+            actor.action?.fadeOut(.09);
+            const deathAction=actor.mixer.clipAction(deathClip);
+            const duration=Math.min(1.5,Math.max(.25,deathClip.duration));
+            deathAction.reset().setEffectiveWeight(1).setDuration(duration).setLoop(THREE.LoopOnce,1);
+            deathAction.clampWhenFinished=true;deathAction.fadeIn(.09).play();
+            actor.deathUntil=now+duration*1000;actor.lastFrame=now;
+            actor.anchor.userData.worldPoint=null;
+            if(actor.nameLabel)actor.nameLabel.visible=false;
+          }
+        }
+        if(now<actor.deathUntil){
+          actor.mixer.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+          actor.lastFrame=now;continue;
+        }
+      }
       actor.mixer?.stopAllAction();
       scene.remove(actor.anchor);actor.nameLabel?.material.dispose();nativeCreatureActors.delete(key);
     }
@@ -1177,7 +1239,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(hero){
       hero.avatar.visible=true;
       hero.avatar.position.set(centerX,0,centerY);
-      hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      const heading=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      const turnElapsed=Math.min(80,Math.max(1,performance.now()-lastHeroPoseAt));
+      hero.avatar.rotation.y+=Math.atan2(Math.sin(heading-hero.avatar.rotation.y),Math.cos(heading-hero.avatar.rotation.y))
+        *(lastHeroPoseAt>0?1-Math.exp(-turnElapsed*.018):1);
       const tool=String(p.weapon||p.tool||'NONE').toLowerCase();
       updateEquippedVisual(tool);
       if(swingArc.parent!==hero.avatar)hero.avatar.add(swingArc);

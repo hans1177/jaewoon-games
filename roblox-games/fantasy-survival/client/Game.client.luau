@@ -509,6 +509,7 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   activeCombatStartedAt = os.clock()
   -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
   activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
+    followAnimator = true,
     response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
   })
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
