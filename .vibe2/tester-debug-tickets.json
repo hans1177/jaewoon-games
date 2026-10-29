@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-29T18:56:49.613Z",
+  "updatedAt": "2026-10-29T19:07:36.694Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -11999,9 +11999,64 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-29T13:04:37.413Z",
-      "updatedAt": "2026-10-29T18:56:49.606Z",
-      "occurrenceCount": 2
+      "updatedAt": "2026-10-29T19:07:36.674Z",
+      "occurrenceCount": 3
     }
   ],
-  "webPlaytestObservations": []
+  "webPlaytestObservations": [
+    {
+      "gameId": "portal-rpg",
+      "runtimePassed": true,
+      "target": "web",
+      "sourceRoot": "web-games/portal-rpg",
+      "sourceTreeSha": "9c1f194a9e81057667774d7161e4c566a406cf2b",
+      "sourceRevision": "9880601e135db1dede8eeba0646d11ddf48be6e7",
+      "runtimeObserved": true,
+      "failureStage": null,
+      "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
+      "sharedSourceTrees": {
+        "assets": "2b3531c53a053ef717d3dd2ce28d2b2a8d5f801c",
+        "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
+        "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
+      },
+      "runId": "40933467703",
+      "observedAt": "2026-10-29T19:07:36.674Z"
+    },
+    {
+      "gameId": "ocean-voyage",
+      "runtimePassed": true,
+      "target": "web",
+      "sourceRoot": "web-games/ocean-voyage",
+      "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
+      "sourceRevision": "9880601e135db1dede8eeba0646d11ddf48be6e7",
+      "runtimeObserved": true,
+      "failureStage": null,
+      "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
+      "sharedSourceTrees": {
+        "assets": "2b3531c53a053ef717d3dd2ce28d2b2a8d5f801c",
+        "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
+        "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
+      },
+      "runId": "40933467703",
+      "observedAt": "2026-10-29T19:07:36.674Z"
+    },
+    {
+      "gameId": "gem-survivor",
+      "runtimePassed": true,
+      "target": "web",
+      "sourceRoot": "web-games/gem-survivor",
+      "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
+      "sourceRevision": "9880601e135db1dede8eeba0646d11ddf48be6e7",
+      "runtimeObserved": true,
+      "failureStage": null,
+      "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
+      "sharedSourceTrees": {
+        "assets": "2b3531c53a053ef717d3dd2ce28d2b2a8d5f801c",
+        "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
+        "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
+      },
+      "runId": "40933467703",
+      "observedAt": "2026-10-29T19:07:36.674Z"
+    }
+  ]
 }
