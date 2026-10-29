@@ -1236,7 +1236,8 @@ test('model-free Luau action threshold unlock only changes existing server boole
   order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
    goal:'함수 collect에서 trace 호출 뒤 a.progress >= 3이면 a.unlocked를 true로 설정해'}});
  assert.equal(candidate.edits.length,1);
- assert.match(candidate.edits[0].replace,/not \(a\.unlocked\) and \(a\.progress >= 3\)/);
+ assert.match(candidate.edits[0].replace,/not \(a\.unlocked\) and \(\(?a\.progress >= 3\)\)?/);
+ assert.match(candidate.edits[0].replace,/a\.unlocked = true/,'existing boolean is set only after threshold');
  assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
 });
 
