@@ -78,3 +78,21 @@ test('owner can request the existing state -> UI -> save function chain in Korea
  const unapproved=compileComplexOwnerIntent({order:{goal:'함수 collect에서 mutate 호출 뒤 render 호출하고 save를 호출해'}});
  assert.ok(unapproved.unresolved.some(row=>row.code==='NO_OWNER_SPEC'));
 });
+
+test('natural language without function names binds only explicit state UI save and all-server combat semantics',()=>{
+ for(const [goal,operation] of [
+  ['상태 변경 후 화면 갱신하고 저장해','semantic-existing-chain'],
+  ['상태가 바뀌면 화면을 갱신하고 저장해','semantic-existing-chain'],
+  ['After changing state, refresh the UI and save','semantic-existing-chain'],
+  ['서버의 모든 전투 함수에서 죽은 대상 공격 금지','semantic-multi-guard'],
+  ['Prevent attacking dead targets in all server combat functions','semantic-multi-guard']
+ ]){
+  const result=compile(goal);
+  assert.equal(result.unresolved.length,0,goal);
+  assert.equal(result.requirements[0].operation,operation);
+  assert.equal(result.requirements[0].functionName,undefined);
+  assert.equal(result.sourceWrite,false);
+ }
+ for(const goal of ['내 게임을 알아서 모두 고쳐','서버 전투를 마음대로 개선해',
+  '함수 이름을 추측해서 저장해'])assert.ok(compile(goal).unresolved.length,goal);
+});
