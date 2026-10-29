@@ -888,7 +888,7 @@ jobs:
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' /tmp/jaewoon-pages-home-live.html || {
             echo 'WEB_PAGES_CANONICAL_HOMEPAGE_NOT_LIVE' >&2; exit 1;
           }
-          grep -Fq 'src="assets/homepage-enhancements.js"' /tmp/jaewoon-pages-home-live.html || {
+          grep -Fq 'src="assets/homepage-enhancements.js?v=owner-only-20261030"' /tmp/jaewoon-pages-home-live.html || {
             echo 'WEB_PAGES_HOME_RENDERER_PATH_MISMATCH' >&2; exit 1;
           }
           # Independent homepage dependencies: bounded concurrent HTTP checks.
