@@ -3321,7 +3321,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   // Image-to-mesh takes precedence over an optional library model fallback.
   // An explicitly supplied model together with an image is still an invalid dual source.
   const explicitSourceModel=clean(task.assetAuthoring?.sourceModel);
-  const linkedSourceModel=imageRequested?'':clean(librarySource?.sourceModel);
+  const linkedSourceModel=imageRequested||Boolean(explicitSourceModel)?'':clean(librarySource?.sourceModel);
   const modelRequested=Boolean(explicitSourceModel||linkedSourceModel);
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
     :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
@@ -3365,7 +3365,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     ?imageRow?.attribution||imageRow?.credit
     :librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit));
   const checkSourceLicense=()=>{
-    if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
+    if(!['project-original','cc0','cc0-1.0','cc-by'].includes(sourceLicense.toLowerCase()))
       throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');
     if(sourceLicense.toLowerCase()==='cc-by'&&!sourceCredit)
       throw new Error('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED');
@@ -3401,11 +3401,19 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   const actualProfile=GENERIC_NATIVE_DCC_TYPES.includes(typeName)?typeName:'prop';
   const resolvedLicense=(imageRequested||modelRequested)?sourceLicense:(module==='human'?'CC0':'project-original');
   const renderedViews=module!=='auto'||imageRequested||modelRequested;
+  // [모델 없는 그래픽 자산화] CC0·원본 SHA가 검증된 내부 3D 자산에서만 방향별 2D 시트를 제작한다.
+  // 3D 원본/리그/게임플레이는 그대로 유지하며 2D UI·아이콘·미리보기 파생물만 추가한다.
+  const spriteAtlas=Boolean(linkedSourceModel
+    &&['cc0','cc0-1.0'].includes(sourceLicense.toLowerCase())
+    &&GENERIC_NATIVE_DCC_TYPES.includes(typeName)
+    &&task.assetAuthoring?.spriteAtlas!==false);
+  if(task.assetAuthoring?.spriteAtlas===true&&!spriteAtlas)
+    throw new Error('SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED');
   return {
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
     family,license:resolvedLicense,module:modelModule,
-    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',
+    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',spriteAtlas,
     internalAssetLibrary:'VIBE_STUDIO_ASSET_UNIVERSE',internalAssetState:'PREPARED_NATIVE_QA_PENDING',
     cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
     cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,sourceImage:imageRequested?sourceImage:null,
@@ -3429,12 +3437,14 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
         '--library-source-sha256',clean(librarySource.sourceSha256)]:[]),
       ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
       ...(module==='medical'?['--source-sanitized','yes']:[]),
+      ...(spriteAtlas?['--sprite-atlas']:[]),
       ...(module==='object'?['--object-kind',objectKind]:[]),
       ...(['animation','video'].includes(module)?['--motion-kind',clean(task.assetAuthoring?.motionKind).toLowerCase()||'sway',
         '--cinematic-style',cinematicStyle,'--cinematic-quality',cinematicQuality]:[])],
     outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,
       `${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,
       `${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
+      ...(spriteAtlas?[`${outputRoot}/sprite-atlas.png`]:[]),
       ...(renderedViews?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[]),
       ...(['animation','video'].includes(module)?[`${outputRoot}/preview-motion.mp4`]:[])],
     evidenceJson:`${outputRoot}/evidence.json`,
@@ -3444,6 +3454,12 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
 
 function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},registry={},assetSupplySummary=null,repoRoot=process.cwd(),explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
+  // [출처 경계] 명시된 미검증 원본을 내부 CC0 라이브러리 원본으로 가장할 수 없다.
+  // 게임·자산 종류 추론이 실패하더라도 요청 단계에서 먼저 차단한다.
+  if(task.assetAuthoring?.spriteAtlas===true&&(
+    clean(task.assetAuthoring?.sourceModel)||clean(task.assetAuthoring?.sourceImage)
+    ||task.imageToAsset===true))
+    throw new Error('SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED');
   const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
   if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
   const engineNativeTarget=['roblox','unity'].includes(targetName);
