@@ -90,7 +90,7 @@ async function requestPermanentGameDelete(id){
   const token=localStorage.getItem('jaewoon_command_device_v1')||'';
   if(!token){
     window.alert('영구삭제 요청에 오너 기기 인증이 필요해. 삭제하지 않았어. 개발 지시 화면에서 먼저 기기를 등록해줘.');
-    location.href='command.html';
+    location.href=new URL('../command.html',import.meta.url).href;
     return;
   }
   const buttons=[...document.querySelectorAll('button[data-hide-game]')].filter(button=>button.dataset.hideGame===id);
@@ -180,7 +180,7 @@ function setFavoritesOpen(open){
 
 const getJson=async path=>{
   try{
-    const r=await fetch(path,{cache:'default',signal:AbortSignal.timeout(10000)});
+    const r=await fetch(new URL(path.replace(/^\/+/,''),new URL('../',import.meta.url)),{cache:'default',signal:AbortSignal.timeout(10000)});
     if(r.ok)return await r.json();
   }catch{}
   return null;
@@ -697,7 +697,7 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,exposure,portfolio,webManifest]=await Promise.all([getJson('game-catalog.json'),getJson('company-status.json'),getJson('homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('homepage-portfolio-status.json'):Promise.resolve(null),getJson('web-games/publish-manifest.json')]);
+    const [catalog,status,exposure,portfolio,webManifest]=await Promise.all([getJson('/jaewoon-games/game-catalog.json'),getJson('/jaewoon-games/company-status.json'),getJson('/jaewoon-games/homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('/jaewoon-games/homepage-portfolio-status.json'):Promise.resolve(null),getJson('/jaewoon-games/web-games/publish-manifest.json')]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
     const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
     const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
@@ -723,7 +723,7 @@ async function refresh(){
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
     // 첫 로딩에서만 카드를 즉시 표시한다. 이후 갱신은 검증된 빌드 상태와 함께 반영해 모바일 카드가 흔들리지 않게 한다.
     renderCatalog(catalog);
-  }finally{refreshInFlight=false;}
+  }finally{refreshInFlight=false;checkDeletionStatus();}
 }
 function main(){
   favoriteGameIds=loadFavorites();
@@ -738,10 +738,10 @@ function main(){
   simplifyPage();
   bindDirectGameLaunch();
   refresh();
-  setInterval(()=>{if(!document.hidden){refresh();checkDeletionStatus();}},SYNC_INTERVAL_MS);
-  window.addEventListener('focus',()=>{refresh();checkDeletionStatus();});
+  setInterval(()=>{if(!document.hidden)refresh();},SYNC_INTERVAL_MS);
+  window.addEventListener('focus',refresh);
   window.addEventListener('online',refresh);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){refresh();checkDeletionStatus();}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
 
