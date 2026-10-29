@@ -208,5 +208,5 @@ test('WEB autonomous evolution stays review-only until exact merged PR browser a
  assert.match(recovery,/post-publication-3d-smoke/);
  assert.match(recovery,/web-playtest-report\.json/);
  assert.match(recovery,/report\.exactPublishedRevision!==true/);
- assert.match(recovery,/game\.sourceRevision===sha/);
+ assert.match(recovery,/g\.sourceRevision===sha/);
 });
