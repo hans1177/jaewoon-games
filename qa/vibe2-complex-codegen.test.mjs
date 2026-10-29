@@ -270,6 +270,26 @@ test('source index refuses symbolic-link escape and protects saved state mutator
     goal:'When function event runs, call persist then render'}}};
   assert.throws(()=>createVibe59CodeCandidates(changed),/UNSUPPORTED_FUNCTION_CONTRACT/);
 });
+test('approved view-only module preserves real game handler indexing but unrelated inline modules remain blocked',t=>{
+  const {root,relative,options}=setup(t,'web',true);
+  const file=path.join(root,relative),original=fs.readFileSync(file,'utf8');
+  const sidecar='\n<script type="module" data-vibe-common-screen>\n'
+    +"import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';\n"
+    +'mountVibeGameScreenEffects();\n</script>\n';
+  fs.writeFileSync(file,original+sidecar);
+  const allowed=indexVibe2GameSource({...options,gameId:'game'});
+  assert.equal(allowed.functions.filter(row=>row.name==='event').length,1);
+  assert.equal(allowed.functions.filter(row=>row.name==='commitState').length,1);
+  assert.equal(allowed.unsupported.length,0);
+  const candidate=planVibe2ComplexWork(options);
+  assert.equal(candidate.edits.length,1);
+  assert.equal(candidate.status,'SOURCE_BOUND_CANDIDATE_NOT_RUNTIME_VERIFIED');
+  fs.writeFileSync(file,original+sidecar.replace('mountVibeGameScreenEffects();','mountVibeGameScreenEffects();window.evil=true;'));
+  const refused=indexVibe2GameSource({...options,gameId:'game'});
+  assert.equal(refused.functions.length,0);
+  assert.ok(refused.unsupported.some(row=>row.reason==='HTML_SCRIPT_SCOPE'));
+});
+
 test('existing line-defense game source is indexed without speculative edits to live gameplay',()=>{
   const root=path.resolve('web-games/line-defense');
   const source=fs.readFileSync(path.join(root,'index.html'),'utf8');
