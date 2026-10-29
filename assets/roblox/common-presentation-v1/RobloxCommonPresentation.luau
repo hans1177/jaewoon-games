@@ -173,6 +173,18 @@ function Presentation.BindGameUiEffects(player, options)
   scope.Parent = gui
   local TweenService = game:GetService("TweenService")
   local touch = game:GetService("UserInputService").TouchEnabled
+  -- 프레임 비용이 낮은 네이티브 후가공. 기존 게임이 설정한 Bloom은 그대로 둔다.
+  if options.postProcessing ~= false and not touch then
+    local Lighting = game:GetService("Lighting")
+    if not Lighting:FindFirstChildOfClass("BloomEffect") then
+      local glow = Instance.new("BloomEffect")
+      glow.Name = "VibeSharedBloom"
+      glow.Intensity = 0.16
+      glow.Size = 18
+      glow.Threshold = 1.25
+      glow.Parent = Lighting
+    end
+  end
   local reduced = options.reducedMotion == true
   local connections = {}
   local bound = {}
@@ -214,6 +226,36 @@ function Presentation.BindGameUiEffects(player, options)
   end
   for _,node in ipairs(gui:GetDescendants()) do bind(node) end
   table.insert(connections,gui.DescendantAdded:Connect(bind))
+  -- [실제 적중] 서버 복제 Humanoid 체력 감소에만 기존 VFX 에셋을 발사한다.
+  -- 피해량·히트박스·전투 Remote는 전혀 다루지 않는다.
+  local shared = game:GetService("ReplicatedStorage"):FindFirstChild("Shared")
+  local vfxModule = shared and shared:FindFirstChild("RobloxCommonVFX")
+  if vfxModule and vfxModule:IsA("ModuleScript") and options.damageVfx ~= false then
+    local ok, VFX = pcall(require, vfxModule)
+    if ok and type(VFX.CreateVibePreset) == "function" then
+      local function bindCharacter(character)
+        local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 4)
+        if not humanoid then return end
+        local lastHealth = humanoid.Health
+        local lastEffectAt = -100
+        table.insert(connections, humanoid.HealthChanged:Connect(function(health)
+          if scope.Parent and health < lastHealth - 0.05 and time() - lastEffectAt >= 0.12 then
+            local root = character:FindFirstChild("HumanoidRootPart")
+            if root then
+              lastEffectAt = time()
+              pcall(VFX.CreateVibePreset, "impact", {
+                cframe = root.CFrame, count = touch and 4 or 8,
+                color = Color3.fromRGB(255, 112, 112), critical = false
+              })
+            end
+          end
+          lastHealth = health
+        end))
+      end
+      if player.Character then task.defer(bindCharacter,player.Character) end
+      table.insert(connections,player.CharacterAdded:Connect(bindCharacter))
+    end
+  end
   scope.Destroying:Connect(function()
     for _,connection in ipairs(connections) do connection:Disconnect() end
     table.clear(connections)
