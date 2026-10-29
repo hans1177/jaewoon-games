@@ -803,3 +803,33 @@ test('Vibe5.9 enumerative provenance never masquerades as evolved AST',()=>{
  assert.equal(concepts.verified,false);
  assert.equal(concepts.promotionAuthorized,false);
 });
+
+
+test('Vibe5.9 conditional AST evaluates only its selected branch on zero divisors',()=>{
+ const piecewise=['select',['param',0],
+   ['/', ['const',1],['param',1]],['const',4]];
+ const spec={parameters:['x','y'],strategy:'evolution',maxGenerations:2,
+   verifiedConcepts:[{verified:true,ast:piecewise,proof:{
+     independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true}}],
+   examples:[{args:[1,2],output:0.5},{args:[-1,0],output:4},
+     {args:[3,5],output:0.2},{args:[-2,0],output:4}],
+   holdouts:[{args:[2,4],output:0.25},{args:[-3,0],output:4}]};
+ const result=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(result.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+ assert.ok(Array.isArray(result.ast));
+ assert.equal(result.casesPassed,6);
+ assert.equal(result.runtimeVerified,false);
+ const fn=vm.runInNewContext('(function(x,y){'+result.source+'})');
+ for(const row of [...spec.examples,...spec.holdouts])
+   assert.ok(Math.abs(fn(...row.args)-row.output)<1e-8);
+ const roblox=synthesizeVibe59NumericAlgorithmSource({
+   spec:{...spec,ownerApproved:true,functionName:'score'},
+   source:'local function score(x,y)\n return 0\nend\n',
+   relative:'roblox-games/demo/score.luau',target:'roblox'});
+ assert.match(roblox.newText,/return/);
+ assert.match(roblox.newText,/and/);
+ assert.equal(roblox.search.casesPassed,6);
+ assert.equal(roblox.runtimeVerified,false);
+ assert.equal(roblox.sourceWrite,false);
+ assert.equal(roblox.conceptCandidates.verified,false);
+});
