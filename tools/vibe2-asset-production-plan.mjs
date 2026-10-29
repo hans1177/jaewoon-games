@@ -3290,6 +3290,40 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   });
 }
 const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','weapon','prop']);
+// No-model intent extraction for explicitly requested 3D changes. Never alters
+// gameplay or invents unlicensed source parts; no ambiguity means no auto edit.
+function inferOfflineMeshReconstruction(task={}){
+  const request=clean(task.goal||task.request);
+  if(!/(?:원본|기존|3d|3D|메시|모델)/i.test(request)
+    ||!/(?:변형|재구성|재가공|재조립|비율|체형|뿔|날개|꼬리|로우폴리|low.?poly|스무딩)/i.test(request))
+    return null;
+  const morph={},add=[],remove=[];
+  for(const [key,token] of [['head','머리'],['torso','몸통'],['arms','팔'],['legs','다리']]){
+    const match=request.match(new RegExp(token+'\\s*(\\d+(?:\\.\\d+)?)\\s*배'));
+    if(match){
+      const number=Number(match[1]);
+      if(!Number.isFinite(number)||number<.65||number>1.45)
+        throw new Error('RECONSTRUCTION_MORPH_OUT_OF_BOUNDS');
+      morph[key]=number;
+    }
+  }
+  if(/근육형|근육질|muscular/i.test(request))morph.muscle=.65;
+  if(/괴물형|monster.?form|거대 괴물/i.test(request))morph.monster=.65;
+  for(const [kind,terms] of [['HORN','(?:뿔|horn)'],['WING','(?:날개|wing)'],['TAIL','(?:꼬리|tail)']]){
+    const addPattern=new RegExp(terms+'.{0,12}(?:추가|붙이|달아|달린|자라|생기|extrud|add)','i');
+    const removePattern=new RegExp(terms+'.{0,12}(?:제거|삭제|없애|remove)','i');
+    if(addPattern.test(request)&&removePattern.test(request))
+      throw new Error('RECONSTRUCTION_PART_INTENT_AMBIGUOUS:'+kind);
+    if(removePattern.test(request))remove.push(kind);
+    else if(addPattern.test(request))add.push({kind,mode:'EXTRUDE'});
+  }
+  const detail=/(?:로우폴리|low.?poly)/i.test(request)?'LOW_POLY'
+    :/(?:스무딩|표면 매끄럽|smooth)/i.test(request)?'SMOOTH':'KEEP';
+  if(!Object.keys(morph).length&&!add.length&&!remove.length&&detail==='KEEP')
+    return null;
+  return {bodyPlan:'CREATURE',morph,add,remove,detail};
+}
+
 function genericNativeDccRecipeForType({target='',task={},type='',librarySource=null,verifiedPartById=new Map()}={}){
   const targetName=clean(target).toLowerCase();
   const typeName=clean(type).toLowerCase();
@@ -3403,7 +3437,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   const resolvedLicense=(imageRequested||modelRequested)?sourceLicense:(module==='human'?'CC0':'project-original');
   // [기존 자산 제작기] 스키마를 제한하고 실제 원본 파일·해시를 검증한 CC0 부위만 결합한다.
   // 외부 모델, 선언만으로 통과, 임의 모델 파일 경로 허용은 전부 금지한다.
-  const requestedReconstruction=task.assetAuthoring?.reconstruction;
+  const requestedReconstruction=task.assetAuthoring?.reconstruction??inferOfflineMeshReconstruction(task);
   let meshReconstruction=null;
   if(requestedReconstruction!==undefined&&requestedReconstruction!==null){
     if(!linkedSourceModel||!['cc0','cc0-1.0'].includes(sourceLicense.toLowerCase()))
@@ -3659,7 +3693,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     .filter(Boolean)
     .map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{},target,uniqueDccTypes))
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch);
-  if(task.assetAuthoring?.reconstruction&&!normalizedGeneric.some(row=>row.meshReconstruction))
+  if((task.assetAuthoring?.reconstruction||inferOfflineMeshReconstruction(task))&&!normalizedGeneric.some(row=>row.meshReconstruction))
     throw new Error('RECONSTRUCTION_NO_VERIFIED_CC0_SOURCE_RECIPE');
   const executionRecipeRows=[...concreteRecipes,...normalizedGeneric]
     .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index);
