@@ -648,6 +648,11 @@ test('continuous verified pattern ingest learns, quarantines stale proof, and re
   const unchanged=ingestVerifiedCodePatterns({samplesDir,libraryInput:trained});
   assert.deepEqual(unchanged.patterns,trained.patterns);
   assert.equal(unchanged.stats.added,0);
+  const source='<button id="magic" data-gameplay-action="castSpell">마법</button><script>let mana=4;function castSpell(){mana-=1;}</script>';
+  fs.writeFileSync(path.join(root,'index.html'),source);
+  const args={order:{target:'web',goal:'모바일 버튼 입력'},sourceRoot:root,
+    responsibleFiles:['index.html']};
+  assert.equal(deterministicWebInputCandidate({...args,patternLibrary:trained})?.learnedCodePatternIds?.includes(learned.id),true);
   fs.writeFileSync(file,JSON.stringify({...sample,verification:{...sample.verification,runtime:'FAIL'}}));
   const stale=ingestVerifiedCodePatterns({samplesDir,libraryInput:trained});
   const blocked=stale.patterns.find(row=>row.id===learned.id);
@@ -656,9 +661,8 @@ test('continuous verified pattern ingest learns, quarantines stale proof, and re
   assert.equal(blocked.retrievalEligible,false);
   assert.equal(blocked.masteryEligible,false);
   assert.equal(blocked.quarantineReason,'SOURCE_SAMPLE_NOT_CURRENTLY_VERIFIED');
-  assert.equal(deterministicWebInputCandidate({order:{target:'web',goal:'모바일 버튼 입력'},
-    sourceRoot:root,responsibleFiles:['index.html'],
-    patternLibrary:stale}),null);
+  assert.equal(deterministicWebInputCandidate({...args,patternLibrary:stale}),null);
+  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),source);
   fs.writeFileSync(file,JSON.stringify(sample));
   const restored=ingestVerifiedCodePatterns({samplesDir,libraryInput:stale});
   assert.notEqual(restored.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
