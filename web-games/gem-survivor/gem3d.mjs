@@ -5,6 +5,7 @@ import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three
 import { OBJLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/OBJLoader.js';
 import {clone as cloneRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 import { GLTFLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 
 const SCALE=56, MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=360;
 const mat=(hex,emissive=hex)=>new THREE.MeshStandardMaterial({
@@ -63,15 +64,24 @@ export async function createGem3d({canvas}){
   return bigger;
  }
  // 몬스터: 저장소 CC0 원본을 사용하고 기존 게임 판정은 그대로 유지한다.
- const authoredIds=[7,15,17,18,21,26,31,35,41,47,49,53,56,31,17,49,21,56,7,35,53,41,18,26,47],objLoader=new OBJLoader(),textureLoader=new THREE.TextureLoader();
+ // [씬 에셋] 기존 CC0 몬스터 이미지를 씬 단위로 한 번 로드하고 참조를 공유한다.
+ const authoredIds=[7,15,17,18,21,26,31,35,41,47,49,53,56,31,17,49,21,56,7,35,53,41,18,26,47],objLoader=new OBJLoader();
+ const assetRuntime=new JaewoonVibeRuntime({gameId:'gem-survivor-scene-assets'});
+ const monsterTextures=new Map(),monsterIds=[...new Set(authoredIds)];
+ let monsterLease;
+ try{
+  monsterLease=await assetRuntime.setScene('gem-survivor-world',monsterIds.map(id=>({id:'monster-'+id,path:'/jaewoon-games/assets/shared/forest/monster-'+id+'.png'})));
+ }catch(error){assetRuntime.destroy();throw error;}
+ for(const id of monsterIds){
+  const texture=new THREE.Texture(monsterLease.assets['monster-'+id]);
+  texture.needsUpdate=true;
+  monsterTextures.set(id,texture);
+ }
  const enemyMeshes=new Map(),prefabCache=new Map();
  await Promise.all(SPECIES.map(async(kind,index)=>{
   const id=authoredIds[index],base=new URL('../../assets/shared/forest/',import.meta.url);
-  if(!prefabCache.has(id))prefabCache.set(id,Promise.all([
-   objLoader.loadAsync(new URL('monster-'+id+'.obj',base).href),
-   textureLoader.loadAsync(new URL('monster-'+id+'.png',base).href)
-  ]));
-  const [object,texture]=await prefabCache.get(id);
+  if(!prefabCache.has(id))prefabCache.set(id,objLoader.loadAsync(new URL('monster-'+id+'.obj',base).href));
+  const object=await prefabCache.get(id),texture=monsterTextures.get(id);
   texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.NearestFilter;
   object.updateMatrixWorld(true);
   const box=new THREE.Box3().setFromObject(object),size=box.getSize(new THREE.Vector3());
@@ -381,7 +391,10 @@ export async function createGem3d({canvas}){
   for(const entry of heroActors.values()){entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);}
   scene.traverse(o=>{
    o.geometry?.dispose?.();if(o.material){for(const m of Array.isArray(o.material)?o.material:[o.material])m?.dispose?.();}
-  });renderer.dispose();
+  });
+  for(const texture of monsterTextures.values())texture.dispose();
+  assetRuntime.destroy();
+  renderer.dispose();
  }
  return {render,resize,dispose,view};
 }
