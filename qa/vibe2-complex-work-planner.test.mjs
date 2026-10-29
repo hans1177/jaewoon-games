@@ -8,6 +8,7 @@ import vm from 'node:vm';
 import {gunzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
 import {compileComplexOwnerIntent} from '../tools/vibe2-complex-intent.mjs';
+import {createVibe59OneShotVolumeCandidate} from '../tools/vibe59-one-shot-volume.mjs';
 import {planComplexGameWork,createComplexGameCandidate} from '../tools/vibe2-complex-work-planner.mjs';
 import {buildGameSourceIndex,sourceDigest} from '../tools/vibe2-game-source-index.mjs';
 import {createVibe59CodeCandidate,createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
@@ -1321,4 +1322,83 @@ test('model-free quest reward compiles to original Roblox server Luau without ch
  assert.equal(candidate.edits.length,1);
  assert.match(candidate.edits[0].replace,/a\.coins \+= 5; a\.questDone = true end/);
  assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
+});
+
+
+// [실제 게임 볼륨] 여섯 콘텐츠 카테고리를 단일 기존 게임 수정으로 생성하고 실제 그리기·선택을 실행한다.
+test('one-shot volume pack draws facilities, RPG maps, backgrounds, sprites, actions and motions in the existing Web loop',t=>{
+ const {repo,root}=fixture(t),filename='game.js',file=path.join(root,filename);
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let originalClicks=0;',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(x,y){originalClicks++;}',
+  'function update(dt){return dt;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const request={facilities:['관람차','회전목마','롤러코스터'],
+  maps:['숲','사막','설원'],backgrounds:['낮','밤'],
+  sprites:['나무','구름'],actions:['점프','대시'],motions:['걷기','회전']};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:request};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:[filename],
+  target:'web',repositoryRoot:repo});
+ assert.equal(candidate.vibe59CodeKind,'ONE_SHOT_GAME_VOLUME');
+ assert.equal(candidate.edits.length,3);
+ assert.deepEqual(candidate.volumePack.contentCounts,{facilities:3,maps:3,backgrounds:2,sprites:2,actions:2,motions:2});
+ assert.equal(candidate.newFiles.length,0);assert.equal(candidate.replaceFiles.length,0);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+ const docs=new Map([[filename,source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get(filename),runtimeName=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ assert.ok(runtimeName);assert.doesNotThrow(()=>new vm.Script(generated));
+ const displayed=[],canvas={width:1000,height:800};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},beginPath(){},arc(){},
+  fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(s){displayed.push(s);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(generated+';({render,handleClick,update,view:()=>'+runtimeName+',previous:()=>originalClicks})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ app.render(ctx);
+ for(const name of ['관람차','회전목마','롤러코스터','숲','사막','설원','나무','구름','점프','대시'])
+  assert.ok(displayed.some(text=>text.includes(name)),name);
+ const click=(x,y)=>app.handleClick(560+x*420/440,32+y*720/600);
+ click(200,244);click(250,347);click(154,516);click(50,570);click(310,65);
+ assert.equal(app.view().mapIndex,1);
+ assert.equal(app.view().selectedFacility,2);
+ assert.equal(app.view().actionIndex,1);
+ assert.equal(app.view().motionIndex,1);
+ assert.equal(app.view().backgroundIndex,1);
+ assert.equal(app.previous(),0,'game input is not also triggered behind the volume panel');
+ const before=app.view().time;app.update(0.03);assert.ok(app.view().time>before);
+ app.handleClick(15,15);assert.equal(app.previous(),1,'existing outside click gameplay preserved');
+ displayed.length=0;app.render(ctx);assert.ok(displayed.some(text=>text.includes('RPG 지역: 사막')));
+ assert.equal(fs.readFileSync(file,'utf8'),source,'candidate generation must not edit real files');
+ assert.doesNotMatch(generated,/localStorage|setItem|DataStore/);
+});
+
+test('one-shot volume pack also accepts a single Korean six-system owner directive',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,source);
+ const goal='게임볼륨 추가: 시설 관람차, 회전목마; 지역 숲, 사막; 배경 낮, 밤; 그래픽 나무, 구름; 액션 점프, 대시; 모션 걷기, 회전';
+ const candidate=createVibe59OneShotVolumeCandidate({sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo,order:{gameId:'rpg',ownerApproved:true,goal,baseRevisionSha:revision}});
+ assert.equal(candidate.vibe59CodeKind,'ONE_SHOT_GAME_VOLUME');
+ assert.equal(candidate.edits.length,2);
+ assert.deepEqual(candidate.volumePack.contentCounts,{facilities:2,maps:2,backgrounds:2,sprites:2,actions:2,motions:2});
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('one-shot volume pack rejects missing canvas ownership, unsafe names and Roblox fake renderer',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='function render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  vibe59VolumeRequest:{facilities:['관람차'],maps:['숲'],actions:['점프']}};
+ const args={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ assert.throws(()=>createVibe59OneShotVolumeCandidate(args),/VIBE59_VOLUME_CANVAS_BINDING/);
+ assert.throws(()=>createVibe59OneShotVolumeCandidate({...args,order:{...order,
+  vibe59VolumeRequest:{facilities:['<script>'],maps:['숲']}}}),/VIBE59_VOLUME_UNSAFE_OR_DUPLICATE_NAME/);
+ assert.throws(()=>createVibe59OneShotVolumeCandidate({...args,target:'roblox'}),/VIBE59_VOLUME_WEB_CANVAS_ONLY/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
 });
