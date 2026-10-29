@@ -6,6 +6,7 @@ import {JaewoonVibeRuntime} from '../assets/vibe-runtime.js';
 import {JaewoonVibeWorkspace} from '../assets/vibe-workspace.js';
 import {createVibeWebRuntimeBundle} from '../assets/vibe-web-runtime-runner.js';
 import {buildGeneratedGame,normalizeGeneratedGameAssets} from '../assets/game-generator.js';
+import {JaewoonGameSession} from '../assets/game-session.js';
 import {Script,createContext} from 'node:vm';
 import {readFileSync} from 'node:fs';
 
@@ -653,4 +654,30 @@ test('asset diagnostics panel observes the existing runtime without modifying ga
  assert.match(panel,/info\.estimatedBytes/);
  assert.match(panel,/info\.preloadedSceneCount/);
  assert.match(panel,/panel\.append\(title,close,status,diagnostics/);
+});
+
+
+// [실제 세션 연결] 등록한 씬의 에셋을 전환 직전에 획득하고 실패 시 게임 진행 상태를 유지한다.
+test('game session loads declared scene assets, preserves failed transition and releases on back',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async url=>new Response(String(url).includes('missing')?'not found':'{"ok":true}',{status:String(url).includes('missing')?404:200});
+ try{
+   const session=new JaewoonGameSession({gameId:'scene-asset-session-qa',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+   session.registerScene('town',{assets:[{id:'shared',path:'shared.json'}]});
+   session.registerScene('cave',{assets:[{id:'shared',path:'shared.json'},{id:'map',path:'map.json'}]});
+   session.registerScene('broken',{assets:[{id:'missing',path:'missing.json'}]});
+   assert.equal(await session.goToScene('town'),'town');
+   assert.equal(session.runtime.activeSceneId,'town');
+   assert.equal(await session.goToScene('cave'),'cave');
+   assert.equal(session.runtime.getAssetStats().total,2);
+   await assert.rejects(session.goToScene('broken'),AggregateError);
+   assert.equal(session.scenes.current,'cave');
+   assert.equal(session.runtime.activeSceneId,'cave');
+   assert.equal(await session.backScene(),'town');
+   assert.equal(session.runtime.getAssetStats().total,1);
+   session.registerScene('empty');
+   assert.equal(session.goToScene('empty'),'empty');
+   assert.equal(session.runtime.getAssetStats().total,0);
+   session.destroy();
+ }finally{globalThis.fetch=original}
 });

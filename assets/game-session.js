@@ -1,3 +1,5 @@
+// 파일명: assets/game-session.js
+// [임포트] 기존 공통 게임 세션/런타임 경로 재사용
 import { JaewoonVibeRuntime } from './vibe-runtime.js';
 import { JaewoonGameLoop } from './game-loop.js';
 import { JaewoonInputActions } from './input-actions.js';
@@ -86,8 +88,15 @@ export class JaewoonGameSession {
       this.runtime.boot({ visibilityPause, errorReporter });
     }
     if (attachInput && typeof window !== 'undefined') this.input.attachKeyboard(window);
-    if (startLoop) this.loop.start();
     this.started = true;
+    if (startLoop) {
+      const currentScene = this.scenes.scene(this.scenes.current);
+      if (Array.isArray(currentScene?.assets)) {
+        this.runtime.setScene(currentScene.name, currentScene.assets, currentScene.assetOptions || {})
+          .then(() => { if (this.started) this.loop.start(); })
+          .catch(error => this.emit('session-asset-error', { gameId: this.blueprint.gameId, scene: currentScene.name, message: error.message }));
+      } else this.loop.start();
+    }
     this.emit('session-start', { gameId: this.blueprint.gameId, systems: this.kit.enabledSystems() });
     return this;
   }
@@ -105,17 +114,41 @@ export class JaewoonGameSession {
     return this.scenes.register(name, scene);
   }
 
+  // [씬 전환] 에셋이 선언된 씬만 비동기 로딩하고, 기존 동기 씬 API는 유지한다.
   goToScene(name, data = null, options = {}) {
-    const result = this.scenes.go(name, data, options);
-    this.input.releaseAll();
-    this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
+    const commit = () => {
+      const result = this.scenes.go(name, data, options);
+      this.input.releaseAll();
+      this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
+      return result;
+    };
+    const target = this.scenes.scene(name);
+    if (Array.isArray(target?.assets)) {
+      return this.runtime.setScene(target.name, target.assets, target.assetOptions || {}).then(lease => {
+        try { return commit(); } catch (error) { lease.release(); throw error; }
+      });
+    }
+    const result = commit();
+    if (this.runtime.activeSceneId != null) this.runtime.releaseScene();
     return result;
   }
 
   backScene(fallback = null) {
-    const result = this.scenes.back(fallback);
-    this.input.releaseAll();
-    this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
+    const commit = () => {
+      const result = this.scenes.back(fallback);
+      this.input.releaseAll();
+      this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
+      return result;
+    };
+    const nextName = this.scenes.history.at(-1)?.name || fallback;
+    const target = this.scenes.scene(nextName);
+    if (Array.isArray(target?.assets)) {
+      return this.runtime.setScene(target.name, target.assets, target.assetOptions || {}).then(lease => {
+        try { return commit(); } catch (error) { lease.release(); throw error; }
+      });
+    }
+    const result = commit();
+    if (nextName && this.runtime.activeSceneId != null) this.runtime.releaseScene();
     return result;
   }
 
@@ -124,11 +157,23 @@ export class JaewoonGameSession {
   }
 
   restoreSceneCheckpoint(label = 'default') {
-    const result = this.scenes.restoreCheckpoint(label);
-    if (result) {
-      this.input.releaseAll();
-      this.emit('session-scene', { gameId: this.blueprint.gameId, scene: this.scenes.current });
+    const commit = () => {
+      const result = this.scenes.restoreCheckpoint(label);
+      if (result) {
+        this.input.releaseAll();
+        this.emit('session-scene', { gameId: this.blueprint.gameId, scene: this.scenes.current });
+      }
+      return result;
+    };
+    const checkpoint = this.scenes.checkpoints.get(String(label || 'default'));
+    const target = this.scenes.scene(checkpoint?.current);
+    if (Array.isArray(target?.assets)) {
+      return this.runtime.setScene(target.name, target.assets, target.assetOptions || {}).then(lease => {
+        try { return commit(); } catch (error) { lease.release(); throw error; }
+      });
     }
+    const result = commit();
+    if (result && this.runtime.activeSceneId != null) this.runtime.releaseScene();
     return result;
   }
 
