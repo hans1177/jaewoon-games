@@ -741,7 +741,8 @@ jobs:
   publish-pages:
     needs: deploy
     if: github.event_name != 'pull_request' && needs.deploy.outputs.source_current == 'true' && needs.deploy.outputs.artifact_ready == 'true'
-    runs-on: ubuntu-slim
+    # 게시가 slim 제어 작업 뒤에서 장시간 대기하지 않게 기존 일반 러너 풀을 사용한다.
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
       group: magic-forest-pages-main-publish
