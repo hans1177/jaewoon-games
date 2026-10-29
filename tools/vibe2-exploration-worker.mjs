@@ -14,7 +14,7 @@ import {inspectVibe59RobloxCoding} from './vibe59-roblox-coding.mjs';
 import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
-import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
+import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, buildResponsibilityGraph, buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -303,7 +303,55 @@ function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSym
   };
 }
 
-function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[],diagnosticReplayBaseline=null}={}){
+// Enlarge the actionable *function* set only inside already-reserved source files.
+// Caller/callee matches in other files are read-only until a new reservation.
+function compileReservedHelperEdits({sourceRows=[],responsibleFiles=[],primaryTargets=[]}={}){
+  const allowed=new Set(responsibleFiles.map(posix)),primary=new Set(primaryTargets);
+  const edits=[],seen=new Set();
+  for(const row of sourceRows.slice(0,32)){
+    const file=posix(row?.relative),source=String(row?.text||'');
+    if(!allowed.has(file)||!source||source.length>MAX_READ_BYTES)continue;
+    const language=/\.luau?$/i.test(file)?'luau':/\.cs$/i.test(file)?'csharp':'javascript';
+    const graph=buildResponsibilityGraph({source,language});
+    const nodes=new Map((graph.nodes||[]).map(node=>[node.name,node]));
+    for(const name of primary){
+      const owner=nodes.get(name);
+      if(!owner)continue;
+      for(const dependent of unique([...(owner.calls||[]),...(owner.calledBy||[])])){
+        const node=nodes.get(dependent),key=file+'::'+dependent;
+        if(!node||primary.has(dependent)||seen.has(key))continue;
+        const stateOverlap=unique((owner.stateWrites||[]).filter(state=>
+          (node.stateReads||[]).includes(state)||(node.stateWrites||[]).includes(state)));
+        const direction=(owner.calls||[]).includes(dependent)?'CALLEE':'CALLER';
+        edits.push(Object.freeze({
+          file,symbol:dependent,primary:name,direction,
+          sharedState:stateOverlap.slice(0,12),
+          reason:'STATIC_DIRECT_SAME_FILE_CALL_EDGE',
+          writableWithinExistingReservation:true,
+          preservesSaveBalanceAndAuthority:true,
+          runtimeVerified:false
+        }));
+        seen.add(key);
+        if(edits.length>=16)break;
+      }
+      if(edits.length>=16)break;
+    }
+    if(edits.length>=16)break;
+  }
+  return Object.freeze({
+    mode:'PRIMARY_PLUS_CAUSALLY_LINKED_RESERVED_HELPERS',
+    allowedResponsibleFiles:Object.freeze([...allowed]),
+    reservedHelperEdits:Object.freeze(edits),
+    maximumAdditionalWritableFiles:0,
+    unreservedImpactFilesReadOnly:true,
+    dependentFileRequiresNewCanonicalReservation:true,
+    codeChangesRequireOriginalFailureReplayAndFocusedQA:true,
+    unrelatedSystemMutationForbidden:true,
+    runtimeVerified:false
+  });
+}
+
+function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[],diagnosticReplayBaseline=null,sourceRows=[]}={}){
   const sourceAnalysis=analyzeExistingGameSource(sourceText);
   const gameplaySketch=taskGameplaySketch(order,sourceAnalysis);
   const codingArchitecture=buildCodingArchitecture({
@@ -323,6 +371,8 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
   const traces=[...(expertDevelopment?.causalDebug?.traces||[]),...(requirementTrace?[requirementTrace]:[])];
   const primaryTargets=unique(traces.map(row=>row?.primaryTarget)).slice(0,8);
   const primarySet=new Set(primaryTargets);
+  const reservedHelperEditPlan=compileReservedHelperEdits({sourceRows,responsibleFiles,primaryTargets});
+  const reservedHelperNames=reservedHelperEditPlan.reservedHelperEdits.map(row=>row.symbol);
   const primaryNodes=(graph.nodes||[]).filter(node=>primarySet.has(node.name));
   const primarySystems=unique(primaryNodes.flatMap(node=>node.systems||[]));
   const directDependentSymbols=unique(primaryNodes.flatMap(node=>[...(node.calls||[]),...(node.calledBy||[])])).slice(0,16);
@@ -450,7 +500,7 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
   const calibrationRecommendation=clean(order?.responsibilityCalibration?.recommendation).toUpperCase();
   const confidence=rawResponsibilityConfidence==='HIGH'&&calibrationRecommendation==='DOWNGRADE_HIGH_TO_MEDIUM'?'MEDIUM':rawResponsibilityConfidence;
   const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
-  const allowedDependentSymbolsOrSystems=unique([...directDependentSymbols,...directDependentSystems]).slice(0,24);
+  const allowedDependentSymbolsOrSystems=unique([...reservedHelperNames,...directDependentSymbols,...directDependentSystems]).slice(0,24);
   const patchRecipe=compilePatchRecipe({order,failures:repairFailures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
   return{
     version:1,
@@ -474,6 +524,7 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
     },
     primaryTargets,
     allowedResponsibleFiles:responsibleFiles,
+    reservedHelperEditPlan,
     allowedDependentSymbolsOrSystems,
     primarySystems,
     dependentSystems,
@@ -509,7 +560,7 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
     responsibilityGraph:{
       version:graph.version,language:graph.language,analysis:graph.analysis,runtimeVerified:false,
       nodeCount:Number(graph.nodeCount||0),
-      relevantNodes:(graph.nodes||[]).filter(node=>primarySet.has(node.name)||directDependentSymbols.includes(node.name)).slice(0,24).map(node=>({
+      relevantNodes:(graph.nodes||[]).filter(node=>primarySet.has(node.name)||allowedDependentSymbolsOrSystems.includes(node.name)).slice(0,24).map(node=>({
         name:node.name,systems:node.systems||[],calls:node.calls||[],calledBy:node.calledBy||[],
         stateReads:node.stateReads||[],stateWrites:node.stateWrites||[],storageKeys:node.storageKeys||[],events:node.events||[]
       })),
@@ -648,7 +699,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const diagnosticReplayBaseline=verifyDiagnosticReplayBaseline({order,target,root});
   const editContract=target==='system'
     ?compileSystemEditContract({order,responsibleFiles:responsible,testTargets})
-    :compileEditContract({cwd,order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline});
+    :compileEditContract({cwd,order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline,sourceRows:responsibilityRows});
   const orderFingerprint=explorationOrderFingerprint(order);
   const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,orderFingerprint,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
@@ -726,6 +777,8 @@ export function explorationGuidance(handoff={}){
       `코딩 전략=${handoff.editContract.strategyHint||'NONE'} · 책임 확신=${handoff.editContract.responsibilityConfidence||'LOW'}`,
       `주 책임 심볼=${(handoff.editContract.primaryTargets||[]).join(', ')||'NONE'}`,
       `허용 의존 심볼/시스템=${(handoff.editContract.allowedDependentSymbolsOrSystems||[]).join(', ')||'NONE'}`,
+      `예약된 파일 내 자동 수정 보조 함수=${(handoff.editContract.reservedHelperEditPlan?.reservedHelperEdits||[]).map(row=>row.file+'::'+row.symbol+' <- '+row.primary+'('+row.direction+')').join(' | ')||'NONE'}`,
+      '수정 실행: 기존 예약된 책임 파일의 주 함수와 인과적으로 연결된 보조 함수를 함께 직접 수정하고 원래 실패를 재검증한다. 예약되지 않은 영향 파일은 읽기 전용이며 별도 정식 예약 없이 수정하지 않는다.',
       `소유 상태=${(handoff.editContract.ownedState||[]).join(', ')||'NONE'}`,
       `보존 계약=${(handoff.editContract.preserveSemantics||[]).join(' | ')||'NONE'}`,
       `인과 체인=${(handoff.editContract.failureOrRequirementCausalChain||[]).join(' -> ')||'NONE'}`,
