@@ -37,6 +37,23 @@ test('WEB Vibe generates a bounded real-player movement candidate only for the o
   assert.ok(speed*Math.min(.25,elapsed)>10);
 });
 
+test('WEB public movement repair skips its unaffected Three.js renderer without a free-model key',async()=>{
+  const task={gameId:'wild-survival',
+    goal:'Fix #11129 from run 40872553330: WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED'};
+  const html={relative:'web-games/wild-survival/index.html',
+    original:fs.readFileSync('web-games/wild-survival/index.html','utf8')};
+  const renderer={relative:'web-games/wild-survival/wild3d.mjs',
+    original:fs.readFileSync('web-games/wild-survival/wild3d.mjs','utf8')};
+  const withoutModel={cloud:true,apiKey:'',geminiImpl:async()=>{throw Error('MODEL_MUST_NOT_BE_CALLED');}};
+  const generated=await proposeWebVibeChange(task,html,withoutModel);
+  assert.ok(generated?.deterministicWebSource);
+  assert.equal(generated.offlineSourceProof.runtimeVerified,false);
+  assert.equal(await proposeWebVibeChange(task,renderer,withoutModel),null);
+  assert.equal(await proposeWebVibeChange(task,renderer,{...withoutModel,apiKey:'optional'}),null);
+  await assert.rejects(()=>proposeWebVibeChange({...task,goal:'unrelated input change'},renderer,withoutModel),
+    /WEB_VIBE_FREE_MODEL_KEY_MISSING/);
+});
+
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
