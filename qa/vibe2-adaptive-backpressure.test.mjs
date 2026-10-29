@@ -141,7 +141,7 @@ test('autonomous bottleneck tuning measures verified throughput and rolls back a
   const first=decideAdaptiveBackpressure(
     createParallelismControl({currentMax:256}),
     pressuredTelemetry({runId:'tune-1',workerCount:256,effectiveMax:256,
-      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      queueWait:{p95Ms:35000},failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
       throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4}})
   );
   assert.equal(first.currentMax,128);
@@ -182,7 +182,7 @@ test('autonomous bottleneck tuning measures verified throughput and rolls back a
 test('gains require measured throughput and security pressure cannot be bypassed by rollback',()=>{
   const initial=decideAdaptiveBackpressure(createParallelismControl({currentMax:256}),
     pressuredTelemetry({runId:'gain-1',workerCount:256,effectiveMax:256,
-      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      queueWait:{p95Ms:35000},failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
       throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4}}));
   const gain=decideAdaptiveBackpressure(initial,
     pressuredTelemetry({runId:'gain-2',workerCount:128,effectiveMax:128,
