@@ -5761,7 +5761,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-29T14:55:38.942Z",
+      "updatedAt": "2026-10-29T14:55:52.423Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7987,25 +7987,21 @@
       "robloxRuntimeLastObservationAttemptAt": "2026-10-29T14:44:12.036Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
-        "sessionId": "40892542205:fantasy-survival:40889554755:3",
-        "workflowRunId": 40892542205,
+        "sessionId": "40895554381:fantasy-survival:40889554755:3",
+        "workflowRunId": 40895554381,
         "workflowRunAttempt": 1,
-        "controlRevision": "b13d639151f515e6e5bcc7cef17e63c316070a9a",
+        "controlRevision": "8ed3545bd6f0948de7a13638b2df7f386184e45f",
         "gameId": "fantasy-survival",
         "sourceRevision": "9e7ce6553533059d22cb52fff29b0ac318f81478",
         "artifactIdentity": "sha256:45a03894dd91139418fd717ee574354ddefac8a2edf26f06fe022f4e80f0a10c",
         "artifactRunId": 40889554755,
         "candidateVersionNumber": 3,
-        "status": "COMPLETED_PRODUCT_FAILURE",
-        "queuedAt": "2026-10-29T14:37:56.057Z",
+        "status": "QUEUED_FOR_STUDIO",
+        "queuedAt": "2026-10-29T14:55:52.423Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true,
-        "completedAt": "2026-10-29T14:55:38.942Z",
-        "resultPass": false,
-        "infrastructureFailure": false,
-        "currentSourceArtifactBinding": true
+        "companyRuntimeAuthoritative": true
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -8066,7 +8062,7 @@
       "robloxNativeFailureClass": "ROBLOX_UI_STATE"
     }
   ],
-  "updatedAt": "2026-10-29T14:55:38.942Z",
+  "updatedAt": "2026-10-29T14:55:52.423Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
