@@ -568,6 +568,10 @@ test('duplicate exact source notifications preserve F0 progress and failed sourc
   queue.items[0].robloxBuildOrPackagePassed=false;
   assert.equal(reconcileChangedRobloxItems({queue,changedGameIds:[item.gameId],sourceRevision,stamp,
     validateItem:()=>({pass:true,buildSourceChanged:true})}).results[0].requiresRuntime,true);
+  const unchangedQueue={items:[{...structuredClone(item),robloxBuildOrPackagePassed:false,
+    robloxEvidenceInvalidatedBySourceChange:null}]};
+  assert.equal(reconcileChangedRobloxItems({queue:unchangedQueue,changedGameIds:[item.gameId],sourceRevision,stamp,
+    validateItem:()=>({pass:true,buildSourceChanged:false})}).results[0].requiresRuntime,true);
   const failed=reconcileChangedRobloxItems({queue,changedGameIds:[item.gameId],sourceRevision,stamp,
     validateItem:()=>({pass:false,blockers:['SOURCE_INVALID']})});
   assert.equal(failed.results[0].pass,false);
