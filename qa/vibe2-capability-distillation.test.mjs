@@ -29,6 +29,36 @@ test('menu learning keeps source-checked reasoning and cannot promote an unrevie
   assert.ok(failure.avoidPatterns.some(row=>row.includes('INTERFACE_BLUEPRINT')));
 });
 
+test('native Studio repair recipe self-improvement requires real fan-in verification and never promotes rejection',()=>{
+  const task={id:'native-ui-fix',gameId:'fantasy-survival',target:'roblox',goal:'repair verified mobile overlap'};
+  const selection={status:'CANDIDATE_VALIDATED',candidateCount:2,
+    selectedFingerprint:'safe-edit-1',attempts:[
+      {recipe:'DIFFERENT_REPAIR',fingerprint:'failed-edit-1',status:'REJECTED',reasonCode:'SYNTAX_INVALID'},
+      {recipe:'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION',fingerprint:'safe-edit-1',status:'VALIDATED'}]};
+  const result={outcome:'PASS',codingMethod:{strategy:'RESPONSIBILITY_FIRST',deterministicNativeSelection:selection}};
+  const trace=buildObservableCodingTrace({task,result});
+  assert.equal(trace.decision.nativeRepair.selectedRecipe,'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
+  assert.equal(trace.decision.nativeRepair.attempts,2);
+  assert.equal(trace.decision.nativeRepair.rejected,1);
+  assert.equal(trace.decision.nativeRepair.runtimeVerified,false);
+  assert.equal(trace.decision.nativeRepair.learningVerified,false);
+  assert.equal(buildVerifiedCapabilityExperienceReview({task,result}),null,
+    'candidate generation and static validation alone cannot create learned capability');
+  const accepted=buildVerifiedCapabilityExperienceReview({task,result,finalReviewPass:true,selected:true});
+  assert.ok(accepted.reusablePatterns.includes(
+    'CAPABILITY:NATIVE_REPAIR_RECIPE:STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION'));
+  assert.ok(!accepted.reusablePatterns.some(x=>x.includes('DIFFERENT_REPAIR')),
+    'rejected recipe must not become reusable learning');
+  const failed={...result,outcome:'FAIL',candidateFailure:{class:'NO_MODEL_SOURCE_REPAIR_UNAVAILABLE'},
+    evidence:['source-generation-failure:NO_MODEL_SOURCE_REPAIR_UNAVAILABLE']};
+  const rejected=buildVerifiedCapabilityExperienceReview({task,result:failed,finalReviewPass:true,selected:true});
+  assert.equal(rejected.outcome,'FAIL');
+  assert.ok(!rejected.reusablePatterns.some(x=>x.includes('NATIVE_REPAIR_RECIPE')));
+  assert.ok(rejected.avoidPatterns.some(x=>x.includes('NO_MODEL_SOURCE_REPAIR_UNAVAILABLE')));
+  const forged={...result,codingMethod:{deterministicNativeSelection:{...selection,selectedFingerprint:'not-validated'}}};
+  assert.equal(buildObservableCodingTrace({task,result:forged}).decision.nativeRepair.selectedRecipe,null);
+});
+
 test('coding engine revision is observable provenance and cannot itself grant verified capability',()=>{
   const result={outcome:'PASS',codingMethod:{engineRevision:'VIBE2_CODING_2.1',sourceAnalysisVersion:2}};
   const trace=buildObservableCodingTrace({task:{id:'native-code',target:'unity'},result});

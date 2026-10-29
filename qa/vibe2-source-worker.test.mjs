@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,prioritizeVerifiedStudioNativeRepair,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {PLAYABLE_IMPROVEMENT_IDS,evaluatePlayableImprovementSourceProof} from '../tools/company-playable-improvement-source-proof.mjs';
@@ -10317,6 +10317,43 @@ test('Vibe5.9 offline source coding never calls external or localhost AI after s
    else process.env[key]=old[key];
   }
  }
+});
+
+test('real Studio MCP failure is routed into native source repair before generic Vibe5.9 codegen',()=>{
+  const failure={
+    authority:'roblox-official-studio-mcp-product-quality-failure',
+    workflowRunId:40901857206,
+    sourceRevision:'93f4a1a30a5b3965ee937aa0bffcdc739bae0795',
+    artifactIdentity:'sha256:add4fabcf0306020d5cd4539032b6ca2a0cf395d5d3fc999e3d47cbd75d938c8',
+    repairSurfaces:['MOBILE_UI'],
+    qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
+      observed:{overlapPairs:8,largeBlockingOverlayCount:0}}]
+  };
+  const request={target:'roblox',goal:'repair proven Studio UI overlap',
+    selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure}}}};
+  const files=['client/Game.client.luau','shared/RobloxCommonUI.luau'];
+  assert.equal(prioritizeVerifiedStudioNativeRepair({order:request,responsibleFiles:files}),true);
+  const engine=fs.readFileSync(path.join(process.cwd(),'tools/vibe2-source-worker.mjs'),'utf8');
+  const native=engine.indexOf('if(nativeStudioFirst)tryNativeCandidate();');
+  const general=engine.indexOf('const v59=createVibe59CodeCandidates(');
+  assert.ok(native>0&&general>native,'real Studio failure repair must precede generic Vibe5.9 candidate');
+  for(const [label,change] of [
+    ['unverified authority',{authority:'unverified'}],
+    ['no source identity',{sourceRevision:''}],
+    ['no artifact identity',{artifactIdentity:''}],
+    ['no replay authority',{workflowRunId:0}],
+    ['not overlapping',{qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',
+      repairSurface:'MOBILE_UI',observed:{overlapPairs:0,largeBlockingOverlayCount:0}}]}],
+    ['blocking overlay unknown',{qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',
+      repairSurface:'MOBILE_UI',observed:{overlapPairs:8,largeBlockingOverlayCount:1}}]}]
+  ]){
+    const altered={...request,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{
+      studioQualityFailure:{...failure,...change}}}}};
+    assert.equal(prioritizeVerifiedStudioNativeRepair({order:altered,responsibleFiles:files}),false,label);
+  }
+  assert.equal(prioritizeVerifiedStudioNativeRepair({order:request,responsibleFiles:['client/Game.client.luau']}),false,
+    'unrelated edits must not preempt the source-bound repair');
+  assert.equal(prioritizeVerifiedStudioNativeRepair({order:{...request,target:'web'},responsibleFiles:files}),false);
 });
 
 test('Vibe offline generator makes a genuine native UI patch from current Studio MCP overlap without authoring game source directly',()=>{
