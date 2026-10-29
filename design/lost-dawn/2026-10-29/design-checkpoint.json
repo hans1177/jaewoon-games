@@ -1,0 +1,894 @@
+{
+  "contractVersion": 4,
+  "gameId": "lost-dawn",
+  "date": "2026-10-29",
+  "seedId": "AUTO-MISSING-DESIGN-LOST-DAWN",
+  "fingerprint": "b625c8be334e44a0add0980733757304c2bb7cf2f8949b8078082cc593c1e563",
+  "policyDigest": "7c6d9caf29300edb9f357dcb31764f9f6f946fe6bfcb9fe7181c0f7c55452ad7",
+  "engineDigest": "b22c8641c08f932bd83dc5f4437a60084b74509029012f03ddd2c702794c2351",
+  "ownerDesignEventId": null,
+  "designTopicMode": null,
+  "status": "IN_PROGRESS",
+  "completedPhases": [],
+  "phases": {},
+  "tasks": {},
+  "modelHealth": {},
+  "slowPhases": {},
+  "currentPhase": "DESIGNER_DRAFT",
+  "createdAt": "2026-10-29T02:51:54.089Z",
+  "updatedAt": "2026-10-29T02:51:54.122Z",
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 145,
+    "sha256": "6873594e232eeda3bfeb7ac3c9b5fc8b764afbc0856ce969905f91717a586348",
+    "inventoryCount": 160,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MATERIAL": [],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "USE",
+            "assetId": "tycoon-rugDoormat",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "mat"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MATERIAL": [],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "USE",
+            "assetId": "tycoon-rugDoormat",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "mat"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MATERIAL",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MATERIAL": [],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "SKILL": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
+          "VFX": [],
+          "WEAPON": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MATERIAL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "USE",
+            "assetId": "tycoon-rugDoormat",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "mat"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "external-actor-barbarian": {
+        "family": "CHARACTER",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-actor-barbarian",
+          "sourceModel": "assets/roblox/actors/native/barbarian.glb",
+          "sourceLicense": "cc0-1.0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [],
+            "currentSourceBound": false,
+            "genericFamilyRequest": true,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": null,
+        "sourcePath": "assets/roblox/actors/native/barbarian.glb",
+        "platform": "ROBLOX",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
+        "productionVerified": false
+      },
+      "tycoon-rugDoormat": {
+        "family": "PROP",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "mat"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "role": "MAT",
+        "sourcePath": "assets/shared/tycoon/rugDoormat.glb",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "UNVERIFIED",
+        "productionVerified": false
+      },
+      "tycoon-arrowBlue_left": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "role": "CONTROL_ICON",
+        "sourcePath": "assets/shared/tycoon/arrowBlue_left.png",
+        "platform": "SHARED_UI",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "UNVERIFIED",
+        "productionVerified": false
+      }
+    }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "schema maxLength mismatch: root.signatureSystems[2].name"
+}
