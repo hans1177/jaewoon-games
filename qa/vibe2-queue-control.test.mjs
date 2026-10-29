@@ -3801,3 +3801,17 @@ test('Web retry failure is isolated from eligible Roblox dispatch and platform c
   assert.ok(performance.web.effectiveWeight<=1.1);
   assert.ok(performance.roblox.effectiveWeight>=5.4);
 });
+
+test('Unity OWNER_HOLD never reserves development capacity while Web and Roblox remain eligible',()=>{
+  const policy={developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',
+    UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'}};
+  const make=(id,target)=>({id,gameId:id,target,department:'development',
+    type:'implementation',goal:'continue current game',status:'queued',
+    sourceRoot:target+'-games/'+id,responsibleFiles:['source.js']});
+  const tasks=[make('held-unity','unity'),make('web-game','web'),make('roblox-game','roblox')];
+  const batch=reserveVibeTaskBatch({maxConcurrentTasks:3,tasks},
+    {policy,lane:'game-primary',maxConcurrentTasks:3});
+  assert.deepEqual(batch.tasks.map(task=>task.target).sort(),['roblox','web']);
+  assert.equal(batch.queue.tasks.find(task=>task.id==='held-unity').ownerDevelopmentHold,true);
+  assert.equal(batch.queue.tasks.find(task=>task.id==='held-unity').status,'queued');
+});
