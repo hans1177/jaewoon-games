@@ -1777,13 +1777,13 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         'local shade=Instance.new("TextButton");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)',
         'shade.Text="";shade.AutoButtonColor=false',
         'shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui'
-      ].join('\n');
+      ].join('\n ');
       const shadeAfter=[
         'local shade=Instance.new("Frame");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)',
         'shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=false;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui',
         'local outsideClose=RobloxCommonUI.CreatePrimaryButton({name="OutsideActionsMenuClose",text="닫기",minWidth=64,minHeight=52})',
         'outsideClose.Size=UDim2.fromOffset(72,52);outsideClose.Position=UDim2.fromOffset(8,8);outsideClose.ZIndex=40;outsideClose.Parent=shade'
-      ].join('\n');
+      ].join('\n ');
       const outsideBefore='shade.Activated:Connect(function()setOpen(false)end)';
       const outsideAfter=[
         'outsideClose.Activated:Connect(function()setOpen(false)end)',
