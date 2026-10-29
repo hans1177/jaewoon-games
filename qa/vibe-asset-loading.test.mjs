@@ -204,3 +204,183 @@ test('core browser smoke scopes real games without misclassifying the Vibe Maker
  assert.match(workflow,/changed_web_games=ALL/);
  assert.match(workflow,/VIBE2_BROWSER_CHANGED_GAMES:/);
 });
+
+
+// [씬 수명] 전환 성공 시 공용 참조를 유지하고 이전 씬 전용 이미지는 즉시 해제한다.
+test('scene transition keeps shared assets, disposes old-only images and ignores stale releases',async()=>{
+ const original={fetch:globalThis.fetch,Image:globalThis.Image};
+ const images=[];
+ globalThis.fetch=async()=>new Response('{"stage":1}',{status:200});
+ globalThis.Image=class {
+   constructor(){images.push(this)}
+   set src(value){this._src=value;if(value)queueMicrotask(()=>this.onload?.())}
+   get src(){return this._src}
+ };
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/game/'});
+   const town=await runtime.setScene('town',[{id:'shared',path:'shared.json'},{id:'map',path:'town.png'}]);
+   assert.equal(runtime.activeSceneId,'town');
+   assert.equal(runtime.sceneAssets.size,1);
+   assert.equal(runtime.assetCache.size,2);
+   const townImage=town.assets.map;
+   const cave=await runtime.setScene('cave',[{id:'shared',path:'shared.json'},{id:'map',path:'cave.png'}]);
+   assert.equal(cave.assets.shared,town.assets.shared);
+   assert.equal(runtime.activeSceneId,'cave');
+   assert.equal(runtime.sceneAssets.size,1);
+   assert.equal(runtime.assetCache.size,2);
+   assert.equal(townImage.src,'');
+   town.release();
+   assert.equal(runtime.assetCache.size,2,'stale scene lease cannot release the new scene');
+   cave.release();
+   assert.equal(runtime.activeSceneId,null);
+   assert.equal(runtime.assetCache.size,0);
+   runtime.destroy();
+ }finally{globalThis.fetch=original.fetch;globalThis.Image=original.Image}
+});
+
+// [씬 원자성] 새 씬 로딩 오류가 현재 플레이 중인 씬을 해제하지 않는다.
+test('failed scene transition preserves old scene and its resource leases',async()=>{
+ const before=globalThis.fetch;
+ globalThis.fetch=async url=>new Response(String(url).includes('bad')?'missing':'{"ok":true}',{status:String(url).includes('bad')?404:200});
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const old=await runtime.setScene('safe',[{id:'shared',path:'ok.json'}]);
+   await assert.rejects(runtime.setScene('broken',[{id:'missing',path:'bad.json'}]),AggregateError);
+   assert.equal(runtime.activeSceneId,'safe');
+   assert.equal(runtime.assetCache.size,1);
+   assert.deepEqual(old.assets.shared,{ok:true});
+   runtime.destroy();
+   assert.equal(runtime.sceneAssets.size,0);
+   assert.equal(runtime.assetCache.size,0);
+ }finally{globalThis.fetch=before}
+});
+
+// [씬 경쟁] 느린 이전 씬 요청은 취소되고, 나중 씬 요청만 활성화된다.
+test('new scene transition cancels pending old scene and prevents stale activation',async()=>{
+ const before=globalThis.fetch;
+ let aborted=0;
+ globalThis.fetch=(url,{signal}={})=>String(url).includes('slow')
+  ?new Promise((resolve,reject)=>{
+    signal?.addEventListener('abort',()=>{aborted++;reject(Object.assign(new Error('aborted'),{name:'AbortError'}))},{once:true});
+  })
+  :Promise.resolve(new Response('{"new":true}',{status:200}));
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const first=runtime.setScene('old',[{id:'old',path:'slow.json'}]);
+   const second=runtime.setScene('new',[{id:'new',path:'new.json'}]);
+   await assert.rejects(first,AggregateError);
+   const scene=await second;
+   assert.equal(scene.assets.new.new,true);
+   assert.equal(runtime.activeSceneId,'new');
+   assert.equal(runtime.assetCache.size,1);
+   assert.equal(aborted,1);
+   runtime.destroy();
+   assert.equal(runtime.assetCache.size,0);
+ }finally{globalThis.fetch=before}
+});
+
+// [안정성] 서버 일시 오류만 재시도하고 성공 결과의 참조 해제가 정상 동작한다.
+test('asset loader retries transient failures without leaking failed attempts',async()=>{
+ const before=globalThis.fetch;
+ let attempts=0;
+ globalThis.fetch=async()=>new Response(++attempts===1?'try again':'{"ok":true}',{status:attempts===1?503:200});
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const lease=await runtime.loadAssets([{id:'test',path:'retry.json'}],{retries:2});
+   assert.equal(attempts,2);
+   assert.deepEqual(lease.assets.test,{ok:true});
+   assert.equal(runtime.assetCache.size,1);
+   lease.release();
+   assert.equal(runtime.assetCache.size,0);
+   runtime.destroy();
+ }finally{globalThis.fetch=before}
+});
+
+// [안정성] 타임아웃은 대기를 종료하고 해당 임대만 해제한다.
+test('asset timeout rejects without keeping unreferenced entries',async()=>{
+ const before=globalThis.fetch;
+ globalThis.fetch=()=>new Promise(()=>{});
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   await assert.rejects(runtime.loadAssets([{id:'slow',path:'never.json'}],{retries:0,timeoutMs:5}),AggregateError);
+   assert.equal(runtime.assetCache.size,0);
+   runtime.destroy();
+ }finally{globalThis.fetch=before}
+});
+
+// [안정성] 한 요청의 취소가 동일 자산을 참조하는 다른 요청을 중단하지 않는다.
+test('shared request survives abort of one consumer and releases on last reference',async()=>{
+ const before=globalThis.fetch;
+ let complete,calls=0,aborted=0;
+ globalThis.fetch=(url,{signal}={})=>{
+   calls++;
+   signal?.addEventListener('abort',()=>aborted++,{once:true});
+   return new Promise(resolve=>{complete=()=>resolve(new Response('{"kept":true}',{status:200}))});
+ };
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const controller=new AbortController();
+   const first=runtime.loadAssets([{id:'a',path:'common.json'}],{signal:controller.signal});
+   const second=runtime.loadAssets([{id:'b',path:'common.json'}]);
+   controller.abort();
+   await assert.rejects(first,AggregateError);
+   complete();
+   const other=await second;
+   assert.equal(other.assets.b.kept,true);
+   assert.equal(calls,1);
+   assert.equal(aborted,0,'remaining consumers protect the shared network request');
+   other.release();
+   assert.equal(runtime.assetCache.size,0);
+   runtime.destroy();
+ }finally{globalThis.fetch=before}
+});
+
+// [안정성] 파괴된 런타임의 미완료 로딩은 완료 후 캐시를 되살릴 수 없다.
+test('destroy aborts pending scene loads and prevents late cache resurrection',async()=>{
+ const before=globalThis.fetch;
+ let abandoned=0;
+ globalThis.fetch=(url,{signal}={})=>new Promise((resolve,reject)=>{
+   signal?.addEventListener('abort',()=>{abandoned++;reject(Object.assign(new Error('aborted'),{name:'AbortError'}))},{once:true});
+ });
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const pending=runtime.setScene('loading',[{id:'a',path:'pending.json'}]);
+   runtime.destroy();
+   await assert.rejects(pending,AggregateError);
+   assert.equal(abandoned,1);
+   assert.equal(runtime.assetCache.size,0);
+   assert.equal(runtime.sceneAssets.size,0);
+ }finally{globalThis.fetch=before}
+});
+
+
+// [씬 오디오] 로딩된 음악의 객체 URL뿐 아니라 등록된 재생 참조도 함께 정리한다.
+test('scene transition disposes audio object URL and removes registered playback reference',async()=>{
+ const before={fetch:globalThis.fetch,Audio:globalThis.Audio,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
+ let revoked=0,paused=0;
+ globalThis.fetch=async()=>new Response(new Blob(['audio']));
+ globalThis.Audio=class {
+   constructor(src){this.src=src;this.dataset={}}
+   pause(){paused++}
+   removeAttribute(name){if(name==='src')this.src=''}
+   load(){}
+ };
+ URL.createObjectURL=()=> 'blob:scene-bgm';
+ URL.revokeObjectURL=()=>{revoked++};
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const music=await runtime.setScene('first',[{id:'bgm',path:'theme.ogg'}]);
+   runtime.registerAudio('scene-theme',music.assets.bgm,'music');
+   assert.equal(runtime.audio.size,1);
+   await runtime.setScene('second',[{id:'config',path:'level.txt'}]);
+   assert.equal(runtime.audio.size,0);
+   assert.equal(revoked,1);
+   assert.equal(paused,1);
+   runtime.destroy();
+ }finally{
+   globalThis.fetch=before.fetch;
+   globalThis.Audio=before.Audio;
+   URL.createObjectURL=before.create;
+   URL.revokeObjectURL=before.revoke;
+ }
+});
