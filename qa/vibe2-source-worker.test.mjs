@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {PLAYABLE_IMPROVEMENT_IDS,evaluatePlayableImprovementSourceProof} from '../tools/company-playable-improvement-source-proof.mjs';
@@ -10287,6 +10287,7 @@ test('Vibe5.9 canonical game worker is offline-only and rejects ungrounded sourc
  assert.ok(worker.length>1000,'original worker and fan-in path must remain in place');
  assert.match(worker,/VIBE2_V4_OFFLINE_ONLY: 'true'/);
  assert.match(worker,/VIBE2_ROBLOX_NO_MODEL_ONLY: 'true'/);
+ assert.match(worker,/VIBE2_V4_NO_EXTERNAL_API: 'true'/);
  assert.match(worker,/tools\/vibe2-source-worker\.mjs/);
  const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
  assert.match(source,/if\(!generated&&clean\(process\.env\.VIBE2_V4_OFFLINE_ONLY\)/);
@@ -10296,4 +10297,24 @@ test('Vibe5.9 canonical game worker is offline-only and rejects ungrounded sourc
  assert.match(source,/COMPOSED_SOURCE_GRAPH/);
  assert.match(source,/applyExactEdits\(sourceRoot,candidate\.edits,\{dryRun:true\}\)/);
  assert.match(source,/candidateValidation=candidateValidator\(candidate\)/);
+});
+
+
+test('Vibe5.9 offline source coding never calls external or localhost AI after synthesis failure',async()=>{
+ const keys=['VIBE2_V4_OFFLINE_ONLY','VIBE2_ROBLOX_NO_MODEL_ONLY','VIBE2_GAME_SOURCE_PROVIDER'];
+ const old=Object.fromEntries(keys.map(k=>[k,process.env[k]]));
+ try{
+  process.env.VIBE2_V4_OFFLINE_ONLY='true';
+  process.env.VIBE2_ROBLOX_NO_MODEL_ONLY='true';
+  for(const provider of ['GEMINI_API','LOCAL_OLLAMA']){
+   process.env.VIBE2_GAME_SOURCE_PROVIDER=provider;
+   await assert.rejects(()=>requestLocalModel('do not call the model',{model:'offline-only'}),
+     /VIBE59_OFFLINE_SOURCE_MODEL_CALL_FORBIDDEN/);
+  }
+ }finally{
+  for(const key of keys){
+   if(old[key]===undefined)delete process.env[key];
+   else process.env[key]=old[key];
+  }
+ }
 });
