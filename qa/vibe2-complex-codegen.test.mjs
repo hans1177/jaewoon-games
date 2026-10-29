@@ -394,10 +394,10 @@ test('Sprint3 real line-defense Roblox nested server handler produces source-bou
   const options={order:{selectedTask:{
     gameId:'line-defense',ownerDirective:true,
     sourceSha256:digest(original),
-    goal:'When function inspectInvasionAndDeploy runs, call startQuest then updateInventorySummary'
+    goal:'When function attackEnemy runs, call startQuest then updateInventorySummary'
   }},sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
   const index=indexVibe2GameSource({sourceRoot:root,gameId:'line-defense',target:'roblox',responsibleFiles:[relative]});
-  const handler=index.functions.find(row=>row.name==='inspectInvasionAndDeploy');
+  const handler=index.functions.find(row=>row.name==='attackEnemy');
   assert.ok(handler,'actual nested server handler must be grounded');
   assert.equal(handler.parserConfidence,'BOUNDED_NESTED_LUAU');
   const candidate=createVibe59CodeCandidates(options);
