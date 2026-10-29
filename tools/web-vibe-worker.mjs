@@ -185,11 +185,11 @@ export function synthesizeWebSourceWithoutModel(task,source){
   const edits=[],roles=[];
   if(wantsLabel){
     const matching=definitions.filter(fn=>fn.name==='syncBestiaryName'
-      &&fn.code.includes("pen.font='900 64px system-ui,sans-serif'")
-      &&fn.code.includes('state.bestiary?.[e.type?.id]')
-      &&fn.code.includes('new THREE.SpriteMaterial('));
+      &&fn.body.includes("pen.font='900 64px system-ui,sans-serif'")
+      &&fn.body.includes('state.bestiary?.[e.type?.id]')
+      &&fn.body.includes('new THREE.SpriteMaterial('));
     if(matching.length!==1)return null;
-    const before=matching[0].code;
+    const before=matching[0].body;
     const after=before.replace("pen.font='900 64px system-ui,sans-serif'","pen.font='900 76px system-ui,sans-serif'")
       .replace("pen.strokeStyle='#010c08';pen.lineWidth=9;","pen.strokeStyle='#010c08';pen.lineWidth=11;");
     if(after===before)return null;
@@ -198,10 +198,10 @@ export function synthesizeWebSourceWithoutModel(task,source){
   }
   if(wantsFrame){
     const target='const dt=(now-last)/1000;';
-    const matching=definitions.filter(fn=>fn.code.includes(target)
-      &&/\bfunction\s+\w+\s*\([^)]*\bnow\b[^)]*\blast\b[^)]*\)/.test(fn.code));
+    const matching=definitions.filter(fn=>/(?:frame|tick|update|render|animate)/i.test(fn.name)
+      &&fn.body.includes(target)&&!fn.body.includes('Math.max(0,Math.min(.05,(now-last)/1000))'));
     if(matching.length!==1)return null;
-    const before=matching[0].code;
+    const before=matching[0].body;
     const after=before.replace(target,'const dt=Math.max(0,Math.min(.05,(now-last)/1000));');
     if(after===before)return null;
     edits.push({oldText:before,newText:after});
