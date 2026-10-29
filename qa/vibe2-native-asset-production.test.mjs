@@ -235,6 +235,27 @@ test('existing native DCC automatically derives only role-matched internal sourc
     assert.equal(omitted.args.includes('--sprite-atlas'),false,'per-game sprite output remains optional');
     assert.equal(omitted.outputs.some(output=>output.endsWith('/sprite-atlas.png')),false);
     assert.equal(derived.companyPromotionAllowed,false);
+    const reconstructionTask={...task,assetAuthoring:{reconstruction:{
+      bodyPlan:'CREATURE',morph:{head:1.25,torso:1.15,arms:.9,legs:1.1,muscle:.5,monster:.45},
+      add:[{kind:'HORN',mode:'EXTRUDE'},{kind:'TAIL',mode:'EXTRUDE'}],
+      remove:[],detail:'LOW_POLY'
+    }}};
+    const reconstruction=buildVibeAssetProductionPlan({repoRoot:root,target:'unity',
+      task:reconstructionTask,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    const native=reconstruction.nativeAuthoringExecution.dcc.executionRecipes.find(row=>row.sourceModel==='assets/shared/tree.obj');
+    assert.ok(native);
+    assert.ok(native.args.includes('--reconstruct-json'));
+    assert.ok(native.args.includes('--library-source-sha256'));
+    assert.equal(native.meshReconstruction.bodyPlan,'CREATURE');
+    assert.equal(native.meshReconstruction.add.length,2);
+    assert.equal(native.meshReconstruction.add[0].mode,'EXTRUDE');
+    assert.equal(native.meshReconstruction.detail,'LOW_POLY');
+    assert.equal(native.companyPromotionAllowed,false);
+    assert.equal(native.runtimeVerificationRequired,true);
+    assert.throws(()=>buildVibeAssetProductionPlan({repoRoot:root,target:'unity',
+      task:{...task,assetAuthoring:{reconstruction:{add:[{kind:'WING',mode:'CC0_PART',assetId:'unregistered-wing'}]}}},
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}}),
+      /RECONSTRUCTION_CC0_PART_UNVERIFIED/);
     assert.equal(derived.runtimeVerificationRequired,true);
     fs.appendFileSync(sourcePath,'# unauthorized source mutation\n');
     const changed=build();
@@ -2209,6 +2230,15 @@ test('canonical generic Blender visual recipe is syntax-valid and emits GLB prev
   assert.match(source,/REIMPORTED_CC0_GLB_FOUR_VIEW_BLENDER_RENDER/);
   assert.match(source,/sourceMeshSha256.*SOURCE_PROVENANCE/);
   assert.match(source,/externalAiModelUsed.*False/);
+  assert.match(source,/def reconstruct_verified_source\(/);
+  assert.match(source,/RECONSTRUCTION_VERIFIED_CC0_PARENT_REQUIRED/);
+  assert.match(source,/RECONSTRUCTION_CC0_PART_SOURCE_CHANGED/);
+  assert.match(source,/RECONSTRUCTION_RIGGED_EXTRUSION_UNSAFE/);
+  assert.match(source,/RECONSTRUCTION_MORPH_STATIC_QA_FAILED/);
+  assert.match(source,/SOURCE_FACE_EXTRUSION/);
+  assert.match(source,/RECONSTRUCTION_RIG_BONE_COLLAPSED/);
+  assert.match(source,/RECONSTRUCTION_DEGENERATE_GEOMETRY/);
+  assert.match(source,/OFFLINE_CC0_SOURCE_MESH_RECONSTRUCTION/);
   assert.match(source,/runtimeVerified.*False/);
 });
 
@@ -5785,4 +5815,14 @@ test('model-free sprite source rejects unregistered 3D inputs before native auth
   assert.throws(()=>buildVibeAssetProductionPlan({
     target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}
   }),/SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED/);
+});
+
+test('model-free mesh reconstruction refuses unregistered, non-CC0 or overpowered recipes',()=>{
+  const plan=(assetAuthoring)=>buildVibeAssetProductionPlan({
+    target:'roblox',task:{gameId:'reconstruction-negative',goal:'3D prop 모델 변형',assetAuthoring},
+    manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.throws(()=>plan({reconstruction:{morph:{head:1.2}},sourceModel:'assets/shared/raw.glb',sourceLicense:'CC0'}),
+    /RECONSTRUCTION_VERIFIED_CC0_PARENT_REQUIRED/);
+  assert.throws(()=>plan({reconstruction:{morph:{head:1.2}}}),
+    /RECONSTRUCTION_NO_VERIFIED_CC0_SOURCE_RECIPE/);
 });
