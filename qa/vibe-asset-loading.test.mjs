@@ -133,7 +133,7 @@ test('generated game honors explicit assets and rejects unsafe or unsupported so
  const configured=buildGeneratedGame({packageData:{gameId:'approved',assets:{player:'assets/player.png',bgm:'audio/music.ogg'}}});
  assert.ok(configured.html.includes('"path":"assets/player.png"'));
  assert.ok(configured.html.includes('"path":"audio/music.ogg"'));
- assert.ok(configured.html.includes('runtime.loadAssets(ASSET_MANIFEST'));
+ assert.ok(configured.html.includes("runtime.setScene('play',ASSET_MANIFEST"));
  assert.ok(configured.html.includes('loadedAssets.player'));
  assert.ok(configured.html.includes("runtime.registerAudio('generated-bgm'"));
  assert.ok(!configured.html.includes('javascript:alert(1)'));
@@ -158,7 +158,7 @@ test('generated game gates startup on asset loading and draws provided assets',a
    constructor(){this.paused=false}
    boot(){return this}
    loadProgress(){return null}
-   loadAssets(entries,{onProgress}){loadedEntries=entries;onProgress({progress:0});return new Promise(resolve=>{resolveAssets=()=>{onProgress({progress:1});resolve({assets:{background:{kind:'bg'},player:{kind:'player'},enemy:{kind:'enemy'},bgm:{loop:false}},release(){}})}})}
+   setScene(sceneId,entries,{onProgress}){assert.equal(sceneId,'play');loadedEntries=entries;onProgress({progress:0});return new Promise(resolve=>{resolveAssets=()=>{onProgress({progress:1});resolve({assets:{background:{kind:'bg'},player:{kind:'player'},enemy:{kind:'enemy'},bgm:{loop:false}},release(){}})}})}
    registerAudio(name,audio,kind){assert.equal(name,'generated-bgm');assert.equal(kind,'music');this.audio=audio}
    playAudio(name){assert.equal(name,'generated-bgm');plays++}
    destroy(){}
@@ -188,7 +188,7 @@ test('generated game reports missing asset failure instead of starting a broken 
  const ui=new Map();
  const getElementById=id=>{if(!ui.has(id))ui.set(id,{textContent:'',style:{},addEventListener(){},setPointerCapture(){},getBoundingClientRect:()=>({width:140,left:0,top:0})});return ui.get(id)};
  getElementById('game').width=640;getElementById('game').height=480;getElementById('game').getContext=()=>({});
- class FakeRuntime{boot(){}loadAssets(){return new Promise((resolve,reject)=>{rejectAssets=reject})}loadProgress(){return null}destroy(){}}
+ class FakeRuntime{boot(){}setScene(){return new Promise((resolve,reject)=>{rejectAssets=reject})}loadProgress(){return null}destroy(){}}
  const ctx=createContext({JaewoonVibeRuntime:FakeRuntime,document:{getElementById,addEventListener(){},removeEventListener(){}},window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(){rafCount++},setTimeout:()=>0,clearTimeout(){},console:{error(){}}});
  new Script(body).runInContext(ctx);
  rejectAssets(new Error('404'));
@@ -574,4 +574,73 @@ test('aborted font load never registers a late FontFace or keeps a cached lease'
    globalThis.FontFace=old.FontFace;
    globalThis.document=old.document;
  }
+});
+
+
+// [에셋 큐] 높은 우선순위가 먼저 시작되고 선행 에셋 완료 전 종속 로딩은 시작하지 않는다.
+test('priority and dependency groups execute in order and reject dependency cycles',async()=>{
+ const previous=globalThis.fetch,order=[];
+ globalThis.fetch=async url=>{order.push(String(url).split('/').pop());return new Response('{"ok":true}')};
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const lease=await runtime.loadAssets([
+     {id:'low',path:'low.json',priority:0},
+     {id:'high',path:'high.json',priority:10},
+     {id:'child',path:'child.json',priority:100,dependsOn:['high']}
+   ],{concurrency:1});
+   assert.deepEqual(order,['high.json','low.json','child.json']);
+   assert.equal(lease.assets.child.ok,true);
+   lease.release();
+   await assert.rejects(runtime.loadAssets([{id:'a',path:'a.json',dependsOn:['b']},{id:'b',path:'b.json',dependsOn:['a']}]),/circular asset dependencies/);
+   assert.equal(runtime.getAssetStats().total,0);
+   runtime.destroy();
+ }finally{globalThis.fetch=previous}
+});
+
+// [메모리] 활성 씬을 보존하면서 선행 로딩을 제한하고, 다음 씬 재사용에 중복 다운로드가 없다.
+test('preloadScene reuses ready assets and memory trim evicts only speculative scenes',async()=>{
+ const previous=globalThis.fetch;const requests=[];
+ globalThis.fetch=async url=>{requests.push(String(url));return new Response(new Uint8Array(32))};
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/',assetMemoryLimitBytes:100});
+   const active=await runtime.setScene('play',[{id:'main',path:'main.bin'}]);
+   assert.equal(runtime.getAssetStats().estimatedBytes,32);
+   const first=await runtime.preloadScene('next',[{id:'next',path:'next.bin'}]);
+   assert.equal(first.ready,true);
+   assert.equal(runtime.getAssetStats().preloadedSceneCount,1);
+   const transferred=await runtime.setScene('next',[{id:'next',path:'next.bin'}]);
+   assert.equal(transferred.assets.next.byteLength,32);
+   assert.equal(requests.filter(url=>url.endsWith('/next.bin')).length,1);
+   assert.equal(runtime.getAssetStats().preloadedSceneCount,0);
+   const old=await runtime.preloadScene('future',[{id:'future',path:'future.bin'}]);
+   assert.equal(old.ready,true);
+   runtime.setAssetMemoryLimit(40);
+   assert.equal(runtime.getAssetStats().preloadedSceneCount,0);
+   assert.equal(runtime.activeSceneId,'next');
+   assert.equal(runtime.getAssetStats().estimatedBytes,32);
+   active.release();
+   runtime.destroy();
+ }finally{globalThis.fetch=previous}
+});
+
+// [변경 감지] HEAD 지문이 바뀌어도 활성 씬을 중단하지 않고 신규 요청만 갱신한다.
+test('asset change detection invalidates future requests without mutating active scene',async()=>{
+ const previous=globalThis.fetch;let etag='v1';const urls=[];
+ globalThis.fetch=async (url,options={})=>{
+   if(options.method==='HEAD')return new Response(null,{status:200,headers:{etag}});
+   urls.push(String(url));return new Response('{"value":1}');
+ };
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const old=await runtime.setScene('old',[{id:'a',path:'config.json'}]);
+   assert.equal((await runtime.checkAssetUpdates(['config.json'])).changed.length,0);
+   etag='v2';
+   assert.deepEqual((await runtime.checkAssetUpdates(['config.json'])).changed,['config.json']);
+   assert.equal(old.assets.a.value,1);
+   const fresh=await runtime.setScene('new',[{id:'a',path:'config.json'}]);
+   assert.equal(urls.length,2);
+   assert.match(urls[1],/_vibe_asset_revision=1/);
+   assert.equal(runtime.getAssetDiagnostics().entries.length,1);
+   fresh.release();runtime.destroy();
+ }finally{globalThis.fetch=previous}
 });
