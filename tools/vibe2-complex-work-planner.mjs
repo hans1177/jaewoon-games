@@ -204,7 +204,8 @@ export function createVibe2ComplexCandidate(options={}){
       {name:'atomic-in-memory-edit-replay',pass:true}
     ]},
     vibe59DesignSteps:steps.map(row=>({id:row.id,dependsOn:row.dependsOn,
-      source:row.source,effect:row.effect})),
+      source:row.source,effect:row.effect,placement:row.placement,
+      anchorCall:row.anchorCall,forwardedArguments:row.forwardedArguments})),
     vibe59SourceIndex:{gameId:intent.gameId,files:index.files,
       boundSymbols:steps.length+edits.length,unsupported:index.unsupported},
     ruleDigest:sourceDigest(JSON.stringify([intent.requestId,sourceSha256ByPath,edits])),
