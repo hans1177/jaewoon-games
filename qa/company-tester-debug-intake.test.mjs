@@ -223,6 +223,14 @@ test('published WEB playtest intake rejects stale trees and deduplicates the sam
   assert.equal(first.tickets.tickets[0].surface,'WEB');
   const repeated=ingestTesterDebug({repoRoot:root,webPlaytestReport:report,ticketQueue:first.tickets,recoveryQueue:first.recovery});
   assert.equal(repeated.ingested,0);assert.equal(repeated.tickets.tickets[0].occurrenceCount,1);
+  const passed=ingestTesterDebug({repoRoot:root,webPlaytestReport:{...report,runId:'124',games:[{...game,runtimePassed:true}]},ticketQueue:first.tickets,recoveryQueue:first.recovery});
+  assert.equal(passed.tickets.tickets[0].status,'VERIFIED');
+  assert.equal(passed.recovery.tasks[0].status,'awaiting-primary-ai-review');
+  const outdated=ingestTesterDebug({repoRoot:root,webPlaytestReport:report,ticketQueue:passed.tickets,recoveryQueue:passed.recovery});
+  assert.equal(outdated.tickets.tickets[0].status,'VERIFIED');
+  const refailed=ingestTesterDebug({repoRoot:root,webPlaytestReport:{...report,runId:'125'},ticketQueue:passed.tickets,recoveryQueue:passed.recovery});
+  assert.equal(refailed.tickets.tickets[0].status,'OPEN');
+  assert.equal(refailed.recovery.tasks[0].status,'queued');
   for(const altered of [{...report,sharedSourceTrees:{assets:'f'.repeat(40)}},{...report,exactGameSources:false},{...report,games:[{...game,target:'roblox'}]},
     {...report,games:[{...game,sourceTreeSha:'f'.repeat(40)}]}]){
     assert.equal(ingestTesterDebug({repoRoot:root,webPlaytestReport:altered}).ingested,0);

@@ -195,6 +195,7 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
     incoming.push(...platformTickets(item,stamp));
   }
   // 웹 전용: 기존 Pages 브라우저 보고서만 수신하고 현재 게임 트리가 같은 관측만 인계한다.
+  const acceptedWebObservations=new Map();
   const observations=new Map((ticketQueue.webPlaytestObservations||[]).filter(row=>row?.target==='web').map(row=>[row.gameId,row]));
   if(webPlaytestReport?.authority==='PUBLISHED_WEB_BROWSER_SMOKE'&&webPlaytestReport.exactGameSources===true
     &&/^[0-9]+$/.test(String(webPlaytestReport.runId||''))){
@@ -211,8 +212,8 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
       let current='';try{current=clean(execFileSync('git',['rev-parse','HEAD:'+row.sourceRoot],{cwd:repoRoot,encoding:'utf8',stdio:['ignore','pipe','ignore']}));}catch{continue;}
       if(current!==row.sourceTreeSha)continue;
       const prior=observations.get(row.gameId);
-      if(prior?.runId===String(webPlaytestReport.runId))continue;
-      const observed={...row,sharedSourceTrees:shared,runId:String(webPlaytestReport.runId),observedAt:stamp};observations.set(row.gameId,observed);
+      if(/^[0-9]+$/.test(String(prior?.runId||''))&&BigInt(prior.runId)>=BigInt(webPlaytestReport.runId))continue;
+      const observed={...row,sharedSourceTrees:shared,runId:String(webPlaytestReport.runId),observedAt:stamp};observations.set(row.gameId,observed);acceptedWebObservations.set(row.gameId,observed);
       if(row.runtimePassed===false&&clean(row.failureSignature))incoming.push({
         id:'bug-'+hash([row.gameId,'WEB',row.sourceTreeSha,row.failureSignature]),gameId:row.gameId,surface:'WEB',
         phase:'POST_PUBLICATION_PLAYTEST',severity:'HIGH',category:category(row.failureSignature),
@@ -225,7 +226,30 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
   }
   const tickets=mergeTickets(ticketQueue,incoming);
   tickets.webPlaytestObservations=[...observations.values()].slice(-64);
+  const failedWebTicketIds=new Set(incoming.filter(t=>t.surface==='WEB'&&t.phase==='POST_PUBLICATION_PLAYTEST').map(t=>t.id));
+  for(const ticket of tickets.tickets){
+    if(ticket.surface!=='WEB'||ticket.phase!=='POST_PUBLICATION_PLAYTEST')continue;
+    const observation=acceptedWebObservations.get(ticket.gameId);
+    if(failedWebTicketIds.has(ticket.id)){ticket.status='OPEN';ticket.updatedAt=stamp;}
+    else if(observation?.runtimePassed===true&&ticket.status==='OPEN'){
+      ticket.status='VERIFIED';ticket.updatedAt=stamp;
+      ticket.verificationScope='EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY';
+      ticket.evidence=uniq([...(ticket.evidence||[]),'web-browser-playtest-pass-run:'+observation.runId,
+        'web-browser-playtest-pass-source:'+observation.sourceRevision]);
+    }
+  }
   let recovery=normalizeRecoveryQueue(recoveryQueue),added=[];
+  for(const task of recovery.tasks){
+    if(task.sourceQueue!=='tester-debug')continue;
+    const ticket=tickets.tickets.find(t=>t.id===task.sourceTaskId&&t.surface==='WEB'&&t.phase==='POST_PUBLICATION_PLAYTEST');
+    if(!ticket)continue;
+    if(ticket.status==='VERIFIED'&&acceptedWebObservations.get(ticket.gameId)?.runtimePassed===true&&task.status==='queued'){
+      task.status='awaiting-primary-ai-review';task.updatedAt=stamp;
+      task.deterministicEvidence=uniq([...(task.deterministicEvidence||[]),...ticket.evidence]);
+    }else if(failedWebTicketIds.has(ticket.id)&&task.status==='awaiting-primary-ai-review'){
+      task.status='queued';task.updatedAt=stamp;
+    }
+  }
   for(const t of tickets.tickets){
     if(t.status!=='OPEN'||!['CRITICAL','HIGH','MEDIUM'].includes(t.severity)||t.repairEligible===false)continue;
     const rec=enqueueRecovery(recovery,{
