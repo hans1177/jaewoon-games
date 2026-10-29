@@ -25,6 +25,8 @@ assert.equal(catalog.normalization?.ordering,'CANONICAL_STABLE');
 assert.equal(catalog.normalization?.orderField,'catalogOrder');
 assert.equal(catalog.normalization?.orderContiguous,true);
 assert.equal(catalog.runtimeCounts?.normalizedGames,catalog.games.length);
+assert.equal(catalog.runtimeCounts?.canonicalGames,catalog.games.length,'canonical summary count must match current game records');
+assert.equal(catalog.runtimeCounts?.homepageInfo,catalog.games.filter(game=>game.homepageInfo&&typeof game.homepageInfo==='object').length,'homepage info summary must match current game records');
 
 for(const [index,game] of catalog.games.entries()){
   assert.equal(Object.hasOwn(game,'newFeatureExpansionFrozen'),false,'legacy feature freeze must be removed: '+game.id);

@@ -29,6 +29,12 @@ import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neur
 import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemetry.mjs';
 
 const clean = (value) => String(value ?? '').trim();
+// 실제 생성기 의존 코드가 바뀌면 기존 실패를 새 버전에서 한 번 재검토한다.
+const SOURCE_CODEGEN_SHA256 = createHash('sha256').update([
+  'vibe2-source-worker.mjs','vibe2-v59-autonomy.mjs','vibe2-complex-intent.mjs',
+  'vibe2-complex-work-planner.mjs','vibe2-game-source-index.mjs',
+  'company-build-up-directive.mjs'
+].map(file=>file+'\n'+fs.readFileSync(new URL(file,import.meta.url),'utf8')).join('\n')).digest('hex');
 // The executable lives in the exact main contract checkout; cwd can be a stale control branch.
 // 중앙 검증 정책의 상대 경로는 실행 중인 canonical 소스 위치 기준으로 고정한다.
 // 제어 브랜치/임시 테스트 디렉터리의 cwd로 정책이 바뀌면 안 된다.
@@ -521,9 +527,7 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
           ||!evidence.some(value=>clean(value).startsWith('source-no-model-failure-kind:')));
       if(deterministicRoblox){
         if(nativeCodegenSha256===null){
-          const workerFile=path.join(path.dirname(fileURLToPath(import.meta.url)),'vibe2-source-worker.mjs');
-          if(!fs.existsSync(workerFile))return task;
-          nativeCodegenSha256=createHash('sha256').update(fs.readFileSync(workerFile)).digest('hex');
+          nativeCodegenSha256=SOURCE_CODEGEN_SHA256;
         }
         // 공식 Studio MCP의 실제 UI 관측이 바뀐 경우에만 검증 재시도를 허용한다.
         // 실행 번호만 바뀌고 실패 원인이 같으면 중복 실행하지 않는다.
@@ -543,15 +547,14 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
         const studioSignature=officialStudio?createHash('sha256')
           .update(JSON.stringify(observations.sort((a,b)=>a[0]-b[0]||a[1]-b[1]))).digest('hex'):'none';
         const fingerprint='source-no-model-codegen-sha256:'+nativeCodegenSha256;
+        // [반복 실패 차단] 검증 안 된 Studio 자료는 같은 생성기에서 새로운 시도로 세지 않는다.
+        // 생성기 자체가 달라졌을 때만 별도의 코드 개선 재검토를 허용한다.
+        if(!officialStudio&&evidence.includes(fingerprint))return task;
         const attempt='source-no-model-attempt-sha256:'+createHash('sha256')
           .update(nativeCodegenSha256+'|'+studioSignature).digest('hex');
         const tried=evidence.filter(value=>clean(value).startsWith('source-no-model-attempt-sha256:'));
         // 이전 큐 상태는 조합 키가 없으므로 기존 SHA 기반 차단을 유지한다.
-        // Losing or spoofing official Studio observations cannot create a new
-        // "none" attempt for an unchanged native worker. A revised source worker
-        // still changes the codegen fingerprint and remains immediately eligible.
-        if(tried.includes(attempt)||(!officialStudio&&evidence.includes(fingerprint))
-          ||(!tried.length&&evidence.includes(fingerprint)))return task;
+        if(tried.includes(attempt)||(!tried.length&&evidence.includes(fingerprint)))return task;
         recovered+=1;
         return {...task,...clearedReservation(),status:'queued',blocker:null,
           lastOutcome:officialStudio?'MODEL_FREE_NATIVE_STUDIO_EVIDENCE_RECHECK':'MODEL_FREE_NATIVE_CODEGEN_RECHECK',
@@ -562,15 +565,18 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
             ...tried.slice(-23),fingerprint,attempt,'source-no-model-retry-resumed:v1'
           ])]};
       }
+      const offlineFingerprint='source-offline-pattern-codegen-sha256:'+SOURCE_CODEGEN_SHA256;
+      const codegenChanged=offlinePattern&&!evidence.includes(offlineFingerprint);
       const prefix=offlinePattern?'source-offline-pattern-retry-at:'
         :noModel?'source-no-model-retry-at:':'external-ai-quota-retry-at:';
       const marker=evidence.findLast(value=>clean(value).startsWith(prefix));
       const readyAt=Date.parse(clean(marker).slice(prefix.length));
-      if(!Number.isFinite(readyAt)||Number(nowMs)<readyAt)return task;
+      if(!codegenChanged&&(!Number.isFinite(readyAt)||Number(nowMs)<readyAt))return task;
       recovered+=1;
       return {...task,...clearedReservation(),status:'queued',blocker:null,
         lastOutcome:offlinePattern?'OFFLINE_RECIPE_CAPABILITY_RECHECK':noModel?'MODEL_FREE_SOURCE_RECHECK':'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
-        evidence:[...new Set([...evidence,offlinePattern?'source-offline-pattern-retry-resumed:v1'
+        evidence:[...new Set([...evidence.filter(value=>!offlinePattern||!clean(value).startsWith('source-offline-pattern-codegen-sha256:')),
+          ...(offlinePattern?[offlineFingerprint]:[]),offlinePattern?'source-offline-pattern-retry-resumed:v1'
           :noModel?'source-no-model-retry-resumed:v1':'external-ai-quota-wait-resumed:v1'])]};
     }
     if (task.status !== 'running') return task;
@@ -1352,12 +1358,14 @@ export function applyVibeFanInResults(queueInput, results = []) {
         tasks:queue.tasks.map(task=>{
           if(task.id!==taskId)return task;
           const retained=(task.evidence||[]).filter(value=>
-            !clean(value).startsWith('source-offline-pattern-retry-at:'));
+            !clean(value).startsWith('source-offline-pattern-retry-at:')
+            &&!clean(value).startsWith('source-offline-pattern-codegen-sha256:'));
           return {...task,...clearedReservation(),status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE',
             lastOutcome:'OFFLINE_RECIPE_CAPABILITY_GAP',
             neuronExpectedVariants:0,neuronResults:[],
             evidence:[...new Set([...retained,'offline-recipe-capability-gap:v1',
-              'source-offline-pattern-retry-at:'+retryAt])] };
+              'source-offline-pattern-retry-at:'+retryAt,
+              'source-offline-pattern-codegen-sha256:'+SOURCE_CODEGEN_SHA256])] };
         })
       });
       applied.push({taskId,outcome:'DEFERRED_OFFLINE_RECIPE',retryAt,

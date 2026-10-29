@@ -42,7 +42,7 @@ test('ordered natural-language call connectors retain exact owner text and groun
   'When function event runs, call commitState, render'
  ]){
   const parsed=compileVibe2ComplexIntent({...base,order:{selectedTask:{...base.order.selectedTask,goal}}});
-  assert.equal(parsed.ownerDirectiveReference.originalText,goal);
+  assert.equal(parsed.ownerDirectiveReference.originalText,goal.trim());
   assert.deepEqual(parsed.requirements.map(r=>r.effect),['commitState','render']);
   assert.equal(parsed.requirements[1].dependsOn[0],parsed.requirements[0].id);
   assert.equal(parsed.ownerDirectiveReference.verifiedFromOwnerOrder,true);
@@ -110,4 +110,30 @@ test('source-grounded existing Roblox RemoteEvent may connect health to original
   assert.equal(parsed.requirements[0].functionName,undefined);
   assert.equal(parsed.sourceWrite,false);
  }
+});
+
+test('owner source instruction survives large exact build-up context without dropping extra owner requirements',async()=>{
+ const {directivePrompt}=await import('../tools/company-build-up-directive.mjs');
+ const directive={gameIdentityAndNonNegotiables:{identity:'rpg'},gameplayImplementationDirectives:[],progressionContentWorldDirectives:[],uxInputDirectives:[],preserveConstraints:[],acceptanceEvidence:[],nextEscalationCandidates:[],directiveId:'directive-one',gameId:'rpg',platform:'WEB',primaryGoalReason:'context '.repeat(18000)};
+ const prefix='함수 hit에서 a.dead이면 false를 반환해',context=directivePrompt(directive);
+ assert.ok(context.length>100000);
+ const goal=prefix+'\n\n'+context;
+ const order={selectedTask:{gameId:'rpg',ownerDirective:true,goal,buildUpDirective:directive}};
+ const parsed=compileComplexOwnerIntent({order,target:'web'});
+ assert.equal(parsed.requirements.length,1);assert.equal(parsed.unresolved.length,0);
+ assert.equal(parsed.ownerDirectiveReference.originalText,goal.trim());
+ assert.equal(parsed.ownerDirectiveReference.interpretedText,prefix);
+ for(const changed of [goal+'\n새 보스도 만들어',goal.replace('context context','altered context')]){
+  const rejected=compileComplexOwnerIntent({order:{selectedTask:{...order.selectedTask,goal:changed}},target:'web'});
+  assert.ok(rejected.unresolved.length,'unaligned context and extra requirements must not be discarded');
+ }
+ const wrong=compileComplexOwnerIntent({order:{selectedTask:{...order.selectedTask,buildUpDirective:{...directive,gameId:'other'}}},target:'web'});
+ assert.ok(wrong.unresolved.length);
+ const unapproved=compileComplexOwnerIntent({order:{selectedTask:{...order.selectedTask,ownerDirective:false}},target:'web'});
+ assert.ok(unapproved.unresolved.some(row=>row.code==='NO_OWNER_SPEC'));
+ const chain='When function event runs, call commitState, render';
+ const legacy=compileVibe2ComplexIntent({order:{selectedTask:{...order.selectedTask,goal:chain+'\n\n'+context}},
+  target:'web',sourceRoot:'web-games/rpg',responsibleFiles:['game.js']});
+ assert.deepEqual(legacy.requirements.map(row=>row.effect),['commitState','render']);
+ assert.equal(legacy.ownerDirectiveReference.originalText,(chain+'\n\n'+context).trim());
 });

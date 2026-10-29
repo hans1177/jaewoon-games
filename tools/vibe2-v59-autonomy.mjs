@@ -9,6 +9,7 @@ import {inspectSourceFunctions,executableText} from './company-vibe2-expert-deve
 export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges,createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
+import {createVibe59OneShotVolumeCandidate} from './vibe59-one-shot-volume.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
@@ -112,10 +113,11 @@ export function composeVibe59Systems({systems:chosen=[],bindings=[]}={}){
 // 기존 열거 탐색과 반례 루프를 공유한다. 외부 코드/논문 원문은 실행하거나 복제하지 않는다.
 function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
   const valid=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
-  const close=(a,b)=>valid(a)&&Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b));
+  const close=(a,b)=>valid(a)&&(b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
   const operators=['+','-','*','/','%','min','max','gt','lt'];
-  const unary=['abs','floor','round','neg'];
+  const unary=['abs','floor','ceil','trunc','sign','round','neg'];
   const terms=[...params.map((_,i)=>['param',i]),...constants.map(n=>['const',n])];
+  const signatureValue=value=>valid(value)?(Object.is(value,-0)?'-0':Number(value.toPrecision(8))):'invalid';
   const maxGenerations=Math.max(2,Math.min(48,Number.isInteger(spec.maxGenerations)?spec.maxGenerations:24));
   const maxNodes=Math.max(7,Math.min(39,Number.isInteger(spec.maxNodes)?spec.maxNodes:25));
   let seed=Number.parseInt(sha(JSON.stringify([params,constants,spec.seed||'VIBE59'])).slice(0,8),16)>>>0;
@@ -136,8 +138,14 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
           typeof part[1]==='number'&&Number.isFinite(part[1])&&Math.abs(part[1])<=1000))return false;
         continue;
       }
-      const arity=unary.includes(op)?2:operators.includes(op)?3:op==='select'?4:0;
+      const arity=unary.includes(op)?2:operators.includes(op)?3:['select','clamp'].includes(op)?4:0;
       if(!arity||part.length!==arity)return false;
+      // Limit clamp to explicit finite, ordered constants; no dynamic bound evaluation.
+      if(op==='clamp'&&(!Array.isArray(part[2])||part[2][0]!=='const'||part[2].length!==2
+        ||!Array.isArray(part[3])||part[3][0]!=='const'||part[3].length!==2
+        ||typeof part[2][1]!=='number'||typeof part[3][1]!=='number'
+        ||!Number.isFinite(part[2][1])||!Number.isFinite(part[3][1])
+        ||part[2][1]>=part[3][1]))return false;
       for(let i=1;i<arity;i++)stack.push({node:part[i],depth:frame.depth+1,
         ancestors:[...frame.ancestors,part]});
     }
@@ -151,11 +159,18 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(!valid(x))return NaN;
     if(op==='abs')return Math.abs(x);
     if(op==='floor')return Math.floor(x);
+    if(op==='ceil')return Math.ceil(x);
+    if(op==='trunc')return Math.trunc(x);
+    if(op==='sign')return Math.sign(x);
     if(op==='round')return Math.round(x);
     if(op==='neg')return -x;
     // A conditional evaluates only the selected branch: an invalid unused
     // branch is not a failed candidate or a hidden holdout counterexample.
     if(op==='select')return evaluate(x>0?b:c,args);
+    if(op==='clamp'){
+      const lower=evaluate(b,args),upper=evaluate(c,args);
+      return valid(lower)&&valid(upper)&&lower<upper?Math.min(Math.max(x,lower),upper):NaN;
+    }
     const y=evaluate(b,args);
     if(!valid(y))return NaN;
     switch(op){
@@ -173,12 +188,19 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='const')return String(a);
     const x=render(a,target),math=target==='roblox'?'math.':'Math.';
     if(op==='neg')return '(-'+x+')';
+    if(op==='trunc'&&target==='roblox')return '(math.modf('+x+'))';
     if(unary.includes(op))return math+op+'('+x+')';
+    if(op==='clamp'){
+      const lower=render(b,target),upper=render(c,target);
+      return target==='roblox'?'math.clamp('+x+','+lower+','+upper+')':
+        'Math.min(Math.max('+x+','+lower+'),'+upper+')';
+    }
     const y=render(b,target);
     if(op==='min'||op==='max')return math+op+'('+x+','+y+')';
     if(op==='gt'||op==='lt')return target==='roblox'
       ?'(('+x+op.replace('gt','>').replace('lt','<')+y+') and 1 or 0)'
       :'('+x+(op==='gt'?'>':'<')+y+'?1:0)';
+    if(op==='%')return target==='roblox'?'math.fmod('+x+','+y+')':'('+x+'%'+y+')';
     if(op==='select'){
       const z=render(c,target);
       return target==='roblox'?'(('+x+'>0) and ('+y+') or ('+z+'))'
@@ -203,7 +225,7 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     const error=activeRows.reduce((sum,i)=>sum+
       (valid(values[i])?Math.min(1000,Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output))):1000),0);
     const risk=(key.match(/"\/"|"%"|"select"/g)||[]).length;
-    const signature=activeRows.map(i=>valid(values[i])?Number(values[i].toPrecision(8)):'invalid').join('|');
+    const signature=activeRows.map(i=>signatureValue(values[i])).join('|');
     const novelty=semantic.has(signature)?0:1;
     semantic.add(signature);candidatesConsidered++;
     const row={ast,values,expr:render(ast),cost:size(ast),variables:key.includes('"param"')?1:0,
@@ -215,6 +237,9 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     }
   }
   for(const term of [...terms,...verifiedSeeds])add(term,0);
+  for(let i=0;i<params.length;i++)for(const lower of constants)for(const upper of constants){
+    if(lower<upper)add(['clamp',['param',i],['const',lower],['const',upper]],0);
+  }
   const primitives=terms.slice(0,12);
   for(const a of primitives){
     for(const op of unary)add([op,a],0);
@@ -224,7 +249,7 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     const best=[...all].sort((a,b)=>a.error-b.error||a.risk-b.risk||a.cost-b.cost||a.expr.localeCompare(b.expr));
     const chosen=new Map();
     for(const row of best){
-      const signature=activeRows.map(i=>valid(row.values[i])?Number(row.values[i].toPrecision(8)):'x').join(',');
+      const signature=activeRows.map(i=>signatureValue(row.values[i])).join(',');
       if(chosen.has(signature)&&chosen.size>=16)continue;
       chosen.set(signature,row);
       if(chosen.size>=56)break;
@@ -284,7 +309,7 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
       ||row.args.some(x=>typeof x!=='number'||!Number.isFinite(x)||Math.abs(x)>1e6)
       ||typeof row.output!=='number'||!Number.isFinite(row.output)||Math.abs(row.output)>1e7)
       throw Error('VIBE59_ALGORITHM_INVALID_ORACLE');
-    const key=JSON.stringify(row.args);
+    const key=JSON.stringify(row.args.map(x=>Object.is(x,-0)?'-0':x));
     if(keys.has(key))throw Error('VIBE59_ALGORITHM_DUPLICATE_INPUT');
     keys.add(key);
   }
@@ -293,17 +318,18 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     throw Error('VIBE59_ALGORITHM_CONSTANTS_INVALID');
   const fixed=[...new Set(constants)];
   const valid=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
-  const close=(a,b)=>valid(a)&&Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b));
+  const close=(a,b)=>valid(a)&&(b===0?Object.is(a,b):Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b)));
   const original=new Set(rows.map((row,i)=>i));
   const active=new Set(examples.map((_,i)=>i));
   const seenCounterexamples=[],maxDepth=Math.max(1,Math.min(4,Number.isInteger(spec.maxDepth)?spec.maxDepth:3));
   let searched=0,passes=0,selected=null;
   function attempt(){
     const candidates=[],semantic=new Map();
-    const normalized=value=>valid(value)?Number(value.toPrecision(10)).toString():'invalid';
+    const normalized=value=>valid(value)?(Object.is(value,-0)?'-0':Number(value.toPrecision(10)).toString()):'invalid';
     const signature=values=>[...active].map(i=>normalized(values[i])).join('|');
     const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
-      valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
+      valid(values[i])?(values[i]===0&&rows[i].output===0&&!Object.is(values[i],rows[i].output)?1:
+        Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output))):100000),0);
     function add(expr,values,cost,variables,depth,ast){
       // Hidden holdouts must not influence candidate admission or semantic
       // deduplication before a counterexample is explicitly activated.
@@ -316,9 +342,17 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     }
     for(const [j,p] of params.entries())add(p,rows.map(row=>row.args[j]),1,1,0,{kind:'reference',name:p});
     for(const c of fixed)add(String(c),rows.map(()=>c),1,0,0,{kind:'constant',value:c});
+    for(const [j,param] of params.entries())for(const lower of fixed)for(const upper of fixed){
+      if(lower>=upper)continue;
+      add('Math.min(Math.max('+param+','+lower+'),'+upper+')',
+        rows.map(row=>Math.min(Math.max(row.args[j],lower),upper)),4,1,1,
+        {kind:'clamp',value:{kind:'reference',name:param},
+          minimum:{kind:'constant',value:lower},maximum:{kind:'constant',value:upper}});
+    }
     const operators=[
       ['+', (a,b)=>a+b],['-',(a,b)=>a-b],['*',(a,b)=>a*b],
-      ['/',(a,b)=>b===0?NaN:a/b],['min',(a,b)=>Math.min(a,b)],
+      ['/',(a,b)=>Math.abs(b)<1e-9?NaN:a/b],
+      ['%',(a,b)=>Math.abs(b)<1e-9?NaN:a%b],['min',(a,b)=>Math.min(a,b)],
       ['max',(a,b)=>Math.max(a,b)]
     ];
     function best(){
@@ -335,7 +369,7 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
         ...prior.slice(0,64)].map(x=>[x.expr,x])).values()].slice(0,76);
       const newer=pool.filter(x=>x.depth===d-1);
       for(const a of newer){
-        for(const [label,operation] of [['abs',Math.abs],['floor',Math.floor],['round',Math.round],['neg',n=>-n]]){
+        for(const [label,operation] of [['abs',Math.abs],['floor',Math.floor],['ceil',Math.ceil],['trunc',Math.trunc],['sign',Math.sign],['round',Math.round],['neg',n=>-n]]){
           const vals=a.values.map(operation);
           add(label==='neg'?'(-'+a.expr+')':'Math.'+label+'('+a.expr+')',vals,a.cost+1,a.variables,d,
             {kind:'mutation',operator:label,operand:a.ast});
@@ -406,7 +440,7 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
     ||search.trainingCases<3||!Number.isSafeInteger(search.heldOutCases)
     ||search.heldOutCases<2||search.casesPassed!==search.trainingCases+search.heldOutCases)
     return empty('INDEPENDENT_ORACLE_REQUIRED');
-  const unary=new Set(['neg','abs','floor','round']);
+  const unary=new Set(['neg','abs','floor','ceil','trunc','sign','round']);
   const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
   const budget={nodes:0};
   function normalize(node,depth,ancestors){
@@ -426,6 +460,12 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
       if(op==='select'&&node.length===4)
         return [op,normalize(node[1],depth+1,next),normalize(node[2],depth+1,next),
           normalize(node[3],depth+1,next)];
+      if(op==='clamp'&&node.length===4){
+        const value=normalize(node[1],depth+1,next);
+        const lower=normalize(node[2],depth+1,next),upper=normalize(node[3],depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return [op,value,lower,upper];
+      }
     }else if(Object.getPrototypeOf(node)===Object.prototype){
       if(node.kind==='reference'){
         const index=params.indexOf(node.name);
@@ -438,6 +478,14 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
       if(node.kind==='crossover'&&binary.has(node.operator))
         return [node.operator,normalize(node.left,depth+1,next),
           normalize(node.right,depth+1,next)];
+      if(node.kind==='clamp'&&Object.keys(node).length===4
+        &&['kind','value','minimum','maximum'].every(k=>Object.hasOwn(node,k))){
+        const value=normalize(node.value,depth+1,next);
+        const lower=normalize(node.minimum,depth+1,next);
+        const upper=normalize(node.maximum,depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return ['clamp',value,lower,upper];
+      }
     }
     throw Error('VIBE59_UNSAFE_CONCEPT_AST');
   }
@@ -488,7 +536,7 @@ export function renderVibe59NumericLuaAST(node,params){
     ||params.some(name=>typeof name!=='string'||!legal.test(name)||forbidden.has(name)
       ||!luaIdentifier.test(name)||luaReserved.has(name)))
     throw Error('VIBE59_ALGORITHM_LUA_PARAMETERS_INVALID');
-  const unary=new Set(['abs','floor','round','neg']);
+  const unary=new Set(['abs','floor','ceil','trunc','sign','round','neg']);
   const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
   const state={nodes:0};
   function normalize(part,depth,ancestors){
@@ -508,9 +556,17 @@ export function renderVibe59NumericLuaAST(node,params){
       if(op==='select'&&part.length===4)
         return [op,normalize(part[1],depth+1,next),normalize(part[2],depth+1,next),
           normalize(part[3],depth+1,next)];
+      if(op==='clamp'&&part.length===4){
+        const value=normalize(part[1],depth+1,next);
+        const lower=normalize(part[2],depth+1,next);
+        const upper=normalize(part[3],depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return [op,value,lower,upper];
+      }
     }else if(Object.getPrototypeOf(part)===Object.prototype){
       const fields={reference:['kind','name'],constant:['kind','value'],
-        mutation:['kind','operator','operand'],crossover:['kind','operator','left','right']};
+        mutation:['kind','operator','operand'],crossover:['kind','operator','left','right'],
+        clamp:['kind','value','minimum','maximum']};
       const required=Object.hasOwn(fields,part.kind)?fields[part.kind]:null;
       if(!required||Object.keys(part).length!==required.length
         ||required.some(key=>!Object.hasOwn(part,key)))
@@ -527,6 +583,13 @@ export function renderVibe59NumericLuaAST(node,params){
       if(part.kind==='crossover'&&binary.has(part.operator))
         return [part.operator,normalize(part.left,depth+1,next),
           normalize(part.right,depth+1,next)];
+      if(part.kind==='clamp'){
+        const value=normalize(part.value,depth+1,next);
+        const lower=normalize(part.minimum,depth+1,next);
+        const upper=normalize(part.maximum,depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return ['clamp',value,lower,upper];
+      }
     }
     throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
   }
@@ -537,13 +600,17 @@ export function renderVibe59NumericLuaAST(node,params){
     if(op==='const')return String(a);
     const x=render(a);
     if(op==='neg')return '(-'+x+')';
-    if(['abs','floor'].includes(op))return 'math.'+op+'('+x+')';
+    if(op==='trunc')return '(math.modf('+x+'))';
+    if(['abs','floor','ceil','sign'].includes(op))return 'math.'+op+'('+x+')';
     if(op==='round')return 'math.floor(('+x+')+0.5)';
+    if(op==='clamp')return 'math.clamp('+x+','+render(b)+','+render(c)+')';
     const y=render(b);
     if(op==='min'||op==='max')return 'math.'+op+'('+x+','+y+')';
     if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
     if(op==='select')return '(('+x+'>0) and ('+y+') or ('+render(c)+'))';
-    if(op==='%')return '('+x+'-math.modf('+x+'/'+y+')*'+y+')';
+    // Lua's % uses floor-division remainder; fmod preserves JavaScript's
+    // truncation-toward-zero semantics for negative dividends and signed zero.
+    if(op==='%')return 'math.fmod('+x+','+y+')';
     return '('+x+op+y+')';
   }
   return render(ast);
@@ -965,7 +1032,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
       throw Error('VIBE59_FUNCTION_REWRITE_ANCHOR_MISMATCH');
     find=originalFunction.original;
   }
-  if(content.length>260000)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
+  if(Buffer.byteLength(content)>2*1024*1024)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     if(find!=null&&typeof find!=='string')throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
@@ -1139,7 +1206,14 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   let rewritten=compiled.source;
   if(autoFunctionRewrite){
     if(req.robloxServerAction)throw Error('VIBE59_FUNCTION_REWRITE_SERVER_AUTHORITY');
+    // [원본 함수 계약] 이벤트 핸들러가 반환하던 값의 형식은 보존한다.
+    // 불리언이 아닌 기존 반환 계약은 재작성하지 않고 거부한다.
     if(req.machine){
+      const originalBody=executableText(originalFunction.original,
+        target==='roblox'?'luau':'javascript').slice(originalFunction.header.length);
+      const returns=[...originalBody.matchAll(/\breturn\b\s*([^;\n}\r]*)/g)];
+      if(!returns.length||returns.some(row=>!['true','false'].includes(row[1].trim())))
+        throw Error('VIBE59_FUNCTION_REWRITE_RETURN_CONTRACT');
       // 생성기의 헤더 표기(공백/local)가 달라도 원본 선언을 정확히 보존한다.
       const generatedHeader=target==='roblox'
         ?/^(?:local\s+)?function\s+[A-Za-z_]\w*\s*\(\s*eventName\s*\)/
@@ -1254,7 +1328,7 @@ export function evaluateVibe59OfflinePatchEvidence({candidate={},order={},source
      ||!fs.statSync(full).isFile()||!fs.realpathSync(full).startsWith(root+path.sep))
      throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_ESCAPE');
    const source=fs.readFileSync(full,'utf8');
-   if(source.length>260000)throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_LIMIT');
+   if(Buffer.byteLength(source)>2*1024*1024)throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_LIMIT');
    const functions=inspectSourceFunctions(source,{language:target==='roblox'?'luau':'javascript',maxFunctions:4096});
    files.set(edit.path,{source,functions,hash:sha(source)});
    originals.push({path:edit.path,sha256:sha(source)});
@@ -1320,6 +1394,9 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
   const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
     responsibleFiles,target,repositoryRoot});
   if(visualAssetCandidate)return visualAssetCandidate;
+  // [실제 빌드업] 기존 Vibe 후보→동일 안전 편집기 경로에서 월드·시설·그래픽·입력·모션을 일괄 생성한다.
+  const volumeCandidate=createVibe59OneShotVolumeCandidate({order,sourceRoot,responsibleFiles,target,repositoryRoot});
+  if(volumeCandidate)return audited(volumeCandidate);
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null){
     // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.

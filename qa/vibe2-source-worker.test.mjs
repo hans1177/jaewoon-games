@@ -7,11 +7,40 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,prioritizeVerifiedStudioNativeRepair,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,deterministicRobloxNativeRepairCandidate,prioritizeVerifiedStudioNativeRepair,focusedSymbolContext,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {PLAYABLE_IMPROVEMENT_IDS,evaluatePlayableImprovementSourceProof} from '../tools/company-playable-improvement-source-proof.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
+
+test('source coder keeps reserved helper functions ahead of noisy graph evidence without widening file writes',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-helper-focus-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file=path.join(root,'core.js');
+ const source=[
+  'function primary(){return targetHelper();}',
+  ...Array.from({length:30},(_,i)=>'function noise'+i+'(){return '+i+';}'),
+  'function targetHelper(){return 42;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const graphNodes=Array.from({length:22},(_,i)=>({name:'noise'+i}));
+ const contract={
+  responsibilityConfidence:'HIGH',
+  primaryTargets:['primary'],
+  responsibilityGraph:{relevantNodes:graphNodes},
+  reservedHelperEditPlan:{reservedHelperEdits:[
+   {file:'core.js',symbol:'targetHelper',writableWithinExistingReservation:true},
+   {file:'outside.js',symbol:'unreservedHelper',writableWithinExistingReservation:true}
+  ]},
+  allowedDependentSymbolsOrSystems:['targetHelper','unreservedHelper']
+ };
+ const focused=focusedSymbolContext(root,'web',['core.js'],{editContract:contract});
+ assert.ok(focused&&focused.files.length>0);
+ assert.ok(focused.files.some(x=>x.content.includes('function targetHelper()')));
+ assert.ok(focused.files.every(x=>x.path==='core.js'&&x.editable===true));
+ assert.equal(focused.exactSourceWindows,true);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
 
 // [무모델] 기존 액션을 직접 재사용하는 모바일 조작 생성과 거부 경계.
 test('no-model Roblox generates touch controls from exact existing native action callbacks',t=>{
@@ -774,7 +803,6 @@ import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
-import { focusedSymbolContext } from '../tools/vibe2-source-worker.mjs';
 import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, rejectedSourcePatchFingerprint, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
@@ -4181,10 +4209,11 @@ test('deterministic diagnostic repair adds touch-action to the actual interactiv
 
 test('source worker wires deterministic diagnostic before model recovery',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
-  const deterministicAt=source.indexOf('const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate');
+  const deterministicAt=source.indexOf('const deterministicDiagnostic=!nativeStudioFirst&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate');
   const modelAt=source.indexOf('generated=await generateCandidateWithRecovery({prompt',deterministicAt);
-  assert.ok(deterministicAt>0&&modelAt>deterministicAt);
-  assert.match(source,/verifiedExternalLearningContract\.required!==true\?deterministicDiagnosticCandidate/);
+  const nativeFallbackAt=source.indexOf('if(!nativeStudioFirst&&!generated)tryNativeCandidate();',deterministicAt);
+  assert.ok(deterministicAt>0&&nativeFallbackAt>deterministicAt&&modelAt>nativeFallbackAt);
+  assert.match(source,/!nativeStudioFirst&&!allowFullRewrite&&verifiedExternalLearningContract\.required!==true\?deterministicDiagnosticCandidate/);
   assert.match(source,/VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=PASS/);
 });
 test('reproduced interval diagnostic is anchored before incremental QA',()=>{

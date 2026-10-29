@@ -266,6 +266,18 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.match(reconcileStep,/OWNER_EXACT_ROBLOX_REACTIVATION_POLICY_NOT_VERIFIED/);
   assert.match(reconcileStep,/approvedFocusedGame\.productionClass!=='DEVELOPMENT_CONFIRMED'/);
   assert.match(reconcileStep,/machineRemoved\.some\(id=>!ownerRemoval\.ids\.includes\(id\)\)/);
+  assert.match(reconcileStep,/new Set\(ownerRemoval\.ids\)\.size!==ownerRemoval\.ids\.length/);
+  assert.doesNotMatch(reconcileStep,/machineRemoved\.length!==ownerRemoval\.ids\?\.length/,
+    'newer owner removals must not be blocked by stale machine-list length');
+  const machinePolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const mainCatalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const protectedIds=machinePolicy.permanentProjectRemoval?.ids||[];
+  const ownerIds=mainCatalog.permanentRemovalPolicy?.ids||[];
+  assert.ok(ownerIds.length>=protectedIds.length);
+  assert.ok(protectedIds.every(id=>ownerIds.includes(id)),
+    'all original machine-locked removals must remain protected');
+  assert.ok(protectedIds.some(id=>!ownerIds.filter(other=>other!==id).includes(id)),
+    'omitting a machine-locked removal must still fail');
   assert.match(reconcileStep,/machineRemoved\.includes\(allowedReactivation\)/);
   assert.doesNotMatch(reconcileStep,/\.includes\('SIMPLE_RPG_REACTIVATED_FOR_OWNER_EXACT_ROBLOX_FOCUS_2026-10-19'\)/);
   assert.match(reconcileStep,/UNAUTHORIZED_PERMANENT_REMOVAL_REVERSAL/);

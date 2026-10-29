@@ -138,7 +138,8 @@ jobs:
               ||focus.ownerFocusedGamePlatforms?.[allowedReactivation]!=='ROBLOX'
               ||ownerRemoval.authority!=='OWNER_DIRECTIVE'
               ||!Array.isArray(machineRemoved)
-              ||machineRemoved.length!==ownerRemoval.ids?.length
+              ||!Array.isArray(ownerRemoval.ids)
+              ||new Set(ownerRemoval.ids).size!==ownerRemoval.ids.length
               ||machineRemoved.some(id=>!ownerRemoval.ids.includes(id))
               ||!approvedFocusedGame
               ||!['ACTIVE','REBUILD'].includes(approvedFocusedGame.lifecycleState)

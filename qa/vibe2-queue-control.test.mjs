@@ -244,6 +244,8 @@ test('official Studio evidence change retries one native causal candidate, same 
     playtestRuntimeFindings:{studioQualityFailure:{
       ...failure(5,4080),authority:'unverified-label'}}}};
   assert.equal(recover(spoof).recovered,0,'unverified metadata cannot reopen a blocked native task');
+  const missing={...blocked,buildUpDirective:{...blocked.buildUpDirective,playtestRuntimeFindings:{}}};
+  assert.equal(recover(missing).recovered,0,'missing Studio evidence must not create another attempt for unchanged codegen');
 });
 
 test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
@@ -274,6 +276,11 @@ test('zero-attempt Vibe4 missing pattern defers and frees capacity without prete
   const retry=Date.parse(settled.applied[0].retryAt);
   assert.ok(retry>Date.now()+5*60*60*1000);
   assert.equal(recoverStaleRunningReservations(settled.queue,{nowMs:retry-1000}).recovered,0);
+  const oldGenerator={...waiting,evidence:waiting.evidence.filter(v=>!v.startsWith('source-offline-pattern-codegen-sha256:'))};
+  const revised=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[oldGenerator]}),{nowMs:retry-1000});
+  assert.equal(revised.recovered,1,'a real generator revision bypasses the six-hour wait');
+  const blockedAgain={...revised.queue.tasks[0],status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE'};
+  assert.equal(recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[blockedAgain]}),{nowMs:retry-1000}).recovered,0,'the same revision cannot reopen a failure loop');
   const independent=reserveVibeTaskBatch(settled.queue,{maxConcurrentTasks:1,lane:'game-primary'});
   assert.deepEqual(independent.tasks.map(row=>row.id),['independent-game']);
   const resumed=recoverStaleRunningReservations(settled.queue,{nowMs:retry+1000});

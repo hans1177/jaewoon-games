@@ -7,6 +7,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {scriptText,lex} from './vibe2-game-source-index.mjs';
+import {executableText,buildResponsibilityGraph} from './company-vibe2-expert-development.mjs';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
 import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
@@ -312,18 +314,31 @@ function tokenCount(text,re){return (String(text).match(re)||[]).length;}
 
 const CONTROL_FLOW_SYMBOLS=new Set(['if','for','while','switch','catch','with']);
 function sourceAnchorCandidates(text='',file=''){
-  const anchors=[],lines=String(text).split('\n');
+  const source=String(text),lines=source.split('\n');
+  // Reuse the existing lexical source analyzer: comments and string literals are
+  // not executable source evidence, even when they look like function declarations.
+  const language=/\.luau?$/i.test(file)?'luau':/\.cs$/i.test(file)?'csharp':'javascript';
+  const executable=executableText(source,language);
+  const sanitized=/\.html?$/i.test(file)
+    ?executable.replace(/<!--[\s\S]*?-->/g,match=>match.replace(/[^\r\n]/g,' '))
+    :executable;
+  const codeLines=sanitized.split('\n'),anchors=[];
   const patterns=[
     ['CLASS',/^\s*(?:export\s+)?(?:(?:public|private|protected|internal|abstract|sealed|static|partial)\s+)*class\s+([A-Za-z_$][\w$]*)/],
     ['FUNCTION',/^\s*(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
     ['FUNCTION',/^\s*(?:local\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
+    // Real Luau and Web code commonly owns behavior through assigned callbacks
+    // instead of named function declarations.
+    ['FUNCTION',/^\s*(?:local\s+)?([A-Za-z_$][\w$]*)\s*(?::[^=\n]+)?=\s*(?:async\s+)?function\s*\(/],
+    ['METHOD',/^\s*([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)+)\s*=\s*(?:async\s+)?function\s*\(/],
+    ['METHOD',/^\s*([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)+)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/],
     ['FUNCTION',/^\s*([A-Za-z_][\w]*)\s*(?:<[^>]+>)?\s*\([^)]*\)\s*(?:<[^>]+>)?\s*:[^=]+=/],
     ['FUNCTION',/^\s*(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/],
     ['METHOD',/^\s*(?:(?:public|private|protected|internal|static|async|virtual|override|sealed|partial)\s+)+(?:[A-Za-z_$][\w$<>,.?\[\]]*\s+)+([A-Za-z_$][\w$]*)\s*\(/],
     ['METHOD',/^\s*([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/]
   ];
   for(let index=0;index<lines.length;index++){
-    const line=lines[index],trimmed=line.trim();
+    const line=codeLines[index]||'',trimmed=(lines[index]||'').trim();
     if(!trimmed||trimmed.startsWith('//')||trimmed.startsWith('#'))continue;
     let matched=false;
     for(const [kind,re] of patterns){
@@ -331,7 +346,7 @@ function sourceAnchorCandidates(text='',file=''){
       if(!match)continue;
       const symbol=clean(match[1]);
       if(!symbol||CONTROL_FLOW_SYMBOLS.has(symbol.toLowerCase()))continue;
-      const nearby=lines.slice(Math.max(0,index-2),Math.min(lines.length,index+4)).join(' ');
+      const nearby=codeLines.slice(Math.max(0,index-2),Math.min(lines.length,index+4)).join(' ');
       const score=20
         +tokenCount(nearby,/attack|damage|combat|enemy|boss|player|input|progress|reward|unlock|quest|save|spawn|camera|animation|vfx|ui|touch|state|phase|mode|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)*8
         +(kind==='CLASS'?8:kind==='FUNCTION'?6:4);
@@ -339,20 +354,85 @@ function sourceAnchorCandidates(text='',file=''){
       matched=true;break;
     }
     if(matched)continue;
-    const state=line.match(/\b(?:state|phase|mode|status)\s*(?:=|:)\s*["']([A-Za-z0-9_-]{3,})["']/i);
+    // Match the literal value in the original line only when executable code
+    // contains the state assignment; the lexical view intentionally masks strings.
+    const state=/\b(?:state|phase|mode|status)\s*(?:=|:)/i.test(line)
+      ?(lines[index]||'').match(/\b(?:state|phase|mode|status)\s*(?:=|:)\s*["']([A-Za-z0-9_-]{3,})["']/i):null;
     if(state)anchors.push({file,line:index+1,kind:'STATE',symbol:'STATE:'+clean(state[1]),context:clean(trimmed).slice(0,180),score:18});
   }
   return anchors.sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)||a.line-b.line).slice(0,24);
 }
 
-function selectPrimarySourceAnchors(source={},responsibleFiles=[],limit=6){
+function selectPrimarySourceAnchors(source={},responsibleFiles=[],limit=6,{failureSignature=''}={}){
   const preferred=new Set((responsibleFiles||[]).map(posix).filter(Boolean));
   const anchors=[...(source?.sourceAnchors||[])];
+  const failure=clean(failureSignature).toLowerCase();
+  // An observed failure naming an existing source symbol is stronger evidence
+  // than generic keyword density. Never invent an unobserved function name.
+  const directMatch=row=>{
+    const symbol=clean(row.symbol).toLowerCase();
+    return Boolean(failure&&symbol.length>=4&&
+      new RegExp('(^|[^a-z0-9_$])'+symbol.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=$|[^a-z0-9_$])').test(failure));
+  };
   anchors.sort((a,b)=>(preferred.has(posix(b.file))?1:0)-(preferred.has(posix(a.file))?1:0)
+    ||Number(directMatch(b))-Number(directMatch(a))
     ||Number(b.score||0)-Number(a.score||0)
     ||String(a.file).localeCompare(String(b.file))
     ||Number(a.line||0)-Number(b.line||0));
   return anchors.slice(0,Math.max(1,Number(limit)||6));
+}
+
+// Analyze only the selected game-owned functions. This reuses the existing
+// lexical responsibility graph instead of introducing an AI agent or pipeline.
+// Cross-file calls are deliberately *not* inferred from matching names.
+function inspectBuildUpSourceDependencies({repoRoot,sourceRoot='',anchors=[]}={}){
+  const proof=new Map();
+  const repository=path.resolve(repoRoot||process.cwd());
+  const within=(parent,child)=>{
+    const rel=path.relative(parent,child);
+    return Boolean(rel&&!path.isAbsolute(rel)&&rel!=='..'&&!rel.startsWith('..'+path.sep));
+  };
+  let realRepository;
+  try{realRepository=fs.realpathSync(repository);}catch{return proof;}
+  const roots=String(sourceRoot||'').split('|').map(root=>root.trim()).filter(Boolean)
+    .map(root=>{try{
+      const exact=fs.realpathSync(path.resolve(repository,root));
+      return within(realRepository,exact)&&fs.statSync(exact).isDirectory()?exact:null;
+    }catch{return null;}}).filter(Boolean);
+  if(!roots.length)return proof;
+  const cache=new Map();
+  for(const anchor of anchors.slice(0,8)){
+    const file=posix(anchor?.file),symbol=clean(anchor?.symbol);
+    if(!file||!symbol||!/[.](?:js|mjs|cjs|ts|tsx|jsx|html?|lua|luau|cs)$/i.test(file))continue;
+    let exact;
+    try{exact=fs.realpathSync(path.resolve(repository,file));}catch{continue;}
+    if(!within(realRepository,exact)||!roots.some(root=>within(root,exact)))continue;
+    if(!cache.has(exact)){
+      let graph=null;
+      try{
+        if(fs.statSync(exact).size<=128*1024){
+          const language=/[.]luau?$/i.test(file)?'luau':/[.]cs$/i.test(file)?'csharp':'javascript';
+          graph=buildResponsibilityGraph({source:fs.readFileSync(exact,'utf8'),language});
+        }
+      }catch{}
+      cache.set(exact,graph);
+    }
+    const graph=cache.get(exact),node=graph?.nodes?.find(row=>row.name===symbol);
+    if(!node)continue;
+    proof.set(file+'::'+symbol,Object.freeze({
+      authority:'BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE',
+      calls:Object.freeze(node.calls.slice(0,24)),
+      calledBy:Object.freeze(node.calledBy.slice(0,24)),
+      stateReads:Object.freeze(node.stateReads.slice(0,24)),
+      stateWrites:Object.freeze(node.stateWrites.slice(0,24)),
+      storageKeys:Object.freeze(node.storageKeys.slice(0,16)),
+      events:Object.freeze(node.events.slice(0,16)),
+      systems:Object.freeze(node.systems.slice(0,16)),
+      runtimeVerified:false,sourceWriteAuthorized:false,
+      dependentFilesNotAuthorized:true
+    }));
+  }
+  return proof;
 }
 
 function classifyPreviousEffectiveness({previousDirective=null,previousOutcome='',depthInfo={},runtimeEvidence={}}={}){
@@ -483,7 +563,14 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     score:
       tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|motion|particle|vfx|sound|audio|music|bgm|sfx|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
-  const sourceAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,48);
+  const rankedAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>
+    Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0));
+  // A global top-N would silently erase complete responsibilities in sparse
+  // files. Preserve a bounded set of observed symbols per file, including
+  // lower-scoring failure owners, before exact responsibleFiles are selected.
+  const sourceAnchors=[...new Map([...rankedAnchors.slice(0,48),
+    ...rows.flatMap(row=>(row.sourceAnchors||[]).slice(0,3))]
+    .map(row=>[row.file+'::'+row.line+'::'+row.symbol,row])).values()];
   return Object.freeze({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:files.length?fingerprint.digest('hex'):sha('missing:'+sourceRoot),
@@ -527,7 +614,16 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
   for(const part of parts)for(const [key,value] of Object.entries(part.signals||{}))signals[key]=(signals[key]||0)+Number(value||0);
   const combinedFingerprint=sha(parts.map(part=>part.sourceTreeFingerprint).sort().join('|'));
   const topFiles=parts.flatMap(part=>part.topFiles||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)).slice(0,20);
-  const sourceAnchors=parts.flatMap(part=>part.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,64);
+  const rankedAnchors=parts.flatMap(part=>part.sourceAnchors||[]).sort((a,b)=>
+    Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0));
+  // Multi-root build-up must not silently drop lower-volume platform owners.
+  const perFileCounts=new Map();
+  const sourceAnchors=[...new Map([...rankedAnchors.slice(0,64),
+    ...rankedAnchors.filter(row=>{
+      const count=perFileCounts.get(row.file)||0;
+      perFileCounts.set(row.file,count+1);
+      return count<3;
+    })].map(row=>[row.file+'::'+row.line+'::'+row.symbol,row])).values()];
   return Object.freeze({
     sourceRoot:roots.join('|'),
     sourceRoots:Object.freeze(roots),
@@ -787,6 +883,7 @@ export function buildDesignToPlatformCodingTrace({
   const id=clean(gameId);
   if(!/^[a-z0-9][a-z0-9-]*$/.test(id))throw new Error('DESIGN_CODING_GAME_ID_INVALID');
   const roots=Object.freeze({
+    WEB:`web-games/${id}`,
     ROBLOX:`roblox-games/${id}`,
     UNITY_WEB:`unity-games/${id}`,
     UNITY_APP:`unity-games/${id}`
@@ -797,8 +894,10 @@ export function buildDesignToPlatformCodingTrace({
     declared==='UNITY_WEB'?'UNITY_WEB':
     declared==='UNITY_APP'||declared==='UNITY'?'UNITY_APP':
     declared==='WEB'&&(observedRoot.split('|').includes(roots.UNITY_WEB))?'UNITY_WEB':
+    declared==='WEB'&&observedRoot.split('|').includes(roots.WEB)?'WEB':
     declared==='COMMON'&&observedRoot.split('|').includes(roots.ROBLOX)?'ROBLOX':
     declared==='COMMON'&&observedRoot.split('|').includes(roots.UNITY_WEB)?'UNITY_APP':
+    declared==='COMMON'&&observedRoot.split('|').includes(roots.WEB)?'WEB':
     'NOT_SELECTED_NATIVE_PLATFORM';
   const designRoles=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
   const connections=Array.isArray(design.systemInterconnections)?design.systemInterconnections:[];
@@ -843,7 +942,7 @@ export function buildDesignToPlatformCodingTrace({
     const raw=posix(clean(value));
     if(!selectedRoot||!raw)return'';
     const candidate=raw.startsWith(selectedRoot+'/')?raw:`${selectedRoot}/${raw}`;
-    if(!candidate.startsWith(selectedRoot+'/')||!['.lua','.luau','.cs'].some(ext=>candidate.toLowerCase().endsWith(ext)))return'';
+    if(!candidate.startsWith(selectedRoot+'/')||!(selected==='WEB'?['.html','.htm','.js','.mjs','.cjs']:selected==='ROBLOX'?['.lua','.luau']:['.cs']).some(ext=>candidate.toLowerCase().endsWith(ext)))return'';
     const full=path.resolve(rootReal,candidate);
     const canonicalOwnerRoot=path.resolve(rootReal,selectedRoot);
     if(!full.startsWith(canonicalOwnerRoot+path.sep)||!full.startsWith(rootReal+path.sep))return'';
@@ -866,6 +965,12 @@ export function buildDesignToPlatformCodingTrace({
   const codeSignalFiles=observedFiles.filter(file=>{
     try{
       const original=fs.readFileSync(path.resolve(rootReal,file),'utf8');
+      if(selected==='WEB'){
+        if(Buffer.byteLength(original)>2*1024*1024)return false;
+        const source=lex(scriptText(original,/\.html?$/i.test(file)),'javascript').code;
+        nativeCodeByFile.set(file,source);
+        return /\bfunction\s*[\w.:(]|=>|\baddEventListener\s*\(/.test(source);
+      }
       const withoutStrings=original.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,' ');
       const source=withoutStrings.replace(/\/\*[\s\S]*?\*\//g,' ').replace(/--\[\[[\s\S]*?\]\]/g,' ')
         .split('\n').map(line=>{
@@ -1030,10 +1135,10 @@ export function buildDesignToPlatformCodingTrace({
   const spatialReady=clean(unityDepth.dimension)==='3D'
     &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
       .every(field=>clean(unityDepth[field]).length>=32);
-  const platforms=['ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
+  const platforms=[...(selected==='WEB'?['WEB']:[]),'ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
     platform:name,canonicalGameSourceRoot:roots[name],
-    sharedUnitySource:name!=='ROBLOX',
-    gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
+    sharedUnitySource:['UNITY_WEB','UNITY_APP'].includes(name),
+    gameCodePlatformProfile:name==='WEB'?'WEB':name==='ROBLOX'?'ROBLOX':'UNITY',
     requiresSameServerTwoClientPlay:mandatory,
     requiresNativeRuntimeResult:true,
     minimumRenderedDimension:'3D',
@@ -1237,7 +1342,7 @@ export function buildDesignToPlatformCodingTrace({
   return Object.freeze({
     version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
     gameId:id,requestedPlatform:declared,activePlatform:selected,
-    originalSourcePlatform:'ROBLOX',originalSourceLanguage:'LUAU',
+    originalSourcePlatform:selected==='WEB'?'WEB':'ROBLOX',originalSourceLanguage:selected==='WEB'?'JAVASCRIPT':'LUAU',
     unityWebSourceSync,
     designFingerprint:sha(JSON.stringify(design)),sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
@@ -2483,7 +2588,7 @@ export function directivePrompt(d={}){
   const visual=Object.entries(d.visualBuildUpDirective?.domains||{}).map(([k,v])=>`- ${k}: ${v}`).join('\n');
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,28).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
-  const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
+  const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`+(row.sourceDependencyEvidence?' | STATIC_SAME_FILE_CALLS='+row.sourceDependencyEvidence.calls.join(',')+' | STATIC_CALLERS='+row.sourceDependencyEvidence.calledBy.join(',')+' | STATIC_STATE_WRITES='+row.sourceDependencyEvidence.stateWrites.join(',')+' | STATIC_SAVE_KEYS='+row.sourceDependencyEvidence.storageKeys.join(','):'')).join('\n');
   const volume=d.designedGameVolume||{};
   // 전체 항목의 이름과 상태는 빠짐없이 전달하되, 상세 계약은 책임 워커가 현재 항목에만 펼친다.
   // 게임 전체의 반복 프롬프트 폭증을 막고 현재 큐·F0–F9 구조를 그대로 유지한다.
@@ -2832,11 +2937,16 @@ export function buildGameSpecificBuildUpDirective({
   const gaps=states.filter(x=>x.state==='GAP');
   const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,focus,depthInfo});
   const topFiles=uniq([...(responsibleFiles||[]),...(source?.topFiles||[]).map(x=>x.file)]).slice(0,Math.max(16,uniq(responsibleFiles||[]).length));
-  const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8);
+  const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8,{
+    failureSignature:clean(runtimeEvidence?.failureSignature)||clean(runtimeEvidence?.playtestFinding)
+  });
   const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
   const expectedEffect=expectedPlayerEffect({focus,identity,anchor,secondary});
+  const dependencies=inspectBuildUpSourceDependencies({repoRoot,sourceRoot,anchors:primarySourceAnchors});
   const sourceResponsibilities=primarySourceAnchors.map(row=>Object.freeze({
     ...row,
+    ...(dependencies.has(posix(row.file)+'::'+clean(row.symbol))
+      ?{sourceDependencyEvidence:dependencies.get(posix(row.file)+'::'+clean(row.symbol))}:{}),
     currentBehavior:clean(row.context)||`현재 ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} 구현을 소스에서 관찰함`,
     intendedBehavior:`${focus} primary goal "${goal}"에 맞춰 ${row.symbol||'이 책임 영역'}의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 "${expectedEffect}"가 되게 한다.`,
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,

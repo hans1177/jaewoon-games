@@ -397,7 +397,8 @@ test('homepage workflow validates the exact sample deployment contract',()=>{
   assert.match(workflow,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(workflow,/data-homepage-build="2026-09-21-sample-exact"/);
   assert.match(workflow,/command\.html\?from=chatgpt-shortcut/);
-  assert.match(workflow,/grep -Fq '"start_url": "\/"' manifest\.webmanifest/);
+  assert.match(workflow,/grep -Fq '"start_url": "\.\/"' manifest\.webmanifest/);
+  assert.match(workflow,/grep -Fq '"scope": "\.\/"' manifest\.webmanifest/);
   assert.match(workflow,/SYNC_INTERVAL_MS=30000/);
 });
 
@@ -681,4 +682,47 @@ test('general web game title art runs after canonical runtime catalog reconcilia
   const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
   assert.match(manager,/scene==='SCHOOL'/);
   assert.match(manager,/ROBLOX_BLOCK_AVATAR_V1/);
+});
+
+
+test('homepage runtime shelves and PWA checks accept verified scoped implementation, not missing security behavior',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
+  const serviceWorker=fs.readFileSync('sw.js','utf8');
+  const includesAll=(value,parts)=>parts.every(part=>value.includes(part));
+  const names=[
+    'activeRuntimeLayoutManager','platformReadyAndDevelopmentShelvesDoNotDuplicate',
+    'pwaManifestCommandEntry','pwaManifestIconsPreserved','serviceWorkerPwaContractPreserved'
+  ];
+  for(const name of names){
+    const line=manager.split('\n').find(row=>row.startsWith('  '+name+':'));
+    assert.ok(line,'missing direct homepage contract: '+name);
+    const expression=line.slice(line.indexOf(':')+1).replace(/,$/,'');
+    const check=new Function('enhancementEntry','index','manifest','serviceWorker','includesAll',
+      'return ('+expression+')');
+    assert.equal(check(homepage,index,manifest,serviceWorker,includesAll),true,name);
+    const brokenHomepage=name==='activeRuntimeLayoutManager'
+      ?homepage.replace("const verifiedStatus=status?.runtimeAuthority==='company-runtime'?status:{};","")
+      :name==='platformReadyAndDevelopmentShelvesDoNotDuplicate'
+      ?homepage.replace('const development=developmentRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game))&&!hiddenGameIds.has(gameIdOf(game))&&!availableIds.has(gameIdOf(game)));','')
+      :homepage;
+    const brokenManifest=name==='pwaManifestCommandEntry'?{...manifest,scope:'../'}
+      :name==='pwaManifestIconsPreserved'?{...manifest,icons:[]}:manifest;
+    const brokenWorker=name==='serviceWorkerPwaContractPreserved'
+      ?serviceWorker.replace('if(!url.pathname.startsWith(scopePath))return;',''):serviceWorker;
+    assert.equal(check(brokenHomepage,index,brokenManifest,brokenWorker,includesAll),false,
+      'missing critical homepage behavior must fail: '+name);
+  }
+});
+
+test('post-publication browser smoke proves owner-deleted games are absent without weakening live gameplay smoke',()=>{
+  const browser=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+  assert.match(browser,/portalOwnerRemovalVerified=liveCatalog\.permanentRemovalPolicy\.ids\.includes\('portal-rpg'\)/);
+  assert.match(browser,/assert\.equal\(liveCatalog\.games\.some\(game=>game\.id==='portal-rpg'\),false/);
+  assert.match(browser,/assert\.equal\(manifest\.routes\.includes\('web-games\/portal-rpg\/'\),false/);
+  assert.match(browser,/assert\.ok\(manifest\.routes\.includes\('web-games\/portal-rpg\/'\)/);
+  assert.match(browser,/if\(liveBase&&!portalOwnerRemovalVerified\)/);
+  assert.match(browser,/PORTAL_RPG_TOUCH_MOVEMENT_FAILED/);
+  assert.match(browser,/PORTAL_RPG_SAVE_RESTORE_FAILED/);
+  assert.match(browser,/POST_PUBLISH_EXPECTED_SHA_INVALID/);
 });

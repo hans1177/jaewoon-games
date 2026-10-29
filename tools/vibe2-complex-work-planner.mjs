@@ -395,9 +395,54 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
   if(r.condition&&!booleanPredicate(r.condition)){unresolved.push({id:r.id,code:'BOOLEAN_TYPE_UNPROVEN'});continue}
   if(r.output){
    const body=file.code.slice(owner.bodyStart,owner.bodyEnd),escaped=r.output.replaceAll('.','\\.');
-   if(!new RegExp('(?<![\\w$.])'+escaped+'\\s*[+*/%-]?=(?!=)').test(body)){
+   const writes=new RegExp('(?<![\\w$.])'+escaped+'\\s*[+*/%-]?=(?!=)');
+   if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'||r.operation==='quest-reward-after-existing-call'){
+    // [기능 확장] 이미 정의된 필드에만 행동 결과를 연결한다. 새로운 저장 필드는 만들지 않는다.
+    const field=r.output.split('.').at(-1);
+    const numericField=name=>new RegExp('(?:\\{|,)\\s*'+name+'\\s*(?::|=)\\s*-?\\d+(?:\\.\\d+)?(?=\\s*[,}])').test(file.code);
+    if(r.operation==='counter-after-existing-call'){
+     if(!numericField(field)||writes.test(body)){
+      unresolved.push({id:r.id,code:'COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN'});continue;
+     }
+    }else{
+     // [빌드업] 완료 플래그·진행도·보상은 이미 정의된 동일 게임 상태만 사용한다.
+     const condition=r.condition,progress=condition?.left?.name;
+     const boolField=new RegExp('(?:\\{|,)\\s*'+field+'\\s*(?::|=)\\s*false(?=\\s*[,}])');
+     const isQuest=r.operation==='quest-reward-after-existing-call';
+     const actor=r.output.split('.')[0],reward=r.rewardField;
+     const commonInvalid=condition?.kind!=='compare'||!['>=','>'].includes(condition.op)
+       ||condition.left?.kind!=='ref'||condition.right?.kind!=='number'
+       ||!Number.isSafeInteger(condition.right.value)||condition.right.value<1
+       ||condition.right.value>1000000||typeof progress!=='string'
+       ||!progress.includes('.')||!r.output.includes('.')
+       ||progress.split('.')[0]!==actor||!owner.parameters.includes(actor)
+       ||progress===r.output||!numericField(progress.split('.').at(-1))
+       ||!boolField.test(file.code)||writes.test(body);
+     if(isQuest){
+      const rewardName=typeof reward==='string'?reward.split('.').at(-1):'';
+      const rewardBound=typeof reward==='string'&&reward.split('.').length===2
+       &&reward.split('.')[0]===actor&&reward!==progress&&reward!==r.output
+       &&numericField(rewardName)
+       &&!new RegExp('(?<![\\w$.])'+reward.replaceAll('.','\\.')+'\\s*(?:[+*/%-]?=(?!=)|\\+\\+|--)').test(body);
+      if(commonInvalid||!rewardBound||!Number.isSafeInteger(r.amount)||r.amount<1||r.amount>1000){
+       unresolved.push({id:r.id,code:'QUEST_REWARD_EXISTING_CONTRACT_UNPROVEN'});continue;
+      }
+     }else if(commonInvalid){
+      unresolved.push({id:r.id,code:'UNLOCK_EXISTING_THRESHOLD_OR_FLAG_UNPROVEN'});continue;
+     }
+    }
+   }else if(!writes.test(body)){
     unresolved.push({id:r.id,code:'UNDECLARED_STATE_WRITE'});continue;
    }
+  }
+  if(r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'||r.operation==='quest-reward-after-existing-call'){
+   // [게임 기능] 원본 함수가 실제로 한 번 호출되는 지점 뒤에만 진행도 증가를 연결한다.
+   const calls=index.edges.filter(e=>e.from===owner.id&&e.toName===r.after&&e.to);
+   if(calls.length!==1||!Array.isArray(calls[0].arguments)||calls[0].arguments.length>6){
+    unresolved.push({id:r.id,code:'COUNTER_EVENT_CALL_UNPROVEN'});continue;
+   }
+   r.afterCallArguments=[...calls[0].arguments];
+   r.afterCallStart=calls[0].start;
   }
   if(r.operation==='existing-call'){
    // [메인] 기존 상태 변경 호출 뒤 실제 원본의 UI·저장 책임 함수를 순서대로 연결한다.
@@ -448,13 +493,16 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
    sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence},...(r.boundCalleeSymbols||[]),...(r.boundExtraSymbols||[])],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});
  }
  if(unresolved.length)return {status:'BLOCKED',intent,unresolved,sourceWrite:false,modelUsed:false,runtimeVerified:false};
- // 같은 기존 진입점의 중단 조건만 OR로 합성한다. 원시 편집 영역의 중복은 계속 거부한다.
+ // 같은 삽입점의 연속된 중단 조건만 OR로 합성한다. 중간 상태 변경을 앞지르지 않는다.
  for(let i=0;i<nodes.length;i++){
   const node=nodes[i];if(node.operation!=='guard-return')continue;
   node.requirementIds=[node.id];
   for(let j=nodes.length-1;j>i;j--){
    const other=nodes[j];
-   if(other.operation==='guard-return'&&other.owner.id===node.owner.id){
+   if(other.operation==='guard-return'&&other.owner.id===node.owner.id&&
+     other.owner.insertionOffset===node.owner.insertionOffset&&
+     !nodes.slice(i+1,j).some(between=>between.owner.id===node.owner.id&&between.operation!=='guard-return')&&
+     JSON.stringify(other.returnValue)===JSON.stringify(node.returnValue)){
     node.condition={kind:'or',items:[node.condition,other.condition]};node.requirementIds.push(other.id);
     node.ownerTexts=[...(node.ownerTexts||[node.ownerText]),other.ownerText];nodes.splice(j,1);
    }
@@ -484,6 +532,8 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
   active.delete(node.id);done.add(node.id);sorted.push(node);
  };
  try{nodes.forEach(visit)}catch{return blocked('DEPENDENCY_CYCLE')}
+ // [전체 인계] 승인된 문장 예산과 같은 48개 실제 변경을 상한으로 유지한다.
+ if(sorted.length>48)return blocked('ATOMIC_CHANGE_BUDGET');
  const waves=[];
  for(let i=0;i<sorted.length;i+=12)waves.push({index:waves.length,requirements:sorted.slice(i,i+12).map(n=>n.id),
   dependsOnPreviousWave:i>0,requiredPriorVerifiedRevision:i>0?'EXACT_NEXT_SOURCE_REVISION':null});
@@ -494,7 +544,9 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
 
 export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
  if(plan?.status!=='BOUND')return null;
- const selected=plan.nodes.slice(0,12),atoms=[],ranges=new Map(),originals=new Map();
+ // [원자 생성] 앞의 12개만 내보내 나머지 요구가 사라지는 부분 결과를 금지한다.
+ if(plan.nodes.length>48)throw Error('VIBE2_COMPLEX_ATOMIC_CHANGE_BUDGET');
+ const selected=plan.nodes,atoms=[],ranges=new Map(),originals=new Map(),byOwner=new Map();
  for(const file of plan.index.files){
   const actual=fs.readFileSync(safeSourceFile(sourceRoot,file.path),'utf8');
   if(sourceDigest(actual)!==file.sourceSha256)throw Error('VIBE2_COMPLEX_STALE_SOURCE');
@@ -502,11 +554,52 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
  }
  for(const node of selected){
   const atom=synthesizeGameChangeAtom({requirement:node,owner:node.owner,file:node.file,target});
-  const old=ranges.get(atom.file)||[],span=atom.sourceSpan;
-  if(old.some(p=>span.start<p.end&&span.end>p.start))throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT');
-  old.push(span);ranges.set(atom.file,old);atoms.push(atom);
+  atoms.push(atom);
+  const group=byOwner.get(atom.ownerSymbol)||[];
+  group.push(atom);byOwner.set(atom.ownerSymbol,group);
  }
- const edits=normalizeExactEdits(atoms.map(a=>a.sourcePatch));
+ // [원자 합성] 같은 함수의 공통 앵커는 겹칠 수 있다. 실제 변경 구간만 비교해
+ // 기존 함수 하나의 수정안으로 합친다. 서로 다른 책임 함수와 실제 값 충돌은 거부한다.
+ const combined=[];
+ for(const group of byOwner.values()){
+  const first=group[0],original=originals.get(first.file);
+  const start=Math.min(...group.map(atom=>atom.sourceSpan.start));
+  const end=Math.max(...group.map(atom=>atom.sourceSpan.end));
+  const old=ranges.get(first.file)||[];
+  if(old.some(span=>start<span.end&&end>span.start))throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT');
+  old.push({start,end});ranges.set(first.file,old);
+  if(group.length===1){combined.push(first.sourcePatch);continue}
+  const guards=group.filter(atom=>atom.operation==='guard-return');
+  if(new Set(guards.map(atom=>JSON.stringify(atom.typedAst.returnValue))).size>1)
+   throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:RETURN_CONTRACT');
+  const writes=group.flatMap(atom=>atom.outputSymbols);
+  if(new Set(writes).size!==writes.length)throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:STATE_WRITE');
+  const calls=group.flatMap(atom=>atom.effects.filter(effect=>effect.startsWith('CALL_EXISTING_FUNCTION:')));
+  if(new Set(calls).size!==calls.length)throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:DUPLICATE_CALL');
+  const changes=group.map((atom,index)=>{
+   const {find,replace}=atom.sourcePatch;
+   let prefix=0,suffix=0;
+   while(prefix<find.length&&prefix<replace.length&&find[prefix]===replace[prefix])prefix++;
+   while(suffix<find.length-prefix&&suffix<replace.length-prefix&&
+    find[find.length-1-suffix]===replace[replace.length-1-suffix])suffix++;
+   return {start:atom.sourceSpan.start+prefix,end:atom.sourceSpan.end-suffix,
+    replacement:replace.slice(prefix,replace.length-suffix),index};
+  });
+  for(let i=0;i<changes.length;i++)for(let j=i+1;j<changes.length;j++){
+   const a=changes[i],b=changes[j];
+   if((a.start<b.end&&a.end>b.start)||
+    (a.start===a.end&&a.start>b.start&&a.start<b.end)||
+    (b.start===b.end&&b.start>a.start&&b.start<a.end))
+    throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:SOURCE_DELTA');
+  }
+  const find=original.slice(start,end);let replace=find;
+  // 원본 오프셋을 유지하며 뒤에서 적용한다. 같은 위치의 삽입은 승인 지시 순서다.
+  changes.sort((a,b)=>b.start-a.start||b.end-a.end||b.index-a.index);
+  for(const change of changes)replace=replace.slice(0,change.start-start)+change.replacement+replace.slice(change.end-start);
+  if(original.split(find).length!==2||find===replace)throw Error('VIBE2_COMPLEX_NONUNIQUE_COMPOSED_ANCHOR');
+  combined.push({path:first.file,find,replace});
+ }
+ const edits=normalizeExactEdits(combined);
  if(!edits.length)throw Error('VIBE2_COMPLEX_NO_SOURCE_DELTA');
  const documents=new Map(originals);applyExactEdits(sourceRoot,edits,{documents});
  const cases=atoms.flatMap(a=>a.scenarioProofs.cases.map(c=>({...c,name:a.id+':'+(c.name||'boundary')})));
@@ -516,7 +609,7 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
   vibe59DesignSteps:atoms.map(a=>({id:a.id,dependsOn:a.dependencies,operation:a.operation,ruleDigest:sourceDigest(JSON.stringify(a.typedAst))})),
   complexPlan:{digest:plan.digest,baseRevisionSha:plan.baseRevisionSha,sourceDigest:plan.index.digest,
    requirementCount:plan.intent.requirements.length,boundSymbolCount:new Set(plan.nodes.map(n=>n.owner.id)).size,atomCount:atoms.length,
-   completedWave:0,deferredWaves:plan.waves.slice(1),atoms},
+   completedWave:plan.waves.length-1,deferredWaves:[],atoms},
   ruleDigest:sourceDigest(JSON.stringify(edits)),sourceWrite:false,modelUsed:false,runtimeVerified:false};
 }
 

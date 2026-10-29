@@ -326,7 +326,7 @@
       "counts": {
         "releaseConfirmed": 0,
         "developmentConfirmed": 5,
-        "designOnly": 10
+        "designOnly": 9
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
@@ -345,7 +345,6 @@
         "P0008",
         "P0009",
         "P0101",
-        "P0102",
         "P0103"
       ],
       "lifecycle": {
@@ -359,7 +358,6 @@
           "P0008",
           "P0009",
           "P0101",
-          "P0102",
           "P0103",
           "RUNTIME-cozy-island",
           "RUNTIME-fantasy-survival",
@@ -369,15 +367,17 @@
         "paused": [],
         "rebuild": [],
         "retired": [],
-        "removed": []
+        "removed": [
+          "P0102"
+        ]
       },
       "pipeline": {
         "target": 60,
-        "count": 15,
+        "count": 14,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 45
+        "deficit": 46
       },
       "ranking": [
         {
@@ -503,21 +503,6 @@
         {
           "rank": 9,
           "rawEvidenceRank": 9,
-          "gameId": "P0102",
-          "slug": "survival2",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 6,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 0,
-          "targetPlatform": "WEB",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 10,
-          "rawEvidenceRank": 10,
           "gameId": "P0103",
           "slug": "territory-war",
           "lifecycleState": "ACTIVE",

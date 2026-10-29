@@ -3128,6 +3128,227 @@ test('runtime neural ingress refuses ambiguous existing task mutation',()=>{
   assert.deepEqual(result.queue.tasks.map(row=>row.status),['blocked','blocked']);
 });
 
+// [게임별 병목] 동일 소스 버전의 검증된 실패만 재예약하고 다른 게임과 이전 빌드는 보존한다.
+test('verified game-specific bottleneck selects exact reserved source among multiple same-game tasks',()=>{
+  const gameId='multi-system-game',revision='e'.repeat(40);
+  const makeEvent=file=>compileRuntimeNeuralEvent({
+    gameId,engine:'roblox',queueRuntimeObserved:true,queueRuntimeEvidencePlatform:'ROBLOX',
+    queueRuntimePassed:false,queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'same-runtime-stage-blocker',queueRuntimeSourceRevision:revision,
+    queueRuntimeRootCauseVerified:true,queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME',
+    queueRuntimeResponsibleFile:file
+  });
+  const serverFile=`roblox-games/${gameId}/server/Game.server.luau`;
+  const clientFile=`roblox-games/${gameId}/client/Game.client.luau`;
+  const tasks=[['server-repair',serverFile],['client-repair',clientFile]].map(([id,file])=>({
+    id,gameId,target:'roblox',department:'development',type:'implementation',
+    goal:'repair existing game function',sourceRoot:`roblox-games/${gameId}`,
+    releaseState:'development-confirmed',responsibleFiles:[file],
+    status:'blocked',blocker:'runtime-error',priority:'normal',
+    evidence:['source-revision:'+revision]
+  }));
+  const server=makeEvent(serverFile),client=makeEvent(clientFile);
+  assert.equal(server.route.queueMutationAllowed,true);
+  assert.equal(server.event.verifiedResponsibleFile,serverFile);
+  assert.notEqual(server.event.id,client.event.id,'the same signature in independent systems is distinct');
+  const result=applyRuntimeNeuralEventsToQueue({maxConcurrentTasks:20,tasks},[server,client]);
+  assert.equal(result.mutationCount,2);
+  assert.deepEqual(result.applied.filter(x=>x.mutated).map(x=>x.taskId),['server-repair','client-repair']);
+  for(const [id,file] of [['server-repair',serverFile],['client-repair',clientFile]]){
+    const repaired=result.queue.tasks.find(x=>x.id===id);
+    assert.equal(repaired.status,'queued');
+    assert.deepEqual(repaired.responsibleFiles,[file]);
+    assert.ok(repaired.evidence.includes('runtime-neural-ingress-responsible-file:'+file));
+    assert.ok(repaired.goal.includes('검증된 책임 파일: '+file));
+    assert.ok(repaired.goal.endsWith('repair existing game function'));
+  }
+  const repeated=applyRuntimeNeuralEventsToQueue({
+    maxConcurrentTasks:20,
+    tasks:result.queue.tasks.map(x=>({...x,status:'blocked'}))
+  },[server,client]);
+  assert.equal(repeated.mutationCount,0);
+  assert.ok(repeated.applied.every(x=>x.reason==='SAME_GAME_FAILURE_ALREADY_ROUTED'));
+});
+
+test('verified source bottleneck fails closed when file is unreserved or forged outside game root',()=>{
+  const gameId='file-scope-game',revision='f'.repeat(40);
+  const serverFile=`roblox-games/${gameId}/server/Game.server.luau`;
+  const clientFile=`roblox-games/${gameId}/client/Game.client.luau`;
+  const incident=file=>compileRuntimeNeuralEvent({
+    gameId,engine:'roblox',queueRuntimeObserved:true,queueRuntimeEvidencePlatform:'ROBLOX',
+    queueRuntimePassed:false,queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'file-owner-proven',queueRuntimeSourceRevision:revision,
+    queueRuntimeRootCauseVerified:true,queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME',
+    queueRuntimeResponsibleFile:file
+  });
+  const task={id:'server-only',gameId,target:'roblox',department:'development',
+    type:'implementation',goal:'do not widen scope',sourceRoot:`roblox-games/${gameId}`,
+    responsibleFiles:[serverFile],releaseState:'development-confirmed',
+    status:'blocked',blocker:'runtime-failure',evidence:['source-revision:'+revision]};
+  const denied=applyRuntimeNeuralEventsToQueue({tasks:[task]},[incident(clientFile)]);
+  assert.equal(denied.mutationCount,0);
+  assert.equal(denied.applied[0].reason,'VERIFIED_RESPONSIBLE_FILE_NOT_RESERVED');
+  assert.equal(denied.queue.tasks[0].goal,task.goal);
+  const forged=incident(`roblox-games/${gameId}/../other-game/secret.luau`);
+  assert.equal(forged.event.verifiedResponsibleFile,null);
+  const crossGame=incident('roblox-games/another-game/server/Game.server.luau');
+  assert.equal(crossGame.event.verifiedResponsibleFile,null);
+  const unverified=compileRuntimeNeuralEvent({
+    gameId,engine:'roblox',queueRuntimeObserved:true,queueRuntimeEvidencePlatform:'ROBLOX',
+    queueRuntimePassed:false,queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'file-owner-proven',queueRuntimeSourceRevision:revision,
+    queueRuntimeRootCauseVerified:false,queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME',
+    queueRuntimeResponsibleFile:serverFile
+  });
+  assert.equal(unverified.event.verifiedResponsibleFile,null);
+  assert.equal(applyRuntimeNeuralEventsToQueue({tasks:[task]},[unverified]).mutationCount,0);
+});
+
+test('per-game autonomous runtime bottleneck repair isolates source revisions and dedupes repeated failure',()=>{
+  const sourceRevision='b'.repeat(40);
+  const incident=signature=>compileRuntimeNeuralEvent({
+    gameId:'repair-game',engine:'roblox',
+    queueRuntimeObserved:true,queueRuntimeEvidencePlatform:'ROBLOX',
+    queueRuntimePassed:false,queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:signature,queueRuntimeSourceRevision:sourceRevision,
+    queueRuntimeRootCauseVerified:true,queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME'
+  });
+  const firstEvent=incident('server-boot-timeout');
+  assert.equal(firstEvent.route.queueMutationAllowed,true);
+  const entry=(id,gameId,revision)=>({
+    id,gameId,target:'roblox',department:'development',type:'implementation',
+    goal:'repair exact runtime',responsibleFiles:[`roblox-games/${gameId}/server/Game.server.luau`],
+    releaseState:'development-confirmed',sourceRoot:`roblox-games/${gameId}`,
+    evidence:[`source-revision:${revision}`],status:'blocked',blocker:'runtime-failure',priority:'normal'
+  });
+  const initial={maxConcurrentTasks:20,tasks:[
+    entry('same-game-stale','repair-game','a'.repeat(40)),
+    entry('same-game-current','repair-game',sourceRevision),
+    entry('other-game-current','other-game',sourceRevision)
+  ]};
+  const result=applyRuntimeNeuralEventsToQueue(initial,[firstEvent]);
+  assert.equal(result.mutationCount,1);
+  assert.equal(result.applied[0].taskId,'same-game-current');
+  assert.equal(result.queue.tasks.find(x=>x.id==='same-game-stale').status,'blocked');
+  assert.equal(result.queue.tasks.find(x=>x.id==='other-game-current').status,'blocked');
+  const repaired=result.queue.tasks.find(x=>x.id==='same-game-current');
+  assert.ok(repaired.evidence.includes('runtime-neural-ingress-failed-stage:TARGET_PLATFORM_RUNTIME'));
+  assert.ok(repaired.evidence.includes('runtime-neural-ingress-failure-signature:server-boot-timeout'));
+  assert.ok(repaired.evidence.includes('runtime-neural-ingress-source-revision:'+sourceRevision));
+  assert.ok(repaired.evidence.includes('runtime-neural-ingress-responsible-system:ROBLOX_RUNTIME'));
+  assert.match(repaired.goal,/\[VERIFIED_GAME_RUNTIME_BOTTLENECK\]/);
+  assert.match(repaired.goal,/검증된 책임 시스템: ROBLOX_RUNTIME/);
+  assert.match(repaired.goal,/실패 단계: TARGET_PLATFORM_RUNTIME/);
+  assert.match(repaired.goal,/실패 식별자: server-boot-timeout/);
+  assert.ok(repaired.goal.endsWith('repair exact runtime'));
+  const retryQueue={...result.queue,tasks:result.queue.tasks.map(x=>
+    x.id==='same-game-current'?{...x,status:'blocked'}:x)};
+  const repeated=applyRuntimeNeuralEventsToQueue(retryQueue,[firstEvent]);
+  assert.equal(repeated.mutationCount,0);
+  assert.equal(repeated.applied[0].reason,'SAME_GAME_FAILURE_ALREADY_ROUTED');
+  const newFailure=incident('server-boot-new-cause');
+  assert.notEqual(newFailure.event.id,firstEvent.event.id);
+  const next=applyRuntimeNeuralEventsToQueue(retryQueue,[newFailure]);
+  assert.equal(next.mutationCount,1);
+  assert.ok(next.queue.tasks.find(x=>x.id==='same-game-current').evidence
+    .includes('runtime-neural-ingress-failure-signature:server-boot-new-cause'));
+  const nextGoal=next.queue.tasks.find(x=>x.id==='same-game-current').goal;
+  assert.match(nextGoal,/실패 식별자: server-boot-new-cause/);
+  assert.doesNotMatch(nextGoal,/실패 식별자: server-boot-timeout/);
+  assert.equal((nextGoal.match(/\[VERIFIED_GAME_RUNTIME_BOTTLENECK\]/g)||[]).length,1);
+});
+
+test('per-game runtime recovery does not reinterpret a stale build as the current source',()=>{
+  const revision='c'.repeat(40);
+  const compiled=compileRuntimeNeuralEvent({
+    gameId:'only-old-source',engine:'roblox',queueRuntimeObserved:true,
+    queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimePassed:false,
+    queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'verified-failed-runtime',queueRuntimeSourceRevision:revision,
+    queueRuntimeRootCauseVerified:true,queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME'
+  });
+  const result=applyRuntimeNeuralEventsToQueue({maxConcurrentTasks:20,tasks:[{
+    id:'old-task',gameId:'only-old-source',target:'roblox',
+    department:'development',type:'implementation',goal:'old source',
+    responsibleFiles:['roblox-games/only-old-source/server/Game.server.luau'],
+    sourceRoot:'roblox-games/only-old-source',releaseState:'development-confirmed',
+    evidence:['source-revision:'+'a'.repeat(40)],status:'blocked',blocker:'old-build'
+  }]},[compiled]);
+  assert.equal(result.mutationCount,0);
+  assert.equal(result.applied[0].reason,'SOURCE_REVISION_MISMATCH');
+  assert.equal(result.queue.tasks[0].status,'blocked');
+});
+
+// [게임별 병목] 중단 권한·소스 충돌 시 기존 작업을 변경하지 않는다.
+test('per-game verified bottleneck never requeues owner-held work or a conflicting source identity',()=>{
+  const version='d'.repeat(40);
+  const project={gameId:'held-game',engine:'roblox',queueRuntimeObserved:true,
+    queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimePassed:false,
+    queueRuntimeFailureStage:'TARGET_PLATFORM_RUNTIME',
+    queueRuntimeFailureSignature:'verified-client-failure',queueRuntimeSourceRevision:version,
+    queueRuntimeRootCauseVerified:true,queueRuntimeResponsibleSystem:'ROBLOX_CLIENT'};
+  assert.equal(compileRuntimeNeuralEvent({...project,ownerDevelopmentHold:true}),null);
+  assert.equal(compileRuntimeNeuralEvent({...project,ownerDevelopmentStopped:true}),null);
+  const compiled=compileRuntimeNeuralEvent(project);
+  const original={id:'held-work',gameId:'held-game',target:'roblox',
+    department:'development',type:'implementation',goal:'original goal',
+    responsibleFiles:['roblox-games/held-game/client/Game.client.luau'],
+    sourceRoot:'roblox-games/held-game',releaseState:'development-confirmed',
+    status:'blocked',blocker:'owner-hold',ownerDevelopmentHold:true};
+  const held=applyRuntimeNeuralEventsToQueue({tasks:[original]},[compiled]);
+  assert.equal(held.mutationCount,0);
+  assert.equal(held.queue.tasks[0].status,'blocked');
+  assert.equal(held.queue.tasks[0].goal,'original goal');
+  const conflicting=applyRuntimeNeuralEventsToQueue({tasks:[{...original,
+    ownerDevelopmentHold:false,evidence:['source-revision:'+version,
+      'build-source-revision:'+'a'.repeat(40)]}]},[compiled]);
+  assert.equal(conflicting.mutationCount,0);
+  assert.equal(conflicting.applied[0].reason,'SOURCE_REVISION_MISMATCH');
+  assert.equal(conflicting.queue.tasks[0].goal,'original goal');
+});
+
+test('game-local autonomous repair keeps every verified F0-F9 failure in existing scheduler',()=>{
+  const gameId='floor-local-repair',revision='a'.repeat(40);
+  const ownedFile=`roblox-games/${gameId}/server/Game.server.luau`;
+  const originalTask={id:'floor-local-repair-task',gameId,target:'roblox',
+    department:'development',type:'implementation',goal:'repair existing source',
+    responsibleFiles:[ownedFile],sourceRoot:`roblox-games/${gameId}`,
+    releaseState:'development-confirmed',status:'blocked',blocker:'floor-failure',
+    evidence:['source-revision:'+revision]};
+  for(const stage of [
+    'F0_SOURCE_PREFLIGHT','F1_SERVER_BOOT','F2_WORLD_FOUNDATION',
+    'F3_CHARACTER_FOUNDATION','F4_PHYSICS_AND_MOVEMENT','F5_GAMEPLAY',
+    'F6_PROGRESS_AND_REWARDS','F7_INDEPENDENT_QA','F8_REGRESSION',
+    'F9_RELEASE_REGRESSION','INDEPENDENT_QA','TARGET_PLATFORM_RELEASE_REGRESSION'
+  ]){
+    const project={gameId,engine:'roblox',queueRuntimeObserved:true,
+      queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimePassed:false,
+      queueRuntimeFailureStage:stage,queueRuntimeFailureSignature:'floor-error-'+stage,
+      queueRuntimeSourceRevision:revision,queueRuntimeRootCauseVerified:true,
+      queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME',queueRuntimeResponsibleFile:ownedFile};
+    const compiled=compileRuntimeNeuralEvent(project);
+    assert.ok(compiled,'expected verified floor failure event for '+stage);
+    assert.equal(compiled.event.stage,stage);
+    assert.equal(compiled.route.queueMutationAllowed,true);
+    const routed=applyRuntimeNeuralEventsToQueue({maxConcurrentTasks:20,tasks:[originalTask]},[compiled]);
+    assert.equal(routed.mutationCount,1,'exact failed stage must select existing task: '+stage);
+    assert.ok(routed.queue.tasks[0].goal.includes('실패 단계: '+stage));
+    assert.deepEqual(routed.queue.tasks[0].responsibleFiles,[ownedFile]);
+    const unverified=compileRuntimeNeuralEvent({...project,queueRuntimeRootCauseVerified:false});
+    assert.ok(unverified);
+    assert.equal(applyRuntimeNeuralEventsToQueue({tasks:[originalTask]},[unverified]).mutationCount,0);
+  }
+  for(const stage of ['F12_UNKNOWN','FAKE_F2_WORLD','UNRELATED_VALIDATION']){
+    assert.equal(compileRuntimeNeuralEvent({
+      gameId,engine:'roblox',queueRuntimeObserved:true,
+      queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimePassed:false,
+      queueRuntimeFailureStage:stage,queueRuntimeFailureSignature:stage,
+      queueRuntimeSourceRevision:revision,queueRuntimeRootCauseVerified:true,
+      queueRuntimeResponsibleSystem:'ROBLOX_RUNTIME'
+    }),null,stage);
+  }
+});
+
 test('unobserved runtime state does not invent a runtime neural event',()=>{
   assert.equal(compileRuntimeNeuralEvent({
     gameId:'runtime-pending',

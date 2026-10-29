@@ -32,6 +32,7 @@ let browser;
 let activeGameId=null,runtimeFailure=null;
 const observedGames=new Set();
 let testedSourceTrees={},sharedSourceTrees={};
+let portalOwnerRemovalVerified=false;
 try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
  if(liveBase){
@@ -40,6 +41,23 @@ try{
    const response=await identityPage.request.get(liveBase+'web-games/publish-manifest.json',{timeout:15000});
    assert.ok(response.ok(),'POST_PUBLISH_IDENTITY_MANIFEST_HTTP');
    const manifest=await response.json();requireLivePublicationSha(manifest.sourceSha,'BROWSER_PLAYTEST_INITIAL_SOURCE');
+   assert.ok(Array.isArray(manifest.routes),'POST_PUBLISH_GAME_ROUTE_MANIFEST_MISSING');
+   const catalogResponse=await identityPage.request.get(liveBase+'game-catalog.json',{timeout:15000});
+   assert.ok(catalogResponse.ok(),'POST_PUBLISH_GAME_CATALOG_HTTP');
+   const liveCatalog=await catalogResponse.json();
+   assert.ok(Array.isArray(liveCatalog.games)&&Array.isArray(liveCatalog.permanentRemovalPolicy?.ids),
+     'POST_PUBLISH_GAME_CATALOG_AUTHORITY_MISSING');
+   portalOwnerRemovalVerified=liveCatalog.permanentRemovalPolicy.ids.includes('portal-rpg');
+   if(portalOwnerRemovalVerified){
+     assert.equal(liveCatalog.games.some(game=>game.id==='portal-rpg'),false,
+       'OWNER_REMOVED_PORTAL_STILL_IN_CATALOG');
+     assert.equal(manifest.routes.includes('web-games/portal-rpg/'),false,
+       'OWNER_REMOVED_PORTAL_STILL_PUBLISHED');
+     console.log('PORTAL_RPG_OWNER_REMOVAL_VERIFIED=YES');
+   }else{
+     assert.ok(manifest.routes.includes('web-games/portal-rpg/'),
+       'ACTIVE_PORTAL_RPG_PUBLICATION_MISSING');
+   }
    testedSourceTrees=manifest.sourceTreeShas||{};
    for(const root of ['assets','multiplayer','web-games/_shared']){
     try{const tree=execFileSync('git',['rev-parse','--verify','HEAD:'+root],{encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();
@@ -112,8 +130,8 @@ try{
    }finally{await context.close();}
   }
  }
- // 포탈 RPG: 공식 공개판에서 포탈·3D 캐릭터·실제 터치 이동·보스 피해·구매 및 저장을 확인한다.
- if(liveBase){
+ // Active portal RPG keeps full touch, combat, purchase and save smoke; owner-deleted portal must stay absent.
+ if(liveBase&&!portalOwnerRemovalVerified){
   activeGameId='portal-rpg';
   for(const view of [
    {name:'portrait',width:390,height:844},

@@ -82,7 +82,10 @@ export function inspectSourceFunctions(source='',{language='',maxFunctions=160}=
   ];
   if(kind==='csharp')patterns.push(/\b(?:(?:public|private|protected|internal|static|virtual|override|async|sealed|new|partial)\s+)*(?:[A-Za-z_][\w.<>?,\[\]]*)\s+([A-Za-z_][\w]*)\s*\([^;{}]*\)\s*\{/g);
   if(kind==='luau'){
-    for(const match of code.matchAll(/\b(?:local\s+)?function\s+([A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*)\s*\([^)]*\)/g)){
+    // Both named and assigned Luau functions own real gameplay behavior.
+    // The executableText mask prevents comment/string lookalikes from being parsed.
+    for(const match of code.matchAll(/\b(?:local\s+)?function\s+([A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*)\s*\([^)]*\)|\b(?:local\s+)?([A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*)\s*=\s*function\s*\([^)]*\)/g)){
+      const name=match[1]||match[2];
       const bodyStart=match.index+match[0].length,stack=['function'];let pendingDo=0,end=-1,bodyEnd=-1;
       for(const token of code.slice(bodyStart).matchAll(/\b(?:function|if|elseif|for|while|do|repeat|until|end)\b/g)){
         const word=token[0];
@@ -94,7 +97,7 @@ export function inspectSourceFunctions(source='',{language='',maxFunctions=160}=
           stack.pop();if(!stack.length){bodyEnd=bodyStart+token.index;end=bodyEnd+word.length;break;}
         }
       }
-      if(end>=0&&!seen.has(match[1])){seen.add(match[1]);rows.push({name:match[1],body:raw.slice(bodyStart,bodyEnd),code:code.slice(bodyStart,bodyEnd),start:match.index,end,language:kind});}
+      if(end>=0&&!seen.has(name)){seen.add(name);rows.push({name,body:raw.slice(bodyStart,bodyEnd),code:code.slice(bodyStart,bodyEnd),start:match.index,end,language:kind});}
     }
     return rows.sort((a,b)=>a.start-b.start).slice(0,limit);
   }
@@ -254,11 +257,18 @@ export function traceFailureResponsibility({failure='',responsibilityGraph={}}={
   const systems=failureSystems(failure),nodes=Array.isArray(responsibilityGraph.nodes)?responsibilityGraph.nodes:[];
   const ranked=nodes.map(node=>{
     let score=0;for(const system of systems)if((node.systems||[]).includes(system))score+=5;
+    // Prefer the exact existing function named in an observed failure signature.
+    // Quoted names and partial identifiers may not claim unrelated source code.
+    const exactSymbol=String(node.name||'').trim();
+    const escaped=[...exactSymbol].map(ch=>'\\^$.*+?()[]{}|'.includes(ch)?'\\'+ch:ch).join('');
+    const functionMention=exactSymbol.length>=4
+      &&new RegExp('(^|[^A-Za-z0-9_$])'+escaped+'(?=$|[^A-Za-z0-9_$])','i').test(String(failure));
+    if(functionMention)score+=24;
     score+=Math.min(4,tokenOverlap(failure,[node.name,...(node.stateWrites||[]),...(node.storageKeys||[])].join(' ')));
     if(systems.includes('SAVE')&&(node.storageKeys||[]).length)score+=3;
     if(systems.includes('INPUT')&&(node.events||[]).length)score+=2;
     if((node.stateWrites||[]).length)score+=1;
-    return{function:node.name,score,systems:node.systems,stateWrites:node.stateWrites,stateReads:node.stateReads,callers:node.calledBy,callees:node.calls,storageKeys:node.storageKeys,events:node.events};
+    return{function:node.name,score,exactFailureSymbolMention:functionMention,systems:node.systems,stateWrites:node.stateWrites,stateReads:node.stateReads,callers:node.calledBy,callees:node.calls,storageKeys:node.storageKeys,events:node.events};
   }).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.function.localeCompare(b.function)).slice(0,6);
   const primary=ranked[0]||null;
   return{failure:clean(failure),failureSystems:systems,primaryTarget:primary?.function||null,candidates:ranked,causalChain:primary?['FAILURE_EVIDENCE',...(primary.events?.length?['INPUT_OR_EVENT_ENTRY']:[]),`RESPONSIBLE_FUNCTION:${primary.function}`,...(primary.stateWrites||[]).slice(0,4).map(x=>`STATE_WRITE:${x}`),...(primary.callees||[]).slice(0,4).map(x=>`DOWNSTREAM:${x}`)]:['FAILURE_EVIDENCE','RESPONSIBILITY_NOT_RESOLVED'],rule:'PATCH_PRIMARY_RESPONSIBILITY_THEN_REPLAY_ORIGINAL_FAILURE'};

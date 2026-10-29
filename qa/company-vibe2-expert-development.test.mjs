@@ -67,6 +67,34 @@ end`;
   assert.equal(graph.runtimeVerified,false);
 });
 
+test('assigned Luau module functions appear as real source graph call and state owners',()=>{
+ const src=[
+  'local visited = {}',
+  '-- local phantom = function() visited = {} end',
+  'local note = "local fake = function() end"',
+  'local grantReward = function(id)',
+  '  table.insert(visited, id)',
+  'end',
+  'Module.Claim = function(id)',
+  '  grantReward(id)',
+  'end',
+  'local function requestClaim(id)',
+  '  Module.Claim(id)',
+  'end'
+ ].join('\n');
+ const graph=buildResponsibilityGraph({source:src,language:'luau'});
+ assert.deepEqual(graph.nodes.map(row=>row.name),[
+  'grantReward','Module.Claim','requestClaim']);
+ const claim=graph.nodes.find(row=>row.name==='Module.Claim');
+ const grant=graph.nodes.find(row=>row.name==='grantReward');
+ assert.ok(claim.calls.includes('grantReward'));
+ assert.ok(grant.calledBy.includes('Module.Claim'));
+ assert.ok(grant.stateWrites.includes('visited'));
+ assert.ok(graph.edges.some(row=>row.from==='requestClaim'&&row.to==='Module.Claim'));
+ assert.equal(graph.runtimeVerified,false);
+ assert.equal(graph.nodes.some(row=>/phantom|fake/.test(row.name)),false);
+});
+
 test('Unity C# analysis links UI choice through placement to reward state and preserves method boundaries',()=>{
   const code=`using UnityEngine;
 public class Game : MonoBehaviour {
@@ -101,6 +129,29 @@ function claim() { if (canClaim()) grant(); }
   assert.equal(predicate.calls.length,0);
   assert.equal(predicate.stateWrites.includes('reward'),false);
   for(const fn of inspectSourceFunctions(code))assert.equal(code.slice(fn.start,fn.end).startsWith('function '+fn.name),true);
+});
+
+test('actual failure symbol outranks generic system keywords without partial-name collisions',()=>{
+ const code=[
+  'let hp=10;',
+  'let gold=30;',
+  'function saveCombatState(){localStorage.setItem("save-v1",String(gold));}',
+  'function applyDamageExtra(){gold+=1;saveCombatState();}',
+  'function applyDamage(){return hp;}'
+ ].join('\n');
+ const graph=buildResponsibilityGraph({source:code});
+ const trace=traceFailureResponsibility({
+  failure:'TypeError: applyDamage is not updating hp in combat save flow',
+  responsibilityGraph:graph
+ });
+ assert.equal(trace.primaryTarget,'applyDamage');
+ assert.equal(trace.candidates[0].exactFailureSymbolMention,true);
+ assert.equal(trace.candidates.find(row=>row.function==='applyDamageExtra')?.exactFailureSymbolMention,false);
+ const punctuation=traceFailureResponsibility({
+  failure:'at applyDamage() in web-games/demo/main.js:14:9',
+  responsibilityGraph:graph
+ });
+ assert.equal(punctuation.primaryTarget,'applyDamage');
 });
 
 test('causal debugger ranks the real responsibility boundary instead of only classifying failure text',()=>{

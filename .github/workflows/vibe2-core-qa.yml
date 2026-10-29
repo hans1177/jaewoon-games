@@ -404,7 +404,7 @@ jobs:
         with:
           node-version: '22'
 
-      # [Node 22] Validate the read-only global crypto regression under the pinned runtime.
+      # [Node 22] Verify GLB source hashes without assigning read-only global crypto.
       - name: Verify Node 22 GLB crypto and source hash regression
         run: |
           node -e "if(process.versions.node.split('.')[0]!=='22')process.exit(1)"

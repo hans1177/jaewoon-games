@@ -1,3 +1,4 @@
+// 파일명: qa/company-build-up-directive.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -666,6 +667,169 @@ test('unverified history raises generation but does not rotate focus without a v
   assert.equal(second.primaryFocus,first.primaryFocus);
   assert.equal(second.loopEscalation.automatic,true);
   assert.equal(second.loopEscalation.reuseSameGoalWithoutNewEvidence,false);
+});
+
+// Existing F0 BUILD_UP must preserve exact source responsibilities, not only the globally loudest files.
+test('self source analysis keeps sparse exact owner symbols beyond 48 noisy scripts and binds them to BUILD_UP',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-responsibility-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const sourceRoot='web-games/demo',source=path.join(root,sourceRoot);
+ fs.mkdirSync(path.join(source,'logic'),{recursive:true});
+ for(let i=0;i<64;i++)fs.writeFileSync(
+  path.join(source,'logic','aNoise'+String(i).padStart(2,'0')+'.js'),
+  'function uiMenu'+i+'(){const ui="ui ui ui ui ui";return ui;}\n');
+ const owner='web-games/demo/logic/zCritical.js';
+ fs.writeFileSync(path.join(root,owner),[
+  '/* function phantomComment(){ return false; } */',
+  '// function phantomSingle(){ return false; }',
+  'const example="function phantomString(){}";',
+  'function renderHud(){const ui=1;return ui;}',
+  'function applyDamage(amount){ return amount; }',
+  'const state = "idle";'
+ ].join('\n'));
+ const report=inspectGameSources({repoRoot:root,sourceRoots:[sourceRoot]});
+ assert.ok(report.sourceAnchors.some(x=>x.file===owner&&x.symbol==='applyDamage'),
+   'a globally low-ranking owner must survive the top-48 cutoff');
+ assert.ok(!report.sourceAnchors.some(x=>/phantom/.test(x.symbol)),
+   'comments and string literals must not be executable function evidence');
+ const directive=buildGameSpecificBuildUpDirective({
+  repoRoot:root,gameId:'demo',platform:'WEB',sourceRoot,
+  responsibleFiles:[owner],designRecord:design(),
+  runtimeEvidence:{runtimeObserved:true,runtimePassed:false,
+   failureSignature:'TypeError: applyDamage crashed'},
+ });
+ const selected=directive.responsibleSystemsAndFiles.sourceAnchors;
+ assert.equal(selected[0].file,owner);
+ assert.equal(selected[0].symbol,'applyDamage');
+ assert.equal(selected[0].line,5);
+ assert.match(directive.primaryGoalReason,/zCritical\.js::applyDamage/);
+ assert.equal(directive.currentImplementationFindings.sourceAnchors.some(
+  x=>x.file===owner&&x.symbol==='applyDamage'),true);
+ assert.equal(directive.playtestRuntimeFindings.runtimePassed,false);
+ assert.equal(directive.responsibleSystemsAndFiles.selectionRule,
+  'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST');
+});
+
+test('source analysis recognizes Luau module callbacks and Web assigned handlers without hallucinating comments',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-source-symbols-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const luau='roblox-games/demo/server/Game.server.luau';
+ const web='roblox-games/demo/client/Screen.js';
+ for(const pathName of [luau,web])
+  fs.mkdirSync(path.dirname(path.join(root,pathName)),{recursive:true});
+ fs.writeFileSync(path.join(root,luau),[
+  '--[[ function phantomLong() end ]]',
+  '-- function phantomSingle() end',
+  'local updateBestiary = function(monster) return monster end',
+  'MonsterBook.register = function(monster) return monster end'
+ ].join('\n'));
+ fs.writeFileSync(path.join(root,web),[
+  '/* const phantomHandler = () => {} */',
+  'UI.onPress = (event) => { return event; };',
+  'const handleTouch = (event) => { return event; };'
+ ].join('\n'));
+ const report=inspectGameSources({repoRoot:root,sourceRoots:['roblox-games/demo']});
+ const all=report.sourceAnchors.map(x=>x.symbol);
+ for(const exact of ['updateBestiary','MonsterBook.register','UI.onPress','handleTouch'])
+  assert.ok(all.includes(exact),'missing '+exact);
+ assert.ok(all.every(x=>!x.startsWith('phantom')));
+ assert.equal(report.fileCount,2);
+});
+
+test('multi-platform source inspection retains a sparse actual Luau responsibility behind 70 Web files',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-multi-root-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ for(let i=0;i<70;i++){
+  const relative='web-games/demo/logic/noise'+String(i).padStart(2,'0')+'.js';
+  fs.mkdirSync(path.dirname(path.join(root,relative)),{recursive:true});
+  fs.writeFileSync(path.join(root,relative),
+   'function uiInputHandler'+i+'(){return uiInputHandler'+i+';}\n');
+ }
+ const owner='roblox-games/demo/server/Book.server.luau';
+ fs.mkdirSync(path.dirname(path.join(root,owner)),{recursive:true});
+ fs.writeFileSync(path.join(root,owner),
+  'local updateBestiary = function(monster) return monster end\n');
+ const report=inspectGameSources({repoRoot:root,sourceRoots:[
+  'web-games/demo','roblox-games/demo'
+ ]});
+ assert.ok(report.sourceAnchors.some(x=>x.file===owner&&x.symbol==='updateBestiary'));
+ assert.equal(report.fileCount,71);
+ assert.ok(report.platformSourceFingerprints['web-games/demo']);
+ assert.ok(report.platformSourceFingerprints['roblox-games/demo']);
+});
+
+test('build-up independently traces exact Web function callers and state writes into existing worker directives',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-dependency-build-up-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file='web-games/demo/logic.js';
+ fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});
+ fs.writeFileSync(path.join(root,file),[
+  'let health = 20;',
+  'function applyDamage(amount){health-=amount;return health;}',
+  'function onEnemyHit(){applyDamage(2);}',
+  'function renderMenu(){return false;}',
+  '// function fakeDamage(){health=999;}'
+ ].join('\n'));
+ const directive=buildGameSpecificBuildUpDirective({
+  repoRoot:root,sourceRoot:'web-games/demo',gameId:'demo',platform:'WEB',
+  designRecord:design(),responsibleFiles:[file],
+  runtimeEvidence:{runtimeObserved:true,runtimePassed:false,
+   failureSignature:'TypeError: applyDamage returned wrong health'}
+ });
+ const owners=directive.responsibleSystemsAndFiles.sourceAnchors;
+ assert.equal(owners[0].symbol,'applyDamage');
+ const proof=owners[0].sourceDependencyEvidence;
+ assert.equal(proof.authority,'BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE');
+ assert.ok(proof.calledBy.includes('onEnemyHit'));
+ assert.ok(proof.stateWrites.includes('health'));
+ assert.equal(proof.runtimeVerified,false);
+ assert.equal(proof.sourceWriteAuthorized,false);
+ assert.equal(proof.dependentFilesNotAuthorized,true);
+ assert.equal(owners.some(row=>row.symbol==='fakeDamage'),false);
+ const prompt=directivePrompt(directive);
+ assert.match(prompt,/STATIC_CALLERS=onEnemyHit/);
+ assert.match(prompt,/STATIC_STATE_WRITES=health/);
+ assert.match(prompt,/logic\.js/);
+ assert.equal(directive.playtestRuntimeFindings.runtimePassed,false);
+});
+
+test('build-up reads assigned Luau function dependencies only from the owned game root',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-luau-owned-dependencies-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file='roblox-games/demo/server/Game.server.luau';
+ const foreign='roblox-games/foreign/server/Hidden.server.luau';
+ for(const pathName of [file,foreign])
+  fs.mkdirSync(path.dirname(path.join(root,pathName)),{recursive:true});
+ fs.writeFileSync(path.join(root,file),[
+  'local visited = {}',
+  'local grantReward = function(id)',
+  '  table.insert(visited, id)',
+  'end',
+  'local function requestClaim(id)',
+  '  grantReward(id)',
+  'end'
+ ].join('\n'));
+ fs.writeFileSync(path.join(root,foreign),'local function stealData() return 42 end\n');
+ const scoped=buildGameSpecificBuildUpDirective({
+  repoRoot:root,sourceRoot:'roblox-games/demo',gameId:'demo',platform:'ROBLOX',
+  designRecord:design(),responsibleFiles:[file],
+  runtimeEvidence:{failureSignature:'grantReward failed'}
+ });
+ const row=scoped.responsibleSystemsAndFiles.sourceAnchors.find(x=>x.symbol==='grantReward');
+ assert.ok(row,'source owner must be found');
+ assert.deepEqual(row.sourceDependencyEvidence.calledBy,['requestClaim']);
+ assert.ok(row.sourceDependencyEvidence.stateWrites.includes('visited'));
+ assert.equal(row.sourceDependencyEvidence.runtimeVerified,false);
+ const sourceObservation={sourceRoot:'roblox-games/demo',sourceTreeFingerprint:'f'.repeat(64),
+  sourceAnchors:[{file:foreign,line:1,kind:'FUNCTION',symbol:'stealData',score:200}],
+  topFiles:[],observations:[],signals:{}};
+ const untrusted=buildGameSpecificBuildUpDirective({
+  repoRoot:root,sourceRoot:'roblox-games/demo',gameId:'demo',platform:'ROBLOX',
+  designRecord:design(),sourceObservation,responsibleFiles:[foreign]
+ });
+ assert.equal(untrusted.responsibleSystemsAndFiles.sourceAnchors[0].symbol,'stealData');
+ assert.equal(untrusted.responsibleSystemsAndFiles.sourceAnchors[0].sourceDependencyEvidence,undefined,
+  'foreign game content must not be inspected even if an observation claims it');
 });
 
 test('source fingerprint tracks real code and assets but ignores generated evidence metadata',()=>{
@@ -2329,4 +2493,36 @@ test('two designed C story genres require only one independently verified native
   assert.equal(buildGameSpecificBuildUpDirective({gameId:id,platform:'ROBLOX',designRecord:incomplete,
     sourceObservation:{sourceTreeFingerprint:tree,topFiles:[],sourceAnchors:[],observations:[],signals:{}},
     runtimeEvidence:complete}).creativeCGenreImplementation.satisfied,false);
+});
+
+// [웹 소스 인계] 일반 웹을 Unity/Roblox 원본으로 오인하지 않는다.
+test('general Web design trace binds executable HTML and JS owners without inheriting native authority',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-design-owner-'));
+ try{
+  const gameId='web-owner',sourceRoot='web-games/'+gameId,dir=path.join(root,sourceRoot);
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),'<html><body><p>Health = 999; Reward = 888;</p><script type="application/json">{"Reward":1}</script><script>let Health=10; function hit(){Health -= 1;}</script></body></html>');
+  fs.writeFileSync(path.join(dir,'game.mjs'),'let Reward=0; export function collect(){ Reward += 1; }');
+  const design={signatureSystems:[{grammarRole:'MAIN',id:'combat',name:'combat',stateInputs:['Health'],stateOutputs:['Health']},
+   {grammarRole:'A',id:'collect',name:'collect',stateInputs:['Reward'],stateOutputs:['Reward']}],systemInterconnections:[]};
+  const responsibleFiles=[sourceRoot+'/index.html',sourceRoot+'/game.mjs'];
+  const trace=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot,repoRoot:root,responsibleFiles,multiplayerRequired:false});
+  assert.equal(trace.activePlatform,'WEB');assert.equal(trace.originalSourcePlatform,'WEB');
+  assert.equal(trace.originalSourceLanguage,'JAVASCRIPT');assert.equal(trace.unityWebSourceSync,null);
+  assert.deepEqual([...trace.executableCodeCandidateFiles].sort(),[...responsibleFiles].sort());
+  assert.equal(trace.platformCodingPlans.find(row=>row.platform==='WEB').sharedUnitySource,false);
+  assert.equal(trace.roleBindings.find(row=>row.role==='MAIN').nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+  assert.equal(trace.roleBindings.find(row=>row.role==='A').nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+  assert.equal(trace.sourceImplementationPassed,false);assert.equal(trace.actualWebglRenderPassed,false);
+  fs.writeFileSync(path.join(dir,'index.html'),'<html><body>function fake(){Health -= 1;}<script type="application/json">{"Reward":2}</script><script>// Health -= 1;\nconst label="Reward += 1;";</script></body></html>');
+  fs.writeFileSync(path.join(dir,'game.mjs'),'// function collect(){Reward += 1;}');
+  const inert=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot,repoRoot:root,responsibleFiles,multiplayerRequired:false});
+  assert.deepEqual(inert.executableCodeCandidateFiles,[],'HTML labels, JSON, strings and comments cannot prove implementation');
+  fs.writeFileSync(path.join(dir,'game.mjs'),'function regexOnly(){return /Health += 1; Reward += 1;/;}');
+  const regex=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot,repoRoot:root,responsibleFiles,multiplayerRequired:false});
+  assert.equal(regex.roleBindings.find(row=>row.role==='MAIN').nativeStateMapping.matchedWrittenOutputKeys.length,0);
+  assert.equal(regex.roleBindings.find(row=>row.role==='A').nativeStateMapping.matchedWrittenOutputKeys.length,0);
+  const other=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot:'web-games/other',repoRoot:root,responsibleFiles:[],multiplayerRequired:false});
+  assert.notEqual(other.activePlatform,'WEB');
+ }finally{fs.rmSync(root,{recursive:true,force:true})}
 });

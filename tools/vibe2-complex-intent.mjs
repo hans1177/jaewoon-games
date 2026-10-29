@@ -2,6 +2,7 @@
 // [임포트] 외부 AI 없이 오너 원문에서 제한된 인과 요청을 추출한다.
 import crypto from 'node:crypto';
 import {sourceDigest} from './vibe2-game-source-index.mjs';
+import {directivePrompt} from './company-build-up-directive.mjs';
 
 const hash=value=>crypto.createHash('sha256').update(String(value)).digest('hex');
 const identifier='([A-Za-z_$][A-Za-z0-9_$]{0,63})';
@@ -26,7 +27,16 @@ const protectedNames=new Set(['constructor','prototype','__proto__','eval','Func
 
 export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',responsibleFiles=[],baseCommit=''}={}){
   const task=order.selectedTask||{};
-  const goal=String(task.goal||order.originalGoal||order.goal||'').trim();
+  let goal=String(task.goal||order.originalGoal||order.goal||'').trim();
+  // [지시 분리] 기존 계획기가 붙인 동일 게임·플랫폼 설명만 원문과 분리한다.
+  // 설명 전체가 원본 directivePrompt와 일치해야 한다. 임의 접미 요구는 버리지 않는다.
+  const originalText=goal;
+  const directive=task.buildUpDirective||order.buildUpDirective;
+  const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',at=goal.indexOf(marker);
+  if(at>=0&&directive?.gameId===String(task.gameId||order.gameId||'')&&
+    String(directive.platform).toLowerCase()===target&&typeof directive.gameIdentityAndNonNegotiables?.identity==='string'&&
+    ['gameplayImplementationDirectives','progressionContentWorldDirectives','uxInputDirectives','preserveConstraints','acceptanceEvidence','nextEscalationCandidates'].every(key=>Array.isArray(directive[key]))&&goal.slice(at+2)===directivePrompt(directive).trimEnd())
+    goal=goal.slice(0,at).trim();
   if(!['web','roblox'].includes(target)||!goal||goal.length>640||
     /[\r\n\x00-\x1f\`{}]/.test(goal))return null;
   // [메인] 세미콜론으로 구분된 최대 4개 명시 지시만 해석한다. 임의 문장을 보완하지 않는다.
@@ -47,7 +57,7 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
   const requestId=hash([gameId,target,goal,baseCommit].join('|'));
   return Object.freeze({
     schemaVersion:'vibe2-complex-intent-v1',requestId,gameId,target,
-    ownerDirectiveReference:{originalText:goal,verifiedFromOwnerOrder:true},
+    ownerDirectiveReference:{originalText,interpretedText:goal,derivedFromOwnerRequest:originalText!==goal,verifiedFromOwnerOrder:true},
     allowedGameRoot:sourceRoot,authorizedFiles:[...responsibleFiles],
     baseCommit:String(baseCommit),sourceWrite:false,runtimeVerified:false,
     requirements:steps.flatMap((step,group)=>step.effects.map((effect,index)=>({
@@ -96,13 +106,20 @@ export function expressionReferences(ast){
 
 // 메인: 승인 사실은 기존 오너 주문에서 복사한다. 해석 결과로 승인을 만들지 않는다.
 export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha=''}={}){
- const task=order.selectedTask||{},text=String(task.goal||order.originalGoal||order.goal||'').trim();
+ const task=order.selectedTask||{},originalText=String(task.goal||order.originalGoal||order.goal||'').trim();
+ let text=originalText;
+ const directive=task.buildUpDirective||order.buildUpDirective;
+ const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',at=text.indexOf(marker);
+ if(at>=0&&directive?.gameId===String(task.gameId||order.gameId||'')&&
+   String(directive.platform).toLowerCase()===target&&typeof directive.gameIdentityAndNonNegotiables?.identity==='string'&&
+   ['gameplayImplementationDirectives','progressionContentWorldDirectives','uxInputDirectives','preserveConstraints','acceptanceEvidence','nextEscalationCandidates'].every(key=>Array.isArray(directive[key]))&&text.slice(at+2)===directivePrompt(directive).trimEnd())
+   text=text.slice(0,at).trim();
  const gameId=String(task.gameId||order.gameId||'');
  const approval=task.ownerDirective===true||order.ownerApproved===true;
  const reference=String(task.ownerDirectiveId||order.ownerDirectiveId||order.taskId||sourceDigest(text));
  const result={schemaVersion:'vibe2-complex-intent-v1',requestId:sourceDigest(JSON.stringify([gameId,target,text,reference])),
-  gameId,target,baseRevisionSha,ownerDirectiveReference:{originalText:String(order.originalGoal||text),
-   interpretedText:text,derivedFromOwnerRequest:Boolean(order.originalGoal&&order.originalGoal!==text),
+  gameId,target,baseRevisionSha,ownerDirectiveReference:{originalText:String(order.originalGoal||originalText),
+   interpretedText:text,derivedFromOwnerRequest:originalText!==text||Boolean(order.originalGoal&&order.originalGoal!==text),
    verifiedFromOwnerOrder:approval,reference},
   requirements:[],unresolved:[],sourceWrite:false,modelUsed:false,runtimeVerified:false};
  if(!approval)result.unresolved.push({code:'NO_OWNER_SPEC'});
@@ -110,7 +127,7 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
  const clauses=text.split(/[;\n]+/).map(x=>x.trim().replace(/[.!。]$/,'')).filter(Boolean);
  if(clauses.length>48){result.unresolved.push({code:'REQUIREMENT_BUDGET'});return result}
  for(const ownerText of clauses){
-  let m,operation,functionName,callback,condition,output,value,minimum,maximum,after,callee,callees,semantic;
+  let m,operation,functionName,callback,condition,output,value,minimum,maximum,amount,rewardField,after,callee,callees,semantic,returnValue;
   try{
    if(/^(?:죽은 (?:유닛|공격자)(?:은|는) 공격하지 않게 해|Prevent dead attackers from attacking)$/i.test(ownerText)){
     operation='semantic-guard';semantic='dead-attacker';
@@ -122,6 +139,10 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
     operation='semantic-multi-guard';semantic='dead-target-server';
    }else if(/^(?:로블록스 서버 체력 이벤트를 기존 클라이언트 화면에 연결해|기존 서버 체력 변경을 클라이언트 화면에 반영해|Connect existing Roblox server health event to client UI)$/i.test(ownerText)){
     operation='semantic-remote-ui';semantic='existing-server-health-to-client-ui';
+   }else if((m=new RegExp('^함수 ('+name+')(?:의 ('+name+') 반복)?에서 (.+?)(?:이면|일 때) (true|false|-?\\d+(?:\\.\\d+)?)(?:을|를)? 반환(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
+    [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);returnValue=parseIntentExpression(m[4]);
+   }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return (true|false|-?\\d+(?:\\.\\d+)?) when (.+)$','i').exec(ownerText))){
+    [,functionName,callback]=m;operation='guard-return';returnValue=parseIntentExpression(m[3]);condition=parseIntentExpression(m[4]);
    }else if((m=new RegExp('^함수 ('+name+')(?:의 ('+name+') 반복)?에서 (.+?)(?:이면|일 때) 중단(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
    }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return when (.+)$','i').exec(ownerText))){
@@ -136,12 +157,40 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
      (m=new RegExp('^In (?:function )?('+name+'),? clamp ('+name+'(?:\\.'+name+')*) between (-?\\d+(?:\\.\\d+)?) and (-?\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
     [,functionName,output]=m;minimum=Number(m[3]);maximum=Number(m[4]);operation='clamp-assignment';
     if(!Number.isFinite(minimum)||!Number.isFinite(maximum)||minimum>=maximum||minimum< -1e6||maximum>1e6)throw Error('range');
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) true로 하고 ('+name+'(?:\\.'+name+')*)(?:을|를) (\\d+) 증가시켜$').exec(ownerText))){
+    functionName=m[1];after=m[2];condition=parseIntentExpression(m[3]);output=m[4];
+    rewardField=m[5];amount=Number(m[6]);operation='quest-reward-after-existing-call';
+    value={kind:'boolean',value:true};
+    if(!Number.isSafeInteger(amount)||amount<1||amount>1000)throw Error('amount');
+   }else if((m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call when (.+?) complete ('+name+'(?:\\.'+name+')*) and reward ('+name+'(?:\\.'+name+')*) by (\\d+)$','i').exec(ownerText))){
+    functionName=m[1];after=m[2];condition=parseIntentExpression(m[3]);output=m[4];
+    rewardField=m[5];amount=Number(m[6]);operation='quest-reward-after-existing-call';
+    value={kind:'boolean',value:true};
+    if(!Number.isSafeInteger(amount)||amount<1||amount>1000)throw Error('amount');
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) true로 설정(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
+    functionName=m[1];after=m[2];condition=parseIntentExpression(m[3]);output=m[4];
+    value={kind:'boolean',value:true};operation='unlock-after-existing-call';
+   }else if((m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call when (.+?) set ('+name+'(?:\\.'+name+')*) to true$','i').exec(ownerText))){
+    functionName=m[1];after=m[2];condition=parseIntentExpression(m[3]);output=m[4];
+    value={kind:'boolean',value:true};operation='unlock-after-existing-call';
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+'(?:\\.'+name+')*)(?:을|를) (\\d+(?:\\.\\d+)?) (증가|감소)시켜$').exec(ownerText))){
+    functionName=m[1];after=m[2];output=m[3];amount=Number(m[4])*(m[5]==='증가'?1:-1);operation='counter-after-existing-call';
+    if(!Number.isSafeInteger(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
+   }else if((m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') (increase|decrease) ('+name+'(?:\\.'+name+')*) by (\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
+    functionName=m[1];after=m[2];output=m[4];amount=Number(m[5])*(m[3].toLowerCase()==='increase'?1:-1);operation='counter-after-existing-call';
+    if(!Number.isSafeInteger(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+'(?:\\.'+name+')*)(?:을|를) (\\d+(?:\\.\\d+)?) (증가|감소)시켜$').exec(ownerText))){
+    functionName=m[1];output=m[2];amount=Number(m[3])*(m[4]==='증가'?1:-1);operation='adjust-existing-counter';
+    if(!Number.isFinite(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
+   }else if((m=new RegExp('^In (?:function )?('+name+'),? (increase|decrease) ('+name+'(?:\\.'+name+')*) by (\\d+(?:\\.\\d+)?)$','i').exec(ownerText))){
+    functionName=m[1];output=m[3];amount=Number(m[4])*(m[2].toLowerCase()==='increase'?1:-1);operation='adjust-existing-counter';
+    if(!Number.isFinite(amount)||Math.abs(amount)>1000||amount===0)throw Error('amount');
    }else if((m=new RegExp('^함수 ('+name+')에서 (.+?)이면 ('+name+'(?:\\.'+name+')*)(?:을|를) (true|false|-?\\d+(?:\\.\\d+)?)로 설정(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
     functionName=m[1];condition=parseIntentExpression(m[2]);output=m[3];value=parseIntentExpression(m[4]);operation='conditional-assignment';
    }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
    const id='req-'+sourceDigest(ownerText).slice(0,16);
    if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
-   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,callees,
+   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,returnValue,output,value,minimum,maximum,amount,rewardField,after,callee,callees,
     dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
     stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
   }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}

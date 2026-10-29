@@ -8,6 +8,7 @@ import vm from 'node:vm';
 import {gunzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
 import {compileComplexOwnerIntent} from '../tools/vibe2-complex-intent.mjs';
+import {createVibe59OneShotVolumeCandidate} from '../tools/vibe59-one-shot-volume.mjs';
 import {planComplexGameWork,createComplexGameCandidate} from '../tools/vibe2-complex-work-planner.mjs';
 import {buildGameSourceIndex,sourceDigest} from '../tools/vibe2-game-source-index.mjs';
 import {createVibe59CodeCandidate,createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
@@ -21,10 +22,10 @@ function fixture(t,target='web'){
  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'rpg',webPath:'web-games/rpg',robloxProjectPath:'roblox-games/rpg'}]}));
  return {repo,root};
 }
-test('canonical Vibe2 source worker physically applies an existing production SVG asset edit on an isolated game branch',t=>{
+test('canonical Vibe2 source worker physically applies an existing production UI SVG asset edit on an isolated game branch',t=>{
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-asset-source-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
- const relative='assets/survival-atlas.svg',project='web-games/survival2';
- const originalFile=path.resolve(project,relative),original=fs.readFileSync(originalFile,'utf8');
+ const relative='assets/snail.svg',project='web-games/asset-test';
+ const originalFile=path.resolve('assets/logo-sprite-snail.svg'),original=fs.readFileSync(originalFile,'utf8');
  const sourceRoot=path.join(repo,project),target=path.join(sourceRoot,relative);
  fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,original);
  const git=(...args)=>{const r=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});
@@ -33,9 +34,9 @@ test('canonical Vibe2 source worker physically applies an existing production SV
  git('config','user.name','Vibe2 Test');git('add','--',project);
  git('commit','-qm','original existing production SVG asset');
  git('switch','-q','-c','vibe2/candidate/existing-svg-asset');
- const old=original.match(/<g id="wolf"[^>]*>[\s\S]*?<\/g>/)?.[0];
- assert.ok(old&&old.includes('fill="#6d7773"'));
- const edit={path:relative,find:old,replace:old.replace('fill="#6d7773"','fill="#81938b"')};
+ const old=original.match(/<g id="n"[^>]*>[\s\S]*?<\/g>/)?.[0];
+ assert.ok(old&&old.includes('fill="#c78353"'));
+ const edit={path:relative,find:old,replace:old.replace('fill="#c78353"','fill="#81938b"')};
  const candidate={edits:[edit],newFiles:[],replaceFiles:[]};
  const candidateRoot=path.join(repo,'.vibe2/candidates/existing-svg-asset');
  assert.throws(()=>applyVibe2CandidateToSource({cwd:repo,sourceRoot,candidateRoot,candidate:{
@@ -66,7 +67,7 @@ test('natural owner request compiles two real source edits atomically through th
  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
  assert.equal(candidate.runtimeVerified,false);
 });
-test('stale source, overlapping owner spans, cycle and ungrounded fields block unchanged originals',t=>{
+test('stale source, conflicting writes, cycle and ungrounded fields block unchanged originals',t=>{
  const {root}=fixture(t),source='const state={dead:false};\nfunction hit(a){\n a.hp-=1;\n}';
  const file=path.join(root,'game.js');fs.writeFileSync(file,source);
  const order={ownerApproved:true,baseRevisionSha:revision,goal:'함수 hit에서 a.dead이면 중단해'};
@@ -75,7 +76,7 @@ test('stale source, overlapping owner spans, cycle and ungrounded fields block u
  fs.appendFileSync(file,'\n// new revision');assert.throws(()=>createComplexGameCandidate({plan,sourceRoot:root}),/STALE_SOURCE/);
  assert.equal(planComplexGameWork({...options,sourceIndex:plan.index}).status,'BLOCKED');
  fs.writeFileSync(file,source);
- const overlap=planComplexGameWork({...options,order:{...order,goal:order.goal+'; 함수 hit에서 a.hp < 0이면 a.hp를 0로 설정해'}});
+ const overlap=planComplexGameWork({...options,order:{...order,goal:'함수 hit에서 a.hp < 0이면 a.hp를 0로 설정해; 함수 hit에서 a.hp > 100이면 a.hp를 100로 설정해'}});
  assert.throws(()=>createComplexGameCandidate({plan:overlap,sourceRoot:root}),/OVERLAPPING/);
  const cycle=planComplexGameWork({...options,order:{...order,vibe59ComplexDependencies:{hit:['hit']}}});
  assert.equal(cycle.unresolved[0].code,'DEPENDENCY_CYCLE');
@@ -183,7 +184,7 @@ test('event-state-UI and bounded existing writes synthesize executable source wi
  assert.equal(c.edits.length,2);assert.equal(c.runtimeVerified,false);
 });
 
-test('ten supported source fixtures produce actual candidates and deterministic behavior; thirteen steps defer the next wave',t=>{
+test('ten supported source fixtures execute deterministically and thirteen steps complete in one atomic candidate',t=>{
  const {repo,root}=fixture(t);let baselineAttempts=0,attempts=0,verified=0;
  for(let fixtureId=0;fixtureId<10;fixtureId++){
   const source='const data={dead:false,hp:10};\nfunction hit(a){\n a.hp -= '+(fixtureId+1)+';\n}\nfunction award(a){\n a.hp += 1;\n}';
@@ -202,8 +203,14 @@ test('ten supported source fixtures produce actual candidates and deterministic 
  fs.writeFileSync(path.join(root,'game.js'),source);
  const order={ownerApproved:true,goal:Array.from({length:13},(_,i)=>'함수 f'+i+'에서 a.dead이면 중단해').join('; ')};
  const plan=planComplexGameWork({order,sourceRoot:root,responsibleFiles:['game.js'],baseRevisionSha:revision});
- const c=createComplexGameCandidate({plan,sourceRoot:root});assert.equal(c.edits.length,12);
- assert.equal(c.complexPlan.deferredWaves.length,1);assert.equal(c.complexPlan.deferredWaves[0].dependsOnPreviousWave,true);
+ const c=createComplexGameCandidate({plan,sourceRoot:root});assert.equal(c.edits.length,13);
+ assert.equal(c.complexPlan.deferredWaves.length,0);assert.equal(c.complexPlan.completedWave,1);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,c.edits,{documents:docs});
+ const functions=vm.runInNewContext(docs.get('game.js')+';['+Array.from({length:13},(_,i)=>'f'+i).join(',')+']');
+ const alive={dead:false,hp:30},dead={dead:true,hp:30};
+ for(const fn of functions){fn(alive);fn(dead)}
+ assert.equal(alive.hp,17);assert.equal(dead.hp,30);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
 });
 
 test('historical five zero-attempt inputs replay exact owner goals without fabricating broad coding success',()=>{
@@ -837,4 +844,881 @@ test('ambiguous, nested and unbound anonymous Luau remote handlers fail without 
   assert.ok(plan.unresolved.some(row=>row.code==='REMOTE_UI_ORIGINAL_EVENT_BINDING_UNPROVEN'));
   assert.equal(fs.readFileSync(path.join(root,files[1]),'utf8'),altered);
  }
+});
+
+// [회귀] 같은 실패를 편집/필드 순서만 바꿔 재평가하지 않고 실제 대안으로 진행한다.
+test('repair fingerprints deduplicate independent reordered edits while preserving sequential edit semantics',()=>{
+ const a={path:'game.js',find:'first();',replace:'first(1);'},b={path:'game.js',find:'last();',replace:'last(1);'};
+ const evaluated=[];
+ const result=runCodegenCounterexampleRepair({sourceDigest:sourceDigest('original'),
+  generate:({attempt})=>({edits:attempt===0?[a,b]:attempt===1?
+   [{replace:b.replace,find:b.find,path:b.path},{replace:a.replace,find:a.find,path:a.path}]:
+   [{...a,replace:'first(2);'},b]}),
+  evaluate:c=>{evaluated.push(c);return evaluated.length===2?{pass:true}:
+   {pass:false,reproduced:true,failureSignature:'ordering-regression',responsibleSymbols:['first','last']}}
+ });
+ assert.equal(result.status,'CANDIDATE_VALIDATED');assert.equal(evaluated.length,2);
+ assert.equal(result.attempts[1].attempt,3);
+ const seq=[{path:'a.js',find:'x()',replace:'y()'},{path:'a.js',find:'y()',replace:'z()'}];
+ const sequential=runCodegenCounterexampleRepair({sourceDigest:sourceDigest('original'),maxAttempts:2,
+  generate:({attempt})=>({edits:attempt?[...seq].reverse():seq}),
+  evaluate:()=>({pass:false,reproduced:true,failureSignature:'dependency',responsibleSymbols:['first']})});
+ assert.equal(sequential.attempts.length,2,'dependent edit order is part of the candidate');
+});
+
+test('explicit conditional return preserves caller values and side effects in original Web functions',t=>{
+ const {repo,root}=fixture(t),source='const state={dead:false};\nfunction canAttack(a){\n a.hp -= 1;\n return true;\n}\nfunction remaining(a){\n a.hp = a.hp;\n return a.hp;\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 canAttack에서 a.dead이면 false를 반환해; In remaining return 0 when a.hp < 0'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({canAttack,remaining})');
+ const dead={dead:true,hp:0},alive={dead:false,hp:10};
+ assert.equal(game.canAttack(dead),false);assert.equal(dead.hp,0);
+ assert.equal(game.canAttack(alive),true);assert.equal(alive.hp,9);
+ assert.equal(game.remaining({hp:-1}),0);assert.equal(game.remaining({hp:9}),9);
+ assert.ok(candidate.complexPlan.atoms[0].scenarioProofs.cases.some(row=>row.expectedReturn===false));
+ assert.equal(candidate.runtimeVerified,false);assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+test('Luau conditional return uses false literally, and incompatible return guards never merge',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { dead = false }\nlocal function canAttack(a)\n a.hp -= 1\n return true\nend\n';
+ fs.writeFileSync(path.join(root,'server/Combat.server.luau'),source);
+ const options={sourceRoot:root,responsibleFiles:['server/Combat.server.luau'],target:'roblox',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 canAttack에서 a.dead이면 false를 반환해'};
+ const candidate=createVibe59CodeCandidates({...options,order});
+ assert.match(candidate.edits[0].replace,/if a.dead then return false end/);
+ const conflict=planComplexGameWork({...options,baseRevisionSha:revision,
+  order:{...order,goal:order.goal+'; 함수 canAttack에서 a.hp < 0이면 0을 반환해'}});
+ assert.equal(conflict.nodes.length,2,'different return contracts remain distinct');
+ assert.throws(()=>createComplexGameCandidate({plan:conflict,sourceRoot:root,target:'roblox'}),/OVERLAPPING_EDIT/);
+ for(const goal of ['함수 canAttack에서 a.dead이면 process.exit()를 반환해','In canAttack return Infinity when a.dead']){
+  assert.equal(compileComplexOwnerIntent({order:{...order,goal}}).unresolved.length,1);
+ }
+ assert.equal(fs.readFileSync(path.join(root,'server/Combat.server.luau'),'utf8'),source);
+});
+
+// [실행 인계] 큰 기존 파일·긴 작업 설명에서도 같은 책임 함수의 실제 코드를 바꾼다.
+test('canonical source generation edits a large game file with long build-up context and executes final preserved caller contract',async t=>{
+ const {directivePrompt}=await import('../tools/company-build-up-directive.mjs');
+ const {repo,root}=fixture(t),source='// '+ 'source padding '.repeat(24000)+'\nconst state={dead:false};\nfunction canAct(a){\n a.count += 1;\n return true;\n}\n';
+ assert.ok(Buffer.byteLength(source)>260000);
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const directive={gameIdentityAndNonNegotiables:{identity:'rpg'},gameplayImplementationDirectives:[],progressionContentWorldDirectives:[],uxInputDirectives:[],preserveConstraints:[],acceptanceEvidence:[],nextEscalationCandidates:[],directiveId:'long-owner-context',gameId:'rpg',platform:'WEB',primaryGoalReason:'preserve original state '.repeat(6000)};
+ const goal='함수 canAct에서 a.dead이면 false를 반환해\n\n'+directivePrompt(directive);
+ const order={selectedTask:{gameId:'rpg',ownerDirective:true,goal,buildUpDirective:directive},baseRevisionSha:revision};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';canAct');
+ const dead={dead:true,count:0},alive={dead:false,count:0};
+ assert.equal(game(dead),false);assert.equal(dead.count,0);assert.equal(game(alive),true);assert.equal(alive.count,1);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+ fs.writeFileSync(path.join(root,'game.js'),'// '+'x'.repeat(2*1024*1024));
+ assert.throws(()=>buildGameSourceIndex({sourceRoot:root,responsibleFiles:['game.js']}),/SOURCE_SIZE/);
+});
+
+// [회귀] 원본 함수 하나의 중단·값 제한·기존 호출 연결을 하나의 실제 소스 변경으로 합친다.
+test('same owner guard clamp and UI call synthesize one canonical executable source edit',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={dead:false,hp:10,views:0};\nfunction refresh(a){a.views+=1;}\nfunction trace(a){a.traces+=1;}\nfunction update(a,nextHp){\n a.hp = nextHp;\n trace(a);\n return true;\n}';
+ const file=path.join(root,'game.js');fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 update에서 a.dead이면 false를 반환해; 함수 update에서 a.hp를 0에서 100까지 제한해; 함수 update에서 trace 호출 뒤 refresh를 호출해'};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.equal(candidate.edits.length,1);assert.equal(candidate.complexPlan.atomCount,3);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({update})');
+ for(const [input,expected] of [[-5,0],[0,0],[50,50],[100,100],[105,100]]){
+  const actor={dead:false,hp:10,views:0,traces:0};
+  assert.equal(game.update(actor,input),true);assert.equal(actor.hp,expected);
+  assert.equal(actor.traces,1);assert.equal(actor.views,1);
+ }
+ const dead={dead:true,hp:7,views:0,traces:0};assert.equal(game.update(dead,50),false);
+ assert.deepEqual(dead,{dead:true,hp:7,views:0,traces:0});
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ // 정식 물리 적용 경로에서도 같은 수정안 한 개를 그대로 사용한다.
+ const git=(...args)=>{const result=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});assert.equal(result.status,0,result.stderr)};
+ git('init','-q');git('config','user.email','vibe2-tests@example.invalid');git('config','user.name','Vibe2 Test');
+ git('add','.');git('commit','-qm','original game');git('switch','-q','-c','vibe2/candidate/composed-source');
+ const applied=applyVibe2CandidateToSource({cwd:repo,sourceRoot:root,candidateRoot:path.join(repo,'.vibe2/candidates/composed-source'),candidate});
+ assert.deepEqual(applied.changedFiles,['game.js']);assert.equal(fs.readFileSync(file,'utf8'),docs.get('game.js'));
+});
+
+test('same insertion point preserves approved condition and guard order without accepting conflicting contracts',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const state={dead:false,ready:false,active:false};\nfunction act(a){\n a.active = true;\n return true;\n}';
+ fs.writeFileSync(file,source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ for(const [goal,expected] of [
+  ['함수 act에서 a.dead이면 false를 반환해; 함수 act에서 a.ready이면 a.active를 false로 설정해',true],
+  ['함수 act에서 a.ready이면 a.active를 false로 설정해; 함수 act에서 a.dead이면 false를 반환해',false]
+ ]){
+  const candidate=createVibe59CodeCandidates({...options,order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal}});
+  assert.equal(candidate.edits.length,1);
+  const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+  const game=vm.runInNewContext(docs.get('game.js')+';({act})'),actor={dead:true,ready:true,active:true};
+  assert.equal(game.act(actor),false);assert.equal(actor.active,expected);
+ }
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('same owner Luau source composes existing clamp and guard without changing server authority',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { dead = false, hp = 10 }\nlocal function update(a,nextHp)\n a.hp = nextHp\n return true\nend\n';
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 update에서 a.dead이면 false를 반환해; 함수 update에서 a.hp를 0에서 100까지 제한해'}});
+ assert.equal(candidate.edits.length,1);assert.match(candidate.edits[0].replace,/if a\.dead then return false end/);
+ assert.match(candidate.edits[0].replace,/math\.clamp\(nextHp, 0, 100\)/);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+});
+
+// [회귀] 중간의 상태 변경 전후 조건은 같은 반환값이어도 앞쪽 OR 조건으로 이동하지 않는다.
+test('same owner guard composition never moves a predicate before an intervening state change',t=>{
+ const {repo,root}=fixture(t),source='const defaults={dead:false,ready:false,active:false};\nfunction act(a){\n a.active = true;\n return true;\n}';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 act에서 a.dead이면 false를 반환해; 함수 act에서 a.ready이면 a.active를 false로 설정해; 함수 act에서 a.active이면 false를 반환해'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.complexPlan.atomCount,3);assert.equal(candidate.edits.length,1);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({act})');
+ const changed={dead:false,ready:true,active:true};assert.equal(game.act(changed),true);assert.equal(changed.active,true);
+ const unchanged={dead:false,ready:false,active:true};assert.equal(game.act(unchanged),false);
+ const dead={dead:true,ready:true,active:true};assert.equal(game.act(dead),false);assert.equal(dead.active,true);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+// [회귀] 겹친 호출 연결로 같은 저장·화면 함수를 두 번 실행하지 않는다.
+test('same owner composition rejects duplicate call effects while retaining distinct ordered calls',t=>{
+ const {repo,root}=fixture(t),source='const state={count:0};\nfunction trace(a){a.count+=1;}\nfunction refresh(a){a.count+=10;}\nfunction render(a){a.count+=100;}\nfunction act(a){\n trace(a);\n}';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 act에서 trace 호출 뒤 refresh를 호출해; 함수 act에서 trace 호출 뒤 refresh 호출하고 render를 호출해'};
+ assert.throws(()=>createVibe59CodeCandidates({...options,order}),/OVERLAPPING_EDIT:DUPLICATE_CALL/);
+ const candidate=createVibe59CodeCandidates({...options,order:{...order,
+  goal:'함수 act에서 trace 호출 뒤 refresh를 호출해; 함수 act에서 trace 호출 뒤 render를 호출해'}});
+ assert.equal(candidate.edits.length,1);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({act})'),actor={count:0};game.act(actor);
+ assert.equal(actor.count,111);assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+// [전체 인계] 마지막 승인 단계까지 생성하고 마지막 단계가 실패하면 부분 후보를 반환하지 않는다.
+test('canonical complex source generation completes all forty-eight steps and rejects an invalid final step atomically',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const defaults={dead:false};\n'+Array.from({length:48},(_,i)=>'function f'+i+'(a){a.hp -= 1;}').join('\n');
+ fs.writeFileSync(file,source);
+ const clauses=Array.from({length:48},(_,i)=>'함수 f'+i+'에서 a.dead이면 중단해');
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:clauses.join('; ')};
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const candidate=createVibe59CodeCandidates({...options,order});
+ assert.equal(candidate.complexPlan.atomCount,48);assert.equal(candidate.complexPlan.requirementCount,48);
+ assert.equal(candidate.complexPlan.deferredWaves.length,0);assert.equal(candidate.edits.length,48);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const functions=vm.runInNewContext(docs.get('game.js')+';['+Array.from({length:48},(_,i)=>'f'+i).join(',')+']');
+ const alive={dead:false,hp:100},dead={dead:true,hp:100};
+ for(const fn of functions){fn(alive);fn(dead)}
+ assert.equal(alive.hp,52);assert.equal(dead.hp,100);
+ const invalid=[...clauses];invalid[47]='함수 f47에서 a.hp를 0에서 100까지 제한해';
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal:invalid.join('; ')}}),/ASSIGNMENT_ANCHOR/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal:order.goal+'; 함수 missing에서 a.dead이면 중단해'}}),/REQUIREMENT_BUDGET/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.sourceWrite,false);
+});
+
+
+// [빌드업] 이미 존재하는 점수 누적 연산을 직접 강화한다. 별도 상태 쓰기나 우회 함수를 만들지 않는다.
+test('model-free owner counter build-up changes existing numeric progression with original gameplay preserved',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const defaults={dead:false,coins:0};\nfunction collect(a){\n a.coins += 1;\n return true;\n}';
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 a.coins를 3 증가시켜'};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.equal(candidate.edits.length,1);assert.equal(candidate.complexPlan.atomCount,2);
+ assert.equal(candidate.complexPlan.atoms.find(a=>a.operation==='adjust-existing-counter').scenarioProofs.pass,true);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect');
+ const alive={dead:false,coins:4},dead={dead:true,coins:4};
+ assert.equal(collect(alive),true);assert.equal(alive.coins,8);
+ assert.equal(collect(dead),false);assert.equal(dead.coins,4);
+ assert.match(docs.get('game.js'),/a\.coins \+= 4;/);
+ assert.equal(candidate.runtimeVerified,false);assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('model-free counter adjustment supports a decrease but rejects missing or ambiguous numeric owners',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const source='const defaults={coins:0};\nfunction collect(a){\n a.coins += 1;\n}';
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'In collect decrease a.coins by 2'};
+ const candidate=createVibe59CodeCandidates({...options,order});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ assert.match(docs.get('game.js'),/a\.coins -= 1;/);
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect'),actor={coins:10};
+ collect(actor);assert.equal(actor.coins,9);
+ for(const goal of ['함수 collect에서 a.coins를 0 증가시켜','함수 collect에서 a.coins를 1001 증가시켜']){
+  assert.equal(compileComplexOwnerIntent({order:{...order,goal}}).unresolved[0].code,'AMBIGUOUS_EXPRESSION');
+ }
+ fs.writeFileSync(file,'const defaults={coins:0};\nfunction collect(a){\n a.coins += 1;\n a.coins += 2;\n}');
+ assert.throws(()=>createVibe59CodeCandidates({...options,order}),/COUNTER_ANCHOR/);
+ fs.writeFileSync(file,'const defaults={coins:0};\nfunction collect(a,next){\n a.coins = next;\n}');
+ assert.throws(()=>createVibe59CodeCandidates({...options,order}),/COUNTER_ANCHOR/);
+ assert.equal(candidate.runtimeVerified,false);
+});
+
+test('model-free Luau counter growth rewrites the responsible integer delta only',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { coins = 0 }\nlocal function collect(a)\n a.coins -= 2\n return true\nend\n';
+ fs.writeFileSync(path.join(root,'server/Collect.server.luau'),source);
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,responsibleFiles:['server/Collect.server.luau'],target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 collect에서 a.coins를 3 증가시켜'}});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/a\.coins \+= 1/);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+});
+
+
+// [빌드업] 기존 게임 행동에 점수 진행을 실제로 추가하고 원본 호출·중단 순서를 보존한다.
+test('model-free buildup adds new progress after an existing action without changing save structure',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const defaults={coins:0,dead:false,views:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){',
+  ' trace(a);',
+  ' return true;',
+  '}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 trace 호출 뒤 a.coins를 2 증가시켜'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.complexPlan.atomCount,2);
+ assert.equal(candidate.edits.length,1);
+ assert.ok(candidate.complexPlan.atoms.some(x=>x.operation==='counter-after-existing-call'));
+ const docs=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect');
+ const alive={dead:false,coins:1,views:0},dead={dead:true,coins:1,views:0};
+ assert.equal(collect(alive),true);assert.equal(alive.coins,3);assert.equal(alive.views,1);
+ assert.equal(collect(dead),false);assert.equal(dead.coins,1);assert.equal(dead.views,0);
+ assert.match(docs.get('game.js'),/trace\(a\);\s*a\.coins \+= 2;/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);
+});
+
+test('model-free new progress rejects ambiguous action or duplicate field reward',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const original=[
+  'const defaults={coins:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){trace(a);}'
+ ].join('\n');
+ fs.writeFileSync(file,original);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'In collect after trace increase a.coins by 3'};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const valid=createVibe59CodeCandidates(options);
+ assert.equal(valid.complexPlan.atomCount,1);
+ assert.match(valid.edits[0].replace,/a\.coins \+= 3;/);
+ assert.equal(valid.modelUsed,false);
+ fs.writeFileSync(file,original.replace('trace(a);}', 'trace(a);a.coins+=1;}'));
+ assert.throws(()=>createVibe59CodeCandidates(options),/COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN/);
+ fs.writeFileSync(file,original.replace('trace(a);}', 'other(a);}') );
+ assert.throws(()=>createVibe59CodeCandidates(options),/COUNTER_EVENT_CALL_UNPROVEN/);
+ fs.writeFileSync(file,original.replace('coins:0','coins:false'));
+ assert.throws(()=>createVibe59CodeCandidates(options),/COUNTER_EXISTING_FIELD_OR_UNIQUE_WRITE_UNPROVEN/);
+ assert.equal(valid.runtimeVerified,false);
+});
+
+test('model-free Luau buildup inserts a numeric gameplay effect after a verified native call',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source=[
+  'local defaults = { coins = 0, dead = false }',
+  'local function trace(a)',
+  ' a.views += 1',
+  'end',
+  'local function collect(a)',
+  ' trace(a)',
+  ' return true',
+  'end',
+  ''
+ ].join('\n');
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,
+  responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+   goal:'함수 collect에서 trace 호출 뒤 a.coins를 3 증가시켜'}});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/trace\(a\)\s*a\.coins \+= 3/);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+});
+
+
+// [빌드업] 기존 행동으로 실제 진행도를 올리고 문턱 도달 시 기존 기능을 한 번 해금한다.
+test('model-free action buildup composes progress and threshold unlock after an existing event',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const defaults={progress:0,unlocked:false,dead:false,views:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){',
+  ' trace(a);',
+  ' return true;',
+  '}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 trace 호출 뒤 a.progress를 1 증가시켜; 함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.unlocked를 true로 설정해'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.complexPlan.atomCount,3);
+ assert.equal(candidate.edits.length,1);
+ assert.ok(candidate.complexPlan.atoms.some(atom=>atom.operation==='unlock-after-existing-call'));
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect');
+ const alive={progress:0,unlocked:false,dead:false,views:0};
+ assert.equal(collect(alive),true);assert.equal(alive.progress,1);assert.equal(alive.unlocked,false);
+ assert.equal(collect(alive),true);assert.equal(alive.progress,2);assert.equal(alive.unlocked,true);
+ assert.equal(collect(alive),true);assert.equal(alive.progress,3);assert.equal(alive.unlocked,true);
+ assert.equal(alive.views,3);
+ const dead={progress:1,unlocked:false,dead:true,views:0};
+ assert.equal(collect(dead),false);assert.equal(dead.progress,1);
+ assert.equal(dead.unlocked,false);assert.equal(dead.views,0);
+ assert.match(docs.get('game.js'),/a\.progress \+= 1;[\s\S]*![(]a\.unlocked[)]/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);
+});
+
+test('model-free threshold unlock rejects invented or already-mutated game state',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const original='const defaults={progress:0,unlocked:false};\nfunction trace(a){a.views+=1;}\nfunction collect(a){trace(a);return true;}';
+ fs.writeFileSync(file,original);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'In collect after trace call when a.progress >= 2 set a.unlocked to true'};
+ const candidate=createVibe59CodeCandidates({...options,order});
+ assert.equal(candidate.complexPlan.atomCount,1);
+ assert.match(candidate.edits[0].replace,/a\.unlocked = true;/);
+ assert.equal(candidate.runtimeVerified,false);
+ for(const altered of [
+  original.replace('unlocked:false','unlocked:0'),
+  original.replace('progress:0','progress:false'),
+  original.replace('trace(a);return true','trace(a);a.unlocked=true;return true')
+ ]){
+  fs.writeFileSync(file,altered);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order}),/UNLOCK_EXISTING_THRESHOLD_OR_FLAG_UNPROVEN/);
+ }
+ fs.writeFileSync(file,original);
+ for(const bad of [
+  '함수 collect에서 trace 호출 뒤 a.progress >= 0이면 a.unlocked를 true로 설정해',
+  '함수 collect에서 trace 호출 뒤 a.progress < 2이면 a.unlocked를 true로 설정해',
+  '함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.progress를 true로 설정해'
+ ]){
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal:bad}}),/UNLOCK_EXISTING_THRESHOLD_OR_FLAG_UNPROVEN/);
+ }
+ assert.equal(fs.readFileSync(file,'utf8'),original);
+});
+
+test('model-free Luau action threshold unlock only changes existing server boolean',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { progress = 0, unlocked = false }\nlocal function trace(a)\n a.views += 1\nend\nlocal function collect(a)\n trace(a)\n return true\nend\n';
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,
+  responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+   goal:'함수 collect에서 trace 호출 뒤 a.progress >= 3이면 a.unlocked를 true로 설정해'}});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/not \(a\.unlocked\) and \(\(?a\.progress >= 3\)\)?/);
+ assert.match(candidate.edits[0].replace,/a\.unlocked = true/,'existing boolean is set only after threshold');
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
+});
+
+
+// [빌드업] 실제 퀘스트 진행도와 완료 보상을 원본 이벤트 한 번에 연결한다.
+test('model-free quest buildup completes a threshold goal and pays the existing reward exactly once',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const defaults={progress:0,questDone:false,coins:0,dead:false,views:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){',
+  ' trace(a);',
+  ' return true;',
+  '}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 trace 호출 뒤 a.progress를 1 증가시켜; 함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.questDone을 true로 하고 a.coins를 5 증가시켜'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.edits.length,1);assert.equal(candidate.complexPlan.atomCount,3);
+ const quest=candidate.complexPlan.atoms.find(atom=>atom.operation==='quest-reward-after-existing-call');
+ assert.deepEqual(quest.outputSymbols,['a.questDone','a.coins']);
+ assert.equal(quest.scenarioProofs.pass,true);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect');
+ const alive={progress:0,questDone:false,coins:10,dead:false,views:0};
+ const expected=[[1,false,10],[2,true,15],[3,true,15],[4,true,15]];
+ for(const [progress,questDone,coins] of expected){
+  assert.equal(collect(alive),true);
+  assert.equal(alive.progress,progress);assert.equal(alive.questDone,questDone);assert.equal(alive.coins,coins);
+ }
+ assert.equal(alive.views,4);
+ const dead={progress:1,questDone:false,coins:0,dead:true,views:0};
+ assert.equal(collect(dead),false);assert.deepEqual(dead,{progress:1,questDone:false,coins:0,dead:true,views:0});
+ assert.equal(fs.readFileSync(file,'utf8'),source);assert.equal(candidate.runtimeVerified,false);
+});
+
+test('model-free quest reward requires previously defined threshold flag and reward fields',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const defaults={progress:0,questDone:false,coins:0};\nfunction trace(a){a.views+=1;}\nfunction collect(a){trace(a);return true;}';
+ fs.writeFileSync(file,source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'In collect after trace call when a.progress >= 3 complete a.questDone and reward a.coins by 7'};
+ const valid=createVibe59CodeCandidates({...options,order});
+ assert.equal(valid.complexPlan.atomCount,1);assert.match(valid.edits[0].replace,/a\.coins \+= 7; a\.questDone = true;/);
+ for(const invalid of [
+  source.replace('questDone:false','questDone:0'),
+  source.replace('coins:0','coins:false'),
+  source.replace('progress:0','progress:false'),
+  source.replace('trace(a);return','trace(a);a.coins+=1;return')
+ ]){
+  fs.writeFileSync(file,invalid);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order}),/QUEST_REWARD_EXISTING_CONTRACT_UNPROVEN/);
+ }
+ fs.writeFileSync(file,source);
+ for(const goal of [
+  '함수 collect에서 trace 호출 뒤 a.progress >= 0이면 a.questDone을 true로 하고 a.coins를 7 증가시켜',
+  '함수 collect에서 trace 호출 뒤 a.progress < 2이면 a.questDone을 true로 하고 a.coins를 7 증가시켜',
+  '함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.questDone을 true로 하고 a.progress를 7 증가시켜'
+ ]){
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal}}),/QUEST_REWARD_EXISTING_CONTRACT_UNPROVEN/);
+ }
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('model-free quest reward compiles to original Roblox server Luau without changing save schema',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source=[
+  'local defaults = { progress = 0, questDone = false, coins = 0 }',
+  'local function trace(a)',
+  ' a.views += 1',
+  'end',
+  'local function collect(a)',
+  ' trace(a)',
+  ' return true',
+  'end',''
+ ].join('\n');
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.questDone을 true로 하고 a.coins를 5 증가시켜'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/a\.coins \+= 5; a\.questDone = true end/);
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
+});
+
+
+// [실제 게임 볼륨] 여섯 콘텐츠 카테고리를 단일 기존 게임 수정으로 생성하고 실제 그리기·선택을 실행한다.
+test('one-shot volume pack draws facilities, RPG maps, backgrounds, sprites, actions and motions in the existing Web loop',t=>{
+ const {repo,root}=fixture(t),filename='game.js',file=path.join(root,filename);
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let originalClicks=0;',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(x,y){originalClicks++;}',
+  'function update(dt){return dt;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const request={facilities:['관람차','회전목마','롤러코스터'],
+  maps:['숲','사막','설원'],backgrounds:['낮','밤'],
+  sprites:['나무','구름'],actions:['점프','대시'],motions:['걷기','회전']};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:request};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:[filename],
+  target:'web',repositoryRoot:repo});
+ assert.equal(candidate.vibe59CodeKind,'ONE_SHOT_GAME_VOLUME');
+ assert.equal(candidate.edits.length,3);
+ assert.deepEqual(candidate.volumePack.contentCounts,{facilities:3,maps:3,backgrounds:2,sprites:2,actions:2,motions:2});
+ assert.equal(candidate.newFiles.length,0);assert.equal(candidate.replaceFiles.length,0);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+ const docs=new Map([[filename,source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get(filename),runtimeName=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ assert.ok(runtimeName);assert.doesNotThrow(()=>new vm.Script(generated));
+ const displayed=[],canvas={width:1000,height:800};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},beginPath(){},arc(){},
+  fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(s){displayed.push(s);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(generated+';({render,handleClick,update,view:()=>'+runtimeName+',previous:()=>originalClicks})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ app.render(ctx);
+ for(const name of ['관람차','회전목마','롤러코스터','숲','사막','설원','나무','구름','점프','대시'])
+  assert.ok(displayed.some(text=>text.includes(name)),name);
+ const click=(x,y)=>app.handleClick(560+x*420/440,32+y*720/600);
+ click(200,244);click(250,347);click(154,516);click(50,570);click(310,65);
+ assert.equal(app.view().mapIndex,1);
+ assert.equal(app.view().selectedFacility,2);
+ assert.equal(app.view().actionIndex,1);
+ assert.equal(app.view().motionIndex,1);
+ assert.equal(app.view().backgroundIndex,1);
+ assert.equal(app.previous(),0,'game input is not also triggered behind the volume panel');
+ const before=app.view().time;app.update(0.03);assert.ok(app.view().time>before);
+ app.handleClick(15,15);assert.equal(app.previous(),1,'existing outside click gameplay preserved');
+ displayed.length=0;app.render(ctx);assert.ok(displayed.some(text=>text.includes('RPG 지역: 사막')));
+ // Mobile viewport: fully readable panel can be closed; original game input remains usable.
+ canvas.width=390;canvas.height=700;displayed.length=0;app.render(ctx);
+ assert.ok(displayed.some(text=>text.includes('GAME WORLD+')));
+ app.handleClick(350,20);displayed.length=0;app.render(ctx);
+ assert.ok(displayed.includes('WORLD+'));
+ assert.ok(!displayed.some(text=>text.includes('GAME WORLD+')));
+ app.handleClick(5,5);assert.equal(app.previous(),2,'closed mobile volume yields back to game controls');
+ app.handleClick(350,20);displayed.length=0;app.render(ctx);
+ assert.ok(displayed.some(text=>text.includes('GAME WORLD+')));
+ assert.equal(fs.readFileSync(file,'utf8'),source,'candidate generation must not edit real files');
+ assert.doesNotMatch(generated,/localStorage|setItem|DataStore/);
+});
+
+test('one-shot volume pack also accepts a single Korean six-system owner directive',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,source);
+ const goal='게임볼륨 추가: 시설 관람차, 회전목마; 지역 숲, 사막; 배경 낮, 밤; 그래픽 나무, 구름; 액션 점프, 대시; 모션 걷기, 회전';
+ const candidate=createVibe59OneShotVolumeCandidate({sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo,order:{gameId:'rpg',ownerApproved:true,goal,baseRevisionSha:revision}});
+ assert.equal(candidate.vibe59CodeKind,'ONE_SHOT_GAME_VOLUME');
+ assert.equal(candidate.edits.length,2);
+ assert.deepEqual(candidate.volumePack.contentCounts,{facilities:2,maps:2,backgrounds:2,sprites:2,actions:2,motions:2});
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('one-shot volume pack rejects missing canvas ownership, unsafe names and Roblox fake renderer',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='function render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  vibe59VolumeRequest:{facilities:['관람차'],maps:['숲'],actions:['점프']}};
+ const args={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ assert.throws(()=>createVibe59OneShotVolumeCandidate(args),/VIBE59_VOLUME_CANVAS_BINDING/);
+ assert.throws(()=>createVibe59OneShotVolumeCandidate({...args,order:{...order,
+  vibe59VolumeRequest:{facilities:['<script>'],maps:['숲']}}}),/VIBE59_VOLUME_UNSAFE_OR_DUPLICATE_NAME/);
+ assert.throws(()=>createVibe59OneShotVolumeCandidate({...args,target:'roblox'}),/VIBE59_VOLUME_WEB_CANVAS_ONLY/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+
+// [빌드업 UI 5종] 실제 렌더/클릭/키보드 원본 함수에 상태·시설·지도·목표·편의기능을 연결한다.
+test('one-shot Web volume UI has working status, facility info, minimap, objectives and keyboard convenience',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let originalClicks=0,originalKeys=[];',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(x,y){originalClicks++;}',
+  'function handleKeydown(event){originalKeys.push(event.key);}',
+  'function update(dt){return dt;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  vibe59VolumeRequest:{facilities:['관람차','회전목마'],maps:['숲','사막'],backgrounds:['낮','밤'],
+   sprites:['나무'],actions:['점프','대시'],motions:['걷기','춤']}};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo});
+ assert.equal(candidate.vibe59CodeKind,'ONE_SHOT_GAME_VOLUME');
+ assert.equal(candidate.edits.length,4);
+ assert.deepEqual(candidate.volumePack.uiPages,['월드','상태','시설','지도','목표','가방','장비','제작','퀘스트','상점']);
+ assert.equal(candidate.volumePack.saveSchemaChanged,false);
+ assert.equal(candidate.runtimeVerified,false);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const code=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(code)?.[1];
+ assert.ok(symbol);assert.doesNotThrow(()=>new vm.Script(code));
+ const labels=[],canvas={width:1000,height:800};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(text){labels.push(text);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(code+';({render,handleClick,handleKeydown,update,view:()=>'+symbol+
+  ',originalClicks:()=>originalClicks,originalKeys:()=>originalKeys})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ const click=(x,y)=>app.handleClick(560+x*420/440,32+y*720/600);
+ const switchTab=n=>click(205+n*46+18,20);
+ const screen=()=>{labels.length=0;app.render(ctx);return labels.join('|');};
+ assert.match(screen(),/RPG 지역: 숲/);
+ switchTab(1);assert.equal(app.view().tab,'상태');
+ assert.match(screen(),/플레이 상태창/);
+ assert.match(screen(),/움직임 줄이기: 꺼짐/);
+ click(60,463);assert.equal(app.view().reduceMotion,true);
+ assert.match(screen(),/움직임 줄이기: 켜짐/);
+ switchTab(2);assert.match(screen(),/놀이 시설 정보창/);
+ click(272,142);assert.equal(app.view().selectedFacility,1);
+ assert.equal(app.view().rides,0,'selecting a ride does not count as riding');
+ click(80,540);assert.equal(app.view().rides,1);assert.equal(app.view().rideCounts[1],1);
+ assert.match(screen(),/이용 1회/);
+ switchTab(3);assert.match(screen(),/RPG 탐험 미니맵/);
+ click(265,156);assert.equal(app.view().mapIndex,1);
+ assert.equal(app.view().visitedMaps[1],true);
+ assert.match(screen(),/탐험한 지역: 2 \/ 2/);
+ switchTab(0);click(153,519);click(153,519);
+ assert.equal(app.view().actionsDone,2);
+ switchTab(4);assert.match(screen(),/플레이 목표 \/ 진행도/);
+ assert.match(screen(),/이 콘텐츠 묶음의 목표 3 \/ 3 완료/);
+ click(70,270);assert.equal(app.view().tab,'시설','clicking a goal takes user to its action');
+ app.handleKeydown({key:'1'});assert.equal(app.originalKeys().at(-1),'1',
+  'ordinary game keyboard shortcuts remain usable');
+ app.handleKeydown({key:'3',altKey:true});assert.equal(app.view().tab,'시설');
+ app.handleKeydown({key:'5',altKey:true});assert.equal(app.view().tab,'목표');
+ const keysBefore=app.originalKeys().length;
+ app.handleKeydown({key:'m',altKey:true});assert.equal(app.view().reduceMotion,false);
+ app.handleKeydown({key:'v',altKey:true});assert.equal(app.view().open,false);
+ app.handleKeydown({key:'v',altKey:true});assert.equal(app.view().open,true);
+ assert.equal(app.originalKeys().length,keysBefore,'Alt shortcuts do not double-trigger game keyboard');
+ assert.equal(app.originalClicks(),0);
+ app.handleClick(12,12);assert.equal(app.originalClicks(),1,'outside game area is not stolen');
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.doesNotMatch(code,/localStorage|sessionStorage|setItem|DataStore/);
+});
+
+test('one-shot UI uses large touch menu on mobile and preserves gameplay outside panel',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nlet clicks=0;\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){clicks++;}\n';
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차'],maps:['숲','사막'],actions:['점프']}};
+ const cand=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,cand.edits,{documents:docs});
+ const body=docs.get('game.js'),variable=/const (__vibeVolume_[a-f0-9]+) = /.exec(body)?.[1];
+ const labels=[],canvas={width:390,height:700};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(text){labels.push(text);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(body+';({render,handleClick,view:()=>'+variable+',clicks:()=>clicks})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ const touch=(x,y)=>app.handleClick(390*.05+x*(390*.90)/440,700*.06+y*(700*.86)/600);
+ app.render(ctx);assert.ok(labels.includes('화면 메뉴'));
+ touch(350,27);assert.equal(app.view().menuOpen,true);
+ labels.length=0;app.render(ctx);
+ assert.ok(labels.includes('시설 화면'));assert.ok(labels.includes('목표 화면'));
+ touch(90,85+3*86+30);assert.equal(app.view().tab,'지도');
+ assert.equal(app.view().menuOpen,false);
+ labels.length=0;app.render(ctx);assert.ok(labels.includes('RPG 탐험 미니맵'));
+ touch(350,27);touch(85,85+4*86+30);
+ assert.equal(app.view().tab,'목표');
+ touch(350,27);touch(90,85+0*86+30);
+ assert.equal(app.view().tab,'월드');
+ assert.equal(app.clicks(),0,'touch navigation does not leak into original game');
+ app.handleClick(350,20);assert.equal(app.view().open,false,'existing close control remains available');
+ app.handleClick(5,5);assert.equal(app.clicks(),1,'outside clicks still reach original game');
+ app.handleClick(350,20);assert.equal(app.view().open,true);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('one-shot UI skips unknown keyboard sources and protects valued keyboard return contracts',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const common='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,common);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차'],maps:['숲']}};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const noKeyboard=createVibe59OneShotVolumeCandidate(options);
+ assert.equal(noKeyboard.edits.length,2);
+ fs.writeFileSync(file,common+'function handleKeydown(e){return 10;}\n');
+ assert.throws(()=>createVibe59OneShotVolumeCandidate(options),/VIBE59_VOLUME_KEYBOARD_RETURN_CONTRACT/);
+ fs.writeFileSync(file,common);
+ assert.equal(fs.readFileSync(file,'utf8'),common);
+});
+
+test('one-shot five system panels perform real material, crafting, equipment, quest and shop state transitions',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let outside=0;let originalKeys=0;',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(x,y){outside++;}',
+  'function handleKeydown(e){originalKeys++;}',
+  'function update(dt){}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차','회전목마'],maps:['숲','사막'],backgrounds:['낮'],actions:['점프','대시'],motions:['걷기']}};
+ const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo});
+ assert.equal(candidate.volumePack.gameplayBuildUp.length,5);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ assert.ok(symbol);assert.doesNotThrow(()=>new vm.Script(generated));
+ const labels=[],canvas={width:1000,height:800};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(value){labels.push(value);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(generated+';({render,handleClick,handleKeydown,view:()=>'+symbol+
+   ',outside:()=>outside,originalKeys:()=>originalKeys})',{document:{querySelector:()=>canvas},Date,Math,Number});
+ const click=(x,y)=>app.handleClick(560+x*420/440,32+y*720/600);
+ const world=()=>click(227,21);
+ const system=i=>{click(65,20);click(80,85+i*86+30);};
+ const screen=()=>{labels.length=0;app.render(ctx);return labels.join('|');};
+ world();click(30,238);click(30,238);assert.equal(app.view().materials[0],2);
+ system(2);assert.match(screen(),/제작창/);click(50,145);
+ assert.equal(app.view().materials[0],0);assert.equal(app.view().gearCounts[0],1);
+ click(50,145);assert.equal(app.view().gearCounts[0],1,'craft fails without material');
+ system(1);assert.match(screen(),/장비창/);click(60,145);
+ assert.equal(app.view().equipped,0);
+ world();click(32,520);assert.equal(app.view().coins,2,'equipped action grants pack reward');
+ click(32,520);assert.equal(app.view().coins,4);
+ click(235,238);assert.equal(app.view().visitedMaps[1],true);
+ click(40,348);assert.equal(app.view().rides,1);
+ system(3);assert.match(screen(),/퀘스트 목록/);
+ const before=app.view().coins;click(45,145);
+ assert.equal(app.view().coins,before+2);click(45,145);
+ assert.equal(app.view().coins,before+2,'quest reward cannot be claimed twice');
+ system(4);assert.match(screen(),/상점 UI/);
+ const balance=app.view().coins;click(70,145);
+ assert.equal(app.view().coins,balance-3);assert.equal(app.view().tickets[0],1);
+ system(0);assert.match(screen(),/인벤토리창/);
+ const rides=app.view().rides,coins=app.view().coins;
+ click(60,117+2*65+25);
+ assert.equal(app.view().tickets[0],0);assert.equal(app.view().rides,rides+1);
+ assert.equal(app.view().coins,coins,'ticket redeem cannot mint coins');
+ app.handleKeydown({altKey:true,key:'0'});assert.equal(app.view().tab,'상점');
+ assert.equal(app.originalKeys(),0,'Alt system navigation consumed');
+ app.handleKeydown({key:'z'});assert.equal(app.originalKeys(),1);
+ assert.equal(app.outside(),0);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.doesNotMatch(generated,/localStorage|sessionStorage|setItem|DataStore/);
+});
+test('one-shot keyboard never shadows the original event parameter name',t=>{
+ for(const eventName of ['e','event','key','v']){
+  const {repo,root}=fixture(t),file=path.join(root,'game.js');
+  const source=[
+   'const canvas=document.querySelector("canvas");',
+   'const ctx=canvas.getContext("2d");',
+   'let ordinary=0;',
+   'function render(ctx){ctx.fillRect(0,0,1,1);}',
+   'function handleClick(x,y){}',
+   'function handleKeydown('+eventName+'){ordinary++;}',
+   'function update(dt){}'
+  ].join('\n');
+  fs.writeFileSync(file,source);
+  const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+   facilities:['관람차'],maps:['숲'],backgrounds:['낮'],actions:['점프'],motions:['걷기']}};
+  const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,
+   responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+  const docs=new Map([['game.js',source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+  assert.ok(symbol);
+  const app=vm.runInNewContext(generated+';({handleKeydown,view:()=>'+symbol+',ordinary:()=>ordinary})',{
+   document:{querySelector:()=>({getContext:()=>({fillRect(){}})})},Date,Math,Number
+  });
+  app.handleKeydown({altKey:true,key:'6'});
+  assert.equal(app.view().tab,'가방',eventName+' supports system shortcuts');
+  assert.equal(app.ordinary(),0,eventName+' consumes Alt navigation');
+  app.handleKeydown({key:'z'});
+  assert.equal(app.ordinary(),1,eventName+' preserves ordinary key input');
+  assert.equal(fs.readFileSync(file,'utf8'),source);
+ }
+});
+
+test('mobile system menu switches between five legacy and five additional panels',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,source);
+ const candidate=createVibe59OneShotVolumeCandidate({order:{gameId:'rpg',ownerApproved:true,
+   baseRevisionSha:revision,vibe59VolumeRequest:{maps:['숲','사막'],facilities:['관람차'],actions:['점프']}},
+   sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ const labels=[],canvas={width:390,height:700};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(value){labels.push(value);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(generated+';({render,handleClick,view:()=>'+symbol+'})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ const touch=(x,y)=>app.handleClick(390*.05+x*(390*.90)/440,700*.06+y*(700*.86)/600);
+ touch(340,25);assert.equal(app.view().menuPage,0);
+ touch(80,560);assert.equal(app.view().menuPage,1);
+ labels.length=0;app.render(ctx);
+ assert.ok(labels.includes('가방 화면'));assert.ok(labels.includes('상점 화면'));
+ touch(80,85+4*86+25);assert.equal(app.view().tab,'상점');
+ labels.length=0;app.render(ctx);assert.ok(labels.includes('상점 UI'));
+});
+
+
+test('one-shot generator captures source input bindings before volume-local shadow declarations',t=>{
+ for(const [renderParameter,clickParameters] of [
+  ['v',['v','w']],['w',['h','_x']],['h',['_x','_y']],['x',['x','y']]
+ ]){
+  const {repo,root}=fixture(t),file=path.join(root,'game.js');
+  const source=[
+   'const canvas=document.querySelector("canvas");',
+   'const ctx=canvas.getContext("2d");',
+   'let outside=0;',
+   'function render('+renderParameter+'){'+renderParameter+'.fillRect(0,0,1,1);}',
+   'function handleClick('+clickParameters.join(',')+'){outside++;}'
+  ].join('\n');
+  fs.writeFileSync(file,source);
+  const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+   facilities:['관람차'],maps:['숲','사막'],backgrounds:['낮'],actions:['점프'],motions:['걷기']}};
+  const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,
+   responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+  const docs=new Map([['game.js',source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const generated=docs.get('game.js');
+  assert.doesNotThrow(()=>new vm.Script(generated));
+  const symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+  assert.ok(symbol);
+  const labels=[],canvas={width:1000,height:800};
+  const context={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+   beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+   fillText(value){labels.push(value);}};
+  canvas.getContext=()=>context;
+  const app=vm.runInNewContext(generated+';({render,handleClick,view:()=>'+symbol+
+   ',outside:()=>outside})',{document:{querySelector:()=>canvas},Date,Math,Number});
+  assert.doesNotThrow(()=>app.render(context));
+  assert.ok(labels.includes('GAME WORLD+'),'canvas owner must survive parameter '+renderParameter);
+  app.handleClick(950,10);
+  assert.equal(app.view().open,false,'click owner must survive '+clickParameters.join(','));
+  app.handleClick(950,10);
+  assert.equal(app.view().open,true);
+  assert.equal(app.outside(),0,'overlay clicks remain consumed');
+  assert.equal(fs.readFileSync(file,'utf8'),source);
+ }
+});
+test('one-shot pointer event parameter named v retains offset coordinates',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let outside=0;',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(v){outside++;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차'],maps:['숲'],backgrounds:['낮'],actions:['점프'],motions:['걷기']}};
+ const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,
+  responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ const canvas={width:1000,height:800,getContext:()=>({fillRect(){}})};
+ const app=vm.runInNewContext(generated+';({handleClick,view:()=>'+symbol+
+  ',outside:()=>outside})',{document:{querySelector:()=>canvas},Date,Math,Number});
+ app.handleClick({offsetX:950,offsetY:10});
+ assert.equal(app.view().open,false);
+ app.handleClick({offsetX:950,offsetY:10});
+ assert.equal(app.view().open,true);
+ assert.equal(app.outside(),0);
 });

@@ -10,7 +10,6 @@ import {JaewoonGameSession} from '../assets/game-session.js';
 import {Script,createContext} from 'node:vm';
 import {readFileSync} from 'node:fs';
 
-
 // Browser runs module imports natively. The Node VM harness substitutes only
 // these three exact already-verified dependencies; it must not silently strip
 // unknown module imports or treat static HTML as an executed browser proof.
@@ -687,7 +686,7 @@ test('game session loads declared scene assets, preserves failed transition and 
  const original=globalThis.fetch;
  globalThis.fetch=async url=>new Response(String(url).includes('missing')?'not found':'{"ok":true}',{status:String(url).includes('missing')?404:200});
  try{
-   const session=new JaewoonGameSession({gameId:'scene-asset-session-qa',genre:'rpg',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+   const session=new JaewoonGameSession({gameId:'scene-asset-session-qa',genre:'survival',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
    session.registerScene('town',{assets:[{id:'shared',path:'shared.json'}]});
    session.registerScene('cave',{assets:[{id:'shared',path:'shared.json'},{id:'map',path:'map.json'}]});
    session.registerScene('broken',{assets:[{id:'missing',path:'missing.json'}]});
@@ -731,7 +730,7 @@ test('asset-free scene changes cancel pending scene loading without changing sav
   else signal.addEventListener('abort',fail,{once:true});
  });
  try{
-  const session=new JaewoonGameSession({gameId:'asset-free-scene-qa',genre:'rpg',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+  const session=new JaewoonGameSession({gameId:'asset-free-scene-qa',genre:'survival',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
   session.registerScene('menu');
   session.registerScene('loading',{assets:[{id:'map',path:'slow.json'}]});
   assert.equal(session.goToScene('menu'),'menu');
@@ -762,7 +761,7 @@ test('scene enter and checkpoint restore receive loaded scene assets',async()=>{
  globalThis.fetch=async()=>new Response('{"ready":true}',{status:200});
  try{
   const visits=[];
-  const session=new JaewoonGameSession({gameId:'scene-enter-assets-qa',genre:'rpg',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+  const session=new JaewoonGameSession({gameId:'scene-enter-assets-qa',genre:'survival',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
   session.registerScene('menu');
   session.registerScene('world',{assets:[{id:'map',path:'world.json'}],enter:ctx=>visits.push(ctx.assets?.map?.ready)});
   await session.goToScene('world');

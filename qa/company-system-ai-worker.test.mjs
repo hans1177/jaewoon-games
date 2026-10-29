@@ -577,6 +577,82 @@ test('Vibe production outcomes count actual verified tasks and never infer deplo
  assert.ok(sensor.actions.includes('FINISH_OWNER_FOCUSED_GAME_WITH_VERIFIED_RUNTIME_EVIDENCE'));
 });
 
+// Existing Vibe neural-gated recovery emits a requeue-specific outcome, not plain FAIL.
+// Keep per-game stages visible without pretending that a queued repair passed gameplay QA.
+test('gated game-local runtime repair is visible to the canonical bottleneck sensor',()=>{
+ const make=(id,gameId,stage,status,revision='b'.repeat(40))=>{
+   const signature='observed-'+stage;
+   const file='roblox-games/'+gameId+'/server/Game.server.luau';
+   return{
+     id,gameId,target:'roblox',department:'development',type:'implementation',
+     status,lastOutcome:'RUNTIME_RESULT_GATED_REQUEUE',retries:0,
+     sourceRoot:'roblox-games/'+gameId,responsibleFiles:[file],
+     goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\n실패 단계: '+stage+
+       '\n실패 식별자: '+signature+
+       '\n[/VERIFIED_GAME_RUNTIME_BOTTLENECK]\nrepair existing server logic',
+     evidence:[
+       'runtime-neural-ingress:gated-existing-task-requeue',
+       'runtime-neural-ingress-event:'+gameId+'|RUNTIME_RESULT|ROBLOX|'+revision+'|FAIL|'+stage,
+       'runtime-neural-ingress-failed-stage:'+stage,
+       'runtime-neural-ingress-failure-signature:'+signature,
+       'runtime-neural-ingress-source-revision:'+revision,
+       'runtime-neural-ingress-responsible-file:'+file
+     ]
+   };
+ };
+ const queued=make('repair-f2','game-a','F2_WORLD_FOUNDATION','queued');
+ const running=make('repair-f8','game-a','F8_REGRESSION','running');
+ const blocked=make('repair-f9','game-b','F9_RELEASE_REGRESSION','blocked');
+ const historical={...make('old-closed','game-a','F4_PHYSICS','verified')};
+ const obsolete={...make('old-goal','game-b','F1_SERVER_BOOT','queued'),
+   goal:'[WEB_AUTONOMOUS_BUILD_UP] new unrelated work'};
+ const legacy={id:'old-legacy',gameId:'game-b',target:'web',status:'queued',
+   lastOutcome:'FAIL',retries:1,goal:'repair old failed build'};
+ const result=summarizeVerifiedGameProduction({tasks:[queued,running,blocked,historical,obsolete,legacy]});
+ const gameA=result.games.find(row=>row.gameId==='game-a');
+ const gameB=result.games.find(row=>row.gameId==='game-b');
+ assert.equal(gameA.causalRepairPending,1);
+ assert.equal(gameA.gatedRuntimeRepairPending,1);
+ assert.equal(gameA.causalRepairRunning,1);
+ assert.equal(gameA.verifiedPackages,1);
+ assert.deepEqual(gameA.runtimeRepairStages.map(x=>x.stage),['F2_WORLD_FOUNDATION','F8_REGRESSION']);
+ assert.equal(gameA.runtimeRepairStages[0].sourceRevision,'b'.repeat(40));
+ assert.equal(gameA.runtimeRepairStages[0].outcome,'REPAIR_NOT_RUNTIME_PASS');
+ assert.equal(gameB.causalRepairPending,1,'legacy failed repair remains visible');
+ assert.equal(gameB.causalRepairBlocked,1);
+ assert.equal(gameB.gatedRuntimeRepairPending,0);
+ assert.equal(gameB.runtimeRepairStages.length,1,'obsolete unrelated goal is not an active repair');
+ assert.equal(result.games.every(x=>!x.deploymentVerified&&!x.gameCompletionVerified),true);
+ const snapshot=analyzeSystemAiBottlenecks({
+   gameQueue:{tasks:[queued,running,blocked,historical,obsolete,legacy]},
+   systemAiQueue:{tasks:[]},at:Date.parse('2026-10-30T00:00:00Z')
+ });
+ assert.ok(snapshot.actions.includes('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH'));
+ assert.equal(snapshot.productionOutcome.games.find(x=>x.gameId==='game-a').causalRepairPending,1);
+});
+
+test('gated game-local sensor refuses event markers with a stale or unproven current goal',()=>{
+ const event=['runtime-neural-ingress:gated-existing-task-requeue',
+  'runtime-neural-ingress-event:some-runtime-event',
+  'runtime-neural-ingress-failed-stage:F3_CHARACTER_FOUNDATION',
+  'runtime-neural-ingress-failure-signature:real-failure'];
+ const base={gameId:'game-c',id:'unsafe-failure',target:'roblox',status:'queued',
+  lastOutcome:'RUNTIME_RESULT_GATED_REQUEUE',retries:0,evidence:event};
+ const withoutGoal=summarizeVerifiedGameProduction({tasks:[{
+  ...base,goal:'repair some other feature'
+ }]});
+ assert.equal(withoutGoal.games[0].causalRepairPending,0);
+ const wrongSignature=summarizeVerifiedGameProduction({tasks:[{
+  ...base,goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\n실패 단계: F3_CHARACTER_FOUNDATION\n실패 식별자: another'
+ }]});
+ assert.equal(wrongSignature.games[0].gatedRuntimeRepairPending,0);
+ const noEvent=summarizeVerifiedGameProduction({tasks:[{
+  ...base,goal:'[VERIFIED_GAME_RUNTIME_BOTTLENECK]\n실패 단계: F3_CHARACTER_FOUNDATION\n실패 식별자: real-failure',
+  evidence:event.filter(x=>!x.startsWith('runtime-neural-ingress-event:'))
+ }]});
+ assert.equal(noEvent.games[0].causalRepairPending,0);
+});
+
 // 우선순위 계산은 다른 작업의 생성 본문에 의존하지 않으며 입력 정규화 의미를 보존한다.
 test('repair impact scoring reads peer dependencies without copying unrelated task payloads',()=>{
   const at=Date.parse('2026-10-21T04:20:00Z');

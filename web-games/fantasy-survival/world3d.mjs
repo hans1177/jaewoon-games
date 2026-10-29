@@ -419,6 +419,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  // [렌더 통계] 월드·그림자·후가공을 같은 프레임으로 집계한다. 패스마다 초기화하지 않는다.
+  renderer.info.autoReset=false;
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
   scene.fog=new THREE.Fog(0x244238,22,90);
@@ -1483,6 +1485,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       camera.position.x+=Math.sin(sampleNow*.19)*strength;
       camera.position.y+=Math.cos(sampleNow*.23)*strength;
     }
+    renderer.info.reset();
     if(bloom)bloom.render(scene,camera,qualityFactor);
     else renderer.render(scene,camera);
     active=true;canvas.hidden=false;fallbackReason='';

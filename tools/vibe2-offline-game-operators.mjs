@@ -7,7 +7,7 @@ import {VIBE59_LUAU_CODING_SKILLS_109} from './vibe59-luau-skills109.mjs';
 // 메인: 새 외형·저장 키·경제 값을 만들지 않는 기존 소스 연산 카탈로그.
 export const OFFLINE_GAME_SYSTEMS=Object.freeze([
  'input','combat','ai','bestiary','building','inventory','crafting','world','ui','saving','quest','loop',
-].map(system=>Object.freeze({system,operations:['guard-return','existing-call','clamp-assignment','conditional-assignment'],
+].map(system=>Object.freeze({system,operations:['guard-return','existing-call','clamp-assignment','conditional-assignment','adjust-existing-counter','counter-after-existing-call','unlock-after-existing-call','quest-reward-after-existing-call'],
  existingRobloxRecipes:VIBE59_LUAU_CODING_SKILLS_109.filter(s=>s.system===(system==='quest'?'quests':system)).map(s=>s.id),
  newStateOrAssetCreation:false,runtimeVerified:false})));
 const forbidden=new Set(['constructor','prototype','__proto__','process','require','globalThis','eval','Function']);
@@ -81,11 +81,17 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
  let edit,proof,effects=[];
  if(r.operation==='guard-return'){
   const condition=renderIntentExpression(r.condition,target);
-  const statement=target==='web'?'if ('+condition+') return;':'if '+condition+' then return end';
+  // [메인] 명시된 반환값만 합성해 호출자의 boolean/수치 계약을 보존한다.
+  if(r.returnValue&&!['boolean','number'].includes(r.returnValue.kind))throw Error('VIBE2_OPERATOR_RETURN_LITERAL');
+  const value=r.returnValue?' '+renderIntentExpression(r.returnValue,target):'';
+  const statement=target==='web'?'if ('+condition+') return'+value+';':'if '+condition+' then return'+value+' end';
   if(body.includes(statement))throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
   edit={path:file.path,find:prefix,replace:prefix+'\n'+indent+statement};
-  proof=verifyIntentCondition(r.condition);effects=['CONTROL_FLOW_EARLY_RETURN'];
- }else if(r.operation==='existing-call'){
+  proof=verifyIntentCondition(r.condition);
+  proof={...proof,cases:proof.cases.map(row=>({...row,returnsEarly:row.expected,
+   ...(row.expected?{expectedReturn:r.returnValue?.value}:{})}))};
+  effects=['CONTROL_FLOW_EARLY_RETURN'];
+ }else if(r.operation==='existing-call'||r.operation==='counter-after-existing-call'||r.operation==='unlock-after-existing-call'||r.operation==='quest-reward-after-existing-call'){
   // 실제 소스 인덱스가 증명한 호출 위치와 단순 인자만 사용한다. 표현식이나 문자열 인자는 추측하지 않는다.
   const at=r.afterCallStart,anchorArgs=r.afterCallArguments;
   if(!Number.isSafeInteger(at)||at<owner.bodyStart||at>=owner.bodyEnd||!Array.isArray(anchorArgs))
@@ -97,6 +103,54 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   if(!match)throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
   // [메인] 기존 호출 뒤 같은 책임 범위의 여러 실제 함수를 하나의 원자적 수정안으로 연결한다.
   const find=source.slice(owner.start,at+match[0].length);
+  if(r.operation==='quest-reward-after-existing-call'){
+   // [빌드업] 기존 퀘스트 완료 상태를 원자적 보상 지급의 중복 방지 키로 사용한다.
+   if(r.value?.kind!=='boolean'||r.value.value!==true
+      ||!Number.isSafeInteger(r.amount)||r.amount<1||r.amount>1000)
+    throw Error('VIBE2_OPERATOR_QUEST_REWARD_CONTRACT');
+   const comparison=renderIntentExpression(r.condition,target),predicate=target==='web'
+    ?'!('+r.output+') && ('+comparison+')':'not ('+r.output+') and ('+comparison+')';
+   const statement=target==='web'
+    ?indent+'if ('+predicate+') { '+r.rewardField+' += '+r.amount+'; '+r.output+' = true; }'
+    :indent+'if '+predicate+' then '+r.rewardField+' += '+r.amount+'; '+r.output+' = true end';
+   if(source.slice(at+match[0].length,owner.bodyEnd).trimStart().startsWith(statement.trim()))
+    throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
+   edit={path:file.path,find,replace:find+'\n'+statement};
+   const checked=verifyIntentCondition(r.condition);
+   proof={...checked,authority:'EXISTING_ACTION_QUEST_ONCE_REWARD_ORACLE',
+    cases:checked.cases.map(row=>({...row,action:r.after,firstCompletionReward:row.expected?r.amount:0,
+      repeatedCompletionReward:0})),independentGameQa:false,actualGamePlaytest:false};
+   effects=['WRITE_EXISTING_FIELD:'+r.rewardField,'WRITE_EXISTING_FIELD:'+r.output];
+  }else if(r.operation==='unlock-after-existing-call'){
+   // [빌드업] 기존 행동 뒤에 숫자 문턱과 최초 해금 조건을 연결한다. 재호출은 멱등 처리한다.
+   if(r.value?.kind!=='boolean'||r.value.value!==true)throw Error('VIBE2_OPERATOR_UNLOCK_VALUE');
+   const comparison=renderIntentExpression(r.condition,target),predicate=target==='web'
+    ?'!('+r.output+') && ('+comparison+')':'not ('+r.output+') and ('+comparison+')';
+   const statement=target==='web'
+    ?indent+'if ('+predicate+') { '+r.output+' = true; }'
+    :indent+'if '+predicate+' then '+r.output+' = true end';
+   if(source.slice(at+match[0].length,owner.bodyEnd).trimStart().startsWith(statement.trim()))
+    throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
+   edit={path:file.path,find,replace:find+'\n'+statement};
+   const checked=verifyIntentCondition(r.condition);
+   proof={...checked,authority:'EXISTING_ACTION_THRESHOLD_UNLOCK_ORACLE',
+    cases:checked.cases.map(row=>({...row,action:r.after,unlockOnce:row.expected})),
+    independentGameQa:false,actualGamePlaytest:false};
+   effects=['WRITE_EXISTING_FIELD:'+r.output];
+  }else if(r.operation==='counter-after-existing-call'){
+   // [빌드업] 기존 행동 다음에 이미 정의된 정수 진행도 필드를 직접 갱신한다.
+   if(!Number.isSafeInteger(r.amount)||!r.amount||Math.abs(r.amount)>1000)
+    throw Error('VIBE2_OPERATOR_COUNTER_AMOUNT');
+   const statement=indent+r.output+(r.amount<0?' -= ':' += ')+Math.abs(r.amount)+(target==='web'?';':'');
+   if(source.slice(at+match[0].length,owner.bodyEnd).trimStart().startsWith(statement.trim()))
+    throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
+   edit={path:file.path,find,replace:find+'\n'+statement};
+   proof={pass:true,cases:[-1,0,1,10,100].map(initial=>({event:'AFTER_EXISTING_CALL',
+    existingCall:r.after,initial,expected:initial+r.amount})),
+    authority:'SOURCE_BOUND_GAMEPLAY_PROGRESS_ORACLE',
+    independentGameQa:false,actualGamePlaytest:false};
+   effects=['WRITE_EXISTING_FIELD:'+r.output];
+  }else{
   const orderedCalls=r.orderedCalls||[{callee:r.callee,forwardedArguments:r.forwardedArguments||[]}];
   if(!orderedCalls.length||orderedCalls.some(call=>!Array.isArray(call.forwardedArguments)))
    throw Error('VIBE2_OPERATOR_CALL_BINDING');
@@ -108,6 +162,7 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
    {name:'unchanged-owner',symbol:owner.id}
   ],authority:'SOURCE_CALL_ORDER_ONLY',independentGameQa:false,actualGamePlaytest:false};
   effects=orderedCalls.map(call=>'CALL_EXISTING_FUNCTION:'+call.callee);
+  }
  }else if(r.operation==='clamp-assignment'){
   const escaped=r.output.replaceAll('.','\\.'),re=new RegExp('(?<![\\w$.])'+escaped+'[ \\t]*=[ \\t]*([A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*|-?\\d+(?:\\.\\d+)?)[ \\t]*'+(target==='web'?';':'(?=\\r?\\n|$)'),'g');
   const matches=[...body.matchAll(re)];if(matches.length!==1)throw Error('VIBE2_OPERATOR_ASSIGNMENT_ANCHOR');
@@ -116,6 +171,29 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   const rhs=target==='web'?'Math.min('+r.maximum+', Math.max('+r.minimum+', '+match[1]+'))':'math.clamp('+match[1]+', '+r.minimum+', '+r.maximum+')';
   edit={path:file.path,find,replace:r.output+' = '+rhs+(target==='web'?';':'')};
   proof={pass:true,cases:[r.minimum-1,r.minimum,(r.minimum+r.maximum)/2,r.maximum,r.maximum+1].map(input=>({input,expected:Math.min(r.maximum,Math.max(r.minimum,input))})),authority:'LOCAL_BOUNDARY_ORACLE',independentGameQa:false,actualGamePlaytest:false};effects=['WRITE_EXISTING_FIELD:'+r.output];
+ }else if(r.operation==='adjust-existing-counter'){
+  // [빌드업] 이미 존재하는 정수 누적식 하나를 직접 수정한다. 추가 쓰기나 별도 경로를 만들지 않는다.
+  if(!Number.isSafeInteger(r.amount)||!r.amount||Math.abs(r.amount)>1000)
+   throw Error('VIBE2_OPERATOR_COUNTER_AMOUNT');
+  const escaped=r.output.replaceAll('.','\\.').replaceAll('$','\\$');
+  const re=new RegExp('(?<![\\w$.])'+escaped+'[ \\t]*([+-])=[ \\t]*(\\d+)[ \\t]*'+
+   (target==='web'?';':'(?=\\r?\\n|$)'),'g');
+  const matches=[...body.matchAll(re)];
+  if(matches.length!==1)throw Error('VIBE2_OPERATOR_COUNTER_ANCHOR');
+  const match=matches[0],original=Number(match[2]);
+  if(!Number.isSafeInteger(original)||original>1e6)throw Error('VIBE2_OPERATOR_COUNTER_ORIGINAL');
+  const originalDelta=match[1]==='+'?original:-original;
+  const delta=originalDelta+r.amount;
+  if(!Number.isSafeInteger(delta)||Math.abs(delta)>1e6)
+   throw Error('VIBE2_OPERATOR_COUNTER_RESULT');
+  const at=owner.bodyStart+match.index,find=source.slice(at,at+match[0].length);
+  const replacement=r.output+' '+(delta<0?'-=':'+=')+' '+Math.abs(delta)+(target==='web'?';':'');
+  if(find===replacement)throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
+  edit={path:file.path,find,replace:replacement};
+  proof={pass:true,cases:[-10,-1,0,1,10].map(initial=>({initial,
+   original:initial+originalDelta,expected:initial+originalDelta+r.amount})),
+   authority:'EXISTING_INTEGER_COUNTER_ORACLE',independentGameQa:false,actualGamePlaytest:false};
+  effects=['WRITE_EXISTING_FIELD:'+r.output];
  }else if(r.operation==='conditional-assignment'){
   const statement=r.output+' = '+renderIntentExpression(r.value,target)+(target==='web'?';':'');
   const condition=renderIntentExpression(r.condition,target);
@@ -126,7 +204,7 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
  return {id:r.id,operation:r.operation,file:file.path,beforeSha256:file.sourceSha256,
   ownerSymbol:owner.id,sourceSpan:{start:source.indexOf(edit.find),end:source.indexOf(edit.find)+edit.find.length},
   requirementIds:r.requirementIds||[r.id],ownerTexts:r.ownerTexts||[r.ownerText],derivation:r.derivation||'EXPLICIT_SOURCE_SYMBOL',
-  inputSymbols:r.boundSymbols,outputSymbols:r.output?[r.output]:[],dependencies:r.dependsOn,
+  inputSymbols:r.boundSymbols,outputSymbols:r.output?[r.output,...(r.rewardField?[r.rewardField]:[])]:[],dependencies:r.dependsOn,
   effects,invariants:r.invariants,scenarioProofs:proof,sourcePatch:edit,
-  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,output:r.output,value:r.value},runtimeVerified:false};
+  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,returnValue:r.returnValue,output:r.output,value:r.value,amount:r.amount,rewardField:r.rewardField},runtimeVerified:false};
 }

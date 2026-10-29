@@ -677,6 +677,203 @@ test('Vibe5.9 AST mutation and crossover search passes new numeric holdouts with
  assert.equal(result.sourceWrite,false);
 });
 
+// [무모델 지원] 소수 올림 계산을 기존 WEB/ROBLOX 수치 함수에 직접 합성한다.
+test('Vibe5.9 no-model ceiling synthesis preserves signed and integral holdouts across Web and Luau',()=>{
+ const spec={parameters:['x'],maxDepth:2,
+  examples:[{args:[1.2],output:2},{args:[-1.2],output:-1},
+   {args:[0.3],output:1},{args:[2],output:2}],
+  holdouts:[{args:[-0.3],output:-0},{args:[2.01],output:3},
+   {args:[-2],output:-2}]};
+ for(const strategy of [undefined,'evolution']){
+  const selected=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
+  assert.equal(selected.casesPassed,7);
+  assert.equal(selected.modelUsed,false);
+  assert.equal(selected.runtimeVerified,false);
+  assert.equal(selected.sourceWrite,false);
+  assert.match(selected.source,/Math\.ceil\(x\)/);
+  const web=vm.runInNewContext('(function(x){'+selected.source+'})');
+  for(const row of [...spec.examples,...spec.holdouts])
+   assert.equal(web(...row.args),row.output);
+  assert.equal(renderVibe59NumericLuaAST(selected.ast,['x']),'math.ceil(x)');
+ }
+ const original='local function roundUp(x)\n return 0\nend\n';
+ const compiled=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'roundUp'},
+  source:original,relative:'ServerScriptService/roundUp.luau',target:'roblox'});
+ assert.match(compiled.newText,/return math\.ceil\(x\)/);
+ assert.equal(compiled.sourceWrite,false);
+ assert.equal(compiled.runtimeVerified,false);
+ assert.equal(original,'local function roundUp(x)\n return 0\nend\n');
+});
+
+// [무모델 수치 확장] 기존 AST 합성기에서 부호/0의 방향과 소수 자르기를 증명한다.
+test('Vibe5.9 synthesizes truncating integer parts on Web and Roblox without numeric sign loss',()=>{
+ const spec={parameters:['x'],maxDepth:2,
+  examples:[{args:[3.75],output:3},{args:[-3.75],output:-3},
+   {args:[0.75],output:0},{args:[-0.75],output:-0}],
+  holdouts:[{args:[11.42],output:11},{args:[-11.42],output:-11},
+   {args:[-2],output:-2}]};
+ for(const strategy of [undefined,'evolution']){
+  const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
+  assert.equal(result.casesPassed,7);
+  assert.equal(result.modelUsed,false);
+  assert.equal(result.sourceWrite,false);
+  assert.equal(result.runtimeVerified,false);
+  assert.match(result.source,/Math\.trunc\(x\)/);
+  const numeric=vm.runInNewContext('(function(x){'+result.source+'})');
+  for(const row of [...spec.examples,...spec.holdouts])
+   assert.ok(Object.is(numeric(...row.args),row.output),'exact zero sign and truncation required');
+  assert.equal(renderVibe59NumericLuaAST(result.ast,['x']),'(math.modf(x))');
+ }
+ const original='local function integerPart(x)\n return 0\nend\n';
+ const result=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'integerPart'},
+  source:original,relative:'ServerScriptService/integerPart.luau',target:'roblox'});
+ assert.match(result.newText,/return \(math\.modf\(x\)\)/);
+ assert.equal(result.search.casesPassed,7);
+ assert.equal(result.sourceWrite,false);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(original,'local function integerPart(x)\n return 0\nend\n');
+});
+
+test('Vibe5.9 model-free sign handles distinct positive and negative zero oracle inputs',()=>{
+ const spec={parameters:['x'],maxDepth:2,
+  examples:[{args:[-0],output:-0},{args:[0],output:0},
+   {args:[-2.4],output:-1},{args:[2.4],output:1}],
+  holdouts:[{args:[-17.25],output:-1},{args:[15.25],output:1},
+   {args:[0.1],output:1},{args:[-0.1],output:-1}]};
+ for(const strategy of [undefined,'evolution']){
+  const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
+  assert.equal(result.casesPassed,8);
+  assert.match(result.source,/Math\.sign\(x\)/);
+  const numeric=vm.runInNewContext('(function(x){'+result.source+'})');
+  for(const row of [...spec.examples,...spec.holdouts])
+   assert.ok(Object.is(numeric(...row.args),row.output),'sign oracle must reject negative-zero aliasing');
+  assert.equal(renderVibe59NumericLuaAST(result.ast,['x']),'math.sign(x)');
+  assert.equal(result.runtimeVerified,false);
+  assert.equal(result.modelUsed,false);
+  assert.equal(result.sourceWrite,false);
+ }
+});
+
+// [무모델 엔진 확장] 상·하한 클램프는 검증된 예제와 숨긴 반례만으로 합성한다.
+test('Vibe5.9 bounded clamp synthesizes Web and Luau code without AI or game writes',()=>{
+ const spec={parameters:['x'],constants:[10],maxDepth:2,
+  examples:[{args:[-8],output:0},{args:[1.25],output:1.25},
+    {args:[30],output:10},{args:[7.5],output:7.5}],
+  holdouts:[{args:[-0.3],output:0},{args:[10],output:10},
+    {args:[99],output:10},{args:[0],output:0}]};
+ const reference=x=>Math.min(Math.max(x,0),10);
+ for(const strategy of [undefined,'evolution']){
+  const found=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
+  assert.equal(found.casesPassed,8);
+  assert.equal(found.modelUsed,false);
+  assert.equal(found.sourceWrite,false);
+  assert.equal(found.runtimeVerified,false);
+  assert.equal(found.exactGameQaRequired,true);
+  assert.equal(found.ast.kind??found.ast[0],'clamp');
+  assert.equal(found.expression,'Math.min(Math.max(x,0),10)');
+  const web=vm.runInNewContext('(function(x){'+found.source+'})');
+  for(const row of [...spec.examples,...spec.holdouts])
+    assert.ok(Object.is(web(...row.args),row.output));
+  for(const x of [-1000,-0.1,0,0.1,3.3,10,10.001,1000])
+    assert.equal(web(x),reference(x));
+  assert.equal(renderVibe59NumericLuaAST(found.ast,found.parameters),
+    'math.clamp(x,0,10)');
+  const concepts=extractVibe59AlgorithmConceptCandidates({search:found});
+  assert.ok(concepts.concepts.some(c=>c.ast[0]==='clamp'));
+  assert.equal(concepts.verified,false);
+  assert.equal(concepts.promotionAuthorized,false);
+ }
+ const webSource='function clampHealth(x){return x;}\n';
+ const webResult=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'clampHealth'},
+  source:webSource,relative:'web-games/test/health.js',target:'web'});
+ assert.match(webResult.newText,/return Math\.min\(Math\.max\(x,0\),10\);/);
+ assert.equal(webResult.sourceWrite,false);
+ assert.equal(webSource,'function clampHealth(x){return x;}\n');
+ const luaSource='local function clampHealth(x)\n return x\nend\n';
+ const luaResult=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'clampHealth'},
+  source:luaSource,relative:'ServerScriptService/Health.luau',target:'roblox'});
+ assert.match(luaResult.newText,/return math\.clamp\(x,0,10\)/);
+ assert.equal(luaResult.runtimeVerified,false);
+ assert.equal(luaResult.sourceWrite,false);
+ assert.equal(luaSource,'local function clampHealth(x)\n return x\nend\n');
+});
+
+test('Vibe5.9 clamp AST rejects inverted, dynamic and injected numeric limits',()=>{
+ const x=['param',0],lo=['const',0],hi=['const',10];
+ const cases=[
+  ['clamp',x,hi,lo],
+  ['clamp',x,lo,lo],
+  ['clamp',x,['param',0],hi],
+  ['clamp',x,lo,['const',Infinity]],
+  ['clamp',x,lo,['const','game:Destroy()']],
+  {kind:'clamp',value:{kind:'reference',name:'x'},
+    minimum:{kind:'constant',value:10},maximum:{kind:'constant',value:0}},
+  {kind:'clamp',value:{kind:'reference',name:'x'},
+    minimum:{kind:'constant',value:0},maximum:{kind:'constant',value:10},
+    injection:'workspace:ClearAllChildren()'}
+ ];
+ for(const ast of cases)assert.throws(()=>renderVibe59NumericLuaAST(ast,['x']),
+  /LUA_AST_REQUIRED/);
+ assert.equal(renderVibe59NumericLuaAST(['clamp',x,lo,hi],['x']),
+  'math.clamp(x,0,10)');
+});
+
+// [무모델 엔진 확장] JS의 음수 나머지 및 -0를 Luau math.fmod와 일치시킨다.
+test('Vibe5.9 no-model remainder synthesis preserves signed-zero and negative dividend Web/Luau semantics',()=>{
+ const spec={parameters:['x'],constants:[3],maxDepth:2,maxGenerations:6,
+  examples:[{args:[8],output:2},{args:[-8],output:-2},
+    {args:[10],output:1},{args:[-10],output:-1},
+    {args:[6],output:0},{args:[-6],output:-0}],
+  holdouts:[{args:[14],output:2},{args:[-14],output:-2},
+    {args:[9],output:0},{args:[-3],output:-0}]};
+ for(const strategy of [undefined,'evolution']){
+  const found=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy}});
+  assert.equal(found.casesPassed,10);
+  assert.equal(found.modelUsed,false);
+  assert.equal(found.sourceWrite,false);
+  assert.equal(found.runtimeVerified,false);
+  assert.equal(found.exactGameQaRequired,true);
+  assert.equal(found.expression,'(x%3)');
+  assert.equal(found.ast.operator??found.ast[0],'%');
+  assert.equal(renderVibe59NumericLuaAST(found.ast,['x']),'math.fmod(x,3)');
+  const generated=vm.runInNewContext('(function(x){'+found.source+'})');
+  for(const sample of [...spec.examples,...spec.holdouts])
+    assert.ok(Object.is(generated(...sample.args),sample.output),'holdout includes signed negative zero');
+  for(const n of [-100,-13,-6,-1,0,1,6,13,100])
+    assert.ok(Object.is(generated(n),n%3));
+  const concepts=extractVibe59AlgorithmConceptCandidates({search:found});
+  assert.equal(concepts.verified,false);
+  assert.equal(concepts.promotionAuthorized,false);
+ }
+ const originalWeb='function remainder(x){return x;}\n';
+ const web=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'remainder'},
+  source:originalWeb,relative:'web-games/test/math.js',target:'web'});
+ assert.match(web.newText,/return \(x%3\);/);
+ assert.equal(web.sourceWrite,false);
+ assert.equal(originalWeb,'function remainder(x){return x;}\n');
+ const originalLua='local function remainder(x)\n return x\nend\n';
+ const lua=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'remainder'},
+  source:originalLua,relative:'ServerScriptService/math.server.luau',target:'roblox'});
+ assert.match(lua.newText,/return math\.fmod\(x,3\)/);
+ assert.equal(lua.runtimeVerified,false);
+ assert.equal(lua.sourceWrite,false);
+ assert.equal(originalLua,'local function remainder(x)\n return x\nend\n');
+});
+
+test('Vibe5.9 Luau remainder safely uses fmod for negative divisors and rejects injected AST',()=>{
+ assert.equal(renderVibe59NumericLuaAST(
+  ['%',['param',0],['param',1]],['x','y']),'math.fmod(x,y)');
+ assert.throws(()=>renderVibe59NumericLuaAST(
+  ['%',['param',0],['const','game:Destroy()']],['x']),
+  /LUA_AST_REQUIRED/);
+});
+
 test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure function',()=>{
  const spec={ownerApproved:true,functionName:'resolve',parameters:['a','b'],
   examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],
@@ -745,6 +942,12 @@ test('offline general function rewrite composes original Web event handler from 
  assert.throws(()=>run({...req,sourceSha256:'0'.repeat(64)}),/STALE_SOURCE/);
  assert.throws(()=>run({...req,scenarios:scenarios.slice(0,1)}),/INDEPENDENT_SCENARIOS_REQUIRED/);
  assert.throws(()=>run({...req,find:'return false;'}),/ANCHOR_MISMATCH/);
+ fs.writeFileSync(path.join(root,'game.js'),original.replace('return false;','return 42;'));
+ assert.throws(()=>run(req),/RETURN_CONTRACT/);
+ fs.writeFileSync(path.join(root,'game.js'),original.replace('return false;','return phase;'));
+ assert.throws(()=>run(req),/RETURN_CONTRACT/);
+ fs.writeFileSync(path.join(root,'game.js'),original.replace('return false;','phase = "active";'));
+ assert.throws(()=>run(req),/RETURN_CONTRACT/);
 });
 
 test('model-free Web rule rewrite executes its final original function, preserving caller contract',t=>{
@@ -821,6 +1024,8 @@ test('offline Luau state function rewrite stays within original function and can
  const preserved=generate();
  assert.match(preserved.edits[0].replace,/^function advance\(eventName\)/);
  assert.equal(preserved.vibe59TestPlan.pass,true);
+ fs.writeFileSync(path.join(root,'main.luau'),original.replace('return false','return 42'));
+ assert.throws(generate,/RETURN_CONTRACT/);
  fs.writeFileSync(path.join(root,'main.luau'),original+'local function advance(eventName)\n return false\nend\n');
  assert.throws(generate,/FUNCTION_OWNER_AMBIGUOUS/);
  fs.writeFileSync(path.join(root,'main.luau'),original.replace('return false','DataStoreService:UpdateAsync("key")'));
@@ -978,7 +1183,7 @@ test('Vibe5.9 Lua compiler accepts enumerative object AST and evolved array AST 
  assert.ok(Array.isArray(evolved.ast));
  assert.match(renderVibe59NumericLuaAST(evolved.ast,evolved.parameters),/^(?:math\.max\(|\()/);
  assert.equal(renderVibe59NumericLuaAST(['%',['param',0],['param',1]],['x','y']),
-   '(x-math.modf(x/y)*y)');
+   'math.fmod(x,y)');
  assert.equal(renderVibe59NumericLuaAST({kind:'mutation',operator:'round',
    operand:{kind:'reference',name:'x'}},['x']), 'math.floor((x)+0.5)');
  assert.equal(enumerative.runtimeVerified,false);
@@ -1075,4 +1280,55 @@ test('Vibe5.9 conditional AST evaluates only its selected branch on zero divisor
  assert.equal(roblox.runtimeVerified,false);
  assert.equal(roblox.sourceWrite,false);
  assert.equal(roblox.conceptCandidates.verified,false);
+});
+
+// [회귀] 기존 웹 전용 작업기가 범용 무모델 원본 계획기를 실제로 사용한다.
+test('WEB worker shares the canonical complex plan across files without any model call or save mutation',async t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'web-complex-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const root=path.join(repo,'web-games/demo');fs.mkdirSync(root,{recursive:true});
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'demo',webPath:'web-games/demo'}]}));
+ const sources=[
+  {relative:'web-games/demo/combat.js',original:'const state={dead:false};\nfunction hit(a){\n a.hp -= 1;\n return true;\n}\n'},
+  {relative:'web-games/demo/ui.js',original:'const state={dead:false};\nfunction updateUi(a){\n a.visible = true;\n}\n'},
+  {relative:'web-games/demo/count.js',original:'function remaining(a){\n return a.hp;\n}\n'},
+  {relative:'web-games/demo/save.js',original:'function save(){\n localStorage.setItem("demo-save", "unchanged");\n}\n'}
+ ];
+ sources.forEach(row=>fs.writeFileSync(path.join(repo,row.relative),row.original));
+ const task={gameId:'demo',ownerDirective:true,evidence:['owner-source-authenticated'],
+  goal:'함수 hit에서 a.dead이면 false를 반환해; 함수 updateUi에서 a.dead이면 중단해; 함수 remaining에서 a.hp < 0이면 0을 반환해'};
+ const complexContext={repositoryRoot:repo,sourceRevision:'a'.repeat(40),sources};
+ let externalCalls=0;
+ const options={cloud:true,apiKey:'',complexContext,geminiImpl:async()=>{externalCalls++;throw Error('must not call model')}};
+ const combat=await proposeWebVibeChange(task,sources[0],options),plan=complexContext.plan;
+ const ui=await proposeWebVibeChange(task,sources[1],options),count=await proposeWebVibeChange(task,sources[2],options);
+ assert.equal(complexContext.plan,plan,'one shared source index for the full task');
+ assert.equal(await proposeWebVibeChange(task,sources[3],options),null);
+ assert.equal(combat.deterministicWebComplex,true);assert.equal(ui.deterministicWebComplex,true);
+ assert.equal(combat.offlineSourceProof.requirementCount,3);assert.equal(externalCalls,0);
+ const remaining=vm.runInNewContext(count.updated+';remaining');
+ assert.equal(remaining({hp:-1}),0);assert.equal(remaining({hp:0}),0);assert.equal(remaining({hp:5}),5);
+ const hit=vm.runInNewContext(combat.updated+';hit'),update=vm.runInNewContext(ui.updated+';updateUi');
+ const dead={hp:0,dead:true,visible:false};assert.equal(hit(dead),false);update(dead);
+ assert.equal(dead.hp,0);assert.equal(dead.visible,false);
+ const alive={hp:5,dead:false,visible:false};assert.equal(hit(alive),true);update(alive);
+ assert.equal(alive.hp,4);assert.equal(alive.visible,true);
+ sources.forEach(row=>assert.equal(fs.readFileSync(path.join(repo,row.relative),'utf8'),row.original));
+ assert.equal(combat.offlineSourceProof.runtimeVerified,false);
+ await assert.rejects(()=>proposeWebVibeChange(task,{...sources[0],original:sources[0].original+'\n// stale'},options),/SNAPSHOT_MISMATCH/);
+});
+
+test('WEB complex intent never falls through to a model on missing scope, mixed unsupported requests or missing owner proof',async t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'web-complex-deny-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const root=path.join(repo,'web-games/demo');fs.mkdirSync(root,{recursive:true});
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'demo',webPath:'web-games/demo'}]}));
+ const source={relative:'web-games/demo/game.js',original:'const state={dead:false};\nfunction hit(a){\n a.hp -= 1;\n}\n'};
+ fs.writeFileSync(path.join(repo,source.relative),source.original);
+ const task={gameId:'demo',goal:'함수 hit에서 a.dead이면 중단해',ownerDirective:true,evidence:['owner-source-authenticated']};
+ let calls=0;
+ for(const change of [{goal:task.goal+'; 새 보스 만들어'}, {evidence:[]}, {goal:'함수 missing에서 a.dead이면 중단해'}]){
+  await assert.rejects(()=>proposeWebVibeChange({...task,...change},source,{cloud:true,
+   complexContext:{repositoryRoot:repo,sourceRevision:'a'.repeat(40),sources:[source]},
+   geminiImpl:async()=>{calls++;return {text:'{}'}}}),/WEB_VIBE_COMPLEX_SOURCE_BLOCKED/);
+ }
+ assert.equal(calls,0);assert.equal(fs.readFileSync(path.join(repo,source.relative),'utf8'),source.original);
 });
