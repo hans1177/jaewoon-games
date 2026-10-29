@@ -915,7 +915,7 @@ export function locateVibe59ExistingFunction({source='',functionName='',target='
    :new RegExp('^function\\s+'+functionName+'\\s*\\(([^)]*)\\)\\s*\\{');
  const match=header.exec(original);
  if(!match||/\b(?:save|persist|load|reward|purchase|delete|remove|spend|grant)\b/i.test(functionName)
-   ||/\b(?:DataStoreService|GetDataStore|SetAsync|UpdateAsync|RemoveAsync|localStorage|sessionStorage|fetch|XMLHttpRequest|require|eval|Function|FireServer|FireClient|FireAllClients|OnServerEvent|OnClientEvent|http|https)\b/i.test(executableText(original,language))
+   ||/\b(?:DataStoreService|GetDataStore|SetAsync|UpdateAsync|RemoveAsync|localStorage|sessionStorage|fetch|XMLHttpRequest|require|eval|FireServer|FireClient|FireAllClients|OnServerEvent|OnClientEvent|http|https)\b/i.test(executableText(original,language))
    ||inspectSourceFunctions(original,{language,maxFunctions:64}).some(row=>row.name!==functionName))
    throw Error('VIBE59_FUNCTION_REWRITE_PROTECTED');
  return Object.freeze({name:functionName,original,header:match[0],parameters:match[1].split(',').map(x=>x.trim()).filter(Boolean),
