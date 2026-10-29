@@ -24,6 +24,12 @@ export class JaewoonVibeRuntime {
       ? new URL('../', import.meta.url).href
       : this.assetBaseUrl;
     this.assetCache = new Map();
+    // [씬 소유권] 현재 씬의 임대를 추적하고, 전환 경쟁에서 오래된 결과가 화면을 덮지 못하게 한다.
+    this.sceneAssets = new Map();
+    this.activeSceneId = null;
+    this.sceneTransition = 0;
+    this.pendingSceneController = null;
+    this.destroyed = false;
   }
 
   // [에셋 경로] 일반 상대 경로는 게임 페이지 기준, /assets 등 루트 경로는 프로젝트 기준이다.
@@ -55,33 +61,54 @@ export class JaewoonVibeRuntime {
     return 'binary';
   }
 
-  async fetchAsset(url) {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('asset fetch failed: ' + response.status + ' ' + url);
+  async fetchAsset(url, signal = null) {
+    const response = await fetch(url, signal ? { signal } : undefined);
+    if (!response.ok) {
+      const error = new Error('asset fetch failed: ' + response.status + ' ' + url);
+      error.status = response.status;
+      throw error;
+    }
     return response;
   }
 
-  // [에셋 로딩] 원본 URL별 공유 Promise로 중복 다운로드를 방지한다.
-  async readAsset({ url, type, family }) {
+  // [에셋 로딩] 실제 네트워크·이미지 요청을 취소하고 부분 등록된 오디오·폰트를 남기지 않는다.
+  async readAsset({ url, type, family, signal = null }) {
+    const aborted = () => Object.assign(new Error('asset loading aborted'), { name: 'AbortError' });
+    if (signal?.aborted) throw aborted();
     if (type === 'image') {
       if (typeof Image === 'undefined') throw new Error('image loader unavailable');
       return new Promise((resolve, reject) => {
         const image = new Image();
-        image.onload = () => { image.onload = null; image.onerror = null; resolve({ value: image }); };
-        image.onerror = () => { image.onload = null; image.onerror = null; reject(new Error('image load failed: ' + url)); };
-        image.src = url;
+        const finish = (callback, result) => {
+          image.onload = null;
+          image.onerror = null;
+          signal?.removeEventListener('abort', onAbort);
+          callback(result);
+        };
+        const onAbort = () => {
+          image.src = '';
+          finish(reject, aborted());
+        };
+        image.onload = () => finish(resolve, { value: image });
+        image.onerror = () => finish(reject, new Error('image load failed: ' + url));
+        signal?.addEventListener('abort', onAbort, { once: true });
+        if (signal?.aborted) onAbort();
+        else image.src = url;
       });
     }
-    const response = await this.fetchAsset(url);
+    const response = await this.fetchAsset(url, signal);
     if (type === 'json') return { value: await response.json() };
     if (type === 'text') return { value: await response.text() };
     if (type === 'binary') return { value: await response.arrayBuffer() };
     if (type === 'audio') {
-      const objectUrl = URL.createObjectURL(await response.blob());
+      const bytes = await response.blob();
+      if (signal?.aborted) throw aborted();
+      const objectUrl = URL.createObjectURL(bytes);
       try {
         if (typeof Audio === 'undefined') throw new Error('audio loader unavailable');
         const audio = new Audio(objectUrl);
         audio.preload = 'auto';
+        if (signal?.aborted) throw aborted();
         return { value: audio, objectUrl };
       } catch (error) {
         URL.revokeObjectURL(objectUrl);
@@ -92,6 +119,7 @@ export class JaewoonVibeRuntime {
       if (typeof FontFace === 'undefined' || typeof document === 'undefined' || !document.fonts) throw new Error('font loader unavailable');
       const font = new FontFace(family, await response.arrayBuffer());
       await font.load();
+      if (signal?.aborted) throw aborted();
       document.fonts.add(font);
       return { value: font, registeredFont: font };
     }
@@ -100,6 +128,7 @@ export class JaewoonVibeRuntime {
 
   // [에셋 캐시] 하나의 씬 또는 호출이 해제해도 다른 참조는 유지한다.
   acquireAsset({ path, type, family }) {
+    if (this.destroyed) throw new Error('runtime destroyed');
     const url = this.resolveAssetUrl(path);
     const kind = type || this.assetType(path);
     if (!['image', 'audio', 'json', 'text', 'binary', 'font'].includes(kind)) throw new Error('unsupported asset type: ' + kind);
@@ -107,11 +136,15 @@ export class JaewoonVibeRuntime {
     const key = JSON.stringify([kind, url, kind === 'font' ? fontFamily : '']);
     let entry = this.assetCache.get(key);
     if (!entry) {
-      entry = { key, refs: 0, resource: null, promise: null };
+      const controller = new AbortController();
+      entry = { key, refs: 0, resource: null, promise: null, controller };
       this.assetCache.set(key, entry);
-      entry.promise = this.readAsset({ url, type: kind, family: fontFamily }).then(resource => {
+      entry.promise = this.readAsset({ url, type: kind, family: fontFamily, signal: controller.signal }).then(resource => {
         entry.resource = resource;
-        if (entry.refs === 0) this.disposeAssetEntry(entry);
+        if (entry.refs === 0 || this.destroyed) {
+          this.disposeAssetEntry(entry);
+          throw Object.assign(new Error('asset loading aborted'), { name: 'AbortError' });
+        }
         return resource.value;
       }).catch(error => {
         if (this.assetCache.get(key) === entry) this.assetCache.delete(key);
@@ -129,6 +162,10 @@ export class JaewoonVibeRuntime {
     const value = resource.value;
     if (resource.registeredFont) document.fonts.delete(resource.registeredFont);
     if (resource.objectUrl) {
+      // [오디오 해제] 씬 소유 임대가 끝난 재생 객체를 오디오 등록 맵에서도 제거한다.
+      for (const [name, registered] of this.audio) {
+        if (registered === value) this.audio.delete(name);
+      }
       value.pause?.();
       value.removeAttribute?.('src');
       value.load?.();
@@ -143,13 +180,20 @@ export class JaewoonVibeRuntime {
     const entry = this.assetCache.get(key);
     if (!entry || entry.refs <= 0) return false;
     entry.refs -= 1;
-    if (entry.refs === 0 && entry.resource) this.disposeAssetEntry(entry);
+    if (entry.refs === 0) {
+      if (entry.resource) this.disposeAssetEntry(entry);
+      else {
+        this.assetCache.delete(key);
+        entry.controller.abort();
+      }
+    }
     return true;
   }
 
-  // [에셋 큐] 완료 건수 기반 진행률, 실패 전파, 완료 이벤트 및 호출 단위 정리를 제공한다.
-  async loadAssets(entries, { concurrency = 4, onProgress = null, onComplete = null, signal = null } = {}) {
+  // [에셋 큐] 공유 요청은 참조 수로 보호하고, 개별 대기는 취소·재시도·시간 제한을 지원한다.
+  async loadAssets(entries, { concurrency = 4, onProgress = null, onComplete = null, signal = null, retries = 1, timeoutMs = 30000 } = {}) {
     if (!Array.isArray(entries)) throw new Error('asset list required');
+    if (this.destroyed) throw new Error('runtime destroyed');
     const items = entries.map(item => typeof item === 'string' ? { path: item, id: item } : item);
     const ids = new Set();
     for (const item of items) {
@@ -160,6 +204,8 @@ export class JaewoonVibeRuntime {
     const assets = Object.create(null);
     const leases = [];
     const errors = [];
+    const retryCount = Math.max(0, Math.min(5, Math.floor(Number(retries) || 0)));
+    const deadline = Math.max(0, Number(timeoutMs) || 0);
     let next = 0, loaded = 0, failed = 0;
     const notify = (event, detail) => {
       if (typeof window !== 'undefined') this.emit(event, detail);
@@ -169,18 +215,41 @@ export class JaewoonVibeRuntime {
       onProgress?.(state);
       notify('assets-progress', state);
     };
+    const wait = promise => new Promise((resolve, reject) => {
+      let timer = null, settled = false;
+      const finish = (callback, value) => {
+        if (settled) return;
+        settled = true;
+        if (timer !== null) clearTimeout(timer);
+        signal?.removeEventListener('abort', onAbort);
+        callback(value);
+      };
+      const onAbort = () => finish(reject, Object.assign(new Error('asset loading aborted'), { name: 'AbortError' }));
+      signal?.addEventListener('abort', onAbort, { once: true });
+      if (signal?.aborted) { onAbort(); return; }
+      if (deadline > 0) timer = setTimeout(() => finish(reject, Object.assign(new Error('asset loading timeout'), { name: 'TimeoutError' })), deadline);
+      promise.then(value => finish(resolve, value), error => finish(reject, error));
+    });
     report();
     const worker = async () => {
-      while (next < total) {
+      while (next < total && !signal?.aborted) {
         const item = items[next++];
         try {
-          if (signal?.aborted) throw new Error('asset loading aborted');
-          const lease = this.acquireAsset(item);
-          leases.push(lease.key);
-          const value = await lease.promise;
-          if (signal?.aborted) throw new Error('asset loading aborted');
-          assets[item.id] = value;
-          loaded++;
+          for (let attempt = 0; attempt <= retryCount; attempt++) {
+            if (signal?.aborted) throw Object.assign(new Error('asset loading aborted'), { name: 'AbortError' });
+            let lease = null;
+            try {
+              lease = this.acquireAsset(item);
+              const value = await wait(lease.promise);
+              leases.push(lease.key);
+              assets[item.id] = value;
+              loaded++;
+              break;
+            } catch (error) {
+              if (lease) this.releaseAsset(lease.key);
+              if (signal?.aborted || error.name === 'AbortError' || [400, 401, 403, 404].includes(error.status) || attempt === retryCount) throw error;
+            }
+          }
         } catch (error) {
           errors.push(error);
           failed++;
@@ -195,14 +264,60 @@ export class JaewoonVibeRuntime {
       released = true;
       for (const key of leases) this.releaseAsset(key);
     };
-    const status = Object.freeze({ ok: errors.length === 0, loaded, failed, total });
+    const status = Object.freeze({ ok: errors.length === 0 && !signal?.aborted, loaded, failed, total });
     notify('assets-complete', status);
     onComplete?.(status);
-    if (errors.length) {
+    if (!status.ok) {
       release();
-      throw new AggregateError(errors, 'asset loading failed');
+      throw new AggregateError(errors.length ? errors : [Object.assign(new Error('asset loading aborted'), { name: 'AbortError' })], 'asset loading failed');
     }
     return { assets, ...status, release };
+  }
+
+  // [씬 전환] 새 씬을 준비하는 동안 이전 씬을 유지하며, 성공할 때만 참조를 교체한다.
+  async setScene(sceneId, entries, options = {}) {
+    const id = String(sceneId ?? '').trim();
+    if (!id) throw new Error('scene id required');
+    if (this.destroyed) throw new Error('runtime destroyed');
+    const version = ++this.sceneTransition;
+    this.pendingSceneController?.abort();
+    const controller = new AbortController();
+    this.pendingSceneController = controller;
+    const onAbort = () => controller.abort();
+    options.signal?.addEventListener('abort', onAbort, { once: true });
+    if (options.signal?.aborted) controller.abort();
+    try {
+      const lease = await this.loadAssets(entries, { ...options, signal: controller.signal });
+      if (controller.signal.aborted || this.destroyed || version !== this.sceneTransition) {
+        lease.release();
+        throw Object.assign(new Error('scene transition aborted'), { name: 'AbortError' });
+      }
+      const old = this.sceneAssets.get(this.activeSceneId);
+      this.sceneAssets.clear();
+      this.sceneAssets.set(id, lease);
+      this.activeSceneId = id;
+      old?.release();
+      return {
+        sceneId: id,
+        assets: lease.assets,
+        release: () => { if (this.sceneAssets.get(id) === lease) this.releaseScene(id); }
+      };
+    } finally {
+      options.signal?.removeEventListener('abort', onAbort);
+      if (this.pendingSceneController === controller) this.pendingSceneController = null;
+    }
+  }
+
+  // [씬 해제] 반환된 씬 임대의 release 또는 직접 호출로 현재 씬 에셋을 정리한다.
+  releaseScene(sceneId = this.activeSceneId) {
+    if (sceneId == null || sceneId !== this.activeSceneId) return false;
+    ++this.sceneTransition;
+    this.pendingSceneController?.abort();
+    const lease = this.sceneAssets.get(sceneId);
+    this.sceneAssets.delete(sceneId);
+    this.activeSceneId = null;
+    lease?.release();
+    return Boolean(lease);
   }
 
   load() {
@@ -422,6 +537,14 @@ export class JaewoonVibeRuntime {
   }
 
   destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    ++this.sceneTransition;
+    this.pendingSceneController?.abort();
+    this.pendingSceneController = null;
+    for (const lease of this.sceneAssets.values()) lease.release();
+    this.sceneAssets.clear();
+    this.activeSceneId = null;
     this.flushSaveProgress();
     clearTimeout(this.autosaveTimer);
     this.autosaveTimer = null;
@@ -431,6 +554,7 @@ export class JaewoonVibeRuntime {
     for (const entry of this.assetCache.values()) {
       entry.refs = 0;
       if (entry.resource) this.disposeAssetEntry(entry);
+      else entry.controller.abort();
     }
     this.assetCache.clear();
     for (const audio of this.audio.values()) audio.pause?.();
