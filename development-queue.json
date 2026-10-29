@@ -4257,7 +4257,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-29T04:20:01.117Z",
+      "updatedAt": "2026-10-29T04:21:38.359Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4272,10 +4272,9 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-first-frame-requires-simulating-runtime",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -4919,10 +4918,10 @@
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
         "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
         "externalCapacityDeferred": true,
-        "retryAfterSeconds": 1203,
-        "retryNotBefore": "2026-10-28T17:37:13.157Z",
-        "observedAt": "2026-10-28T17:17:10.694Z",
-        "workflowRunId": 40732464432,
+        "retryAfterSeconds": 2346,
+        "retryNotBefore": "2026-10-29T05:00:43.846Z",
+        "observedAt": "2026-10-29T04:21:38.359Z",
+        "workflowRunId": 40815964850,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxRuntimePassedAt": null,
@@ -5610,7 +5609,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-29T04:11:56.644Z"
+        "verifiedAt": "2026-10-29T04:21:38.359Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-28T06:10:50.299Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-29T04:11:56.644Z",
@@ -7797,7 +7796,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-29T04:20:49.170Z",
+  "updatedAt": "2026-10-29T04:21:38.359Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
