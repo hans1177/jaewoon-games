@@ -67,13 +67,16 @@
         "web-vibe-recovery-failure:needs-source-or-provider-recheck",
         "web-vibe-owner-retry-approved-2026-10-27-checkout-and-large-source-repair",
         "web-vibe-provider-failure-run:40808185450",
-        "web-vibe-provider-cooldown:source-retry-budget-preserved"
+        "web-vibe-provider-cooldown:source-retry-budget-preserved",
+        "web-vibe-provider-route-expanded:352a6872f78eb64d886057970c5a7d2e30fa653d",
+        "gemini-retry-after-preserved:alternate-free-provider-eligible-now"
       ],
       "recoveryAttempts": 2,
       "recoveryLastFailureAt": "2026-10-29T02:46:47.084Z",
-      "recoveryNextAt": "2026-10-29T06:59:59.528Z",
+      "recoveryNextAt": null,
       "blocker": null,
-      "recoveryFailureClass": "PROVIDER_COOLDOWN"
+      "recoveryFailureClass": "PROVIDER_COOLDOWN",
+      "geminiCooldownUntil": "2026-10-29T06:59:59.528Z"
     },
     {
       "id": "pwa-641a328c-4677-49f1-8d99-7cf652b2498a",
