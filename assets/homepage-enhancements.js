@@ -18,27 +18,55 @@ function loadHiddenGames(){
     return new Set(Array.isArray(value)?value.filter(id=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)).slice(0,200):[]);
   }catch{return new Set();}
 }
-function gameTitleActions(id,name){
-  return `<span class="homeGameTitleActions">${favoriteButton(id,name)}<button class="homeManageButton homeStopButton" type="button" data-stop-request="${esc(id)}" aria-label="${esc(name)} 개발중단 요청" title="개발중단 요청 · 오너 확인 필요">중단</button><button class="homeManageButton homeDeleteButton" type="button" data-hide-game="${esc(id)}" aria-label="${esc(name)} 홈 목록에서 삭제" title="이 기기의 홈 목록에서 삭제">삭제</button></span>`;
+function gameDeleteButton(id,name){
+  return `<button class="homeManageButton homeDeleteButton" type="button" data-hide-game="${esc(id)}" aria-label="${esc(name)} 게임 삭제" title="게임 삭제 · 자동개발 중단">삭제</button>`;
 }
-function hideGameFromHome(id){
+function gameTitleActions(id,name){
+  return `<span class="homeGameTitleActions">${favoriteButton(id,name)}${gameDeleteButton(id,name)}</span>`;
+}
+async function hideGameFromHome(id){
   const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
-  if(!row||!window.confirm((identityOf(row).name||row.name||id)+' 게임을 이 기기의 홈 목록에서 삭제할까? 게임 원본·저장·자동개발은 삭제되지 않아.'))return;
-  hiddenGameIds.add(id);
-  try{localStorage.setItem(HIDDEN_GAMES_STORAGE_KEY,JSON.stringify([...hiddenGameIds]));}catch{}
-  lastSignature='';
-  refresh();
+  if(!row)return;
+  const name=identityOf(row).name||row.name||id;
+  // 즐겨찾기 해제에는 확인창이 없고 삭제에만 확인창이 하나 있다.
+  if(!window.confirm(name+' 게임을 삭제할까?\n즐겨찾기·홈 목록에서 사라지고 자동개발도 중단돼.\n기존 게임 파일과 저장 데이터는 보존돼.'))return;
+  const token=localStorage.getItem('jaewoon_command_device_v1')||'';
+  if(!token){
+    window.alert('개발중단 요청에 오너 기기 인증이 필요해. 게임은 삭제하지 않았어. 개발 지시 화면에서 먼저 기기를 등록해줘.');
+    location.href='/jaewoon-games/command.html';
+    return;
+  }
+  const button=document.querySelector(`button[data-hide-game="${id}"]`);
+  if(button)button.disabled=true;
+  try{
+    const body='OWNER_STOP_GAME:'+id;
+    const response=await fetch('https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command',{
+      method:'POST',cache:'no-store',
+      headers:{'Content-Type':'application/json','apikey':'sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ','x-jaewoon-device':token},
+      body:JSON.stringify({action:'create',gameId:id,kind:'directive',priority:'urgent',body})
+    });
+    const result=await response.json().catch(()=>null);
+    if(!response.ok||result?.ok!==true||result?.task?.game_id!==id||result?.task?.body!==body
+      ||result?.task?.status!=='received')throw Error(String(result?.error||'OWNER_STOP_NOT_ACCEPTED'));
+    // 접수 성공 후에만 즐겨찾기에서 제거한다. 실제 개발중단은 인증된 PWA 브리지가 확정한다.
+    favoriteGameIds.delete(id);
+    hiddenGameIds.add(id);
+    try{
+      localStorage.setItem(FAVORITES_STORAGE_KEY,JSON.stringify([...favoriteGameIds]));
+      localStorage.setItem(HIDDEN_GAMES_STORAGE_KEY,JSON.stringify([...hiddenGameIds]));
+    }catch{}
+    lastSignature='';
+    await refresh();
+    renderFavoriteGames();
+  }catch(error){
+    window.alert('개발중단 요청을 서버에 접수하지 못했어. 즐겨찾기와 게임은 삭제하지 않았어.\n'+String(error.message||error));
+  }finally{if(button)button.disabled=false;}
 }
 function restoreHiddenGames(){
   hiddenGameIds.clear();
   try{localStorage.removeItem(HIDDEN_GAMES_STORAGE_KEY);}catch{}
   lastSignature='';
   refresh();
-}
-function requestDevelopmentStop(id){
-  const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
-  if(!row||!window.confirm((identityOf(row).name||row.name||id)+' 게임의 개발중단 요청 화면으로 이동할까? 실제 중단은 인증된 관리 지시가 반영돼야 적용돼.'))return;
-  location.href='/jaewoon-games/command.html?game='+encodeURIComponent(id)+'&manage=stop';
 }
 let favoriteGameIds=new Set();
 let favoriteDisplayRows=[];
@@ -66,7 +94,7 @@ function renderFavoriteGames(){
     const href=links.web||links.roblox||links.unity||links.webSource||'';
     const art=game.image?`<img class="mobileFavoriteArt" src="${esc(game.image)}" alt="" loading="lazy" decoding="async">`:'<span class="mobileFavoriteArt" aria-hidden="true"></span>';
     const body=`${art}<span class="mobileFavoriteText"><strong>${esc(game.name)}</strong><small>${href?'게임 열기':'플레이 준비 중'}</small></span>`;
-    return href?`<a class="mobileFavoriteLink" href="${esc(href)}">${body}</a>`:`<div class="mobileFavoriteUnavailable">${body}</div>`;
+    return `<div class="mobileFavoriteRow">${href?`<a class="mobileFavoriteLink" href="${esc(href)}">${body}</a>`:`<div class="mobileFavoriteUnavailable">${body}</div>`}${gameDeleteButton(game.id,game.name)}</div>`;
   }).join(''):'<p class="mobileFavoriteEmpty">즐겨찾기한 게임이 없어. 게임 타이틀 옆 ☆을 눌러 추가해.</p>';
   list.dataset.favoriteCount=String(rows.length);
 }
@@ -406,8 +434,9 @@ function installStyles(){
 .homeFocusTitleRow .homeFavoriteToggle[aria-pressed="true"]{background:#fff3d5;color:#bd7900;border-color:#f2d38c}
 .homeGameTitleActions{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto}
 .homeManageButton{min-height:44px;padding:0 9px;border:1px solid #d5e1ec;border-radius:10px;background:#f1f6fb;color:#526579;font-size:11px;font-weight:850;white-space:nowrap;cursor:pointer;touch-action:manipulation}
-.homeStopButton{background:#fff6e9;color:#955918;border-color:#f3d7b3}
 .homeDeleteButton{background:#fff0f0;color:#a12e39;border-color:#f1c6c9}
+.mobileFavoriteRow{display:flex;align-items:center;gap:8px}.mobileFavoriteRow>.mobileFavoriteLink,.mobileFavoriteRow>.mobileFavoriteUnavailable{flex:1;min-width:0}
+.mobileFavoriteRow>.homeDeleteButton{flex:0 0 auto;margin-right:6px}
 .homeManageButton:focus-visible,.homeRestoreButton:focus-visible{outline:2px solid #1677ff;outline-offset:2px}
 .homeRestoreBar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:0 0 14px;padding:12px;border:1px solid #dce4ee;background:#fff;border-radius:12px;font-size:12px;color:#53687b}.homeRestoreBar[hidden]{display:none}
 .homeRestoreButton{min-height:44px;padding:0 14px;background:#edf5ff;color:#1769bf;border:0;border-radius:9px;font-weight:850;cursor:pointer}
@@ -534,7 +563,7 @@ function buildGameCenter(catalog,status){
   restore.id='homeHiddenRestoreBar';
   restore.className='homeRestoreBar';
   restore.hidden=hiddenGameIds.size===0;
-  restore.innerHTML=`<span>이 기기에서 숨긴 게임 ${hiddenGameIds.size}개</span><button type="button" class="homeRestoreButton" data-restore-hidden>전체 복원</button>`;
+  restore.innerHTML=`<span>숨긴 게임 ${hiddenGameIds.size}개 · 복원해도 서버 개발중단은 해제되지 않아</span><button type="button" class="homeRestoreButton" data-restore-hidden>목록 복원</button>`;
   hub.prepend(restore);
   buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임','입장 가능한 게임 · 로비 체험 또는 본게임 가능',available);
   buildShelf(hub,'homeDevelopmentGameCenter','개발 중','설계·로비 구현과 검증이 진행 중인 게임',development);
@@ -580,8 +609,6 @@ function bindDirectGameLaunch(){
     if(restore){restoreHiddenGames();return;}
     const hide=event.target.closest('button[data-hide-game]');
     if(hide){hideGameFromHome(hide.dataset.hideGame);return;}
-    const stop=event.target.closest('button[data-stop-request]');
-    if(stop){requestDevelopmentStop(stop.dataset.stopRequest);return;}
     const favorite=event.target.closest('button[data-favorite-id]');
     if(favorite){toggleFavorite(favorite.dataset.favoriteId);return;}
     const control=event.target.closest('button[data-gallery-step]');
