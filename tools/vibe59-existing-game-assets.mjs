@@ -107,8 +107,42 @@ export function inspectVibe59ExistingGameAssets({order={},sourceRoot='',reposito
     }
   }
   walk(root,0);
-  return Object.freeze({gameId,target,assets:found,sourceWrite:false,runtimeVerified:false,
-    suggestionsRequireProvenance:true});
+  const missingReferences=[];
+  // Detect broken file-backed SVG/PNG/audio/model links without selecting a made-up replacement.
+  // Only literal HTML/CSS paths are considered; runtime-computed URLs remain unverified.
+  if(target==='web'){
+    const documents=[];
+    function collect(dir,depth){
+      if(depth>4||documents.length>=32)return;
+      for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+        if(documents.length>=32)break;
+        if(entry.isSymbolicLink())continue;
+        const abs=path.join(dir,entry.name);
+        if(entry.isDirectory()){collect(abs,depth+1);continue;}
+        if(entry.isFile()&&/\.(?:html|css)$/i.test(entry.name)&&entry.name.length<100
+          &&fs.statSync(abs).size<=256000)documents.push(abs);
+      }
+    }
+    collect(root,0);
+    for(const file of documents){
+      const body=fs.readFileSync(file,'utf8');
+      const refs=[...body.matchAll(/\b(?:src|href)\s*=\s*["']([^"'<>]+)["']/gi),
+        ...body.matchAll(/url\s*\(\s*["']?([^"'()]+)["']?\s*\)/gi)];
+      for(const match of refs){
+        const value=match[1].split(/[?#]/)[0];
+        if(!/\.(?:svg|png|webp|jpg|jpeg|glb|fbx|ogg|mp3|wav|gz)$/i.test(value)
+          ||value.startsWith('/')||value.includes('\\')||value.includes(':')
+          ||value.split('/').includes('..'))continue;
+        const resolved=path.resolve(path.dirname(file),value);
+        if(!resolved.startsWith(root+path.sep)||fs.existsSync(resolved))continue;
+        missingReferences.push({referencedBy:path.relative(root,file).split(path.sep).join('/'),
+          assetPath:path.relative(root,resolved).split(path.sep).join('/'),
+          problem:'MISSING_REFERENCED_ASSET',repair:'REQUIRES_VERIFIED_ROLE_AND_PROVENANCE'});
+      }
+    }
+  }
+  return Object.freeze({gameId,target,assets:found,missingReferences,
+    sourceWrite:false,runtimeVerified:false,suggestionsRequireProvenance:true});
 }
 
 // Bounded modifications to an actual existing game's visuals. The original graphics asset
@@ -163,6 +197,11 @@ export function applyVibe59ApprovedGameAssetChanges({
         &&mapping.path===replace.path&&mapping.sourcePath===replace.sourcePath
         &&mapping.ledgerId===replace.ledgerId&&mapping.assetRole===replace.assetRole))
       throw Error('VIBE59_GAME_ASSET_BINDING_NOT_APPROVED');
+    if(!(replace.sourcePath.startsWith('assets/shared/')
+      ||replace.sourcePath.startsWith('assets/roblox/')
+      ||replace.sourcePath.startsWith('web-games/'+gameId+'/assets/')
+      ||replace.sourcePath.startsWith('roblox-games/'+gameId+'/assets/')))
+      throw Error('VIBE59_GAME_ASSET_SOURCE_LIBRARY_NOT_ALLOWED');
     const original=register(replace.path,replace.expectedSha256);
     const sourceAbs=verifiedFile(repo,replace.sourcePath);
     const replacement=fs.readFileSync(sourceAbs);
