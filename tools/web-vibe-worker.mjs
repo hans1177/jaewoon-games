@@ -8,6 +8,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {assertWebVibeQueue,assertWebVibeTask,WEB_VIBE_CONTROL_BRANCH} from './web-vibe-organization.mjs';
 import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import {inspectSourceFunctions} from './company-vibe2-expert-development.mjs';
+import {compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
 import {synthesizeVibe59NumericAlgorithmSource} from './vibe2-v59-autonomy.mjs';
 import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -423,13 +424,49 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
 }
 
 export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fetch,
-  geminiImpl=requestGeminiFreePair,apiKey='',previousVerified=[]}={}){
+  geminiImpl=requestGeminiFreePair,apiKey='',previousVerified=[],complexContext={}}={}){
   // 정확한 합성 사양이 있는 오너 웹 작업은 외부 모델 없이 먼저 처리한다.
   const algorithm=synthesizeWebAlgorithmWithoutModel(task,source);
   if(algorithm)return algorithm;
   if(task?.algorithmSpec||/```(?:json)?\s*\{\s*"algorithmSpec"/i.test(String(task?.goal||''))){
     // 타 파일은 이 단일 책임 함수 작업의 실패로 취급하지 않는다.
     return null;
+  }
+  // [메인] 웹 전용 큐도 기존 범용 무모델 계획기를 사용한다. 모든 파일을 한 번에 연결한다.
+  // 계획의 원본 해시/카탈로그/오너 범위가 틀리면 외부 모델로 우회하지 않는다.
+  if(complexContext.plan===undefined){
+    const sources=complexContext.sources||[source],prefix='web-games/'+task.gameId+'/';
+    const responsibleFiles=sources.filter(row=>/\.(?:html?|[cm]?js)$/i.test(row.relative||''))
+      .map(row=>String(row.relative).startsWith(prefix)?row.relative.slice(prefix.length):'../unowned');
+    complexContext.plan=compileSourceBoundComplexRequest({
+      order:{gameId:task.gameId,goal:task.goal,
+        ownerApproved:task.ownerDirective===true&&task.evidence?.includes('owner-source-authenticated')===true,
+        baseRevisionSha:complexContext.sourceRevision||task.baseRevisionSha||''},
+      sourceRoot:path.join(complexContext.repositoryRoot||ROOT,'web-games',task.gameId),
+      responsibleFiles,target:'web',repositoryRoot:complexContext.repositoryRoot||ROOT
+    });
+  }
+  const complex=complexContext.plan;
+  if(complex.status==='BLOCKED')fail('WEB_VIBE_COMPLEX_SOURCE_BLOCKED:'+complex.unresolved.map(row=>row.code).join('|'));
+  if(complex.status==='CANDIDATE'){
+    if(complex.candidate.complexPlan.deferredWaves.length)fail('WEB_VIBE_COMPLEX_DEFERRED_REQUIREMENTS');
+    const prefix='web-games/'+task.gameId+'/',relative=String(source.relative).slice(prefix.length);
+    const original=complex.plan.index.files.find(file=>file.path===relative);
+    if(String(source.relative).startsWith(prefix)&&!original&&!/\.(?:html?|[cm]?js)$/i.test(source.relative))return null;
+    if(!String(source.relative).startsWith(prefix)||!original||original.source!==source.original)
+      fail('WEB_VIBE_COMPLEX_SOURCE_SNAPSHOT_MISMATCH');
+    const edits=complex.candidate.edits.filter(edit=>edit.path===relative);
+    if(!edits.length)return null;
+    const result=safeWebVibeReplacement(source.original,JSON.stringify({
+      edits:edits.map(edit=>({oldText:edit.find,newText:edit.replace})),
+      reason:'기존 범용 무모델 계획기의 원본 책임 함수 직접 수정'
+    }),{relative:source.relative});
+    return {...result,deterministicWebComplex:true,offlineSourceProof:{
+      source:source.relative,sourceDigest:complex.plan.index.digest,
+      planDigest:complex.plan.digest,requirementCount:complex.plan.intent.requirements.length,
+      roles:complex.candidate.complexPlan.atoms.filter(atom=>atom.file===relative).map(atom=>atom.operation),
+      modelUsed:false,runtimeVerified:false
+    }};
   }
   // [전체 코드 진단] 무모델 분석은 앞부분 발췌가 아닌 실제 파일 전체를 읽는다.
   const analysis={bytes:Buffer.byteLength(source.original),
@@ -648,10 +685,11 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
   if(prior.length!==(task.ownerPatchLineage?.verifiedPredecessors||[]).length)
     fail('WEB_VIBE_BUILD_UP_HISTORY_NOT_VERIFIED');
   const changed=[],unsupported=[];
+  const complexContext={sources,sourceRevision:run('git',['rev-parse','HEAD'])};
   for(const source of sources){
     try{
       const edit=await proposeWebVibeChange(task,source,{cloud:args.cloud===true,fetchImpl,geminiImpl,
-        apiKey:args.cloud?clean(process.env.GEMINI_API_KEY):'',
+        apiKey:args.cloud?clean(process.env.GEMINI_API_KEY):'',complexContext,
         previousVerified:[...prior,...verifiedWebKnowledge.filter(row=>!prior.includes(row))]});
       if(edit)changed.push({source,edit});
     }catch(error){

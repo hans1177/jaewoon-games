@@ -110,7 +110,7 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
  const clauses=text.split(/[;\n]+/).map(x=>x.trim().replace(/[.!。]$/,'')).filter(Boolean);
  if(clauses.length>48){result.unresolved.push({code:'REQUIREMENT_BUDGET'});return result}
  for(const ownerText of clauses){
-  let m,operation,functionName,callback,condition,output,value,minimum,maximum,after,callee,callees,semantic;
+  let m,operation,functionName,callback,condition,output,value,minimum,maximum,after,callee,callees,semantic,returnValue;
   try{
    if(/^(?:죽은 (?:유닛|공격자)(?:은|는) 공격하지 않게 해|Prevent dead attackers from attacking)$/i.test(ownerText)){
     operation='semantic-guard';semantic='dead-attacker';
@@ -122,6 +122,10 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
     operation='semantic-multi-guard';semantic='dead-target-server';
    }else if(/^(?:로블록스 서버 체력 이벤트를 기존 클라이언트 화면에 연결해|기존 서버 체력 변경을 클라이언트 화면에 반영해|Connect existing Roblox server health event to client UI)$/i.test(ownerText)){
     operation='semantic-remote-ui';semantic='existing-server-health-to-client-ui';
+   }else if((m=new RegExp('^함수 ('+name+')(?:의 ('+name+') 반복)?에서 (.+?)(?:이면|일 때) (true|false|-?\\d+(?:\\.\\d+)?)(?:을|를)? 반환(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
+    [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);returnValue=parseIntentExpression(m[4]);
+   }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return (true|false|-?\\d+(?:\\.\\d+)?) when (.+)$','i').exec(ownerText))){
+    [,functionName,callback]=m;operation='guard-return';returnValue=parseIntentExpression(m[3]);condition=parseIntentExpression(m[4]);
    }else if((m=new RegExp('^함수 ('+name+')(?:의 ('+name+') 반복)?에서 (.+?)(?:이면|일 때) 중단(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
    }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return when (.+)$','i').exec(ownerText))){
@@ -141,7 +145,7 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
    }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
    const id='req-'+sourceDigest(ownerText).slice(0,16);
    if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
-   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,callees,
+   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,returnValue,output,value,minimum,maximum,after,callee,callees,
     dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
     stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
   }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}

@@ -838,3 +838,57 @@ test('ambiguous, nested and unbound anonymous Luau remote handlers fail without 
   assert.equal(fs.readFileSync(path.join(root,files[1]),'utf8'),altered);
  }
 });
+
+// [회귀] 같은 실패를 편집/필드 순서만 바꿔 재평가하지 않고 실제 대안으로 진행한다.
+test('repair fingerprints deduplicate independent reordered edits while preserving sequential edit semantics',()=>{
+ const a={path:'game.js',find:'first();',replace:'first(1);'},b={path:'game.js',find:'last();',replace:'last(1);'};
+ const evaluated=[];
+ const result=runCodegenCounterexampleRepair({sourceDigest:sourceDigest('original'),
+  generate:({attempt})=>({edits:attempt===0?[a,b]:attempt===1?
+   [{replace:b.replace,find:b.find,path:b.path},{replace:a.replace,find:a.find,path:a.path}]:
+   [{...a,replace:'first(2);'},b]}),
+  evaluate:c=>{evaluated.push(c);return evaluated.length===2?{pass:true}:
+   {pass:false,reproduced:true,failureSignature:'ordering-regression',responsibleSymbols:['first','last']}}
+ });
+ assert.equal(result.status,'CANDIDATE_VALIDATED');assert.equal(evaluated.length,2);
+ assert.equal(result.attempts[1].attempt,3);
+ const seq=[{path:'a.js',find:'x()',replace:'y()'},{path:'a.js',find:'y()',replace:'z()'}];
+ const sequential=runCodegenCounterexampleRepair({sourceDigest:sourceDigest('original'),maxAttempts:2,
+  generate:({attempt})=>({edits:attempt?[...seq].reverse():seq}),
+  evaluate:()=>({pass:false,reproduced:true,failureSignature:'dependency',responsibleSymbols:['first']})});
+ assert.equal(sequential.attempts.length,2,'dependent edit order is part of the candidate');
+});
+
+test('explicit conditional return preserves caller values and side effects in original Web functions',t=>{
+ const {repo,root}=fixture(t),source='const state={dead:false};\nfunction canAttack(a){\n a.hp -= 1;\n return true;\n}\nfunction remaining(a){\n a.hp = a.hp;\n return a.hp;\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 canAttack에서 a.dead이면 false를 반환해; In remaining return 0 when a.hp < 0'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({canAttack,remaining})');
+ const dead={dead:true,hp:0},alive={dead:false,hp:10};
+ assert.equal(game.canAttack(dead),false);assert.equal(dead.hp,0);
+ assert.equal(game.canAttack(alive),true);assert.equal(alive.hp,9);
+ assert.equal(game.remaining({hp:-1}),0);assert.equal(game.remaining({hp:9}),9);
+ assert.ok(candidate.complexPlan.atoms[0].scenarioProofs.cases.some(row=>row.expectedReturn===false));
+ assert.equal(candidate.runtimeVerified,false);assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+test('Luau conditional return uses false literally, and incompatible return guards never merge',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { dead = false }\nlocal function canAttack(a)\n a.hp -= 1\n return true\nend\n';
+ fs.writeFileSync(path.join(root,'server/Combat.server.luau'),source);
+ const options={sourceRoot:root,responsibleFiles:['server/Combat.server.luau'],target:'roblox',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 canAttack에서 a.dead이면 false를 반환해'};
+ const candidate=createVibe59CodeCandidates({...options,order});
+ assert.match(candidate.edits[0].replace,/if a.dead then return false end/);
+ const conflict=planComplexGameWork({...options,baseRevisionSha:revision,
+  order:{...order,goal:order.goal+'; 함수 canAttack에서 a.hp < 0이면 0을 반환해'}});
+ assert.equal(conflict.nodes.length,2,'different return contracts remain distinct');
+ assert.throws(()=>createComplexGameCandidate({plan:conflict,sourceRoot:root,target:'roblox'}),/OVERLAPPING_EDIT/);
+ for(const goal of ['함수 canAttack에서 a.dead이면 process.exit()를 반환해','In canAttack return Infinity when a.dead']){
+  assert.equal(compileComplexOwnerIntent({order:{...order,goal}}).unresolved.length,1);
+ }
+ assert.equal(fs.readFileSync(path.join(root,'server/Combat.server.luau'),'utf8'),source);
+});
