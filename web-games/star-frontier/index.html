@@ -706,5 +706,11 @@ load();spawnStars();spawnSector();state.hp=clamp(state.hp,1,maxHp());updateHud()
 
 })();
 </script>
+
+<!-- Vibe 공용 게임 화면: UI 트윈·발광·입력 파티클 (원본 판정/세이브 비변경) -->
+<script type="module" data-vibe-common-screen>
+import {mountVibeGameScreenEffects} from '../../assets/vibe-browser-presentation.mjs';
+mountVibeGameScreenEffects();
+</script>
 </body>
 </html>
