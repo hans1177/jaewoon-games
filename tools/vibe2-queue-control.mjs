@@ -464,6 +464,7 @@ export function releaseCompletedWorkerArtifactSlots(queueInput,{runArtifacts=[]}
 export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now(), staleMs = DEFAULT_STALE_RUNNING_MS } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   let recovered = 0;
+  let nativeCodegenSha256 = null;
   const tasks = queue.tasks.map((task) => {
     // 과거 asset-development 실행 구간에 혼입된 읽기 전용 연구만 구별해 기존 큐로 복귀한다.
     // 실제 게임/에셋 구현과 외부 원칙 미분류 차단은 변경하지 않는다.
@@ -508,12 +509,33 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
         }
       }
     }
-    // [무모델·할당량] 실제 게임 소스가 아닌 외부 모델 공급 장애만 유한 대기한다.
-    // 대기 해제 후에도 동일한 기존 F0~F9·서버 판정·QA 검증을 반드시 통과해야 한다.
+    // [무모델] 로블록스 자체 생성기가 개선되면 같은 게임을 즉시 재검토한다.
+    // 동일 생성기 버전에서 재실패한 작업은 반복 실행하지 않는다.
+    // 외부 모델 장애와 웹 오프라인 패턴 실패의 기존 대기 규칙은 유지한다.
     if(task.status==='blocked'&&['EXTERNAL_AI_QUOTA_COOLDOWN','SOURCE_MODEL_UNAVAILABLE','OFFLINE_RECIPE_UNAVAILABLE'].includes(clean(task.blocker))){
       const noModel=clean(task.blocker)==='SOURCE_MODEL_UNAVAILABLE';
       const offlinePattern=clean(task.blocker)==='OFFLINE_RECIPE_UNAVAILABLE';
       const evidence=Array.isArray(task.evidence)?task.evidence:[];
+      const deterministicRoblox=noModel&&clean(task.target).toLowerCase()==='roblox'
+        &&(evidence.includes('source-no-model-failure-kind:DETERMINISTIC_ROBLOX')
+          ||!evidence.some(value=>clean(value).startsWith('source-no-model-failure-kind:')));
+      if(deterministicRoblox){
+        if(nativeCodegenSha256===null){
+          const workerFile=path.join(path.dirname(fileURLToPath(import.meta.url)),'vibe2-source-worker.mjs');
+          if(!fs.existsSync(workerFile))return task;
+          nativeCodegenSha256=createHash('sha256').update(fs.readFileSync(workerFile)).digest('hex');
+        }
+        const fingerprint='source-no-model-codegen-sha256:'+nativeCodegenSha256;
+        if(evidence.includes(fingerprint))return task;
+        recovered+=1;
+        return {...task,...clearedReservation(),status:'queued',blocker:null,
+          lastOutcome:'MODEL_FREE_NATIVE_CODEGEN_RECHECK',
+          evidence:[...new Set([
+            ...evidence.filter(value=>!clean(value).startsWith('source-no-model-codegen-sha256:')
+              &&!clean(value).startsWith('source-no-model-retry-at:')),
+            fingerprint,'source-no-model-retry-resumed:v1'
+          ])]};
+      }
       const prefix=offlinePattern?'source-offline-pattern-retry-at:'
         :noModel?'source-no-model-retry-at:':'external-ai-quota-retry-at:';
       const marker=evidence.findLast(value=>clean(value).startsWith(prefix));
@@ -1327,19 +1349,26 @@ export function applyVibeFanInResults(queueInput, results = []) {
           &&!/NEXT_RETRY_AT=/.test(message));
     });
     if(noModelFailures){
-      const retryAt=new Date(Date.now()+60*60*1000).toISOString();
+      const deterministicRoblox=variants.every(row=>
+        clean(row?.candidateFailure?.class).toUpperCase()==='NO_MODEL_SOURCE_REPAIR_UNAVAILABLE');
+      const retryAt=deterministicRoblox?null:new Date(Date.now()+60*60*1000).toISOString();
       queue=createVibeContinuousQueue({
         maxConcurrentTasks:queue.maxConcurrentTasks,
         tasks:queue.tasks.map(task=>{
           if(task.id!==taskId)return task;
-          const retained=(task.evidence||[]).filter(value=>!clean(value).startsWith('source-no-model-retry-at:'));
+          const retained=(task.evidence||[]).filter(value=>
+            !clean(value).startsWith('source-no-model-retry-at:')
+            &&!clean(value).startsWith('source-no-model-failure-kind:'));
           return {...task,...clearedReservation(),status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE',
             lastOutcome:'MODEL_FREE_SOURCE_NOT_APPLICABLE',
             neuronExpectedVariants:0,neuronResults:[],
-            evidence:[...new Set([...retained,'model-free-deterministic-unavailable:v1','source-no-model-retry-at:'+retryAt])]};
+            evidence:[...new Set([...retained,'model-free-deterministic-unavailable:v1',
+              'source-no-model-failure-kind:'+(deterministicRoblox?'DETERMINISTIC_ROBLOX':'EXTERNAL_AI'),
+              ...(retryAt?['source-no-model-retry-at:'+retryAt]:[])])]};
         })
       });
-      applied.push({taskId,outcome:'DEFERRED_NO_MODEL',retryAt});
+      applied.push({taskId,outcome:'DEFERRED_NO_MODEL',
+        ...(retryAt?{retryAt}:{retryMode:'SOURCE_WORKER_REVISION'})});
       continue;
     }
     const neuralTransactions=new Map(variants.map(row=>[row,buildNeuralWorkerTransaction(row)]));
