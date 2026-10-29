@@ -67,6 +67,34 @@ end`;
   assert.equal(graph.runtimeVerified,false);
 });
 
+test('assigned Luau module functions appear as real source graph call and state owners',()=>{
+ const src=[
+  'local visited = {}',
+  '-- local phantom = function() visited = {} end',
+  'local note = "local fake = function() end"',
+  'local grantReward = function(id)',
+  '  table.insert(visited, id)',
+  'end',
+  'Module.Claim = function(id)',
+  '  grantReward(id)',
+  'end',
+  'local function requestClaim(id)',
+  '  Module.Claim(id)',
+  'end'
+ ].join('\n');
+ const graph=buildResponsibilityGraph({source:src,language:'luau'});
+ assert.deepEqual(graph.nodes.map(row=>row.name),[
+  'grantReward','Module.Claim','requestClaim']);
+ const claim=graph.nodes.find(row=>row.name==='Module.Claim');
+ const grant=graph.nodes.find(row=>row.name==='grantReward');
+ assert.ok(claim.calls.includes('grantReward'));
+ assert.ok(grant.calledBy.includes('Module.Claim'));
+ assert.ok(grant.stateWrites.includes('visited'));
+ assert.ok(graph.edges.some(row=>row.from==='requestClaim'&&row.to==='Module.Claim'));
+ assert.equal(graph.runtimeVerified,false);
+ assert.equal(graph.nodes.some(row=>/phantom|fake/.test(row.name)),false);
+});
+
 test('Unity C# analysis links UI choice through placement to reward state and preserves method boundaries',()=>{
   const code=`using UnityEngine;
 public class Game : MonoBehaviour {
