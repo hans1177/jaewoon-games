@@ -1,0 +1,42 @@
+name: Vibe5.9 real Luau compiler gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/vibe59-*.mjs'
+      - 'tools/vibe2-v59-autonomy.mjs'
+      - 'qa/vibe59-luau-compiler.mjs'
+      - '.github/workflows/vibe59-luau-compiler.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-generated-luau:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install official pinned Luau compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/vibe59-luau"
+          curl -fsSL --retry 3 --retry-delay 2 \
+            'https://github.com/luau-lang/luau/releases/download/0.744/luau-ubuntu.zip' \
+            -o "$RUNNER_TEMP/vibe59-luau/compiler.zip"
+          cd "$RUNNER_TEMP/vibe59-luau"
+          echo '6506f0852c623aaffcb28494aac16c26dc04a269ea0e16cc0aafc8c8ac79f3ec  compiler.zip' | sha256sum --check --status
+          unzip -q compiler.zip -d binaries
+          compiler="$(find "$PWD/binaries" -type f -name 'luau-compile' -print -quit)"
+          test -n "$compiler"
+          chmod +x "$compiler"
+          "$compiler" --help >/dev/null
+          echo "VIBE59_LUAU_COMPILER=$compiler" >> "$GITHUB_ENV"
+      - name: Compile 116 complete generated Luau scripts and reject invalid syntax
+        run: node qa/vibe59-luau-compiler.mjs
