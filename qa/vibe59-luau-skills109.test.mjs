@@ -189,7 +189,7 @@ test('Vibe5.9 twelve-step offline complex design keeps all changes source-ground
  for(const file of files)assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
  assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:steps.map((step,index)=>
   index===1?{...step,scenarios:scenarios.slice(0,1)}:step)}}),
-  /VIBE59_COMPLEX_DESIGN_UNVERIFIED_STEP/);
+  /VIBE59_SKILL_POSITIVE_NEGATIVE_SCENARIOS_REQUIRED|VIBE59_COMPLEX_DESIGN_UNVERIFIED_STEP/);
  assert.throws(()=>createVibe59CodeCandidates({...options,order:{vibe59CodeRequests:
   Array.from({length:13},(_,index)=>({...steps[0],id:'overflow-'+index}))}}),
   /VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED/);
