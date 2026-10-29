@@ -417,7 +417,31 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     ||/[^A-Za-z0-9_$+\-*\/%().,\s]/.test(matches[0][2])
     ||/\b(?:eval|Function|import|require|process|this|window|globalThis|localStorage|sessionStorage|game|workspace)\b/.test(matches[0][2]))
     throw Error('VIBE59_ALGORITHM_EXISTING_PURE_FUNCTION_REQUIRED');
-  const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy:roblox?'evolution':spec.strategy}});
+  // Only exact-source, reproduced game counterexamples can amend the owner's oracle.
+  const observed=Array.isArray(spec.verifiedCounterexamples)?spec.verifiedCounterexamples:[];
+  if(observed.length>12)throw Error('VIBE59_ALGORITHM_COUNTEREXAMPLES_LIMIT');
+  const merged=[...(spec.examples||[])],holdoutKeys=new Set((spec.holdouts||[]).map(row=>JSON.stringify(row.args)));
+  const observedIds=new Set();
+  for(const row of observed){
+    const proof=row?.proof||{},args=row?.args;
+    const evidenceId=String(proof.evidenceId||'');
+    if(!row||row.sourceSha256!==sha(source)||row.reproduced!==true
+      ||row.gameSourceChanged!==true||row.actualGamePlaytest!==true
+      ||proof.independentQa!=='PASS'||proof.regression!=='PASS'||proof.runtime!=='PASS'
+      ||proof.actualPlatformRuntime!==true||!evidenceId||observedIds.has(evidenceId)
+      ||!Array.isArray(args)||args.length!==params.length||args.some(n=>!Number.isFinite(n)||Math.abs(n)>1e6)
+      ||!Number.isFinite(row.output)||Math.abs(row.output)>1e7
+      ||holdoutKeys.has(JSON.stringify(args)))
+      throw Error('VIBE59_ALGORITHM_COUNTEREXAMPLE_UNVERIFIED');
+    observedIds.add(evidenceId);
+    const prior=merged.find(item=>JSON.stringify(item.args)===JSON.stringify(args));
+    if(prior){
+      if(prior.output!==row.output)throw Error('VIBE59_ALGORITHM_ORACLE_CONFLICT');
+    }else merged.push({args,output:row.output});
+  }
+  if(merged.length>18)throw Error('VIBE59_ALGORITHM_COUNTEREXAMPLES_LIMIT');
+  const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,examples:merged,
+    strategy:roblox?'evolution':spec.strategy}});
   if(roblox&&!result.ast)throw Error('VIBE59_ROBLOX_AST_PROOF_REQUIRED');
   const luaExpr=roblox?renderVibe59NumericLuaAST(result.ast,params):null;
   const oldText=matches[0][0];
@@ -426,6 +450,7 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     :oldText.replace(/return\s+[^;{}]+;/,'return '+result.expression+';');
   if(oldText===newText)throw Error('VIBE59_ALGORITHM_NO_SOURCE_DELTA');
   return Object.freeze({oldText,newText,search:result,
+    acceptedRuntimeCounterexamples:observed.length,
     sourceWrite:false,modelUsed:false,runtimeVerified:false,
     authority:'existing-exact-function-replacement-only'});
 }
@@ -557,6 +582,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     const generated=synthesizeVibe59NumericAlgorithmSource({spec:{...req.algorithmSpec,
       verifiedConcepts:req.algorithmSpec.verifiedConcepts??order.vibe59VerifiedAlgorithmConcepts??inherited,
       strategy:req.algorithmSpec.strategy??(meta.strategy==='BOUNDED_AST_EVOLUTION_CEGIS'?'evolution':undefined),
+      verifiedCounterexamples:req.algorithmSpec.verifiedCounterexamples??order.vibe59VerifiedAlgorithmFailures,
       ownerApproved:req.ownerApproved===true},source:content,relative});
     if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
     return Object.freeze({summary:'Vibe5.9 AST-evolved and counterexample-guided numeric algorithm',
