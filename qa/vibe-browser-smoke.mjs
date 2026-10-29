@@ -49,6 +49,7 @@ try{
  }
  // 포탈 RPG: 공식 공개판에서 포탈·3D 캐릭터·실제 터치 이동·보스 피해·구매 및 저장을 확인한다.
  if(liveBase){
+  activeGameId='portal-rpg';
   for(const view of [
    {name:'portrait',width:390,height:844},
    {name:'landscape',width:844,height:390}
@@ -135,6 +136,7 @@ try{
  }
  // 푸른항해: 공개판의 실제 저장 형식으로 교전을 시작하고 GLB·포격·복귀를 검증한다.
  if(liveBase){
+  activeGameId='ocean-voyage';
   for(const viewport of [{width:390,height:844},{width:844,height:390}]){
    const context=await browser.newContext({viewport,isMobile:true,hasTouch:true});
    const ocean=await context.newPage(),faults=[];ocean.on('pageerror',e=>faults.push(e.message));
@@ -202,6 +204,7 @@ try{
  assert.equal(await checkbox.isChecked(),true);
  assert.deepEqual(errors,[],'Uncaught browser exceptions');
  if(liveBase){
+  activeGameId='gem-survivor';
   // 보석생존전: 실제 공개 커밋의 스테이지·월드·입력·일시정지를 검사한다.
   const response=await page.request.get(liveBase+'web-games/publish-manifest.json');
   assert.ok(response.ok(),'GEM_PUBLIC_MANIFEST_HTTP');
@@ -473,6 +476,7 @@ try{
  }
  // Cozy Island RTS: run on the real published GitHub Pages only, after deployment.
  if(liveBase){
+  activeGameId='cozy-island';
   // 공개 후: 경로 보존, 수평/수직 성문 자동 방향과 인부 길찾기의 실제 JS 모듈 검사.
   // 사후검증 체크아웃에는 qa 스크립트만 있으므로 실제 공개 모듈을 받아 검사한다.
   const castleResponse=await page.request.get(liveBase+'web-games/cozy-island/castle-layout.js');
@@ -692,6 +696,7 @@ try{
  // Owner-required: only real published, rendered WebGL 3D counts as wild-survival 3D.
  // A live 200 for index.html or a valid model preview does NOT prove gameplay is 3D.
  if(liveBase){
+   activeGameId='wild-survival';
    const moduleUrl=liveBase+'web-games/wild-survival/wild3d.mjs';
    const moduleResponse=await page.request.get(moduleUrl,{timeout:15000});
    assert.equal(moduleResponse.status(),200,'WILD_SURVIVAL_3D_MODULE_NOT_LIVE: '+moduleUrl);
