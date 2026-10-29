@@ -4071,7 +4071,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       const currentF0=exactRobloxF0PreflightFailure(project);
       const repairStart='[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]';
       const repairEnd='[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]';
-      const stripF0=goal=>clean(goal).replace(/^\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n[\s\S]*?\n\[\/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n?/,'');
+      const stripF0=goal=>clean(goal).replace(/\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n[\s\S]*?\n\[\/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n?/g,'').trim();
       const originalGoal=clean(candidate.goal),restoredGoal=stripF0(originalGoal);
       if(currentF0&&!project.queueRobloxQualityBuildUpRequired){
         const updated=applyRobloxF0PreflightRepairDirective(candidate.buildUpDirective,project,lane);
