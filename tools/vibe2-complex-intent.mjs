@@ -120,6 +120,8 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
     operation='semantic-existing-chain';semantic='state-ui-save';
    }else if(/^(?:서버의 모든 전투 함수에서 죽은 대상 공격 금지|모든 서버 공격 함수에서 죽은 대상을 공격하지 않게 해|Prevent attacking dead targets in all server combat functions)$/i.test(ownerText)){
     operation='semantic-multi-guard';semantic='dead-target-server';
+   }else if(/^(?:로블록스 서버 체력 이벤트를 기존 클라이언트 화면에 연결해|기존 서버 체력 변경을 클라이언트 화면에 반영해|Connect existing Roblox server health event to client UI)$/i.test(ownerText)){
+    operation='semantic-remote-ui';semantic='existing-server-health-to-client-ui';
    }else if((m=new RegExp('^함수 ('+name+')(?:의 ('+name+') 반복)?에서 (.+?)(?:이면|일 때) 중단(?:해|해줘|하라|해주세요)?$').exec(ownerText))){
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
    }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return when (.+)$','i').exec(ownerText))){
