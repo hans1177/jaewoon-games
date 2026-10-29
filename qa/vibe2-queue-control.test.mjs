@@ -3720,3 +3720,84 @@ test('Web autonomous gameplay context survives queue normalization and JSON rest
   assert.equal(createVibeContinuousQueue({tasks:[{...base,autonomousEvolution:{...base.autonomousEvolution,focus:'PRESENTATION'}}]}).tasks[0].autonomousEvolution,null);
 });
 
+
+test('tight shared-capacity reclaim reserves Roblox even when 127 Web runners are already occupied',()=>{
+  const tasks=[
+    ...Array.from({length:127},(_,i)=>({id:'web-active-'+i,gameId:'web-'+i,target:'web',
+      department:'development',type:'implementation',goal:'web busy',status:'running',
+      sourceRoot:'web-games/web-'+i,responsibleFiles:['main.js']})),
+    {id:'roblox-ready',gameId:'native',target:'roblox',department:'development',
+      type:'implementation',goal:'native source',status:'queued',sourceRoot:'roblox-games/native',
+      responsibleFiles:['client/Main.client.luau']},
+    {id:'web-backlog',gameId:'backlog',target:'web',department:'development',
+      type:'implementation',goal:'web source',status:'queued',sourceRoot:'web-games/backlog',
+      responsibleFiles:['main.js']}
+  ];
+  const chosen=selectVibeQueueBatch({maxConcurrentTasks:128,tasks},
+    {lane:'game-primary',maxConcurrentTasks:128});
+  assert.deepEqual(chosen.selected.map(t=>t.id),['roblox-ready']);
+  assert.deepEqual(chosen.platformReservations.protectedTaskIds,['roblox-ready']);
+  assert.equal(chosen.platformReservations.physicalHostedRunnerSlotsNotGuaranteed,true);
+});
+
+test('tight shared-capacity reclaim reserves Web even when Roblox jobs dominate',()=>{
+  const tasks=[
+    ...Array.from({length:127},(_,i)=>({id:'native-active-'+i,gameId:'native-'+i,target:'roblox',
+      department:'development',type:'implementation',goal:'native busy',status:'running',
+      sourceRoot:'roblox-games/native-'+i,responsibleFiles:['client/Client.luau']})),
+    {id:'web-ready',gameId:'web-ready',target:'web',department:'development',
+      type:'implementation',goal:'web source',status:'queued',
+      sourceRoot:'web-games/web-ready',responsibleFiles:['main.js']},
+    {id:'native-backlog',gameId:'other',target:'roblox',department:'development',
+      type:'implementation',goal:'native source',status:'queued',
+      sourceRoot:'roblox-games/other',responsibleFiles:['client/Client.luau']}
+  ];
+  const chosen=selectVibeQueueBatch({maxConcurrentTasks:128,tasks},
+    {lane:'game-primary',maxConcurrentTasks:128});
+  assert.deepEqual(chosen.selected.map(t=>t.id),['web-ready']);
+  assert.deepEqual(chosen.platformReservations.protectedTaskIds,['web-ready']);
+});
+
+test('one-slot waves alternate Web and Roblox, while idle target slots are borrowed without new queues',()=>{
+  const make=(id,target,status='queued')=>({id,gameId:id,target,department:'development',
+    type:'implementation',status,goal:'develop',sourceRoot:target+'-games/'+id,
+    responsibleFiles:['owner.js'],lastOutcome:status==='verified'?'PASS':null});
+  const first=selectVibeQueueBatch({maxConcurrentTasks:1,tasks:[make('rb-a','roblox'),make('web-a','web')]},
+    {lane:'game-primary',maxConcurrentTasks:1});
+  assert.deepEqual(first.selected.map(t=>t.id),['rb-a']);
+  const next=selectVibeQueueBatch({maxConcurrentTasks:1,tasks:[
+    make('rb-a','roblox','verified'),make('rb-b','roblox'),make('web-a','web')]},
+    {lane:'game-primary',maxConcurrentTasks:1});
+  assert.deepEqual(next.selected.map(t=>t.id),['web-a']);
+  const idle=selectVibeQueueBatch({maxConcurrentTasks:2,tasks:[make('rb-b','roblox'),make('rb-c','roblox')]},
+    {lane:'game-primary',maxConcurrentTasks:2});
+  assert.deepEqual(idle.selected.map(t=>t.id).sort(),['rb-b','rb-c']);
+  assert.equal(idle.platformReservations.borrowIdleSlots,true);
+});
+
+test('Web retry failure is isolated from eligible Roblox dispatch and platform checkpoint throughput stays distinct',()=>{
+  const make=(id,target,status='queued',evidence=[])=>({
+    id,gameId:id,target,department:'development',type:'implementation',goal:'develop',
+    sourceRoot:target+'-games/'+id,responsibleFiles:['owner.js'],status,evidence});
+  const before={maxConcurrentTasks:1,tasks:[make('web-failed','web','running'),
+    make('native-ready','roblox')]};
+  const failure=finishVibeQueueTask(before,{taskId:'web-failed',outcome:'FAIL',
+    blocker:'web-render-broken',retryable:true});
+  assert.equal(failure.queue.tasks.find(t=>t.id==='web-failed').status,'queued');
+  const chosen=selectVibeQueueBatch(failure.queue,{lane:'game-primary',maxConcurrentTasks:1});
+  assert.deepEqual(chosen.selected.map(t=>t.id),['native-ready']);
+  const history=Array.from({length:8},(_,i)=>make('web-proof-'+i,'web','verified',
+    ['workload:cycle-ms:60000']));
+  const performance=selectVibeQueueBatch({maxConcurrentTasks:2,tasks:[
+    ...history,make('native-failed','roblox','failed'),make('web-ready','web'),make('native-ready','roblox')
+  ]},{lane:'game-primary',maxConcurrentTasks:2}).platformPerformance;
+  assert.equal(performance.web.sampleSize,8);
+  assert.equal(performance.web.successRatePct,100);
+  assert.equal(performance.web.measuredVerifiedCycleCount,8);
+  assert.equal(performance.web.serialVerifiedPerHour,60);
+  assert.equal(performance.roblox.sampleSize,1);
+  assert.equal(performance.roblox.successRatePct,0);
+  assert.equal(performance.roblox.serialVerifiedPerHour,null);
+  assert.ok(performance.web.effectiveWeight<=1.1);
+  assert.ok(performance.roblox.effectiveWeight>=5.4);
+});
