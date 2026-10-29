@@ -7851,10 +7851,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-29T15:36:29.422Z",
+      "updatedAt": "2026-10-29T15:49:13.208Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8580,38 +8580,38 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "9e7ce6553533059d22cb52fff29b0ac318f81478",
+      "robloxQualityBuildUpSourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
       "robloxQualityFailureClass": "PRODUCT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "9e7ce6553533059d22cb52fff29b0ac318f81478",
-        "artifactIdentity": "sha256:45a03894dd91139418fd717ee574354ddefac8a2edf26f06fe022f4e80f0a10c",
-        "versionNumber": 3,
+        "sourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
+        "artifactIdentity": "sha256:add4fabcf0306020d5cd4539032b6ca2a0cf395d5d3fc999e3d47cbd75d938c8",
+        "versionNumber": 40898272824,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
-          "adaptive-ui-blocking-overlay"
+          "adaptive-ui-commercial-quality"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-ui-blocking-overlay",
+            "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
-            "priority": "CRITICAL",
-            "hint": "Remove or dismiss persistent full-screen modal/guide overlays that block gameplay input or obscure the playable viewport.",
+            "priority": "HIGH",
+            "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
             "observed": {
               "offscreenButtons": 0,
               "undersizedTouchButtons": 0,
               "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
-              "overlapPairs": 0,
+              "overlapPairs": 8,
               "largeOverlayCount": 1,
-              "largeBlockingOverlayCount": 1,
+              "largeBlockingOverlayCount": 0,
               "largestOverlayCoverage": 0.8965763172922679
             }
           }
@@ -8620,8 +8620,8 @@
           "MOBILE_UI"
         ],
         "robloxFailureClass": "ROBLOX_UI_STATE",
-        "testedAt": "2026-10-29T14:55:38.942Z",
-        "workflowRunId": 40892542205,
+        "testedAt": "2026-10-29T15:49:13.208Z",
+        "workflowRunId": 40901857206,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxStudioAssetBindingApplied": true,
@@ -9191,12 +9191,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "9e7ce6553533059d22cb52fff29b0ac318f81478",
-        "artifactIdentity": "sha256:45a03894dd91139418fd717ee574354ddefac8a2edf26f06fe022f4e80f0a10c",
-        "artifactRunId": 40889554755,
-        "universeId": "10773436325",
-        "placeId": "108565970231899",
-        "versionNumber": 3,
+        "sourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
+        "artifactIdentity": "sha256:add4fabcf0306020d5cd4539032b6ca2a0cf395d5d3fc999e3d47cbd75d938c8",
+        "artifactRunId": 40898272824,
+        "universeId": "",
+        "placeId": "",
+        "versionNumber": 40898272824,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -9433,13 +9433,13 @@
             "id": "scenario-adaptive-ui-commercial-quality",
             "name": "scenario-adaptive-ui-commercial-quality",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-adaptive-ui-blocking-overlay",
             "name": "scenario-adaptive-ui-blocking-overlay",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-world-safety",
@@ -9697,8 +9697,8 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 1,
-          "primaryActionDisplacement": 1.8694133757472162,
-          "primaryActionVelocity": 0.000006536586189606501,
+          "primaryActionDisplacement": 2.131560041543269,
+          "primaryActionVelocity": 0.000006505376940470881,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "FAST_DEEP",
@@ -9715,13 +9715,13 @@
               "undersizedTouchButtons": 0,
               "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
-              "overlapPairs": 0,
+              "overlapPairs": 8,
               "largeOverlayCount": 1,
-              "largeBlockingOverlayCount": 1,
+              "largeBlockingOverlayCount": 0,
               "largestOverlayCoverage": 0.8965763172922679
             },
             "surfaces": {
-              "interactionSurfaceCount": 14,
+              "interactionSurfaceCount": 15,
               "progressionSurfaceCount": 11,
               "combatSurfaceCount": 9,
               "npcSurfaceCount": 0,
@@ -9738,7 +9738,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2887.3203125,
+              "memoryMb": 2895.66796875,
               "descendantCount": 994
             },
             "multiplayer": null,
@@ -9782,7 +9782,7 @@
           "scenario-visual-capture-sane",
           "scenario-adaptive-runtime-surface",
           "scenario-adaptive-ftue-clarity",
-          "scenario-adaptive-ui-commercial-quality",
+          "scenario-adaptive-ui-blocking-overlay",
           "scenario-adaptive-world-safety",
           "scenario-adaptive-map-route-coverage",
           "ROBLOX_UI_STATE"
@@ -9816,11 +9816,11 @@
           },
           {
             "id": "adaptive-ui-commercial-quality",
-            "pass": true
+            "pass": false
           },
           {
             "id": "adaptive-ui-blocking-overlay",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-world-safety",
@@ -9978,22 +9978,22 @@
         ],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
-          "adaptive-ui-blocking-overlay"
+          "adaptive-ui-commercial-quality"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-ui-blocking-overlay",
+            "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
-            "priority": "CRITICAL",
-            "hint": "Remove or dismiss persistent full-screen modal/guide overlays that block gameplay input or obscure the playable viewport.",
+            "priority": "HIGH",
+            "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
             "observed": {
               "offscreenButtons": 0,
               "undersizedTouchButtons": 0,
               "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
-              "overlapPairs": 0,
+              "overlapPairs": 8,
               "largeOverlayCount": 1,
-              "largeBlockingOverlayCount": 1,
+              "largeBlockingOverlayCount": 0,
               "largestOverlayCoverage": 0.8965763172922679
             }
           }
@@ -10005,8 +10005,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-29T14:55:38.942Z",
-        "workflowRunId": 40892542205,
+        "testedAt": "2026-10-29T15:49:13.208Z",
+        "workflowRunId": 40901857206,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -10050,12 +10050,16 @@
         "artifactIdentity": "sha256:add4fabcf0306020d5cd4539032b6ca2a0cf395d5d3fc999e3d47cbd75d938c8",
         "artifactRunId": 40898272824,
         "candidateVersionNumber": 40898272824,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "COMPLETED_PRODUCT_FAILURE",
         "queuedAt": "2026-10-29T15:31:10.853Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "completedAt": "2026-10-29T15:49:13.208Z",
+        "resultPass": false,
+        "infrastructureFailure": false,
+        "currentSourceArtifactBinding": true
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -10116,7 +10120,7 @@
       "robloxNativeFailureClass": "ROBLOX_UI_STATE"
     }
   ],
-  "updatedAt": "2026-10-29T15:46:07.396Z",
+  "updatedAt": "2026-10-29T15:49:13.208Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
