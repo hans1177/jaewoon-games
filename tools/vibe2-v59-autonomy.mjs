@@ -383,6 +383,85 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
 }
 
 
+// [증명 대기 개념 추출] 기존 수치 AST의 부분식을 재사용 후보로 만든다.
+// 오라클 검증만으로 실제 게임 QA, 지속 학습 승격 또는 소스 변경을 승인하지 않는다.
+export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8}={}){
+  const empty=reason=>Object.freeze({concepts:Object.freeze([]),reason,
+    verification:'ORACLE_ONLY',verified:false,persisted:false,
+    promotionAuthorized:false,sourceWrite:false,modelUsed:false});
+  const params=search?.parameters;
+  if(search?.modelUsed!==false||search?.sourceWrite!==false||search?.runtimeVerified!==false
+    ||!Array.isArray(params)||params.length<1||params.length>3
+    ||params.some(p=>typeof p!=='string'||!/^[A-Za-z_$][\w$]*$/.test(p))
+    ||new Set(params).size!==params.length||!Number.isSafeInteger(search.trainingCases)
+    ||search.trainingCases<3||!Number.isSafeInteger(search.heldOutCases)
+    ||search.heldOutCases<2||search.casesPassed!==search.trainingCases+search.heldOutCases)
+    return empty('INDEPENDENT_ORACLE_REQUIRED');
+  const unary=new Set(['neg','abs','floor','round']);
+  const binary=new Set(['+','-','*','/','%','min','max','gt','lt']);
+  const budget={nodes:0};
+  function normalize(node,depth,ancestors){
+    if(!node||typeof node!=='object'||ancestors.has(node)
+      ||depth>4||++budget.nodes>39)throw Error('VIBE59_UNSAFE_CONCEPT_AST');
+    const next=new Set(ancestors);next.add(node);
+    if(Array.isArray(node)){
+      const op=node[0];
+      if(op==='param'&&node.length===2&&Number.isInteger(node[1])
+        &&node[1]>=0&&node[1]<params.length)return ['param',node[1]];
+      if(op==='const'&&node.length===2&&Number.isFinite(node[1])
+        &&Math.abs(node[1])<=1000)return ['const',node[1]];
+      if(unary.has(op)&&node.length===2)
+        return [op,normalize(node[1],depth+1,next)];
+      if(binary.has(op)&&node.length===3)
+        return [op,normalize(node[1],depth+1,next),normalize(node[2],depth+1,next)];
+      if(op==='select'&&node.length===4)
+        return [op,normalize(node[1],depth+1,next),normalize(node[2],depth+1,next),
+          normalize(node[3],depth+1,next)];
+    }else if(Object.getPrototypeOf(node)===Object.prototype){
+      if(node.kind==='reference'){
+        const index=params.indexOf(node.name);
+        if(index>=0)return ['param',index];
+      }
+      if(node.kind==='constant'&&Number.isFinite(node.value)
+        &&Math.abs(node.value)<=1000)return ['const',node.value];
+      if(node.kind==='mutation'&&unary.has(node.operator))
+        return [node.operator,normalize(node.operand,depth+1,next)];
+      if(node.kind==='crossover'&&binary.has(node.operator))
+        return [node.operator,normalize(node.left,depth+1,next),
+          normalize(node.right,depth+1,next)];
+    }
+    throw Error('VIBE59_UNSAFE_CONCEPT_AST');
+  }
+  let ast;
+  try{ast=normalize(search.ast,0,new Set());}catch{return empty('AST_REJECTED');}
+  const extracted=new Map();
+  function visit(node){
+    let size=1;
+    for(const child of node.slice(1))if(Array.isArray(child))size+=visit(child);
+    if(size>1){
+      const serialized=JSON.stringify(node);
+      if(serialized.includes('"param"')&&!extracted.has(serialized))
+        extracted.set(serialized,{ast:node,size});
+    }
+    return size;
+  }
+  visit(ast);
+  const bound=Math.max(1,Math.min(8,Number.isInteger(maxConcepts)?maxConcepts:8));
+  const entries=[...extracted].sort((a,b)=>b[1].size-a[1].size
+    ||a[0].localeCompare(b[0])).slice(0,bound);
+  const freeze=node=>Object.freeze(node.map(v=>Array.isArray(v)?freeze(v):v));
+  const concepts=entries.map(([serialized,row])=>Object.freeze({
+    fingerprint:sha(serialized),ast:freeze(row.ast),complexity:row.size,
+    parameters:Object.freeze([...params]),verified:false,verification:'ORACLE_ONLY',
+    reusableAfterGameProofOnly:true,exactSourceRevisionRequired:true,
+    freshCrossPlatformHoldoutsRequired:true,sourceWriteAuthorized:false
+  }));
+  return Object.freeze({concepts:Object.freeze(concepts),
+    reason:concepts.length?'CANDIDATE_ONLY':'NO_PARAMETRIC_SUBEXPRESSION',
+    verification:'ORACLE_ONLY',verified:false,persisted:false,
+    promotionAuthorized:false,sourceWrite:false,modelUsed:false});
+}
+
 // [유틸] AST -> Luau. Roblox 런타임이나 서버 권한으로 간주하지 않는다.
 function renderVibe59NumericLuaAST(node,params){
   if(!Array.isArray(node))throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
@@ -523,6 +602,7 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
     :oldText.replace(/return\s+[^;{}]+;/,'return '+result.expression+';');
   if(oldText===newText)throw Error('VIBE59_ALGORITHM_NO_SOURCE_DELTA');
   return Object.freeze({oldText,newText,search:result,
+    conceptCandidates:extractVibe59AlgorithmConceptCandidates({search:result}),
     acceptedRuntimeCounterexamples:observed.length,
     laboratory:laboratory?{...laboratory,winner:undefined}:null,
     sourceWrite:false,modelUsed:false,runtimeVerified:false,
@@ -675,7 +755,8 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
         ...(Array.isArray(req.algorithmSpec.verifiedCounterexamples)?req.algorithmSpec.verifiedCounterexamples:[])
           .map(row=>({args:row.args,output:row.output}))],
         trainingCases:generated.search.trainingCases,heldOutCases:generated.search.heldOutCases},
-      algorithmProof:generated.search,codeLaboratory:generated.laboratory,
+      algorithmProof:generated.search,algorithmConceptCandidates:generated.conceptCandidates,
+      codeLaboratory:generated.laboratory,
       ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
       sourceWrite:false,modelUsed:false,runtimeVerified:false});
   }
