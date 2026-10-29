@@ -816,6 +816,11 @@ test('offline Luau state function rewrite stays within original function and can
  assert.match(candidate.edits[0].replace,/phase = "active"/);
  assert.equal(candidate.vibe59TestPlan.pass,true);
  assert.equal(fs.readFileSync(path.join(root,'main.luau'),'utf8'),original);
+ const plain=original.replace('local function advance','function advance');
+ fs.writeFileSync(path.join(root,'main.luau'),plain);
+ const preserved=generate();
+ assert.match(preserved.edits[0].replace,/^function advance\(eventName\)/);
+ assert.equal(preserved.vibe59TestPlan.pass,true);
  fs.writeFileSync(path.join(root,'main.luau'),original+'local function advance(eventName)\n return false\nend\n');
  assert.throws(generate,/FUNCTION_OWNER_AMBIGUOUS/);
  fs.writeFileSync(path.join(root,'main.luau'),original.replace('return false','DataStoreService:UpdateAsync("key")'));
