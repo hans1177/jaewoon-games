@@ -526,6 +526,12 @@ test('Vibe2 generated algorithm integrates with canonical Roblox candidate witho
   find:'local function score(x,y)\n return 0\nend',algorithmSpec:spec}};
  const candidate=createVibe59CodeCandidate({order,sourceRoot:root,
   responsibleFiles:['logic.luau'],target:'roblox'});
+ const inferred=createVibe59CodeCandidate({order:{vibe59CodeRequest:{
+   ownerApproved:true,path:'logic.luau',algorithmSpec:spec}},sourceRoot:root,
+   responsibleFiles:['logic.luau'],target:'roblox'});
+ assert.equal(inferred.sourceFunctionAutoLocated,true);
+ assert.equal(inferred.sourceFunctionRewrite,true);
+ assert.equal(inferred.edits[0].find,'local function score(x,y)\n return 0\nend');
  assert.equal(candidate.vibe59CodeKind,'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM');
  assert.equal(candidate.algorithmProof.runtimeVerified,false);
  assert.equal(candidate.codeLaboratory.independentQa,'NOT_RUN');
