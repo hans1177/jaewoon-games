@@ -1,3 +1,5 @@
+// 파일명: assets/scene-flow.js
+// [메인] 씬별 기존 콜백/상태에 선택적인 에셋 목록을 보존한다.
 function clone(value) {
   return value == null ? value : JSON.parse(JSON.stringify(value));
 }
@@ -11,6 +13,8 @@ function normalizeScene(name, scene = {}) {
     exit: typeof scene.exit === 'function' ? scene.exit : null,
     snapshot: typeof scene.snapshot === 'function' ? scene.snapshot : null,
     restore: typeof scene.restore === 'function' ? scene.restore : null,
+    ...(Array.isArray(scene.assets) ? { assets: clone(scene.assets) } : {}),
+    ...(scene.assetOptions && typeof scene.assetOptions === 'object' ? { assetOptions: { ...scene.assetOptions } } : {}),
   };
 }
 
