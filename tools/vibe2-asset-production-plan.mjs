@@ -7346,6 +7346,15 @@ export async function produceRegisteredCc0Asset({
   repoRoot=process.cwd(),assetId='',gameId='',target='web',role='',
   blender='blender',fetchImpl=globalThis.fetch
 }={}){
+  const publicHttps=value=>{
+    try{
+      const uri=new URL(clean(value));
+      return uri.protocol==='https:'&&!uri.username&&!uri.password
+        &&!/(^localhost$|\\.localhost$|\\.local$|\\.internal$)/i.test(uri.hostname)
+        &&!/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(uri.hostname)
+        &&!uri.hostname.includes(':');
+    }catch{return false;}
+  };
   const type=clean(role).toLowerCase(),platform=clean(target).toLowerCase();
   const game=clean(gameId),id=clean(assetId);
   const expectedFamilies={character:'CHARACTER',creature:'CREATURE',building:'BUILDING',
@@ -7407,6 +7416,8 @@ export async function produceRegisteredCc0Asset({
     if(bytes.toString('ascii',0,4)!=='glTF'||bytes.readUInt32LE(4)!==2
       ||bytes.readUInt32LE(8)!==size)throw new Error('CC0_DOWNLOAD_GLB_INVALID');
     fs.mkdirSync(path.dirname(full),{recursive:true});
+    const realParent=fs.realpathSync(path.dirname(full));
+    if(!realParent.startsWith(assetsRoot+path.sep))throw new Error('CC0_DOWNLOAD_DIRECTORY_ESCAPE');
     const temp=full+'.cc0-download-'+process.pid;
     try{
       fs.writeFileSync(temp,bytes,{flag:'wx'});
