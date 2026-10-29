@@ -2746,7 +2746,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       });
     }
   }
-  // [원본 책임 함수 재작성] 여러 검증된 부분 수정을 한 함수로 재조립한다.
+  // [책임 그래프의 함수별 재작성] 한 파일의 서로 다른 함수에 있는 근거 수정들을
+  // 함수 경계마다 재조립한다. 중첩 함수의 부모를 고르거나 모호한 원본은 거부한다.
   for(const patch of [...candidates]){
     if(!Array.isArray(patch.edits)||patch.edits.length<2||patch.edits.length>6
       ||!patch.edits.every(edit=>edit.path===patch.edits[0].path))continue;
@@ -2754,25 +2755,45 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     if(!source||/SAVE|DATASTORE|SERVER_AUTHORITY/.test(clean(patch.deterministicRobloxNativeRepair)))continue;
     const parts=patch.edits.map(edit=>({edit,start:source.indexOf(edit.find)}));
     if(parts.some(row=>row.start<0||source.split(row.edit.find).length!==2))continue;
+    parts.sort((a,b)=>a.start-b.start);
+    if(parts.some((row,i)=>i>0&&parts[i-1].start+parts[i-1].edit.find.length>row.start))continue;
     const functions=inspectSourceFunctions(source,{language:'luau',maxFunctions:4096});
-    const owners=functions.filter(fn=>parts.every(row=>
-      row.start>=fn.start&&row.start+row.edit.find.length<=fn.end));
-    if(owners.length!==1)continue;
-    const fn=owners[0],original=source.slice(fn.start,fn.end);
-    if(original.length>16000||source.split(original).length!==2)continue;
-    let revised=original,limit=fn.end;
-    for(const row of parts.sort((a,b)=>b.start-a.start)){
-      const end=row.start+row.edit.find.length;
-      if(end>limit){revised='';break;}
-      revised=revised.slice(0,row.start-fn.start)+row.edit.replace+revised.slice(end-fn.start);
-      limit=row.start;
+    const owned=new Map();let unresolved=false;
+    for(const row of parts){
+      const covering=functions.filter(fn=>row.start>=fn.start&&row.start+row.edit.find.length<=fn.end)
+        .sort((a,b)=>(a.end-a.start)-(b.end-b.start));
+      if(!covering.length||(covering.length>1
+        &&covering[0].end-covering[0].start===covering[1].end-covering[1].start)){
+        unresolved=true;break;
+      }
+      const fn=covering[0],key=fn.name+':'+fn.start;
+      const rows=owned.get(key)||{fn,parts:[]};rows.parts.push(row);owned.set(key,rows);
     }
-    if(!revised||revised===original)continue;
-    candidates.push({...patch,edits:[{path:relative,find:original,replace:revised}],
-      deterministicPriority:patch.deterministicRobloxNativeRepair==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION'?-220:10,
-      deterministicRobloxNativeRepair:'ORIGINAL_FUNCTION_REWRITE',
+    if(unresolved||!owned.size||owned.size>3)continue;
+    const rewrites=[];
+    for(const {fn,parts:ownedParts} of owned.values()){
+      const original=source.slice(fn.start,fn.end);
+      if(original.length>16000||source.split(original).length!==2){unresolved=true;break;}
+      let revised=original;
+      for(const row of [...ownedParts].sort((a,b)=>b.start-a.start)){
+        const offset=row.start-fn.start,end=offset+row.edit.find.length;
+        if(revised.slice(offset,end)!==row.edit.find){unresolved=true;break;}
+        revised=revised.slice(0,offset)+row.edit.replace+revised.slice(end);
+      }
+      if(unresolved||revised===original){unresolved=true;break;}
+      rewrites.push({path:relative,find:original,replace:revised});
+    }
+    if(unresolved||!rewrites.length)continue;
+    const multi=rewrites.length>1,official=patch.deterministicRobloxNativeRepair==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION';
+    candidates.push({...patch,edits:rewrites,readDependencies:[relative],
+      dependencyHashes:{[relative]:sourceHashes.get(relative)},
+      deterministicPriority:official?-220:multi?-160:10,
+      deterministicRobloxNativeRepair:multi?'MULTI_FUNCTION_REWRITE':'ORIGINAL_FUNCTION_REWRITE',
       semanticGrounding:{...patch.semanticGrounding,originalRecipe:patch.deterministicRobloxNativeRepair,
-        sourceFunction:fn.name,originalEditCount:parts.length,exactFunctionRewrite:true,runtimeVerified:false}});
+        sourceFunctions:[...owned.values()].map(row=>row.fn.name),
+        sourceFunction:rewrites.length===1?[...owned.values()][0].fn.name:null,
+        originalEditCount:parts.length,functionCount:rewrites.length,
+        exactFunctionRewrite:true,sourceBound:true,modelUsed:false,runtimeVerified:false}});
   }
   // [코딩 엔진] 실제 소스 후보를 전부 비교하고 작은 수정부터 독립 검증한다.
   // 첫 후보 실패가 다른 책임 함수/파일의 실행 가능한 후보까지 막지 않는다.
@@ -9320,6 +9341,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         vibe59JsReplayPass:v59.vibe59JsReplay?.pass??null,
         vibe59AutoProbeCount:v59.vibe59AutoTestPlan?.generatedCaseCount||0,
         vibe59StrategiesChecked:v59.vibe59StrategiesChecked,vibe59SelectedStrategy:v59.vibe59Strategy,
+        vibe59FunctionRewrite:v59.sourceFunctionRewrite===true,
+        vibe59FunctionOwner:v59.sourceFunction||null,
+        vibe59OfflineAudit:v59.vibe59OfflineAudit||null,
+        vibe59IndependentRuntimeVerified:false,
         mode:v59.vibe59CodeKind==='COMPOSED_OFFLINE_SOURCE'?'VIBE59_COMPLEX_DESIGN':v59.vibe59CodeKind==='ROBLOX_CRAFTING_TRANSACTION'?'VIBE59_ROBLOX_CRAFTING_TRANSACTION':v59.vibe59CodeKind==='ROBLOX_PATHFINDING'?'VIBE59_ROBLOX_PATHFINDING':v59.vibe59CodeKind==='ROBLOX_ADVANCED_GAMEPLAY'?'VIBE59_ROBLOX_ADVANCED_GAMEPLAY':v59.vibe59CodeKind==='ROBLOX_SKILL_109'?'VIBE59_ROBLOX_SKILL_109':v59.vibe59CodeKind==='ROBLOX_DOMAIN_OPERATION'?'VIBE59_ROBLOX_DOMAIN_OPERATION':v59.vibe59CodeKind==='ROBLOX_SERVER_ACTION'?'VIBE59_ROBLOX_SERVER_ACTION':v59.vibe59CodeKind==='STATE_MACHINE'?'VIBE59_STATE_MACHINE':'VIBE59_COMPOSED_LOGIC',maxPredict:0,timeoutMs:0,contextWindow:0,
         temperature:0,completionMode:'VIBE59_COMPOSED_LOGIC'}};
       console.log('VIBE59_COMPOSED_LOGIC=VALIDATED:'+v59.ruleDigest.slice(0,12));

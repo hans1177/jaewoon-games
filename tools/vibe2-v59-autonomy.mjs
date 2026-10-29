@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
+import {inspectSourceFunctions,executableText} from './company-vibe2-expert-development.mjs';
 export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges,createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
@@ -894,6 +895,34 @@ export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsi
    ruleDigest:sha(JSON.stringify({sourceRevision:sha(source),rel,variable,min,max})),
    sourceSha256:sha(source),modelUsed:false,sourceWrite:false,runtimeVerified:false});
 }
+// [무모델 범용 함수 탐색] 기존 책임 함수의 정확한 문법 범위만 재작성한다.
+// 모호한 이름, 중첩 함수, 저장/권한/네트워크 경계는 원본 전체 교체 후보에서 제외한다.
+export function locateVibe59ExistingFunction({source='',functionName='',target=''}={}){
+ if(!['web','roblox'].includes(target)||typeof source!=='string'||source.length>260000
+   ||!/^[A-Za-z_][A-Za-z0-9_]{0,59}$/.test(functionName))
+   throw Error('VIBE59_FUNCTION_REWRITE_SCOPE');
+ const language=target==='roblox'?'luau':'javascript';
+ const names=inspectSourceFunctions(source,{language,maxFunctions:4096})
+   .filter(row=>row.name===functionName);
+ const symbol=new RegExp('\\bfunction\\s+'+functionName+'\\s*\\(','g');
+ const hits=[...executableText(source,language).matchAll(symbol)];
+ if(names.length!==1||hits.length!==1)throw Error('VIBE59_FUNCTION_OWNER_AMBIGUOUS');
+ const fn=names[0],original=source.slice(fn.start,fn.end);
+ if(original.length<20||original.length>24000||source.split(original).length!==2)
+   throw Error('VIBE59_FUNCTION_REWRITE_SCOPE');
+ const header=target==='roblox'
+   ?new RegExp('^(?:local\\s+)?function\\s+'+functionName+'\\s*\\(([^)]*)\\)')
+   :new RegExp('^function\\s+'+functionName+'\\s*\\(([^)]*)\\)\\s*\\{');
+ const match=header.exec(original);
+ if(!match||/\b(?:save|persist|load|reward|purchase|delete|remove|spend|grant)\b/i.test(functionName)
+   ||/\b(?:DataStoreService|GetDataStore|SetAsync|UpdateAsync|RemoveAsync|localStorage|sessionStorage|fetch|XMLHttpRequest|require|eval|FireServer|FireClient|FireAllClients|OnServerEvent|OnClientEvent|http|https)\b/i.test(executableText(original,language))
+   ||/\b(?:new\s+Function|Function\s*\()/.test(executableText(original,language))
+   ||inspectSourceFunctions(original,{language,maxFunctions:64}).some(row=>row.name!==functionName))
+   throw Error('VIBE59_FUNCTION_REWRITE_PROTECTED');
+ return Object.freeze({name:functionName,original,header:match[0],parameters:match[1].split(',').map(x=>x.trim()).filter(Boolean),
+   pathStart:fn.start,pathEnd:fn.end,sourceSha256:sha(source),sourceWrite:false,runtimeVerified:false});
+}
+
 export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFiles=[],target='',documents=null,verifiedCodePatterns=[]}={}){
   const creativeRequest=order.selectedTask?.vibe59CreativeRequest??order.vibe59CreativeRequest;
   const creativePlan=creativeRequest&&target==='roblox'?buildVibe59CreativityPlan({
@@ -908,7 +937,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     scenarios:creativeChosen.scenarios}:null);
   if(req==null)return createVibe59IntentStatCandidate({order,sourceRoot,responsibleFiles,target});
   const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction,req?.robloxCraftingAction].filter(Boolean);
-  if(!req||req.ownerApproved!==true||!req.path||(!req.find&&!req.algorithmSpec)
+  if(!req||req.ownerApproved!==true||!req.path||(!req.find&&!req.algorithmSpec&&!req.rewriteExistingFunction)
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
        [Boolean(req.rule),Boolean(req.machine),Boolean(req.algorithmSpec)].filter(Boolean).length!==1))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
@@ -925,12 +954,22 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   // [함수 자동 지정] 알고리즘 합성은 기존 함수 파서가 원본 본문을 찾는다.
   // 그 외 작업은 기존 앵커 필수 규칙을 유지한다.
   const content=documents instanceof Map&&documents.has(relative)
-    ?documents.get(relative):fs.readFileSync(full,'utf8'),find=req.find;
+    ?documents.get(relative):fs.readFileSync(full,'utf8');
+  let find=req.find;
+  const autoFunctionRewrite=req.rewriteExistingFunction===true&&Boolean(req.rule||req.machine);
+  const functionName=req.functionName||req.machine?.handlerName;
+  const originalFunction=autoFunctionRewrite
+    ?locateVibe59ExistingFunction({source:content,functionName,target}):null;
+  if(originalFunction){
+    if(find!=null&&find!==''&&find!==originalFunction.original)
+      throw Error('VIBE59_FUNCTION_REWRITE_ANCHOR_MISMATCH');
+    find=originalFunction.original;
+  }
   if(content.length>260000)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     if(find!=null&&typeof find!=='string')throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
-  }else if(typeof find!=='string'||!find||find.length>1024
+  }else if(typeof find!=='string'||!find||find.length>(autoFunctionRewrite?24000:1024)
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.algorithmSpec){
@@ -1063,6 +1102,11 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   if(!req.machine&&req.codegenVariant)
     throw Error('VIBE59_STRATEGY_REQUIRES_STATE_MACHINE');
   const ownerScenarios=req.scenarios||[];
+  if(autoFunctionRewrite&&(!Array.isArray(ownerScenarios)||ownerScenarios.length<2))
+    throw Error('VIBE59_FUNCTION_REWRITE_INDEPENDENT_SCENARIOS_REQUIRED');
+  if(autoFunctionRewrite&&req.machine&&(
+    req.machine.handlerName!==originalFunction.name||originalFunction.parameters.join(',')!=='eventName'))
+    throw Error('VIBE59_FUNCTION_REWRITE_HANDLER_SIGNATURE');
   const generatedProbes=generateVibe59AutonomousProbes({rule:req.rule,machine:req.machine,
     maxCases:Math.max(0,Math.min(10,20-ownerScenarios.length))});
   const probeCases=generatedProbes.cases;
@@ -1079,21 +1123,44 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     }):null;
     return {variant,compiled:result,replay};
   });
-  const selected=candidates.find(row=>row.replay?.pass!==false);
+  // [무모델 후보 경쟁] 같은 반례를 통과한 전략 중 조건 분기와 소스 비용 최소화.
+  const measured=candidates.map((row,index)=>({...row,index,
+    sourceBytes:Buffer.byteLength(row.compiled.source),
+    branchCount:(row.compiled.source.match(/\b(?:if|switch|case|elseif)\b/g)||[]).length}));
+  const selected=measured.filter(row=>row.replay?.pass!==false)
+    .sort((a,b)=>a.branchCount-b.branchCount||a.sourceBytes-b.sourceBytes||a.index-b.index)[0];
   if(!selected)throw Error('VIBE59_ALL_GENERATED_STRATEGIES_REJECTED:'+
     candidates.map(row=>row.variant+':'+(row.replay?.reason||row.replay?.counterexamples?.map(x=>x.name).join(','))).join('|'));
   const {compiled}=selected;
-  if(compiled.source===find)throw Error('VIBE59_NOOP');
+  let rewritten=compiled.source;
+  if(autoFunctionRewrite){
+    if(req.robloxServerAction)throw Error('VIBE59_FUNCTION_REWRITE_SERVER_AUTHORITY');
+    if(req.machine){
+      if(target==='roblox'&&originalFunction.header.startsWith('function '))
+        rewritten=rewritten.replace(/^local function /,'function ');
+    }else{
+      const body=compiled.source.split('\n').map(line=>'  '+line).join('\n');
+      rewritten=originalFunction.header+'\n'+body+'\n'+(target==='roblox'?'end':'}');
+    }
+    if(!rewritten.startsWith(originalFunction.header)||rewritten.length>24000)
+      throw Error('VIBE59_FUNCTION_REWRITE_SIGNATURE_DRIFT');
+  }
+  if(rewritten===find)throw Error('VIBE59_NOOP');
   const codeReplay=selected.replay;
   return Object.freeze({summary:'Vibe5.9 composed offline code',
     expectedEffect:'Source-grounded, explicitly approved state transition',
-    edits:[{path:relative,find,replace:compiled.source}],newFiles:[],replaceFiles:[],
+    edits:[{path:relative,find,replace:rewritten}],newFiles:[],replaceFiles:[],
+    ...(originalFunction?{sourceFunctionRewrite:true,sourceFunction:originalFunction.name,
+      sourceBeforeSha256:originalFunction.sourceSha256,
+      sourceFunctionAutoLocated:!clean(req.find),sourceFunctionOriginalBytes:Buffer.byteLength(find),
+      sourceFunctionRewrittenBytes:Buffer.byteLength(rewritten)}:{}),
     tests:[],vibe59TestPlan:tests,vibe59CodeKind:codeKind,
     vibe59AutoTestPlan:generatedProbes,
     vibe59JsReplay:codeReplay,vibe59Strategy:req.robloxServerAction?selected.compiled.strategy:selected.variant,
     ...(req.robloxServerAction?{vibe59RobloxSafety:selected.compiled.safety,
       vibe59RobloxInspection:inspectVibe59RobloxCoding({files:[{path:relative,source:content}],responsiblePaths:[relative]})}:{}),
-    vibe59StrategiesChecked:candidates.map(row=>({variant:row.variant,pass:row.replay?.pass??null})),
+    vibe59StrategiesChecked:measured.map(row=>({variant:row.variant,pass:row.replay?.pass??null,
+      staticBranchCount:row.branchCount,sourceBytes:row.sourceBytes,selected:row.variant===selected.variant})),
     ruleDigest:sha(JSON.stringify(req.rule||req.machine)),
     sourceWrite:false,modelUsed:false,runtimeVerified:false});
 }
@@ -1145,7 +1212,77 @@ export function applyVibe59ApprovedGameSourceChange({order={},sourceRoot='',resp
     sourceWrite:true,modelUsed:false,runtimeVerified:false,releaseVerified:false});
 }
 
+// [10능력 통합 증거] 새 실행기가 아닌 기존 Vibe5.9 후보의 함수·원인·성능·실패 증거.
+// 정적 분석은 실제 게임 QA와 무관하며 학습 승격 또는 원본 쓰기를 승인하지 않는다.
+export function evaluateVibe59OfflinePatchEvidence({candidate={},order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[]}={}){
+ if(!candidate||!Array.isArray(candidate.edits)||!candidate.edits.length||candidate.edits.length>24)
+   throw Error('VIBE59_CANDIDATE_AUDIT_SCOPE');
+ const root=fs.realpathSync(sourceRoot),allowed=new Set(responsibleFiles),files=new Map();
+ const owners=new Set(),callEdges=new Set(),hotPaths=[],touches=[],originals=[];
+ for(const edit of candidate.edits){
+  if(!allowed.has(edit.path)||typeof edit.find!=='string'||!edit.find
+    ||typeof edit.replace!=='string'||edit.find===edit.replace)
+    throw Error('VIBE59_CANDIDATE_AUDIT_UNOWNED_EDIT');
+  if(!files.has(edit.path)){
+   const full=path.resolve(root,edit.path);
+   if(!full.startsWith(root+path.sep)||fs.lstatSync(full).isSymbolicLink()
+     ||!fs.statSync(full).isFile()||!fs.realpathSync(full).startsWith(root+path.sep))
+     throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_ESCAPE');
+   const source=fs.readFileSync(full,'utf8');
+   if(source.length>260000)throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_LIMIT');
+   const functions=inspectSourceFunctions(source,{language:target==='roblox'?'luau':'javascript',maxFunctions:4096});
+   files.set(edit.path,{source,functions,hash:sha(source)});
+   originals.push({path:edit.path,sha256:sha(source)});
+  }
+  const file=files.get(edit.path),start=file.source.indexOf(edit.find);
+  const unique=start>=0&&file.source.indexOf(edit.find,start+edit.find.length)<0;
+  if(!unique&&candidate.vibe59CodeKind!=='COMPOSED_OFFLINE_SOURCE')
+    throw Error('VIBE59_CANDIDATE_AUDIT_STALE_ANCHOR');
+  if(unique){
+   const end=start+edit.find.length;
+   const bound=file.functions.filter(fn=>start>=fn.start&&end<=fn.end)
+     .sort((a,b)=>(a.end-a.start)-(b.end-b.start));
+   if(bound.length){
+    owners.add(edit.path+':'+bound[0].name);
+    for(const found of file.functions){
+     if(found!==bound[0]&&new RegExp('\\b'+found.name+'\\s*\\(').test(file.source.slice(start,end)))
+       callEdges.add(bound[0].name+'->'+found.name);
+    }
+   }
+  }
+  if(/(?:RenderStepped|Heartbeat|while\s+true|requestAnimationFrame|setInterval)/.test(edit.replace)
+     &&!/(?:RenderStepped|Heartbeat|while\s+true|requestAnimationFrame|setInterval)/.test(edit.find))
+    hotPaths.push(edit.path);
+  touches.push({path:edit.path,oldBytes:Buffer.byteLength(edit.find),newBytes:Buffer.byteLength(edit.replace),
+    sourceBound:unique});
+ }
+ const digest=sha(JSON.stringify([originals,touches,candidate.edits.map(x=>[x.path,x.find,x.replace])]));
+ const rejects=order.selectedTask?.vibe59RejectedCandidateFingerprints||order.vibe59RejectedCandidateFingerprints||[];
+ if(Array.isArray(rejects)&&rejects.length<=128&&rejects.includes(digest))
+   throw Error('VIBE59_REPEATED_FAILED_CANDIDATE');
+ const revision=clean(order.baseCommit||order.sourceRevision);
+ const gameId=clean(order.selectedTask?.gameId||order.gameId);
+ const ids=(Array.isArray(verifiedCodePatterns)?verifiedCodePatterns:[])
+  .filter(p=>p?.verified===true&&p?.retrievalEligible!==false&&!p?.quarantineReason
+    &&p?.rawCodeStored===false&&p?.independentQa==='PASS'&&p?.engine===target
+    &&clean(p?.sourceRevision)===revision&&revision&&gameId&&p?.gameId===gameId)
+  .map(p=>clean(p.id)).filter(Boolean).slice(0,8);
+ const staticEstimate={functionCount:owners.size,sourceFunctionOwners:[...owners],
+  existingCallEdges:[...callEdges],functionsAnalyzed:[...files.values()].reduce((n,f)=>n+f.functions.length,0),
+  changedBytes:touches.reduce((n,e)=>n+e.newBytes,0),
+  staticHotPathIntroductions:hotPaths,editCount:candidate.edits.length,
+  sourceEvidence:originals,dependentEdits:touches.filter(e=>!e.sourceBound).length,
+  verifiedPatternHints:ids,fingerprint:digest,
+  counterexampleCount:candidate.vibe59TestPlan?.counterexamples?.length||0,
+  generatedProbeCount:candidate.vibe59AutoTestPlan?.generatedCaseCount||0,
+  status:'STATIC_ONLY_QA_RUNTIME_REQUIRED',modelUsed:false,runtimeVerified:false};
+ return Object.freeze({...candidate,vibe59OfflineAudit:Object.freeze(staticEstimate)});
+}
+
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
+  const audited=candidate=>candidate?.edits?.length
+    ?evaluateVibe59OfflinePatchEvidence({candidate,order,sourceRoot,responsibleFiles,target,verifiedCodePatterns})
+    :candidate;
   // Existing assets are first-class Vibe worker edit candidates, not presentation-only notes.
   const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
     responsibleFiles,target,repositoryRoot});
@@ -1166,7 +1303,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
         throw error;
       }
     }
-    return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
+    return audited(createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns}));
   }
   if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
@@ -1250,7 +1387,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
   applyExactEdits(sourceRoot,edits,{documents:replay});
   for(const [relative,content] of documents)
     if(replay.get(relative)!==content)throw Error('VIBE59_COMPLEX_DESIGN_REPLAY_MISMATCH');
-  return Object.freeze({
+  return audited(Object.freeze({
     summary:'Vibe5.9 offline dependency-ordered complex design code synthesis',
     expectedEffect:'Atomically implement '+assembled.length+' owner-approved, source-grounded game-system steps',
     edits,newFiles:[],replaceFiles:[],tests:[],
@@ -1259,7 +1396,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
       operation:row.candidate.vibe59CodeKind,ruleDigest:row.candidate.ruleDigest})),
     ruleDigest:sha(JSON.stringify(assembled.map(row=>[row.id,row.dependsOn,row.candidate.ruleDigest]))),
     sourceWrite:false,modelUsed:false,runtimeVerified:false
-  });
+  }));
 }
 export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sourceImpact=null}={}){
   const requirement=compileVibe59Requirements({order,target});

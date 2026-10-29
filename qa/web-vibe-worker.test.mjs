@@ -8,7 +8,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
-import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate,createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -703,6 +703,76 @@ test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure 
  assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
    spec,source:'local function resolve(a,b)\n  game.Players:ClearAllChildren()\n  return 0\nend\n',
    relative:'score.server.luau'}),/EXISTING_PURE_FUNCTION_REQUIRED/);
+});
+
+test('offline general function rewrite composes original Web event handler from verified transition cases',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-general-web-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const original='const saved="save-v1";\nfunction advance(eventName) { return false; }\n';
+ fs.writeFileSync(path.join(root,'game.js'),original);
+ const machine={handlerName:'advance',stateVariable:'phase',
+  states:['idle','active'],events:['start'],transitions:[{from:'idle',to:'active',event:'start'}]};
+ const scenarios=[
+  {name:'start',initialState:{phase:'idle'},events:['start'],expectedState:{phase:'active'},expectedConsumed:[true]},
+  {name:'no-duplicate',initialState:{phase:'active'},events:['start'],expectedState:{phase:'active'},expectedConsumed:[false]}];
+ const req={path:'game.js',ownerApproved:true,rewriteExistingFunction:true,machine,scenarios};
+ const run=request=>createVibe59CodeCandidate({order:{vibe59CodeRequest:request},
+  target:'web',sourceRoot:root,responsibleFiles:['game.js']});
+ const result=run(req);
+ assert.equal(result.sourceFunctionRewrite,true);
+ assert.equal(result.sourceFunction,'advance');
+ assert.equal(result.sourceFunctionAutoLocated,true);
+ assert.equal(result.vibe59TestPlan.pass,true);
+ assert.equal(result.vibe59JsReplay.pass,true);
+ const audited=()=>createVibe59CodeCandidates({order:{vibe59CodeRequest:req},
+  target:'web',sourceRoot:root,responsibleFiles:['game.js']});
+ const checked=audited();
+ assert.equal(checked.vibe59OfflineAudit.status,'STATIC_ONLY_QA_RUNTIME_REQUIRED');
+ assert.equal(checked.vibe59OfflineAudit.functionCount,1);
+ assert.equal(checked.vibe59OfflineAudit.editCount,1);
+ assert.equal(checked.vibe59OfflineAudit.sourceEvidence.length,1);
+ assert.equal(checked.vibe59OfflineAudit.runtimeVerified,false);
+ const fingerprint=checked.vibe59OfflineAudit.fingerprint;
+ assert.equal(fingerprint.length,64);
+ assert.throws(()=>createVibe59CodeCandidates({order:{
+  vibe59CodeRequest:req,vibe59RejectedCandidateFingerprints:[fingerprint]},
+  target:'web',sourceRoot:root,responsibleFiles:['game.js']}),/REPEATED_FAILED_CANDIDATE/);
+ assert.equal(result.edits.length,1);
+ assert.match(result.edits[0].replace,/phase = "active"/);
+ assert.equal(result.runtimeVerified,false);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),original);
+ assert.throws(()=>run({...req,sourceSha256:'0'.repeat(64)}),/STALE_SOURCE/);
+ assert.throws(()=>run({...req,scenarios:scenarios.slice(0,1)}),/INDEPENDENT_SCENARIOS_REQUIRED/);
+ assert.throws(()=>run({...req,find:'return false;'}),/ANCHOR_MISMATCH/);
+});
+
+test('offline Luau state function rewrite stays within original function and cannot alter saves',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-luau-function-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const original='local keep="save-v1"\nlocal function advance(eventName)\n return false\nend\n';
+ fs.writeFileSync(path.join(root,'main.luau'),original);
+ const machine={handlerName:'advance',stateVariable:'phase',
+  states:['idle','active'],events:['start'],transitions:[{from:'idle',to:'active',event:'start'}]};
+ const scenarios=[{name:'start',initialState:{phase:'idle'},events:['start'],
+   expectedState:{phase:'active'},expectedConsumed:[true]},
+  {name:'repeat',initialState:{phase:'active'},events:['start'],
+   expectedState:{phase:'active'},expectedConsumed:[false]}];
+ const order={vibe59CodeRequest:{ownerApproved:true,path:'main.luau',
+  rewriteExistingFunction:true,machine,scenarios}};
+ const generate=()=>createVibe59CodeCandidate({order,sourceRoot:root,
+  responsibleFiles:['main.luau'],target:'roblox'});
+ const candidate=generate();
+ assert.equal(candidate.sourceFunction,'advance');
+ assert.equal(candidate.sourceFunctionAutoLocated,true);
+ assert.equal(candidate.edits[0].find,'local function advance(eventName)\n return false\nend');
+ assert.match(candidate.edits[0].replace,/local function advance\(eventName\)/);
+ assert.match(candidate.edits[0].replace,/phase = "active"/);
+ assert.equal(candidate.vibe59TestPlan.pass,true);
+ assert.equal(fs.readFileSync(path.join(root,'main.luau'),'utf8'),original);
+ fs.writeFileSync(path.join(root,'main.luau'),original+'local function advance(eventName)\n return false\nend\n');
+ assert.throws(generate,/FUNCTION_OWNER_AMBIGUOUS/);
+ fs.writeFileSync(path.join(root,'main.luau'),original.replace('return false','DataStoreService:UpdateAsync("key")'));
+ assert.throws(generate,/FUNCTION_REWRITE_PROTECTED/);
 });
 
 test('Vibe5.9 inherited AST concepts must be attested and acyclic before use',()=>{
