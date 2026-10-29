@@ -10,7 +10,8 @@ const sw=fs.readFileSync('sw.js','utf8');
 test('homepage and installed app open the front door, with ChatGPT opening internal PWA chat',()=>{
   const homepage=fs.readFileSync('index.html','utf8');
   const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
-  assert.equal(manifest.start_url,'/');
+  assert.equal(manifest.start_url,'./');
+  assert.equal(manifest.scope,'./');
   assert.equal(manifest.id,'/command.html');
   assert.equal(manifest.display,'standalone');
   assert.match(homepage,/<nav class="mobileDock"[\s\S]*?href="command\.html\?from=chatgpt-shortcut" data-chatgpt-launch/);
@@ -62,7 +63,8 @@ test('emergency local history is transient and queued directives replay without 
 test('inline command script parses and service worker cache is refreshed',()=>{
   assert.doesNotThrow(()=>new Function(inlineScript(command)));
   assert.match(sw,/jaewoon-pwa-v26/);
-  assert.match(sw,/['"]\/emergency-ai\.js['"]/);
+  assert.match(sw,/['"]emergency-ai\.js['"]/);
+  assert.match(sw,/const APP_SHELL=\['command\.html'/);
 });
 
 
@@ -70,6 +72,7 @@ test('GitHub Pages 프로젝트 하위 경로에서 홈페이지 스크립트와
   const index=fs.readFileSync('index.html','utf8');
   const client=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(index,/src="assets\/homepage-enhancements\.js"/);
+  assert.match(index,/navigator\.serviceWorker\.register\('sw\.js',\{scope:'\.\/'\}\)/);
   assert.match(index,/href="command\.html\?from=chatgpt-shortcut"/);
   assert.match(client,/new URL\('\.\.\/',import\.meta\.url\)/);
   assert.match(client,/getJson\('\/game-catalog\.json'\)/);
