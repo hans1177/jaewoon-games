@@ -212,7 +212,7 @@ test('approved Vibe5.9 edits the actual game source file, not just a staged map'
   assert.deepEqual(result.changedFiles,[file]);
   const changed=fs.readFileSync(path.join(root,file),'utf8');
   assert.notEqual(changed,source);assert.match(changed,/commitState\(\);\s*render\(\);/);
-  const ctx=vm.createContext({});vm.runInContext(changed.replace(/<\\/?script>/g,'')+'\nevent();event();',ctx);
+  const ctx=vm.createContext({});vm.runInContext(changed.replaceAll('<script>','').replaceAll('</script>','')+'\nevent();event();',ctx);
   assert.deepEqual(Array.from(vm.runInContext('[score,state,text]',ctx)),[2,2,'2']);
   fs.writeFileSync(path.join(root,file),source);
   assert.throws(()=>applyVibe59ApprovedGameSourceChange({order:{...order,selectedTask:{
