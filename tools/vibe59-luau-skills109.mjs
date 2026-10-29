@@ -84,7 +84,7 @@ function emit(p){
     actions=[f+' = '+f+' - '+p.amount,to+' = '+to+' + '+p.amount];break;
   default:throw Error('VIBE59_SKILL_UNKNOWN_KIND');
  }
- lines.push('if not ('+guard+') then return false end',...actions);
+ lines.push('if not ('+guard+') then return false end',...actions,'return true');
  return lines.join('\n');
 }
 function nonCodeMasked(text){
