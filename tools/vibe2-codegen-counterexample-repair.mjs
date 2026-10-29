@@ -5,10 +5,12 @@ import {sourceDigest} from './vibe2-game-source-index.mjs';
 // 메인: 기존 생성기·독립 평가기를 호출하는 한정된 반례 탐색. 큐·배포 권한은 없다.
 export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:sourceSha,
  failures=[],maxAttempts=3,approvedBudget=3}={}){
- const budget=Math.min(5,Math.max(0,Math.floor(maxAttempts)),Math.max(0,Math.floor(approvedBudget)));
+ const budget=Number.isSafeInteger(maxAttempts)&&Number.isSafeInteger(approvedBudget)&&
+  maxAttempts>0&&approvedBudget>0?Math.min(5,maxAttempts,approvedBudget):0;
  if(typeof generate!=='function'||typeof evaluate!=='function'||!/^[a-f0-9]{64}$/.test(sourceSha)||!budget)
   throw Error('VIBE2_REPAIR_CONTRACT');
  const seen=new Set(),counterexamples=[],attempts=[];
+ let skippedDuplicate=false;
  for(const failure of failures){
   if(failure.sourceDigest!==sourceSha||failure.reproduced!==true||!failure.failureSignature||
    !Array.isArray(failure.responsibleSymbols)||failure.responsibleSymbols.length<1||failure.responsibleSymbols.length>2)
@@ -20,7 +22,8 @@ export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:s
   const candidate=generate({attempt,counterexamples:[...counterexamples]});
   if(!candidate?.edits?.length)return {status:'BLOCKED',reason:'NO_SOURCE_DELTA',attempts,sourceWrite:false,runtimeVerified:false};
   const fingerprint=sourceDigest(JSON.stringify(candidate.edits));
-  if(seen.has(fingerprint))return {status:'BLOCKED',reason:'REPEATED_PATCH_FINGERPRINT',attempts,sourceWrite:false,runtimeVerified:false};
+  // [헬퍼] 중복은 평가하지 않지만 남은 승인 예산에서 다른 후보의 합성은 허용한다.
+  if(seen.has(fingerprint)){skippedDuplicate=true;continue;}
   seen.add(fingerprint);
   const result=evaluate(candidate,{attempt,counterexamples:[...counterexamples]});
   if(result&&typeof result.then==='function')throw Error('VIBE2_REPAIR_SYNCHRONOUS_ORACLE_REQUIRED');
@@ -32,5 +35,6 @@ export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:s
    return {status:'BLOCKED',reason:'UNREPRODUCED_OR_UNSCOPED_FAILURE',attempts,sourceWrite:false,runtimeVerified:false};
   counterexamples.push({...result,sourceDigest:sourceSha,patchFingerprint:fingerprint});
  }
- return {status:'BLOCKED',reason:'REPAIR_BUDGET_EXHAUSTED',attempts,counterexamples,sourceWrite:false,runtimeVerified:false};
+ return {status:'BLOCKED',reason:skippedDuplicate?'REPEATED_PATCH_FINGERPRINT':'REPAIR_BUDGET_EXHAUSTED',
+  attempts,counterexamples,sourceWrite:false,runtimeVerified:false};
 }

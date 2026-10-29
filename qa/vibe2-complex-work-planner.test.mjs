@@ -76,6 +76,45 @@ test('counterexample repair rejects duplicate patches, stale evidence and unboun
  assert.equal(stale.reason,'UNVERIFIED_COUNTEREXAMPLE');
 });
 
+// [회귀] 중복 후보로 예산을 낭비하지 않고 뒤따르는 새로운 패치만 평가한다.
+test('counterexample repair skips duplicate fingerprints but tries a later grounded alternative',()=>{
+ const sha=sourceDigest('original'),mk=n=>({edits:[{path:'game.js',find:'old',replace:String(n)}]});
+ const evaluated=[];
+ const result=runCodegenCounterexampleRepair({sourceDigest:sha,maxAttempts:3,approvedBudget:3,
+  generate:({attempt,counterexamples})=>{
+   if(attempt===2)assert.equal(counterexamples.length,1,'reproduced failure is retained');
+   return mk(attempt===2?2:0);
+  },
+  evaluate:c=>{
+   evaluated.push(c.edits[0].replace);
+   return c.edits[0].replace==='2'?{pass:true,actualGamePlaytest:false}:
+    {pass:false,reproduced:true,failureSignature:'hit-regression',responsibleSymbols:['hit']};
+  }});
+ assert.deepEqual(evaluated,['0','2']);
+ assert.equal(result.status,'CANDIDATE_VALIDATED');
+ assert.equal(result.attempts.length,2);
+ assert.equal(result.counterexamples.length,1);
+ assert.equal(result.sourceWrite,false);assert.equal(result.runtimeVerified,false);
+});
+
+test('counterexample repair skips known failed patch evidence and rejects malformed budgets',()=>{
+ const sha=sourceDigest('original'),mk=n=>({edits:[{path:'game.js',find:'old',replace:String(n)}]});
+ const fingerprint=sourceDigest(JSON.stringify(mk(0).edits)),evaluated=[];
+ const options={sourceDigest:sha,maxAttempts:3,approvedBudget:3,
+  failures:[{sourceDigest:sha,reproduced:true,failureSignature:'known-defect',
+   responsibleSymbols:['hit'],patchFingerprint:fingerprint}],
+  generate:({attempt})=>mk(attempt===0?0:3),
+  evaluate:c=>{evaluated.push(c.edits[0].replace);return {pass:true,actualGamePlaytest:false}}
+ };
+ const result=runCodegenCounterexampleRepair(options);
+ assert.equal(result.status,'CANDIDATE_VALIDATED');
+ assert.deepEqual(evaluated,['3']);
+ assert.equal(result.attempts.length,1);
+ for(const budget of [Number.NaN,Infinity,1.5,0,-1,'3']){
+  assert.throws(()=>runCodegenCounterexampleRepair({...options,maxAttempts:budget}),/VIBE2_REPAIR_CONTRACT/);
+ }
+});
+
 test('real line-defense source prevents dead attacks and duplicate death rewards while normal combat stays identical',()=>{
  const root='web-games/line-defense';
  const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:['index.html']});
