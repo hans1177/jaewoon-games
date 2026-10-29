@@ -607,7 +607,7 @@ test('Vibe gameplay numbers require exact existing owner onepatch, allowed platf
     id:'owner-roblox-onepatch-4091',gameId:'gem-survivor',
     target:'roblox',sourceRoot,department:'development',type:'implementation',
     ownerDirective:true,protectedChange:false,requiresOwnerDecision:false,designChange:false,
-    goal:'[OWNER_ROBLOX_ONEPATCH]\\n요청: 몬스터 체력과 공격력을 플레이 결과에 맞춰 개선해\\n기존 F0~F9 검증 유지',
+    goal:'[OWNER_ROBLOX_ONEPATCH]\n요청: 몬스터 체력과 공격력을 플레이 결과에 맞춰 개선해\n기존 F0~F9 검증 유지',
     responsibleFiles:[file],
     evidence:[
       'owner-request-instance:owner-roblox-onepatch-4091',
@@ -621,7 +621,7 @@ test('Vibe gameplay numbers require exact existing owner onepatch, allowed platf
     [{...task,protectedChange:true},centralPolicy],
     [{...task,requiresOwnerDecision:true},centralPolicy],
     [{...task,designChange:true},centralPolicy],
-    [{...task,goal:'[OWNER_ROBLOX_ONEPATCH]\\n요청: 몬스터 체력은 바꾸지 말고 그래픽만 수정해'},centralPolicy],
+    [{...task,goal:'[OWNER_ROBLOX_ONEPATCH]\n요청: 몬스터 체력은 바꾸지 말고 그래픽만 수정해'},centralPolicy],
     [{...task,id:'other'},centralPolicy],
     [{...task,sourceRoot:'roblox-games/other'},centralPolicy],
     [{...task,target:'web'},centralPolicy],
@@ -635,6 +635,6 @@ test('Vibe gameplay numbers require exact existing owner onepatch, allowed platf
     assert.equal(verifiedOwnerGameplayRequest({task:blocked,centralPolicy:policy}),false);
   }
   const source=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
-  assert.match(source,/verifiedOwnerGameplayRequest\\(\\{task,centralPolicy\\}\\)/);
-  assert.match(source,/verifiedOwnerGameplayChange \\}/);
+  assert.ok(source.includes('verifiedOwnerGameplayRequest({task,centralPolicy})'));
+  assert.ok(source.includes('experience:genericLearningExperience, verifiedOwnerGameplayChange'));
 });
