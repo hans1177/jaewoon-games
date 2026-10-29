@@ -47,38 +47,68 @@ try{
    }
   }finally{await identityPage.close();}
  }
- // 홈페이지: 게시 후 실제 모바일·데스크톱에서 게임별 즐겨찾기/삭제 노출과 확인 취소를 검증한다.
+ // 공개 홈페이지는 게임/즐겨찾기만 표시한다. 관리자 삭제 버튼은 등록 기기의 서버 검증 후 노출된다.
  if(liveBase){
   activeGameId='homepage';
   for(const viewport of [{width:390,height:844},{width:1280,height:800}]){
    const context=await browser.newContext({viewport,isMobile:viewport.width<700,hasTouch:viewport.width<700});
-   const home=await context.newPage(),errors=[];let confirmations=0,deleteRequests=0;
+   const home=await context.newPage(),errors=[];let confirmations=0,deleteRequests=0,listChecks=0;
    home.on('pageerror',error=>errors.push(error.message));
    home.on('dialog',async dialog=>{
     if(dialog.type()==='confirm'){
      confirmations++;
      assert.match(dialog.message(),/영구삭제/,'HOMEPAGE_DELETE_CONFIRM_TEXT');
-     await dialog.dismiss();
-    }else await dialog.dismiss();
+    }
+    await dialog.dismiss();
    });
+   // 실제 삭제 요청은 절대 보내지 않는다. 테스트 토큰은 UI 인증 응답만 임시 모의한다.
    await home.route('**/functions/v1/company-command',route=>{
-    deleteRequests++;return route.abort();
+    const request=route.request();
+    const cors={
+     'Access-Control-Allow-Origin':new URL(liveBase).origin,
+     'Access-Control-Allow-Headers':'content-type, apikey, x-jaewoon-device',
+     'Access-Control-Allow-Methods':'POST, OPTIONS'
+    };
+    if(request.method()==='OPTIONS')
+     return route.fulfill({status:204,headers:cors});
+    let payload={};
+    try{payload=JSON.parse(request.postData()||'{}');}catch{}
+    if(payload.action==='list'){
+     listChecks++;
+     return route.fulfill({status:200,contentType:'application/json',headers:cors,
+      body:JSON.stringify({ok:true,tasks:[]})});
+    }
+    if(payload.action==='create')deleteRequests++;
+    return route.abort();
    });
    try{
     const response=await home.goto(liveBase,{waitUntil:'domcontentloaded',timeout:30000});
     assert.equal(response?.status(),200,'HOMEPAGE_HTTP');
-    await home.locator('.foldGameCard .homeDeleteButton').first().waitFor({state:'visible',timeout:30000});
+    await home.locator('.foldGameCard .homeFavoriteToggle').first().waitFor({state:'visible',timeout:30000});
     const count=await home.locator('.foldGameCard').count();
-    const deletes=await home.locator('.foldGameCard .homeDeleteButton').count();
-    const favorites=await home.locator('.foldGameCard .homeFavoriteToggle').count();
-    assert.ok(count>0&&deletes===count&&favorites===count,'HOMEPAGE_GAME_ACTIONS_MISSING');
+    assert.ok(count>0,'HOMEPAGE_GAME_CARDS_MISSING');
+    assert.equal(await home.locator('.foldGameCard .homeFavoriteToggle').count(),count,'HOMEPAGE_FAVORITES_MISSING');
+    assert.equal(await home.locator('.homeDeleteButton').count(),0,'HOMEPAGE_GUEST_DELETE_VISIBLE');
+    assert.equal(listChecks,0,'HOMEPAGE_GUEST_MUST_NOT_REQUEST_OWNER_AUTH');
+    // 임시 브라우저에 소유자 토큰을 넣고 검증 성공 응답을 모의한다. 실제 권한을 발급하지 않는다.
+    await home.evaluate(()=>localStorage.setItem('jaewoon_command_device_v1','browser-smoke-untrusted-token'));
+    await home.reload({waitUntil:'domcontentloaded'});
+    await home.locator('.foldGameCard .homeDeleteButton').first().waitFor({state:'visible',timeout:30000});
+    const ownerCount=await home.locator('.foldGameCard').count();
+    assert.equal(ownerCount,count,'HOMEPAGE_OWNER_MUST_RETAIN_CARDS');
+    assert.equal(await home.locator('.foldGameCard .homeDeleteButton').count(),count,'HOMEPAGE_OWNER_DELETE_BUTTON_MISSING');
+    assert.ok(listChecks>0,'HOMEPAGE_OWNER_ACCESS_NOT_VERIFIED_BY_SERVER');
     assert.equal(await home.locator('[data-stop-request]').count(),0,'HOMEPAGE_STOP_BUTTON_SHOULD_BE_REMOVED');
     await home.locator('.foldGameCard .homeDeleteButton').first().click();
     assert.equal(confirmations,1,'HOMEPAGE_DELETE_CONFIRM_ONCE');
     assert.equal(deleteRequests,0,'HOMEPAGE_DELETE_CANCEL_MUST_NOT_CONTACT_SERVER');
     assert.equal(await home.locator('.foldGameCard').count(),count,'HOMEPAGE_DELETE_CANCEL_MUST_RETAIN_GAMES');
+    await home.evaluate(()=>localStorage.removeItem('jaewoon_command_device_v1'));
+    await home.reload({waitUntil:'domcontentloaded'});
+    await home.locator('.foldGameCard .homeFavoriteToggle').first().waitFor({state:'visible',timeout:30000});
+    assert.equal(await home.locator('.homeDeleteButton').count(),0,'HOMEPAGE_OWNER_LOGOUT_MUST_HIDE_DELETE');
     assert.deepEqual(errors,[],'HOMEPAGE_BROWSER_SCRIPT_ERRORS');
-    console.log('HOMEPAGE_FAVORITE_DELETE_CANCEL_PASS '+JSON.stringify({viewport,count,deletes,favorites}));
+    console.log('HOMEPAGE_OWNER_ONLY_CONTROLS_PASS '+JSON.stringify({viewport,count,listChecks,confirmations,deleteRequests}));
    }finally{await context.close();}
   }
  }
