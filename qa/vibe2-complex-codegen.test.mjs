@@ -14,7 +14,7 @@ import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
 import {createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 import {execFileSync} from 'node:child_process';
-import {runVibe2SourceWorker} from '../tools/vibe2-source-worker.mjs';
+import {runVibe2SourceWorker,applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
 
 function setup(t,target='web',html=false){
@@ -72,17 +72,27 @@ test('canonical Vibe2 no-model worker edits actual game source on an isolated ca
   git('config','user.name','Vibe2 Test');
   git('add','--',relative);git('commit','-qm','original game source');
   git('switch','-q','-c','vibe2/candidate/'+taskId);
-  const result=await runVibe2SourceWorker({cwd,applySource:true});
-  assert.equal(result.branch,'vibe2/candidate/'+taskId);
-  assert.ok(result.changedFiles.includes('index.html'));
+  // 정식 정책 계약에 검증된 자산 전수 평가가 없으면 작업자는 쓰기를 거부한다.
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),
+    /ALL_GAME_DYNAMIC_ASSET_BINDING_CONTRACT/);
+  assert.equal(fs.readFileSync(destination,'utf8'),original);
+  const sourceRoot=path.dirname(destination),candidateRoot=path.join(cwd,'.vibe2/candidates',taskId);
+  const candidate=createVibe59CodeCandidates({order:workOrder,sourceRoot,
+    responsibleFiles:['index.html'],target:'web',repositoryRoot:cwd});
+  assert.equal(candidate.modelUsed,false);
+  assert.equal(candidate.edits.length,1);
+  assert.throws(()=>applyVibe2CandidateToSource({cwd,sourceRoot,candidateRoot,candidate:{
+    ...candidate,edits:[...candidate.edits,{path:'index.html',
+      find:'this source anchor does not exist',replace:'never write'}]
+  }}),/edit find 불일치/);
+  assert.equal(fs.readFileSync(destination,'utf8'),original,'second invalid edit must preserve real game source');
+  const applied=applyVibe2CandidateToSource({cwd,sourceRoot,candidateRoot,candidate});
+  assert.equal(applied.branch,'vibe2/candidate/'+taskId);
+  assert.deepEqual(applied.changedFiles,['index.html']);
   const after=fs.readFileSync(destination,'utf8');
-  assert.notEqual(after,original,'canonical worker must change the game file, not just snapshot');
+  assert.notEqual(after,original,'canonical source-application responsibility must edit game file');
   assert.match(after,/updateMeta\(\);\s*hud\(\);\s*\}/);
-  assert.equal(fs.readFileSync(path.resolve(relative),'utf8'),original,'real repository source is never mutated by regression');
-  assert.equal(result.generation.modelUsed,false);
-  assert.equal(result.generation.attempts,1);
-  assert.equal(result.verifiedBeforePromotion,false);
-  assert.equal(result.mode,'isolated-candidate-branch-source-write');
+  assert.equal(fs.readFileSync(path.resolve(relative),'utf8'),original,'production repository source remains unchanged by regression');
 });
 
 test('natural language becomes an ordered two-step DAG tied to exact existing source definitions',t=>{
