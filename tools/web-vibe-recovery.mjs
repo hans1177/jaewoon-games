@@ -17,12 +17,31 @@ const eligible=task=>task?.ownerDirective===true&&task?.status==='queued'
   &&task?.evidence?.includes('owner-source-authenticated');
 export function selectWebVibeRecoveryTask(queue,{now=new Date().toISOString(),maxAttempts=3}={}){
   const state=assertWebVibeQueue(queue),at=validTime(now);
-  const task=state.tasks.find(row=>eligible(row)
-    &&Math.max(0,Math.floor(Number(row.recoveryAttempts)||0))<maxAttempts
-    &&(!row.recoveryNextAt||validTime(row.recoveryNextAt)<=at));
+  // Choose one ready task per game, preserving the owner's within-game order.
+  // Prioritize never-attempted games over retry loops, then the least recently
+  // failed game. This keeps an old repeatedly failing task from monopolizing
+  // the 5-minute existing WEB watchdog without dropping its retry entitlement.
+  const perGame=new Map();
+  for(const [index,task] of state.tasks.entries()){
+    if(!eligible(task)
+      ||Math.max(0,Math.floor(Number(task.recoveryAttempts)||0))>=maxAttempts
+      ||(task.recoveryNextAt&&validTime(task.recoveryNextAt)>at)
+      ||state.tasks.some(other=>other.gameId===task.gameId&&other.status==='running'))
+      continue;
+    if(!perGame.has(task.gameId))perGame.set(task.gameId,{task,index});
+  }
+  const ranked=[...perGame.values()].sort((a,b)=>{
+    const retry=t=>Math.max(0,Math.floor(Number(t.recoveryAttempts)||0));
+    if(retry(a.task)!==retry(b.task))return retry(a.task)-retry(b.task);
+    const last=t=>t.recoveryLastFailureAt?validTime(t.recoveryLastFailureAt):0;
+    if(last(a.task)!==last(b.task))return last(a.task)-last(b.task);
+    return a.index-b.index;
+  });
+  const task=ranked[0]?.task;
   if(!task)return null;
   return Object.freeze({id:task.id,taskId:task.id.slice(4),gameId:task.gameId,
-    files:task.sourceFiles||'*',sourceRoot:task.sourceRoot});
+    files:task.sourceFiles||'*',sourceRoot:task.sourceRoot,
+    queueSelection:'PER_GAME_FRESH_FIRST_BOUNDED_RETRY'});
 }
 export function recordWebVibeRecoveryFailure(queue,id,{now=new Date().toISOString(),maxAttempts=3,failureLog=''}={}){
   const state=assertWebVibeQueue(queue),at=validTime(now);
@@ -44,6 +63,40 @@ export function recordWebVibeRecoveryFailure(queue,id,{now=new Date().toISOStrin
     return {queue:assertWebVibeQueue({...state,tasks}),changed:true,
       attempts:Math.max(0,Math.floor(Number(task.recoveryAttempts)||0)),exhausted:false,
       failureClass:'PROVIDER_COOLDOWN',nextRetryAt:new Date(nextAt).toISOString()};
+  }
+  // A damaged ephemeral checkout is infrastructure, not an authored-source
+  // failure. Preserve the source retry budget, but bound these retries too.
+  // Never retry unverified authorization or billing errors through this path.
+  const workerFailure=String(failureLog).split(/\r?\n/)
+    .find(line=>line.startsWith('WEB_VIBE_WORKER_BLOCKED='))||'';
+  if(/^WEB_VIBE_WORKER_BLOCKED=(?:WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:|WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST)/.test(workerFailure)){
+    const infraAttempts=Math.min(4,Math.max(0,Math.floor(Number(task.recoveryInfraAttempts)||0))+1);
+    const exhausted=infraAttempts>=4;
+    const nextAt=exhausted?null:new Date(at+infraAttempts*15*60_000).toISOString();
+    const tasks=state.tasks.map(row=>row.id!==id?row:{...row,
+      recoveryFailureClass:'EPHEMERAL_CHECKOUT',recoveryInfraAttempts:infraAttempts,
+      recoveryLastFailureAt:new Date(at).toISOString(),recoveryNextAt:nextAt,
+      status:exhausted?'blocked':'queued',
+      blocker:exhausted?'WEB_VIBE_EPHEMERAL_CHECKOUT_REVIEW_REQUIRED':null,
+      evidence:[...new Set([...(row.evidence||[]),
+        'web-vibe-ephemeral-checkout:source-retry-budget-preserved'])]
+    });
+    return {queue:assertWebVibeQueue({...state,tasks}),changed:true,
+      attempts:Math.max(0,Math.floor(Number(task.recoveryAttempts)||0)),
+      infraAttempts,exhausted,failureClass:'EPHEMERAL_CHECKOUT',nextRetryAt:nextAt};
+  }
+  // Missing free credentials cannot be "fixed" by retrying paid providers.
+  if(workerFailure.startsWith('WEB_VIBE_WORKER_BLOCKED=WEB_VIBE_FREE_MODEL_KEY_MISSING:')){
+    const tasks=state.tasks.map(row=>row.id!==id?row:{...row,
+      status:'blocked',blocker:'WEB_VIBE_VERIFIED_FREE_MODEL_CREDENTIAL_REQUIRED',
+      recoveryFailureClass:'FREE_PROVIDER_NOT_CONFIGURED',
+      recoveryLastFailureAt:new Date(at).toISOString(),recoveryNextAt:null,
+      evidence:[...new Set([...(row.evidence||[]),
+        'web-vibe-free-model-key-missing:fail-closed-no-paid-fallback'])]
+    });
+    return {queue:assertWebVibeQueue({...state,tasks}),changed:true,
+      attempts:Math.max(0,Math.floor(Number(task.recoveryAttempts)||0)),
+      exhausted:true,failureClass:'FREE_PROVIDER_NOT_CONFIGURED'};
   }
   const attempts=Math.min(maxAttempts,Math.max(0,Math.floor(Number(task.recoveryAttempts)||0))+1);
   const exhausted=attempts>=maxAttempts,delayMs=attempts*30*60_000;
