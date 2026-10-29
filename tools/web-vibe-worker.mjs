@@ -6,6 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {assertWebVibeQueue,assertWebVibeTask,WEB_VIBE_CONTROL_BRANCH} from './web-vibe-organization.mjs';
 import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
+import {inspectSourceFunctions} from './company-vibe2-expert-development.mjs';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const REPO='hans1177/jaewoon-games';
 const clean=v=>String(v??'').trim();
@@ -51,14 +52,23 @@ export function chooseWebVibeTask(queue,taskId){
 export function safeWebVibeReplacement(original,response,{relative='index.html'}={}){
   let raw=clean(response).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
   let value;try{value=JSON.parse(raw);}catch{fail('WEB_VIBE_MODEL_JSON_INVALID');}
-  if(!value||typeof value.oldText!=='string'||typeof value.newText!=='string')fail('WEB_VIBE_MODEL_REPLACEMENT_INVALID');
-  const a=value.oldText,b=value.newText;
-  if(a.length<8||a.length>2500||b.length<1||b.length>4200||
-     a===b||!original.includes(a)||original.indexOf(a)!==original.lastIndexOf(a)||
-     /(?:child_process|process\.env|eval\s*\(|new Function\s*\(|javascript:|gh\s+api|git\s+push)/i.test(b))
-    fail('WEB_VIBE_MODEL_REPLACEMENT_UNSAFE_OR_NONUNIQUE');
-  const updated=original.replace(a,b);
-  if(updated.length<original.length*.85||updated.length>original.length*1.15)fail('WEB_VIBE_SOURCE_DELTA_OUT_OF_RANGE');
+  const edits=Array.isArray(value?.edits)?value.edits:[value];
+  if(!edits.length||edits.length>8)fail('WEB_VIBE_MODEL_REPLACEMENT_INVALID');
+  let updated=original;
+  const ranges=[];
+  for(const edit of edits){
+    if(!edit||typeof edit.oldText!=='string'||typeof edit.newText!=='string')fail('WEB_VIBE_MODEL_REPLACEMENT_INVALID');
+    const a=edit.oldText,b=edit.newText,index=original.indexOf(a);
+    if(a.length<8||a.length>32000||b.length<1||b.length>64000||a===b||index<0
+      ||index!==original.lastIndexOf(a)
+      ||ranges.some(row=>index<row.end&&index+a.length>row.start)
+      ||/(?:child_process|process\.env|eval\s*\(|new Function\s*\(|javascript:|gh\s+api|git\s+push)/i.test(b))
+      fail('WEB_VIBE_MODEL_REPLACEMENT_UNSAFE_OR_NONUNIQUE');
+    ranges.push({start:index,end:index+a.length,newText:b});
+  }
+  // 메인: 원본 위치 기준으로 역순 적용해 앞 변경이 뒤 앵커를 덮지 않게 한다. 검증 전 파일 쓰기 없음.
+  for(const row of ranges.sort((a,b)=>b.start-a.start))updated=updated.slice(0,row.start)+row.newText+updated.slice(row.end);
+  if(updated.length<original.length*.85||updated.length>original.length+Math.max(original.length*.15,64000))fail('WEB_VIBE_SOURCE_DELTA_OUT_OF_RANGE');
   if(/\.html?$/i.test(relative)&&(!/<html[\s>]/i.test(updated)||!/<\/html\s*>/i.test(updated)))fail('WEB_VIBE_HTML_STRUCTURE_CHANGED');
   if(/\.json$/i.test(relative)){try{JSON.parse(updated);}catch{fail('WEB_VIBE_JSON_STRUCTURE_INVALID');}}
   if(/\.svg$/i.test(relative)&&(!/<svg[\s>]/i.test(updated)||!/<\/svg\s*>/i.test(updated)))fail('WEB_VIBE_SVG_STRUCTURE_INVALID');
@@ -75,7 +85,7 @@ export function safeWebVibeReplacement(original,response,{relative='index.html'}
       run('node',['--check','--input-type='+(type==='module'?'module':'commonjs')],{input:block[2]});
     }
   }
-  return {updated,oldText:a,newText:b,reason:clean(value.reason).slice(0,280)};
+  return {updated,oldText:edits[0].oldText,newText:edits[0].newText,edits,reason:clean(value.reason).slice(0,280)};
 }
 // 유틸: 같은 게임의 실제 텍스트 책임 파일만 범위로 선택한다. 수량 제한 없음.
 export function resolveWebVibeSources(gameId,{repoRoot=ROOT,files='index.html'}={}){
@@ -166,7 +176,40 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
   const analysis={bytes:Buffer.byteLength(source.original),
     functions:[...source.original.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(row=>row[1]),
     scripts:[...source.original.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]};
-  const excerpt=source.original.slice(0,13500);
+  // 메인: 기존 함수 분석기로 파일 뒤쪽의 책임 함수와 직접 호출 의존성을 원본 그대로 읽는다.
+  const definitions=inspectSourceFunctions(source.original,{language:'web',maxFunctions:4096});
+  const signals=[
+    [/도감|이름표|bestiary|nameplate/i,/bestiary|nameplate|syncBestiary|label/i],
+    [/건축|청사진|설치|building|blueprint|placement/i,/build|blueprint|place|craft/i],
+    [/몬스터|전투|공격|은신|돌진|monster|combat|attack|enemy/i,/enemy|creature|combat|attack|damage|crystal|projectile/i],
+    [/저장|불러|save|load/i,/save|load|persist|serial/i],
+    [/맵|지역|월드|카메라|stage|world|camera|map/i,/world|region|stage|camera|spawn|render/i],
+    [/터치|버튼|조이스틱|입력|touch|button|joystick|input/i,/touch|pointer|input|joystick|button|control/i]
+  ].filter(([pattern])=>pattern.test(task.goal||'')).map(([,pattern])=>pattern);
+  const tokens=[...new Set((String(task.goal||'').match(/[A-Za-z_$][\w$]{2,}/g)||[]).map(x=>x.toLowerCase()))];
+  const ranked=definitions.map(fn=>({fn,score:
+    (task.responsibleSymbols||[]).includes(fn.name)?1000:
+    signals.reduce((sum,re)=>sum+(re.test(fn.name)?20:re.test(fn.code)?1:0),0)
+      +tokens.reduce((sum,token)=>sum+(fn.name.toLowerCase().includes(token)?12:fn.code.toLowerCase().includes(token)?1:0),0)
+  })).sort((a,b)=>b.score-a.score||a.fn.start-b.fn.start);
+  let excerpt=source.original,contextComplete=true;
+  if(source.original.length>64000){
+    const selected=ranked.filter(row=>row.score>0).map(row=>row.fn),included=new Set(),chunks=[];
+    let bytes=0;
+    for(let i=0;i<selected.length;i++){
+      const fn=selected[i];if(included.has(fn.start))continue;
+      const text=source.original.slice(fn.start,fn.end);
+      if(bytes+text.length>64000)continue;
+      chunks.push('\n=== COMPLETE FUNCTION '+fn.name+' ===\n'+text);bytes+=text.length;included.add(fn.start);
+      for(const dependency of definitions){
+        if(!included.has(dependency.start)&&fn.code.includes(dependency.name+'(')&&!selected.includes(dependency))selected.push(dependency);
+      }
+    }
+    if(!chunks.length)fail('WEB_VIBE_RESPONSIBILITY_CONTEXT_REQUIRED:'+source.relative);
+    excerpt='FUNCTION INDEX (names are not implementation evidence): '+definitions.map(fn=>fn.name).join(', ')
+      +'\nREAD-ONLY FILE HEADER:\n'+source.original.slice(0,2400)+chunks.join('\n');
+    contextComplete=false;
+  }
   if(/\.html?$/i.test(source.relative)){
     const scripts=analysis.scripts.filter(row=>! /\bsrc\s*=/i.test(row[1]));
     if(scripts.length===1&&(!scripts[0][1].trim()||/^\s*type=['"]module['"]\s*$/i.test(scripts[0][1]))){
@@ -211,18 +254,21 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
   if(cloud&&!clean(apiKey))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING:'+source.relative+':functions='+analysis.functions.length+':bytes='+analysis.bytes);
   const system='You are the independent WEB-only coding assistant. Inspect only the provided existing web-game file. '
     +'If no relevant change is needed, return JSON {"skip":true,"reason":"not affected"}. '
-    +'Otherwise return JSON with one unique bounded oldText,newText,reason replacement for this file. '
-    +'Never modify saves, security, deployment, tokens, Roblox/Unity, unrelated files, or run tools.';
+    +'Otherwise return JSON {edits:[{oldText,newText}],reason} with up to 8 non-overlapping exact replacements in existing responsible functions. '
+    +'Implement connected gameplay changes together; preserve function responsibilities and never append wrappers or overrides. '
+    +'Never modify saves, security, deployment, tokens, Roblox/Unity, unrelated files, or run tools. '
+    +'Only edit exact source shown below; never guess missing code or claim runtime verification.';
   const user='Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,2000)
     +'\nPrior independently merged patches for this same WEB game (context only; recheck latest source):\n'
     +previousVerified.map(row=>row.id+': '+clean(row.goal).slice(0,300)).join('\n').slice(0,1300)
     +'\nContinue from current game source and preserve existing mechanics/saves. Do not reset previous build-up progress.'
+    +'\nSource context: '+(contextComplete?'COMPLETE_FILE':'COMPLETE_SELECTED_FUNCTIONS_NOT_COMPLETE_FILE')
     +'\nExisting exact source excerpt:\n'+excerpt;
   let answer='';
   if(cloud){
     const result=await geminiImpl({apiKey,geminiRetryAt:task.geminiCooldownUntil||null,
       contents:[{role:'user',parts:[{text:system+'\n\n'+user}]}],
-      maxOutputTokens:3072,temperature:0,responseMimeType:'application/json',timeoutMs:95000});
+      maxOutputTokens:8192,temperature:0,responseMimeType:'application/json',timeoutMs:95000});
     answer=clean(result?.text);
   }else{
     const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),95000);
@@ -259,7 +305,7 @@ function createPr(task,changed,token,{cloud=false}={}){
   run('git',['add','--',...expected]);
   const staged=run('git',['diff','--cached','--name-only']).split(/\r?\n/).filter(Boolean).sort();
   if(!staged.length||JSON.stringify(staged)!==JSON.stringify(expected))fail('WEB_VIBE_UNEXPECTED_CHANGED_FILE');
-  run('git',['commit','-m','fix(web): dedicated Web Vibe candidate for '+task.gameId]);
+  run('git',['-c','user.name=jaewoon-web-vibe','-c','user.email=jaewoon-web-vibe@users.noreply.github.com','commit','-m','fix(web): dedicated Web Vibe candidate for '+task.gameId]);
   // Drop all preconfigured Git credential helpers. Only the dedicated WEB token
   // is available to the fixed GitHub CLI helper for this scoped PR push.
   run('git',['-c','credential.helper=','-c','credential.helper=!gh auth git-credential',

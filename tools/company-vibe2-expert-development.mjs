@@ -73,7 +73,8 @@ function matchingBrace(text,start){
   }
   return -1;
 }
-export function inspectSourceFunctions(source='',{language=''}={}){
+export function inspectSourceFunctions(source='',{language='',maxFunctions=160}={}){
+  const limit=Math.max(1,Math.min(4096,Math.floor(Number(maxFunctions)||160)));
   const raw=scriptsFromHtml(source),kind=sourceLanguage(raw,language),code=executableText(raw,kind),rows=[],seen=new Set();
   const patterns=[
     /(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/g,
@@ -95,7 +96,7 @@ export function inspectSourceFunctions(source='',{language=''}={}){
       }
       if(end>=0&&!seen.has(match[1])){seen.add(match[1]);rows.push({name:match[1],body:raw.slice(bodyStart,bodyEnd),code:code.slice(bodyStart,bodyEnd),start:match.index,end,language:kind});}
     }
-    return rows.sort((a,b)=>a.start-b.start).slice(0,160);
+    return rows.sort((a,b)=>a.start-b.start).slice(0,limit);
   }
   for(const pattern of patterns){
     for(const match of code.matchAll(pattern)){
@@ -106,7 +107,7 @@ export function inspectSourceFunctions(source='',{language=''}={}){
       seen.add(name);rows.push({name,body:raw.slice(open+1,close),code:code.slice(open+1,close),start:match.index||0,end:close+1,language:kind});
     }
   }
-  return rows.sort((a,b)=>a.start-b.start).slice(0,160);
+  return rows.sort((a,b)=>a.start-b.start).slice(0,limit);
 }
 function declaredStateNames(source='',language='javascript'){
   const raw=executableText(scriptsFromHtml(source),language),names=[];
