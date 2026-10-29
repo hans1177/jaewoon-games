@@ -848,16 +848,12 @@ test('Vibe5.9 Lua compiler fails closed on malformed, cyclic and injected AST',(
    /LUA_PARAMETERS_INVALID/);
  assert.throws(()=>renderVibe59NumericLuaAST(['param',0],['x','x']),
    /LUA_PARAMETERS_INVALID/);
- for(const illegal of ['x
-});
-,'and','end','function','goto','type','export'])
+ for(const illegal of ['x$','and','end','function','goto','type','export'])
    assert.throws(()=>renderVibe59NumericLuaAST(['param',0],[illegal]),
      /LUA_PARAMETERS_INVALID/);
  const badLua='local function score$(x)\n return 0\nend\n';
  assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
-   spec:{ownerApproved:true,functionName:'score
-});
-,parameters:['x'],
+   spec:{ownerApproved:true,functionName:'score$',parameters:['x'],
      examples:[{args:[1],output:1},{args:[2],output:2},{args:[3],output:3}],
      holdouts:[{args:[4],output:4},{args:[5],output:5}]},
    source:badLua,relative:'roblox-games/demo/logic.luau',target:'roblox'
