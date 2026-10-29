@@ -2744,12 +2744,6 @@ export function findWebRecurringBuildUpTask(project,repoRoot,queue){
   ['MOBILE_SAVE','모바일 터치·성능·화면 잘림·진행막힘·세이브/복구와 시작 경험을 고친다.']
  ];
  const [focus,idea]=domains[passed%domains.length];
- const recurringDesign=latestVerifiedDesign(repoRoot,project.gameId);
- const recurringTuning=centralPresentationPolicy(repoRoot)?.continuousGameplaySystemEvolutionContract?.ownerAuthorizedGameplayTuning;
- const recurringTuningAuthorized=Boolean(recurringDesign)
-   &&recurringTuning?.status==='OWNER_DIRECT_LOCKED'
-   &&recurringTuning?.authority==='OWNER_DIRECTIVE_2026-10-30'
-   &&['CORE_FUN','PROGRESSION'].includes(focus);
  // 큰 게임은 index.html을 장식하지 않고 실제 게임 모듈을 우선 수정한다.
  const owner=['game-v3.js','game.js','main.js','script.js','app.js','index.js','index.html']
    .map(name=>root+'/'+name).find(file=>fs.existsSync(sourceFile(repoRoot,file)))||root+'/index.html';
@@ -2766,12 +2760,9 @@ export function findWebRecurringBuildUpTask(project,repoRoot,queue){
  const goal=failed
    ?'[WEB_CAUSAL_REPAIR] '+project.gameId+' 이전 '+cause.id+' 실패 원인과 정확한 QA 근거를 조사하고 같은 책임 함수에서 수정해 동일 검증을 재실행한다: '+[cause.blocker,cause.lastOutcome].map(clean).filter(Boolean).join(' | ').slice(0,300)
    :'[WEB_AUTONOMOUS_BUILD_UP] '+project.gameId+' 세대 '+version+' / '+focus+'\n'+idea+
-     '\n검증된 전 세대·현재 소스·승인 설계·실제 플레이 문제를 비교해 한 가지 일관된 게임 기능 아이디어를 선택하고 기존 함수에 실제 구현한다. 문서·라벨·검증 버튼만 변경해 완료 처리하지 않는다. 기존 게임 정체성과 저장 키·저장 의미·서버 권한은 유지한다. 승인 근거 없는 밸런스 변경은 금지한다.'+
-     (recurringTuningAuthorized?' [OWNER_APPROVED_GAMEPLAY_TUNING_20261030] 체력·공격력·보상·드롭·밸런스·전투 기능·몬스터/보스 전술 AI까지 오너가 지속 개선을 승인했다. 현재 게임의 검증 설계·책임 코드·실제 플레이 지표에서 확인한 문제만 개선하고, 난이도/생존률/전투 시간/획득률/진행 불능·악용 가능성의 전후 근거를 제시한다. 저장·기존 진행·서버 판정 권한은 유지한다.':'')+
-     ' 해당 게임의 기존 BUILD_UP→F0~F9 후보·모바일 브라우저·저장·회귀·정확한 소스 revision 검증 후에만 다음 세대로 이어간다. 새 큐·워크플로·래퍼·우회 배포를 만들지 않는다.';
+     '\n검증된 전 세대·현재 소스·승인 설계·실제 플레이 문제를 비교해 한 가지 일관된 게임 기능 아이디어를 선택하고 기존 함수에 실제 구현한다. 문서·라벨·검증 버튼만 변경해 완료 처리하지 않는다. 기존 게임 정체성·밸런스·성벽/경제/동맹 같은 핵심 기능·저장 키와 저장 의미를 임의로 변경하지 않는다. 승인 근거 없는 신규 밸런스 변경은 금지한다. 해당 게임의 기존 BUILD_UP→F0~F9 후보·모바일 브라우저·저장·회귀·정확한 소스 revision 검증 후에만 다음 세대로 이어간다. 새 큐·워크플로·래퍼·우회 배포를 만들지 않는다.';
  let out=task(prefix+version,project,goal+playtestContext,responsible,failed?'high':'normal','medium',[
    'web-autonomous-recurring-build-up:v1','web-recurring-focus:'+focus,
-   ...(recurringTuningAuthorized?['owner-gameplay-tuning:OWNER_DIRECTIVE_2026-10-30','owner-gameplay-tuning:VERIFIED_SAME_GAME_DESIGN','owner-gameplay-tuning:BEFORE_AFTER_AND_RUNTIME_QA_REQUIRED']:[]),
    'web-loop:EXISTING_BUILD_UP_F0_F9','real-source-diff-required','preserve-existing-save-and-rules',
    'web-playtest-feedback:'+(ownPlaytest?'OBSERVED':'UNVERIFIED'),
    ...(noSourceGrowth?['web-source-growth:NO_DELTA_REPAIR_REQUIRED']:[]),
@@ -3245,14 +3236,6 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const existingHolisticBackfillRequired=project?.existing===true&&existingHolisticMissingFocuses.includes(focusPillar);
 
   const designContext=latestVerifiedDesign(repoRoot,project.gameId);
-  // [오너 지시] 검증된 같은 게임 설계와 실제 플레이 근거가 있는 게임플레이 회차만 수치 조정을 허용한다.
-  const tuningPolicy=centralPresentationPolicy(repoRoot)?.continuousGameplaySystemEvolutionContract?.ownerAuthorizedGameplayTuning;
-  const gameplayTuningAuthorized=tuningPolicy?.status==='OWNER_DIRECT_LOCKED'
-    &&tuningPolicy?.authority==='OWNER_DIRECTIVE_2026-10-30'
-    &&tuningPolicy?.requiresSameGameCurrentSourceAndLatestVerifiedDesign===true
-    &&Boolean(designContext)
-    &&['CORE_FUN','PROGRESSION'].includes(focusPillar)
-    &&['web','roblox','unity'].includes(clean(project.engine).toLowerCase());
   const gameplayDesignRequired=['CORE_FUN','PROGRESSION'].includes(focusPillar);
   if(gameplayDesignRequired&&!designContext)return null;
   const designContent=designContext?.record?.content&&typeof designContext.record.content==='object'
@@ -3381,9 +3364,6 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     :phase==='REPAIR'
       ?'최근 실패/차단 근거를 먼저 재현하고 원인 책임 시스템을 직접 수리한다. 같은 증상을 다른 wrapper나 임시 override로 덮지 말고 원인을 제거한 뒤 동일 시나리오를 다시 검증한다. 수리 범위 안에서 작은 품질 개선도 함께 남긴다.'
       :'새 기능을 억지로 늘리지 말고 현재 구현의 병목을 최적화한다. 중복/불필요한 처리, 모바일 입력 지연, 렌더/업데이트 비용, 상태 불일치, UI 가독성, 코드 책임 혼선을 기존 구조 안에서 직접 줄이고 실제 플레이 품질을 한 단계 올린다.';
-  const tuningInstruction=gameplayTuningAuthorized
-    ?' [OWNER_APPROVED_GAMEPLAY_TUNING_20261030] 오너가 이 게임의 체력(플레이어/적), 공격력, 드롭·보상, 난이도·경제 밸런스, 전투 시스템, 몬스터·보스·NPC 전술 AI의 지속 개선을 명시 승인했다. 실제 책임 게임플레이 코드를 현재 소스·검증된 동일 게임 설계와 연결해서 필요한 값이나 행동만 변경해라. 기존 플레이 대비 적정 난이도/생존률/전투 시간/보상 획득률/진행 가능성/전략 차이를 관찰하고 전후 수치·회귀를 기록한다. 승인 설계의 정체성과 기존 저장 키·스키마·누적 진행, 서버의 피해/보상 판정 권한과 멀티 보안은 유지한다. 표현·캐릭터 AI만으로 체력/피해/보상을 임의 지급하지 않는다. 실제 플레이·독립 QA·기존 F0~F9와 배포 게이트를 통과하지 못하면 반영 성공으로 기록하지 않는다. 새 파이프라인이나 유료 서비스를 만들지 않는다.'
-    :'';
   const visualInstruction=focusPillar==='PRESENTATION'
     ?' 그래픽은 마커/상수/파티클 존재만으로 완료하지 않는다. 캐릭터·적 실루엣, 환경 깊이와 랜드마크, 애니메이션 상태, 공격/피격/사망 반응, VFX, 조명, UI 계층, 카메라/오디오 타이밍 중 현재 약한 부분을 실제 렌더 소스에서 여러 요소 함께 개선하고 전후 차이가 눈에 보여야 한다.'
     :'';
@@ -3399,10 +3379,10 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     ?' 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.'
     :'';
   const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
-${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}${tuningInstruction}${flowQualityInstruction}${flowArchitecture?` CURRENT_GAME_SOURCE_INVENTORY=${JSON.stringify({count:candidates.length,paths:candidates.slice(0,24),responsibleSourceFingerprints:responsibleFileFingerprints})}; LIBRARY_PATH_CHECK=${JSON.stringify({found:presentLibraryHints,missing:absentLibraryHints,sourceFingerprints:availableLibrarySources})}. 실제 소스 위치와 존재하는 라이브러리를 먼저 대조하고, 동일 이름이어도 버전·내용·저장 계약을 확인하기 전에는 덮어쓰거나 신규 중복 시스템을 생성하지 않는다.`:''}${platformLane==='unity-web'?' Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리 예산, 핵심 루프 실제 진행을 독립 검증한다. Unity Native PASS나 Roblox PASS로 대체하지 않는다.':''}
+${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}${flowQualityInstruction}${flowArchitecture?` CURRENT_GAME_SOURCE_INVENTORY=${JSON.stringify({count:candidates.length,paths:candidates.slice(0,24),responsibleSourceFingerprints:responsibleFileFingerprints})}; LIBRARY_PATH_CHECK=${JSON.stringify({found:presentLibraryHints,missing:absentLibraryHints,sourceFingerprints:availableLibrarySources})}. 실제 소스 위치와 존재하는 라이브러리를 먼저 대조하고, 동일 이름이어도 버전·내용·저장 계약을 확인하기 전에는 덮어쓰거나 신규 중복 시스템을 생성하지 않는다.`:''}${platformLane==='unity-web'?' Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리 예산, 핵심 루프 실제 진행을 독립 검증한다. Unity Native PASS나 Roblox PASS로 대체하지 않는다.':''}
 ${expectationInstruction}
 현재 근거=${explicitGap}
-설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 새 핵심 규칙·밸런스·경제/진행 의미는 승인 없이 바꾸지 않는다. 승인된 체력·공격력·보상·전투·AI 개선은 동일 게임 검증 설계와 실제 플레이 근거로만 조정한다. 세이브 스키마·서버 권한은 변경하지 않는다.
+설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
 작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
 
   const designEvidence=designContext?[
@@ -3424,7 +3404,6 @@ ${expectationInstruction}
     'studio-quality-design-is-not-implementation-ceiling',
     'studio-quality-real-source-delta-required',
     'studio-quality-next-cycle-required:YES',
-    ...(gameplayTuningAuthorized?['owner-gameplay-tuning:OWNER_DIRECTIVE_2026-10-30','owner-gameplay-tuning:VERIFIED_SAME_GAME_DESIGN','owner-gameplay-tuning:BEFORE_AFTER_AND_RUNTIME_QA_REQUIRED']:[]),
     'studio-quality-expectation-level:'+String(iterationExpectation.expectationLevel),
     'studio-quality-expectation-tier:'+iterationExpectation.tier,
     'studio-quality-detail-depth:'+String(iterationExpectation.detailDepthLevel),
