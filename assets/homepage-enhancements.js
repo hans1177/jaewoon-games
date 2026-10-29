@@ -9,37 +9,94 @@ let platformExposure={games:[]};
 let publishedWebRoutes=new Set();
 // 메인: 즐겨찾기는 기기의 브라우저에만 저장한다. 서버 카탈로그·게임 저장 데이터는 변경하지 않는다.
 const FAVORITES_STORAGE_KEY='jaewoon-home-game-favorites-v1';
-const HIDDEN_GAMES_STORAGE_KEY='jaewoon-home-hidden-games-v1';
+const DELETE_PENDING_KEY='jaewoon-home-delete-pending-v1';
 let hiddenGameIds=new Set();
-// 메인: 목록 삭제는 기기별 표시 설정이다. 원본·세이브·서버의 개발상태는 변경하지 않는다.
+// 메인: 삭제 대기 게임만 현재 화면에서 숨긴다. 새로고침 후에는 서버 카탈로그가 진실이다.
 function loadHiddenGames(){
   try{
-    const value=JSON.parse(localStorage.getItem(HIDDEN_GAMES_STORAGE_KEY)||'[]');
-    return new Set(Array.isArray(value)?value.filter(id=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)).slice(0,200):[]);
+    const ids=JSON.parse(localStorage.getItem(DELETE_PENDING_KEY)||'[]');
+    return new Set((Array.isArray(ids)?ids:[]).filter(id=>typeof id==='string'&&/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)).slice(0,200));
   }catch{return new Set();}
 }
 function gameDeleteButton(id,name){
-  return `<button class="homeManageButton homeDeleteButton" type="button" data-hide-game="${esc(id)}" aria-label="${esc(name)} 게임 삭제" title="게임 삭제 · 자동개발 중단">삭제</button>`;
+  return '<button class="homeManageButton homeDeleteButton" type="button" data-hide-game="'+esc(id)+'" aria-label="'+esc(name)+' 게임 영구삭제" title="게임 영구삭제 · 개발중단">삭제</button>';
 }
 function gameTitleActions(id,name){
-  return `<span class="homeGameTitleActions">${favoriteButton(id,name)}${gameDeleteButton(id,name)}</span>`;
+  return '<span class="homeGameTitleActions">'+favoriteButton(id,name)+gameDeleteButton(id,name)+'</span>';
 }
-async function hideGameFromHome(id){
+// 유틸: 같은 사이트의 게임별 고유 접두사로 저장된 브라우저 세이브만 제거한다.
+function clearOwnedBrowserSaves(id){
+  const prefixes=[id,id.replaceAll('-','_')];
+  for(const storage of [localStorage,sessionStorage]){
+    try{
+      for(let i=storage.length-1;i>=0;i--){
+        const key=storage.key(i);
+        if(key&&prefixes.some(prefix=>key===prefix||key.startsWith(prefix+'-')||key.startsWith(prefix+'_')))
+          storage.removeItem(key);
+      }
+    }catch{}
+  }
+}
+// 메인: 원본 삭제가 canonical main 카탈로그에서 확인된 경우에만 이 기기의 게임별 저장을 정리한다.
+function reconcileConfirmedDeletions(catalog){
+  let pending=[];
+  try{pending=JSON.parse(localStorage.getItem(DELETE_PENDING_KEY)||'[]');}catch{}
+  if(!Array.isArray(pending)||!pending.length)return;
+  const removed=new Set(catalog?.permanentRemovalPolicy?.ids||[]);
+  const left=[];
+  for(const id of pending){
+    if(typeof id!=='string'||!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id))continue;
+    if(removed.has(id)&&!(catalog.games||[]).some(game=>game.id===id)){
+      clearOwnedBrowserSaves(id);
+      hiddenGameIds.delete(id);
+    }else left.push(id);
+  }
+  try{localStorage.setItem(DELETE_PENDING_KEY,JSON.stringify(left));}catch{}
+}
+// 메인: 서버가 영구삭제 작업을 거부하거나 실패한 경우 영구삭제 대기 표시를 해제한다.
+async function checkDeletionStatus(){
+  if(!hiddenGameIds.size)return;
+  const token=localStorage.getItem('jaewoon_command_device_v1')||'';
+  if(!token)return;
+  try{
+    const response=await fetch('https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command',{
+      method:'POST',cache:'no-store',
+      headers:{'Content-Type':'application/json','apikey':'sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ','x-jaewoon-device':token},
+      body:JSON.stringify({action:'list'})
+    });
+    if(!response.ok)return;
+    const payload=await response.json();
+    if(payload?.ok!==true||!Array.isArray(payload.tasks))return;
+    const errors=new Set(payload.tasks.filter(task=>['failed','needs_input','cancelled'].includes(task.status)
+      &&task.body==='OWNER_DELETE_GAME:'+task.game_id).map(task=>task.game_id));
+    let changed=false;
+    for(const id of errors){
+      if(!hiddenGameIds.delete(id))continue;
+      changed=true;
+      window.alert(id+' 게임 영구삭제 처리가 실패했어. 게임 원본은 삭제 완료로 확인되지 않았어.');
+    }
+    if(changed){
+      try{localStorage.setItem(DELETE_PENDING_KEY,JSON.stringify([...hiddenGameIds]));}catch{}
+      lastSignature='';await refresh();
+    }
+  }catch{}
+}
+async function requestPermanentGameDelete(id){
   const row=favoriteDisplayRows.find(game=>gameIdOf(game)===id);
   if(!row)return;
   const name=identityOf(row).name||row.name||id;
-  // 즐겨찾기 해제에는 확인창이 없고 삭제에만 확인창이 하나 있다.
-  if(!window.confirm(name+' 게임을 삭제할까?\n즐겨찾기·홈 목록에서 사라지고 자동개발도 중단돼.\n기존 게임 파일과 저장 데이터는 보존돼.'))return;
+  // 삭제 시에만 한 번 확인한다. 게임 원본·게시 목록을 삭제하되 다른 플랫폼 저장은 별개다.
+  if(!window.confirm(name+' 게임을 영구삭제할까?\n게임 원본 파일과 홈페이지 게시 경로가 삭제되고 개발도 중단돼.\n이 기기의 해당 게임 전용 저장도 삭제돼.\n다른 기기와 Roblox 클라우드 저장은 별도로 남을 수 있어.\n되돌릴 수 없어.'))return;
   const token=localStorage.getItem('jaewoon_command_device_v1')||'';
   if(!token){
-    window.alert('개발중단 요청에 오너 기기 인증이 필요해. 게임은 삭제하지 않았어. 개발 지시 화면에서 먼저 기기를 등록해줘.');
+    window.alert('영구삭제 요청에 오너 기기 인증이 필요해. 삭제하지 않았어. 개발 지시 화면에서 먼저 기기를 등록해줘.');
     location.href='/command.html';
     return;
   }
-  const button=document.querySelector(`button[data-hide-game="${id}"]`);
-  if(button)button.disabled=true;
+  const buttons=[...document.querySelectorAll('button[data-hide-game]')].filter(button=>button.dataset.hideGame===id);
+  buttons.forEach(button=>button.disabled=true);
   try{
-    const body='OWNER_STOP_GAME:'+id;
+    const body='OWNER_DELETE_GAME:'+id;
     const response=await fetch('https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command',{
       method:'POST',cache:'no-store',
       headers:{'Content-Type':'application/json','apikey':'sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ','x-jaewoon-device':token},
@@ -47,26 +104,21 @@ async function hideGameFromHome(id){
     });
     const result=await response.json().catch(()=>null);
     if(!response.ok||result?.ok!==true||result?.task?.game_id!==id||result?.task?.body!==body
-      ||result?.task?.status!=='received')throw Error(String(result?.error||'OWNER_STOP_NOT_ACCEPTED'));
-    // 접수 성공 후에만 즐겨찾기에서 제거한다. 실제 개발중단은 인증된 PWA 브리지가 확정한다.
+      ||result?.task?.status!=='received'||!/^[0-9a-f-]{36}$/i.test(result?.task?.id||''))
+      throw Error(String(result?.error||'OWNER_DELETE_NOT_ACCEPTED'));
+    let pending=[];
+    try{pending=JSON.parse(localStorage.getItem(DELETE_PENDING_KEY)||'[]');}catch{}
+    try{localStorage.setItem(DELETE_PENDING_KEY,JSON.stringify([...new Set([...(Array.isArray(pending)?pending:[]),id])]));}catch{}
     favoriteGameIds.delete(id);
     hiddenGameIds.add(id);
-    try{
-      localStorage.setItem(FAVORITES_STORAGE_KEY,JSON.stringify([...favoriteGameIds]));
-      localStorage.setItem(HIDDEN_GAMES_STORAGE_KEY,JSON.stringify([...hiddenGameIds]));
-    }catch{}
+    try{localStorage.setItem(FAVORITES_STORAGE_KEY,JSON.stringify([...favoriteGameIds]));}catch{}
     lastSignature='';
     await refresh();
     renderFavoriteGames();
+    window.alert('영구삭제 요청이 서버에 접수됐어. 원본 삭제와 GitHub Pages 반영은 서버 처리 후 확정돼.');
   }catch(error){
-    window.alert('개발중단 요청을 서버에 접수하지 못했어. 즐겨찾기와 게임은 삭제하지 않았어.\n'+String(error.message||error));
-  }finally{if(button)button.disabled=false;}
-}
-function restoreHiddenGames(){
-  hiddenGameIds.clear();
-  try{localStorage.removeItem(HIDDEN_GAMES_STORAGE_KEY);}catch{}
-  lastSignature='';
-  refresh();
+    window.alert('영구삭제 요청을 접수하지 못했어. 게임 원본과 저장은 변경하지 않았어.\n'+String(error.message||error));
+  }finally{buttons.forEach(button=>button.disabled=false);}
 }
 let favoriteGameIds=new Set();
 let favoriteDisplayRows=[];
@@ -559,12 +611,12 @@ function buildGameCenter(catalog,status){
   const development=developmentRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game))&&!hiddenGameIds.has(gameIdOf(game))&&!availableIds.has(gameIdOf(game)));
   // 사용자 숨김과 별도로 관리 대상 원본 행은 유지한다.
   favoriteDisplayRows=[...internalReleaseRows(catalog,status),...developmentRows(catalog,status)].filter(game=>!stopped.has(gameIdOf(game)));
-  const restore=document.getElementById('homeHiddenRestoreBar')||document.createElement('div');
-  restore.id='homeHiddenRestoreBar';
-  restore.className='homeRestoreBar';
-  restore.hidden=hiddenGameIds.size===0;
-  restore.innerHTML=`<span>숨긴 게임 ${hiddenGameIds.size}개 · 복원해도 서버 개발중단은 해제되지 않아</span><button type="button" class="homeRestoreButton" data-restore-hidden>목록 복원</button>`;
-  hub.prepend(restore);
+  const pending=document.getElementById('homeHiddenRestoreBar')||document.createElement('div');
+  pending.id='homeHiddenRestoreBar';
+  pending.className='homeRestoreBar';
+  pending.hidden=hiddenGameIds.size===0;
+  pending.textContent='영구삭제 요청 접수 · 서버 및 게시 반영 확인 중 ('+hiddenGameIds.size+'개)';
+  hub.prepend(pending);
   buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임','입장 가능한 게임 · 로비 체험 또는 본게임 가능',available);
   buildShelf(hub,'homeDevelopmentGameCenter','개발 중','설계·로비 구현과 검증이 진행 중인 게임',development);
   document.documentElement.dataset.homePlatformAvailableCount=String(available.length);
@@ -605,10 +657,8 @@ function bindDirectGameLaunch(){
     if(counter)counter.textContent=(index+1)+'/'+total;
   },true);
   document.addEventListener('click',event=>{
-    const restore=event.target.closest('button[data-restore-hidden]');
-    if(restore){restoreHiddenGames();return;}
     const hide=event.target.closest('button[data-hide-game]');
-    if(hide){hideGameFromHome(hide.dataset.hideGame);return;}
+    if(hide){requestPermanentGameDelete(hide.dataset.hideGame);return;}
     const favorite=event.target.closest('button[data-favorite-id]');
     if(favorite){toggleFavorite(favorite.dataset.favoriteId);return;}
     const control=event.target.closest('button[data-gallery-step]');
@@ -654,6 +704,7 @@ async function refresh(){
     if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
+    reconcileConfirmedDeletions(catalog);
     // 배포 목록에 없는 원본 경로는 실행 링크로 노출하지 않는다.
     publishedWebRoutes=new Set((Array.isArray(webManifest?.routes)?webManifest.routes:[])
       .filter(route=>/^web-games\/[a-z0-9][a-z0-9-]*\/$/.test(route)));
@@ -681,18 +732,16 @@ function main(){
     if(event.key===FAVORITES_STORAGE_KEY){
       favoriteGameIds=loadFavorites();updateFavoriteButtons();renderFavoriteGames();
     }
-    if(event.key===HIDDEN_GAMES_STORAGE_KEY){
-      hiddenGameIds=loadHiddenGames();lastSignature='';refresh();
-    }
+    if(event.key===DELETE_PENDING_KEY){hiddenGameIds=loadHiddenGames();lastSignature='';refresh();}
   });
   installStyles();
   simplifyPage();
   bindDirectGameLaunch();
   refresh();
-  setInterval(()=>{if(!document.hidden)refresh();},SYNC_INTERVAL_MS);
-  window.addEventListener('focus',refresh);
+  setInterval(()=>{if(!document.hidden){refresh();checkDeletionStatus();}},SYNC_INTERVAL_MS);
+  window.addEventListener('focus',()=>{refresh();checkDeletionStatus();});
   window.addEventListener('online',refresh);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){refresh();checkDeletionStatus();}});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
 
