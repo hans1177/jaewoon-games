@@ -756,6 +756,72 @@ test('Vibe5.9 model-free sign handles distinct positive and negative zero oracle
  }
 });
 
+// [무모델 엔진 확장] 상·하한 클램프는 검증된 예제와 숨긴 반례만으로 합성한다.
+test('Vibe5.9 bounded clamp synthesizes Web and Luau code without AI or game writes',()=>{
+ const spec={parameters:['x'],constants:[10],maxDepth:2,
+  examples:[{args:[-8],output:0},{args:[1.25],output:1.25},
+    {args:[30],output:10},{args:[7.5],output:7.5}],
+  holdouts:[{args:[-0.3],output:0},{args:[10],output:10},
+    {args:[99],output:10},{args:[0],output:0}]};
+ const reference=x=>Math.min(Math.max(x,0),10);
+ for(const strategy of [undefined,'evolution']){
+  const found=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy,maxGenerations:6}});
+  assert.equal(found.casesPassed,8);
+  assert.equal(found.modelUsed,false);
+  assert.equal(found.sourceWrite,false);
+  assert.equal(found.runtimeVerified,false);
+  assert.equal(found.exactGameQaRequired,true);
+  assert.equal(found.ast.kind??found.ast[0],'clamp');
+  assert.equal(found.expression,'Math.min(Math.max(x,0),10)');
+  const web=vm.runInNewContext('(function(x){'+found.source+'})');
+  for(const row of [...spec.examples,...spec.holdouts])
+    assert.ok(Object.is(web(...row.args),row.output));
+  for(const x of [-1000,-0.1,0,0.1,3.3,10,10.001,1000])
+    assert.equal(web(x),reference(x));
+  assert.equal(renderVibe59NumericLuaAST(found.ast,found.parameters),
+    'math.clamp(x,0,10)');
+  const concepts=extractVibe59AlgorithmConceptCandidates({search:found});
+  assert.ok(concepts.concepts.some(c=>c.ast[0]==='clamp'));
+  assert.equal(concepts.verified,false);
+  assert.equal(concepts.promotionAuthorized,false);
+ }
+ const webSource='function clampHealth(x){return x;}\n';
+ const webResult=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'clampHealth'},
+  source:webSource,relative:'web-games/test/health.js',target:'web'});
+ assert.match(webResult.newText,/return Math\.min\(Math\.max\(x,0\),10\);/);
+ assert.equal(webResult.sourceWrite,false);
+ assert.equal(webSource,'function clampHealth(x){return x;}\n');
+ const luaSource='local function clampHealth(x)\n return x\nend\n';
+ const luaResult=synthesizeVibe59NumericAlgorithmSource({
+  spec:{...spec,ownerApproved:true,functionName:'clampHealth'},
+  source:luaSource,relative:'ServerScriptService/Health.luau',target:'roblox'});
+ assert.match(luaResult.newText,/return math\.clamp\(x,0,10\)/);
+ assert.equal(luaResult.runtimeVerified,false);
+ assert.equal(luaResult.sourceWrite,false);
+ assert.equal(luaSource,'local function clampHealth(x)\n return x\nend\n');
+});
+
+test('Vibe5.9 clamp AST rejects inverted, dynamic and injected numeric limits',()=>{
+ const x=['param',0],lo=['const',0],hi=['const',10];
+ const cases=[
+  ['clamp',x,hi,lo],
+  ['clamp',x,lo,lo],
+  ['clamp',x,['param',0],hi],
+  ['clamp',x,lo,['const',Infinity]],
+  ['clamp',x,lo,['const','game:Destroy()']],
+  {kind:'clamp',value:{kind:'reference',name:'x'},
+    minimum:{kind:'constant',value:10},maximum:{kind:'constant',value:0}},
+  {kind:'clamp',value:{kind:'reference',name:'x'},
+    minimum:{kind:'constant',value:0},maximum:{kind:'constant',value:10},
+    injection:'workspace:ClearAllChildren()'}
+ ];
+ for(const ast of cases)assert.throws(()=>renderVibe59NumericLuaAST(ast,['x']),
+  /LUA_AST_REQUIRED/);
+ assert.equal(renderVibe59NumericLuaAST(['clamp',x,lo,hi],['x']),
+  'math.clamp(x,0,10)');
+});
+
 test('Vibe5.9 AST proof can generate a Luau expression only in an existing pure function',()=>{
  const spec={ownerApproved:true,functionName:'resolve',parameters:['a','b'],
   examples:[{args:[3,2],output:3},{args:[1,5],output:5},{args:[9,4],output:9}],

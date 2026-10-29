@@ -137,8 +137,14 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
           typeof part[1]==='number'&&Number.isFinite(part[1])&&Math.abs(part[1])<=1000))return false;
         continue;
       }
-      const arity=unary.includes(op)?2:operators.includes(op)?3:op==='select'?4:0;
+      const arity=unary.includes(op)?2:operators.includes(op)?3:['select','clamp'].includes(op)?4:0;
       if(!arity||part.length!==arity)return false;
+      // Limit clamp to explicit finite, ordered constants; no dynamic bound evaluation.
+      if(op==='clamp'&&(!Array.isArray(part[2])||part[2][0]!=='const'||part[2].length!==2
+        ||!Array.isArray(part[3])||part[3][0]!=='const'||part[3].length!==2
+        ||typeof part[2][1]!=='number'||typeof part[3][1]!=='number'
+        ||!Number.isFinite(part[2][1])||!Number.isFinite(part[3][1])
+        ||part[2][1]>=part[3][1]))return false;
       for(let i=1;i<arity;i++)stack.push({node:part[i],depth:frame.depth+1,
         ancestors:[...frame.ancestors,part]});
     }
@@ -160,6 +166,10 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     // A conditional evaluates only the selected branch: an invalid unused
     // branch is not a failed candidate or a hidden holdout counterexample.
     if(op==='select')return evaluate(x>0?b:c,args);
+    if(op==='clamp'){
+      const lower=evaluate(b,args),upper=evaluate(c,args);
+      return valid(lower)&&valid(upper)&&lower<upper?Math.min(Math.max(x,lower),upper):NaN;
+    }
     const y=evaluate(b,args);
     if(!valid(y))return NaN;
     switch(op){
@@ -179,6 +189,11 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     if(op==='neg')return '(-'+x+')';
     if(op==='trunc'&&target==='roblox')return '(math.modf('+x+'))';
     if(unary.includes(op))return math+op+'('+x+')';
+    if(op==='clamp'){
+      const lower=render(b,target),upper=render(c,target);
+      return target==='roblox'?'math.clamp('+x+','+lower+','+upper+')':
+        'Math.min(Math.max('+x+','+lower+'),'+upper+')';
+    }
     const y=render(b,target);
     if(op==='min'||op==='max')return math+op+'('+x+','+y+')';
     if(op==='gt'||op==='lt')return target==='roblox'
@@ -220,6 +235,9 @@ function evolveVibe59NumericAST({params,constants,rows,active,maxDepth,spec}){
     }
   }
   for(const term of [...terms,...verifiedSeeds])add(term,0);
+  for(let i=0;i<params.length;i++)for(const lower of constants)for(const upper of constants){
+    if(lower<upper)add(['clamp',['param',i],['const',lower],['const',upper]],0);
+  }
   const primitives=terms.slice(0,12);
   for(const a of primitives){
     for(const op of unary)add([op,a],0);
@@ -322,6 +340,13 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     }
     for(const [j,p] of params.entries())add(p,rows.map(row=>row.args[j]),1,1,0,{kind:'reference',name:p});
     for(const c of fixed)add(String(c),rows.map(()=>c),1,0,0,{kind:'constant',value:c});
+    for(const [j,param] of params.entries())for(const lower of fixed)for(const upper of fixed){
+      if(lower>=upper)continue;
+      add('Math.min(Math.max('+param+','+lower+'),'+upper+')',
+        rows.map(row=>Math.min(Math.max(row.args[j],lower),upper)),4,1,1,
+        {kind:'clamp',value:{kind:'reference',name:param},
+          minimum:{kind:'constant',value:lower},maximum:{kind:'constant',value:upper}});
+    }
     const operators=[
       ['+', (a,b)=>a+b],['-',(a,b)=>a-b],['*',(a,b)=>a*b],
       ['/',(a,b)=>b===0?NaN:a/b],['min',(a,b)=>Math.min(a,b)],
@@ -432,6 +457,12 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
       if(op==='select'&&node.length===4)
         return [op,normalize(node[1],depth+1,next),normalize(node[2],depth+1,next),
           normalize(node[3],depth+1,next)];
+      if(op==='clamp'&&node.length===4){
+        const value=normalize(node[1],depth+1,next);
+        const lower=normalize(node[2],depth+1,next),upper=normalize(node[3],depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return [op,value,lower,upper];
+      }
     }else if(Object.getPrototypeOf(node)===Object.prototype){
       if(node.kind==='reference'){
         const index=params.indexOf(node.name);
@@ -444,6 +475,14 @@ export function extractVibe59AlgorithmConceptCandidates({search={},maxConcepts=8
       if(node.kind==='crossover'&&binary.has(node.operator))
         return [node.operator,normalize(node.left,depth+1,next),
           normalize(node.right,depth+1,next)];
+      if(node.kind==='clamp'&&Object.keys(node).length===4
+        &&['kind','value','minimum','maximum'].every(k=>Object.hasOwn(node,k))){
+        const value=normalize(node.value,depth+1,next);
+        const lower=normalize(node.minimum,depth+1,next);
+        const upper=normalize(node.maximum,depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return ['clamp',value,lower,upper];
+      }
     }
     throw Error('VIBE59_UNSAFE_CONCEPT_AST');
   }
@@ -514,9 +553,17 @@ export function renderVibe59NumericLuaAST(node,params){
       if(op==='select'&&part.length===4)
         return [op,normalize(part[1],depth+1,next),normalize(part[2],depth+1,next),
           normalize(part[3],depth+1,next)];
+      if(op==='clamp'&&part.length===4){
+        const value=normalize(part[1],depth+1,next);
+        const lower=normalize(part[2],depth+1,next);
+        const upper=normalize(part[3],depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return [op,value,lower,upper];
+      }
     }else if(Object.getPrototypeOf(part)===Object.prototype){
       const fields={reference:['kind','name'],constant:['kind','value'],
-        mutation:['kind','operator','operand'],crossover:['kind','operator','left','right']};
+        mutation:['kind','operator','operand'],crossover:['kind','operator','left','right'],
+        clamp:['kind','value','minimum','maximum']};
       const required=Object.hasOwn(fields,part.kind)?fields[part.kind]:null;
       if(!required||Object.keys(part).length!==required.length
         ||required.some(key=>!Object.hasOwn(part,key)))
@@ -533,6 +580,13 @@ export function renderVibe59NumericLuaAST(node,params){
       if(part.kind==='crossover'&&binary.has(part.operator))
         return [part.operator,normalize(part.left,depth+1,next),
           normalize(part.right,depth+1,next)];
+      if(part.kind==='clamp'){
+        const value=normalize(part.value,depth+1,next);
+        const lower=normalize(part.minimum,depth+1,next);
+        const upper=normalize(part.maximum,depth+1,next);
+        if(lower[0]==='const'&&upper[0]==='const'&&lower[1]<upper[1])
+          return ['clamp',value,lower,upper];
+      }
     }
     throw Error('VIBE59_ALGORITHM_LUA_AST_REQUIRED');
   }
@@ -546,6 +600,7 @@ export function renderVibe59NumericLuaAST(node,params){
     if(op==='trunc')return '(math.modf('+x+'))';
     if(['abs','floor','ceil','sign'].includes(op))return 'math.'+op+'('+x+')';
     if(op==='round')return 'math.floor(('+x+')+0.5)';
+    if(op==='clamp')return 'math.clamp('+x+','+render(b)+','+render(c)+')';
     const y=render(b);
     if(op==='min'||op==='max')return 'math.'+op+'('+x+','+y+')';
     if(op==='gt'||op==='lt')return '(('+x+(op==='gt'?'>':'<')+y+') and 1 or 0)';
