@@ -1161,3 +1161,80 @@ test('model-free Luau buildup inserts a numeric gameplay effect after a verified
  assert.match(candidate.edits[0].replace,/trace\(a\)\s*a\.coins \+= 3/);
  assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
 });
+
+
+// [빌드업] 기존 행동으로 실제 진행도를 올리고 문턱 도달 시 기존 기능을 한 번 해금한다.
+test('model-free action buildup composes progress and threshold unlock after an existing event',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const defaults={progress:0,unlocked:false,dead:false,views:0};',
+  'function trace(a){a.views+=1;}',
+  'function collect(a){',
+  ' trace(a);',
+  ' return true;',
+  '}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 trace 호출 뒤 a.progress를 1 증가시켜; 함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.unlocked를 true로 설정해'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.complexPlan.atomCount,3);
+ assert.equal(candidate.edits.length,1);
+ assert.ok(candidate.complexPlan.atoms.some(atom=>atom.operation==='unlock-after-existing-call'));
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const collect=vm.runInNewContext(docs.get('game.js')+';collect');
+ const alive={progress:0,unlocked:false,dead:false,views:0};
+ assert.equal(collect(alive),true);assert.equal(alive.progress,1);assert.equal(alive.unlocked,false);
+ assert.equal(collect(alive),true);assert.equal(alive.progress,2);assert.equal(alive.unlocked,true);
+ assert.equal(collect(alive),true);assert.equal(alive.progress,3);assert.equal(alive.unlocked,true);
+ assert.equal(alive.views,3);
+ const dead={progress:1,unlocked:false,dead:true,views:0};
+ assert.equal(collect(dead),false);assert.equal(dead.progress,1);
+ assert.equal(dead.unlocked,false);assert.equal(dead.views,0);
+ assert.match(docs.get('game.js'),/a\.progress \+= 1;[\s\S]*![(]a\.unlocked[)]/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);
+});
+
+test('model-free threshold unlock rejects invented or already-mutated game state',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const original='const defaults={progress:0,unlocked:false};\nfunction trace(a){a.views+=1;}\nfunction collect(a){trace(a);return true;}';
+ fs.writeFileSync(file,original);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'In collect after trace call when a.progress >= 2 set a.unlocked to true'};
+ const candidate=createVibe59CodeCandidates({...options,order});
+ assert.equal(candidate.complexPlan.atomCount,1);
+ assert.match(candidate.edits[0].replace,/a\.unlocked = true;/);
+ assert.equal(candidate.runtimeVerified,false);
+ for(const altered of [
+  original.replace('unlocked:false','unlocked:0'),
+  original.replace('progress:0','progress:false'),
+  original.replace('trace(a);return true','trace(a);a.unlocked=true;return true')
+ ]){
+  fs.writeFileSync(file,altered);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order}),/UNLOCK_EXISTING_THRESHOLD_OR_FLAG_UNPROVEN/);
+ }
+ fs.writeFileSync(file,original);
+ for(const bad of [
+  '함수 collect에서 trace 호출 뒤 a.progress >= 0이면 a.unlocked를 true로 설정해',
+  '함수 collect에서 trace 호출 뒤 a.progress < 2이면 a.unlocked를 true로 설정해',
+  '함수 collect에서 trace 호출 뒤 a.progress >= 2이면 a.progress를 true로 설정해'
+ ]){
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal:bad}}),/UNLOCK_EXISTING_THRESHOLD_OR_FLAG_UNPROVEN/);
+ }
+ assert.equal(fs.readFileSync(file,'utf8'),original);
+});
+
+test('model-free Luau action threshold unlock only changes existing server boolean',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { progress = 0, unlocked = false }\nlocal function trace(a)\n a.views += 1\nend\nlocal function collect(a)\n trace(a)\n return true\nend\n';
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,
+  responsibleFiles:['server/Game.server.luau'],target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+   goal:'함수 collect에서 trace 호출 뒤 a.progress >= 3이면 a.unlocked를 true로 설정해'}});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/not \(a\.unlocked\) and \(a\.progress >= 3\)/);
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.modelUsed,false);
+});
