@@ -487,6 +487,8 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
   active.delete(node.id);done.add(node.id);sorted.push(node);
  };
  try{nodes.forEach(visit)}catch{return blocked('DEPENDENCY_CYCLE')}
+ // [전체 인계] 승인된 문장 예산과 같은 48개 실제 변경을 상한으로 유지한다.
+ if(sorted.length>48)return blocked('ATOMIC_CHANGE_BUDGET');
  const waves=[];
  for(let i=0;i<sorted.length;i+=12)waves.push({index:waves.length,requirements:sorted.slice(i,i+12).map(n=>n.id),
   dependsOnPreviousWave:i>0,requiredPriorVerifiedRevision:i>0?'EXACT_NEXT_SOURCE_REVISION':null});
@@ -497,7 +499,9 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
 
 export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
  if(plan?.status!=='BOUND')return null;
- const selected=plan.nodes.slice(0,12),atoms=[],ranges=new Map(),originals=new Map(),byOwner=new Map();
+ // [원자 생성] 앞의 12개만 내보내 나머지 요구가 사라지는 부분 결과를 금지한다.
+ if(plan.nodes.length>48)throw Error('VIBE2_COMPLEX_ATOMIC_CHANGE_BUDGET');
+ const selected=plan.nodes,atoms=[],ranges=new Map(),originals=new Map(),byOwner=new Map();
  for(const file of plan.index.files){
   const actual=fs.readFileSync(safeSourceFile(sourceRoot,file.path),'utf8');
   if(sourceDigest(actual)!==file.sourceSha256)throw Error('VIBE2_COMPLEX_STALE_SOURCE');
@@ -560,7 +564,7 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
   vibe59DesignSteps:atoms.map(a=>({id:a.id,dependsOn:a.dependencies,operation:a.operation,ruleDigest:sourceDigest(JSON.stringify(a.typedAst))})),
   complexPlan:{digest:plan.digest,baseRevisionSha:plan.baseRevisionSha,sourceDigest:plan.index.digest,
    requirementCount:plan.intent.requirements.length,boundSymbolCount:new Set(plan.nodes.map(n=>n.owner.id)).size,atomCount:atoms.length,
-   completedWave:0,deferredWaves:plan.waves.slice(1),atoms},
+   completedWave:plan.waves.length-1,deferredWaves:[],atoms},
   ruleDigest:sourceDigest(JSON.stringify(edits)),sourceWrite:false,modelUsed:false,runtimeVerified:false};
 }
 

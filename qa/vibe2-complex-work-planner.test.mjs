@@ -183,7 +183,7 @@ test('event-state-UI and bounded existing writes synthesize executable source wi
  assert.equal(c.edits.length,2);assert.equal(c.runtimeVerified,false);
 });
 
-test('ten supported source fixtures produce actual candidates and deterministic behavior; thirteen steps defer the next wave',t=>{
+test('ten supported source fixtures execute deterministically and thirteen steps complete in one atomic candidate',t=>{
  const {repo,root}=fixture(t);let baselineAttempts=0,attempts=0,verified=0;
  for(let fixtureId=0;fixtureId<10;fixtureId++){
   const source='const data={dead:false,hp:10};\nfunction hit(a){\n a.hp -= '+(fixtureId+1)+';\n}\nfunction award(a){\n a.hp += 1;\n}';
@@ -202,8 +202,14 @@ test('ten supported source fixtures produce actual candidates and deterministic 
  fs.writeFileSync(path.join(root,'game.js'),source);
  const order={ownerApproved:true,goal:Array.from({length:13},(_,i)=>'함수 f'+i+'에서 a.dead이면 중단해').join('; ')};
  const plan=planComplexGameWork({order,sourceRoot:root,responsibleFiles:['game.js'],baseRevisionSha:revision});
- const c=createComplexGameCandidate({plan,sourceRoot:root});assert.equal(c.edits.length,12);
- assert.equal(c.complexPlan.deferredWaves.length,1);assert.equal(c.complexPlan.deferredWaves[0].dependsOnPreviousWave,true);
+ const c=createComplexGameCandidate({plan,sourceRoot:root});assert.equal(c.edits.length,13);
+ assert.equal(c.complexPlan.deferredWaves.length,0);assert.equal(c.complexPlan.completedWave,1);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,c.edits,{documents:docs});
+ const functions=vm.runInNewContext(docs.get('game.js')+';['+Array.from({length:13},(_,i)=>'f'+i).join(',')+']');
+ const alive={dead:false,hp:30},dead={dead:true,hp:30};
+ for(const fn of functions){fn(alive);fn(dead)}
+ assert.equal(alive.hp,17);assert.equal(dead.hp,30);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
 });
 
 test('historical five zero-attempt inputs replay exact owner goals without fabricating broad coding success',()=>{
@@ -1001,4 +1007,27 @@ test('same owner composition rejects duplicate call effects while retaining dist
  const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
  const game=vm.runInNewContext(docs.get('game.js')+';({act})'),actor={count:0};game.act(actor);
  assert.equal(actor.count,111);assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+// [전체 인계] 마지막 승인 단계까지 생성하고 마지막 단계가 실패하면 부분 후보를 반환하지 않는다.
+test('canonical complex source generation completes all forty-eight steps and rejects an invalid final step atomically',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const defaults={dead:false};\n'+Array.from({length:48},(_,i)=>'function f'+i+'(a){a.hp -= 1;}').join('\n');
+ fs.writeFileSync(file,source);
+ const clauses=Array.from({length:48},(_,i)=>'함수 f'+i+'에서 a.dead이면 중단해');
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:clauses.join('; ')};
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const candidate=createVibe59CodeCandidates({...options,order});
+ assert.equal(candidate.complexPlan.atomCount,48);assert.equal(candidate.complexPlan.requirementCount,48);
+ assert.equal(candidate.complexPlan.deferredWaves.length,0);assert.equal(candidate.edits.length,48);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const functions=vm.runInNewContext(docs.get('game.js')+';['+Array.from({length:48},(_,i)=>'f'+i).join(',')+']');
+ const alive={dead:false,hp:100},dead={dead:true,hp:100};
+ for(const fn of functions){fn(alive);fn(dead)}
+ assert.equal(alive.hp,52);assert.equal(dead.hp,100);
+ const invalid=[...clauses];invalid[47]='함수 f47에서 a.hp를 0에서 100까지 제한해';
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal:invalid.join('; ')}}),/ASSIGNMENT_ANCHOR/);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,goal:order.goal+'; 함수 missing에서 a.dead이면 중단해'}}),/REQUIREMENT_BUDGET/);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);assert.equal(candidate.sourceWrite,false);
 });
