@@ -1,3 +1,14 @@
+-- [Vibe 공용 프레젠테이션] 기존 버튼 트윈/글로우 재사용. 전투·저장 불변.
+task.defer(function()
+ local player=game:GetService("Players").LocalPlayer
+ if not player then return end
+ local shared=game:GetService("ReplicatedStorage"):FindFirstChild("Shared") or game:GetService("ReplicatedStorage"):WaitForChild("Shared",8)
+ if not shared then return end
+ local module=shared:FindFirstChild("RobloxCommonPresentation")
+ if not module or not module:IsA("ModuleScript") then return end
+ local ok,presentation=pcall(require,module)
+ if ok and type(presentation.BindGameUiEffects)=="function" then presentation.BindGameUiEffects(player) end
+end)
 -- 파일명: roblox-games/daechung-rpg/client/Game.client.luau
 -- 포탈 알피지 모바일 HUD: 마을 허브 + 포탈 사냥터 + 전투 UI
 local Players=game:GetService("Players")
