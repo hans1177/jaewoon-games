@@ -511,7 +511,7 @@ test('WEB existing owner task applies a synthesized numeric algorithm without mo
  assert.notEqual(edit.updated,source.original);
  assert.equal(synthesizeWebAlgorithmWithoutModel({...task,ownerDirective:false},source),null);
  assert.equal(synthesizeWebAlgorithmWithoutModel({...task,evidence:[]},source),null);
- assert.equal(synthesizeWebAlgorithmWithoutModel({...task,algorithmSpec:{...spec,source:'web-games/other/game.js'}},source),null);
+ assert.throws(()=>synthesizeWebAlgorithmWithoutModel({...task,algorithmSpec:{...spec,source:'web-games/other/game.js'}},source),/SPEC_SCOPE_INVALID/);
  // 두 번째 파일을 임의로 바꾸지 않는다.
  assert.equal(await proposeWebVibeChange(task,
   {relative:'web-games/demo/other.js',original:'const status=1;'},
