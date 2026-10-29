@@ -8,6 +8,7 @@ import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeV
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,verifyVibe59LuauSkillScenarios} from './vibe59-luau-skills109.mjs';
 import {VIBE59_QUALITY_GAMEPLAY_ACTIONS,synthesizeVibe59QualityGameplay,verifyVibe59QualityScenarios} from './vibe59-quality-gameplay.mjs';
+import {synthesizeVibe59Pathfinding,verifyVibe59PathfindingScenarios} from './vibe59-pathfinding.mjs';
 import {buildVibeVerifiedMemoryIndex,retrieveVibeVerifiedPatterns,classifyVibeRepairFailure} from '../assets/vibe-v3-engine.js';
 const sha=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
 const clean=x=>String(x??'').trim();
@@ -196,7 +197,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const req=explicit??(creativeChosen?{...creativeRequest,robloxDomainAction:creativeChosen.spec,
     scenarios:creativeChosen.scenarios}:null);
   if(req==null)return null;
-  const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction].filter(Boolean);
+  const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction].filter(Boolean);
   if(!req||req.ownerApproved!==true||!req.path||!req.find
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
        Boolean(req.rule)===Boolean(req.machine)))
@@ -216,6 +217,21 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
+  if(req.robloxPathfindingAction){
+    const generated=synthesizeVibe59Pathfinding({spec:req.robloxPathfindingAction,
+      source:content,sourcePath:relative,replaceAnchor:find});
+    const proof=verifyVibe59PathfindingScenarios({spec:req.robloxPathfindingAction,
+      scenarios:req.scenarios});
+    if(!proof.pass)throw Error('VIBE59_PATHFINDING_SCENARIO_COUNTEREXAMPLE:'+
+      proof.cases.filter(x=>!x.pass).map(x=>x.name).join(','));
+    return Object.freeze({summary:'Vibe5.9 obstacle-aware Roblox AI pathfinding',
+      expectedEffect:'Compute one PathfindingService waypoint per bounded AI tick',
+      edits:[{path:relative,find,replace:generated.source}],newFiles:[],replaceFiles:[],
+      tests:[],vibe59CodeKind:'ROBLOX_PATHFINDING',
+      vibe59GameplayMechanic:generated.operation,vibe59GameplaySafety:generated.safety,
+      vibe59TestPlan:proof,ruleDigest:sha(JSON.stringify(req.robloxPathfindingAction)),
+      sourceWrite:false,modelUsed:false,runtimeVerified:false});
+  }
   if(req.robloxQualityAction){
     const compiled=synthesizeVibe59QualityGameplay({spec:req.robloxQualityAction,
       source:content,replaceAnchor:find,sourcePath:relative});
@@ -334,8 +350,8 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
     skillCatalog:{total:VIBE59_LUAU_CODING_SKILLS_109.length,
       systems:[...new Set(VIBE59_LUAU_CODING_SKILLS_109.map(x=>x.system))],
       codegen:'existing-owner-approved-server-state-only',runtimeVerified:false},
-    advancedGameplay:{mechanics:VIBE59_QUALITY_GAMEPLAY_ACTIONS.map(x=>x.id),
-      count:VIBE59_QUALITY_GAMEPLAY_ACTIONS.length,verification:'offline-scenario-only',
+    advancedGameplay:{mechanics:[...VIBE59_QUALITY_GAMEPLAY_ACTIONS.map(x=>x.id),'ai-pathfinding-chase'],
+      count:VIBE59_QUALITY_GAMEPLAY_ACTIONS.length+1,verification:'offline-scenario-only',
       requiresExistingAuthorizedServerBindings:true,runtimeVerified:false},
     sourceFlowCount:codeFlow?.sources?.length||0,
     sourceImpactCount:sourceImpact?.impactedSources?.length||0,
