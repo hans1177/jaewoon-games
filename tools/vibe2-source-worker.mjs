@@ -2752,7 +2752,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     .sort((a,b)=>(Number(a.deterministicPriority)||0)-(Number(b.deterministicPriority)||0)
       ||a.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0)
       -b.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0));
-  const selection={version:1,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
+  const selection={version:2,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
     attempts:[],selectedFingerprint:null,runtimeVerified:false};
   const deadline=Date.now()+DEFAULT_TIMEOUT_MS;
   for(const raw of ranked){
