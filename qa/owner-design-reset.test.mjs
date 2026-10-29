@@ -309,7 +309,7 @@ test('promoted owner-reset seeds remain eligible for parallel strict design revi
 
 test('design runtime keeps PASS as checkpoint and schedules recurring design health review',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
-  assert.match(workflow,/cron: '0 16 \* \* \*'/);
+  assert.match(workflow,/cron: '17 \* \* \* \*'/,'hourly checkpoint recovery must keep its canonical watchdog');
   assert.match(workflow,/designEvolutionDueFor/);
   assert.match(workflow,/deepReviewIntervalHours\|\|168/);
   assert.match(workflow,/NEW_VERIFIED_OR_OWNER_SIGNAL/);
