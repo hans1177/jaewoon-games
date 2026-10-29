@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
+import {createVibe2ComplexCandidate} from './vibe2-complex-work-planner.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
 import {retrieveVerifiedAlgorithmConcepts,preferVerifiedAlgorithmStrategy} from './vibe2-learning-motor.mjs';
@@ -1045,7 +1046,16 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // but original files remain untouched until the canonical worker admits the batch.
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[]}={}){
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
-  if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
+  if(batch==null){
+    // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.
+    const explicit=order.selectedTask?.vibe59CodeRequest??order.vibe59CodeRequest;
+    if(explicit==null){
+      const linked=createVibe2ComplexCandidate({order,sourceRoot,responsibleFiles,target,
+        baseCommit:order.baseCommit||order.sourceRevision||''});
+      if(linked)return linked;
+    }
+    return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
+  }
   if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
   const indexed=batch.map((step,index)=>{
