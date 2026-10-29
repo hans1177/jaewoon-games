@@ -1911,7 +1911,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-29T14:36:15.776Z",
+      "updatedAt": "2026-10-29T14:40:27.780Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1961,7 +1961,7 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxSourceCommit": "9d53f865948a1e9e3d1e8485ace89ba7576cb988",
+      "robloxSourceCommit": "cabd31cd000e5f941fcf638dd01b5dd8584dd92f",
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "0340a484546eede7a6c54e9c60440f750150620b",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
@@ -2006,10 +2006,10 @@
         "workflowRunId": 40250013982,
         "testedAt": "2026-10-26T00:36:00.324Z"
       },
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2020,7 +2020,7 @@
         "capturedAt": "2026-10-26T01:41:51.341Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapPassedAt": "2026-10-29T14:36:15.776Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-29T14:40:27.780Z",
       "robloxBuildFailedAt": null,
       "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
@@ -2036,7 +2036,7 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxRuntimeRetryCount": 3,
+      "robloxRuntimeRetryCount": 0,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "horror-escape-room",
@@ -7096,7 +7096,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-29T14:40:08.399Z",
+  "updatedAt": "2026-10-29T14:40:27.780Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -7162,5 +7162,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
