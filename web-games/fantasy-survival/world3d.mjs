@@ -425,6 +425,62 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // 실제 피격 이벤트가 있을 때만 기존 Vibe GPU 파티클을 방출한다.
   const impactVfx=createVibeWorldVfx(THREE,scene,{maxParticles:mobileBudget?24:72});
   const seenHitStamp=new WeakMap();let lastImpactFrame=0;
+
+  // [후가공] 앱에 EffectComposer/UnrealBloomPass 모듈이 포함돼 있지 않으므로
+  // 같은 역할의 밝은 픽셀 추출 + 가우시안 합성 패스를 기존 렌더러 내부에 구현한다.
+  // 모바일에서는 GPU 과부하를 피하기 위해 원본 단일 패스를 유지한다.
+  function createNativeBloom(){
+    if(mobileBudget)return null;
+    const sceneTarget=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true,stencilBuffer:false});
+    const lightTarget=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:false,stencilBuffer:false});
+    const postScene=new THREE.Scene(),postCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+    const plane=new THREE.PlaneGeometry(2,2);
+    const vertexShader='varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}';
+    const brightMaterial=new THREE.ShaderMaterial({uniforms:{tScene:{value:sceneTarget.texture}},vertexShader,
+      fragmentShader:'uniform sampler2D tScene;varying vec2 vUv;void main(){vec3 c=texture2D(tScene,vUv).rgb;float light=smoothstep(.67,1.13,max(max(c.r,c.g),c.b));gl_FragColor=vec4(c*light,1.0);}',
+      toneMapped:false,depthWrite:false,depthTest:false});
+    const combineMaterial=new THREE.ShaderMaterial({uniforms:{tScene:{value:sceneTarget.texture},tGlow:{value:lightTarget.texture},stepSize:{value:new THREE.Vector2(1,1)},strength:{value:.46}},vertexShader,
+      fragmentShader:`uniform sampler2D tScene;uniform sampler2D tGlow;uniform vec2 stepSize;uniform float strength;varying vec2 vUv;
+       void main(){
+         vec3 glow=texture2D(tGlow,vUv).rgb*.20;
+         glow+=(texture2D(tGlow,vUv+vec2(stepSize.x,0.)).rgb+texture2D(tGlow,vUv-vec2(stepSize.x,0.)).rgb+
+           texture2D(tGlow,vUv+vec2(0.,stepSize.y)).rgb+texture2D(tGlow,vUv-vec2(0.,stepSize.y)).rgb)*.12;
+         glow+=(texture2D(tGlow,vUv+stepSize).rgb+texture2D(tGlow,vUv-stepSize).rgb+
+           texture2D(tGlow,vUv+vec2(stepSize.x,-stepSize.y)).rgb+
+           texture2D(tGlow,vUv+vec2(-stepSize.x,stepSize.y)).rgb)*.08;
+         gl_FragColor=vec4(texture2D(tScene,vUv).rgb+glow*strength,1.);
+         #include <tonemapping_fragment>
+         #include <colorspace_fragment>
+       }`,
+      depthWrite:false,depthTest:false,toneMapped:true});
+    const quad=new THREE.Mesh(plane,brightMaterial);quad.frustumCulled=false;postScene.add(quad);
+    let width=0,height=0,failed=false;
+    return{
+      render(scene,camera,quality){
+        if(failed||quality<.88){renderer.setRenderTarget(null);renderer.render(scene,camera);return}
+        try{
+          const w=Math.max(1,Math.round(renderer.domElement.clientWidth*renderer.getPixelRatio()));
+          const h=Math.max(1,Math.round(renderer.domElement.clientHeight*renderer.getPixelRatio()));
+          if(w!==width||h!==height){
+            width=w;height=h;
+            sceneTarget.setSize(w,h);
+            const lowW=Math.max(1,Math.floor(w/4)),lowH=Math.max(1,Math.floor(h/4));
+            lightTarget.setSize(lowW,lowH);
+            combineMaterial.uniforms.stepSize.value.set(1/lowW,1/lowH);
+          }
+          renderer.setRenderTarget(sceneTarget);renderer.clear();renderer.render(scene,camera);
+          renderer.setRenderTarget(lightTarget);quad.material=brightMaterial;renderer.clear();renderer.render(postScene,postCamera);
+          renderer.setRenderTarget(null);quad.material=combineMaterial;renderer.render(postScene,postCamera);
+        }catch(error){
+          failed=true;renderer.setRenderTarget(null);
+          console.warn('VIBE_BLOOM_DISABLED_RENDER_FALLBACK',error);
+          renderer.render(scene,camera);
+        }
+      },
+      dispose(){sceneTarget.dispose();lightTarget.dispose();quad.geometry.dispose();brightMaterial.dispose();combineMaterial.dispose();}
+    };
+  }
+  const bloom=createNativeBloom();
   // No generated floor mesh. Every visible ground tile is a clone of the
   // downloaded Tiny Treats CC0 floor_base.obj (including source silhouette).
   const sourceFloor=models.get('floor_base');
@@ -1328,7 +1384,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     impactVfx.update(Math.min(.05,Math.max(0,(sampleNow-(lastImpactFrame||sampleNow))/1000)));
     lastImpactFrame=sampleNow;
-    renderer.render(scene,camera);
+    if(bloom)bloom.render(scene,camera,qualityFactor);
+    else renderer.render(scene,camera);
     active=true;canvas.hidden=false;fallbackReason='';
     if(!extraModelsStarted){
       extraModelsStarted=true;
@@ -1394,7 +1451,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const mesh of mageBoltEffects)scene.remove(mesh);
     mageBoltEffects.length=0;mageBoltGeometry.dispose();mageBoltMaterial.dispose();
     arrowGeometry.dispose();arrowMaterial.dispose();sporeMaterial.dispose();sunOrbMaterial.dispose();
-    impactVfx.dispose();
+    impactVfx.dispose();bloom?.dispose();
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
@@ -1436,6 +1493,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       nativeCreatures:nativeCreatureActors.size,undeadCreatures:undeadActors.size,
       resourceBatches:resourceBatches.size,loadingModels:loadingCreatureCount,loadedModels:nativeCreatureSources.size,
       measuredFps,pixelRatio:renderer.getPixelRatio(),
+      bloomAvailable:!!bloom,bloomActive:!!bloom&&qualityFactor>=.88,softShadows:renderer.shadowMap.type===THREE.PCFSoftShadowMap,
       // [모션 검증 입력] 클립 출처·누락 상태는 측정값이며 실제 런타임 합격이나 학습 승인으로 승격하지 않는다.
       motionSource:'CC0_AUTHORED_GLTF',motionClip:actualPlayerClip,missingMotionRole:unavailablePlayerClip,
       motionSourceClipCount:heroClips.length,availableMotionClips:[...heroClipNames],
