@@ -1273,6 +1273,9 @@ export function evaluateVibe59OfflinePatchEvidence({candidate={},order={},source
 }
 
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
+  const audited=candidate=>candidate?.edits?.length
+    ?evaluateVibe59OfflinePatchEvidence({candidate,order,sourceRoot,responsibleFiles,target,verifiedCodePatterns})
+    :candidate;
   // Existing assets are first-class Vibe worker edit candidates, not presentation-only notes.
   const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
     responsibleFiles,target,repositoryRoot});
@@ -1293,7 +1296,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
         throw error;
       }
     }
-    return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns});
+    return audited(createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target,verifiedCodePatterns}));
   }
   if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
@@ -1377,7 +1380,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
   applyExactEdits(sourceRoot,edits,{documents:replay});
   for(const [relative,content] of documents)
     if(replay.get(relative)!==content)throw Error('VIBE59_COMPLEX_DESIGN_REPLAY_MISMATCH');
-  return Object.freeze({
+  return audited(Object.freeze({
     summary:'Vibe5.9 offline dependency-ordered complex design code synthesis',
     expectedEffect:'Atomically implement '+assembled.length+' owner-approved, source-grounded game-system steps',
     edits,newFiles:[],replaceFiles:[],tests:[],
@@ -1386,7 +1389,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
       operation:row.candidate.vibe59CodeKind,ruleDigest:row.candidate.ruleDigest})),
     ruleDigest:sha(JSON.stringify(assembled.map(row=>[row.id,row.dependsOn,row.candidate.ruleDigest]))),
     sourceWrite:false,modelUsed:false,runtimeVerified:false
-  });
+  }));
 }
 export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sourceImpact=null}={}){
   const requirement=compileVibe59Requirements({order,target});
