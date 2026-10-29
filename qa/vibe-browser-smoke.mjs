@@ -525,14 +525,36 @@ try{
       assert.ok(Number(await game.locator('body').getAttribute('data-native-triangles'))>400,
         'CC0 avatar replacement did not preserve real WebGL geometry');
     }
-    // Test the existing gameplay state authority, not a replacement 3D demo.
-    const firstX=metrics.playerX;
-    await game.keyboard.down('d');
-    await game.waitForTimeout(850);
-    await game.keyboard.up('d');
-    const lastX=await game.locator('body').getAttribute('data-player-x');
-    assert.ok(Number(lastX)>firstX+1,
-     viewport.name+': keyboard input failed to move original game state');
+    // [실게임 입력 검증] 움직임은 실제 저장 좌표로 판정한다.
+    // 오른쪽이 장애물/지형에 막힌 경우까지 키보드 실패로 오인하지 않도록
+    // 반대·수직 방향도 실행한다. 모두 막히면 진짜 실패로 남기고 상세 증거를 기록한다.
+    const startingPosition={x:metrics.playerX,y:metrics.playerY};
+    const movementAttempts=[];
+    let movedPosition=null;
+    for(const key of ['d','a','w','s']){
+      const before=await game.evaluate(()=>({
+       x:Number(document.body.dataset.playerX),y:Number(document.body.dataset.playerY)
+      }));
+      await game.keyboard.down(key);
+      await game.waitForTimeout(850);
+      const observed=await game.evaluate(()=>({
+       x:Number(document.body.dataset.playerX),y:Number(document.body.dataset.playerY),
+       motion:document.body.dataset.motionState||'',
+       area:document.body.dataset.area||'',
+       nativeBlocked:document.body.dataset.nativeBlocked||'',
+       activeElement:document.activeElement?.id||document.activeElement?.tagName||''
+      }));
+      await game.keyboard.up(key);
+      const delta=Math.hypot(observed.x-before.x,observed.y-before.y);
+      movementAttempts.push({key,from:before,to:observed,delta});
+      if(delta>1){movedPosition=observed;break;}
+    }
+    assert.ok(movedPosition,
+     'MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED '+viewport.name+' '+
+     JSON.stringify({startingPosition,movementAttempts,sourceSha:requiredRevision,errors:gameErrors}));
+    const lastX=String(movedPosition.x),lastY=String(movedPosition.y);
+    assert.equal(movedPosition.nativeBlocked,'false',
+     viewport.name+': 3D game became blocked after input');
     const afterMode=await game.locator('body').getAttribute('data-spatial-dimension');
     assert.equal(afterMode,'3d',viewport.name+': 3D disappeared after real game input');
     // Original pagehide handler writes the existing save. A reload must recover it.
@@ -542,8 +564,9 @@ try{
     await game.waitForFunction(()=>document.body.dataset.spatialDimension==='3d',
      null,{timeout:60000});
     const restoredX=Number(await game.locator('body').getAttribute('data-player-x'));
-    assert.ok(Math.abs(restoredX-Number(lastX))<100,
-     viewport.name+': saved player position was not restored');
+    const restoredY=Number(await game.locator('body').getAttribute('data-player-y'));
+    assert.ok(Math.hypot(restoredX-Number(lastX),restoredY-Number(lastY))<100,
+     viewport.name+': saved player position was not restored in the original game');
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught errors in save/reload cycle');
     if(!viewport.mobile){
       await game.waitForFunction(()=>document.body.dataset.nativePlayerSource?.endsWith('/assets/roblox/actors/native/mage.glb'),
