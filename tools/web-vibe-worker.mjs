@@ -217,7 +217,8 @@ export function compileVerifiedWebLearning(task,source,previousVerified=[]){
   const functions=inspectSourceFunctions(source.original,{language:'web',maxFunctions:4096}),found=[];
   for(const row of previousVerified){
     const proof=row.learningVerification;
-    if(row.status!=='merged'||row.gameId!==task.gameId||row.sourceRoot!==task.sourceRoot
+    if(row.status!=='merged'||!/^web-games\/[a-zA-Z0-9_-]+$/.test(row.sourceRoot||'')
+      ||row.sourceRoot!=='web-games/'+row.gameId
       ||proof?.status!=='VERIFIED'||proof?.browserPassed!==true||proof?.independentQaPassed!==true
       ||! /^[a-f0-9]{40}$/.test(clean(proof.sourceRevision))||!Number.isSafeInteger(proof.runId)
       ||proof.runId<=0)continue;
@@ -226,8 +227,15 @@ export function compileVerifiedWebLearning(task,source,previousVerified=[]){
         ||typeof recipe.from!=='string'||typeof recipe.to!=='string'
         ||recipe.from.length<16||recipe.to.length<16||recipe.from.length>2300||recipe.to.length>2300
         ||!/^[a-f0-9]{64}$/.test(clean(recipe.baseSourceSha))
-        ||source.relative!==recipe.source||source.original.split(recipe.from).length!==2
+        ||source.original.split(recipe.from).length!==2
         ||recipe.from===recipe.to)continue;
+      const sameGame=row.gameId===task.gameId&&recipe.source===source.relative;
+      const sourceSuffix=String(recipe.source).split('/').slice(2).join('/');
+      const currentSuffix=String(source.relative).split('/').slice(2).join('/');
+      const crossGame=row.gameId!==task.gameId&&sourceSuffix===currentSuffix
+        &&/\.(?:js|mjs)$/i.test(sourceSuffix)
+        &&['NAME_READABILITY','FRAME_STABILITY','SCENE_PRESENTATION','MOBILE_INPUT'].includes(recipe.topic);
+      if(!sameGame&&!crossGame)continue;
       const owners=functions.filter(fn=>fn.name===recipe.owner&&fn.body.includes(recipe.from));
       if(owners.length!==1)continue;
       const guarded=safeWebVibeReplacement(source.original,JSON.stringify({
@@ -503,13 +511,17 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
     .map(id=>state.queue.tasks.find(row=>row.id===id))
     .filter(row=>row&&row.status==='merged'&&row.gameId===task.gameId
       &&row.target==='web'&&row.sourceRoot===task.sourceRoot);
+  const verifiedWebKnowledge=state.queue.tasks.filter(row=>row.target==='web'&&row.status==='merged'
+    &&row.learningVerification?.status==='VERIFIED'&&row.learningVerification?.browserPassed===true
+    &&row.learningVerification?.independentQaPassed===true).slice(-64);
   if(prior.length!==(task.ownerPatchLineage?.verifiedPredecessors||[]).length)
     fail('WEB_VIBE_BUILD_UP_HISTORY_NOT_VERIFIED');
   const changed=[],unsupported=[];
   for(const source of sources){
     try{
       const edit=await proposeWebVibeChange(task,source,{cloud:args.cloud===true,fetchImpl,geminiImpl,
-        apiKey:args.cloud?clean(process.env.GEMINI_API_KEY):'',previousVerified:prior});
+        apiKey:args.cloud?clean(process.env.GEMINI_API_KEY):'',
+        previousVerified:[...prior,...verifiedWebKnowledge.filter(row=>!prior.includes(row))]});
       if(edit)changed.push({source,edit});
     }catch(error){
       if(String(error.message).startsWith('WEB_VIBE_FREE_MODEL_KEY_MISSING:'))unsupported.push(error.message);
