@@ -755,14 +755,16 @@ test('scene enter and checkpoint restore receive loaded scene assets',async()=>{
 });
 
 // [기존 실제 게임] 자체 원화 경로가 공통 씬 취소·해제 수명과 연결되어야 한다.
-test('ocean voyage and lost dawn reuse the shared scene asset lifecycle',()=>{
+test('ocean voyage and cozy island reuse the shared scene asset lifecycle',()=>{
  const ocean=readFileSync(new URL('../web-games/ocean-voyage/ocean3d.mjs',import.meta.url),'utf8');
- const dawn=readFileSync(new URL('../web-games/lost-dawn/index.html',import.meta.url),'utf8');
+ const cozy=readFileSync(new URL('../web-games/cozy-island/render-v3.js',import.meta.url),'utf8');
+ const cozyGame=readFileSync(new URL('../web-games/cozy-island/game-v3.js',import.meta.url),'utf8');
  assert.match(ocean,/assetRuntime\.setScene\(nextScene,\[\{id:'harbor',path:'\.\/assets\/harbor\.webp'\}\]/);
  assert.match(ocean,/if\(!nextScene\)\{assetRuntime\.releaseScene\(\);return;\}/);
  assert.match(ocean,/dispose\(\)\{destroyed=true;assetRuntime\.destroy\(\)/);
  assert.doesNotMatch(ocean,/townArt=new Image\(\)/);
- assert.match(dawn,/atlasRuntime\.setScene\('lost-dawn-world'/);
- assert.match(dawn,/atlasRuntime\?\.destroy\(\)/);
- assert.doesNotMatch(dawn,/atlas=new Image\(\)/);
+ assert.match(cozy,/this\.assetRuntime\.setScene\('cozy-island-world'/);
+ assert.match(cozy,/new THREE\.Texture\(sharedTree\)/);
+ assert.match(cozyGame,/new IslandRendererV3\(canvas,runtime\)/);
+ assert.match(cozyGame,/pagehide',event=>\{if\(!event\.persisted\)runtime\.destroy\(\)/);
 });
