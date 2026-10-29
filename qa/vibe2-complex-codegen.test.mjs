@@ -66,6 +66,33 @@ test('WEB canonical V5.9 builds a real atomic edit; independent runtime proves s
   vm.runInContext(changed+'event();event();',game);
   assert.deepEqual(Array.from(vm.runInContext('[score,state,text]',game)),[2,2,'2']);
 });
+// 회귀: 흔한 한국어 동사 연결과 영어 쉼표 나열도 기존 소스 함수만 연결한다.
+test('natural ordered call verbs synthesize executable state and UI updates without source writes',t=>{
+  const {root,relative,source,options}=setup(t);
+  for(const goal of [
+    '함수 event 실행 후 commitState 호출하고 render 호출해',
+    '함수 event 실행 후 commitState 호출한 다음 render 호출해',
+    '함수 event 실행 후 commitState 호출 후 render 호출해',
+    'When function event runs, call commitState, then render',
+    'When function event runs, call commitState, render'
+  ]){
+    const order={selectedTask:{...options.order.selectedTask,goal}};
+    const candidate=createVibe59CodeCandidates({...options,order});
+    assert.equal(candidate.edits.length,1,goal);
+    const docs=new Map([[relative,source]]);
+    applyExactEdits(root,candidate.edits,{documents:docs});
+    assert.match(docs.get(relative),/commitState\(\);\s*render\(\);/,goal);
+    const game=vm.createContext({});
+    vm.runInContext(docs.get(relative)+'event();event();',game);
+    assert.deepEqual(Array.from(vm.runInContext('[score,state,text]',game)),[2,2,'2'],goal);
+    assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
+    assert.equal(candidate.runtimeVerified,false);
+  }
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{selectedTask:{
+    ...options.order.selectedTask,goal:'함수 event 실행 후 commitState 호출하고 unknown 호출해'
+  }}}),/SOURCE_BINDING_NOT_UNIQUE/);
+});
+
 test('HTML actual game-style single inline script binds offsets correctly and executes',t=>{
   const {root,relative,source,options}=setup(t,'web',true);
   const result=createVibe59CodeCandidates(options);

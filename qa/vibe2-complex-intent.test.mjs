@@ -1,7 +1,7 @@
 // 파일명: qa/vibe2-complex-intent.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {compileComplexOwnerIntent,parseIntentExpression} from '../tools/vibe2-complex-intent.mjs';
+import {compileVibe2ComplexIntent,compileComplexOwnerIntent,parseIntentExpression} from '../tools/vibe2-complex-intent.mjs';
 const compile=goal=>compileComplexOwnerIntent({order:{gameId:'line-defense',ownerApproved:true,goal},baseRevisionSha:'a'.repeat(40)});
 test('Korean and English owner clauses produce stable bounded requirements without inventing facts',()=>{
  for(const text of [
@@ -30,3 +30,29 @@ test('no owner scope, unknown goals, duplicate clauses and executable expression
  assert.throws(()=>parseIntentExpression('a["dead"]'));
  assert.throws(()=>parseIntentExpression('0/0'));
 });
+
+test('ordered natural-language call connectors retain exact owner text and grounded function sequence',()=>{
+ const base={target:'web',sourceRoot:'web-games/line-defense',responsibleFiles:['index.html'],
+  order:{selectedTask:{gameId:'line-defense',ownerDirective:true,goal:''}}};
+ for(const goal of [
+  '함수 event 실행 후 commitState 호출하고 render 호출해',
+  '함수 event 실행 후 commitState 호출한 다음 render 호출해',
+  '함수 event 실행 후 commitState 호출 후 render 호출해',
+  'When function event runs, call commitState, then render',
+  'When function event runs, call commitState, render'
+ ]){
+  const parsed=compileVibe2ComplexIntent({...base,order:{selectedTask:{...base.order.selectedTask,goal}}});
+  assert.equal(parsed.ownerDirectiveReference.originalText,goal);
+  assert.deepEqual(parsed.requirements.map(r=>r.effect),['commitState','render']);
+  assert.equal(parsed.requirements[1].dependsOn[0],parsed.requirements[0].id);
+  assert.equal(parsed.ownerDirectiveReference.verifiedFromOwnerOrder,true);
+ }
+ for(const goal of [
+  '함수 event 실행 후 commitState 호출하고 process.exit 호출해',
+  '함수 event 실행 후 commitState 호출하고 render를 추측해서 호출해',
+  'When function event runs, call commitState, render, unknown, extra, fifth'
+ ]){
+  assert.equal(compileVibe2ComplexIntent({...base,order:{selectedTask:{...base.order.selectedTask,goal}}}),null);
+ }
+});
+

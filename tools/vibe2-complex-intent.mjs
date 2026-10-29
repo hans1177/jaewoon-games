@@ -13,7 +13,10 @@ function extractExistingChain(text){
   const en=english.exec(text),ko=en?null:korean.exec(text);
   if(!en&&!ko)return null;
   const match=en||ko;
-  const parts=match[2].replace(/\.$/,'').split(en?/\s+(?:then|and)\s+/i:/\s+(?:다음|그리고)\s+/);
+  // 호출 순서만 추출한다. 연결어 사이에 명시된 기존 함수 이름 외에는 새 인자를 추정하지 않는다.
+  const parts=match[2].replace(/\.$/,'').split(en?
+    /\s*,\s*(?:(?:then|and)\s+)?|\s+(?:then|and)\s+/i:
+    /\s*호출(?:한)?\s*(?:하고|후|뒤|다음)\s*|\s+(?:다음|그리고)\s+/);
   if(parts.length<2||parts.length>4)return null;
   const names=parts.map(part=>effectIdentifier.exec(part.trim())?.[1]);
   if(names.some(name=>!name))return null;
