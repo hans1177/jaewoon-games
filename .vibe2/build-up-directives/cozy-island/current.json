@@ -4835,25 +4835,7 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
-      "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 40901883894,
-      "testedAt": "2026-10-29T15:44:18.208Z",
-      "repairSurfaces": [
-        "VFX_FEEDBACK"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "adaptive-effects-surface",
-          "repairSurface": "VFX_FEEDBACK",
-          "priority": "MEDIUM",
-          "hint": "Restore readable telegraphs, hit feedback, particles/trails/highlights without blocking play.",
-          "observed": "{\"interactionSurfaceCount\":39,\"progressionSurfaceCount\":28,\"combatSurfaceCount\":5,\"npcSurfaceCount\":8,\"companionSurfaceCount\":40,\"itemSurfaceCount\":4,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":0,\"promptCount\":34,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
     "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
     "blockers": [

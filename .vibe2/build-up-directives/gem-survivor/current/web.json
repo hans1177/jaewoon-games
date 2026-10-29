@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "gem-survivor-build-up-g6-396981756841",
-  "directiveFingerprint": "396981756841721e0754f396427a5579ea5b2c71f43de330838739184e44f001",
-  "previousDirectiveFingerprint": "4afdfb74a64c57f1b546fe69c8a9f142a02711e234f9d8a567a24f7a43f0c69b",
-  "forbiddenRepeatFingerprint": "4afdfb74a64c57f1b546fe69c8a9f142a02711e234f9d8a567a24f7a43f0c69b",
+  "directiveId": "gem-survivor-build-up-g7-3b8ed6da3e4c",
+  "directiveFingerprint": "3b8ed6da3e4c3b6b1718299036dced8bff2531a8786545094e4868537523e66a",
+  "previousDirectiveFingerprint": "396981756841721e0754f396427a5579ea5b2c71f43de330838739184e44f001",
+  "forbiddenRepeatFingerprint": "396981756841721e0754f396427a5579ea5b2c71f43de330838739184e44f001",
   "gameId": "gem-survivor",
   "gameName": "보석 생존전",
-  "generation": 6,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/gem-survivor",
-  "sourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+  "sourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
   "designFingerprint": "1ae84f9a8be244a25c6ad8164e87627c392573f95b05f1aa21a51cdfaafc720f",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+        "sourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "1ae84f9a8be244a25c6ad8164e87627c392573f95b05f1aa21a51cdfaafc720f",
-    "sourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+    "sourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+    "sourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4384,7 +4384,7 @@
       "combat": 251,
       "progression": 40,
       "ai": 49,
-      "save": 20,
+      "save": 16,
       "multiplayer": 28,
       "animation": 7,
       "motionStates": 138,
@@ -4398,7 +4398,7 @@
       "entryFlow": 0,
       "loadingFlow": 0,
       "input": 12,
-      "map": 119,
+      "map": 123,
       "landmark": 2,
       "interaction": 9,
       "inventory": 0,
@@ -4406,14 +4406,14 @@
       "settings": 0,
       "feedback": 46,
       "session": 23,
-      "content": 304,
+      "content": 316,
       "choice": 33,
       "connection": 1,
-      "performance": 64,
+      "performance": 67,
       "lighting": 10,
       "primitive": 2,
       "todo": 0,
-      "errorRecovery": 9
+      "errorRecovery": 11
     },
     "topFiles": [
       {
@@ -4422,7 +4422,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "score": 74
+        "score": 76
       }
     ],
     "sourceAnchors": [
@@ -4444,7 +4444,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 15,
+        "line": 16,
         "kind": "FUNCTION",
         "symbol": "vec",
         "context": "const vec=(x,y,z)=>new THREE.Vector3(x,y,z);",
@@ -4452,7 +4452,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 146,
+        "line": 156,
         "kind": "FUNCTION",
         "symbol": "animateHero",
         "context": "function animateHero(entry,state,now,dt,key){",
@@ -4476,7 +4476,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 56,
+        "line": 57,
         "kind": "FUNCTION",
         "symbol": "growPool",
         "context": "function growPool(mesh,required){",
@@ -4500,7 +4500,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 10,
+        "line": 11,
         "kind": "FUNCTION",
         "symbol": "mat",
         "context": "const mat=(hex,emissive=hex)=>new THREE.MeshStandardMaterial({",
@@ -4508,7 +4508,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 16,
+        "line": 17,
         "kind": "FUNCTION",
         "symbol": "createGem3d",
         "context": "export async function createGem3d({canvas}){",
@@ -4516,7 +4516,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 166,
+        "line": 176,
         "kind": "FUNCTION",
         "symbol": "onResize",
         "context": "const onResize=()=>resize(),onLoss=e=>{e.preventDefault();document.body.dataset.spatialDimension='3d-error'};",
@@ -4572,7 +4572,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 182,
+        "line": 192,
         "kind": "FUNCTION",
         "symbol": "view",
         "context": "function view(state,world){",
@@ -4580,7 +4580,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 188,
+        "line": 198,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "function render({player:state,allies=[],enemies:enemyActors=[],projectiles:shots=[],gems:drops=[],",
@@ -4604,7 +4604,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 169,
+        "line": 179,
         "kind": "FUNCTION",
         "symbol": "write",
         "context": "function write(inst,items,max,make){",
@@ -4692,7 +4692,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 138,
+        "line": 148,
         "kind": "FUNCTION",
         "symbol": "heroActor",
         "context": "function heroActor(key,kind){",
@@ -4700,7 +4700,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 379,
+        "line": 389,
         "kind": "FUNCTION",
         "symbol": "dispose",
         "context": "function dispose(){",
@@ -4708,7 +4708,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 32,
+        "line": 33,
         "kind": "FUNCTION",
         "symbol": "poolEnvironment",
         "context": "function poolEnvironment(geometry,count,color){",
@@ -4716,7 +4716,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 49,
+        "line": 50,
         "kind": "FUNCTION",
         "symbol": "pool",
         "context": "function pool(geometry,material,maximum){",
@@ -4724,7 +4724,7 @@
       },
       {
         "file": "web-games/gem-survivor/gem3d.mjs",
-        "line": 160,
+        "line": 170,
         "kind": "FUNCTION",
         "symbol": "resize",
         "context": "function resize(){",
@@ -4735,9 +4735,9 @@
   "previousVersionDelta": {
     "previousGoal": "보석 생존전. 서사시의 추방과 귀환·민속 금기와 전염 생존. 보석 생존전에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "a312f70f1c1697731ad6da7f9eda078e42cdbadb5ffe43473059af7ce5c3ac46",
-    "currentSourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+    "currentSourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5981,7 +5981,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 78991,
+        "sourceBytes": 79707,
         "largestFileBytes": 52991,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6014,20 +6014,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=USABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 7,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=USABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -6068,7 +6069,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 148,
+        "score": 130,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -6183,11 +6184,11 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 6,
-    "previousGeneration": 5,
+    "generation": 7,
+    "previousGeneration": 6,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
-    "priorSourceFingerprint": "a312f70f1c1697731ad6da7f9eda078e42cdbadb5ffe43473059af7ce5c3ac46",
+    "sourceFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
+    "priorSourceFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6206,7 +6207,7 @@
     "version": 1,
     "gameId": "gem-survivor",
     "platform": "WEB",
-    "sourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+    "sourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6723,9 +6724,9 @@
       "gameId": "gem-survivor",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 6,
-        "actorClass": "BOSS",
-        "sourceOwnerFile": "web-games/gem-survivor/index.html",
+        "generation": 7,
+        "actorClass": "CREATURE",
+        "sourceOwnerFile": "web-games/gem-survivor/gem3d.mjs",
         "qualityAxis": "POSE_VELOCITY_CROSSFADE",
         "featureId": "POSE_VELOCITY_CROSSFADE",
         "evidenceCount": 0,
@@ -6738,7 +6739,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "gem-survivor",
-          "actorClass": "BOSS",
+          "actorClass": "CREATURE",
           "featureId": "POSE_VELOCITY_CROSSFADE",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -6943,7 +6944,7 @@
     "gameId": "gem-survivor",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+    "sourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7813,7 +7814,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f18810a64b4607e0324a97d932d0bb7ecc8cbf6f6493188899449026aa257c67",
+      "sourceTreeFingerprint": "3324c01dae4176eaa9f19357c3eea663cf18c1078f479050dd1ba5851fe983ef",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7875,7 +7876,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7943,5 +7944,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.780Z"
+  "generatedAt": "2026-10-29T16:27:41.340Z"
 }
