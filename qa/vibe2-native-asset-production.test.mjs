@@ -252,6 +252,14 @@ test('existing native DCC automatically derives only role-matched internal sourc
     assert.equal(native.meshReconstruction.detail,'LOW_POLY');
     assert.equal(native.companyPromotionAllowed,false);
     assert.equal(native.runtimeVerificationRequired,true);
+    const inferred=buildVibeAssetProductionPlan({repoRoot:root,target:'unity',
+      task:{...task,goal:'기존 3D 모델에 뿔 추가, 몸통 1.2배, 로우폴리'},
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    const inferredRecipe=inferred.nativeAuthoringExecution.dcc.executionRecipes.find(row=>row.sourceModel==='assets/shared/tree.obj');
+    assert.ok(inferredRecipe);
+    assert.equal(inferredRecipe.meshReconstruction.add[0].kind,'HORN');
+    assert.equal(inferredRecipe.meshReconstruction.morph.torso,1.2);
+    assert.equal(inferredRecipe.meshReconstruction.detail,'LOW_POLY');
     assert.throws(()=>buildVibeAssetProductionPlan({repoRoot:root,target:'unity',
       task:{...task,assetAuthoring:{reconstruction:{add:[{kind:'WING',mode:'CC0_PART',assetId:'unregistered-wing'}]}}},
       manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}}),
