@@ -694,3 +694,75 @@ test('generated web games reuse shared Vibe VFX and tween without changing save 
  assert.match(html,/runtime\.setScene\('play'/);
  assert.match(html,/runtime\.flushSaveProgress/);
 });
+
+
+// [공통 세션 취소] 에셋 없는 화면·뒤로가기·체크포인트에서 미완료 로딩을 중지한다.
+test('asset-free scene changes cancel pending scene loading without changing saves',async()=>{
+ const before=globalThis.fetch;
+ let aborted=0;
+ globalThis.fetch=(url,{signal}={})=>new Promise((resolve,reject)=>{
+  const fail=()=>{aborted++;reject(Object.assign(new Error('cancelled'),{name:'AbortError'}))};
+  if(signal.aborted)fail();
+  else signal.addEventListener('abort',fail,{once:true});
+ });
+ try{
+  const session=new JaewoonGameSession({gameId:'asset-free-scene-qa',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+  session.registerScene('menu');
+  session.registerScene('loading',{assets:[{id:'map',path:'slow.json'}]});
+  assert.equal(session.goToScene('menu'),'menu');
+  session.checkpointScene('menu');
+  const first=session.goToScene('loading');
+  assert.equal(session.runtime.getAssetStats().pendingSceneId,'loading');
+  assert.equal(session.goToScene('menu'),'menu');
+  await assert.rejects(first,AggregateError);
+  assert.equal(session.scenes.current,'menu');
+  assert.equal(session.runtime.getAssetStats().total,0);
+  const second=session.goToScene('loading');
+  assert.equal(session.backScene('menu'),'menu');
+  await assert.rejects(second,AggregateError);
+  const third=session.goToScene('loading');
+  assert.ok(session.restoreSceneCheckpoint('menu'));
+  await assert.rejects(third,AggregateError);
+  assert.equal(aborted,3);
+  assert.equal(session.runtime.getAssetStats().pendingSceneId,null);
+  assert.equal(session.runtime.getAssetStats().sceneCount,0);
+  assert.equal(session.scenes.current,'menu');
+  session.destroy();
+ }finally{globalThis.fetch=before}
+});
+
+// [공통 씬 진입] 로딩 완료된 실제 객체가 기존 진입 콜백으로 전달된다.
+test('scene enter and checkpoint restore receive loaded scene assets',async()=>{
+ const before=globalThis.fetch;
+ globalThis.fetch=async()=>new Response('{"ready":true}',{status:200});
+ try{
+  const visits=[];
+  const session=new JaewoonGameSession({gameId:'scene-enter-assets-qa',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+  session.registerScene('menu');
+  session.registerScene('world',{assets:[{id:'map',path:'world.json'}],enter:ctx=>visits.push(ctx.assets?.map?.ready)});
+  await session.goToScene('world');
+  assert.deepEqual(visits,[true]);
+  session.checkpointScene('world');
+  session.goToScene('menu');
+  await session.goToScene('world');
+  assert.deepEqual(visits,[true,true]);
+  await session.restoreSceneCheckpoint('world');
+  assert.deepEqual(visits,[true,true,true]);
+  session.goToScene('menu');
+  assert.equal(session.runtime.getAssetStats().total,0);
+  session.destroy();
+ }finally{globalThis.fetch=before}
+});
+
+// [기존 실제 게임] 자체 원화 경로가 공통 씬 취소·해제 수명과 연결되어야 한다.
+test('ocean voyage and lost dawn reuse the shared scene asset lifecycle',()=>{
+ const ocean=readFileSync(new URL('../web-games/ocean-voyage/ocean3d.mjs',import.meta.url),'utf8');
+ const dawn=readFileSync(new URL('../web-games/lost-dawn/index.html',import.meta.url),'utf8');
+ assert.match(ocean,/assetRuntime\.setScene\(nextScene,\[\{id:'harbor',path:'\.\/assets\/harbor\.webp'\}\]/);
+ assert.match(ocean,/if\(!nextScene\)\{assetRuntime\.releaseScene\(\);return;\}/);
+ assert.match(ocean,/dispose\(\)\{destroyed=true;assetRuntime\.destroy\(\)/);
+ assert.doesNotMatch(ocean,/townArt=new Image\(\)/);
+ assert.match(dawn,/atlasRuntime\.setScene\('lost-dawn-world'/);
+ assert.match(dawn,/atlasRuntime\?\.destroy\(\)/);
+ assert.doesNotMatch(dawn,/atlas=new Image\(\)/);
+});
