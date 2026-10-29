@@ -7,7 +7,7 @@ import {VIBE59_LUAU_CODING_SKILLS_109} from './vibe59-luau-skills109.mjs';
 // 메인: 새 외형·저장 키·경제 값을 만들지 않는 기존 소스 연산 카탈로그.
 export const OFFLINE_GAME_SYSTEMS=Object.freeze([
  'input','combat','ai','bestiary','building','inventory','crafting','world','ui','saving','quest','loop',
-].map(system=>Object.freeze({system,operations:['guard-return','existing-call','clamp-assignment','conditional-assignment'],
+].map(system=>Object.freeze({system,operations:['guard-return','existing-call','clamp-assignment','conditional-assignment','adjust-existing-counter'],
  existingRobloxRecipes:VIBE59_LUAU_CODING_SKILLS_109.filter(s=>s.system===(system==='quest'?'quests':system)).map(s=>s.id),
  newStateOrAssetCreation:false,runtimeVerified:false})));
 const forbidden=new Set(['constructor','prototype','__proto__','process','require','globalThis','eval','Function']);
@@ -122,6 +122,29 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   const rhs=target==='web'?'Math.min('+r.maximum+', Math.max('+r.minimum+', '+match[1]+'))':'math.clamp('+match[1]+', '+r.minimum+', '+r.maximum+')';
   edit={path:file.path,find,replace:r.output+' = '+rhs+(target==='web'?';':'')};
   proof={pass:true,cases:[r.minimum-1,r.minimum,(r.minimum+r.maximum)/2,r.maximum,r.maximum+1].map(input=>({input,expected:Math.min(r.maximum,Math.max(r.minimum,input))})),authority:'LOCAL_BOUNDARY_ORACLE',independentGameQa:false,actualGamePlaytest:false};effects=['WRITE_EXISTING_FIELD:'+r.output];
+ }else if(r.operation==='adjust-existing-counter'){
+  // [빌드업] 이미 존재하는 정수 누적식 하나를 직접 수정한다. 추가 쓰기나 별도 경로를 만들지 않는다.
+  if(!Number.isSafeInteger(r.amount)||!r.amount||Math.abs(r.amount)>1000)
+   throw Error('VIBE2_OPERATOR_COUNTER_AMOUNT');
+  const escaped=r.output.replaceAll('.','\\.').replaceAll('$','\\$');
+  const re=new RegExp('(?<![\\w$.])'+escaped+'[ \\t]*([+-])=[ \\t]*(\\d+)[ \\t]*'+
+   (target==='web'?';':'(?=\\r?\\n|$)'),'g');
+  const matches=[...body.matchAll(re)];
+  if(matches.length!==1)throw Error('VIBE2_OPERATOR_COUNTER_ANCHOR');
+  const match=matches[0],original=Number(match[2]);
+  if(!Number.isSafeInteger(original)||original>1e6)throw Error('VIBE2_OPERATOR_COUNTER_ORIGINAL');
+  const originalDelta=match[1]==='+'?original:-original;
+  const delta=originalDelta+r.amount;
+  if(!Number.isSafeInteger(delta)||Math.abs(delta)>1e6)
+   throw Error('VIBE2_OPERATOR_COUNTER_RESULT');
+  const at=owner.bodyStart+match.index,find=source.slice(at,at+match[0].length);
+  const replacement=r.output+' '+(delta<0?'-=':'+=')+' '+Math.abs(delta)+(target==='web'?';':'');
+  if(find===replacement)throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
+  edit={path:file.path,find,replace:replacement};
+  proof={pass:true,cases:[-10,-1,0,1,10].map(initial=>({initial,
+   original:initial+originalDelta,expected:initial+originalDelta+r.amount})),
+   authority:'EXISTING_INTEGER_COUNTER_ORACLE',independentGameQa:false,actualGamePlaytest:false};
+  effects=['WRITE_EXISTING_FIELD:'+r.output];
  }else if(r.operation==='conditional-assignment'){
   const statement=r.output+' = '+renderIntentExpression(r.value,target)+(target==='web'?';':'');
   const condition=renderIntentExpression(r.condition,target);
@@ -134,5 +157,5 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   requirementIds:r.requirementIds||[r.id],ownerTexts:r.ownerTexts||[r.ownerText],derivation:r.derivation||'EXPLICIT_SOURCE_SYMBOL',
   inputSymbols:r.boundSymbols,outputSymbols:r.output?[r.output]:[],dependencies:r.dependsOn,
   effects,invariants:r.invariants,scenarioProofs:proof,sourcePatch:edit,
-  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,returnValue:r.returnValue,output:r.output,value:r.value},runtimeVerified:false};
+  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,returnValue:r.returnValue,output:r.output,value:r.value,amount:r.amount},runtimeVerified:false};
 }
