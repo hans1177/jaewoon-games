@@ -43,3 +43,21 @@ test('anonymous callback and block-local declarations cannot become foreign func
   order:{ownerApproved:true,goal:'함수 hit에서 state.dead이면 중단해'}});
  assert.equal(plan.status,'BLOCKED');assert.equal(plan.unresolved[0].code,'MISSING_GROUNDING_OR_SHADOWED_STATE');
 });
+
+
+test('Roblox source index binds only original ReplicatedStorage RemoteEvents and ignores comments',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-remote-source-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'server'));
+ const file='server/Main.server.luau';
+ const original='-- local fakeRemote = ReplicatedStorage:WaitForChild("FAKE")\n'+
+  'local ReplicatedStorage = game:GetService("ReplicatedStorage")\n'+
+  'local HpChanged = ReplicatedStorage:WaitForChild("HP_CHANGED")\n'+
+  'local function hit(player: any, state: any)\n state.hp -= 1\n HpChanged:FireClient(player, state.hp)\nend\n';
+ fs.writeFileSync(path.join(root,file),original);
+ const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:[file],target:'roblox'});
+ assert.deepEqual(index.files[0].remotes.map(r=>[r.variable,r.eventName]),[['HpChanged','HP_CHANGED']]);
+ assert.equal(index.files[0].remotes[0].sourceSha256,index.files[0].sourceSha256);
+ fs.writeFileSync(path.join(root,file),original.replace('game:GetService("ReplicatedStorage")','other:GetService("ReplicatedStorage")'));
+ const blocked=buildGameSourceIndex({sourceRoot:root,responsibleFiles:[file],target:'roblox'});
+ assert.equal(blocked.files[0].remotes.length,0);
+});

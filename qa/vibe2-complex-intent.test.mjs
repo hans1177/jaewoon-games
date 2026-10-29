@@ -96,3 +96,18 @@ test('natural language without function names binds only explicit state UI save 
  for(const goal of ['내 게임을 알아서 모두 고쳐','서버 전투를 마음대로 개선해',
   '함수 이름을 추측해서 저장해'])assert.ok(compile(goal).unresolved.length,goal);
 });
+
+
+test('source-grounded existing Roblox RemoteEvent may connect health to original client UI without function names',()=>{
+ for(const goal of [
+  '로블록스 서버 체력 이벤트를 기존 클라이언트 화면에 연결해',
+  '기존 서버 체력 변경을 클라이언트 화면에 반영해',
+  'Connect existing Roblox server health event to client UI'
+ ]){
+  const parsed=compileComplexOwnerIntent({order:{gameId:'line-defense',ownerApproved:true,goal},target:'roblox',baseRevisionSha:'a'.repeat(40)});
+  assert.equal(parsed.unresolved.length,0,goal);
+  assert.equal(parsed.requirements[0].operation,'semantic-remote-ui');
+  assert.equal(parsed.requirements[0].functionName,undefined);
+  assert.equal(parsed.sourceWrite,false);
+ }
+});

@@ -688,3 +688,82 @@ test('name-free WEB object discovery refuses shadowed, unrelated and competing o
   assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),content);
  }
 });
+
+
+test('Roblox original server HP event binds one client receiver to its existing UI renderer',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'client'));
+ const files=['server/Combat.server.luau','client/Hud.client.luau'];
+ const server='local ReplicatedStorage = game:GetService("ReplicatedStorage")\n'+
+  'local HealthChanged = ReplicatedStorage:WaitForChild("HEALTH_CHANGED")\n'+
+  'local function damage(player: any, state: any, amount: number)\n'+
+  ' state.hp -= amount\n HealthChanged:FireClient(player, state.hp)\nend\n';
+ const client='local ReplicatedStorage = game:GetService("ReplicatedStorage")\n'+
+  'local HealthChanged = ReplicatedStorage:WaitForChild("HEALTH_CHANGED")\n'+
+  'local label={Text=""}\nlocal lastHp=0\n'+
+  'local function remember(hp: number)\n lastHp = hp\nend\n'+
+  'local function draw(hp: number)\n label.Text = tostring(hp)\nend\n'+
+  'local function receive(hp: number)\n remember(hp)\nend\n'+
+  'HealthChanged.OnClientEvent:Connect(receive)\n';
+ const sources=[server,client];files.forEach((file,i)=>fs.writeFileSync(path.join(root,file),sources[i]));
+ const options={sourceRoot:root,responsibleFiles:files,target:'roblox',baseRevisionSha:revision,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'로블록스 서버 체력 이벤트를 기존 클라이언트 화면에 연결해'}};
+ const plan=planComplexGameWork(options);
+ assert.equal(plan.status,'BOUND',JSON.stringify(plan.unresolved));
+ assert.equal(plan.index.files[0].remotes[0].eventName,'HEALTH_CHANGED');
+ assert.equal(plan.nodes[0].boundSymbols.length,3);
+ const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ const throughCanonical=createVibe59CodeCandidates({...options,repositoryRoot:repo});
+ assert.equal(throughCanonical.vibe59CodeKind,'COMPLEX_OWNER_INTENT');
+ assert.deepEqual(throughCanonical.edits,candidate.edits);
+ assert.equal(candidate.edits.length,1);
+ assert.equal(candidate.edits[0].path,files[1]);
+ assert.match(candidate.edits[0].replace,/remember\(hp\)\s+draw\(hp\)/);
+ assert.equal(candidate.complexPlan.atoms[0].derivation,'EXISTING_REMOTE_SERVER_TO_CLIENT_UI');
+ const docs=new Map(files.map((file,i)=>[file,sources[i]]));
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ assert.equal(docs.get(files[0]),server);
+ assert.equal((docs.get(files[1]).match(/draw\(hp\)/g)||[]).length,1);
+ for(let i=0;i<2;i++)assert.equal(fs.readFileSync(path.join(root,files[i]),'utf8'),sources[i]);
+ if(process.env.VIBE2_LUAU_BINARY){
+  const probe=path.join(root,'remote-ui.luau');
+  fs.writeFileSync(probe,'local connection=nil\nlocal event={OnClientEvent={Connect=function(self,fn) connection=fn end}}\n'+
+   'local game={GetService=function(self,name) return {WaitForChild=function(self,key) return event end} end}\n'+
+   docs.get(files[1])+
+   '\nconnection(17)\nassert(lastHp==17 and label.Text=="17")\nconnection(5)\nassert(lastHp==5 and label.Text=="5")\n');
+  const run=spawnSync(process.env.VIBE2_LUAU_BINARY,[probe],{encoding:'utf8',timeout:10000});
+  assert.equal(run.status,0,run.stderr);
+ }
+ fs.writeFileSync(path.join(root,files[0]),server+'-- a different deployed source\n');
+ assert.throws(()=>createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'}),/STALE_SOURCE/);
+});
+
+test('Roblox remote HUD source binding blocks wrong event, absent server evidence and duplicate UI call',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'client'));
+ const files=['server/Damage.server.luau','client/HUD.client.luau'];
+ const server='local ReplicatedStorage = game:GetService("ReplicatedStorage")\n'+
+  'local hpRemote = ReplicatedStorage:WaitForChild("HP_EVENT")\n'+
+  'local function damage(player: any, state: any, amount: number)\n'+
+  ' state.hp -= amount\n hpRemote:FireClient(player, state.hp)\nend\n';
+ const client='local ReplicatedStorage = game:GetService("ReplicatedStorage")\n'+
+  'local hpRemote = ReplicatedStorage:WaitForChild("HP_EVENT")\n'+
+  'local label={Text=""}\nlocal lastHp=0\n'+
+  'local function remember(hp: number)\n lastHp = hp\nend\n'+
+  'local function draw(hp: number)\n label.Text = tostring(hp)\nend\n'+
+  'local function receive(hp: number)\n remember(hp)\nend\n'+
+  'hpRemote.OnClientEvent:Connect(receive)\n';
+ const options={sourceRoot:root,responsibleFiles:files,target:'roblox',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'기존 서버 체력 변경을 클라이언트 화면에 반영해'}};
+ for(const changed of [
+  [server,client.replace('WaitForChild("HP_EVENT")','WaitForChild("OTHER_EVENT")')],
+  [server.replace('hpRemote:FireClient(player, state.hp)','local unused = state.hp'),client],
+  [server.replace('state.hp -= amount\n hpRemote:FireClient(player, state.hp)','hpRemote:FireClient(player, state.hp)\n state.hp -= amount'),client],
+  [server,client.replace(' remember(hp)\nend\nhpRemote.OnClientEvent',' remember(hp)\n draw(hp)\nend\nhpRemote.OnClientEvent')],
+  [server,client.replace('hpRemote.OnClientEvent:Connect(receive)','hpRemote.OnClientEvent:Connect(function(hp) remember(hp) end)')]
+ ]){
+  files.forEach((file,i)=>fs.writeFileSync(path.join(root,file),changed[i]));
+  const plan=planComplexGameWork(options);
+  assert.equal(plan.status,'BLOCKED',JSON.stringify(plan.unresolved));
+  assert.ok(plan.unresolved.some(row=>row.code==='REMOTE_UI_ORIGINAL_EVENT_BINDING_UNPROVEN'));
+  for(let i=0;i<2;i++)assert.equal(fs.readFileSync(path.join(root,files[i]),'utf8'),changed[i]);
+ }
+});
