@@ -119,7 +119,7 @@ test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflar
   assert.match(html,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(html,/id="gameHub"/);
   assert.match(html,/class="mobileDock"/);
-  assert.ok(html.includes('src="assets/homepage-enhancements.js"'));
+  assert.ok(html.includes('src="assets/homepage-enhancements.js?v=owner-only-20261030"'));
   assert.ok(html.includes('href="manifest.webmanifest"'));
   assert.doesNotMatch(html,/data-jaewoon-pages-redirect|http-equiv="refresh"/i);
   assert.ok(!html.includes('url=https://jaewoon-games.pages.dev/'));

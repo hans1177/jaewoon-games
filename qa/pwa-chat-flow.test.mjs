@@ -71,7 +71,7 @@ test('inline command script parses and service worker cache is refreshed',()=>{
 test('GitHub Pages 프로젝트 하위 경로에서 홈페이지 스크립트와 웹 카탈로그 경로를 유지한다',()=>{
   const index=fs.readFileSync('index.html','utf8');
   const client=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.match(index,/src="assets\/homepage-enhancements\.js"/);
+  assert.match(index,/src="assets\/homepage-enhancements\.js\?v=owner-only-20261030"/);
   assert.match(index,/navigator\.serviceWorker\.register\('sw\.js',\{scope:'\.\/'\}\)/);
   assert.match(index,/href="command\.html\?from=chatgpt-shortcut"/);
   assert.match(client,/new URL\('\.\.\/',import\.meta\.url\)/);
