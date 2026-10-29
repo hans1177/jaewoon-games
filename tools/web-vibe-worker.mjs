@@ -168,6 +168,52 @@ function verifiedLocalMain({cloud=false}={}){
   if(remaining)fail('WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:'+remaining.split('\n').length);
   console.log('WEB_VIBE_CLOUD_CHECKOUT_REPAIRED=PASS');
 }
+// [메인] 무모델 웹 코드 작성: 요청·원본 책임 함수·실제 실행 코드가 모두 일치할 때만 수정한다.
+// 3D 모델/몬스터/밸런스/세이브를 추측하지 않고, 부분 작업을 전체 개발로 위장하지 않는다.
+export function synthesizeWebSourceWithoutModel(task,source){
+  const goal=clean(task?.goal),original=String(source?.original||''),relative=clean(source?.relative);
+  if(!/^web-games\/[a-zA-Z0-9_-]+\/.+\.(?:html?|js|mjs|cjs)$/i.test(relative)||!original||!goal)return null;
+  const wantsLabel=/(?:도감|이름표|nameplate|bestiary)/i.test(goal)
+    &&/(?:흐리|가독|안\s*보|잘\s*보|선명|읽기|readab|contrast|legib|blur)/i.test(goal);
+  const wantsFrame=/(?:프레임|시간차|버벅|frame|delta|lag|프레임\s*드랍)/i.test(goal)
+    &&/(?:수정|개선|안정|제한|끊김|fix|stabili|clamp|smooth|버벅)/i.test(goal);
+  if(!wantsLabel&&!wantsFrame)return null;
+  // 이 규칙 밖의 별도 기능 요구가 함께 있으면 부분 수정 PR을 완료로 기록하지 않는다.
+  if(/(?:청사진|건축|설치|처치|허공|공격|전투|보스|신규\s*(?:몬스터|지역|스테이지)|저장\s*(?:변경|초기화)|blueprint|construction|new\s*(?:boss|stage|enemy)|combat|kill)/i.test(goal))
+    return null;
+  const definitions=inspectSourceFunctions(original,{language:'web',maxFunctions:4096});
+  const edits=[],roles=[];
+  if(wantsLabel){
+    const matching=definitions.filter(fn=>fn.name==='syncBestiaryName'
+      &&fn.code.includes("pen.font='900 64px system-ui,sans-serif'")
+      &&fn.code.includes('state.bestiary?.[e.type?.id]')
+      &&fn.code.includes('new THREE.SpriteMaterial('));
+    if(matching.length!==1)return null;
+    const before=matching[0].code;
+    const after=before.replace("pen.font='900 64px system-ui,sans-serif'","pen.font='900 76px system-ui,sans-serif'")
+      .replace("pen.strokeStyle='#010c08';pen.lineWidth=9;","pen.strokeStyle='#010c08';pen.lineWidth=11;");
+    if(after===before)return null;
+    edits.push({oldText:before,newText:after});
+    roles.push('EXISTING_BESTIARY_NAME_READABILITY');
+  }
+  if(wantsFrame){
+    const target='const dt=(now-last)/1000;';
+    const matching=definitions.filter(fn=>fn.code.includes(target)
+      &&/\bfunction\s+\w+\s*\([^)]*\bnow\b[^)]*\blast\b[^)]*\)/.test(fn.code));
+    if(matching.length!==1)return null;
+    const before=matching[0].code;
+    const after=before.replace(target,'const dt=Math.max(0,Math.min(.05,(now-last)/1000));');
+    if(after===before)return null;
+    edits.push({oldText:before,newText:after});
+    roles.push('EXISTING_FRAME_DELTA_BOUND');
+  }
+  if(!edits.length)return null;
+  const result=safeWebVibeReplacement(original,JSON.stringify({edits,reason:'검증된 기존 웹 게임 책임 함수 직접 수정'}),{relative});
+  return {...result,deterministicWebSource:true,offlineSourceProof:{
+    source:relative,changedFunctions:edits.length,roles,runtimeVerified:false
+  }};
+}
+
 // 클라우드/로컬은 같은 WEB_VIBE_1 파일 검증과 PR 경로를 사용한다.
 // 원격 모델 응답은 절대 권한이 아니며 기존 단일 bounded edit 검사만 통과한다.
 export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fetch,
@@ -252,6 +298,9 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
       }
     }
   }
+  // 무료 모델이 없어도 원본 함수가 뒷받침하는 코드 수정은 바로 수행한다.
+  const offline=synthesizeWebSourceWithoutModel(task,source);
+  if(offline)return offline;
   if(cloud&&!clean(apiKey))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING:'+source.relative+':functions='+analysis.functions.length+':bytes='+analysis.bytes);
   const system='You are the independent WEB-only coding assistant. Inspect only the provided existing web-game file. '
     +'If no relevant change is needed, return JSON {"skip":true,"reason":"not affected"}. '
