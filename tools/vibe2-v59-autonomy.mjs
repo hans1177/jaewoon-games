@@ -446,6 +446,7 @@ export function buildVibe59AutonomyPlan({order={},target='web',codeFlow=null,sou
     sourceFlowCount:codeFlow?.sources?.length||0,
     sourceImpactCount:sourceImpact?.impactedSources?.length||0,
     synthesisCandidateAvailable:Boolean(order.vibe59CodeRequest||order.selectedTask?.vibe59CodeRequest
+      ||order.vibe59CodeRequests||order.selectedTask?.vibe59CodeRequests
       ||order.vibe59CreativeRequest||order.selectedTask?.vibe59CreativeRequest),
     testStrategy:'explicit-scenarios-needing-existing-harness',
     refactorStrategy:'bounded-candidates-needing-existing-validation',
