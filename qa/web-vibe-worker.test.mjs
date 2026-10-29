@@ -724,6 +724,19 @@ test('offline general function rewrite composes original Web event handler from 
  assert.equal(result.sourceFunctionAutoLocated,true);
  assert.equal(result.vibe59TestPlan.pass,true);
  assert.equal(result.vibe59JsReplay.pass,true);
+ const audited=()=>createVibe59CodeCandidates({order:{vibe59CodeRequest:req},
+  target:'web',sourceRoot:root,responsibleFiles:['game.js']});
+ const checked=audited();
+ assert.equal(checked.vibe59OfflineAudit.status,'STATIC_ONLY_QA_RUNTIME_REQUIRED');
+ assert.equal(checked.vibe59OfflineAudit.functionCount,1);
+ assert.equal(checked.vibe59OfflineAudit.editCount,1);
+ assert.equal(checked.vibe59OfflineAudit.sourceEvidence.length,1);
+ assert.equal(checked.vibe59OfflineAudit.runtimeVerified,false);
+ const fingerprint=checked.vibe59OfflineAudit.fingerprint;
+ assert.equal(fingerprint.length,64);
+ assert.throws(()=>createVibe59CodeCandidates({order:{
+  vibe59CodeRequest:req,vibe59RejectedCandidateFingerprints:[fingerprint]},
+  target:'web',sourceRoot:root,responsibleFiles:['game.js']}),/REPEATED_FAILED_CANDIDATE/);
  assert.equal(result.edits.length,1);
  assert.match(result.edits[0].replace,/phase = "active"/);
  assert.equal(result.runtimeVerified,false);
