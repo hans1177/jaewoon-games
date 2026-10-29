@@ -11,7 +11,7 @@ import {mergeVertices} from '../../assets/roblox/world-ghosts/native/mesh/three/
 import {clone as cloneAnimatedRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
-import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
+import {createSurvivalPlayerMotionProfile,createVibeUpperBodyAnimationClip} from '../../assets/vibe-motion-director.js';
 import {planAssetApplication} from '../../assets/asset-selector.js';
 import {createVibeWorldVfx} from '../../assets/vibe-game-world-runtime.mjs';
 
@@ -903,8 +903,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   function authoredUpperAttack(clip){
     if(!clip)return null;
     if(heroUpperClipCache.has(clip.name))return heroUpperClipCache.get(clip.name);
-    const tracks=clip.tracks.filter(track=>/(spine|chest|clavicle|shoulder|upperarm|lowerarm|forearm|wrist|hand|neck|head)/i.test(track.name)&&!/root|hips|pelvis/i.test(track.name));
-    const upper=tracks.length?new THREE.AnimationClip(clip.name+'__upper',clip.duration,tracks.map(track=>track.clone())):null;
+    const upper=createVibeUpperBodyAnimationClip(THREE,clip);
     heroUpperClipCache.set(clip.name,upper);
     return upper;
   }
