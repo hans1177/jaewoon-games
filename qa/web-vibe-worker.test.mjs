@@ -808,6 +808,11 @@ test('Vibe5.9 canonical source candidate exposes extracted concepts without muta
      holdouts:[{args:[8,1],output:8},{args:[-2,-1],output:-1}]}}};
  const candidate=createVibe59CodeCandidate({order,sourceRoot:root,
    responsibleFiles:['logic.js'],target:'web'});
+ const auto=createVibe59CodeCandidate({order:{vibe59CodeRequest:{
+   ...order.vibe59CodeRequest,find:undefined}},sourceRoot:root,
+   responsibleFiles:['logic.js'],target:'web'});
+ assert.equal(auto.sourceFunctionAutoLocated,true);
+ assert.equal(auto.edits[0].find,'function score(x,y){return 0;}');
  assert.ok(candidate.algorithmConceptCandidates.concepts.length>=1);
  assert.equal(candidate.algorithmConceptCandidates.promotionAuthorized,false);
  assert.equal(candidate.sourceWrite,false);
