@@ -743,3 +743,26 @@ test('continuous verified pattern ingest learns, quarantines stale proof, and re
   assert.equal(removed.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
   assert.equal(removed.patterns.find(row=>row.id===learned.id).verified,true);
 });
+
+
+// [Studio MCP] 학습 규칙은 동일 리비전의 실제 검증 증거와 원본 책임 함수가 있어야 생성된다.
+test('verified Studio modal repair distills source-bound native recipe without raw patches',()=>{
+ const sha='c'.repeat(40),trace={state:'PASS',sourceRevision:sha,commitSha:sha,
+   pullRequest:11111,ci:'PASS',independentQa:'PASS',runtime:'PASS'};
+ const base={taskType:'roblox',gameId:'fantasy-survival',sourceRevision:sha,
+   independentQa:'PASS',browserQa:'NOT_APPLICABLE',
+   instruction:'Studio MCP HUD overlap ActionMenuShade in RobloxCommonUI.AdaptActionMenu',
+   verification:{fullRegression:'PASS',runtime:'PASS',trace}};
+ const patterns=deriveVerifiedCodePatterns(base,'company-learning/training-samples/verified-studio.json');
+ const match=patterns.find(row=>row.system==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
+ assert.equal(match?.executableRecipe?.responsibleFunction,'RobloxCommonUI.AdaptActionMenu');
+ assert.equal(match?.executableRecipe?.requiresTargetRuntimeQa,true);
+ assert.ok(match?.implementationRecipe?.proof.includes('FULL_REGRESSION_PASS'));
+ assert.equal(match?.rawCodeStored,false);
+ const missingTrace=deriveVerifiedCodePatterns({...base,verification:{...base.verification,trace:null}});
+ assert.ok(!missingTrace.some(row=>row.system==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION'));
+ const otherFunction=deriveVerifiedCodePatterns({...base,instruction:'Studio MCP HUD overlap ActionMenuShade in OtherUI.CreatePanel'});
+ assert.ok(!otherFunction.some(row=>row.system==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION'));
+ const failed=deriveVerifiedCodePatterns({...base,verification:{...base.verification,runtime:'FAIL'}});
+ assert.deepEqual(failed,[]);
+});

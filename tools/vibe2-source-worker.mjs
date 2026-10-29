@@ -1801,9 +1801,24 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         'end)',
         'gui.Destroying:Connect(function()outsideInput:Disconnect()end)'
       ].join('\n');
-      if(source.split(shadeBefore).length===2&&source.split(outsideBefore).length===2
-        &&source.indexOf(shadeBefore)<source.indexOf(outsideBefore)
-        &&source.indexOf(outsideBefore)<source.indexOf('return {isOpen=function()return opened end')){
+      // 공식 Studio가 지목한 원본 AdaptActionMenu 함수 안의 정확한 두 구문만 수정한다.
+      const menuAnchor='function RobloxCommonUI.AdaptActionMenu(';
+      const menuStart=source.indexOf(menuAnchor);
+      const menuEnd=menuStart<0?-1:source.indexOf('return {isOpen=function()return opened end',menuStart);
+      const shadeAt=source.indexOf(shadeBefore),outsideAt=source.indexOf(outsideBefore);
+      if(menuStart>=0&&source.indexOf(menuAnchor,menuStart+1)===-1&&menuEnd>menuStart
+        &&source.split(shadeBefore).length===2&&source.split(outsideBefore).length===2
+        &&shadeAt>menuStart&&outsideAt>shadeAt&&outsideAt<menuEnd){
+        // 검증된 같은 함수·원인 규칙이 있으면 기존 학습 라이브러리 근거를 연결한다.
+        // 이력이 없어도 공식 Studio 관측과 정확한 원본 일치가 후보 생성의 필수 조건이다.
+        const learnedStudioRule=readVerifiedCodePatternsForSourceWorker().patterns.find(pattern=>
+          pattern?.verified===true&&pattern?.retrievalEligible!==false&&!pattern?.quarantineReason
+          &&pattern?.rawCodeStored===false&&pattern?.authority==='verified-internal-code-pattern'
+          &&pattern?.independentQa==='PASS'&&pattern?.engine==='roblox'
+          &&pattern?.system==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION'
+          &&pattern?.executableRecipe?.kind==='REPAIR_EXISTING_STUDIO_MODAL_BACKDROP'
+          &&pattern.executableRecipe.responsibleFunction==='RobloxCommonUI.AdaptActionMenu'
+          &&/^[a-f0-9]{40}$/i.test(clean(pattern.sourceRevision)));
         candidates.push({
           summary:'Vibe free native Roblox modal UI repair grounded in actual Studio HUD overlap',
           expectedEffect:'Remove the full-screen clickable button that overlaps menu controls while retaining an accessible outside-close control and touch outside dismissal',
@@ -1812,7 +1827,9 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             {path:relative,find:outsideBefore,replace:outsideAfter}
           ],newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-180,
           deterministicRobloxNativeRepair:'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION',
+          learnedCodePatternIds:learnedStudioRule?[learnedStudioRule.id]:[],
           semanticGrounding:{studioRunId:Number(studioFailure.workflowRunId)||null,
+            responsibleFunction:'RobloxCommonUI.AdaptActionMenu',
             failureKind:'adaptive-ui-commercial-quality',observedOverlapPairs:Math.max(...observed.map(row=>Number(row.overlapPairs)||0)),
             originalSourceAnchors:true,sourceBound:true,preserveTouchDismissal:true,
             noNewServerRules:true,noSaveMutation:true,modelUsed:false,runtimeVerified:false}

@@ -525,15 +525,37 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
           if(!fs.existsSync(workerFile))return task;
           nativeCodegenSha256=createHash('sha256').update(fs.readFileSync(workerFile)).digest('hex');
         }
+        // 공식 Studio MCP의 실제 UI 관측이 바뀐 경우에만 검증 재시도를 허용한다.
+        // 실행 번호만 바뀌고 실패 원인이 같으면 중복 실행하지 않는다.
+        const studio=task?.selectedTask?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure
+          ||task?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure;
+        const studioDetails=Array.isArray(studio?.qualityFailureDetails)?studio.qualityFailureDetails:[];
+        const observations=studioDetails.filter(row=>clean(row?.id)==='adaptive-ui-commercial-quality'
+          &&clean(row?.repairSurface).toUpperCase()==='MOBILE_UI').map(row=>{
+          let observed=row?.observed;
+          if(typeof observed==='string'){try{observed=JSON.parse(observed);}catch{observed=null;}}
+          return [Number(observed?.overlapPairs),Number(observed?.largeBlockingOverlayCount)];
+        }).filter(([overlap,blockers])=>Number.isFinite(overlap)&&overlap>=2&&blockers===0);
+        const officialStudio=studio?.authority==='roblox-official-studio-mcp-product-quality-failure'
+          &&Number.isSafeInteger(Number(studio.workflowRunId))&&Number(studio.workflowRunId)>0
+          &&Array.isArray(studio.repairSurfaces)&&studio.repairSurfaces.includes('MOBILE_UI')
+          &&observations.length>0;
+        const studioSignature=officialStudio?createHash('sha256')
+          .update(JSON.stringify(observations.sort((a,b)=>a[0]-b[0]||a[1]-b[1]))).digest('hex'):'none';
         const fingerprint='source-no-model-codegen-sha256:'+nativeCodegenSha256;
-        if(evidence.includes(fingerprint))return task;
+        const attempt='source-no-model-attempt-sha256:'+createHash('sha256')
+          .update(nativeCodegenSha256+'|'+studioSignature).digest('hex');
+        const tried=evidence.filter(value=>clean(value).startsWith('source-no-model-attempt-sha256:'));
+        // 이전 큐 상태는 조합 키가 없으므로 기존 SHA 기반 차단을 유지한다.
+        if(tried.includes(attempt)||(!tried.length&&evidence.includes(fingerprint)))return task;
         recovered+=1;
         return {...task,...clearedReservation(),status:'queued',blocker:null,
-          lastOutcome:'MODEL_FREE_NATIVE_CODEGEN_RECHECK',
+          lastOutcome:officialStudio?'MODEL_FREE_NATIVE_STUDIO_EVIDENCE_RECHECK':'MODEL_FREE_NATIVE_CODEGEN_RECHECK',
           evidence:[...new Set([
             ...evidence.filter(value=>!clean(value).startsWith('source-no-model-codegen-sha256:')
-              &&!clean(value).startsWith('source-no-model-retry-at:')),
-            fingerprint,'source-no-model-retry-resumed:v1'
+              &&!clean(value).startsWith('source-no-model-retry-at:')
+              &&!clean(value).startsWith('source-no-model-attempt-sha256:')),
+            ...tried.slice(-23),fingerprint,attempt,'source-no-model-retry-resumed:v1'
           ])]};
       }
       const prefix=offlinePattern?'source-offline-pattern-retry-at:'

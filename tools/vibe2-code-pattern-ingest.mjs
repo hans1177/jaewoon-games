@@ -114,6 +114,15 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
       ['NEXT_STATE_TRANSITION','NEXT_STAGE'].includes(clean(row.horizon))))).map(([name])=>name);
   const gameId=clean(sample.gameId||sample.project)||null;
   const engine=engineOf(sample);
+  // 공식 Studio 실패→기존 책임 함수 수정→동일 리비전 QA/런타임/회귀 PASS인 경우만
+  // 학습 규칙을 축적한다. 실제 코드는 복제하지 않고 원인·함수·필수 검증만 저장한다.
+  const studioRuleVerified=engine==='roblox'&&trace&&upper(trace.state)==='PASS'
+    &&upper(trace.ci)==='PASS'&&upper(trace.independentQa)==='PASS'
+    &&upper(trace.runtime)==='PASS'&&clean(trace.sourceRevision||trace.sha)===sourceRevision
+    &&/studio[ -]?mcp/i.test(text)
+    &&/RobloxCommonUI\.AdaptActionMenu/.test(text)
+    &&/actionmenushade|modal.*backdrop|hud.*overlap|오버랩|겹침/i.test(text);
+  if(studioRuleVerified)systems.push('STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION');
   const taskType=clean(sample.taskType);
   return systems.map(system=>({
     id:`pat_${hash([gameId,engine,taskType,system,sourceRevision].join('|'))}`,
@@ -135,6 +144,14 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
       kind:'BIND_EXISTING_BUTTON_ACTION',actions:verifiedActions,
       requiresExactSourceFunction:true,requiresTargetRuntimeQa:true
     }}:{}),
+    ...(system==='STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION'?{
+      implementationRecipe:{source:'RobloxCommonUI.AdaptActionMenu',proof:[
+        'OFFICIAL_STUDIO_MCP_UI_FAILURE','EXACT_ORIGINAL_FUNCTION',
+        'INDEPENDENT_RUNTIME_QA_PASS','FULL_REGRESSION_PASS','SOURCE_REVISION_MATCH']},
+      executableRecipe:{kind:'REPAIR_EXISTING_STUDIO_MODAL_BACKDROP',
+        responsibleFunction:'RobloxCommonUI.AdaptActionMenu',
+        requiresExactSourceFunction:true,requiresTargetRuntimeQa:true}
+    }:{}),
     ...(CAUSAL_REPLAY_SCENARIOS[system]?{observedReplay:Object.freeze({
       scenarioId:CAUSAL_REPLAY_SCENARIOS[system],sourceRevision,
       horizon:clean(replay.find(row=>clean(row.scenarioId)===CAUSAL_REPLAY_SCENARIOS[system])?.horizon),

@@ -206,6 +206,41 @@ test('model-free Roblox source misses retry once per source worker revision with
   assert.equal(afterUpgrade.queue.tasks[0].evidence.filter(v=>v.startsWith('source-no-model-codegen-sha256:')).length,1);
 });
 
+
+test('official Studio evidence change retries one native causal candidate, same cause stays deduplicated',()=>{
+  const failure=(count,run)=>({authority:'roblox-official-studio-mcp-product-quality-failure',
+    workflowRunId:run,repairSurfaces:['MOBILE_UI'],qualityFailureDetails:[{
+      id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
+      observed:JSON.stringify({overlapPairs:count,largeBlockingOverlayCount:0})}]});
+  const task={id:'studio-queue-evidence',gameId:'fantasy-survival',target:'roblox',
+    department:'development',type:'implementation',goal:'repair current studio UI source',
+    sourceRoot:'roblox-games/fantasy-survival',responsibleFiles:['shared/RobloxCommonUI.luau'],
+    status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE',retries:5,maxRetries:5,
+    evidence:['source-no-model-failure-kind:DETERMINISTIC_ROBLOX'],
+    selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure(8,4077)}}}};
+  const recover=task=>recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[task]}),{nowMs:Date.now()});
+  const initial=recover(task);
+  assert.equal(initial.recovered,1);
+  const first=initial.queue.tasks[0];
+  assert.ok(first.evidence.some(x=>x.startsWith('source-no-model-attempt-sha256:')));
+  const blocked={...first,status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE'};
+  assert.equal(recover(blocked).recovered,0,'identical cause and worker must remain blocked');
+  const same={...blocked,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure(8,4078)}}}};
+  assert.equal(recover(same).recovered,0,'new run id alone is not improved evidence');
+  const improved={...blocked,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:failure(5,4079)}}}};
+  const second=recover(improved);
+  assert.equal(second.recovered,1,'new official actionable UI observation reopens the same original source');
+  assert.equal(second.queue.tasks[0].lastOutcome,'MODEL_FREE_NATIVE_STUDIO_EVIDENCE_RECHECK');
+  assert.equal(second.queue.tasks[0].retries,5,'evidence recheck does not consume retries');
+  assert.equal(second.queue.tasks[0].evidence.filter(x=>x.startsWith('source-no-model-attempt-sha256:')).length,2);
+  const back={...second.queue.tasks[0],status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE',
+    selectedTask:task.selectedTask};
+  assert.equal(recover(back).recovered,0,'old attempted observation must not restart a failure loop');
+  const spoof={...blocked,selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:{
+    ...failure(5,4080),authority:'unverified-label'}}}}};
+  assert.equal(recover(spoof).recovered,0,'unverified metadata cannot reopen a blocked native task');
+});
+
 test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
   const base={id:'owner-offline-missing',gameId:'owner-web-game',target:'web',
     department:'development',type:'implementation',goal:'owner change requires a verified source recipe',
