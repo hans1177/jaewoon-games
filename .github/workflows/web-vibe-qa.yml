@@ -55,5 +55,7 @@ jobs:
           set -euo pipefail
           node --test qa/web-vibe-organization.test.mjs qa/web-vibe-worker.test.mjs
           node --test qa/pwa-command-vibe2-task.test.mjs qa/vibe2-local-web-chat.test.mjs
+      - name: Verify existing free-provider rotation and billing boundaries
+        run: node --test qa/vibe2-gemini-free-rotation.test.mjs
       - name: Ensure local and GitHub cloud development paths stay separate
         run: node --test qa/github-cloud-web-isolation.test.mjs

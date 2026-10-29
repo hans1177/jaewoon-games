@@ -356,6 +356,10 @@ jobs:
       WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN || github.token }}
       WEB_VIBE_JOB_TOKEN: ${{ !secrets.WEB_VIBE_GH_TOKEN }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+      VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED }}
       WEB_OWNER_TASK_ID: ${{ needs.web-recovery-select.outputs.task_id }}
       WEB_OWNER_FILES: ${{ needs.web-recovery-select.outputs.files }}
     steps:
@@ -438,6 +442,10 @@ jobs:
       WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN || github.token }}
       WEB_VIBE_JOB_TOKEN: ${{ !secrets.WEB_VIBE_GH_TOKEN }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+      VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED }}
       WEB_OWNER_TASK_ID: ${{ needs.bridge.outputs.task_id }}
       WEB_OWNER_FILES: ${{ needs.bridge.outputs.files }}
     steps:

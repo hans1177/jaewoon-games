@@ -82,3 +82,16 @@ test('existing PWA fetches current control snapshots without unbounded history',
   assert.match(source,/storage-unpack --queue="\$work\/\.vibe2\/queue\.json"/);
   assert.match(source,/storage-pack --queue=\.vibe2\/queue\.json/);
 });
+
+// 회귀: 기존 무료 전환 경로는 WEB 두 실행부에도 전달하며 무료 요금제 확인을 만들어내지 않는다.
+test('WEB owner and recovery lanes bind existing free provider rotation without assumed billing approval',()=>{
+  const source=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  for(const job of ['web-recovery-onepatch','web-cloud-onepatch']){
+    const block=source.slice(source.indexOf('  '+job+':')).split(/\n  [a-z][a-z-]+:/)[0];
+    assert.match(block,/GROQ_API_KEY: \$\{\{ secrets\.GROQ_API_KEY \}\}/);
+    assert.match(block,/OPENROUTER_API_KEY: \$\{\{ secrets\.OPENROUTER_API_KEY \}\}/);
+    assert.match(block,/VIBE2_EXTERNAL_FREE_ROTATION: 'YES'/);
+    assert.match(block,/VIBE2_GROQ_FREE_PLAN_VERIFIED: \$\{\{ vars\.VIBE2_GROQ_FREE_PLAN_VERIFIED \}\}/);
+    assert.doesNotMatch(block,/VIBE2_GROQ_FREE_PLAN_VERIFIED:.*\|\|/);
+  }
+});
