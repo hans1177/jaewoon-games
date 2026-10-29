@@ -258,7 +258,7 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
       }
       if(verdict?.buildSourceChanged===false){
         const restored=restoreMetadataOnlyRobloxInvalidation(item,{stamp});
-        results.push({gameId,pass:true,sourceRevision,buildSourceChanged:false,metadataOnly:true,restored});
+        results.push({gameId,pass:true,sourceRevision,buildSourceChanged:false,metadataOnly:true,restored,requiresRuntime:item.robloxBuildOrPackagePassed!==true});
         continue;
       }
       invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp});
