@@ -681,3 +681,16 @@ test('game session loads declared scene assets, preserves failed transition and 
    session.destroy();
  }finally{globalThis.fetch=original}
 });
+
+// [VFX 생성기] 새 웹게임도 기존 저장/씬 로딩과 동일한 렌더 루프에서 공용 효과를 사용한다.
+test('generated web games reuse shared Vibe VFX and tween without changing save contract',()=>{
+ const html=buildGeneratedGame({packageData:{gameId:'vfx-generated',content:{}},title:'VFX Generated'}).html;
+ assert.match(html,/createVibeCanvasVfx/);
+ assert.match(html,/VibePresentationEngine/);
+ assert.match(html,/vfx\.burst\('impact'/);
+ assert.match(html,/vfx\.burst\('explosion'/);
+ assert.match(html,/vfx\.draw\(ctx\)/);
+ assert.match(html,/presentation\.tween\('toast'/);
+ assert.match(html,/runtime\.setScene\('play'/);
+ assert.match(html,/runtime\.flushSaveProgress/);
+});
