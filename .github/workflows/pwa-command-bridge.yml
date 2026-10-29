@@ -325,6 +325,26 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # 기존 5분 watchdog 안에서만 학습을 승격한다. PR 병합 + 정확한 공개 소스
+          # + 해당 게임 실제 브라우저 플레이 증거가 없으면 기존 review를 보존한다.
+          for attempt in 1 2 3; do
+            gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-head.json
+            jq -r '.content' /tmp/web-recovery-head.json | base64 -d > /tmp/web-recovery-queue.json
+            node tools/web-vibe-recovery.mjs reconcile /tmp/web-recovery-queue.json /tmp/web-recovery-verified.json > /tmp/web-recovery-verified-result.json
+            if ! jq -e '.changed > 0' /tmp/web-recovery-verified-result.json >/dev/null; then break; fi
+            content="$(base64 -w0 /tmp/web-recovery-verified.json)"
+            sha="$(jq -r '.sha' /tmp/web-recovery-head.json)"
+            jq -nc --arg message "web-vibe: preserve verified browser learning [skip ci]" \
+              --arg content "$content" --arg sha "$sha" \
+              '{message:$message,content:$content,sha:$sha,branch:"web-vibe-control"}' \
+              > /tmp/web-recovery-learn-payload.json
+            if gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json" \
+                --input /tmp/web-recovery-learn-payload.json >/dev/null; then
+              echo 'WEB_VIBE_VERIFIED_LEARNING_CHECKPOINT=WRITTEN'
+              break
+            fi
+          done
+          # 학습 저장 충돌 시 이전 상태로 과거 합격을 위장하지 않고 최신 큐를 다시 읽는다.
           gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-head.json
           jq -r '.content' /tmp/web-recovery-head.json | base64 -d > /tmp/web-recovery-queue.json
           node tools/web-vibe-recovery.mjs select /tmp/web-recovery-queue.json > /tmp/web-recovery-selection.json
