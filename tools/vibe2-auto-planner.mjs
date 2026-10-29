@@ -1201,7 +1201,13 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
   const platformMatchesProject=!platform||!projectPlatform||platform===projectPlatform;
   const passed=genericObserved?project?.queueRuntimePassed===true:project?.queueRobloxRuntimePassed===true;
   const rawStage=clean(genericObserved?project?.queueRuntimeFailureStage:project?.queueRobloxFailureStage).toUpperCase();
-  const runtimeFailure=!passed&&/(?:^|_)(?:TARGET_PLATFORM_)?RUNTIME(?:_|$)|SERVER_BOOT|PLAYTEST|\bF[09]\b/.test(rawStage);
+  // F0~F9 중 F2~F8의 런타임/독립 검증 장애도 정확한 게임별 실패 단계로 다룬다.
+  // 단계명 자체가 검증 성공을 뜻하지 않으며, 기존 신경 게이트가 별도로
+  // rootCauseVerified·기존 작업·권한·소스 버전을 확인해야만 재예약할 수 있다.
+  const runtimeFailure=!passed&&(
+    /(?:^|_)(?:TARGET_PLATFORM_)?RUNTIME(?:_|$)|SERVER_BOOT|PLAYTEST/.test(rawStage)
+    ||/^(?:F[0-9](?:_|$)|TARGET_PLATFORM_F[0-9](?:_|$)|INDEPENDENT_QA(?:_|$)|TARGET_PLATFORM_INDEPENDENT_QA(?:_|$)|RELEASE_REGRESSION(?:_|$)|TARGET_PLATFORM_RELEASE_REGRESSION(?:_|$))/.test(rawStage)
+  );
   if(!passed&&!runtimeFailure)return null;
   const stage=passed?'TARGET_PLATFORM_RUNTIME':(rawStage||'TARGET_PLATFORM_RUNTIME');
   const sourceRevision=clean(genericObserved?project?.queueRuntimeSourceRevision:project?.queueRobloxSourceCommit);
