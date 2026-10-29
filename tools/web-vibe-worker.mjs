@@ -377,7 +377,7 @@ export function synthesizeWebAlgorithmWithoutModel(task,source){
   let spec=task.algorithmSpec;
   if(!spec){
     const body=String(task.goal||'');
-    const chunks=[...body.matchAll(/`` ```(?:json)?\s*(\{[\s\S]{20,7500}?\})\s*```/gi)];
+    const chunks=[...body.matchAll(/```(?:json)?\s*(\{[\s\S]{20,7500}?\})\s*```/gi)];
     if(chunks.length!==1)return null;
     let parsed;
     try{parsed=JSON.parse(chunks[0][1]);}catch{return null;}
