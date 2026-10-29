@@ -130,3 +130,40 @@ test('PWA cloud queue recovery keeps existing owner intake and independent QA',(
   assert.match(w,/WEB_VIBE_RECOVERY_RESULT=PR_CANDIDATE_ONLY_NOT_MERGED/);
   assert.match(w,/cancel-in-progress: false/);
 });
+
+// 회귀: 제공자 쿼터는 소스 실패 횟수를 소비하거나 수동검토로 승격하지 않는다.
+test('WEB provider cooldown preserves source budget and allows other owner games',async()=>{
+  const {selectWebVibeRecoveryTask,recordWebVibeRecoveryFailure}=await import('../tools/web-vibe-recovery.mjs');
+  const make=(id,gameId)=>({id,gameId,target:'web',sourceRoot:'web-games/'+gameId,
+    goal:'existing owner repair',status:'queued',ownerDirective:true,
+    evidence:['owner-source-authenticated'],recoveryAttempts:2});
+  const task=make('pwa-'+uuid,'insect-survival');
+  const other=make('pwa-22222222-2222-4333-8444-555555555555','cozy-island');
+  const queue={...emptyWebVibeQueue(),tasks:[task,other]};
+  const now='2026-10-29T02:46:46.000Z';
+  const failureLog='WEB_VIBE_WORKER_BLOCKED=GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT=2026-10-29T06:59:59.528Z';
+  const result=recordWebVibeRecoveryFailure(queue,task.id,{now,failureLog});
+  assert.equal(result.failureClass,'PROVIDER_COOLDOWN');
+  assert.equal(result.attempts,2);
+  assert.equal(result.exhausted,false);
+  assert.equal(result.queue.tasks[0].status,'queued');
+  assert.equal(result.queue.tasks[0].recoveryNextAt,'2026-10-29T06:59:59.528Z');
+  assert.deepEqual(result.queue.tasks[1],other);
+  assert.equal(selectWebVibeRecoveryTask(result.queue,{now}).id,other.id);
+  const after={...result.queue,tasks:[result.queue.tasks[0]]};
+  assert.equal(selectWebVibeRecoveryTask(after,{now}),null);
+  assert.equal(selectWebVibeRecoveryTask(after,{now:'2026-10-29T07:00:00Z'}).id,task.id);
+  for(const line of [
+    'WEB_VIBE_WORKER_BLOCKED=WEB_VIBE_MODEL_REPLACEMENT_UNSAFE_OR_NONUNIQUE',
+    failureLog.replaceAll('HTTP_429','HTTP_403'),
+    failureLog.replace('gemini-3.5-flash-lite:HTTP_429','gemini-3.5-flash-lite:HTTP_400'),
+    'untrusted text '+failureLog
+  ]){
+    const failed=recordWebVibeRecoveryFailure(queue,task.id,{now,failureLog:line});
+    assert.equal(failed.exhausted,true);
+    assert.equal(failed.queue.tasks[0].status,'blocked');
+  }
+  const noDate=recordWebVibeRecoveryFailure(queue,task.id,{now,failureLog:failureLog.split(':NEXT_RETRY_AT=')[0]});
+  assert.equal(noDate.queue.tasks[0].recoveryNextAt,'2026-10-29T03:16:46.000Z');
+  assert.equal(recordWebVibeRecoveryFailure({...queue,tasks:[{...task,status:'review'}]},task.id,{now,failureLog}).changed,false);
+});
