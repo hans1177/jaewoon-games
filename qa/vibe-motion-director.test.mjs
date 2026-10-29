@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {createVibeUpperBodyAnimationClip,auditVibeAuthoredAnimationClips} from '../assets/vibe-motion-director.js';
 import {fileURLToPath} from 'node:url';
 import {
   MOTION_DIRECTOR_TARGET,
@@ -2080,4 +2081,19 @@ test('motion selection rejects ownership, platform defaults and commercial right
   const missing=selectRobloxCharacterMotionSource({candidates:[candidate],context:{bodyPlan:'HUMANOID',rigProfile:'R15'}});
   assert.equal(missing.selectedId,null);assert.equal(missing.sourceClass,'VERIFIED_CC0_MOTION_REQUIRED');
  }
+});
+
+test('authored GLB upper-body clip keeps lower-body movement and reports missing clips',()=>{
+ const tracks=['Armature/Spine.quaternion','Armature/RightHand.quaternion','Armature/Hips.position','Armature/LeftFoot.quaternion'].map(name=>({name,clone(){return {name:this.name}}}));
+ const clip={name:'1H_Melee_Attack_Stab',duration:.7,tracks};
+ const THREE={AnimationClip:class{constructor(name,duration,tracks){Object.assign(this,{name,duration,tracks})}}};
+ const upper=createVibeUpperBodyAnimationClip(THREE,clip);
+ assert.equal(upper.name,'1H_Melee_Attack_Stab__upper');
+ assert.equal(upper.tracks.length,2);
+ assert.ok(upper.tracks.every(track=>/Spine|Hand/.test(track.name)));
+ assert.equal(createVibeUpperBodyAnimationClip(THREE,{name:'feet',duration:.5,tracks:[tracks[2]]}),null);
+ const audit=auditVibeAuthoredAnimationClips([{name:'Idle'},clip],{idle:['Idle'],attack:['1H_Melee_Attack_Stab'],run:['Running_A']});
+ assert.deepEqual(audit.resolved,{idle:'Idle',attack:'1H_Melee_Attack_Stab'});
+ assert.deepEqual(audit.missing,['run']);
+ assert.equal(audit.sourceVerified,false);
 });
