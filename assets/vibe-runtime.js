@@ -162,6 +162,10 @@ export class JaewoonVibeRuntime {
     const value = resource.value;
     if (resource.registeredFont) document.fonts.delete(resource.registeredFont);
     if (resource.objectUrl) {
+      // [오디오 해제] 씬 소유 임대가 끝난 재생 객체를 오디오 등록 맵에서도 제거한다.
+      for (const [name, registered] of this.audio) {
+        if (registered === value) this.audio.delete(name);
+      }
       value.pause?.();
       value.removeAttribute?.('src');
       value.load?.();
