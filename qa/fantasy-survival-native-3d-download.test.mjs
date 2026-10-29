@@ -1,5 +1,6 @@
 // Verify downloaded native 3D asset identity before any Magic Forest release.
 // Static/source evidence is not a substitute for WebGL and mobile gameplay QA.
+// 파일명: qa/fantasy-survival-native-3d-download.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -15,6 +16,12 @@ const home='assets/shared/homely-house/';
 const names=['tree','tree_large','foliage_A','cobblestones','bench_A','fence_straight','house','gate_single','package'];
 const index=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
 const moduleSource=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+// [원본 범위] 화면 합성용 쿼드는 postScene 전용이며 게임 월드 대체 모델이 아니다.
+const bloomStart=moduleSource.indexOf('  function createNativeBloom(){');
+const bloomEnd=moduleSource.indexOf('  const bloom=createNativeBloom();',bloomStart);
+assert.ok(bloomStart>=0&&bloomEnd>bloomStart);
+const bloomSource=moduleSource.slice(bloomStart,bloomEnd);
+const spatialSource=moduleSource.slice(0,bloomStart)+moduleSource.slice(bloomEnd);
 const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
 const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
 
@@ -110,7 +117,7 @@ test('original source materials and Diablo-II-style native camera are bound to g
  assert.match(source,/models\.get\('floor_base'\)/);
  assert.match(source,/new THREE\.InstancedMesh\(sourceFloor\.geometry,sourceFloor\.material,49\)/);
  assert.match(source,/Original CC0 MTL diffuse missing/);
- assert.doesNotMatch(source,/new THREE\.PlaneGeometry\(/);
+ assert.doesNotMatch(spatialSource,/new THREE\.PlaneGeometry\(/);
  assert.doesNotMatch(source,/const PALETTE\s*=/);
  assert.doesNotMatch(source,/new THREE\.BoxGeometry\(/);
  assert.doesNotMatch(source,/new THREE\.SphereGeometry\(/);
@@ -192,13 +199,13 @@ test('native forest ground has no 10x10 pitch mismatch and all rounded corners a
  assert.match(moduleSource,/floorSeamTiles\.instanceColor\.needsUpdate=true/);
  assert.match(moduleSource,/centerTileX!==lastFloorGridX\|\|centerTileY!==lastFloorGridZ/);
  assert.match(moduleSource,/scene\.remove\(floorSeamTiles\);floorSeamTiles\.dispose\(\)/);
- assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+ assert.doesNotMatch(spatialSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
 });
 test('native forest movement clips are faster without changing gameplay-owned world movement or combat rules',()=>{
  assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
  assert.match(moduleSource,/heroAction\.setDuration\(selectedAppearance\?\.model==='mage'\?\.43/);
- assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(pose==='move'\?1\.3:1\)/);
- assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(attacking\?1\.35:moving\?1\.25:1\)/);
+ assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(moving\?1\.3:1\)/);
+ assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(reacting\?1:attacking\?1\.35:moving\?1\.25:1\)/);
  assert.match(moduleSource,/heroMixer\.update\(Math\.min\(\.12,/);
  assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
@@ -525,7 +532,7 @@ test('all authored biomes use original instanced scenery without changing intera
    'interactables.push(model)',
    'if(unsafeUnmappedEncounter||!hero)'
  ])assert.ok(moduleSource.includes(token),'original scene invariant missing: '+token);
- assert.doesNotMatch(moduleSource,/new THREE\.PlaneGeometry\(|new THREE\.BoxGeometry\(/);
+ assert.doesNotMatch(spatialSource,/new THREE\.PlaneGeometry\(|new THREE\.BoxGeometry\(/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
 
@@ -626,7 +633,7 @@ test('all existing native biome environments show distinct authored palette and 
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
  assert.match(moduleSource,/const moving=moveDelta>\.14&&poseElapsed>0&&poseElapsed<420/);
  assert.match(moduleSource,/actor\.lastAttackStamp!==e\.attackAt/);
- assert.match(moduleSource,/setLoop\(attacking\?THREE\.LoopOnce:THREE\.LoopRepeat/);
+ assert.match(moduleSource,/setLoop\(attacking\|\|reacting\?THREE\.LoopOnce:THREE\.LoopRepeat/);
  assert.match(moduleSource,/actor\.anchor\.position\.set\(destX,0,destZ\)/);
  assert.match(moduleSource,/selectedAppearance\?\.model==='mage'\?\.43/);
  assert.match(moduleSource,/bolt\.kind==='mageBolt'/);
@@ -644,7 +651,7 @@ test('native fantasy preview uses original CC0 geometry for terrain texture and 
   assert.match(moduleSource,/blueprintVisual=new THREE\.Mesh\(source\.geometry,blueprintMaterial\)/);
   assert.match(moduleSource,/blueprintGhost\.visible=!!bp&&!!blueprintVisual/);
   assert.match(moduleSource,/source\.geometry\.computeBoundingBox\(\)/);
-  assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+  assert.doesNotMatch(spatialSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
   assert.doesNotMatch(moduleSource,/function part\(geometry,material/);
 });
 
@@ -701,7 +708,7 @@ test('all saved player buildings and all buildable ghost recipes display license
   assert.match(index,/state\.walls/);
   assert.match(index,/state\.doors/);
   assert.match(index,/state\.chests/);
-  assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+  assert.doesNotMatch(spatialSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
 });
 
 test('registered monster name tags remain sharply legible and disappear on save reset',()=>{
@@ -730,11 +737,16 @@ test('live CC0 clip manifest and presentation pipeline use authored motions and 
  assert.match(moduleSource,/const upperAttack=authoredUpperAttack\(attackClip\)/);
  assert.match(moduleSource,/layeredAttack\?\(moving\?playerTravelClip:'idle'\)/);
  assert.match(moduleSource,/heroUpperAction\.fadeIn\(\.11\)\.play\(\)/);
- assert.match(moduleSource,/if\(stamp<=0\|\|stamp>sampleNow\|\|sampleNow-stamp>190/);
+ assert.match(moduleSource,/if\(stamp<=0\|\|sampleNow>stamp\+80\|\|seenHitStamp\.get\(enemy\)===stamp/);
  assert.match(moduleSource,/impactVfx\.burst\(\{type:'impact'/);
  assert.match(moduleSource,/THREE\.PCFSoftShadowMap/);
  assert.match(moduleSource,/texture\.colorSpace=THREE\.SRGBColorSpace/);
  assert.match(moduleSource,/createNativeBloom\(\)/);
+ assert.equal((moduleSource.match(/new THREE\.PlaneGeometry\(/g)||[]).length,1,'only the postprocessing quad may be procedural');
+ assert.match(bloomSource,/postScene\.add\(quad\)/);
+ assert.doesNotMatch(bloomSource,/(?<!post)scene\.add\(/i,'the quad must never enter the game world');
+ assert.match(moduleSource,/renderer\.info\.autoReset=false/);
+ assert.match(moduleSource,/renderer\.info\.reset\(\);\s*if\(bloom\)bloom\.render/);
  assert.match(moduleSource,/if\(bloom\)bloom\.render\(scene,camera,qualityFactor\)/);
  assert.match(moduleSource,/bloom\?\.dispose\(\)/);
  assert.match(moduleSource,/mobileBudget\)return null/);
