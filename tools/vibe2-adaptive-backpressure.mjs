@@ -159,7 +159,8 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const previousPass=num(trial?.firstCandidatePassRatePct);
   const observedGain=comparable && verifiedSourceRate>=Number(trial.verifiedSourceChangesPerMinute)*1.1
     && (firstPass===0||previousPass===0||firstPass>=previousPass);
-  const observedLoss=comparable && verifiedSourceRate<=Number(trial.verifiedSourceChangesPerMinute)*0.75
+  const observedLoss=comparable && clean(telemetry.bottleneck)===clean(trial.bottleneck)
+    && verifiedSourceRate<=Number(trial.verifiedSourceChangesPerMinute)*0.75
     && (firstPass===0||previousPass===0||firstPass<=previousPass)
     && num(telemetry.failureRatePct)>=num(trial.failureRatePct);
   const trialEvaluation=!trial?'NOT_EVALUATED'
