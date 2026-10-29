@@ -117,32 +117,6 @@ test('duplicate full-memory reads and duplicate SHA passes cannot return',()=>{
  assert.match(workflow,/node --test qa\/github-pages-asset-staging\.test\.mjs/);
 });
 
-// 실제 기존 게시 승인 코드가 게임 변경을 막고 비게시 변경만 허용하는지 실행한다.
-test('ready Pages artifact survives worker-only main changes without admitting stale game inputs',()=>{
- const begin=workflow.indexOf("          import fs from 'node:fs';",workflow.indexOf('pages-main-diff.json'));
- const end=workflow.indexOf('\n          NODE',begin);assert.ok(begin>0&&end>begin);
- const admission=workflow.slice(begin,end).split('\n').map(line=>line.slice(10)).join('\n');
- const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pages-admit-')),file=path.join(dir,'compare.json');
- try{
-  const check=(diff,expected)=>{
-   fs.writeFileSync(file,JSON.stringify(diff));
-   const result=spawnSync(process.execPath,['--input-type=module','-',file],{input:admission,encoding:'utf8'});
-   assert.equal(result.status,expected,result.stderr||JSON.stringify(diff));
-  };
-  check({status:'ahead',total_commits:2,files:[{filename:'tools/web-vibe-worker.mjs'},{filename:'qa/web-vibe-worker.test.mjs'}]},0);
-  check({status:'ahead',total_commits:1,files:[]},0);
-  for(const filename of ['web-games/gem-survivor/index.html','assets/x.png','index.html','company-status.json','game-catalog.json','.github/workflows/magic-forest-pages.yml','company-learning/platform-release-roadmap.json']){
-   check({status:'ahead',total_commits:1,files:[{filename}]},1);
-  }
-  check({status:'ahead',total_commits:1,files:[{filename:'qa/moved.js',previous_filename:'assets/live.js'}]},1);
-  check({status:'behind',total_commits:1,files:[]},1);
-  check({status:'diverged',total_commits:1,files:[]},1);
-  check({status:'ahead',total_commits:251,files:[]},1);
-  check({status:'ahead',total_commits:1,files:Array.from({length:300},()=>({filename:'qa/test.mjs'}))},1);
-  check({status:'ahead',files:[]},1);
- }finally{fs.rmSync(dir,{recursive:true,force:true})}
-});
-
 test('queued Pages pruning cancels only superseded same-owner PR runs',()=>{
  const start=workflow.indexOf("          import {execFileSync} from 'node:child_process';");
  const stop=workflow.indexOf('          NODE',start);
@@ -206,7 +180,7 @@ test('publication lock ends after official deploy while existing route and brows
  const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
  const post=workflow.slice(workflow.indexOf('  post-publication-3d-smoke:'));
  assert.match(publish,/uses: actions\/deploy-pages@v4/);
- assert.doesNotMatch(publish,/director_live_qa|xargs|curl/);
+ assert.doesNotMatch(publish,/director_live_qa|xargs|vibe-browser-smoke/);
  assert.match(post,/id: director_live_qa/);assert.match(post,/id: forest_native_3d_live_qa/);
  assert.match(post,/POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
  assert.match(post,/needs\.publish-pages\.outputs\.page_url/);
@@ -247,7 +221,7 @@ test('parallel builds cannot push an older shared branch over a newer source',()
  assert.doesNotMatch(branch,/push[^\n]*--force/);
  const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
  assert.match(publish,/group: magic-forest-pages-main-publish/);
- assert.match(publish,/runs-on: ubuntu-slim/);assert.match(publish,/timeout-minutes: 15/);
+ assert.match(publish,/runs-on: ubuntu-latest/);assert.match(publish,/timeout-minutes: 15/);
  const post=workflow.slice(workflow.indexOf('  post-publication-3d-smoke:'));
  assert.match(post,/group: pages-post-publication-qa/);
  assert.match(post,/cancel-in-progress: false/);
@@ -310,7 +284,7 @@ test('continuous main commits admit only strictly forward Pages snapshots',()=>{
  assert.match(run('ahead','behind'),/current=false/,'never build older than gh-pages source');
  assert.match(run('diverged','ahead'),/current=false/,'diverged source is rejected');
  assert.match(run('ahead','identical'),/current=false/,'already staged candidate is coalesced');
- assert.match(workflow,/PAGES_MONOTONIC_STAGED_SOURCE=PASS/);
+ assert.match(workflow,/PAGES_MONOTONIC_PUBLICATION_ADMITTED=/);
  assert.match(workflow,/group: magic-forest-pages-main-publish/);
  assert.match(workflow,/uses: actions\/deploy-pages@v4/);
 });
@@ -325,15 +299,43 @@ test('official Pages artifact is exactly the committed gh-pages snapshot with no
  assert.match(section,/path: \$\{\{ runner\.temp \}\}\/jaewoon-pages-publish/);
  assert.doesNotMatch(section,/cp -a|jaewoon-pages-artifact/);
 });
-test('final atomic Pages switch refuses an older uploaded artifact when shared branch advanced',()=>{
- const from=workflow.indexOf('  publish-pages:');
- const to=workflow.indexOf('  post-publication-3d-smoke:',from);
+test('final Pages admission publishes completed forward snapshots and rejects public rollback',()=>{
+ const from=workflow.indexOf('      - name: Admit latest main or identical publication inputs');
+ const to=workflow.indexOf('      - name: Deploy GitHub Pages explicitly',from);
  const section=workflow.slice(from,to);
- assert.match(section,/PAGES_SUPERSEDED_ATOMIC_SNAPSHOT_SKIPPED/);
- assert.match(section,/PAGES_ATOMIC_SNAPSHOT_ANCESTRY_INVALID/);
- assert.match(section,/if \[ "\$staged" != "\$GITHUB_SHA" \]/);
- assert(section.indexOf('if [ "$staged" != "$GITHUB_SHA" ]')<section.indexOf('if [ "$latest" = "$GITHUB_SHA" ]'));
- assert.match(section,/uses: actions\/deploy-pages@v4/);
+ const body=section.slice(section.indexOf('          set -euo pipefail')).split('\n')
+   .map(line=>line.startsWith('          ')?line.slice(10):line).join('\n');
+ const candidate='b'.repeat(40),latest='c'.repeat(40),previous='a'.repeat(40);
+ const run=(relation,{publicSha=previous,mainRelation='ahead'}={})=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pages-live-admission-'));
+  try{
+   const output=path.join(dir,'result');
+   const mocks=`gh(){
+     case "$*" in
+       *"/commits/main"*) printf '%s' "$TEST_LATEST" ;;
+       *"/compare/$GITHUB_SHA...$TEST_LATEST"*) printf '%s' "$TEST_MAIN_RELATION" ;;
+       *"/compare/"*) printf '%s' "$TEST_PUBLIC_RELATION" ;;
+       *) return 12 ;;
+     esac
+   }
+   curl(){ printf '%s' "$TEST_MANIFEST"; }
+   `;
+   const result=spawnSync('bash',['-e'],{input:mocks+body,encoding:'utf8',env:{...process.env,
+    GITHUB_SHA:candidate,GITHUB_REPOSITORY:'hans1177/jaewoon-games',GITHUB_RUN_ID:'123',
+    RUNNER_TEMP:dir,GITHUB_OUTPUT:output,TEST_LATEST:latest,TEST_MAIN_RELATION:mainRelation,
+    TEST_PUBLIC_RELATION:relation,TEST_MANIFEST:JSON.stringify({sourceSha:publicSha})}});
+   return {...result,output:fs.existsSync(output)?fs.readFileSync(output,'utf8'):''};
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+ };
+ const forward=run('ahead');assert.equal(forward.status,0,forward.stderr);assert.match(forward.output,/publish=true/);
+ const rollback=run('behind');assert.equal(rollback.status,0,rollback.stderr);assert.match(rollback.output,/publish=false/);
+ const same=run('identical',{publicSha:candidate});assert.equal(same.status,0,same.stderr);assert.match(same.output,/publish=false/);
+ assert.notEqual(run('diverged').status,0);
+ assert.notEqual(run('ahead',{mainRelation:'diverged'}).status,0);
+ assert.notEqual(run('ahead',{publicSha:'invalid'}).status,0);
+ assert.doesNotMatch(section,/PAGES_SUPERSEDED_ATOMIC_SNAPSHOT_SKIPPED/);
+ assert.match(section,/Cache-Control: no-cache/);
+ assert.match(section,/publication_check=\$GITHUB_RUN_ID/);
 });
 test('the complete canonical async staging program builds independent game routes and exact source assets',()=>{
  const start=workflow.indexOf("          node <<'NODE'",workflow.indexOf('      - name: Prepare all registered game routes'));
@@ -453,3 +455,4 @@ test('post-deploy browser checks source again after fast install',()=>{
  assert.match(post,/if: steps\.browser_revision\.outputs\.exact == 'true'/);
  assert.match(post,/node qa\/vibe-browser-smoke\.mjs/);
 });
+
