@@ -642,3 +642,21 @@ test('bootstrap validates import map JSON separately from executable JavaScript'
   assert.ok(validateBootstrapHtml(valid.replace('{"imports":{"three":"./three.js"}}','{"imports":')).blockers.includes('IMPORT_MAP_JSON_INVALID'));
   assert.ok(validateBootstrapHtml(valid.replace('let score=0','let =')).blockers.includes('INLINE_SCRIPT_SYNTAX_INVALID'));
 });
+
+test('preserved browser ES modules are syntax-checked without loading imports or executing gameplay',()=>{
+  const valid=basePlayable.replace('</body>',
+    '<script type="module">import {effect} from "./effect.mjs";export const ready=true;void effect;</script></body>');
+  const review=validatePreservedSourceHtml(valid);
+  assert.equal(review.pass,true,review.blockers.join('|'));
+  assert.equal(review.blockers.includes('INLINE_SCRIPT_SYNTAX_INVALID'),false);
+  const malformed=valid.replace('export const ready=true','export const =');
+  assert.ok(validatePreservedSourceHtml(malformed).blockers.includes('INLINE_SCRIPT_SYNTAX_INVALID'),
+    'invalid module source must still fail closed');
+  const malformedClassic=valid.replace('let score=0','let =');
+  assert.ok(validatePreservedSourceHtml(malformedClassic).blockers.includes('INLINE_SCRIPT_SYNTAX_INVALID'),
+    'classic scripts still use the strict script goal');
+  const inertJson=valid.replace('</body>',
+    '<script type="application/json">{"saveVersion":1}</script></body>');
+  assert.equal(validatePreservedSourceHtml(inertJson).pass,true,
+    'non-executable JSON metadata must not be parsed as classic JavaScript');
+});
