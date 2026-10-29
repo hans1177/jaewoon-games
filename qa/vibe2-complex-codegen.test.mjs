@@ -222,6 +222,35 @@ test('approved Vibe5.9 edits the actual game source file, not just a staged map'
   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
 });
 
+test('Vibe5.9 existing source-worker synthesizes authorized in-game visual asset edits without direct writes',t=>{
+  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-art-candidate-'));
+  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+  const root=path.join(repo,'web-games','sample-game');
+  fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
+    games:[{id:'sample-game',webPath:'web-games/sample-game',lifecycleState:'ACTIVE'}]
+  }));
+  const file='assets/atlas.svg',source='<svg xmlns="http://www.w3.org/2000/svg"><path fill="#111"/></svg>';
+  fs.writeFileSync(path.join(root,file),source);
+  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    vibe59VisualAssetEdits:[{path:file,expectedSha256:digest(source),
+      find:'fill="#111"',replace:'fill="#246"'}]}};
+  const options={order,sourceRoot:root,repositoryRoot:repo,responsibleFiles:[file],target:'web'};
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.vibe59CodeKind,'SOURCE_BOUND_VISUAL_ASSET_EDIT');
+  assert.equal(candidate.modelUsed,false);assert.equal(candidate.sourceWrite,false);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  const docs=new Map([[file,source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  assert.match(docs.get(file),/fill="#246"/);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,
+    selectedTask:{...order.selectedTask,vibe59VisualAssetEdits:[{
+      path:file,expectedSha256:'0'.repeat(64),find:'fill="#111"',replace:'fill="#246"'}]}}}),/STALE_SOURCE/);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,
+    ownerApproved:false}}),/NOT_APPROVED/);
+});
+
 test('approved Vibe5.9 modifies existing visual SVG and replaces a game asset using verified CC0 originals',t=>{
   const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-assets-'));
   t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
