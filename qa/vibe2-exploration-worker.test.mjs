@@ -109,7 +109,8 @@ test('no-model source build-up turns actual helper state and saved-key calls int
   'let health=12; let retryCount=0;',
   'function saveHealth(){localStorage.setItem("health-v1",String(health));}',
   'function trackHit(){retryCount++;return retryCount;}',
-  'function applyDamage(amount){health-=amount;saveHealth();trackHit();return health;}',
+  'function scheduleUi(){setInterval(trackHit,300);addEventListener("touchstart",trackHit);}',
+  'function applyDamage(amount){health-=amount;saveHealth();trackHit();scheduleUi();return health;}',
   'function onEnemyHit(){return applyDamage(2);}',
   'function unrelatedFeature(){return 99;}'
  ].join('\n');
@@ -125,10 +126,14 @@ test('no-model source build-up turns actual helper state and saved-key calls int
  assert.ok(helpers.some(row=>row.symbol==='saveHealth'&&row.observedSaveKeys.includes('health-v1')));
  assert.ok(helpers.some(row=>row.symbol==='trackHit'&&row.observedStateWrites.includes('retryCount')));
  assert.ok(helpers.some(row=>row.symbol==='onEnemyHit'&&row.direction==='CALLER'));
+ assert.ok(helpers.some(row=>row.symbol==='scheduleUi'&&row.observedEvents.includes('touchstart')
+   &&row.observedTimers.interval===true));
  assert.ok(helpers.every(row=>row.file==='app.js'&&row.runtimeVerified===false));
  assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_CALL_GRAPH_RECHECK'));
  assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_OWNED_STATE_RECHECK'));
  assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_SAVE_KEY_COMPATIBILITY'));
+ assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_EVENT_BINDING_RECHECK'));
+ assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_TIMER_LIFECYCLE_RECHECK'));
  assert.ok(contract.patchRecipe.focusedChecks.includes('RESERVED_HELPER_SAVE_KEY_COMPATIBILITY'));
  assert.ok(contract.preserveSemantics.includes('SAVE_KEY:health-v1'));
  assert.equal(contract.reservedHelperEditPlan.maximumAdditionalWritableFiles,0);
