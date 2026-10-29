@@ -1597,6 +1597,39 @@ test('one-shot five system panels perform real material, crafting, equipment, qu
  assert.equal(fs.readFileSync(file,'utf8'),source);
  assert.doesNotMatch(generated,/localStorage|sessionStorage|setItem|DataStore/);
 });
+test('one-shot keyboard never shadows the original event parameter name',t=>{
+ for(const eventName of ['e','event','key','v']){
+  const {repo,root}=fixture(t),file=path.join(root,'game.js');
+  const source=[
+   'const canvas=document.querySelector("canvas");',
+   'const ctx=canvas.getContext("2d");',
+   'let ordinary=0;',
+   'function render(ctx){ctx.fillRect(0,0,1,1);}',
+   'function handleClick(x,y){}',
+   'function handleKeydown('+eventName+'){ordinary++;}',
+   'function update(dt){}'
+  ].join('\n');
+  fs.writeFileSync(file,source);
+  const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+   facilities:['관람차'],maps:['숲'],backgrounds:['낮'],actions:['점프'],motions:['걷기']}};
+  const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,
+   responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+  const docs=new Map([['game.js',source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+  assert.ok(symbol);
+  const app=vm.runInNewContext(generated+';({handleKeydown,view:()=>'+symbol+',ordinary:()=>ordinary})',{
+   document:{querySelector:()=>({getContext:()=>({fillRect(){}})})},Date,Math,Number
+  });
+  app.handleKeydown({altKey:true,key:'6'});
+  assert.equal(app.view().tab,'가방',eventName+' supports system shortcuts');
+  assert.equal(app.ordinary(),0,eventName+' consumes Alt navigation');
+  app.handleKeydown({key:'z'});
+  assert.equal(app.ordinary(),1,eventName+' preserves ordinary key input');
+  assert.equal(fs.readFileSync(file,'utf8'),source);
+ }
+});
+
 test('mobile system menu switches between five legacy and five additional panels',t=>{
  const {repo,root}=fixture(t),file=path.join(root,'game.js');
  const source='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
