@@ -252,6 +252,75 @@ export function compileVerifiedWebLearning(task,source,previousVerified=[]){
   }};
 }
 
+// [메인] 기존 게임의 실제 선택 데이터·실행기에서만 새 진행 경로를 합성한다.
+// 조합 가능한 퀘스트/지역/전투/제작이 전부 존재하지 않으면 내용을 만들어내지 않는다.
+export function synthesizeWebProgressionWithoutModel(task,source){
+  const goal=clean(task?.goal),original=String(source?.original||''),relative=clean(source?.relative);
+  if(!/^web-games\/[a-zA-Z0-9_-]+\/.+\.(?:js|mjs|html?)$/i.test(relative)
+    ||!/(?:콘텐츠|퀘스트|의뢰|진행|동선|모험|시스템|볼륨|content|quest|mission|progression|expand)/i.test(goal)
+    ||!/(?:확장|늘|추가|성장|반복|개발|expand|add|new|growth)/i.test(goal)
+    ||/(?:처치\s*오류|공격\s*오류|버그\s*수정|저장\s*변경|능력치|공격력|체력|보상\s*변경|damage|save\s*reset)/i.test(goal))
+    return null;
+  const declared=new Map(),names=['questIds','recipeIds','enemyBehaviorIds','regionIds'];
+  for(const name of names){
+    const pattern=new RegExp('\\bconst\\s+'+name+'\\s*=\\s*(\\[[^\\n\\r;]*\\])\\s*;?','g');
+    const matches=[...original.matchAll(pattern)];
+    if(matches.length!==1)return null;
+    let values;
+    try{values=JSON.parse(matches[0][1]);}catch{return null;}
+    if(!Array.isArray(values)||values.length<2||values.length>24
+      ||values.some(x=>typeof x!=='string'||!/^[a-zA-Z0-9_-]{1,48}$/.test(x))
+      ||new Set(values).size!==values.length)return null;
+    declared.set(name,values);
+  }
+  const routeRe=/\bconst\s+questRoutes\s*=\s*(\[[^\n\r;]*\])\s*;?/g;
+  const matches=[...original.matchAll(routeRe)];
+  if(matches.length!==1)return null;
+  let routes;try{routes=JSON.parse(matches[0][1]);}catch{return null;}
+  const fields=['id','questId','regionId','enemyBehaviorId','recipeId','nextRegionId'];
+  const valid=row=>row&&typeof row==='object'&&!Array.isArray(row)
+    &&Object.keys(row).sort().join(',')===fields.slice().sort().join(',')
+    &&fields.every(key=>typeof row[key]==='string'&&/^[a-zA-Z0-9_-]{1,48}$/.test(row[key]))
+    &&declared.get('questIds').includes(row.questId)
+    &&declared.get('regionIds').includes(row.regionId)
+    &&declared.get('regionIds').includes(row.nextRegionId)
+    &&declared.get('recipeIds').includes(row.recipeId)
+    &&declared.get('enemyBehaviorIds').includes(row.enemyBehaviorId)
+    &&row.regionId!==row.nextRegionId;
+  if(!Array.isArray(routes)||routes.length<1||routes.length>=24
+    ||routes.some(row=>!valid(row))||new Set(routes.map(row=>row.id)).size!==routes.length)return null;
+  const owners=inspectSourceFunctions(original,{language:'web',maxFunctions:4096})
+    .filter(fn=>fn.name==='startQuestRoute'&&
+      /\bquestRoutes\s*\.\s*find\s*\(/.test(fn.body)
+      &&['questId','regionId','enemyBehaviorId','recipeId','nextRegionId'].every(field=>fn.body.includes('.'+field))
+      &&['selectQuest','enterRegion','setEnemyBehavior','craftItem'].every(name=>
+        new RegExp('\\b'+name+'\\s*\\(').test(fn.body)));
+  if(owners.length!==1||!/\bquestRoutes\s*\.\s*(?:forEach|map)\s*\(|\bfor\s*\(\s*const\s+\w+\s+of\s+questRoutes\s*\)/.test(original))
+    return null;
+  let next=null;
+  outer:for(const questId of declared.get('questIds'))
+    for(const regionId of declared.get('regionIds')){
+      const nextRegionId=declared.get('regionIds').find(id=>id!==regionId);
+      for(const enemyBehaviorId of declared.get('enemyBehaviorIds'))
+        for(const recipeId of declared.get('recipeIds')){
+          const row={id:'route_'+[questId,regionId,enemyBehaviorId,recipeId].map(x=>x.replace(/[^a-zA-Z0-9_]/g,'_')).join('_'),
+            questId,regionId,enemyBehaviorId,recipeId,nextRegionId};
+          if(row.id.length>48||routes.some(old=>old.id===row.id)
+            ||routes.some(old=>fields.slice(1).filter(k=>row[k]!==old[k]).length<2))continue;
+          next=row;break outer;
+        }
+    }
+  if(!next)return null;
+  const oldText=matches[0][0];
+  const newText=oldText.replace(matches[0][1],JSON.stringify([...routes,next]));
+  const result=safeWebVibeReplacement(original,JSON.stringify({oldText,newText,
+    reason:'기존 퀘스트·지역·적·제작 함수만 재사용한 실제 진행 경로 확장'}),{relative});
+  return {...result,deterministicWebGrowth:true,offlineSourceProof:{
+    source:relative,changedFunctions:1,roles:['VERIFIED_EXISTING_PROGRESS_ROUTE'],
+    generatedRouteId:next.id,runtimeVerified:false
+  }};
+}
+
 // [메인] 무모델 웹 코드 작성: 요청·원본 책임 함수·실제 실행 코드가 모두 일치할 때만 수정한다.
 // 3D 모델/몬스터/밸런스/세이브를 추측하지 않고, 부분 작업을 전체 개발로 위장하지 않는다.
 export function synthesizeWebSourceWithoutModel(task,source){
@@ -387,6 +456,8 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
   if(offline)return offline;
   const learned=compileVerifiedWebLearning(task,source,previousVerified);
   if(learned)return learned;
+  const progression=synthesizeWebProgressionWithoutModel(task,source);
+  if(progression)return progression;
   if(cloud&&!clean(apiKey))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING:'+source.relative+':functions='+analysis.functions.length+':bytes='+analysis.bytes);
   const system='You are the independent WEB-only coding assistant. Inspect only the provided existing web-game file. '
     +'If no relevant change is needed, return JSON {"skip":true,"reason":"not affected"}. '
