@@ -632,3 +632,59 @@ test('Roblox multi-file guard blocks absent death state, client-only targets and
  assert.equal(over.status,'BLOCKED');
  assert.ok(over.unresolved.some(row=>row.code==='SEMANTIC_MULTIFILE_OWNER_UNPROVEN'));
 });
+
+
+test('name-free WEB semantic intent follows an actual non-state object through display and persistent storage',t=>{
+ const {repo,root}=fixture(t);
+ const source='const inventory={coins:0};\nconst label={textContent:""};\n'+
+  'const localStorage={saved:{},writes:0,setItem(key,value){this.saved[key]=value;this.writes++;}};\n'+
+  'function collect(item){inventory.coins+=item.count;}\n'+
+  'function redraw(item){label.textContent=String(inventory.coins+item.bonus);}\n'+
+  'function persist(){localStorage.setItem("inventory-v1",JSON.stringify(inventory));}\n'+
+  'function onReward(item){\n collect(item);\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'상태 변경 후 화면 갱신하고 저장해'}};
+ const plan=planComplexGameWork({...options,baseRevisionSha:revision});
+ assert.equal(plan.status,'BOUND',JSON.stringify(plan.unresolved));
+ const candidate=createVibe59CodeCandidates(options);
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/collect\(item\);\s+redraw\(item\);\s+persist\(\);/);
+ const docs=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ const result=vm.runInNewContext(docs.get('game.js')+
+  'onReward({count:2,bonus:3});onReward({count:4,bonus:1});'+
+  '({coins:inventory.coins,text:label.textContent,writes:localStorage.writes,saved:JSON.parse(localStorage.saved["inventory-v1"])});');
+ assert.equal(result.coins,6);
+ assert.equal(result.text,'7');
+ assert.equal(result.writes,2);
+ assert.equal(result.saved.coins,6);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+});
+
+test('name-free WEB object discovery refuses shadowed, unrelated and competing original state owners',t=>{
+ const {root}=fixture(t);
+ const first='const inventory={coins:0};\nconst label={textContent:""};\n'+
+  'function collect(item){inventory.coins+=item.count;}\n'+
+  'function redraw(){label.textContent=String(inventory.coins);}\n'+
+  'function persist(){localStorage.setItem("slot-v1",JSON.stringify(inventory));}\n'+
+  'function onReward(item){collect(item);}\n';
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'상태 변경 후 화면 갱신하고 저장해'}};
+ const second=first.replaceAll('inventory','wallet').replaceAll('coins','gold')
+  .replaceAll('label','badge').replaceAll('collect','earn')
+  .replaceAll('redraw','paint').replaceAll('persist','save')
+  .replaceAll('onReward','onPurchase').replace('slot-v1','wallet-v1');
+ for(const content of [
+  first.replace('String(inventory.coins)','String(other.coins)'),
+  first.replace('function redraw(){','function redraw(){const inventory={coins:300};'),
+  first.replace('const inventory={coins:0};','function make(){const inventory={coins:0};}'),
+  first+'\n'+second
+ ]){
+  fs.writeFileSync(path.join(root,'game.js'),content);
+  const plan=planComplexGameWork(options);
+  assert.equal(plan.status,'BLOCKED',JSON.stringify(plan.unresolved));
+  assert.ok(plan.unresolved.some(row=>row.code==='SEMANTIC_STATE_UI_SAVE_OWNER_UNPROVEN'));
+  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),content);
+ }
+});
