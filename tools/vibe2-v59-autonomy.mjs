@@ -577,6 +577,9 @@ export function runVibe59CodeLaboratory({spec={},verifiedHistory=[]}={}){
       ||clean(row.playtestSourceRevision)!==revision
       ||clean(proof.evidenceId)!==evidenceId
       ||clean(proof.sourceRevision)!==revision
+      ||clean(proof.securityEvidenceId)!==clean(row.securityEvidenceId)
+      ||proof.playtestRunId!==row.playtestRunId
+      ||proof.actualGamePlaytest!==true||proof.gameSourceChanged!==true
       ||proof.independentQa!=='PASS'||proof.regression!=='PASS'
       ||proof.runtime!=='PASS'||proof.security!=='PASS'
       ||proof.actualPlatformRuntime!==true
