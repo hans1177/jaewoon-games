@@ -1,3 +1,4 @@
+// 파일명: qa/company-build-up-directive.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -2329,4 +2330,36 @@ test('two designed C story genres require only one independently verified native
   assert.equal(buildGameSpecificBuildUpDirective({gameId:id,platform:'ROBLOX',designRecord:incomplete,
     sourceObservation:{sourceTreeFingerprint:tree,topFiles:[],sourceAnchors:[],observations:[],signals:{}},
     runtimeEvidence:complete}).creativeCGenreImplementation.satisfied,false);
+});
+
+// [웹 소스 인계] 일반 웹을 Unity/Roblox 원본으로 오인하지 않는다.
+test('general Web design trace binds executable HTML and JS owners without inheriting native authority',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-design-owner-'));
+ try{
+  const gameId='web-owner',sourceRoot='web-games/'+gameId,dir=path.join(root,sourceRoot);
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),'<html><body><p>Health = 999; Reward = 888;</p><script type="application/json">{"Reward":1}</script><script>let Health=10; function hit(){Health -= 1;}</script></body></html>');
+  fs.writeFileSync(path.join(dir,'game.mjs'),'let Reward=0; export function collect(){ Reward += 1; }');
+  const design={signatureSystems:[{grammarRole:'MAIN',id:'combat',name:'combat',stateInputs:['Health'],stateOutputs:['Health']},
+   {grammarRole:'A',id:'collect',name:'collect',stateInputs:['Reward'],stateOutputs:['Reward']}],systemInterconnections:[]};
+  const responsibleFiles=[sourceRoot+'/index.html',sourceRoot+'/game.mjs'];
+  const trace=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot,repoRoot:root,responsibleFiles,multiplayerRequired:false});
+  assert.equal(trace.activePlatform,'WEB');assert.equal(trace.originalSourcePlatform,'WEB');
+  assert.equal(trace.originalSourceLanguage,'JAVASCRIPT');assert.equal(trace.unityWebSourceSync,null);
+  assert.deepEqual([...trace.executableCodeCandidateFiles].sort(),[...responsibleFiles].sort());
+  assert.equal(trace.platformCodingPlans.find(row=>row.platform==='WEB').sharedUnitySource,false);
+  assert.equal(trace.roleBindings.find(row=>row.role==='MAIN').nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+  assert.equal(trace.roleBindings.find(row=>row.role==='A').nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+  assert.equal(trace.sourceImplementationPassed,false);assert.equal(trace.actualWebglRenderPassed,false);
+  fs.writeFileSync(path.join(dir,'index.html'),'<html><body>function fake(){Health -= 1;}<script type="application/json">{"Reward":2}</script><script>// Health -= 1;\nconst label="Reward += 1;";</script></body></html>');
+  fs.writeFileSync(path.join(dir,'game.mjs'),'// function collect(){Reward += 1;}');
+  const inert=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot,repoRoot:root,responsibleFiles,multiplayerRequired:false});
+  assert.deepEqual(inert.executableCodeCandidateFiles,[],'HTML labels, JSON, strings and comments cannot prove implementation');
+  fs.writeFileSync(path.join(dir,'game.mjs'),'function regexOnly(){return /Health += 1; Reward += 1;/;}');
+  const regex=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot,repoRoot:root,responsibleFiles,multiplayerRequired:false});
+  assert.equal(regex.roleBindings.find(row=>row.role==='MAIN').nativeStateMapping.matchedWrittenOutputKeys.length,0);
+  assert.equal(regex.roleBindings.find(row=>row.role==='A').nativeStateMapping.matchedWrittenOutputKeys.length,0);
+  const other=buildDesignToPlatformCodingTrace({gameId,design,platform:'WEB',sourceRoot:'web-games/other',repoRoot:root,responsibleFiles:[],multiplayerRequired:false});
+  assert.notEqual(other.activePlatform,'WEB');
+ }finally{fs.rmSync(root,{recursive:true,force:true})}
 });

@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {scriptText,lex} from './vibe2-game-source-index.mjs';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
 import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
@@ -787,6 +788,7 @@ export function buildDesignToPlatformCodingTrace({
   const id=clean(gameId);
   if(!/^[a-z0-9][a-z0-9-]*$/.test(id))throw new Error('DESIGN_CODING_GAME_ID_INVALID');
   const roots=Object.freeze({
+    WEB:`web-games/${id}`,
     ROBLOX:`roblox-games/${id}`,
     UNITY_WEB:`unity-games/${id}`,
     UNITY_APP:`unity-games/${id}`
@@ -797,8 +799,10 @@ export function buildDesignToPlatformCodingTrace({
     declared==='UNITY_WEB'?'UNITY_WEB':
     declared==='UNITY_APP'||declared==='UNITY'?'UNITY_APP':
     declared==='WEB'&&(observedRoot.split('|').includes(roots.UNITY_WEB))?'UNITY_WEB':
+    declared==='WEB'&&observedRoot.split('|').includes(roots.WEB)?'WEB':
     declared==='COMMON'&&observedRoot.split('|').includes(roots.ROBLOX)?'ROBLOX':
     declared==='COMMON'&&observedRoot.split('|').includes(roots.UNITY_WEB)?'UNITY_APP':
+    declared==='COMMON'&&observedRoot.split('|').includes(roots.WEB)?'WEB':
     'NOT_SELECTED_NATIVE_PLATFORM';
   const designRoles=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
   const connections=Array.isArray(design.systemInterconnections)?design.systemInterconnections:[];
@@ -843,7 +847,7 @@ export function buildDesignToPlatformCodingTrace({
     const raw=posix(clean(value));
     if(!selectedRoot||!raw)return'';
     const candidate=raw.startsWith(selectedRoot+'/')?raw:`${selectedRoot}/${raw}`;
-    if(!candidate.startsWith(selectedRoot+'/')||!['.lua','.luau','.cs'].some(ext=>candidate.toLowerCase().endsWith(ext)))return'';
+    if(!candidate.startsWith(selectedRoot+'/')||!(selected==='WEB'?['.html','.htm','.js','.mjs','.cjs']:selected==='ROBLOX'?['.lua','.luau']:['.cs']).some(ext=>candidate.toLowerCase().endsWith(ext)))return'';
     const full=path.resolve(rootReal,candidate);
     const canonicalOwnerRoot=path.resolve(rootReal,selectedRoot);
     if(!full.startsWith(canonicalOwnerRoot+path.sep)||!full.startsWith(rootReal+path.sep))return'';
@@ -866,6 +870,12 @@ export function buildDesignToPlatformCodingTrace({
   const codeSignalFiles=observedFiles.filter(file=>{
     try{
       const original=fs.readFileSync(path.resolve(rootReal,file),'utf8');
+      if(selected==='WEB'){
+        if(Buffer.byteLength(original)>2*1024*1024)return false;
+        const source=lex(scriptText(original,/\.html?$/i.test(file)),'javascript').code;
+        nativeCodeByFile.set(file,source);
+        return /\bfunction\s*[\w.:(]|=>|\baddEventListener\s*\(/.test(source);
+      }
       const withoutStrings=original.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,' ');
       const source=withoutStrings.replace(/\/\*[\s\S]*?\*\//g,' ').replace(/--\[\[[\s\S]*?\]\]/g,' ')
         .split('\n').map(line=>{
@@ -1030,10 +1040,10 @@ export function buildDesignToPlatformCodingTrace({
   const spatialReady=clean(unityDepth.dimension)==='3D'
     &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
       .every(field=>clean(unityDepth[field]).length>=32);
-  const platforms=['ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
+  const platforms=[...(selected==='WEB'?['WEB']:[]),'ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
     platform:name,canonicalGameSourceRoot:roots[name],
-    sharedUnitySource:name!=='ROBLOX',
-    gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
+    sharedUnitySource:['UNITY_WEB','UNITY_APP'].includes(name),
+    gameCodePlatformProfile:name==='WEB'?'WEB':name==='ROBLOX'?'ROBLOX':'UNITY',
     requiresSameServerTwoClientPlay:mandatory,
     requiresNativeRuntimeResult:true,
     minimumRenderedDimension:'3D',
@@ -1237,7 +1247,7 @@ export function buildDesignToPlatformCodingTrace({
   return Object.freeze({
     version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
     gameId:id,requestedPlatform:declared,activePlatform:selected,
-    originalSourcePlatform:'ROBLOX',originalSourceLanguage:'LUAU',
+    originalSourcePlatform:selected==='WEB'?'WEB':'ROBLOX',originalSourceLanguage:selected==='WEB'?'JAVASCRIPT':'LUAU',
     unityWebSourceSync,
     designFingerprint:sha(JSON.stringify(design)),sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
