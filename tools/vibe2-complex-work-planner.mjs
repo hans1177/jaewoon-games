@@ -444,7 +444,7 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
 // 통합: 정식 catalog 경로와 기존 오너 주문이 없으면 후보를 생성하지 않는다.
 export function compileSourceBoundComplexRequest({order={},sourceRoot,responsibleFiles,target,repositoryRoot=process.cwd()}={}){
  const goal=String(order.selectedTask?.goal||order.originalGoal||order.goal||'');
- if(!/(?:^|[;\n])\s*(?:함수\s+|In\s+(?:function\s+)?[A-Za-z_$]|죽은 (?:유닛|공격자|대상|적)|Prevent dead attackers|Do not damage dead targets)/i.test(goal))return {status:'NOT_APPLICABLE'};
+ if(!/(?:^|[;\n])\s*(?:함수\s+|In\s+(?:function\s+)?[A-Za-z_$]|죽은 (?:유닛|공격자|대상|적)|Prevent dead attackers|Do not damage dead targets|상태 (?:변경 후|가 바뀌면)|After changing state|Update the UI and save|서버의 모든 전투 함수|모든 서버 공격 함수|Prevent attacking dead targets)/i.test(goal))return {status:'NOT_APPLICABLE'};
  const baseRevisionSha=String(order.baseRevisionSha||order.baseCommit||order.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||'');
  try{
   const catalog=JSON.parse(fs.readFileSync(path.join(repositoryRoot,'game-catalog.json'),'utf8'));
