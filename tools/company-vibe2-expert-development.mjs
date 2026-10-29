@@ -82,7 +82,10 @@ export function inspectSourceFunctions(source='',{language='',maxFunctions=160}=
   ];
   if(kind==='csharp')patterns.push(/\b(?:(?:public|private|protected|internal|static|virtual|override|async|sealed|new|partial)\s+)*(?:[A-Za-z_][\w.<>?,\[\]]*)\s+([A-Za-z_][\w]*)\s*\([^;{}]*\)\s*\{/g);
   if(kind==='luau'){
-    for(const match of code.matchAll(/\b(?:local\s+)?function\s+([A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*)\s*\([^)]*\)/g)){
+    // Both named and assigned Luau functions own real gameplay behavior.
+    // The executableText mask prevents comment/string lookalikes from being parsed.
+    for(const match of code.matchAll(/\b(?:local\s+)?function\s+([A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*)\s*\([^)]*\)|\b(?:local\s+)?([A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*)\s*=\s*function\s*\([^)]*\)/g)){
+      const name=match[1]||match[2];
       const bodyStart=match.index+match[0].length,stack=['function'];let pendingDo=0,end=-1,bodyEnd=-1;
       for(const token of code.slice(bodyStart).matchAll(/\b(?:function|if|elseif|for|while|do|repeat|until|end)\b/g)){
         const word=token[0];
@@ -94,7 +97,7 @@ export function inspectSourceFunctions(source='',{language='',maxFunctions=160}=
           stack.pop();if(!stack.length){bodyEnd=bodyStart+token.index;end=bodyEnd+word.length;break;}
         }
       }
-      if(end>=0&&!seen.has(match[1])){seen.add(match[1]);rows.push({name:match[1],body:raw.slice(bodyStart,bodyEnd),code:code.slice(bodyStart,bodyEnd),start:match.index,end,language:kind});}
+      if(end>=0&&!seen.has(name)){seen.add(name);rows.push({name,body:raw.slice(bodyStart,bodyEnd),code:code.slice(bodyStart,bodyEnd),start:match.index,end,language:kind});}
     }
     return rows.sort((a,b)=>a.start-b.start).slice(0,limit);
   }

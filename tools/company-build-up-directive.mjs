@@ -8,7 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {scriptText,lex} from './vibe2-game-source-index.mjs';
-import {executableText} from './company-vibe2-expert-development.mjs';
+import {executableText,buildResponsibilityGraph} from './company-vibe2-expert-development.mjs';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
 import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
@@ -380,6 +380,59 @@ function selectPrimarySourceAnchors(source={},responsibleFiles=[],limit=6,{failu
     ||String(a.file).localeCompare(String(b.file))
     ||Number(a.line||0)-Number(b.line||0));
   return anchors.slice(0,Math.max(1,Number(limit)||6));
+}
+
+// Analyze only the selected game-owned functions. This reuses the existing
+// lexical responsibility graph instead of introducing an AI agent or pipeline.
+// Cross-file calls are deliberately *not* inferred from matching names.
+function inspectBuildUpSourceDependencies({repoRoot,sourceRoot='',anchors=[]}={}){
+  const proof=new Map();
+  const repository=path.resolve(repoRoot||process.cwd());
+  const within=(parent,child)=>{
+    const rel=path.relative(parent,child);
+    return Boolean(rel&&!path.isAbsolute(rel)&&rel!=='..'&&!rel.startsWith('..'+path.sep));
+  };
+  let realRepository;
+  try{realRepository=fs.realpathSync(repository);}catch{return proof;}
+  const roots=String(sourceRoot||'').split('|').map(root=>root.trim()).filter(Boolean)
+    .map(root=>{try{
+      const exact=fs.realpathSync(path.resolve(repository,root));
+      return within(realRepository,exact)&&fs.statSync(exact).isDirectory()?exact:null;
+    }catch{return null;}}).filter(Boolean);
+  if(!roots.length)return proof;
+  const cache=new Map();
+  for(const anchor of anchors.slice(0,8)){
+    const file=posix(anchor?.file),symbol=clean(anchor?.symbol);
+    if(!file||!symbol||!/[.](?:js|mjs|cjs|ts|tsx|jsx|html?|lua|luau|cs)$/i.test(file))continue;
+    let exact;
+    try{exact=fs.realpathSync(path.resolve(repository,file));}catch{continue;}
+    if(!within(realRepository,exact)||!roots.some(root=>within(root,exact)))continue;
+    if(!cache.has(exact)){
+      let graph=null;
+      try{
+        if(fs.statSync(exact).size<=128*1024){
+          const language=/[.]luau?$/i.test(file)?'luau':/[.]cs$/i.test(file)?'csharp':'javascript';
+          graph=buildResponsibilityGraph({source:fs.readFileSync(exact,'utf8'),language});
+        }
+      }catch{}
+      cache.set(exact,graph);
+    }
+    const graph=cache.get(exact),node=graph?.nodes?.find(row=>row.name===symbol);
+    if(!node)continue;
+    proof.set(file+'::'+symbol,Object.freeze({
+      authority:'BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE',
+      calls:Object.freeze(node.calls.slice(0,24)),
+      calledBy:Object.freeze(node.calledBy.slice(0,24)),
+      stateReads:Object.freeze(node.stateReads.slice(0,24)),
+      stateWrites:Object.freeze(node.stateWrites.slice(0,24)),
+      storageKeys:Object.freeze(node.storageKeys.slice(0,16)),
+      events:Object.freeze(node.events.slice(0,16)),
+      systems:Object.freeze(node.systems.slice(0,16)),
+      runtimeVerified:false,sourceWriteAuthorized:false,
+      dependentFilesNotAuthorized:true
+    }));
+  }
+  return proof;
 }
 
 function classifyPreviousEffectiveness({previousDirective=null,previousOutcome='',depthInfo={},runtimeEvidence={}}={}){
@@ -2535,7 +2588,7 @@ export function directivePrompt(d={}){
   const visual=Object.entries(d.visualBuildUpDirective?.domains||{}).map(([k,v])=>`- ${k}: ${v}`).join('\n');
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,28).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
-  const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
+  const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`+(row.sourceDependencyEvidence?' | STATIC_SAME_FILE_CALLS='+row.sourceDependencyEvidence.calls.join(',')+' | STATIC_CALLERS='+row.sourceDependencyEvidence.calledBy.join(',')+' | STATIC_STATE_WRITES='+row.sourceDependencyEvidence.stateWrites.join(',')+' | STATIC_SAVE_KEYS='+row.sourceDependencyEvidence.storageKeys.join(','):'')).join('\n');
   const volume=d.designedGameVolume||{};
   // 전체 항목의 이름과 상태는 빠짐없이 전달하되, 상세 계약은 책임 워커가 현재 항목에만 펼친다.
   // 게임 전체의 반복 프롬프트 폭증을 막고 현재 큐·F0–F9 구조를 그대로 유지한다.
@@ -2889,8 +2942,11 @@ export function buildGameSpecificBuildUpDirective({
   });
   const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
   const expectedEffect=expectedPlayerEffect({focus,identity,anchor,secondary});
+  const dependencies=inspectBuildUpSourceDependencies({repoRoot,sourceRoot,anchors:primarySourceAnchors});
   const sourceResponsibilities=primarySourceAnchors.map(row=>Object.freeze({
     ...row,
+    ...(dependencies.has(posix(row.file)+'::'+clean(row.symbol))
+      ?{sourceDependencyEvidence:dependencies.get(posix(row.file)+'::'+clean(row.symbol))}:{}),
     currentBehavior:clean(row.context)||`현재 ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} 구현을 소스에서 관찰함`,
     intendedBehavior:`${focus} primary goal "${goal}"에 맞춰 ${row.symbol||'이 책임 영역'}의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 "${expectedEffect}"가 되게 한다.`,
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
