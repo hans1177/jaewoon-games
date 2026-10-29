@@ -213,7 +213,10 @@ export function indexVibe2GameSource({sourceRoot='',gameId='',target='',responsi
    const blocks=[...file.source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
    if(blocks.length!==1||blocks[0][1].trim()){unsupported.push({path:file.path,reason:'HTML_SCRIPT_SCOPE'});continue}
   }
-  for(const symbol of index.symbols.filter(s=>s.path===file.path&&s.kind==='function'&&!s.parent)){
+  // [실소스 회복] 검사기 범위가 겹쳐 붙인 parent 표식보다 렉서의 실제 전역 스코프를 우선한다.
+  // 중첩 함수는 여전히 차단하고, 전역에서 선언된 원본 함수만 후보로 인정한다.
+  for(const symbol of index.symbols.filter(s=>s.path===file.path&&s.kind==='function'&&
+    (!s.parent||(target==='web'&&s.lexicalScope.length===0)))){
    const header=file.code.slice(symbol.start,symbol.bodyStart);
    if(!/^(?:async\s+)?(?:local\s+)?function\b/.test(header))continue;
    const params=/\(([^()]*)\)/.exec(header)?.[1]?.trim();if(params===undefined)continue;
