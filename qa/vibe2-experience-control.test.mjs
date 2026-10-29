@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
-import { buildVibeContinuousWorkOrder } from '../tools/vibe2-continuous-runner.mjs';
+import { buildVibeContinuousWorkOrder, verifiedOwnerGameplayRequest } from '../tools/vibe2-continuous-runner.mjs';
 import {
   validateVibeExperiencePromotion,
   promoteVibeReviewedExperience,
@@ -596,4 +596,45 @@ test('asset-development runtime lane does not require game-source semantics for 
     if(old===undefined)delete process.env.VIBE2_EXECUTION_LANE;
     else process.env.VIBE2_EXECUTION_LANE=old;
   }
+});
+
+test('Vibe gameplay numbers require exact existing owner onepatch, allowed platform and valid central policy',()=>{
+  const document=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const centralPolicy={valid:true,document};
+  const sourceRoot='roblox-games/gem-survivor';
+  const file=sourceRoot+'/server/Game.server.luau';
+  const task={
+    id:'owner-roblox-onepatch-4091',gameId:'gem-survivor',
+    target:'roblox',sourceRoot,department:'development',type:'implementation',
+    ownerDirective:true,protectedChange:false,requiresOwnerDecision:false,designChange:false,
+    goal:'[OWNER_ROBLOX_ONEPATCH]\\n요청: 몬스터 체력과 공격력을 플레이 결과에 맞춰 개선해\\n기존 F0~F9 검증 유지',
+    responsibleFiles:[file],
+    evidence:[
+      'owner-request-instance:owner-roblox-onepatch-4091',
+      'roblox-organization:github-only','owner-roblox-onepatch:workflow-dispatch',
+      'existing-canonical-vibe2-queue','existing-f0-f9-qa-required','scope-only:'+file
+    ]
+  };
+  assert.equal(verifiedOwnerGameplayRequest({task,centralPolicy}),true);
+  const mutations=[
+    [{...task,ownerDirective:false},centralPolicy],
+    [{...task,protectedChange:true},centralPolicy],
+    [{...task,requiresOwnerDecision:true},centralPolicy],
+    [{...task,designChange:true},centralPolicy],
+    [{...task,goal:'[OWNER_ROBLOX_ONEPATCH]\\n요청: 몬스터 체력은 바꾸지 말고 그래픽만 수정해'},centralPolicy],
+    [{...task,id:'other'},centralPolicy],
+    [{...task,sourceRoot:'roblox-games/other'},centralPolicy],
+    [{...task,target:'web'},centralPolicy],
+    [{...task,responsibleFiles:['roblox-games/other/server/Game.server.luau']},centralPolicy],
+    [{...task,evidence:['owner-request-instance:owner-roblox-onepatch-4091']},centralPolicy],
+    [task,{...centralPolicy,valid:false}],
+    [task,{valid:true,document:{...document,developmentAccess:{...document.developmentAccess,ROBLOX:'OWNER_HOLD'}}}],
+    [task,{valid:true,document:{...document,fixedAutonomousDevelopmentOperatingContract:{}}}]
+  ];
+  for(const [blocked,policy] of mutations){
+    assert.equal(verifiedOwnerGameplayRequest({task:blocked,centralPolicy:policy}),false);
+  }
+  const source=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+  assert.match(source,/verifiedOwnerGameplayRequest\\(\\{task,centralPolicy\\}\\)/);
+  assert.match(source,/verifiedOwnerGameplayChange \\}/);
 });
