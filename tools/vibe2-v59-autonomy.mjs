@@ -298,16 +298,16 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     const signature=values=>[...active].map(i=>normalized(values[i])).join('|');
     const error=values=>[...active].reduce((sum,i)=>sum+Math.min(100000,
       valid(values[i])?Math.abs(values[i]-rows[i].output)/Math.max(1,Math.abs(rows[i].output)):100000),0);
-    function add(expr,values,cost,variables,depth){
+    function add(expr,values,cost,variables,depth,ast){
       if(expr.length>170||values.some(v=>!valid(v)))return;
       const key=signature(values),prev=semantic.get(key);
       if(prev&&prev.cost<=cost)return;
-      const row={expr,values,cost,variables,depth,error:error(values)};
+      const row={expr,values,cost,variables,depth,ast,error:error(values)};
       semantic.set(key,row);
       candidates.push(row);searched++;
     }
-    for(const [j,p] of params.entries())add(p,rows.map(row=>row.args[j]),1,1,0);
-    for(const c of fixed)add(String(c),rows.map(()=>c),1,0,0);
+    for(const [j,p] of params.entries())add(p,rows.map(row=>row.args[j]),1,1,0,{kind:'reference',name:p});
+    for(const c of fixed)add(String(c),rows.map(()=>c),1,0,0,{kind:'constant',value:c});
     const operators=[
       ['+', (a,b)=>a+b],['-',(a,b)=>a-b],['*',(a,b)=>a*b],
       ['/',(a,b)=>b===0?NaN:a/b],['min',(a,b)=>Math.min(a,b)],
@@ -329,7 +329,8 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
       for(const a of newer){
         for(const [label,operation] of [['abs',Math.abs],['floor',Math.floor],['round',Math.round],['neg',n=>-n]]){
           const vals=a.values.map(operation);
-          add(label==='neg'?'(-'+a.expr+')':'Math.'+label+'('+a.expr+')',vals,a.cost+1,a.variables,d);
+          add(label==='neg'?'(-'+a.expr+')':'Math.'+label+'('+a.expr+')',vals,a.cost+1,a.variables,d,
+            {kind:'mutation',operator:label,operand:a.ast});
         }
       }
       for(const a of pool){
@@ -340,7 +341,8 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
             const values=a.values.map((v,i)=>fn(v,b.values[i]));
             const expr=['min','max'].includes(op)?'Math.'+op+'('+a.expr+','+b.expr+')':
               '('+a.expr+op+b.expr+')';
-            add(expr,values,a.cost+b.cost+1,a.variables+b.variables,d);
+            add(expr,values,a.cost+b.cost+1,a.variables+b.variables,d,
+              {kind:'crossover',operator:op,left:a.ast,right:b.ast});
           }
         }
       }
@@ -371,7 +373,9 @@ export function synthesizeVibe59NumericAlgorithm({spec={}}={}){
     casesPassed:passes,trainingCases:examples.length,heldOutCases:holdouts.length,
     counterexamples:Object.freeze(seenCounterexamples),
     candidatesConsidered:searched,search:selected.ast?'BOUNDED_AST_EVOLUTION_CEGIS':'BOUNDED_ENUMERATIVE_CEGIS',
-    ast:selected.ast||null,fitness:Object.freeze({accuracy:passes/rows.length,
+    ast:selected.ast||null,
+    inventionOperators:Object.freeze(['MUTATION','CROSSOVER','SEMANTIC_DEDUPLICATION','COUNTEREXAMPLE_REFINEMENT']),
+    fitness:Object.freeze({accuracy:passes/rows.length,
       complexity:selected.cost,novelty:selected.novelty??0,
       regressionRisk:selected.regressionRisk??0,generations:selected.generations??0}),
     modelUsed:false,sourceWrite:false,runtimeVerified:false,
