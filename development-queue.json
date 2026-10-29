@@ -5090,7 +5090,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-29T15:01:33.753Z",
+      "updatedAt": "2026-10-29T15:02:24.076Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6539,23 +6539,21 @@
       },
       "robloxStudioRuntimeSession": {
         "version": 1,
-        "sessionId": "40892542205:cozy-island:40890499941:4",
-        "workflowRunId": 40892542205,
+        "sessionId": "40896698884:cozy-island:40890499941:4",
+        "workflowRunId": 40896698884,
         "workflowRunAttempt": 1,
-        "controlRevision": "b13d639151f515e6e5bcc7cef17e63c316070a9a",
+        "controlRevision": "8ed3545bd6f0948de7a13638b2df7f386184e45f",
         "gameId": "cozy-island",
         "sourceRevision": "788f1725aaf85fa58e9a809039c42dec50504644",
         "artifactIdentity": "sha256:d21e37ed5661858aad867fa482b3425adb3bbea31da29e02c30cbdfe8a46d466",
         "artifactRunId": 40890499941,
         "candidateVersionNumber": 4,
-        "status": "INTERRUPTED_RETRY_QUEUED",
-        "queuedAt": "2026-10-29T14:37:56.057Z",
+        "status": "QUEUED_FOR_STUDIO",
+        "queuedAt": "2026-10-29T15:02:24.076Z",
         "interruptionRetryCount": 17,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true,
-        "lastInterruptedAt": "2026-10-29T14:57:48.922Z",
-        "lastInterruptedWorkflowRunId": 40892542205
+        "companyRuntimeAuthoritative": true
       }
     },
     {
@@ -8917,7 +8915,7 @@
       "robloxNativeFailureClass": "ROBLOX_UI_STATE"
     }
   ],
-  "updatedAt": "2026-10-29T15:01:33.753Z",
+  "updatedAt": "2026-10-29T15:02:24.076Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
