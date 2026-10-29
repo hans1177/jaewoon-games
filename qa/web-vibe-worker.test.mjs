@@ -461,20 +461,36 @@ test('WEB model-less evolution composes distinct playable routes from existing g
 
 
 // [코드 실험실/알고리즘 발명] 같은 승인 입력으로 제한 탐색과 반례 실험을 반복한다.
-test('Vibe2 offline code laboratory records AST mutations crossover and bounded strategy experiments',()=>{
+test('Vibe2 offline code laboratory ranks only actually played and independently attested strategies',()=>{
  const spec={parameters:['x','y'],maxDepth:3,strategy:'evolution',
   examples:[{args:[1,0],output:1},{args:[2,0],output:2},{args:[3,0],output:3}],
   holdouts:[{args:[2,3],output:5},{args:[4,5],output:9}]};
+ const attested=(strategy,revision,evidenceId,outcome='PASS')=>{
+   const sourceRevision=revision.repeat(40),playtestRunId=123456;
+   return {strategy,sourceRevision,evidenceId,outcome,
+    platform:'WEB',gameId:'sample',domain:'AI',modelUsed:false,
+    sourceChanged:true,gameSourceChanged:true,actualGamePlaytest:true,
+    saveAndBalancePreserved:true,independentQa:'PASS',
+    regression:'PASS',security:'PASS',runtime:'PASS',securityEvidenceId:'security-proof-'+evidenceId,
+    playtestSourceRevision:sourceRevision,playtestRunId,heldOutCases:3,
+    regressionCount:0,reproduced:outcome==='FAIL',counterexampleId:outcome==='FAIL'?'counter-'+evidenceId:null,
+    failureSignature:outcome==='FAIL'?'ALGORITHM_DISAGREEMENT':null,
+    proof:{evidenceId,sourceRevision,playtestRunId,securityEvidenceId:'security-proof-'+evidenceId,
+      independentQa:'PASS',regression:'PASS',security:'PASS',runtime:'PASS',
+      actualPlatformRuntime:true,actualGamePlaytest:true,gameSourceChanged:true}};
+ };
+ const balanced=attested('balanced','a','balanced-real-1');
+ const lean=attested('lean','b','lean-real-1','FAIL');
+ const counterfeit={...attested('balanced','c','unverified-1'),
+   proof:{...balanced.proof,evidenceId:'unverified-1',sourceRevision:'c'.repeat(40),runtime:'PENDING'}};
+ const badSource={...attested('balanced','d','mismatch-1'),playtestSourceRevision:'e'.repeat(40)};
+ const badSecurity={...attested('balanced','e','security-mismatch-1'),
+   securityEvidenceId:'not-the-proof-security-id'};
+ const unplayed={...attested('balanced','f','not-played-1'),actualGamePlaytest:false};
+ const duplicate={...balanced,strategy:'lean'};
  const lab=runVibe59CodeLaboratory({spec,verifiedHistory:[
-  {strategy:'balanced',modelUsed:false,sourceChanged:true,independentQa:'PASS',
-   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
-   sourceRevision:'a'.repeat(40)},
-  {strategy:'lean',modelUsed:false,sourceChanged:true,independentQa:'PASS',
-   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'FAIL',
-   sourceRevision:'b'.repeat(40)},
-  {strategy:'deep',modelUsed:false,sourceChanged:false,independentQa:'PASS',
-   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
-   sourceRevision:'c'.repeat(40)}
+  counterfeit,badSource,badSecurity,unplayed,balanced,duplicate,lean,
+  {...attested('balanced','g','stale-replay-1'),gameSourceChanged:false}
  ]});
  assert.equal(lab.modelUsed,false);
  assert.equal(lab.runtime,'NOT_RUN');
@@ -485,6 +501,16 @@ test('Vibe2 offline code laboratory records AST mutations crossover and bounded 
  assert.ok(Array.isArray(lab.winner.ast));
  assert.ok(lab.winner.inventionOperators.includes('MUTATION'));
  assert.ok(lab.experiments.every(x=>x.sourceChanged===false));
+ const verifiedOnly=runVibe59CodeLaboratory({spec,verifiedHistory:[balanced,lean]});
+ assert.equal(lab.selectedStrategy,verifiedOnly.selectedStrategy);
+ assert.equal(lab.strategyEvidenceCount,verifiedOnly.strategyEvidenceCount);
+ assert.equal(lab.independentQa,'NOT_RUN');
+ const missingAttestation=runVibe59CodeLaboratory({spec,verifiedHistory:[
+  {strategy:'balanced',modelUsed:false,sourceChanged:true,independentQa:'PASS',
+   regression:'PASS',security:'PASS',runtime:'PASS',outcome:'PASS',
+   sourceRevision:'a'.repeat(40)}
+ ]});
+ assert.equal(missingAttestation.strategyEvidenceCount,0);
  assert.throws(()=>runVibe59CodeLaboratory({spec:{...spec,holdouts:[]}}),/EXPLICIT_EXAMPLES_REQUIRED/);
 });
 // [로블록스 공통 코드 경로] 검증된 수치 후보만 기존 Luau 함수 본문에 제안한다.
