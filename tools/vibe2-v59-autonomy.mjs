@@ -227,7 +227,7 @@ export function synthesizeVibe59NumericAlgorithmSource({spec={},source='',relati
   const declaration=new RegExp('\\bfunction\\s+'+name+'\\s*\\(([^)]*)\\)\\s*\\{\\s*return\\s+([^;{}]+);\\s*\\}', 'g');
   const matches=[...source.matchAll(declaration)];
   if(matches.length!==1||matches[0][1].split(',').map(x=>x.trim()).join(',')!==params.join(',')
-    ||/[^A-Za-z0-9_$+\-*/%().,\s]/.test(matches[0][2])
+    ||/[^A-Za-z0-9_$+\-*\/%().,\s]/.test(matches[0][2])
     ||/\b(?:eval|Function|import|require|process|this|window|globalThis|localStorage|sessionStorage)\b/.test(matches[0][2]))
     throw Error('VIBE59_ALGORITHM_EXISTING_PURE_FUNCTION_REQUIRED');
   const result=synthesizeVibe59NumericAlgorithm({spec});
