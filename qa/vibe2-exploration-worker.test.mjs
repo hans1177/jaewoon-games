@@ -101,6 +101,41 @@ test('auto coding expands to direct source helpers only inside already reserved 
  fs.rmSync(cwd,{recursive:true,force:true});
 });
 
+test('no-model source build-up turns actual helper state and saved-key calls into mandatory focused checks',t=>{
+ const cwd=tempRoot();
+ t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+ const file=path.join(cwd,'web-games/demo/app.js');
+ const source=[
+  'let health=12,retryCount=0;',
+  'function saveHealth(){localStorage.setItem("health-v1",String(health));}',
+  'function trackHit(){retryCount++;return retryCount;}',
+  'function applyDamage(amount){health-=amount;saveHealth();trackHit();return health;}',
+  'function onEnemyHit(){return applyDamage(2);}',
+  'function unrelatedFeature(){return 99;}'
+ ].join('\n');
+ write(file,source);
+ const order={run:true,taskId:'helper-qa-owner',gameId:'demo',target:'web',
+  originalGoal:'TypeError at applyDamage() in combat gameplay',
+  goal:'applyDamage damage failure',
+  source:{root:'web-games/demo',responsibleFiles:['web-games/demo/app.js'],ignoredPaths:[]},
+  workPackage:{id:'helper-qa',sharedContext:{diagnosticEvidence:[]}}};
+ const handoff=exploreVibe2WorkOrder({cwd,order}),contract=handoff.editContract;
+ const helpers=contract.reservedHelperEditPlan.reservedHelperEdits;
+ assert.equal(contract.primaryTargets[0],'applyDamage');
+ assert.ok(helpers.some(row=>row.symbol==='saveHealth'&&row.observedSaveKeys.includes('health-v1')));
+ assert.ok(helpers.some(row=>row.symbol==='trackHit'&&row.observedStateWrites.includes('retryCount')));
+ assert.ok(helpers.some(row=>row.symbol==='onEnemyHit'&&row.direction==='CALLER'));
+ assert.ok(helpers.every(row=>row.file==='app.js'&&row.runtimeVerified===false));
+ assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_CALL_GRAPH_RECHECK'));
+ assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_OWNED_STATE_RECHECK'));
+ assert.ok(contract.requiredFocusedChecks.includes('RESERVED_HELPER_SAVE_KEY_COMPATIBILITY'));
+ assert.ok(contract.patchRecipe.focusedChecks.includes('RESERVED_HELPER_SAVE_KEY_COMPATIBILITY'));
+ assert.ok(contract.preserveSemantics.includes('SAVE_KEY:health-v1'));
+ assert.equal(contract.reservedHelperEditPlan.maximumAdditionalWritableFiles,0);
+ assert.equal(handoff.sourceWrite,false);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
 test('reserved helper analysis uses real Luau calls, excludes fake comments and never authorizes unreserved files',()=>{
  const cwd=tempRoot();
  const code=[
