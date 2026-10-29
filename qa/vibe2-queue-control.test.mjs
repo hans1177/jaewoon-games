@@ -3638,3 +3638,27 @@ test('game-primary focuses six active Web games while preserving sixteen distinc
   assert.equal(queue.tasks.filter(item=>item.status==='queued').length,26,
     '대기 작업은 삭제하거나 완료 처리하지 않는다');
 });
+
+test('Web autonomous gameplay context survives queue normalization and JSON restore without granting another lane',()=>{
+  const base={id:'demo-web-autonomous-build-up-v1',gameId:'demo',target:'web',
+    sourceRoot:'web-games/demo',department:'development',type:'implementation',
+    status:'queued',goal:'Verified game-core improvement',
+    responsibleFiles:['web-games/demo/game.js'],
+    evidence:['web-autonomous-recurring-build-up:v1','web-recurring-focus:CORE_FUN'],
+    autonomousEvolution:{existingLoopOnly:true,sourceMutationRequired:true,
+      playtestAfterPublicationRequired:true,preserveSaveAndRules:true,focus:'CORE_FUN',
+      observedFeedback:false,nextCycleUsesVerifiedEffect:true,untrustedAuthorityOverride:true}
+  };
+  const first=createVibeContinuousQueue({tasks:[base]});
+  assert.equal(first.tasks[0].autonomousEvolution.existingLoopOnly,true);
+  assert.equal(first.tasks[0].autonomousEvolution.focus,'CORE_FUN');
+  assert.equal(first.tasks[0].autonomousEvolution.untrustedAuthorityOverride,undefined);
+  assert.equal(Object.isFrozen(first.tasks[0].autonomousEvolution),true);
+  const restored=createVibeContinuousQueue(JSON.parse(JSON.stringify(first)));
+  assert.deepEqual(restored.tasks[0].autonomousEvolution,first.tasks[0].autonomousEvolution);
+  assert.equal(createVibeContinuousQueue({tasks:[{...base,target:'roblox'}]}).tasks[0].autonomousEvolution,null);
+  assert.equal(createVibeContinuousQueue({tasks:[{...base,evidence:[]}]}).tasks[0].autonomousEvolution,null);
+  assert.equal(createVibeContinuousQueue({tasks:[{...base,autonomousEvolution:{...base.autonomousEvolution,playtestAfterPublicationRequired:false}}]}).tasks[0].autonomousEvolution,null);
+  assert.equal(createVibeContinuousQueue({tasks:[{...base,autonomousEvolution:{...base.autonomousEvolution,focus:'PRESENTATION'}}]}).tasks[0].autonomousEvolution,null);
+});
+
