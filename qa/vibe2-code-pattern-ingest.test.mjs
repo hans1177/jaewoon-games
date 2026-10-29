@@ -22,6 +22,25 @@ test('verified sample yields abstract code patterns without raw patch',()=>{
   assert.ok(rows.every(x=>!String(x.pattern).includes('localStorage.setItem')));
 });
 
+test('verified source-changing algorithm experiment is retained without raw code or forged QA',()=>{
+ const base={taskType:'coding',gameId:'demo',sourceRevision:'a'.repeat(40),
+  independentQa:'PASS',browserQa:'PASS',instruction:'알고리즘 합성 기존 함수 직접 수정',
+  verification:{fullRegression:'PASS',runtime:'PASS',security:'PASS',codeLaboratory:{
+   strategy:'balanced',sourceChanged:true,modelUsed:false}}};
+ const accepted=deriveVerifiedCodePatterns(base,'company-learning/training-samples/lab.json')
+  .find(x=>x.system==='ALGORITHM_SYNTHESIS');
+ assert.equal(accepted.verifiedAlgorithmStrategy.strategy,'balanced');
+ assert.equal(accepted.verifiedAlgorithmStrategy.sourceRevision,base.sourceRevision);
+ assert.equal(accepted.rawCodeStored,false);
+ const insecure=deriveVerifiedCodePatterns({...base,verification:{...base.verification,security:'FAIL'}},'lab.json');
+ assert.ok(insecure.every(x=>!x.verifiedAlgorithmStrategy));
+ const noSource=deriveVerifiedCodePatterns({...base,verification:{...base.verification,
+  codeLaboratory:{...base.verification.codeLaboratory,sourceChanged:false}}},'lab.json');
+ assert.ok(noSource.every(x=>!x.verifiedAlgorithmStrategy));
+ const noRuntime=deriveVerifiedCodePatterns({...base,verification:{...base.verification,runtime:'FAIL'}},'lab.json');
+ assert.deepEqual(noRuntime,[]);
+});
+
 test('unverified sample is rejected',()=>{
   assert.deepEqual(deriveVerifiedCodePatterns({taskType:'coding',sourceRevision:'a'.repeat(40),independentQa:'FAIL'}),[]);
 });
