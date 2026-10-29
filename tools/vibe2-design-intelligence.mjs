@@ -692,7 +692,7 @@ export function evaluateVibeReferenceCapabilities(input={}){
     evidenceOnly:true,authorityExpanded:false,sourceMutationAuthorized:false});
 }
 
-export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {}, executionContext = 'IMPLEMENTATION', verifiedOwnerGameplayTuning = false } = {}) {
+export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {}, executionContext = 'IMPLEMENTATION' } = {}) {
   const referenceCapabilities=evaluateVibeReferenceCapabilities(task.referenceStudy||{});
   const stability = evaluateStabilityTriage(task);
   const defectOwnership = evaluateDefectOwnership(task, stability);
@@ -720,9 +720,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     allowed:hardBlockers.length === 0,
     blockers:freezeList(hardBlockers),
     sourceMutationAuthorized:executionContext!=='GAME_DESIGNER_AUTHORING'&&hardBlockers.length === 0,
-    // 이 값은 Vibe의 추측이 아니라 작업 실행기에서 정책·설계 근거를 재검증한 승인이다.
-    protectedGameplayMutationAutomatic:verifiedOwnerGameplayTuning===true
-      &&executionContext!=='GAME_DESIGNER_AUTHORING'&&hardBlockers.length===0
+    protectedGameplayMutationAutomatic:false
   });
   const evidence = task.designEvidence || {};
   const autoPlayer = evidenceStage('AUTO_PLAYER', evidence.autoPlayer, '실제 입력 기반 플레이/진행/재시작/막힘 여부 증거');
@@ -746,9 +744,6 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     blueprint.materialDesignChange ? `설계 밑그림: Plan A/B 이상 비교=${blueprint.alternatives.length>=2?'READY':'MISSING'}; 선택안=${blueprint.selectedPlan||'UNSELECTED'}. 기본 컨셉은 기준점이며 검증 가능한 창의적 장르/구조 도전은 허용한다.` : '설계 밑그림: 물질적 설계 변경 아님.',
     `설계 도달성 검사: ${integrity.status}; 콘텐츠 다양성: ${diversity.status}.`,
     '설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.',
-    implementation.protectedGameplayMutationAutomatic
-      ?'오너의 2026-10-30 체력·공격력·보상·밸런스·전투·AI 개선 승인이 중앙 정책과 동일 게임 설계로 확인됐다. 기존 엔진 판정·세이브·보안과 실측 전후·회귀·출시 게이트는 유지한다.'
-      :'이 작업에 전투/밸런스 수치 변경 승인이 검증되지 않았다. 기존 보호 수치는 변경하지 않는다.',
     constraintText ? `보존 제약: ${constraintText}` : '명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.',
     critic.issues.length ? `비평 경고: ${critic.issues.join(', ')}` : '비평 게이트: 명시적 구조 문제 없음.',
     causality.status === 'UNVERIFIED' ? '인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.' : `인과 그래프 상태: ${causality.status}`,
@@ -775,7 +770,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     referenceHomage,
     referenceCapabilities,
     narrative,
-    implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers, protectedGameplayMutationAutomatic:implementation.protectedGameplayMutationAutomatic }),
+    implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers }),
     advisory:freezeList(advisory),
     guidance,
     planTarget:clean(plan?.target || task?.target),
