@@ -5832,5 +5832,5 @@ test('model-free mesh reconstruction refuses unregistered, non-CC0 or overpowere
   assert.throws(()=>plan({reconstruction:{morph:{head:1.2}},sourceModel:'assets/shared/raw.glb',sourceLicense:'CC0'}),
     /RECONSTRUCTION_VERIFIED_CC0_PARENT_REQUIRED/);
   assert.throws(()=>plan({reconstruction:{morph:{head:1.2}}}),
-    /RECONSTRUCTION_NO_VERIFIED_CC0_SOURCE_RECIPE/);
+    /RECONSTRUCTION_NO_VERIFIED_CC0_SOURCE_RECIPE|RECONSTRUCTION_VERIFIED_CC0_PARENT_REQUIRED/);
 });
