@@ -37,7 +37,7 @@ import {
   assertVibeQueueBlobSize,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
-import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, selectVibeQueueBatch, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
 
 
 
