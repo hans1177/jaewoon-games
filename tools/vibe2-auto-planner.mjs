@@ -4065,6 +4065,61 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         }
       }
     }
+    // Existing queued Roblox build-up work is the canonical repair carrier.
+    // Do not create duplicate game tasks or modify a running reservation.
+    if(lane==='roblox'&&candidate?.buildUpDirective){
+      const currentF0=exactRobloxF0PreflightFailure(project);
+      const repairStart='[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]';
+      const repairEnd='[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]';
+      const stripF0=goal=>clean(goal).replace(/^\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n[\s\S]*?\n\[\/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n?/,'');
+      const originalGoal=clean(candidate.goal),restoredGoal=stripF0(originalGoal);
+      if(currentF0&&!project.queueRobloxQualityBuildUpRequired){
+        const updated=applyRobloxF0PreflightRepairDirective(candidate.buildUpDirective,project,lane);
+        if(JSON.stringify(updated)!==JSON.stringify(candidate.buildUpDirective)){
+          candidate=bindSharedBuildUpDirective(candidate,updated);
+          changed+=1;
+        }
+        const f0Goal=[repairStart,
+          '게임: '+gameId+' / F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+          '실패한 소스 버전: '+clean(project.queueRobloxSourceCommit),
+          '현재 승인된 이 게임의 원래 책임 파일에서 소스 사전검사 실패 원인을 조사하고 수정한다.',
+          '게임 원본 소스가 변경되었으면 구형 오류를 재사용하지 말고 최신 F0을 다시 검증한다.',
+          '기존 F0→F1→F9 순서, 저장·밸런스·보안·출시 QA를 유지하고 성공 증거를 조작하지 않는다.',
+          repairEnd].join('\n');
+        const baseGoal=stripF0(candidate.goal);
+        const expectedGoal=f0Goal+'\n'+baseGoal;
+        if(clean(candidate.goal)!==expectedGoal){
+          candidate={...candidate,goal:expectedGoal};changed+=1;
+        }
+        const evidence=[...new Set([...(candidate.evidence||[]),
+          'roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE',
+          'roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY',
+          'roblox-f0-preflight-failure-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+          'roblox-f0-preflight-source-revision:'+clean(project.queueRobloxSourceCommit)])];
+        const priority=['owner-immediate','critical'].includes(clean(candidate.priority).toLowerCase())
+          ?candidate.priority:'high';
+        if(priority!==candidate.priority||evidence.length!==(candidate.evidence||[]).length){
+          candidate={...candidate,priority,evidence};changed+=1;
+        }
+      }else if(originalGoal!==restoredGoal){
+        // The current source no longer carries this exact F0 failure.
+        // Remove the stale diagnosis without converting it into a QA pass.
+        candidate={...candidate,goal:restoredGoal};
+        changed+=1;
+        if(!project.queueRobloxQualityBuildUpRequired
+          &&candidate.buildUpDirective?.playtestRuntimeFindings?.f0SourcePreflightFailure){
+          const old=candidate.buildUpDirective;
+          candidate=bindSharedBuildUpDirective(candidate,{
+            ...old,nextActionDecision:{
+              action:'REQUEST_REQUIRED_RUNTIME_OBSERVATION',
+              reason:'previous F0 source failure is no longer the active canonical game-stage observation'
+            },
+            playtestRuntimeFindings:{...old.playtestRuntimeFindings,f0SourcePreflightFailure:null}
+          });
+          changed+=1;
+        }
+      }
+    }
     const candidateEvidence=(candidate?.evidence||[]).map(clean);
     const webPresentationBuildUpCarrier=lane==='web'
       &&clean(candidate?.buildUpDirective?.primaryFocus).toUpperCase()==='PRESENTATION'
