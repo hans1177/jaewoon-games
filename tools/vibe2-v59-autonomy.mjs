@@ -350,7 +350,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target=''}={}){
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null)return createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target});
-  if(!Array.isArray(batch)||batch.length<2||batch.length>6)
+  if(!Array.isArray(batch)||batch.length<2||batch.length>12)
     throw Error('VIBE59_COMPLEX_DESIGN_STEPS_REQUIRED');
   const indexed=batch.map((step,index)=>{
     if(!step||typeof step!=='object'||Array.isArray(step)||step.ownerApproved!==true)
@@ -359,7 +359,7 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
     if(!/^[A-Za-z][A-Za-z_0-9-]{0,63}$/.test(id))
       throw Error('VIBE59_COMPLEX_DESIGN_INVALID_STEP_ID');
     const deps=step.dependsOn||[];
-    if(!Array.isArray(deps)||deps.length>6||deps.some(item=>typeof item!=='string'))
+    if(!Array.isArray(deps)||deps.length>12||deps.some(item=>typeof item!=='string'))
       throw Error('VIBE59_COMPLEX_DESIGN_DEPENDENCY_INVALID');
     return{id,step,deps};
   });
@@ -382,7 +382,8 @@ export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFi
     const single=createVibe59CodeCandidate({
       order:{...order,selectedTask,vibe59CodeRequest:row.step},sourceRoot,responsibleFiles,target
     });
-    if(!single?.vibe59TestPlan?.pass||!Array.isArray(single.edits)||!single.edits.length
+    if(!single?.vibe59TestPlan?.pass||!Array.isArray(single.vibe59TestPlan.cases)
+      ||single.vibe59TestPlan.cases.length<2||!Array.isArray(single.edits)||!single.edits.length
       ||single.newFiles?.length||single.replaceFiles?.length)
       throw Error('VIBE59_COMPLEX_DESIGN_UNVERIFIED_STEP:'+row.id);
     for(const edit of single.edits){
