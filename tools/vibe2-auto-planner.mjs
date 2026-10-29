@@ -1208,7 +1208,7 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
     responsibleSystem
   }:null;
   const event={
-    id:[clean(project?.gameId)||'unknown','RUNTIME_RESULT',platform||'UNKNOWN_PLATFORM',sourceRevision||stage,passed?'PASS':'FAIL'].join('|'),
+    id:[clean(project?.gameId)||'unknown','RUNTIME_RESULT',platform||'UNKNOWN_PLATFORM',sourceRevision||stage,passed?'PASS':'FAIL',stage,passed?'':crypto.createHash('sha256').update(signature||'NO_SIGNATURE').digest('hex').slice(0,20)].filter(Boolean).join('|'),
     type:'RUNTIME_RESULT',
     gameId:clean(project?.gameId)||null,
     taskId:null,
@@ -1289,17 +1289,41 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
         &&task.protectedChange!==true
         &&task.paidResourceRequired!==true
       );
+    // 게임·플랫폼·소스 버전이 정확한 실패만 기존 작업으로 복구한다.
+    // 버전이 불일치하면 다른 게임 빌드에 구형 실패를 적용하지 않는다.
     const sourceRevision=runtimeEventSourceRevision(event);
-    const exact=candidates.filter(({task})=>sourceRevision&&(task.evidence||[]).map(clean).some(value=>value.includes(sourceRevision)));
-    const selected=exact.length===1?exact[0]:(exact.length===0&&candidates.length===1?candidates[0]:null);
+    const declaredRevisions=new Map(candidates.map(({task})=>{
+      const evidenceRevisions=(task.evidence||[]).map(clean).map(value=>
+        value.match(/^(?:source-revision|runtime-source-revision|source-commit|build-source-revision):([0-9a-f]{40})$/i)?.[1]||'');
+      const revisions=[...new Set([
+        task.sourceRevision,task.sourceCommit,task.sourceSha,task.buildSourceRevision,
+        ...evidenceRevisions
+      ].map(clean).filter(value=>/^[0-9a-f]{40}$/i.test(value)))];
+      return[clean(task.id),revisions];
+    }));
+    const compatible=candidates.filter(({task})=>{
+      const revisions=declaredRevisions.get(clean(task.id))||[];
+      return !sourceRevision||!revisions.length||revisions.includes(sourceRevision);
+    });
+    const exact=compatible.filter(({task})=>sourceRevision
+      &&(declaredRevisions.get(clean(task.id))||[]).includes(sourceRevision));
+    const unknown=compatible.filter(({task})=>!(declaredRevisions.get(clean(task.id))||[]).length);
+    const selected=exact.length===1?exact[0]:(exact.length===0&&unknown.length===1?unknown[0]:null);
     if(!selected){
       applied.push({
         eventId,gameId,platform:platform.toUpperCase(),mutated:false,
-        reason:(exact.length>1||candidates.length>1)?'AMBIGUOUS_EXISTING_TASK':'NO_EXISTING_TASK'
+        reason:exact.length>1||unknown.length>1?'AMBIGUOUS_EXISTING_TASK'
+          :candidates.length&&compatible.length===0?'SOURCE_REVISION_MISMATCH':'NO_EXISTING_TASK'
       });
       continue;
     }
 
+    const eventMarker='runtime-neural-ingress-event:'+eventId;
+    if((selected.task.evidence||[]).map(clean).includes(eventMarker)){
+      applied.push({eventId,gameId,platform:platform.toUpperCase(),taskId:selected.task.id,
+        mutated:false,reason:'SAME_GAME_FAILURE_ALREADY_ROUTED'});
+      continue;
+    }
     const taskId=selected.task.id;
     queue=createVibeContinuousQueue({
       maxConcurrentTasks:queue.maxConcurrentTasks,
@@ -1317,6 +1341,10 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
           ...(task.evidence||[]),
           ...(compiled?.evidence||[]),
           'runtime-neural-ingress:gated-existing-task-requeue',
+          eventMarker,
+          'runtime-neural-ingress-failed-stage:'+clean(event.stage).slice(0,100),
+          'runtime-neural-ingress-failure-signature:'+clean(event.signature).slice(0,200),
+          sourceRevision?'runtime-neural-ingress-source-revision:'+sourceRevision:'',
           'neural-gated-queue-mutation:REQUEUE_REPRIORITIZE',
           'neural-gated-worker-refill-eligible'
         ])]
