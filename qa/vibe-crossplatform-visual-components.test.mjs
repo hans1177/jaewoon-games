@@ -1,3 +1,4 @@
+// 파일명: qa/vibe-crossplatform-visual-components.test.mjs
 // Native visual-craft regression: synthetic layouts/DOM are not runtime screenshot proof.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -237,8 +238,8 @@ test('reduced motion keeps one real image for impact and disables camera shake',
 });
 
 test('every published Vibe web route binds shared effects without replacing the existing runtime',()=>{
- const slugs='amusement-tycoon cat-step chess-battle core-clash-4v4 cozy-island daechung-rpg defense dice-battle-board egg-heist exorcist-office fantasy-survival fifty-days forgotten-continent gem-survivor horror-escape-room human-go-temp insect-survival island-village kingshot-ad line-defense lost-dawn mini-empire monster-adventure moon-ruins ocean-voyage party-rpg portal-rpg realistic-builder restaurant-tycoon seed-action-survival-rogu-echoes-of-the-lost-star star-frontier survival2 tekken territory-war tower-choice-rpg village-dungeons wild-survival zombie-survival'.split(' ');
- assert.equal(slugs.length,38);
+ const slugs='amusement-tycoon cat-step chess-battle core-clash-4v4 cozy-island daechung-rpg defense dice-battle-board egg-heist exorcist-office fantasy-survival fifty-days forgotten-continent gem-survivor horror-escape-room human-go-temp insect-survival island-village kingshot-ad line-defense lost-dawn mini-empire monster-adventure moon-ruins ocean-voyage party-rpg portal-rpg realistic-builder restaurant-tycoon seed-action-survival-rogu-echoes-of-the-lost-star star-frontier tekken territory-war tower-choice-rpg village-dungeons wild-survival zombie-survival'.split(' ');
+ assert.equal(slugs.length,37);
  for(const slug of slugs){
    const html=fs.readFileSync('web-games/'+slug+'/index.html','utf8');
    assert.match(html,/data-vibe-common-screen/,slug);

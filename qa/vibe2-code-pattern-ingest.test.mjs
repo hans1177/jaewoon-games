@@ -479,8 +479,8 @@ test('Roblox no-model coding guards real DataStore read before writing and prese
   assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'unverified DataStore read must not fall through to unsafe shutdown save');
 });
 
-test('real survival2 uses guarded read-safe merged save across leave and shutdown',()=>{
-  const source=fs.readFileSync('roblox-games/survival2/server/Game.server.luau','utf8');
+test('real existing builder uses guarded read-safe merged save across leave and shutdown',()=>{
+  const source=fs.readFileSync('roblox-games/realistic-builder/server/Game.server.luau','utf8');
   assert.match(source,/local verifiedSaveLoad = \{\}/);
   assert.match(source,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
   assert.match(source,/if verifiedSaveLoad\[player\] ~= true then return end/);
@@ -492,7 +492,7 @@ test('real survival2 uses guarded read-safe merged save across leave and shutdow
   assert.doesNotMatch(source,/game:BindToClose\(function\(\) end\)/);
   assert.equal(deterministicRobloxNativeRepairCandidate({
     order:{target:'roblox',goal:'save stability shutdown'},
-    sourceRoot:'roblox-games/survival2',responsibleFiles:['server/Game.server.luau']
+    sourceRoot:'roblox-games/realistic-builder',responsibleFiles:['server/Game.server.luau']
   }),null,'existing corrected game cannot receive a duplicate patch');
 });
 
