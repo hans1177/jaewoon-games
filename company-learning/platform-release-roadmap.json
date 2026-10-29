@@ -26902,6 +26902,41 @@
   },
   "continuousGameplaySystemEvolutionContract": {
     "version": 3,
+    "ownerAuthorizedGameplayTuning": {
+        "authority": "OWNER_DIRECTIVE_2026-10-30",
+        "status": "OWNER_DIRECT_LOCKED",
+        "scope": "EXISTING_VIBE_GAME_PRIMARY_BUILD_UP_ACTIVE_ELIGIBLE_GAMES_WEB_AND_ROBLOX_UNITY_WHEN_HOLD_LIFTED",
+        "ownerApproval": "STANDING_GAMEPLAY_IMPROVEMENT_DIRECTION_NOT_BLANKET_PERMISSION_TO_BREAK_DESIGN",
+        "allowedSourceChanges": [
+            "PLAYER_AND_ENEMY_HEALTH_HP",
+            "PLAYER_AND_ENEMY_ATTACK_DAMAGE",
+            "LOOT_REWARDS_DROP_RATES_AND_REWARD_TIMING",
+            "DIFFICULTY_PROGRESS_AND_ECONOMY_BALANCE",
+            "COMBAT_MECHANICS_AND_SKILL_BEHAVIOR",
+            "ENEMY_BOSS_NPC_TACTICAL_AI"
+        ],
+        "gameplayCodeOnly": true,
+        "requiresSameGameCurrentSourceAndLatestVerifiedDesign": true,
+        "measureBeforeAfter": true,
+        "mustDemonstrateRealPlayerValue": true,
+        "testDamageDeathDropsAndProgression": true,
+        "noExploitOrUnwinnableProgression": true,
+        "keepOldSavesValid": true,
+        "preserve": [
+            "CORE_GAME_IDENTITY",
+            "SAVE_KEYS_SCHEMA_AND_PRIOR_PROGRESS",
+            "ENGINE_AND_SERVER_AUTHORITY",
+            "SECURITY_AND_ANTI_CHEAT",
+            "MOBILE_INPUT",
+            "EXISTING_VALID_RULES_OUTSIDE_EXACT_CHANGE"
+        ],
+        "presentationOnlyTasksCannotTuneStats": true,
+        "onlyEngineGameplayCodeMayCommitCombatResults": true,
+        "runtimeAndRegressionEvidenceRequired": true,
+        "normalF0ThroughF9AndReleaseGatesUnchanged": true,
+        "noNewPipelineOrGateBypass": true,
+        "freeOnly": true
+    },
     "authority": "OWNER_DIRECTIVE_2026-09-25",
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "intent": "GAME_MUST_KEEP_ADVANCING_TOWARD_AND_BEYOND_APPROVED_DESIGN_COMPLETENESS_WHILE_PRESENTATION_EVOLVES_IN_PARALLEL",
