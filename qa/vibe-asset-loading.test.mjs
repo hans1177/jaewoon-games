@@ -352,3 +352,35 @@ test('destroy aborts pending scene loads and prevents late cache resurrection',a
    assert.equal(runtime.sceneAssets.size,0);
  }finally{globalThis.fetch=before}
 });
+
+
+// [씬 오디오] 로딩된 음악의 객체 URL뿐 아니라 등록된 재생 참조도 함께 정리한다.
+test('scene transition disposes audio object URL and removes registered playback reference',async()=>{
+ const before={fetch:globalThis.fetch,Audio:globalThis.Audio,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
+ let revoked=0,paused=0;
+ globalThis.fetch=async()=>new Response(new Blob(['audio']));
+ globalThis.Audio=class {
+   constructor(src){this.src=src;this.dataset={}}
+   pause(){paused++}
+   removeAttribute(name){if(name==='src')this.src=''}
+   load(){}
+ };
+ URL.createObjectURL=()=> 'blob:scene-bgm';
+ URL.revokeObjectURL=()=>{revoked++};
+ try{
+   const runtime=new JaewoonVibeRuntime({assetBaseUrl:'https://example.com/'});
+   const music=await runtime.setScene('first',[{id:'bgm',path:'theme.ogg'}]);
+   runtime.registerAudio('scene-theme',music.assets.bgm,'music');
+   assert.equal(runtime.audio.size,1);
+   await runtime.setScene('second',[{id:'config',path:'level.txt'}]);
+   assert.equal(runtime.audio.size,0);
+   assert.equal(revoked,1);
+   assert.equal(paused,1);
+   runtime.destroy();
+ }finally{
+   globalThis.fetch=before.fetch;
+   globalThis.Audio=before.Audio;
+   URL.createObjectURL=before.create;
+   URL.revokeObjectURL=before.revoke;
+ }
+});
