@@ -762,3 +762,23 @@ test('Vibe5.9 never promotes forged, cyclic, out-of-bound or unproven AST concep
  assert.deepEqual(extractVibe59AlgorithmConceptCandidates({search:sourceProof})
    .concepts[0].ast,['max',['param',0],['param',1]]);
 });
+
+
+test('Vibe5.9 canonical source candidate exposes extracted concepts without mutating a game',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-concepts-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const original='function score(x,y){return 0;}\nconst untouchedSave="save-v1";\n';
+ fs.writeFileSync(path.join(root,'logic.js'),original);
+ const order={vibe59CodeRequest:{ownerApproved:true,path:'logic.js',
+   find:'function score(x,y){return 0;}',algorithmSpec:{
+     functionName:'score',parameters:['x','y'],
+     examples:[{args:[1,2],output:2},{args:[4,3],output:4},{args:[0,5],output:5}],
+     holdouts:[{args:[8,1],output:8},{args:[-2,-1],output:-1}]}}};
+ const candidate=createVibe59CodeCandidate({order,sourceRoot:root,
+   responsibleFiles:['logic.js'],target:'web'});
+ assert.ok(candidate.algorithmConceptCandidates.concepts.length>=1);
+ assert.equal(candidate.algorithmConceptCandidates.promotionAuthorized,false);
+ assert.equal(candidate.sourceWrite,false);
+ assert.equal(candidate.runtimeVerified,false);
+ assert.equal(fs.readFileSync(path.join(root,'logic.js'),'utf8'),original);
+});
