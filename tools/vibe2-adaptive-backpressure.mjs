@@ -141,21 +141,25 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const firstPass=num(telemetry?.throughput?.firstCandidatePassRatePct);
   const throughput=num(telemetry?.throughput?.verifiedCandidatesPerMinute);
   const previousThroughput=num(control?.lastTelemetry?.verifiedCandidatesPerMinute);
+  const changed=telemetry?.throughput?.sourceMutation?.verifiedChangedWorkerCount;
+  const elapsedMs=num(telemetry?.throughput?.waveElapsedMs);
+  const verifiedSourceRate=Number.isSafeInteger(changed)&&changed>=0&&elapsedMs>0
+    ? changed*60000/elapsedMs:null;
   if(workerCount>=4&&firstPass>0&&firstPass<60)reasons.push('FIRST_CANDIDATE_PASS_RATE');
   if(previousThroughput>0&&throughput>0&&throughput<previousThroughput*.75)reasons.push('VERIFIED_THROUGHPUT_REGRESSION');
   const strongPressure = ['SEVERE', 'HIGH'].includes(level) || reasons.length > 0;
   const mediumPressure = level === 'MEDIUM' && reasons.length === 0;
 
-  // [병목 자가교정] 조정 이전과 다음 파동의 실제 검증된 후보 처리량을 비교한다.
-  // 병목 이름만 같거나 PASS 문구만 있는 경우에는 개선으로 학습하지 않는다.
+  // [병목 자가교정] 조정 이전과 다음 파동의 실제 QA 통과 + 소스 변경 처리량을 비교한다.
+  // 일반 PASS 개수, 모델 응답, 파일 무변경만으로는 엔진 개선을 학습하지 않는다.
   const trial=control.tuningTrial;
   const comparable=trial?.direction==='DOWN' && runId && runId!==trial.runId
     && workerCount>=4 && Number(trial.workerCount)>=4
-    && throughput>0 && Number(trial.verifiedPerMinute)>0;
+    && verifiedSourceRate!==null && Number(trial.verifiedSourceChangesPerMinute)>0;
   const previousPass=num(trial?.firstCandidatePassRatePct);
-  const observedGain=comparable && throughput>=Number(trial.verifiedPerMinute)*1.1
+  const observedGain=comparable && verifiedSourceRate>=Number(trial.verifiedSourceChangesPerMinute)*1.1
     && (firstPass===0||previousPass===0||firstPass>=previousPass);
-  const observedLoss=comparable && throughput<=Number(trial.verifiedPerMinute)*0.75
+  const observedLoss=comparable && verifiedSourceRate<=Number(trial.verifiedSourceChangesPerMinute)*0.75
     && (firstPass===0||previousPass===0||firstPass<=previousPass)
     && num(telemetry.failureRatePct)>=num(trial.failureRatePct);
   const trialEvaluation=!trial?'NOT_EVALUATED'
@@ -270,10 +274,10 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     lastUpdatedAt: now,
     lastTuningEvaluation:trialEvaluation,
     tuningMemory,
-    tuningTrial:decision==='DOWN' && next<current && throughput>0 && workerCount>=4
+    tuningTrial:decision==='DOWN' && next<current && verifiedSourceRate>0 && workerCount>=4
       ? {direction:'DOWN',from:current,to:next,runId:runId||null,
         bottleneck:clean(telemetry.bottleneck)||'UNKNOWN',
-        verifiedPerMinute:throughput,firstCandidatePassRatePct:firstPass,
+        verifiedSourceChangesPerMinute:verifiedSourceRate,firstCandidatePassRatePct:firstPass,
         failureRatePct:num(telemetry.failureRatePct),workerCount}
       : null,
     lastTelemetry: {
