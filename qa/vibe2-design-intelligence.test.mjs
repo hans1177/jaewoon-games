@@ -58,6 +58,25 @@ test('protected change blocks implementation and never expands authority',()=>{
   assert.equal(result.authorityExpanded,false);
 });
 
+test('design intelligence accepts verified owner-requested gameplay numbers but never guesses approval',()=>{
+  const task={type:'implementation',department:'development',goal:'기존 게임 체력과 보상을 조정',protectedChange:false};
+  const unapproved=buildVibeDesignIntelligence({task});
+  assert.equal(unapproved.implementationGate.protectedGameplayMutationAutomatic,false);
+  assert.match(unapproved.guidance,/확인된 오너 작업 지시가 없으면/);
+  const approved=buildVibeDesignIntelligence({task,verifiedOwnerGameplayChange:true});
+  assert.equal(approved.implementationGate.allowed,true);
+  assert.equal(approved.implementationGate.protectedGameplayMutationAutomatic,true);
+  assert.match(approved.guidance,/오너의 특정 게임 체력/);
+  assert.equal(approved.authorityExpanded,false);
+  const protectedTask=buildVibeDesignIntelligence({task:{...task,protectedChange:true},verifiedOwnerGameplayChange:true});
+  assert.equal(protectedTask.implementationGate.allowed,false);
+  assert.equal(protectedTask.implementationGate.protectedGameplayMutationAutomatic,false);
+  const designer=buildVibeDesignIntelligence({task,executionContext:'GAME_DESIGNER_AUTHORING',verifiedOwnerGameplayChange:true});
+  assert.equal(designer.implementationGate.protectedGameplayMutationAutomatic,false);
+  const ownerWaiting=buildVibeDesignIntelligence({task:{...task,requiresOwnerDecision:true},verifiedOwnerGameplayChange:true});
+  assert.equal(ownerWaiting.implementationGate.protectedGameplayMutationAutomatic,false);
+});
+
 test('locked artbook design change requires change request',()=>{
   const result=buildVibeDesignIntelligence({task:{goal:'핵심 루프 재설계',designChange:true,artbook:{locked:true}}});
   assert.equal(result.implementationGate.allowed,false);

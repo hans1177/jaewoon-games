@@ -13,6 +13,7 @@ import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
+import {verifiedOwnerGameplayChangeFromTask} from '../tools/vibe2-continuous-runner.mjs';
 
 
 
@@ -5990,4 +5991,42 @@ test('tactical AI deepening stays inside verified game design and preserves bala
   const sourceText=fs.readFileSync(new URL('../tools/vibe2-auto-planner.mjs',import.meta.url),'utf8');
   assert.match(sourceText,/추격·회피·측면 이동·협동·공격 시점의 실패/);
   assert.match(sourceText,/체력·공격력·드롭·보상·밸런스 수치·엔진 판정·저장은 변경하지 않는다/);
+});
+
+
+test('explicit source-backed owner requests unlock numeric-gameplay proposals only under current verified design',()=>{
+  const root=tempRepo(),gameId='approved-numeric-test';
+  const source=path.join(root,'web-games',gameId);
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'game.js'),'function attack() {}','utf8');
+  writeStudioDesign(root,gameId);
+  assert.ok(latestVerifiedDesign(root,gameId)?.verified,'test must have a verified canonical design');
+  const uuid='01234567-89ab-4cde-8f01-234567890abc';
+  const task={
+    id:'pwa-'+uuid,gameId,target:'web',sourceRoot:'web-games/'+gameId,
+    department:'development',type:'implementation',ownerDirective:true,
+    protectedChange:false,requiresOwnerDecision:false,designChange:false,
+    goal:'[OWNER_IMMEDIATE_PWA]\\n사용자 직접 지시: 체력 공격력 드롭 보상 밸런스 개선해',
+    evidence:['pwa-task:'+uuid,'pwa-kind:directive','source-root:web-games/'+gameId]
+  };
+  const centralPolicy={valid:true,document:{
+    status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED',ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'},
+    fixedAutonomousDevelopmentOperatingContract:{ownerRequestedVibeOneShotPatch:{
+      preservation:{existingGameBalanceOrContentMayChangeOnlyByOwnerDirection:true}
+    }}
+  }};
+  const params={task,plan:{target:'web'},centralPolicy,repoRoot:root};
+  assert.equal(verifiedOwnerGameplayChangeFromTask(params),true);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,ownerDirective:false}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,evidence:['owner-directive:claimed']}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,protectedChange:true}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,requiresOwnerDecision:true}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,goal:'사용자 직접 지시: 체력 공격력 변경하지 마'}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,goal:'사용자 직접 지시: 적 AI 지능 개선해'}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,sourceRoot:'web-games/other'}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,gameId:'no-verified-design',sourceRoot:'web-games/no-verified-design'}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,centralPolicy:{...centralPolicy,valid:false}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,centralPolicy:{...centralPolicy,document:{...centralPolicy.document,developmentAccess:{WEB:'OWNER_HOLD'}}}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,task:{...task,id:'autonomous-studio-task'}}),false);
+  assert.equal(verifiedOwnerGameplayChangeFromTask({...params,plan:{target:'unity'}}),false);
 });
