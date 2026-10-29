@@ -526,6 +526,12 @@ test('Vibe2 generated algorithm integrates with canonical Roblox candidate witho
   find:'local function score(x,y)\n return 0\nend',algorithmSpec:spec}};
  const candidate=createVibe59CodeCandidate({order,sourceRoot:root,
   responsibleFiles:['logic.luau'],target:'roblox'});
+ const inferred=createVibe59CodeCandidate({order:{vibe59CodeRequest:{
+   ownerApproved:true,path:'logic.luau',algorithmSpec:spec}},sourceRoot:root,
+   responsibleFiles:['logic.luau'],target:'roblox'});
+ assert.equal(inferred.sourceFunctionAutoLocated,true);
+ assert.equal(inferred.sourceFunctionRewrite,true);
+ assert.equal(inferred.edits[0].find,'local function score(x,y)\n return 0\nend');
  assert.equal(candidate.vibe59CodeKind,'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM');
  assert.equal(candidate.algorithmProof.runtimeVerified,false);
  assert.equal(candidate.codeLaboratory.independentQa,'NOT_RUN');
@@ -802,6 +808,11 @@ test('Vibe5.9 canonical source candidate exposes extracted concepts without muta
      holdouts:[{args:[8,1],output:8},{args:[-2,-1],output:-1}]}}};
  const candidate=createVibe59CodeCandidate({order,sourceRoot:root,
    responsibleFiles:['logic.js'],target:'web'});
+ const auto=createVibe59CodeCandidate({order:{vibe59CodeRequest:{
+   ...order.vibe59CodeRequest,find:undefined}},sourceRoot:root,
+   responsibleFiles:['logic.js'],target:'web'});
+ assert.equal(auto.sourceFunctionAutoLocated,true);
+ assert.equal(auto.edits[0].find,'function score(x,y){return 0;}');
  assert.ok(candidate.algorithmConceptCandidates.concepts.length>=1);
  assert.equal(candidate.algorithmConceptCandidates.promotionAuthorized,false);
  assert.equal(candidate.sourceWrite,false);

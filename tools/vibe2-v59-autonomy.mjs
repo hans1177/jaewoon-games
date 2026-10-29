@@ -908,7 +908,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
     scenarios:creativeChosen.scenarios}:null);
   if(req==null)return createVibe59IntentStatCandidate({order,sourceRoot,responsibleFiles,target});
   const specialized=[req?.robloxDomainAction,req?.robloxSkill109,req?.robloxQualityAction,req?.robloxPathfindingAction,req?.robloxCraftingAction].filter(Boolean);
-  if(!req||req.ownerApproved!==true||!req.path||!req.find
+  if(!req||req.ownerApproved!==true||!req.path||(!req.find&&!req.algorithmSpec)
     ||(specialized.length?(specialized.length!==1||Boolean(req.rule)||Boolean(req.machine)||target!=='roblox'):
        [Boolean(req.rule),Boolean(req.machine),Boolean(req.algorithmSpec)].filter(Boolean).length!==1))
     throw Error('VIBE59_OWNER_EXPLICIT_CODING_SPEC_REQUIRED');
@@ -922,12 +922,17 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const real=fs.realpathSync(full);
   if(!real.startsWith(root+path.sep)||!fs.lstatSync(full).isFile()
     ||fs.lstatSync(full).isSymbolicLink())throw Error('VIBE59_SOURCE_SCOPE_ESCAPE');
+  // [함수 자동 지정] 알고리즘 합성은 기존 함수 파서가 원본 본문을 찾는다.
+  // 그 외 작업은 기존 앵커 필수 규칙을 유지한다.
   const content=documents instanceof Map&&documents.has(relative)
     ?documents.get(relative):fs.readFileSync(full,'utf8'),find=req.find;
-  if(content.length>260000||typeof find!=='string'||!find||find.length>1024
+  if(content.length>260000)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
+  if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
+  if(req.algorithmSpec){
+    if(find!=null&&typeof find!=='string')throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
+  }else if(typeof find!=='string'||!find||find.length>1024
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
-  if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     if(!['web','roblox'].includes(target))throw Error('VIBE59_ALGORITHM_TARGET_INVALID');
     const memory=order.vibe59AlgorithmMemory||order.selectedTask?.vibe59AlgorithmMemory||{};
@@ -948,17 +953,21 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
           &&row?.engine===target)
         .slice(0,128).map(row=>row.verifiedAlgorithmStrategy),
       ownerApproved:req.ownerApproved===true},source:content,relative,target});
-    if(find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
-    return Object.freeze({summary:'Vibe5.9 AST-evolved and counterexample-guided numeric algorithm',
-      expectedEffect:'Verified owner examples and held-out cases bound the new existing-function algorithm',
-      edits:[{path:relative,find,replace:generated.newText}],newFiles:[],replaceFiles:[],
+    // 원본 파서가 찾은 함수가 한 번만 존재하는지 최종 확인한다.
+    if(find!=null&&find!==''&&find!==generated.oldText)throw Error('VIBE59_ALGORITHM_ANCHOR_MISMATCH');
+    if(content.split(generated.oldText).length!==2)throw Error('VIBE59_ALGORITHM_FUNCTION_AMBIGUOUS');
+    return Object.freeze({summary:'Vibe5.9 AST-evolved source-grounded whole numeric function rewrite',
+      expectedEffect:'Verified examples and held-out cases locate and rewrite the unique existing pure function',
+      edits:[{path:relative,find:generated.oldText,replace:generated.newText}],newFiles:[],replaceFiles:[],
       tests:[],vibe59CodeKind:target==='roblox'?'ROBLOX_SYNTHESIZED_NUMERIC_ALGORITHM':'WEB_SYNTHESIZED_NUMERIC_ALGORITHM',
       vibe59TestPlan:{pass:true,cases:[...req.algorithmSpec.examples,...req.algorithmSpec.holdouts,
         ...(Array.isArray(req.algorithmSpec.verifiedCounterexamples)?req.algorithmSpec.verifiedCounterexamples:[])
           .map(row=>({args:row.args,output:row.output}))],
         trainingCases:generated.search.trainingCases,heldOutCases:generated.search.heldOutCases},
       algorithmProof:generated.search,algorithmConceptCandidates:generated.conceptCandidates,
-      codeLaboratory:generated.laboratory,
+      codeLaboratory:generated.laboratory,sourceFunction:clean(req.algorithmSpec.functionName),
+      sourceFunctionRewrite:true,sourceFunctionAutoLocated:!clean(find),
+      sourceBeforeSha256:sha(content),
       ruleDigest:sha(JSON.stringify(req.algorithmSpec)),
       sourceWrite:false,modelUsed:false,runtimeVerified:false});
   }
