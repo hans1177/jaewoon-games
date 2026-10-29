@@ -137,7 +137,10 @@ function generateInsertion(request,index){
   selectedFacility:request.facilities.length?0:-1,mapIndex:0,backgroundIndex:0,
   actionIndex:0,motionIndex:0,time:0,actionAt:0,started:0,open:true,menuOpen:false,
   tab:'월드',reduceMotion:false,visitedMaps:request.maps.map((_,i)=>i===0),
-  rides:0,rideCounts:request.facilities.map(()=>0),actionsDone:0,lastEvent:'게임 시작'
+  rides:0,rideCounts:request.facilities.map(()=>0),actionsDone:0,lastEvent:'게임 시작',
+  coins:0,materials:request.maps.map(()=>0),gearCounts:request.actions.map(()=>0),
+  tickets:request.facilities.map(()=>0),equipped:-1,crafted:0,purchases:0,
+  claimed:[false,false,false],pages:{},menuPage:0
  };
  const code='const '+id+' = '+JSON.stringify(initial)+';\n'+id+'.started = Date.now();\n';
  const substitutions=text=>text.replaceAll('__VOLUME__',id).replaceAll('ctx',ctx);
@@ -188,15 +191,17 @@ export function createVibe59OneShotVolumeCandidate({order={},sourceRoot='',respo
  if(!/\.html?$/i.test(gameFile))new vm.Script(rendered,{filename:gameFile});
  else new vm.Script(scriptText(rendered,true),{filename:gameFile});
  return {
-  summary:'한 번에 시설·지역·배경·그래픽·액션·모션 추가',
-  expectedEffect:'기존 게임 렌더링·입력·업데이트 함수에 플레이 가능한 벡터 월드 콘텐츠 확장',
+  summary:'월드와 인벤토리·장비·제작·퀘스트·상점 한 번에 생성',
+  expectedEffect:'탐험 재료 수집·제작·착용·퀘스트 보상·상점 거래를 기존 렌더링 및 입력 함수로 연결',
   edits,newFiles:[],replaceFiles:[],tests:[],
   vibe59CodeKind:'ONE_SHOT_GAME_VOLUME',vibe59DesignSteps:ownerFunctions.map((name,i)=>({
    id:'volume-'+name,operation:ownerOperations[i]})),
   vibe59TestPlan:{pass:true,authority:'LOCAL_SOURCE_SYNTAX_ONLY',
    cases:[{name:'content-count',contentCounts},{name:'source-owners',ownerFunctions}],independentGameQa:false},
   volumePack:{gameFile,ownerFunctions,contentCounts,graphics:'CANVAS_PROCEDURAL',
-   uiPages:['월드','상태','시설','지도','목표'],
+   uiPages:['월드','상태','시설','지도','목표','가방','장비','제작','퀘스트','상점'],
+   gameplayBuildUp:['MAP_RESOURCE_COLLECTION','EQUIPMENT_CRAFTING','EQUIPPED_ACTION_REWARD',
+    'QUEST_REWARD_CLAIM','SHOP_TICKET_REDEMPTION'],
    convenience:['RESPONSIVE_MOBILE_PANEL','REDUCED_MOTION','EXISTING_KEYBOARD_WHEN_BOUND'],
    objectives:['VISIT_REGIONS','EXPERIENCE_FACILITY','PERFORM_ACTIONS'],
    interaction:'EXISTING_INPUT_HANDLER',saveSchemaChanged:false},
