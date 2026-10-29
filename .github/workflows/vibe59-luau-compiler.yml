@@ -6,6 +6,7 @@ on:
     paths:
       - 'tools/vibe59-*.mjs'
       - 'tools/vibe2-v59-autonomy.mjs'
+      - 'tools/vibe2-source-worker.mjs'
       - 'qa/vibe59-luau-compiler.mjs'
       - 'qa/vibe59-luau-runtime.mjs'
       - 'qa/vibe59-crafting-runtime.mjs'
@@ -25,6 +26,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Preflight Vibe source worker and code generator JavaScript syntax
+        run: |
+          node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-v59-autonomy.mjs
+          node --check tools/vibe59-crafting-transaction.mjs
+          node --check qa/vibe59-crafting-runtime.mjs
       - name: Install official pinned Luau compiler
         shell: bash
         run: |
