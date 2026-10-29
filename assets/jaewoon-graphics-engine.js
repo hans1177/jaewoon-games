@@ -608,7 +608,7 @@
           button.disabled=true;button.style.opacity='.45';
           button.setAttribute('aria-disabled','true');
         }
-        button.onclick=()=>{if(!destroyed&&action.enabled!==false)onAction(id);};
+        button.onclick=()=>{if(!destroyed&&rich.actions?.node===node&&action.enabled!==false)onAction(id);};
         node.appendChild(button);
       }
       rich.actions={node,count:actions.length};
