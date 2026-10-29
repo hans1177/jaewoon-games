@@ -167,7 +167,7 @@ test('existing cloud free-model response is bounded by same WEB source and save 
 test('WEB cloud patch uses stable owner task branch and review checkpoint instead of false merge',()=>{
  const source=fs.readFileSync('tools/web-vibe-worker.mjs','utf8');
  assert.match(source,/const branch='web-vibe\/'\+task.gameId\+'-'\+task.id.slice\(4\)/);
- assert.match(source,/markWebVibeReview\(task,pr,token\)/);
+ assert.match(source,/markWebVibeReview\(task,pr,token,changed\)/);
  assert.match(source,/status:'review',reviewPrUrl:url/);
  assert.match(source,/WEB_VIBE_REVIEW_QUEUE_STALE/);
  assert.match(source,/web-vibe-pr-created:needs-independent-qa-and-owner-merge/);
