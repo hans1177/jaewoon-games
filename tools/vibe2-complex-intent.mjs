@@ -2,6 +2,7 @@
 // [임포트] 외부 AI 없이 오너 원문에서 제한된 인과 요청을 추출한다.
 import crypto from 'node:crypto';
 import {sourceDigest} from './vibe2-game-source-index.mjs';
+import {directivePrompt} from './company-build-up-directive.mjs';
 
 const hash=value=>crypto.createHash('sha256').update(String(value)).digest('hex');
 const identifier='([A-Za-z_$][A-Za-z0-9_$]{0,63})';
@@ -26,7 +27,16 @@ const protectedNames=new Set(['constructor','prototype','__proto__','eval','Func
 
 export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',responsibleFiles=[],baseCommit=''}={}){
   const task=order.selectedTask||{};
-  const goal=String(task.goal||order.originalGoal||order.goal||'').trim();
+  let goal=String(task.goal||order.originalGoal||order.goal||'').trim();
+  // [지시 분리] 기존 계획기가 붙인 동일 게임·플랫폼 설명만 원문과 분리한다.
+  // 설명 전체가 원본 directivePrompt와 일치해야 한다. 임의 접미 요구는 버리지 않는다.
+  const originalText=goal;
+  const directive=task.buildUpDirective||order.buildUpDirective;
+  const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',at=goal.indexOf(marker);
+  if(at>=0&&directive?.gameId===String(task.gameId||order.gameId||'')&&
+    String(directive.platform).toLowerCase()===target&&typeof directive.gameIdentityAndNonNegotiables?.identity==='string'&&
+    ['gameplayImplementationDirectives','progressionContentWorldDirectives','uxInputDirectives','preserveConstraints','acceptanceEvidence','nextEscalationCandidates'].every(key=>Array.isArray(directive[key]))&&goal.slice(at+2)===directivePrompt(directive).trimEnd())
+    goal=goal.slice(0,at).trim();
   if(!['web','roblox'].includes(target)||!goal||goal.length>640||
     /[\r\n\x00-\x1f\`{}]/.test(goal))return null;
   // [메인] 세미콜론으로 구분된 최대 4개 명시 지시만 해석한다. 임의 문장을 보완하지 않는다.
@@ -47,7 +57,7 @@ export function compileVibe2ComplexIntent({order={},target='',sourceRoot='',resp
   const requestId=hash([gameId,target,goal,baseCommit].join('|'));
   return Object.freeze({
     schemaVersion:'vibe2-complex-intent-v1',requestId,gameId,target,
-    ownerDirectiveReference:{originalText:goal,verifiedFromOwnerOrder:true},
+    ownerDirectiveReference:{originalText,interpretedText:goal,derivedFromOwnerRequest:originalText!==goal,verifiedFromOwnerOrder:true},
     allowedGameRoot:sourceRoot,authorizedFiles:[...responsibleFiles],
     baseCommit:String(baseCommit),sourceWrite:false,runtimeVerified:false,
     requirements:steps.flatMap((step,group)=>step.effects.map((effect,index)=>({
@@ -96,13 +106,20 @@ export function expressionReferences(ast){
 
 // 메인: 승인 사실은 기존 오너 주문에서 복사한다. 해석 결과로 승인을 만들지 않는다.
 export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha=''}={}){
- const task=order.selectedTask||{},text=String(task.goal||order.originalGoal||order.goal||'').trim();
+ const task=order.selectedTask||{},originalText=String(task.goal||order.originalGoal||order.goal||'').trim();
+ let text=originalText;
+ const directive=task.buildUpDirective||order.buildUpDirective;
+ const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',at=text.indexOf(marker);
+ if(at>=0&&directive?.gameId===String(task.gameId||order.gameId||'')&&
+   String(directive.platform).toLowerCase()===target&&typeof directive.gameIdentityAndNonNegotiables?.identity==='string'&&
+   ['gameplayImplementationDirectives','progressionContentWorldDirectives','uxInputDirectives','preserveConstraints','acceptanceEvidence','nextEscalationCandidates'].every(key=>Array.isArray(directive[key]))&&text.slice(at+2)===directivePrompt(directive).trimEnd())
+   text=text.slice(0,at).trim();
  const gameId=String(task.gameId||order.gameId||'');
  const approval=task.ownerDirective===true||order.ownerApproved===true;
  const reference=String(task.ownerDirectiveId||order.ownerDirectiveId||order.taskId||sourceDigest(text));
  const result={schemaVersion:'vibe2-complex-intent-v1',requestId:sourceDigest(JSON.stringify([gameId,target,text,reference])),
-  gameId,target,baseRevisionSha,ownerDirectiveReference:{originalText:String(order.originalGoal||text),
-   interpretedText:text,derivedFromOwnerRequest:Boolean(order.originalGoal&&order.originalGoal!==text),
+  gameId,target,baseRevisionSha,ownerDirectiveReference:{originalText:String(order.originalGoal||originalText),
+   interpretedText:text,derivedFromOwnerRequest:originalText!==text||Boolean(order.originalGoal&&order.originalGoal!==text),
    verifiedFromOwnerOrder:approval,reference},
   requirements:[],unresolved:[],sourceWrite:false,modelUsed:false,runtimeVerified:false};
  if(!approval)result.unresolved.push({code:'NO_OWNER_SPEC'});

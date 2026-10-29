@@ -972,7 +972,7 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
       throw Error('VIBE59_FUNCTION_REWRITE_ANCHOR_MISMATCH');
     find=originalFunction.original;
   }
-  if(content.length>260000)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
+  if(Buffer.byteLength(content)>2*1024*1024)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
   if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     if(find!=null&&typeof find!=='string')throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
@@ -1268,7 +1268,7 @@ export function evaluateVibe59OfflinePatchEvidence({candidate={},order={},source
      ||!fs.statSync(full).isFile()||!fs.realpathSync(full).startsWith(root+path.sep))
      throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_ESCAPE');
    const source=fs.readFileSync(full,'utf8');
-   if(source.length>260000)throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_LIMIT');
+   if(Buffer.byteLength(source)>2*1024*1024)throw Error('VIBE59_CANDIDATE_AUDIT_SOURCE_LIMIT');
    const functions=inspectSourceFunctions(source,{language:target==='roblox'?'luau':'javascript',maxFunctions:4096});
    files.set(edit.path,{source,functions,hash:sha(source)});
    originals.push({path:edit.path,sha256:sha(source)});

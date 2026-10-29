@@ -892,3 +892,23 @@ test('Luau conditional return uses false literally, and incompatible return guar
  }
  assert.equal(fs.readFileSync(path.join(root,'server/Combat.server.luau'),'utf8'),source);
 });
+
+// [실행 인계] 큰 기존 파일·긴 작업 설명에서도 같은 책임 함수의 실제 코드를 바꾼다.
+test('canonical source generation edits a large game file with long build-up context and executes final preserved caller contract',async t=>{
+ const {directivePrompt}=await import('../tools/company-build-up-directive.mjs');
+ const {repo,root}=fixture(t),source='// '+ 'source padding '.repeat(24000)+'\nconst state={dead:false};\nfunction canAct(a){\n a.count += 1;\n return true;\n}\n';
+ assert.ok(Buffer.byteLength(source)>260000);
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const directive={gameIdentityAndNonNegotiables:{identity:'rpg'},gameplayImplementationDirectives:[],progressionContentWorldDirectives:[],uxInputDirectives:[],preserveConstraints:[],acceptanceEvidence:[],nextEscalationCandidates:[],directiveId:'long-owner-context',gameId:'rpg',platform:'WEB',primaryGoalReason:'preserve original state '.repeat(6000)};
+ const goal='함수 canAct에서 a.dead이면 false를 반환해\n\n'+directivePrompt(directive);
+ const order={selectedTask:{gameId:'rpg',ownerDirective:true,goal,buildUpDirective:directive},baseRevisionSha:revision};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';canAct');
+ const dead={dead:true,count:0},alive={dead:false,count:0};
+ assert.equal(game(dead),false);assert.equal(dead.count,0);assert.equal(game(alive),true);assert.equal(alive.count,1);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+ assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
+ fs.writeFileSync(path.join(root,'game.js'),'// '+'x'.repeat(2*1024*1024));
+ assert.throws(()=>buildGameSourceIndex({sourceRoot:root,responsibleFiles:['game.js']}),/SOURCE_SIZE/);
+});

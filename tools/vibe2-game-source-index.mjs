@@ -33,7 +33,8 @@ export function safeSourceFile(root,relative){
   current=path.join(current,part);if(fs.lstatSync(current).isSymbolicLink())fail('SYMLINK');
  }
  if(!file.startsWith(base+path.sep)||!fs.statSync(file).isFile())fail('PATH');
- if(fs.statSync(file).size>260000)fail('SOURCE_SIZE');
+ // 큰 기존 게임도 작은 원본 편집으로 처리한다. 무제한 파일 읽기는 허용하지 않는다.
+ if(fs.statSync(file).size>2*1024*1024)fail('SOURCE_SIZE');
  return file;
 }
 export function resolveGameSourceScope({repositoryRoot,sourceRoot,gameId,target,catalog}={}){
@@ -48,7 +49,7 @@ export function resolveGameSourceScope({repositoryRoot,sourceRoot,gameId,target,
  return {gameId,target,root:actual,relativeRoot:canonical,game};
 }
 
-function scriptText(source,html){
+export function scriptText(source,html){
  if(!html)return source;
  // HTML inert regions and malformed tags cannot ground edits.
  if(/<(?:template|textarea|noscript|plaintext|xmp)\b/i.test(source))fail('INERT_HTML');
@@ -64,7 +65,7 @@ function scriptText(source,html){
  }
  return code.join('');
 }
-function lex(source,language){
+export function lex(source,language){
  const masked=executableText(source,language).split(''),unsupported=[];
  // The reused lexer excludes literals/comments. Mask regex literals as well;
  // interpolated strings remain opaque and are not accepted as edit owners.
