@@ -81,7 +81,8 @@ test('canonical Vibe2 no-model worker edits actual game source on an isolated ca
   assert.equal(fs.readFileSync(path.resolve(relative),'utf8'),original,'real repository source is never mutated by regression');
   assert.equal(result.generation.modelUsed,false);
   assert.equal(result.generation.attempts,1);
-  assert.equal(result.runtimeVerified,false);
+  assert.equal(result.verifiedBeforePromotion,false);
+  assert.equal(result.mode,'isolated-candidate-branch-source-write');
 });
 
 test('natural language becomes an ordered two-step DAG tied to exact existing source definitions',t=>{
