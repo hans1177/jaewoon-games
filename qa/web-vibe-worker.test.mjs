@@ -8,7 +8,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
-import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,renderVibe59NumericLuaAST,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -802,4 +802,50 @@ test('Vibe5.9 enumerative provenance never masquerades as evolved AST',()=>{
  assert.ok(concepts.concepts.length>0);
  assert.equal(concepts.verified,false);
  assert.equal(concepts.promotionAuthorized,false);
+});
+
+
+test('Vibe5.9 Lua compiler accepts enumerative object AST and evolved array AST with the same bounded language',()=>{
+ const spec={parameters:['x','y'],
+   examples:[{args:[1,3],output:3},{args:[7,2],output:7},{args:[-4,-1],output:-1}],
+   holdouts:[{args:[9,8],output:9},{args:[0,5],output:5}]};
+ const enumerative=synthesizeVibe59NumericAlgorithm({spec});
+ assert.equal(enumerative.search,'BOUNDED_ENUMERATIVE_CEGIS');
+ assert.equal(Array.isArray(enumerative.ast),false);
+ assert.equal(enumerative.casesPassed,5);
+ assert.equal(renderVibe59NumericLuaAST(enumerative.ast,enumerative.parameters),'math.max(x,y)');
+ const evolved=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy:'evolution',maxGenerations:5}});
+ assert.equal(evolved.search,'BOUNDED_AST_EVOLUTION_CEGIS');
+ assert.ok(Array.isArray(evolved.ast));
+ assert.match(renderVibe59NumericLuaAST(evolved.ast,evolved.parameters),/^(?:math\.max\(|\()/);
+ assert.equal(renderVibe59NumericLuaAST(['%',['param',0],['param',1]],['x','y']),
+   '(x-math.modf(x/y)*y)');
+ assert.equal(renderVibe59NumericLuaAST({kind:'mutation',operator:'round',
+   operand:{kind:'reference',name:'x'}},['x']), 'math.floor((x)+0.5)');
+ assert.equal(enumerative.runtimeVerified,false);
+ assert.equal(evolved.runtimeVerified,false);
+});
+test('Vibe5.9 Lua compiler fails closed on malformed, cyclic and injected AST',()=>{
+ const cyclic={kind:'mutation',operator:'abs'};cyclic.operand=cyclic;
+ const deep=['param',0];let nested=deep;
+ for(let i=0;i<6;i++)nested=['neg',nested];
+ const cases=[
+   cyclic,nested,
+   ['+', ['param',0], ['param',2]],
+   ['+', ['param',0]],
+   ['const',Infinity],
+   ['const','game.Players:ClearAllChildren()'],
+   {kind:'constant',value:1,poison:'ignore'},
+   {kind:'crossover',operator:'; game:Destroy()',left:{kind:'reference',name:'x'},
+     right:{kind:'reference',name:'y'}},
+   {kind:'reference',name:'workspace'},
+   ['unknown',['param',0],['param',1]],
+   ['select',['param',0],['param',1]]
+ ];
+ for(const ast of cases.filter(row=>row?.kind!=='constant'))
+   assert.throws(()=>renderVibe59NumericLuaAST(ast,['x','y']),/LUA_AST_REQUIRED/);
+ assert.throws(()=>renderVibe59NumericLuaAST(['param',0],['__proto__']),
+   /LUA_PARAMETERS_INVALID/);
+ assert.throws(()=>renderVibe59NumericLuaAST(['param',0],['x','x']),
+   /LUA_PARAMETERS_INVALID/);
 });
