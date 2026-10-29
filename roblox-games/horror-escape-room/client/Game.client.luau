@@ -3419,14 +3419,22 @@ RunService.Heartbeat:Connect(function(dt)
  if tensionClock<.2 then return end
  tensionClock=0
  local running=p:GetAttribute("RoundState")=="RUNNING"
- if not running then
+ local survivor=running and p:GetAttribute("Role")=="SURVIVOR"
+ if not survivor then
+  -- 추격 경고는 생존자만 받는다. 몬스터가 아군을 적으로 감지하지 않게 한다.
   if chase.IsPlaying then chase:Stop()end
-  bgm.Volume=.11
+  bgm.Volume=running and .105 or .11
+  chaseTint.BackgroundTransparency=1
+  miniTitle.Text="지도 · "..tostring(p:GetAttribute("CurrentMap")or"맵")
+  mapPanel.BackgroundColor3=Color3.fromRGB(29,32,39)
   return
  end
  local distance=nearestMonsterDistance()
  local near=distance<=32
  local danger=distance<=17
+ -- 기존 추격 음악과 같은 거리 단계만 시각화하고 적의 정확한 위치는 노출하지 않는다.
+ miniTitle.Text=danger and"위험 · 근접"or near and"경계 · 접근"or("지도 · "..tostring(p:GetAttribute("CurrentMap")or"맵"))
+ mapPanel.BackgroundColor3=danger and Color3.fromRGB(91,34,44)or near and Color3.fromRGB(75,59,35)or Color3.fromRGB(29,32,39)
  bgm.Volume=near and .045 or .105
  chase.Volume=danger and .15 or .115
  if near then
