@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import {buildGameSourceIndex,resolveGameSourceScope,safeSourceFile,sourceDigest,scriptText} from './vibe2-game-source-index.mjs';
+import {buildGameSourceIndex,resolveGameSourceScope,safeSourceFile,sourceDigest,scriptText,sourceScopeAt} from './vibe2-game-source-index.mjs';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
 
 const CATEGORIES=Object.freeze({
@@ -106,22 +106,24 @@ function generateInsertion(request,index){
  const ctx=render.parameters[0],clickArg=interact.parameters;
  if(!new RegExp('\\b'+ctx+'\\s*\\.\\s*(?:fillRect|drawImage|canvas|beginPath)\\b').test(file.code.slice(render.bodyStart,render.bodyEnd)))
   throw Error('VIBE59_VOLUME_CANVAS_CONTEXT_UNPROVEN');
- const canvas=ctx+'.canvas';
- // The click function must already have a canvas reference; do not create or guess new DOM ownership.
- const canvasRefs=[...new Set([...file.code.matchAll(/\b([A-Za-z_$][\w$]*)\.getContext\(\s*['"]2d['"]\s*\)/g)].map(m=>m[1]))];
- const directCtx=/\bctx\b/.test(file.code.slice(interact.bodyStart,interact.bodyEnd))||
-  /\bctx\b/.test(file.code.slice(0,interact.start));
- let canvasRef=null;
- if(ctx==='ctx'&&directCtx)canvasRef='ctx.canvas';
- else if(canvasRefs.length===1)canvasRef=canvasRefs[0];
- // Explicit request can bind the pre-existing canvas variable only if the source proves its ownership.
+ // Bind input coordinates to the original canvas owner, never to a render-only parameter.
+ const clickScope=interact.lexicalScope.join(',');
+ const declared=name=>[...file.code.matchAll(new RegExp('\\b(?:const|let|var)\\s+'+name+'\\b','g'))]
+  .filter(m=>m.index<interact.start&&sourceScopeAt(file.code,m.index,'web').join(',')===clickScope).length===1;
+ const canvasRefs=[...new Set([...file.source.matchAll(/\b([A-Za-z_$][\w$]*)\.getContext\(\s*['"]2d['"]\s*\)/g)]
+  .filter(m=>file.code.slice(m.index,m.index+m[1].length)===m[1]&&declared(m[1])).map(m=>m[1]))];
+ if(canvasRefs.length>1)throw Error('VIBE59_VOLUME_AMBIGUOUS_CANVAS');
+ let canvasRef=canvasRefs[0]||null;
  const requestedCanvas=request.bindings.canvas;
  if(requestedCanvas!==undefined){
-  if(!SAFE_IDENTIFIER.test(requestedCanvas)||!new RegExp('\\b'+requestedCanvas+'\\b').test(file.code))
+  if(!SAFE_IDENTIFIER.test(requestedCanvas)||!declared(requestedCanvas))
    throw Error('VIBE59_VOLUME_CANVAS_BINDING');
   canvasRef=requestedCanvas;
  }
  if(!canvasRef)throw Error('VIBE59_VOLUME_CANVAS_BINDING');
+ // New panel clicks may be handled locally only when the existing handler has no valued-return contract.
+ if(/\breturn\s+(?![;\r\n}])\S/.test(file.code.slice(interact.bodyStart,interact.bodyEnd)))
+  throw Error('VIBE59_VOLUME_CLICK_RETURN_CONTRACT');
  const clickText=clickArg.length===2
   ?click.replaceAll('__INPUT_X__',clickArg[0]).replaceAll('__INPUT_Y__',clickArg[1])
   :click.replaceAll('__INPUT_X__',clickArg[0]+'.offsetX').replaceAll('__INPUT_Y__',clickArg[0]+'.offsetY');
