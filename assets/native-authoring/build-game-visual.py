@@ -41,6 +41,8 @@ PARSER.add_argument('--mesh-model', choices=['auto','trellis2','triposr'], defau
 PARSER.add_argument('--cinematic-style', choices=['studio','dramatic'], default='studio')
 PARSER.add_argument('--cinematic-quality', choices=['preview','high'], default='preview')
 PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
+# [무모델 2D 파생] 검증된 CC0 메시만 실제 4방향 RGBA 스프라이트로 렌더한다.
+PARSER.add_argument('--sprite-atlas', action='store_true')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
 # [내부 라이브러리] 실제 파일·부모 ID·원본 해시가 함께 고정된 자동 파생만 허용한다.
@@ -49,6 +51,12 @@ if bool(ARGS.library_parent_id) != bool(ARGS.library_source_sha256) or (ARGS.lib
 if ARGS.library_parent_id and (not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,159}', ARGS.library_parent_id)
                                or not re.fullmatch(r'[0-9a-fA-F]{64}', ARGS.library_source_sha256)):
     raise RuntimeError('LIBRARY_DERIVATIVE_SOURCE_IDENTITY_INVALID')
+if ARGS.sprite_atlas and (
+    not ARGS.source_model or not ARGS.library_parent_id
+    or ARGS.source_license.strip().lower() not in ('cc0','cc0-1.0')
+    or ARGS.module == 'medical'
+):
+    raise RuntimeError('SPRITE_ATLAS_VERIFIED_CC0_LIBRARY_MESH_REQUIRED')
 ARGS.output.mkdir(parents=True, exist_ok=True)
 STYLE = json.loads(ARGS.style_json)
 AXES = STYLE.get('axes', {})
@@ -1149,6 +1157,7 @@ if max_pixel_error>1e-5: raise RuntimeError('LOSSLESS_OPTIMIZATION_CHANGED_RENDE
 # 렌더: 이미지 기반 자산은 실제 GLB의 네 방향을 동일한 조명에서 추가 촬영한다.
 # 이는 Blender 정적 증거이며 플랫폼 런타임 QA로 간주하지 않는다.
 IMAGE_VIEW_OUTPUTS = []
+SPRITE_ATLAS_EXPORT = None
 if MODULE_PROVENANCE:
     old_camera = Vector(cam.location)
     existing = set(bpy.data.objects)
@@ -1165,6 +1174,85 @@ if MODULE_PROVENANCE:
             if not destination.is_file() or destination.stat().st_size == 0:
                 raise RuntimeError('IMAGE_TO_MESH_VIEW_RENDER_MISSING')
             IMAGE_VIEW_OUTPUTS.append(destination.name)
+        # [기존 네이티브 제작기] 실제 CC0 3D 원본에서 모델 추론 없이 방향별 2D 시트를 생성.
+        # 새 도형이나 가짜 레이어를 합성하지 않고 GLB 내보내기 결과를 재수입해 촬영한다.
+        if ARGS.sprite_atlas:
+            cell = 64 if 'PIXEL' in FAMILY or 'VOXEL' in FAMILY else 192
+            padding = 4
+            tile = cell + 2 * padding
+            sheet_width, sheet_height = tile * 2, tile * 2
+            pixels = array('f', [0.]) * (sheet_width * sheet_height * 4)
+            old_resolution = (SCENE.render.resolution_x, SCENE.render.resolution_y)
+            old_floor_hidden = floor.hide_render
+            old_transparency = SCENE.render.film_transparent
+            view_evidence = []
+            try:
+                SCENE.render.resolution_x = cell
+                SCENE.render.resolution_y = cell
+                SCENE.render.film_transparent = True
+                floor.hide_render = True
+                with tempfile.TemporaryDirectory(prefix='vibe-sprite-views-') as temp:
+                    for index,angle in enumerate((0, 90, 180, 270)):
+                        radians = math.radians(angle)
+                        cam.location = target + Vector((1.8 * math.cos(radians), 1.8 * math.sin(radians), 1.20)) * max(BOUNDS_SIZE)
+                        cam.rotation_euler = (target - cam.location).to_track_quat('-Z', 'Y').to_euler()
+                        render_file = Path(temp) / f'view-{angle:03d}.png'
+                        SCENE.render.filepath = str(render_file)
+                        bpy.ops.render.render(write_still=True)
+                        if not render_file.is_file() or render_file.stat().st_size < 100:
+                            raise RuntimeError('SPRITE_ATLAS_VIEW_RENDER_MISSING')
+                        frame_image = bpy.data.images.load(str(render_file), check_existing=False)
+                        try:
+                            if tuple(frame_image.size) != (cell, cell):
+                                raise RuntimeError('SPRITE_ATLAS_VIEW_SIZE_INVALID')
+                            frame = array('f', [0.]) * len(frame_image.pixels)
+                            frame_image.pixels.foreach_get(frame)
+                        finally:
+                            bpy.data.images.remove(frame_image)
+                        visible = sum(a > .05 for a in frame[3::4])
+                        ratio = visible / (cell * cell)
+                        if ratio < .005 or ratio > .97:
+                            raise RuntimeError('SPRITE_ATLAS_VIEW_INVISIBLE_OR_FULL_FRAME')
+                        x0 = (index % 2) * tile + padding
+                        y0 = (index // 2) * tile + padding
+                        for y in range(cell):
+                            source = 4 * y * cell
+                            destination = 4 * ((y0 + y) * sheet_width + x0)
+                            pixels[destination:destination + 4 * cell] = frame[source:source + 4 * cell]
+                        view_evidence.append({'angleDegrees':angle,'cell':[x0,y0,cell,cell],
+                                              'foregroundRatio':ratio,
+                                              'sourceImageSha256':hashlib.sha256(render_file.read_bytes()).hexdigest()})
+                atlas_path = ARGS.output / 'sprite-atlas.png'
+                atlas = bpy.data.images.new('VibeVerifiedSourceSpriteAtlas',
+                                            width=sheet_width,height=sheet_height,alpha=True)
+                try:
+                    atlas.pixels.foreach_set(pixels)
+                    atlas.file_format = 'PNG'
+                    atlas.filepath_raw = str(atlas_path)
+                    atlas.save()
+                finally:
+                    bpy.data.images.remove(atlas)
+                if not atlas_path.is_file() or atlas_path.stat().st_size < 256:
+                    raise RuntimeError('SPRITE_ATLAS_EXPORT_MISSING')
+                SPRITE_ATLAS_EXPORT = {
+                    'path':atlas_path.name,'sha256':hashlib.sha256(atlas_path.read_bytes()).hexdigest(),
+                    'sourceGlbSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
+                    'sourceMeshSha256':SOURCE_PROVENANCE['sourceSha256'],
+                    'sourceLibraryAssetId':ARGS.library_parent_id,
+                    'sourceLicense':SOURCE_PROVENANCE['license'],
+                    'styleFamily':FAMILY,'size':[sheet_width,sheet_height],
+                    'tileSize':[tile,tile],'cellSize':[cell,cell],
+                    'sampling':'NEAREST' if cell == 64 else 'BILINEAR_WITH_ALPHA',
+                    'frames':view_evidence,'animationClips':[],
+                    'productionMethod':'REIMPORTED_CC0_GLB_FOUR_VIEW_BLENDER_RENDER',
+                    'externalAiModelUsed':False,'sourceFileImmutable':True,
+                    'engineRuntimeBound':False,'runtimeVerified':False
+                }
+            finally:
+                SCENE.render.resolution_x, SCENE.render.resolution_y = old_resolution
+                SCENE.render.film_transparent = old_transparency
+                floor.hide_render = old_floor_hidden
+
     finally:
         cam.location = old_camera
         cam.rotation_euler = (target - cam.location).to_track_quat('-Z', 'Y').to_euler()
@@ -1280,6 +1368,7 @@ evidence={
     'pbrMeshQa':pbr_mesh_qa,
     'researchApplication':application['researchApplication'],
     'multiViewPreview':IMAGE_VIEW_OUTPUTS,
+    'spriteAtlas':SPRITE_ATLAS_EXPORT,
     'videoExport':VIDEO_EXPORT,
     'motionClips':MOTION_CLIPS,
     'targetPlatforms':[ARGS.target.upper()],
@@ -1289,7 +1378,7 @@ evidence={
     'meshObjectCount':len(ASSET_OBJECTS),
     'surfaceDistribution':physical_analysis,
     **({'optimization':application['optimization']} if 'optimization' in application else {}),
-    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','preview-silhouette.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS,*(['preview-motion.mp4'] if VIDEO_EXPORT else [])]
+    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','preview-silhouette.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS,*(['sprite-atlas.png'] if SPRITE_ATLAS_EXPORT else []),*(['preview-motion.mp4'] if VIDEO_EXPORT else [])]
 }
 (ARGS.output/'evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('VIBE_NATIVE_GAME_ASSET='+ARGS.asset_id)
