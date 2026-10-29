@@ -1036,7 +1036,7 @@ test('canonical complex source generation completes all forty-eight steps and re
 // [빌드업] 이미 존재하는 점수 누적 연산을 직접 강화한다. 별도 상태 쓰기나 우회 함수를 만들지 않는다.
 test('model-free owner counter build-up changes existing numeric progression with original gameplay preserved',t=>{
  const {repo,root}=fixture(t),file=path.join(root,'game.js');
- const source='const defaults={dead:false,coins:0};\\nfunction collect(a){\\n a.coins += 1;\\n return true;\\n}';
+ const source='const defaults={dead:false,coins:0};\nfunction collect(a){\n a.coins += 1;\n return true;\n}';
  fs.writeFileSync(file,source);
  const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
   goal:'함수 collect에서 a.dead이면 false를 반환해; 함수 collect에서 a.coins를 3 증가시켜'};
@@ -1049,38 +1049,38 @@ test('model-free owner counter build-up changes existing numeric progression wit
  const alive={dead:false,coins:4},dead={dead:true,coins:4};
  assert.equal(collect(alive),true);assert.equal(alive.coins,8);
  assert.equal(collect(dead),false);assert.equal(dead.coins,4);
- assert.match(docs.get('game.js'),/a\\.coins \\+= 4;/);
+ assert.match(docs.get('game.js'),/a\.coins \+= 4;/);
  assert.equal(candidate.runtimeVerified,false);assert.equal(fs.readFileSync(file,'utf8'),source);
 });
 
 test('model-free counter adjustment supports a decrease but rejects missing or ambiguous numeric owners',t=>{
  const {repo,root}=fixture(t),file=path.join(root,'game.js');
  const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
- const source='const defaults={coins:0};\\nfunction collect(a){\\n a.coins += 1;\\n}';
+ const source='const defaults={coins:0};\nfunction collect(a){\n a.coins += 1;\n}';
  fs.writeFileSync(file,source);
  const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'In collect decrease a.coins by 2'};
  const candidate=createVibe59CodeCandidates({...options,order});
  const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
- assert.match(docs.get('game.js'),/a\\.coins -= 1;/);
+ assert.match(docs.get('game.js'),/a\.coins -= 1;/);
  const collect=vm.runInNewContext(docs.get('game.js')+';collect'),actor={coins:10};
  collect(actor);assert.equal(actor.coins,9);
  for(const goal of ['함수 collect에서 a.coins를 0 증가시켜','함수 collect에서 a.coins를 1001 증가시켜']){
   assert.equal(compileComplexOwnerIntent({order:{...order,goal}}).unresolved[0].code,'AMBIGUOUS_EXPRESSION');
  }
- fs.writeFileSync(file,'const defaults={coins:0};\\nfunction collect(a){\\n a.coins += 1;\\n a.coins += 2;\\n}');
+ fs.writeFileSync(file,'const defaults={coins:0};\nfunction collect(a){\n a.coins += 1;\n a.coins += 2;\n}');
  assert.throws(()=>createVibe59CodeCandidates({...options,order}),/COUNTER_ANCHOR/);
- fs.writeFileSync(file,'const defaults={coins:0};\\nfunction collect(a,next){\\n a.coins = next;\\n}');
+ fs.writeFileSync(file,'const defaults={coins:0};\nfunction collect(a,next){\n a.coins = next;\n}');
  assert.throws(()=>createVibe59CodeCandidates({...options,order}),/COUNTER_ANCHOR/);
  assert.equal(candidate.runtimeVerified,false);
 });
 
 test('model-free Luau counter growth rewrites the responsible integer delta only',t=>{
  const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
- const source='local defaults = { coins = 0 }\\nlocal function collect(a)\\n a.coins -= 2\\n return true\\nend\\n';
+ const source='local defaults = { coins = 0 }\nlocal function collect(a)\n a.coins -= 2\n return true\nend\n';
  fs.writeFileSync(path.join(root,'server/Collect.server.luau'),source);
  const candidate=createVibe59CodeCandidates({sourceRoot:root,responsibleFiles:['server/Collect.server.luau'],target:'roblox',repositoryRoot:repo,
   order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 collect에서 a.coins를 3 증가시켜'}});
  assert.equal(candidate.edits.length,1);
- assert.match(candidate.edits[0].replace,/a\\.coins \\+= 1/);
+ assert.match(candidate.edits[0].replace,/a\.coins \+= 1/);
  assert.equal(candidate.modelUsed,false);assert.equal(candidate.runtimeVerified,false);
 });
