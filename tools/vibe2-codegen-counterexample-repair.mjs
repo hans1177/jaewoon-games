@@ -20,11 +20,20 @@ export function runCodegenCounterexampleRepair({generate,evaluate,sourceDigest:s
  }
  for(let attempt=0;attempt<budget;attempt++){
   const candidate=generate({attempt,counterexamples:[...counterexamples]});
-  if(!candidate?.edits?.length)return {status:'BLOCKED',reason:'NO_SOURCE_DELTA',attempts,sourceWrite:false,runtimeVerified:false};
-  const fingerprint=sourceDigest(JSON.stringify(candidate.edits));
+  if(!Array.isArray(candidate?.edits)||!candidate.edits.length)return {status:'BLOCKED',reason:'NO_SOURCE_DELTA',attempts,sourceWrite:false,runtimeVerified:false};
+  // [메인] 독립 편집은 필드·배열 순서가 달라도 같은 실패로 묶는다.
+  // 앞 편집이 뒤 앵커를 만드는 의존 편집은 적용 순서를 보존한다.
+  const edits=candidate.edits.map(edit=>[edit?.path,edit?.find,edit?.replace]);
+  if(edits.some(row=>row.some(value=>typeof value!=='string')||!row[1]||row[1]===row[2]))
+   return {status:'BLOCKED',reason:'INVALID_SOURCE_DELTA',attempts,sourceWrite:false,runtimeVerified:false};
+  const dependent=edits.some((a,i)=>edits.some((b,j)=>i!==j&&a[0]===b[0]&&
+   (a[1].includes(b[1])||a[2].includes(b[1]))));
+  if(!dependent)edits.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
+  const legacyFingerprint=sourceDigest(JSON.stringify(candidate.edits));
+  const fingerprint=sourceDigest(JSON.stringify(edits));
   // [헬퍼] 중복은 평가하지 않지만 남은 승인 예산에서 다른 후보의 합성은 허용한다.
-  if(seen.has(fingerprint)){skippedDuplicate=true;continue;}
-  seen.add(fingerprint);
+  if(seen.has(fingerprint)||seen.has(legacyFingerprint)){skippedDuplicate=true;continue;}
+  seen.add(fingerprint);seen.add(legacyFingerprint);
   const result=evaluate(candidate,{attempt,counterexamples:[...counterexamples]});
   if(result&&typeof result.then==='function')throw Error('VIBE2_REPAIR_SYNCHRONOUS_ORACLE_REQUIRED');
   attempts.push({attempt:attempt+1,fingerprint,pass:result?.pass===true});

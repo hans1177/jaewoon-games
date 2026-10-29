@@ -1076,3 +1076,51 @@ test('Vibe5.9 conditional AST evaluates only its selected branch on zero divisor
  assert.equal(roblox.sourceWrite,false);
  assert.equal(roblox.conceptCandidates.verified,false);
 });
+
+// [회귀] 기존 웹 전용 작업기가 범용 무모델 원본 계획기를 실제로 사용한다.
+test('WEB worker shares the canonical complex plan across files without any model call or save mutation',async t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'web-complex-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const root=path.join(repo,'web-games/demo');fs.mkdirSync(root,{recursive:true});
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'demo',webPath:'web-games/demo'}]}));
+ const sources=[
+  {relative:'web-games/demo/combat.js',original:'const state={dead:false};\nfunction hit(a){\n a.hp -= 1;\n return true;\n}\n'},
+  {relative:'web-games/demo/ui.js',original:'const state={dead:false};\nfunction updateUi(a){\n a.visible = true;\n}\n'},
+  {relative:'web-games/demo/save.js',original:'function save(){\n localStorage.setItem("demo-save", "unchanged");\n}\n'}
+ ];
+ sources.forEach(row=>fs.writeFileSync(path.join(repo,row.relative),row.original));
+ const task={gameId:'demo',ownerDirective:true,evidence:['owner-source-authenticated'],
+  goal:'함수 hit에서 a.dead이면 false를 반환해; 함수 updateUi에서 a.dead이면 중단해'};
+ const complexContext={repositoryRoot:repo,sourceRevision:'a'.repeat(40),sources};
+ let externalCalls=0;
+ const options={cloud:true,apiKey:'',complexContext,geminiImpl:async()=>{externalCalls++;throw Error('must not call model')}};
+ const combat=await proposeWebVibeChange(task,sources[0],options),plan=complexContext.plan;
+ const ui=await proposeWebVibeChange(task,sources[1],options);
+ assert.equal(complexContext.plan,plan,'one shared source index for the full task');
+ assert.equal(await proposeWebVibeChange(task,sources[2],options),null);
+ assert.equal(combat.deterministicWebComplex,true);assert.equal(ui.deterministicWebComplex,true);
+ assert.equal(combat.offlineSourceProof.requirementCount,2);assert.equal(externalCalls,0);
+ const hit=vm.runInNewContext(combat.updated+';hit'),update=vm.runInNewContext(ui.updated+';updateUi');
+ const dead={hp:0,dead:true,visible:false};assert.equal(hit(dead),false);update(dead);
+ assert.equal(dead.hp,0);assert.equal(dead.visible,false);
+ const alive={hp:5,dead:false,visible:false};assert.equal(hit(alive),true);update(alive);
+ assert.equal(alive.hp,4);assert.equal(alive.visible,true);
+ sources.forEach(row=>assert.equal(fs.readFileSync(path.join(repo,row.relative),'utf8'),row.original));
+ assert.equal(combat.offlineSourceProof.runtimeVerified,false);
+ await assert.rejects(()=>proposeWebVibeChange(task,{...sources[0],original:sources[0].original+'\n// stale'},options),/SNAPSHOT_MISMATCH/);
+});
+
+test('WEB complex intent never falls through to a model on missing scope, mixed unsupported requests or missing owner proof',async t=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'web-complex-deny-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const root=path.join(repo,'web-games/demo');fs.mkdirSync(root,{recursive:true});
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'demo',webPath:'web-games/demo'}]}));
+ const source={relative:'web-games/demo/game.js',original:'const state={dead:false};\nfunction hit(a){\n a.hp -= 1;\n}\n'};
+ fs.writeFileSync(path.join(repo,source.relative),source.original);
+ const task={gameId:'demo',goal:'함수 hit에서 a.dead이면 중단해',ownerDirective:true,evidence:['owner-source-authenticated']};
+ let calls=0;
+ for(const change of [{goal:task.goal+'; 새 보스 만들어'}, {evidence:[]}, {goal:'함수 missing에서 a.dead이면 중단해'}]){
+  await assert.rejects(()=>proposeWebVibeChange({...task,...change},source,{cloud:true,
+   complexContext:{repositoryRoot:repo,sourceRevision:'a'.repeat(40),sources:[source]},
+   geminiImpl:async()=>{calls++;return {text:'{}'}}}),/WEB_VIBE_COMPLEX_SOURCE_BLOCKED/);
+ }
+ assert.equal(calls,0);assert.equal(fs.readFileSync(path.join(repo,source.relative),'utf8'),source.original);
+});

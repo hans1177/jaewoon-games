@@ -454,7 +454,8 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
   node.requirementIds=[node.id];
   for(let j=nodes.length-1;j>i;j--){
    const other=nodes[j];
-   if(other.operation==='guard-return'&&other.owner.id===node.owner.id){
+   if(other.operation==='guard-return'&&other.owner.id===node.owner.id&&
+     JSON.stringify(other.returnValue)===JSON.stringify(node.returnValue)){
     node.condition={kind:'or',items:[node.condition,other.condition]};node.requirementIds.push(other.id);
     node.ownerTexts=[...(node.ownerTexts||[node.ownerText]),other.ownerText];nodes.splice(j,1);
    }

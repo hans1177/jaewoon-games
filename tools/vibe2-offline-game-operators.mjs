@@ -81,10 +81,16 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
  let edit,proof,effects=[];
  if(r.operation==='guard-return'){
   const condition=renderIntentExpression(r.condition,target);
-  const statement=target==='web'?'if ('+condition+') return;':'if '+condition+' then return end';
+  // [메인] 명시된 반환값만 합성해 호출자의 boolean/수치 계약을 보존한다.
+  if(r.returnValue&&!['boolean','number'].includes(r.returnValue.kind))throw Error('VIBE2_OPERATOR_RETURN_LITERAL');
+  const value=r.returnValue?' '+renderIntentExpression(r.returnValue,target):'';
+  const statement=target==='web'?'if ('+condition+') return'+value+';':'if '+condition+' then return'+value+' end';
   if(body.includes(statement))throw Error('VIBE2_OPERATOR_NO_SOURCE_DELTA');
   edit={path:file.path,find:prefix,replace:prefix+'\n'+indent+statement};
-  proof=verifyIntentCondition(r.condition);effects=['CONTROL_FLOW_EARLY_RETURN'];
+  proof=verifyIntentCondition(r.condition);
+  proof={...proof,cases:proof.cases.map(row=>({...row,returnsEarly:row.expected,
+   ...(row.expected?{expectedReturn:r.returnValue?.value}:{})}))};
+  effects=['CONTROL_FLOW_EARLY_RETURN'];
  }else if(r.operation==='existing-call'){
   // 실제 소스 인덱스가 증명한 호출 위치와 단순 인자만 사용한다. 표현식이나 문자열 인자는 추측하지 않는다.
   const at=r.afterCallStart,anchorArgs=r.afterCallArguments;
@@ -128,5 +134,5 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
   requirementIds:r.requirementIds||[r.id],ownerTexts:r.ownerTexts||[r.ownerText],derivation:r.derivation||'EXPLICIT_SOURCE_SYMBOL',
   inputSymbols:r.boundSymbols,outputSymbols:r.output?[r.output]:[],dependencies:r.dependsOn,
   effects,invariants:r.invariants,scenarioProofs:proof,sourcePatch:edit,
-  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,output:r.output,value:r.value},runtimeVerified:false};
+  authoritativeOwnerScope:r.ownerScope,typedAst:{condition:r.condition,returnValue:r.returnValue,output:r.output,value:r.value},runtimeVerified:false};
 }
