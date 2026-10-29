@@ -697,32 +697,63 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,exposure,portfolio,webManifest]=await Promise.all([getJson('/jaewoon-games/game-catalog.json'),getJson('/jaewoon-games/company-status.json'),getJson('/jaewoon-games/homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('/jaewoon-games/homepage-portfolio-status.json'):Promise.resolve(null),getJson('/jaewoon-games/web-games/publish-manifest.json')]);
-    if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
-    const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
-    const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
-    if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
-    portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
-    platformExposure=exposure;
-    reconcileConfirmedDeletions(catalog);
-    // 배포 목록에 없는 원본 경로는 실행 링크로 노출하지 않는다.
-    publishedWebRoutes=new Set((Array.isArray(webManifest?.routes)?webManifest.routes:[])
-      .filter(route=>/^web-games\/[a-z0-9][a-z0-9-]*\/$/.test(route)));
-    const renderCatalog=currentCatalog=>{
-      const sig=JSON.stringify([currentCatalog,status,portfolioStatus,platformExposure,[...publishedWebRoutes]]);
-      if(sig===lastSignature)return;
-      // Keep the user's open player intact while background status snapshots change.
-      if(document.querySelector('.homeGameplayVideo[open]'))return;
-      updateLiveSummary(currentCatalog,status);
-      buildFocus(currentCatalog,status);
-      buildGameCenter(currentCatalog,status);
-      buildRecentUpdates(currentCatalog);
+    // 메인: 인증된 카탈로그가 도착하면 카드부터 표시한다. 보조 메타데이터 실패로 전체 목록을 막지 않는다.
+    const catalogWork=getJson('/jaewoon-games/game-catalog.json');
+    const statusWork=getJson('/jaewoon-games/company-status.json');
+    const exposureWork=getJson('/jaewoon-games/homepage-platform-exposure.json');
+    const portfolioWork=document.getElementById('homePortfolioBoard')
+      ?getJson('/jaewoon-games/homepage-portfolio-status.json'):Promise.resolve(null);
+    const manifestWork=getJson('/jaewoon-games/web-games/publish-manifest.json');
+    const catalog=await catalogWork;
+    if(catalog?.runtimeInfoAuthority!=='company-runtime'||!Array.isArray(catalog.games)){
+      if(!lastSignature){
+        const hero=document.getElementById('hero');
+        if(hero)hero.innerHTML='<div class="homeFocusInner"><h1>게임 목록 연결 실패</h1><p>게임 데이터 연결을 확인하고 있어. 네트워크를 확인한 뒤 새로고침해줘.</p></div>';
+        const grid=document.getElementById('gameGrid');
+        if(grid)grid.textContent='게임 목록을 불러오지 못했어. 연결을 확인한 뒤 새로고침해줘.';
+      }
+      return;
+    }
+    const renderCatalog=status=>{
+      const sig=JSON.stringify([catalog,status,portfolioStatus,platformExposure,[...publishedWebRoutes]]);
+      if(sig===lastSignature||document.querySelector('.homeGameplayVideo[open]'))return;
+      updateLiveSummary(catalog,status);
+      buildFocus(catalog,status);
+      buildGameCenter(catalog,status);
+      buildRecentUpdates(catalog);
       lastSignature=sig;
     };
+    reconcileConfirmedDeletions(catalog);
+    if(!lastSignature){
+      platformExposure={games:[]};
+      publishedWebRoutes=new Set();
+      portfolioStatus={games:[],counts:{}};
+      renderCatalog({});
+    }
+    const [status,exposure,portfolio,webManifest]=await Promise.all([
+      statusWork,exposureWork,portfolioWork,manifestWork
+    ]);
+    const verifiedStatus=status?.runtimeAuthority==='company-runtime'?status:{};
+    const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
+    const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)
+      ?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
+    const verifiedExposure=exposureAuthority==='company-runtime'
+      &&JSON.stringify(exposurePlatforms)===JSON.stringify(['ROBLOX','UNITY'])
+      &&Array.isArray(exposure?.games);
+    // 미검증 외부 노출 정보로 실행 링크를 만들지 않는다. 게임 카드만 계속 보여준다.
+    platformExposure=verifiedExposure?exposure:{games:[]};
+    portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
+    publishedWebRoutes=new Set((Array.isArray(webManifest?.routes)?webManifest.routes:[])
+      .filter(route=>/^web-games\/[a-z0-9][a-z0-9-]*\/$/.test(route)));
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
-    // 첫 로딩에서만 카드를 즉시 표시한다. 이후 갱신은 검증된 빌드 상태와 함께 반영해 모바일 카드가 흔들리지 않게 한다.
-    renderCatalog(catalog);
+    renderCatalog(verifiedStatus);
+  }catch(error){
+    console.error('HOME_CATALOG_RENDER_FAILED',error);
+    if(!lastSignature){
+      const hero=document.getElementById('hero');
+      if(hero)hero.innerHTML='<div class="homeFocusInner"><h1>게임 표시 오류</h1><p>게임 데이터는 유지돼 있어. 새로고침 후 다시 확인해줘.</p></div>';
+    }
   }finally{refreshInFlight=false;checkDeletionStatus();}
 }
 function main(){
