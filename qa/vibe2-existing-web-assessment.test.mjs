@@ -301,9 +301,14 @@ test('island-village legacy source retains save and playable startup without mis
   assert.match(html,/requestAnimationFrame\(frame\)/);
   assert.match(html,/<canvas\b[^>]*id=["']game["']/i);
   assert.doesNotMatch(html,/Approved Web Bootstrap|\/path\/to\/source\.js/i);
-  const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  const scripts=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
   assert.ok(scripts.length>0,'existing source must have a startup script');
-  for(const script of scripts)assert.doesNotThrow(()=>new vm.Script(script[1],{filename:file}));
+  for(const script of scripts){
+    if(/\btype\s*=\s*['"]module['"]/i.test(script[1])){
+      const check=spawnSync(process.execPath,['--input-type=module','--check'],{input:script[2],encoding:'utf8'});
+      assert.equal(check.status,0,check.stderr||'module source must parse');
+    }else assert.doesNotThrow(()=>new vm.Script(script[2],{filename:file}));
+  }
 });
 
 test('large Web HTML is read completely from checkout and is never mistaken for missing source',()=>{
@@ -376,6 +381,11 @@ test('survival2 historical playable source recovery keeps saved progress and ori
   assert.match(html,/getContext\('2d'\)/);
   assert.doesNotMatch(html,/Approved Web Bootstrap|Simulated game logic/);
   assert.ok(fs.statSync(path.join(root,'assets','survival-atlas.svg')).size>100);
-  for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))
-    if(match[1].trim())assert.doesNotThrow(()=>new vm.Script(match[1]));
+  for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
+    if(!match[2].trim())continue;
+    if(/\btype\s*=\s*['"]module['"]/i.test(match[1])){
+      const check=spawnSync(process.execPath,['--input-type=module','--check'],{input:match[2],encoding:'utf8'});
+      assert.equal(check.status,0,check.stderr||'module source must parse');
+    }else assert.doesNotThrow(()=>new vm.Script(match[2]));
+  }
 });
