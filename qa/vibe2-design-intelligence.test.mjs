@@ -58,6 +58,28 @@ test('protected change blocks implementation and never expands authority',()=>{
   assert.equal(result.authorityExpanded,false);
 });
 
+test('explicit verified owner gameplay request is allowed only without design or security blockers',()=>{
+  const task={gameId:'gem-survivor',target:'roblox',type:'implementation',goal:'체력과 공격력 수치 조정'};
+  const ordinary=buildVibeDesignIntelligence({task});
+  assert.equal(ordinary.implementationGate.protectedGameplayMutationAutomatic,false);
+  const authorized=buildVibeDesignIntelligence({task,verifiedOwnerGameplayChange:true});
+  assert.equal(authorized.implementationGate.allowed,true);
+  assert.equal(authorized.implementationGate.protectedGameplayMutationAutomatic,true);
+  assert.match(authorized.guidance,/명시적인 오너 게임플레이 변경 요청/);
+  assert.equal(authorized.authorityExpanded,false);
+  for(const field of ['protectedChange','requiresOwnerDecision','designChange']){
+    const denied=buildVibeDesignIntelligence({task:{...task,[field]:true},verifiedOwnerGameplayChange:true});
+    assert.equal(denied.implementationGate.protectedGameplayMutationAutomatic,false,field);
+  }
+  const designer=buildVibeDesignIntelligence({task,verifiedOwnerGameplayChange:true,executionContext:'GAME_DESIGNER_AUTHORING'});
+  assert.equal(designer.implementationGate.protectedGameplayMutationAutomatic,false);
+  const locked=buildVibeDesignIntelligence({task:{
+    ...task,designConstraints:[{id:'existing-hitbox',rule:'protected',locked:true,proposedChange:'other',preserves:false}]
+  },verifiedOwnerGameplayChange:true});
+  assert.equal(locked.implementationGate.allowed,false);
+  assert.equal(locked.implementationGate.protectedGameplayMutationAutomatic,false);
+});
+
 test('locked artbook design change requires change request',()=>{
   const result=buildVibeDesignIntelligence({task:{goal:'핵심 루프 재설계',designChange:true,artbook:{locked:true}}});
   assert.equal(result.implementationGate.allowed,false);
