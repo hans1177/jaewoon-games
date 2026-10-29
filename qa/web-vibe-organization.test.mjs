@@ -325,6 +325,9 @@ test('WEB watchdog uses expiring exact-owner CAS claims to suppress duplicate 5-
   assert.equal(claim.claimUntil,'2026-10-30T02:15:00.000Z');
   assert.equal(claim.queue.tasks[0].status,'queued','claim does not forge a running or PASS checkpoint');
   assert.equal(claim.queue.tasks[0].recoveryClaimRunId,40918533815);
+  const claimedHealth=buildWebVibeQueueHealth(claim.queue,{now:'2026-10-30T01:05:00Z'});
+  assert.equal(claimedHealth.claimed,1);
+  assert.equal(claimedHealth.ready,1,'another game remains ready while this lease is active');
   assert.equal(selectWebVibeRecoveryTask(claim.queue,{now:'2026-10-30T01:05:00Z'}).id,other.id,
     'another eligible WEB game must not be blocked by the first game claim');
   const one={...emptyWebVibeQueue(),tasks:[claim.queue.tasks[0]]};
