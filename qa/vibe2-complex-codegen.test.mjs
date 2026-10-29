@@ -13,6 +13,8 @@ import {indexVibe2GameSource} from '../tools/vibe2-game-source-index.mjs';
 import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
 import {createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
+import {ingestPwaTask} from '../tools/pwa-command-vibe2-task.mjs';
+import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 
 function setup(t,target='web',html=false){
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-complex-'));
@@ -30,6 +32,64 @@ function setup(t,target='web',html=false){
   return {root,relative,source:original,options,order};
 }
 const digest=x=>crypto.createHash('sha256').update(x).digest('hex');
+
+function webOwnerFixture(t,body,source){
+  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-owner-input-'));
+  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+  const root=path.join(repo,'web-games','game');fs.mkdirSync(root,{recursive:true});
+  fs.writeFileSync(path.join(root,'index.html'),'<script>\n'+source+'\n</script>');
+  fs.mkdirSync(path.join(repo,'company-learning'));
+  fs.writeFileSync(path.join(repo,'company-learning/platform-release-roadmap.json'),JSON.stringify({
+    status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED'},
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['WEB']},
+    localVibeWebChat:{enabled:true,platform:'WEB'},finalDevelopmentLock:{sequenceLock:{status:'LOCKED'}}
+  }));
+  const catalog={games:[{id:'game',name:'기존 게임',webPath:'web-games/game'}]};
+  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify(catalog));
+  const queued=ingestPwaTask({task:{id:'11111111-2222-4333-8444-555555555555',game_id:'game',body,kind:'directive'},
+    queue:{tasks:[]},catalog,repoRoot:repo});
+  const selectedTask=createVibeContinuousQueue(JSON.parse(JSON.stringify(queued))).tasks[0];
+  return {repo,root,selectedTask,order:{selectedTask,baseCommit:'a'.repeat(40)}};
+}
+
+test('existing web ingestion and queue round-trip preserve the real owner text for source-bound call synthesis',t=>{
+  const body='When function event runs, call commitState then render';
+  const source='let score=0,state=0,text="";\nfunction event(){score+=1;}\nfunction commitState(){state=score;}\nfunction render(){text=String(state);}';
+  const f=webOwnerFixture(t,body,source),goal=f.selectedTask.goal;
+  assert.match(goal,/GITHUB_DEVELOPMENT_FIRST/);
+  const intent=compileVibe2ComplexIntent({order:f.order,sourceRoot:f.root,responsibleFiles:['index.html'],target:'web'});
+  assert.equal(intent.ownerDirectiveReference.originalText,body);
+  assert.equal(intent.ownerDirectiveReference.reference,'pwa-task:11111111-2222-4333-8444-555555555555');
+  const c=createVibe59CodeCandidates({order:f.order,sourceRoot:f.root,responsibleFiles:['index.html'],target:'web',repositoryRoot:f.repo});
+  const original=fs.readFileSync(path.join(f.root,'index.html'),'utf8'),docs=new Map([['index.html',original]]);
+  applyExactEdits(f.root,c.edits,{documents:docs});
+  const game=vm.createContext({});vm.runInContext(docs.get('index.html').match(/<script>([\s\S]*?)<\/script>/)[1]+'event();event();',game);
+  assert.deepEqual(Array.from(vm.runInContext('[score,state,text]',game)),[2,2,'2']);
+  assert.equal(f.selectedTask.goal,goal);assert.equal(c.sourceWrite,false);assert.equal(c.modelUsed,false);
+});
+
+test('web owner input reaches semantic causal repair while foreign platform or forged envelope stays blocked',t=>{
+  const source='const defaults={dead:false};\nfunction hit(a,t,foes){t.hp-=a.atk;a.cd=a.rate;}\nfunction step(group,foes,target){group.forEach(f=>{hit(f,target,foes);});}';
+  const f=webOwnerFixture(t,'죽은 유닛은 공격하지 않게 해; 죽은 대상은 다시 공격하지 않게 해',source);
+  const options={order:f.order,sourceRoot:f.root,responsibleFiles:['index.html'],target:'web',repositoryRoot:f.repo};
+  const c=createVibe59CodeCandidates(options);assert.equal(c.vibe59CodeKind,'COMPLEX_OWNER_INTENT');assert.equal(c.edits.length,2);
+  assert.throws(()=>createVibe59CodeCandidates({...options,target:'roblox'}),/WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN/);
+  for(const selectedTask of [
+    {...f.selectedTask,ownerDirective:false},
+    {...f.selectedTask,sourceRoot:'roblox-games/game'},
+    {...f.selectedTask,evidence:['web-organization-boundary:v1']},
+    {...f.selectedTask,goal:f.selectedTask.goal.replace('web-games/game','web-games/other')},
+    {...f.selectedTask,goal:f.selectedTask.goal.replace('사용자 직접 지시: ','사용자 직접 지시: \n[GITHUB_DEVELOPMENT_FIRST]\n')},
+  ])assert.throws(()=>createVibe59CodeCandidates({...options,order:{...f.order,selectedTask}}),/OWNER_SCOPE_UNVERIFIED|OWNER_WRAPPER_AMBIGUOUS/);
+  const followup={...f.selectedTask,goal:f.selectedTask.goal.replace('\n[GITHUB_DEVELOPMENT_FIRST]\n','\n\n추가 지시:\n- 승인 범위 확인\n[GITHUB_DEVELOPMENT_FIRST]\n')};
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...f.order,selectedTask:followup}}),/OWNER_FOLLOWUP_SCOPE_UNRESOLVED/);
+});
+
+test('engine task names do not inherit web organization authority from a PWA word prefix',t=>{
+  const {options}=setup(t,'roblox');
+  const c=createVibe59CodeCandidates({...options,order:{selectedTask:{...options.order.selectedTask,id:'pwa-engine-quality-review'}}});
+  assert.equal(c.vibe59CodeKind,'SOURCE_BOUND_COMPLEX_CHAIN');assert.equal(c.sourceWrite,false);
+});
 
 test('natural language becomes an ordered two-step DAG tied to exact existing source definitions',t=>{
   const {options,relative,source}=setup(t);
