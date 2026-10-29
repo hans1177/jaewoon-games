@@ -136,6 +136,74 @@ test('duplicate telemetry cannot apply the same pressure twice',()=>{
   assert.equal(twice.lastReason,'DUPLICATE_RUN');
 });
 
+// 검증된 후보 처리량이 악화되면 이전 조정을 되돌리고 같은 병목의 재시도를 제한한다.
+test('autonomous bottleneck tuning measures verified throughput and rolls back a proven ineffective step',()=>{
+  const first=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:256}),
+    pressuredTelemetry({runId:'tune-1',workerCount:256,effectiveMax:256,
+      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4}})
+  );
+  assert.equal(first.currentMax,128);
+  assert.equal(first.tuningTrial?.from,256);
+  assert.equal(first.tuningTrial?.to,128);
+  const second=decideAdaptiveBackpressure(first,
+    pressuredTelemetry({runId:'tune-2',workerCount:128,effectiveMax:128,
+      actualPeakConcurrency:128,effectivePeakUtilizationPct:100,
+      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      throughput:{firstCandidatePassRatePct:70,verifiedCandidatesPerMinute:2}})
+  );
+  assert.equal(second.currentMax,256);
+  assert.equal(second.lastDecision,'UP');
+  assert.equal(second.lastReason,'VERIFIED_THROUGHPUT_REGRESSION_ROLLBACK');
+  assert.equal(second.lastTuningEvaluation,'MEASURED_REGRESSION');
+  assert.equal(second.tuningMemory?.remainingCycles,2);
+  assert.equal(second.tuningTrial,null);
+
+  const cooldown=decideAdaptiveBackpressure(second,
+    pressuredTelemetry({runId:'tune-3',workerCount:256,effectiveMax:256,
+      actualPeakConcurrency:256,effectivePeakUtilizationPct:100,
+      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      throughput:{firstCandidatePassRatePct:50,verifiedCandidatesPerMinute:4}})
+  );
+  assert.equal(cooldown.currentMax,256);
+  assert.equal(cooldown.lastReason,'INEFFECTIVE_BOTTLENECK_TUNING_COOLDOWN');
+  assert.equal(cooldown.tuningMemory.remainingCycles,1);
+  const afterCooldown=decideAdaptiveBackpressure(cooldown,
+    pressuredTelemetry({runId:'tune-4',workerCount:256,effectiveMax:256,
+      actualPeakConcurrency:256,effectivePeakUtilizationPct:100,
+      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      throughput:{firstCandidatePassRatePct:50,verifiedCandidatesPerMinute:4}})
+  );
+  assert.equal(afterCooldown.currentMax,128);
+  assert.equal(afterCooldown.lastDecision,'DOWN');
+});
+
+test('gains require measured throughput and security pressure cannot be bypassed by rollback',()=>{
+  const initial=decideAdaptiveBackpressure(createParallelismControl({currentMax:256}),
+    pressuredTelemetry({runId:'gain-1',workerCount:256,effectiveMax:256,
+      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      throughput:{firstCandidatePassRatePct:80,verifiedCandidatesPerMinute:4}}));
+  const gain=decideAdaptiveBackpressure(initial,
+    pressuredTelemetry({runId:'gain-2',workerCount:128,effectiveMax:128,
+      actualPeakConcurrency:128,effectivePeakUtilizationPct:100,
+      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      throughput:{firstCandidatePassRatePct:85,verifiedCandidatesPerMinute:5}}));
+  assert.equal(gain.lastTuningEvaluation,'MEASURED_IMPROVEMENT');
+  assert.equal(gain.tuningMemory,null);
+  const missing=decideAdaptiveBackpressure(initial,
+    pressuredTelemetry({runId:'missing-2',workerCount:128,effectiveMax:128,
+      failureRatePct:0,pressureLevel:'LOW',bottleneck:'SOURCE_CANDIDATE_GENERATION'}));
+  assert.equal(missing.lastTuningEvaluation,'INSUFFICIENT_VERIFIED_THROUGHPUT');
+  assert.equal(missing.tuningMemory,null);
+  const severe=decideAdaptiveBackpressure(initial,
+    pressuredTelemetry({runId:'severe-2',workerCount:128,effectiveMax:128,
+      failureRatePct:45,pressureLevel:'SEVERE',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      throughput:{firstCandidatePassRatePct:70,verifiedCandidatesPerMinute:2}}));
+  assert.notEqual(severe.lastReason,'VERIFIED_THROUGHPUT_REGRESSION_ROLLBACK');
+  assert.ok(severe.currentMax<=128);
+});
+
 test('missing or corrupt control state falls back to maximum default 256',()=>{
   const files=tempFiles();
   try{
