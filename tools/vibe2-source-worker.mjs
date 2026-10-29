@@ -1722,12 +1722,13 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   const actionWork=/(?:gameplay|combat|craft|quest|action|dispatch|implementation|게임|전투|공격|제작|퀘스트|행동|구현)/i.test(intent)
     &&/(?:missing|unbound|restore|dispatch|connect|implement|누락|연결|복구|구현|미동작)/i.test(intent);
   const runtimeWork=/(?:runtime|spawn|respawn|character|stream|lifecycle|camera|hud|scroll|viewport|cleanup|스폰|리스폰|캐릭터|초기|스트리밍|카메라|화면|스크롤|런타임|누수|종료.*정리)/i.test(intent);
+  const roundLifecycleWork=/(?:round|match|objective|terminal|escape|exit|round reset|라운드|연속 플레이|단말|탈출|비상구|목표 초기화)/i.test(intent);
   const motionWork=/(?:motion|animation|animator|rig|npc|mob|creature|boss|wildlife|모션|애니메이션|리깅|몹|보스|동물)/i.test(intent)
     ||Boolean((order?.selectedTask?.buildUpDirective||order?.buildUpDirective)?.gameInternalAutoComposition?.actorMotion?.nextGameSpecificMotionWorkUnit?.actorClass);
-  if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork&&!motionWork)return null;
+  if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork&&!motionWork&&!roundLifecycleWork)return null;
   let root;
   try{root=fs.realpathSync(sourceRoot);}catch{return null;}
-  const candidates=[],sourceHashes=new Map();
+  const candidates=[],sourceHashes=new Map(),sourceTexts=new Map();
   for(const relative of unique(responsibleFiles)){
     if(!/\.lua[u]?$/i.test(relative)||path.isAbsolute(relative)||relative.split(/[\/\\]/).includes('..'))continue;
     const file=path.resolve(sourceRoot,relative);
@@ -1736,6 +1737,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     const source=fs.readFileSync(file,'utf8');
     if(source.length>1000000)continue;
     sourceHashes.set(relative,crypto.createHash('sha256').update(source).digest('hex'));
+    sourceTexts.set(relative,source);
     // [게임별 실구현 · 무모델] 실제 동물 애니메이터가 '속도' Attribute 변경마다
     // 공격/피격 SetState를 재시작하면 한 동작이 끝나지 못한다. 원본 함수의 상태/옵션을
     // 그대로 두고 상태나 액션 옵션이 바뀐 경우에만 재생한다. 다른 함수/게임은 건드리지 않는다.
@@ -2475,6 +2477,102 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           expectedEffect:'Use GuiButton.Activated for existing click handler on touch, controller and mouse without altering game action',
           edits:[{path:relative,find:statement,replace:statement.slice(0,statement.indexOf(variable))+variable+'.Activated:Connect('}],
           newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'GUI_BUTTON_NATIVE_ACTIVATED'
+        });
+      }
+    }
+  }
+  // [무외부-AI 복합 설계] 서로 다른 서버 게임함수와 클라이언트 HUD의
+  // 라운드 상태 의존성을 함께 추적한다. 승인된 기존 단말/탈출 메커니즘만 복구한다.
+  // 실제 시작 루프에서 같은 맵 재사용 + 해금 프롬프트 + 단말 상태가 모두 확인되어야 한다.
+  if(roundLifecycleWork){
+    const serverReset='escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)';
+    const stationComplete=[
+      '   base:SetAttribute("ObjectiveRound",objectiveState.round)',
+      '   objectiveState.done=math.min(math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4),objectiveState.done+1)',
+      '   screen.Color=Color3.fromRGB(96,231,166)',
+      '   syncObjectiveProgress()'
+    ].join('\n');
+    const clientProgress='  objectiveLine.Text=string.format("단말 %d/%d · 정화 후 탈출",objectivesDone,objectivesTotal)';
+    const clientBranch=' elseif role=="SURVIVOR"then\n'+clientProgress;
+    const serverRows=[...sourceTexts].filter(([file,body])=>
+      /(?:^|\/)server\/.+\.lua[u]?$/i.test(file)
+      &&body.includes('local function syncObjectiveProgress()')
+      &&body.includes('local function addObjectiveStation(')
+      &&body.includes('local function addEscapeGate(')
+      &&body.includes('if existing and workspace:GetAttribute("MapReady")==true and workspace:GetAttribute("CurrentMapId")==map.Id then arena=existing else arena=ensureArena(map)end')
+      &&body.includes('d.Name=="EmergencyGate"then d.CanCollide=false')
+      &&body.includes('d.Name=="EscapePrompt"then d.Enabled=true')
+      &&body.includes('prompt.Name="EscapePrompt"')
+      &&body.includes('base:SetAttribute("ObjectiveRound",objectiveState.round)')
+      &&body.split(serverReset).length===2
+      &&body.split(stationComplete).length===2
+      &&!body.includes('object.Name=="EmergencyGate"then object.CanCollide=true')
+    );
+    const clientRows=[...sourceTexts].filter(([file,body])=>
+      /(?:^|\/)client\/.+\.lua[u]?$/i.test(file)
+      &&body.includes('local function render()')
+      &&body.split(clientBranch).length===2
+      &&body.includes('local objectivesDone=tonumber(p:GetAttribute("ObjectivesDone"))or 0')
+      &&body.includes('local objectivesTotal=math.max(1,tonumber(p:GetAttribute("ObjectivesTotal"))')
+    );
+    if(serverRows.length===1&&clientRows.length===1){
+      const [serverFile,serverText]=serverRows[0],[clientFile,clientText]=clientRows[0];
+      // Each statement must sit in the expected live lifecycle, not an unrelated
+      // helper or example. A moved/ambiguous source graph fails closed.
+      const roundStart=serverText.indexOf('objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount');
+      const spawnAfter=serverText.indexOf('local survivorOrder=Room.shuffledSpawns(survivorSpawns)',roundStart);
+      const resetAt=serverText.indexOf(serverReset),stationAt=serverText.indexOf(stationComplete);
+      const unlockedAt=serverText.indexOf('local function syncObjectiveProgress()');
+      const gateAt=serverText.indexOf('local function addEscapeGate(');
+      const renderAt=clientText.indexOf('local function render()'),branchAt=clientText.indexOf(clientBranch);
+      const resultAt=clientText.indexOf('local resultCode=',renderAt);
+      const activeServer=executableText(serverText,'luau'),activeClient=executableText(clientText,'luau');
+      const active=(masked,source,token,at)=>at>=0&&masked.slice(at,at+token.length)===token
+        &&source.split(token).length===2;
+      if(roundStart>=0&&spawnAfter>roundStart&&resetAt>roundStart&&resetAt<spawnAfter
+        &&stationAt>unlockedAt&&stationAt<gateAt
+        &&renderAt>=0&&branchAt>renderAt&&branchAt<resultAt
+        &&active(activeServer,serverText,serverReset,resetAt)
+        &&active(activeServer,serverText,stationComplete,stationAt)
+        &&active(activeClient,clientText,clientBranch,branchAt)){
+        const restored=[serverReset,
+          ' -- Existing arena persists between rounds; restore the original locked state.',
+          ' for _,object in ipairs(arena:GetDescendants())do',
+          '  if object:IsA("BasePart")then',
+          '   if object.Name=="EmergencyGate"then object.CanCollide=true;object.Transparency=0',
+          '   elseif object.Name=="EmergencySign"then object.Color=Color3.fromRGB(112,130,145)',
+          '   elseif string.sub(object.Name,1,13)=="EnergyScreen_"then object.Color=Color3.fromRGB(84,181,235)end',
+          '  elseif object:IsA("ProximityPrompt")then',
+          '   if object.Name=="EscapePrompt"then object.Enabled=false',
+          '   elseif object.Name=="EnergyPrompt"then object.ActionText="가동 / 충전"end',
+          '  end',
+          ' end'
+        ].join('\n');
+        const progress=[
+          ' elseif role=="SURVIVOR"then',
+          '  if p:GetAttribute("Escaped")==true then',
+          '   objectiveLine.Text="탈출 성공 · 팀 결과 대기"',
+          '  elseif objectivesDone>=math.max(1,tonumber(C.EscapeUnlockObjectives)or objectivesTotal) then',
+          '   objectiveLine.Text="탈출구 개방 · 비상 출구에서 탈출!"',
+          '  else',
+          '   objectiveLine.Text=string.format("단말 %d/%d · %d개 남음",objectivesDone,objectivesTotal,math.max(0,math.max(1,tonumber(C.EscapeUnlockObjectives)or objectivesTotal)-objectivesDone))',
+          '  end'
+        ].join('\n');
+        candidates.push({
+          summary:'Vibe5.9 offline multi-function round lifecycle and survivor exit UI repair',
+          expectedEffect:'Reset original terminal/escape gate state for every reused round and show the server-defined escape threshold in survivor HUD',
+          edits:[
+            {path:serverFile,find:serverReset,replace:restored},
+            {path:serverFile,find:stationComplete,replace:stationComplete.replace('   syncObjectiveProgress()','   prompt.ActionText="충전"\n   syncObjectiveProgress()')},
+            {path:clientFile,find:clientBranch,replace:progress}
+          ],newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-100,
+          deterministicRobloxNativeRepair:'CROSS_FUNCTION_ROUND_EXIT_LIFECYCLE',
+          readDependencies:[serverFile,clientFile],
+          dependencyHashes:{[serverFile]:sourceHashes.get(serverFile),[clientFile]:sourceHashes.get(clientFile)},
+          semanticGrounding:{analyzedFunctions:['syncObjectiveProgress','addObjectiveStation','addEscapeGate','startRound','render'],
+            writes:['EscapeUnlocked','SurvivorEscapeTriggered','EnergyPrompt','EscapePrompt'],
+            serverAuthorityPreserved:true,noNewSaveKeys:true,noNewGameplayRules:true,
+            sourceBound:true,modelUsed:false,runtimeVerified:false}
         });
       }
     }
