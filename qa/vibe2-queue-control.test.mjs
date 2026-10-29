@@ -206,6 +206,52 @@ test('model-free Roblox source misses retry once per source worker revision with
   assert.equal(afterUpgrade.queue.tasks[0].evidence.filter(v=>v.startsWith('source-no-model-codegen-sha256:')).length,1);
 });
 
+// [자기강화] 실제 Studio의 새로운 실패 증거만 이전 코드버전에서 재학습·재시도한다.
+test('verified new Studio revision-bound observations can reopen a blocked native source task once',()=>{
+  const rev='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const official=(runId)=>({
+    authority:'roblox-official-studio-mcp-product-quality-failure',
+    workflowRunId:runId,sourceRevision:rev,artifactIdentity:artifact,
+    repairSurfaces:['MOBILE_UI'],
+    qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
+      observed:JSON.stringify({overlapPairs:8,largeBlockingOverlayCount:0})}]
+  });
+  const failure=(runId)=>({directiveId:'studio-failure-'+runId,
+    gameId:'fantasy-survival',sourceRevision:rev,artifactIdentity:artifact,
+    playtestRuntimeFindings:{studioQualityFailure:official(runId)}});
+  const sourceTask={
+    id:'real-studio-evidence',gameId:'fantasy-survival',target:'roblox',
+    department:'development',type:'implementation',
+    sourceRoot:'roblox-games/fantasy-survival',goal:'verified studio feedback',
+    responsibleFiles:['shared/RobloxCommonUI.luau'],status:'blocked',
+    blocker:'SOURCE_MODEL_UNAVAILABLE',sourceRevision:rev,artifactIdentity:artifact,
+    buildUpDirective:failure(40901857206),evidence:['model-free-deterministic-unavailable:v1',
+      'source-no-model-failure-kind:DETERMINISTIC_ROBLOX'],retries:4,maxRetries:4
+  };
+  const first=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[sourceTask]}));
+  assert.equal(first.recovered,1);
+  const recovered=first.queue.tasks[0];
+  assert.equal(recovered.status,'queued');
+  assert.equal(recovered.evidence.filter(v=>v.startsWith('source-no-model-studio-failure-sha256:')).length,1);
+  const blocked={...recovered,status:'blocked',blocker:'SOURCE_MODEL_UNAVAILABLE'};
+  assert.equal(recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[blocked]})).recovered,0,
+    'same generator and official failure cannot restart indefinitely');
+  const fresh={...blocked,buildUpDirective:failure(40901857207)};
+  const learned=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[fresh]}));
+  assert.equal(learned.recovered,1,'new Studio playtest evidence must trigger causal re-analysis');
+  assert.equal(learned.queue.tasks[0].lastOutcome,'MODEL_FREE_VERIFIED_STUDIO_EVIDENCE_RECHECK');
+  assert.equal(learned.queue.tasks[0].retries,4,'verified feedback cannot consume game retry budget');
+  assert.equal(learned.queue.tasks[0].evidence.filter(v=>v.startsWith('source-no-model-studio-failure-sha256:')).length,1);
+  const stale={...blocked,buildUpDirective:failure(40901857208)};
+  stale.buildUpDirective.playtestRuntimeFindings.studioQualityFailure.sourceRevision='c'.repeat(40);
+  assert.equal(recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[stale]})).recovered,0,
+    'wrong source identity must not trigger a new candidate');
+  const injected={...blocked,buildUpDirective:failure(40901857209)};
+  injected.buildUpDirective.playtestRuntimeFindings.studioQualityFailure.authority='unverified-label';
+  assert.equal(recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[injected]})).recovered,0,
+    'unverified Studio labels must not bypass the same-generation retry guard');
+});
+
 test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
   const base={id:'owner-offline-missing',gameId:'owner-web-game',target:'web',
     department:'development',type:'implementation',goal:'owner change requires a verified source recipe',

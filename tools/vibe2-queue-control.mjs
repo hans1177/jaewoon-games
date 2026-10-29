@@ -526,14 +526,41 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
           nativeCodegenSha256=createHash('sha256').update(fs.readFileSync(workerFile)).digest('hex');
         }
         const fingerprint='source-no-model-codegen-sha256:'+nativeCodegenSha256;
-        if(evidence.includes(fingerprint))return task;
+        // [실패 학습] 동일 코드라도 새 공식 Studio 관찰이면 해당 책임 게임만
+        // 즉시 다시 진단한다. 검증되지 않거나 다른 빌드의 주장으로 재예약하지 않는다.
+        const studio=task?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure;
+        const studioSource=clean(studio?.sourceRevision);
+        const studioArtifact=clean(studio?.artifactIdentity);
+        // Canonical queue normalizes away ad-hoc task revision fields. Bound
+        // build-up identity remains intact and is the appropriate provenance.
+        const taskSource=clean(task?.buildUpDirective?.sourceRevision
+          ||task?.buildUpDirective?.robloxSourceCommit
+          ||task?.sourceRevision||task?.baseSourceRevision||task?.robloxSourceCommit);
+        const taskArtifact=clean(task?.buildUpDirective?.artifactIdentity
+          ||task?.buildUpDirective?.robloxBuildArtifactIdentity
+          ||task?.robloxBuildArtifactIdentity||task?.artifactIdentity);
+        const official=studio?.authority==='roblox-official-studio-mcp-product-quality-failure'
+          &&Number.isSafeInteger(Number(studio?.workflowRunId))&&Number(studio.workflowRunId)>0
+          &&/^[0-9a-f]{40}$/i.test(studioSource)&&/^sha256:[0-9a-f]{64}$/i.test(studioArtifact)
+          &&(!taskSource||taskSource===studioSource)&&(!taskArtifact||taskArtifact===studioArtifact)
+          &&Array.isArray(studio?.repairSurfaces)&&studio.repairSurfaces.includes('MOBILE_UI')
+          &&Array.isArray(studio?.qualityFailureDetails)
+          &&studio.qualityFailureDetails.some(row=>clean(row?.id)==='adaptive-ui-commercial-quality'
+            &&clean(row?.repairSurface)==='MOBILE_UI');
+        const failureFingerprint=official?'source-no-model-studio-failure-sha256:'
+          +createHash('sha256').update(JSON.stringify({
+            runId:Number(studio.workflowRunId),source:studioSource,artifact:studioArtifact,
+            findings:studio.qualityFailureDetails.filter(row=>clean(row?.repairSurface)==='MOBILE_UI')
+          })).digest('hex'):null;
+        if(evidence.includes(fingerprint)&&(!failureFingerprint||evidence.includes(failureFingerprint)))return task;
         recovered+=1;
         return {...task,...clearedReservation(),status:'queued',blocker:null,
-          lastOutcome:'MODEL_FREE_NATIVE_CODEGEN_RECHECK',
+          lastOutcome:!evidence.includes(fingerprint)?'MODEL_FREE_NATIVE_CODEGEN_RECHECK':'MODEL_FREE_VERIFIED_STUDIO_EVIDENCE_RECHECK',
           evidence:[...new Set([
             ...evidence.filter(value=>!clean(value).startsWith('source-no-model-codegen-sha256:')
+              &&!clean(value).startsWith('source-no-model-studio-failure-sha256:')
               &&!clean(value).startsWith('source-no-model-retry-at:')),
-            fingerprint,'source-no-model-retry-resumed:v1'
+            fingerprint,...(failureFingerprint?[failureFingerprint]:[]),'source-no-model-retry-resumed:v1'
           ])]};
       }
       const prefix=offlinePattern?'source-offline-pattern-retry-at:'

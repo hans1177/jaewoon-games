@@ -1739,7 +1739,30 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   const roundLifecycleWork=/(?:round|match|objective|terminal|escape|exit|round reset|라운드|연속 플레이|단말|탈출|비상구|목표 초기화)/i.test(intent);
   const motionWork=/(?:motion|animation|animator|rig|npc|mob|creature|boss|wildlife|모션|애니메이션|리깅|몹|보스|동물)/i.test(intent)
     ||Boolean((order?.selectedTask?.buildUpDirective||order?.buildUpDirective)?.gameInternalAutoComposition?.actorMotion?.nextGameSpecificMotionWorkUnit?.actorClass);
-  if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork&&!motionWork&&!roundLifecycleWork)return null;
+  // [자기강화] 실행으로 관찰된 공식 Studio 실패는 일반 요청의 키워드보다 신뢰도가 높다.
+  // 검증된 증거의 책임 범위·버전·관찰값을 한 번만 정규화해서 모든 책임 소스에 재사용한다.
+  const studioFailure=order?.selectedTask?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure
+    ||order?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure||null;
+  const studioDetails=Array.isArray(studioFailure?.qualityFailureDetails)?studioFailure.qualityFailureDetails:[];
+  const studioSurfaces=Array.isArray(studioFailure?.repairSurfaces)?studioFailure.repairSurfaces:[];
+  const studioKinds=Array.isArray(studioFailure?.qualityFailureKinds)?studioFailure.qualityFailureKinds:[];
+  const officialStudioUi=studioFailure?.authority==='roblox-official-studio-mcp-product-quality-failure'
+    &&studioSurfaces.some(value=>clean(value).toUpperCase()==='MOBILE_UI')
+    &&(studioKinds.includes('adaptive-ui-commercial-quality')
+      ||studioDetails.some(row=>clean(row?.id)==='adaptive-ui-commercial-quality'));
+  const knownSource=clean(order?.selectedTask?.sourceRevision||order?.selectedTask?.baseSourceRevision
+    ||order?.sourceRevision||order?.baseSourceRevision);
+  const knownArtifact=clean(order?.selectedTask?.robloxBuildArtifactIdentity
+    ||order?.selectedTask?.artifactIdentity||order?.robloxBuildArtifactIdentity||order?.artifactIdentity);
+  const exactStudioSource= !knownSource
+    ||(Boolean(clean(studioFailure?.sourceRevision))&&clean(studioFailure.sourceRevision)===knownSource);
+  const exactStudioArtifact= !knownArtifact
+    ||(Boolean(clean(studioFailure?.artifactIdentity))&&clean(studioFailure.artifactIdentity)===knownArtifact);
+  const studioObserved=studioDetails.filter(row=>clean(row?.repairSurface).toUpperCase()==='MOBILE_UI')
+    .map(row=>{try{return typeof row.observed==='string'?JSON.parse(row.observed):row.observed||{};}catch{return{};}});
+  const verifiedStudioOverlap=officialStudioUi&&exactStudioSource&&exactStudioArtifact
+    &&studioObserved.some(row=>Number(row?.overlapPairs)>=2&&Number(row?.largeBlockingOverlayCount)===0);
+  if(!inputWork&&!saveWork&&!actionWork&&!runtimeWork&&!motionWork&&!roundLifecycleWork&&!verifiedStudioOverlap)return null;
   let root;
   try{root=fs.realpathSync(sourceRoot);}catch{return null;}
   const candidates=[],sourceHashes=new Map(),sourceTexts=new Map();
@@ -1757,21 +1780,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     // Preserve visible dimming and outside-tap dismissal, but make the backdrop a
     // noninteractive Frame with an actual accessible dismiss button. The Studio
     // commercial UI gate stays unchanged and must verify the new real runtime.
-    const studioFailure=order?.selectedTask?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure
-      ||order?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure||null;
-    const studioUiFailure=studioFailure?.authority==='roblox-official-studio-mcp-product-quality-failure'
-      &&(studioFailure.repairSurfaces||[]).includes('MOBILE_UI')
-      &&((studioFailure.qualityFailureKinds||[]).includes('adaptive-ui-commercial-quality')
-        ||(studioFailure.qualityFailureDetails||[]).some(row=>clean(row?.id)==='adaptive-ui-commercial-quality'));
-    const observedRows=(studioFailure?.qualityFailureDetails||[]).filter(row=>
-      clean(row?.repairSurface).toUpperCase()==='MOBILE_UI');
-    const observed=observedRows.map(row=>{
-      try{return typeof row.observed==='string'?JSON.parse(row.observed):row.observed||{};}
-      catch{return{};}
-    });
-    const overlappingHud=studioUiFailure&&observed.some(row=>
-      Number(row?.overlapPairs)>=2&&Number(row?.largeBlockingOverlayCount)===0);
-    if(overlappingHud&&/^(?:shared\/).+\.luau$/i.test(relative)
+    if(verifiedStudioOverlap&&/^(?:shared\/).+\.luau$/i.test(relative)
       &&source.includes('function RobloxCommonUI.AdaptActionMenu(')
       &&!source.includes('OutsideActionsMenuClose')){
       const shadeBefore=[
@@ -1813,7 +1822,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           ],newFiles:[],replaceFiles:[],tests:[],deterministicPriority:-180,
           deterministicRobloxNativeRepair:'STUDIO_MCP_MODAL_BACKDROP_INPUT_SEPARATION',
           semanticGrounding:{studioRunId:Number(studioFailure.workflowRunId)||null,
-            failureKind:'adaptive-ui-commercial-quality',observedOverlapPairs:Math.max(...observed.map(row=>Number(row.overlapPairs)||0)),
+            failureKind:'adaptive-ui-commercial-quality',observedOverlapPairs:Math.max(...studioObserved.map(row=>Number(row.overlapPairs)||0)),
             originalSourceAnchors:true,sourceBound:true,preserveTouchDismissal:true,
             noNewServerRules:true,noSaveMutation:true,modelUsed:false,runtimeVerified:false}
         });
@@ -9268,6 +9277,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
           generation:{attempts:deterministicNativeSelection.attempts.length,
             recoveryUsed:deterministicNativeSelection.attempts.some(row=>row.status==='REJECTED'),modelUsed:false,
             deterministicRobloxNativeRepair:native.deterministicRobloxNativeRepair,
+            // Original worker output carries source-bound recipe decisions for the
+            // existing fan-in learning pipeline; it does not itself award runtime PASS.
+            deterministicSelection:native.deterministicSelection,
             mode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR',maxPredict:0,timeoutMs:0,contextWindow:0,
             temperature:0,completionMode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR'}};
         console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=VALIDATED:'+native.deterministicRobloxNativeRepair);
