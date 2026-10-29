@@ -539,7 +539,9 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
  assert.match(server,/prompt\.Name="EscapePrompt"/);
  assert.match(server,/workspace:SetAttribute\("SurvivorEscapeTriggered",true\)/);
  assert.match(server,/if workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true then endRound\("SURVIVOR"\)/);
- assert.match(client,/objectiveLine\.Text=string\.format\("단말 %d\/%d · 정화 후 탈출",objectivesDone,objectivesTotal\)/);
+ assert.match(client,/objectiveLine\.Text=string\.format\("단말 %d\/%d · %d개 남음",objectivesDone,objectivesTotal/);
+ assert.match(client,/objectiveLine\.Text="탈출구 개방 · 비상 출구에서 탈출!"/);
+ assert.match(client,/objectiveLine\.Text="탈출 성공 · 팀 결과 대기"/);
  assert.match(client,/if role=="MONSTER"then\s+objectiveLine\.Text="인간을 찾아 감염"/);
 });
 
@@ -1003,4 +1005,22 @@ test('verified owner-only publication saves queue and policy before resuming F0-
  assert.ok(!source.slice(0,source.indexOf('\npermissions:')).includes(
    "      - 'company-learning/platform-release-roadmap.json'"),
    'policy-only owner release must not accidentally republish owner private place');
+});
+
+test('같은 맵을 연속 플레이해도 단말과 비상 출구가 새 라운드로 초기화된다',()=>{
+ const start=server.indexOf('objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount');
+ const finish=server.indexOf('local survivorOrder=Room.shuffledSpawns(survivorSpawns)',start);
+ assert.ok(start>=0&&finish>start,'실제 startRound 서버 상태 초기화가 있어야 한다');
+ const reset=server.slice(start,finish);
+ for(const state of ['EscapeUnlocked','SurvivorEscapeTriggered'])assert.ok(reset.includes('workspace:SetAttribute("'+state+'",false)'),state);
+ assert.match(reset,/arena:GetDescendants\(\)/);
+ assert.match(reset,/object\.Name=="EmergencyGate"then object\.CanCollide=true;object\.Transparency=0/);
+ assert.match(reset,/object\.Name=="EmergencySign"then object\.Color=Color3\.fromRGB\(112,130,145\)/);
+ assert.match(reset,/object\.Name=="EnergyScreen_"/);
+ assert.match(reset,/object\.Name=="EscapePrompt"then object\.Enabled=false/);
+ assert.match(reset,/object\.Name=="EnergyPrompt"then object\.ActionText="가동 \/ 충전"/);
+ assert.match(server,/base:SetAttribute\("ObjectiveRound",objectiveState\.round\)[\s\S]*?prompt\.ActionText="충전"/);
+ assert.match(client,/objectivesDone>=unlockAt/);
+ assert.match(client,/objectiveLine\.Text="탈출구 개방 · 비상 출구에서 탈출!"/);
+ assert.match(client,/objectiveLine\.Text="탈출 성공 · 팀 결과 대기"/);
 });
