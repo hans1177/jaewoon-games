@@ -1159,7 +1159,19 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
       throw Error('VIBE59_FUNCTION_REWRITE_SIGNATURE_DRIFT');
   }
   if(rewritten===find)throw Error('VIBE59_NOOP');
-  const codeReplay=selected.replay;
+  // 생성 중간 산물이 아닌 최종 함수 전체를 제한된 JS 샌드박스에서 재실행한다.
+  // 규칙형 무인자 함수는 호출까지 포함해 상태 결과를 독립 오라클과 비교한다.
+  let codeReplay=selected.replay;
+  if(autoFunctionRewrite&&target==='web'){
+    const replaySource=req.machine?rewritten:rewritten+'\n'+originalFunction.name+'();';
+    codeReplay=verifyVibe59GeneratedJavaScript({
+      source:replaySource,rule:req.rule,machine:req.machine,
+      scenarios:[...ownerScenarios,...probeCases]
+    });
+    if(codeReplay.pass!==true)
+      throw Error('VIBE59_REWRITTEN_FUNCTION_REPLAY_REJECTED:'+
+        (codeReplay.reason||codeReplay.counterexamples?.map(row=>row.name).join(',')));
+  }
   return Object.freeze({summary:'Vibe5.9 composed offline code',
     expectedEffect:'Source-grounded, explicitly approved state transition',
     edits:[{path:relative,find,replace:rewritten}],newFiles:[],replaceFiles:[],
