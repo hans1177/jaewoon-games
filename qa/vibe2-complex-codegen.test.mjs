@@ -95,24 +95,24 @@ test('canonical Vibe2 no-model worker edits actual game source on an isolated ca
   assert.equal(fs.readFileSync(path.resolve(relative),'utf8'),original,'production repository source remains unchanged by regression');
 });
 
-test('real existing survival2 SVG accepts Korean and English owner recolor and commits exact game art on candidate branch',t=>{
+test('real existing UI sprite SVG accepts Korean and English owner recolor and commits exact game art on candidate branch',t=>{
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-live-svg-'));
  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
- const gameId='survival2',relative='assets/survival-atlas.svg';
- const production=path.resolve('web-games',gameId,relative),original=fs.readFileSync(production,'utf8');
+ const gameId='asset-test',relative='assets/snail.svg';
+ const production=path.resolve('assets/logo-sprite-snail.svg'),original=fs.readFileSync(production,'utf8');
  const root=path.join(repo,'web-games',gameId),target=path.join(root,relative);
  fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,original);
  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
-  games:[{id:gameId,webPath:'web-games/survival2',lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]}));
+  games:[{id:gameId,webPath:'web-games/asset-test',lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]}));
  const git=(...args)=>{const result=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});
   assert.equal(result.status,0,result.stderr||result.error?.message);return result.stdout;};
  git('init','-q');git('config','user.email','vibe59-tests@example.invalid');
- git('config','user.name','Vibe59 Test');git('add','--','web-games/survival2');
+ git('config','user.name','Vibe59 Test');git('add','--','web-games/asset-test');
  git('commit','-qm','existing production game SVG');
  git('switch','-q','-c','vibe2/candidate/svg-owner-recolor');
  const options={sourceRoot:root,repositoryRoot:repo,responsibleFiles:[relative],target:'web'};
- const ko='기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #81938b으로 바꿔';
- const english='Recolor wolf in assets/survival-atlas.svg from #6d7773 to #81938b';
+ const ko='기존 assets/snail.svg의 n 색상 #c78353을 #81938b으로 바꿔';
+ const english='Recolor n in assets/snail.svg from #c78353 to #81938b';
  const order=goal=>({ownerApproved:true,selectedTask:{ownerDirective:true,gameId,goal}});
  const candidate=createVibe59CodeCandidates({...options,order:order(ko)});
  const translated=createVibe59CodeCandidates({...options,order:order(english)});
@@ -126,13 +126,13 @@ test('real existing survival2 SVG accepts Korean and English owner recolor and c
  const applied=applyVibe2CandidateToSource({cwd:repo,sourceRoot:root,candidateRoot,candidate});
  assert.deepEqual(applied.changedFiles,[relative]);
  const after=fs.readFileSync(target,'utf8');
- assert.equal(after,original.replace('fill="#6d7773"','fill="#81938b"'));
- assert.match(after,/<g id="boar"[^>]*><ellipse[^>]*fill="#6a4935"/);
+ assert.equal(after,original.replace('fill="#c78353"','fill="#81938b"'));
+ assert.ok(after.includes('stroke="#915834"'),'the original shell outline is preserved');
  assert.equal(fs.readFileSync(production,'utf8'),original);
- assert.equal(git('diff','--name-only').trim(),'web-games/survival2/'+relative);
- assert.throws(()=>createVibe59CodeCandidates({...options,order:order('기존 assets/survival-atlas.svg의 ghost 색상 #6d7773을 #81938b으로 바꿔')}),/GROUP_NOT_UNIQUE/);
+ assert.equal(git('diff','--name-only').trim(),'web-games/asset-test/'+relative);
+ assert.throws(()=>createVibe59CodeCandidates({...options,order:order('기존 assets/snail.svg의 ghost 색상 #c78353을 #81938b으로 바꿔')}),/GROUP_NOT_UNIQUE/);
  let invalid=null,notApproved=null;
- try{invalid=createVibe59CodeCandidates({...options,order:order('기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #nope으로 바꿔')});}
+ try{invalid=createVibe59CodeCandidates({...options,order:order('기존 assets/snail.svg의 n 색상 #c78353을 #nope으로 바꿔')});}
  catch(error){assert.match(String(error),/VIBE2_COMPLEX|SOURCE_BINDING|VIBE59_/);}
  assert.notEqual(invalid?.vibe59CodeKind,'SOURCE_BOUND_VISUAL_ASSET_EDIT');
  try{notApproved=createVibe59CodeCandidates({...options,order:{selectedTask:{ownerDirective:false,gameId,goal:ko}}});}
@@ -142,18 +142,18 @@ test('real existing survival2 SVG accepts Korean and English owner recolor and c
 test('Vibe visual source editor applies two independent changes in the SAME existing SVG atomically',t=>{
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-multi-actor-'));
  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
- const gameId='survival2',relative='assets/survival-atlas.svg',root=path.join(repo,'web-games',gameId);
+ const gameId='asset-test',relative='assets/snail.svg',root=path.join(repo,'web-games',gameId);
  fs.mkdirSync(path.join(root,'assets'),{recursive:true});
- const original=fs.readFileSync(path.resolve('web-games',gameId,relative),'utf8');
+ const original=fs.readFileSync(path.resolve('assets/logo-sprite-snail.svg'),'utf8');
  fs.writeFileSync(path.join(root,relative),original);
  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
-  games:[{id:gameId,webPath:'web-games/survival2'}]}));
- const sourceSha256=digest(original),wolf=original.match(/<g id="wolf"[^>]*>[\s\S]*?<\/g>/)?.[0],
-  boar=original.match(/<g id="boar"[^>]*>[\s\S]*?<\/g>/)?.[0];
- assert.ok(wolf&&boar);
+  games:[{id:gameId,webPath:'web-games/asset-test'}]}));
+ const sourceSha256=digest(original),shell=original.match(/<circle[^>]*fill="#c78353"[^>]*\/>/)?.[0],
+  ring=original.match(/<circle[^>]*stroke="#915834"[^>]*\/>/)?.[0];
+ assert.ok(shell&&ring);
  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId,vibe59VisualAssetEdits:[
-  {path:relative,expectedSha256:sourceSha256,find:wolf,replace:wolf.replace('fill="#6d7773"','fill="#81938b"')},
-  {path:relative,expectedSha256:sourceSha256,find:boar,replace:boar.replace('fill="#6a4935"','fill="#826b4e"')}
+  {path:relative,expectedSha256:sourceSha256,find:shell,replace:shell.replace('fill="#c78353"','fill="#81938b"')},
+  {path:relative,expectedSha256:sourceSha256,find:ring,replace:ring.replace('stroke="#915834"','stroke="#826b4e"')}
  ]}};
  const opts={order,sourceRoot:root,repositoryRoot:repo,responsibleFiles:[relative],target:'web'};
  const candidate=createVibe59CodeCandidates(opts);
@@ -162,7 +162,7 @@ test('Vibe visual source editor applies two independent changes in the SAME exis
  const docs=new Map([[relative,original]]);
  applyExactEdits(root,candidate.edits,{documents:docs});
  assert.match(docs.get(relative),/fill="#81938b"/);
- assert.match(docs.get(relative),/fill="#826b4e"/);
+ assert.match(docs.get(relative),/stroke="#826b4e"/);
  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
 });
 test('natural language becomes an ordered two-step DAG tied to exact existing source definitions',t=>{
@@ -382,17 +382,17 @@ test('approved Vibe5.9 edits the actual game source file, not just a staged map'
   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
 });
 
-test('existing survival2 production SVG receives owner Korean/English recolor through canonical source worker on a candidate branch',t=>{
+test('existing production UI sprite SVG receives owner Korean/English recolor through canonical source worker on a candidate branch',t=>{
   const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-existing-asset-real-'));
   t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
-  const game='survival2',relative='assets/survival-atlas.svg',sourceFile=path.resolve('web-games',game,relative);
+  const game='asset-test',relative='assets/snail.svg',sourceFile=path.resolve('assets/logo-sprite-snail.svg');
   const original=fs.readFileSync(sourceFile,'utf8'),root=path.join(repo,'web-games',game);
   const target=path.join(root,relative);
   fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,original);
   fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
     games:[{id:game,webPath:'web-games/'+game,lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]
   }));
-  const goal='기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #81938b으로 바꿔';
+  const goal='기존 assets/snail.svg의 n 색상 #c78353을 #81938b으로 바꿔';
   const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:game,goal}};
   const options={order,sourceRoot:root,repositoryRoot:repo,responsibleFiles:[relative],target:'web'};
   const generated=createVibe59CodeCandidates(options);
@@ -403,10 +403,10 @@ test('existing survival2 production SVG receives owner Korean/English recolor th
   assert.equal(generated.runtimeVerified,false);
   assert.equal(fs.readFileSync(target,'utf8'),original);
   assert.equal(generated.edits.length,1);
-  assert.match(generated.edits[0].find,/<g id="wolf"/);
+  assert.match(generated.edits[0].find,/<g id="n"/);
   assert.match(generated.edits[0].replace,/fill="#81938b"/);
   const english=createVibe59CodeCandidates({...options,order:{...order,selectedTask:{
-    ...order.selectedTask,goal:'Recolor wolf in assets/survival-atlas.svg from #6d7773 to #81938b'}}});
+    ...order.selectedTask,goal:'Recolor n in assets/snail.svg from #c78353 to #81938b'}}});
   assert.deepEqual(english.edits,generated.edits);
   const git=(...args)=>{
     const result=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});
@@ -422,20 +422,20 @@ test('existing survival2 production SVG receives owner Korean/English recolor th
   assert.equal(applied.branch,'vibe2/candidate/owner-art-change');
   assert.deepEqual(applied.changedFiles,[relative]);
   const changed=fs.readFileSync(target,'utf8');
-  assert.equal(changed,original.replace('fill="#6d7773"','fill="#81938b"'));
+  assert.equal(changed,original.replace('fill="#c78353"','fill="#81938b"'));
   assert.equal(git('diff','--name-only').trim(),'web-games/'+game+'/'+relative);
   assert.equal(fs.readFileSync(sourceFile,'utf8'),original,'production source must not change in test');
   // The same no-model worker must refuse editing a different game, missing group or invalid color.
   assert.throws(()=>createVibe59CodeCandidates({...options,order:{ownerApproved:false,
     selectedTask:order.selectedTask}}),/VIBE59_GAME_ASSET_WRITE_NOT_APPROVED/);
   assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,selectedTask:{
-    ...order.selectedTask,goal:'Recolor ghost in assets/survival-atlas.svg from #6d7773 to #81938b'}}}),
+    ...order.selectedTask,goal:'Recolor ghost in assets/snail.svg from #c78353 to #81938b'}}}),
     /VIBE59_GAME_ASSET_GROUP_NOT_UNIQUE/);
   assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,selectedTask:{
-    ...order.selectedTask,goal:'Recolor wolf in assets/other.svg from #6d7773 to #81938b'}}}),
+    ...order.selectedTask,goal:'Recolor n in assets/other.svg from #c78353 to #81938b'}}}),
     /VIBE59_GAME_ASSET_RESPONSIBLE_FILE_REQUIRED/);
   assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,selectedTask:{
-    ...order.selectedTask,goal:'Recolor wolf in assets/survival-atlas.svg from #6d7773 to #abcd'}}}),
+    ...order.selectedTask,goal:'Recolor n in assets/snail.svg from #c78353 to #abcd'}}}),
     /VIBE59_GAME_ASSET_COLOR_INVALID/);
 });
 test('Vibe5.9 existing source-worker synthesizes authorized in-game visual asset edits without direct writes',t=>{

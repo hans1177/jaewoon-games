@@ -21,10 +21,10 @@ function fixture(t,target='web'){
  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'rpg',webPath:'web-games/rpg',robloxProjectPath:'roblox-games/rpg'}]}));
  return {repo,root};
 }
-test('canonical Vibe2 source worker physically applies an existing production SVG asset edit on an isolated game branch',t=>{
+test('canonical Vibe2 source worker physically applies an existing production UI SVG asset edit on an isolated game branch',t=>{
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-asset-source-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
- const relative='assets/survival-atlas.svg',project='web-games/survival2';
- const originalFile=path.resolve(project,relative),original=fs.readFileSync(originalFile,'utf8');
+ const relative='assets/snail.svg',project='web-games/asset-test';
+ const originalFile=path.resolve('assets/logo-sprite-snail.svg'),original=fs.readFileSync(originalFile,'utf8');
  const sourceRoot=path.join(repo,project),target=path.join(sourceRoot,relative);
  fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,original);
  const git=(...args)=>{const r=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:15000});
@@ -33,9 +33,9 @@ test('canonical Vibe2 source worker physically applies an existing production SV
  git('config','user.name','Vibe2 Test');git('add','--',project);
  git('commit','-qm','original existing production SVG asset');
  git('switch','-q','-c','vibe2/candidate/existing-svg-asset');
- const old=original.match(/<g id="wolf"[^>]*>[\s\S]*?<\/g>/)?.[0];
- assert.ok(old&&old.includes('fill="#6d7773"'));
- const edit={path:relative,find:old,replace:old.replace('fill="#6d7773"','fill="#81938b"')};
+ const old=original.match(/<g id="n"[^>]*>[\s\S]*?<\/g>/)?.[0];
+ assert.ok(old&&old.includes('fill="#c78353"'));
+ const edit={path:relative,find:old,replace:old.replace('fill="#c78353"','fill="#81938b"')};
  const candidate={edits:[edit],newFiles:[],replaceFiles:[]};
  const candidateRoot=path.join(repo,'.vibe2/candidates/existing-svg-asset');
  assert.throws(()=>applyVibe2CandidateToSource({cwd:repo,sourceRoot,candidateRoot,candidate:{
