@@ -817,8 +817,12 @@ export function createVibe59IntentStatCandidate({order={},sourceRoot='',responsi
   const source=fs.readFileSync(file,'utf8');
   let script=source;
   if(/\.html?$/i.test(rel)){
+   if(/<!--|<(?:template|textarea|noscript|plaintext|xmp)\b/i.test(source))continue;
    const blocks=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
    if(blocks.length!==1||blocks[0][1].trim())continue;
+   // 속성값 안의 가짜 script 태그를 실제 실행 코드로 해석하지 않는다.
+   const prefix=source.slice(0,blocks[0].index);
+   if(prefix.replace(/<(?:[^<>"']|"[^"]*"|'[^']*')*>/g,'').includes('<'))continue;
    script=blocks[0][2];
   }
   // 소스 분석: 문자열·주석은 위치를 보존해 가리고, 해석하지 않는 문법은 거부한다.

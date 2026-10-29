@@ -22,6 +22,11 @@ test('owner stat edits reject non-code, hidden competing writes and shadowed bui
    'let speed = baseSpeed;\nspeed += bonus;',
    'function run(Math) {\nlet speed = baseSpeed;\n}',
   ]],
+  ['web','index.html',[
+   '<!-- <script>\nlet speed = baseSpeed;\n</script> -->',
+   '<template><script>\nlet speed = baseSpeed;\n</script></template>',
+   '<div title="<script>\nlet speed = baseSpeed;\n</script>">Text</div>',
+  ]],
   ['roblox','game.luau',[
    '--[=[\nlocal speed = baseSpeed\n]=]',
    'local text = [==[\nlocal speed = baseSpeed\n]==]',
