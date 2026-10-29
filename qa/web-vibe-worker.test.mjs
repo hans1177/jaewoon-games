@@ -8,7 +8,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange,webLearningCandidate,compileVerifiedWebLearning,synthesizeWebProgressionWithoutModel,synthesizeWebAlgorithmWithoutModel} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
-import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
+import {synthesizeVibe59NumericAlgorithm,synthesizeVibe59NumericAlgorithmSource,runVibe59CodeLaboratory,extractVibe59AlgorithmConceptCandidates,createVibe59CodeCandidate} from '../tools/vibe2-v59-autonomy.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'123456789abc',endpoint:'http://127.0.0.1:11434/api/chat'}),/DEDICATED_MODEL_ENDPOINT_REQUIRED/);
@@ -707,4 +707,58 @@ test('Vibe5.9 uses only source-matched and independently replayed playtest count
  assert.throws(()=>synthesizeVibe59NumericAlgorithmSource({
    spec:{...spec,verifiedCounterexamples:[{...row,proof:{...proof,runtime:'PENDING'}}]},
    source,relative:'web-games/demo/logic.js'}),/COUNTEREXAMPLE_UNVERIFIED/);
+});
+
+
+test('Vibe5.9 extracts reusable WEB and Roblox AST subexpressions without silently verifying them',()=>{
+ const specs={ownerApproved:true,functionName:'score',parameters:['x','y'],
+   examples:[{args:[1,2],output:2},{args:[4,3],output:4},{args:[0,5],output:5}],
+   holdouts:[{args:[8,1],output:8},{args:[-2,-1],output:-1}]};
+ const web=synthesizeVibe59NumericAlgorithmSource({spec:specs,
+   source:'function score(x,y){return 0;}\n',relative:'web-games/demo/logic.js'});
+ const lua=synthesizeVibe59NumericAlgorithmSource({spec:specs,
+   source:'local function score(x,y)\n return 0\nend\n',
+   relative:'roblox-games/demo/logic.luau'});
+ for(const row of [web,lua]){
+   const extracted=row.conceptCandidates;
+   assert.equal(extracted.verification,'ORACLE_ONLY');
+   assert.equal(extracted.verified,false);
+   assert.equal(extracted.promotionAuthorized,false);
+   assert.equal(extracted.persisted,false);
+   assert.ok(extracted.concepts.length>=1);
+   assert.ok(extracted.concepts.length<=8);
+   assert.ok(extracted.concepts.every(x=>x.verified===false
+     &&x.sourceWriteAuthorized===false&&x.reusableAfterGameProofOnly===true));
+   assert.ok(extracted.concepts.some(x=>x.ast[0]==='max'));
+   const repeated=extractVibe59AlgorithmConceptCandidates({search:row.search});
+   assert.deepEqual(repeated.concepts,extracted.concepts);
+ }
+ assert.equal(web.search.casesPassed,5);
+ assert.equal(lua.search.casesPassed,5);
+});
+test('Vibe5.9 never promotes forged, cyclic, out-of-bound or unproven AST concepts',()=>{
+ const valid={modelUsed:false,sourceWrite:false,runtimeVerified:false,
+   casesPassed:5,trainingCases:3,heldOutCases:2,parameters:['x','y'],
+   ast:['+', ['param',0], ['param',1]]};
+ const accepted=extractVibe59AlgorithmConceptCandidates({search:valid,maxConcepts:1});
+ assert.equal(accepted.concepts.length,1);
+ assert.equal(accepted.concepts[0].complexity,3);
+ assert.equal(accepted.concepts[0].verified,false);
+ const cyclic=['abs'];cyclic.push(cyclic);
+ const invalid=[
+   {...valid,ast:cyclic},
+   {...valid,ast:['+', ['param',0],['param',2]]},
+   {...valid,ast:['select',['param',0],['const',0]]},
+   {...valid,ast:['+', ['param',0],['const',Infinity]]},
+   {...valid,ast:['+', ['param',0],['const',2],['const',3]]},
+   {...valid,ast:['+', ['param',0],['const',1]],modelUsed:true},
+   {...valid,casesPassed:4}
+ ];
+ for(const row of invalid){
+   assert.equal(extractVibe59AlgorithmConceptCandidates({search:row}).concepts.length,0);
+ }
+ const sourceProof={...valid,ast:{kind:'crossover',operator:'max',
+   left:{kind:'reference',name:'x'},right:{kind:'reference',name:'y'}}};
+ assert.deepEqual(extractVibe59AlgorithmConceptCandidates({search:sourceProof})
+   .concepts[0].ast,['max',['param',0],['param',1]]);
 });
