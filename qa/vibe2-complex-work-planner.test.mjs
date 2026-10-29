@@ -1654,3 +1654,71 @@ test('mobile system menu switches between five legacy and five additional panels
  touch(80,85+4*86+25);assert.equal(app.view().tab,'상점');
  labels.length=0;app.render(ctx);assert.ok(labels.includes('상점 UI'));
 });
+
+
+test('one-shot generator captures source input bindings before volume-local shadow declarations',t=>{
+ for(const [renderParameter,clickParameters] of [
+  ['v',['v','w']],['w',['h','_x']],['h',['_x','_y']],['x',['x','y']]
+ ]){
+  const {repo,root}=fixture(t),file=path.join(root,'game.js');
+  const source=[
+   'const canvas=document.querySelector("canvas");',
+   'const ctx=canvas.getContext("2d");',
+   'let outside=0;',
+   'function render('+renderParameter+'){'+renderParameter+'.fillRect(0,0,1,1);}',
+   'function handleClick('+clickParameters.join(',')+'){outside++;}'
+  ].join('\n');
+  fs.writeFileSync(file,source);
+  const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+   facilities:['관람차'],maps:['숲','사막'],backgrounds:['낮'],actions:['점프'],motions:['걷기']}};
+  const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,
+   responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+  const docs=new Map([['game.js',source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const generated=docs.get('game.js');
+  assert.doesNotThrow(()=>new vm.Script(generated));
+  const symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+  assert.ok(symbol);
+  const labels=[],canvas={width:1000,height:800};
+  const context={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+   beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+   fillText(value){labels.push(value);}};
+  canvas.getContext=()=>context;
+  const app=vm.runInNewContext(generated+';({render,handleClick,view:()=>'+symbol+
+   ',outside:()=>outside})',{document:{querySelector:()=>canvas},Date,Math,Number});
+  assert.doesNotThrow(()=>app.render(context));
+  assert.ok(labels.includes('GAME WORLD+'),'canvas owner must survive parameter '+renderParameter);
+  app.handleClick(950,10);
+  assert.equal(app.view().open,false,'click owner must survive '+clickParameters.join(','));
+  app.handleClick(950,10);
+  assert.equal(app.view().open,true);
+  assert.equal(app.outside(),0,'overlay clicks remain consumed');
+  assert.equal(fs.readFileSync(file,'utf8'),source);
+ }
+});
+test('one-shot pointer event parameter named v retains offset coordinates',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let outside=0;',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(v){outside++;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차'],maps:['숲'],backgrounds:['낮'],actions:['점프'],motions:['걷기']}};
+ const candidate=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,
+  responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ const generated=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(generated)?.[1];
+ const canvas={width:1000,height:800,getContext:()=>({fillRect(){}})};
+ const app=vm.runInNewContext(generated+';({handleClick,view:()=>'+symbol+
+  ',outside:()=>outside})',{document:{querySelector:()=>canvas},Date,Math,Number});
+ app.handleClick({offsetX:950,offsetY:10});
+ assert.equal(app.view().open,false);
+ app.handleClick({offsetX:950,offsetY:10});
+ assert.equal(app.view().open,true);
+ assert.equal(app.outside(),0);
+});
