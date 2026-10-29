@@ -531,8 +531,14 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
         const studio=task?.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure;
         const studioSource=clean(studio?.sourceRevision);
         const studioArtifact=clean(studio?.artifactIdentity);
-        const taskSource=clean(task?.sourceRevision||task?.baseSourceRevision||task?.robloxSourceCommit);
-        const taskArtifact=clean(task?.robloxBuildArtifactIdentity||task?.artifactIdentity);
+        // Canonical queue normalizes away ad-hoc task revision fields. Bound
+        // build-up identity remains intact and is the appropriate provenance.
+        const taskSource=clean(task?.buildUpDirective?.sourceRevision
+          ||task?.buildUpDirective?.robloxSourceCommit
+          ||task?.sourceRevision||task?.baseSourceRevision||task?.robloxSourceCommit);
+        const taskArtifact=clean(task?.buildUpDirective?.artifactIdentity
+          ||task?.buildUpDirective?.robloxBuildArtifactIdentity
+          ||task?.robloxBuildArtifactIdentity||task?.artifactIdentity);
         const official=studio?.authority==='roblox-official-studio-mcp-product-quality-failure'
           &&Number.isSafeInteger(Number(studio?.workflowRunId))&&Number(studio.workflowRunId)>0
           &&/^[0-9a-f]{40}$/i.test(studioSource)&&/^sha256:[0-9a-f]{64}$/i.test(studioArtifact)
