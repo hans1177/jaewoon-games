@@ -432,3 +432,29 @@ test('empty world tap swings without killing off-target crystal lizards or hitti
   assert.match(source,/function petStrike\(e,manual=false\)\{\s*if\(!petAlive\(\)\|\|!e\|\|e\.hp<=0\|\|e\.crystalHidden\)return false/);
   assert.match(source,/function petTarget\(\)\{return state\.enemies\.find\(e=>e\.netId===state\.pet\.targetId&&!e\.crystalHidden/);
 });
+
+test('two taps register an unrecorded monster before first-hit combat, then render its saved name',()=>{
+ const start=source.indexOf(' const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);');
+ const end=source.indexOf("\n if(state.area==='surface'){",start);
+ assert.ok(start>=0&&end>start,'live monster handler remains in the original world tap');
+ const scan=new Function('state','dist','wx','wy','now','worldPoint','doubleTapTarget',
+   'unlockBestiary','tapArrowAimTarget','currentWeapon','currentRange','showNotice','attack','BESTIARY_INFO',
+   source.slice(start,end));
+ const enemy={x:40,y:0,type:{id:'mossboar',name:'이끼멧돼지',r:20,mood:'neutral'},netId:'boar-1',hp:72,area:'surface'};
+ const state={area:'surface',player:{x:0,y:0},enemies:[enemy],bestiary:{}};
+ let id=null,at=0,attacks=0,registrations=0;
+ const doubleTapTarget=(key,now,action)=>{if(id===key&&now-at<1300){id=null;action();return true}id=key;at=now;return false};
+ const tap=now=>scan(state,(x,y,a,b)=>Math.hypot(x-a,y-b),40,0,now,{monsterId:enemy.netId},
+   doubleTapTarget,key=>{state.bestiary[key]=true;registrations++},()=>{},()=>({}),()=>100,
+   ()=>{},()=>{attacks++},{mossboar:{cat:'neutral'}});
+ tap(1000);assert.equal(attacks,0,'first tap cannot kill an unregistered species');
+ tap(1700);assert.equal(registrations,1);assert.equal(attacks,0);
+ assert.equal(state.bestiary.mossboar,true);
+ tap(2600);assert.equal(attacks,1,'registered species keeps original tap-to-attack');
+ const renderer=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+ assert.match(renderer,/function syncBestiaryName\(actor,e,state,height\)/);
+ assert.match(renderer,/state\.bestiary\?\.\[e\.type\?\.id\]/);
+ assert.match(renderer,/projected\.project\(camera\)/);
+ for(const species of ['toxicmycelium','toxicsporeorb','swampgolem','fearbear'])
+  assert.match(source,new RegExp(species+':\\{cat:'),'missing bestiary record: '+species);
+});
