@@ -193,7 +193,7 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
   assert.match(homepage,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|links\.webSource\|\|''/);
   assert.match(homepage,/exposureAuthority/);
-  assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
+  assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)===JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
   assert.match(homepage,/data-direct-play|dataset\.directPlay/);
 });
@@ -265,7 +265,7 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
 
 test('homepage front door matches approved sample on desktop and mobile',()=>{
   const index=fs.readFileSync('index.html','utf8');
-  assert.match(index,/href="\/asset-library\.html"/);
+  assert.match(index,/href="asset-library\.html"/);
   const assetLibrarySurface=fs.readFileSync('asset-library.html','utf8');
   assert.match(assetLibrarySurface,/회사 에셋 라이브러리/);
   assert.match(assetLibrarySurface,/data-asset-library-version="[1-9]\d*"/);
@@ -327,8 +327,8 @@ test('homepage has one canonical runtime data renderer',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(index,/\nloadData\(\);/);
   assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
-  assert.match(runtime,/const renderCatalog=currentCatalog=>/);
-  assert.match(runtime,/renderCatalog\(catalog\);/);
+  assert.match(runtime,/const renderCatalog=status=>/);
+  assert.match(runtime,/renderCatalog\(verifiedStatus\);/);
   assert.doesNotMatch(runtime,/bindAvailableUnityWebSurfaces|renderCatalog\(boundCatalog\)/);
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
@@ -337,8 +337,8 @@ test('homepage has one canonical runtime data renderer',()=>{
 test('homepage live polling is bounded and event-assisted',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const SYNC_INTERVAL_MS=30000;/);
-  assert.match(runtime,/window\.addEventListener\('focus',refresh\)/);
-  assert.match(runtime,/window\.addEventListener\('online',refresh\)/);
+  assert.match(runtime,/window\.addEventListener\('focus',\(\)=>\{/);
+  assert.match(runtime,/window\.addEventListener\('online',\(\)=>\{/);
   assert.match(runtime,/visibilitychange/);
 });
 
@@ -409,7 +409,7 @@ test('featured hero is explicit and ChatGPT launcher opens internal PWA chat',()
   assert.match(runtime,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|links\.webSource\|\|''/);
   assert.match(runtime,/const actionLabel=links\.web\?'일반 웹게임 플레이':links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':links\.webSource\?'원본 게임 링크 열기':'게임 보기'/);
   assert.doesNotMatch(index,/package=com\.openai\.chatgpt|intent:\/\/chatgpt/);
-  assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
+  assert.match(index,/href="command\.html\?from=chatgpt-shortcut"/);
   assert.match(index,/function openChatGpt\(\)/);
 });
 
@@ -434,7 +434,7 @@ test('homepage does not query Unity Web deployment assets',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(runtime,/bindAvailableUnityWebSurfaces|unityWebTestUrl|unityWebAction/);
   assert.doesNotMatch(runtime,/unity-web-deploy-manifest\.json|probeFetch\(|createUnityInstance/);
-  assert.match(runtime,/renderCatalog\(catalog\);/);
+  assert.match(runtime,/renderCatalog\(verifiedStatus\);/);
   assert.match(runtime,/const SYNC_INTERVAL_MS=30000;/);
 });
 
@@ -533,11 +533,15 @@ test('homepage reuses fetched URLs and unchanged shelf nodes instead of rebuildi
   const {runInNewContext}=await import('node:vm');
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const requests=[];
+  // The live homepage resolves JSON under the current GitHub Pages project base.
   const fetchJson=runInNewContext(source.slice(source.indexOf('const getJson='),source.indexOf('const esc='))+'getJson;',{
-    AbortSignal,fetch:async(url,options)=>{requests.push({url,options});return{ok:true,json:async()=>({value:1})};}
+    AbortSignal,URL,document:{baseURI:'https://hans1177.github.io/jaewoon-games/'},
+    fetch:async(url,options)=>{requests.push({url:String(url),options});return{ok:true,json:async()=>({value:1})};}
   });
   await fetchJson('/game-catalog.json');
-  assert.equal(requests[0].url,'/game-catalog.json');
+  await fetchJson('/jaewoon-games/company-status.json');
+  assert.equal(requests[0].url,'https://hans1177.github.io/jaewoon-games/game-catalog.json');
+  assert.equal(requests[1].url,'https://hans1177.github.io/jaewoon-games/company-status.json');
   assert.equal(requests[0].options.cache,'default');
   assert.ok(requests[0].options.signal);
   const nodes=new Map();let writes=0,appends=0;
@@ -585,18 +589,21 @@ test('homepage front door binds runtime snapshots and the verified web publicati
  const requests=[];let renders=0;
  const data={'/game-catalog.json':{runtimeInfoAuthority:'company-runtime',games:[]},'/company-status.json':{runtimeAuthority:'company-runtime'},'/homepage-platform-exposure.json':{authority:'company-runtime',supportedPlatforms:['ROBLOX','UNITY'],games:[]}};
  const refresh=runInNewContext(source.slice(source.indexOf('async function refresh(){'),source.indexOf('function main(){'))+'refresh;',{
-  refreshInFlight:false,lastSignature:'',portfolioStatus:{},platformExposure:{},getJson:async path=>{requests.push(path);return data[path];},
+  refreshInFlight:false,lastSignature:'',portfolioStatus:{},platformExposure:{},publishedWebRoutes:new Set(),
+  ownerUiRefreshPending:false,reconcileConfirmedDeletions:()=>{},checkDeletionStatus:()=>{},
+  getJson:async path=>{requests.push(path);return data[path];},
   normalizePlatform:String,document:{getElementById:()=>null,querySelector:()=>null,documentElement:{dataset:{}}},
   updateLiveSummary:()=>{},buildFocus:()=>{renders++;},buildGameCenter:()=>{},buildRecentUpdates:()=>{}
  });
  await refresh();assert.deepEqual(requests,['/game-catalog.json','/company-status.json','/homepage-platform-exposure.json','/web-games/publish-manifest.json']);
- await refresh();assert.equal(renders,1);
+ assert.equal(renders,2,'initial safe catalog then runtime-verified render');
+ await refresh();assert.equal(renders,2,'unchanged verified snapshot does not repaint');
 });
 
 test('PWA runtime metadata uses bounded server HTTP caching while scripts remain network-only',async()=>{
  const {runInNewContext}=await import('node:vm');const events={};const calls=[];
  runInNewContext(fs.readFileSync('sw.js','utf8'),{URL,Request,Response,Headers,
-  self:{location:{origin:'https://site.test'},addEventListener:(name,callback)=>{events[name]=callback;}},
+  self:{location:{origin:'https://site.test'},registration:{scope:'https://site.test/'},addEventListener:(name,callback)=>{events[name]=callback;}},
   fetch:async(request,options)=>{calls.push(options);return new Response('ok');},
   caches:{match:()=>{throw Error('runtime must not use offline app cache');}}
  });
@@ -631,7 +638,7 @@ test('read-only secondary homepage keeps primary authority and independently pla
   assert.ok(page.includes('credentials:'));
   assert.ok(page.includes('배포 완료 증거는 아니야'));
   assert.ok(primary.includes('Vercel 보조 홈페이지'));
-  assert.ok(primary.includes('/backup.html'));
+  assert.ok(primary.includes('href="backup.html"'),'project-relative backup link remains reachable');
   assert.equal(ci.split("      - 'backup.html'").length-1,2);
   assert.ok(ci.includes('/backup.html'));
   assert.ok(ci.includes('index.html backup.html company.html'));
