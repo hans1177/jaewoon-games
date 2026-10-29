@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks, robloxQualityRepairFiles } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks, robloxQualityRepairFiles, webRuntimeFailureBuildUpInstruction } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
@@ -16,6 +16,46 @@ import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-archit
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
 
+
+test('existing Pages real browser QA checks legal movement in four directions and true saved XY instead of a single collision-prone axis',()=>{
+  const source=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+  assert.match(source,/for\(const key of \['d','a','w','s'\]\)/);
+  assert.match(source,/game\.keyboard\.down\(key\)/);
+  assert.match(source,/game\.keyboard\.up\(key\)/);
+  assert.match(source,/Math\.hypot\(observed\.x-before\.x,observed\.y-before\.y\)/);
+  assert.match(source,/MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED/);
+  assert.match(source,/startingPosition,movementAttempts,sourceSha:requiredRevision,errors:gameErrors/);
+  assert.match(source,/Math\.hypot\(restoredX-Number\(lastX\),restoredY-Number\(lastY\)\)<100/);
+  assert.match(source,/requireLivePublicationSha\(manifest\.sourceSha,'FOREST_PUBLIC_SOURCE_SHA'\)/);
+  assert.match(source,/POST_PUBLISH_SOURCE_SUPERSEDED/);
+  assert.match(source,/WEB_POST_PUBLICATION_PLAYTEST/);
+});
+
+test('existing Vibe BUILD_UP promotes only source-identified Web runtime failure to an evidence-bound repair instruction',()=>{
+  const sourceRevision='a'.repeat(40);
+  const project={engine:'web',queueRuntimeObserved:true,queueRuntimePassed:false,
+    queueRuntimeEvidencePlatform:'WEB',queueRuntimeSourceRevision:sourceRevision,
+    queueRuntimeFailureStage:'WEB_POST_PUBLICATION_PLAYTEST',
+    queueRuntimeFailureSignature:'desktop: keyboard input failed to move original game state',
+    queueRuntimeRootCauseVerified:false};
+  const instruction=webRuntimeFailureBuildUpInstruction(project);
+  assert.match(instruction,/WEB_POST_PUBLICATION_CAUSAL_REPAIR/);
+  assert.ok(instruction.includes('source-revision='+sourceRevision));
+  assert.match(instruction,/root-cause-verified=NO/);
+  assert.match(instruction,/3D 렌더/);
+  assert.match(instruction,/모바일 터치/);
+  assert.match(instruction,/다음 BUILD_UP 기대치 상승을 주장하지 않는다/);
+  assert.doesNotMatch(instruction,/\bRUNTIME_PASS\b|QA_BYPASS|automaticPromotionAllowed:true/);
+  assert.equal(webRuntimeFailureBuildUpInstruction({...project,engine:'roblox'}),'');
+  assert.equal(webRuntimeFailureBuildUpInstruction({...project,queueRuntimeEvidencePlatform:'UNITY'}),'');
+  assert.equal(webRuntimeFailureBuildUpInstruction({...project,queueRuntimePassed:true}),'');
+  assert.equal(webRuntimeFailureBuildUpInstruction({...project,queueRuntimeObserved:false}),'');
+  assert.equal(webRuntimeFailureBuildUpInstruction({...project,queueRuntimeSourceRevision:''}),'');
+  assert.equal(webRuntimeFailureBuildUpInstruction({...project,queueRuntimeFailureSignature:''}),'');
+  assert.match(webRuntimeFailureBuildUpInstruction({...project,queueRuntimeRootCauseVerified:true}),/root-cause-verified=YES/);
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  assert.match(planner,/if\(project\.engine==='web'\)adaptedGoal\+=webRuntimeFailureBuildUpInstruction\(project\)/);
+});
 
 // 소스 구조 검사 전용 3D fixture. 실행 성공이나 런타임 검증을 뜻하지 않는다.
 const spatialFixture=`<script>const camera=new THREE.PerspectiveCamera();const mesh=new THREE.Mesh();const renderer=new THREE.WebGLRenderer();renderer.render(scene,camera);</script>`;
