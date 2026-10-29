@@ -10325,8 +10325,8 @@ test('Vibe offline generator makes a genuine native UI patch from current Studio
   const original=fs.readFileSync(path.join(root,rel),'utf8');
   const officialFailure={authority:'roblox-official-studio-mcp-product-quality-failure',
     workflowRunId:40901857206,repairSurfaces:['MOBILE_UI'],
-    qualityFailureKinds:['adaptive-ui-commercial-quality'],
-    qualityFailureDetails:[{repairSurface:'MOBILE_UI',
+    // The canonical planner may retain the specific failure in detail ids only.
+    qualityFailureDetails:[{id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',
       observed:JSON.stringify({overlapPairs:8,largeBlockingOverlayCount:0})}]};
   const order={target:'roblox',goal:'actual Studio UI repair of overlapping HUD and mobile menu',
     selectedTask:{buildUpDirective:{playtestRuntimeFindings:{studioQualityFailure:officialFailure}}}};
