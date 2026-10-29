@@ -360,7 +360,7 @@ test('complex existing calls, duplicate anchors and string literals remain fail-
   assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),modified);
  }
 });
-test('server-local Luau connects verified parameterized call without changing source',t=>{
+test('server-local native Luau connects verified parameterized call without changing source',t=>{
  const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
  const file='server/Game.server.luau';
  const source='local score=0\nlocal function give(actor: any)\n score += actor.gain\nend\n'+
