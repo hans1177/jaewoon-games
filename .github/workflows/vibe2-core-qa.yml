@@ -8,6 +8,9 @@ on:
       - vibe2-main-integration-20260916
     paths:
       - 'assets/roblox/common-motion-v1/**'
+      - 'assets/vibe-runtime.js'
+      - 'assets/vibe-web-runtime-runner.js'
+      - 'qa/vibe-asset-loading.test.mjs'
       - 'web-games/**'
       - 'tools/asset-health-check.mjs'
       - 'qa/insect-survival.test.mjs'
@@ -181,6 +184,9 @@ on:
       - vibe2-unreal-core
     paths:
       - 'assets/roblox/common-motion-v1/**'
+      - 'assets/vibe-runtime.js'
+      - 'assets/vibe-web-runtime-runner.js'
+      - 'qa/vibe-asset-loading.test.mjs'
       - 'web-games/**'
       - 'tools/asset-health-check.mjs'
       - 'qa/insect-survival.test.mjs'

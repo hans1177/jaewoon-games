@@ -15,20 +15,31 @@ export class JaewoonVibeRuntime {
     this.settings = { ...this.defaultSettings, ...(this.load().settings || {}) };
     this.audio = new Map();
     this.cleanup = [];
-    // [에셋] 게임 URL을 기본값으로, 배포 루트를 명시하면 해당 루트로 해석한다.
+    // [에셋 경로] 로컬 페이지와 공통 assets 루트를 분리해 GitHub Pages 하위 배포 경로를 보존한다.
     const documentUrl = typeof document !== 'undefined' ? document.baseURI : import.meta.url;
     this.assetBaseUrl = assetBaseUrl == null
       ? documentUrl
       : new URL(String(assetBaseUrl).replace(/\/?$/, '/'), documentUrl).href;
+    this.assetRootUrl = assetBaseUrl == null
+      ? new URL('../', import.meta.url).href
+      : this.assetBaseUrl;
     this.assetCache = new Map();
   }
 
-  // [에셋 경로] GitHub Pages 하위 경로에서도 origin 루트(/) 대신 설정한 게임 루트를 기준으로 한다.
+  // [에셋 경로] 일반 상대 경로는 게임 페이지 기준, /assets 등 루트 경로는 프로젝트 기준이다.
   resolveAssetUrl(path) {
     const value = String(path ?? '').trim();
     if (!value) throw new Error('asset path required');
-    const relative = value.startsWith('/') && !value.startsWith('//') ? value.slice(1) : value;
-    const url = new URL(relative, this.assetBaseUrl);
+    let url;
+    if (value.startsWith('/') && !value.startsWith('//')) {
+      const root = new URL(this.assetRootUrl);
+      const absoluteInProject = root.pathname !== '/' && value.startsWith(root.pathname);
+      url = absoluteInProject ? new URL(value, root.origin) : new URL(value.slice(1), root);
+      if (url.origin !== root.origin || !url.pathname.startsWith(root.pathname))
+        throw new Error('asset path escapes project root');
+    } else {
+      url = new URL(value, this.assetBaseUrl);
+    }
     if (!['http:', 'https:', 'blob:', 'data:'].includes(url.protocol)) throw new Error('unsafe asset URL');
     return url.href;
   }
