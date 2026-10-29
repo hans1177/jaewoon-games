@@ -6052,7 +6052,10 @@ test('owner directive allows verified gameplay tuning on every active WEB and RO
     const gameId='owner-full-game-'+engine;
     const projectPath=engine+'-games/'+gameId;
     fs.mkdirSync(path.join(root,projectPath),{recursive:true});
-    fs.writeFileSync(path.join(root,projectPath,'game.js'),'function updateEnemy() {}','utf8');
+    if(engine==='roblox'){
+      fs.mkdirSync(path.join(root,projectPath,'server'),{recursive:true});
+      fs.writeFileSync(path.join(root,projectPath,'server','Game.server.luau'),'local function updateEnemy() end','utf8');
+    }else fs.writeFileSync(path.join(root,projectPath,'game.js'),'function updateEnemy() {}','utf8');
     writeStudioDesign(root,gameId);
     const project={gameId,engine,releaseState:'development-confirmed',projectPath,name:gameId};
     for(const focus of ['CORE_FUN','PROGRESSION']){
