@@ -69,10 +69,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 
 <div id="startOverlay" class="overlay show"><div class="panel">
  <div class="eyebrow">5스테이지 연속 도전 · 최대 4인 협동</div><h1>보석 생존전</h1>
- <p>선택한 전장부터 수정 동굴·폐허 정원·화산 채굴장을 순환한 뒤 서리 성채와 심연 왕좌에 도전해. 각 스테이지에서 5분을 버티고 보스를 잡아. 능력은 다음 스테이지에도 유지돼. 고유 기술은 오른쪽 원형 버튼이나 전장 탭, Q키로 사용해.</p>
+ <p>수정 동굴 → 폐허 정원 → 화산 채굴장 → 서리 성채 → 심연 왕좌. 각 스테이지에서 5분을 버티고 보스를 잡아. 능력은 다음 스테이지에도 유지돼. 고유 기술은 오른쪽 원형 버튼이나 전장 탭, Q키로 사용해.</p>
  <div id="heroes" class="heroes" role="group" aria-label="캐릭터 선택"></div>
- <h2>첫 전장 선택</h2><p>처음 세 전장의 시작 순서를 골라. 전투 난이도와 보상은 진행 단계대로 유지돼.</p>
- <div id="stages" class="heroes" role="group" aria-label="첫 전장 선택"></div>
  <details open><summary>온라인 협동 · 친구와 함께</summary>
  <p>이메일 없이 방을 만들거나 숫자 한 자리(0~9)를 입력해 참가해. 최대 4명이 함께 플레이하고 방장이 시작해. 같은 번호는 동시에 한 방만 사용해.</p>
  <div class="netRow"><button id="netCreate" type="button">방 만들기</button></div>
@@ -111,7 +109,6 @@ const HEROES={
  rogue:{name:'그림자 추적자',model:'rogue',skill:'그림자 질주',cooldown:8,desc:'바라보는 방향으로 돌진 · 단검 난사',color:'#f0a1cf'},
  cleric:{name:'새벽 치유사',model:'cleric',skill:'새벽의 기도',cooldown:16,desc:'주변 동료 55 회복 · 적에게 성광 피해',color:'#ffe3a1'}
 };
-let firstStageIndex=0;
 let stageId='cavern',stageIndex=0,selectedHero='guardian',stageCleared=false,won=false;
 const net={client:null,connected:false,id:'',host:'',roster:[],peers:new Map(),inputs:new Map(),seq:0,lastFrame:0,sendAt:0,inputAt:0,skillRequest:0,seenSkills:new Map(),chunks:new Map(),lastPacket:0};
 const isHost=()=>!net.connected||net.host===net.id;
@@ -214,7 +211,7 @@ function burst(x,y,color,n){
 
 // ==================== 메인 ====================
 function reset(){
- releaseInputs();stageIndex=0;stageId=STAGE_ORDER[firstStageIndex];stageCleared=false;won=false;net.lastFrame=0;
+ releaseInputs();stageIndex=0;stageId=STAGE_ORDER[0];stageCleared=false;won=false;net.lastFrame=0;
  elapsed=0;spawnTimer=0;kills=0;bossSpawned=false;boss=null;screenShake=0;
  enemies.length=0;projectiles.length=0;gems.length=0;effects.length=0;poisonPools.length=0;particles.length=0;
  Object.assign(player,{x:WORLD.width/2,y:WORLD.height/2,r:15,hp:START_HP,maxHp:START_HP,speed:220,inv:0,gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92});
@@ -366,7 +363,7 @@ function useHeroSkill(unit=player){
 }
 function nextStage(){
  if(!stageCleared||stageIndex>=4)return;
- stageIndex++;stageId=STAGE_ORDER[stageIndex<3?(stageIndex+firstStageIndex)%3:stageIndex];stageCleared=false;won=false;elapsed=0;spawnTimer=0;boss=null;bossSpawned=false;
+ stageIndex++;stageId=STAGE_ORDER[stageIndex];stageCleared=false;won=false;elapsed=0;spawnTimer=0;boss=null;bossSpawned=false;
  enemies.length=0;projectiles.length=0;poisonPools.length=0;effects.length=0;gems.length=0;
  for(const a of actors()){a.x=WORLD.width/2;a.y=WORLD.height/2;if(a.hp<=0)a.hp=Math.ceil(a.maxHp*.3);a.inv=1;a.slow=0;}
  running=true;paused=false;$('endOverlay').classList.remove('show');ui.bossHud.classList.remove('show');updateUi();
@@ -620,18 +617,6 @@ function requestSkill(){if(!running||paused||player.hp<=0)return;if(!isHost()){n
 $('heroSkill').onclick=requestSkill;
 // 실제 전장만 탭하면 스킬 사용. HUD·조이스틱·선택 화면은 제외.
 canvas.addEventListener('pointerdown',()=>{if(running&&!paused)requestSkill();});
-// UI: 기존 전장·원본 모델을 선택에 연결한다. 선택은 실행 중 변경하지 않으며 방장 프레임이 협동 전장을 결정한다.
-for(const [index,id] of STAGE_ORDER.slice(0,3).entries()){
- const button=document.createElement('button');button.type='button';button.dataset.stage=id;
- button.setAttribute('aria-pressed',String(index===firstStageIndex));
- const title=document.createElement('b');title.textContent=STAGES[id].name;button.appendChild(title);
- const description=document.createElement('span');description.className='heroNote';
- description.textContent=['푸른 수정과 동굴 유적','초록 정원과 고대 폐허','붉은 화산과 채굴 유적'][index];button.appendChild(description);
- button.onclick=()=>{if(running||!isHost())return;firstStageIndex=index;
-  document.querySelectorAll('[data-stage]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.stage===id)));
- };
- $('stages').appendChild(button);
-}
 for(const [id,hero] of Object.entries(HEROES)){const button=document.createElement('button');button.dataset.hero=id;button.setAttribute('aria-pressed',String(id===selectedHero));button.innerHTML='<b>'+hero.name+'</b><span class="heroNote">'+hero.skill+' · '+hero.desc+'</span>';button.onclick=()=>{if(running)return;selectedHero=id;player.hero=id;document.querySelectorAll('[data-hero]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hero===id)));};$('heroes').appendChild(button);}
 function networkStatus(message){$('netStatus').textContent=message;}
 function syncRoster(list){
@@ -647,8 +632,7 @@ function applyFrame(frame){
  if(!frame||!Array.isArray(frame.units)||frame.units.length>4||!Number.isInteger(frame.stage)||frame.stage<0||frame.stage>4||!Array.isArray(frame.enemies)||frame.enemies.length>1800||!Array.isArray(frame.shots)||frame.shots.length>2000||!Array.isArray(frame.gems)||frame.gems.length>5000)return;
  const fields=['x','y','r','hp','maxHp','speed','inv','skillCd','skillVisual','attackVisual','shield','slow','revive','faceX','faceY','basicDamage','basicRate','basicSpeed','magnet'];
  for(const row of frame.units){if(!net.roster.some(p=>p.userId===row.id))continue;const unit=row.id===net.id?player:net.peers.get(row.id);if(!unit)continue;for(const key of fields)if(Number.isFinite(row[key]))unit[key]=row[key];if(HEROES[row.hero])unit.hero=row.hero;}
- firstStageIndex=Number.isInteger(frame.firstStageIndex)&&frame.firstStageIndex>=0&&frame.firstStageIndex<3?frame.firstStageIndex:0;
- stageIndex=frame.stage;stageId=STAGE_ORDER[stageIndex<3?(stageIndex+firstStageIndex)%3:stageIndex];elapsed=frame.time;kills=frame.kills;running=!!frame.running;paused=!!frame.paused;stageCleared=!!frame.clear;Object.assign(abilityLv,frame.abilities);Object.assign(player,frame.progress);
+ stageIndex=frame.stage;stageId=STAGE_ORDER[stageIndex];elapsed=frame.time;kills=frame.kills;running=!!frame.running;paused=!!frame.paused;stageCleared=!!frame.clear;Object.assign(abilityLv,frame.abilities);Object.assign(player,frame.progress);
  enemies.splice(0,enemies.length,...frame.enemies.map(e=>({...ENEMY_TYPES[e[0]],type:e[0],x:e[1],y:e[2],r:e[3],hp:e[4],maxHp:e[5],speed:e[6],hit:e[7],boss:e[0]==='boss',charge:e[8]})));
  projectiles.splice(0,projectiles.length,...frame.shots.map(p=>({kind:p[0],x:p[1],y:p[2],vx:p[3],vy:p[4],r:p[5],color:p[6]})));
  gems.splice(0,gems.length,...frame.gems.map(g=>({x:g[0],y:g[1],r:5,v:1})));poisonPools.splice(0,poisonPools.length,...frame.pools);effects.splice(0,effects.length,...frame.effects);
@@ -679,7 +663,7 @@ function networkTick(now){
  }
  if(now-net.sendAt<200)return;net.sendAt=now;
  const units=actors().map(a=>{const row={id:a===player?net.id:a.netId,hero:a.hero};for(const k of ['x','y','r','hp','maxHp','speed','inv','skillCd','skillVisual','attackVisual','shield','slow','revive','faceX','faceY','basicDamage','basicRate','basicSpeed','magnet'])row[k]=Math.round((a[k]||0)*100)/100;return row;});
- const frame=JSON.stringify({stage:stageIndex,firstStageIndex,time:elapsed,kills,running,paused,clear:stageCleared,won,ended:$('endOverlay').classList.contains('show'),boss:bossSpawned,units,abilities:abilityLv,progress:{gems:player.gems,gemNeed:player.gemNeed,choices:player.choices},enemies:enemies.map(e=>[e.type,Math.round(e.x),Math.round(e.y),e.r,Math.ceil(e.hp),Math.ceil(e.maxHp),e.speed,e.hit,e.charge||0]),shots:projectiles.map(p=>[p.kind,Math.round(p.x),Math.round(p.y),p.vx,p.vy,p.r,p.color]),gems:gems.map(g=>[Math.round(g.x),Math.round(g.y)]),pools:poisonPools.map(p=>({...p})),effects:effects.slice(-40)});
+ const frame=JSON.stringify({stage:stageIndex,time:elapsed,kills,running,paused,clear:stageCleared,won,ended:$('endOverlay').classList.contains('show'),boss:bossSpawned,units,abilities:abilityLv,progress:{gems:player.gems,gemNeed:player.gemNeed,choices:player.choices},enemies:enemies.map(e=>[e.type,Math.round(e.x),Math.round(e.y),e.r,Math.ceil(e.hp),Math.ceil(e.maxHp),e.speed,e.hit,e.charge||0]),shots:projectiles.map(p=>[p.kind,Math.round(p.x),Math.round(p.y),p.vx,p.vy,p.r,p.color]),gems:gems.map(g=>[Math.round(g.x),Math.round(g.y)]),pools:poisonPools.map(p=>({...p})),effects:effects.slice(-40)});
  const total=Math.ceil(frame.length/10000);if(total>32)return;net.seq++;for(let part=0;part<total;part++)net.client.sendEvent({action:'gem-frame',seq:net.seq,part,total,data:frame.slice(part*10000,(part+1)*10000)});
 }
 function multiplayer(){

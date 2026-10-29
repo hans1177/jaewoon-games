@@ -264,3 +264,41 @@ test('scheduled WEB retry is restricted to the authenticated owner WEB workflow'
   assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,
     environment:{...env,GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_ACTOR:'hans1177'}}).githubHosted,true);
 });
+
+// 회귀: 큰 파일의 뒤쪽 책임 함수와 연결 변경을 기존 검증 경로로 처리한다.
+test('WEB large file context reaches late responsible functions and exact dependencies',async()=>{
+ const prefix='/*'+('unrelated padding '.repeat(4500))+'*/\n';
+ const functions=Array.from({length:180},(_,i)=>'function idle'+i+'(){return '+i+';}').join('\n');
+ const original=prefix+functions+'\nfunction combatDependency(){return 12;}\nfunction lateAttack(){return combatDependency()+1;}';
+ let prompt='';
+ const edit=await proposeWebVibeChange({gameId:'demo',goal:'lateAttack combat improvement',responsibleSymbols:['lateAttack']},
+  {relative:'web-games/demo/game.mjs',original},{cloud:true,apiKey:'fixture',geminiImpl:async request=>{
+    prompt=request.contents[0].parts[0].text;
+    return {text:JSON.stringify({edits:[{oldText:'function lateAttack(){return combatDependency()+1;}',newText:'function lateAttack(){return combatDependency()+2;}'}],reason:'actual existing function change'})};
+  }});
+ assert.ok(prompt.includes('COMPLETE FUNCTION lateAttack'));
+ assert.ok(prompt.includes('function combatDependency(){return 12;}'));
+ assert.ok(!prompt.includes(prefix.trim()));
+ assert.ok(edit.updated.endsWith('function lateAttack(){return combatDependency()+2;}'));
+});
+test('WEB connected edits are atomic, source anchored and retain final save and syntax guards',()=>{
+ const original='const firstValue=1; const secondValue=2; localStorage.getItem("existing-save");';
+ const change=safeWebVibeReplacement(original,JSON.stringify({edits:[
+  {oldText:'const firstValue=1;',newText:'const firstValue=3;'},
+  {oldText:'const secondValue=2;',newText:'const secondValue=4;'}
+ ]}),{relative:'game.mjs'});
+ assert.ok(change.updated.includes('firstValue=3'));
+ assert.ok(change.updated.includes('secondValue=4'));
+ assert.equal(change.edits.length,2);
+ assert.throws(()=>safeWebVibeReplacement(original,JSON.stringify({edits:[
+  {oldText:'const firstValue=1;',newText:'const firstValue=3;'},
+  {oldText:'localStorage.getItem("existing-save")',newText:'localStorage.getItem("changed-save")'}
+ ]}),{relative:'game.mjs'}),/SAVE_KEY_CHANGED/);
+ assert.throws(()=>safeWebVibeReplacement(original,JSON.stringify({edits:[
+  {oldText:'const firstValue=1;',newText:'const firstValue=3;'},
+  {oldText:'firstValue=1;',newText:'firstValue=4;'}
+ ]}),{relative:'game.mjs'}),/UNSAFE_OR_NONUNIQUE/);
+ const block='function largeCombat(){return ['+Array.from({length:1800},(_,i)=>i).join(',')+'];}';
+ assert.ok(safeWebVibeReplacement(block,JSON.stringify({oldText:block,newText:block.replace('return [','return [999,')}),{relative:'game.mjs'}).updated.includes('[999,'));
+ assert.throws(()=>safeWebVibeReplacement(original,JSON.stringify({edits:[{oldText:'const firstValue=1;',newText:'const firstValue=;'}]}),{relative:'game.mjs'}));
+});

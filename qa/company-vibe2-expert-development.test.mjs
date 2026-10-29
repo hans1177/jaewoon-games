@@ -175,3 +175,13 @@ test('canonical Vibe development context exposes expert targets to the existing 
   assert.ok(context.repairLoop.responsibleTargets.includes('placeTower'));
   assert.ok(context.repairLoop.retryContract.includes('TRACE_TO_PRIMARY_STATE_WRITER'));
 });
+
+// 회귀: 기존 기본 분석 범위는 유지하며 웹 책임 탐색만 더 큰 함수 목록을 요청할 수 있다.
+test('function inspection can reach late web symbols without changing default callers',()=>{
+ const source=Array.from({length:200},(_,i)=>'function action'+i+'(){return '+i+';}').join('\n');
+ assert.equal(inspectSourceFunctions(source,{language:'web'}).length,160);
+ const expanded=inspectSourceFunctions(source,{language:'web',maxFunctions:4096});
+ assert.equal(expanded.length,200);
+ assert.equal(expanded.at(-1).name,'action199');
+ assert.equal(source.slice(expanded.at(-1).start,expanded.at(-1).end),'function action199(){return 199;}');
+});
