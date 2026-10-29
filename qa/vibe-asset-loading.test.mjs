@@ -130,7 +130,7 @@ test('generated game honors explicit assets and rejects unsafe or unsupported so
  assert.throws(()=>normalizeGeneratedGameAssets({assets:[{id:'player',path:'assets/a.png'},{id:'player',path:'assets/b.png'}]}),/duplicate game asset/);
  const basic=buildGeneratedGame({packageData:{gameId:'no-assets',content:{}}});
  assert.ok(basic.html.includes('const ASSET_MANIFEST=[];'));
- assert.ok(basic.html.includes("import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js'"));
+ assert.ok(basic.html.includes("import { JaewoonVibeRuntime, createVibeModelSprites } from '../../assets/vibe-runtime.js'"));
  const configured=buildGeneratedGame({packageData:{gameId:'approved',assets:{player:'assets/player.png',bgm:'audio/music.ogg'}}});
  assert.ok(configured.html.includes('"path":"assets/player.png"'));
  assert.ok(configured.html.includes('"path":"audio/music.ogg"'));
@@ -144,7 +144,7 @@ test('generated game gates startup on asset loading and draws provided assets',a
  const html=buildGeneratedGame({packageData:{gameId:'qa-generated-assets',assets:{background:'assets/bg.png',player:'assets/player.png',enemy:'assets/enemy.png',bgm:'audio/bgm.ogg'}}}).html;
  const scriptSource=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
  assert.ok(scriptSource,'generated module script exists');
- const body=scriptSource.replace(/^\s*import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
+ const body=scriptSource.replace(/^import \{[^\n]+\} from '[^']+';$/gm,'');
  let resolveAssets,loadedEntries,rafCount=0,frame=null,plays=0;
  const drawCalls=[],listeners=new Map();
  const canvasContext={clearRect(){},fillRect(){},fillText(){},beginPath(){},arc(){},fill(){},drawImage:(...args)=>drawCalls.push(args)};
@@ -164,7 +164,7 @@ test('generated game gates startup on asset loading and draws provided assets',a
    playAudio(name){assert.equal(name,'generated-bgm');plays++}
    destroy(){}
  }
- const context=createContext({JaewoonVibeRuntime:FakeRuntime,document:doc,window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(fn){rafCount++;frame=fn},setTimeout:()=>0,clearTimeout(){},console});
+ const context=createContext({JaewoonVibeRuntime:FakeRuntime,createVibeCanvasVfx:()=>({burst(){},draw(){},update(){},dispose(){}}),VibePresentationEngine:class {constructor(){this.settings={reducedMotion:false}}update(){}tween(){}dispose(){}},document:doc,window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(fn){rafCount++;frame=fn},setTimeout:()=>0,clearTimeout(){},console});
  new Script(body,{filename:'generated-game.js'}).runInContext(context);
  assert.equal(rafCount,0,'game loop must wait for loading');
  assert.equal(getElementById('status').textContent,'에셋 로딩 0%');
@@ -184,13 +184,13 @@ test('generated game gates startup on asset loading and draws provided assets',a
 
 test('generated game reports missing asset failure instead of starting a broken scene',async()=>{
  const html=buildGeneratedGame({packageData:{gameId:'qa-missing',assets:{player:'assets/missing.png'}}}).html;
- const body=html.match(/<script type="module">([\s\S]*?)<\/script>/)[1].replace(/^\s*import \{ JaewoonVibeRuntime \} from '[^']+';\s*/,'');
+ const body=html.match(/<script type="module">([\s\S]*?)<\/script>/)[1].replace(/^import \{[^\n]+\} from '[^']+';$/gm,'');
  let rejectAssets,rafCount=0;
  const ui=new Map();
  const getElementById=id=>{if(!ui.has(id))ui.set(id,{textContent:'',style:{},addEventListener(){},setPointerCapture(){},getBoundingClientRect:()=>({width:140,left:0,top:0})});return ui.get(id)};
  getElementById('game').width=640;getElementById('game').height=480;getElementById('game').getContext=()=>({});
  class FakeRuntime{boot(){}setScene(){return new Promise((resolve,reject)=>{rejectAssets=reject})}loadProgress(){return null}destroy(){}}
- const ctx=createContext({JaewoonVibeRuntime:FakeRuntime,document:{getElementById,addEventListener(){},removeEventListener(){}},window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(){rafCount++},setTimeout:()=>0,clearTimeout(){},console:{error(){}}});
+ const ctx=createContext({JaewoonVibeRuntime:FakeRuntime,createVibeCanvasVfx:()=>({burst(){},draw(){},update(){},dispose(){}}),VibePresentationEngine:class {constructor(){this.settings={reducedMotion:false}}update(){}tween(){}dispose(){}},document:{getElementById,addEventListener(){},removeEventListener(){}},window:{addEventListener(){}},performance:{now:()=>100},requestAnimationFrame(){rafCount++},setTimeout:()=>0,clearTimeout(){},console:{error(){}}});
  new Script(body).runInContext(ctx);
  rejectAssets(new Error('404'));
  await new Promise(resolve=>setImmediate(resolve));
@@ -662,7 +662,7 @@ test('game session loads declared scene assets, preserves failed transition and 
  const original=globalThis.fetch;
  globalThis.fetch=async url=>new Response(String(url).includes('missing')?'not found':'{"ok":true}',{status:String(url).includes('missing')?404:200});
  try{
-   const session=new JaewoonGameSession({gameId:'scene-asset-session-qa',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+   const session=new JaewoonGameSession({gameId:'scene-asset-session-qa',genre:'survival',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
    session.registerScene('town',{assets:[{id:'shared',path:'shared.json'}]});
    session.registerScene('cave',{assets:[{id:'shared',path:'shared.json'},{id:'map',path:'map.json'}]});
    session.registerScene('broken',{assets:[{id:'missing',path:'missing.json'}]});
@@ -706,7 +706,7 @@ test('asset-free scene changes cancel pending scene loading without changing sav
   else signal.addEventListener('abort',fail,{once:true});
  });
  try{
-  const session=new JaewoonGameSession({gameId:'asset-free-scene-qa',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+  const session=new JaewoonGameSession({gameId:'asset-free-scene-qa',genre:'survival',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
   session.registerScene('menu');
   session.registerScene('loading',{assets:[{id:'map',path:'slow.json'}]});
   assert.equal(session.goToScene('menu'),'menu');
@@ -737,7 +737,7 @@ test('scene enter and checkpoint restore receive loaded scene assets',async()=>{
  globalThis.fetch=async()=>new Response('{"ready":true}',{status:200});
  try{
   const visits=[];
-  const session=new JaewoonGameSession({gameId:'scene-enter-assets-qa',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
+  const session=new JaewoonGameSession({gameId:'scene-enter-assets-qa',genre:'survival',autoRestore:false,runtimeOptions:{assetBaseUrl:'https://example.com/'}});
   session.registerScene('menu');
   session.registerScene('world',{assets:[{id:'map',path:'world.json'}],enter:ctx=>visits.push(ctx.assets?.map?.ready)});
   await session.goToScene('world');

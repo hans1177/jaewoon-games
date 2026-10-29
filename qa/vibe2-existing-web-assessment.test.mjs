@@ -301,9 +301,20 @@ test('island-village legacy source retains save and playable startup without mis
   assert.match(html,/requestAnimationFrame\(frame\)/);
   assert.match(html,/<canvas\b[^>]*id=["']game["']/i);
   assert.doesNotMatch(html,/Approved Web Bootstrap|\/path\/to\/source\.js/i);
-  const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  const scripts=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
   assert.ok(scripts.length>0,'existing source must have a startup script');
-  for(const script of scripts)assert.doesNotThrow(()=>new vm.Script(script[1],{filename:file}));
+  for(const [,attributes,body] of scripts){
+    if(!body.trim())continue;
+    if(/\btype\s*=\s*['"]importmap['"]/i.test(attributes)){
+      assert.doesNotThrow(()=>JSON.parse(body));continue;
+    }
+    if(/\btype\s*=\s*['"]module['"]/i.test(attributes)){
+      const checked=spawnSync(process.execPath,['--input-type=module','--check'],
+        {input:body,encoding:'utf8',timeout:10000});
+      assert.equal(checked.status,0,checked.stderr);continue;
+    }
+    assert.doesNotThrow(()=>new vm.Script(body,{filename:file}));
+  }
 });
 
 test('large Web HTML is read completely from checkout and is never mistaken for missing source',()=>{
@@ -368,14 +379,7 @@ test('star-frontier asteroid source replay terminates and preserves original sec
   ]);
 });
 
-test('survival2 historical playable source recovery keeps saved progress and original atlas',()=>{
-  const root=path.join('web-games','survival2');
-  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-  assert.match(html,/jaewoon-survival2-v3/);
-  assert.match(html,/requestAnimationFrame\(loop\)/);
-  assert.match(html,/getContext\('2d'\)/);
-  assert.doesNotMatch(html,/Approved Web Bootstrap|Simulated game logic/);
-  assert.ok(fs.statSync(path.join(root,'assets','survival-atlas.svg')).size>100);
-  for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))
-    if(match[1].trim())assert.doesNotThrow(()=>new vm.Script(match[1]));
+test('owner-retired survival2 stays removed from the canonical Web source',()=>{
+  assert.equal(fs.existsSync(path.join('web-games','survival2','index.html')),false);
+  assert.equal(fs.existsSync(path.join('web-games','survival2','assets','survival-atlas.svg')),false);
 });

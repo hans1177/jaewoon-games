@@ -745,6 +745,12 @@ test('offline general function rewrite composes original Web event handler from 
  assert.throws(()=>run({...req,sourceSha256:'0'.repeat(64)}),/STALE_SOURCE/);
  assert.throws(()=>run({...req,scenarios:scenarios.slice(0,1)}),/INDEPENDENT_SCENARIOS_REQUIRED/);
  assert.throws(()=>run({...req,find:'return false;'}),/ANCHOR_MISMATCH/);
+ fs.writeFileSync(path.join(root,'game.js'),original.replace('return false;','return 42;'));
+ assert.throws(()=>run(req),/RETURN_CONTRACT/);
+ fs.writeFileSync(path.join(root,'game.js'),original.replace('return false;','return phase;'));
+ assert.throws(()=>run(req),/RETURN_CONTRACT/);
+ fs.writeFileSync(path.join(root,'game.js'),original.replace('return false;','phase = "active";'));
+ assert.throws(()=>run(req),/RETURN_CONTRACT/);
 });
 
 test('model-free Web rule rewrite executes its final original function, preserving caller contract',t=>{
@@ -821,6 +827,8 @@ test('offline Luau state function rewrite stays within original function and can
  const preserved=generate();
  assert.match(preserved.edits[0].replace,/^function advance\(eventName\)/);
  assert.equal(preserved.vibe59TestPlan.pass,true);
+ fs.writeFileSync(path.join(root,'main.luau'),original.replace('return false','return 42'));
+ assert.throws(generate,/RETURN_CONTRACT/);
  fs.writeFileSync(path.join(root,'main.luau'),original+'local function advance(eventName)\n return false\nend\n');
  assert.throws(generate,/FUNCTION_OWNER_AMBIGUOUS/);
  fs.writeFileSync(path.join(root,'main.luau'),original.replace('return false','DataStoreService:UpdateAsync("key")'));
