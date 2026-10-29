@@ -525,6 +525,8 @@ export function createComplexGameCandidate({plan,sourceRoot,target='web'}={}){
    throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:RETURN_CONTRACT');
   const writes=group.flatMap(atom=>atom.outputSymbols);
   if(new Set(writes).size!==writes.length)throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:STATE_WRITE');
+  const calls=group.flatMap(atom=>atom.effects.filter(effect=>effect.startsWith('CALL_EXISTING_FUNCTION:')));
+  if(new Set(calls).size!==calls.length)throw Error('VIBE2_COMPLEX_OVERLAPPING_EDIT:DUPLICATE_CALL');
   const changes=group.map((atom,index)=>{
    const {find,replace}=atom.sourcePatch;
    let prefix=0,suffix=0;
