@@ -125,6 +125,9 @@ test('existing line-defense game source is indexed without speculative edits to 
 
 
 test('real existing line-defense source candidate starts in a real Chromium browser without changing live game files',t=>{
+  const chrome=['google-chrome','google-chrome-stable','chromium','chromium-browser']
+    .some(bin=>spawnSync(bin,['--version'],{encoding:'utf8'}).status===0);
+  if(!chrome){t.skip('Chrome unavailable in core runner; mandatory Playwright practice-runtime checks actual mobile game');return}
   const liveRoot=path.resolve('web-games/line-defense'),relative='index.html';
   const source=fs.readFileSync(path.join(liveRoot,relative),'utf8');
   const order={selectedTask:{ownerDirective:true,gameId:'line-defense',
