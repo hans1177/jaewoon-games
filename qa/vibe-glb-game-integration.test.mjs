@@ -65,9 +65,9 @@ test('existing runtime verifies real GLB header and byte hash before scene cachi
   header.setUint32(16, 0x4e4f534a, true);
   const hash = createHash('sha256').update(new Uint8Array(glb)).digest('hex');
   const originalFetch = globalThis.fetch;
-  const originalCrypto = globalThis.crypto;
+  const originalCrypto = Object.getOwnPropertyDescriptor(globalThis,'crypto');
   try {
-    globalThis.crypto=webcrypto;
+    Object.defineProperty(globalThis,'crypto',{configurable:true,value:webcrypto});
     globalThis.fetch=async()=>({ok:true,arrayBuffer:async()=>glb});
     const runtime=new JaewoonVibeRuntime({gameId:'glb-hash-test',assetBaseUrl:'https://example.test/'});
     const bytes=await runtime.readAsset({url:'https://example.test/actor.glb',type:'binary',format:'glb',sha256:hash});
@@ -78,6 +78,7 @@ test('existing runtime verifies real GLB header and byte hash before scene cachi
     runtime.destroy();
   } finally {
     globalThis.fetch=originalFetch;
-    globalThis.crypto=originalCrypto;
+    if(originalCrypto)Object.defineProperty(globalThis,'crypto',originalCrypto);
+    else delete globalThis.crypto;
   }
 });

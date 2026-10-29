@@ -543,6 +543,9 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
         const studioSignature=officialStudio?createHash('sha256')
           .update(JSON.stringify(observations.sort((a,b)=>a[0]-b[0]||a[1]-b[1]))).digest('hex'):'none';
         const fingerprint='source-no-model-codegen-sha256:'+nativeCodegenSha256;
+        // [반복 실패 차단] 검증 안 된 Studio 자료는 같은 생성기에서 새로운 시도로 세지 않는다.
+        // 생성기 자체가 달라졌을 때만 별도의 코드 개선 재검토를 허용한다.
+        if(studio&&!officialStudio&&evidence.includes(fingerprint))return task;
         const attempt='source-no-model-attempt-sha256:'+createHash('sha256')
           .update(nativeCodegenSha256+'|'+studioSignature).digest('hex');
         const tried=evidence.filter(value=>clean(value).startsWith('source-no-model-attempt-sha256:'));

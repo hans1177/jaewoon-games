@@ -1139,7 +1139,14 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   let rewritten=compiled.source;
   if(autoFunctionRewrite){
     if(req.robloxServerAction)throw Error('VIBE59_FUNCTION_REWRITE_SERVER_AUTHORITY');
+    // [원본 함수 계약] 이벤트 핸들러가 반환하던 값의 형식은 보존한다.
+    // 불리언이 아닌 기존 반환 계약은 재작성하지 않고 거부한다.
     if(req.machine){
+      const originalBody=executableText(originalFunction.original,
+        target==='roblox'?'luau':'javascript').slice(originalFunction.header.length);
+      const returns=[...originalBody.matchAll(/\breturn\b\s*([^;\n}\r]*)/g)];
+      if(!returns.length||returns.some(row=>!['true','false'].includes(row[1].trim())))
+        throw Error('VIBE59_FUNCTION_REWRITE_RETURN_CONTRACT');
       // 생성기의 헤더 표기(공백/local)가 달라도 원본 선언을 정확히 보존한다.
       const generatedHeader=target==='roblox'
         ?/^(?:local\s+)?function\s+[A-Za-z_]\w*\s*\(\s*eventName\s*\)/

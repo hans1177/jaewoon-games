@@ -511,7 +511,7 @@ test('Vibe worker uses external Gemini without local model startup before obtain
   assert.doesNotMatch(workerPart,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES/);
   assert.doesNotMatch(workerPart,/uses:.*prepare-ollama/);
   assert.doesNotMatch(workerPart,/ollama\.com\/install\.sh/);
-  assert.match(workerPart,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
+  assert.match(workerPart,/GEMINI_API_KEY: \$\{\{ vars\.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets\.GEMINI_API_KEY \|\| '' \}\}/);
   assert.match(workerPart,/VIBE2_GAME_SOURCE_PROVIDER=GEMINI_API/);
   assert.match(workerPart,/if: steps\.order\.outputs\.run == 'true' && steps\.order\.outputs\.route == 'text-source-worker' && steps\.work_lock\.outputs\.acquired == 'true'/);
   assert.equal(runtime.continuous.workLockConflictPolicy.preLockReadOnlyPreparationAllowed,true);
@@ -1652,7 +1652,7 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
 
 test('stateless fan-in refill admission coalesces duplicate pending SHA/lane wakes without cancelling active workers',()=>{
   assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
-  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
   assert.match(workflow,/VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE_EXACT:/);
   assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_WAKE_COALESCING');

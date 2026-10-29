@@ -332,6 +332,12 @@ test('real existing line-defense source candidate starts in a real Chromium brow
   const staged=path.join(tmp,'web-games','line-defense');fs.mkdirSync(staged,{recursive:true});
   fs.writeFileSync(path.join(staged,relative),documents.get(relative));
   fs.copyFileSync(path.resolve('game-catalog.json'),path.join(tmp,'game-catalog.json'));
+  // [실제 브라우저 QA] 기존 게임이 참조하는 공용 모듈만 동일 경로로 스테이징한다.
+  // 게임 원본을 수정하거나 임의 모형/모듈로 검사를 우회하지 않는다.
+  fs.mkdirSync(path.join(tmp,'assets'),{recursive:true});
+  for(const asset of ['vibe-browser-presentation.mjs','vibe-presentation-engine.mjs',
+    'vibe-game-world-runtime.mjs','vibe-genre-gameplay.mjs'])
+    fs.copyFileSync(path.resolve('assets',asset),path.join(tmp,'assets',asset));
   const result=spawnSync(process.execPath,[path.resolve('qa/vibe2-development-web-browser-smoke.mjs')],{
     cwd:tmp,env:{...process.env,VIBE2_BROWSER_CHANGED_GAMES:'line-defense'},
     encoding:'utf8',timeout:110000,maxBuffer:8*1024*1024
