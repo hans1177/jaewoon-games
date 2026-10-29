@@ -304,3 +304,46 @@ test('WEB connected edits are atomic, source anchored and retain final save and 
  assert.ok(safeWebVibeReplacement(block,JSON.stringify({oldText:block,newText:block.replace('return [','return [999,')}),{relative:'game.mjs'}).updated.includes('[999,'));
  assert.throws(()=>safeWebVibeReplacement(original,JSON.stringify({edits:[{oldText:'const firstValue=1;',newText:'const firstValue=;'}]}),{relative:'game.mjs'}));
 });
+
+
+// [무모델 개발] 기존 게임의 실제 책임 함수를 읽고, 실행 코드 변화와 보존 범위를 함께 검증한다.
+test('WEB model-less source compiler updates existing 3D bestiary rendering without model calls',async()=>{
+  const original=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+  const source={relative:'web-games/fantasy-survival/world3d.mjs',original};
+  let calls=0;
+  const candidate=await proposeWebVibeChange({
+    gameId:'fantasy-survival',goal:'마력숲 도감 등록 몬스터 3D 이름표 너무 흐려서 가독성 개선'
+  },source,{cloud:true,apiKey:'',geminiImpl:async()=>{calls++;throw Error('MODEL_MUST_NOT_RUN');}});
+  assert.equal(calls,0);
+  assert.equal(candidate.deterministicWebSource,true);
+  assert.equal(candidate.offlineSourceProof.runtimeVerified,false);
+  assert.deepEqual(candidate.offlineSourceProof.roles,['EXISTING_BESTIARY_NAME_READABILITY']);
+  assert.match(candidate.updated,/pen\.font='900 76px system-ui,sans-serif'/);
+  assert.match(candidate.updated,/pen\.strokeStyle='#010c08';pen\.lineWidth=11/);
+  assert.ok(candidate.updated.includes('state.bestiary?.[e.type?.id]'));
+  assert.equal(candidate.updated.includes('pen.font=\'900 64px system-ui,sans-serif\''),false);
+  const mixed={gameId:'fantasy-survival',goal:'도감 이름표 흐림 수정, 청사진 설치 오류, 공격 처치 오류까지 모두 변경'};
+  await assert.rejects(()=>proposeWebVibeChange(mixed,source,{
+    cloud:true,apiKey:'',geminiImpl:async()=>{calls++;throw Error('MODEL_MUST_NOT_RUN');}
+  }),/WEB_VIBE_FREE_MODEL_KEY_MISSING/);
+  assert.equal(calls,0);
+  await assert.rejects(()=>proposeWebVibeChange({
+    gameId:'fantasy-survival',goal:'마력숲 도감 등록 몬스터 3D 이름표 너무 흐려서 가독성 개선'
+  },{...source,original:candidate.updated},{cloud:true,apiKey:''}),/WEB_VIBE_FREE_MODEL_KEY_MISSING/);
+});
+test('WEB model-less source compiler directly improves existing frame function and rejects invented content',async()=>{
+  const original='function updateFrame(now,last){const dt=(now-last)/1000;return dt;}';
+  const source={relative:'web-games/demo/game.js',original};
+  let calls=0;
+  const candidate=await proposeWebVibeChange({gameId:'demo',goal:'게임 프레임 시간차 안정 개선'},source,{
+    cloud:true,apiKey:'',geminiImpl:async()=>{calls++;throw Error('MODEL_MUST_NOT_RUN');}
+  });
+  assert.equal(calls,0);
+  assert.equal(candidate.deterministicWebSource,true);
+  assert.match(candidate.updated,/Math\.max\(0,Math\.min\(\.05,\(now-last\)\/1000\)\)/);
+  assert.deepEqual(candidate.offlineSourceProof.roles,['EXISTING_FRAME_DELTA_BOUND']);
+  assert.equal(candidate.offlineSourceProof.runtimeVerified,false);
+  await assert.rejects(()=>proposeWebVibeChange({gameId:'demo',goal:'신규 보스 전투 전체 구현'},
+    source,{cloud:true,apiKey:'',geminiImpl:async()=>{calls++;throw Error('MODEL_MUST_NOT_RUN');}}),/WEB_VIBE_FREE_MODEL_KEY_MISSING/);
+  assert.equal(calls,0);
+});
