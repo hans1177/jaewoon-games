@@ -195,7 +195,9 @@ test('single changed Roblox game redispatches exact runtime game id',()=>{
 
 test('source drift sync has a dedicated non-starving concurrency lane',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*queue: max\s*\n\s*cancel-in-progress: false/);
+  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-\$\{\{/);
+  assert.doesNotMatch(workflow,/queue: max/);
+  assert.match(workflow,/github\.event\.pull_request\.merge_commit_sha/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/regenerate_runtime_state/);
@@ -315,7 +317,7 @@ test('unknown Roblox build-source diff is non-mutating',()=>{
 test('source drift writer generation invalidates stale queued writers before runtime mutation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
   const source=fs.readFileSync('tools/company-roblox-source-drift-sync.mjs','utf8');
-  assert.match(workflow,/group: roblox-source-drift-runtime-writer-v2/);
+  assert.match(workflow,/group: roblox-source-drift-\$\{\{/);
   assert.match(workflow,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION: v2/);
   assert.match(source,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION_STALE/);
   assert.match(source,/generation!==['"]v2['"]/);
@@ -445,7 +447,10 @@ test('Roblox source sync preserves both triggers without pending cross-cancellat
   assert.ok(workflow.includes('  push:\n    branches: [main]'));
   assert.ok(workflow.includes('  pull_request:\n    branches: [main]\n    types: [closed]'));
   assert.ok(workflow.includes('  workflow_dispatch:'));
-  assert.ok(workflow.includes('group: roblox-source-drift-runtime-writer-v2\n  queue: max\n  cancel-in-progress: false'));
+  assert.ok(workflow.includes("group: roblox-source-drift-${{"));
+  assert.ok(workflow.includes('github.event.pull_request.merge_commit_sha'));
+  assert.ok(!workflow.includes('queue: max'));
+  assert.ok(workflow.includes('cd "$GITHUB_WORKSPACE"\n            local force_args=()'));
   assert.ok(workflow.includes('cancel-in-progress: false'));
 });
 
@@ -544,4 +549,27 @@ test('asset library checks actual published Pages manifest separately from nativ
   assert.ok(browser.includes("nextPublication?.target==='GITHUB_PAGES_INTERNAL_STATIC'"));
   assert.ok(browser.includes('publishedWebManifest.sharedAssets.includes(sourceFile)'));
   assert.ok(browser.includes('실제 게임 적용은 별도 검증'));
+});
+
+
+// 동일 소스의 중복 알림은 진행 중인 검증·게시 상태를 되감지 않는다.
+test('duplicate exact source notifications preserve F0 progress and failed source validation still blocks',()=>{
+  const sourceRevision='a'.repeat(40), stamp='2026-10-29T00:00:00Z';
+  const item={gameId:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',minimumDesignContract:{pass:true},
+    robloxSourceCommit:sourceRevision,robloxBuildOrPackagePassed:true,robloxFoundationF0Passed:true,
+    robloxEvidenceInvalidatedBySourceChange:{previousSourceRevision:'b'.repeat(40),newSourceRevision:sourceRevision}};
+  const queue={items:[structuredClone(item)]};
+  const result=reconcileChangedRobloxItems({queue,changedGameIds:[item.gameId],sourceRevision,stamp,
+    validateItem:()=>({pass:true,buildSourceChanged:true})});
+  assert.deepEqual(queue.items[0],item);
+  assert.equal(result.results[0].alreadySynchronized,true);
+  assert.equal(result.results[0].requiresRuntime,false);
+  queue.items[0].robloxBuildOrPackagePassed=false;
+  assert.equal(reconcileChangedRobloxItems({queue,changedGameIds:[item.gameId],sourceRevision,stamp,
+    validateItem:()=>({pass:true,buildSourceChanged:true})}).results[0].requiresRuntime,true);
+  const failed=reconcileChangedRobloxItems({queue,changedGameIds:[item.gameId],sourceRevision,stamp,
+    validateItem:()=>({pass:false,blockers:['SOURCE_INVALID']})});
+  assert.equal(failed.results[0].pass,false);
+  assert.equal(queue.items[0].robloxInternalReleasePublished,false);
 });
