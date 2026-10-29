@@ -21,7 +21,7 @@ import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
 import { createVibe4OfflinePatternCandidate } from './vibe2-v4-pattern-coder.mjs';
-import { createVibe59CodeCandidate } from './vibe2-v59-autonomy.mjs';
+import { createVibe59CodeCandidates } from './vibe2-v59-autonomy.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, executableText } from './company-vibe2-expert-development.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
@@ -9065,7 +9065,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   // Vibe5.9 bounded compositional synthesis: no cloud AI or source write.
   // Owner-approved source scope and the original Vibe2 validator still decide admission.
   if(!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
-    const v59=createVibe59CodeCandidate({order,sourceRoot,responsibleFiles,target});
+    const v59=createVibe59CodeCandidates({order,sourceRoot,responsibleFiles,target});
     if(v59){
       const candidate=normalizeCandidate(v59,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
@@ -9076,7 +9076,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         vibe59JsReplayPass:v59.vibe59JsReplay?.pass??null,
         vibe59AutoProbeCount:v59.vibe59AutoTestPlan?.generatedCaseCount||0,
         vibe59StrategiesChecked:v59.vibe59StrategiesChecked,vibe59SelectedStrategy:v59.vibe59Strategy,
-        mode:v59.vibe59CodeKind==='ROBLOX_CRAFTING_TRANSACTION'?'VIBE59_ROBLOX_CRAFTING_TRANSACTION':v59.vibe59CodeKind==='ROBLOX_PATHFINDING'?'VIBE59_ROBLOX_PATHFINDING':v59.vibe59CodeKind==='ROBLOX_ADVANCED_GAMEPLAY'?'VIBE59_ROBLOX_ADVANCED_GAMEPLAY':v59.vibe59CodeKind==='ROBLOX_SKILL_109'?'VIBE59_ROBLOX_SKILL_109':v59.vibe59CodeKind==='ROBLOX_DOMAIN_OPERATION'?'VIBE59_ROBLOX_DOMAIN_OPERATION':v59.vibe59CodeKind==='ROBLOX_SERVER_ACTION'?'VIBE59_ROBLOX_SERVER_ACTION':v59.vibe59CodeKind==='STATE_MACHINE'?'VIBE59_STATE_MACHINE':'VIBE59_COMPOSED_LOGIC',maxPredict:0,timeoutMs:0,contextWindow:0,
+        mode:v59.vibe59CodeKind==='COMPOSED_OFFLINE_SOURCE'?'VIBE59_COMPLEX_DESIGN':v59.vibe59CodeKind==='ROBLOX_CRAFTING_TRANSACTION'?'VIBE59_ROBLOX_CRAFTING_TRANSACTION':v59.vibe59CodeKind==='ROBLOX_PATHFINDING'?'VIBE59_ROBLOX_PATHFINDING':v59.vibe59CodeKind==='ROBLOX_ADVANCED_GAMEPLAY'?'VIBE59_ROBLOX_ADVANCED_GAMEPLAY':v59.vibe59CodeKind==='ROBLOX_SKILL_109'?'VIBE59_ROBLOX_SKILL_109':v59.vibe59CodeKind==='ROBLOX_DOMAIN_OPERATION'?'VIBE59_ROBLOX_DOMAIN_OPERATION':v59.vibe59CodeKind==='ROBLOX_SERVER_ACTION'?'VIBE59_ROBLOX_SERVER_ACTION':v59.vibe59CodeKind==='STATE_MACHINE'?'VIBE59_STATE_MACHINE':'VIBE59_COMPOSED_LOGIC',maxPredict:0,timeoutMs:0,contextWindow:0,
         temperature:0,completionMode:'VIBE59_COMPOSED_LOGIC'}};
       console.log('VIBE59_COMPOSED_LOGIC=VALIDATED:'+v59.ruleDigest.slice(0,12));
     }
