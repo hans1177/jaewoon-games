@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-29T13:04:37.420Z",
+  "updatedAt": "2026-10-29T18:56:49.613Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -11989,7 +11989,8 @@
       "responsibleFiles": [],
       "evidence": [
         "roblox-f0-source-preflight-failed",
-        "{\"sourceRevision\":\"eeaf371cb5ddef3a98b31f211c9b2e89a5c7c673\",\"buildSourceRevision\":\"eeaf371cb5ddef3a98b31f211c9b2e89a5c7c673\",\"artifactIdentity\":\"sha256:4fab8bc81ebd8816e10490c12e821e1973f6e1647d528a2733f266aac8832119\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"eeaf371cb5ddef3a98b31f211c9b2e89a5c7c673\",\"buildSourceRevision\":\"eeaf371cb5ddef3a98b31f211c9b2e89a5c7c673\",\"artifactIdentity\":\"sha256:4fab8bc81ebd8816e10490c12e821e1973f6e1647d528a2733f266aac8832119\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"93f4a1a30a5b3965ee937aa0bffcdc739bae0795\",\"buildSourceRevision\":\"93f4a1a30a5b3965ee937aa0bffcdc739bae0795\",\"artifactIdentity\":\"sha256:320a9a2475fefeb285046248a9b905191b223304848349e19eb65887109667f7\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -11998,8 +11999,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-29T13:04:37.413Z",
-      "updatedAt": "2026-10-29T13:04:37.413Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-10-29T18:56:49.606Z",
+      "occurrenceCount": 2
     }
   ],
   "webPlaytestObservations": []
