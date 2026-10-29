@@ -3000,15 +3000,39 @@ export function robloxQualityRepairFiles(project,repoRoot){
   }else if(failure?.authority==='roblox-source-static-contract-failure'){
     files=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'];
   }else if(failure?.authority==='roblox-official-studio-mcp-product-quality-failure'){
-    // A real Studio UI failure must be repairable by the next Vibe source worker.
-    // Never bind old play evidence to a new source or a different packaged artifact.
-    const exact=clean(failure.sourceRevision)&&clean(failure.sourceRevision)===clean(project.queueRobloxSourceCommit)
-      &&clean(failure.artifactIdentity)&&clean(failure.artifactIdentity)===clean(project.queueRobloxArtifactIdentity);
+    // Observed Studio failures must reach the same game's real source repair lane,
+    // not be silently reduced to mobile UI alone. These are file triage candidates,
+    // NOT a verified root-cause claim or permission to bypass release QA.
+    const revision=clean(failure.sourceRevision),artifact=clean(failure.artifactIdentity);
+    const exact=/^[0-9a-f]{40}$/i.test(revision)&&revision===clean(project.queueRobloxSourceCommit)
+      &&/^sha256:[0-9a-f]{64}$/i.test(artifact)&&artifact===clean(project.queueRobloxArtifactIdentity)
+      &&project.ownerDevelopmentHold!==true&&project.ownerDevelopmentStopped!==true;
     const surfaces=[...(failure.repairSurfaces||[]),
       ...(failure.qualityFailureDetails||[]).map(row=>row?.repairSurface)].map(value=>clean(value).toUpperCase());
-    const kinds=(failure.qualityFailureKinds||[]).map(value=>clean(value).toLowerCase());
-    if(exact&&(surfaces.includes('MOBILE_UI')||kinds.includes('adaptive-ui-commercial-quality'))){
-      files=['client/Game.client.luau','shared/RobloxCommonUI.luau'];
+    const kinds=new Set((failure.qualityFailureKinds||[]).map(value=>clean(value).toLowerCase()));
+    // Each repair surface stays on the original Roblox game; no generic
+    // game-wide lock and no additional external assets or writable roots.
+    const bySurface={
+      MOBILE_UI:['client/Game.client.luau','shared/RobloxCommonUI.luau'],
+      GAME_START:['client/Game.client.luau','server/Game.server.luau'],
+      MAP_ROUTEABILITY:['server/Game.server.luau','shared/GameConfig.luau'],
+      WORLD_GEOMETRY:['server/Game.server.luau','shared/GameConfig.luau'],
+      SAVE_REJOIN:['server/Game.server.luau','shared/GameConfig.luau'],
+      ACTION_IMPLEMENTATION:['server/Game.server.luau','client/Game.client.luau'],
+      ROBLOX_OBSERVED_INTERACTION:['server/Game.server.luau','client/Game.client.luau'],
+      VFX_FEEDBACK:['client/Game.client.luau','shared/RobloxCommonUI.luau'],
+      VISUAL_ASSET_LOADING:['client/Game.client.luau','server/Game.server.luau'],
+      PERFORMANCE:['server/Game.server.luau','client/Game.client.luau']
+    };
+    if(exact){
+      const observedSurfaces=new Set(surfaces);
+      if(kinds.has('adaptive-ui-commercial-quality'))observedSurfaces.add('MOBILE_UI');
+      if(kinds.has('adaptive-start-playability'))observedSurfaces.add('GAME_START');
+      if(kinds.has('adaptive-map-route-coverage'))observedSurfaces.add('MAP_ROUTEABILITY');
+      if(kinds.has('adaptive-save-rejoin-persistence'))observedSurfaces.add('SAVE_REJOIN');
+      if(kinds.has('adaptive-performance-budget'))observedSurfaces.add('PERFORMANCE');
+      if(kinds.has('visual-asset-load-integrity'))observedSurfaces.add('VISUAL_ASSET_LOADING');
+      files=[...new Set([...observedSurfaces].flatMap(surface=>bySurface[surface]||[]))];
     }
   }
   const root=sourceFile(repoRoot,`roblox-games/${project.gameId}`);
