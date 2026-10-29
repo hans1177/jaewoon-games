@@ -4,11 +4,66 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import vm from 'node:vm';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 import {VIBE59_LUAU_CODING_SKILLS_109,synthesizeVibe59LuauSkill,
   verifyVibe59LuauSkillScenarios} from '../tools/vibe59-luau-skills109.mjs';
 import {createVibe59CodeCandidate,createVibe59CodeCandidates,buildVibe59AutonomyPlan} from '../tools/vibe2-v59-autonomy.mjs';
 const copy=x=>JSON.parse(JSON.stringify(x));
+
+test('owner stat edits reject non-code, hidden competing writes and shadowed builtins',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-stat-scope-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ for(const [target,file,sources] of [
+  ['web','game.js',[
+   '/*\nlet speed = baseSpeed;\n*/',
+   'const text = `\nlet speed = baseSpeed;\n`;',
+   'let speed = baseSpeed;\nspeed = computeSpeed();',
+   'let speed = baseSpeed;\nspeed += bonus;',
+   'function run(Math) {\nlet speed = baseSpeed;\n}',
+  ]],
+  ['web','index.html',[
+   '<!-- <script>\nlet speed = baseSpeed;\n</script> -->',
+   '<template><script>\nlet speed = baseSpeed;\n</script></template>',
+   '<div title="<script>\nlet speed = baseSpeed;\n</script>">Text</div>',
+  ]],
+  ['roblox','game.luau',[
+   '--[=[\nlocal speed = baseSpeed\n]=]',
+   'local text = [==[\nlocal speed = baseSpeed\n]==]',
+   'local speed = baseSpeed\nspeed = computeSpeed()',
+   'local speed = baseSpeed\nspeed += bonus',
+   'local math = customMath\nlocal speed = baseSpeed',
+  ]],
+ ]){
+  for(const source of sources){
+   fs.writeFileSync(path.join(root,file),source);
+   assert.equal(createVibe59CodeCandidates({
+    order:{selectedTask:{ownerDirective:true,goal:'Clamp speed between 0 and 25'}},
+    sourceRoot:root,responsibleFiles:[file],target,
+   }),null,source);
+   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  }
+ }
+});
+
+test('generated WEB clamp executes real patched code at all boundaries',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-stat-execute-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const source='// speed = ignored\nlet speed = baseSpeed;\nglobalThis.result = speed;';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const candidate=createVibe59CodeCandidates({
+  order:{selectedTask:{ownerDirective:true,goal:'Clamp speed between -5 and 25'}},
+  sourceRoot:root,responsibleFiles:['game.js'],target:'web',
+ });
+ assert.ok(candidate);
+ const documents=new Map([['game.js',source]]);
+ applyExactEdits(root,candidate.edits,{documents});
+ for(const [baseSpeed,expected] of [[-10,-5],[-5,-5],[10,10],[25,25],[30,25]]){
+  const context={baseSpeed};vm.runInNewContext(documents.get('game.js'),context);
+  assert.equal(context.result,expected);
+ }
+ assert.equal(candidate.runtimeVerified,false);
+});
 
 test('owner plain-English WEB stat clamp synthesizes a real unique inline game edit without model or source write',t=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-intent-web-'));
