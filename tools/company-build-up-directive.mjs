@@ -8,6 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {scriptText,lex} from './vibe2-game-source-index.mjs';
+import {executableText} from './company-vibe2-expert-development.mjs';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
 import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
@@ -313,18 +314,31 @@ function tokenCount(text,re){return (String(text).match(re)||[]).length;}
 
 const CONTROL_FLOW_SYMBOLS=new Set(['if','for','while','switch','catch','with']);
 function sourceAnchorCandidates(text='',file=''){
-  const anchors=[],lines=String(text).split('\n');
+  const source=String(text),lines=source.split('\n');
+  // Reuse the existing lexical source analyzer: comments and string literals are
+  // not executable source evidence, even when they look like function declarations.
+  const language=/\.luau?$/i.test(file)?'luau':/\.cs$/i.test(file)?'csharp':'javascript';
+  const executable=executableText(source,language);
+  const sanitized=/\.html?$/i.test(file)
+    ?executable.replace(/<!--[\s\S]*?-->/g,match=>match.replace(/[^\r\n]/g,' '))
+    :executable;
+  const codeLines=sanitized.split('\n'),anchors=[];
   const patterns=[
     ['CLASS',/^\s*(?:export\s+)?(?:(?:public|private|protected|internal|abstract|sealed|static|partial)\s+)*class\s+([A-Za-z_$][\w$]*)/],
     ['FUNCTION',/^\s*(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
     ['FUNCTION',/^\s*(?:local\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
+    // Real Luau and Web code commonly owns behavior through assigned callbacks
+    // instead of named function declarations.
+    ['FUNCTION',/^\s*(?:local\s+)?([A-Za-z_$][\w$]*)\s*(?::[^=\n]+)?=\s*(?:async\s+)?function\s*\(/],
+    ['METHOD',/^\s*([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)+)\s*=\s*(?:async\s+)?function\s*\(/],
+    ['METHOD',/^\s*([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)+)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/],
     ['FUNCTION',/^\s*([A-Za-z_][\w]*)\s*(?:<[^>]+>)?\s*\([^)]*\)\s*(?:<[^>]+>)?\s*:[^=]+=/],
     ['FUNCTION',/^\s*(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/],
     ['METHOD',/^\s*(?:(?:public|private|protected|internal|static|async|virtual|override|sealed|partial)\s+)+(?:[A-Za-z_$][\w$<>,.?\[\]]*\s+)+([A-Za-z_$][\w$]*)\s*\(/],
     ['METHOD',/^\s*([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/]
   ];
   for(let index=0;index<lines.length;index++){
-    const line=lines[index],trimmed=line.trim();
+    const line=codeLines[index]||'',trimmed=(lines[index]||'').trim();
     if(!trimmed||trimmed.startsWith('//')||trimmed.startsWith('#'))continue;
     let matched=false;
     for(const [kind,re] of patterns){
@@ -332,7 +346,7 @@ function sourceAnchorCandidates(text='',file=''){
       if(!match)continue;
       const symbol=clean(match[1]);
       if(!symbol||CONTROL_FLOW_SYMBOLS.has(symbol.toLowerCase()))continue;
-      const nearby=lines.slice(Math.max(0,index-2),Math.min(lines.length,index+4)).join(' ');
+      const nearby=codeLines.slice(Math.max(0,index-2),Math.min(lines.length,index+4)).join(' ');
       const score=20
         +tokenCount(nearby,/attack|damage|combat|enemy|boss|player|input|progress|reward|unlock|quest|save|spawn|camera|animation|vfx|ui|touch|state|phase|mode|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)*8
         +(kind==='CLASS'?8:kind==='FUNCTION'?6:4);
@@ -346,10 +360,19 @@ function sourceAnchorCandidates(text='',file=''){
   return anchors.sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)||a.line-b.line).slice(0,24);
 }
 
-function selectPrimarySourceAnchors(source={},responsibleFiles=[],limit=6){
+function selectPrimarySourceAnchors(source={},responsibleFiles=[],limit=6,{failureSignature=''}={}){
   const preferred=new Set((responsibleFiles||[]).map(posix).filter(Boolean));
   const anchors=[...(source?.sourceAnchors||[])];
+  const failure=clean(failureSignature).toLowerCase();
+  // An observed failure naming an existing source symbol is stronger evidence
+  // than generic keyword density. Never invent an unobserved function name.
+  const directMatch=row=>{
+    const symbol=clean(row.symbol).toLowerCase();
+    return Boolean(failure&&symbol.length>=4&&
+      new RegExp('(^|[^a-z0-9_$])'+symbol.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=$|[^a-z0-9_$])').test(failure));
+  };
   anchors.sort((a,b)=>(preferred.has(posix(b.file))?1:0)-(preferred.has(posix(a.file))?1:0)
+    ||Number(directMatch(b))-Number(directMatch(a))
     ||Number(b.score||0)-Number(a.score||0)
     ||String(a.file).localeCompare(String(b.file))
     ||Number(a.line||0)-Number(b.line||0));
@@ -484,7 +507,14 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     score:
       tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|motion|particle|vfx|sound|audio|music|bgm|sfx|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
-  const sourceAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,48);
+  const rankedAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>
+    Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0));
+  // A global top-N would silently erase complete responsibilities in sparse
+  // files. Keep one observed symbol per source file in addition to top-ranked
+  // symbols; assignment priority is resolved later from exact responsibleFiles.
+  const sourceAnchors=[...new Map([...rankedAnchors.slice(0,48),
+    ...rows.map(row=>row.sourceAnchors?.[0]).filter(Boolean)]
+    .map(row=>[row.file+'::'+row.line+'::'+row.symbol,row])).values()];
   return Object.freeze({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:files.length?fingerprint.digest('hex'):sha('missing:'+sourceRoot),
@@ -2842,7 +2872,9 @@ export function buildGameSpecificBuildUpDirective({
   const gaps=states.filter(x=>x.state==='GAP');
   const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,focus,depthInfo});
   const topFiles=uniq([...(responsibleFiles||[]),...(source?.topFiles||[]).map(x=>x.file)]).slice(0,Math.max(16,uniq(responsibleFiles||[]).length));
-  const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8);
+  const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8,{
+    failureSignature:clean(runtimeEvidence?.failureSignature)||clean(runtimeEvidence?.playtestFinding)
+  });
   const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
   const expectedEffect=expectedPlayerEffect({focus,identity,anchor,secondary});
   const sourceResponsibilities=primarySourceAnchors.map(row=>Object.freeze({
