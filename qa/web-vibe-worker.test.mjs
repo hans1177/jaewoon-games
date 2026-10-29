@@ -885,3 +885,31 @@ test('Vibe5.9 Lua compiler fails closed on malformed, cyclic and injected AST',(
    source:badLua,relative:'roblox-games/demo/logic.luau',target:'roblox'
  }),/LUA_PARAMETERS_INVALID/);
 });
+
+
+test('Vibe5.9 CEGIS isolates hidden invalid holdouts and lazily evaluates safe conditional AST branches',()=>{
+ const guardedReciprocal=['select',
+   ['gt',['param',0],['const',0]],
+   ['/', ['const',1],['param',0]],
+   ['const',0]];
+ const spec={parameters:['x'],maxDepth:3,maxGenerations:2,
+  examples:[{args:[1],output:1},{args:[2],output:0.5},{args:[4],output:0.25}],
+  holdouts:[{args:[0],output:0},{args:[8],output:0.125}],
+  verifiedConcepts:[{verified:true,
+    proof:{independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true},
+    ast:guardedReciprocal}]};
+ for(const strategy of ['evolution',undefined]){
+   const result=synthesizeVibe59NumericAlgorithm({spec:{...spec,strategy}});
+   assert.equal(result.casesPassed,5);
+   assert.equal(result.heldOutCases,2);
+   assert.ok(result.counterexamples.includes(0),
+     'the hidden zero-denominator holdout must become an explicit counterexample');
+   assert.equal(result.runtimeVerified,false);
+   assert.equal(result.sourceWrite,false);
+   const fn=vm.runInNewContext('(function(x){'+result.source+'})');
+   assert.equal(fn(0),0,'unselected 1/0 branch must not invalidate the result');
+   assert.equal(fn(8),0.125);
+   assert.equal(fn(4),0.25);
+   assert.equal(renderVibe59NumericLuaAST(result.ast,['x']).includes('game'),false);
+ }
+});
