@@ -397,7 +397,8 @@ test('homepage workflow validates the exact sample deployment contract',()=>{
   assert.match(workflow,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(workflow,/data-homepage-build="2026-09-21-sample-exact"/);
   assert.match(workflow,/command\.html\?from=chatgpt-shortcut/);
-  assert.match(workflow,/grep -Fq '"start_url": "\/"' manifest\.webmanifest/);
+  assert.match(workflow,/grep -Fq '"start_url": "\.\/"' manifest\.webmanifest/);
+  assert.match(workflow,/grep -Fq '"scope": "\.\/"' manifest\.webmanifest/);
   assert.match(workflow,/SYNC_INTERVAL_MS=30000/);
 });
 
