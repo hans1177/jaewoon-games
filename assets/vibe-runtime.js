@@ -3,7 +3,7 @@
 // 규칙: 게임별 저장 키 보존, 자동저장은 지연 저장 + 백그라운드 이탈 즉시 저장, 저장 실패가 게임 진행을 막지 않음
 
 export class JaewoonVibeRuntime {
-  constructor({ gameId = 'game', storagePrefix = 'jaewoon-games', autosaveDelay = 400, autosaveOnHide = true, assetBaseUrl = null } = {}) {
+  constructor({ gameId = 'game', storagePrefix = 'jaewoon-games', autosaveDelay = 400, autosaveOnHide = true, assetBaseUrl = null, assetMemoryLimitBytes = 64 * 1024 * 1024 } = {}) {
     this.gameId = gameId;
     this.storageKey = `${storagePrefix}:${gameId}`;
     this.paused = false;
@@ -24,6 +24,11 @@ export class JaewoonVibeRuntime {
       ? new URL('../', import.meta.url).href
       : this.assetBaseUrl;
     this.assetCache = new Map();
+    this.assetMemoryLimitBytes = Number.isFinite(Number(assetMemoryLimitBytes)) ? Math.max(0, Number(assetMemoryLimitBytes)) : 64 * 1024 * 1024;
+    this.preloadedScenes = new Map();
+    this.preloadTasks = new Map();
+    this.assetVersions = new Map();
+    this.assetSignatures = new Map();
     // [씬 소유권] 현재 씬의 임대를 추적하고, 전환 경쟁에서 오래된 결과가 화면을 덮지 못하게 한다.
     this.sceneAssets = new Map();
     this.activeSceneId = null;
@@ -110,7 +115,7 @@ export class JaewoonVibeRuntime {
         const audio = new Audio(objectUrl);
         audio.preload = 'auto';
         if (signal?.aborted) throw aborted();
-        return { value: audio, objectUrl };
+        return { value: audio, objectUrl, bytes: bytes.size };
       } catch (error) {
         URL.revokeObjectURL(objectUrl);
         throw error;
@@ -118,11 +123,12 @@ export class JaewoonVibeRuntime {
     }
     if (type === 'font') {
       if (typeof FontFace === 'undefined' || typeof document === 'undefined' || !document.fonts) throw new Error('font loader unavailable');
-      const font = new FontFace(family, await response.arrayBuffer());
+      const fontBytes = await response.arrayBuffer();
+      const font = new FontFace(family, fontBytes);
       await font.load();
       if (signal?.aborted) throw aborted();
       document.fonts.add(font);
-      return { value: font, registeredFont: font };
+      return { value: font, registeredFont: font, bytes: fontBytes.byteLength };
     }
     throw new Error('unsupported asset type: ' + type);
   }
@@ -134,14 +140,25 @@ export class JaewoonVibeRuntime {
     const kind = type || this.assetType(path);
     if (!['image', 'audio', 'json', 'text', 'binary', 'font'].includes(kind)) throw new Error('unsupported asset type: ' + kind);
     const fontFamily = family || path;
-    const key = JSON.stringify([kind, url, kind === 'font' ? fontFamily : '']);
+    const revision = this.assetVersions.get(url) || 0;
+    const key = JSON.stringify([kind, url, kind === 'font' ? fontFamily : '', revision]);
+    const requestUrl = revision && /^https?:/.test(url) ? (() => {
+      const fresh = new URL(url);
+      fresh.searchParams.set('_vibe_asset_revision', String(revision));
+      return fresh.href;
+    })() : url;
     let entry = this.assetCache.get(key);
     if (!entry) {
       const controller = new AbortController();
-      entry = { key, refs: 0, resource: null, promise: null, controller };
+      entry = { key, refs: 0, resource: null, promise: null, controller, bytes: 0 };
       this.assetCache.set(key, entry);
-      entry.promise = this.readAsset({ url, type: kind, family: fontFamily, signal: controller.signal }).then(resource => {
+      entry.promise = this.readAsset({ url: requestUrl, type: kind, family: fontFamily, signal: controller.signal }).then(resource => {
         entry.resource = resource;
+        const value = resource.value;
+        entry.bytes = Math.max(0, Number(resource.bytes) || (kind === 'image'
+          ? (Number(value.naturalWidth || value.width) || 0) * (Number(value.naturalHeight || value.height) || 0) * 4
+          : kind === 'binary' ? value.byteLength : kind === 'text' ? value.length * 2
+          : kind === 'json' ? JSON.stringify(value).length * 2 : 0));
         if (entry.refs === 0 || this.destroyed) {
           this.disposeAssetEntry(entry);
           throw Object.assign(new Error('asset loading aborted'), { name: 'AbortError' });
@@ -196,18 +213,22 @@ export class JaewoonVibeRuntime {
   // [에셋 상태] 실제 캐시와 임대를 기준으로 메모리 점검용 불변 스냅샷을 제공한다.
   getAssetStats() {
     const byType = { image: 0, audio: 0, json: 0, text: 0, binary: 0, font: 0 };
-    let ready = 0, loading = 0, references = 0;
+    let ready = 0, loading = 0, references = 0, estimatedBytes = 0;
     for (const entry of this.assetCache.values()) {
       const kind = JSON.parse(entry.key)[0];
       if (Object.hasOwn(byType, kind)) byType[kind]++;
       if (entry.resource) ready++;
       else loading++;
       references += entry.refs;
+      estimatedBytes += entry.bytes || 0;
     }
     return Object.freeze({
       total: this.assetCache.size, ready, loading, references,
       activeSceneId: this.activeSceneId, pendingSceneId: this.pendingSceneId,
-      sceneCount: this.sceneAssets.size, byType: Object.freeze(byType)
+      sceneCount: this.sceneAssets.size, preloadedSceneCount: this.preloadedScenes.size,
+      estimatedBytes, memoryLimitBytes: this.assetMemoryLimitBytes,
+      overBudget: this.assetMemoryLimitBytes > 0 && estimatedBytes > this.assetMemoryLimitBytes,
+      byType: Object.freeze(byType)
     });
   }
 
@@ -224,6 +245,26 @@ export class JaewoonVibeRuntime {
       if (!item || !item.path || !item.id || ids.has(String(item.id))) throw new Error('invalid or duplicate asset id');
       ids.add(String(item.id));
     }
+    // [의존성] 완료된 선행 에셋만 다음 배치에 넣고, 순환/누락 의존성을 조기에 차단한다.
+    const remaining = new Map(items.map(item => [String(item.id), item]));
+    const scheduled = new Set();
+    const batches = [];
+    for (const item of items) {
+      if (item.dependsOn != null && (!Array.isArray(item.dependsOn)
+        || item.dependsOn.some(id => !ids.has(String(id)) || String(id) === String(item.id)))) {
+        throw new Error('invalid asset dependency: ' + item.id);
+      }
+    }
+    while (remaining.size) {
+      const ready = [...remaining.values()].filter(item => (item.dependsOn || []).every(id => scheduled.has(String(id))));
+      if (!ready.length) throw new Error('circular asset dependencies');
+      ready.sort((a, b) => (Number(b.priority) || 0) - (Number(a.priority) || 0));
+      batches.push(ready);
+      for (const item of ready) {
+        remaining.delete(String(item.id));
+        scheduled.add(String(item.id));
+      }
+    }
     const total = items.length;
     const assets = Object.create(null);
     const leases = [];
@@ -232,7 +273,8 @@ export class JaewoonVibeRuntime {
     const deadline = Number.isFinite(Number(timeoutMs)) ? Math.max(0, Number(timeoutMs)) : 30000;
     const retryDelay = Number.isFinite(Number(retryDelayMs)) ? Math.max(0, Math.min(2000, Number(retryDelayMs))) : 120;
     const abortError = () => Object.assign(new Error('asset loading aborted'), { name: 'AbortError' });
-    let next = 0, loaded = 0, failed = 0;
+    let loaded = 0, failed = 0;
+    const failedIds = new Set();
     const notify = (event, detail) => {
       try { if (typeof window !== 'undefined') this.emit(event, detail); } catch {}
     };
@@ -273,10 +315,13 @@ export class JaewoonVibeRuntime {
       }, ms);
     });
     report();
+    for (const batch of batches) {
+    let next = 0;
     const worker = async () => {
-      while (next < total && !signal?.aborted && !this.destroyed) {
-        const item = items[next++];
+      while (next < batch.length && !signal?.aborted && !this.destroyed) {
+        const item = batch[next++];
         try {
+          if ((item.dependsOn || []).some(id => failedIds.has(String(id)))) throw new Error('asset dependency failed: ' + item.id);
           for (let attempt = 0; attempt <= retryCount; attempt++) {
             if (signal?.aborted || this.destroyed) throw abortError();
             let lease = null;
@@ -302,12 +347,14 @@ export class JaewoonVibeRuntime {
           }
         } catch (error) {
           errors.push(error);
+          failedIds.add(String(item.id));
           failed++;
         }
         report();
       }
     };
-    await Promise.all(Array.from({ length: Math.min(total, Math.max(1, Math.floor(Number(concurrency) || 4))) }, worker));
+    await Promise.all(Array.from({ length: Math.min(batch.length, Math.max(1, Math.floor(Number(concurrency) || 4))) }, worker));
+    }
     let released = false;
     const release = () => {
       if (released) return;
@@ -338,16 +385,30 @@ export class JaewoonVibeRuntime {
     options.signal?.addEventListener('abort', onAbort, { once: true });
     if (options.signal?.aborted) controller.abort();
     try {
-      const lease = await this.loadAssets(entries, { ...options, signal: controller.signal });
+      const signature = JSON.stringify(entries);
+      const pending = this.preloadTasks.get(id);
+      if (pending?.signature === signature) {
+        try { await pending.promise; } catch { /* 배경 선행 로딩 실패 시 일반 씬 로딩으로 복구 */ }
+      }
+      const prefetched = this.preloadedScenes.get(id);
+      if (prefetched && prefetched.signature !== signature) {
+        this.preloadedScenes.delete(id);
+        prefetched.lease.release();
+      }
+      const cached = this.preloadedScenes.get(id);
+      const lease = cached ? cached.lease : await this.loadAssets(entries, { ...options, signal: controller.signal });
       if (controller.signal.aborted || this.destroyed || version !== this.sceneTransition) {
+        if (cached) this.preloadedScenes.delete(id);
         lease.release();
         throw Object.assign(new Error('scene transition aborted'), { name: 'AbortError' });
       }
+      if (cached) this.preloadedScenes.delete(id);
       const old = this.sceneAssets.get(this.activeSceneId);
       this.sceneAssets.clear();
       this.sceneAssets.set(id, lease);
       this.activeSceneId = id;
       old?.release();
+      this.trimAssetCache();
       return {
         sceneId: id,
         assets: lease.assets,
@@ -383,6 +444,111 @@ export class JaewoonVibeRuntime {
     this.activeSceneId = null;
     lease?.release();
     return Boolean(lease);
+  }
+
+  // [메모리] 활성 게임 임대는 절대 강제 해제하지 않고 오래된 선행 로딩부터 정리한다.
+  setAssetMemoryLimit(bytes) {
+    if (!Number.isFinite(Number(bytes)) || Number(bytes) < 0) throw new Error('invalid asset memory limit');
+    this.assetMemoryLimitBytes = Number(bytes);
+    this.trimAssetCache();
+    return this.getAssetStats();
+  }
+
+  trimAssetCache() {
+    let estimated = [...this.assetCache.values()].reduce((sum, entry) => sum + (entry.bytes || 0), 0);
+    const evicted = [];
+    if (this.assetMemoryLimitBytes > 0) {
+      while (estimated > this.assetMemoryLimitBytes && this.preloadedScenes.size) {
+        const [id, preload] = this.preloadedScenes.entries().next().value;
+        this.preloadedScenes.delete(id);
+        preload.lease.release();
+        evicted.push(id);
+        estimated = [...this.assetCache.values()].reduce((sum, entry) => sum + (entry.bytes || 0), 0);
+      }
+    }
+    return Object.freeze({ evicted: Object.freeze(evicted), ...this.getAssetStats() });
+  }
+
+  // [선행 로딩] 다음 씬 소유 임대를 보관하되, 제한 초과 시 자동 해제한다.
+  async preloadScene(sceneId, entries, options = {}) {
+    const id = String(sceneId ?? '').trim();
+    if (!id || !Array.isArray(entries)) throw new Error('invalid preload scene');
+    if (this.destroyed) throw new Error('runtime destroyed');
+    const signature = JSON.stringify(entries);
+    const existing = this.preloadedScenes.get(id);
+    if (existing?.signature === signature) return Object.freeze({ sceneId: id, ready: true, assets: existing.lease.assets });
+    if (existing) {
+      this.preloadedScenes.delete(id);
+      existing.lease.release();
+    }
+    const pending = this.preloadTasks.get(id);
+    if (pending?.signature === signature) return pending.promise;
+    pending?.controller.abort();
+    const controller = new AbortController();
+    const onAbort = () => controller.abort();
+    options.signal?.addEventListener('abort', onAbort, { once: true });
+    if (options.signal?.aborted) controller.abort();
+    const promise = this.loadAssets(entries, { ...options, signal: controller.signal }).then(lease => {
+      if (this.destroyed || controller.signal.aborted || this.preloadTasks.get(id)?.promise !== promise) {
+        lease.release();
+        return Object.freeze({ sceneId: id, ready: false });
+      }
+      this.preloadedScenes.set(id, { signature, entries, lease });
+      this.trimAssetCache();
+      return Object.freeze({ sceneId: id, ready: this.preloadedScenes.has(id), assets: this.preloadedScenes.has(id) ? lease.assets : null });
+    }).finally(() => {
+      options.signal?.removeEventListener('abort', onAbort);
+      if (this.preloadTasks.get(id)?.promise === promise) this.preloadTasks.delete(id);
+    });
+    this.preloadTasks.set(id, { signature, controller, promise });
+    return promise;
+  }
+
+  // [에셋 변경] 사용 중인 리소스는 보존하고 다음 획득부터 새 버전을 요청한다.
+  invalidateAsset(path) {
+    const url = this.resolveAssetUrl(path);
+    this.assetVersions.set(url, (this.assetVersions.get(url) || 0) + 1);
+    for (const [id, preload] of this.preloadedScenes) {
+      if (!preload.entries || !preload.entries.some(item => this.resolveAssetUrl(typeof item === 'string' ? item : item.path) === url)) continue;
+      this.preloadedScenes.delete(id);
+      preload.lease.release();
+    }
+    return this.assetVersions.get(url);
+  }
+
+  // [변경 감지] ETag / Last-Modified 비교, 실패 시 현재 게임 에셋은 그대로 유지한다.
+  async checkAssetUpdates(entries) {
+    if (!Array.isArray(entries)) throw new Error('asset list required');
+    const changed = [], errors = [];
+    for (const item of entries) {
+      const path = typeof item === 'string' ? item : item.path;
+      const url = this.resolveAssetUrl(path);
+      try {
+        const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+        if (!response.ok) throw new Error('asset check failed: ' + response.status);
+        const signature = response.headers.get('etag') || response.headers.get('last-modified');
+        if (!signature) continue;
+        const previous = this.assetSignatures.get(url);
+        this.assetSignatures.set(url, signature);
+        if (previous != null && previous !== signature) {
+          this.invalidateAsset(path);
+          changed.push(path);
+        }
+      } catch (error) { errors.push(Object.freeze({ path, message: String(error.message || error) })); }
+    }
+    return Object.freeze({ checked: entries.length, changed: Object.freeze(changed), errors: Object.freeze(errors) });
+  }
+
+  // [진단] 실제 캐시와 씬 소유권만 읽으며 게임 데이터에는 접근하지 않는다.
+  getAssetDiagnostics() {
+    return Object.freeze({
+      ...this.getAssetStats(),
+      entries: Object.freeze([...this.assetCache.values()].map(entry => {
+        const [type, url] = JSON.parse(entry.key);
+        return Object.freeze({ type, url, references: entry.refs, ready: Boolean(entry.resource), estimatedBytes: entry.bytes || 0 });
+      })),
+      preloadedScenes: Object.freeze([...this.preloadedScenes.keys()])
+    });
   }
 
   load() {
@@ -608,6 +774,10 @@ export class JaewoonVibeRuntime {
     this.pendingSceneController?.abort();
     this.pendingSceneController = null;
     this.pendingSceneId = null;
+    for (const task of this.preloadTasks.values()) task.controller.abort();
+    this.preloadTasks.clear();
+    for (const preload of this.preloadedScenes.values()) preload.lease.release();
+    this.preloadedScenes.clear();
     for (const lease of this.sceneAssets.values()) lease.release();
     this.sceneAssets.clear();
     this.activeSceneId = null;
