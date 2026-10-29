@@ -11,7 +11,7 @@ import {spawnSync} from 'node:child_process';
 import {compileVibe2ComplexIntent} from '../tools/vibe2-complex-intent.mjs';
 import {indexVibe2GameSource} from '../tools/vibe2-game-source-index.mjs';
 import {planVibe2ComplexWork} from '../tools/vibe2-complex-work-planner.mjs';
-import {createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
+import {createVibe59CodeCandidates,applyVibe59ApprovedGameSourceChange,inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges} from '../tools/vibe2-v59-autonomy.mjs';
 import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
 import {execFileSync} from 'node:child_process';
 import {runVibe2SourceWorker,applyVibe2CandidateToSource} from '../tools/vibe2-source-worker.mjs';
@@ -256,6 +256,149 @@ test('real existing line-defense source candidate starts in a real Chromium brow
 });
 
 
+
+test('approved Vibe5.9 edits the actual game source file, not just a staged map',t=>{
+  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-live-source-'));
+  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+  const root=path.join(repo,'web-games','sample-game');fs.mkdirSync(root,{recursive:true});
+  const file='index.html';
+  const source='<script>\nlet score=0,state=0,text="";\nfunction event(){ score += 1; }\nfunction commitState(){ state=score; }\nfunction render(){ text=String(state); }\n</script>';
+  fs.writeFileSync(path.join(root,file),source);
+  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    goal:'When function event runs, call commitState then render'}};
+  assert.throws(()=>applyVibe59ApprovedGameSourceChange({order,sourceRoot:root,
+    responsibleFiles:[file],target:'web',repositoryRoot:repo}),/NOT_APPROVED/);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  const result=applyVibe59ApprovedGameSourceChange({order,sourceRoot:root,
+    responsibleFiles:[file],target:'web',repositoryRoot:repo,approvedSourceWrite:true});
+  assert.equal(result.sourceWrite,true);assert.equal(result.runtimeVerified,false);
+  assert.equal(result.releaseVerified,false);
+  assert.deepEqual(result.changedFiles,[file]);
+  const changed=fs.readFileSync(path.join(root,file),'utf8');
+  assert.notEqual(changed,source);assert.match(changed,/commitState\(\);\s*render\(\);/);
+  const ctx=vm.createContext({});vm.runInContext(changed.replaceAll('<script>','').replaceAll('</script>','')+'\nevent();event();',ctx);
+  assert.deepEqual(Array.from(vm.runInContext('[score,state,text]',ctx)),[2,2,'2']);
+  fs.writeFileSync(path.join(root,file),source);
+  assert.throws(()=>applyVibe59ApprovedGameSourceChange({order:{...order,selectedTask:{
+    ...order.selectedTask,goal:'When function event runs, call commitState then nonexistent'}},
+    sourceRoot:root,responsibleFiles:[file],target:'web',repositoryRoot:repo,
+    approvedSourceWrite:true}));
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+});
+
+test('Vibe5.9 existing source-worker synthesizes authorized in-game visual asset edits without direct writes',t=>{
+  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-art-candidate-'));
+  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+  const root=path.join(repo,'web-games','sample-game');
+  fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({
+    games:[{id:'sample-game',webPath:'web-games/sample-game',lifecycleState:'ACTIVE'}]
+  }));
+  const file='assets/atlas.svg',source='<svg xmlns="http://www.w3.org/2000/svg"><path fill="#111"/></svg>';
+  fs.writeFileSync(path.join(root,file),source);
+  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    vibe59VisualAssetEdits:[{path:file,expectedSha256:digest(source),
+      find:'fill="#111"',replace:'fill="#246"'}]}};
+  const options={order,sourceRoot:root,repositoryRoot:repo,responsibleFiles:[file],target:'web'};
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.vibe59CodeKind,'SOURCE_BOUND_VISUAL_ASSET_EDIT');
+  assert.equal(candidate.modelUsed,false);assert.equal(candidate.sourceWrite,false);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  const docs=new Map([[file,source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  assert.match(docs.get(file),/fill="#246"/);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,
+    selectedTask:{...order.selectedTask,vibe59VisualAssetEdits:[{
+      path:file,expectedSha256:'0'.repeat(64),find:'fill="#111"',replace:'fill="#246"'}]}}}),/STALE_SOURCE/);
+  assert.throws(()=>createVibe59CodeCandidates({...options,order:{...order,
+    ownerApproved:false}}),/NOT_APPROVED/);
+});
+
+test('approved Vibe5.9 modifies existing visual SVG and replaces a game asset using verified CC0 originals',t=>{
+  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-assets-'));
+  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+  const root=path.join(repo,'web-games','sample-game');
+  fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+  fs.mkdirSync(path.join(repo,'assets','shared','ui'),{recursive:true});
+  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'sample-game',webPath:'web-games/sample-game',lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]}));
+  const atlas='assets/atlas.svg',icon='assets/crest.png';
+  const beforeSvg='<svg xmlns="http://www.w3.org/2000/svg"><rect fill="#111"/></svg>';
+  const oldIcon=Buffer.from('old image source'),newIcon=Buffer.from('approved licensed source');
+  fs.writeFileSync(path.join(root,atlas),beforeSvg);
+  fs.writeFileSync(path.join(root,icon),oldIcon);
+  fs.writeFileSync(path.join(root,'index.html'),'<img src="assets/crest.png">');
+  const approvedSource='assets/shared/ui/crest.png';
+  fs.writeFileSync(path.join(repo,approvedSource),newIcon);
+  fs.writeFileSync(path.join(repo,'assets','asset-license-ledger.json'),JSON.stringify({
+    entries:[{id:'verified-existing-crest',source:'Approved CC0 graphic',
+      sourceUrl:'https://example.org/approved-cc0',license:'CC0',commercialUse:true,
+      modificationUse:true,verifiedAt:'2026-10-29',targetGame:'sample-game',
+      evidence:{licenseUrl:'https://example.org/license',
+        files:[{path:approvedSource,sha256:digest(newIcon)}]}}]
+  }));
+  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    approvedAssetMappings:[{path:icon,sourcePath:approvedSource,ledgerId:'verified-existing-crest',
+      assetRole:'ui',ownerApproved:true}]}};
+  const options={order,sourceRoot:root,repositoryRoot:repo,target:'web'};
+  const edit={path:atlas,expectedSha256:digest(beforeSvg),find:'fill="#111"',replace:'fill="#456"'};
+  const replace={path:icon,expectedSha256:digest(oldIcon),sourcePath:approvedSource,
+    sourceSha256:digest(newIcon),ledgerId:'verified-existing-crest',
+    assetRole:'ui',mappingApproved:true};
+  const inspection=inspectVibe59ExistingGameAssets({
+    ...options,order:{selectedTask:{gameId:'sample-game'}}
+  });
+  assert.equal(inspection.sourceWrite,false);
+  assert.ok(inspection.assets.some(x=>x.path===atlas&&x.sha256===digest(beforeSvg)));
+  assert.throws(()=>applyVibe59ApprovedGameAssetChanges({...options,
+    visualEdits:[edit],binaryReplacements:[replace]}),/NOT_APPROVED/);
+  assert.throws(()=>applyVibe59ApprovedGameAssetChanges({...options,
+    approvedAssetWrite:true,visualEdits:[edit],
+    binaryReplacements:[{...replace,sourceSha256:'0'.repeat(64)}]}),/STALE_SOURCE/);
+  assert.throws(()=>applyVibe59ApprovedGameAssetChanges({...options,
+    approvedAssetWrite:true,visualEdits:[edit],
+    binaryReplacements:[{...replace,mappingApproved:false}]}),/NOT_APPROVED/);
+  assert.equal(fs.readFileSync(path.join(root,atlas),'utf8'),beforeSvg);
+  assert.deepEqual(fs.readFileSync(path.join(root,icon)),oldIcon);
+  const result=applyVibe59ApprovedGameAssetChanges({...options,
+    approvedAssetWrite:true,visualEdits:[edit],binaryReplacements:[replace]});
+  assert.equal(result.assetWrite,true);
+  assert.equal(result.runtimeVerified,false);assert.equal(result.releaseVerified,false);
+  assert.deepEqual(result.changedAssets,[atlas,icon]);
+  assert.match(fs.readFileSync(path.join(root,atlas),'utf8'),/fill="#456"/);
+  assert.deepEqual(fs.readFileSync(path.join(root,icon)),newIcon);
+  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),'<img src="assets/crest.png">');
+});
+test('Vibe5.9 asset editing refuses unlicensed binaries and unsafe SVG scripts without touching originals',t=>{
+  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe59-asset-deny-'));
+  t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+  const root=path.join(repo,'web-games','sample-game');fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+  fs.mkdirSync(path.join(repo,'assets','shared'),{recursive:true});
+  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'sample-game',webPath:'web-games/sample-game',lifecycleState:'ACTIVE'}]}));
+  const file='assets/atlas.svg',original='<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>';
+  fs.writeFileSync(path.join(root,file),original);
+  fs.writeFileSync(path.join(root,'assets','image.png'),'old');
+  fs.writeFileSync(path.join(repo,'assets','shared','image.png'),'new');
+  fs.writeFileSync(path.join(repo,'assets','asset-license-ledger.json'),JSON.stringify({
+    entries:[{id:'not-cc0',source:'unknown',sourceUrl:'https://example.org',
+      license:'UNKNOWN',commercialUse:true,modificationUse:true,verifiedAt:'2026-10-29',
+      targetGame:'sample-game',evidence:{licenseUrl:'https://example.org/license',
+        files:[{path:'assets/shared/image.png',sha256:digest('new')}]}}]
+  }));
+  const options={order:{ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    approvedAssetMappings:[{path:'assets/image.png',sourcePath:'assets/shared/image.png',
+      ledgerId:'not-cc0',assetRole:'ui',ownerApproved:true}]}},
+    sourceRoot:root,repositoryRoot:repo,target:'web',approvedAssetWrite:true};
+  assert.throws(()=>applyVibe59ApprovedGameAssetChanges({...options,
+    visualEdits:[{path:file,expectedSha256:digest(original),find:'<rect/>',
+      replace:'<script>alert(1)</script>'}]}),/UNSAFE_SVG/);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),original);
+  assert.throws(()=>applyVibe59ApprovedGameAssetChanges({...options,
+    binaryReplacements:[{path:'assets/image.png',expectedSha256:digest('old'),
+      sourcePath:'assets/shared/image.png',sourceSha256:digest('new'),
+      ledgerId:'not-cc0',assetRole:'ui',mappingApproved:true}]}),/LICENSE_NOT_VERIFIED/);
+  assert.equal(fs.readFileSync(path.join(root,'assets','image.png'),'utf8'),'old');
+});
 
 test('Sprint2 multi-file ROBLOX server functions produce two source-grounded atomic edits and independent DAGs',t=>{
   const root=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-multi-luau-')),'game');

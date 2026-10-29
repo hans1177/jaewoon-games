@@ -5,6 +5,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {applyExactEdits} from './autonomous-safe-edit.mjs';
+export {inspectVibe59ExistingGameAssets,applyVibe59ApprovedGameAssetChanges,createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
+import {createVibe59ExistingGameVisualCandidate} from './vibe59-existing-game-assets.mjs';
 import {createVibe2ComplexCandidate,compileSourceBoundComplexRequest} from './vibe2-complex-work-planner.mjs';
 import {synthesizeVibe59RobloxServerAction,inspectVibe59RobloxCoding,synthesizeVibe59RobloxDomainAction,verifyVibe59RobloxDomainScenarios} from './vibe59-roblox-coding.mjs';
 import {buildVibe59CreativityPlan} from './vibe59-creative-engine.mjs';
@@ -1092,7 +1094,53 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
 // Structured complex designs use the existing exact-edit engine against a private
 // in-memory source snapshot. Dependent steps may consume earlier generated code,
 // but original files remain untouched until the canonical worker admits the batch.
+// 승인된 실제 게임 소스의 원자적 변경: 후보 생성과 원본 쓰기는 별개 권한이다.
+// 실제 원본을 먼저 읽어 후보를 검증하고, 같은 내용일 때만 기존 편집기로 기록한다.
+export function applyVibe59ApprovedGameSourceChange({order={},sourceRoot='',responsibleFiles=[],target='',repositoryRoot=process.cwd(),approvedSourceWrite=false}={}){
+  if(approvedSourceWrite!==true||order.ownerApproved!==true||order.selectedTask?.ownerDirective!==true)
+    throw Error('VIBE59_REAL_GAME_SOURCE_WRITE_NOT_APPROVED');
+  if(!['web','roblox'].includes(target))throw Error('VIBE59_REAL_GAME_TARGET_NOT_ALLOWED');
+  const root=path.resolve(sourceRoot),repository=path.resolve(repositoryRoot);
+  if(root===repository||!root.startsWith(repository+path.sep))
+    throw Error('VIBE59_REAL_GAME_ROOT_OUTSIDE_REPOSITORY');
+  const relativeRoot=path.relative(repository,root).replaceAll(path.sep,'/');
+  if(!/^(web-games|roblox-games)\/[a-z0-9][a-z0-9-]*$/.test(relativeRoot)
+    ||(target==='web'&&!relativeRoot.startsWith('web-games/'))
+    ||(target==='roblox'&&!relativeRoot.startsWith('roblox-games/')))
+    throw Error('VIBE59_REAL_GAME_ROOT_UNCLAIMED');
+  const files=[...new Set(responsibleFiles)];
+  if(!files.length||files.length>8||files.some(file=>typeof file!=='string'
+    ||!file||path.isAbsolute(file)||file.split(/[\\/]/).includes('..')
+    ||!fs.existsSync(path.join(root,file))||!fs.statSync(path.join(root,file)).isFile()))
+    throw Error('VIBE59_REAL_GAME_FILES_UNCLAIMED');
+  const originals=new Map(files.map(file=>[file,fs.readFileSync(path.join(root,file),'utf8')]));
+  const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:files,target,repositoryRoot:repository});
+  if(candidate?.modelUsed!==false||candidate?.sourceWrite!==false
+    ||!Array.isArray(candidate.edits)||!candidate.edits.length
+    ||candidate.newFiles?.length||candidate.replaceFiles?.length
+    ||candidate.edits.some(edit=>!originals.has(edit.path)))
+    throw Error('VIBE59_REAL_GAME_CANDIDATE_UNVERIFIED');
+  const staged=new Map(originals);
+  applyExactEdits(root,candidate.edits,{documents:staged});
+  const changed=[...staged].filter(([file,content])=>content!==originals.get(file));
+  if(!changed.length)throw Error('VIBE59_REAL_GAME_NO_EFFECT');
+  for(const [file,original] of originals)
+    if(fs.readFileSync(path.join(root,file),'utf8')!==original)
+      throw Error('VIBE59_REAL_GAME_SOURCE_CHANGED_CONCURRENTLY');
+  // 실제 소스 변경은 기존 편집기를 사용한다. 배포/운영 검증 권한은 별도이다.
+  applyExactEdits(root,candidate.edits);
+  for(const [file,content] of changed)
+    if(fs.readFileSync(path.join(root,file),'utf8')!==content)
+      throw Error('VIBE59_REAL_GAME_WRITE_VERIFICATION_FAILED');
+  return Object.freeze({gameRoot:relativeRoot,changedFiles:changed.map(([file])=>file),
+    sourceWrite:true,modelUsed:false,runtimeVerified:false,releaseVerified:false});
+}
+
 export function createVibe59CodeCandidates({order={},sourceRoot='',responsibleFiles=[],target='',verifiedCodePatterns=[],repositoryRoot=process.cwd()}={}){
+  // Existing assets are first-class Vibe worker edit candidates, not presentation-only notes.
+  const visualAssetCandidate=createVibe59ExistingGameVisualCandidate({order,sourceRoot,
+    responsibleFiles,target,repositoryRoot});
+  if(visualAssetCandidate)return visualAssetCandidate;
   const batch=order.selectedTask?.vibe59CodeRequests??order.vibe59CodeRequests;
   if(batch==null){
     // Source-grounded natural-language chaining augments, never bypasses, explicit V5.9 recipes.
