@@ -90,12 +90,19 @@ export function synthesizeGameChangeAtom({requirement,owner,file,target}){
    '\\s*\\)'+(target==='web'?'\\s*;':''));
   const match=re.exec(source.slice(at,owner.bodyEnd));
   if(!match)throw Error('VIBE2_OPERATOR_CALL_ANCHOR');
-  // 기존 책임 함수의 선언까지 포함해 동일 이름의 다른 호출과 충돌하지 않게 한다.
+  // [메인] 기존 호출 뒤 같은 책임 범위의 여러 실제 함수를 하나의 원자적 수정안으로 연결한다.
   const find=source.slice(owner.start,at+match[0].length);
-  const args=r.forwardedArguments||[];
-  edit={path:file.path,find,replace:find+'\n'+indent+r.callee+'('+args.join(', ')+')'+(target==='web'?';':'')};
-  proof={pass:true,cases:[{name:'ordered-existing-call',after:r.after,callee:r.callee,forwardedArguments:args},{name:'unchanged-owner',symbol:owner.id}],
-   authority:'SOURCE_CALL_ORDER_ONLY',independentGameQa:false,actualGamePlaytest:false};effects=['CALL_EXISTING_FUNCTION:'+r.callee];
+  const orderedCalls=r.orderedCalls||[{callee:r.callee,forwardedArguments:r.forwardedArguments||[]}];
+  if(!orderedCalls.length||orderedCalls.some(call=>!Array.isArray(call.forwardedArguments)))
+   throw Error('VIBE2_OPERATOR_CALL_BINDING');
+  const lines=orderedCalls.map(call=>indent+call.callee+'('+call.forwardedArguments.join(', ')+')'+(target==='web'?';':''));
+  edit={path:file.path,find,replace:find+'\n'+lines.join('\n')};
+  proof={pass:true,cases:[
+   ...orderedCalls.map((call,i)=>({name:i?'ordered-existing-call-'+(i+1):'ordered-existing-call',
+    after:i?orderedCalls[i-1].callee:r.after,callee:call.callee,forwardedArguments:call.forwardedArguments})),
+   {name:'unchanged-owner',symbol:owner.id}
+  ],authority:'SOURCE_CALL_ORDER_ONLY',independentGameQa:false,actualGamePlaytest:false};
+  effects=orderedCalls.map(call=>'CALL_EXISTING_FUNCTION:'+call.callee);
  }else if(r.operation==='clamp-assignment'){
   const escaped=r.output.replaceAll('.','\\.'),re=new RegExp('(?<![\\w$.])'+escaped+'[ \\t]*=[ \\t]*([A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*|-?\\d+(?:\\.\\d+)?)[ \\t]*'+(target==='web'?';':'(?=\\r?\\n|$)'),'g');
   const matches=[...body.matchAll(re)];if(matches.length!==1)throw Error('VIBE2_OPERATOR_ASSIGNMENT_ANCHOR');

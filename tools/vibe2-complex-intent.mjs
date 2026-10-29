@@ -110,7 +110,7 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
  const clauses=text.split(/[;\n]+/).map(x=>x.trim().replace(/[.!。]$/,'')).filter(Boolean);
  if(clauses.length>48){result.unresolved.push({code:'REQUIREMENT_BUDGET'});return result}
  for(const ownerText of clauses){
-  let m,operation,functionName,callback,condition,output,value,minimum,maximum,after,callee,semantic;
+  let m,operation,functionName,callback,condition,output,value,minimum,maximum,after,callee,callees,semantic;
   try{
    if(/^(?:죽은 (?:유닛|공격자)(?:은|는) 공격하지 않게 해|Prevent dead attackers from attacking)$/i.test(ownerText)){
     operation='semantic-guard';semantic='dead-attacker';
@@ -120,6 +120,9 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
    }else if((m=new RegExp('^In (?:function )?('+name+')(?: callback ('+name+'))?,? return when (.+)$','i').exec(ownerText))){
     [,functionName,callback]=m;operation='guard-return';condition=parseIntentExpression(m[3]);
+   }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+') 호출하고 ('+name+')(?:을|를)? 호출(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
+     (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+') then ('+name+')$','i').exec(ownerText))){
+    [,functionName,after,callee]=m;callees=[m[3],m[4]];operation='existing-call';
    }else if((m=new RegExp('^함수 ('+name+')에서 ('+name+') 호출 뒤 ('+name+')(?:을|를) 호출(?:해|해줘|하라|해주세요)?$').exec(ownerText))||
      (m=new RegExp('^In (?:function )?('+name+'),? after ('+name+') call ('+name+')$','i').exec(ownerText))){
     [,functionName,after,callee]=m;operation='existing-call';
@@ -132,7 +135,7 @@ export function compileComplexOwnerIntent({order={},target='web',baseRevisionSha
    }else{result.unresolved.push({code:'UNSUPPORTED_OPERATOR',ownerText});continue}
    const id='req-'+sourceDigest(ownerText).slice(0,16);
    if(result.requirements.some(r=>r.id===id)){result.unresolved.push({code:'DUPLICATE_REQUIREMENT',ownerText});continue}
-   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,
+   result.requirements.push({id,ownerText,functionName,callback,operation,semantic,condition,output,value,minimum,maximum,after,callee,callees,
     dependsOn:[],boundSymbols:[],acceptanceScenarios:[],invariants:['PRESERVE_SAVE_KEYS','NO_UNDECLARED_STATE_WRITE','NO_ASSET_CREATION'],
     stateOwnership:target==='roblox'?'EXISTING_SERVER_OWNER':'EXISTING_WEB_OWNER',status:'UNBOUND'});
   }catch{result.unresolved.push({code:'AMBIGUOUS_EXPRESSION',ownerText})}

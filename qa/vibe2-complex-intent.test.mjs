@@ -56,3 +56,25 @@ test('ordered natural-language call connectors retain exact owner text and groun
  }
 });
 
+
+test('owner can request the existing state -> UI -> save function chain in Korean and English',()=>{
+ for(const goal of [
+  '함수 collect에서 mutate 호출 뒤 render 호출하고 save를 호출해',
+  'In function collect, after mutate call render then save'
+ ]){
+  const intent=compile(goal);
+  assert.equal(intent.unresolved.length,0,goal);
+  assert.equal(intent.requirements.length,1);
+  assert.equal(intent.requirements[0].operation,'existing-call');
+  assert.equal(intent.requirements[0].after,'mutate');
+  assert.deepEqual(intent.requirements[0].callees,['render','save']);
+  assert.equal(intent.sourceWrite,false);
+ }
+ for(const goal of [
+  '함수 collect에서 mutate 호출 뒤 render 호출하고 알수없는 저장을 호출해',
+  'In function collect, after mutate call render then save then another',
+  '함수 collect에서 mutate 호출 뒤 render 호출하고 process.exit 호출해'
+ ])assert.ok(compile(goal).unresolved.length,goal);
+ const unapproved=compileComplexOwnerIntent({order:{goal:'함수 collect에서 mutate 호출 뒤 render 호출하고 save를 호출해'}});
+ assert.ok(unapproved.unresolved.some(row=>row.code==='NO_OWNER_SPEC'));
+});

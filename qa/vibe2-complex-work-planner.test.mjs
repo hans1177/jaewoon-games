@@ -405,3 +405,86 @@ test('server-local native Luau existing-call preserves typed arguments and block
  const blocked=planComplexGameWork(options);
  assert.equal(blocked.status,'BLOCKED');assert.equal(blocked.unresolved[0].code,'CALL_PARAMETER_BINDING_UNPROVEN');
 });
+
+test('WEB owner event changes state, refreshes existing UI and saves exactly once per event in one edit',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={hp:0};\nconst ui={textContent:""};\nconst storage={writes:0,data:null};\n'+
+  'function mutate(actor){state.hp+=actor.gain;}\n'+
+  'function render(actor){ui.textContent=String(state.hp+actor.bias);}\n'+
+  'function save(){storage.writes++;storage.data=JSON.stringify(state);}\n'+
+  'function collect(actor){\n mutate(actor);\n}\n';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+   goal:'함수 collect에서 mutate 호출 뒤 render 호출하고 save를 호출해'}};
+ const candidate=createVibe59CodeCandidates(options);
+ assert.equal(candidate.vibe59CodeKind,'COMPLEX_OWNER_INTENT');
+ assert.equal(candidate.edits.length,1);
+ assert.equal(candidate.complexPlan.atomCount,1);
+ assert.equal(candidate.complexPlan.atoms[0].inputSymbols.length,3);
+ assert.deepEqual(candidate.complexPlan.atoms[0].effects,['CALL_EXISTING_FUNCTION:render','CALL_EXISTING_FUNCTION:save']);
+ assert.match(candidate.edits[0].replace,/mutate\(actor\);\s+render\(actor\);\s+save\(\);/);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const result=vm.runInNewContext(docs.get('game.js')+
+  'collect({gain:3,bias:2});collect({gain:4,bias:1});({hp:state.hp,label:ui.textContent,writes:storage.writes,data:storage.data});');
+ assert.equal(result.hp,7);
+ assert.equal(result.label,'8');
+ assert.equal(result.writes,2);
+ assert.equal(JSON.parse(result.data).hp,7);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);
+});
+
+test('WEB chain blocks duplicate save, missing UI, mismatched arguments and stale source without writing',t=>{
+ const {root}=fixture(t);
+ const good='const state={hp:0};\nfunction mutate(actor){state.hp+=actor.gain;}\n'+
+  'function render(actor){state.shown=state.hp;}\nfunction save(){state.saved=state.hp;}\n'+
+  'function collect(actor){mutate(actor);}\n';
+ const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 collect에서 mutate 호출 뒤 render 호출하고 save를 호출해'}};
+ for(const changed of [
+  good.replace('function save(){state.saved=state.hp;}\n',''),
+  good.replace('function render(actor)','function render(unknown)'),
+  good.replace('mutate(actor);}','mutate(actor);save();}'),
+  good.replace('function save(){','function save(actor=1){')
+ ]){
+  fs.writeFileSync(path.join(root,'game.js'),changed);
+  const plan=planComplexGameWork(options);
+  assert.equal(plan.status,'BLOCKED');
+  assert.ok(plan.unresolved.some(row=>/CALL_(OWNERSHIP|PARAMETER_BINDING)/.test(row.code)));
+  assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),changed);
+ }
+ fs.writeFileSync(path.join(root,'game.js'),good);
+ const plan=planComplexGameWork(options);assert.equal(plan.status,'BOUND');
+ fs.writeFileSync(path.join(root,'game.js'),good+'// main moved\n');
+ assert.throws(()=>createComplexGameCandidate({plan,sourceRoot:root}),/STALE_SOURCE/);
+});
+
+test('Roblox server Luau chain preserves owned state, display, save and source without new RemoteEvents',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const file='server/Game.server.luau';
+ const source='local state={hp=0,shown=0,saved=0,writes=0}\n'+
+  'local function mutate(actor: any)\n state.hp += actor.gain\nend\n'+
+  'local function render(actor: any)\n state.shown = state.hp + actor.bias\nend\n'+
+  'local function save()\n state.saved = state.hp\n state.writes += 1\nend\n'+
+  'local function collect(actor: any)\n mutate(actor)\nend\n';
+ fs.writeFileSync(path.join(root,file),source);
+ const options={sourceRoot:root,responsibleFiles:[file],target:'roblox',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 collect에서 mutate 호출 뒤 render 호출하고 save를 호출해'}};
+ const plan=planComplexGameWork(options);assert.equal(plan.status,'BOUND');
+ const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ assert.equal(candidate.edits.length,1);
+ assert.match(candidate.edits[0].replace,/mutate\(actor\)\s+render\(actor\)\s+save\(\)/);
+ const docs=new Map([[file,source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ if(process.env.VIBE2_LUAU_BINARY){
+  const probe=path.join(root,'probe.luau');fs.writeFileSync(probe,docs.get(file)+
+   '\ncollect({gain=3,bias=2})\nassert(state.hp==3 and state.shown==5 and state.saved==3 and state.writes==1)\n'+
+   'collect({gain=4,bias=1})\nassert(state.hp==7 and state.shown==8 and state.saved==7 and state.writes==2)\n'+
+   'print("SERVER_CHAIN_LUAU=PASS; ROBLOX_PLAYTEST=UNVERIFIED")');
+  const run=spawnSync(process.env.VIBE2_LUAU_BINARY,[probe],{encoding:'utf8',timeout:10000});
+  assert.equal(run.status,0,run.stderr);assert.match(run.stdout,/SERVER_CHAIN_LUAU=PASS/);
+ }
+ assert.equal(fs.readFileSync(path.join(root,file),'utf8'),source);
+ fs.writeFileSync(path.join(root,file),source.replace('local function save()\n','local function save(missing: any)\n'));
+ assert.equal(planComplexGameWork(options).status,'BLOCKED');
+});

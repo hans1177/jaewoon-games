@@ -266,34 +266,52 @@ export function planComplexGameWork({order={},intent,sourceIndex,sourceRoot,resp
    }
   }
   if(r.operation==='existing-call'){
-   const callees=index.symbols.filter(s=>s.kind==='function'&&s.name===r.callee&&s.path===file.path&&!s.ambiguous);
+   // [메인] 기존 상태 변경 호출 뒤 실제 원본의 UI·저장 책임 함수를 순서대로 연결한다.
+   const orderedNames=r.callees||[r.callee];
+   const candidates=orderedNames.map(name=>index.symbols.filter(s=>s.kind==='function'&&s.name===name&&s.path===file.path&&!s.ambiguous));
    const call=index.edges.filter(e=>e.from===owner.id&&e.toName===r.after&&e.to);
    const ancestors=new Set([owner.id]);let parent=owner.parent;
    while(parent){ancestors.add(parent);parent=index.symbols.find(s=>s.id===parent)?.parent}
    const scope=sourceScopeAt(file.code,owner.start,target);
-   const calleeScope=callees.length===1?sourceScopeAt(file.code,callees[0].start,target):[];
-   if(callees.length!==1||call.length!==1||r.callee===r.functionName||!calleeScope.every((x,i)=>scope[i]===x)||
-     callees[0].parent&&!ancestors.has(callees[0].parent)){
+   const callees=candidates.map(rows=>rows[0]);
+   if(candidates.some(rows=>rows.length!==1)||call.length!==1||
+     new Set(orderedNames).size!==orderedNames.length||orderedNames.includes(r.functionName)||
+     (r.callees&&orderedNames.includes(r.after))||
+     callees.some(callee=>{
+       const calleeScope=sourceScopeAt(file.code,callee.start,target);
+       return !calleeScope.every((x,i)=>scope[i]===x)||
+         (callee.parent&&!ancestors.has(callee.parent));
+     })){
     unresolved.push({id:r.id,code:'CALL_OWNERSHIP_UNPROVEN'});continue;
    }
-   // 호출 대상 인자 이름을 원래 책임 함수의 고유 매개변수에 직접 결합한다. Luau 지역 선언은 끌어올려지지 않는다.
-   const callee=callees[0];let forwardedArguments;
    if(!Array.isArray(call[0].arguments)||call[0].arguments.length>6){
     unresolved.push({id:r.id,code:'CALL_ANCHOR_ARGUMENTS_UNPROVEN'});continue;
    }
    try{
     const formals=symbol=>explicitParameterNames(/\(([^()]*)\)/.exec(file.code.slice(symbol.start,symbol.bodyStart))?.[1]??'...');
-    const available=formals(owner);forwardedArguments=formals(callee);
-    if(forwardedArguments.some(name=>!available.includes(name)||owner.locals.includes(name))||
-      [...available,...owner.locals].includes(r.callee)||callee.unsupported.length||
-      (target==='roblox'&&callee.start>=owner.start))throw Error('UNPROVEN_CALL');
-   }catch{unresolved.push({id:r.id,code:'CALL_PARAMETER_BINDING_UNPROVEN'});continue}
-   r.forwardedArguments=forwardedArguments;
+    const available=formals(owner);
+    const orderedCalls=callees.map((callee,i)=>{
+     const forwardedArguments=formals(callee);
+     if(forwardedArguments.some(name=>!available.includes(name)||owner.locals.includes(name))||
+       [...available,...owner.locals].includes(orderedNames[i])||callee.unsupported.length||
+       (target==='roblox'&&callee.start>=owner.start))throw Error('UNPROVEN_CALL');
+     return {callee:orderedNames[i],forwardedArguments};
+    });
+    // 저장 함수가 이미 이벤트 경로에서 호출되면 재호출해 중복 저장하지 않는다.
+    if(r.callees&&index.edges.some(e=>e.from===owner.id&&orderedNames.includes(e.toName)))
+     throw Error('DUPLICATE_CHAIN_CALL');
+    r.forwardedArguments=orderedCalls[0].forwardedArguments;
+    r.orderedCalls=orderedCalls;
+    r.boundCalleeSymbols=callees.map(callee=>({id:callee.id,path:callee.path,
+     start:callee.start,end:callee.end,sourceSha256:callee.sourceSha256,parserConfidence:callee.parserConfidence}));
+   }catch{
+    unresolved.push({id:r.id,code:'CALL_PARAMETER_BINDING_UNPROVEN'});continue;
+   }
    r.afterCallArguments=[...call[0].arguments];
    r.afterCallStart=call[0].start;
   }
   nodes.push({...r,owner,file,boundSymbols:[{id:owner.id,path:owner.path,start:owner.start,end:owner.end,
-   sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence}],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});
+   sourceSha256:owner.sourceSha256,parserConfidence:owner.parserConfidence},...(r.boundCalleeSymbols||[])],ownerScope:intent.ownerDirectiveReference,dependsOn:[]});
  }
  if(unresolved.length)return {status:'BLOCKED',intent,unresolved,sourceWrite:false,modelUsed:false,runtimeVerified:false};
  // 같은 기존 진입점의 중단 조건만 OR로 합성한다. 원시 편집 영역의 중복은 계속 거부한다.
