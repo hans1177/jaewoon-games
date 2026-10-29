@@ -667,6 +667,21 @@ test('continuous verified pattern ingest learns, quarantines stale proof, and re
   const restored=ingestVerifiedCodePatterns({samplesDir,libraryInput:stale});
   assert.notEqual(restored.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
   assert.equal(restored.stats.reactivated>0,true);
+  // Historical records without new runtime data are retained for audit and
+  // are not misrepresented as a newly failed playtest.
+  fs.writeFileSync(file,JSON.stringify({...sample,verification:{fullRegression:'PASS'}}));
+  const historical=ingestVerifiedCodePatterns({samplesDir,libraryInput:restored});
+  assert.notEqual(historical.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
+  // A source revision change invalidates the original learning even when
+  // the new revision has no verified native runtime evidence.
+  fs.writeFileSync(file,JSON.stringify({...sample,sourceRevision:'e'.repeat(40),
+    verification:{fullRegression:'PASS'}}));
+  const changedRevision=ingestVerifiedCodePatterns({samplesDir,libraryInput:historical});
+  assert.equal(changedRevision.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
+  // Corrupted source evidence must not keep an old executable recipe active.
+  fs.writeFileSync(file,'NOT_VALID_JSON');
+  const malformed=ingestVerifiedCodePatterns({samplesDir,libraryInput:historical});
+  assert.equal(malformed.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
   fs.unlinkSync(file);
   const removed=ingestVerifiedCodePatterns({samplesDir,libraryInput:restored});
   assert.equal(removed.patterns.find(row=>row.id===learned.id).retrievalEligible,false);
