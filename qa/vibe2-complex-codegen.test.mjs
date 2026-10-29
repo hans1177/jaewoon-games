@@ -228,6 +228,7 @@ test('approved Vibe5.9 modifies existing visual SVG and replaces a game asset us
   const root=path.join(repo,'web-games','sample-game');
   fs.mkdirSync(path.join(root,'assets'),{recursive:true});
   fs.mkdirSync(path.join(repo,'assets','shared','ui'),{recursive:true});
+  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'sample-game',webPath:'web-games/sample-game',lifecycleState:'ACTIVE'}],ownerStoppedGameIds:[]}));
   const atlas='assets/atlas.svg',icon='assets/crest.png';
   const beforeSvg='<svg xmlns="http://www.w3.org/2000/svg"><rect fill="#111"/></svg>';
   const oldIcon=Buffer.from('old image source'),newIcon=Buffer.from('approved licensed source');
@@ -243,7 +244,9 @@ test('approved Vibe5.9 modifies existing visual SVG and replaces a game asset us
       evidence:{licenseUrl:'https://example.org/license',
         files:[{path:approvedSource,sha256:digest(newIcon)}]}}]
   }));
-  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game'}};
+  const order={ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    approvedAssetMappings:[{path:icon,sourcePath:approvedSource,ledgerId:'verified-existing-crest',
+      assetRole:'ui',ownerApproved:true}]}};
   const options={order,sourceRoot:root,repositoryRoot:repo,target:'web'};
   const edit={path:atlas,expectedSha256:digest(beforeSvg),find:'fill="#111"',replace:'fill="#456"'};
   const replace={path:icon,expectedSha256:digest(oldIcon),sourcePath:approvedSource,
@@ -278,6 +281,7 @@ test('Vibe5.9 asset editing refuses unlicensed binaries and unsafe SVG scripts w
   t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
   const root=path.join(repo,'web-games','sample-game');fs.mkdirSync(path.join(root,'assets'),{recursive:true});
   fs.mkdirSync(path.join(repo,'assets','shared'),{recursive:true});
+  fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'sample-game',webPath:'web-games/sample-game',lifecycleState:'ACTIVE'}]}));
   const file='assets/atlas.svg',original='<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>';
   fs.writeFileSync(path.join(root,file),original);
   fs.writeFileSync(path.join(root,'assets','image.png'),'old');
@@ -288,7 +292,9 @@ test('Vibe5.9 asset editing refuses unlicensed binaries and unsafe SVG scripts w
       targetGame:'sample-game',evidence:{licenseUrl:'https://example.org/license',
         files:[{path:'assets/shared/image.png',sha256:digest('new')}]}}]
   }));
-  const options={order:{ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game'}},
+  const options={order:{ownerApproved:true,selectedTask:{ownerDirective:true,gameId:'sample-game',
+    approvedAssetMappings:[{path:'assets/image.png',sourcePath:'assets/shared/image.png',
+      ledgerId:'not-cc0',assetRole:'ui',ownerApproved:true}]}},
     sourceRoot:root,repositoryRoot:repo,target:'web',approvedAssetWrite:true};
   assert.throws(()=>applyVibe59ApprovedGameAssetChanges({...options,
     visualEdits:[{path:file,expectedSha256:digest(original),find:'<rect/>',
