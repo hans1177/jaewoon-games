@@ -53,6 +53,8 @@ function unavailableOfflineSourceCapability(row={}){
   // which failed validation. Never treat generic source failures as unavailable.
   if(kind==='VIBE4_OFFLINE_PATTERN_UNAVAILABLE'
     &&message.startsWith('VIBE4_OFFLINE_PATTERN_UNAVAILABLE:'))return kind;
+  if(kind==='COMPLEX_CAPABILITY_GAP'
+    &&message.startsWith('VIBE2_COMPLEX_CAPABILITY_GAP:'))return kind;
   if(kind==='NO_MODEL_SOURCE_REPAIR_UNAVAILABLE'
     &&message.startsWith('ROBLOX_NO_MODEL_SOURCE_REPAIR_UNAVAILABLE:'))return kind;
   if(kind==='EXTERNAL_AI_UNAVAILABLE'
@@ -249,6 +251,17 @@ export function computeParallelismTelemetry(input={}){
     effectiveMax,
     taskCount,
     workerCount,
+    codegenMeasurements:{
+      measuredWorkers:rows.filter(r=>Number.isSafeInteger(r.metrics?.candidateGenerationAttempts)&&r.metrics.candidateGenerationAttempts>=0).length,
+      zeroAttemptWorkers:rows.filter(r=>r.metrics?.candidateGenerationAttempts===0).length,
+      attemptedWorkers:rows.filter(r=>Number.isSafeInteger(r.metrics?.candidateGenerationAttempts)&&r.metrics.candidateGenerationAttempts>0).length,
+      complexRequirementCount:rows.reduce((n,r)=>n+(Number.isSafeInteger(r.metrics?.complexRequirementCount)&&r.metrics.complexRequirementCount>0?r.metrics.complexRequirementCount:0),0),
+      complexBoundSymbolCount:rows.reduce((n,r)=>n+(Number.isSafeInteger(r.metrics?.complexBoundSymbolCount)&&r.metrics.complexBoundSymbolCount>0?r.metrics.complexBoundSymbolCount:0),0),
+      runtimePassInferredFromWorkerPass:false,
+      cohorts:[...new Set(rows.map(r=>clean(r.gameId)).filter(Boolean))].map(gameId=>({gameId,
+        workers:rows.filter(r=>r.gameId===gameId).length,
+        attempted:rows.filter(r=>r.gameId===gameId&&Number.isSafeInteger(r.metrics?.candidateGenerationAttempts)&&r.metrics.candidateGenerationAttempts>0).length}))
+    },
     actualPeakConcurrency:peak,
     scheduledSlotUtilizationPct:round(requestedMax?workerCount/requestedMax*100:0),
     observedPeakUtilizationPct:round(requestedMax?peak/requestedMax*100:0),

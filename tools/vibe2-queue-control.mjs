@@ -1287,8 +1287,10 @@ export function applyVibeFanInResults(queueInput, results = []) {
     // 다른 게임의 결정론적 작업과 QA·자산·배포 작업은 기존 큐에서 계속 실행된다.
     const offlinePatternFailures=passes.length===0&&variants.length>0&&variants.every(row=>
       clean(row.outcome).toUpperCase()==='FAIL'
-      &&clean(row?.candidateFailure?.class).toUpperCase()==='VIBE4_OFFLINE_PATTERN_UNAVAILABLE'
-      &&clean(row?.candidateFailure?.message).startsWith('VIBE4_OFFLINE_PATTERN_UNAVAILABLE:')
+      &&((clean(row?.candidateFailure?.class).toUpperCase()==='VIBE4_OFFLINE_PATTERN_UNAVAILABLE'
+        &&clean(row?.candidateFailure?.message).startsWith('VIBE4_OFFLINE_PATTERN_UNAVAILABLE:'))
+        ||(clean(row?.candidateFailure?.class).toUpperCase()==='COMPLEX_CAPABILITY_GAP'
+          &&clean(row?.candidateFailure?.message).startsWith('VIBE2_COMPLEX_CAPABILITY_GAP:')))
       &&(row?.metrics?.candidateGenerationAttempts==null||Number(row.metrics.candidateGenerationAttempts)===0)
     );
     if(offlinePatternFailures){

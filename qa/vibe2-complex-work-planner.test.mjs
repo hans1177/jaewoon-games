@@ -1,0 +1,195 @@
+// 파일명: qa/vibe2-complex-work-planner.test.mjs
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import vm from 'node:vm';
+import {gunzipSync} from 'node:zlib';
+import {spawnSync} from 'node:child_process';
+import {compileComplexOwnerIntent} from '../tools/vibe2-complex-intent.mjs';
+import {planComplexGameWork,createComplexGameCandidate} from '../tools/vibe2-complex-work-planner.mjs';
+import {buildGameSourceIndex,sourceDigest} from '../tools/vibe2-game-source-index.mjs';
+import {createVibe59CodeCandidate,createVibe59CodeCandidates} from '../tools/vibe2-v59-autonomy.mjs';
+import {applyExactEdits} from '../tools/autonomous-safe-edit.mjs';
+import {runCodegenCounterexampleRepair} from '../tools/vibe2-codegen-counterexample-repair.mjs';
+const revision='a'.repeat(40);
+function fixture(t,target='web'){
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-complex-'));t.after(()=>fs.rmSync(repo,{recursive:true,force:true}));
+ const root=path.join(repo,target==='web'?'web-games/rpg':'roblox-games/rpg');fs.mkdirSync(root,{recursive:true});
+ fs.writeFileSync(path.join(repo,'game-catalog.json'),JSON.stringify({games:[{id:'rpg',webPath:'web-games/rpg',robloxProjectPath:'roblox-games/rpg'}]}));
+ return {repo,root};
+}
+test('natural owner request compiles two real source edits atomically through the existing V59 entry',t=>{
+ const {repo,root}=fixture(t),source='const state={dead:false,hp:10};\nfunction hit(a){\n a.hp -= 1;\n}\nfunction reward(a){\n hit(a);\n a.hp += 1;\n}';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 hit에서 a.dead이면 중단해; 함수 reward에서 a.dead이면 중단해'};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ assert.equal(candidate.vibe59CodeKind,'COMPLEX_OWNER_INTENT');assert.equal(candidate.edits.length,2);
+ assert.equal(candidate.complexPlan.atomCount,2);
+ assert.equal(candidate.vibe59DesignSteps[1].dependsOn[0],candidate.vibe59DesignSteps[0].id);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const game=vm.runInNewContext(docs.get('game.js')+';({hit,reward})');
+ const dead={dead:true,hp:0};game.hit(dead);game.reward(dead);assert.equal(dead.hp,0);
+ const alive={dead:false,hp:10};game.hit(alive);assert.equal(alive.hp,9);game.reward(alive);assert.equal(alive.hp,9);
+ assert.equal(fs.readFileSync(path.join(root,'game.js'),'utf8'),source);
+ assert.equal(candidate.runtimeVerified,false);
+});
+test('stale source, overlapping owner spans, cycle and ungrounded fields block unchanged originals',t=>{
+ const {root}=fixture(t),source='const state={dead:false};\nfunction hit(a){\n a.hp-=1;\n}';
+ const file=path.join(root,'game.js');fs.writeFileSync(file,source);
+ const order={ownerApproved:true,baseRevisionSha:revision,goal:'함수 hit에서 a.dead이면 중단해'};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',baseRevisionSha:revision};
+ const plan=planComplexGameWork(options);assert.equal(plan.status,'BOUND');
+ fs.appendFileSync(file,'\n// new revision');assert.throws(()=>createComplexGameCandidate({plan,sourceRoot:root}),/STALE_SOURCE/);
+ assert.equal(planComplexGameWork({...options,sourceIndex:plan.index}).status,'BLOCKED');
+ fs.writeFileSync(file,source);
+ const overlap=planComplexGameWork({...options,order:{...order,goal:order.goal+'; 함수 hit에서 a.hp < 0이면 a.hp를 0로 설정해'}});
+ assert.throws(()=>createComplexGameCandidate({plan:overlap,sourceRoot:root}),/OVERLAPPING/);
+ const cycle=planComplexGameWork({...options,order:{...order,vibe59ComplexDependencies:{hit:['hit']}}});
+ assert.equal(cycle.unresolved[0].code,'DEPENDENCY_CYCLE');
+ assert.equal(planComplexGameWork({...options,order:{...order,goal:'함수 hit에서 a.unknown이면 중단해'}}).status,'BLOCKED');
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+test('Roblox source candidates retain server ownership and distinct multi-file source evidence',t=>{
+ const {repo,root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const files=['server/Hit.server.luau','server/Award.server.luau'];
+ const sources=['local defaults = { dead = false }\nlocal function hit(a)\n a.hp -= 1\nend\n',
+  'local defaults = { dead = false }\nlocal function award(a)\n a.hp += 1\nend\n'];
+ files.forEach((f,i)=>fs.writeFileSync(path.join(root,f),sources[i]));
+ const candidate=createVibe59CodeCandidates({sourceRoot:root,responsibleFiles:files,target:'roblox',repositoryRoot:repo,
+  order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 hit에서 a.dead이면 중단해; 함수 award에서 a.dead이면 중단해'}});
+ assert.equal(candidate.edits.length,2);assert.ok(candidate.edits.every(e=>e.replace.includes('then return end')));
+ assert.equal(candidate.complexPlan.atoms[0].beforeSha256,sourceDigest(sources[0]));
+ assert.equal(candidate.sourceWrite,false);assert.equal(candidate.runtimeVerified,false);
+});
+test('counterexample repair rejects duplicate patches, stale evidence and unbounded retries',()=>{
+ const original=sourceDigest('original'),mk=n=>({edits:[{path:'game.js',find:'old',replace:String(n)}]});
+ const result=runCodegenCounterexampleRepair({sourceDigest:original,generate:({attempt})=>mk(attempt),
+  evaluate:c=>c.edits[0].replace==='1'?{pass:true}:{pass:false,reproduced:true,failureSignature:'miss',responsibleSymbols:['hit']}});
+ assert.equal(result.status,'CANDIDATE_VALIDATED');assert.equal(result.attempts.length,2);
+ const duplicate=runCodegenCounterexampleRepair({sourceDigest:original,generate:()=>mk(0),
+  evaluate:()=>({pass:false,reproduced:true,failureSignature:'miss',responsibleSymbols:['hit']})});
+ assert.equal(duplicate.reason,'REPEATED_PATCH_FINGERPRINT');assert.equal(duplicate.attempts.length,1);
+ const stale=runCodegenCounterexampleRepair({sourceDigest:original,generate:()=>mk(0),evaluate:()=>({pass:true}),failures:[{sourceDigest:'b'.repeat(64),reproduced:true,responsibleSymbols:['hit'],failureSignature:'miss'}]});
+ assert.equal(stale.reason,'UNVERIFIED_COUNTEREXAMPLE');
+});
+
+test('real line-defense source prevents dead attacks and duplicate death rewards while normal combat stays identical',()=>{
+ const root='web-games/line-defense';
+ const index=buildGameSourceIndex({sourceRoot:root,responsibleFiles:['index.html']});
+ const actual=index.files[0].source;
+ const names=['team','hit','clamp','attackPower','killReward','onEnemyKilled'];
+ const definitions=names.map(name=>{const s=index.symbols.find(s=>s.name===name);return actual.slice(s.start,s.end)}).join('\n');
+ const run=source=>{
+  const context=vm.createContext({innerWidth:420,Math});
+  vm.runInContext('let save={killRewardLv:0};let s={time:10,stage:1,money:0,maxMoney:800,strikes:[],shake:0,ally:{hp:1200},enemy:{hp:1500}};'+source+';globalThis.api={team,hit,s};',context);
+  return context.api;
+ };
+ const make=(extra={})=>({x:100,team:'enemy',dead:false,hp:100,cd:0,flash:0,atk:10,rate:1,range:50,speed:0,size:20,...extra});
+ const baseline=run(definitions.replace('  if ((a.dead || t.dead)) return;','').replace('  if (f.dead) return;',''));
+ const before=make({x:98,team:'ally'});baseline.team([make({dead:true,hp:0})],[before],'enemy',.016);
+ assert.equal(before.hp,90,'original game reproduces dead attacker damaging a living unit');
+ const game=run(definitions),ally=make({x:98,team:'ally'});
+ game.team([make({dead:true,hp:0})],[ally],'enemy',.016);assert.equal(ally.hp,100);
+ const attacker=make({team:'ally'}),target=make({hp:10,reward:5});
+ game.hit(attacker,target,[target]);assert.equal(target.hp,0);assert.equal(target.dead,true);assert.equal(game.s.money,5);
+ attacker.cd=0;game.hit(attacker,target,[target]);assert.equal(target.hp,0);assert.equal(game.s.money,5);
+ const live=make({team:'ally'}),liveTarget=make();game.hit(live,liveTarget,[liveTarget]);assert.equal(liveTarget.hp,90);
+ const miss=make({x:200,team:'ally',range:1});game.team([miss],[],'ally',.016);assert.equal(game.s.enemy.hp,1500);
+ assert.match(actual,/KEY='jaewoon-line-defense-v1',TEST_KEY='jaewoon-line-defense-test-v1'/);
+});
+
+test('event-state-UI and bounded existing writes synthesize executable source without new save keys',t=>{
+ const {repo,root}=fixture(t);
+ const source='const state={ready:true,active:false,hp:10};\nfunction give(){state.hp=state.hp+1;}\nfunction render(){state.active=true;}\nfunction collect(){\n give();\n}\nfunction update(){\n state.hp = nextHp;\n}';
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'함수 collect에서 give 호출 뒤 render를 호출해; 함수 update에서 state.hp를 0에서 100까지 제한해'};
+ const c=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,c.edits,{documents:docs});
+ const ctx={nextHp:120};vm.runInNewContext(docs.get('game.js')+';collect();update();globalThis.result=state;',ctx);
+ assert.equal(ctx.result.active,true);assert.equal(ctx.result.hp,100);
+ assert.equal(c.edits.length,2);assert.equal(c.runtimeVerified,false);
+});
+
+test('ten supported source fixtures produce actual candidates and deterministic behavior; thirteen steps defer the next wave',t=>{
+ const {repo,root}=fixture(t);let baselineAttempts=0,attempts=0,verified=0;
+ for(let fixtureId=0;fixtureId<10;fixtureId++){
+  const source='const data={dead:false,hp:10};\nfunction hit(a){\n a.hp -= '+(fixtureId+1)+';\n}\nfunction award(a){\n a.hp += 1;\n}';
+  fs.writeFileSync(path.join(root,'game.js'),source);
+  const options={sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo,
+   order:{gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,goal:'함수 hit에서 a.dead이면 중단해; 함수 award에서 a.dead이면 중단해'}};
+  if(createVibe59CodeCandidate(options))baselineAttempts++;
+  const c=createVibe59CodeCandidates(options);
+  if(c.edits.length)attempts++;
+  const docs=new Map([['game.js',source]]);applyExactEdits(root,c.edits,{documents:docs});
+  const game=vm.runInNewContext(docs.get('game.js')+';({hit,award})'),a={dead:true,hp:0};game.hit(a);game.award(a);
+  assert.equal(a.hp,0);verified++;
+ }
+ assert.equal(baselineAttempts,0);assert.equal(attempts,10);assert.equal(verified,10);
+ const source='const data={dead:false};\n'+Array.from({length:13},(_,i)=>'function f'+i+'(a){a.hp -= 1;}').join('\n');
+ fs.writeFileSync(path.join(root,'game.js'),source);
+ const order={ownerApproved:true,goal:Array.from({length:13},(_,i)=>'함수 f'+i+'에서 a.dead이면 중단해').join('; ')};
+ const plan=planComplexGameWork({order,sourceRoot:root,responsibleFiles:['game.js'],baseRevisionSha:revision});
+ const c=createComplexGameCandidate({plan,sourceRoot:root});assert.equal(c.edits.length,12);
+ assert.equal(c.complexPlan.deferredWaves.length,1);assert.equal(c.complexPlan.deferredWaves[0].dependsOnPreviousWave,true);
+});
+
+test('historical five zero-attempt inputs replay exact owner goals without fabricating broad coding success',()=>{
+ const cases=JSON.parse(gunzipSync(fs.readFileSync('qa/vibe59-history.json.gz')));
+ assert.equal(cases.length,5);let zeroAttemptBaseline=0,blocked=0;
+ for(const row of cases){
+  assert.equal(sourceDigest(row.goal),row.goalSha256);assert.equal(row.baselineRunId,40830930094);
+  zeroAttemptBaseline+=row.baselineAttempts===0?1:0;
+  const intent=compileComplexOwnerIntent({order:{selectedTask:row},target:row.target,baseRevisionSha:row.sourceRevision});
+  assert.ok(intent.unresolved.length,row.id);blocked++;
+  if(!row.ownerDirective)assert.equal(intent.ownerDirectiveReference.verifiedFromOwnerOrder,false);
+ }
+ assert.equal(zeroAttemptBaseline,5);assert.equal(blocked,5);
+});
+
+test('server-local state guards follow original nil validation and cannot run before state initialization',t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const source='local defaults = { dead = false }\nlocal function hit(player)\n local state = profiles[player]\n if not state then return end\n state.hp -= 1\nend\n';
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+ const options={order:{ownerApproved:true,goal:'함수 hit에서 state.dead이면 중단해'},sourceRoot:root,responsibleFiles:['server/Game.server.luau'],target:'roblox',baseRevisionSha:revision};
+ const plan=planComplexGameWork(options);assert.equal(plan.status,'BOUND');
+ const c=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'});
+ assert.match(c.edits[0].replace,/if not state then return end\n\n  if state\.dead then return end/);
+ fs.writeFileSync(path.join(root,'server/Game.server.luau'),source.replace(' if not state then return end\n',''));
+ assert.equal(planComplexGameWork(options).status,'BLOCKED');
+});
+
+test('server-local native Luau executes emitted multi-file changes with live and dead actors',{skip:!process.env.VIBE2_LUAU_BINARY},t=>{
+ const {root}=fixture(t,'roblox');fs.mkdirSync(path.join(root,'server'));
+ const files=['server/Hit.server.luau','server/Award.server.luau'];
+ const source=['local defaults = {dead=false}\nlocal function hit(a)\n a.hp -= 1\nend\n',
+  'local defaults = {dead=false}\nlocal function award(a)\n a.hp += 1\nend\n'];
+ files.forEach((f,i)=>fs.writeFileSync(path.join(root,f),source[i]));
+ const plan=planComplexGameWork({sourceRoot:root,responsibleFiles:files,target:'roblox',baseRevisionSha:revision,
+  order:{ownerApproved:true,goal:'함수 hit에서 a.dead이면 중단해; 함수 award에서 a.dead이면 중단해'}});
+ const candidate=createComplexGameCandidate({plan,sourceRoot:root,target:'roblox'}),docs=new Map(files.map((f,i)=>[f,source[i]]));
+ applyExactEdits(root,candidate.edits,{documents:docs});
+ const code=[...docs.values()].join('\n')+'\nlocal a={dead=true,hp=0}\nhit(a)\naward(a)\nassert(a.hp==0)\na.dead=false\na.hp=10\nhit(a)\nassert(a.hp==9)\naward(a)\nassert(a.hp==10)\nprint("NATIVE_LUAU_COMPLEX=PASS; ROBLOX_PLAYTEST=UNVERIFIED")';
+ const file=path.join(root,'probe.luau');fs.writeFileSync(file,code);
+ const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[file],{encoding:'utf8',timeout:10000});
+ assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/NATIVE_LUAU_COMPLEX=PASS/);
+ assert.equal(candidate.runtimeVerified,false);
+});
+
+test('ordinary owner combat language discovers actual damage, caller and iteration owners without supplied function names',t=>{
+ const {repo,root}=fixture(t);
+ const current=fs.readFileSync('web-games/line-defense/index.html','utf8');
+ const baseline=current.replace('\n  if ((a.dead || t.dead)) return;','').replace('\n  if (f.dead) return;','');
+ fs.writeFileSync(path.join(root,'index.html'),baseline);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  goal:'죽은 유닛은 공격하지 않게 해; 죽은 대상은 다시 공격하지 않게 해'};
+ const c=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['index.html'],target:'web',repositoryRoot:repo});
+ assert.equal(c.edits.length,2);assert.equal(c.complexPlan.requirementCount,2);
+ const docs=new Map([['index.html',baseline]]);applyExactEdits(root,c.edits,{documents:docs});
+ assert.equal(docs.get('index.html'),current,'the engine reproduces the exact real game repair from source evidence');
+ assert.equal(c.complexPlan.atoms.flatMap(a=>a.requirementIds).length,3);
+ assert.ok(c.complexPlan.atoms.some(a=>a.derivation==='CALL_ARGUMENT_TO_EXISTING_ITERATION_PARAMETER'));
+});
