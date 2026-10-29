@@ -1411,3 +1411,127 @@ test('one-shot volume pack rejects missing canvas ownership, unsafe names and Ro
  assert.throws(()=>createVibe59OneShotVolumeCandidate({...args,target:'roblox'}),/VIBE59_VOLUME_WEB_CANVAS_ONLY/);
  assert.equal(fs.readFileSync(file,'utf8'),source);
 });
+
+
+// [빌드업 UI 5종] 실제 렌더/클릭/키보드 원본 함수에 상태·시설·지도·목표·편의기능을 연결한다.
+test('one-shot Web volume UI has working status, facility info, minimap, objectives and keyboard convenience',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source=[
+  'const canvas=document.querySelector("canvas");',
+  'const ctx=canvas.getContext("2d");',
+  'let originalClicks=0,originalKeys=[];',
+  'function render(ctx){ctx.fillRect(0,0,1,1);}',
+  'function handleClick(x,y){originalClicks++;}',
+  'function handleKeydown(event){originalKeys.push(event.key);}',
+  'function update(dt){return dt;}'
+ ].join('\n');
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,
+  vibe59VolumeRequest:{facilities:['관람차','회전목마'],maps:['숲','사막'],backgrounds:['낮','밤'],
+   sprites:['나무'],actions:['점프','대시'],motions:['걷기','춤']}};
+ const candidate=createVibe59CodeCandidates({order,sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo});
+ assert.equal(candidate.vibe59CodeKind,'ONE_SHOT_GAME_VOLUME');
+ assert.equal(candidate.edits.length,4);
+ assert.deepEqual(candidate.volumePack.uiPages,['월드','상태','시설','지도','목표']);
+ assert.equal(candidate.volumePack.saveSchemaChanged,false);
+ assert.equal(candidate.runtimeVerified,false);
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,candidate.edits,{documents:docs});
+ const code=docs.get('game.js'),symbol=/const (__vibeVolume_[a-f0-9]+) = /.exec(code)?.[1];
+ assert.ok(symbol);assert.doesNotThrow(()=>new vm.Script(code));
+ const labels=[],canvas={width:1000,height:800};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(text){labels.push(text);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(code+';({render,handleClick,handleKeydown,update,view:()=>'+symbol+
+  ',originalClicks:()=>originalClicks,originalKeys:()=>originalKeys})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ const click=(x,y)=>app.handleClick(560+x*420/440,32+y*720/600);
+ const switchTab=n=>click(205+n*46+18,20);
+ const screen=()=>{labels.length=0;app.render(ctx);return labels.join('|');};
+ assert.match(screen(),/RPG 지역: 숲/);
+ switchTab(1);assert.equal(app.view().tab,'상태');
+ assert.match(screen(),/플레이 상태창/);
+ assert.match(screen(),/움직임 줄이기: 꺼짐/);
+ click(60,463);assert.equal(app.view().reduceMotion,true);
+ assert.match(screen(),/움직임 줄이기: 켜짐/);
+ switchTab(2);assert.match(screen(),/놀이 시설 정보창/);
+ click(272,142);assert.equal(app.view().selectedFacility,1);
+ assert.equal(app.view().rides,0,'selecting a ride does not count as riding');
+ click(80,540);assert.equal(app.view().rides,1);assert.equal(app.view().rideCounts[1],1);
+ assert.match(screen(),/이용 1회/);
+ switchTab(3);assert.match(screen(),/RPG 탐험 미니맵/);
+ click(265,156);assert.equal(app.view().mapIndex,1);
+ assert.equal(app.view().visitedMaps[1],true);
+ assert.match(screen(),/탐험한 지역: 2 \/ 2/);
+ switchTab(0);click(153,519);click(153,519);
+ assert.equal(app.view().actionsDone,2);
+ switchTab(4);assert.match(screen(),/플레이 목표 \/ 진행도/);
+ assert.match(screen(),/이 콘텐츠 묶음의 목표 3 \/ 3 완료/);
+ click(70,270);assert.equal(app.view().tab,'시설','clicking a goal takes user to its action');
+ app.handleKeydown({key:'1'});assert.equal(app.originalKeys().at(-1),'1',
+  'ordinary game keyboard shortcuts remain usable');
+ app.handleKeydown({key:'3',altKey:true});assert.equal(app.view().tab,'시설');
+ app.handleKeydown({key:'5',altKey:true});assert.equal(app.view().tab,'목표');
+ const keysBefore=app.originalKeys().length;
+ app.handleKeydown({key:'m',altKey:true});assert.equal(app.view().reduceMotion,false);
+ app.handleKeydown({key:'v',altKey:true});assert.equal(app.view().open,false);
+ app.handleKeydown({key:'v',altKey:true});assert.equal(app.view().open,true);
+ assert.equal(app.originalKeys().length,keysBefore,'Alt shortcuts do not double-trigger game keyboard');
+ assert.equal(app.originalClicks(),0);
+ app.handleClick(12,12);assert.equal(app.originalClicks(),1,'outside game area is not stolen');
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+ assert.doesNotMatch(code,/localStorage|sessionStorage|setItem|DataStore/);
+});
+
+test('one-shot UI uses large touch menu on mobile and preserves gameplay outside panel',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const source='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nlet clicks=0;\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){clicks++;}\n';
+ fs.writeFileSync(file,source);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차'],maps:['숲','사막'],actions:['점프']}};
+ const cand=createVibe59OneShotVolumeCandidate({order,sourceRoot:root,responsibleFiles:['game.js'],
+  target:'web',repositoryRoot:repo});
+ const docs=new Map([['game.js',source]]);applyExactEdits(root,cand.edits,{documents:docs});
+ const body=docs.get('game.js'),variable=/const (__vibeVolume_[a-f0-9]+) = /.exec(body)?.[1];
+ const labels=[],canvas={width:390,height:700};
+ const ctx={canvas,save(){},restore(){},translate(){},scale(){},rotate(){},
+  beginPath(){},arc(){},fill(){},stroke(){},moveTo(){},lineTo(){},fillRect(){},
+  fillText(text){labels.push(text);}};
+ canvas.getContext=()=>ctx;
+ const app=vm.runInNewContext(body+';({render,handleClick,view:()=>'+variable+',clicks:()=>clicks})',
+  {document:{querySelector:()=>canvas},Date,Math,Number});
+ const touch=(x,y)=>app.handleClick(390*.05+x*(390*.90)/440,700*.06+y*(700*.86)/600);
+ app.render(ctx);assert.ok(labels.includes('화면 메뉴'));
+ touch(350,27);assert.equal(app.view().menuOpen,true);
+ labels.length=0;app.render(ctx);
+ assert.ok(labels.includes('시설 화면'));assert.ok(labels.includes('목표 화면'));
+ touch(90,85+3*86+30);assert.equal(app.view().tab,'지도');
+ assert.equal(app.view().menuOpen,false);
+ labels.length=0;app.render(ctx);assert.ok(labels.includes('RPG 탐험 미니맵'));
+ touch(350,27);touch(85,85+4*86+30);
+ assert.equal(app.view().tab,'목표');
+ touch(350,27);touch(90,85+0*86+30);
+ assert.equal(app.view().tab,'월드');
+ assert.equal(app.clicks(),0,'touch navigation does not leak into original game');
+ app.handleClick(350,20);assert.equal(app.view().open,false,'existing close control remains available');
+ app.handleClick(5,5);assert.equal(app.clicks(),1,'outside clicks still reach original game');
+ app.handleClick(350,20);assert.equal(app.view().open,true);
+ assert.equal(fs.readFileSync(file,'utf8'),source);
+});
+
+test('one-shot UI skips unknown keyboard sources and protects valued keyboard return contracts',t=>{
+ const {repo,root}=fixture(t),file=path.join(root,'game.js');
+ const common='const canvas=document.querySelector("canvas");\nconst ctx=canvas.getContext("2d");\nfunction render(ctx){ctx.fillRect(0,0,1,1);}\nfunction handleClick(x,y){}\n';
+ fs.writeFileSync(file,common);
+ const order={gameId:'rpg',ownerApproved:true,baseRevisionSha:revision,vibe59VolumeRequest:{
+  facilities:['관람차'],maps:['숲']}};
+ const options={order,sourceRoot:root,responsibleFiles:['game.js'],target:'web',repositoryRoot:repo};
+ const noKeyboard=createVibe59OneShotVolumeCandidate(options);
+ assert.equal(noKeyboard.edits.length,2);
+ fs.writeFileSync(file,common+'function handleKeydown(e){return 10;}\n');
+ assert.throws(()=>createVibe59OneShotVolumeCandidate(options),/VIBE59_VOLUME_KEYBOARD_RETURN_CONTRACT/);
+ fs.writeFileSync(file,common);
+ assert.equal(fs.readFileSync(file,'utf8'),common);
+});
