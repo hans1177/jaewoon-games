@@ -28,7 +28,7 @@ if(location.hash)history.replaceState(null,'',location.pathname+location.search)
 function setState(text,type=''){state.textContent=text;state.className='state'+(type?' '+type:'');}
 async function register(){
   retry.classList.remove('show');
-  if(localStorage.getItem(TOKEN_KEY)){setState('이미 등록된 기기야. 채팅으로 이동 중…','ok');setTimeout(()=>location.replace('/command.html'),250);return;}
+  if(localStorage.getItem(TOKEN_KEY)){setState('이미 등록된 기기야. 채팅으로 이동 중…','ok');setTimeout(()=>location.replace('command.html'),250);return;}
   if(!bootstrapCode){setState('등록코드가 링크에 없어. 새 등록 링크를 사용해.','bad');return;}
   setState('기기 등록 중…');
   try{
@@ -37,7 +37,7 @@ async function register(){
     if(!response.ok||!data.token)throw new Error(data.error||`HTTP_${response.status}`);
     localStorage.setItem(TOKEN_KEY,data.token);
     setState('등록 완료. 채팅으로 이동 중…','ok');
-    setTimeout(()=>location.replace('/command.html'),350);
+    setTimeout(()=>location.replace('command.html'),350);
   }catch(error){setState(`등록 실패: ${error.message}`,'bad');retry.classList.add('show');}
 }
 retry.addEventListener('click',register);

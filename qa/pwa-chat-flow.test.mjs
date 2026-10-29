@@ -74,3 +74,11 @@ test('GitHub Pages 프로젝트 하위 경로에서 홈페이지 스크립트와
   assert.match(client,/new URL\('\.\.\/',import\.meta\.url\)/);
   assert.match(client,/getJson\('\/game-catalog\.json'\)/);
 });
+
+
+test('기기 등록과 개발 채팅은 프로젝트 페이지의 실제 경로를 사용한다',()=>{
+  const register=fs.readFileSync('register.html','utf8');
+  assert.match(command,/fetch\(`game-catalog\.json\?ts=/);
+  assert.match(command,/fetch\(`company-status\.json\?ts=/);
+  assert.match(register,/location\.replace\('command\.html'\)/);
+});
