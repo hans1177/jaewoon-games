@@ -285,3 +285,135 @@ test('Sprint2 actual Roblox game server+client originals retain exact SHA and ow
   assert.equal(index.sourceWrite,false);
   assert.equal(index.runtimeVerified,false);
 });
+
+
+test('Sprint3 nested Luau if/for with verified player argument produces executable server state and display calls',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-sprint3-luau-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const relative='server/Combat.server.luau';
+  const source=[
+    'local score = 0','local shown = 0',
+    'local function commitState(player: any)',
+    '  score += player.amount','end',
+    'local function render(player: any)',
+    '  shown = score','end',
+    'local function event(player: any)',
+    '  for i = 1, 2 do',
+    '    if i > 0 then score += 1 end',
+    '  end','end',''
+  ].join('\n');
+  fs.writeFileSync(path.join(root,relative),source);
+  const options={order:{selectedTask:{gameId:'game',ownerDirective:true,
+    goal:'When function event runs, call commitState then render',
+    sourceSha256:digest(source)}},sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
+  const index=indexVibe2GameSource({sourceRoot:root,gameId:'game',target:'roblox',responsibleFiles:[relative]});
+  const handler=index.functions.find(row=>row.name==='event');
+  assert.equal(handler?.parserConfidence,'BOUNDED_NESTED_LUAU');
+  assert.equal(handler?.params,'player: any');
+  const planned=planVibe2ComplexWork(options);
+  assert.deepEqual(planned.steps.map(row=>row.forwardedArguments),[['player'],['player']]);
+  const candidate=createVibe59CodeCandidates(options);
+  assert.deepEqual(candidate.edits.map(row=>row.path),[relative]);
+  assert.equal(candidate.runtimeVerified,false);
+  const docs=new Map([[relative,source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const changed=docs.get(relative);
+  assert.match(changed,/commitState\(player\)\s+render\(player\)\s+end/);
+  assert.match(changed,/for i = 1, 2 do[\s\S]*if i > 0 then score \+= 1 end[\s\S]*commitState\(player\)/);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
+  const runnable=changed+'\nevent({amount=3})\nassert(score==5 and shown==5)\nprint("VIBE2_NESTED_PARAM_RUNTIME=PASS")\n';
+  const targetFile=path.join(temp,'candidate.luau');fs.writeFileSync(targetFile,runnable);
+  const compiler=process.env.VIBE2_LUAU_COMPILER;
+  if(compiler&&fs.existsSync(compiler)){
+    const result=spawnSync(compiler,[targetFile],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'Luau compiler: '+String(result.stderr).slice(-900));
+  }
+  const runner=process.env.VIBE2_LUAU_BINARY;
+  if(runner&&fs.existsSync(runner)){
+    const result=spawnSync(runner,[targetFile],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'Luau runtime: '+String(result.stderr).slice(-900));
+    assert.match(result.stdout,/VIBE2_NESTED_PARAM_RUNTIME=PASS/);
+  }
+});
+
+test('Sprint3 WEB forward only explicit original identifiers and reject mismatched or shadowed params',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-sprint3-web-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(root);
+  const relative='game.js';
+  const source='let score=0, shown=0;\n'+
+    'function commitState(actor){ score += actor.amount; }\n'+
+    'function render(actor){ shown=score; }\n'+
+    'function event(actor, inventory){ score += 1; }\n';
+  fs.writeFileSync(path.join(root,relative),source);
+  const order={selectedTask:{gameId:'game',ownerDirective:true,
+    goal:'When function event runs, call commitState then render'}};
+  const options={order,sourceRoot:root,responsibleFiles:[relative],target:'web'};
+  const candidate=createVibe59CodeCandidates(options);
+  assert.deepEqual(candidate.edits.map(row=>row.path),[relative]);
+  const docs=new Map([[relative,source]]);
+  applyExactEdits(root,candidate.edits,{documents:docs});
+  const game=vm.createContext({});
+  vm.runInContext(docs.get(relative)+'event({amount:4},{});',game);
+  assert.deepEqual(Array.from(vm.runInContext('[score,shown]',game)),[5,5]);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
+
+  const mismatch=source.replace('function render(actor)','function render(other)');
+  fs.writeFileSync(path.join(root,relative),mismatch);
+  assert.throws(()=>createVibe59CodeCandidates(options),/PARAMETER_BINDING_UNPROVEN/);
+  const shadow=source.replace('score += 1;','let actor = {amount:100}; score += 1;');
+  fs.writeFileSync(path.join(root,relative),shadow);
+  assert.throws(()=>createVibe59CodeCandidates(options),/PARAMETER_BINDING_UNPROVEN/);
+  const dynamic=source.replace('function render(actor)','function render(...args)');
+  fs.writeFileSync(path.join(root,relative),dynamic);
+  assert.throws(()=>createVibe59CodeCandidates(options),/PARAMETER_CONTRACT/);
+});
+
+test('Sprint3 fail-closed on Luau early return and nested closure instead of placing unreachable or ambiguous calls',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-sprint3-deny-'));
+  t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const root=path.join(temp,'game');fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const relative='server/Game.server.luau',head='local function a(player)\nend\nlocal function b(player)\nend\n';
+  const order={selectedTask:{gameId:'game',ownerDirective:true,goal:'When function c runs, call a then b'}};
+  const options={order,sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
+  fs.writeFileSync(path.join(root,relative),head+'local function c(player)\n if not player then return end\nend\n');
+  assert.throws(()=>createVibe59CodeCandidates(options),/UNSUPPORTED_FUNCTION_CONTRACT/);
+  fs.writeFileSync(path.join(root,relative),head+'local function c(player)\n local function hidden() end\nend\n');
+  assert.throws(()=>createVibe59CodeCandidates(options),/SOURCE_BINDING_NOT_UNIQUE/);
+  fs.writeFileSync(path.join(root,relative),head+'local function c(player)\n remote.OnServerEvent:Connect(handle)\nend\n');
+  assert.throws(()=>createVibe59CodeCandidates(options),/UNSUPPORTED_FUNCTION_CONTRACT/);
+  fs.writeFileSync(path.join(root,relative),head+'local function c(player)\n local player = nil\nend\n');
+  assert.throws(()=>createVibe59CodeCandidates(options),/PARAMETER_BINDING_UNPROVEN/);
+});
+
+test('Sprint3 real line-defense Roblox nested server handler produces source-bound candidate and keeps original untouched',t=>{
+  const root=path.resolve('roblox-games/line-defense');
+  const relative='server/Game.server.luau';
+  const original=fs.readFileSync(path.join(root,relative),'utf8');
+  const options={order:{selectedTask:{
+    gameId:'line-defense',ownerDirective:true,
+    sourceSha256:digest(original),
+    goal:'When function inspectInvasionAndDeploy runs, call startQuest then updateInventorySummary'
+  }},sourceRoot:root,responsibleFiles:[relative],target:'roblox'};
+  const index=indexVibe2GameSource({sourceRoot:root,gameId:'line-defense',target:'roblox',responsibleFiles:[relative]});
+  const handler=index.functions.find(row=>row.name==='inspectInvasionAndDeploy');
+  assert.ok(handler,'actual nested server handler must be grounded');
+  assert.equal(handler.parserConfidence,'BOUNDED_NESTED_LUAU');
+  const candidate=createVibe59CodeCandidates(options);
+  assert.equal(candidate.vibe59CodeKind,'SOURCE_BOUND_COMPLEX_CHAIN');
+  assert.equal(candidate.sourceSha256,digest(original));
+  const replay=new Map([[relative,original]]);
+  applyExactEdits(root,candidate.edits,{documents:replay});
+  assert.match(replay.get(relative),/startQuest\(player\)\s+updateInventorySummary\(player\)\s+end/);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original);
+  const compiler=process.env.VIBE2_LUAU_COMPILER;
+  if(compiler&&fs.existsSync(compiler)){
+    const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-sprint3-real-'));
+    t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+    const candidateFile=path.join(temp,'Game.server.luau');
+    fs.writeFileSync(candidateFile,replay.get(relative));
+    const result=spawnSync(compiler,[candidateFile],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,'actual-source compilation: '+String(result.stderr).slice(-900));
+  }
+});
