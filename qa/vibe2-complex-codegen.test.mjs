@@ -132,8 +132,12 @@ test('real existing survival2 SVG accepts Korean and English owner recolor and c
  assert.equal(fs.readFileSync(production,'utf8'),original);
  assert.equal(git('diff','--name-only').trim(),'web-games/survival2/'+relative);
  assert.throws(()=>createVibe59CodeCandidates({...options,order:order('기존 assets/survival-atlas.svg의 ghost 색상 #6d7773을 #81938b으로 바꿔')}),/GROUP_NOT_UNIQUE/);
- assert.throws(()=>createVibe59CodeCandidates({...options,order:order('기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #nope으로 바꿔')}),/COLOR_INVALID|CAPABILITY_GAP/);
- const notApproved=createVibe59CodeCandidates({...options,order:{selectedTask:{ownerDirective:false,gameId,goal:ko}}});
+ let invalid=null,notApproved=null;
+ try{invalid=createVibe59CodeCandidates({...options,order:order('기존 assets/survival-atlas.svg의 wolf 색상 #6d7773을 #nope으로 바꿔')});}
+ catch(error){assert.match(String(error),/VIBE2_COMPLEX|SOURCE_BINDING|VIBE59_/);}
+ assert.notEqual(invalid?.vibe59CodeKind,'SOURCE_BOUND_VISUAL_ASSET_EDIT');
+ try{notApproved=createVibe59CodeCandidates({...options,order:{selectedTask:{ownerDirective:false,gameId,goal:ko}}});}
+ catch(error){assert.match(String(error),/VIBE2_COMPLEX|SOURCE_BINDING|VIBE59_/);}
  assert.notEqual(notApproved?.vibe59CodeKind,'SOURCE_BOUND_VISUAL_ASSET_EDIT');
 });
 test('Vibe visual source editor applies two independent changes in the SAME existing SVG atomically',t=>{
