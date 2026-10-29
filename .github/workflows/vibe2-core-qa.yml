@@ -113,6 +113,10 @@ on:
       - 'qa/vibe59-roblox-coding.test.mjs'
       - 'qa/vibe59-creative-engine.test.mjs'
       - 'qa/vibe59-luau-skills109.test.mjs'
+      - 'qa/vibe2-complex-codegen.test.mjs'
+      - 'tools/vibe2-complex-intent.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-complex-work-planner.mjs'
       - 'qa/vibe59-quality-gameplay.test.mjs'
       - 'qa/vibe59-pathfinding.test.mjs'
       - 'qa/vibe59-crafting-transaction.test.mjs'
@@ -252,6 +256,10 @@ on:
       - 'qa/vibe-studio-asset-universe.test.mjs'
       - 'qa/vibe2-*.test.mjs'
       - 'qa/vibe59-luau-skills109.test.mjs'
+      - 'qa/vibe2-complex-codegen.test.mjs'
+      - 'tools/vibe2-complex-intent.mjs'
+      - 'tools/vibe2-game-source-index.mjs'
+      - 'tools/vibe2-complex-work-planner.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-merged-pr-provenance.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
@@ -609,6 +617,7 @@ jobs:
           node --test qa/vibe59-roblox-coding.test.mjs
           node --test qa/vibe59-creative-engine.test.mjs
           node --test qa/vibe59-luau-skills109.test.mjs
+          node --test qa/vibe2-complex-codegen.test.mjs
           node --test qa/vibe59-quality-gameplay.test.mjs
           node --test qa/vibe59-pathfinding.test.mjs
           node --test qa/vibe59-crafting-transaction.test.mjs
