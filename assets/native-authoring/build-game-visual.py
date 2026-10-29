@@ -934,7 +934,7 @@ def reconstruct_verified_source():
             relative=row.get('path','')
             sha=row.get('sha256','')
             asset_id=row.get('assetId','')
-            if not isinstance(relative,str) or not re.fullmatch(r'assets/[A-Za-z0-9_./-]+\.(glb|obj|stl)',relative) or '..' in relative.split('/'):
+            if not isinstance(relative,str) or not re.fullmatch(r'assets/[A-Za-z0-9_./-]+\.glb',relative) or '..' in relative.split('/'):
                 raise RuntimeError('RECONSTRUCTION_CC0_PART_PATH_INVALID')
             if not isinstance(asset_id,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,159}',asset_id):
                 raise RuntimeError('RECONSTRUCTION_CC0_PART_ID_INVALID')
@@ -947,14 +947,10 @@ def reconstruct_verified_source():
             if not part_file.is_file() or not 0<part_file.stat().st_size<=64*1024*1024 or hashlib.sha256(part_file.read_bytes()).hexdigest()!=sha:
                 raise RuntimeError('RECONSTRUCTION_CC0_PART_SOURCE_CHANGED')
             seen=set(bpy.data.objects)
-            if part_file.suffix=='.glb': bpy.ops.import_scene.gltf(filepath=str(part_file))
-            elif part_file.suffix=='.obj':
-                if hasattr(bpy.ops.wm,'obj_import'):bpy.ops.wm.obj_import(filepath=str(part_file))
-                else:bpy.ops.import_scene.obj(filepath=str(part_file))
-            else:
-                if hasattr(bpy.ops.wm,'stl_import'):bpy.ops.wm.stl_import(filepath=str(part_file))
-                else:bpy.ops.import_mesh.stl(filepath=str(part_file))
+            bpy.ops.import_scene.gltf(filepath=str(part_file))
             meshes=[obj for obj in bpy.data.objects if obj not in seen and obj.type=='MESH']
+            if any(mod.type=='ARMATURE' for obj in meshes for mod in obj.modifiers):
+                raise RuntimeError('RECONSTRUCTION_RIGGED_PART_NEEDS_RETARGET_REVIEW')
             if not meshes or sum(len(obj.data.polygons) for obj in meshes)>max_face_count:
                 raise RuntimeError('RECONSTRUCTION_CC0_PART_GEOMETRY_INVALID')
             if ASSET_ARMATURES:
@@ -985,6 +981,23 @@ def reconstruct_verified_source():
                 obj.data.name='VibeVerifiedPartMesh_'+kind
                 if not obj.data.materials:
                     obj.data.materials.append(MID)
+                else:
+                    for slot in obj.material_slots:
+                        if not slot.material: continue
+                        derivative=slot.material.copy()
+                        derivative.name='VibePart_'+slot.material.name
+                        shader=next((n for n in derivative.node_tree.nodes
+                                     if n.type=='BSDF_PRINCIPLED'),None) if derivative.use_nodes else None
+                        if shader:
+                            roughness=shader.inputs.get('Roughness')
+                            if roughness and not roughness.is_linked and (LOW_POLY or SOFT or WORN):
+                                roughness.default_value=max(.62,float(roughness.default_value))
+                            base_color=shader.inputs.get('Base Color')
+                            if MUTED and base_color and not base_color.is_linked:
+                                old=list(base_color.default_value)
+                                gray=sum(old[:3])/3
+                                base_color.default_value=tuple(.85*v+.15*gray for v in old[:3])+(old[3],)
+                        slot.material=derivative
                 ASSET_OBJECTS.append(obj)
                 obj['vibeDerivedPartSourceId']=asset_id
                 obj['vibeDerivedPartSourceSha256']=sha
@@ -1192,7 +1205,7 @@ for obj in ASSET_OBJECTS:
         obj['vibeSourceImageSha256']=IMAGE_PROVENANCE['inputSha256']
         obj['vibeSourceLicense']=IMAGE_PROVENANCE['sourceLicense']
     if SOURCE_PROVENANCE:
-        obj['vibeSourceMeshSha256']=SOURCE_PROVENANCE['sourceSha256']
+        obj['vibeSourceMeshSha256']=obj.get('vibeDerivedPartSourceSha256',SOURCE_PROVENANCE['sourceSha256'])
         obj['vibeSourceLicense']=SOURCE_PROVENANCE['license']
 
 # Export only authored asset objects.
