@@ -922,12 +922,17 @@ export function createVibe59CodeCandidate({order={},sourceRoot='',responsibleFil
   const real=fs.realpathSync(full);
   if(!real.startsWith(root+path.sep)||!fs.lstatSync(full).isFile()
     ||fs.lstatSync(full).isSymbolicLink())throw Error('VIBE59_SOURCE_SCOPE_ESCAPE');
+  // [함수 자동 지정] 알고리즘 합성은 기존 함수 파서가 원본 본문을 찾는다.
+  // 그 외 작업은 기존 앵커 필수 규칙을 유지한다.
   const content=documents instanceof Map&&documents.has(relative)
     ?documents.get(relative):fs.readFileSync(full,'utf8'),find=req.find;
-  if(content.length>260000||typeof find!=='string'||!find||find.length>1024
+  if(content.length>260000)throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
+  if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
+  if(req.algorithmSpec){
+    if(find!=null&&typeof find!=='string')throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
+  }else if(typeof find!=='string'||!find||find.length>1024
     ||content.indexOf(find)<0||content.indexOf(find,content.indexOf(find)+find.length)>=0)
     throw Error('VIBE59_ANCHOR_NOT_UNIQUE');
-  if(req.sourceSha256!=null&&sha(content)!==req.sourceSha256)throw Error('VIBE59_STALE_SOURCE');
   if(req.algorithmSpec){
     if(!['web','roblox'].includes(target))throw Error('VIBE59_ALGORITHM_TARGET_INVALID');
     const memory=order.vibe59AlgorithmMemory||order.selectedTask?.vibe59AlgorithmMemory||{};
