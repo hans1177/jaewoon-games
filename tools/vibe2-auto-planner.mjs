@@ -1185,6 +1185,8 @@ function compactRuntimeFailureEvidence({requestedStage='',implementationReason='
 }
 
 export function compileRuntimeNeuralEvent(project={},diagnosis=null){
+  // 소유자 보류/개발 중단 게임의 과거 실패는 자동 소스 수리 재예약 근거가 아니다.
+  if(project?.ownerDevelopmentHold===true||project?.ownerDevelopmentStopped===true)return null;
   const genericObserved=project?.queueRuntimeObserved===true;
   const legacyRobloxObserved=project?.queueRobloxRuntimeObserved===true;
   if(!genericObserved&&!legacyRobloxObserved)return null;
@@ -1216,6 +1218,7 @@ export function compileRuntimeNeuralEvent(project={},diagnosis=null){
     outcome:passed?'PASS':'FAIL',
     stage,
     signature,
+    verifiedResponsibleSystem:rootCauseVerified?responsibleSystem:null,
     evidence:[
       'runtime-result-source:company-runtime',
       `runtime-platform:${platform||'UNKNOWN'}`,
@@ -1288,6 +1291,8 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
         &&task.requiresOwnerDecision!==true
         &&task.protectedChange!==true
         &&task.paidResourceRequired!==true
+        &&task.ownerDevelopmentHold!==true
+        &&task.ownerDevelopmentStopped!==true
       );
     // 게임·플랫폼·소스 버전이 정확한 실패만 기존 작업으로 복구한다.
     // 버전이 불일치하면 다른 게임 빌드에 구형 실패를 적용하지 않는다.
@@ -1303,7 +1308,7 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
     }));
     const compatible=candidates.filter(({task})=>{
       const revisions=declaredRevisions.get(clean(task.id))||[];
-      return !sourceRevision||!revisions.length||revisions.includes(sourceRevision);
+      return revisions.length<=1&&(!sourceRevision||!revisions.length||revisions.includes(sourceRevision));
     });
     const exact=compatible.filter(({task})=>sourceRevision
       &&(declaredRevisions.get(clean(task.id))||[]).includes(sourceRevision));
@@ -1325,10 +1330,27 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
       continue;
     }
     const taskId=selected.task.id;
+    // 재예약만으로 끝내지 않고 검증된 해당 게임 오류를 기존 소스 작업자의 직접 수정 계약에 제공한다.
+    // 같은 작업의 다른 오류가 발견되면 앞선 진단 지시만 교체하고 원래 목표는 보존한다.
+    const currentGoal=clean(selected.task.goal).replace(/^\[VERIFIED_GAME_RUNTIME_BOTTLENECK\]\n[\s\S]*?\n\[\/VERIFIED_GAME_RUNTIME_BOTTLENECK\]\n?/, '');
+    const causalGoal=[
+      '[VERIFIED_GAME_RUNTIME_BOTTLENECK]',
+      '게임: '+gameId+' / 플랫폼: '+platform.toUpperCase(),
+      '검증된 책임 시스템: '+clean(event.verifiedResponsibleSystem||'UNKNOWN').slice(0,120),
+      '실패 단계: '+clean(event.stage).slice(0,120),
+      '실패 식별자: '+clean(event.signature).slice(0,200),
+      sourceRevision?'실패한 소스 버전: '+sourceRevision:'',
+      '현재 책임 함수와 직접 의존 함수에서 관측 실패를 재현하고 기존 함수를 직접 수정한다.',
+      '실패 단계와 영향받은 저장/이벤트/타이머/모바일 입력의 회귀 검사를 요구한다.',
+      '소스 변경·실제 런타임 검증 전에는 성공으로 판단하지 않는다. 기존 밸런스·저장·서버 권한·릴리스 게이트를 유지한다.',
+      '[/VERIFIED_GAME_RUNTIME_BOTTLENECK]',
+      currentGoal
+    ].filter(Boolean).join('\n');
     queue=createVibeContinuousQueue({
       maxConcurrentTasks:queue.maxConcurrentTasks,
       tasks:queue.tasks.map(task=>task.id===taskId?{
         ...task,
+        goal:causalGoal,
         status:'queued',
         priority:task.priority==='owner-immediate'?'owner-immediate':'high',
         blocker:null,
@@ -1344,6 +1366,7 @@ export function applyRuntimeNeuralEventsToQueue(queueInput={},compiledEvents=[])
           eventMarker,
           'runtime-neural-ingress-failed-stage:'+clean(event.stage).slice(0,100),
           'runtime-neural-ingress-failure-signature:'+clean(event.signature).slice(0,200),
+          'runtime-neural-ingress-responsible-system:'+clean(event.verifiedResponsibleSystem||'UNKNOWN').slice(0,120),
           sourceRevision?'runtime-neural-ingress-source-revision:'+sourceRevision:'',
           'neural-gated-queue-mutation:REQUEUE_REPRIORITIZE',
           'neural-gated-worker-refill-eligible'
