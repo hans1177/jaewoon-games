@@ -64,7 +64,9 @@ export function verifiedOwnerGameplayRequest({task={},centralPolicy={}}={}){
   if(!request||request.length>2000)return false;
   const explicitlyRequested=/(체력|공격력|피해량|대미지|데미지|드롭률|보상|밸런스|난이도|전투\s*(?:기능|규칙|로직|AI|인공지능)|몬스터\s*(?:AI|인공지능)|보스\s*(?:AI|인공지능)|player\s*hp|enemy\s*hp|damage|reward|drop\s*rate|combat\s*ai|balance)/i.test(request);
   const actionRequested=/(변경|개선|조정|수정|강화|약화|올려|내려|증가|감소|맞춰|바꿔|튜닝|tune|adjust|improve|change|fix)/i.test(request);
-  return explicitlyRequested&&actionRequested;
+  // A negated stat request is not permission; reject ambiguous mixed sentences instead of expanding scope.
+  const prohibited=/(?:체력|공격력|피해량|보상|드롭률|밸런스|난이도|전투|AI|수치).{0,24}(?:바꾸지|변경하지|건드리지|그대로 두|유지해|변경 금지|do not change|keep unchanged)/i.test(request);
+  return explicitlyRequested&&actionRequested&&!prohibited;
 }
 
 function currentLaneMaxWorkMinutes(runtime = {}) {
