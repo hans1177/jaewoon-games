@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-17t2kiu",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-web-library-cc0-replacement-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "web-games/fantasy-survival/index.html",
+        "web-games/fantasy-survival/research-log-2.html",
+        "web-games/fantasy-survival/research-log-3.html",
+        "web-games/fantasy-survival/research-log.html",
+        "web-games/fantasy-survival/tier.html",
+        "web-games/fantasy-survival/world3d.mjs"
+      ],
+      "baseSha": "fe228c6f1c9f80b2b5cf010ac2d3f9d780359bbc",
+      "runId": "40819367116",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-29T05:23:17.261Z",
+      "expiresAt": "2026-10-29T06:08:17.261Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-web-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
