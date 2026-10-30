@@ -296,7 +296,11 @@ local function spawnEnemy(isBoss, index)
   model:SetAttribute("Species",partId)
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or (partId=="bee" and "BEE_SWEEP" or "WOLF_BITE"))
   model:SetAttribute("NativeMobMotion","IDLE")
-  model:SetAttribute("NativeMobRig",#model:GetDescendants()>0 and "SOURCE_MESH" or "UNVERIFIED")
+  local hasOriginalMotor=false
+  for _,descendant in ipairs(model:GetDescendants()) do
+    if descendant:IsA("Motor6D") then hasOriginalMotor=true;break end
+  end
+  model:SetAttribute("NativeMobRig",hasOriginalMotor and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or
     (partId=="bee" and "DIVE_STING" or "LEAP_BITE"))
   model:SetAttribute("EnemyHealth",hitPoints)
@@ -398,7 +402,19 @@ local function attackEnemy(player)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)
   player:SetAttribute("LastApprovedScope","combat-impact")
   if target.HP<=0 then
-    target.model:Destroy()
+    target.model:SetAttribute("NativeMobMotion","DEATH")
+    target.model:SetAttribute("AttackState","DEATH")
+    remote:FireAllClients("MEADOW_MOB_DEATH",{
+      species=target.kind,
+      pattern=target.model:GetAttribute("AttackPattern"),
+      position=target.position,boss=target.isBoss,
+    })
+    local fallenModel=target.model
+    -- Only the original mesh is rotated/faded. No surrogate corpse or Part.
+    fallenModel:PivotTo(fallenModel:GetPivot()*CFrame.Angles(0,0,.42))
+    task.delay(.35,function()
+      if fallenModel.Parent then fallenModel:Destroy() end
+    end)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
     setNumber(player,"EnemyHealth",0)
