@@ -201,6 +201,26 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     if(/\bcombatMotionSource\b/.test(raw)&&/\bactiveCombatController\b/.test(raw))return false;
   }
 
+  // [마력숲 원본 생물] 서식지의 승인 자산 선택부터 안전한 원본 메시 생성까지
+  // 동일한 spawnEnemy 책임 함수 안에서 확인한다. 목록/마커만으로는 통과하지 않는다.
+  if(family==='CREATURE'){
+    const source=raw.match(/\blocal function spawnEnemy\s*\(\s*site\s*,\s*siteIndex\s*\)([\s\S]*?)\nend\b/)?.[1]||'';
+    const nativeCreatureChain=[
+      /\btable\.find\s*\(\s*studioCreatureAtoms\s*,\s*site\.atom\s*\)/,
+      /\bNativeCreatureAssets\s*\[\s*partId\s*\]/,
+      /\btypeof\s*\(\s*modelId\s*\)\s*~=\s*["']number["']/,
+      /\bAssetService\s*:\s*LoadAssetAsync\s*\(\s*modelId\s*\)/,
+      /\btemplate\s*:\s*IsA\s*\(\s*["']Model["']\s*\)/,
+      /\btemplate\s*:\s*FindFirstChildWhichIsA\s*\(\s*["']MeshPart["']\s*,\s*true\s*\)/,
+      /\bitem:IsA\s*\(\s*["']LuaSourceContainer["']\s*\)/,
+      /\breturn template:Clone\s*\(\s*\)/,
+      /\bif not model:IsA\s*\(\s*["']Model["']\s*\)\s*then\s*return nil end/,
+      /\bmodel:ScaleTo\s*\(/,
+      /\bmodel:PivotTo\s*\(/,
+    ];
+    if(nativeCreatureChain.every(pattern=>pattern.test(source)))return true;
+  }
+
   // 공용 원본 factory를 직접 require한 별칭만 추적한다. 선택 atom이 실제
   // Create 호출을 지배해야 하며 목록·마커·임의 함수·재할당은 연결 증거가 아니다.
   if(family==='SKILL'||family==='VFX'){
