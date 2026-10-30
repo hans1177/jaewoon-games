@@ -70,7 +70,20 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/model:PivotTo\(CFrame\.new\(location\)\)/);
   assert.match(server,/model\.Parent=gameWorld/);
   assert.doesNotMatch(server,/CreatureParts\.Create\(partId/);
-  assert.match(server,/WorldProps.Create\(id/);
+  // The starting meadow uses real Terrain and vetted CC0 source meshes;
+  // the old procedural WorldProps constructor is no longer the source of truth.
+  assert.match(server,/local function createStartingMeadow\(\)/);
+  assert.match(server,/meadowTerrain:FillBlock\(/);
+  assert.match(server,/meadowTerrain:FillBall\(/);
+  assert.match(server,/local function worldAsset\(id, location, targetHeight\)/);
+  assert.match(server,/local modelId = NativeCreatureAssets\[id\]/);
+  assert.match(server,/AssetService:LoadAssetAsync\(modelId\)/);
+  assert.match(server,/template:FindFirstChildWhichIsA\("MeshPart",true\)/);
+  assert.match(server,/rayParams.FilterDescendantsInstances=\{meadowTerrain\}/);
+  assert.match(server,/MEADOW_ORIGINAL_MESH_GROUND_UNVERIFIED/);
+  assert.match(server,/clone\.Parent=gameWorld/);
+  assert.match(server,/local model = spec\.visual and worldAsset\(spec\.visual,spec\.position,11\) or nil/);
+  assert.doesNotMatch(server,/WorldProps\.Create\(id/);
   assert.match(server,/targetHuman:TakeDamage\(enemy.damage\)/);
   // The actual world creature must telegraph an authorized strike, and a dodge must cancel damage.
   assert.match(server,/attackTelegraph\.Adornee = model/);
