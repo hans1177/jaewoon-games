@@ -862,12 +862,36 @@ try{
    await game.locator('#begin').click();
    assert.equal(await game.locator('#start').evaluate(el=>el.classList.contains('hide')),true,
      'WILD_SURVIVAL_GAMEPLAY_START_FAILED');
+   // [공개판 이동 증거] 기존 500ms 판정은 유지하고 실패 원인만 분리해 기록한다.
+   // 느린 프레임을 PASS로 우회하지 않으며, 키를 누른 동안의 추가 관측도 실패로 남긴다.
+   const beforeInput=await game.evaluate(()=>({
+     x:Number(document.body.dataset.playerWorldX),
+     y:Number(document.body.dataset.playerWorldY),
+     frames:document.body.dataset.webglFrames||'under-60',
+     focus:document.activeElement?.id||document.activeElement?.tagName||'none'
+   }));
    await game.keyboard.down('ArrowRight');
    await game.waitForTimeout(500);
-   await game.keyboard.up('ArrowRight');
    const movedX=Number(await game.locator('body').getAttribute('data-player-world-x'));
+   let delayedX=movedX;
+   if(!(Number.isFinite(movedX)&&movedX>evidence.x+10)){
+     await game.waitForTimeout(1500);
+     delayedX=Number(await game.locator('body').getAttribute('data-player-world-x'));
+   }
+   await game.keyboard.up('ArrowRight');
+   const afterInput=await game.evaluate(()=>({
+     x:Number(document.body.dataset.playerWorldX),
+     y:Number(document.body.dataset.playerWorldY),
+     frames:document.body.dataset.webglFrames||'under-60',
+     focus:document.activeElement?.id||document.activeElement?.tagName||'none',
+     scene:document.body.dataset.spatialDimension,
+     renderer:document.body.dataset.renderer,
+     started:document.getElementById('start')?.classList.contains('hide')
+   }));
    assert.ok(Number.isFinite(movedX)&&movedX>evidence.x+10,
-     'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED');
+     'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED '+
+     JSON.stringify({sourceSha:expected,initialX:evidence.x,beforeInput,
+       after500ms:movedX,after2000ms:delayedX,afterInput}));
    await game.locator('#interact').click();
    await game.locator('#menuBtn').click();
    assert.equal(await game.locator('#craft').evaluate(el=>el.classList.contains('open')),true,
