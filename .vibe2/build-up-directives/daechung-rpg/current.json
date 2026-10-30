@@ -5310,7 +5310,56 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "bbd9ef1b84046a6afac8745e2eaa65feb4bfeb9d",
+      "artifactIdentity": "sha256:a7e7596650b9cdc4f07b07648869a38c0eedfd644753c6f78c688ba4bc4be63a",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 41049607786,
+      "testedAt": "2026-10-30T11:50:28.436Z",
+      "repairSurfaces": [
+        "PERFORMANCE",
+        "SAVE_REJOIN",
+        "VISUAL_ASSET_LOADING",
+        "ACTION_IMPLEMENTATION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-performance-budget",
+          "repairSurface": "PERFORMANCE",
+          "priority": "HIGH",
+          "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
+          "observed": "{\"memoryMb\":3020,\"descendantCount\":7151}"
+        },
+        {
+          "id": "adaptive-save-rejoin-persistence",
+          "repairSurface": "SAVE_REJOIN",
+          "priority": "CRITICAL",
+          "hint": "F9 Studio restart did not preserve stable progression/inventory state. Repair save timing, load ordering, schema migration, or reset/duplication behavior.",
+          "observed": "{\"restartOk\":true,\"progressionObserved\":false,\"progressionPreserved\":false,\"inventoryComparable\":false,\"inventoryPreserved\":true}"
+        },
+        {
+          "id": "visual-asset-load-integrity",
+          "repairSurface": "VISUAL_ASSET_LOADING",
+          "priority": "HIGH",
+          "hint": "Repair unavailable or unauthorized Roblox mesh, texture, image, or animation assets observed during Studio play.",
+          "observed": "{\"assetErrors\":[\"ContentId: rbxassetid://254849325 failed due to: User is not authorized to access Asset. ContentId: rbxassetid://254849325 failed due to: User is not authorized to access Asset. ContentId: rbxassetid://1819167267 failed due to: User is not authorized to access Asset. ContentId: rbxassetid://254849325 failed due to: User is not authorized to access Asset. ContentId: rbxassetid://254849325 failed due to: User is not authorized to access Asset. NPC_ASSET_LOAD_FAILURE assetId=254849325 FAILURE_STAGE\"]}"
+        },
+        {
+          "id": "daechung-cloud-combat-damage",
+          "repairSurface": "ACTION_IMPLEMENTATION",
+          "priority": "CRITICAL",
+          "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
+          "observed": "{\"keysObserved\":true,\"movementDistance\":3.8436733691383407,\"changedFrames\":true,\"realTargetDamageObserved\":false,\"studioRejoinStatePreserved\":false}"
+        },
+        {
+          "id": "daechung-cloud-studio-save-rejoin",
+          "repairSurface": "SAVE_REJOIN",
+          "priority": "CRITICAL",
+          "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
+          "observed": "{\"keysObserved\":true,\"movementDistance\":3.8436733691383407,\"changedFrames\":true,\"realTargetDamageObserved\":false,\"studioRejoinStatePreserved\":false}"
+        }
+      ]
+    },
     "failureStage": "VIBE_INTERNAL_PLAY",
     "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
     "blockers": [

@@ -4955,13 +4955,39 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "ab9f5fab5ec530fc697c140a65d9c4a0bc90aedb",
+      "artifactIdentity": "sha256:6729a08b70ca97e6ce823e2cbad272efa2a108e99e9b321d3316077ff9825bc5",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 41049442451,
+      "testedAt": "2026-10-30T11:45:11.458Z",
+      "repairSurfaces": [
+        "MAP_ROUTEABILITY",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
+          "priority": "CRITICAL",
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"ok\":false,\"initialOk\":false,\"recoveredByInteraction\":false,\"moved\":0,\"fall\":0,\"floorBelow\":true}]}"
+        },
+        {
+          "id": "observed-action-bffe3be7e56e2b237f34",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-bffe3be7e56e2b237f34\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"targetIdentity\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"recoveredByInteraction\":false,\"attempts\":1}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
     "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
     "blockers": [
       "roblox-build-package-revalidation-pending"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -12435,9 +12461,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
@@ -12455,8 +12481,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",

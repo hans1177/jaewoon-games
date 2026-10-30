@@ -5951,7 +5951,7 @@
     "independentQaPassed": false,
     "regressionPassed": false,
     "f0SourcePreflightFailure": {
-      "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
+      "sourceRevision": "bbd9ef1b84046a6afac8745e2eaa65feb4bfeb9d",
       "stage": "F0_SOURCE_INTEGRITY",
       "signature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "runtimeObserved": false
@@ -13409,7 +13409,7 @@
     "expectedPlayerEffect": "백수대전쟁. MAIN은 A(기지 시설 확장과 자동 병력 생산에 따른 전선 진격 × 전쟁·군사)와 독립적인 B(기존 생물집 건설·자동 출격·생물 진화와 서버 판정 전투 × 초원 생태)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 공상과학 × 보조 무협)의 판정 차이, @(균사망: 분해 대상과 연결된 지점을 확인함의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
       "classification": "SOURCE_PREFLIGHT_FAILED",
-      "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at 1ec44c06de9918684edafff2061ee9ff08e2053e; investigate and repair responsible source, then rerun canonical F0 before F1 or publication",
+      "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at bbd9ef1b84046a6afac8745e2eaa65feb4bfeb9d; investigate and repair responsible source, then rerun canonical F0 before F1 or publication",
       "runtimeObserved": false
     },
     "baseline": {
@@ -13429,7 +13429,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at 1ec44c06de9918684edafff2061ee9ff08e2053e; investigate and repair responsible source, then rerun canonical F0 before F1 or publication"
+    "reason": "exact same-game F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED source preflight failed at bbd9ef1b84046a6afac8745e2eaa65feb4bfeb9d; investigate and repair responsible source, then rerun canonical F0 before F1 or publication"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
