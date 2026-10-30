@@ -70,7 +70,7 @@ if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true
  ||provenance.gameId!=='fantasy-survival'||provenance.sourceManifestSha256!==crypto.createHash('sha256').update(manifestBytes).digest('hex')))throw Error('FANTASY_NATIVE_APPROVAL_OR_MANIFEST_MISMATCH');
 if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
 const ids={};const records={};const verifiedModels=new Map();
-const oldRegistry=fantasy?JSON.parse(await fs.readFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8')):null;
+const oldRegistry=fantasy?JSON.parse(await fs.readFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8').catch(()=>'{"models":{}}')):null;
 for(const name of names){
  const extension=fantasy?path.extname(manifest.models[name]?.sourcePath||manifest.models[name]?.archiveEntry||'').slice(1).toLowerCase():'glb';
  if(fantasy&&!['fbx','glb'].includes(extension))throw Error('FANTASY_UNSUPPORTED_NATIVE_FORMAT:'+name);
