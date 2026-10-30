@@ -53,7 +53,6 @@ local AssetService = game:GetService("AssetService")
 local NativeCreatureAssets = require(Shared:WaitForChild("VisualAssetIds"))
 local studioCreatureAtoms = studioAssetFamily("CREATURE")
 local nativeCreatureTemplates = {}
-local WorldProps = require(Shared:WaitForChild("RobloxCommonWorldProps"))
 local gameWorld = workspace:FindFirstChild("FantasySurvivalWorld")
 if not gameWorld then
   gameWorld = Instance.new("Folder")
@@ -678,6 +677,11 @@ local function bindNativeFoundationCharacter(character)
   local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 4, 0), Vector3.new(0, -16, 0), params)
   local groundContact = groundHit ~= nil and groundHit.Instance ~= nil
   character:SetAttribute("GROUND_CONTACT", groundContact)
+  -- Player-customized Roblox R15 characters retain their genuine clothes,
+  -- accessories, joints and original animation controller.
+  local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
+  character:SetAttribute("R15_AVATAR_READY", isR15)
+  character:SetAttribute("NativeAvatarRig", isR15 and "R15" or "R15_REQUIRED")
   character:SetAttribute("MOVEMENT_CONFIRMED", true)
 end
 local function bindNativeFoundationPlayer(player)
