@@ -172,6 +172,10 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
   // [실제 원본 건물] 승인 BUILDING atom → 등록된 원본 Model ID →
   // AssetService 메시 검증 → worldAsset 배치의 책임 경로만 인정한다.
   if(family==='BUILDING'){
+    const worldAssetStart=raw.search(/\blocal\s+function\s+worldAsset\s*\(/);
+    const worldAssetEnd=worldAssetStart>=0?raw.indexOf('\nend\n',worldAssetStart):-1;
+    const nativeWorldAsset=worldAssetEnd>worldAssetStart
+      ?raw.slice(worldAssetStart,worldAssetEnd):'';
     const approvedNativeVillagePath=[
       /local\s+studioBuildingAtoms\s*=\s*studioAssetFamily\s*\(\s*["']BUILDING["']\s*\)/,
       /local\s+nativeVillageReady\s*=\s*table\.find\(studioBuildingAtoms,"WALL_SOLID"\)~=nil/,
@@ -179,6 +183,11 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
       /table\.find\(studioBuildingAtoms,"ROOF_GABLE"\)~=nil/,
       /NativeCreatureAssets\[key\]<1/,
       /if\s+nativeVillageReady\s+then/,
+      /local\s+model=worldAsset\(piece\.asset,Vector3\.new\(/,
+      /model:SetAttribute\("MeadowVillageScenery",true\)/,
+      /mesh:IsA\("MeshPart"\)/,
+    ];
+    const approvedWorldAsset=[
       /local\s+function\s+worldAsset\(id,\s*location/,
       /local\s+modelId\s*=\s*NativeCreatureAssets\[id\]/,
       /template\s*=\s*AssetService:LoadAssetAsync\(modelId\)/,
@@ -186,11 +195,9 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
       /template:FindFirstChildWhichIsA\("MeshPart",true\)/,
       /local\s+clone=template:Clone\(\)/,
       /clone:ScaleTo\(nativeWorldScale\)/,
-      /local\s+model=worldAsset\(piece\.asset,Vector3\.new\(/,
-      /model:SetAttribute\("MeadowVillageScenery",true\)/,
-      /mesh:IsA\("MeshPart"\)/,
     ];
-    if(approvedNativeVillagePath.every(pattern=>pattern.test(raw)))return true;
+    if(approvedNativeVillagePath.every(pattern=>pattern.test(raw))
+      &&approvedWorldAsset.every(pattern=>pattern.test(nativeWorldAsset)))return true;
   }
   // 모션은 관절 쓰기가 공용 모듈의 BindJointPose 내부에서 발생한다.
   // 선택 atom → 서버 승인 → R15 Motor6D → 실제 샘플·맵핑·프레임 Step이
