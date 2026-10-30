@@ -1188,9 +1188,11 @@ local function setEnemyAttackState(enemy, state)
   enemy.model:SetAttribute("NativeMobMotionDuration",state=="ANTICIPATION" and math.max(.12,(enemy.windupUntil or os.clock()+.68)-os.clock()) or .46)
   enemy.model:SetAttribute("AttackState",state)
   enemy.model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
-  local motion=state=="ANTICIPATION" and "ATTACK" or
-    state=="CHASE" and "RUN" or (state=="RETURN_TO_SPAWN" or state=="PATROL") and "WALK" or
-    (state=="RECOVERY" or state=="STUNNED") and "HIT" or "IDLE"
+  -- 서버 전투 상태만 시각 모션으로 전달한다. 적중·피해·쿨다운은 변경하지 않는다.
+  local motion=state=="CHASE" and "RUN" or
+    (state=="RETURN_TO_SPAWN" or state=="PATROL") and "WALK" or
+    (state=="ANTICIPATION" or state=="ATTACK" or state=="RECOVERY" or state=="DEATH") and state or
+    (state=="STUNNED" or state=="HIT") and "HIT" or "IDLE"
   enemy.model:SetAttribute("NativeMobMotion",motion)
   enemy.telegraph.Enabled=state=="ANTICIPATION"
 end
