@@ -4884,6 +4884,7 @@ end
 
 function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)
  local opened=false
+ local compact=primary and primary.compact==true
  gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
  local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
  title.Parent=hud;status.Parent=hud;if healthTrack then healthTrack.Parent=hud end
@@ -4897,6 +4898,21 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   quick=RobloxCommonUI.CreatePrimaryButton({name="PrimaryGameAction",text=primary.label,minWidth=52,minHeight=56})
   quick.Parent=gui;quick.Activated:Connect(primary.activate)
  end
+ -- [게임별 컴팩트 모드] 마력숲이 명시한 경우에만 기본 파란 큰 버튼을 교체한다.
+ if compact then
+  local menuCorner=menu:FindFirstChildOfClass("UICorner")
+  if menuCorner then menuCorner.CornerRadius=UDim.new(1,0) end
+  local menuGradient=menu:FindFirstChildOfClass("UIGradient")
+  if menuGradient then menuGradient.Color=ColorSequence.new(Color3.fromRGB(42,65,73),Color3.fromRGB(19,30,42)) end
+  menu.TextSize=13
+  if quick then
+   local quickCorner=quick:FindFirstChildOfClass("UICorner")
+   if quickCorner then quickCorner.CornerRadius=UDim.new(1,0) end
+   local quickGradient=quick:FindFirstChildOfClass("UIGradient")
+   if quickGradient then quickGradient.Color=ColorSequence.new(Color3.fromRGB(248,123,83),Color3.fromRGB(147,42,48)) end
+   quick.TextSize=18
+  end
+ end
  local shade=Instance.new("TextButton");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)
  shade.Text="";shade.AutoButtonColor=false
  shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui
@@ -4909,8 +4925,16 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
   if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8)end
   if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
-  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
-  if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
+  if compact then
+   menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-14,1,-207);menu.Size=UDim2.fromOffset(58,52)
+   if quick then
+    quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-18,1,-34)
+    quick.Size=UDim2.fromOffset(84,84)
+   end
+  else
+   menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
+   if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
+  end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
   list.Position=UDim2.fromOffset(8,68);list.Size=UDim2.new(1,-16,1,-76)
