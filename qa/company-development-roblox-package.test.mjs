@@ -1285,6 +1285,35 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   }
 });
 
+// [마력숲 공통 AI/시각 연출] 변경된 표현이 서버 권한과 전투 밸런스를 침범하지 않는다.
+test('fantasy monster shared actions have restrained impacts stable targets and mobile pose LOD',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(server,/focusUserId=nil/);
+  assert.match(server,/if focusPlayer and focusDistance<=range\+3 then/);
+  assert.match(server,/enemy\.focusUserId=targetPlayer and targetPlayer\.UserId or nil/);
+  assert.match(server,/local range=140/);
+  assert.match(server,/local leashDistance=\(enemy\.position-enemy\.spawnPosition\)\.Magnitude/);
+  assert.match(server,/radius=enemy\.kind=="wolf" and 5 or 3\.5/);
+  assert.match(server,/local weight=enemy\.kind=="wolf" and \.55 or \.32/);
+  assert.match(server,/enemy\.visualFacing=offset\.Unit/);
+  assert.match(server,/facing=enemy\.visualFacing/);
+  assert.match(client,/local function mobVfx\(pattern,where,stage,facing\)/);
+  assert.match(client,/stage=="IMPACT" and \(charge and "SHAPE_BURST" or "IMPACT_FLASH"\)/);
+  assert.match(client,/textureKey=\(wolf or skeleton\) and stage=="IMPACT" and "slash" or nil/);
+  assert.match(client,/mobVfx\(payload\.pattern,payload\.position,"IMPACT",payload\.facing\)/);
+  assert.match(client,/if mode=="IDLE" then/);
+  assert.match(client,/elseif mode=="HIT" or mode=="DEATH" then/);
+  assert.match(client,/row\.species~="wolf" and \(mode=="ANTICIPATION"/);
+  assert.match(client,/row\.renderAccumulator\+=dt/);
+  assert.match(client,/row\.controller\.Step\(row\.poses,poseDt\)/);
+  assert.match(server,/local hitDamage=math\.floor\(enemy\.damage\/hitCount\)/);
+  assert.match(server,/enemy\.windupUntil=now\+\(enemy\.isBoss and \.68 or/);
+  assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)/);
+});
+
 // Existing server/input authority must boot before slow CC0 asset imports.
 test('fantasy native controls do not wait on asset import and source rigs can move',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
