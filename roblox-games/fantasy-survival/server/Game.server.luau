@@ -529,7 +529,7 @@ local function villageNativeNpc(spec)
     desc.TorsoColor=spec.cloth
     desc.LeftLegColor=spec.pants
     desc.RightLegColor=spec.pants
-    local model=Players:CreateHumanoidModelFromDescription(desc,Enum.HumanoidRigType.R15)
+    local model=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
     desc:Destroy()
     return model
   end)
