@@ -1190,14 +1190,14 @@ local function resolve(atomId)
 	return id, row
 end
 
--- 메인: 호출자가 소유한 Bone/Motor6D 자세를 프레임률과 무관하게 블렌딩한다.
+-- 메인: 호출자가 소유한 Bone/Motor6D/AnimationConstraint 자세를 블렌딩한다.
 -- 자체 반복 루프·루트 이동·피해 판정·애니메이션 자산 등록은 만들지 않는다.
 function RobloxCommonMotion.BindJointPose(joints, options)
  options=options or {}
  local rows={}
  local closed=false
  for name,joint in pairs(joints or {})do
-  if typeof(joint)=="Instance"and(joint:IsA("Bone")or joint:IsA("Motor6D"))then
+  if typeof(joint)=="Instance"and(joint:IsA("Bone")or joint:IsA("Motor6D")or joint:IsA("AnimationConstraint"))then
    rows[#rows+1]={name=name,joint=joint,base=joint.Transform,pose=CFrame.identity,
     response=math.max(1,tonumber((options.responseByJoint or {})[name])or tonumber(options.response)or 18),lastApplied=nil}
   end

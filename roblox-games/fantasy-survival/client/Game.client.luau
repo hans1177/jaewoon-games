@@ -597,7 +597,7 @@ end
 -- 서버 피해·이동·콤보 판정, 원래 Animator, 저장값은 수정하지 않는다.
 -- 이 경로는 미게시 원본 포즈를 직접 합성하며 실제 재생 QA 전까지 인증된 AnimationTrack이 아니다.
 local combatMotionSource = nil
-local combatMotionModule = Shared:FindFirstChild("RobloxCommonMotion")
+local combatMotionModule = Shared:WaitForChild("RobloxCommonMotion",12)
 if combatMotionModule then
   local ok, source = pcall(require, combatMotionModule)
   if ok and type(source) == "table" and source.CreateCombatCombo and source.SampleCombatCombo
@@ -789,9 +789,14 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
   end
   local joints = {}
   for _, descendant in ipairs(character:GetDescendants()) do
-    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1
+    -- Roblox Avatar Joint Upgrade uses AnimationConstraint for new R15 avatars.
+    -- Prefer it over legacy Motor6D when both exist on an imported rig.
+    local nativeJoint=descendant:IsA("AnimationConstraint") or descendant:IsA("Motor6D")
+    if nativeJoint and descendant.Part0 and descendant.Part1
       and (combatUpperJoints[descendant.Name] or (r6 and (descendant.Name=="RootJoint" or descendant.Name=="Left Shoulder" or descendant.Name=="Right Shoulder" or descendant.Name=="Left Hip" or descendant.Name=="Right Hip"))) then
-      joints[descendant.Name] = descendant
+      if not joints[descendant.Name] or descendant:IsA("AnimationConstraint") then
+        joints[descendant.Name] = descendant
+      end
     end
   end
   if not ((r6 and joints.RootJoint and joints["Left Shoulder"] and joints["Right Shoulder"])
@@ -924,8 +929,12 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   finishMeadowSkillPose()
   finishNativeCombatMotion()
   for _,joint in ipairs(character:GetDescendants()) do
-    if joint:IsA("Motor6D") and joint.Part0 and joint.Part1 and skillMotionMapping[joint.Name] then
-      skillMotionJoints[joint.Name]=joint
+    -- Share the real R15 pose path with both legacy and upgraded avatar joints.
+    local nativeJoint=joint:IsA("AnimationConstraint") or joint:IsA("Motor6D")
+    if nativeJoint and joint.Part0 and joint.Part1 and skillMotionMapping[joint.Name] then
+      if not skillMotionJoints[joint.Name] or joint:IsA("AnimationConstraint") then
+        skillMotionJoints[joint.Name]=joint
+      end
       skillMotionAvailable[skillMotionMapping[joint.Name]]=true
     end
   end
