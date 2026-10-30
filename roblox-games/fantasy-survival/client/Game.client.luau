@@ -385,22 +385,46 @@ list.CanvasSize = UDim2.new()
 list.ScrollBarThickness = 4
 list.ClipsDescendants = true
 list.Parent = root
+local actionGrid=Instance.new("UIGridLayout")
+actionGrid.Name="NativeActionGrid"
+actionGrid.SortOrder=Enum.SortOrder.LayoutOrder
+actionGrid.CellSize=UDim2.new(.5,-5,0,54)
+actionGrid.CellPadding=UDim2.new(0,6,0,6)
+actionGrid.Parent=list
+local actionButtons={}
 for index, action in ipairs(Config.Actions) do
   local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
   button.Name = "ScopeAction" .. index
   button.LayoutOrder = index
-  local column = (index - 1) % 2
-  local row = math.floor((index - 1) / 2)
-  button.Size = UDim2.new(0.5, -4, 0, 44)
-  button.Position = UDim2.new(column * 0.5, column == 0 and 0 or 4, 0, row * 50)
+  button.Size=UDim2.new(.5,-5,0,54) -- UIGridLayout owns actual position
   button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)
   button.TextColor3 = Color3.fromRGB(16, 24, 40)
   button.TextWrapped = true
   button.TextScaled = false;button.TextSize=15
   button.Text = CommonUI.ActionLabel(action,index)
   button.Parent = list
+  actionButtons[action.Id]=button
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
+-- Every mobile skill is directly reachable, with server-time cooldowns.
+local readyClock=0
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  readyClock+=dt
+  if readyClock<.2 then return end
+  readyClock=0
+  local now=workspace:GetServerTimeNow()
+  for _,action in ipairs(Config.Actions) do
+    local button=actionButtons[action.Id]
+    if button then
+      local deadline=player:GetAttribute("MeadowReady_"..action.Id)
+      local remains=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
+      button.Text=action.Label..(remains>.05 and ("  ·  "..math.ceil(remains).."초") or "")
+      button.BackgroundColor3=remains>.05 and Color3.fromRGB(83,90,100) or
+        (action.Kind=="SKILL" and Color3.fromRGB(176,218,195) or Color3.fromRGB(235,242,255))
+      button.Active=remains<=.05
+    end
+  end
+end)
 -- Telegraphs are read from actual server-authored enemy models, never predicted hits.
 local meadowPatternBanner=Instance.new("TextLabel")
 meadowPatternBanner.Name="MeadowAttackTelegraph"
@@ -499,6 +523,77 @@ end
 task.defer(reportNativeFoundationReady)
 
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",activate=function()remote:FireServer(primaryCombatAction.Id)end}or nil)
+
+-- Source-bound Roblox SKILL / VFX packages. Server approval is the only trigger.
+-- UI actions never apply local damage, healing, knockback, cooldown or inventory.
+local meadowSkillPresentation=nil
+local meadowCommonVFX=nil
+for _,pair in ipairs({
+  {"RobloxCommonSkillPresentation","skill"},{"RobloxCommonVFX","vfx"},
+}) do
+  local module=Shared:FindFirstChild(pair[1])
+  if module and module:IsA("ModuleScript") then
+    local ok,value=pcall(require,module)
+    if ok and type(value)=="table" then
+      if pair[2]=="skill" then meadowSkillPresentation=value else meadowCommonVFX=value end
+    end
+  end
+end
+local actionsById={}
+for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
+local debris=game:GetService("Debris")
+local function playApprovedMeadowEffect(actionId,overrideVfx)
+  local action=actionsById[actionId]
+  if not action then return end
+  local character=player.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart then return end
+  local position=player:GetAttribute("ApprovedActionTarget")
+  if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
+    position=rootPart.Position
+  end
+  local hostPart=character:FindFirstChild("RightHand") or rootPart
+  local warm=Color3.fromRGB(132,245,169)
+  local accent=Color3.fromRGB(231,255,189)
+  if actionId=="skill-meadow-bolt" then warm=Color3.fromRGB(128,197,255) end
+  if actionId=="skill-meadow-heavy" or actionId=="skill-meadow-sweep" then
+    warm=Color3.fromRGB(255,187,109)
+  end
+  local settings={
+    parent=workspace,cframe=CFrame.new(position),hostPart=hostPart,
+    startPosition=hostPart.Position,endPosition=position,
+    color=warm,accent=accent,duration=.46,
+    radius=actionId=="skill-meadow-sweep" and 10 or 4,
+    scale=1,autoCleanup=true,reducedMotion=UserInputService.TouchEnabled,
+    vfx=meadowCommonVFX,
+  }
+  local selectedFx=overrideVfx or action.VfxAtom
+  if meadowCommonVFX and selectedFx then
+    local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
+    if not ok then warn("마력숲 VFX source unavailable: "..tostring(err)) end
+  end
+  if meadowSkillPresentation and not overrideVfx and action.SkillAtom then
+    local ok,result,controller=pcall(meadowSkillPresentation.Create,action.SkillAtom,settings)
+    if ok then
+      if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
+        debris:AddItem(result,2.8)
+      elseif action.SkillAtom=="DASH_STREAK" and controller then
+        task.delay(.65,function() pcall(function()controller.Destroy() end) end)
+      end
+    else
+      warn("마력숲 skill source unavailable: "..tostring(result))
+    end
+  end
+end
+player:GetAttributeChangedSignal("ApprovedActionFX"):Connect(function()
+  local id,seq=tostring(player:GetAttribute("ApprovedActionFX") or ""):match("^([^:]+):(%d+)$")
+  if id and seq then playApprovedMeadowEffect(id) end
+end)
+remote.OnClientEvent:Connect(function(kind,payload)
+  if kind=="MEADOW_REACTION" and payload=="PARRY" then
+    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH")
+  end
+end)
 
 -- [모션·액션] 서버가 승인한 기존 COMBAT 입력만 R15 공용 관절 애니메이션에 연결한다.
 -- 서버 피해·이동·콤보 판정, 원래 Animator, 저장값은 수정하지 않는다.
