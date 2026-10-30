@@ -675,6 +675,11 @@ task.defer(function()
     {98,-75,13},{121,-99,14},{143,-128,11},
     {-91,84,13},{-116,102,12},{-139,130,14},
     {97,81,12},{123,105,14},{146,135,11},
+    -- [숲 군락] 승인된 원본 나무만 간격을 달리해 군락의 빈틈을 메운다.
+    {-82,-69,14},{-105,-112,12},{-132,-97,17},{-90,-137,13},
+    {87,-88,14},{104,-129,12},{137,-109,17},{91,-142,13},
+    {-86,96,15},{-104,138,12},{-137,113,16},{-96,151,13},
+    {87,98,15},{106,134,12},{139,117,16},{95,152,13},
   }
   local sceneryCount=0
   for index,spec in ipairs(woodland) do
@@ -718,6 +723,17 @@ task.defer(function()
     end
   end
   gameWorld:SetAttribute("MeadowNativeTrails",#tracks)
+  -- [덤불 같은 지표] 원본 지형 재질로 오솔길 옆 숲의 잎·잔디 밀도를 높인다.
+  -- 캐릭터·자원·전투 스폰 주변은 피하고 새 파츠나 가짜 식생 모델은 만들지 않는다.
+  for _,brush in ipairs({
+    {-91,-101,3.8},{-115,-75,3.1},{-137,-116,3.4},{-75,-124,3.2},
+    {88,-100,3.7},{125,-79,3.2},{145,-116,3.3},{76,-128,3.1},
+    {-87,119,3.7},{-126,94,3.4},{-151,123,3.2},{-75,145,3.1},
+    {90,117,3.8},{126,91,3.2},{151,120,3.4},{77,146,3.1},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(brush[1],-2.9,brush[2]),brush[3],Enum.Material.LeafyGrass)
+    task.wait()
+  end
   -- 추가 야생동물은 이미 검증된 사슴/멧돼지/토끼 모델만 사용한다.
   for index,spec in ipairs({
     {"deer",-245,-191,4.4},{"deer",251,211,4.4},{"deer",202,-232,4.4},
@@ -751,6 +767,19 @@ task.defer(function()
     task.wait(.1)
   end
   gameWorld:SetAttribute("MeadowRuinCount",ruinCount)
+  -- [건축 흔적] 승인된 CC0 석벽 메시만 재사용해 세 탐사 유적의 외곽을 보강한다.
+  -- 기존 1~3번 조사 대상과 저장 비트마스크, 퀘스트 진행은 그대로 유지한다.
+  for index,site in ipairs({Vector3.new(-122,3,-147),Vector3.new(137,3,139),Vector3.new(-154,3,122)})do
+    for section,offset in ipairs({Vector3.new(9,0,8),Vector3.new(-9,0,7)})do
+      local wall=worldAsset("ruin",site+offset,4.8)
+      if wall then
+        wall.Name="Meadow_Ruin_Outer_"..index.."_"..section
+        wall:SetAttribute("MeadowScenery",true)
+        wall:PivotTo(wall:GetPivot()*CFrame.Angles(0,math.rad(section==1 and 90 or -80),0))
+      end
+      task.wait(.12)
+    end
+  end
   if sceneryCount==0 then warn("마력숲 초원 나무 로딩 0개: 등록 CC0 자산 및 Place 사용 권한 확인 필요") end
 end)
 
