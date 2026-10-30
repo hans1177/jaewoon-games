@@ -120131,7 +120131,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -120166,7 +120166,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 13,
-      "previousReservationId": "system-ai:41091899990:1",
+      "previousReservationId": "system-ai:41115434883:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -120174,12 +120174,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:41115434883:1",
-      "reservedAt": "2026-10-30T19:30:05.845Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -120493,7 +120493,17 @@
         "actions-run:41050189185",
         "system-ai-handoff-to-reservation:system-ai:41091899990:1",
         "actions-run:41091899990",
-        "system-ai-handoff-to-reservation:system-ai:41115434883:1"
+        "system-ai-handoff-to-reservation:system-ai:41115434883:1",
+        "actions-run:41115434883",
+        "external-ai-raw-output-sha256:fd7b541f045784432721c33b6f0a1df98530f3ab542aa6581fb319eb36505feb",
+        "selected-hypothesis:responsible-source-defect",
+        "hypothesis-rejected:pipeline-or-runner",
+        "hypothesis-rejected:execution-integration-path-defect",
+        "hypothesis-rejected:contract-or-evidence-mismatch",
+        "system-ai-applied-answer-sha256:636292f727d0673fd0a29c9eb2af593baf13226956b60c2c4a83426b25c6bfd6",
+        "repair-strategy-fingerprint:f73e6075de766e01280382a880869709de8cb48571737d78bbd44f8deb528df3",
+        "failed-strategy-fingerprint:f73e6075de766e01280382a880869709de8cb48571737d78bbd44f8deb528df3",
+        "model-output-sha256:fd7b541f045784432721c33b6f0a1df98530f3ab542aa6581fb319eb36505feb"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1722,
@@ -120508,7 +120518,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-30T19:30:05.845Z"
+      "updatedAt": "2026-10-30T19:34:34.237Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
