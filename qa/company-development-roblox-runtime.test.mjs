@@ -1840,3 +1840,33 @@ test('successful source promotion hands the same game to existing technical plan
     assert.equal(result.status,0,result.stderr);assert.equal(result.stdout.trim().split('\n').at(-1),expected);
   }
 });
+
+// [모델 등록 재사용] 실제 워크플로 판정식을 실행해 정상 등록의 무한 재업로드를 막는다.
+test('registered fantasy native assets stop registration repair while missing or mismatched IDs still repair',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf("const nativeCreatureRepairPending=item.gameId==='fantasy-survival'");
+  const end=workflow.indexOf('const materialRepairPending=',start);
+  assert.ok(start>=0&&end>start,'existing registration owner predicate must be present');
+  const predicate=workflow.slice(start,end)+'\nnativeCreatureRepairPending;';
+  const roles=['wolf','bee','golem','deer','boar','rabbit','tree'];
+  const models=Object.fromEntries(roles.map((role,index)=>[role,{assetId:10001+index}]));
+  const manifest={gameId:'fantasy-survival',ownerApproved:true,license:'CC0-1.0',models};
+  const ids='return {\n'+roles.map(role=>' '+role+' = '+models[role].assetId+',').join('\n')+'\n}';
+  const evaluate=(registry={models},source=ids,missing=[])=>runInNewContext(predicate,{
+    item:{gameId:'fantasy-survival'},nativeManifest:manifest,
+    nativeServer:'local FANTASY_NATIVE_CREATURES_VERSION = 1',target:'roblox-games/fantasy-survival',
+    fs:{
+      existsSync:file=>!missing.some(name=>file.endsWith(name)),
+      readFileSync:file=>file.endsWith('CC0-ASSET-REGISTRY.json')?JSON.stringify(registry):source,
+    },
+  });
+  assert.equal(evaluate(),false,'all seven registered original models must reuse their IDs');
+  assert.equal(evaluate({models},ids.replace(/ = /g,'=\t')),false,'Luau whitespace does not invalidate registration');
+  assert.equal(evaluate({models:{...models,wolf:{assetId:20001}}}),true,'different asset ID requires repair');
+  assert.equal(evaluate({models:Object.fromEntries(Object.entries(models).filter(([role])=>role!=='tree'))}),true,'missing role requires repair');
+  assert.equal(evaluate({models:{...models,wolf:{assetId:'10001'}}}),true,'non-numeric ID remains invalid');
+  assert.equal(evaluate({models},ids.replace('wolf = 10001','wolf = 100010')),true,'numeric prefix cannot pass');
+  assert.equal(evaluate({models},ids.replace('wolf =','otherwolf =')),true,'role suffix cannot pass');
+  assert.equal(evaluate({models},ids,['VisualAssetIds.luau']),true,'missing Luau binding requires repair');
+  assert.equal(evaluate({models},ids,['CC0-ASSET-REGISTRY.json']),true,'missing registry requires repair');
+});
