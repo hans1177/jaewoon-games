@@ -70,7 +70,10 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/model:PivotTo\(CFrame\.new\(location\)\)/);
   assert.match(server,/model\.Parent=gameWorld/);
   assert.doesNotMatch(server,/CreatureParts\.Create\(partId/);
-  assert.match(server,/WorldProps.Create\(id/);
+  assert.match(server,/meadowTerrain:FillBlock\(/);
+  assert.match(server,/worldAsset\(spec.visual,spec.position,11\)/);
+  assert.match(server,/template:FindFirstChildWhichIsA\("MeshPart",true\)/);
+  assert.doesNotMatch(server,/WorldProps.Create\(id/,'the approved meadow uses actual registered CC0 meshes');
   assert.match(server,/targetHuman:TakeDamage\(enemy.damage\)/);
   // The actual world creature must telegraph an authorized strike, and a dodge must cancel damage.
   assert.match(server,/attackTelegraph\.Adornee = model/);
