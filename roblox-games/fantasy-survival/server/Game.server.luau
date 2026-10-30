@@ -47,6 +47,7 @@ end
 -- 마력숲 생존기: 실제 게임 상태, 생물 파도, 수집 노드, 성장의 권한은 서버가 소유한다.
 -- 공용 외형 라이브러리는 표현만 담당하고 데미지·드랍·저장은 이 게임에서 계산한다.
 local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
 local FANTASY_NATIVE_CREATURES_VERSION = 1
 local AssetService = game:GetService("AssetService")
 local NativeCreatureAssets = require(Shared:WaitForChild("VisualAssetIds"))
@@ -69,14 +70,71 @@ local encounterSerial = 0
 local attackCooldown = {}
 local LastWaveReward = 0
 local MAX_ENEMIES = 22
+-- Roblox Terrain is native collidable terrain, never an assembled visual Part.
+-- All meadow vegetation and animals must come from the game's registered CC0 meshes.
+local meadowTerrain = workspace.Terrain
+local function createStartingMeadow()
+  meadowTerrain:FillBlock(CFrame.new(0, -4, 0), Vector3.new(312, 12, 312), Enum.Material.Grass)
+  for _, ridge in ipairs({
+    {x=-115,z=-92,r=41,y=-12}, {x=110,z=-99,r=48,y=-14},
+    {x=-105,z=111,r=43,y=-12}, {x=104,z=116,r=45,y=-13},
+    {x=-154,z=8,r=39,y=-12}, {x=153,z=-3,r=42,y=-13},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(ridge.x,ridge.y,ridge.z),ridge.r,Enum.Material.Grass)
+  end
+  -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
+  for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
+    meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
+  end
+  Lighting.ClockTime = 10.5
+  Lighting.Brightness = 2
+  Lighting.Ambient = Color3.fromRGB(95,113,105)
+  Lighting.OutdoorAmbient = Color3.fromRGB(154,175,151)
+  gameWorld:SetAttribute("StartingRegion", "MEADOW")
+  gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
+end
+createStartingMeadow()
 
-local function worldAsset(id, location)
-  local ok, model = pcall(function()
-    return WorldProps.Create(id, {parent=gameWorld, quality="near", anchored=true,
-      pivot=CFrame.new(location)})
+local function worldAsset(id, location, targetHeight)
+  local modelId = NativeCreatureAssets[id]
+  if typeof(modelId) ~= "number" or modelId < 1 then
+    warn("마력숲 등록된 CC0 초원 자산 없음: "..id)
+    return nil
+  end
+  local ok, result = pcall(function()
+    local template = nativeCreatureTemplates[modelId]
+    if not template then
+      template = AssetService:LoadAssetAsync(modelId)
+      if not template:IsA("Model") or not template:FindFirstChildWhichIsA("MeshPart",true) then
+        template:Destroy()
+        error("MEADOW_ORIGINAL_NATIVE_MESH_REQUIRED")
+      end
+      for _, part in ipairs(template:GetDescendants()) do
+        if part:IsA("LuaSourceContainer") or part:IsA("RemoteEvent")
+          or part:IsA("RemoteFunction") or part:IsA("Tool") then
+          part:Destroy()
+        elseif part:IsA("BasePart") then
+          part.Anchored=true
+          part.CanCollide=false
+          part.CanTouch=false
+          part.CanQuery=false
+        end
+      end
+      template.Parent=nil
+      nativeCreatureTemplates[modelId]=template
+    end
+    local clone=template:Clone()
+    local originalHeight=clone:GetExtentsSize().Y
+    if originalHeight <= 0 then clone:Destroy();error("MEADOW_MESH_BOUNDS_INVALID") end
+    clone:ScaleTo(clone:GetScale()*(targetHeight or 5)/originalHeight)
+    clone:PivotTo(CFrame.new(location))
+    clone.Name="Meadow_"..id
+    clone.Parent=gameWorld
+    clone:SetAttribute("CC0SourceModelId",modelId)
+    return clone
   end)
-  if not ok then warn("마력숲 공용 월드 자산 로딩 실패: "..tostring(id)) end
-  return ok and model or nil
+  if not ok then warn("마력숲 CC0 초원 자산 로딩/권한 실패: "..id..": "..tostring(result)) end
+  return ok and result or nil
 end
 
 local function broadcastSurvivalState(actor)
@@ -115,12 +173,15 @@ end
 local function gatherResource(player, node)
   local character = player.Character
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-  if not rootPart or not node or not node.model or not node.model.Parent then return false end
-  if (rootPart.Position - node.model:GetPivot().Position).Magnitude > 14 then return false end
+  if not rootPart or not node then return false end
+  if node.model and not node.model.Parent then return false end
+  if not node.model and node.kind~="STONE" then return false end
+  local sourcePos=node.model and node.model:GetPivot().Position or node.position
+  if (rootPart.Position-sourcePos).Magnitude>14 then return false end
   local now = os.clock()
   if now < node.readyAt then return false end
   node.readyAt = now + 11
-  node.model:SetAttribute("NextHarvestAt", node.readyAt)
+  if node.model then node.model:SetAttribute("NextHarvestAt", node.readyAt) end
   local material = node.kind == "WOOD" and "Wood" or "Stone"
   setNumber(player, material, readNumber(player, material, 0) + 2)
   awardProgress(player, 3, 1)
@@ -130,37 +191,53 @@ local function gatherResource(player, node)
 end
 
 local function createResourceNodes()
-  local positions = {
-    {kind="WOOD",id="RESOURCE_WOOD_NODE",position=Vector3.new(-27,2,-22)},
-    {kind="WOOD",id="RESOURCE_WOOD_NODE",position=Vector3.new(28,2,25)},
-    {kind="WOOD",id="RESOURCE_WOOD_NODE",position=Vector3.new(37,2,-32)},
-    {kind="STONE",id="RESOURCE_ROCK_NODE",position=Vector3.new(-35,2,31)},
-    {kind="STONE",id="RESOURCE_ROCK_NODE",position=Vector3.new(11,2,-39)},
-    {kind="STONE",id="RESOURCE_ROCK_NODE",position=Vector3.new(-7,2,43)},
+  local sites = {
+    {kind="WOOD",visual="tree",position=Vector3.new(-27,2,-22)},
+    {kind="WOOD",visual="tree",position=Vector3.new(28,2,25)},
+    {kind="WOOD",visual="tree",position=Vector3.new(37,2,-32)},
+    {kind="STONE",position=Vector3.new(-35,2,31)},
+    {kind="STONE",position=Vector3.new(11,2,-39)},
+    {kind="STONE",position=Vector3.new(-7,2,43)},
   }
-  for _,spec in ipairs(positions) do
-    local model = worldAsset(spec.id, spec.position)
-    if model then
-      local part = model:FindFirstChildWhichIsA("BasePart", true)
-      if part then
-        local node = {model=model,kind=spec.kind,readyAt=0}
-        table.insert(resourceNodes, node)
-        local prompt = Instance.new("ProximityPrompt")
-        prompt.Name = "GatherPrompt"
-        prompt.ActionText = spec.kind=="WOOD" and "나무 채집" or "돌 채집"
-        prompt.ObjectText = spec.kind=="WOOD" and "마력숲 목재" or "마력숲 광석"
-        prompt.MaxActivationDistance = 12
-        prompt.HoldDuration = .55
-        prompt.RequiresLineOfSight = false
-        prompt.Parent = part
+  for _, spec in ipairs(sites) do
+    local model = spec.visual and worldAsset(spec.visual,spec.position,11) or nil
+    if spec.kind == "STONE" or model then
+      local node={model=model,position=spec.position,kind=spec.kind,readyAt=0}
+      table.insert(resourceNodes,node)
+      local mesh=model and model:FindFirstChildWhichIsA("MeshPart",true)
+      if mesh then
+        local prompt=Instance.new("ProximityPrompt")
+        prompt.Name="GatherPrompt"
+        prompt.ActionText="나무 채집"
+        prompt.ObjectText="초원 나무"
+        prompt.MaxActivationDistance=12
+        prompt.HoldDuration=.55
+        prompt.RequiresLineOfSight=false
+        prompt.Parent=mesh
         prompt.Triggered:Connect(function(player) gatherResource(player,node) end)
       end
     end
   end
-  worldAsset("LORE_STONE", Vector3.new(0,2,53))
-  worldAsset("SIGNPOST", Vector3.new(5,2,-6))
 end
 createResourceNodes()
+
+-- Passive original wildlife are presentation only. They never change combat,
+-- progression, drops or the original save schema.
+local meadowWildlife={}
+for index,spec in ipairs({
+  {kind="deer",position=Vector3.new(-68,3,-22),height=4.4},
+  {kind="deer",position=Vector3.new(61,3,34),height=4.4},
+  {kind="boar",position=Vector3.new(52,3,-65),height=3.1},
+  {kind="rabbit",position=Vector3.new(-39,3,62),height=1.8},
+  {kind="rabbit",position=Vector3.new(41,3,67),height=1.8},
+}) do
+  local model=worldAsset(spec.kind,spec.position,spec.height)
+  if model then
+    model:SetAttribute("MeadowWildlife",spec.kind)
+    table.insert(meadowWildlife,{model=model,origin=spec.position,phase=index*1.7,
+      range=spec.kind=="rabbit" and 5 or 9,speed=spec.kind=="rabbit" and .48 or .2})
+  end
+end
 
 local function spawnEnemy(isBoss, index)
   if #enemies >= MAX_ENEMIES then return false end
@@ -207,7 +284,8 @@ local function spawnEnemy(isBoss, index)
   model:PivotTo(CFrame.new(location))
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
-  model.Name = isBoss and "마력숲 보스" or "마력숲 야생 생물"
+  model.Name = isBoss and "돌 골렘" or (partId=="bee" and "초원 벌" or "초원 늑대")
+  model:SetAttribute("Species",partId)
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
@@ -318,8 +396,8 @@ local function gatherNearestResource(player)
   if not rootPart then return false end
   local nearest,distance=nil,14
   for _,node in ipairs(resourceNodes) do
-    if node.model.Parent and os.clock()>=node.readyAt then
-      local d=(rootPart.Position-node.model:GetPivot().Position).Magnitude
+    if (node.kind=="STONE" or (node.model and node.model.Parent)) and os.clock()>=node.readyAt then
+      local d=(rootPart.Position-(node.model and node.model:GetPivot().Position or node.position)).Magnitude
       if d<distance then nearest,distance=node,d end
     end
   end
@@ -369,6 +447,16 @@ local function updateEnemyAI(dt,now)
     if WaveState=="COMBAT" then finishWave() end
     if now>=nextWaveAt then startWave() end
     return
+  end
+  -- Gentle ambient animal motion without fabricated geometry or hitboxes.
+  for _, animal in ipairs(meadowWildlife) do
+    if animal.model.Parent then
+      local phase=now*animal.speed+animal.phase
+      local desired=animal.origin+Vector3.new(math.sin(phase)*animal.range,0,
+        math.cos(phase)*animal.range*.55)
+      animal.model:PivotTo(CFrame.lookAt(desired,
+        desired+Vector3.new(math.cos(phase),0,-math.sin(phase))))
+    end
   end
   for _,enemy in ipairs(enemies) do
     if enemy.HP>0 and enemy.model.Parent then
@@ -558,22 +646,6 @@ if not nativeFoundationRemote then
   nativeFoundationRemote.Name = "RuntimeFoundationReport"
   nativeFoundationRemote.Parent = ReplicatedStorage
 end
-local survivalGround = workspace:FindFirstChild("SurvivalGround")
-if survivalGround and not survivalGround:IsA("BasePart") then survivalGround:Destroy(); survivalGround = nil end
-if not survivalGround then
-  survivalGround = Instance.new("Part")
-  survivalGround.Name = "SurvivalGround"
-  survivalGround.Parent = workspace
-end
-survivalGround.Size = Vector3.new(280, 2, 280)
-survivalGround.Position = Vector3.new(0, 0, 0)
-survivalGround.Anchored = true
-survivalGround.CanCollide = true
-survivalGround.CanQuery = true
-survivalGround.Material = Enum.Material.Grass
-survivalGround.Color = Color3.fromRGB(72, 105, 66)
-survivalGround.TopSurface = Enum.SurfaceType.Smooth
-
 local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
 if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
@@ -581,13 +653,14 @@ if not nativeFoundationSpawn then
   nativeFoundationSpawn.Parent = workspace
 end
 nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
+nativeFoundationSpawn.Transparency = 1 -- Engine spawn locator only, never visible scenery
 nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
 nativeFoundationSpawn.Anchored = true
 nativeFoundationSpawn.CanCollide = false
 nativeFoundationSpawn.CanTouch = false
 nativeFoundationSpawn.CanQuery = false
 nativeFoundationSpawn.Neutral = true
-nativeFoundationSpawn.Material = table.find(studioMaterialAtoms, "METAL") and Enum.Material.Metal or Enum.Material.Plastic
+nativeFoundationSpawn.Material = Enum.Material.Grass
 
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
@@ -601,7 +674,7 @@ local function bindNativeFoundationCharacter(character)
   if rootPart.Position.Y < 2 then rootPart.CFrame = CFrame.new(0, 4, 0) end
   local params = RaycastParams.new()
   params.FilterType = Enum.RaycastFilterType.Exclude
-  params.FilterDescendantsInstances = {character}
+  params.FilterDescendantsInstances = {character,nativeFoundationSpawn}
   local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 4, 0), Vector3.new(0, -16, 0), params)
   local groundContact = groundHit ~= nil and groundHit.Instance ~= nil
   character:SetAttribute("GROUND_CONTACT", groundContact)
