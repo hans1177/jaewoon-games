@@ -1838,6 +1838,18 @@ local function bindSurvivalHealth(player)
     humanoid.Died:Connect(function()
       player:SetAttribute("RunActive", false)
       player:SetAttribute("LastApprovedScope", "survival-respawn")
+      -- [실제 부활 복구] Roblox 자동 리스폰의 기본 대기시간을 먼저 보장한다.
+      -- 이후에도 같은 죽은 캐릭터가 남아 있을 때만 LoadCharacterAsync로 복구한다.
+      -- 새 캐릭터가 생성됐다면 호출하지 않아 중복 스폰과 저장 상태 손실을 피한다.
+      task.delay(Players.RespawnTime+1,function()
+        if player.Parent~=Players or player.Character~=character or humanoid.Health>0 then return end
+        local recovered,reason=pcall(function()
+          player:LoadCharacterAsync()
+        end)
+        if not recovered then
+          warn("SURVIVAL_RESPAWN_RECOVERY_FAILED: "..tostring(reason))
+        end
+      end)
     end)
   end
   player.CharacterAdded:Connect(bindCharacter)
