@@ -190,8 +190,22 @@ local function worldAsset(id, location, targetHeight)
     end
     local clone=template:Clone()
     if not clone:IsA("Model") then return nil end
-    local originalHeight=clone:GetExtentsSize().Y
-    if originalHeight <= 0 then clone:Destroy();error("MEADOW_MESH_BOUNDS_INVALID") end
+    -- 원본 래퍼/숨은 피벗 크기를 제외한 보이는 CC0 메시 높이로 원본 크기를 정한다.
+    local meshMinY,meshMaxY=math.huge,-math.huge
+    for _,mesh in ipairs(clone:GetDescendants()) do
+      if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+        local cf=mesh.CFrame
+        local halfY=(math.abs(cf.RightVector.Y)*mesh.Size.X
+          +math.abs(cf.UpVector.Y)*mesh.Size.Y
+          +math.abs(cf.LookVector.Y)*mesh.Size.Z)*.5
+        meshMinY=math.min(meshMinY,cf.Position.Y-halfY)
+        meshMaxY=math.max(meshMaxY,cf.Position.Y+halfY)
+      end
+    end
+    local originalHeight=meshMaxY-meshMinY
+    if originalHeight <= .01 or originalHeight==math.huge then
+      clone:Destroy();error("MEADOW_VISIBLE_MESH_BOUNDS_INVALID")
+    end
     local nativeWorldScale=clone:GetScale()*(targetHeight or 5)/originalHeight
     if id=="tree" then
       -- 실제 등록된 채집 나무의 배경·자원 선택값을 같은 원본 메시 크기에 연결한다.
@@ -215,6 +229,26 @@ local function worldAsset(id, location, targetHeight)
       end
     end
     clone:PivotTo(CFrame.new(location))
+    -- 수입 FBX의 래퍼가 장식 본체에서 떨어져 있어도 나무/동물 중심을 원래 위치에 정렬.
+    local minX,maxX,minZ,maxZ=math.huge,-math.huge,math.huge,-math.huge
+    for _,mesh in ipairs(clone:GetDescendants()) do
+      if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+        local cf=mesh.CFrame
+        local halfX=(math.abs(cf.RightVector.X)*mesh.Size.X
+          +math.abs(cf.UpVector.X)*mesh.Size.Y
+          +math.abs(cf.LookVector.X)*mesh.Size.Z)*.5
+        local halfZ=(math.abs(cf.RightVector.Z)*mesh.Size.X
+          +math.abs(cf.UpVector.Z)*mesh.Size.Y
+          +math.abs(cf.LookVector.Z)*mesh.Size.Z)*.5
+        minX=math.min(minX,cf.Position.X-halfX)
+        maxX=math.max(maxX,cf.Position.X+halfX)
+        minZ=math.min(minZ,cf.Position.Z-halfZ)
+        maxZ=math.max(maxZ,cf.Position.Z+halfZ)
+      end
+    end
+    if minX==math.huge then clone:Destroy();error("MEADOW_CC0_VISIBLE_MESH_MISSING") end
+    clone:PivotTo(clone:GetPivot()
+      +Vector3.new(location.X-(minX+maxX)*.5,0,location.Z-(minZ+maxZ)*.5))
     -- Align the original source mesh to a measured native Terrain hit.
     local rayParams=RaycastParams.new()
     rayParams.FilterType=Enum.RaycastFilterType.Include
@@ -320,6 +354,9 @@ local function recordMeadowQuest(player, eventName)
     progress+=1
   elseif stage==5 then
     if eventName~="WOODLAND" then return end
+    progress+=1
+  elseif stage==6 then
+    if eventName~="BOSS_KILL" then return end
     progress+=1
   end
   progress=math.min(quest.Goal,progress)
@@ -653,8 +690,20 @@ local function spawnEnemy(isBoss, index)
     return false
   end
   if not model:IsA("Model") then return nil end
-  local nativeHeight=model:GetExtentsSize().Y
-  if nativeHeight<=0 then model:Destroy();return false end
+  -- 몬스터도 비가시 루트 크기를 빼고 원본 메시의 실제 세로 크기를 사용한다.
+  local actualMin,actualMax=math.huge,-math.huge
+  for _,mesh in ipairs(model:GetDescendants()) do
+    if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+      local cf=mesh.CFrame
+      local halfY=(math.abs(cf.RightVector.Y)*mesh.Size.X
+        +math.abs(cf.UpVector.Y)*mesh.Size.Y
+        +math.abs(cf.LookVector.Y)*mesh.Size.Z)*.5
+      actualMin=math.min(actualMin,cf.Position.Y-halfY)
+      actualMax=math.max(actualMax,cf.Position.Y+halfY)
+    end
+  end
+  local nativeHeight=actualMax-actualMin
+  if nativeHeight<=.01 or nativeHeight==math.huge then model:Destroy();return false end
   model:ScaleTo(model:GetScale()*nativeScale/nativeHeight)
   -- [원본 몬스터 관절] 분리된 실제 MeshPart 사지에만 Motor6D 연결.
   -- 통짜/스킨 가중치 없는 메시에는 가짜 다리나 Bone을 추가하지 않는다.
@@ -764,7 +813,7 @@ local function spawnEnemy(isBoss, index)
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
   local meadowNames={wolf="초원 늑대",bee="초원 벌",boar="사나운 멧돼지",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
-  model.Name=isBoss and "돌 골렘" or (meadowNames[partId] or partId)
+  model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
   -- [몹 색·재질] 원본 텍스처/메시는 그대로 쓰고 종별 표면만 차별화한다.
   local originalTextured=partId=="bat" or partId=="mushroom" or partId=="skeleton"
   local bodyTint=isBoss and Color3.fromRGB(126,135,124)
@@ -805,6 +854,7 @@ local function spawnEnemy(isBoss, index)
   model:SetAttribute("EnemyMaxHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
+  if isBoss then model:SetAttribute("BossPhase",1) end
   -- 기존 공용 생물 모델 위에만 공격 예고를 표시한다. 판정용 가짜 파츠를 만들지 않는다.
   local attackTelegraph = Instance.new("Highlight")
   attackTelegraph.Name = "AttackAnticipation"
@@ -895,6 +945,9 @@ local function applyMeadowDamage(player,target,damage)
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
+  if target.isBoss and target.HP>0 and target.HP<=target.maxHP*.5 then
+    target.model:SetAttribute("BossPhase",2)
+  end
   -- Server-authorized impact location is sent only after a real target took damage.
   -- No miss, empty-air swing or client-generated contact may emit this effect.
   remote:FireClient(player, "MEADOW_IMPACT", {
@@ -925,7 +978,10 @@ local function applyMeadowDamage(player,target,damage)
     awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
     recordMeadowQuest(player,"KILL")
     setNumber(player,"EnemyHealth",0)
-    if target.isBoss then setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1) end
+    if target.isBoss then
+      setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1)
+      recordMeadowQuest(player,"BOSS_KILL")
+    end
     if Config.CompetitiveRequired then
       setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+(target.isBoss and 5 or 1))
     end
@@ -1060,7 +1116,8 @@ end
 
 local function chooseMeadowMobSkill(enemy)
   enemy.attackSerial+=1
-  local second=enemy.attackSerial%2==0
+  -- 수문장 후반부는 충격파 연타를 사용하되 원래 총 피해·체력·보상은 보존한다.
+  local second=(enemy.isBoss and enemy.HP<=enemy.maxHP*.5) or enemy.attackSerial%2==0
   local pattern=enemy.isBoss and (second and "GOLEM_SHOCKWAVE" or "GOLEM_SLAM")
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
     or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")

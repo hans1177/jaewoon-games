@@ -1342,3 +1342,15 @@ test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한
  assert.match(client,/plate.AlwaysOnTop=false;plate.MaxDistance=55/);
  assert.match(server,/model:SetAttribute\("EnemyMaxHealth",hitPoints\)/);
 });
+
+test('마력숲 초원 수문장은 기존 골렘·5웨이브·보상을 보존하고 메인 퀘스트에 연결된다',()=>{
+ const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+ const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+ assert.match(config,/Id="meadow-gatekeeper"/);
+ assert.match(server,/recordMeadowQuest\(player,"BOSS_KILL"\)/);
+ assert.match(server,/if eventName~="BOSS_KILL" then return end/);
+ assert.match(server,/CurrentWave%5==0 and spawnEnemy\(true,number\+1\)/);
+ assert.match(server,/enemy.HP<=enemy.maxHP\*\.5/);
+ assert.match(server,/target.model:SetAttribute\("BossPhase",2\)/);
+ assert.match(server,/awardProgress\(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5\)/);
+});
