@@ -577,7 +577,7 @@ local function playApprovedMeadowEffect(actionId,overrideVfx)
     if ok then
       if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
         debris:AddItem(result,2.8)
-      elseif action.SkillAtom=="DASH_STREAK" and controller then
+      elseif (action.SkillAtom=="DASH_STREAK" or action.SkillAtom=="SKILL_TRAIL") and controller then
         task.delay(.65,function() pcall(function()controller.Destroy() end) end)
       end
     else
