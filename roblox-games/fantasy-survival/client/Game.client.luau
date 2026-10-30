@@ -1417,10 +1417,23 @@ end
 -- 메인 버튼: 빈 화면 탭/스페이스와 같은 서버 승인 기본 공격만 사용한다.
 local meadowPrimaryAttack=Instance.new("TextButton")
 meadowPrimaryAttack.Name="MeadowPrimaryAttack"
-meadowPrimaryAttack.Text="⚔\n공격"
+meadowPrimaryAttack.Text="공격"
 meadowPrimaryAttack.TextSize=22
 styleMeadowCombatButton(meadowPrimaryAttack,Color3.fromRGB(255,104,90))
 meadowPrimaryAttack.Parent=meadowSkillDock
+-- [전투 아이콘] 외부 CC0 아틀라스의 실제 타격 장갑 그림만 사용한다.
+local attackIcon=Instance.new("ImageLabel")
+attackIcon.Name="CC0PrimaryAttackIcon"
+attackIcon.Image=meadowIconAtlas
+attackIcon.ImageRectOffset=Vector2.fromOffset(0,0)
+attackIcon.ImageRectSize=Vector2.fromOffset(64,64)
+attackIcon.BackgroundTransparency=1
+attackIcon.AnchorPoint=Vector2.new(.5,0)
+attackIcon.Position=UDim2.fromScale(.5,.07)
+attackIcon.Size=UDim2.fromScale(.58,.60)
+attackIcon.ZIndex=15
+attackIcon.Parent=meadowPrimaryAttack
+meadowPrimaryAttack.TextYAlignment=Enum.TextYAlignment.Bottom
 local primaryGradient=meadowPrimaryAttack:FindFirstChildOfClass("UIGradient")
 primaryGradient.Color=ColorSequence.new(Color3.fromRGB(167,49,47),Color3.fromRGB(62,12,28))
 meadowPrimaryAttack.Activated:Connect(function()
@@ -1430,7 +1443,7 @@ meadowPrimaryAttack.Activated:Connect(function()
 end)
 -- 방어·좌우 회피는 기존 서버 스킬 ID를 그대로 실행하는 보조 버튼이다.
 local meadowUtilityActions={
-  {"skill-meadow-guard","막기",Color3.fromRGB(107,215,225)},
+  {"skill-meadow-guard","막기",Color3.fromRGB(107,215,225),1},
   {"skill-meadow-dodge-left","좌회피",Color3.fromRGB(177,191,206)},
   {"skill-meadow-dodge-right","우회피",Color3.fromRGB(177,191,206)},
 }
@@ -1442,6 +1455,20 @@ for index,info in ipairs(meadowUtilityActions)do
   button.TextSize=12
   styleMeadowCombatButton(button,info[3])
   button.Parent=meadowSkillDock
+  if info[4] then
+    local guardIcon=Instance.new("ImageLabel")
+    guardIcon.Name="CC0GuardIcon"
+    guardIcon.Image=meadowIconAtlas
+    guardIcon.ImageRectOffset=Vector2.fromOffset(info[4]*64,0)
+    guardIcon.ImageRectSize=Vector2.fromOffset(64,64)
+    guardIcon.BackgroundTransparency=1
+    guardIcon.AnchorPoint=Vector2.new(.5,0)
+    guardIcon.Position=UDim2.fromScale(.5,.05)
+    guardIcon.Size=UDim2.fromScale(.48,.48)
+    guardIcon.ZIndex=15
+    guardIcon.Parent=button
+    button.TextYAlignment=Enum.TextYAlignment.Bottom
+  end
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")~=true then activateMeadowAction(info[1]) end
   end)
