@@ -449,8 +449,12 @@ local function villageBoardDialogue(player,sourcePosition)
     })
   end
 end
-local function villageInvestigate(player,clueIndex,role)
+local function villageInvestigate(player,clueIndex,role,sceneContractIndex)
   local index,contract=villageCurrentContract(player)
+  if sceneContractIndex and index~=sceneContractIndex then
+    villageDialogue(player,role,"이 흔적은 다른 사건에 속해. 현재 마을 의뢰를 먼저 확인해.")
+    return
+  end
   if not contract then
     villageDialogue(player,role,"모든 마을 의뢰가 끝났어. 남은 주민의 사정은 네가 선택한 결과에 따라 달라졌어.")
     return
@@ -582,6 +586,8 @@ local function villageNativeNpc(spec)
   return npc
 end
 local function createMeadowVillage()
+  -- 외곽 지형 생성이 끝나고 조사 흔적을 배치해야 월드 확장에 흔적이 묻히지 않는다.
+  while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.15) end
   -- 시작지(0,0) 및 기존 자원(최대 z=-39)과 떨어진 남쪽 빈 초원에 마을을 놓는다.
   for _,path in ipairs({
     {-90,0,9},{-104,0,12},{-118,0,11},{-132,0,10},{-146,0,8},
@@ -641,29 +647,56 @@ local function createMeadowVillage()
     end
     task.wait(.1)
   end
-  local scenePositions={
-    {name="약초 보관 터",position=Vector3.new(-31,3,-136),clueIndex=4},
-    {name="낡은 우물 석축",position=Vector3.new(0,3,-160),clueIndex=5},
-    {name="경비대의 흔적",position=Vector3.new(32,3,-151),clueIndex=6},
-  }
+  -- [위치별 사건 단서] 세 의뢰에 각각 세 곳. 단순 NPC 반복 대화 대신 현장 추적을 요구한다.
   local evidenceCount=0
-  for _,scene in ipairs(scenePositions) do
-    local model=worldAsset("ruin",scene.position,3.8)
-    if model then
-      model.Name="Meadow_Village_Evidence_"..scene.clueIndex
-      model:SetAttribute("VillageClueIndex",scene.clueIndex)
-      if villagePrompt(model,scene.name,"흔적 조사",function(player)
-        villageInvestigate(player,scene.clueIndex,scene.name)
-      end) then evidenceCount+=1 end
+  for contractIndex,contract in ipairs(Config.VillageContracts) do
+    for sceneIndex,site in ipairs(contract.Sites) do
+      local scenePosition=Vector3.new(site[1],3,site[2])
+      local model=worldAsset("ruin",scenePosition,3.8)
+      if model then
+        model.Name="Meadow_Village_Evidence_"..contractIndex.."_"..sceneIndex
+        model:SetAttribute("VillageContractIndex",contractIndex)
+        model:SetAttribute("VillageClueIndex",sceneIndex+3)
+        local title=({"흔적이 남은 보관 터","버려진 물길","의심스러운 기록"})[sceneIndex]
+        if villagePrompt(model,title,"현장 조사",function(player)
+          villageInvestigate(player,sceneIndex+3,title,contractIndex)
+        end) then evidenceCount+=1 end
+        local mesh=model:FindFirstChildWhichIsA("MeshPart",true)
+        if mesh then
+          local marker=Instance.new("BillboardGui")
+          marker.Name="MeadowVillageInvestigationMarker"
+          marker.Adornee=mesh
+          marker.Size=UDim2.fromOffset(130,34)
+          marker.StudsOffsetWorldSpace=Vector3.new(0,4.4,0)
+          marker.MaxDistance=35
+          marker.Parent=mesh
+          local caption=Instance.new("TextLabel")
+          caption.Size=UDim2.fromScale(1,1)
+          caption.BackgroundTransparency=1
+          caption.Font=Enum.Font.GothamBold
+          caption.TextSize=13
+          caption.TextStrokeTransparency=.45
+          caption.TextColor3=Color3.fromRGB(239,201,125)
+          caption.Text="조사할 흔적"
+          caption.Parent=marker
+        end
+      end
+      -- 실제 숲 외곽까지 이어지는 다져진 길을 Terrain에만 조성한다.
+      for step=1,9 do
+        local t=step/9
+        local x=scenePosition.X*t
+        local z=-146+(scenePosition.Z+146)*t
+        meadowTerrain:FillBall(Vector3.new(x,-1.5,z),3.2,Enum.Material.Ground)
+      end
+      task.wait(.08)
     end
-    task.wait(.08)
   end
   -- 원본 CC0 메시 이외에 임시 건축 파츠를 생성하지 않는다.
   gameWorld:SetAttribute("MeadowVillageEvidenceCount",evidenceCount)
   gameWorld:SetAttribute("MeadowVillageNPCCount",readyCount)
   gameWorld:SetAttribute("MeadowVillageWallCount",wallCount)
   gameWorld:SetAttribute("MeadowVillageBoardReady",board~=nil)
-  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil and evidenceCount==3)
+  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil and evidenceCount==9)
 end
 task.defer(createMeadowVillage)
 
