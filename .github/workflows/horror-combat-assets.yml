@@ -6,6 +6,7 @@ on:
       - '.github/workflows/horror-combat-assets.yml'
       - 'tools/horror-combat-assets.mjs'
       - 'roblox-games/fantasy-survival/icons.png'
+      - 'roblox-games/fantasy-survival/right-icons.png'
       - 'assets/roblox/common-ui-v1/icons.png'
       - 'assets/roblox/common-ui-v1/panel.png'
       - 'assets/roblox/common-vfx-v1/sources/**'
@@ -59,7 +60,7 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$MAGIC_UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/icons.png | grep -q .; then
+          if [ "$MAGIC_UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/icons.png roblox-games/fantasy-survival/right-icons.png | grep -q .; then
             node tools/horror-combat-assets.mjs --magic-ui-only
           elif [ "$VFX_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-vfx-v1/sources | grep -q .; then
             node tools/horror-combat-assets.mjs --shared-vfx-only

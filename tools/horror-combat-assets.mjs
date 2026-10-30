@@ -360,6 +360,55 @@ if(process.argv.includes('--magic-ui-only')){
  const anchor=/local meadowIconAtlas="[^"]*" -- CC0_INTERFACE_ATLAS/;
  if(!anchor.test(client))throw Error('MAGIC_UI_BINDING_ANCHOR_MISSING');
  fs.writeFileSync(clientPath,client.replace(anchor,'local meadowIconAtlas="rbxassetid://'+assetId+'" -- CC0_INTERFACE_ATLAS'));
+ // [시안 그림 자산] 사용자 제공 사진에서 오른쪽 버튼 7개만 추출해 기존 등록 경로에 연결한다.
+ const right=registry.rightActionIcons;
+ if(right){
+  if(right.source!=='OWNER_PROVIDED_REFERENCE_CAPTURE'||right.license!=='OWNER_AUTHORIZED_SCREENSHOT_UI'
+    ||!right.authorization||right.scope!=='RIGHT_ACTION_HUD_ONLY'
+    ||right.path!=='roblox-games/fantasy-survival/right-icons.png'
+    ||right.width!==320||right.height!==40||right.columns!==8
+    ||right.universeId!==art.universeId||right.keys?.join(',')!=='kick,uppercut,guard,dodge,sprint,interact,bag,')
+    throw Error('MAGIC_RIGHT_ICON_PROVENANCE_INVALID');
+  const rightBytes=fs.readFileSync(right.path);
+  if(crypto.createHash('sha256').update(rightBytes).digest('hex')!==right.sha256
+    ||!rightBytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+    ||rightBytes.readUInt32BE(16)!==320||rightBytes.readUInt32BE(20)!==40)
+    throw Error('MAGIC_RIGHT_ICON_SOURCE_MISMATCH');
+  let rightId=right.assetId;
+  if(!/^[1-9]\d*$/.test(String(rightId||''))||right.importedSourceHash!==right.sha256){
+   const form=new FormData();
+   form.append('request',JSON.stringify({assetType:'Image',displayName:'Mana Forest Right Action HUD',description:'Owner provided right-side screenshot sprites '+right.sha256,creationContext:{creator}}));
+   form.append('fileContent',new Blob([rightBytes],{type:'image/png'}),'right-icons.png');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(op.path||''))throw Error('MAGIC_RIGHT_ICON_OPERATION_INVALID');
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+    await new Promise(resolve=>setTimeout(resolve,4000));
+    op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   if(!op.done||op.error||!(/^[1-9]\d*$/.test(String(op.response?.assetId||''))))throw Error('MAGIC_RIGHT_ICON_IMPORT_FAILED');
+   rightId=String(op.response.assetId);
+   right.assetId=rightId;
+   right.importedSourceHash=right.sha256;
+   right.importedRevision=process.env.GITHUB_SHA;
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+  }
+  const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:right.universeId,action:'Use',requests:[{assetId:Number(rightId),grantToDependencies:true}]})
+  });
+  if(grant.errors?.length)throw Error('MAGIC_RIGHT_ICON_PERMISSION_FAILED');
+  right.importVerified=true;
+  right.authorizedUniverseIds=[right.universeId];
+  right.runtimeVerified=false;
+  fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+  const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
+  const before=fs.readFileSync(clientPath,'utf8');
+  const anchor=/local meadowRightActionAtlas="[^"]*" -- RIGHT_ACTION_ICON_ATLAS/;
+  if(!anchor.test(before))throw Error('MAGIC_RIGHT_ICON_BINDING_ANCHOR_MISSING');
+  fs.writeFileSync(clientPath,before.replace(anchor,'local meadowRightActionAtlas="rbxassetid://'+rightId+'" -- RIGHT_ACTION_ICON_ATLAS'));
+  console.log('MAGIC_RIGHT_ICON_NATIVE_IMPORTED='+rightId);
+ }
  // 이미 등록된 CC0 입자 이미지는 새로 업로드하지 않고 마력숲 사용 권한만 부여한다.
  const vfx=JSON.parse(fs.readFileSync('assets/roblox/common-vfx-v1/catalog.json','utf8'));
  registry.interfaceVfx=[];
