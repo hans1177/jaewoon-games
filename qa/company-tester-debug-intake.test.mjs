@@ -87,23 +87,68 @@ test('Roblox F0 source integrity failure enters recovery with repeated occurrenc
  assert.equal(recovery.recurrenceCount,3);
 });
 
-test('tester debug recovery binds by game id and enters ROOT_CAUSE_MODE on third recurrence',()=>{
- const recovery={
-  version:1,tasks:[{
-   id:'recovery-f0',status:'queued',priority:'critical',sourceQueue:'tester-debug',sourceTaskId:'bug-f0',
-   gameId:'daechung-rpg',responsibleFiles:[],contextFiles:[],failureStage:'F0_SOURCE_INTEGRITY',
-   failureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',blastRadius:'single-ticket',recurrenceCount:3,
-   evidence:['tester-debug-occurrence-count:3'],recoveryStrategy:'REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE',
-   verificationPlan:['RERUN_EXACT_FAILED_STAGE'],recoveryOwner:'VIBE2_VIBE3'
-  }]
- };
- const gameQueue={tasks:[{id:'game-daechung-rpg',gameId:'daechung-rpg',status:'queued',evidence:[]}]};
- const result=dispatchRecovery({recoveryInput:recovery,gameQueueInput:gameQueue,systemAiQueueInput:{tasks:[]},route:'all'});
+test('tester debug recovery binds by proven game source and enters ROOT_CAUSE_MODE on third recurrence',()=>{
+ const dev={items:[{
+  gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',
+  targetSourcePath:'roblox-games/daechung-rpg',
+  robloxFailureStage:'F0_SOURCE_INTEGRITY',
+  robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED'
+ }]};
+ const first=ingestTesterDebug({developmentQueue:dev});
+ const second=ingestTesterDebug({developmentQueue:dev,ticketQueue:first.tickets,recoveryQueue:first.recovery});
+ const third=ingestTesterDebug({developmentQueue:dev,ticketQueue:second.tickets,recoveryQueue:second.recovery});
+ const recovery=third.recovery.tasks.find(x=>x.gameId==='daechung-rpg'&&x.failureStage==='F0_SOURCE_INTEGRITY');
+ assert.ok(recovery);
+ assert.deepEqual(recovery.responsibleFiles,[],'do not invent a Roblox script from a generic F0 failure');
+ assert.equal(recovery.recurrenceCount,3);
+ assert.ok(recovery.evidence.includes('tester-debug-surface:ROBLOX'));
+ const own={id:'game-daechung-rpg',gameId:'daechung-rpg',target:'roblox',
+  sourceRoot:'roblox-games/daechung-rpg',currentStep:'F0_SOURCE_INTEGRITY',
+  responsibleFiles:['roblox-games/daechung-rpg/server/Game.server.luau'],
+  sourceRevision:'verified-source-revision',status:'failed',priority:'normal',evidence:[]};
+ const sibling={id:'game-other',gameId:'other',target:'roblox',sourceRoot:'roblox-games/other',
+  currentStep:'F0_SOURCE_INTEGRITY',responsibleFiles:['roblox-games/other/server/Game.server.luau'],
+  status:'queued',priority:'normal'};
+ const result=dispatchRecovery({recoveryInput:third.recovery,
+  gameQueueInput:{tasks:[own,sibling]},systemAiQueueInput:{tasks:[]},route:'all'});
  const task=result.gameQueue.tasks[0];
  assert.equal(task.repairMode,'ROOT_CAUSE_MODE');
  assert.equal(task.gameRepairContract.mode,'ROOT_CAUSE_MODE');
+ assert.equal(task.sourceMutationBaseline,'verified-source-revision');
  assert.ok(task.evidence.includes('game-repair-repeat-count:3'));
- assert.equal(result.recovery.tasks[0].status,'dispatched');
+ assert.ok(task.evidence.includes('recovery-source-bound-from-canonical-game-task:'+own.id));
+ assert.equal(result.recovery.tasks.find(x=>x.id===recovery.id).status,'dispatched');
+ assert.deepEqual(result.gameQueue.tasks[1],sibling);
+ assert.deepEqual(result.gameRequeuedTaskIds,[own.id]);
+});
+
+test('source-less tester recovery stays queued if exact game responsibility is missing or ambiguous',()=>{
+ const recovery={tasks:[{
+  id:'recovery-f0',status:'queued',sourceQueue:'tester-debug',sourceTaskId:'bug-f0',
+  gameId:'daechung-rpg',responsibleFiles:[],failureStage:'F0_SOURCE_INTEGRITY',
+  failureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',recurrenceCount:3,
+  evidence:['tester-debug-surface:ROBLOX'],recoveryOwner:'VIBE2_VIBE3',
+  recoveryStrategy:'EXACT_STAGE_REPAIR'
+ }]};
+ const noProof={id:'game-no-proof',gameId:'daechung-rpg',status:'queued',evidence:[]};
+ const unknown=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[noProof]}});
+ assert.deepEqual(unknown.gameQueue.tasks,[noProof]);
+ assert.equal(unknown.recovery.tasks[0].status,'queued');
+ const candidate=(id)=>({id,gameId:'daechung-rpg',target:'roblox',
+  sourceRoot:'roblox-games/daechung-rpg',currentStep:'F0_SOURCE_INTEGRITY',
+  responsibleFiles:['roblox-games/daechung-rpg/server/Game.server.luau'],status:'failed'});
+ const candidates=[candidate('a'),candidate('b')];
+ const ambiguous=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:candidates}});
+ assert.deepEqual(ambiguous.gameQueue.tasks,candidates);
+ assert.equal(ambiguous.dispatched.length,0);
+ const blocked={...candidate('offline'),status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE'};
+ const unsafe=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[blocked]}});
+ assert.deepEqual(unsafe.gameQueue.tasks,[blocked]);
+ assert.equal(unsafe.recovery.tasks[0].status,'queued');
+ const approval={...candidate('approval'),requiresOwnerDecision:true};
+ const gated=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[approval]}});
+ assert.deepEqual(gated.gameQueue.tasks,[approval]);
+ assert.equal(gated.recovery.tasks[0].status,'queued');
 });
 
 
