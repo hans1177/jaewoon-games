@@ -295,6 +295,10 @@ local function spawnEnemy(isBoss, index)
   model.Name = isBoss and "돌 골렘" or (partId=="bee" and "초원 벌" or "초원 늑대")
   model:SetAttribute("Species",partId)
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or (partId=="bee" and "BEE_SWEEP" or "WOLF_BITE"))
+  model:SetAttribute("CreatureMotionState","IDLE")
+  model:SetAttribute("CreatureActionSequence",0)
+  model:SetAttribute("CreatureHitSequence",0)
+  model:SetAttribute("CreatureRuntimeRig","ORIGINAL_MODEL_JOINTS_ONLY")
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
@@ -312,7 +316,7 @@ local function spawnEnemy(isBoss, index)
     model=model,HP=hitPoints,maxHP=hitPoints,
     isBoss=isBoss,kind=partId,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
     speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,
-    lastAttack=0,windupUntil=nil,windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE"
+    lastAttack=0,windupUntil=nil,windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE",attackNumber=0,attackPattern=nil
   })
   return true
 end
@@ -382,12 +386,30 @@ local function applyMeadowDamage(player,target,damage)
   if focus then damage=math.floor(damage*1.25) end
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
+  target.model:SetAttribute("CreatureMotionState",target.HP>0 and "HIT" or "DEATH")
+  target.model:SetAttribute("CreatureHitSequence",(target.model:GetAttribute("CreatureHitSequence") or 0)+1)
+  if target.HP>0 then
+    local hitSerial=target.model:GetAttribute("CreatureHitSequence")
+    task.delay(.23,function()
+      if target.model.Parent and target.model:GetAttribute("CreatureHitSequence")==hitSerial then
+        target.model:SetAttribute("CreatureMotionState",target.attackState=="CHASE" and
+          (target.kind=="bee" and "FLY" or "RUN") or "IDLE")
+      end
+    end)
+  end
   setNumber(player,"Combo",readNumber(player,"Combo",0)+1)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)
   player:SetAttribute("LastApprovedScope","combat-impact")
   player:SetAttribute("ApprovedActionTarget",target.position)
   if target.HP<=0 then
-    target.model:Destroy()
+    local defeatedModel=target.model
+    defeatedModel:SetAttribute("AttackState","DEATH")
+    target.telegraph.Enabled=false
+    -- Preserve the original CC0 native model for its death action; this is
+    -- presentation only and never keeps the dead enemy in hit/reward lists.
+    task.delay(.72,function()
+      if defeatedModel.Parent then defeatedModel:Destroy() end
+    end)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
     setNumber(player,"EnemyHealth",0)
@@ -465,6 +487,13 @@ local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
   enemy.attackState=state
   enemy.model:SetAttribute("AttackState",state)
+  if state~="RECOVERY" or enemy.model:GetAttribute("CreatureMotionState")~="HIT" then
+    local movement=state=="CHASE" and (enemy.kind=="bee" and "FLY" or "RUN") or
+      state=="RETURN_TO_SPAWN" and (enemy.kind=="bee" and "FLY" or "WALK") or
+      state=="ANTICIPATION" and "START" or
+      state=="RECOVERY" and "STOP" or "IDLE"
+    enemy.model:SetAttribute("CreatureMotionState",movement)
+  end
   enemy.telegraph.Enabled=state=="ANTICIPATION"
 end
 
@@ -533,6 +562,9 @@ local function updateEnemyAI(dt,now)
             enemy.windupUntil=nil
             enemy.windupTargetUserId=nil
             enemy.lastAttack=now
+            enemy.model:SetAttribute("CreatureMotionState","ATTACK")
+            enemy.model:SetAttribute("CreatureActionSequence",
+              (enemy.model:GetAttribute("CreatureActionSequence") or 0)+1)
             setEnemyAttackState(enemy,"RECOVERY")
             local defense=meadowDefense[targetPlayer] or {}
             local incoming=enemy.damage
@@ -547,6 +579,26 @@ local function updateEnemyAI(dt,now)
             end
             if incoming>0 then targetHuman:TakeDamage(incoming) end
             setNumber(targetPlayer,"Health",math.max(0,math.floor(targetHuman.Health)))
+            -- Original Golem stomp is an actual, telegraphed, server-checked
+            -- short-range area hit. The primary victim is never hit twice.
+            if enemy.attackPattern=="GOLEM_STOMP" then
+              for _,other in ipairs(Players:GetPlayers()) do
+                if other~=targetPlayer and other:GetAttribute("ProfileReady")==true then
+                  local ch=other.Character
+                  local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+                  local rt=ch and ch:FindFirstChild("HumanoidRootPart")
+                  if hum and hum.Health>0 and rt and (rt.Position-enemy.position).Magnitude<=7 then
+                    local guard=meadowDefense[other] or {}
+                    local splash=enemy.damage
+                    if (guard.dodgeUntil or 0)>now or (guard.parryUntil or 0)>now then
+                      splash=0
+                    elseif (guard.guardUntil or 0)>now then splash=math.ceil(splash*.5) end
+                    if splash>0 then hum:TakeDamage(splash) end
+                    setNumber(other,"Health",math.max(0,math.floor(hum.Health)))
+                  end
+                end
+              end
+            end
           end
         elseif distance>attackRange then
           setEnemyAttackState(enemy,"CHASE")
@@ -561,7 +613,15 @@ local function updateEnemyAI(dt,now)
           enemy.model:PivotTo(CFrame.lookAt(enemy.position,enemy.position+offset.Unit))
         elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
           enemy.windupTargetUserId=targetPlayer.UserId
-          enemy.windupUntil=now+(enemy.isBoss and .65 or (enemy.kind=="bee" and .25 or .42))
+          enemy.attackNumber+=1
+          -- Every creature has two genuine server-authorized tactical moves.
+          -- Both consume the original attack cycle; no invisible proxy hitbox.
+          local alternate=enemy.attackNumber%3==0
+          enemy.attackPattern=enemy.isBoss and (alternate and "GOLEM_STOMP" or "GOLEM_SLAM")
+            or enemy.kind=="bee" and (alternate and "BEE_SPIRAL_STING" or "BEE_SWEEP")
+            or (alternate and "WOLF_POUNCE" or "WOLF_BITE")
+          enemy.model:SetAttribute("AttackPattern",enemy.attackPattern)
+          enemy.windupUntil=now+(enemy.isBoss and .65 or (enemy.kind=="bee" and .38 or .42))
           setEnemyAttackState(enemy,"ANTICIPATION")
         end
       end
