@@ -2096,7 +2096,7 @@ local meadowMobControllers={}
 local meadowMobRigWarnings={}
 local nativeMobMotionMap={
   IDLE="IDLE",CHASE="RUN",RUN="RUN",RETURN_TO_SPAWN="WALK",WALK="WALK",
-  ANTICIPATION="ATTACK",ATTACK="ATTACK",RECOVERY="HIT",HIT="HIT",DEATH="DEATH",
+  ANTICIPATION="ANTICIPATION",ATTACK="ATTACK",RECOVERY="RECOVERY",HIT="HIT",DEATH="DEATH",
 }
 -- [몹 실제 리깅] 기존 Bone/Motor6D/AnimationConstraint의 채널명을 재사용한다.
 local nativeMobJointAlias={
@@ -2205,7 +2205,7 @@ local function bindOriginalMob(model)
   }
   local bounds,size=model:GetBoundingBox()
   for _,joint in ipairs(model:GetDescendants()) do
-    -- 실제 관절 종류별 연결점을 읽는다. AnimationConstraint에는 Part0/Part1이 없다.
+    -- 실제 관절 종류별 연결점을 읽는다. AnimationConstraint는 Attachment를 우선한다.
     local motor=joint:IsA("Motor6D") and joint.Part0 and joint.Part1
     local constraint=joint:IsA("AnimationConstraint") and joint.Attachment0 and joint.Attachment1
     if motor or constraint or joint:IsA("Bone") then
@@ -2250,7 +2250,7 @@ local function bindOriginalMob(model)
           name="UpperArm"..side
         end
       end
-      if sourceChannels[name] and not joints[name] then
+      if sourceChannels[name] and (not joints[name] or constraint) then
         joints[name]=joint
         available[name]=true
       end
@@ -2317,6 +2317,20 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         local wildlife=row.species=="deer" or row.species=="boar" or row.species=="rabbit"
         mode=wildlife and "WALK" or "IDLE"
       end
+      -- 서버 적중시각으로 공격 충격과 복귀만 연출한다. 피해 판정은 서버가 유지한다.
+      local forcedPhase=nil
+      local impactAt=tonumber(model:GetAttribute("NativeMobLastImpact")) or 0
+      local eventAt=tonumber(model:GetAttribute("NativeMobMotionStartedAt")) or 0
+      local impactAge=workspace:GetServerTimeNow()-impactAt
+      if requested=="RECOVERY" and impactAt>=eventAt and impactAge>=0 and impactAge<.56 then
+        if impactAge<.20 then
+          mode="ATTACK"
+          forcedPhase=math.clamp(.38+impactAge/.20*.45,0,1)
+        else
+          mode="RECOVERY"
+          forcedPhase=math.clamp((impactAge-.20)/.36,0,1)
+        end
+      end
       if mode~=row.lastMode then
         row.lastMode=mode
         row.motionStartedAt=os.clock()
@@ -2327,15 +2341,17 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       if serverAge then row.phase=serverAge else row.phase+=math.min(dt,.12) end
       local repeating=mode=="IDLE" or mode=="WALK" or mode=="RUN" or mode=="FLY"
       local duration=mode=="DEATH" and 1.32 or mode=="ATTACK" and .75
+        or mode=="ANTICIPATION" and .42 or mode=="RECOVERY" and .38
         or mode=="HIT" and .46 or mode=="START" and .36
         or mode=="RUN" and .82 or 1.15
       local authoredDuration=model:GetAttribute("NativeMobMotionDuration")
-      if row.species=="golem" and mode=="ATTACK" and typeof(authoredDuration)=="number" then
+      if mode=="ANTICIPATION" and typeof(authoredDuration)=="number" then
         duration=math.max(.12,authoredDuration)
       end
       local phase=repeating and (row.phase%duration)/duration
         or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
       if not repeating and serverAge then phase=math.clamp(serverAge/duration,0,1) end
+      if forcedPhase then phase=forcedPhase end
       table.clear(row.poses)
       local _,matched=meadowMobMotion.SampleProceduralActorMotion(mode,
         phase,{
@@ -2346,10 +2362,10 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         },row.poses)
       if matched then
         -- [수문장 액션] 실제 원본 팔·다리만 큰 예비 동작과 충격 뒤 복귀에 연결한다.
-        if row.species=="golem" and (mode=="ATTACK" or mode=="HIT") then
+        if row.species=="golem" and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY" or mode=="HIT") then
           local shock=model:GetAttribute("AttackPattern")=="GOLEM_SHOCKWAVE"
-          local lift=mode=="ATTACK" and math.sin(phase*math.pi*.5) or (1-phase)
-          local pitch=mode=="ATTACK" and -(shock and .75 or 1.35)*lift or .5*lift
+          local lift=(mode=="ANTICIPATION" or mode=="ATTACK") and math.sin(phase*math.pi*.5) or (1-phase)
+          local pitch=(mode=="ANTICIPATION" or mode=="ATTACK") and -(shock and .75 or 1.35)*lift or .5*lift
           if row.available.UpperArmL then row.poses.UpperArmL=CFrame.Angles(pitch,0,-.22*lift) end
           if row.available.UpperArmR then row.poses.UpperArmR=CFrame.Angles(pitch,0,.22*lift) end
           if row.available.ThighL then row.poses.ThighL=CFrame.Angles(shock and -.32*lift or .12*lift,0,0) end
