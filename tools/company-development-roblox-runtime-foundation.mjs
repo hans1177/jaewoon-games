@@ -480,7 +480,7 @@ export async function probeRobloxOpenCloudEngine({
     task=decoded.body;
   }
   const state=clean(task?.state).toUpperCase()||'UNKNOWN';
-  if(state!=='COMPLETE')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
+  if(state!=='COMPLETE'&&state!=='FAILED')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
   const logsResponse=await fetchWithNetworkRetry(fetchImpl,`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}},{
     attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_LOGS'
   });
@@ -496,6 +496,10 @@ export async function probeRobloxOpenCloudEngine({
     for(const message of Array.isArray(row?.messages)?row.messages:[])if(clean(message))messages.push(clean(message));
   }
   const joined=messages.join('\n');
+  if(state==='FAILED')return Object.freeze({
+    available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,
+    state,taskPath:rawPath,error:clean(task?.error?.message)||joined.slice(0,2000)||'LUAU_TASK_FAILED_WITHOUT_LOGS',
+  });
   const exactPlace=clean(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_PLACE=([0-9]+)$/m)?.[1])===place;
   const exactVersion=Number(joined.match(/^JAEWOON_OPEN_CLOUD_ENGINE_VERSION=([0-9]+)$/m)?.[1]||0)===version;
   const simulationRunningBefore=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING_BEFORE=true');

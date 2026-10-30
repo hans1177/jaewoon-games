@@ -792,7 +792,11 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
     -- Roblox Avatar Joint Upgrade uses AnimationConstraint for new R15 avatars.
     -- Prefer it over legacy Motor6D when both exist on an imported rig.
     local nativeJoint=descendant:IsA("AnimationConstraint") or descendant:IsA("Motor6D")
-    if nativeJoint and descendant.Part0 and descendant.Part1
+    local connected=nativeJoint and (
+      (descendant:IsA("AnimationConstraint") and descendant.Attachment0 and descendant.Attachment1
+        and descendant.Attachment0.Parent and descendant.Attachment1.Parent)
+      or (descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1))
+    if connected
       and (combatUpperJoints[descendant.Name] or (r6 and (descendant.Name=="RootJoint" or descendant.Name=="Left Shoulder" or descendant.Name=="Right Shoulder" or descendant.Name=="Left Hip" or descendant.Name=="Right Hip"))) then
       if not joints[descendant.Name] or descendant:IsA("AnimationConstraint") then
         joints[descendant.Name] = descendant
@@ -931,7 +935,11 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   for _,joint in ipairs(character:GetDescendants()) do
     -- Share the real R15 pose path with both legacy and upgraded avatar joints.
     local nativeJoint=joint:IsA("AnimationConstraint") or joint:IsA("Motor6D")
-    if nativeJoint and joint.Part0 and joint.Part1 and skillMotionMapping[joint.Name] then
+    local connected=nativeJoint and (
+      (joint:IsA("AnimationConstraint") and joint.Attachment0 and joint.Attachment1
+        and joint.Attachment0.Parent and joint.Attachment1.Parent)
+      or (joint:IsA("Motor6D") and joint.Part0 and joint.Part1))
+    if connected and skillMotionMapping[joint.Name] then
       if not skillMotionJoints[joint.Name] or joint:IsA("AnimationConstraint") then
         skillMotionJoints[joint.Name]=joint
       end
