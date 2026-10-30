@@ -1114,8 +1114,9 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/forestBed.SoundId="rbxassetid:\/\/9116971475"/);
   assert.match(client,/birdChirp.SoundId="rbxassetid:\/\/140708444684424"/);
   assert.match(client,/birdChirp.Looped=false/);
-  assert.match(client,/forestBed.Volume=\.035\+\.085\*forestPresence/);
-  assert.match(client,/birdChirp.Volume=\.085\+\.17\*forestPresence/);
+  assert.match(client,/forestBed.Volume=\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)/);
+  assert.match(client,/local quiet=weather=="RAIN" or weather=="STORM" or timePhase=="NIGHT"/);
+  assert.match(client,/birdChirp.Volume=\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)/);
   assert.match(client,/nextChirp=os.clock\(\)\+math.random\(17,29\)/);
   // Survival inspection is meaningful but cannot change existing balance, rewards or save data.
   assert.match(server,/local function inspectMeadowSurvival\(player,model,subject\)/);
@@ -1219,8 +1220,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","승룡권"'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
-  assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
-  assert.match(client,/compact=true,hideButton=true,pages=meadowPages/);
+  assert.match(client,/if processedByUI or meadowJournalOpen or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
+  assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,nil,multiplayerStatus,\{compact=true,hideButton=true\}\)/);
   assert.ok(client.includes('hideButton=true'),
     'the default attack button must remain hidden for world-tap combat');
   const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
