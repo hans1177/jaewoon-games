@@ -1252,7 +1252,11 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
   assert.match(client,/lastPosition=model:GetPivot\(\)\.Position,travel=0,groundSpeed=0/);
   assert.match(client,/row\.groundSpeed\+=\(rawSpeed-row\.groundSpeed\)/);
-  assert.match(client,/if row\.groundSpeed<\.35 then mode="IDLE" end/);
+  assert.match(client,/local movedEnough=traveled>\.03 and traveled<=5/);
+  assert.match(client,/row\.motionHoldUntil=os\.clock\(\)\+\.16/);
+  assert.match(client,/if row\.groundSpeed<1\.1 and os\.clock\(\)>=row\.motionHoldUntil then mode="IDLE" end/);
+  assert.match(client,/intensity=footTravel and math\.clamp\(row\.groundSpeed\/7\.5,\.6,1\.08\) or 1\.24/);
+  assert.match(client,/if movedEnough then row\.travel\+=traveled end/);
   assert.match(client,/phase=\(row\.travel%stride\)\/stride/);
   assert.match(motion,/local legPhase=\(t\+offset\)%1/);
   assert.match(motion,/local airborne=locomotion and math\.sin/);
