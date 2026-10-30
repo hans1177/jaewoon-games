@@ -2059,6 +2059,17 @@ local function updateEnemyAI(dt,now)
       end
       animal.escape=(animal.escape or Vector3.zero):Lerp(escape,math.min(1,dt*3))
       desired+=animal.escape
+      -- [사슴 원본 보행] 실제 위치 변화와 사람 접근 거리로 대기·걷기·질주를 구분한다.
+      -- 늑대와 동일한 NativeMobMotion 상태를 사용하며 리스폰·체력·전투를 바꾸지 않는다.
+      local traveled=(Vector3.new(desired.X,0,desired.Z)
+        -Vector3.new((animal.position or animal.origin).X,0,(animal.position or animal.origin).Z)).Magnitude
+      local animalMode=traveled<.025 and "IDLE" or
+        (animal.model:GetAttribute("MeadowWildlife")=="deer" and closest<11 and "RUN" or "WALK")
+      if animalMode~=animal.motionMode then
+        animal.motionMode=animalMode
+        animal.model:SetAttribute("NativeMobMotion",animalMode)
+        animal.model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
+      end
       -- 목표 지점의 실제 이동 벡터로 동물의 전방을 설정한다.
       -- 야생동물의 기존 원본 피벗과 발 지면 간 오프셋을 유지해 지하 이동을 방지한다.
       if now>=(animal.nextGroundSample or 0) then
@@ -2289,7 +2300,12 @@ RunService.Heartbeat:Connect(function(dt)
         local smooth=(animal.visualFacingSmooth or facing):Lerp(facing,alpha)
         if smooth.Magnitude>.01 then animal.visualFacingSmooth=smooth.Unit end
         local forward=animal.visualFacingSmooth or facing
-        animal.model:PivotTo(CFrame.lookAt(animal.visualPosition,animal.visualPosition+forward))
+        -- [사슴 +Z 전방] 새 CC0 GLB 원본의 앞 방향을 이동 방향에 맞춘다.
+        local facing=CFrame.lookAt(animal.visualPosition,animal.visualPosition+forward)
+        if animal.model:GetAttribute("MeadowWildlife")=="deer" then
+          facing*=CFrame.Angles(0,math.pi,0)
+        end
+        animal.model:PivotTo(facing)
       end
     end
     for _,enemy in ipairs(enemies) do
