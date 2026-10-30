@@ -124,6 +124,68 @@ local function createStartingMeadow()
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
 end
 createStartingMeadow()
+-- [서버 메인: 초원 날씨·새벽/낮/저녁/밤]
+-- 기존 웨이브 갱신 틱에서 함께 실행한다. 날씨는 표현 전용이며 저장·전투를 변경하지 않는다.
+-- 12분당 게임 내 하루가 흐르고, 모든 플레이어가 같은 현재 시간/날씨를 관측한다.
+local meadowWeatherSequence={"CLEAR","RAIN","CLEAR","FOG","CLEAR","STORM"}
+local meadowClouds=meadowTerrain:FindFirstChildOfClass("Clouds")
+if not meadowClouds then
+  meadowClouds=Instance.new("Clouds")
+  meadowClouds.Name="MeadowNativeClouds"
+  meadowClouds.Parent=meadowTerrain
+end
+local lastMeadowClimateTick=-1
+local lastMeadowWeather=""
+
+local function updateMeadowClimate()
+  if worldClock-lastMeadowClimateTick<.7 then return end
+  lastMeadowClimateTick=worldClock
+  local hour=(5.25+worldClock*24/720)%24
+  local period=hour>=5 and hour<8 and "DAWN"
+    or hour>=8 and hour<17.5 and "DAY"
+    or hour>=17.5 and hour<20.5 and "DUSK" or "NIGHT"
+  local weather=meadowWeatherSequence[(math.floor(worldClock/90)%#meadowWeatherSequence)+1]
+  local morning=math.clamp((hour-5.25)/2.5,0,1)
+  local evening=math.clamp((20.5-hour)/2.5,0,1)
+  local sun=math.min(morning,evening)
+  local damp=weather=="STORM" and .66 or weather=="RAIN" and .79
+    or weather=="FOG" and .88 or 1
+  local brightness=math.max(.78,(.82+1.6*sun)*damp)
+  local lightColor=Color3.fromRGB(72,88,118):Lerp(Color3.fromRGB(155,175,146),sun)
+  local airColor=Color3.fromRGB(83,99,128):Lerp(Color3.fromRGB(177,196,163),sun)
+  if weather=="STORM" or weather=="RAIN" then
+    lightColor=lightColor:Lerp(Color3.fromRGB(83,102,118),weather=="STORM" and .5 or .25)
+    airColor=airColor:Lerp(Color3.fromRGB(110,129,139),weather=="STORM" and .65 or .3)
+  end
+  Lighting.ClockTime=hour
+  Lighting.Brightness=brightness
+  Lighting.Ambient=lightColor
+  Lighting.OutdoorAmbient=airColor
+  Lighting.FogColor=airColor
+  Lighting.FogStart=weather=="FOG" and 35 or weather=="STORM" and 55 or 110
+  Lighting.FogEnd=weather=="FOG" and 210 or weather=="STORM" and 390
+    or weather=="RAIN" and 680 or 1600
+  local cover=weather=="STORM" and .94 or weather=="RAIN" and .79
+    or weather=="FOG" and .67 or .22
+  local density=weather=="STORM" and .86 or weather=="RAIN" and .66
+    or weather=="FOG" and .55 or .27
+  local smooth=.12
+  meadowClouds.Cover=meadowClouds.Cover+(cover-meadowClouds.Cover)*smooth
+  meadowClouds.Density=meadowClouds.Density+(density-meadowClouds.Density)*smooth
+  meadowClouds.Color=meadowClouds.Color:Lerp(
+    weather=="STORM" and Color3.fromRGB(78,93,115)
+      or weather=="RAIN" and Color3.fromRGB(151,166,177)
+      or Color3.fromRGB(241,246,236),smooth)
+  gameWorld:SetAttribute("MeadowDayPhase",period)
+  gameWorld:SetAttribute("MeadowClockMinutes",math.floor(hour*60))
+  if weather~=lastMeadowWeather then
+    lastMeadowWeather=weather
+    gameWorld:SetAttribute("MeadowWeather",weather)
+    gameWorld:SetAttribute("MeadowWeatherChangedAt",workspace:GetServerTimeNow())
+  end
+end
+updateMeadowClimate()
+
 -- [초원 외곽] 기존 중앙 지역 바깥에 겹치지 않는 Terrain 4구획을 순차적으로 생성한다.
 -- 새 메시/Part는 만들지 않으며, 최초 입력과 플레이어 프로필/전투 이벤트 초기화를 막지 않는다.
 task.defer(function()
@@ -1399,6 +1461,7 @@ RunService.Heartbeat:Connect(function(dt)
     local logicStep=math.min(enemyUpdateElapsed,.25)
     enemyUpdateElapsed=0
     updateEnemyAI(logicStep,os.clock())
+    updateMeadowClimate()
   end
   if enemyVisualElapsed>=1/30 then
     local visualStep=math.min(enemyVisualElapsed,.08)
