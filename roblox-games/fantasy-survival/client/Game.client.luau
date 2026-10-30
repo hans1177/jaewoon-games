@@ -621,7 +621,9 @@ local combatPoseTargets = {}
 local combatR15Targets = {}
 -- 상체 공격만 소유하고 하체의 기존 걷기·달리기 Animator는 유지한다.
 local combatUpperJoints = {Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
-  LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true}
+  LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true,
+  LeftHip=true, RightHip=true, LeftKnee=true, RightKnee=true,
+  LeftAnkle=true, RightAnkle=true}
 local combatRecoveryUntil = nil
 local function finishNativeCombatMotion()
   if activeCombatController then activeCombatController.Destroy(true) end
@@ -689,17 +691,24 @@ local function startApprovedNativeAction(approved,combatOnly)
     local profile=weaponProfile or "UNARMED"
     local unarmedMoves=nil
     if profile=="UNARMED" then
-      if approvedScope=="skill-meadow-heavy" then
-        unarmedMoves={"U:UPPERCUT_RIGHT"}
-      elseif approvedScope=="skill-meadow-sweep" then
-        unarmedMoves={"U:HOOK_LEFT"}
-      elseif approvedScope=="scope-coreloop-0-9b2d4dfbc6" then
-        unarmedMoves={"U:CROSS_RIGHT"}
-      elseif approvedScope=="scope-mobileux-5acfb2eaa6" then
-        unarmedMoves={"U:FRONT_KICK_L"}
-      else
-        unarmedMoves={"U:JAB_LEFT"}
+      -- All 24 unpaired fists, elbows, knees and kicks from the genuine
+      -- company R15 action library. Throws require a real paired victim.
+      local moves={}
+      if type(combatMotionSource.DescribeUnarmedActions)=="function" then
+        for _,entry in ipairs(combatMotionSource.DescribeUnarmedActions()) do
+          if not entry.pairedTargetRequired then table.insert(moves,entry.id) end
+        end
       end
+      if #moves==0 then moves={"JAB_LEFT","CROSS_RIGHT","FRONT_KICK_L"} end
+      local chosen=moves[1+((tonumber(approvedEvent) or 1)-1)%#moves]
+      if approvedScope=="skill-meadow-heavy" then
+        chosen="UPPERCUT_RIGHT"
+      elseif approvedScope=="skill-meadow-sweep" then
+        chosen="ROUND_KICK_L"
+      elseif approvedScope=="scope-mobileux-5acfb2eaa6" then
+        chosen=moves[1+((tonumber(approvedEvent) or 1)-1)%#moves]
+      end
+      unarmedMoves={"U:"..chosen}
     end
     local ok,combo=pcall(combatMotionSource.CreateCombatCombo,profile,unarmedMoves)
     if not ok or not combo or not combo.steps or #combo.steps==0 then return end
@@ -745,6 +754,10 @@ local function startApprovedNativeAction(approved,combatOnly)
   })
   character:SetAttribute("NativeCombatMotionAtom",motionAtom)
   character:SetAttribute("NativeCombatMotionProfile",compiled and compiled.profileId or "R15_ACTOR_SOURCE")
+  if compiled and compiled.profileId=="UNARMED" then
+    character:SetAttribute("CombatWeaponRequired",false)
+    character:SetAttribute("UnarmedStrikePose",compiled.steps[1].id)
+  end
   character:SetAttribute("NativeCombatMotionState","SOURCE_POSE_PLAYING_UNVERIFIED")
 end
 player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
