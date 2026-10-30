@@ -9,7 +9,7 @@ import path from 'node:path';
 import { runSystemAiWorker } from '../tools/company-system-ai-worker.mjs';
 import { normalizeSystemAiQueue,reserveSystemAiBatch,reserveSystemAiTargets,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask,systemAiImpactProfile } from '../tools/company-system-ai-queue.mjs';
 import { planMarketing } from '../tools/company-growth-marketing-planner.mjs';
-import { analyzeSystemAiBottlenecks, summarizeVerifiedGameProduction } from '../tools/company-system-ai-bottleneck-sensor.mjs';
+import { analyzeSystemAiBottlenecks, summarizeVerifiedGameProduction, findUnroutedGameF0Failures } from '../tools/company-system-ai-bottleneck-sensor.mjs';
 
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-system-ai-'));}
 function write(file,text){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text,'utf8');}
@@ -653,6 +653,89 @@ test('gated game-local sensor refuses event markers with a stale or unproven cur
  assert.equal(noEvent.games[0].causalRepairPending,0);
 });
 
+
+
+test('canonical exact F0 failure without an eligible source-bound repair task is independently reported',()=>{
+  const gameId='baeksu-war',revision='9'.repeat(40),root='roblox-games/'+gameId;
+  const baseline={
+    gameId,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',selectedPlatform:'ROBLOX',
+    robloxProjectPath:root,robloxSourceCommit:revision,robloxBuildSourceRevision:revision,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,
+    robloxBuildArtifactIdentity:'sha256:'+'a'.repeat(64),robloxFoundationF0Passed:false,
+    canonicalState:'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED',
+    currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',robloxFailureStage:'F0_SOURCE_INTEGRITY',
+    robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    routingBlockers:['roblox-f0-source-preflight-failed']
+  };
+  const inactive={id:'baeksu-asset',gameId,target:'roblox',status:'queued',
+    department:'development',type:'implementation',executionLane:'ASSET_DEVELOPMENT',
+    sourceRoot:root,responsibleFiles:[root+'/server/Game.server.luau'],
+    goal:'[WORLD_LOBBY_FIRST] keep working',evidence:['studio-quality-loop:v1']};
+  const snapshot=analyzeSystemAiBottlenecks({systemAiQueue:{tasks:[]},
+    developmentQueue:{items:[baseline]},gameQueue:{tasks:[inactive]}});
+  assert.equal(snapshot.unroutedGameF0FailureCount,1);
+  assert.deepEqual(snapshot.unroutedGameF0Failures.map(x=>x.gameId),[gameId]);
+  assert.equal(snapshot.unroutedGameF0Failures[0].sourceRevision,revision);
+  assert.equal(snapshot.unroutedGameF0Failures[0].reason,'ACTIVE_GAME_TASK_NOT_BOUND_TO_EXACT_F0_REPAIR');
+  assert.deepEqual(snapshot.unroutedGameF0Failures[0].activeGameTaskIds,['baeksu-asset']);
+  assert.ok(snapshot.actions.includes('RECONCILE_UNROUTED_GAME_F0_WITH_EXISTING_VIBE_PLANNER'));
+  assert.equal(snapshot.productionOutcome.games[0].f0SourceRepairPending,0);
+  assert.equal(snapshot.unroutedGameF0Failures[0].automaticRepairClaim,false);
+  assert.equal(snapshot.unroutedGameF0Failures[0].automaticRuntimePassClaim,false);
+  const noTask=findUnroutedGameF0Failures({items:[baseline]},{tasks:[]});
+  assert.equal(noTask[0].reason,'NO_ACTIVE_GAME_REPAIR_TASK');
+});
+
+test('source-specific F0 gap closes only for current game- and revision-bound intent',()=>{
+  const gameId='game-f0-exact',revision='c'.repeat(40),root='roblox-games/'+gameId;
+  const item={gameId,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    selectedPlatform:'ROBLOX',robloxProjectPath:root,robloxSourceCommit:revision,
+    robloxBuildSourceRevision:revision,robloxBuildOrPackagePassed:true,
+    robloxBuildPreflightPassed:true,robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    canonicalState:'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED',
+    currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',robloxFoundationF0Passed:false,
+    robloxFailureStage:'F0_SOURCE_INTEGRITY',
+    robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    routingBlockers:['roblox-f0-source-preflight-failed']};
+  const task={id:'game-f0-repair',gameId,target:'roblox',
+    department:'development',type:'implementation',status:'queued',executionLane:'GAME_PRIMARY',
+    sourceRoot:root,responsibleFiles:[root+'/server/Game.server.luau'],
+    goal:'[WORLD_LOBBY_FIRST] keep game identity\n'+
+      '[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\n게임: '+gameId+
+      ' / F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED\n'+
+      '실패한 소스 버전: '+revision+
+      '\n[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\nrepair current source',
+    evidence:['roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE',
+      'roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY',
+      'roblox-f0-preflight-failure-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+      'roblox-f0-preflight-source-revision:'+revision]};
+  assert.deepEqual(findUnroutedGameF0Failures({items:[item]},{tasks:[task]}),[]);
+  for(const stale of [
+    {...task,executionLane:'ASSET_DEVELOPMENT'},
+    {...task,status:'verified'},
+    {...task,gameId:'other-game'},
+    {...task,evidence:task.evidence.filter(x=>!x.startsWith('roblox-f0-preflight-source-revision:'))},
+    {...task,goal:task.goal.replace(revision,'a'.repeat(40))},
+    {...task,evidence:task.evidence.slice(0,-1).concat('roblox-f0-preflight-source-revision:'+'a'.repeat(40))}
+  ]){
+    const findings=findUnroutedGameF0Failures({items:[item]},{tasks:[stale]});
+    assert.equal(findings.length,1,JSON.stringify(stale).slice(0,150));
+    assert.equal(findings[0].gameId,gameId);
+  }
+  for(const denied of [
+    {...item,ownerDevelopmentHold:true},
+    {...item,selectedPlatform:'UNITY'},
+    {...item,robloxProjectPath:'roblox-games/another-game'},
+    {...item,robloxBuildSourceRevision:'d'.repeat(40)},
+    {...item,robloxBuildOrPackagePassed:false},
+    {...item,robloxBuildPreflightPassed:false},
+    {...item,robloxFoundationF0Passed:true},
+    {...item,canonicalState:'F0_SOURCE_PREFLIGHT_PASSED'},
+    {...item,robloxFailureSignature:'DIFFERENT_FAILURE'},
+    {...item,robloxSourceCommit:'not-a-sha'}
+  ])assert.deepEqual(findUnroutedGameF0Failures({items:[denied]},{tasks:[]}),[],
+    'invalid or held F0 evidence must not create an inferred repair');
+});
 
 test('F0 game-local repair is counted separately from runtime proof and prioritized by existing sensor',()=>{
  const make=(id,gameId,status,source='b'.repeat(40))=>{

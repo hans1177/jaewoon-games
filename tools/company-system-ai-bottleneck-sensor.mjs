@@ -338,6 +338,54 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
     releaseAndRuntimeVerificationAuthority:'EXISTING_EXACT_BUILD_DEPLOYMENT_AND_POST_PUBLISH_GATES'};
 }
 
+// Compare the canonical source-stage failure to the actual scheduled game task.
+// A recorded F0 failure is NOT evidence that the Vibe queue has accepted repair.
+// This is an observation only; never manufacture a task, verdict, or source write.
+export function findUnroutedGameF0Failures(developmentQueue={items:[]},gameQueue={tasks:[]}){
+  const items=Array.isArray(developmentQueue?.items)?developmentQueue.items:[];
+  const tasks=Array.isArray(gameQueue?.tasks)?gameQueue.tasks:[];
+  const findings=[];
+  for(const item of items){
+    const gameId=clean(item?.gameId),sourceRevision=clean(item?.robloxSourceCommit);
+    const root='roblox-games/'+gameId;
+    const eligible=gameId&&/^[a-z0-9][a-z0-9-]{1,63}$/.test(gameId)
+      &&clean(item?.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED'
+      &&clean(item?.status).toUpperCase()==='ACTIVE'
+      &&clean(item?.selectedPlatform).toUpperCase()==='ROBLOX'
+      &&clean(item?.robloxProjectPath)===root
+      &&item?.ownerDevelopmentHold!==true&&item?.ownerDevelopmentStopped!==true
+      &&clean(item?.canonicalState).toUpperCase()==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'
+      &&clean(item?.currentStep).toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT'
+      &&clean(item?.robloxFailureStage).toUpperCase()==='F0_SOURCE_INTEGRITY'
+      &&clean(item?.robloxFailureSignature)==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED'
+      &&(item?.routingBlockers||[]).map(clean).includes('roblox-f0-source-preflight-failed')
+      &&item?.robloxFoundationF0Passed!==true
+      &&/^[0-9a-f]{40}$/i.test(sourceRevision)
+      &&clean(item?.robloxBuildSourceRevision)===sourceRevision
+      &&item?.robloxBuildOrPackagePassed===true
+      &&item?.robloxBuildPreflightPassed===true
+      &&/^sha256:[0-9a-f]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity));
+    if(!eligible)continue;
+    const active=tasks.filter(task=>clean(task.gameId)===gameId
+      &&clean(task.target).toLowerCase()==='roblox'
+      &&clean(task.department).toLowerCase()==='development'
+      &&clean(task.type||'implementation').toLowerCase()==='implementation'
+      &&['queued','running','blocked'].includes(clean(task.status).toLowerCase()));
+    const routed=active.filter(task=>f0SourcePreflightRepairObservation(task)?.sourceRevision===sourceRevision);
+    if(routed.length)continue;
+    findings.push({
+      gameId,platform:'ROBLOX',stage:'F0_SOURCE_INTEGRITY',
+      failureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',sourceRevision,
+      activeGameTaskIds:uniq(active.map(task=>task.id)).slice(0,12),
+      activeGameTaskCount:active.length,
+      reason:active.length?'ACTIVE_GAME_TASK_NOT_BOUND_TO_EXACT_F0_REPAIR':'NO_ACTIVE_GAME_REPAIR_TASK',
+      recommendedAction:'RECONCILE_WITH_EXISTING_VIBE_GAME_PLANNER',
+      automaticRepairClaim:false,automaticRuntimePassClaim:false
+    });
+  }
+  return findings.sort((a,b)=>a.gameId.localeCompare(b.gameId));
+}
+
 export function analyzeSystemAiBottlenecks({
   systemAiQueue={tasks:[]},
   gameQueue={tasks:[]},
@@ -350,6 +398,7 @@ export function analyzeSystemAiBottlenecks({
   const tasks=Array.isArray(systemAiQueue?.tasks)?systemAiQueue.tasks:[];
   const gameTasks=Array.isArray(gameQueue?.tasks)?gameQueue.tasks:[];
   const productionOutcome=summarizeVerifiedGameProduction(gameQueue);
+  const unroutedGameF0Failures=findUnroutedGameF0Failures(developmentQueue,gameQueue);
   const queued=tasks.filter(t=>clean(t.status).toLowerCase()==='queued');
   const running=tasks.filter(t=>clean(t.status).toLowerCase()==='running');
   const awaiting=tasks.filter(t=>clean(t.status).toLowerCase()==='awaiting-supervisor');
@@ -520,6 +569,8 @@ export function analyzeSystemAiBottlenecks({
   if(productionOutcome.duplicateActiveGroups.length)actions.push('COLLAPSE_EXACT_DUPLICATE_GAME_WORK');
   if(productionOutcome.games.some(g=>g.causalRepairPending>0||g.causalRepairRunning>0||g.causalRepairBlocked>0))
     actions.push('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH');
+  if(unroutedGameF0Failures.length)
+    actions.push('RECONCILE_UNROUTED_GAME_F0_WITH_EXISTING_VIBE_PLANNER');
   if(productionOutcome.games.some(g=>g.focused&&(g.queued>0||g.running>0)))
     actions.push('FINISH_OWNER_FOCUSED_GAME_WITH_VERIFIED_RUNTIME_EVIDENCE');
   if(stalePrimaryRuns>0)actions.push('CANCEL_STALE_PRIMARY_REVISION_INGRESS');
@@ -542,6 +593,8 @@ export function analyzeSystemAiBottlenecks({
     caretakerHotspots,
     development,
     productionOutcome,
+    unroutedGameF0Failures,
+    unroutedGameF0FailureCount:unroutedGameF0Failures.length,
     externalLearningApplications,
     workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs,observedRunnerQueuedRuns,runnerQueuedRuns,runnerInProgressRuns,observedPrimaryGameQueuedRuns,primaryGameQueuedRuns,joblessOrphanQueuedRuns,joblessOrphanPrimaryRuns,duplicateWorkflowRuns,stalePrimaryRuns,runnerPressure},
     configuredBatch:configured,
@@ -607,6 +660,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_DEVELOPMENT_F0_EXACT='+result.development.exactF0Count);
   console.log('SYSTEM_AI_DEVELOPMENT_DUAL_PLATFORM_PREFLIGHT_MISMATCH='+result.development.dualPlatformPreflightMismatchCount);
   console.log('SYSTEM_AI_DEVELOPMENT_F0_REPAIR_REQUIRED='+result.development.f0RepairCount);
+  console.log('SYSTEM_AI_GAME_F0_REPAIR_UNROUTED='+result.unroutedGameF0FailureCount);
   console.log('SYSTEM_AI_DEVELOPMENT_F0_CANDIDATE_HANDOFF_PENDING='+result.development.pendingCandidateCount);
   console.log('SYSTEM_AI_DEVELOPMENT_QUALITY_GATE_BLOCKED='+result.development.qualityBlockedCount);
   console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_WORLD_BOOTSTRAP_UNOBSERVED='+result.development.firstFrameWorldBootstrapUnobservedCount);
