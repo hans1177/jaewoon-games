@@ -331,14 +331,12 @@
       "name": "알 도둑 대작전",
       "sourcePath": "web-games/egg-heist",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "HOLD_REDIRECT_ONLY",
-      "mode": "HOLD",
-      "targetEngine": "design-only",
+      "productionClassSource": "CURRENT_EVIDENCE_STATE",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "protectedValues": [],
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "WEB",
-      "targetPlatformReady": true
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0009",
@@ -570,7 +568,7 @@
     "counts": {
       "releaseConfirmed": 0,
       "developmentConfirmed": 5,
-      "designOnly": 9
+      "designOnly": 8
     },
     "releaseConfirmedGameIds": [],
     "developmentConfirmedGameIds": [
@@ -586,7 +584,6 @@
       "P0004",
       "P0005",
       "P0007",
-      "P0008",
       "P0009",
       "P0101",
       "P0103"
@@ -599,7 +596,6 @@
         "P0005",
         "P0006",
         "P0007",
-        "P0008",
         "P0009",
         "P0101",
         "P0103",
@@ -612,16 +608,17 @@
       "rebuild": [],
       "retired": [],
       "removed": [
+        "P0008",
         "P0102"
       ]
     },
     "pipeline": {
       "target": 60,
-      "count": 14,
+      "count": 13,
       "activeDevelopmentWipMax": null,
       "capacityOnly": true,
       "noArtificialGlobalGameCountCap": true,
-      "deficit": 46
+      "deficit": 47
     },
     "ranking": [
       {
