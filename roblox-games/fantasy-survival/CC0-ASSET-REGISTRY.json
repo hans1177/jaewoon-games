@@ -247,6 +247,119 @@
       "10773436325"
     ]
   },
+  "interfaceUiSourcePacks": {
+    "version": 1,
+    "status": "ARCHIVES_PRESENT_UNIMPORTED",
+    "license": "CC0-1.0",
+    "authoritativeRuntimeAtlas": "interfaceIcons",
+    "packs": [
+      {
+        "key": "ui-adventure",
+        "path": "assets/external/simple-rpg/icons-vfx-npc/ui-adventure.zip",
+        "sha256": "982e8ab66842509ee9214f9c2038e594cbe029f19d1dc177fecaad3b41a67ed3",
+        "license": "CC0-1.0",
+        "sourcePage": "https://opengameart.org/content/ui-pack-adventure",
+        "verifiedFiles": 260,
+        "sourceOnly": true,
+        "robloxImported": false,
+        "runtimeVerified": false
+      },
+      {
+        "key": "ui-pack",
+        "path": "assets/external/simple-rpg/icons-vfx-npc/ui-pack.zip",
+        "sha256": "a8a14a234911eb648c062622915c93e79e94e97cb7f9f375a70f6617f1174318",
+        "license": "CC0-1.0",
+        "sourcePage": "https://opengameart.org/content/ui-pack",
+        "verifiedFiles": 870,
+        "sourceOnly": true,
+        "robloxImported": false,
+        "runtimeVerified": false
+      },
+      {
+        "key": "game-icons",
+        "path": "assets/external/simple-rpg/icons-vfx-npc/game-icons.zip",
+        "sha256": "7a86d8d58e0b851e22004b3c70bf90b003632bbf9ac633424daa3bb17d9e7e4e",
+        "license": "CC0-1.0",
+        "sourcePage": "https://opengameart.org/content/game-icons",
+        "verifiedFiles": 425,
+        "sourceOnly": true,
+        "robloxImported": false,
+        "runtimeVerified": false
+      },
+      {
+        "key": "fantasy-rpg-icons",
+        "path": "assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip",
+        "sha256": "d7e8e4d41dbf6b5c3d2de0f9eee74674488728e1bf9e551861cddb1d74a0b624",
+        "license": "CC0-1.0",
+        "sourcePage": "https://opengameart.org/content/fantasy-rpg-icons-0",
+        "verifiedFiles": 32,
+        "sourceOnly": true,
+        "robloxImported": false,
+        "runtimeVerified": false
+      },
+      {
+        "key": "emotes",
+        "path": "assets/external/simple-rpg/icons-vfx-npc/emotes.zip",
+        "sha256": "96ab3f2c92d7acd860942efca1c9f1295184b11d3db5c79c28da82036e496526",
+        "license": "CC0-1.0",
+        "sourcePage": "https://opengameart.org/content/emotes-pack",
+        "verifiedFiles": 513,
+        "sourceOnly": true,
+        "robloxImported": false,
+        "runtimeVerified": false
+      },
+      {
+        "key": "ui-rpg",
+        "path": "assets/external/simple-rpg/UIpack_RPG.zip",
+        "sha256": "c69c30c09d74df542842e4ec811735b6d260cd6c9e2ee261d7b894d259a6adb4",
+        "license": "CC0-1.0",
+        "sourcePage": "https://opengameart.org/content/ui-pack-rpg-extension",
+        "verifiedFiles": 90,
+        "sourceOnly": true,
+        "robloxImported": false,
+        "runtimeVerified": false
+      }
+    ],
+    "roleSelections": {
+      "gameWindow": [
+        "ui-adventure:PNG/Default/panel_brown_dark.png",
+        "ui-adventure:PNG/Default/panel_border_brown.png",
+        "ui-rpg:PNG/buttonLong_brown.png",
+        "game-icons:PNG/White/2x/menuGrid.png",
+        "game-icons:PNG/White/2x/home.png"
+      ],
+      "inventoryWindow": [
+        "ui-rpg:PNG/panel_brown.png",
+        "ui-rpg:PNG/panelInset_brown.png",
+        "ui-rpg:PNG/buttonSquare_brown.png",
+        "fantasy-rpg-icons:icon_bag.png",
+        "fantasy-rpg-icons:icon_chest.png",
+        "fantasy-rpg-icons:icon_goldcoins.png"
+      ],
+      "minimap": [
+        "ui-adventure:PNG/Default/minimap_ring_brown.png",
+        "ui-adventure:PNG/Default/minimap_compass_toon_n.png",
+        "ui-adventure:PNG/Default/minimap_arrow_a.png",
+        "ui-adventure:PNG/Default/minimap_icon_star_yellow.png",
+        "ui-adventure:PNG/Default/minimap_icon_exclamation_yellow.png"
+      ],
+      "customizationWindow": [
+        "ui-rpg:PNG/panel_blue.png",
+        "ui-adventure:PNG/Default/panel_grid_blueprint.png",
+        "ui-rpg:PNG/iconCheck_blue.png",
+        "game-icons:PNG/White/2x/gear.png",
+        "game-icons:PNG/White/2x/menuList.png",
+        "game-icons:PNG/White/2x/scrollVertical.png"
+      ],
+      "helper": [
+        "game-icons:PNG/White/2x/information.png",
+        "game-icons:PNG/White/2x/question.png",
+        "fantasy-rpg-icons:icon_book.png",
+        "ui-adventure:PNG/Default/panel_brown.png",
+        "emotes:PNG/Vector/Style 1/emote_question.png"
+      ]
+    }
+  },
   "interfaceVfx": [
     {
       "key": "ring",
