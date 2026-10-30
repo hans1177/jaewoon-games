@@ -2,6 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
+test('owner immediate Roblox 마력숲은 기존 집중 Roblox보다 먼저 배정되고 다른 게임은 보존된다',()=>{
+  const roadmap={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+    enabled:true,ownerFocusedGameIds:['simple-rpg','insect-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'},
+    completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
+  }}};
+  const rows=[
+    {...nativeItem('old-game','ROBLOX'),enqueuedAt:'2026-09-01T00:00:00Z'},
+    {...nativeItem('simple-rpg','ROBLOX'),enqueuedAt:'2026-09-02T00:00:00Z'},
+    {...nativeItem('fantasy-survival','ROBLOX'),enqueuedAt:'2026-10-30T00:00:00Z'}
+  ];
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow(rows,1,roadmap).map(x=>x.gameId),['fantasy-survival']);
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow(rows,3,roadmap).map(x=>x.gameId),
+    ['fantasy-survival','simple-rpg','old-game']);
+});
+
 test('three-game owner focus puts Roblox completion first and reuses spare native capacity',()=>{
   const roadmap={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
     enabled:true,ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],

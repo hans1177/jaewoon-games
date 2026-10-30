@@ -1138,6 +1138,15 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
 });
 
+test('마력숲 타격은 부드러운 내장 둔탁음으로 교체하고 연속 재생량을 제한한다',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  assert.match(source,/impact.SoundId="rbxasset:\/\/sounds\/action_jump_land\.mp3"/);
+  assert.doesNotMatch(source,/impact.SoundId="rbxasset:\/\/sounds\/swordlunge\.wav"/);
+  assert.match(source,/soundNow-lastSoftHitAt>=\.11/);
+  assert.match(source,/impact.Volume=payload.finisher and \.26 or \(payload.boss and \.21 or \.16\)/);
+  assert.match(source,/impact.RollOffMaxDistance=22/);
+});
+
 test('fantasy meadow binds six original CC0 creature rigs and prevents repeating death or hit motion',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const manifest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));

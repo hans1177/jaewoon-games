@@ -724,6 +724,7 @@ if vfxModule then
     and type(module.AttachShortTrail)=="function" then combatVFX=module end
 end
 -- Only server-authorized impact messages may trigger contact sparks.
+local lastSoftHitAt=0
 remote.OnClientEvent:Connect(function(kind,payload)
   if kind~="MEADOW_IMPACT" or typeof(payload)~="table"
     or typeof(payload.position)~="Vector3" then return end
@@ -737,19 +738,25 @@ remote.OnClientEvent:Connect(function(kind,payload)
     reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 8 or 18,
     scale=payload.boss and 2.05 or 1.48,
   })
-  -- [실제 명중 타격음] Roblox 기본 내장 효과음만 사용 (외부 오디오 권한 불필요).
-  local myCharacter=player.Character
-  local soundRoot=myCharacter and (myCharacter:FindFirstChild("HumanoidRootPart") or myCharacter.PrimaryPart)
-  if soundRoot then
-    local impact=Instance.new("Sound")
-    impact.Name="MeadowConfirmedHit"
-    impact.SoundId="rbxasset://sounds/swordlunge.wav"
-    impact.Volume=payload.finisher and 1.55 or (payload.boss and 1.4 or 1.15)
-    impact.PlaybackSpeed=payload.finisher and .78 or 1.05
-    impact.RollOffMaxDistance=55
-    impact.Parent=soundRoot
-    impact:Play()
-    game:GetService("Debris"):AddItem(impact,2)
+  -- [부드러운 타격음] 날카로운 검 휘두르기 대신 기존 내장 착지 둔탁음의 작은 음량 사용.
+  -- 연타 소리가 겹쳐 시끄러워지는 것을 0.11초 간격 제한으로 방지한다.
+  local soundNow=os.clock()
+  if soundNow-lastSoftHitAt>=.11 then
+    lastSoftHitAt=soundNow
+    local myCharacter=player.Character
+    local soundRoot=myCharacter and (myCharacter:FindFirstChild("HumanoidRootPart") or myCharacter.PrimaryPart)
+    if soundRoot then
+      local impact=Instance.new("Sound")
+      impact.Name="MeadowSoftImpact"
+      impact.SoundId="rbxasset://sounds/action_jump_land.mp3"
+      impact.Volume=payload.finisher and .26 or (payload.boss and .21 or .16)
+      impact.PlaybackSpeed=payload.finisher and .88 or .98
+      impact.RollOffMinDistance=4
+      impact.RollOffMaxDistance=22
+      impact.Parent=soundRoot
+      impact:Play()
+      game:GetService("Debris"):AddItem(impact,1.2)
+    end
   end
   local hitFlash=Instance.new("Frame")
   hitFlash.Name="MeadowHitScreenFeedback"
