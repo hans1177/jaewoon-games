@@ -1321,6 +1321,22 @@ test('fantasy monster shared actions have restrained impacts stable targets and 
   assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)/);
 });
 
+// [마력숲 캐릭터 부활] 엔진 기본 타이머 이후의 실패만 복구하고 기존 프로필·전투 수치는 그대로 유지한다.
+test('fantasy player death recovers only if original humanoid never auto-respawned',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(server,/local function bindSurvivalHealth\(player\)/);
+  const lifecycle=server.slice(server.indexOf('local function bindSurvivalHealth('),server.indexOf('-- 데이터 읽기가 실패한 세션에서는'));
+  assert.match(lifecycle,/humanoid\.Died:Connect\(function\(\)/);
+  assert.match(lifecycle,/task\.delay\(Players\.RespawnTime\+1,function\(\)/);
+  assert.match(lifecycle,/player\.Parent~=Players or player\.Character~=character or humanoid\.Health>0/);
+  assert.match(lifecycle,/player:LoadCharacterAsync\(\)/);
+  assert.match(lifecycle,/if not recovered then/);
+  assert.match(lifecycle,/player\.CharacterAdded:Connect\(bindCharacter\)/);
+  assert.match(server,/player\.RespawnLocation = nativeFoundationSpawn/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.doesNotMatch(lifecycle,/humanoid\.MaxHealth\s*=|humanoid\.Health\s*=/);
+});
+
 // Existing server/input authority must boot before slow CC0 asset imports.
 test('fantasy native controls do not wait on asset import and source rigs can move',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
