@@ -314,8 +314,10 @@ local function worldAsset(id, location, targetHeight)
             surface.Color=bark and meadowPalette.bark or meadowPalette.leaves
             surface.Material=bark and Enum.Material.Wood or Enum.Material.Fabric
           else
+            -- [야생동물 토이 표면] 자갈/천 직물 대신 유광을 억제한 장난감 플라스틱.
+            -- 원본 모델, 메시·리그·판정은 그대로 유지한다.
             surface.Color=animalTint
-            surface.Material=Enum.Material.Fabric
+            surface.Material=Enum.Material.Plastic
           end
           surface.Reflectance=0
         end
@@ -965,34 +967,40 @@ local function spawnEnemy(isBoss, index)
   local meadowNames={wolf="초원 늑대",bee="초원 벌",boar="사나운 멧돼지",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
-  -- [몬스터 공통 재질] 원본 텍스처·메시·종별 실루엣은 유지한다.
-  -- 숲의 무광 저채도 색감만 맞추며 보스의 암석 재질과 벌의 투명 날개는 보존한다.
-  -- 몸통과 숲 초목의 무광색을 맞춘다. 원본 TextureID/SurfaceAppearance는 유지.
+  -- [몬스터 공통 재질] 늑대·벌·멧돼지·버섯·박쥐·해골·골렘 전 종류에 동일한 토이 플라스틱을 적용한다.
+  -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
+  -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
+  -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
   local bodyTint=isBoss and meadowPalette.golem
     or meadowPalette[partId] or meadowPalette.wolf
-  -- [소프트 스터드 재질] 로블록스 기본 Pebble의 둥근 미세 요철과 매끈한 Plastic 장식을 조합한다.
-  -- 임의 파츠/텍스처를 만들지 않으며 원본 UV, TextureID, SurfaceAppearance, MaterialVariant는 보존한다.
-  -- PBR 맵은 실시간 LuaU에서 쓰기 권한이 없으므로 기존 원본 재질을 덮어쓰지 않는다.
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") then
       local partName=surface.Name:lower()
-      local wing=partId=="bee" and partName:find("wing",1,true)
+      local wing=(partId=="bee" or partId=="bat") and partName:find("wing",1,true)
       local smoothDetail=wing or partName:find("eye",1,true)
-        or partName:find("tooth",1,true) or partName:find("teeth",1,true)
-        or partName:find("claw",1,true) or partName:find("horn",1,true)
-        or partName:find("crystal",1,true)
-      local sourceColor=surface.Color
-      local hasSourceDetail=(surface.TextureID~=""
-        or surface:FindFirstChildOfClass("SurfaceAppearance")~=nil)
-      -- 원본 색상·얼굴·눈·날개는 읽히도록 유지하고, 몸통만 둥근 요철을 사용한다.
-      surface.Color=wing and Color3.fromRGB(190,228,235)
-        or hasSourceDetail and sourceColor:Lerp(bodyTint,.16)
-        or sourceColor:Lerp(bodyTint,.38)
-      surface.Material=wing and Enum.Material.Glass
-        or smoothDetail and Enum.Material.SmoothPlastic or Enum.Material.Pebble
+        or partName:find("pupil",1,true) or partName:find("tooth",1,true)
+        or partName:find("teeth",1,true) or partName:find("claw",1,true)
+        or partName:find("horn",1,true) or partName:find("crystal",1,true)
+      if wing then
+        -- 투명 날개와 비행 몬스터의 읽기 쉬운 실루엣은 유지한다.
+        surface.Material=Enum.Material.Glass
+        surface.Color=Color3.fromRGB(190,228,235)
+      elseif smoothDetail then
+        surface.Material=Enum.Material.SmoothPlastic
+      else
+        -- 구형 Pebble 돌무늬/체크 무늬는 원본 메시의 본체에서 제거한다.
+        -- 원본 모델 템플릿은 유지하므로 기존 에셋을 파괴하거나 덮어쓰지 않는다.
+        local appearance=surface:FindFirstChildOfClass("SurfaceAppearance")
+        if appearance then appearance:Destroy() end
+        if surface.TextureID~="" then surface.TextureID="" end
+        surface.MaterialVariant=""
+        surface.Material=Enum.Material.Plastic
+        surface.Color=surface.Color:Lerp(bodyTint,.78)
+      end
       surface.Reflectance=0
     end
   end
+  model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
   local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",boar="BOAR_CHARGE",
     mushroom="MUSHROOM_SPORES",bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
