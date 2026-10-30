@@ -52,6 +52,8 @@ local FANTASY_NATIVE_CREATURES_VERSION = 1
 local AssetService = game:GetService("AssetService")
 local NativeCreatureAssets = require(Shared:WaitForChild("VisualAssetIds"))
 local studioCreatureAtoms = studioAssetFamily("CREATURE")
+local studioEnvironmentAtoms = studioAssetFamily("ENVIRONMENT")
+local studioPropAtoms = studioAssetFamily("PROP")
 local nativeCreatureTemplates = {}
 local gameWorld = workspace:FindFirstChild("FantasySurvivalWorld")
 if not gameWorld then
@@ -123,9 +125,18 @@ local function worldAsset(id, location, targetHeight)
       nativeCreatureTemplates[modelId]=template
     end
     local clone=template:Clone()
+    if not clone:IsA("Model") then return nil end
     local originalHeight=clone:GetExtentsSize().Y
     if originalHeight <= 0 then clone:Destroy();error("MEADOW_MESH_BOUNDS_INVALID") end
-    clone:ScaleTo(clone:GetScale()*(targetHeight or 5)/originalHeight)
+    local nativeWorldScale=clone:GetScale()*(targetHeight or 5)/originalHeight
+    if id=="tree" then
+      -- 실제 등록된 채집 나무의 배경·자원 선택값을 같은 원본 메시 크기에 연결한다.
+      local environmentScale=table.find(studioEnvironmentAtoms,"TREE_CROWN_ROUND") and nativeWorldScale or nil
+      local propScale=table.find(studioPropAtoms,"RESOURCE_WOOD") and environmentScale or nil
+      if not propScale then clone:Destroy();error("MEADOW_TREE_SELECTION_REQUIRED") end
+      nativeWorldScale=propScale
+    end
+    clone:ScaleTo(nativeWorldScale)
     clone:PivotTo(CFrame.new(location))
     -- Align the original source mesh to a measured native Terrain hit.
     local rayParams=RaycastParams.new()
