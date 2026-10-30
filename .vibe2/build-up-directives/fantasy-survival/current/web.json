@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g7-9eca158de96e",
-  "directiveFingerprint": "9eca158de96e81eb1774517aee34a9a068e0311aed882e532600903823fa0452",
-  "previousDirectiveFingerprint": "4753911b1c7af5f5dac83724281b47c1e8881806899b2067ad944117c0a774d0",
-  "forbiddenRepeatFingerprint": "4753911b1c7af5f5dac83724281b47c1e8881806899b2067ad944117c0a774d0",
+  "directiveId": "fantasy-survival-build-up-g1-5cd55da045a0",
+  "directiveFingerprint": "5cd55da045a093e367aa25434585be4c3e4cf8222d1bc40d165542351823dbb6",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 7,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/fantasy-survival",
-  "sourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
+  "sourceTreeFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
   "designFingerprint": "0a0e0ef57852092c2464deb365ddbb3326ae88078c803e760e587931a60db548",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "0a0e0ef57852092c2464deb365ddbb3326ae88078c803e760e587931a60db548",
-    "previousDesignFingerprint": "62953d8cd5706df4f1fbb8a78e70fd120d17174a120d7ebb314dab9c7c520118",
+    "previousDesignFingerprint": null,
     "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
@@ -346,7 +346,7 @@
           "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
           "VFX_AUDIO_CAMERA_POLISH_MOBILE"
         ],
-        "sourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
+        "sourceTreeFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
         "rule": "MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -367,7 +367,7 @@
     "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "0a0e0ef57852092c2464deb365ddbb3326ae88078c803e760e587931a60db548",
-    "sourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
+    "sourceTreeFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
     "multiplayerMode": "HYBRID",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -983,7 +983,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
+    "sourceTreeFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
     "mode": "PRESERVATION_PRESENTATION_MILESTONES_ONLY",
     "authoredItemCount": 48,
     "authoredCounts": {
@@ -4424,7 +4424,7 @@
       "entryFlow": 17,
       "loadingFlow": 2,
       "input": 53,
-      "map": 2827,
+      "map": 2828,
       "landmark": 517,
       "interaction": 256,
       "inventory": 271,
@@ -4494,7 +4494,7 @@
     "sourceAnchors": [
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7657,
+        "line": 7661,
         "kind": "FUNCTION",
         "symbol": "startCompanionSwitchHold",
         "context": "function startCompanionSwitchHold(e,wx,wy){",
@@ -4502,7 +4502,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7609,
+        "line": 7613,
         "kind": "FUNCTION",
         "symbol": "loadPos",
         "context": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
@@ -4510,7 +4510,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4812,
+        "line": 4816,
         "kind": "FUNCTION",
         "symbol": "templeTrapContains",
         "context": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
@@ -4518,7 +4518,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4815,
+        "line": 4819,
         "kind": "FUNCTION",
         "symbol": "updateTempleTrap",
         "context": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
@@ -4526,7 +4526,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4816,
+        "line": 4820,
         "kind": "FUNCTION",
         "symbol": "enterTempleLower",
         "context": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
@@ -4534,7 +4534,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4813,
+        "line": 4817,
         "kind": "FUNCTION",
         "symbol": "spawnTempleTrapLeech",
         "context": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
@@ -4542,7 +4542,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4817,
+        "line": 4821,
         "kind": "FUNCTION",
         "symbol": "returnTempleLobby",
         "context": "function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}",
@@ -4550,7 +4550,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7611,
+        "line": 7615,
         "kind": "FUNCTION",
         "symbol": "loadBuildList",
         "context": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
@@ -4558,7 +4558,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4814,
+        "line": 4818,
         "kind": "FUNCTION",
         "symbol": "hostTempleTrapSpawn",
         "context": "function hostTempleTrapSpawn(payload){if(!multiIsHost()||!payload)return;const r=multiplayer.remote.get(String(payload.playerId||''));if(!r||r.area!=='jungletemple-upper'||!templeT",
@@ -4574,7 +4574,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4760,
+        "line": 4764,
         "kind": "FUNCTION",
         "symbol": "enterGoblinOutpost",
         "context": "function enterGoblinOutpost(){if(state.area!=='surface')return;state.goblinOutpostReturnPos={x:state.player.x,y:state.player.y};state.area='goblinoutpost-1';state.player.x=GOBLIN_O",
@@ -4582,7 +4582,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4762,
+        "line": 4766,
         "kind": "FUNCTION",
         "symbol": "goGoblinOutpostFloor",
         "context": "function goGoblinOutpostFloor(floor){floor=clamp(Math.floor(Number(floor)||1),1,4);if(floor>1&&!state.goblinOutpost.cleared[floor-2]){showNotice((floor-1)+'층 적을 전부 잡아야 문이 열려');retu",
@@ -4598,7 +4598,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4761,
+        "line": 4765,
         "kind": "FUNCTION",
         "symbol": "leaveGoblinOutpost",
         "context": "function leaveGoblinOutpost(){state.area='surface';state.player.x=state.goblinOutpostReturnPos?.x||GOBLIN_OUTPOST_ENTRANCE.x;state.player.y=(state.goblinOutpostReturnPos?.y||GOBLIN",
@@ -4606,7 +4606,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4099,
+        "line": 4103,
         "kind": "FUNCTION",
         "symbol": "finishPetEnemyKill",
         "context": "function finishPetEnemyKill(e,ownerId=multiplayer.playerId){",
@@ -4614,7 +4614,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4519,
+        "line": 4523,
         "kind": "FUNCTION",
         "symbol": "leaveUnderwater",
         "context": "function leaveUnderwater(){",
@@ -4630,7 +4630,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4086,
+        "line": 4090,
         "kind": "FUNCTION",
         "symbol": "killPet",
         "context": "function killPet(){",
@@ -4638,7 +4638,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4811,
+        "line": 4815,
         "kind": "FUNCTION",
         "symbol": "enterTempleUpper",
         "context": "function enterTempleUpper(){state.area='jungletemple-upper';state.player.x=JUNGLE_TEMPLE_UPPER.return.x;state.player.y=JUNGLE_TEMPLE_UPPER.return.y-120;state.templeTrapSince=0;spaw",
@@ -4646,7 +4646,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4818,
+        "line": 4822,
         "kind": "FUNCTION",
         "symbol": "offerTigerAtAltar",
         "context": "function offerTigerAtAltar(){if(state.templeOfferingUsed){showNotice('호랑이 제물이 이미 바쳐져 있어');return}if(materialAmount('tigerOffering')<1){showNotice('호랑이를 잡아 호랑이 제물이 필요해');return}pay(",
@@ -4654,7 +4654,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4406,
+        "line": 4410,
         "kind": "FUNCTION",
         "symbol": "openSmelt",
         "context": "function openSmelt(station='furnace'){if(!['furnace','toxicFurnace'].includes(station)||!state[station]||state.area!=='surface')return;if(!nearStructure(state[station],175)){showNo",
@@ -4662,7 +4662,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4810,
+        "line": 4814,
         "kind": "FUNCTION",
         "symbol": "spawnTempleGuardian",
         "context": "function spawnTempleGuardian(){if(state.templeGuardianSpawned)return;state.templeGuardianSpawned=true;const m=spawnAt(creatures.jungleGuardian,2100,1150,null);m.area='jungletemple-",
@@ -4678,7 +4678,7 @@
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 3431,
+        "line": 3435,
         "kind": "FUNCTION",
         "symbol": "openMap",
         "context": "function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.class",
@@ -4895,25 +4895,19 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "마력숲 생존기. 철학·사상·공성전 역할수행. 마력숲 생존기에서 전투와 획득 장비의 조합 운용 × 철학·사상과 제작과 방어 거점 관리 × 공성전이 서로 결과를 되돌려 바꾸며 스릴러·공상과학의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-    "previousFocus": "USABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "bffc67c5835da0267e41809559f1023a940d86e9ffe6a95614602491c1603b04",
-    "currentSourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
-    "sourceRevision": "2a8d7b25dcc80e8956e785d55e893bdda50304ec",
-    "playtestFinding": "desktop: keyboard input failed to move original game state",
+    "sourceRevision": "39994ab294f156183e4943d2375939c85156382c",
+    "playtestFinding": "",
     "responsibleSource": "",
     "studioQualityFailure": null,
-    "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
-    "failureSignature": "desktop: keyboard input failed to move original game state",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": true,
-    "runtimePassed": false,
+    "runtimePassed": true,
     "independentQaPassed": false,
     "regressionPassed": false
   },
@@ -5473,7 +5467,7 @@
     {
       "domain": "WORLD_DENSITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "넓은 공간이 비지 않게 탐색 거리마다 기능성 소품·상호작용·조우·자원·환경 이야기 중 게임에 맞는 요소를 배치하고 반복 복제 밀도를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5491,7 +5485,7 @@
     {
       "domain": "LANDMARKS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5536,7 +5530,7 @@
     {
       "domain": "INVENTORY_USABILITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5545,7 +5539,7 @@
     {
       "domain": "EQUIPMENT_LOADOUT",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5590,7 +5584,7 @@
     {
       "domain": "FAILURE_RESPAWN_CHECKPOINTS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "사망/실패/런 종료 시 기존 손실·보존·체크포인트·리스폰 규칙을 유지하고 빠르게 재시작하게 한다. 실제 기록에 있는 원인만 시각화한다: 퍼즐의 잘못된 연결, 방어의 뚫린 경로, 생존의 사망 원인 등 해당 장르에 맞게 표시하며 근거가 없으면 추측하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5599,7 +5593,7 @@
     {
       "domain": "SAVE_AND_RECOVERY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5608,7 +5602,7 @@
     {
       "domain": "SAVE_COMPLETENESS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5617,7 +5611,7 @@
     {
       "domain": "RECONNECT_RECOVERY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5626,7 +5620,7 @@
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5671,7 +5665,7 @@
     {
       "domain": "MENU_FLOW",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "마력숲 생존기를 연습하는 로비/허브를 기존 UI에 연결한다. 승인된 장르에 맞게 퍼즐은 작은 연습판, 방어는 적 하나에 배치·회수, 생존은 안전한 채집·제작·장착을 활용한다. 연습은 건너뛸 수 있고 기존 재화·보상·저장에 영향을 주지 않는다. 로딩은 실제 월드·저장·참가 준비 단계와 실패 이유·재시도/안전 복귀를 표시한다. 시작은 준비 확인 후 한 번만 처리하고 스폰·카메라·목표까지 연결한다. 기존 메뉴의 뒤로가기·닫기·스크롤·팝업·선택 유지를 모바일에서 검수하며 중복 화면·가짜 진행률·장식용 버튼을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5689,7 +5683,7 @@
     {
       "domain": "UI_DESIGN_SYSTEM",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "HUD와 메뉴가 공통 타이포·패널·아이콘·간격·상태 색/형태 규칙을 공유하고 게임 세계의 아트 언어와 연결되며 기능마다 제각각인 임시 UI를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5698,7 +5692,7 @@
     {
       "domain": "UI_INFORMATION_PRIORITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5707,7 +5701,7 @@
     {
       "domain": "FEEDBACK_CLARITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5734,7 +5728,7 @@
     {
       "domain": "GAME_FEEL",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 마력숲 생존기에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5770,7 +5764,7 @@
     {
       "domain": "AUDIO_MUSIC_SFX",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5806,7 +5800,7 @@
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5815,7 +5809,7 @@
     {
       "domain": "BUILDINGS_AND_PROPS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5851,7 +5845,7 @@
     {
       "domain": "PALETTE",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5860,7 +5854,7 @@
     {
       "domain": "LIGHTING",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5869,7 +5863,7 @@
     {
       "domain": "ANIMATION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5878,7 +5872,7 @@
     {
       "domain": "SECONDARY_MOTION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5887,7 +5881,7 @@
     {
       "domain": "VFX",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5896,7 +5890,7 @@
     {
       "domain": "CAMERA",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5905,7 +5899,7 @@
     {
       "domain": "UI_HUD",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "HUD는 현재 목표·체력/위험·핵심 자원·쿨다운/상태·다음 선택의 우선순위를 명확히 하고 게임 아트 언어와 일치하는 패널/아이콘/상태 피드백을 사용한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5914,7 +5908,7 @@
     {
       "domain": "AUDIO_VISUAL_TIMING",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5923,7 +5917,7 @@
     {
       "domain": "ENVIRONMENTAL_MOTION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "세계에 맞는 바람/식생/물/빛/먼지/기계 등 미세 환경 움직임을 추가해 정적인 무대를 피하되 플레이 정보와 성능을 방해하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5932,7 +5926,7 @@
     {
       "domain": "PERFORMANCE",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5941,7 +5935,7 @@
     {
       "domain": "PERFORMANCE_BUDGET",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5950,7 +5944,7 @@
     {
       "domain": "RUNTIME_STABILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5959,7 +5953,7 @@
     {
       "domain": "ERROR_RECOVERY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5993,9 +5987,9 @@
       "reason": "placeholder or primitive-heavy implementation remains"
     }
   ],
-  "primaryFocus": "STABILITY",
-  "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(WEB_POST_PUBLICATION_PLAYTEST / desktop: keyboard input failed to move original game state). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 web-games/fantasy-survival/index.html::startCompanionSwitchHold, web-games/fantasy-survival/index.html::loadPos, web-games/fantasy-survival/index.html::templeTrapContains, web-games/fantasy-survival/index.html::updateTempleTrap, web-games/fantasy-survival/index.html::enterTempleLower, web-games/fantasy-survival/index.html::spawnTempleTrapLeech, web-games/fantasy-survival/index.html::returnTempleLobby, web-games/fantasy-survival/index.html::loadBuildList이다.",
+  "primaryFocus": "PRESENTATION",
+  "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"마력숲 생존기\", 현재 책임 소스는 web-games/fantasy-survival/index.html::startCompanionSwitchHold, web-games/fantasy-survival/index.html::loadPos, web-games/fantasy-survival/index.html::templeTrapContains, web-games/fantasy-survival/index.html::updateTempleTrap, web-games/fantasy-survival/index.html::enterTempleLower, web-games/fantasy-survival/index.html::spawnTempleTrapLeech, web-games/fantasy-survival/index.html::returnTempleLobby, web-games/fantasy-survival/index.html::loadBuildList이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 web-games/fantasy-survival/index.html::startCompanionSwitchHold, web-games/fantasy-survival/index.html::loadPos, web-games/fantasy-survival/index.html::templeTrapContains, web-games/fantasy-survival/index.html::updateTempleTrap, web-games/fantasy-survival/index.html::enterTempleLower, web-games/fantasy-survival/index.html::spawnTempleTrapLeech, web-games/fantasy-survival/index.html::returnTempleLobby, web-games/fantasy-survival/index.html::loadBuildList에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "마력숲 생존기를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -6025,9 +6019,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
+          "web-games/fantasy-survival/world3d.mjs",
           "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log.html"
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6040,9 +6034,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
+          "web-games/fantasy-survival/world3d.mjs",
           "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log.html"
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6055,9 +6049,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
+          "web-games/fantasy-survival/world3d.mjs",
           "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log.html"
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6070,9 +6064,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
+          "web-games/fantasy-survival/world3d.mjs",
           "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log.html"
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6085,9 +6079,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/research-log-2.html",
+          "web-games/fantasy-survival/world3d.mjs",
           "web-games/fantasy-survival/research-log-3.html",
-          "web-games/fantasy-survival/research-log.html"
+          "web-games/fantasy-survival/research-log-2.html"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6129,9 +6123,9 @@
       "UNITY"
     ],
     "requestedPlatform": "WEB",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
-    "contentExpansionDeferredUntilRuntimeRepairPass": true,
-    "themeCoverageAdvanced": false,
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -6143,8 +6137,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 8780982,
-        "largestFileBytes": 1363920,
+        "sourceBytes": 9217951,
+        "largestFileBytes": 1364367,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -6176,8 +6170,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6187,14 +6181,9 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 1
       },
       "sequence": [
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -6230,7 +6219,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 120,
+        "score": 76,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6240,19 +6229,14 @@
       },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
+        "score": 34,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
       },
       {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 22,
-        "gapDomains": []
-      },
-      {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 16,
+        "score": 24,
         "gapDomains": []
       },
       {
@@ -6269,10 +6253,23 @@
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 14,
+        "gapDomains": []
       }
     ],
-    "coherentContentBundle": [],
-    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
+    "coherentContentBundle": [
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+    ],
+    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -6305,9 +6302,17 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": false,
-      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
-      "examples": [],
+      "allowed": true,
+      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
+      "examples": [
+        "ENVIRONMENTAL_RULE",
+        "ENEMY_RELATIONSHIP_RULE",
+        "BOSS_PHASE_RULE",
+        "ITEM_SYNERGY_RULE",
+        "QUEST_STATE_RULE",
+        "REGION_ACCESS_RULE",
+        "MULTIPLAYER_INTERACTION_RULE"
+      ],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -6317,9 +6322,11 @@
       ]
     },
     "completionAcceptance": [
-      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
+      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
+      "CONNECTED_TO_EXISTING_GAME_FLOW",
+      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
@@ -6327,12 +6334,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 7,
-    "previousGeneration": 6,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
-    "priorSourceFingerprint": "bffc67c5835da0267e41809559f1023a940d86e9ffe6a95614602491c1603b04",
-    "previousRuntimeEffect": "REGRESSION",
+    "sourceFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6350,7 +6357,7 @@
     "version": 1,
     "gameId": "fantasy-survival",
     "platform": "WEB",
-    "sourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
+    "sourceTreeFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7152,8 +7159,8 @@
       "gameId": "fantasy-survival",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 7,
-        "actorClass": "MOUNT",
+        "generation": 1,
+        "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/fantasy-survival/index.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -7167,7 +7174,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "fantasy-survival",
-          "actorClass": "MOUNT",
+          "actorClass": "BOSS",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -7400,14 +7407,14 @@
       "BEFORE_AFTER_COMPARISON_REQUIRED",
       "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
     ],
-    "focus": "STABILITY"
+    "focus": "PRESENTATION"
   },
   "playerFacingInspectionContract": {
     "version": 1,
     "gameId": "fantasy-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
+    "sourceTreeFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7738,11 +7745,11 @@
     ],
     "responsibleSourceCandidates": [
       "web-games/fantasy-survival/index.html",
-      "web-games/fantasy-survival/research-log-2.html",
-      "web-games/fantasy-survival/research-log-3.html",
-      "web-games/fantasy-survival/research-log.html",
-      "web-games/fantasy-survival/tier.html",
       "web-games/fantasy-survival/world3d.mjs",
+      "web-games/fantasy-survival/research-log-3.html",
+      "web-games/fantasy-survival/research-log-2.html",
+      "web-games/fantasy-survival/tier.html",
+      "web-games/fantasy-survival/research-log.html",
       "web-games/fantasy-survival/audio/lab-recorder.mp3",
       "web-games/fantasy-survival/icons/armor.png",
       "web-games/fantasy-survival/icons/armorgold.png",
@@ -7786,7 +7793,7 @@
     "version": 1,
     "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
     "platform": "WEB",
-    "focus": "STABILITY",
+    "focus": "PRESENTATION",
     "attention": "STANDARD",
     "tracks": [
       {
@@ -7890,14 +7897,14 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
-    "ROBLOX": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "FORTNITE_UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
-    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "UNREAL": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "ROBLOX": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "FORTNITE_UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNREAL": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
@@ -7906,75 +7913,75 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7657,
+        "line": 7661,
         "kind": "FUNCTION",
         "symbol": "startCompanionSwitchHold",
         "currentBehavior": "function startCompanionSwitchHold(e,wx,wy){",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 startCompanionSwitchHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 startCompanionSwitchHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7609,
+        "line": 7613,
         "kind": "FUNCTION",
         "symbol": "loadPos",
         "currentBehavior": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 4812,
-        "kind": "FUNCTION",
-        "symbol": "templeTrapContains",
-        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 4815,
-        "kind": "FUNCTION",
-        "symbol": "updateTempleTrap",
-        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
         "line": 4816,
         "kind": "FUNCTION",
-        "symbol": "enterTempleLower",
-        "currentBehavior": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 enterTempleLower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "templeTrapContains",
+        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 4813,
+        "line": 4819,
         "kind": "FUNCTION",
-        "symbol": "spawnTempleTrapLeech",
-        "currentBehavior": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnTempleTrapLeech의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "updateTempleTrap",
+        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 4820,
+        "kind": "FUNCTION",
+        "symbol": "enterTempleLower",
+        "currentBehavior": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 enterTempleLower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
         "line": 4817,
         "kind": "FUNCTION",
-        "symbol": "returnTempleLobby",
-        "currentBehavior": "function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 returnTempleLobby의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "spawnTempleTrapLeech",
+        "currentBehavior": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 spawnTempleTrapLeech의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7611,
+        "line": 4821,
+        "kind": "FUNCTION",
+        "symbol": "returnTempleLobby",
+        "currentBehavior": "function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 returnTempleLobby의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 7615,
         "kind": "FUNCTION",
         "symbol": "loadBuildList",
         "currentBehavior": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 loadBuildList의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 loadBuildList의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
@@ -8027,7 +8034,7 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
+    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -8099,11 +8106,11 @@
   "responsibleSystemsAndFiles": {
     "files": [
       "web-games/fantasy-survival/index.html",
-      "web-games/fantasy-survival/research-log-2.html",
-      "web-games/fantasy-survival/research-log-3.html",
-      "web-games/fantasy-survival/research-log.html",
-      "web-games/fantasy-survival/tier.html",
       "web-games/fantasy-survival/world3d.mjs",
+      "web-games/fantasy-survival/research-log-3.html",
+      "web-games/fantasy-survival/research-log-2.html",
+      "web-games/fantasy-survival/tier.html",
+      "web-games/fantasy-survival/research-log.html",
       "web-games/fantasy-survival/audio/lab-recorder.mp3",
       "web-games/fantasy-survival/icons/armor.png",
       "web-games/fantasy-survival/icons/armorgold.png",
@@ -8114,99 +8121,99 @@
     "sourceAnchors": [
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7657,
+        "line": 7661,
         "kind": "FUNCTION",
         "symbol": "startCompanionSwitchHold",
         "context": "function startCompanionSwitchHold(e,wx,wy){",
         "score": 602,
         "currentBehavior": "function startCompanionSwitchHold(e,wx,wy){",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 startCompanionSwitchHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 startCompanionSwitchHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fantasy-survival/index.html::startCompanionSwitchHold이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7609,
+        "line": 7613,
         "kind": "FUNCTION",
         "symbol": "loadPos",
         "context": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
         "score": 458,
         "currentBehavior": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fantasy-survival/index.html::loadPos이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 4812,
-        "kind": "FUNCTION",
-        "symbol": "templeTrapContains",
-        "context": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
-        "score": 362,
-        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::templeTrapContains이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 4815,
-        "kind": "FUNCTION",
-        "symbol": "updateTempleTrap",
-        "context": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
-        "score": 362,
-        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::updateTempleTrap이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
         "line": 4816,
         "kind": "FUNCTION",
+        "symbol": "templeTrapContains",
+        "context": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
+        "score": 362,
+        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::templeTrapContains이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 4819,
+        "kind": "FUNCTION",
+        "symbol": "updateTempleTrap",
+        "context": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
+        "score": 362,
+        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::updateTempleTrap이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 4820,
+        "kind": "FUNCTION",
         "symbol": "enterTempleLower",
         "context": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
         "score": 362,
         "currentBehavior": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 enterTempleLower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 enterTempleLower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fantasy-survival/index.html::enterTempleLower이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 4813,
-        "kind": "FUNCTION",
-        "symbol": "spawnTempleTrapLeech",
-        "context": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
-        "score": 354,
-        "currentBehavior": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnTempleTrapLeech의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::spawnTempleTrapLeech이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
         "line": 4817,
         "kind": "FUNCTION",
+        "symbol": "spawnTempleTrapLeech",
+        "context": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
+        "score": 354,
+        "currentBehavior": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 spawnTempleTrapLeech의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::spawnTempleTrapLeech이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 4821,
+        "kind": "FUNCTION",
         "symbol": "returnTempleLobby",
         "context": "function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}",
         "score": 354,
         "currentBehavior": "function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 returnTempleLobby의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 returnTempleLobby의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fantasy-survival/index.html::returnTempleLobby이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/fantasy-survival/index.html",
-        "line": 7611,
+        "line": 7615,
         "kind": "FUNCTION",
         "symbol": "loadBuildList",
         "context": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
         "score": 346,
         "currentBehavior": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
-        "intendedBehavior": "STABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 loadBuildList의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "intendedBehavior": "PRESENTATION primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 마력숲 생존기와 전투와 획득 장비의 조합 운용 × 철학·사상가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 loadBuildList의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fantasy-survival/index.html::loadBuildList이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -8238,11 +8245,11 @@
     "platform": "WEB",
     "plannedFiles": [
       "web-games/fantasy-survival/index.html",
-      "web-games/fantasy-survival/research-log-2.html",
-      "web-games/fantasy-survival/research-log-3.html",
-      "web-games/fantasy-survival/research-log.html",
-      "web-games/fantasy-survival/tier.html",
       "web-games/fantasy-survival/world3d.mjs",
+      "web-games/fantasy-survival/research-log-3.html",
+      "web-games/fantasy-survival/research-log-2.html",
+      "web-games/fantasy-survival/tier.html",
+      "web-games/fantasy-survival/research-log.html",
       "web-games/fantasy-survival/audio/lab-recorder.mp3",
       "web-games/fantasy-survival/icons/armor.png",
       "web-games/fantasy-survival/icons/armorgold.png",
@@ -8290,18 +8297,18 @@
     "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
+    "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 마력숲 생존기의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "desktop: keyboard input failed to move original game state",
-      "runtimeObserved": true
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "958b85c9f778251071e846505d53f645e567b268ca89d3c5443a72ad7b860dd1",
+      "sourceTreeFingerprint": "78048e1a7934b97354658ad1813442eb5f1adae3b348535e99a3c6cc427fa251",
       "runtimeObserved": true,
-      "runtimePassed": false,
-      "failureStage": "WEB_POST_PUBLICATION_PLAYTEST",
-      "failureSignature": "desktop: keyboard input failed to move original game state"
+      "runtimePassed": true,
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8312,8 +8319,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial PRESENTATION build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8353,18 +8360,18 @@
   ],
   "nextEscalationCandidates": [
     "DEEPEN_CORE_FUN_DECISION_DENSITY",
-    "RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE",
+    "CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY",
     "CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST",
     "OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED"
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -8419,5 +8426,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-30T01:48:18.177Z"
+  "generatedAt": "2026-10-30T19:24:14.608Z"
 }

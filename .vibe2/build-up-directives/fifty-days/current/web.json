@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "fifty-days-build-up-g2-dc25d7fb5451",
-  "directiveFingerprint": "dc25d7fb545192ffd7519b5b46480d6a51c0e12cdd7edee2b790c275b30e26e3",
-  "previousDirectiveFingerprint": "ac22d17bb99f4efd48881d5176a81af18117886354a1212f03797bccbea1c6f9",
-  "forbiddenRepeatFingerprint": "ac22d17bb99f4efd48881d5176a81af18117886354a1212f03797bccbea1c6f9",
+  "directiveId": "fifty-days-build-up-g1-e30da23d7131",
+  "directiveFingerprint": "e30da23d713105bd00437c84d4ad297dc935ec308c5a1014331fcf4ad2640521",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "fifty-days",
   "gameName": "50일",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/fifty-days",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
-    "previousDesignFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "fifty-days",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
     "sourceTreeFingerprint": "c318cafec00f656415f8e934e961bb79fdd38b6df4782c4c93c911def8872b79",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/fifty-days",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/fifty-days",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/fifty-days/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/fifty-days/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "attack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "damage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "applyLoot",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/fifty-days/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/fifty-days/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "attack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "damage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "applyLoot",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/fifty-days/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/fifty-days/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "attack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "damage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "applyLoot",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/fifty-days/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/fifty-days/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "attack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "damage",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/fifty-days/index.html",
+            "symbol": "applyLoot",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/fifty-days/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/fifty-days/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4431,15 +4573,7 @@
         "kind": "FUNCTION",
         "symbol": "update",
         "context": "function update(dt){",
-        "score": 314
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
-        "line": 132,
-        "kind": "FUNCTION",
-        "symbol": "damage",
-        "context": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
-        "score": 282
+        "score": 258
       },
       {
         "file": "web-games/fifty-days/index.html",
@@ -4447,7 +4581,7 @@
         "kind": "FUNCTION",
         "symbol": "load",
         "context": "function load(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;Object.assign(state,d);if(d.player){player.x=d.player.x;player.y=d.player.y}}catch(e){}}",
-        "score": 250
+        "score": 242
       },
       {
         "file": "web-games/fifty-days/index.html",
@@ -4459,19 +4593,11 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 101,
+        "line": 132,
         "kind": "FUNCTION",
-        "symbol": "clearSave",
-        "context": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
-        "score": 202
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
-        "line": 102,
-        "kind": "FUNCTION",
-        "symbol": "updateHud",
-        "context": "function updateHud(){",
-        "score": 202
+        "symbol": "damage",
+        "context": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
+        "score": 226
       },
       {
         "file": "web-games/fifty-days/index.html",
@@ -4491,11 +4617,19 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 157,
+        "line": 101,
         "kind": "FUNCTION",
-        "symbol": "joystickUpdate",
-        "context": "function joystickUpdate(e){const r=$('joystick').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,l=Math.hypot(dx,dy)",
-        "score": 170
+        "symbol": "clearSave",
+        "context": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
+        "score": 194
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "line": 102,
+        "kind": "FUNCTION",
+        "symbol": "updateHud",
+        "context": "function updateHud(){",
+        "score": 194
       },
       {
         "file": "web-games/fifty-days/index.html",
@@ -4503,15 +4637,15 @@
         "kind": "FUNCTION",
         "symbol": "save",
         "context": "function save(show=true){",
-        "score": 162
+        "score": 154
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 159,
-        "kind": "METHOD",
-        "symbol": "addEventListener",
-        "context": "addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}if(e.key==='e'||e.key==='E')interact()});addEventListener('keyup',e=>keys[e.key]=fa",
-        "score": 136
+        "line": 157,
+        "kind": "FUNCTION",
+        "symbol": "joystickUpdate",
+        "context": "function joystickUpdate(e){const r=$('joystick').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,l=Math.hypot(dx,dy)",
+        "score": 122
       },
       {
         "file": "web-games/fifty-days/index.html",
@@ -4523,11 +4657,11 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 156,
-        "kind": "FUNCTION",
-        "symbol": "showInventory",
-        "context": "function showInventory(){const rows=Object.entries(state.inventory).sort((a,b)=>b[1]-a[1]);$('inventoryRows').innerHTML=rows.length?rows.map(([n,c])=>`<div class=\"row\"><b>${n}</b><",
-        "score": 106
+        "line": 159,
+        "kind": "METHOD",
+        "symbol": "addEventListener",
+        "context": "addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}if(e.key==='e'||e.key==='E')interact()});addEventListener('keyup',e=>keys[e.key]=fa",
+        "score": 104
       },
       {
         "file": "web-games/fifty-days/index.html",
@@ -4539,11 +4673,11 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 155,
+        "line": 156,
         "kind": "FUNCTION",
-        "symbol": "loop",
-        "context": "function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}",
-        "score": 98
+        "symbol": "showInventory",
+        "context": "function showInventory(){const rows=Object.entries(state.inventory).sort((a,b)=>b[1]-a[1]);$('inventoryRows').innerHTML=rows.length?rows.map(([n,c])=>`<div class=\"row\"><b>${n}</b><",
+        "score": 90
       },
       {
         "file": "web-games/fifty-days/index.html",
@@ -4551,6 +4685,14 @@
         "kind": "FUNCTION",
         "symbol": "interact",
         "context": "function interact(){",
+        "score": 82
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "line": 155,
+        "kind": "FUNCTION",
+        "symbol": "loop",
+        "context": "function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}",
         "score": 82
       },
       {
@@ -4571,14 +4713,6 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 92,
-        "kind": "FUNCTION",
-        "symbol": "refreshCreatures",
-        "context": "function refreshCreatures(){",
-        "score": 50
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
         "line": 84,
         "kind": "FUNCTION",
         "symbol": "toast",
@@ -4591,6 +4725,14 @@
         "kind": "FUNCTION",
         "symbol": "safePoint",
         "context": "function safePoint(minR=150){let x,y;do{x=rnd(70,WORLD-70);y=rnd(70,WORLD-70)}while(Math.hypot(x-camp.x,y-camp.y)<minR);return{x,y}}",
+        "score": 42
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "line": 92,
+        "kind": "FUNCTION",
+        "symbol": "refreshCreatures",
+        "context": "function refreshCreatures(){",
         "score": 42
       },
       {
@@ -4620,13 +4762,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "cda2e2c524999a4cb4fa5c1eb86e5980e5eea9c2991654b31cfe1874406fd09d",
-    "currentSourceTreeFingerprint": "c318cafec00f656415f8e934e961bb79fdd38b6df4782c4c93c911def8872b79",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5755,9 +5891,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"50일\", 현재 책임 소스는 web-games/fifty-days/index.html::update, web-games/fifty-days/index.html::damage, web-games/fifty-days/index.html::load, web-games/fifty-days/index.html::attack, web-games/fifty-days/index.html::clearSave, web-games/fifty-days/index.html::updateHud, web-games/fifty-days/index.html::applyLoot, web-games/fifty-days/index.html::upgradeCamp이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"50일\", 현재 책임 소스는 web-games/fifty-days/index.html::update, web-games/fifty-days/index.html::load, web-games/fifty-days/index.html::attack, web-games/fifty-days/index.html::damage, web-games/fifty-days/index.html::applyLoot, web-games/fifty-days/index.html::upgradeCamp, web-games/fifty-days/index.html::clearSave, web-games/fifty-days/index.html::updateHud이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/fifty-days/index.html::update, web-games/fifty-days/index.html::damage, web-games/fifty-days/index.html::load, web-games/fifty-days/index.html::attack, web-games/fifty-days/index.html::clearSave, web-games/fifty-days/index.html::updateHud, web-games/fifty-days/index.html::applyLoot, web-games/fifty-days/index.html::upgradeCamp에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/fifty-days/index.html::update, web-games/fifty-days/index.html::load, web-games/fifty-days/index.html::attack, web-games/fifty-days/index.html::damage, web-games/fifty-days/index.html::applyLoot, web-games/fifty-days/index.html::upgradeCamp, web-games/fifty-days/index.html::clearSave, web-games/fifty-days/index.html::updateHud에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "50일를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "환경 탐색과 자원 확보 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5921,12 +6057,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 2,
+        "WORLD_ECOLOGY_STORY_CHAIN": 1,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -5935,7 +6071,6 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
       ],
       "requiredThemes": [
@@ -5971,7 +6106,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 202,
+        "score": 60,
         "gapDomains": [
           "MAP_EXPANSION",
           "WORLD_DENSITY",
@@ -6096,12 +6231,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "c318cafec00f656415f8e934e961bb79fdd38b6df4782c4c93c911def8872b79",
-    "priorSourceFingerprint": "cda2e2c524999a4cb4fa5c1eb86e5980e5eea9c2991654b31cfe1874406fd09d",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6595,8 +6730,8 @@
       "gameId": "fifty-days",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
-        "actorClass": "PLAYER",
+        "generation": 1,
+        "actorClass": "CREATURE",
         "sourceOwnerFile": "web-games/fifty-days/index.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -6610,7 +6745,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "fifty-days",
-          "actorClass": "PLAYER",
+          "actorClass": "CREATURE",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -7268,15 +7403,6 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 132,
-        "kind": "FUNCTION",
-        "symbol": "damage",
-        "currentBehavior": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
-        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
         "line": 100,
         "kind": "FUNCTION",
         "symbol": "load",
@@ -7295,20 +7421,11 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 101,
+        "line": 132,
         "kind": "FUNCTION",
-        "symbol": "clearSave",
-        "currentBehavior": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
-        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 clearSave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
-        "line": 102,
-        "kind": "FUNCTION",
-        "symbol": "updateHud",
-        "currentBehavior": "function updateHud(){",
-        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "symbol": "damage",
+        "currentBehavior": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
+        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7328,18 +7445,30 @@
         "currentBehavior": "function upgradeCamp(){const next=state.campLevel+1,c=campCosts[next];if(!c){toast('캠프는 이미 최고 레벨이야');return}if(state.wood<c.wood||state.stone<c.stone){toast(`필요 자원: 나무 ${c.wood}, 돌",
         "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 upgradeCamp의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "line": 101,
+        "kind": "FUNCTION",
+        "symbol": "clearSave",
+        "currentBehavior": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
+        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 clearSave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "line": 102,
+        "kind": "FUNCTION",
+        "symbol": "updateHud",
+        "currentBehavior": "function updateHud(){",
+        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
         "file": "web-games/fifty-days/index.html",
         "symbol": "update",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
-        "symbol": "damage",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7357,13 +7486,7 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "symbol": "clearSave",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
-        "symbol": "updateHud",
+        "symbol": "damage",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7376,6 +7499,18 @@
       {
         "file": "web-games/fifty-days/index.html",
         "symbol": "upgradeCamp",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "symbol": "clearSave",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "symbol": "updateHud",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7460,22 +7595,72 @@
         "kind": "FUNCTION",
         "symbol": "update",
         "context": "function update(dt){",
-        "score": 314,
+        "score": 258,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "save",
+            "toast",
+            "clamp",
+            "dist",
+            "damage",
+            "rnd",
+            "updateHud"
+          ],
+          "calledBy": [
+            "loop"
+          ],
+          "stateReads": [
+            "WORLD",
+            "species",
+            "state",
+            "player",
+            "camera",
+            "keys",
+            "n",
+            "sp",
+            "d",
+            "mx",
+            "len",
+            "isNight",
+            "dx",
+            "w",
+            "x",
+            "y",
+            "dt",
+            "r"
+          ],
+          "stateWrites": [
+            "state",
+            "player",
+            "camera",
+            "n",
+            "sp",
+            "d",
+            "mx",
+            "len",
+            "isNight",
+            "dx",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "SAVE",
+            "WORLD",
+            "COMBAT",
+            "GOAL_STATE",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function update(dt){",
         "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fifty-days/index.html::update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
-        "line": 132,
-        "kind": "FUNCTION",
-        "symbol": "damage",
-        "context": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
-        "score": 282,
-        "currentBehavior": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
-        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fifty-days/index.html::damage이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7484,7 +7669,34 @@
         "kind": "FUNCTION",
         "symbol": "load",
         "context": "function load(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;Object.assign(state,d);if(d.player){player.x=d.player.x;player.y=d.player.y}}catch(e){}}",
-        "score": 250,
+        "score": 242,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [],
+          "stateReads": [
+            "state",
+            "player",
+            "d",
+            "x",
+            "y"
+          ],
+          "stateWrites": [
+            "player",
+            "d",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function load(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;Object.assign(state,d);if(d.player){player.x=d.player.x;player.y=d.player.y}}catch(e){}}",
         "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 load의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fifty-days/index.html::load이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7497,6 +7709,45 @@
         "symbol": "attack",
         "context": "function attack(){",
         "score": 234,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist",
+            "toast",
+            "updateHud"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "species",
+            "state",
+            "player",
+            "d",
+            "now",
+            "target",
+            "vx",
+            "x",
+            "y"
+          ],
+          "stateWrites": [
+            "state",
+            "d",
+            "now",
+            "target",
+            "vx"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "INTERACTION",
+            "GOAL_STATE",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function attack(){",
         "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 attack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fifty-days/index.html::attack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7504,26 +7755,45 @@
       },
       {
         "file": "web-games/fifty-days/index.html",
-        "line": 101,
+        "line": 132,
         "kind": "FUNCTION",
-        "symbol": "clearSave",
-        "context": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
-        "score": 202,
-        "currentBehavior": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
-        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 clearSave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fifty-days/index.html::clearSave이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/fifty-days/index.html",
-        "line": 102,
-        "kind": "FUNCTION",
-        "symbol": "updateHud",
-        "context": "function updateHud(){",
-        "score": 202,
-        "currentBehavior": "function updateHud(){",
-        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fifty-days/index.html::updateHud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "damage",
+        "context": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
+        "score": 226,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "updateHud"
+          ],
+          "calledBy": [
+            "update"
+          ],
+          "stateReads": [
+            "state",
+            "player",
+            "night",
+            "reduced"
+          ],
+          "stateWrites": [
+            "state",
+            "player",
+            "night",
+            "reduced"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp",
+        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fifty-days/index.html::damage이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7533,6 +7803,32 @@
         "symbol": "applyLoot",
         "context": "function applyLoot(name){",
         "score": 202,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "updateHud"
+          ],
+          "calledBy": [
+            "openChest"
+          ],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [
+            "state"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "INTERACTION",
+            "COMBAT",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function applyLoot(name){",
         "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 applyLoot의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fifty-days/index.html::applyLoot이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7545,9 +7841,114 @@
         "symbol": "upgradeCamp",
         "context": "function upgradeCamp(){const next=state.campLevel+1,c=campCosts[next];if(!c){toast('캠프는 이미 최고 레벨이야');return}if(state.wood<c.wood||state.stone<c.stone){toast(`필요 자원: 나무 ${c.wood}, 돌",
         "score": 202,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast",
+            "refreshCreatures",
+            "updateHud",
+            "save"
+          ],
+          "calledBy": [
+            "interact"
+          ],
+          "stateReads": [
+            "campCosts",
+            "state",
+            "next"
+          ],
+          "stateWrites": [
+            "state",
+            "next"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "ECONOMY",
+            "PROGRESSION",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function upgradeCamp(){const next=state.campLevel+1,c=campCosts[next];if(!c){toast('캠프는 이미 최고 레벨이야');return}if(state.wood<c.wood||state.stone<c.stone){toast(`필요 자원: 나무 ${c.wood}, 돌",
         "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 upgradeCamp의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/fifty-days/index.html::upgradeCamp이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "line": 101,
+        "kind": "FUNCTION",
+        "symbol": "clearSave",
+        "context": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
+        "score": 194,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [],
+          "stateReads": [],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
+        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 clearSave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fifty-days/index.html::clearSave이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/fifty-days/index.html",
+        "line": 102,
+        "kind": "FUNCTION",
+        "symbol": "updateHud",
+        "context": "function updateHud(){",
+        "score": 194,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "clamp"
+          ],
+          "calledBy": [
+            "applyLoot",
+            "interact",
+            "upgradeCamp",
+            "attack",
+            "damage",
+            "update"
+          ],
+          "stateReads": [
+            "campCosts",
+            "state",
+            "cost"
+          ],
+          "stateWrites": [
+            "cost"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "CORE_STATE",
+            "ECONOMY",
+            "PROGRESSION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function updateHud(){",
+        "intendedBehavior": "CORE_FUN primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 50일를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fifty-days/index.html::updateHud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/fifty-days/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7644,8 +8045,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 50일의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7664,8 +8065,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7711,12 +8112,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7779,5 +8180,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.678Z"
+  "generatedAt": "2026-10-30T19:27:57.851Z"
 }
