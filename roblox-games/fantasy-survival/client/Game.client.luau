@@ -2647,7 +2647,13 @@ task.delay(5,function()
   local forestBed=Instance.new("Sound")
   forestBed.Name="MeadowForestAmbience"
   forestBed.SoundId="rbxassetid://9116971475" -- Creator Store: Morning Forest Birds 4
-  forestBed.Volume=.045
+  -- [오디오] 승인된 숲 환경음 선택값을 실제 로컬 Sound 볼륨에 연결한다.
+  -- 선택된 기존 숲 음원의 음량·재생 주기·사운드 그룹은 그대로 유지한다.
+  if hasStudioAssetAtom("AUDIO","ENV_FOREST") then
+    forestBed.Volume=.045
+  else
+    forestBed.Volume=0
+  end
   forestBed.Looped=true
   forestBed.PlaybackSpeed=.96
   forestBed.SoundGroup=meadowAmbienceGroup
@@ -2682,8 +2688,13 @@ task.delay(5,function()
       local phase=climate and climate:GetAttribute("MeadowDayPhase") or "DAY"
       local sky=climate and climate:GetAttribute("MeadowWeather") or "CLEAR"
       local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="SNOW" or sky=="STORM"
-      forestBed.Volume=(.035+.085*forestPresence)*(quiet and .28 or 1)
-      birdChirp.Volume=(.085+.17*forestPresence)*(quiet and .18 or 1)
+      if hasStudioAssetAtom("AUDIO","ENV_FOREST") then
+        forestBed.Volume=(.035+.085*forestPresence)*(quiet and .28 or 1)
+        birdChirp.Volume=(.085+.17*forestPresence)*(quiet and .18 or 1)
+      else
+        forestBed.Volume=0
+        birdChirp.Volume=0
+      end
       if os.clock()>=nextChirp then
         if forestPresence>.12 and not quiet then
           birdChirp.PlaybackSpeed=.91+math.random()*.17
