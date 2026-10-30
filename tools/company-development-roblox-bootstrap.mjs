@@ -157,7 +157,7 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
   // 선택 atom → 서버 승인 → R15 Motor6D → 실제 샘플·맵핑·프레임 Step이
   // 모두 존재할 때만 소스 수준의 실제 자산 소비로 인정한다.
   // 이 판정은 Roblox 런타임 재생·프레임 품질 검증을 대체하지 않는다.
-  if(family==='MOTION'){
+  if(family==='MOTION'||family==='CHARACTER'){
     const motionChain=[
       /Shared\s*:\s*FindFirstChild\s*\(\s*["']RobloxCommonMotion["']\s*\)/,
       /\bpcall\s*\(\s*require\s*,\s*combatMotionModule\s*\)/,
@@ -183,10 +183,29 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
       /\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']MOTION["']\s*,\s*["']ATTACK_LIGHT_1["']\s*\)\s+then/,
       /\bcombatMotionSource\.BindJointPose\s*\(/
     ].every(pattern=>pattern.test(approvedListener));
-    if(trustedApproval&&motionChain.every(pattern=>pattern.test(raw)))return true;
+    const selectedCharacter=family==='MOTION'
+      ||/\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']CHARACTER["']\s*,\s*["']HAND_BARE["']\s*\)\s+then\s+return\s+end/.test(approvedListener);
+    if(selectedCharacter&&trustedApproval&&motionChain.every(pattern=>pattern.test(raw)))return true;
     // A partially connected combat pipeline must not fall back to unrelated
     // asset-list or UI rendering as evidence of server-approved MOTION.
     if(/\bcombatMotionSource\b/.test(raw)&&/\bactiveCombatController\b/.test(raw))return false;
+  }
+  // 공용 원본 factory를 직접 require한 별칭만 추적한다. 선택 atom이 실제
+  // Create 호출을 지배해야 하며 목록·마커·임의 함수·재할당은 연결 증거가 아니다.
+  if(family==='SKILL'||family==='VFX'){
+    const moduleName=family==='SKILL'?'RobloxCommonSkillPresentation':'RobloxCommonVFX';
+    const imported=new RegExp('\\blocal\\s+([A-Za-z_]\\w*)\\s*,\\s*([A-Za-z_]\\w*)\\s*=\\s*pcall\\s*\\(\\s*require\\s*,\\s*Shared\\s*:\\s*FindFirstChild\\s*\\(\\s*["\\x27]'+moduleName+'["\\x27]\\s*\\)\\s*\\)','g');
+    for(const binding of raw.matchAll(imported)){
+      const alias=binding[2],tail=raw.slice(binding.index+binding[0].length);
+      if([...tail.matchAll(new RegExp('\\b'+alias+'\\s*=\\s*([^\\n;]+)','g'))].some(row=>!/^nil\b/.test(row[1].trim())))continue;
+      const branch=new RegExp('\\bif\\b[^\\n]*hasStudioAssetAtom\\s*\\(\\s*["\\x27]'+family+'["\\x27]\\s*,\\s*["\\x27][A-Z0-9_]+["\\x27]\\s*\\)[^\\n]*\\bthen\\b([\\s\\S]*?)\\n\\s*(?:else|elseif|end)\\b','g');
+      const call=new RegExp('\\bpcall\\s*\\(\\s*'+alias+'\\s*\\.\\s*Create\\s*,');
+      for(const guard of tail.matchAll(branch)){
+        const condition=guard[0].slice(0,guard[0].indexOf('then'));
+        if(/\bnot\s+hasStudioAssetAtom|\bor\b/.test(condition))continue;
+        if(call.test(guard[1]))return true;
+      }
+    }
   }
   const renderSink=/(?:\.(?:Color|BackgroundColor3|TextColor3|ImageColor3|Material|MaterialVariant|TextureID|MeshId|Transparency|Size|CFrame|Position|Orientation|Rotation|LightEmission|Rate|Volume|PlaybackSpeed|AnimationId|Transform|Thickness|CornerRadius)\s*=|TweenService\s*:\s*Create\s*\(|:\s*Create\s*\([^\n]*(?:TweenInfo|Position|Rotation|Transform)|Instance\.new\s*\(\s*["'](?:UIStroke|UICorner|UIGradient|SurfaceAppearance|ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\s*\))/i;
   // Model:PivotTo/ScaleTo는 실제 메시 배치/크기 소비다. 목록이나 마커가 아니라
