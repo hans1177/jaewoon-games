@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-30T19:23:56.898Z",
+  "updatedAt": "2026-10-30T20:34:10.537Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -603,8 +603,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-10-30T19:23:56.884Z",
-      "occurrenceCount": 323,
+      "updatedAt": "2026-10-30T20:34:10.520Z",
+      "occurrenceCount": 324,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -1340,7 +1340,8 @@
       "evidence": [
         "{\"version\":1,\"gameId\":\"fantasy-survival\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"c407e873c1f3ef3d289c0eb12d4aeb25a07aa3d4\",\"artifactIdentity\":\"sha256:773feb896eca85d5704e305a94ff166853172e6cc9ed64d3a25b577dfea30013\",\"artifactRunId\":36238682627,\"universeId\":\"10768135650\",\"placeId\":\"115755859942485\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":2,\"workflowRunId\":36247615144,\"publishedAt\":\"2026-09-26T14:16:00.910Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
         "{\"version\":1,\"gameId\":\"fantasy-survival\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"6cd25e0cfc9719487000909ad3eb530a8193c2fe\",\"artifactIdentity\":\"sha256:7916e402e30758df17226d973ad199a1916989bd8a7da7886435759b2635e2b0\",\"artifactRunId\":40629263779,\"universeId\":\"10773436325\",\"placeId\":\"108565970231899\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":2,\"workflowRunId\":40634264515,\"publishedAt\":\"2026-10-28T04:49:25.939Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
-        "{\"version\":1,\"gameId\":\"fantasy-survival\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"ea73b103b85bbc3bf2c526b439ff5cac49f2f447\",\"artifactIdentity\":\"sha256:7bb50d620e200f69cb2299bd2afb96fae62a13006eb585f0485b29fdb9e6ccf2\",\"artifactRunId\":41073591365,\"universeId\":\"10773436325\",\"placeId\":\"108565970231899\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":39,\"workflowRunId\":41075028064,\"publishedAt\":\"2026-10-30T14:52:06.386Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
+        "{\"version\":1,\"gameId\":\"fantasy-survival\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"ea73b103b85bbc3bf2c526b439ff5cac49f2f447\",\"artifactIdentity\":\"sha256:7bb50d620e200f69cb2299bd2afb96fae62a13006eb585f0485b29fdb9e6ccf2\",\"artifactRunId\":41073591365,\"universeId\":\"10773436325\",\"placeId\":\"108565970231899\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":39,\"workflowRunId\":41075028064,\"publishedAt\":\"2026-10-30T14:52:06.386Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
+        "{\"version\":1,\"gameId\":\"fantasy-survival\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"76dae75bb5bdcf0dd6ae661005e0a5024b50da7a\",\"artifactIdentity\":\"sha256:b28d091f03bc6443744cba96d31b358cbe99638aed048f608e397e8cb2015d47\",\"artifactRunId\":41118444180,\"universeId\":\"10773436325\",\"placeId\":\"108565970231899\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":43,\"workflowRunId\":41119160260,\"publishedAt\":\"2026-10-30T19:57:48.601Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
@@ -1349,8 +1350,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T14:25:18.564Z",
-      "updatedAt": "2026-10-30T19:10:53.042Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-10-30T20:34:10.520Z",
+      "occurrenceCount": 5
     },
     {
       "id": "bug-0e778fae0d7491732692",
@@ -12009,8 +12010,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-29T13:04:37.413Z",
-      "updatedAt": "2026-10-30T19:23:56.884Z",
-      "occurrenceCount": 17
+      "updatedAt": "2026-10-30T20:34:10.520Z",
+      "occurrenceCount": 18
     },
     {
       "id": "bug-8ced1b71035aab94f819",
@@ -12119,7 +12120,7 @@
       "target": "web",
       "sourceRoot": "web-games/ocean-voyage",
       "sourceTreeSha": "bd78acee4969637fdadce382f6b8972746319860",
-      "sourceRevision": "f3954973f1384af9c9bca5187afe610cc0e58d9f",
+      "sourceRevision": "62ee0125185af9c1a193c0598c735de8a40de8c1",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12128,8 +12129,8 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41112670169",
-      "observedAt": "2026-10-30T19:23:56.884Z"
+      "runId": "41120577385",
+      "observedAt": "2026-10-30T20:34:10.520Z"
     },
     {
       "gameId": "gem-survivor",
@@ -12137,7 +12138,7 @@
       "target": "web",
       "sourceRoot": "web-games/gem-survivor",
       "sourceTreeSha": "a662a98c0cf0e044d31fb7fbb54134d79c7eb629",
-      "sourceRevision": "39994ab294f156183e4943d2375939c85156382c",
+      "sourceRevision": "62ee0125185af9c1a193c0598c735de8a40de8c1",
       "runtimeObserved": true,
       "failureStage": null,
       "coverage": "EXISTING_BROWSER_SMOKE_SCENARIOS_ONLY",
@@ -12146,8 +12147,8 @@
         "multiplayer": "d7dae6cd55dca14964152bf14faf0f0340ae6708",
         "web-games/_shared": "c8ea4cb8a743261d722b6ffdbf5cf240c6c0b644"
       },
-      "runId": "41105068019",
-      "observedAt": "2026-10-30T19:10:53.042Z"
+      "runId": "41120577385",
+      "observedAt": "2026-10-30T20:34:10.520Z"
     },
     {
       "gameId": "fantasy-survival",
