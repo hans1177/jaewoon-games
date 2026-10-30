@@ -380,8 +380,8 @@ list.Size = UDim2.new(1, -20, 1, -150)
 list.Position = UDim2.fromOffset(10, 142)
 list.BackgroundTransparency = 1
 list.BorderSizePixel = 0
-list.AutomaticCanvasSize = Enum.AutomaticSize.Y
-list.CanvasSize = UDim2.new()
+list.AutomaticCanvasSize = Enum.AutomaticSize.None
+list.CanvasSize = UDim2.fromOffset(0,math.ceil(#Config.Actions/2)*60+12)
 list.ScrollBarThickness = 4
 list.ClipsDescendants = true
 list.Parent = root
@@ -404,7 +404,31 @@ for index, action in ipairs(Config.Actions) do
   button.Text = CommonUI.ActionLabel(action,index)
   button.Parent = list
   actionButtons[action.Id]=button
-  button.Activated:Connect(function() remote:FireServer(action.Id) end)
+  button.Activated:Connect(function()
+    local ready=player:GetAttribute("MeadowReady_"..action.Id)
+    if typeof(ready)=="number" and ready>workspace:GetServerTimeNow() then return end
+    remote:FireServer(action.Id)
+  end)
+end
+-- Company original skill pack badges are GUI elements, not world geometry.
+local skillBadgeModule=Shared:FindFirstChild("RobloxCommonSkillPresentation")
+if skillBadgeModule and skillBadgeModule:IsA("ModuleScript") then
+  local ok,skillSource=pcall(require,skillBadgeModule)
+  if ok and type(skillSource)=="table" and type(skillSource.Create)=="function" then
+    for _,action in ipairs(Config.Actions) do
+      local button=actionButtons[action.Id]
+      if action.Kind=="SKILL" and button then
+        local made,badge=pcall(skillSource.Create,"SKILL_ICON_BADGE",{
+          parent=button,symbol="◆",size=UDim2.fromOffset(18,18),
+          color=Color3.fromRGB(23,68,57),accent=Color3.fromRGB(226,255,206),
+        })
+        if made and badge then
+          badge.Position=UDim2.fromOffset(2,2)
+          badge.ZIndex=button.ZIndex+1
+        end
+      end
+    end
+  end
 end
 -- Every mobile skill is directly reachable, with server-time cooldowns.
 local readyClock=0
@@ -542,13 +566,23 @@ end
 local actionsById={}
 for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
 local debris=game:GetService("Debris")
-local function playApprovedMeadowEffect(actionId,overrideVfx)
+local alreadyPlayedMeadowFX={}
+local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetPosition,sequence)
   local action=actionsById[actionId]
+  actorUserId=typeof(actorUserId)=="number" and actorUserId or player.UserId
+  if sequence~=nil then
+    local key=tostring(actorUserId)..":"..tostring(sequence)
+    if alreadyPlayedMeadowFX[key] then return end
+    alreadyPlayedMeadowFX[key]=true
+    task.delay(8,function()alreadyPlayedMeadowFX[key]=nil end)
+  end
   if not action then return end
-  local character=player.Character
+  local sourcePlayer=Players:GetPlayerByUserId(actorUserId)
+  local character=sourcePlayer and sourcePlayer.Character
   local rootPart=character and character:FindFirstChild("HumanoidRootPart")
   if not rootPart then return end
-  local position=player:GetAttribute("ApprovedActionTarget")
+  local position=typeof(targetPosition)=="Vector3" and targetPosition or
+    (sourcePlayer and sourcePlayer:GetAttribute("ApprovedActionTarget"))
   if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
     position=rootPart.Position
   end
@@ -572,7 +606,7 @@ local function playApprovedMeadowEffect(actionId,overrideVfx)
     local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
     if not ok then warn("마력숲 VFX source unavailable: "..tostring(err)) end
   end
-  if meadowSkillPresentation and not overrideVfx and action.SkillAtom then
+  if meadowSkillPresentation and not overrideVfx and action.SkillAtom and action.SkillAtom~="SKILL_ICON_BADGE" then
     local ok,result,controller=pcall(meadowSkillPresentation.Create,action.SkillAtom,settings)
     if ok then
       if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
@@ -587,11 +621,13 @@ local function playApprovedMeadowEffect(actionId,overrideVfx)
 end
 player:GetAttributeChangedSignal("ApprovedActionFX"):Connect(function()
   local id,seq=tostring(player:GetAttribute("ApprovedActionFX") or ""):match("^([^:]+):(%d+)$")
-  if id and seq then playApprovedMeadowEffect(id) end
+  if id and seq then playApprovedMeadowEffect(id,nil,player.UserId,nil,tonumber(seq)) end
 end)
-remote.OnClientEvent:Connect(function(kind,payload)
-  if kind=="MEADOW_REACTION" and payload=="PARRY" then
-    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH")
+remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosition)
+  if kind=="MEADOW_ACTION_FX" then
+    playApprovedMeadowEffect(actionId,nil,payload,targetPosition,sequence)
+  elseif kind=="MEADOW_REACTION" and payload=="PARRY" then
+    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH",player.UserId)
   end
 end)
 
