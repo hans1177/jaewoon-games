@@ -296,6 +296,26 @@ async function main(){
       universeId:result.universeId,placeId:result.placeId,placeFile,
     });
     result.published=true; result.versionNumber=published.versionNumber;
+    if(gameId==='fantasy-survival'&&avatarRig==='R15'){
+      result.stage='POST_PUBLISH_VERIFY';write();
+      try{
+        const {probeRobloxOpenCloudEngine}=await import('./company-development-roblox-runtime-foundation.mjs');
+        const proof=await probeRobloxOpenCloudEngine({
+          universeId:result.universeId,placeId:result.placeId,versionNumber:result.versionNumber,
+          apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,maxPolls:24,pollIntervalMs:1000
+        });
+        const exact=proof.engineExecuted===true&&proof.exactPlace===true&&proof.exactVersion===true&&proof.serverContextExecuted===true;
+        result.postPublishQa={exactPublishedVersionVerified:exact,avatarRigConfigured:'R15',
+          state:proof.state||'UNVERIFIED',realPlayerGameplayVerified:false,clientMotionPlaybackVerified:false,
+          authority:'roblox-open-cloud-exact-place-version-luau-task',checkedAt:new Date().toISOString()};
+        console.log('FOREST_POST_PUBLISH_EXACT_VERSION='+(exact?'PASS':'UNVERIFIED'));
+      }catch(error){
+        result.postPublishQa={exactPublishedVersionVerified:false,avatarRigConfigured:'R15',
+          realPlayerGameplayVerified:false,clientMotionPlaybackVerified:false,error:String(error?.message||error).slice(0,220)};
+        console.log('FOREST_POST_PUBLISH_EXACT_VERSION=UNVERIFIED');
+      }
+      write();
+    }
     result.stage='PASS'; result.pass=true; result.completedAt=new Date().toISOString(); write();
     console.log(`ROBLOX_DEDICATED_EXPERIENCE_PASS=${gameId}`);
     console.log(`ROBLOX_DEDICATED_UNIVERSE_ID=${result.universeId}`);
