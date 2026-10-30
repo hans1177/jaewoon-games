@@ -2744,6 +2744,11 @@ local activeCombatCharacter = nil
 local activeCombatController = nil
 local activeCombatCombo = nil
 local activeCombatStartedAt = 0
+-- [검 3단계] 실제 연속 입력별 포즈 순서만 추적한다. 공격력·서버 판정·저장값과 무관하다.
+local swordComboStage=0
+local swordComboAt=0
+local swordComboProfile=nil
+local swordComboCharacter=nil
 local combatPoseTargets = {}
 local combatR15Targets = {}
 local combatVFX = nil
@@ -3047,6 +3052,10 @@ local function finishNativeCombatMotion()
 end
 player.CharacterAdded:Connect(function()
   finishNativeCombatMotion()
+  swordComboStage=0
+  swordComboAt=0
+  swordComboProfile=nil
+  swordComboCharacter=nil
   predictedCombatUntil=0
   table.clear(pendingCombatMotion)
 end)
@@ -3059,6 +3068,8 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   local r6=humanoid.RigType==Enum.HumanoidRigType.R6
   local tool = character:FindFirstChildOfClass("Tool")
   local equipment = tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or "UNARMED"
+  -- 기존 장검·철검 도구를 공용 SWORD 원본 모션에 연결한다. 도구 실물을 새로 만들지 않는다.
+  if equipment=="장검" or equipment=="철검" then equipment="SWORD" end
   local profile = equipment == "UNARMED" and "UNARMED" or combatMotionSource.ResolveWeaponProfile(equipment)
   if not profile then
     character:SetAttribute("NativeCombatMotionState", "MATCHING_WEAPON_MOTION_REQUIRED")
@@ -3114,6 +3125,14 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   end
   local approvedIndex=tonumber(approvedEvent) or 1
   local chosenMoves={}
+  -- [검 1·2·3타] 같은 검으로 1.15초 이내 이어 누르면 오른베기→왼베기→찌르기.
+  -- 타격 요청은 기존 공격 입력 1회당 1회만 보내며 서버의 .42초 재사용 시간을 따른다.
+  local swordProfile=profile=="SWORD" or profile=="LONGSWORD" or profile=="GREATSWORD"
+  local swordStage=0
+  if swordProfile then
+    swordStage=(swordComboCharacter==character and swordComboProfile==profile
+      and os.clock()-swordComboAt<=1.15) and (swordComboStage%3+1) or 1
+  end
   local martialTrack=profile=="UNARMED" and martialSkillTracks[approvedScope] or nil
   if martialTrack then
     -- 각 버튼의 1~5타는 고정된 영화식 연출. 승인 시퀀스가 순서를 섞지 않는다.
@@ -3122,15 +3141,27 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
     local offset=(approvedIndex-1)%#basicUnarmedMoves
     for i=1,5 do chosenMoves[i]=basicUnarmedMoves[(offset+i-1)%#basicUnarmedMoves+1] end
   else
-    -- 장착 무기는 기존 무기별 단타와 공격 밸런스를 그대로 유지한다.
+    -- 검은 연속 입력 순서에 맞는 원본 키포즈 1개를 재생한다. 다른 무기는 기존 선택을 유지한다.
     local routeOk,route=pcall(combatMotionSource.CreateCombatCombo,profile)
     if not routeOk or not route or #route.steps==0 then return end
-    chosenMoves[1]=route.steps[(approvedIndex-1)%#route.steps+1].id
+    if swordProfile and #route.steps<3 then return end
+    chosenMoves[1]=route.steps[swordProfile and swordStage or ((approvedIndex-1)%#route.steps+1)].id
   end
-  -- 공용 CreateCombatCombo는 불변 객체다. 실제 저작된 5개의 관절 포즈를 연결한다.
+  -- 공용 CreateCombatCombo는 불변 객체다. 기존 맨손 5타와 검 1타별 포즈를 재사용한다.
   local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
     profile,chosenMoves,{speed=martialTrack and martialTrack.speed or (profile=="UNARMED" and 1.22 or 1)})
   if not ok or not combo or not combo.steps or #combo.steps~=#chosenMoves then return end
+  if swordProfile then
+    swordComboStage=swordStage
+    swordComboAt=os.clock()
+    swordComboProfile=profile
+    swordComboCharacter=character
+  elseif swordComboProfile then
+    swordComboStage=0
+    swordComboAt=0
+    swordComboProfile=nil
+    swordComboCharacter=nil
+  end
   combatRecoveryUntil = nil
   activeCombatCharacter = character
   activeCombatCombo = combo
@@ -3150,7 +3181,9 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
   character:SetAttribute("NativeCombatActionId", chosenMoves[1])
   character:SetAttribute("NativeCombatStrikeCount", #chosenMoves)
-  character:SetAttribute("NativeCombatStyle", martialTrack and martialTrack.name or "BASIC")
+  character:SetAttribute("NativeSwordComboStage",swordStage)
+  character:SetAttribute("NativeCombatStyle", swordProfile and "SWORD_THREE_STRIKES"
+    or martialTrack and martialTrack.name or "BASIC")
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
   return true
@@ -3450,29 +3483,35 @@ RunService.PreSimulation:Connect(function(dt)
       end
     end
   end
-  -- [연타 잔상] 5개의 실제 손·발 타격마다 원본 VFX를 교체한다.
+  -- [연타 잔상] 맨손 5타 및 검 1·2·3단계에 기존 짧은 궤적을 재사용한다.
   if strikeIndex~=activeStrikeTrailIndex then
     activeStrikeTrailIndex=strikeIndex
     if activeCombatCharacter then
       activeCombatCharacter:SetAttribute("NativeCombatStrikeIndex",strikeIndex)
     end
     stopStrikeTrail()
-    if combatVFX and activeCombatCombo.profileId=="UNARMED"
+    local swordSwing=activeCombatCombo.profileId=="SWORD"
+      or activeCombatCombo.profileId=="LONGSWORD" or activeCombatCombo.profileId=="GREATSWORD"
+    if combatVFX and (activeCombatCombo.profileId=="UNARMED" or swordSwing)
       and timeInAction<activeCombatCombo.duration then
       local chosenMove=currentStep.id
       local leg=chosenMove:find("KICK",1,true) or chosenMove:find("KNEE",1,true)
       local left=chosenMove:find("LEFT",1,true) or chosenMove:match("_L$")
       local hostName=leg and (left and "LeftFoot" or "RightFoot")
         or (left and "LeftHand" or "RightHand")
-      local host=character:FindFirstChild(hostName)
+      local equipped=character:FindFirstChildOfClass("Tool")
+      local swordHandle=swordSwing and equipped and equipped:FindFirstChild("Handle")
+      local host=swordHandle and swordHandle:IsA("BasePart") and swordHandle
+        or character:FindFirstChild(swordSwing and "RightHand" or hostName)
       if host and host:IsA("BasePart") then
         local style=activeCombatMartialTrack
-        local color=style and style.color or
-          (leg and Color3.fromRGB(124,245,220) or Color3.fromRGB(255,207,112))
+        local color=style and style.color or swordSwing and
+          (swordComboStage==3 and Color3.fromRGB(255,221,174) or Color3.fromRGB(195,214,219))
+          or (leg and Color3.fromRGB(124,245,220) or Color3.fromRGB(255,207,112))
         local ok,_,controller=pcall(combatVFX.AttachShortTrail,host,{
           color=color,lifetime=nativeTouchEnabled and .19 or .32,
-          width=style and style.trailWidth or (nativeTouchEnabled and .6 or .76),
-          length=style and 3.2 or 1.3,
+          width=style and style.trailWidth or swordSwing and .52 or (nativeTouchEnabled and .6 or .76),
+          length=style and 3.2 or swordSwing and (swordComboStage==3 and 2.8 or 1.9) or 1.3,
         })
         if ok and controller then activeStrikeTrail=controller end
       end
