@@ -4938,6 +4938,102 @@ test('existing queued game F0 build-up receives latest exact causal repair witho
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+test('existing asset-lane Roblox F0 failure is routed into same game primary source task then restored',()=>{
+  const root=tempRepo(),gameId='f0-real-execution-lane',source='d'.repeat(40);
+  const sourceRoot='roblox-games/'+gameId,server=sourceRoot+'/server/Game.server.luau';
+  fs.mkdirSync(path.join(root,sourceRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(root,server),'return true\n');
+  writeStudioDesign(root,gameId);
+  const catalog={games:[{id:gameId,name:'F0 Primary Repair',productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE',robloxProjectPath:sourceRoot}]};
+  const baseProject={gameId,engine:'roblox',projectPath:sourceRoot,
+    releaseState:'development-confirmed'};
+  const original=findStudioContinuousImprovementTask(baseProject,root,{tasks:[]},'PRESENTATION');
+  assert.ok(original);
+  const existing={...original,status:'queued',sourceRoot,
+    executionLane:'ASSET_DEVELOPMENT',assetProductionLane:true,
+    buildUpDirective:null,buildUpDirectiveId:null,
+    evidence:[...new Set([...(original.evidence||[]),'asset-production-parallel:v1'])]};
+  const failure={items:[{
+    gameId,gameName:'F0 Primary Repair',status:'ACTIVE',
+    selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:sourceRoot,
+    currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',canonicalState:'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED',
+    robloxSourceCommit:source,robloxFailureStage:'F0_SOURCE_INTEGRITY',
+    robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    routingBlockers:['roblox-f0-source-preflight-failed']
+  }]};
+  const plan=(queue,developmentQueue)=>planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue,
+    queue,repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
+    planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  try{
+    assert.ok(existing.responsibleFiles.includes(server));
+    const repaired=plan({maxConcurrentTasks:20,tasks:[existing]},failure).queue.tasks.find(x=>x.id===existing.id);
+    assert.ok(repaired,'must reuse existing game task id');
+    assert.equal(repaired.status,'queued');
+    assert.equal(repaired.executionLane,'GAME_PRIMARY');
+    assert.equal(repaired.assetProductionLane,false);
+    assert.ok(!repaired.evidence.includes('asset-production-parallel:v1'));
+    assert.ok(repaired.evidence.includes('roblox-f0-preflight-original-asset-lane:YES'));
+    assert.match(repaired.goal,/\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]/);
+    assert.ok(repaired.responsibleFiles.includes(server));
+    const again=plan({maxConcurrentTasks:20,tasks:[repaired]},failure).queue.tasks.find(x=>x.id===existing.id);
+    assert.ok(again);
+    assert.equal(again.executionLane,'GAME_PRIMARY');
+    assert.equal((again.goal.match(/\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]/g)||[]).length,1);
+    assert.deepEqual(again.responsibleFiles,repaired.responsibleFiles);
+    const resolved={items:failure.items.map(item=>({
+      ...item,currentStep:'VIBE_INTERNAL_PLAY',canonicalState:'F0_SOURCE_PREFLIGHT_PASSED',
+      robloxFailureStage:'',robloxFailureSignature:'',routingBlockers:[]
+    }))};
+    const restored=plan({maxConcurrentTasks:20,tasks:[again]},resolved).queue.tasks.find(x=>x.id===existing.id);
+    assert.ok(restored);
+    assert.equal(restored.executionLane,'ASSET_DEVELOPMENT');
+    assert.equal(restored.assetProductionLane,true);
+    assert.ok(restored.evidence.includes('asset-production-parallel:v1'));
+    assert.doesNotMatch(restored.goal,/\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('F0 lane routing refuses foreign or unowned source and never changes an in-flight task',()=>{
+  const root=tempRepo(),gameId='f0-lane-safety',source='f'.repeat(40);
+  const sourceRoot='roblox-games/'+gameId;
+  fs.mkdirSync(path.join(root,sourceRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(root,sourceRoot,'server/Game.server.luau'),'return true\n');
+  writeStudioDesign(root,gameId);
+  const catalog={games:[{id:gameId,name:'F0 Safety',productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE',robloxProjectPath:sourceRoot}]};
+  const base=findStudioContinuousImprovementTask({gameId,engine:'roblox',projectPath:sourceRoot,
+    releaseState:'development-confirmed'},root,{tasks:[]},'PRESENTATION');
+  const invalidSources=[
+    ['web-games/other/index.html'],
+    ['roblox-games/other/server/Game.server.luau'],
+    ['roblox-games/'+gameId+'/server/../other.luau']
+  ];
+  const developmentQueue={items:[{gameId,status:'ACTIVE',gameName:'F0 Safety',
+    selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:sourceRoot,
+    currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',canonicalState:'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED',
+    robloxSourceCommit:source,robloxFailureStage:'F0_SOURCE_INTEGRITY',
+    robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    routingBlockers:['roblox-f0-source-preflight-failed']}]};
+  try{
+    for(const paths of invalidSources){
+      const task={...base,status:'queued',sourceRoot,responsibleFiles:paths,
+        buildUpDirective:null,buildUpDirectiveId:null,assetProductionLane:true,
+        evidence:['studio-quality-loop:v1','asset-production-parallel:v1']};
+      const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue,
+        queue:{maxConcurrentTasks:20,tasks:[task]},repoRoot:root,maxConcurrentTasks:20,
+        queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0});
+      const after=result.queue.tasks.find(x=>x.id===task.id);
+      assert.ok(after);
+      assert.notEqual(after.executionLane,'GAME_PRIMARY');
+      assert.doesNotMatch(after.goal,/\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]/);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('Roblox product-quality failure is projected into canonical planner buildup instead of internal-play replay',()=>{
   const planner=fs.readFileSync(path.join(process.cwd(),'tools','vibe2-auto-planner.mjs'),'utf8');
   assert.match(planner,/queueRobloxQualityBuildUpRequired/);
