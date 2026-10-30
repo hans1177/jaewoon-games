@@ -941,3 +941,42 @@ globalThis.fetch=async(url,options={})=>{
     assert.match(ids,/tree=900007/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('fantasy meadow uses genuine Roblox R15 motion, skill and VFX modules with server authority',()=>{
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const sourceMotion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const sourceSkill=fs.readFileSync('assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau','utf8');
+  const sourceVfx=fs.readFileSync('assets/roblox/common-vfx-v1/RobloxCommonVFX.luau','utf8');
+  const rows=[...config.matchAll(/\{ Id = "([^"]+)", Label = "([^"]+)", Kind = "([^"]+)", Order = (\d+), MotionAtom = "([^"]+)"[^\n]*\}/g)];
+  assert.equal(rows.length,17,'all currently buildable meadow actions must be reachable');
+  assert.equal(new Set(rows.map(row=>row[1])).size,rows.length,'no duplicate action id');
+  assert.equal(rows.filter(row=>row[3]==='SKILL').length,11);
+  for(const row of rows){
+    const [,id,,kind,,motion]=row;
+    assert.ok(server.includes('["'+id+'"]'),'button must reach a real server handler: '+id);
+    assert.ok(sourceMotion.includes(motion+' = table.freeze('),'R15 source motion must exist: '+motion);
+    const literal=config.split('\n').find(line=>line.includes('Id = "'+id+'"'))||'';
+    const skill=literal.match(/SkillAtom = "([^"]+)"/)?.[1];
+    const vfx=literal.match(/VfxAtom = "([^"]+)"/)?.[1];
+    if(skill)assert.ok(sourceSkill.includes('id == "'+skill+'"'),'real common SKILL module: '+skill);
+    if(vfx)assert.ok(sourceVfx.includes('id == "'+vfx+'"'),'real common VFX module: '+vfx);
+  }
+  assert.match(server,/meadowSkillCooldown\[player\]/);
+  assert.match(server,/workspace:GetServerTimeNow\(\)/,'mobile cooldown needs synchronized server time');
+  assert.match(server,/meadowDefense\[targetPlayer\]/,'enemy damage must remain server-authoritative');
+  assert.match(server,/player:SetAttribute\("ApprovedActionMotion"/);
+  assert.match(server,/player:SetAttribute\("ApprovedActionFX"/);
+  assert.match(client,/GetAttributeChangedSignal\("ApprovedActionMotion"\)/);
+  assert.match(client,/GetAttributeChangedSignal\("ApprovedActionFX"\)/);
+  assert.match(client,/SampleProceduralActorMotion\(/);
+  assert.match(client,/SampleCombatCombo\(/);
+  assert.match(client,/MapCombatPoseToR15\(/);
+  assert.match(client,/RobloxCommonSkillPresentation/);
+  assert.match(client,/RobloxCommonVFX/);
+  assert.match(client,/NativeActionGrid/);
+  assert.doesNotMatch(client,/Humanoid:TakeDamage|DataStoreService|Instance\.new\("Part"\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'preserve exact existing save writer');
+});
