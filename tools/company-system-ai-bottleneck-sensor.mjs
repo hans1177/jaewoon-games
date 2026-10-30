@@ -244,7 +244,12 @@ function f0SourcePreflightRepairObservation(task={}){
     ||!(/^[a-z0-9][a-z0-9-]{1,63}$/.test(id))
     ||clean(task.sourceRoot)!=='roblox-games/'+id)return null;
   const goal=clean(task.goal);
-  if(!goal.startsWith('[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]'))return null;
+  // The existing world/lobby-first contract can legitimately prefix this goal.
+  // Only the bounded exact F0 block is authoritative, not surrounding text.
+  const start=goal.indexOf('[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]');
+  const end=start<0?-1:goal.indexOf('[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]',start);
+  if(start<0||end<0)return null;
+  const f0Goal=goal.slice(start,end);
   const evidence=(Array.isArray(task.evidence)?task.evidence:[]).map(clean);
   if(!evidence.includes('roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE')
     ||!evidence.includes('roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY')
@@ -253,8 +258,8 @@ function f0SourcePreflightRepairObservation(task={}){
   const revisions=evidence.filter(value=>value.startsWith('roblox-f0-preflight-source-revision:'));
   const revision=clean(revisions.at(-1)).slice('roblox-f0-preflight-source-revision:'.length);
   if(!(/^[0-9a-f]{40}$/i.test(revision))
-    ||!goal.includes('실패한 소스 버전: '+revision)
-    ||!goal.includes('F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED'))return null;
+    ||!f0Goal.includes('실패한 소스 버전: '+revision)
+    ||!f0Goal.includes('F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED'))return null;
   const responsible=(Array.isArray(task.responsibleFiles)?task.responsibleFiles:[])
     .map(clean).filter(file=>file.startsWith('roblox-games/'+id+'/')
       &&/^roblox-games\/[a-z0-9-]+\/(?:server|client|shared)\/(?:[a-z0-9._-]+\/)*[a-z0-9._-]+\.(?:lua|luau)$/i.test(file)
