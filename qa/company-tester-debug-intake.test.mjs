@@ -338,3 +338,16 @@ test('real Web runtime repair targets only its own runnable source and preserves
  assert.equal(pending.recovery.tasks[0].status,'queued');
  assert.equal(pending.dispatched.length,0);
 });
+
+test('wild-survival live movement evidence uses a source SHA declared in its own scope',()=>{
+ const source=fs.readFileSync(new URL('./vibe-browser-smoke.mjs',import.meta.url),'utf8');
+ const start=source.indexOf(' // Owner-required: only real published, rendered WebGL 3D');
+ const end=source.indexOf('  const finalManifestResponse',start);
+ assert.ok(start>=0&&end>start,'WILD_SURVIVAL_LIVE_EVIDENCE_SCOPE_MISSING');
+ const wild=source.slice(start,end);
+ assert.ok(wild.includes("const wildSourceSha=String(process.env.GITHUB_SHA||'').trim()"));
+ assert.ok(wild.includes('WILD_SURVIVAL_PUBLIC_SOURCE_SHA_REQUIRED'));
+ assert.equal(wild.split('sourceSha:wildSourceSha').length-1,2);
+ assert.equal(wild.includes('sourceSha:expected'),false);
+ assert.ok(wild.includes('WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED'));
+});
