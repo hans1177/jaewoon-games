@@ -379,6 +379,15 @@ local function attackEnemy(player)
   local damage=math.floor(16+level*2.2+weaponTier*8)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
+  -- Server-authorized impact location is sent only after a real target took damage.
+  -- No miss, empty-air swing or client-generated contact may emit this effect.
+  remote:FireClient(player, "MEADOW_IMPACT", {
+    position=target.position,
+    species=target.kind,
+    boss=target.isBoss,
+    finisher=target.HP<=0,
+    damage=damage,
+  })
   setNumber(player,"Combo",readNumber(player,"Combo",0)+1)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)
   player:SetAttribute("LastApprovedScope","combat-impact")
@@ -397,6 +406,14 @@ local function attackEnemy(player)
   end
   broadcastSurvivalState(player)
   return true
+end
+
+local function unarmedSkillAttack(player)
+  -- The skill toolbar is a genuine bare-hand mode; equipped tools retain their
+  -- original weapon attack path. Damage, range and cooldown are all unchanged.
+  local character=player.Character
+  if not character or character:FindFirstChildOfClass("Tool") then return false end
+  return attackEnemy(player)
 end
 
 local function gatherNearestResource(player)
@@ -549,6 +566,10 @@ local handlers={
   ["scope-coreloop-1-6ebe58f496"]=gatherNearestResource,
   ["scope-coreloop-2-6c927cfa40"]=upgradeEquipment,
   ["scope-mobileux-5acfb2eaa6"]=attackEnemy,
+  ["meadow-unarmed-rush"]=unarmedSkillAttack,
+  ["meadow-unarmed-uppercut"]=unarmedSkillAttack,
+  ["meadow-unarmed-kick"]=unarmedSkillAttack,
+  ["meadow-unarmed-elbow"]=unarmedSkillAttack,
 }
 
 local function bindSurvivalHealth(player)
