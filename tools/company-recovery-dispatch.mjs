@@ -124,11 +124,17 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           ||task.protectedChange===true||task.securityReviewRequired===true
           ||task.securityQuarantined===true||clean(task.blocker)==='OFFLINE_RECIPE_UNAVAILABLE')return false;
         if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return false;
-        return clean(task.failureStage)===clean(rec.failureStage)
-          ||clean(task.currentStep)===clean(rec.failureStage)
-          ||clean(task.failureSignature)===clean(rec.failureSignature)
-          ||clean(task.blocker)===clean(rec.failureSignature)
-          ||uniq(task.evidence).includes('recovery-exact-stage:'+clean(rec.failureStage));
+        const taskEvidence=uniq(task.evidence);
+        const storedStage=[...taskEvidence].reverse().find(row=>row.startsWith('recovery-exact-stage:'))||'';
+        const recordedStage=clean(task.failureStage||task.currentStep)
+          ||clean(storedStage.slice('recovery-exact-stage:'.length));
+        // A shared F0/runtime stage does not prove that two distinct failures are identical.
+        // Never bind a source-less tester ticket to a different explicit failure signature.
+        const storedCause=[...taskEvidence].reverse().find(row=>row.startsWith('failure-cause:'))||'';
+        const recordedSignature=clean(task.failureSignature)
+          ||clean(storedCause.slice('failure-cause:'.length));
+        return recordedStage===clean(rec.failureStage)
+          &&(!recordedSignature||recordedSignature===clean(rec.failureSignature));
       }):[];
     const sourceBoundCandidate=inferredCandidates.length===1?inferredCandidates[0]:null;
     const gameSourceFiles=explicitlyBoundFiles.length?explicitlyBoundFiles
