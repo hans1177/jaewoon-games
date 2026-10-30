@@ -3078,9 +3078,12 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   -- [공식 Roblox 관절·자산 계약] 원본 3단계 검술과 맨손은 각각 승인된 실제 자산을 요구한다.
   -- 공용 R15 포즈는 Animator를 덮지 않고 PreSimulation에서 기존 Transform 위에 섞는다.
   local swordProfile=profile=="SWORD" or profile=="LONGSWORD" or profile=="GREATSWORD"
-  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1")
-    or (swordProfile and (not hasStudioAssetAtom("MOTION","ATTACK_LIGHT_2")
-      or not hasStudioAssetAtom("MOTION","ATTACK_LIGHT_3"))) then
+  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then
+    character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
+    return
+  end
+  if swordProfile and (not hasStudioAssetAtom("MOTION","ATTACK_LIGHT_2")
+    or not hasStudioAssetAtom("MOTION","ATTACK_LIGHT_3")) then
     character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
     return
   end
