@@ -67,7 +67,11 @@ end
 local function getJoints(model)
 	local joints = {}
 	for _, item in ipairs(model:GetDescendants()) do
-		if item:IsA("Motor6D") then
+		-- Prefer genuine upgraded joints, retain the original Motor6D rig.
+		if (item:IsA("AnimationConstraint") or item:IsA("Motor6D"))
+			and item.Part0 and item.Part1
+			and item.Part0:IsDescendantOf(model) and item.Part1:IsDescendantOf(model)
+			and (not joints[item.Name] or item:IsA("AnimationConstraint")) then
 			joints[item.Name] = item
 		end
 	end
@@ -437,7 +441,14 @@ local function step(controller, dt)
 	local alpha = expAlpha(response, dt)
 	for name, joint in pairs(controller.joints) do
 		local target = targets[name] or CFrame.identity
-		joint.Transform = joint.Transform:Lerp(target, alpha)
+		local current=joint.Transform
+		local base=current~=controller.lastApplied[joint] and current
+			or controller.baseTransforms[joint] or CFrame.identity
+		controller.baseTransforms[joint]=base
+		local blended=(controller.jointPoses[joint] or CFrame.identity):Lerp(target,alpha)
+		controller.jointPoses[joint]=blended
+		joint.Transform=blended*base
+		controller.lastApplied[joint]=joint.Transform
 	end
 
 	controller.auditTime=(controller.auditTime or 0)+dt
@@ -506,7 +517,9 @@ function Controller:Destroy()
 	end
 	-- A pooled or re-bound creature must not inherit its previous dying/attack pose.
 	for _, joint in pairs(self.joints) do
-		if joint.Parent then joint.Transform = CFrame.identity end
+		if joint.Parent and joint.Transform==self.lastApplied[joint] then
+			joint.Transform=self.baseTransforms[joint] or CFrame.identity
+		end
 	end
 end
 
@@ -522,6 +535,7 @@ function Animator.bind(model, options)
 		model = model,
 		cfg = cfg,
 		joints = getJoints(model),
+		jointPoses = {}, baseTransforms = {}, lastApplied = {},
 		time = 0,
 		phase = tonumber(options.phase) or 0,
 		earPhase = tonumber(options.earPhase) or (species:byte(1) or 1) * 0.17,
@@ -558,8 +572,8 @@ function Animator.bind(model, options)
 	model:SetAttribute("WildlifeSecondaryMotion", true)
 	model:SetAttribute("WildlifeAnimationPrinciples", "KEY_POSE_ANTICIPATION_OVERLAP_FOLLOW_THROUGH_SETTLE")
 
-	local signal = RunService:IsClient() and RunService.RenderStepped or RunService.Heartbeat
-	controller.connection = signal:Connect(function(dt)
+	-- Native joint Transform is applied immediately after PreSimulation.
+	controller.connection = RunService.PreSimulation:Connect(function(dt)
 		step(controller, math.min(dt, .15))
 	end)
 
