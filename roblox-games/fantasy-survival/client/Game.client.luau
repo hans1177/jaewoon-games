@@ -883,7 +883,7 @@ local skillUnarmedMoves={
 }
 local combatUpperJoints = {Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
   LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true,
-  LeftHip=true, RightHip=true, LeftKnee=true, RightKnee=true,
+  LeftHip=true,RightHip=true,LeftKnee=true,RightKnee=true,
   LeftAnkle=true, RightAnkle=true}
 local activeStrikeTrail=nil
 local activeStrikeTrailToken=0
