@@ -142142,11 +142142,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_59aecb446fc9c6ef17acb64f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11457",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4146743427900c28cd0b1e8a4cb1d92ceeffb573",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11457,
+        "baseBranch": "main",
+        "headBranch": "owner/fantasy-vibe-first-soft-hit-20261030",
+        "baseSha": "4146743427900c28cd0b1e8a4cb1d92ceeffb573",
+        "headSha": "1f0a88426120a4aaf29fedbeb4116850966225c5",
+        "mergeCommitSha": "c49dc3af02b2866673dc10f270f493080e258bc4",
+        "mergedAt": "2026-10-30T08:59:11Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7df974be2a063ee8689ad06ca223eab4977b332127b35bb12cbf91769a0a732e",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/fantasy-vibe-first-soft-hit-20261030",
+        "candidateSha": "1f0a88426120a4aaf29fedbeb4116850966225c5"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 77,
+        "deletedLineCount": 18,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "assets/vibe-continuous-queue.js",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "tools/company-selected-platform-router.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "assets/vibe-continuous-queue.js",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "tools/company-selected-platform-router.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11457",
+        "merge-commit:c49dc3af02b2866673dc10f270f493080e258bc4",
+        "base-main:4146743427900c28cd0b1e8a4cb1d92ceeffb573"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1128
+    "total": 1129
   }
 }
