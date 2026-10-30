@@ -1634,3 +1634,52 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end
 end)
 
+
+-- [초원 자연 음향] Roblox Creator Store에서 배포하는 새소리·숲 음원만 사용한다.
+-- 플레이어별 로컬 재생: 서버 전투/오디오 이벤트에 영향을 주지 않고 실제 소리가 허용되지 않으면 조용히 유지.
+-- 잦은 재생/고음량을 피하고, 사슴·토끼 서식지와 숲 외곽에 가까울수록 새소리가 선명해진다.
+task.delay(5,function()
+  local soundService=game:GetService("SoundService")
+  local forestBed=Instance.new("Sound")
+  forestBed.Name="MeadowForestAmbience"
+  forestBed.SoundId="rbxassetid://9116971475" -- Creator Store: Morning Forest Birds 4
+  forestBed.Volume=.045
+  forestBed.Looped=true
+  forestBed.PlaybackSpeed=.96
+  forestBed.Parent=soundService
+  local birdChirp=Instance.new("Sound")
+  birdChirp.Name="MeadowNearbyBirds"
+  birdChirp.SoundId="rbxassetid://140708444684424" -- Creator Store: Birds Chirping SFX
+  birdChirp.Volume=.14
+  birdChirp.Looped=false
+  birdChirp.Parent=soundService
+  local groves={
+    Vector2.new(-258,-206),Vector2.new(261,-219),
+    Vector2.new(-270,220),Vector2.new(258,240),
+  }
+  forestBed:Play()
+  local nextChirp=os.clock()+math.random(7,13)
+  while forestBed.Parent and birdChirp.Parent do
+    task.wait(1)
+    local character=player.Character
+    local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+      local distance=math.huge
+      for _,grove in ipairs(groves) do
+        local dx=rootPart.Position.X-grove.X
+        local dz=rootPart.Position.Z-grove.Y
+        distance=math.min(distance,math.sqrt(dx*dx+dz*dz))
+      end
+      local forestPresence=1-math.clamp((distance-25)/235,0,1)
+      forestBed.Volume=.035+.085*forestPresence
+      birdChirp.Volume=.085+.17*forestPresence
+      if os.clock()>=nextChirp then
+        if forestPresence>.12 then
+          birdChirp.PlaybackSpeed=.91+math.random()*.17
+          birdChirp:Play()
+        end
+        nextChirp=os.clock()+math.random(17,29)
+      end
+    end
+  end
+end)
