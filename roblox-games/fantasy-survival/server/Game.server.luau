@@ -53,6 +53,7 @@ local FANTASY_NATIVE_CREATURES_VERSION = 1
 local AssetService = game:GetService("AssetService")
 local NativeCreatureAssets = require(Shared:WaitForChild("VisualAssetIds"))
 local studioCreatureAtoms = studioAssetFamily("CREATURE")
+local studioBuildingAtoms = studioAssetFamily("BUILDING")
 local studioEnvironmentAtoms = studioAssetFamily("ENVIRONMENT")
 local studioPropAtoms = studioAssetFamily("PROP")
 local nativeCreatureTemplates = {}
@@ -685,7 +686,10 @@ local function createMeadowVillage()
   -- 마력숲 Universe의 모델 등록·사용 권한이 없으면 임의 파츠 집으로 대체하지 않는다.
   local villagePrefabKeys={"villageWall","villageDoor","villageWindow","villageRoof",
     "villageRoofEnd","villageStall","villageFountain","villageFence","villageLantern","villageCart"}
-  local nativeVillageReady=true
+  -- [원본 건물] 승인된 BUILDING 선택값과 실제 Kenney 모델 ID를 모두 확인한다.
+  local nativeVillageReady=table.find(studioBuildingAtoms,"WALL_SOLID")~=nil
+    and table.find(studioBuildingAtoms,"DOOR_SINGLE")~=nil
+    and table.find(studioBuildingAtoms,"ROOF_GABLE")~=nil
   for _,key in ipairs(villagePrefabKeys) do
     if typeof(NativeCreatureAssets[key])~="number" or NativeCreatureAssets[key]<1 then
       nativeVillageReady=false;break
