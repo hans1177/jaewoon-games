@@ -432,7 +432,7 @@ jobs:
                   const ids=fs.existsSync(idsPath)?fs.readFileSync(idsPath,'utf8'):'';
                   const registered=existingRegistry.models?.[role];
                   return !registered||!Number.isSafeInteger(registered.assetId)||registered.assetId<1
-                    ||!new RegExp('\\\\b'+role+'\\\\s*=\\\\s*'+registered.assetId+'\\\\b').test(ids);
+                    ||!new RegExp('\\b'+role+'\\s*=\\s*'+registered.assetId+'\\b').test(ids);
                 })
               );
             const materialRepairPending=reconciliationRow?.sourceRepairPending===true
