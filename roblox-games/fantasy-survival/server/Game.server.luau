@@ -430,7 +430,7 @@ local function villageBoardDialogue(player,sourcePosition)
     return
   end
   local phase=readNumber(player,"VillageContractPhase",0)
-  villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+24}
+  villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+40}
   if phase==0 then
     villageDialogue(player,"의뢰판 · "..contract.Name,contract.Summary.."\n\n수락하면 마을 주민 세 명의 단서를 확인할 수 있어.",{
       {label="의뢰 수락",action="village:accept"},
@@ -438,9 +438,9 @@ local function villageBoardDialogue(player,sourcePosition)
   elseif phase==1 then
     local mask=readNumber(player,"VillageContractEvidence",0)
     local discovered=0
-    for slot=0,2 do if bit32.band(mask,bit32.lshift(1,slot))~=0 then discovered+=1 end end
+    for slot=0,5 do if bit32.band(mask,bit32.lshift(1,slot))~=0 then discovered+=1 end end
     villageDialogue(player,"조사 중 · "..contract.Name,contract.Summary..
-      "\n\n단서 "..discovered.."/3 · 약초상 미라, 추적자 라온, 경비병 아린을 만나 봐.")
+      "\n\n단서 "..discovered.."/6 · 주민 3명과 현장 조사 지점 3곳을 확인해.")
   else
     villageDialogue(player,"결정 · "..contract.Name,contract.Summary..
       "\n\n단서를 모두 모았어. 어떤 선택에도 결과가 남고 한 번만 보상을 받아.",{
@@ -464,10 +464,12 @@ local function villageInvestigate(player,clueIndex,role)
   if bit32.band(mask,bit)==0 then
     mask=bit32.bor(mask,bit)
     setNumber(player,"VillageContractEvidence",mask)
-    if mask==7 then setNumber(player,"VillageContractPhase",2) end
+    if mask==63 then setNumber(player,"VillageContractPhase",2) end
   end
-  villageDialogue(player,role,contract.Clues[clueIndex]..
-    (mask==7 and "\n\n이제 촌장에게 돌아가 어느 쪽을 믿을지 결정해." or "\n\n다른 주민의 이야기도 들어 봐."))
+  local clue=clueIndex<=3 and contract.Clues[clueIndex] or contract.Scenes[clueIndex-3]
+  local note=mask==63 and "\n\n이제 촌장에게 돌아가 어느 쪽을 믿을지 결정해."
+    or "\n\n마을의 다른 진술과 현장 흔적도 조사해."
+  villageDialogue(player,role,clue..note)
 end
 local function villageChoose(player,actionId)
   if os.clock()-(villageInteractionCooldown[player] or 0)<.35 then return end
@@ -486,7 +488,7 @@ local function villageChoose(player,actionId)
     return
   end
   local selected=actionId=="village:resolve:1" and 1 or actionId=="village:resolve:2" and 2 or nil
-  if selected and phase==2 and readNumber(player,"VillageContractEvidence",0)==7 then
+  if selected and phase==2 and readNumber(player,"VillageContractEvidence",0)==63 then
     local choice=contract.Choices[selected]
     local previous=readNumber(player,"VillageContractOutcomes",0)
     local shift=(index-1)*2
@@ -639,10 +641,29 @@ local function createMeadowVillage()
     end
     task.wait(.1)
   end
+  local scenePositions={
+    {name="약초 보관 터",position=Vector3.new(-31,3,-136),clueIndex=4},
+    {name="낡은 우물 석축",position=Vector3.new(0,3,-160),clueIndex=5},
+    {name="경비대의 흔적",position=Vector3.new(32,3,-151),clueIndex=6},
+  }
+  local evidenceCount=0
+  for _,scene in ipairs(scenePositions) do
+    local model=worldAsset("ruin",scene.position,3.8)
+    if model then
+      model.Name="Meadow_Village_Evidence_"..scene.clueIndex
+      model:SetAttribute("VillageClueIndex",scene.clueIndex)
+      if villagePrompt(model,scene.name,"흔적 조사",function(player)
+        villageInvestigate(player,scene.clueIndex,scene.name)
+      end) then evidenceCount+=1 end
+    end
+    task.wait(.08)
+  end
+  -- 원본 CC0 메시 이외에 임시 건축 파츠를 생성하지 않는다.
+  gameWorld:SetAttribute("MeadowVillageEvidenceCount",evidenceCount)
   gameWorld:SetAttribute("MeadowVillageNPCCount",readyCount)
   gameWorld:SetAttribute("MeadowVillageWallCount",wallCount)
   gameWorld:SetAttribute("MeadowVillageBoardReady",board~=nil)
-  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil)
+  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil and evidenceCount==3)
 end
 task.defer(createMeadowVillage)
 
