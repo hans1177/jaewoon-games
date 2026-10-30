@@ -2677,8 +2677,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -2697,14 +2697,14 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxSharedTargetCurrent": false,
+      "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-30T11:09:33.688Z",
+      "updatedAt": "2026-10-30T11:14:54.669Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3352,7 +3352,27 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "platform": "ROBLOX",
+        "sourceRevision": "ab5b41873efb54d786f24feefad544457ccc3bfb",
+        "artifactIdentity": "sha256:07d86f6c73e55c343cbeaef03a75d28260f2f6569292c8f2d49afa0449054c0f",
+        "artifactRunId": 41045107678,
+        "universeId": "10773076775",
+        "placeId": "115056847915626",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "canonicalGameTarget": false,
+        "validationOnly": true,
+        "exposure": "PRIVATE_PRE_F9_VALIDATION_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 10,
+        "workflowRunId": 41046052835,
+        "publishedAt": "2026-10-30T11:14:54.669Z",
+        "authority": "roblox-open-cloud-pre-f9-validation-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxRuntimePassed": false,
@@ -3374,29 +3394,7 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxInternalReleaseEvidence": {
-        "version": 3,
-        "gameId": "horror-escape-room",
-        "platform": "ROBLOX",
-        "sourceRevision": "d3685a0b98feda63cbe52aaa9b6e47affba9ab07",
-        "artifactIdentity": "sha256:1a236dc501f1fcdc5b94bb4f6b28e0ad1b73190142bbdd0b87ef485e2af9eac0",
-        "artifactRunId": 41008693219,
-        "publisherMainRevision": "a0a3e1501e1b9c646d4c0de25829f9fed3d36fa3",
-        "universeId": "10767445796",
-        "placeId": "98222620265768",
-        "finalReviewPassed": false,
-        "validationMode": null,
-        "headlessFastMvpPassed": true,
-        "published": true,
-        "publicRelease": false,
-        "exposure": "PRIVATE_OR_RESTRICTED",
-        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-        "versionNumber": 144,
-        "workflowRunId": 41011307257,
-        "publishedAt": "2026-10-30T06:04:21.063Z",
-        "dedicated": true,
-        "authority": "owner-direct-github-dedicated-private-publish"
-      },
+      "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
@@ -3436,10 +3434,10 @@
         "workflowRunId": 41009887021,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -3458,7 +3456,7 @@
       "robloxPublicRelease": false,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "cb321c44f1dcff287051741e426696acc916fb5e",
         "newSourceRevision": "39c7a029230c47b7067d7d5276c8c4bf1222fa23",
@@ -3474,7 +3472,7 @@
         "placeId": "115056847915626",
         "verified": true,
         "verifiedAt": "2026-10-26T07:33:11.998Z",
-        "lastVerifiedAt": "2026-10-29T14:55:24.787Z",
+        "lastVerifiedAt": "2026-10-30T11:14:54.669Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-pre-f9-validation-target",
         "dedicated": true,
@@ -3485,206 +3483,8 @@
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
       "robloxCanonicalPublishPending": false,
-      "robloxReleaseVersionNumber": 144,
-      "robloxInternalVibePlayEvidence": {
-        "version": 2,
-        "gameId": "horror-escape-room",
-        "studioHarnessVersion": 18,
-        "authority": "roblox-official-studio-mcp-runtime",
-        "pass": false,
-        "actualPlay": false,
-        "runtimeVerified": false,
-        "learningReusable": true,
-        "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
-        "infrastructureFailure": false,
-        "failureClass": "STUDIO_PRODUCT_QUALITY_FAILURE",
-        "robloxFailureClass": "ROBLOX_TOUCH_INPUT",
-        "actualPlayEligibility": "INTERNAL_RELEASE_OR_HISTORICAL_REPLAY",
-        "studioMcpServerEnablementRequired": false,
-        "operatorPrerequisite": null,
-        "localPlaceFile": true,
-        "officialStudioMcp": true,
-        "onlinePlaceDirectOpen": false,
-        "robloxPlayerAutomation": false,
-        "externalGuiAutomation": false,
-        "undocumentedStudioCliAutomation": false,
-        "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "d3685a0b98feda63cbe52aaa9b6e47affba9ab07",
-        "artifactIdentity": "sha256:1a236dc501f1fcdc5b94bb4f6b28e0ad1b73190142bbdd0b87ef485e2af9eac0",
-        "artifactRunId": 41008693219,
-        "universeId": "10767445796",
-        "placeId": "98222620265768",
-        "versionNumber": 144,
-        "historicalSharedTargetExactArtifact": true,
-        "historicalExactBuildReplay": false,
-        "currentSourceArtifactBinding": true,
-        "currentPublishedRuntimeClaim": false,
-        "publishedCandidateCrossCheckPassed": true,
-        "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
-        "capabilities": {
-          "officialStudioMcp": false,
-          "playMode": false,
-          "mcpInput": false,
-          "screenCapture": false,
-          "consoleCapture": false
-        },
-        "actions": [
-          {
-            "id": "ui-entry-1",
-            "type": "mcp-mouse-input",
-            "dispatched": false,
-            "ok": false
-          }
-        ],
-        "checkpoints": [
-          {
-            "id": "official-studio-mcp-connected",
-            "name": "official-studio-mcp-connected",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "local-studio-selected",
-            "name": "local-studio-selected",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "studio-state-readable",
-            "name": "studio-state-readable",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "PRE_PLAY_STUDIO_MODAL_GATE",
-            "name": "PRE_PLAY_STUDIO_MODAL_GATE",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "play-mode-started",
-            "name": "play-mode-started",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "actual-play-initial-client-probe",
-            "name": "actual-play-initial-client-probe",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "initial-character-playable",
-            "name": "initial-character-playable",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "floating-character-map-readiness",
-            "name": "floating-character-map-readiness",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "entry-action-1-dispatched",
-            "name": "entry-action-1-dispatched",
-            "required": true,
-            "pass": false
-          }
-        ],
-        "errors": [
-          {
-            "type": "studio-product-start-action-error",
-            "actionId": "ui-primary-action",
-            "signature": "ROBLOX_STUDIO_START_ACTION_ABORT:ENTRY_ACTION_NOT_VISIBLE:저택 들어가기"
-          }
-        ],
-        "runtimeSummary": {
-          "consoleErrorCount": 1,
-          "consoleWarningCount": 0,
-          "distinctFrameChange": false,
-          "characterMotionRuntimeRequired": false,
-          "characterMotionRuntimePassed": true,
-          "scenarioContractRequired": true,
-          "scenarioFailureCount": 1,
-          "primaryActionDisplacement": 0,
-          "primaryActionVelocity": 0,
-          "primaryActionFeedbackChanged": false,
-          "commercialAudit": {
-            "auditProfile": "FAST_DEEP",
-            "timelineProbeCount": 0,
-            "routePlanningProbeCount": 0,
-            "lightweightProbeCount": 0,
-            "progressChanged": false,
-            "inventoryChanged": false,
-            "timelineProgressChanged": false,
-            "timelineMobDynamic": false,
-            "timelineCompanionDynamic": false,
-            "uiCommercial": {},
-            "surfaces": {},
-            "performance": {},
-            "multiplayer": null,
-            "saveRejoin": null
-          }
-        },
-        "characterMotionRuntime": null,
-        "learningSignals": [
-          "roblox official studio mcp local runtime",
-          "official-studio-mcp-connected",
-          "local-studio-selected",
-          "studio-state-readable",
-          "PRE_PLAY_STUDIO_MODAL_GATE",
-          "play-mode-started",
-          "actual-play-initial-client-probe",
-          "initial-character-playable",
-          "floating-character-map-readiness",
-          "debugging",
-          "runtime error",
-          "ROBLOX_TOUCH_INPUT"
-        ],
-        "rawSourceIncluded": false,
-        "rawGameplayValuesIncluded": false,
-        "rawViewportIncluded": false,
-        "scenarioContractRequired": true,
-        "scenarioContractVersion": 4,
-        "scenarioContractFingerprint": "sha256:7d5a1eb6b5c140d5205b431e3fd440e61b704f397c7025832f37e7a2af02f9cb",
-        "scenarioCoverage": [
-          {
-            "id": "adaptive-start-playability",
-            "pass": false
-          }
-        ],
-        "scenarioCoveragePass": false,
-        "qualityFailureKinds": [
-          "adaptive-start-playability"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "adaptive-start-playability",
-            "repairSurface": "GAME_START",
-            "priority": "CRITICAL",
-            "hint": "The start action was unavailable or the observed class selection did not finish. Restore an actionable entry flow and confirm selection before full Studio QA.",
-            "observed": {
-              "requiredButtonText": "대시",
-              "visibleButtons": 0,
-              "largeBlockingOverlayCount": 0
-            }
-          }
-        ],
-        "functionalChainEvidence": {
-          "inputDispatched": false,
-          "runtimeVerified": false,
-          "screenChanged": false,
-          "authoritativeStateChangeObserved": false,
-          "exactScenarioObserved": true
-        },
-        "testedAt": "2026-10-30T05:48:08.351Z",
-        "workflowRunId": 41009887021,
-        "publicationAuthority": false,
-        "publicationTargetDiscovery": false,
-        "commercialRegressionDetected": false,
-        "commercialRegressionDetails": []
-      },
+      "robloxReleaseVersionNumber": 10,
+      "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
       "robloxSecurityReleaseEvidence": null,
@@ -9891,7 +9691,7 @@
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T07:55:20.643Z"
     }
   ],
-  "updatedAt": "2026-10-30T11:14:29.977Z",
+  "updatedAt": "2026-10-30T11:14:54.669Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
