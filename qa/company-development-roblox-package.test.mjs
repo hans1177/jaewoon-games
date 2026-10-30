@@ -1504,15 +1504,23 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.doesNotMatch(client,/GuiService.TouchControlsEnabled=false|Controls:Disable\(\)/);
   assert.match(controls,/meadowSkillDock.Position=UDim2.new/);
   assert.match(client,/meadowSkillDock.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
-  // 세로가 좁은 모바일도 고려해 기존 전투 UI 묶음을 위로 옮긴다.
-  assert.match(client,/landscape and \(v\.Y<420 and 22 or 45\) or 112/);
-  // 좌표 표시를 원형 지도 위에 붙이고 기존 지도·제목·마커는 그대로 유지한다.
-  assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+18,mapDiameter\+58\)/);
-  assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,22\)/);
-  assert.match(client,/radarTitle.Position=UDim2.fromOffset\(5,mapDiameter\+28\)/);
-  assert.match(client,/radarCoordinates.Position=UDim2.fromOffset\(7,1\)/);
-  assert.match(client,/radarCoordinates.Size=UDim2.new\(1,-14,0,18\)/);
-  assert.match(client,/radarCoordinates.TextSize=10/);
+  // [모바일 배치] 우측 조작창은 오른쪽 2픽셀로 붙고, 좁은 가로화면에서는 미니맵과 간섭하지 않는다.
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-math.floor\(2\*scale\)/);
+  assert.match(client,/v.Y<350 and 32 or v.Y<420 and 44 or 83/);
+  assert.match(client,/or 136\)\*scale/);
+  // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
+  assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+14,mapDiameter\+40\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-4,0,0\)/);
+  assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
+  assert.match(client,/radarTitle.Position=UDim2.fromOffset\(3,mapDiameter\+7\)/);
+  assert.match(client,/radarCoordinates.Position=UDim2.fromOffset\(3,mapDiameter\+25\)/);
+  assert.match(client,/radarCoordinates.TextSize=9/);
+  assert.match(client,/radarTitle.Font=Enum.Font.Gotham/);
+  assert.match(client,/radarTitle.Text=areaName/);
+  for(const region of ['초원지역','초원 마을','오래된 유적','숲 가장자리'])
+    assert.ok(client.includes('areaName="'+region+'"'),'real existing area name missing: '+region);
+  assert.match(client,/world:FindFirstChild\("Meadow_Ruin_"\.\.index\)/);
+  assert.match(client,/world:GetAttribute\("MeadowVillageNPCCount"\) or 0/);
 });
 
 // Existing server/input authority must boot before slow CC0 asset imports.
@@ -1544,7 +1552,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or (?:\d+|math.floor\(math.clamp\()/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-4,0,0)'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
