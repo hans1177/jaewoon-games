@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/fantasy-survival/client/Game.client.luau
 -- [Vibe 공용 프레젠테이션] 기존 버튼에만 TweenService/글로우 적용 (세이브·판정 불변).
 task.defer(function()
   local player = game:GetService("Players").LocalPlayer
@@ -436,7 +437,12 @@ meadowPatternBanner.Parent=gui
 local telegraphCorner=Instance.new("UICorner")
 telegraphCorner.CornerRadius=UDim.new(0,12)
 telegraphCorner.Parent=meadowPatternBanner
-local telegraphNames={WOLF_BITE="초원 늑대 · 물어뜯기",BEE_SWEEP="초원 벌 · 급강하",GOLEM_SLAM="돌 골렘 · 내려찍기"}
+-- 서버가 사용하는 여섯 공격 패턴을 모두 같은 예고 UI에 연결한다.
+local telegraphNames={
+  WOLF_BITE="초원 늑대 · 물어뜯기",WOLF_LUNGE="초원 늑대 · 도약",
+  BEE_SWEEP="초원 벌 · 급강하",BEE_STING="초원 벌 · 독침",
+  GOLEM_SLAM="돌 골렘 · 내려찍기",GOLEM_SHOCKWAVE="돌 골렘 · 충격파",
+}
 local telegraphElapsed=0
 game:GetService("RunService").Heartbeat:Connect(function(dt)
   telegraphElapsed+=dt
@@ -709,9 +715,12 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
   for model,row in pairs(meadowMobControllers) do
     if model.Parent and row.controller then
       local requested=model:GetAttribute("NativeMobMotion")
+      -- 상태값을 먼저 보존하고, 서버 상태가 없을 때만 종별 기본 모션을 사용한다.
       local mode=nativeMobMotionMap[requested]
-        or (row.species=="deer" or row.species=="boar" or row.species=="rabbit")
-          and "WALK" or "IDLE"
+      if not mode then
+        local wildlife=row.species=="deer" or row.species=="boar" or row.species=="rabbit"
+        mode=wildlife and "WALK" or "IDLE"
+      end
       if mode~=row.lastMode then
         row.lastMode=mode
         row.motionStartedAt=os.clock()
