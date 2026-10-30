@@ -278,6 +278,8 @@ for index,spec in ipairs({
   local model=worldAsset(spec.kind,spec.position,spec.height)
   if model then
     model:SetAttribute("MeadowWildlife",spec.kind)
+    model:SetAttribute("NativeMobMotion","WALK")
+    model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
     table.insert(meadowWildlife,{model=model,origin=model:GetPivot().Position,phase=index*1.7,
       range=spec.kind=="rabbit" and 5 or 9,speed=spec.kind=="rabbit" and .48 or .2})
   end
@@ -356,10 +358,16 @@ local function spawnEnemy(isBoss, index)
   model:SetAttribute("Species",partId)
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or (partId=="bee" and "BEE_SWEEP" or "WOLF_BITE"))
   model:SetAttribute("NativeMobMotion","IDLE")
+  model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
   local hasOriginalMotor=false
   for _,descendant in ipairs(model:GetDescendants()) do
-    if descendant:IsA("Motor6D") then hasOriginalMotor=true;break end
+    if descendant:IsA("Bone") or descendant:IsA("AnimationConstraint")
+      or (descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1) then
+      hasOriginalMotor=true
+      break
+    end
   end
+  -- 정적 메시에는 실제 걷기 관절이 없음을 표시한다. 판정이나 스폰에는 영향 없다.
   model:SetAttribute("NativeMobRig",hasOriginalMotor and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or
     (partId=="bee" and "DIVE_STING" or "LEAP_BITE"))
@@ -382,7 +390,8 @@ local function spawnEnemy(isBoss, index)
     speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,
     lastAttack=0,attackSerial=0,attackPattern=nil,windupUntil=nil,
     windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE",
-    baseHeight=location.Y,visualFacing=Vector3.new(0,0,-1)
+    baseHeight=location.Y,visualFacing=Vector3.new(0,0,-1),
+    visualPosition=location,visualFacingSmooth=Vector3.new(0,0,-1)
   })
   return true
 end
@@ -563,6 +572,7 @@ local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
   enemy.attackState=state
   enemy.model:SetAttribute("AttackState",state)
+  enemy.model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
   local motion=state=="ANTICIPATION" and "ATTACK" or
     state=="CHASE" and "RUN" or state=="RETURN_TO_SPAWN" and "WALK" or
     state=="RECOVERY" and "HIT" or "IDLE"
@@ -600,9 +610,9 @@ local function animateMeadowOriginalMob(enemy,now)
   local stridePitch=inMotion and math.sin(phase)*(.05+(kind=="wolf" and .13 or .06)) or 0
   local bank=aerial and math.sin(phase*.52)*.22
     or inMotion and math.sin(phase*.65)*.09 or 0
-  local facing=enemy.visualFacing
+  local facing=enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
-  local pivot=enemy.position+Vector3.new(0,movingHeight,0)
+  local pivot=(enemy.visualPosition or enemy.position)+Vector3.new(0,movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
     *CFrame.Angles(attackPitch+stridePitch,0,bank))
 end
@@ -733,17 +743,39 @@ local function updateEnemyAI(dt,now)
           setEnemyAttackState(enemy,"ANTICIPATION")
         end
       end
-      animateMeadowOriginalMob(enemy,now)
     end
   end
 end
+-- [몹 실제 보행] 전투/사거리/이동 속도 계산은 기존 0.12초 AI 스텝 그대로 둔다.
+-- 렌더링할 원본 모델 피벗만 30Hz로 보간해 8Hz 점프 이동을 제거한다.
 local enemyUpdateElapsed=0
+local enemyVisualElapsed=0
 RunService.Heartbeat:Connect(function(dt)
-  enemyUpdateElapsed+=math.min(dt,.15)
-  if enemyUpdateElapsed<.12 then return end
-  local step=math.min(enemyUpdateElapsed,.25)
-  enemyUpdateElapsed=0
-  updateEnemyAI(step,os.clock())
+  local step=math.min(dt,.15)
+  enemyUpdateElapsed+=step
+  enemyVisualElapsed+=step
+  if enemyUpdateElapsed>=.12 then
+    local logicStep=math.min(enemyUpdateElapsed,.25)
+    enemyUpdateElapsed=0
+    updateEnemyAI(logicStep,os.clock())
+  end
+  if enemyVisualElapsed>=1/30 then
+    local visualStep=math.min(enemyVisualElapsed,.08)
+    enemyVisualElapsed=0
+    local alpha=1-math.exp(-visualStep*18)
+    local now=os.clock()
+    for _,enemy in ipairs(enemies) do
+      if enemy.HP>0 and enemy.model.Parent then
+        enemy.visualPosition=(enemy.visualPosition or enemy.position):Lerp(enemy.position,alpha)
+        local desired=enemy.visualFacing
+        if desired.Magnitude>.01 then
+          local smooth=(enemy.visualFacingSmooth or desired):Lerp(desired,alpha)
+          if smooth.Magnitude>.01 then enemy.visualFacingSmooth=smooth.Unit end
+        end
+        animateMeadowOriginalMob(enemy,now)
+      end
+    end
+  end
 end)
 
 local meadowSkillSeconds={
