@@ -203102,12 +203102,12 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 1,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-30T03:18:50.522Z"
+      "updatedAt": "2026-10-30T03:38:10.578Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203323,12 +203323,12 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 1,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-30T03:18:50.549Z"
+      "updatedAt": "2026-10-30T03:38:10.601Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -238316,12 +238316,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 4,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-30T03:18:50.686Z"
+      "updatedAt": "2026-10-30T03:38:10.712Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -239698,12 +239698,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 9,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-30T03:18:50.754Z"
+      "updatedAt": "2026-10-30T03:38:10.796Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -242168,7 +242168,8 @@
         "actions-run:40993151696",
         "system-ai-handoff-to-reservation:system-ai:40993944448:1",
         "actions-run:40993944448",
-        "system-ai-handoff-to-reservation:system-ai:40995556175:1"
+        "system-ai-handoff-to-reservation:system-ai:40995556175:1",
+        "actions-run:40995556175"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -242181,12 +242182,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 25,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-30T03:18:50.644Z"
+      "updatedAt": "2026-10-30T03:38:10.683Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -244394,7 +244395,8 @@
         "actions-run:40993151696",
         "system-ai-handoff-to-reservation:system-ai:40993944448:1",
         "actions-run:40993944448",
-        "system-ai-handoff-to-reservation:system-ai:40995556175:1"
+        "system-ai-handoff-to-reservation:system-ai:40995556175:1",
+        "actions-run:40995556175"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -244407,12 +244409,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 21,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-30T03:18:50.594Z"
+      "updatedAt": "2026-10-30T03:38:10.632Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -247159,7 +247161,8 @@
         "actions-run:40993151696",
         "system-ai-handoff-to-reservation:system-ai:40993944448:1",
         "actions-run:40993944448",
-        "system-ai-handoff-to-reservation:system-ai:40995556175:1"
+        "system-ai-handoff-to-reservation:system-ai:40995556175:1",
+        "actions-run:40995556175"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -247172,12 +247175,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 1,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-30T03:18:50.707Z"
+      "updatedAt": "2026-10-30T03:38:10.742Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -248480,12 +248483,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 1,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-30T03:18:50.734Z"
+      "updatedAt": "2026-10-30T03:38:10.775Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
@@ -251045,12 +251048,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 1,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-25T08:09:24.576Z",
-      "updatedAt": "2026-10-30T03:18:50.786Z"
+      "updatedAt": "2026-10-30T03:38:10.817Z"
     },
     {
       "id": "recovery-a8e7c5b2447563afc90e",
@@ -258126,7 +258129,14 @@
         "actions-run:40993944448",
         "recovery-escalated-from:system-ai",
         "recovery-route:SYSTEM_AI",
-        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE"
+        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE",
+        "recovery-queue:recovery-9a456336f1bac674a1e1",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+        "failure-cause:WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+        "system-ai-impact-score:2344",
+        "system-ai-blocked-task-count:98",
+        "actions-run:40994722858",
+        "actions-run:40995556175"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -258139,12 +258149,12 @@
       "recoveryOwner": "SYSTEM_AI",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 0,
+      "recurrenceCount": 1,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-10-30T03:07:34.296Z"
+      "updatedAt": "2026-10-30T03:38:10.840Z"
     }
   ]
 }
