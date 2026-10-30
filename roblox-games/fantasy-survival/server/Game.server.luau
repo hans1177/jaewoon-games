@@ -78,10 +78,7 @@ local meadowEncounterSites = {
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(83,3,-91)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-84,3,94)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(81,3,96)},
-  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(-191,3,-185)},
-  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(191,3,-183)},
-  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(-196,3,179)},
-  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(196,3,183)},
+  -- [사용자 제거] 버섯 몬스터 서식지 4곳 폐쇄. 나머지 지역·몬스터 배치는 유지.
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-254,3,-226)},
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(248,3,-224)},
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(239,3,236)},
@@ -100,7 +97,7 @@ local meadowPalette={
   wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
   deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
-  mushroom=Color3.fromRGB(163,142,117),skeleton=Color3.fromRGB(198,192,174),
+  skeleton=Color3.fromRGB(198,192,174),
   golem=Color3.fromRGB(129,138,126),
 }
 local meadowTerrain = workspace.Terrain
@@ -1601,9 +1598,9 @@ local function spawnEnemy(site, siteIndex)
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13)
   local meadowNames={wolf="초원 늑대",
-    mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
+    bat="황혼 박쥐",skeleton="초원 해골"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
-  -- [몬스터 공통 재질] 늑대·버섯·박쥐·해골·골렘에 기존 토이 플라스틱을 적용한다.
+  -- [몬스터 공통 재질] 늑대·박쥐·해골·골렘에 기존 토이 플라스틱을 적용한다.
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
   -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
@@ -1639,7 +1636,7 @@ local function spawnEnemy(site, siteIndex)
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
   local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",
-    mushroom="MUSHROOM_SPORES",bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
+    bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or firstAttack[partId])
   model:SetAttribute("NativeMobMotion","IDLE")
   model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
@@ -1654,7 +1651,7 @@ local function spawnEnemy(site, siteIndex)
   -- 정적 메시에는 실제 걷기 관절이 없음을 표시한다. 판정이나 스폰에는 영향 없다.
   model:SetAttribute("NativeMobRig",hasOriginalMotor and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
   local secondarySkill={wolf="LEAP_BITE",bee="DIVE_STING",
-    mushroom="SPORE_CLOUD",bat="NIGHT_DIVE",skeleton="BONE_SWING"}
+    bat="NIGHT_DIVE",skeleton="BONE_SWING"}
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("EnemyMaxHealth",hitPoints)
@@ -1923,13 +1920,30 @@ local function animateMeadowOriginalMob(enemy,now)
   -- 네발 몹은 가짜 몸체 점프 대신 실제 다리 관절로 접지를 표현한다.
   local movingHeight=aerial and (1.35+math.sin(phase)*.42)
     or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .14 or .035) or 0)
+  -- [황혼 박쥐 비행] 원본 메시만 공중에서 부드럽게 부상→급강하→상승시킨다.
+  -- 실제 서버 공격 위치·사거리·피해·속도·지면 충돌 권한은 변경하지 않는다.
+  local batWindup=0
+  local batDive=0
+  if kind=="bat" then
+    local elapsed=math.max(0,now-(enemy.attackStateStartedAt or now))
+    if enemy.attackState=="ANTICIPATION" then
+      local duration=math.max(.12,enemy.model:GetAttribute("NativeMobMotionDuration") or .32)
+      batWindup=math.clamp(elapsed/duration,0,1)
+      batWindup=batWindup*batWindup*(3-2*batWindup)
+    elseif enemy.attackState=="ATTACK" then
+      batDive=math.sin(math.pi*math.clamp(elapsed/.46,0,1))
+    end
+    movingHeight=1.4+math.sin(phase)*.16+batWindup*.34-batDive*.83
+  end
   -- [늑대 물기] 예비 동작은 제자리에서 몸을 낮춘다. 급습은 원본 목/앞다리 관절이 담당한다.
   local leap=attacking and (kind=="wolf" and -.12 or kind=="boar" and .66
     or kind=="golem" and .38 or aerial and .5 or -.18) or 0
+  if kind=="bat" then leap=0 end
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
   local attackPitch=attacking and (kind=="wolf" and -.14
     or kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
+  if kind=="bat" then attackPitch=-.12*batWindup+.65*batDive+.12*recoil end
   if enemy.isBoss and attacking then
     local duration=enemy.model:GetAttribute("NativeMobMotionDuration") or .68
     local preparation=math.clamp((now-(enemy.attackStateStartedAt or now))/duration,0,1)
@@ -1961,8 +1975,7 @@ local function chooseMeadowMobSkill(enemy)
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
     or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")
     or enemy.kind=="bat" and (second and "BAT_SWEEP" or "BAT_DIVE")
-    or enemy.kind=="mushroom" and (second and "MUSHROOM_SPORES" or "MUSHROOM_BASH")
-    or enemy.kind=="skeleton" and (second and "SKELETON_THRUST" or "SKELETON_CLEAVE")
+     or enemy.kind=="skeleton" and (second and "SKELETON_THRUST" or "SKELETON_CLEAVE")
     or (second and "WOLF_LUNGE" or "WOLF_BITE")
   enemy.attackPattern=pattern
   enemy.model:SetAttribute("AttackPattern",pattern)
