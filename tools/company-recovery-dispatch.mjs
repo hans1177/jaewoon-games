@@ -117,6 +117,12 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
       /^(?:unity|unreal|godot)-games\//.test(file)))return rec;
     if(mode!=='all'&&mode==='vibe'&&owner!=='VIBE2_VIBE3')return rec;
     if(mode!=='all'&&mode==='system-ai'&&owner!=='SYSTEM_AI')return rec;
+    // 복구 원본이 승인·보안 격리 상태라면 관련 작업으로 권한을 우회하지 않는다.
+    const restricted=task=>task?.requiresOwnerDecision===true||task?.protectedChange===true
+      ||task?.paidResourceRequired===true||task?.securityReviewRequired===true
+      ||task?.securityQuarantined===true;
+    if(owner==='VIBE2_VIBE3'&&(restricted(rec)||gameQueue.tasks.some(task=>
+      clean(task.id)===clean(rec.sourceTaskId)&&restricted(task))))return rec;
     const ids=uniq([rec.sourceTaskId,...(rec.relatedTaskIds||[])]);
     let touched=0;
     if(owner==='VIBE2_VIBE3'){
@@ -172,8 +178,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         }
         // 결정권·유료 자원·보호 정책 변경은 일반 게임별 자동복구 권한 밖이다.
         if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
-          ||task.requiresOwnerDecision===true||task.protectedChange===true
-          ||task.paidResourceRequired===true)return task;
+          ||restricted(task))return task;
         if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return task;
         touched++;
         const running=clean(task.status)==='running';
