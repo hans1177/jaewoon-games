@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-30T05:55:48.698Z",
+  "generatedAt": "2026-10-30T05:57:08.883Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,13 +821,13 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-10-30T05:46:04.843Z",
-            "checkedAt": "2026-10-30T05:55:15.281Z",
+            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "result": "PRE_F0_OR_PENDING",
+            "verifiedAt": null,
+            "checkedAt": "2026-10-30T05:57:08.776Z",
             "lastFailureAt": null,
-            "f0PassedAt": "2026-10-30T05:46:04.843Z",
+            "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
@@ -843,22 +843,24 @@
             "homepageReady": false,
             "technicalReady": false,
             "designReady": true,
-            "lobbyReady": true,
+            "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": true,
               "movement": true,
               "noRuntimeErrors": true
             },
-            "blockers": [],
+            "blockers": [
+              "exactRuntime"
+            ],
             "sourceRevision": "b8a307171acac7e1420e193bb8fc4b0ab6261265",
             "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
-            "verifiedAt": "2026-10-30T05:11:20.066Z"
+            "verifiedAt": null
           },
           "executionAvailable": true,
           "historicalInternalRelease": true,
@@ -924,7 +926,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T05:55:15.281Z"
+      "updatedAt": "2026-10-30T05:57:08.776Z"
     },
     {
       "gameId": "daechung-rpg",
