@@ -21,11 +21,28 @@ if(!creator&&cookie&&/^[1-9][0-9]*$/.test(targetUniverse)){
  const data=await r.json().catch(()=>({}));
  if(r.ok&&String(data.id)===targetUniverse&&data.creatorType==='User')creator=String(data.creatorTargetId||'');
 }
+// Existing Vibe asset registration resolves the real authenticated owner, never a guessed ID.
+if(!creator&&cookie){
+ const response=await fetch('https://users.roblox.com/v1/users/authenticated',{
+  headers:{cookie},signal:AbortSignal.timeout(16000)
+ }).catch(()=>null);
+ if(response?.ok){
+  const account=await response.json().catch(()=>({}));
+  const authenticated=String(account.id||'');
+  if(/^[1-9][0-9]*$/.test(authenticated))creator=authenticated;
+ }
+}
 if(!creator){
  const scope=await introspectRobloxApiKey({apiKey:key});
+ if(scope.enabled!==true||scope.expired===true)throw Error('MODEL_CREATOR_AUTHORIZATION_UNVERIFIED');
+ const writable=scope.scopes.filter(entry=>/asset/i.test(entry.name||'')
+  &&entry.operations.some(x=>/write|create/i.test(x)));
  const ids=new Set();
- for(const entry of scope.scopes)if(/asset/i.test(entry.name||'')&&entry.operations.some(x=>/write|create/i.test(x)))for(const id of entry.userIds)ids.add(id);
+ for(const entry of writable)for(const id of entry.userIds)if(/^[1-9][0-9]*$/.test(id))ids.add(id);
  if(ids.size===1)creator=[...ids][0];
+ const authorized=String(scope.authorizedUserId||'');
+ if(!creator&&/^[1-9][0-9]*$/.test(authorized)
+  &&writable.some(entry=>entry.userIds.includes('*')||entry.userIds.includes(authorized)))creator=authorized;
 }
 if(!/^[1-9][0-9]*$/.test(creator))throw Error('MODEL_CREATOR_UNKNOWN_FAIL_CLOSED');
 let csrf='';
