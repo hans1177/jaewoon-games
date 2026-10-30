@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-30T11:05:45.669Z",
+  "generatedAt": "2026-10-30T11:08:37.296Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -947,14 +947,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-30T06:51:35.021Z",
-            "checkedAt": "2026-10-30T10:59:44.722Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-10-30T11:08:20.612Z",
+            "checkedAt": "2026-10-30T11:08:20.612Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
-            "candidatePublishedAt": "2026-10-30T06:51:35.021Z",
+            "f0PassedAt": "2026-10-30T11:08:20.612Z",
+            "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
           },
@@ -976,18 +976,19 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": true,
               "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
-            "artifactIdentity": "sha256:b5b1a32146cddafc4af0fbbe7dada51cbb9eb298c0d1defa50bebd9074203447",
-            "verifiedAt": "2026-10-30T07:08:34.303Z"
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
           },
           "executionAvailable": true,
           "historicalInternalRelease": true,
@@ -1053,7 +1054,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T10:59:44.722Z"
+      "updatedAt": "2026-10-30T11:08:20.612Z"
     },
     {
       "gameId": "defense",
