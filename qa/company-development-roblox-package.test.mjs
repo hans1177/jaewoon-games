@@ -1174,7 +1174,13 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(server,/meadowInspectReady\[player\]=now\+2\.5/);
   assert.match(server,/model:IsDescendantOf\(gameWorld\)/);
   assert.match(server,/rootPart.Position-model:GetPivot\(\).Position\).Magnitude>15/);
-  assert.match(server,/if index%6==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
+  // 네 입구에만 조사 프롬프트를 표시해 사분면 기록을 유지하고 중복 HUD를 막는다.
+  assert.match(server,/if index==6 or index==12 or index==18 or index==24 then/);
+  assert.match(server,/bindMeadowInspection\(tree,"WOODLAND"\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\+#trailSpurs\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowWoodlandScene","FOUR_GROVES_FOUR_REAL_TRAIL_SPURS"\)/);
+  assert.match(server,/Vector3.new\(site.X,-7\.2,site.Z\)/);
+  assert.match(server,/Vector3.new\(9,0,-8\),Vector3.new\(-9,0,-8\)/);
   assert.match(server,/bindMeadowInspection\(animal,spec\[1\]\)/);
   assert.match(server,/bindMeadowInspection\(model,spec.kind\)/);
   assert.match(server,/animal.escape=\(animal.escape or Vector3.zero\):Lerp\(escape,math.min\(1,dt\*3\)\)/);
@@ -1362,7 +1368,11 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
   assert.ok(client.includes('meadowHealthTrack.Size=UDim2.new(1,-18,0,18)'));
-  assert.ok(client.includes('local radarTrailEndpoints={{-51,-48,-177,-176}'));
+  assert.ok(client.includes('local radarTrailEndpoints={'));
+  assert.ok(client.includes('{-51,-48,-177,-176},{58,-49,183,-177}'));
+  assert.ok(client.includes('{-177,-176,-228,-219},{183,-177,231,-228}'));
+  assert.ok(client.includes('for route=1,8 do'));
+  assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
   assert.ok(client.includes('local mapDiameter=compactLandscape and 102 or small and 106 or 120'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
