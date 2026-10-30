@@ -255,7 +255,7 @@ local function recordMeadowQuest(player, eventName)
   if not quest then return end
   local progress=readNumber(player,"QuestProgress",0)
   if stage==1 then
-    if eventName~="INSPECT" then return end
+    if eventName~="INSPECT" and eventName~="WOODLAND" then return end
     progress+=1
   elseif stage==2 then
     if eventName=="WOOD" and readNumber(player,"QuestWood",0)==0 then
