@@ -699,11 +699,12 @@ local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,meadowHealt
 local meadowHud=gui:FindFirstChild("MobileGameStatus")
 if meadowHud then meadowAvatar.Parent=meadowHud;meadowAvatar.Visible=false end
 -- [스토리·아이템 HUD] 실제 서버 퀘스트와 DataStore 소장 기록만 보여준다.
--- 중앙 게임 화면과 점프/전투 영역은 비워 두고 좌상단에 펼침 단추만 둔다.
+-- [모바일 아이콘 메뉴] 좌측 큰 문구 패널을 작은 아이콘으로 줄인다.
+-- 실제 퀘스트·아이템·날씨 정보는 기존 저널과 서버 속성에 그대로 남는다.
 local questTracker=Instance.new("TextButton")
 questTracker.Name="MeadowMainQuest"
-questTracker.Size=UDim2.fromOffset(290,64)
-questTracker.Position=UDim2.fromOffset(10,130)
+questTracker.Size=UDim2.fromOffset(52,56)
+questTracker.Position=UDim2.fromOffset(9,130)
 questTracker.BackgroundColor3=Color3.fromRGB(22,47,39)
 questTracker.BackgroundTransparency=.08
 questTracker.BorderSizePixel=0
@@ -729,12 +730,12 @@ trackerTitle.TextXAlignment=Enum.TextXAlignment.Left
 trackerTitle.Font=Enum.Font.GothamBold
 trackerTitle.TextSize=15
 trackerTitle.ZIndex=9
+trackerTitle.Visible=false
 trackerTitle.Parent=questTracker
 if meadowIconAtlas~="" then
   local icon=Instance.new("ImageLabel");icon.Name="CC0QuestIcon";icon.BackgroundTransparency=1
   icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new(320,0);icon.ImageRectSize=Vector2.new(64,64)
-  icon.Size=UDim2.fromOffset(22,22);icon.Position=UDim2.fromOffset(8,7);icon.ZIndex=10;icon.Parent=questTracker
-  trackerTitle.Position=UDim2.fromOffset(36,5);trackerTitle.Size=UDim2.new(1,-44,0,25)
+  icon.Size=UDim2.fromOffset(38,38);icon.Position=UDim2.fromOffset(7,2);icon.ZIndex=10;icon.Parent=questTracker
 end
 local trackerDetail=Instance.new("TextLabel")
 trackerDetail.Name="QuestObjective"
@@ -747,7 +748,19 @@ trackerDetail.Font=Enum.Font.GothamMedium
 trackerDetail.TextSize=12
 trackerDetail.TextWrapped=true
 trackerDetail.ZIndex=9
+trackerDetail.Visible=false
 trackerDetail.Parent=questTracker
+local questCaption=Instance.new("TextLabel")
+questCaption.Name="QuestIconCaption"
+questCaption.Position=UDim2.fromOffset(0,40)
+questCaption.Size=UDim2.new(1,0,0,14)
+questCaption.BackgroundTransparency=1
+questCaption.Text="퀘스트"
+questCaption.TextColor3=Color3.fromRGB(251,235,190)
+questCaption.TextSize=10
+questCaption.Font=Enum.Font.GothamBold
+questCaption.ZIndex=10
+questCaption.Parent=questTracker
 
 local journalScroll=meadowPages[3]
 local function journalRow(name,height)
@@ -890,7 +903,7 @@ inventoryQuick.Name="MeadowInventoryQuick"
 inventoryQuick.Image=meadowIconAtlas
 inventoryQuick.ImageRectOffset=Vector2.new(256,0)
 inventoryQuick.ImageRectSize=Vector2.new(64,64)
-inventoryQuick.Size=UDim2.fromOffset(50,50)
+inventoryQuick.Size=UDim2.fromOffset(52,56)
 inventoryQuick.BackgroundColor3=Color3.fromRGB(19,43,40)
 inventoryQuick.BorderSizePixel=0
 inventoryQuick.ZIndex=11
@@ -904,8 +917,8 @@ quickStroke.Thickness=1.8
 quickStroke.Parent=inventoryQuick
 local quickCaption=Instance.new("TextLabel")
 quickCaption.Name="BackpackCaption"
-quickCaption.Position=UDim2.fromOffset(0,50)
-quickCaption.Size=UDim2.fromOffset(50,17)
+quickCaption.Position=UDim2.fromOffset(0,40)
+quickCaption.Size=UDim2.new(1,0,0,14)
 quickCaption.BackgroundTransparency=1
 quickCaption.Text="가방"
 quickCaption.TextColor3=Color3.fromRGB(247,239,207)
@@ -965,15 +978,13 @@ end)
 local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
-  local short=v.Y<440
-  local narrowPortrait=v.X<480 and v.X<v.Y
-  questTracker.Position=UDim2.fromOffset(9,short and 106 or 132)
-  -- [모바일 배치] 오른쪽 탐험 지도의 폭을 남겨 퀘스트와 버튼이 서로 덮이지 않게 한다.
-  questTracker.Size=UDim2.fromOffset(math.max(120,math.min(294,v.X-(narrowPortrait and 173 or 112))),short and 57 or 64)
-  inventoryQuick.Position=UDim2.fromOffset(10,short and 213 or 249)
-  trackerTitle.TextSize=short and 12 or 15
-  trackerDetail.TextSize=short and 10 or 12
-
+  local shortLandscape=v.X>v.Y and v.Y<450
+  -- [간편 메뉴] 세로 화면에서는 왼쪽 한 열, 낮은 가로 화면에서는 한 행에 둔다.
+  -- 하단 조이스틱과 오른쪽 반원형 스킬에 간섭하지 않는다.
+  questTracker.Position=UDim2.fromOffset(9,shortLandscape and 108 or 130)
+  questTracker.Size=UDim2.fromOffset(52,56)
+  inventoryQuick.Position=UDim2.fromOffset(shortLandscape and 70 or 9,shortLandscape and 108 or 194)
+  inventoryQuick.Size=UDim2.fromOffset(52,56)
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 layoutMeadowJournal()
@@ -1008,26 +1019,62 @@ do
 -- [초원 날씨 표시·네이티브 강수] 서버의 같은 날씨/시각을 모든 플레이어가 관측한다.
 -- 날씨는 시각 효과 전용이다. 스킬 입력·몬스터 전투·저장/성장은 변경하지 않는다.
 local meadowClimateWorld=workspace:WaitForChild("FantasySurvivalWorld",15)
-local meadowClimateChip=Instance.new("TextLabel")
+local meadowClimateChip=Instance.new("TextButton")
 meadowClimateChip.Name="MeadowClimateStatus"
-meadowClimateChip.Position=UDim2.fromOffset(9,203)
-meadowClimateChip.Size=UDim2.fromOffset(202,28)
+meadowClimateChip.Position=UDim2.fromOffset(9,258)
+meadowClimateChip.Size=UDim2.fromOffset(52,56)
 meadowClimateChip.BackgroundColor3=Color3.fromRGB(20,44,46)
 meadowClimateChip.BackgroundTransparency=.13
 meadowClimateChip.BorderSizePixel=0
 meadowClimateChip.TextColor3=Color3.fromRGB(243,249,235)
-meadowClimateChip.TextSize=13
+meadowClimateChip.TextSize=12
 meadowClimateChip.Font=Enum.Font.GothamBold
 meadowClimateChip.TextXAlignment=Enum.TextXAlignment.Center
-meadowClimateChip.Text="초원 날씨 불러오는 중"
-meadowClimateChip.Active=false
+meadowClimateChip.Text="날씨"
+meadowClimateChip.TextWrapped=true
+meadowClimateChip.AutoButtonColor=true
+meadowClimateChip.Active=true
 meadowClimateChip.ZIndex=8
 meadowClimateChip.Parent=gui
 local climateCorner=Instance.new("UICorner")
-climateCorner.CornerRadius=UDim.new(0,8)
+climateCorner.CornerRadius=UDim.new(0,11)
 climateCorner.Parent=meadowClimateChip
+local climateStroke=Instance.new("UIStroke")
+climateStroke.Color=Color3.fromRGB(151,204,187)
+climateStroke.Thickness=1.5
+climateStroke.Transparency=.22
+climateStroke.Parent=meadowClimateChip
+-- 서버의 전체 날씨/시각은 날씨 아이콘을 눌렀을 때만 짧게 보여준다.
+local climateDetails=Instance.new("TextLabel")
+climateDetails.Name="MeadowClimateDetails"
+climateDetails.Size=UDim2.fromOffset(206,32)
+climateDetails.BackgroundColor3=Color3.fromRGB(20,44,46)
+climateDetails.BackgroundTransparency=.07
+climateDetails.BorderSizePixel=0
+climateDetails.TextColor3=Color3.fromRGB(245,249,232)
+climateDetails.TextSize=12
+climateDetails.Font=Enum.Font.GothamBold
+climateDetails.ZIndex=12
+climateDetails.Visible=false
+climateDetails.Parent=gui
+local climateDetailsCorner=Instance.new("UICorner")
+climateDetailsCorner.CornerRadius=UDim.new(0,9)
+climateDetailsCorner.Parent=climateDetails
+local climateDetailToken=0
+meadowClimateChip.Activated:Connect(function()
+  if gui:GetAttribute("GameMenuOpen")==true or gui:GetAttribute("StoryJournalOpen")==true then return end
+  climateDetailToken+=1
+  local token=climateDetailToken
+  climateDetails.Visible=not climateDetails.Visible
+  if climateDetails.Visible then
+    task.delay(4,function()
+      if token==climateDetailToken then climateDetails.Visible=false end
+    end)
+  end
+end)
 local climatePeriodNames={DAWN="새벽",DAY="낮",DUSK="저녁",NIGHT="밤"}
 local climateWeatherNames={CLEAR="맑음",RAIN="비",FOG="안개",SNOW="눈",STORM="폭풍"}
+local climateWeatherSymbols={CLEAR="☀",RAIN="☂",FOG="☁",SNOW="❄",STORM="⚡"}
 local climateEmitter=nil
 local climateLightningUntil=0
 local climateNextLightningAt=os.clock()+19
@@ -1108,19 +1155,28 @@ if meadowClimateWorld then
 end
 local function renderMeadowClimate()
   local v=gui.AbsoluteSize
-  local short=v.Y>0 and v.Y<440
-  local narrowPortrait=v.X<480 and v.X<v.Y
-  meadowClimateChip.Position=UDim2.fromOffset(9,short and 172 or 203)
-  -- 실제 지도와 날씨 상태창이 겹치지 않도록 좁은 화면의 왼쪽 열 너비를 맞춘다.
-  meadowClimateChip.Size=UDim2.fromOffset(math.max(120,math.min(208,v.X-(narrowPortrait and 174 or 110))),short and 24 or 28)
-  meadowClimateChip.TextSize=short and 11 or 13
-  meadowClimateChip.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  local shortLandscape=v.X>v.Y and v.Y<450
+  local chipX=shortLandscape and 131 or 9
+  local chipY=shortLandscape and 108 or 258
+  meadowClimateChip.Position=UDim2.fromOffset(chipX,chipY)
+  meadowClimateChip.Size=UDim2.fromOffset(52,56)
+  climateDetails.Position=UDim2.fromOffset(shortLandscape and 9 or 68,
+    shortLandscape and 169 or 268)
+  local show=gui:GetAttribute("GameMenuOpen")~=true
     and gui:GetAttribute("StoryJournalOpen")~=true
-  if not meadowClimateWorld then return end
+  meadowClimateChip.Visible=show
+  if not show then climateDetails.Visible=false end
+  if not meadowClimateWorld then
+    meadowClimateChip.Text="날씨"
+    climateDetails.Text="초원 날씨 불러오는 중"
+    return
+  end
   local weather=meadowClimateWorld:GetAttribute("MeadowWeather") or "CLEAR"
   local period=meadowClimateWorld:GetAttribute("MeadowDayPhase") or "DAWN"
   local clock=meadowClimateWorld:GetAttribute("MeadowClockMinutes") or 315
-  meadowClimateChip.Text=string.format("%s  ·  %s  ·  %02d:%02d",
+  meadowClimateChip.Text=string.format("%s\n%s",climateWeatherSymbols[weather] or "☀",
+    climateWeatherNames[weather] or "맑음")
+  climateDetails.Text=string.format("%s  ·  %s  ·  %02d:%02d",
     climatePeriodNames[period] or "초원",climateWeatherNames[weather] or "맑음",
     math.floor(clock/60),clock%60)
   if climateEmitter then
