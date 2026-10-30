@@ -438,6 +438,19 @@ jobs:
                   return !registered||!Number.isSafeInteger(registered.assetId)||registered.assetId<1
                     ||!new RegExp('\\b'+role+'\\s*=\\s*'+registered.assetId+'\\b').test(ids);
                 })
+                ||(()=>{
+                  const registryPath=target+'/CC0-ASSET-REGISTRY.json';
+                  if(!fs.existsSync(registryPath))return false;
+                  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+                  const village=registry.villagePrefabs;
+                  if(village?.sourceVerified!==true)return false;
+                  if(village.registrationVerified!==true)return true;
+                  const idsPath=target+'/shared/VisualAssetIds.luau';
+                  const ids=fs.existsSync(idsPath)?fs.readFileSync(idsPath,'utf8'):'';
+                  return Object.entries(village.models||{}).some(([role,row])=>
+                    !Number.isSafeInteger(row.assetId)||row.assetId<1
+                    ||!ids.includes(role+'='+row.assetId));
+                })()
               );
             const materialRepairPending=reconciliationRow?.sourceRepairPending===true
               &&reconciliationRow?.sourceContractRepairRequired!==true
