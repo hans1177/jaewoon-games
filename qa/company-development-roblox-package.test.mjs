@@ -1734,9 +1734,9 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.ok(client.includes('skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR'));
   assert.match(client,/dodgePoseUntil=0\s*finishMeadowSkillPose\(\)/);
   // 기존 공식 R15 관절만 사용해 낮추기-옆발-착지까지 포즈가 연속 변화해야 한다.
-  assert.match(client,/skillMotionDuration=isDodge and \.46/);
-  assert.match(client,/local prepare=math\.clamp\(phase\/\.16,0,1\)/);
-  assert.match(client,/local settle=math\.clamp\(\(1-phase\)\/\.32,0,1\)/);
+  assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
+  assert.match(client,/local prepare=math\.clamp\(phase\/\.17,0,1\)/);
+  assert.match(client,/local settle=math\.clamp\(\(1-phase\)\/\.27,0,1\)/);
   assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ThighR=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles/);
@@ -1746,7 +1746,7 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(dodge,/workspace:Raycast\(start,side\*7,ray\)/);
   assert.match(dodge,/if distance<2 then return false end/);
   assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
-  assert.match(dodge,/local eased=t\*t\*\(3-2\*t\)/);
+  assert.match(dodge,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
   assert.match(dodge,/character:PivotTo\(dodgeOrigin\+dodgeOffset\*eased\)/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
 });
