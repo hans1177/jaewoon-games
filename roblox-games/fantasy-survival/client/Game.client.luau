@@ -2310,10 +2310,15 @@ task.delay(5,function()
         distance=math.min(distance,math.sqrt(dx*dx+dz*dz))
       end
       local forestPresence=1-math.clamp((distance-25)/235,0,1)
-      forestBed.Volume=.035+.085*forestPresence
-      birdChirp.Volume=.085+.17*forestPresence
+      -- [시간·날씨 음향] 서버가 정한 실제 시간/날씨를 읽고 야간·우천 새소리만 줄인다.
+      local climate=workspace:FindFirstChild("FantasySurvivalWorld")
+      local phase=climate and climate:GetAttribute("MeadowDayPhase") or "DAY"
+      local sky=climate and climate:GetAttribute("MeadowWeather") or "CLEAR"
+      local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="STORM"
+      forestBed.Volume=(.035+.085*forestPresence)*(quiet and .28 or 1)
+      birdChirp.Volume=(.085+.17*forestPresence)*(quiet and .18 or 1)
       if os.clock()>=nextChirp then
-        if forestPresence>.12 then
+        if forestPresence>.12 and not quiet then
           birdChirp.PlaybackSpeed=.91+math.random()*.17
           birdChirp:Play()
         end
