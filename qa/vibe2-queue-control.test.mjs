@@ -7,9 +7,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {runInNewContext} from 'node:vm';
 import {
   synchronizeOwnerDevelopmentHolds,
+  SOURCE_CODEGEN_SHA256,
   webSourceRetiredInCatalog,
   completeOwnerExclusiveGameScope,
   enqueueVibeTask,
@@ -246,6 +248,53 @@ test('official Studio evidence change retries one native causal candidate, same 
   assert.equal(recover(spoof).recovered,0,'unverified metadata cannot reopen a blocked native task');
   const missing={...blocked,buildUpDirective:{...blocked.buildUpDirective,playtestRuntimeFindings:{}}};
   assert.equal(recover(missing).recovered,0,'missing Studio evidence must not create another attempt for unchanged codegen');
+});
+
+test('offline pattern-coder source revision reopens only the exact safe game without waiting six hours',()=>{
+  const generatorFiles=[
+    'vibe2-v4-pattern-coder.mjs','vibe2-source-worker.mjs','vibe2-v59-autonomy.mjs',
+    'vibe2-complex-intent.mjs','vibe2-complex-work-planner.mjs',
+    'vibe2-game-source-index.mjs','company-build-up-directive.mjs'
+  ];
+  const digest=(rewritePattern)=>createHash('sha256').update(generatorFiles.map(file=>{
+    const raw=fs.readFileSync(new URL('../tools/'+file,import.meta.url),'utf8');
+    const content=file==='vibe2-v4-pattern-coder.mjs'&&rewritePattern
+      ?raw+'\n// prior offline generator candidate without the new behavior\n':raw;
+    return file+'\n'+content;
+  }).join('\n')).digest('hex');
+  assert.equal(SOURCE_CODEGEN_SHA256,digest(false),
+    'offline recheck fingerprint must include executable Vibe4 pattern-coder source');
+  const priorSha=digest(true);
+  assert.notEqual(priorSha,SOURCE_CODEGEN_SHA256);
+  const retryAt=new Date(Date.now()+6*60*60*1000).toISOString();
+  const base={id:'forest-offline',gameId:'forest',target:'web',
+    department:'development',type:'implementation',
+    sourceRoot:'web-games/forest',responsibleFiles:['index.html'],
+    status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE',retries:2,
+    evidence:['source-offline-pattern-codegen-sha256:'+priorSha,
+      'source-offline-pattern-retry-at:'+retryAt]};
+  const revived=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[base]}),
+    {nowMs:Date.now()});
+  assert.equal(revived.recovered,1,'new offline generator must retry before six-hour deadline');
+  const task=revived.queue.tasks[0];
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,2);
+  assert.equal(task.lastOutcome,'OFFLINE_RECIPE_CAPABILITY_RECHECK');
+  assert.ok(task.evidence.includes('source-offline-pattern-codegen-sha256:'+SOURCE_CODEGEN_SHA256));
+  const unchanged=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[
+    {...task,status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE'}
+  ]}),{nowMs:Date.now()});
+  assert.equal(unchanged.recovered,0,'unchanged generator must not cause a tight retry loop');
+  for(const field of ['ownerDevelopmentHold','ownerDevelopmentStopped','requiresOwnerDecision',
+    'protectedChange','paidResourceRequired','securityReviewRequired','securityQuarantined']){
+    const held={...base,[field]:true};
+    const gated=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[held]}),
+      {nowMs:Date.now()+7*60*60*1000});
+    assert.equal(gated.recovered,0,field+' must stay fail-closed even on code revision');
+    assert.equal(gated.queue.tasks[0].status,'blocked');
+    assert.equal(gated.queue.tasks[0].blocker,'OFFLINE_RECIPE_UNAVAILABLE');
+    assert.deepEqual(gated.queue.tasks[0].evidence,held.evidence);
+  }
 });
 
 test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
