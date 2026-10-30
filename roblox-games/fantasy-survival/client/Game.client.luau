@@ -2493,7 +2493,8 @@ local function bindOriginalMob(model)
     followAnimator=true,response=26,
   }) or nil
   local row={controller=controller,available=available,plan=bodyPlan,
-    species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock()}
+    species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
+    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0}
   model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG"
     or "UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET")
   if not actualRig and not meadowMobRigWarnings[species] then
@@ -2553,6 +2554,20 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           forcedPhase=math.clamp((impactAge-.20)/.36,0,1)
         end
       end
+      -- [4족 접지] 시간만으로 다리를 휘두르면 제자리에서도 발이 미끄러진다.
+      -- 실제 서버 메시 피벗의 수평 이동거리로 보폭을 맞추고 멈추면 가볍게 정지한다.
+      local position=model:GetPivot().Position
+      local moved=Vector3.new(position.X-row.lastPosition.X,0,position.Z-row.lastPosition.Z)
+      row.lastPosition=position
+      local traveled=moved.Magnitude
+      local step=math.clamp(dt,1/120,.12)
+      local rawSpeed=traveled>5 and 0 or math.min(traveled/step,24)
+      row.groundSpeed+=(rawSpeed-row.groundSpeed)*math.min(1,step*9)
+      local footTravel=(mode=="WALK" or mode=="RUN") and row.plan=="QUADRUPED"
+      if footTravel then
+        if traveled<=5 then row.travel+=traveled end
+        if row.groundSpeed<.35 then mode="IDLE" end
+      end
       if mode~=row.lastMode then
         row.lastMode=mode
         row.motionStartedAt=os.clock()
@@ -2572,6 +2587,11 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       end
       local phase=repeating and (row.phase%duration)/duration
         or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
+      if footTravel and mode~="IDLE" then
+        -- 걷기/달리기 모두 실제 전진 거리당 한 걸음: 앞뒤 대각 발의 접지와 일치.
+        local stride=mode=="RUN" and 5.5 or 3.9
+        phase=(row.travel%stride)/stride
+      end
       if not repeating and serverAge then phase=math.clamp(serverAge/duration,0,1) end
       if forcedPhase then phase=forcedPhase end
       table.clear(row.poses)
@@ -2579,8 +2599,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         phase,{
           bodyPlan=row.plan,actorClass=model:GetAttribute("Boss") and "BOSS" or "CREATURE",
           availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
-          secondary=.7,intensity=1.24,
-          profile={limbArc=1.3,footContact=1.28,attackStrike=1.22},
+          secondary=.7,intensity=footTravel and 1.08 or 1.24,
+          profile={limbArc=footTravel and 1.08 or 1.3,footContact=1.28,attackStrike=1.22},
         },row.poses)
       if matched then
         -- [수문장 액션] 실제 원본 팔·다리만 큰 예비 동작과 충격 뒤 복귀에 연결한다.
@@ -2595,7 +2615,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         end
         -- 실제 원본 관절이 있는 몹에만 종별 공격·추적 동작을 크게 합성한다.
         local gain=mode=="ATTACK" and (row.species=="golem" and 1.75 or 1.6)
-          or mode=="RUN" and 1.42 or 1.10
+          or mode=="RUN" and (row.plan=="QUADRUPED" and 1.08 or 1.42)
+          or 1.10
         for joint,pose in pairs(row.poses) do
           if typeof(pose)=="CFrame" then
             local axis,angle=pose:ToAxisAngle()
