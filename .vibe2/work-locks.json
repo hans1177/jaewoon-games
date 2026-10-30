@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-kjuou0",
+      "worker": "vibe2",
+      "taskId": "gem-survivor-web-startup-spatial-repair-v8",
+      "gameId": "gem-survivor",
+      "files": [
+        "web-games/gem-survivor/index.html",
+        "web-games/gem-survivor/gem3d.mjs"
+      ],
+      "baseSha": "c49dc3af02b2866673dc10f270f493080e258bc4",
+      "runId": "41030132769",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-30T09:10:51.286Z",
+      "expiresAt": "2026-10-30T09:55:51.286Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:gem-survivor-web-startup-spatial-repair-v8"
+      ]
+    }
+  ]
 }
