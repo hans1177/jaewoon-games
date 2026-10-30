@@ -1320,10 +1320,7 @@ local function styleMeadowCombatButton(button,color)
   border.Thickness=2.5
   border.Transparency=.06
   border.Parent=button
-  local gradient=Instance.new("UIGradient")
-  gradient.Rotation=105
-  gradient.Color=ColorSequence.new(Color3.fromRGB(56,66,75),Color3.fromRGB(11,18,26))
-  gradient.Parent=button
+  -- 텍스트까지 어둡게 만드는 버튼 전체 그라디언트 대신 밝은 글자를 유지한다.
 end
 for index,skill in ipairs(meleeSkills)do
   local button=Instance.new("TextButton")
@@ -1392,8 +1389,7 @@ meadowPrimaryAttack.Text="⚔\n공격"
 meadowPrimaryAttack.TextSize=22
 styleMeadowCombatButton(meadowPrimaryAttack,Color3.fromRGB(255,104,90))
 meadowPrimaryAttack.Parent=meadowSkillDock
-local primaryGradient=meadowPrimaryAttack:FindFirstChildOfClass("UIGradient")
-primaryGradient.Color=ColorSequence.new(Color3.fromRGB(167,49,47),Color3.fromRGB(62,12,28))
+meadowPrimaryAttack.BackgroundColor3=Color3.fromRGB(115,41,45)
 meadowPrimaryAttack.Activated:Connect(function()
   if gui:GetAttribute("GameMenuOpen")~=true and primaryCombatAction then
     activateMeadowAction(primaryCombatAction.Id)
