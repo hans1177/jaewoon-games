@@ -3075,14 +3075,24 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
     character:SetAttribute("NativeCombatMotionState", "MATCHING_WEAPON_MOTION_REQUIRED")
     return
   end
-  -- [공용 자산 실연결] 선택된 스튜디오 모션과 자사 R15 포즈 라이브러리의 동작 ID를 연결한다.
-  -- 자산 카탈로그 ATTACK_LIGHT_1은 공용 포즈 원본 LIGHT_ATTACK_1에 대응한다.
-  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then
+  -- [공식 Roblox 관절·자산 계약] 원본 3단계 검술과 맨손은 각각 승인된 실제 자산을 요구한다.
+  -- 공용 R15 포즈는 Animator를 덮지 않고 PreSimulation에서 기존 Transform 위에 섞는다.
+  local swordProfile=profile=="SWORD" or profile=="LONGSWORD" or profile=="GREATSWORD"
+  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1")
+    or (swordProfile and (not hasStudioAssetAtom("MOTION","ATTACK_LIGHT_2")
+      or not hasStudioAssetAtom("MOTION","ATTACK_LIGHT_3"))) then
     character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
     return
   end
-  -- 승인된 맨손 포즈를 기존 아바타의 실제 관절에만 적용한다.
-  if not hasStudioAssetAtom("CHARACTER","HAND_BARE") then return end
+  if profile=="UNARMED" then
+    if not hasStudioAssetAtom("CHARACTER","HAND_BARE") then return end
+  elseif swordProfile then
+    local bladeAtom=profile=="GREATSWORD" and "BLADE_HEAVY" or "BLADE_LONG"
+    if not hasStudioAssetAtom("WEAPON",bladeAtom) then
+      character:SetAttribute("NativeCombatMotionState", "APPROVED_WEAPON_ATOM_REQUIRED")
+      return
+    end
+  end
   local motionOk, authoredMotion = pcall(combatMotionSource.Describe, "LIGHT_ATTACK_1")
   if not motionOk or not authoredMotion or authoredMotion.rig ~= "R15" then
     character:SetAttribute("NativeCombatMotionState", "R15_MOTION_SOURCE_REQUIRED")
@@ -3127,7 +3137,6 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   local chosenMoves={}
   -- [검 1·2·3타] 같은 검으로 1.15초 이내 이어 누르면 오른베기→왼베기→찌르기.
   -- 타격 요청은 기존 공격 입력 1회당 1회만 보내며 서버의 .42초 재사용 시간을 따른다.
-  local swordProfile=profile=="SWORD" or profile=="LONGSWORD" or profile=="GREATSWORD"
   local swordStage=0
   if swordProfile then
     swordStage=(swordComboCharacter==character and swordComboProfile==profile
