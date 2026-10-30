@@ -613,6 +613,9 @@ end
 local activeCombatCharacter = nil
 local activeCombatController = nil
 local activeCombatCombo = nil
+local activeNativeActionState=nil
+local activeNativeActionDuration=0
+local activeNativeAvailableJoints={}
 local activeCombatStartedAt = 0
 local combatPoseTargets = {}
 local combatR15Targets = {}
@@ -628,74 +631,118 @@ local function finishNativeCombatMotion()
   activeCombatController = nil
   combatRecoveryUntil = nil
   activeCombatCombo = nil
+  activeNativeActionState=nil
+  activeNativeActionDuration=0
+  table.clear(activeNativeAvailableJoints)
   activeCombatCharacter = nil
   table.clear(combatPoseTargets)
   table.clear(combatR15Targets)
 end
 player.CharacterAdded:Connect(function() finishNativeCombatMotion() end)
-player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
-  -- [서버 승인] 하나의 속성에 승인된 전투 액션과 이벤트 번호가 함께 전달된다.
-  local approved = tostring(player:GetAttribute("ApprovedCombatMotion") or "")
-  local approvedScope, approvedEvent = approved:match("^([^:]+):(%d+)$")
-  if not approvedEvent or not authorizedCombatScopes[approvedScope] then return end
-  local character = player.Character
-  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-  if not combatMotionSource or not humanoid or humanoid.Health <= 0 then return end
-  if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-    character:SetAttribute("NativeCombatMotionState", "R15_REQUIRED")
+local function startApprovedNativeAction(approved,combatOnly)
+  local approvedScope,approvedEvent=tostring(approved or ""):match("^([^:]+):(%d+)$")
+  if not approvedEvent then return end
+  local action=actionsById[approvedScope]
+  if not action then return end
+  if combatOnly~=true and action.Kind=="COMBAT" then return end -- avoid duplicate deliveries
+  if combatOnly==true and not authorizedCombatScopes[approvedScope] then return end
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  if not combatMotionSource or not humanoid or humanoid.Health<=0 then return end
+  if humanoid.RigType~=Enum.HumanoidRigType.R15 then
+    character:SetAttribute("NativeCombatMotionState","R15_REQUIRED")
     return
   end
-  local tool = character:FindFirstChildOfClass("Tool")
-  local equipment = tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or "UNARMED"
-  local profile = equipment == "UNARMED" and "UNARMED" or combatMotionSource.ResolveWeaponProfile(equipment)
-  if not profile then
-    character:SetAttribute("NativeCombatMotionState", "MATCHING_WEAPON_MOTION_REQUIRED")
+  -- Only existing Roblox source authored motion atoms, never synthesized bones.
+  local motionAtom=action.MotionAtom or "LIGHT_ATTACK_1"
+  if action.Kind=="COMBAT" and not hasStudioAssetAtom("MOTION","ATTACK_LIGHT_1") then
+    character:SetAttribute("NativeCombatMotionState","APPROVED_MOTION_ATOM_REQUIRED")
     return
   end
-  -- [공용 자산 실연결] 선택된 스튜디오 모션과 자사 R15 포즈 라이브러리의 동작 ID를 연결한다.
-  -- 자산 카탈로그 ATTACK_LIGHT_1은 공용 포즈 원본 LIGHT_ATTACK_1에 대응한다.
-  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then
-    character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
+  local motionOk,authoredMotion=pcall(combatMotionSource.Describe,motionAtom)
+  if not motionOk or not authoredMotion or authoredMotion.rig~="R15" then
+    character:SetAttribute("NativeCombatMotionState","R15_MOTION_SOURCE_REQUIRED")
     return
   end
-  local motionOk, authoredMotion = pcall(combatMotionSource.Describe, "LIGHT_ATTACK_1")
-  if not motionOk or not authoredMotion or authoredMotion.rig ~= "R15" then
-    character:SetAttribute("NativeCombatMotionState", "R15_MOTION_SOURCE_REQUIRED")
-    return
-  end
-  local joints = {}
-  for _, descendant in ipairs(character:GetDescendants()) do
+  local joints={}
+  for _,descendant in ipairs(character:GetDescendants()) do
     if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1
       and combatUpperJoints[descendant.Name] then
-      joints[descendant.Name] = descendant
+      joints[descendant.Name]=descendant
     end
   end
   if not (joints.Waist and joints.LeftShoulder and joints.RightShoulder
     and joints.LeftElbow and joints.RightElbow) then
-    character:SetAttribute("NativeCombatMotionState", "COMPATIBLE_R15_JOINTS_REQUIRED")
+    character:SetAttribute("NativeCombatMotionState","COMPATIBLE_R15_JOINTS_REQUIRED")
     return
   end
-  if activeCombatCharacter ~= character then finishNativeCombatMotion() end
-  local ok, combo = pcall(combatMotionSource.CreateCombatCombo, profile)
-  if not ok or not combo or not combo.steps or #combo.steps == 0 then return end
-  -- 서버 승인 1회당 실제 타격 모션 1회. 미승인 후속 콤보를 시각적으로 추가하지 않는다.
-  combo.steps = {combo.steps[1]}
-  combo.duration = combo.steps[1].start + combo.steps[1].duration
-  combatRecoveryUntil = nil
-  activeCombatCharacter = character
-  activeCombatCombo = combo
-  activeCombatStartedAt = os.clock()
-  -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
-  activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
-    followAnimator = true,
-    response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
+  if activeCombatCharacter~=character then finishNativeCombatMotion() end
+  local compiled=nil
+  local sourceState=nil
+  if action.Kind=="COMBAT" or approvedScope=="skill-meadow-heavy" or
+    approvedScope=="skill-meadow-sweep" then
+    local tool=character:FindFirstChildOfClass("Tool")
+    local equipment=tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or "UNARMED"
+    local profile=equipment=="UNARMED" and "UNARMED" or combatMotionSource.ResolveWeaponProfile(equipment)
+    if not profile then
+      character:SetAttribute("NativeCombatMotionState","MATCHING_WEAPON_MOTION_REQUIRED")
+      return
+    end
+    local ok,combo=pcall(combatMotionSource.CreateCombatCombo,profile)
+    if not ok or not combo or not combo.steps or #combo.steps==0 then return end
+    -- The company source returns frozen combo tables. Select a single actual
+    -- server-approved strike without mutating those shared source definitions.
+    local index=approvedScope=="skill-meadow-heavy" and #combo.steps or
+      approvedScope=="skill-meadow-sweep" and math.min(2,#combo.steps) or
+      1+(math.max(0,tonumber(approvedEvent) or 1)-1)%#combo.steps
+    local step=table.clone(combo.steps[index])
+    step.start=0
+    compiled={profileId=combo.profileId,guard=combo.guard,
+      steps={step},duration=step.duration,fadeDuration=combo.fadeDuration}
+  else
+    -- Native actor motion sampler consumes only actual R15 Motor6Ds.
+    -- There is no temporary AnimationTrack or fabricated model.
+    local states={
+      GATHER_SWING="INTERACT",CRAFT_LOOP="INTERACT",INTERACT_USE="INTERACT",
+      EMOTE_WAVE="GESTURE",SPRINT="START",CHANNEL_LOOP="GESTURE",
+      CAST_BURST="ATTACK",DODGE_LEFT="GESTURE",DODGE_RIGHT="GESTURE",
+      BLOCK_HOLD="INTERACT",PARRY_PERFECT="ATTACK",
+    }
+    sourceState=states[motionAtom]
+    if not sourceState or not combatMotionSource.SampleProceduralActorMotion then return end
+  end
+  activeCombatCharacter=character
+  activeCombatCombo=compiled
+  activeNativeActionState=sourceState
+  activeNativeActionDuration=math.clamp(tonumber(authoredMotion.duration) or .6,.25,1.5)
+  activeCombatStartedAt=os.clock()
+  combatRecoveryUntil=nil
+  table.clear(activeNativeAvailableJoints)
+  for name,joint in pairs(joints) do
+    if joint then
+      local map={Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",
+        RightShoulder="UpperArmR",LeftElbow="ForearmL",RightElbow="ForearmR",
+        LeftWrist="HandL",RightWrist="HandR"}
+      if map[name] then activeNativeAvailableJoints[map[name]]=true end
+    end
+  end
+  if joints.Waist then activeNativeAvailableJoints.Chest=true end
+  activeCombatController=activeCombatController or combatMotionSource.BindJointPose(joints,{
+    followAnimator=true,response=math.clamp(32*(.46/activeNativeActionDuration),22,42),
   })
-  character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
-  character:SetAttribute("NativeCombatMotionProfile", profile)
-  character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
+  character:SetAttribute("NativeCombatMotionAtom",motionAtom)
+  character:SetAttribute("NativeCombatMotionProfile",compiled and compiled.profileId or "R15_ACTOR_SOURCE")
+  character:SetAttribute("NativeCombatMotionState","SOURCE_POSE_PLAYING_UNVERIFIED")
+end
+player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
+  startApprovedNativeAction(player:GetAttribute("ApprovedCombatMotion"),true)
+end)
+player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
+  startApprovedNativeAction(player:GetAttribute("ApprovedActionMotion"),false)
 end)
 RunService.PreSimulation:Connect(function(dt)
-  if not (activeCombatController and activeCombatCombo and activeCombatCharacter) then return end
+  if not (activeCombatController and activeCombatCharacter
+    and (activeCombatCombo or activeNativeActionState)) then return end
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   if character ~= activeCombatCharacter or not humanoid or humanoid.Health <= 0 then
@@ -709,28 +756,45 @@ RunService.PreSimulation:Connect(function(dt)
     if os.clock() >= combatRecoveryUntil then finishNativeCombatMotion() end
     return
   end
-  local _, _, finished = combatMotionSource.SampleCombatCombo(
-    activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
-  )
+  local finished=false
+  if activeCombatCombo then
+    local _, _, sampledFinished = combatMotionSource.SampleCombatCombo(
+      activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
+    )
+    finished=sampledFinished
   if type(combatMotionSource.RefineActorCinematicPose) == "function" then
-    local timeInAction = os.clock() - activeCombatStartedAt
-    local currentStep = activeCombatCombo.steps[#activeCombatCombo.steps]
-    for _, candidateStep in ipairs(activeCombatCombo.steps) do
-      if timeInAction < candidateStep.start + candidateStep.duration then
-        currentStep = candidateStep
-        break
+      local timeInAction = os.clock() - activeCombatStartedAt
+      local currentStep = activeCombatCombo.steps[#activeCombatCombo.steps]
+      for _, candidateStep in ipairs(activeCombatCombo.steps) do
+        if timeInAction < candidateStep.start + candidateStep.duration then
+          currentStep = candidateStep
+          break
+        end
       end
+      local stepPhase = math.clamp((timeInAction - currentStep.start) / math.max(.05, currentStep.duration), 0, 1)
+      combatMotionSource.RefineActorCinematicPose(combatPoseTargets, {
+        actorClass = "PLAYER", bodyPlan = "BIPED", weaponStyle = activeCombatCombo.profileId,
+        actionPhase = stepPhase,
+        authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
+        visualSpeed = humanoid.MoveDirection.Magnitude,
+        mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
+        comboContinuity = #activeCombatCombo.steps > 1 and .32 or 0,
+        intensity = 1, secondary = .55,
+      })
     end
-    local stepPhase = math.clamp((timeInAction - currentStep.start) / math.max(.05, currentStep.duration), 0, 1)
-    combatMotionSource.RefineActorCinematicPose(combatPoseTargets, {
-      actorClass = "PLAYER", bodyPlan = "BIPED", weaponStyle = activeCombatCombo.profileId,
-      actionPhase = stepPhase,
-      authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
-      visualSpeed = humanoid.MoveDirection.Magnitude,
-      mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
-      comboContinuity = #activeCombatCombo.steps > 1 and .32 or 0,
-      intensity = 1, secondary = .55,
-    })
+
+  else
+    local elapsed=os.clock()-activeCombatStartedAt
+    local phase=math.clamp(elapsed/math.max(.1,activeNativeActionDuration),0,1)
+    local sampled,matched=combatMotionSource.SampleProceduralActorMotion(
+      activeNativeActionState,phase,{
+        bodyPlan="BIPED",actorClass="PLAYER",
+        availableJoints=activeNativeAvailableJoints,
+        mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
+        intensity=1,secondary=.55,
+      },combatPoseTargets)
+    if matched~=true then finishNativeCombatMotion();return end
+    finished=elapsed>=activeNativeActionDuration
   end
   combatMotionSource.MapCombatPoseToR15(combatPoseTargets, combatR15Targets)
   activeCombatController.Step(combatR15Targets, dt)
