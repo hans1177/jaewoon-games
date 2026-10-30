@@ -4952,7 +4952,7 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
@@ -4979,13 +4979,13 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-30T10:46:32.913Z",
+      "updatedAt": "2026-10-30T10:47:16.620Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceBootstrapFailedAt": "2026-10-30T10:46:32.913Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxRuntimePassed": false,
       "robloxHeadlessFastMvpPassed": false,
       "robloxInternalReleaseReady": false,
@@ -4993,10 +4993,10 @@
       "robloxPublicReleaseReady": false,
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-f0-restart-build-package-pending"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -5036,7 +5036,7 @@
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxReleasePublishedAt": null,
-      "robloxSourceCommit": "53ad9ccb6afc3e61287d97cace1db65513e7f5a3",
+      "robloxSourceCommit": "cb321c44f1dcff287051741e426696acc916fb5e",
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
       "robloxQualityFailureClass": "PRODUCT",
@@ -5110,7 +5110,7 @@
         "authority": "owner-dedicated-roblox-experience-bootstrap"
       },
       "robloxDedicatedExperiencePublished": false,
-      "robloxSourceBootstrapPassedAt": "2026-10-30T10:44:04.462Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-30T10:47:16.620Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -5620,17 +5620,13 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "be7a05182b3cd6212b2183f12bf939f059aa0309",
-        "newSourceRevision": "53ad9ccb6afc3e61287d97cace1db65513e7f5a3",
-        "invalidatedAt": "2026-10-30T10:44:04.462Z"
-      },
+      "robloxEvidenceInvalidatedBySourceChange": null,
       "robloxRuntimeRetryCount": 0,
       "robloxEvidenceInvalidatedByF0Restart": {
-        "sourceRevision": "01b53a3a4738e301f3dfcb41fad29d791020ac95",
-        "previousSourceRevision": "a0a3e1501e1b9c646d4c0de25829f9fed3d36fa3",
+        "sourceRevision": "cb321c44f1dcff287051741e426696acc916fb5e",
+        "previousSourceRevision": "53ad9ccb6afc3e61287d97cace1db65513e7f5a3",
         "previousArtifactIdentity": null,
-        "restartedAt": "2026-10-30T06:09:37.825Z",
+        "restartedAt": "2026-10-30T10:47:16.620Z",
         "authority": "canonical-main-f0-restart"
       },
       "robloxValidationTarget": {
@@ -9134,7 +9130,7 @@
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T07:55:20.643Z"
     }
   ],
-  "updatedAt": "2026-10-30T10:46:38.679Z",
+  "updatedAt": "2026-10-30T10:47:16.620Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
