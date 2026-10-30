@@ -1810,9 +1810,24 @@ test('existing and generated Roblox games bind confirmed combat to compatible R1
       assert.ok(source.includes('combatMotionSource.'+call),'missing native motion action call: '+call);
     }
     assert.ok(source.includes('player:GetAttributeChangedSignal("ApprovedCombatMotion")'),'authoritative atomic action event required');
-    assert.ok(source.includes('approved:match("^([^:]+):(%d+)$")'),'action scope and event must bind atomically');
+    // The original generated template parses an approved local event; this game's
+    // native client parses the replicated server attribute and supports existing R6.
+    if(source===client){
+      assert.ok(source.includes('tostring(player:GetAttribute("ApprovedCombatMotion") or ""):match("^([^:]+):(%d+)$")'),
+        'the client must parse the full server-approved action scope and sequence');
+      assert.ok(source.includes('if not scope or not serial then return end'),
+        'invalid replicated authorization cannot enter combat');
+      assert.ok(source.includes('if not authorizedCombatScopes[approvedScope] then return false end'),
+        'only configured combat actions may animate');
+      assert.ok(source.includes('local r6=humanoid.RigType==Enum.HumanoidRigType.R6'),
+        'supported original R6 should not be lost');
+      assert.ok(source.includes('COMPATIBLE_R15_JOINTS_REQUIRED'),
+        'incompatible skeletons must not animate');
+    }else{
+      assert.ok(source.includes('approved:match("^([^:]+):(%d+)$")'),'action scope and event must bind atomically');
+      assert.ok(source.includes('humanoid.RigType ~= Enum.HumanoidRigType.R15'),'do not bind to incompatible rigs');
+    }
     assert.ok(source.includes('if action.Kind == "COMBAT"'),'unrelated gameplay action may not play attack');
-    assert.ok(source.includes('humanoid.RigType ~= Enum.HumanoidRigType.R15'),'do not bind to incompatible rigs');
     assert.ok(source.includes('MATCHING_WEAPON_MOTION_REQUIRED'),'do not fake arbitrary weapon animations');
     assert.ok(source.includes('RunService.PreSimulation:Connect'),'render actual joints after built-in animation');
     assert.ok(source.includes('finishNativeCombatMotion()'),'restore joints after attack or character change');
