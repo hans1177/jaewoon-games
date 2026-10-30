@@ -100,6 +100,7 @@ local Config = {
     SharedObjective = 0, RoundScore = 0, XP = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
+    ResearchRecords = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "생존 시작", Kind = "SURVIVAL", Order = 1, LearningPattern = "idle-reward" },
