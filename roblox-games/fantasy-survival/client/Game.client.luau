@@ -711,6 +711,7 @@ local authorizedCombatScopes = {}
 for _, action in ipairs(Config.Actions) do
   if action.Kind == "COMBAT" then authorizedCombatScopes[action.Id] = true end
 end
+local dodgePoseUntil=0
 local activeCombatCharacter = nil
 local activeCombatController = nil
 local activeCombatCombo = nil
@@ -1020,6 +1021,7 @@ player.CharacterAdded:Connect(function()
   table.clear(pendingCombatMotion)
 end)
 playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
+  if os.clock()<dodgePoseUntil then return false end
   if not authorizedCombatScopes[approvedScope] then return false end
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -1156,6 +1158,8 @@ local skillMotionMapping={
   Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
   LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
   LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
+  RootJoint="Spine",["Left Shoulder"]="UpperArmL",["Right Shoulder"]="UpperArmR",
+  ["Left Hip"]="ThighL",["Right Hip"]="ThighR",
 }
 local skillMotionStates={
   INTERACT_USE="INTERACT",GATHER_SWING="INTERACT",CRAFT_LOOP="INTERACT",
@@ -1174,15 +1178,22 @@ local function finishMeadowSkillPose()
   table.clear(skillMotionTargets)
   table.clear(skillMotionR15Targets)
 end
-player.CharacterAdded:Connect(finishMeadowSkillPose)
-player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(finishMeadowSkillPose)
+player.CharacterAdded:Connect(function()
+  dodgePoseUntil=0
+  finishMeadowSkillPose()
+end)
+player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
+  if os.clock()>=dodgePoseUntil then finishMeadowSkillPose() end
+end)
 player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
   local action=id and actionsById[id]
   if not serial or not action or action.Kind=="COMBAT" or not action.MotionAtom then return end
+  local isDodge=id=="skill-meadow-dodge-left" or id=="skill-meadow-dodge-right"
+  if os.clock()<dodgePoseUntil and not isDodge then return end
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
-  if not humanoid or humanoid.Health<=0 or humanoid.RigType~=Enum.HumanoidRigType.R15
+  if not humanoid or humanoid.Health<=0
     or not combatMotionSource or not combatMotionSource.SampleProceduralActorMotion then return end
   local state=skillMotionStates[action.MotionAtom]
   if not state then return end
@@ -1204,7 +1215,11 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
       skillMotionAvailable[skillMotionMapping[joint.Name]]=true
     end
   end
-  if not (skillMotionJoints.Waist and skillMotionJoints.LeftShoulder and
+  local r6=humanoid.RigType==Enum.HumanoidRigType.R6
+  if r6 then
+    if not isDodge or not (skillMotionJoints.RootJoint and skillMotionJoints["Left Shoulder"]
+      and skillMotionJoints["Right Shoulder"]) then return end
+  elseif not (skillMotionJoints.Waist and skillMotionJoints.LeftShoulder and
     skillMotionJoints.RightShoulder and skillMotionJoints.LeftElbow and
     skillMotionJoints.RightElbow) then return end
   skillMotionAvailable.Chest=true
@@ -1216,6 +1231,7 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   skillMotionStart=os.clock()
   skillMotionDuration=math.clamp(tonumber(meta.duration) or .7,.25,1.4)
   skillMotionDeadline=skillMotionStart+skillMotionDuration+.16
+  if isDodge then dodgePoseUntil=skillMotionDeadline end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
   character:SetAttribute("NativeSkillActionId",id)
 end)
@@ -1248,7 +1264,16 @@ RunService.PreSimulation:Connect(function(dt)
     skillMotionTargets.UpperArmL=CFrame.Angles(-.45*ease,0,-sign*.35*ease)
     skillMotionTargets.UpperArmR=CFrame.Angles(-.55*ease,0,sign*.35*ease)
   end
-  combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
+  if humanoid.RigType==Enum.HumanoidRigType.R6 then
+    -- [구형 아바타 회피] 기존 실제 몸통·팔·다리 관절에 같은 좌우 피하기 포즈를 연결한다.
+    skillMotionR15Targets.RootJoint=skillMotionTargets.Spine
+    skillMotionR15Targets["Left Shoulder"]=skillMotionTargets.UpperArmL
+    skillMotionR15Targets["Right Shoulder"]=skillMotionTargets.UpperArmR
+    skillMotionR15Targets["Left Hip"]=skillMotionTargets.ThighL
+    skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR
+  else
+    combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
+  end
   skillMotionR15.Step(skillMotionR15Targets,dt)
 end)
 
