@@ -520,7 +520,7 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
     }
     // [무모델] 로블록스 자체 생성기가 개선되면 같은 게임을 즉시 재검토한다.
     // 동일 생성기 버전에서 재실패한 작업은 반복 실행하지 않는다.
-    // 외부 모델 장애와 웹 오프라인 패턴 실패의 기존 대기 규칙은 유지한다.
+    // 외부 모델 장애는 쿨다운을 유지하되 오프라인 패턴 실패는 실제 생성기 변경만 재검토한다.
     if(task.status==='blocked'&&['EXTERNAL_AI_QUOTA_COOLDOWN','SOURCE_MODEL_UNAVAILABLE','OFFLINE_RECIPE_UNAVAILABLE'].includes(clean(task.blocker))){
       const noModel=clean(task.blocker)==='SOURCE_MODEL_UNAVAILABLE';
       const offlinePattern=clean(task.blocker)==='OFFLINE_RECIPE_UNAVAILABLE';
@@ -592,7 +592,9 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
       recovered+=1;
       return {...task,...clearedReservation(),status:'queued',blocker:null,
         lastOutcome:offlinePattern?'OFFLINE_RECIPE_CAPABILITY_RECHECK':noModel?'MODEL_FREE_SOURCE_RECHECK':'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
-        evidence:[...new Set([...evidence.filter(value=>!offlinePattern||!clean(value).startsWith('source-offline-pattern-codegen-sha256:')),
+        evidence:[...new Set([...evidence.filter(value=>!offlinePattern||(
+          !clean(value).startsWith('source-offline-pattern-codegen-sha256:')
+          &&!clean(value).startsWith('source-offline-pattern-retry-at:'))),
           ...(offlinePattern?[offlineFingerprint]:[]),offlinePattern?'source-offline-pattern-retry-resumed:v1'
           :noModel?'source-no-model-retry-resumed:v1':'external-ai-quota-wait-resumed:v1'])]};
     }
