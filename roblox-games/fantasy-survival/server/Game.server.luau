@@ -127,6 +127,15 @@ local function worldAsset(id, location, targetHeight)
     if originalHeight <= 0 then clone:Destroy();error("MEADOW_MESH_BOUNDS_INVALID") end
     clone:ScaleTo(clone:GetScale()*(targetHeight or 5)/originalHeight)
     clone:PivotTo(CFrame.new(location))
+    -- Align the original source mesh to a measured native Terrain hit.
+    local rayParams=RaycastParams.new()
+    rayParams.FilterType=Enum.RaycastFilterType.Include
+    rayParams.FilterDescendantsInstances={meadowTerrain}
+    local ground=workspace:Raycast(location+Vector3.new(0,44,0),Vector3.new(0,-110,0),rayParams)
+    if not ground then clone:Destroy();error("MEADOW_ORIGINAL_MESH_GROUND_UNVERIFIED") end
+    local boxCF,boxSize=clone:GetBoundingBox()
+    local underside=boxCF.Position.Y-boxSize.Y*.5
+    clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y-underside,0))
     clone.Name="Meadow_"..id
     clone.Parent=gameWorld
     clone:SetAttribute("CC0SourceModelId",modelId)
@@ -233,7 +242,7 @@ for index,spec in ipairs({
   local model=worldAsset(spec.kind,spec.position,spec.height)
   if model then
     model:SetAttribute("MeadowWildlife",spec.kind)
-    table.insert(meadowWildlife,{model=model,origin=spec.position,phase=index*1.7,
+    table.insert(meadowWildlife,{model=model,origin=model:GetPivot().Position,phase=index*1.7,
       range=spec.kind=="rabbit" and 5 or 9,speed=spec.kind=="rabbit" and .48 or .2})
   end
 end
@@ -659,7 +668,7 @@ nativeFoundationSpawn.CanCollide = false
 nativeFoundationSpawn.CanTouch = false
 nativeFoundationSpawn.CanQuery = false
 nativeFoundationSpawn.Neutral = true
-nativeFoundationSpawn.Material = Enum.Material.Grass
+nativeFoundationSpawn.Material = table.find(studioMaterialAtoms, "METAL") and Enum.Material.Metal or Enum.Material.Plastic
 
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
