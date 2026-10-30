@@ -64,7 +64,9 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   // Creature visuals now come from validated native Roblox meshes rather than
   // the legacy procedural CreatureParts source; retain strict source-level gates.
   assert.match(server,/NativeCreatureAssets = require\(Shared:WaitForChild\("VisualAssetIds"\)\)/);
-  assert.match(server,/table\.find\(studioCreatureAtoms,anatomyAtom\) and NativeCreatureAssets\[partId\]/);
+  assert.match(server,/table\.find\(studioCreatureAtoms,selected\.atom\) and NativeCreatureAssets\[partId\]/);
+  assert.match(server,/if CurrentWave>=spec\.wave and table\.find\(studioCreatureAtoms,spec\.atom\)/);
+  assert.match(server,/local partId=selected\.id/);
   assert.match(server,/AssetService:LoadAssetAsync\(modelId\)/);
   assert.match(server,/template:FindFirstChildWhichIsA\("MeshPart",true\)/);
   assert.match(server,/error\("FANTASY_NATIVE_MESH_REQUIRED"\)/);
