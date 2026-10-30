@@ -309,7 +309,7 @@ export async function probeRobloxOpenCloudImageEvidence({
 }
 
 export async function probeRobloxOpenCloudEngine({
-  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,
+  universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,expectedCombatActions=[],
   networkRetryAttempts=4,networkRetryDelayMs=500,createAdmissionIntervalMs=180000,
 }={}){
   const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
@@ -339,6 +339,7 @@ export async function probeRobloxOpenCloudEngine({
     'local studioAssetAtoms={}',
     'local shared=ReplicatedStorage:FindFirstChild("Shared")',
     'local configModule=shared and shared:FindFirstChild("GameConfig")',
+    ...(expectedCombatActions.length?["local motionIds={\"U:JAB_LEFT\",\"U:UPPERCUT_RIGHT\",\"U:ROUND_KICK_R\",\"U:ELBOW_RIGHT\"}","local motionProof={libraryLoaded=false,actions={}}","local motionModule=shared and shared:FindFirstChild(\"RobloxCommonMotion\")","local motionOk,motionLib=pcall(require,motionModule)","motionProof.libraryLoaded=motionOk and type(motionLib)==\"table\"","if not motionProof.libraryLoaded then motionProof.error=tostring(motionLib) end","for _,motionId in ipairs(motionIds) do"," local row={id=motionId,pass=false}"," if motionProof.libraryLoaded then","  local sampled,problem=pcall(function()","   local combo=motionLib.CreateCombatCombo(\"UNARMED\",{motionId},{speed=1})","   local pose={}; motionLib.SampleCombatCombo(combo,combo.steps[1].contact,pose)","   local mapped=motionLib.MapCombatPoseToR15(pose,{})","   local changed=0; for _,cf in pairs(mapped) do local _,angle=cf:ToAxisAngle();if math.abs(angle)>.05 then changed+=1 end end","   row.changedJointCount=changed;row.pass=changed>=2","  end)","  if not sampled then row.error=tostring(problem) end"," end"," table.insert(motionProof.actions,row)","end","print(\"JAEWOON_OPEN_CLOUD_MOTION_PROBE=\"..game:GetService(\"HttpService\"):JSONEncode(motionProof))"]:[]),
     'if configModule and configModule:IsA("ModuleScript") then local ok,config=pcall(require,configModule); if ok and type(config)=="table" and type(config.StudioAssets)=="table" then studioAssetApplied=config.StudioAssets.Applied==true; studioAssetBindingVersion=tonumber(config.StudioAssets.BindingVersion) or 0; studioAssetSelectionFingerprint=tostring(config.StudioAssets.SelectionFingerprint or ""); studioAssetLibraryVersion=tonumber(config.StudioAssets.LibraryVersion) or 0; if type(config.StudioAssets.Families)=="table" then for _,family in pairs(config.StudioAssets.Families) do if type(family)=="table" then for _,atom in ipairs(family) do if type(atom)=="string" and atom~="" then table.insert(studioAssetAtoms,atom) end end end end end end end',
     'table.sort(studioAssetAtoms)',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED="..tostring(studioAssetApplied))',
@@ -607,6 +608,7 @@ export async function probeRobloxOpenCloudEngine({
     sameLuauExecutionSession:true
   });
   return Object.freeze({
+    ...(expectedCombatActions.length?{motionProbe:(()=>{try{return JSON.parse(joined.match(/^JAEWOON_OPEN_CLOUD_MOTION_PROBE=(.*)$/m)?.[1]||'null');}catch{return null;}})()}:{}),
     available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunningBefore,simulationStartAttempted,simulationStartSucceeded,simulationStartError:simulationStartError||null,simulationStartCapabilityDenied,simulationRunning,serverBootObserved,serverContextExecuted,exactLuauTaskObserved,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
     studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
