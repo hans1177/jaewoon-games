@@ -307,10 +307,11 @@ async function main(){
         });
         const exact=proof.engineExecuted===true&&proof.exactPlace===true&&proof.exactVersion===true&&proof.serverContextExecuted===true;
         result.postPublishQa={exactPublishedVersionVerified:exact,avatarRigConfigured:'R15',
-          state:proof.state||'UNVERIFIED',motionProbe:proof.motionProbe||null,realPlayerGameplayVerified:false,clientMotionPlaybackVerified:false,
+          state:proof.state||'UNVERIFIED',error:proof.error||proof.errorMessage||null,motionProbe:proof.motionProbe||null,realPlayerGameplayVerified:false,clientMotionPlaybackVerified:false,
           authority:'roblox-open-cloud-exact-place-version-luau-task',checkedAt:new Date().toISOString()};
         console.log('FOREST_POST_PUBLISH_EXACT_VERSION='+(exact?'PASS':'UNVERIFIED'));
         console.log('FOREST_MOTION_PROBE='+JSON.stringify(proof.motionProbe||null));
+        if(proof.error||proof.errorMessage)console.log('FOREST_POST_PUBLISH_ERROR='+JSON.stringify(proof.error||proof.errorMessage));
       }catch(error){
         result.postPublishQa={exactPublishedVersionVerified:false,avatarRigConfigured:'R15',
           realPlayerGameplayVerified:false,clientMotionPlaybackVerified:false,error:String(error?.message||error).slice(0,220)};
