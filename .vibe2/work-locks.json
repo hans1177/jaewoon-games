@@ -1,5 +1,29 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-524r4c",
+      "worker": "vibe2",
+      "taskId": "baeksu-war-studio-evolution-roblox-usability-v11",
+      "gameId": "baeksu-war",
+      "files": [
+        "roblox-games/baeksu-war/client/Game.client.luau",
+        "roblox-games/baeksu-war/shared/GameConfig.luau",
+        "roblox-games/baeksu-war/server/Game.server.luau",
+        "roblox-games/baeksu-war/shared/VisualAssetIds.luau",
+        "roblox-games/baeksu-war/shared/VisualKit.luau"
+      ],
+      "baseSha": "96cf5e1df4b9d145c1acfb823ef0fcc8b4577ca4",
+      "runId": "41082007694",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-30T15:39:59.636Z",
+      "expiresAt": "2026-10-30T16:24:59.636Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:baeksu-war-studio-evolution-roblox-usability-v11"
+      ]
+    }
+  ]
 }
