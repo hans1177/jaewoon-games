@@ -69,7 +69,7 @@ test('Vibe reuses exact queued game primary work for unverified per-game bottlen
   fs.writeFileSync(path.join(root,sourceRoot,'index.html'),'<canvas id="game"></canvas>','utf8');
   const task={id:'existing-game-primary',gameId:id,target:'web',sourceRoot,
     department:'development',type:'implementation',executionLane:'GAME_PRIMARY',
-    sourceRevision:revision,responsibleFiles:[sourceRoot+'/index.html'],
+    responsibleFiles:[sourceRoot+'/index.html'],evidence:['source-revision:'+revision],
     goal:'기존 게임 완성도 향상',priority:'normal',status:'queued',dependencies:[]};
   const project={gameId:id,engine:'web',projectPath:sourceRoot,
     queueRuntimeObserved:true,queueRuntimePassed:false,queueRuntimeEvidencePlatform:'WEB',
@@ -107,7 +107,7 @@ test('Vibe reuses exact queued game primary work for unverified per-game bottlen
       {project,task:{...task,assetProductionLane:true,executionLane:'ASSET_DEVELOPMENT'}},
       {project,task:{...task,requiresOwnerDecision:true}},
       {project,task:{...task,responsibleFiles:['web-games/another/index.html']}},
-      {project,task:{...task,sourceRevision:'b'.repeat(40)}}
+      {project,task:{...task,evidence:['source-revision:'+'b'.repeat(40)]}}
     ]){
       const result=synchronizeQueuedBuildUpDirectives(
         createVibeContinuousQueue({tasks:[changed.task],maxConcurrentTasks:5}),[changed.project],root);
