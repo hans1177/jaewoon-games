@@ -189,9 +189,9 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   -- 메뉴 클릭은 버튼 응답만. 전투/카메라 연출은 서버가 확인한 해당 행동만 사용한다.
   if serverConfirmed~=true then return end
   local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
-  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true)or approvedScope:find("COMBAT",1,true))then return end
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
 
-  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
     local baseFov = camera.FieldOfView
@@ -202,7 +202,7 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   end
   end
 
-  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
   local character = verifiedLearningPlayer.Character
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
   if character and rootPart then
@@ -268,13 +268,8 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  -- ApprovedCombatMotion is the per-hit server-authorized sequence.
-  -- Avoid a duplicate VFX burst from LastApprovedScope's coarse state.
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
-end)
-verifiedLearningPlayer:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl,true)
-  verifiedLearningLastControl=nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 
@@ -500,6 +495,43 @@ task.defer(reportNativeFoundationReady)
 
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",activate=function()remote:FireServer(primaryCombatAction.Id)end}or nil)
 
+-- Four direct Roblox-native martial skill buttons, visible without opening the menu.
+-- Each sends an existing server-authorized COMBAT action; no client damage authority.
+local meadowSkillDock=Instance.new("Frame")
+meadowSkillDock.Name="MeadowR15SkillDock"
+meadowSkillDock.AnchorPoint=Vector2.new(.5,0)
+meadowSkillDock.Position=UDim2.fromScale(.5,.345)
+meadowSkillDock.Size=UDim2.new(1,-26,0,54)
+meadowSkillDock.BackgroundTransparency=1
+meadowSkillDock.Parent=gui
+local meleeSkills={
+  {"meadow-unarmed-rush","연속권"},
+  {"meadow-unarmed-uppercut","어퍼컷"},
+  {"meadow-unarmed-kick","회전차기"},
+  {"meadow-unarmed-elbow","팔꿈치"},
+}
+for index,skill in ipairs(meleeSkills) do
+  local button=Instance.new("TextButton")
+  button.Name="R15Skill"..index
+  button.Size=UDim2.new(.25,-5,1,0)
+  button.Position=UDim2.new((index-1)*.25,2,0,0)
+  button.BackgroundColor3=Color3.fromRGB(22,76,62)
+  button.TextColor3=Color3.fromRGB(241,255,223)
+  button.TextSize=15
+  button.Font=Enum.Font.GothamBold
+  button.Text=skill[2]
+  button.AutoButtonColor=true
+  button.Parent=meadowSkillDock
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,11)
+  corner.Parent=button
+  button.Activated:Connect(function()
+    local character=player.Character
+    if not character or character:FindFirstChildOfClass("Tool") then return end
+    remote:FireServer(skill[1])
+  end)
+end
+
 -- [모션·액션] 서버가 승인한 기존 COMBAT 입력만 R15 공용 관절 애니메이션에 연결한다.
 -- 서버 피해·이동·콤보 판정, 원래 Animator, 저장값은 수정하지 않는다.
 -- 이 경로는 미게시 원본 포즈를 직접 합성하며 실제 재생 QA 전까지 인증된 AnimationTrack이 아니다.
@@ -521,11 +553,61 @@ local activeCombatCombo = nil
 local activeCombatStartedAt = 0
 local combatPoseTargets = {}
 local combatR15Targets = {}
--- 상체 공격만 소유하고 하체의 기존 걷기·달리기 Animator는 유지한다.
+local combatVFX = nil
+local vfxModule=Shared:FindFirstChild("RobloxCommonVFX")
+if vfxModule then
+  local ok,module=pcall(require,vfxModule)
+  if ok and type(module)=="table" and type(module.CreateImpactFlash)=="function"
+    and type(module.AttachShortTrail)=="function" then combatVFX=module end
+end
+-- Only server-authorized impact messages may trigger contact sparks.
+remote.OnClientEvent:Connect(function(kind,payload)
+  if kind~="MEADOW_IMPACT" or typeof(payload)~="table"
+    or typeof(payload.position)~="Vector3" then return end
+  if not combatVFX then return end
+  local color=payload.boss and Color3.fromRGB(255,164,91)
+    or payload.species=="bee" and Color3.fromRGB(255,234,124)
+    or Color3.fromRGB(128,250,201)
+  combatVFX.CreateImpactFlash({
+    cframe=CFrame.new(payload.position+Vector3.new(0,2,0)),
+    color=color,accent=Color3.fromRGB(255,255,237),
+    reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 5 or 12,
+    scale=payload.boss and 1.65 or 1.1,
+  })
+  if payload.finisher and type(combatVFX.CreateCriticalBurst)=="function" then
+    combatVFX.CreateCriticalBurst({
+      cframe=CFrame.new(payload.position+Vector3.new(0,2.5,0)),
+      reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 6 or 12,
+    })
+  end
+end)
+
+-- The shared Roblox R15 combat library already has real authored joints for
+-- jab/cross/hook/uppercut/elbow/knee/kick. Route ONE confirmed hit to ONE strike.
+local basicUnarmedMoves={
+  "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT",
+  "U:BACKFIST_LEFT","U:UPPERCUT_RIGHT","U:ELBOW_LEFT","U:LOW_KICK_R",
+}
+local skillUnarmedMoves={
+  ["meadow-unarmed-rush"]={"U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT"},
+  ["meadow-unarmed-uppercut"]={"U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT"},
+  ["meadow-unarmed-kick"]={"U:ROUND_KICK_R","U:SIDE_KICK_L","U:FRONT_KICK_R"},
+  ["meadow-unarmed-elbow"]={"U:ELBOW_RIGHT","U:KNEE_LEFT","U:ELBOW_LEFT","U:KNEE_RIGHT"},
+}
+local activeStrikeTrail=nil
+local activeStrikeTrailToken=0
+local function stopStrikeTrail()
+  activeStrikeTrailToken+=1
+  if activeStrikeTrail then activeStrikeTrail.Destroy();activeStrikeTrail=nil end
+end
+-- Upper-body and real leg joints are both owned only while a melee pose plays.
+-- The normal Roblox walk/run Animator is followed, not replaced.
 local combatUpperJoints = {Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
-  LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true}
+  LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true,
+  LeftHip=true,RightHip=true,LeftKnee=true,RightKnee=true,LeftAnkle=true,RightAnkle=true}
 local combatRecoveryUntil = nil
 local function finishNativeCombatMotion()
+  stopStrikeTrail()
   if activeCombatController then activeCombatController.Destroy(true) end
   if activeCombatCharacter and activeCombatCharacter.Parent then
     activeCombatCharacter:SetAttribute("NativeCombatMotionState", "IDLE")
@@ -581,21 +663,63 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
     return
   end
   if activeCombatCharacter ~= character then finishNativeCombatMotion() end
-  local ok, combo = pcall(combatMotionSource.CreateCombatCombo, profile)
-  if not ok or not combo or not combo.steps or #combo.steps == 0 then return end
-  -- 서버 승인 1회당 실제 타격 모션 1회. 미승인 후속 콤보를 시각적으로 추가하지 않는다.
-  combo.steps = {combo.steps[1]}
-  combo.duration = combo.steps[1].start + combo.steps[1].duration
+  local approvedIndex=tonumber(approvedEvent) or 1
+  local chosenMove=nil
+  if profile=="UNARMED" then
+    local moves=skillUnarmedMoves[approvedScope] or basicUnarmedMoves
+    chosenMove=moves[(approvedIndex-1)%#moves+1]
+  else
+    -- Reuse the weapon-specific authored R15 action list, never a fake punch.
+    local routeOk,route=pcall(combatMotionSource.CreateCombatCombo,profile)
+    if not routeOk or not route or #route.steps==0 then return end
+    chosenMove=route.steps[(approvedIndex-1)%#route.steps+1].id
+  end
+  -- CreateCombatCombo is immutable (table.freeze). Build a fresh ONE-strike
+  -- presentation instead of mutating steps or playing unapproved fake hits.
+  local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
+    profile,{chosenMove},{speed=profile=="UNARMED" and 1.08 or 1})
+  if not ok or not combo or not combo.steps or #combo.steps~=1 then return end
   combatRecoveryUntil = nil
   activeCombatCharacter = character
   activeCombatCombo = combo
   activeCombatStartedAt = os.clock()
+  -- A real R15 hand/foot carries the short shared-mesh particle trail.
+  stopStrikeTrail()
+  if combatVFX and profile=="UNARMED" then
+    local isLegStrike=chosenMove:find("KICK",1,true)~=nil
+      or chosenMove:find("KNEE",1,true)~=nil
+    local isLeftStrike=chosenMove:find("LEFT",1,true)~=nil
+      or chosenMove:match("_L$")~=nil
+    local hostName=isLegStrike
+      and (isLeftStrike and "LeftFoot" or "RightFoot")
+      or (isLeftStrike and "LeftHand" or "RightHand")
+    local host=character:FindFirstChild(hostName)
+    if host and host:IsA("BasePart") then
+      local color=chosenMove:find("KICK",1,true) and Color3.fromRGB(124,245,220)
+        or Color3.fromRGB(255,207,112)
+      local trailOk,_,controller=pcall(combatVFX.AttachShortTrail,host,{
+        color=color,lifetime=nativeTouchEnabled and .12 or .18,
+        width=nativeTouchEnabled and .22 or .42,length=1.1,
+      })
+      if trailOk and controller then
+        activeStrikeTrail=controller
+        controller.SetEnabled(true)
+        local token=activeStrikeTrailToken
+        task.delay(.19,function()
+          if activeStrikeTrailToken==token and activeStrikeTrail==controller then
+            controller.SetEnabled(false)
+          end
+        end)
+      end
+    end
+  end
   -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
   activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
     followAnimator = true,
     response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
   })
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
+  character:SetAttribute("NativeCombatActionId", chosenMove)
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
 end)
@@ -633,7 +757,7 @@ RunService.PreSimulation:Connect(function(dt)
       authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
       visualSpeed = humanoid.MoveDirection.Magnitude,
       mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
-      comboContinuity = #activeCombatCombo.steps > 1 and .32 or 0,
+      comboContinuity = tonumber(player:GetAttribute("ActionSequence") or 0)%3~=0 and .32 or 0,
       intensity = 1, secondary = .55,
     })
   end

@@ -80,6 +80,11 @@ local Config = {
     { Id = "scope-coreloop-1-6ebe58f496", Label = "가까운 자원 채집", Kind = "GATHER", Order = 4, LearningPattern = "claim-idempotency" },
     { Id = "scope-coreloop-2-6c927cfa40", Label = "나무·돌로 장비 강화", Kind = "PROGRESSION", Order = 5, LearningPattern = "persistent-growth" },
     { Id = "scope-mobileux-5acfb2eaa6", Label = "공격 (터치)", Kind = "COMBAT", Order = 6, LearningPattern = "commercial-idle-runtime-architecture" },
+    -- Roblox-native R15 punches / elbows / kicks use the existing server hit and damage authority.
+    { Id = "meadow-unarmed-rush", Label = "연속권 · 잽/훅", Kind = "COMBAT", Order = 7, LearningPattern = "r15-unarmed" },
+    { Id = "meadow-unarmed-uppercut", Label = "승룡 어퍼컷", Kind = "COMBAT", Order = 8, LearningPattern = "r15-unarmed" },
+    { Id = "meadow-unarmed-kick", Label = "회전 발차기", Kind = "COMBAT", Order = 9, LearningPattern = "r15-unarmed" },
+    { Id = "meadow-unarmed-elbow", Label = "팔꿈치·무릎", Kind = "COMBAT", Order = 10, LearningPattern = "r15-unarmed" },
   },
   -- STUDIO_ASSET_BINDING_BEGIN
   StudioAssets = {
