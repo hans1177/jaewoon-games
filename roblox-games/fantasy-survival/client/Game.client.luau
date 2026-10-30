@@ -2717,7 +2717,9 @@ local function bindOriginalMob(model)
   }) or nil
   local row={controller=controller,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
-    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0}
+    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0,
+    -- [모션] 실제 관절의 직전 포즈를 저장해 정지·추적·공격 사이를 매끄럽게 잇는다.
+    transitionFrom={},renderedPoses={},transitionStartedAt=0,transitionDuration=0}
   model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG"
     or "UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET")
   if not actualRig and not meadowMobRigWarnings[species] then
@@ -2792,6 +2794,14 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         if row.groundSpeed<.35 then mode="IDLE" end
       end
       if mode~=row.lastMode then
+        -- [모션 전환] 이전 원본 리그 포즈에서 새 행동으로 연속 보간한다.
+        table.clear(row.transitionFrom)
+        for joint,pose in pairs(row.renderedPoses) do
+          row.transitionFrom[joint]=pose
+        end
+        row.transitionStartedAt=os.clock()
+        row.transitionDuration=mode=="ATTACK" and .10
+          or mode=="HIT" and .12 or mode=="DEATH" and .18 or .24
         row.lastMode=mode
         row.motionStartedAt=os.clock()
         row.phase=0
@@ -2961,6 +2971,20 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
               row.poses[joint]=CFrame.fromAxisAngle(axis,math.min(angle*gain,math.rad(112)))
             end
           end
+        end
+        -- [관절 블렌딩] 공격/추적 전환 때 발·목·날개가 순간적으로 꺾이지 않게 한다.
+        -- 새 모션에 없는 이전 관절도 중립 자세까지 부드럽게 복귀시킨다.
+        local blend=math.clamp((os.clock()-row.transitionStartedAt)
+          /math.max(.01,row.transitionDuration),0,1)
+        blend=blend*blend*(3-2*blend)
+        if blend<1 then
+          for joint,previous in pairs(row.transitionFrom) do
+            row.poses[joint]=previous:Lerp(row.poses[joint] or CFrame.identity,blend)
+          end
+        end
+        table.clear(row.renderedPoses)
+        for joint,pose in pairs(row.poses) do
+          row.renderedPoses[joint]=pose
         end
         row.controller.Step(row.poses,poseDt)
       end
