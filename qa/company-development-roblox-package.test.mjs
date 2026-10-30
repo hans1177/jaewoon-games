@@ -1077,3 +1077,21 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   assert.match(client,/math.clamp\(\(os.clock\(\)-row.motionStartedAt\)\/duration,0,1\)/);
   assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
 });
+
+test('Fantasy native upload derives creator from verified private QA Universe without weakening authority',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const uploader=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
+  assert.match(workflow,/const nativeCreatureTarget=item\.robloxValidationTarget\|\|\{\};/);
+  assert.match(workflow,/nativeCreatureTarget\.verified===true/);
+  assert.match(workflow,/nativeCreatureTarget\.dedicated===true/);
+  assert.match(workflow,/nativeCreatureTarget\.internalOnly===true/);
+  assert.match(workflow,/ROBLOX_FANTASY_NATIVE_UNIVERSE_TARGET_UNVERIFIED/);
+  assert.match(workflow,/nativeCreatureUniverseId,/);
+  assert.match(workflow,/ROBLOX_UNIVERSE_ID: \$\{\{ matrix\.nativeCreatureRepair && matrix\.nativeCreatureUniverseId \|\| '' \}\}/);
+  assert.match(uploader,/games\.roblox\.com\/v1\/games\?universeIds=/);
+  assert.match(uploader,/String\(game\.id\)===targetUniverse/);
+  assert.match(uploader,/matching\.length===1/);
+  assert.match(uploader,/owner\?\.type==='User'/);
+  assert.match(uploader,/ids\.size===0\|\|ids\.has\(candidate\)/);
+  assert.match(uploader,/MODEL_CREATOR_UNKNOWN_FAIL_CLOSED/);
+});
