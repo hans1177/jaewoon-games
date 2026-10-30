@@ -4979,19 +4979,20 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
    -- 마력숲 전용: 일반 메뉴를 좌상단에 두고 상태 HUD는 오른쪽으로 분리한다.
    -- 다른 공용 UI 사용 게임은 기존 레이아웃을 유지한다.
    local menuLeft=primary and primary.menuLeft==true
-   hud.Position=menuLeft and UDim2.fromOffset(74,8) or UDim2.fromOffset(9,8)
-   hud.Size=UDim2.fromOffset(math.max(170,math.min(320,v.X-(menuLeft and 82 or 90))),short and 86 or 100)
+   hud.Position=menuLeft and UDim2.fromOffset(66,8) or UDim2.fromOffset(9,8)
+   hud.Size=UDim2.fromOffset(math.min(208,v.X-180),short and 54 or 64)
    title.Position=UDim2.fromOffset(10,4)
-   title.Size=UDim2.new(1,-20,0,22)
+   title.Size=UDim2.new(1,-20,0,17)
    title.TextScaled=false;title.TextSize=short and 12 or 14
    title.TextTruncate=Enum.TextTruncate.AtEnd
-   status.Position=UDim2.fromOffset(10,27)
-   status.Size=UDim2.new(1,-20,0,short and 28 or 38)
+   status.Position=UDim2.fromOffset(10,21)
+   status.Size=UDim2.new(1,-20,0,16)
    status.TextScaled=false;status.TextSize=short and 10 or (v.X<400 and 11 or 12)
    status.TextWrapped=true
-   if healthTrack then healthTrack.Position=UDim2.fromOffset(10,short and 60 or 70);healthTrack.Size=UDim2.new(1,-20,0,14) end
+   if healthTrack then healthTrack.Position=UDim2.fromOffset(10,40);healthTrack.Size=UDim2.new(1,-20,0,12) end
    if multiplayerStatus then
-    multiplayerStatus.Position=UDim2.fromOffset(10,short and 76 or 87)
+    multiplayerStatus.Visible=false
+    multiplayerStatus.Position=UDim2.fromOffset(10,76)
     multiplayerStatus.Size=UDim2.new(1,-20,0,18)
     multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=short and 10 or 11
     multiplayerStatus.TextTruncate=Enum.TextTruncate.AtEnd
@@ -4999,7 +5000,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
    if menuLeft then
     menu.AnchorPoint=Vector2.new(0,0)
     menu.Position=UDim2.fromOffset(9,8)
-    menu.Size=UDim2.fromOffset(54,54)
+    menu.Size=UDim2.fromOffset(44,44)
+    menu.Text="☰";menu.TextSize=24
    else
     menu.AnchorPoint=Vector2.new(1,0)
     menu.Position=UDim2.new(1,-12,0,12)

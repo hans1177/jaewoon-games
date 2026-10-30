@@ -312,12 +312,14 @@ local function worldAsset(id, location, targetHeight)
               or name:find("stem",1,true) or name:find("branch",1,true)
               or name:find("wood",1,true)
             surface.Color=bark and meadowPalette.bark or meadowPalette.leaves
-            surface.Material=bark and Enum.Material.Wood or Enum.Material.Fabric
+            surface.Material=bark and Enum.Material.Wood or Enum.Material.SmoothPlastic
+            surface:SetAttribute("PreserveAuthoredMaterial",true)
           else
             -- [야생동물 토이 표면] 자갈/천 직물 대신 유광을 억제한 장난감 플라스틱.
             -- 원본 모델, 메시·리그·판정은 그대로 유지한다.
             surface.Color=animalTint
-            surface.Material=Enum.Material.Plastic
+            surface.Material=Enum.Material.SmoothPlastic
+            surface:SetAttribute("PreserveAuthoredMaterial",true)
           end
           surface.Reflectance=0
         end
@@ -654,7 +656,9 @@ end)
 task.defer(function()
   local woodland={
     -- 플레이 시작 화면에서 볼 수 있는 네 방향 숲 가장자리. CC0 나무 원본만 재사용.
-    {-48,-57,13},{-59,-52,15},{-68,-62,12},{-49,-72,14},{-61,-79,16},{-78,-53,13},
+    {-30,-49,18},{-42,-39,21},{-28,47,19},{39,42,22},
+    {34,-45,20},{-45,32,18},{46,-31,21},{28,53,19},
+    {-48,-57,20},{-59,-52,22},{-68,-62,12},{-49,-72,14},{-61,-79,16},{-78,-53,13},
     {49,-57,14},{61,-51,12},{72,-64,16},{52,-76,13},{65,-83,15},{81,-54,12},
     {-48,58,15},{-61,51,13},{-72,66,16},{-51,78,12},{-64,85,14},{-82,56,15},
     {48,59,13},{61,53,16},{73,67,14},{51,79,15},{65,86,12},{83,57,14},
@@ -742,7 +746,7 @@ task.defer(function()
   gameWorld:SetAttribute("MeadowWoodlandReady",sceneryCount>0)
   -- 원본 CC0 파손 석벽 1종만 재사용한다. 가짜 파츠 구조물은 만들지 않는다.
   local ruinCount=0
-  for index,site in ipairs({Vector3.new(-122,3,-147),Vector3.new(137,3,139),Vector3.new(-154,3,122)})do
+  for index,site in ipairs({Vector3.new(-45,3,-65),Vector3.new(58,3,48),Vector3.new(-68,3,38)})do
     local ruin=worldAsset("ruin",site,6)
     if ruin then
       ruin.Name="Meadow_Ruin_"..index;ruin:SetAttribute("RuinsIndex",index)
@@ -994,7 +998,8 @@ local function spawnEnemy(isBoss, index)
         if appearance then appearance:Destroy() end
         if surface.TextureID~="" then surface.TextureID="" end
         surface.MaterialVariant=""
-        surface.Material=Enum.Material.Plastic
+        surface.Material=Enum.Material.SmoothPlastic
+            surface:SetAttribute("PreserveAuthoredMaterial",true)
         surface.Color=surface.Color:Lerp(bodyTint,.78)
       end
       surface.Reflectance=0
