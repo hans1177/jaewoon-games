@@ -215,7 +215,7 @@ test('플레이 몬스터 5종은 콘셉트 스킨과 고유 스킬 이펙트를
 });
 
 test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 적용된다',()=>{
- assert.match(client,/BindToRenderStep\("MidnightCharacterMotion"/);
+ assert.match(client,/RunService\.PreSimulation:Connect\(function\(dt\)/);
  assert.match(client,/findMotionJoint/);
  assert.match(client,/Motor6D/);
  for(const action of ['PURIFY','DASH','ABILITY','INFECT'])assert.ok(client.includes('setMotionImpulse("'+action+'"'),action);
