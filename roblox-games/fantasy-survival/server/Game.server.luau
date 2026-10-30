@@ -487,7 +487,7 @@ local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
   enemy.attackState=state
   enemy.model:SetAttribute("AttackState",state)
-  if state~="RECOVERY" or enemy.model:GetAttribute("CreatureMotionState")~="HIT" then
+  if state~="RECOVERY" or (enemy.model:GetAttribute("CreatureMotionState")~="HIT" and enemy.model:GetAttribute("CreatureMotionState")~="ATTACK") then
     local movement=state=="CHASE" and (enemy.kind=="bee" and "FLY" or "RUN") or
       state=="RETURN_TO_SPAWN" and (enemy.kind=="bee" and "FLY" or "WALK") or
       state=="ANTICIPATION" and "START" or
@@ -566,6 +566,13 @@ local function updateEnemyAI(dt,now)
             enemy.model:SetAttribute("CreatureActionSequence",
               (enemy.model:GetAttribute("CreatureActionSequence") or 0)+1)
             setEnemyAttackState(enemy,"RECOVERY")
+            local attackSerial=enemy.model:GetAttribute("CreatureActionSequence")
+            task.delay(.38,function()
+              if enemy.model.Parent and enemy.model:GetAttribute("CreatureActionSequence")==attackSerial
+                and enemy.model:GetAttribute("CreatureMotionState")=="ATTACK" then
+                enemy.model:SetAttribute("CreatureMotionState","STOP")
+              end
+            end)
             local defense=meadowDefense[targetPlayer] or {}
             local incoming=enemy.damage
             if (defense.dodgeUntil or 0)>now then
