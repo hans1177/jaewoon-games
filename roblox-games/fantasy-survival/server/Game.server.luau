@@ -150,6 +150,17 @@ if not meadowClouds then
   meadowClouds.Name="MeadowNativeClouds"
   meadowClouds.Parent=meadowTerrain
 end
+-- [숲 공기감] 기존 Lighting에 원래 Roblox 안개 효과만 더한다.
+-- 다른 월드용 파츠·이미지·후처리 중첩 없이 날씨 갱신 루프에서 그대로 관리한다.
+local meadowAtmosphere=Lighting:FindFirstChildOfClass("Atmosphere")
+if not meadowAtmosphere then
+  meadowAtmosphere=Instance.new("Atmosphere")
+  meadowAtmosphere.Name="MeadowForestAtmosphere"
+  meadowAtmosphere.Parent=Lighting
+end
+meadowAtmosphere.Color=Color3.fromRGB(181,210,193)
+meadowAtmosphere.Decay=Color3.fromRGB(98,121,108)
+meadowAtmosphere.Glare=.10
 local lastMeadowClimateTick=-1
 local lastMeadowWeather=""
 
@@ -181,6 +192,14 @@ local function updateMeadowClimate()
   Lighting.FogStart=weather=="FOG" and 35 or weather=="STORM" and 55 or 110
   Lighting.FogEnd=weather=="FOG" and 210 or weather=="STORM" and 390
     or weather=="RAIN" and 680 or 1600
+  -- [원근감] 수관 뒤는 옅게, 비/안개에는 서서히 짙게. 근처 적 시야는 보존한다.
+  local forestAirDensity=weather=="FOG" and .39 or weather=="STORM" and .31
+    or weather=="RAIN" and .26 or weather=="SNOW" and .22 or .17
+  local forestHaze=weather=="FOG" and 2.0 or weather=="STORM" and 1.5 or .95
+  meadowAtmosphere.Density+=(forestAirDensity-meadowAtmosphere.Density)*.12
+  meadowAtmosphere.Haze+=(forestHaze-meadowAtmosphere.Haze)*.12
+  meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp(
+    airColor:Lerp(meadowPalette.leaves,.11),.12)
   local cover=weather=="STORM" and .94 or weather=="RAIN" and .79
     or weather=="FOG" and .67 or weather=="SNOW" and .76 or .22
   local density=weather=="STORM" and .86 or weather=="RAIN" and .66
@@ -661,6 +680,8 @@ end)
 -- 전투·채집/보상 대상이 아닌 배경용이며, 시작 지점과 기존 스폰/자원은 그대로 보존한다.
 -- 같은 나무 1개 에셋 캐시만 재사용하고 순차 로딩으로 처음 접속을 막지 않는다.
 task.defer(function()
+  -- 외곽 지형이 마지막에 채워지면 개울이 다시 매몰되므로 지형 완료 뒤 수로를 판다.
+  while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.1) end
   local woodland={
     -- 플레이 시작 화면에서 볼 수 있는 네 방향 숲 가장자리. CC0 나무 원본만 재사용.
     {-48,-57,13},{-59,-52,15},{-68,-62,12},{-49,-72,14},{-61,-79,16},{-78,-53,13},
@@ -705,12 +726,81 @@ task.defer(function()
     {155,201,16},{181,193,13},{208,165,17},{221,125,14},
     {187,111,17},{145,223,13},{235,188,15},{205,231,17},
   }
+  -- [숲 조성 / 원본 에셋] 멀리 분산된 나무를 8개 숲 군락으로 이어 화면 가장자리를 울창하게 채운다.
+  -- 기존 수입 CC0 나무 원본만 복제한다. 시작지·공격 반경과 채집 나무 좌표는 그대로 둔다.
+  -- 고정된 수식으로 매 입장 동일하게 배치하며 새 충돌·파츠·서버 전투 개체는 생성하지 않는다.
+  local forestGroves={
+    {-104,-109},{112,-109},{-113,112},{114,112},
+    {-198,-98},{202,-94},{-194,197},{199,191},
+  }
+  local canopyCount=0
+  for groveIndex,center in ipairs(forestGroves)do
+    for index=1,12 do
+      local angle=index*2.399963+groveIndex*.87
+      local radius=12+(index%5)*7+math.sin(index*1.73+groveIndex)*3
+      local x=center[1]+math.cos(angle)*radius
+      local z=center[2]+math.sin(angle)*radius
+      local distance=math.sqrt(x*x+z*z)
+      if distance>84 and math.abs(x)<330 and math.abs(z)<330 then
+        -- 원본 나무의 실제 메시를 11~19 스터드로 변화시켜 비슷한 크기의 반복 배열을 줄인다.
+        woodland[#woodland+1]={x,z,11+((index*7+groveIndex*3)%9)}
+        canopyCount+=1
+      end
+    end
+  end
+  -- [숲 바닥] 얇은 잎풀·낙엽빛 흙을 Terrain 표면에만 교차 배치한다.
+  -- 나무를 기다리는 동안에도 초원과 구별되는 숲 바닥이 먼저 보인다.
+  local forestFloorCount=0
+  for groveIndex,center in ipairs(forestGroves)do
+    for index=1,14 do
+      local angle=index*2.399963+groveIndex*.67
+      local radius=9+(index%7)*7
+      local x=center[1]+math.cos(angle)*radius
+      local z=center[2]+math.sin(angle)*radius
+      local distance=math.sqrt(x*x+z*z)
+      if distance>77 and math.abs(x)<333 and math.abs(z)<333 then
+        local size=6+(index%4)*1.25
+        meadowTerrain:FillBall(Vector3.new(x,2.15-size,z),size,
+          index%6==0 and Enum.Material.Ground or Enum.Material.LeafyGrass)
+        forestFloorCount+=1
+        if index%7==0 then task.wait() end
+      end
+    end
+  end
+  -- [개울 생성 순서] 땅을 먼저 파고 물을 채운 뒤 나무를 안착시켜 나무 밑동이 뜨는 현상을 방지한다.
+  -- [물가] 동쪽 외곽에만 굽은 개울을 만든다. 스폰/채집·웨이브 전투 영역 침범 금지.
+  -- 나무와 바위 외에 별도의 Part, 조작용 다리 또는 임의 메시를 생성하지 않는다.
+  local streamLength=0
+  for step=-44,44 do
+    local z=step*3.5
+    local x=266+8*math.sin(z*.029)+2*math.cos(z*.073)
+    -- [실제 보이는 물길] 바닥 표면을 먼저 파내고 그 아래에 물을 채운다.
+    -- 지형 위에 물 공을 겹치거나 흙 아래에 물을 묻는 기존 문제 방지.
+    local bank=Vector3.new(x,.25,z)
+    meadowTerrain:FillBall(bank,6,Enum.Material.Air)
+    meadowTerrain:FillBall(Vector3.new(x,-2.8,z),4.5,Enum.Material.Water)
+    streamLength+=1
+    if step%5==0 then task.wait(.03) end
+  end
+  gameWorld:SetAttribute("MeadowForestStreamSections",streamLength)
+  local leafTones={
+    meadowPalette.leaves,Color3.fromRGB(93,130,77),
+    Color3.fromRGB(65,107,84),Color3.fromRGB(111,141,88),
+  }
   local sceneryCount=0
   for index,spec in ipairs(woodland) do
     local tree=worldAsset("tree",Vector3.new(spec[1],3,spec[2]),spec[3])
     if tree then
       tree.Name="Meadow_Woodland_"..index
       tree:SetAttribute("MeadowScenery",true)
+      -- [수관 색 변화] 등록 CC0 텍스처·메시 그대로, 잎 표면만 숲의 녹색 음영으로 변주한다.
+      -- 몸통과 나무 채집 모델의 판정·재질은 바꾸지 않는다.
+      local leafTone=leafTones[(index%#leafTones)+1]
+      for _,surface in ipairs(tree:GetDescendants())do
+        if surface:IsA("MeshPart") and surface.Material==Enum.Material.Fabric then
+          surface.Color=surface.Color:Lerp(leafTone,.33)
+        end
+      end
       -- [접근성] 기존 네 초원 입구의 조사 지점만 남겨 프롬프트가 숲 전체를 가리지 않는다.
       -- 네 사분면별 발견 비트·퀘스트·저장 의미는 그대로 사용한다.
       if index==6 or index==12 or index==18 or index==24 then
@@ -719,7 +809,8 @@ task.defer(function()
       tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*137)%360),0))
       sceneryCount+=1
     end
-    task.wait(.1)
+    -- 기존 CC0 메시는 재사용하며 한 번에 세 그루씩만 배치한다.
+    if index%3==0 then task.wait(.06) end
   end
   -- 흙길·바위·잔디 연결은 Roblox Terrain으로만 구성한다. 장식용 Part 생성 금지.
   for _,patch in ipairs({
@@ -738,15 +829,22 @@ task.defer(function()
     {from=Vector2.new(58,-49),to=Vector2.new(183,-177)},
     {from=Vector2.new(-54,62),to=Vector2.new(-184,188)},
     {from=Vector2.new(56,63),to=Vector2.new(192,196)},
+    -- 새 숲에도 들어갈 수 있는 갈래길. 중앙 몬스터 스폰 반경은 그대로 남긴다.
+    {from=Vector2.new(-132,-126),to=Vector2.new(-231,-93)},
+    {from=Vector2.new(128,-128),to=Vector2.new(226,-91)},
+    {from=Vector2.new(-126,139),to=Vector2.new(-220,211)},
+    {from=Vector2.new(134,139),to=Vector2.new(219,215)},
   }
   for route,track in ipairs(tracks) do
-    for step=1,18 do
-      local t=step/18
+    for step=1,34 do
+      local t=step/34
       local p=track.from:Lerp(track.to,t)
       local bend=math.sin(t*math.pi*2+route)*3.4
-      meadowTerrain:FillBall(Vector3.new(p.X+bend,-1.8,p.Y-bend*.45),
-        3.8+math.sin(t*12+route)*.35,Enum.Material.Ground)
-      task.wait(.025)
+      -- 폭 7~9의 불규칙한 길. 표면이 높아져 보행을 막지 않도록 기존 높이를 유지한다.
+      local width=3.8+math.sin(t*12+route)*.45
+      meadowTerrain:FillBall(Vector3.new(p.X+bend,2.1-width,p.Y-bend*.45),
+        width,Enum.Material.Ground)
+      if step%4==0 then task.wait(.025) end
     end
   end
   -- [오솔길 분기] 네 탐험 입구에서 깊은 숲으로 이어지는 실제 Terrain 길이다.
@@ -766,6 +864,21 @@ task.defer(function()
     end
   end
   gameWorld:SetAttribute("MeadowNativeTrails",#tracks+#trailSpurs)
+  -- [이끼 낀 암석] 나무 군락 바깥에만 Terrain 암반을 겹쳐 자연스럽게 노출한다.
+  local forestRockCount=0
+  for _,rock in ipairs({
+    {-155,-105,4.1},{-183,-137,3.6},{-124,-179,3.9},
+    {157,-100,4.2},{178,-149,3.7},{129,-182,3.8},
+    {-148,139,4.0},{-197,166,4.4},{-126,198,3.6},
+    {156,156,4.3},{194,153,3.8},{135,203,3.7},
+    {-279,80,4.6},{282,-43,4.3},{-264,-264,4.4},{289,281,4.2},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(rock[1],2.1-rock[3]+1.1,rock[2]),
+      rock[3],Enum.Material.Rock)
+    forestRockCount+=1
+    task.wait(.02)
+  end
+  gameWorld:SetAttribute("MeadowForestRockCount",forestRockCount)
   -- [덤불 같은 지표] 원본 지형 재질로 오솔길 옆 숲의 잎·잔디 밀도를 높인다.
   -- 캐릭터·자원·전투 스폰 주변은 피하고 새 파츠나 가짜 식생 모델은 만들지 않는다.
   for _,brush in ipairs({
@@ -803,6 +916,8 @@ task.defer(function()
     task.wait(.14)
   end
   gameWorld:SetAttribute("MeadowWoodlandSceneryCount",sceneryCount)
+  gameWorld:SetAttribute("MeadowForestCanopyCount",canopyCount)
+  gameWorld:SetAttribute("MeadowForestFloorCount",forestFloorCount)
   gameWorld:SetAttribute("MeadowWoodlandScene","FOUR_GROVES_FOUR_REAL_TRAIL_SPURS")
   gameWorld:SetAttribute("MeadowForestSoftToyMaterial",sceneryCount>0 and "ORIGINAL_CC0_TREE_MESH_SMOOTH_MATTE" or "NO_NATIVE_MESH")
   gameWorld:SetAttribute("MeadowWoodlandReady",sceneryCount>0)
@@ -839,6 +954,23 @@ task.defer(function()
       task.wait(.12)
     end
   end
+  -- [석벽 흔적] 원본 CC0 석벽 조각만 주변 오솔길 가장자리에 배치한다.
+  -- 별도 RuinsIndex/관찰 이벤트를 만들지 않아 기존 3개 유적 발견 및 저장 비트는 불변.
+  local forestFragmentCount=0
+  for index,site in ipairs({
+    Vector3.new(-164,3,-108),Vector3.new(157,3,-129),
+    Vector3.new(-176,3,180),Vector3.new(169,3,174),
+  })do
+    local fragment=worldAsset("ruin",site,4.7)
+    if fragment then
+      fragment.Name="Meadow_ForestStoneFragment_"..index
+      fragment:SetAttribute("MeadowScenery",true)
+      fragment:PivotTo(fragment:GetPivot()*CFrame.Angles(0,math.rad(index*77),0))
+      forestFragmentCount+=1
+    end
+    task.wait(.06)
+  end
+  gameWorld:SetAttribute("MeadowForestStoneFragmentCount",forestFragmentCount)
   if sceneryCount==0 then warn("마력숲 초원 나무 로딩 0개: 등록 CC0 자산 및 Place 사용 권한 확인 필요") end
 end)
 

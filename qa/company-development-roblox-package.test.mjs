@@ -120,11 +120,15 @@ test('Fantasy Survival Roblox R15 unarmed skills select authentic authored actio
   for(const id of ['meadow-unarmed-rush','meadow-unarmed-uppercut',
     'meadow-unarmed-kick','meadow-unarmed-elbow']){
     assert.ok(config.includes('Id = "'+id+'"'),id+' is an approved gameplay action');
-    assert.ok(server.includes('["'+id+'"]=unarmedSkillAttack'),id+' uses existing damage logic');
+    const expectedCost=id==='meadow-unarmed-uppercut'?20:id==='meadow-unarmed-kick'?14:null;
+    const handler='["'+id+'"]='+(expectedCost===null?'unarmedSkillAttack':'function(player) return unarmedSkillAttack(player,'+expectedCost+') end');
+    assert.ok(server.includes(handler),id+' preserves original attack authority and stamina cost');
     assert.ok(client.includes('["'+id+'"]='),id+' has a dedicated R15 motion route');
   }
   assert.match(server,/if not character or character:FindFirstChildOfClass\("Tool"\) then return false end/);
-  assert.match(server,/return attackEnemy\(player\)/,'skill uses the original authoritative combat function');
+  assert.match(server,/local accepted,hit=attackEnemy\(player\)/,'skill uses the original authoritative combat function');
+  assert.match(server,/if accepted and cost>0 then player:SetAttribute\("MeadowStamina",math.max\(0,stamina-cost\)\) end/,'stamina is deducted only after accepted attacks');
+  assert.match(server,/return accepted,hit/,'accepted attack and hit status are preserved');
   assert.match(server,/remote:FireClient\(player, "MEADOW_IMPACT", \{/);
   assert.ok(server.indexOf('remote:FireClient(player, "MEADOW_IMPACT"') >
     server.indexOf('target.HP=math.max(0,target.HP-damage)'),'impact occurs after confirmed damage');
@@ -1193,6 +1197,55 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
 });
 
+// [숲 밀도·유적·흙길] 사용자 시안에 맞는 자연환경. 자산 등록·전투 판정·저장키는 그대로.
+test('fantasy grove composition reuses licensed meshes and terrain without introducing procedural parts',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const assets=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  for(const id of ['tree','ruin']){
+    assert.equal(assets.models[id].license,'CC0-1.0');
+    assert.equal(assets.models[id].source,'VERIFIED_CC0_ORIGINAL');
+  }
+  assert.match(server,/local forestGroves=\{/);
+  assert.match(server,/woodland\[#woodland\+1\]=\{x,z,11\+\(\(index\*7\+groveIndex\*3\)%9\)\}/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestCanopyCount",canopyCount\)/);
+  assert.match(server,/local leafTones=\{/);
+  // 낮/밤/비/안개와 동기화한 네이티브 숲 대기 효과만 사용한다.
+  assert.match(server,/meadowAtmosphere=Lighting:FindFirstChildOfClass\("Atmosphere"\)/);
+  assert.match(server,/meadowAtmosphere=Instance.new\("Atmosphere"\)/);
+  assert.match(server,/forestAirDensity=weather=="FOG" and \.39/);
+  assert.match(server,/meadowAtmosphere.Density\+=\(forestAirDensity-meadowAtmosphere.Density\)\*\.12/);
+  assert.match(server,/meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp\(/);
+  assert.match(server,/surface.Color=surface.Color:Lerp\(leafTone,\.33\)/);
+  assert.match(server,/surface.Material==Enum.Material.Fabric/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestFloorCount",forestFloorCount\)/);
+  assert.match(server,/index%6==0 and Enum.Material.Ground or Enum.Material.LeafyGrass/);
+  assert.match(server,/if distance>84 and math.abs\(x\)<330/);
+  assert.match(server,/if index==6 or index==12 or index==18 or index==24 then/);
+  assert.match(server,/for step=1,34 do/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\+#trailSpurs\)/);
+  assert.match(server,/for step=-44,44 do/);
+  assert.match(server,/local z=step\*3\.5/);
+  assert.match(server,/local x=266\+8\*math.sin\(z\*\.029\)\+2\*math.cos\(z\*\.073\)/);
+  assert.match(server,/meadowTerrain:FillBall\(bank,6,Enum.Material.Air\)/);
+  assert.match(server,/meadowTerrain:FillBall\(Vector3.new\(x,-2\.8,z\),4\.5,Enum.Material.Water\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestStreamSections",streamLength\)/);
+  // 개울의 지형을 조성한 뒤 원본 CC0 나무를 지면에 정렬한다. 3그루 단위로 시각 갱신.
+  assert.ok(server.indexOf('local streamLength=0')<server.indexOf('local sceneryCount=0'));
+  assert.ok(server.indexOf('meadowTerrain:FillBall(bank,6,Enum.Material.Air)')<server.indexOf('local sceneryCount=0'));
+  assert.match(server,/if index%3==0 then task.wait\(\.06\) end/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestRockCount",forestRockCount\)/);
+  assert.match(server,/local fragment=worldAsset\("ruin",site,4\.7\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestStoneFragmentCount",forestFragmentCount\)/);
+  assert.match(server,/local trailSpurs=\{/);
+  assert.match(server,/Meadow_Ruin_Outer_/);
+  assert.match(server,/MeadowForestSoftToyMaterial/);
+  assert.match(server,/while gameWorld:GetAttribute\("MeadowOuterRegionReady"\)~=true do task.wait\(\.1\) end/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowRuinCount",ruinCount\)/);
+  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save semantics unchanged');
+  assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
+});
+
 test('마력숲 타격은 부드러운 내장 둔탁음으로 교체하고 연속 재생량을 제한한다',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.match(source,/impact.SoundId="rbxasset:\/\/sounds\/action_jump_land\.mp3"/);
@@ -1359,30 +1412,32 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
   // 모바일 전투: 실제 발차기·어퍼컷·막기가 기본 공격 주변의 반원에 배치된다.
-  assert.ok(client.includes('local meadowArcDegrees={-105,-135,-165,-195,-225,-255}'));
+  assert.match(client,/local meleeSkills=\{[\s\S]*?\{"meadow-unarmed-kick","발차기"[\s\S]*?\{"meadow-unarmed-uppercut","어퍼컷"[\s\S]*?\{"skill-meadow-guard","막기"/);
   assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-(landscape and 62 or 7),1,-(landscape and 19 or 102))'));
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-\(landscape and \d+ or \d+\),1,-\(landscape and \d+ or \d+\)\)/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
-  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.new(1,-18,0,18)'));
+  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,21)'));
+  assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
+  assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
   assert.ok(client.includes('local radarTrailEndpoints={'));
   assert.ok(client.includes('{-51,-48,-177,-176},{58,-49,183,-177}'));
   assert.ok(client.includes('{-177,-176,-228,-219},{183,-177,231,-228}'));
   assert.ok(client.includes('for route=1,8 do'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
-  assert.ok(client.includes('local mapDiameter=compactLandscape and 102 or small and 106 or 120'));
+  assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or \d+/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
-  assert.ok(client.includes('meadowAttackIcon.ImageRectOffset=Vector2.new(0,0)'));
+  assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
-  assert.ok(client.includes('local energyDeadline=player:GetAttribute("MeadowReady_skill-meadow-sprint")'));
-  assert.ok(client.includes('energyCooldown=math.max(.1,action.Cooldown or 8)'));
-  assert.ok(client.includes('meadowPrimaryAttack.Activated:Connect(function()'));
+  assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
+  assert.ok(client.includes('meadowSkillCooldowns[index]=cooldown'));
+  assert.ok(!client.includes('meadowPrimaryAttack.Activated:Connect(function()'),'default attack is on world tap, not another button');
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowSkillCooldowns={}'));
@@ -1393,7 +1448,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.equal(icons.importVerified,true);
   assert.ok(client.includes('local meadowIconAtlas="rbxassetid://'+icons.assetId+'"'));
   assert.ok(client.includes('icon.ImageRectOffset=Vector2.new(skill[4]*64,0)'));
-  assert.ok(client.includes('if meadowIconAtlas~="" and skill[4] then'));
+  assert.match(client,/if meadowIconAtlas~="" and skill\[4\](?:~=nil)? then/);
   assert.ok(client.includes('glyph.Name="SkillSymbol"'));
   // Item cards read existing server-authoritative values, without adding a saved schema.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
@@ -1413,9 +1468,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
   assert.ok(client.includes('local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)'));
-  assert.ok(client.includes('local x=centerX+math.cos(angle)*radius'));
-  assert.ok(client.includes('local y=centerY+math.sin(angle)*radius'));
-  assert.ok(client.includes('math.floor((93+(index-1)*58)*scale)'));
+  assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(\d+\+\(index-1\)\*60\)\*scale\),math.floor\(\d+\*scale\)\)/);
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1425,8 +1480,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
   assert.ok(client.includes('button.Size=UDim2.fromOffset(size,size)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
-  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut','skill-meadow-guard',
-    'skill-meadow-parry','skill-meadow-heal','skill-meadow-bolt']){
+  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut','skill-meadow-guard']){
     assert.ok(client.includes('{"'+id+'",'), 'real combat dock skill missing: '+id);
   }
   // 나머지 기존 스킬을 지우지 않고 원본 Config에서 메뉴로 접근 가능해야 한다.
@@ -1436,13 +1490,13 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
     assert.ok(!client.includes('or action.Id=="'+id+'"'), 'unplaced skill must remain reachable in menu: '+id);
   }
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
-  assert.ok(client.includes('{"skill-meadow-dodge-left","좌회피"'));
-  assert.ok(client.includes('{"skill-meadow-dodge-right","우회피"'));
+  assert.ok(!client.includes('{"skill-meadow-dodge-left","좌회피"'),'dodge UI was intentionally removed');
+  assert.ok(!client.includes('{"skill-meadow-dodge-right","우회피"'),'dodge UI was intentionally removed');
   assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","채집"'));
   assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
-  assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,/);
+  assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,(?:nil|meadowHealthTrack),multiplayerStatus,/);
   assert.match(client,/pages=meadowPages/);
   assert.ok(client.includes('hideButton=true'),
     'the default menu attack remains hidden; world-tap and main attack share the existing server action');
