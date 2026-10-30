@@ -4885,6 +4885,44 @@ end
 function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)
  local opened=false
  local compact=primary and primary.compact==true
+ local pages=primary and primary.pages or {}
+ local tabs=nil
+ local selectedPage=0
+ local tabButtons={}
+ local function selectPage(index)
+  selectedPage=index
+  list.Visible=index==0
+  for i,page in ipairs(pages)do page.Visible=i==index end
+  for i,button in ipairs(tabButtons)do
+   button.BackgroundColor3=i-1==index and Color3.fromRGB(59,93,77) or Color3.fromRGB(22,36,37)
+   local underline=button:FindFirstChild("SelectedUnderline")
+   if underline then underline.Visible=i-1==index end
+  end
+  if primary and primary.onPageChanged then primary.onPageChanged(index) end
+ end
+ if #pages>0 then
+  local names={"활동"};for _,name in ipairs(primary.pageNames or {})do names[#names+1]=name end
+  tabs,tabButtons=RobloxCommonUI.CreateFilterBar({name="MeadowMenuTabs",filters=names,selectedIndex=1})
+  tabs.Parent=root;tabs.ZIndex=44
+  local heading=Instance.new("TextLabel");heading.Name="MeadowMenuHeading"
+  heading.Position=UDim2.fromOffset(16,12);heading.Size=UDim2.new(1,-110,0,40)
+  heading.BackgroundTransparency=1;heading.Text="마력숲 · 모험 수첩"
+  heading.TextColor3=Color3.fromRGB(235,235,211);heading.Font=Enum.Font.GothamBold
+  heading.TextSize=19;heading.TextXAlignment=Enum.TextXAlignment.Left;heading.ZIndex=44;heading.Parent=root
+  for i,button in ipairs(tabButtons)do
+   button.ZIndex=45
+   if i>1 and primary.iconAtlas and primary.iconAtlas~="" then
+    local icon=Instance.new("ImageLabel");icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
+    local iconCell=({3,4,5,6,7,3})[i-1]
+    icon.Image=primary.iconAtlas;icon.ImageRectOffset=Vector2.new(iconCell*64,0)
+    icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromOffset(22,22)
+    icon.Position=UDim2.fromOffset(7,11);icon.ZIndex=46;icon.Parent=button
+    button.Text="     "..button.Text
+   end
+   button.Activated:Connect(function()selectPage(i-1)end)
+  end
+  selectPage(0)
+ end
  gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
  local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
  title.Parent=hud;status.Parent=hud;if healthTrack then healthTrack.Parent=hud end
@@ -4939,18 +4977,18 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   if compact then
    local short=v.Y<440
    hud.Position=UDim2.fromOffset(9,8)
-   hud.Size=UDim2.fromOffset(math.max(170,math.min(360,v.X-90)),short and 96 or 116)
+   hud.Size=UDim2.fromOffset(math.max(170,math.min(320,v.X-90)),short and 86 or 100)
    title.Position=UDim2.fromOffset(10,4)
    title.Size=UDim2.new(1,-20,0,22)
    title.TextScaled=false;title.TextSize=short and 12 or 14
    title.TextTruncate=Enum.TextTruncate.AtEnd
    status.Position=UDim2.fromOffset(10,27)
-   status.Size=UDim2.new(1,-20,0,short and 44 or 61)
+   status.Size=UDim2.new(1,-20,0,short and 28 or 38)
    status.TextScaled=false;status.TextSize=short and 10 or (v.X<400 and 11 or 12)
    status.TextWrapped=true
-   if healthTrack then healthTrack.Position=UDim2.fromOffset(10,short and 72 or 91);healthTrack.Size=UDim2.new(1,-20,0,6) end
+   if healthTrack then healthTrack.Position=UDim2.fromOffset(10,short and 60 or 70);healthTrack.Size=UDim2.new(1,-20,0,14) end
    if multiplayerStatus then
-    multiplayerStatus.Position=UDim2.fromOffset(10,short and 73 or 94)
+    multiplayerStatus.Position=UDim2.fromOffset(10,short and 76 or 87)
     multiplayerStatus.Size=UDim2.new(1,-20,0,18)
     multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=short and 10 or 11
     multiplayerStatus.TextTruncate=Enum.TextTruncate.AtEnd
@@ -4974,11 +5012,22 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
-  list.Position=UDim2.fromOffset(8,68);list.Size=UDim2.new(1,-16,1,-76)
+  local bodyTop=tabs and 122 or 68
+  list.Position=UDim2.fromOffset(12,bodyTop);list.Size=UDim2.new(1,-24,1,-bodyTop-12)
+  if tabs then
+   tabs.Position=UDim2.fromOffset(12,64);tabs.Size=UDim2.new(1,-24,0,50)
+   for _,page in ipairs(pages)do
+    page.Position=UDim2.fromOffset(16,bodyTop);page.Size=UDim2.new(1,-32,1,-bodyTop-16)
+   end
+  end
  end
  local function setOpen(value)
   opened=value;root.Visible=value;shade.Visible=value;hud.Visible=not value;menu.Visible=not value
   if quick then quick.Visible=not value end
+  for _,page in ipairs(pages)do
+   for _,child in ipairs(page:GetDescendants())do if child:IsA("GuiObject")then child.ZIndex=44 end end
+   page.ZIndex=43
+  end
   gui:SetAttribute("GameMenuOpen",value)
  end
  menu.Activated:Connect(function()setOpen(true)end)
@@ -4987,7 +5036,8 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  shade.Activated:Connect(function()setOpen(false)end)
  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
  layout();setOpen(false)
- return {isOpen=function()return opened end,close=function()setOpen(false)end}
+ return {isOpen=function()return opened end,close=function()setOpen(false)end,
+  open=function(index)selectPage(index or 0);setOpen(true)end}
 end
 
 

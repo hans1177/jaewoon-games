@@ -1102,7 +1102,7 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
     assert.ok(registry.models[species]?.license==='CC0-1.0','use verified original CC0 only: '+species);
     assert.match(visual,new RegExp('\\b'+species+'\\s*=\\s*'+registry.models[species].assetId+'\\b'));
   }
-  assert.match(server,/task.delay\(8,function\(\)/);
+  assert.match(server,/task.defer\(function\(\)/);
   assert.match(server,/tree=worldAsset\("tree",Vector3.new\(spec\[1\],3,spec\[2\]\),spec\[3\]\)/);
   assert.match(server,/tree:SetAttribute\("MeadowScenery",true\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowWoodlandSceneryCount",sceneryCount\)/);
@@ -1125,7 +1125,7 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(server,/meadowInspectReady\[player\]=now\+2\.5/);
   assert.match(server,/model:IsDescendantOf\(gameWorld\)/);
   assert.match(server,/rootPart.Position-model:GetPivot\(\).Position\).Magnitude>15/);
-  assert.match(server,/if index%7==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
+  assert.match(server,/if index%6==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
   assert.match(server,/bindMeadowInspection\(animal,spec\[1\]\)/);
   assert.match(server,/bindMeadowInspection\(model,spec.kind\)/);
   assert.match(server,/animal.escape=\(animal.escape or Vector3.zero\):Lerp\(escape,math.min\(1,dt\*3\)\)/);
@@ -1208,19 +1208,20 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   // Current mobile combat: 2 skills + guard, world-tap basic attack, dynamic semicircle.
   assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-14,1,-142)'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.match(client,/v.Y-dockHeight-54/);
+  assert.match(client,/v.Y-dockHeight-110/);
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
   assert.match(dodge,/params.RespectCanCollide=true/);
   assert.match(dodge,/ground.Normal.Y>=\.65/);
   assert.match(dodge,/ground.Material~=Enum.Material.Water/);
   assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
-  assert.ok(client.includes('button.Size=UDim2.fromOffset(buttonSize,buttonSize)'));
+  assert.ok(client.includes('button.Size=UDim2.fromOffset(dockWidth,buttonHeight)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","승룡권"'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
-  assert.ok(client.includes('{compact=true,hideButton=true}'),
+  assert.match(client,/compact=true,hideButton=true,pages=meadowPages/);
+  assert.ok(client.includes('hideButton=true'),
     'the default attack button must remain hidden for world-tap combat');
   const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
   assert.match(ui,/if compact then/);
@@ -1290,4 +1291,68 @@ test('마력숲 완벽 막기는 공격자만 기절시키고 연타 총 피해�
   assert.match(server,/meadowDefense\[player\]=nil/);
   assert.match(server,/GetDataStore\("fantasy-survival-development-v1"\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+});
+
+// 마력숲 메뉴는 실제 상태와 기존 서버 액션만 사용하며 외부 아이콘 원본을 보존한다.
+test('마력숲 모험 수첩은 캐릭터 인벤토리 저널 옵션 도우미를 실제 상태에 연결한다',()=>{
+ const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+ const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
+ for(const name of ['캐릭터','인벤토리','저널','옵션','도우미'])assert.ok(client.includes('"'+name+'"'));
+ assert.match(client,/meadowEffectsGroup.Volume/);
+ assert.match(client,/impact.SoundGroup=meadowEffectsGroup/);
+ assert.match(client,/forestBed.SoundGroup=meadowAmbienceGroup/);
+ assert.match(client,/if #meadowJournal>24 then table.remove\(meadowJournal\) end/);
+ assert.match(client,/activateMeadowAction\(row\[2\]\)/);
+ assert.match(ui,/list.Visible=index==0/);
+ assert.match(ui,/page.Visible=i==index/);
+ assert.match(ui,/CreateFilterBar\(\{name="MeadowMenuTabs"/);
+ assert.match(ui,/tabs.Size=UDim2.new\(1,-24,0,50\)/);
+ assert.doesNotMatch(client,/DataStoreService|HttpService:GetAsync/);
+});
+
+test('마력숲 외부 아이콘 원본·파생 이미지 해시와 단일 게임 등록 경로를 검증한다',async()=>{
+ const {createHash}=await import('node:crypto');
+ const art=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8')).interfaceIcons;
+ assert.equal(art.license,'CC0-1.0');assert.equal(art.sources.length,8);
+ for(const row of [...art.sourceArchives,{path:art.path,sha256:art.sha256}])assert.equal(createHash('sha256').update(fs.readFileSync(row.path)).digest('hex'),row.sha256);
+ const bytes=fs.readFileSync(art.path);assert.equal(bytes.readUInt32BE(16),512);assert.equal(bytes.readUInt32BE(20),64);
+ const importer=fs.readFileSync('tools/horror-combat-assets.mjs','utf8');
+ assert.match(importer,/process.argv.includes\('--magic-ui-only'\)/);
+ assert.match(importer,/MAGIC_UI_PERMISSION_FAILED/);
+ assert.match(importer,/art.authorizedUniverseIds=\[art.universeId\]/);
+ assert.equal(art.runtimeVerified,false);
+});
+
+test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한다',()=>{
+ const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+ const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+ assert.match(config,/CompanionQuestStage = 1, CompanionQuestProgress = 0/);
+ assert.match(server,/stage>=request.UnlockMainStage and eventName==request.Event/);
+ assert.match(server,/recordMeadowQuest\(player,"PARRY"\)/);
+ const recorder=server.slice(server.indexOf('local function recordMeadowQuest('),server.indexOf('local function gatherResource('));
+ assert.ok(recorder.indexOf('CompanionQuestStage')<recorder.indexOf('if not quest then return end'));
+ assert.doesNotMatch(recorder,/awardProgress|Coins|XP/);
+ assert.match(client,/info.Story or ""/);
+ assert.match(client,/questTracker.Activated:Connect\(function\(\)meadowMenu.open\(3\)end\)/);
+ assert.doesNotMatch(client,/local journalShade=/);
+ assert.match(client,/task.delay\(bossScene and 1\.5 or 2\.5/);
+ assert.match(client,/skip.Activated:Connect\(closeIntro\)/);
+ assert.match(client,/PromptShown:Connect/);assert.match(client,/PromptHidden:Connect/);
+ assert.match(client,/plate.AlwaysOnTop=false;plate.MaxDistance=55/);
+ assert.match(server,/model:SetAttribute\("EnemyMaxHealth",hitPoints\)/);
+});
+
+test('마력숲 초원 수문장은 기존 골렘·5웨이브·보상을 보존하고 메인 퀘스트에 연결된다',()=>{
+ const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+ const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+ assert.match(config,/Id="meadow-gatekeeper"/);
+ assert.match(server,/recordMeadowQuest\(player,"BOSS_KILL"\)/);
+ assert.match(server,/if eventName~="BOSS_KILL" then return end/);
+ assert.match(server,/CurrentWave%5==0 and spawnEnemy\(true,number\+1\)/);
+ assert.match(server,/enemy.HP<=enemy.maxHP\*\.5/);
+ assert.match(server,/target.model:SetAttribute\("BossPhase",2\)/);
+ assert.match(server,/id="golem",atom="HEAD_GOLEM",height=8\.4/);
+ assert.match(server,/NativeMobMotionDuration/);
+ assert.match(server,/awardProgress\(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5\)/);
 });

@@ -380,6 +380,19 @@ end
 local function recordMeadowQuest(player, eventName)
   if player:GetAttribute("ProfileReady")~=true then return end
   local stage=readNumber(player,"QuestStage",1)
+  -- [동료 서브 퀘스트] 검증된 행동만 기록하며 메인 완료 후에도 독립적으로 진행한다.
+  local sideStage=readNumber(player,"CompanionQuestStage",1)
+  local request=Config.CompanionRequests and Config.CompanionRequests[sideStage]
+  if request and stage>=request.UnlockMainStage and eventName==request.Event then
+    local sideProgress=math.min(request.Goal,readNumber(player,"CompanionQuestProgress",0)+1)
+    if sideProgress>=request.Goal then
+      setNumber(player,"CompanionQuestStage",sideStage+1)
+      setNumber(player,"CompanionQuestProgress",0)
+      remote:FireClient(player,"MEADOW_COMPANION_UPDATE",{completed=request.Name})
+    else
+      setNumber(player,"CompanionQuestProgress",sideProgress)
+    end
+  end
   local quest=Config.MainQuests and Config.MainQuests[stage]
   if not quest then return end
   local progress=readNumber(player,"QuestProgress",0)
@@ -403,6 +416,9 @@ local function recordMeadowQuest(player, eventName)
     progress+=1
   elseif stage==5 then
     if eventName~="WOODLAND" then return end
+    progress+=1
+  elseif stage==6 then
+    if eventName~="BOSS_KILL" then return end
     progress+=1
   end
   progress=math.min(quest.Goal,progress)
@@ -692,7 +708,7 @@ local function spawnEnemy(isBoss, index)
       end
     end
   end
-  local selected=isBoss and {id="golem",atom="HEAD_GOLEM",height=6.3}
+  local selected=isBoss and {id="golem",atom="HEAD_GOLEM",height=8.4}
     or ready[((index-1)%math.max(1,#ready))+1]
   if not selected then return false end
   local partId=selected.id
@@ -859,7 +875,7 @@ local function spawnEnemy(isBoss, index)
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
   local meadowNames={wolf="초원 늑대",bee="초원 벌",boar="사나운 멧돼지",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
-  model.Name=isBoss and "돌 골렘" or (meadowNames[partId] or partId)
+  model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
   -- [몹 색·재질] 원본 텍스처/메시는 그대로 쓰고 종별 표면만 차별화한다.
   local originalTextured=partId=="bat" or partId=="mushroom" or partId=="skeleton"
   local bodyTint=isBoss and Color3.fromRGB(126,135,124)
@@ -897,8 +913,10 @@ local function spawnEnemy(isBoss, index)
     mushroom="SPORE_CLOUD",bat="NIGHT_DIVE",skeleton="BONE_SWING"}
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
+  model:SetAttribute("EnemyMaxHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
+  if isBoss then model:SetAttribute("BossPhase",1) end
   -- 기존 공용 생물 모델 위에만 공격 예고를 표시한다. 판정용 가짜 파츠를 만들지 않는다.
   local attackTelegraph = Instance.new("Highlight")
   attackTelegraph.Name = "AttackAnticipation"
@@ -920,6 +938,9 @@ local function spawnEnemy(isBoss, index)
     baseHeight=location.Y,visualFacing=Vector3.new(0,0,-1),
     visualPosition=location,visualFacingSmooth=Vector3.new(0,0,-1)
   })
+  if isBoss then
+    remote:FireAllClients("MEADOW_BOSS_INTRO",{model=model,name=model.Name,wave=CurrentWave})
+  end
   return true
 end
 
@@ -989,6 +1010,9 @@ local function applyMeadowDamage(player,target,damage)
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
+  if target.isBoss and target.HP>0 and target.HP<=target.maxHP*.5 then
+    target.model:SetAttribute("BossPhase",2)
+  end
   -- Server-authorized impact location is sent only after a real target took damage.
   -- No miss, empty-air swing or client-generated contact may emit this effect.
   remote:FireClient(player, "MEADOW_IMPACT", {
@@ -1019,7 +1043,10 @@ local function applyMeadowDamage(player,target,damage)
     awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
     recordMeadowQuest(player,"KILL")
     setNumber(player,"EnemyHealth",0)
-    if target.isBoss then setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1) end
+    if target.isBoss then
+      setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1)
+      recordMeadowQuest(player,"BOSS_KILL")
+    end
     if Config.CompetitiveRequired then
       setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+(target.isBoss and 5 or 1))
     end
@@ -1100,6 +1127,8 @@ end
 local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
   enemy.attackState=state
+  enemy.attackStateStartedAt=os.clock()
+  enemy.model:SetAttribute("NativeMobMotionDuration",state=="ANTICIPATION" and math.max(.12,(enemy.windupUntil or os.clock()+.68)-os.clock()) or .46)
   enemy.model:SetAttribute("AttackState",state)
   enemy.model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
   local motion=state=="ANTICIPATION" and "ATTACK" or
@@ -1140,6 +1169,12 @@ local function animateMeadowOriginalMob(enemy,now)
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
   local attackPitch=attacking and (kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
+  if enemy.isBoss and attacking then
+    local duration=enemy.model:GetAttribute("NativeMobMotionDuration") or .68
+    local preparation=math.clamp((now-(enemy.attackStateStartedAt or now))/duration,0,1)
+    attackPitch=enemy.attackPattern=="GOLEM_SHOCKWAVE" and .18*preparation or -.38*preparation
+    movingHeight+=enemy.attackPattern=="GOLEM_SHOCKWAVE" and math.sin(preparation*math.pi)*.42 or 0
+  end
   local stridePitch=inMotion and math.sin(phase)*(.05+(kind=="wolf" and .13 or .06)) or 0
   local bank=stunned and math.sin(now*9)*.12 or aerial and math.sin(phase*.52)*.22
     or inMotion and math.sin(phase*.65)*.09 or 0
@@ -1154,7 +1189,8 @@ end
 
 local function chooseMeadowMobSkill(enemy)
   enemy.attackSerial+=1
-  local second=enemy.attackSerial%2==0
+  -- 수문장 후반부는 충격파 연타를 사용하되 원래 총 피해·체력·보상은 보존한다.
+  local second=(enemy.isBoss and enemy.HP<=enemy.maxHP*.5) or enemy.attackSerial%2==0
   local pattern=enemy.isBoss and (second and "GOLEM_SHOCKWAVE" or "GOLEM_SLAM")
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
     or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")
@@ -1184,6 +1220,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
       attacker.model:SetAttribute("NativeMobStunnedUntil",workspace:GetServerTimeNow()+(attacker.isBoss and .6 or 1.2))
       setEnemyAttackState(attacker,"STUNNED")
     end
+    recordMeadowQuest(player,"PARRY")
     player:SetAttribute("MeadowParryConfirmed",workspace:GetServerTimeNow())
     remote:FireClient(player,"MEADOW_REACTION","PARRY")
     return

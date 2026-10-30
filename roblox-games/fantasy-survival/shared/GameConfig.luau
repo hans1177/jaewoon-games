@@ -84,6 +84,20 @@ local Config = {
     {Id="meadow-signal", Name="05 · 세계수 조사 기록", Goal=1,
      Instruction="숲 가장자리 탐색 지점을 1회 조사",
      Story="연구 기록 1~3화의 세계수·화산·오아시스 단서를 모았다. 해당 지역의 실제 탐사 기능은 별도 구현이 필요하다."},
+    {Id="meadow-gatekeeper",Name="06 · 초원 수문장",Goal=1,
+     Instruction="5의 배수 웨이브에 나타나는 초원 수문장 돌 골렘 1마리 처치",
+     Story="동료 연구원과 다음 탐사를 준비하려면 초원의 위협을 먼저 정리해야 한다. 수문장의 공격 예고를 보고, 연타는 완벽 막기로 끊어라."},
+  },
+  -- [동료 의뢰] 연구원 통신으로 받는 선택 의뢰. 메인 진행·경제 보상과 독립한다.
+  CompanionRequests = {
+    {Id="field-observation",Name="동료 조사원 · 생태 관찰",UnlockMainStage=2,Event="INSPECT",Goal=2,
+     Instruction="초원 동물 2회 조사",Message="구조대가 돌아갈 길을 찾도록 초원 생태를 더 관찰해 줘."},
+    {Id="supply-support",Name="동료 보급원 · 출정 준비",UnlockMainStage=3,Event="WOOD",Goal=3,
+     Instruction="나무 자원 3회 채집",Message="다음 조사에 쓸 물자를 준비하고 있어. 채집 기록을 보내 줘."},
+    {Id="guard-training",Name="동료 경비원 · 방어 훈련",UnlockMainStage=4,Event="PARRY",Goal=1,
+     Instruction="몬스터 공격을 타이밍 맞춰 1회 막기",Message="연속 공격이 오면 막기 시작 순간을 노려 봐. 성공하면 상대의 빈틈이 생겨."},
+    {Id="return-route",Name="동료 조사원 · 귀환로 확보",UnlockMainStage=5,Event="WAVE",Goal=1,
+     Instruction="웨이브 1회 생존",Message="세계수 조사 기록과 함께 안전한 귀환 경로도 남기자."},
   },
   StoryRecords = {
     {Title="연구 일지 1화 · 구조 요청",
@@ -100,7 +114,7 @@ local Config = {
     SharedObjective = 0, RoundScore = 0, XP = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
-    ResearchRecords = 0,
+    ResearchRecords = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "생존 시작", Kind = "SURVIVAL", Order = 1, LearningPattern = "idle-reward" },
