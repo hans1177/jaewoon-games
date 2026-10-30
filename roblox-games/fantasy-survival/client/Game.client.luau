@@ -2567,11 +2567,12 @@ local function mobVfx(pattern,where,stage,facing)
     duration=stage=="ANTICIPATION" and (boss and .68 or .4)
       or stage=="DEATH" and .55 or .28,
     reducedMotion=reducedEffects,
-    startDiameter=boss and 16.8 or nil,
-    endDiameter=boss and 16.8 or nil,
+    -- [공격 범위 의미] 실제 광역 판정은 기존 수문장 충격파에만 있다.
+    startDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
+    endDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
     textureKey=(wolf or skeleton) and stage=="IMPACT" and "slash" or nil,
     hideFlash=stage=="ANTICIPATION",
-    hideRing=stage=="IMPACT" and not charge,
+    hideRing=pattern=="GOLEM_SLAM" or stage=="IMPACT" and not charge,
     mist=stage=="DEATH" and not reducedEffects,
     count=reducedEffects and 2 or stage=="DEATH" and 7 or stage=="IMPACT" and 5 or 3,
   })
