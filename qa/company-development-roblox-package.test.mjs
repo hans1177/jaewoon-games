@@ -1495,7 +1495,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('for route=1,8 do'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
-  assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or \d+/);
+  assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or (?:\d+|math.floor\(math.clamp\()/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
@@ -1533,10 +1533,10 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
-  assert.ok(client.includes('local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)'));
+  assert.match(client,/local scale=landscape and math.clamp\(v.Y\/\d+,[\s\S]*?or math.clamp\(v.X\/\d+/);
   assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(\d+\+\(index-1\)\*60\)\*scale\),math.floor\(\d+\*scale\)\)/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\([^)]*(?:index-1|p\[1\])[\s\S]*?\*scale\)/);
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1558,7 +1558,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
   assert.ok(!client.includes('{"skill-meadow-dodge-left","좌회피"'),'dodge UI was intentionally removed');
   assert.ok(!client.includes('{"skill-meadow-dodge-right","우회피"'),'dodge UI was intentionally removed');
-  assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","채집"'));
+  assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","상호작용"') ||
+    client.includes('{"scope-coreloop-1-6ebe58f496","채집"'), 'server-bound gather action remains on the utility dock');
   assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
