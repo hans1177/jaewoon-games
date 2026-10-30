@@ -975,3 +975,74 @@ globalThis.fetch=async(url,options={})=>{
     assert.match(ids,/tree=900007/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('fantasy meadow preserves genuine unarmed R15, server-owned 11 skills, and connected mobile cooldown presentation',()=>{
+  const root='roblox-games/fantasy-survival/';
+  const config=fs.readFileSync(root+'shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync(root+'server/Game.server.luau','utf8');
+  const client=fs.readFileSync(root+'client/Game.client.luau','utf8');
+  const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const actualSkillNames=['heavy','sweep','bolt','guard','parry','dodge-left',
+    'dodge-right','sprint','heal','focus','emote'];
+  const identifiers=[...config.matchAll(/Id = "(skill-meadow-[a-z-]+)"/g)].map(match=>match[1]);
+  assert.equal(identifiers.length,11,'all 11 owner meadow skills must be in the live action menu');
+  assert.equal(new Set(identifiers).size,11);
+  for(const name of actualSkillNames){
+    const action='skill-meadow-'+name;
+    assert.ok(config.includes('Id = "'+action+'"'),action);
+    assert.ok(server.includes('["'+action+'"]='),action+' must have an actual server handler');
+  }
+  assert.match(server,/local function applyMeadowDamage\(player,target,damage\)/);
+  assert.match(server,/local function meadowSkill\(player,id,execute\)/);
+  assert.match(server,/if now<\(cooldowns\[id\] or 0\) then return false end/);
+  assert.match(server,/player:SetAttribute\("MeadowReady_"\.\.id,workspace:GetServerTimeNow\(\)\+interval\)/);
+  assert.match(server,/remote:FireAllClients\("MEADOW_ACTION_FX",player\.UserId,actionId,approvedSequence/);
+  assert.match(client,/if kind=="MEADOW_ACTION_FX" then/);
+  assert.match(client,/player:GetAttributeChangedSignal\("ApprovedActionMotion"\)/);
+  assert.match(client,/local combatUpperJoints = \{Waist=true/);
+  assert.match(client,/LeftHip=true,RightHip=true,LeftKnee=true,RightKnee=true/);
+  assert.match(client,/combatMotionSource\.DescribeUnarmedActions\(\)/);
+  assert.match(client,/local profile=weaponProfile or "UNARMED"/);
+  assert.match(client,/unarmedMoves=\{"U:"\.\.chosen\}/);
+  assert.match(client,/combatMotionSource\.CreateCombatCombo,profile,unarmedMoves/);
+  assert.match(motion,/function RobloxCommonMotion\.DescribeUnarmedActions\(\)/);
+  assert.match(motion,/\{id="JAB_LEFT",kind="HAND"/);
+  assert.match(motion,/\{id="ROUND_KICK_L",kind="KICK"/);
+  assert.doesNotMatch(client,/combo\.steps\s*=\s*\{/,'frozen native motion source must never be mutated');
+  assert.doesNotMatch(server,/Instance\.new\("Part"\)/,'no fake Part monsters or scenery');
+  assert.match(server,/DataStoreService:GetDataStore\("fantasy-survival-development-v1"\)/);
+  assert.match(server,/return store:UpdateAsync|store:UpdateAsync/);
+  assert.match(client,/local actionGrid=Instance\.new\("UIGridLayout"\)/);
+  assert.match(client,/list\.CanvasSize = UDim2\.fromOffset\(0,math\.ceil\(#Config\.Actions\/2\)\*60\+12\)/);
+});
+
+test('fantasy meadow uses six source-native creature action families with no proxy mobs',()=>{
+  const root='roblox-games/fantasy-survival/';
+  const server=fs.readFileSync(root+'server/Game.server.luau','utf8');
+  const client=fs.readFileSync(root+'client/Game.client.luau','utf8');
+  const manifest=JSON.parse(fs.readFileSync(root+'native-assets.json','utf8'));
+  const expected=['wolf','bee','golem','deer','boar','rabbit'];
+  for(const species of expected){
+    assert.ok(manifest.models[species]?.sourceSha256,species+' must retain its original CC0 hash');
+    assert.match(client,new RegExp(species+'="(?:QUADRUPED|FLYER|GIANT)"'),species);
+  }
+  for(const pattern of ['WOLF_BITE','WOLF_POUNCE','BEE_SWEEP',
+      'BEE_SPIRAL_STING','GOLEM_SLAM','GOLEM_STOMP']){
+    assert.ok(server.includes('"'+pattern+'"'),pattern+' must be selected by authoritative AI');
+    assert.ok(client.includes(pattern+'='),pattern+' must get native readable telegraph and effects');
+  }
+  assert.match(server,/model:SetAttribute\("CreatureMotionState","IDLE"\)/);
+  assert.match(server,/model:SetAttribute\("CreatureMotionState","WALK"\)/);
+  assert.match(server,/target\.model:SetAttribute\("CreatureMotionState",target\.HP>0 and "HIT" or "DEATH"\)/);
+  assert.match(server,/task\.delay\(\.72,function\(\)/,'corpse animation survives death for 0.72s');
+  assert.match(client,/creatureMotionSource\.SampleProceduralActorMotion\(/);
+  assert.match(client,/creatureMotionSource\.BindJointPose\(/);
+  assert.match(client,/model:GetAttribute\("Species"\) or model:GetAttribute\("MeadowWildlife"\)/);
+  assert.match(client,/ORIGINAL_RIG_JOINTS_REQUIRED/);
+  assert.match(client,/SOURCE_JOINT_CHANNEL_MISMATCH/);
+  assert.match(client,/meadowCommonVFX\.Create/);
+  assert.match(server,/local defense=meadowDefense\[targetPlayer\] or \{\}/);
+  assert.match(server,/if enemy\.attackPattern=="GOLEM_STOMP" then/);
+  assert.doesNotMatch(client,/Instance\.new\("Part"\)/,'no fake geometry in source creature movement');
+  assert.doesNotMatch(server,/Instance\.new\("Part"\)/,'no proxy mobs or Part floor');
+});
