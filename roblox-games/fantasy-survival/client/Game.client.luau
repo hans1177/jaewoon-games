@@ -459,24 +459,6 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     end
   end
 end)
--- Telegraphs are read from actual server-authored enemy models, never predicted hits.
-local meadowPatternBanner=Instance.new("TextLabel")
-meadowPatternBanner.Name="MeadowAttackTelegraph"
-meadowPatternBanner.AnchorPoint=Vector2.new(.5,0)
-meadowPatternBanner.Position=UDim2.fromScale(.5,.09)
-meadowPatternBanner.Size=UDim2.new(.83,0,0,46)
-meadowPatternBanner.BackgroundColor3=Color3.fromRGB(76,28,28)
-meadowPatternBanner.BackgroundTransparency=.17
-meadowPatternBanner.TextColor3=Color3.fromRGB(255,233,211)
-meadowPatternBanner.TextSize=19
-meadowPatternBanner.Font=Enum.Font.GothamBold
-meadowPatternBanner.TextWrapped=true
-meadowPatternBanner.Visible=false
-meadowPatternBanner.Parent=gui
-local telegraphCorner=Instance.new("UICorner")
-telegraphCorner.CornerRadius=UDim.new(0,12)
-telegraphCorner.Parent=meadowPatternBanner
--- 서버가 사용하는 여섯 공격 패턴을 모두 같은 예고 UI에 연결한다.
 -- [생존 탐색 피드백] 4개 숲 관찰 지점·기존 동물 프롬프트에서 받은 서버 단서만 표시한다.
 -- 6초 뒤 자동 사라지는 작은 알림. 기존 위험 예고·스킬·조이스틱을 가리지 않는다.
 local meadowSurvivalHint=Instance.new("TextLabel")
@@ -509,38 +491,6 @@ player:GetAttributeChangedSignal("MeadowSurvivalHintSerial"):Connect(function()
   task.delay(6,function()
     if token==meadowSurvivalHintToken then meadowSurvivalHint.Visible=false end
   end)
-end)
-
-local telegraphNames={
-  WOLF_BITE="초원 늑대 · 물어뜯기",WOLF_LUNGE="초원 늑대 · 도약",
-  BEE_SWEEP="초원 벌 · 급강하",BEE_STING="초원 벌 · 독침",
-  GOLEM_SLAM="돌 골렘 · 내려찍기",GOLEM_SHOCKWAVE="돌 골렘 · 충격파",
-  BOAR_CHARGE="사나운 멧돼지 · 돌진",BOAR_TUSK="사나운 멧돼지 · 엄니",
-  BAT_DIVE="황혼 박쥐 · 급강하",BAT_SWEEP="황혼 박쥐 · 날개치기",
-  MUSHROOM_SPORES="포자 버섯 · 포자 공격",MUSHROOM_BASH="포자 버섯 · 몸통치기",
-  SKELETON_THRUST="초원 해골 · 찌르기",SKELETON_CLEAVE="초원 해골 · 내려베기",
-}
-local telegraphElapsed=0
-game:GetService("RunService").Heartbeat:Connect(function(dt)
-  telegraphElapsed+=dt
-  if telegraphElapsed<.22 then return end
-  telegraphElapsed=0
-  local character=player.Character
-  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
-  local world=workspace:FindFirstChild("FantasySurvivalWorld")
-  if not rootPart or not world then meadowPatternBanner.Visible=false;return end
-  local closest,distance=nil,50
-  for _,model in ipairs(world:GetChildren()) do
-    if model:IsA("Model") and model:GetAttribute("AttackState")=="ANTICIPATION" then
-      local pattern=model:GetAttribute("AttackPattern")
-      if telegraphNames[pattern] then
-        local d=(rootPart.Position-model:GetPivot().Position).Magnitude
-        if d<distance then closest=pattern;distance=d end
-      end
-    end
-  end
-  meadowPatternBanner.Visible=closest~=nil
-  if closest then meadowPatternBanner.Text="위험! "..telegraphNames[closest].." 공격 예고" end
 end)
 
 local watched = {"Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
@@ -901,9 +851,6 @@ local function layoutMeadowCombatUi()
     button.TextSize=short and 12 or 14
     button.ZIndex=8
   end
-  meadowPatternBanner.Position=UDim2.new(.5,0,0,short and 100 or 118)
-  meadowPatternBanner.Size=UDim2.fromOffset(math.max(130,math.min(v.X-24,short and 290 or 410)),short and 34 or 42)
-  meadowPatternBanner.TextSize=short and 13 or 16
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)
 layoutMeadowCombatUi()
