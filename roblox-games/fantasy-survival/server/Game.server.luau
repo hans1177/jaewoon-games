@@ -946,6 +946,8 @@ local function gatherResource(player, node)
   local material = node.kind == "WOOD" and "Wood" or "Stone"
   setNumber(player, material, readNumber(player, material, 0) + 2)
   awardProgress(player, 3, 1)
+  -- [채집 숙련도] 기존 재화·전투 경험치·자원 2개 보상은 그대로 둔다.
+  setNumber(player,"GatheringProficiency",readNumber(player,"GatheringProficiency",0)+1)
   player:SetAttribute("LastApprovedScope", "resource-harvest")
   recordMeadowQuest(player,node.kind)
   broadcastSurvivalState(player)
@@ -1781,6 +1783,11 @@ local function applyMeadowDamage(player,target,damage)
     end)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
+    -- [사냥 숙련도] 실제 서버에서 처치가 확정된 늑대·박쥐만 기록한다.
+    -- 살아 있는 사슴·토끼 관찰은 사냥으로 인정하지 않으며 도감·드랍 변경 없음.
+    if target.kind=="wolf" or target.kind=="bat" then
+      setNumber(player,"HuntingProficiency",readNumber(player,"HuntingProficiency",0)+1)
+    end
     recordMeadowQuest(player,"KILL")
     setNumber(player,"EnemyHealth",0)
     if target.isBoss then
@@ -1857,6 +1864,8 @@ local function upgradeEquipment(player)
   setNumber(player,"Wood",wood-cost)
   setNumber(player,"Stone",stone-cost)
   setNumber(player,"WeaponTier",tier+1)
+  -- [제작 숙련도] 실제 자원을 소모한 기존 장비 강화 성공만 기록한다.
+  setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
   player:SetAttribute("LastApprovedScope","resource-to-equipment-upgrade")
   broadcastSurvivalState(player)
   return true
