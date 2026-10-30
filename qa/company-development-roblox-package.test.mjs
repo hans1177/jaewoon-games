@@ -1259,3 +1259,35 @@ test('fantasy unarmed and meadow skills support AnimationConstraint and legacy M
   assert.match(server,/player:SetAttribute\("ApprovedCombatMotion",approved\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save key and schema unchanged');
 });
+
+// 파일 구분: 마력숲 회피 모션 우선권·완벽 막기 연타 중단 회귀 검증.
+test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관절에 연결된다',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  assert.match(client,/if os.clock\(\)<dodgePoseUntil then return false end/);
+  assert.match(client,/if os.clock\(\)>=dodgePoseUntil then finishMeadowSkillPose\(\) end/);
+  assert.match(client,/if isDodge then dodgePoseUntil=skillMotionDeadline end/);
+  assert.ok(client.includes('skillMotionR15Targets.RootJoint=skillMotionTargets.Spine'));
+  assert.ok(client.includes('skillMotionR15Targets["Left Hip"]=skillMotionTargets.ThighL'));
+  assert.ok(client.includes('skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR'));
+  assert.match(client,/dodgePoseUntil=0\s*finishMeadowSkillPose\(\)/);
+});
+
+test('마력숲 완벽 막기는 공격자만 기절시키고 연타 총 피해와 저장 구조를 보존한다',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const hit=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('local function updateEnemyAI('));
+  assert.match(server,/defense.perfectGuardUntil=now\+\.28/);
+  assert.match(hit,/defense.perfectGuardUntil=0/);
+  assert.match(hit,/cancelEnemyWindup\(attacker\)/);
+  assert.match(hit,/attacker.stunUntil=now\+\(attacker.isBoss and \.6 or 1\.2\)/);
+  assert.match(hit,/setEnemyAttackState\(attacker,"STUNNED"\)/);
+  assert.match(server,/enemy.comboHit=nil\s*setEnemyAttackState/);
+  assert.match(server,/if now<\(enemy.stunUntil or 0\) then[\s\S]*?continue/);
+  assert.match(server,/if \(enemy.stunUntil or 0\)>now then continue end/);
+  assert.match(server,/applyMeadowMobHit\(targetPlayer,targetHuman,hitDamage,enemy\)/);
+  assert.match(server,/applyMeadowMobHit\(victim,human,hitDamage,enemy\)/);
+  assert.match(server,/hitDamage=enemy.damage-hitDamage\*\(hitCount-1\)/);
+  assert.match(server,/enemy.windupUntil=now\+\.22/);
+  assert.match(server,/meadowDefense\[player\]=nil/);
+  assert.match(server,/GetDataStore\("fantasy-survival-development-v1"\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+});
