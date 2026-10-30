@@ -134652,11 +134652,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c952094e1968a5016722d9d5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11318",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "67aa1d56ec2112eb9841032a3d865aaa4f3a69d6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11318,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-pages-keyboard-diagnostics-and-source-bound-buildup-20261030",
+        "baseSha": "67aa1d56ec2112eb9841032a3d865aaa4f3a69d6",
+        "headSha": "929e2aee51e6a9b4551fd9bfc11e7647884f387a",
+        "mergeCommitSha": "8e85c0216790dbf59a037679842e739d1a398dfe",
+        "mergedAt": "2026-10-30T00:46:18Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e0dbe5c37fe862e978c415ee03c73921e99982b5e6bcafe0e830c39a7b2d32e8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-pages-keyboard-diagnostics-and-source-bound-buildup-20261030",
+        "candidateSha": "929e2aee51e6a9b4551fd9bfc11e7647884f387a"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 368,
+        "deletedLineCount": 784,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-tester-debug-intake.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "tools/company-tester-debug-intake.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "web-games/lost-dawn/index.html"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-tester-debug-intake.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "tools/company-tester-debug-intake.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "web-games/lost-dawn/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11318",
+        "merge-commit:8e85c0216790dbf59a037679842e739d1a398dfe",
+        "base-main:67aa1d56ec2112eb9841032a3d865aaa4f3a69d6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1066
+    "total": 1067
   }
 }
