@@ -419,7 +419,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
         (action.Kind=="SKILL" and Color3.fromRGB(173,232,198) or Color3.fromRGB(235,242,255))
     end
   end
-end
+end)
 -- Telegraphs are read from actual server-authored enemy models, never predicted hits.
 local meadowPatternBanner=Instance.new("TextLabel")
 meadowPatternBanner.Name="MeadowAttackTelegraph"
