@@ -1734,9 +1734,9 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.ok(client.includes('skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR'));
   assert.match(client,/dodgePoseUntil=0\s*finishMeadowSkillPose\(\)/);
   // 기존 공식 R15 관절만 사용해 낮추기-옆발-착지까지 포즈가 연속 변화해야 한다.
-  assert.match(client,/skillMotionDuration=isDodge and \.46/);
-  assert.match(client,/local prepare=math\.clamp\(phase\/\.16,0,1\)/);
-  assert.match(client,/local settle=math\.clamp\(\(1-phase\)\/\.32,0,1\)/);
+  assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
+  assert.match(client,/local prepare=math\.clamp\(phase\/\.17,0,1\)/);
+  assert.match(client,/local settle=math\.clamp\(\(1-phase\)\/\.27,0,1\)/);
   assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ThighR=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles/);
@@ -1746,9 +1746,45 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(dodge,/workspace:Raycast\(start,side\*7,ray\)/);
   assert.match(dodge,/if distance<2 then return false end/);
   assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
-  assert.match(dodge,/local eased=t\*t\*\(3-2\*t\)/);
+  assert.match(dodge,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
   assert.match(dodge,/character:PivotTo\(dodgeOrigin\+dodgeOffset\*eased\)/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
+});
+
+// [마력숲 막기/회피] 공식 R15 관절 타이밍과 서버 판정을 연결하며 기존 밸런스를 유지한다.
+test('fantasy guard holds a full pose and dodges blend smoothly without changing defense authority',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  assert.match(client,/local isGuard=id=="skill-meadow-guard"/);
+  assert.match(client,/local isParry=id=="skill-meadow-parry"/);
+  assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
+  assert.match(client,/elseif isGuard or isParry then/);
+  assert.match(client,/local guard=rise\*release/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.12\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.24\*guard/);
+  assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles\(\.12\*guard/);
+  assert.match(client,/skillMotionTargets\.ShinL=CFrame\.Angles\(\.19\*guard/);
+  assert.match(client,/RunService\.PreSimulation:Connect\(function\(dt\)/);
+  assert.match(client,/followAnimator=true,response=23/);
+  assert.match(client,/joint:IsA\("AnimationConstraint"\) or joint:IsA\("Motor6D"\)/);
+  assert.match(client,/skillMotionR15\.Step\(skillMotionR15Targets,dt\)/);
+  assert.match(server,/local ease=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
+  assert.match(server,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
+  assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-movementStarted\)\/\.40,0,1\)/);
+  assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-began\)\/\.40,0,1\)/);
+  assert.match(server,/floorRay\.FilterDescendantsInstances=\{meadowTerrain\}/);
+  assert.match(server,/floor\.Material==Enum\.Material\.Water/);
+  assert.match(server,/floor\.Normal\.Y<\.65/);
+  assert.match(server,/defense\.guardUntil=now\+2\.8/);
+  assert.match(server,/defense\.perfectGuardUntil=now\+\.28/);
+  assert.match(server,/defense\.parryUntil=now\+\.42/);
+  assert.equal((server.match(/defense\.dodgeUntil=now\+\.48/g)||[]).length,2);
+  assert.match(config,/Id = "skill-meadow-guard"[\s\S]*?Cooldown = 9/);
+  assert.match(config,/Id = "skill-meadow-dodge-left"[\s\S]*?Cooldown = 4/);
+  assert.match(motion,/function RobloxCommonMotion\.BindJointPose/);
+  assert.doesNotMatch(client,/JointInstance\.C0\s*=/);
 });
 
 test('마력숲 완벽 막기는 공격자만 기절시키고 연타 총 피해와 저장 구조를 보존한다',()=>{
