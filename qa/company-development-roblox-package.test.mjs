@@ -43,6 +43,16 @@ test('native NPC and mob animation states keep telegraphs, recovery, and gamepla
   assert.match(server,/setEnemyAttackState\(enemy,"ANTICIPATION"\)/);
   assert.match(server,/setEnemyAttackState\(enemy,"RECOVERY"\)/);
   assert.doesNotMatch(common,/Humanoid:TakeDamage\(/);
+  assert.match(server,/state=="ANTICIPATION" or state=="ATTACK" or state=="RECOVERY"/);
+  assert.match(client,/local impactAt=tonumber\(model:GetAttribute\("NativeMobLastImpact"\)\) or 0/);
+  assert.match(client,/mode="ATTACK"/);
+  assert.match(client,/mode="RECOVERY"/);
+  assert.match(client,/local phase=forcedPhase or/);
+  const npc=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+  assert.match(npc,/motor:IsA\("AnimationConstraint"\)/);
+  assert.match(npc,/local actionState=\(marker=="ANTICIPATION"/);
+  assert.match(npc,/ANTICIPATION=\.42,RECOVERY=\.38,INTERACT=\.9,GESTURE=1\.1/);
+  assert.match(common,/joint:IsA\("Motor6D"\)or joint:IsA\("AnimationConstraint"\)/);
 });
 
 test('selected Fantasy Survival motion reaches a server-authorized R15 frame sink, not just an asset list',()=>{
