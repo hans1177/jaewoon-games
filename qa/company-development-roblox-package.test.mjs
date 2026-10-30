@@ -1539,7 +1539,7 @@ test('마력숲 숲 교체는 텍스처 내장 CC0 원본과 실제 늑대 스�
  assert.match(client,/ForestGroundMist/);
  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
  assert.match(server,/setEnemyAttackState\(enemy,"PATROL"\)/);
- assert.match(server,/neighbor.kind=="wolf" and neighbor.HP>0/);
+ assert.match(server,/neighbor.kind==enemy.kind and neighbor.HP>0/);
  assert.match(server,/bit32.bor\(mask,bit32.lshift\(1,sector\)\)/);
  assert.match(server,/recordMeadowQuest\(player,"DAWN_TRACE"\)/);
  assert.match(server,/bindMeadowInspection\(ruin,"RUIN"\)/);
