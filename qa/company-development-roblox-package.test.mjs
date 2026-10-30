@@ -10,6 +10,53 @@ import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRo
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {bindExistingFantasyNativeCreatures,bindExistingServerStudioMaterial,buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('common Roblox motion, skill and VFX respect official joint and visual lifecycle',()=>{
+  const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const skill=fs.readFileSync('assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau','utf8');
+  const vfx=fs.readFileSync('assets/roblox/common-vfx-v1/RobloxCommonVFX.luau','utf8');
+  assert.match(motion,/joint:IsA\("AnimationConstraint"\)/);
+  assert.match(motion,/row\.joint\.Transform=row\.pose\*row\.base/);
+  assert.match(motion,/row\.joint\.Transform==row\.lastApplied/);
+  assert.match(skill,/function controller\.SetEnabled\(enabled\)/);
+  assert.match(skill,/if not trail\.Enabled then trail:Clear\(\) end/);
+  assert.match(skill,/Debris:AddItem\(trail,cleanupAfter\)/);
+  assert.match(skill,/clamp\(options\.width or 0\.28, 0\.05, 1\)/);
+  assert.match(skill,/Debris:AddItem\(orb,/);
+  assert.match(skill,/Debris:AddItem\(shell,/);
+  assert.match(vfx,/Trail\.WidthScale keypoints are restricted/);
+  assert.match(vfx,/clamp\(options\.width or DEFAULT\.TrailWidth, 0\.05, 1\)/);
+  assert.match(vfx,/ring\.Orientation=Enum\.ParticleOrientation\.FacingCamera/);
+  assert.match(vfx,/if not trail\.Enabled then trail:Clear\(\) end/);
+});
+
+test('native NPC and mob animation states keep telegraphs, recovery, and gameplay authority separate',()=>{
+  const common=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(common,/ANTICIPATION=\{duration=\.42,looped=false\}/);
+  assert.match(common,/RECOVERY=\{duration=\.38,looped=false\}/);
+  assert.match(common,/local npcGesture=actorRole=="NPC" and interact or 0/);
+  assert.match(common,/forgeRot\(targets,joints,"Jaw",impact\*\.34\+hit\*\.07\+charge\*\.10/);
+  assert.match(client,/ANTICIPATION="ANTICIPATION",ATTACK="ATTACK",RECOVERY="RECOVERY"/);
+  assert.match(client,/local constraint=joint:IsA\("AnimationConstraint"\)/);
+  assert.match(client,/meadowMobMotion\.SampleProceduralActorMotion\(mode,/);
+  assert.match(server,/setEnemyAttackState\(enemy,"ANTICIPATION"\)/);
+  assert.match(server,/setEnemyAttackState\(enemy,"RECOVERY"\)/);
+  assert.doesNotMatch(common,/Humanoid:TakeDamage\(/);
+  assert.match(server,/state=="ANTICIPATION" or state=="ATTACK" or state=="RECOVERY"/);
+  assert.match(client,/local impactAt=tonumber\(model:GetAttribute\("NativeMobLastImpact"\)\) or 0/);
+  assert.match(client,/if requested=="RECOVERY" and impactAt>=eventAt/);
+  assert.match(client,/if os.clock\(\)<dodgePoseUntil then return false end/);
+  assert.match(client,/mode="ATTACK"/);
+  assert.match(client,/mode="RECOVERY"/);
+  assert.match(client,/if forcedPhase then phase=forcedPhase end/);
+  const npc=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+  assert.match(npc,/motor:IsA\("AnimationConstraint"\)/);
+  assert.match(npc,/local actionState=\(marker=="ANTICIPATION"/);
+  assert.match(npc,/ANTICIPATION=\.42,RECOVERY=\.38,INTERACT=\.9,GESTURE=1\.1/);
+  assert.match(common,/joint:IsA\("Motor6D"\)or joint:IsA\("AnimationConstraint"\)/);
+});
+
 test('selected Fantasy Survival motion reaches a server-authorized R15 frame sink, not just an asset list',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.equal(robloxStudioAssetFamilyBoundInText(source,'MOTION'),true);
