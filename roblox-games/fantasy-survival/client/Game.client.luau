@@ -466,7 +466,7 @@ meadowPatternBanner.Parent=gui
 local telegraphCorner=Instance.new("UICorner")
 telegraphCorner.CornerRadius=UDim.new(0,12)
 telegraphCorner.Parent=meadowPatternBanner
-local telegraphNames={WOLF_BITE="초원 늑대 · 물어뜯기",BEE_SWEEP="초원 벌 · 급강하",GOLEM_SLAM="돌 골렘 · 내려찍기"}
+local telegraphNames={WOLF_BITE="초원 늑대 · 물어뜯기",WOLF_POUNCE="초원 늑대 · 도약",BEE_SWEEP="초원 벌 · 급강하",BEE_SPIRAL_STING="초원 벌 · 나선 독침",GOLEM_SLAM="돌 골렘 · 내려찍기",GOLEM_STOMP="돌 골렘 · 충격파"}
 local telegraphElapsed=0
 game:GetService("RunService").Heartbeat:Connect(function(dt)
   telegraphElapsed+=dt
@@ -628,6 +628,154 @@ remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosit
     playApprovedMeadowEffect(actionId,nil,payload,targetPosition,sequence)
   elseif kind=="MEADOW_REACTION" and payload=="PARRY" then
     playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH",player.UserId)
+  end
+end)
+
+-- Genuine CC0 creature models: source-driven action FX for every native enemy.
+-- No dummy bodies, procedural proxy monsters, fabricated skeletons or hitboxes.
+local creatureMotionSource=nil
+local nativeMotionModule=Shared:FindFirstChild("RobloxCommonMotion")
+if nativeMotionModule and nativeMotionModule:IsA("ModuleScript") then
+  local ok,source=pcall(require,nativeMotionModule)
+  if ok and type(source)=="table" and type(source.BindJointPose)=="function"
+    and type(source.SampleProceduralActorMotion)=="function" then
+    creatureMotionSource=source
+  end
+end
+local creatureActionState=setmetatable({},{__mode="k"})
+-- Only semantically named real Bones/Motor6Ds from the approved source model.
+-- Mismatched or single-mesh models receive no invented armature or limb motion.
+local nativeCreatureJointNames={
+  FLHip="FLHip",FRHip="FRHip",BLHip="BLHip",BRHip="BRHip",
+  FLKnee="FLKnee",FRKnee="FRKnee",BLKnee="BLKnee",BRKnee="BRKnee",
+  FLAnkle="FLAnkle",FRAnkle="FRAnkle",BLAnkle="BLAnkle",BRAnkle="BRAnkle",
+  FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
+  RearLeftHip="BLHip",RearRightHip="BRHip",
+  WingL="WingL",WingR="WingR",LeftWing="WingL",RightWing="WingR",
+  Tail="Tail",TailBaseJoint="TailBaseJoint",Jaw="Jaw",
+  Spine="Spine",Chest="Chest",Head="Head",Neck="Neck",
+  Waist="Spine",BodyJoint="Chest",ChestJoint="Chest",
+  LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
+  LeftElbow="ForearmL",RightElbow="ForearmR",
+  LeftWrist="HandL",RightWrist="HandR",
+  LeftHip="ThighL",RightHip="ThighR",
+  LeftKnee="ShinL",RightKnee="ShinR",
+}
+local creaturePlans={wolf="QUADRUPED",bee="FLYER",golem="GIANT"}
+local creatureVfx={
+  WOLF_BITE="SHAPE_BURST",WOLF_POUNCE="CRITICAL_BURST",
+  BEE_SWEEP="SHAPE_BURST",BEE_SPIRAL_STING="DODGE_EVASION_PULSE",
+  GOLEM_SLAM="BLOCK_IMPACT",GOLEM_STOMP="BOSS_WARNING_PULSE",
+}
+local function createNativeCreatureController(model,species)
+  if not creatureMotionSource then return nil end
+  local joints,available={},{}
+  for _,joint in ipairs(model:GetDescendants()) do
+    if (joint:IsA("Motor6D") and joint.Part0 and joint.Part1) or joint:IsA("Bone") then
+      local alias=nativeCreatureJointNames[joint.Name]
+      if alias and not joints[alias] then
+        joints[alias]=joint
+        available[alias]=true
+      end
+    end
+  end
+  local count=0
+  for _ in pairs(joints) do count+=1 end
+  if count<2 then
+    model:SetAttribute("NativeCreatureMotionState","ORIGINAL_RIG_JOINTS_REQUIRED")
+    return nil
+  end
+  local controller=creatureMotionSource.BindJointPose(joints,{followAnimator=true,response=21})
+  model:SetAttribute("NativeCreatureMotionState","SOURCE_JOINTS_BOUND_UNVERIFIED")
+  return {controller=controller,available=available,targets={},duration=0,
+    lastState="",startedAt=os.clock(),species=species}
+end
+local function creatureSourceFX(id,cf)
+  if not meadowCommonVFX then return end
+  pcall(meadowCommonVFX.Create,id,{
+    parent=workspace,cframe=cf,scale=.95,duration=.48,
+    reducedMotion=UserInputService.TouchEnabled,
+    color=Color3.fromRGB(247,191,129),accent=Color3.fromRGB(255,236,185),
+  })
+end
+local creatureActionElapsed=0
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  creatureActionElapsed+=math.min(dt,.1)
+  if creatureActionElapsed<.10 then return end
+  local frame=math.min(creatureActionElapsed,.2)
+  creatureActionElapsed=0
+  local world=workspace:FindFirstChild("FantasySurvivalWorld")
+  if not world then return end
+  for _,model in ipairs(world:GetChildren()) do
+    if not model:IsA("Model") then continue end
+    local species=model:GetAttribute("Species")
+    local plan=creaturePlans[species]
+    if not plan then continue end
+    local record=creatureActionState[model]
+    if not record then
+      record={lastHit=0,lastAction=0,lastAttackState="",lastMotion="",startedAt=os.clock(),
+        duration=.75,failedRig=false}
+      creatureActionState[model]=record
+    end
+    local motion=model:GetAttribute("CreatureMotionState") or "IDLE"
+    local attackState=model:GetAttribute("AttackState") or "IDLE"
+    local pattern=model:GetAttribute("AttackPattern")
+    local hitSerial=model:GetAttribute("CreatureHitSequence") or 0
+    local actionSerial=model:GetAttribute("CreatureActionSequence") or 0
+    local cf=model:GetPivot()
+    if attackState~=record.lastAttackState then
+      record.lastAttackState=attackState
+      if attackState=="ANTICIPATION" then
+        creatureSourceFX(species=="golem" and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE",cf)
+      end
+    end
+    if hitSerial~=record.lastHit then
+      record.lastHit=hitSerial
+      creatureSourceFX(motion=="DEATH" and "DESTRUCTION_BURST" or "IMPACT_FLASH",cf)
+    end
+    if actionSerial~=record.lastAction then
+      record.lastAction=actionSerial
+      local sourceEffect=creatureVfx[pattern]
+      if sourceEffect then creatureSourceFX(sourceEffect,cf) end
+    end
+    if motion~=record.lastMotion then
+      record.lastMotion=motion
+      record.startedAt=os.clock()
+      record.duration=motion=="ATTACK" and (species=="golem" and .65 or .42)
+        or motion=="DEATH" and .72 or motion=="HIT" and .25 or .8
+    end
+    if not record.controller and not record.failedRig then
+      local connected=createNativeCreatureController(model,species)
+      if connected then
+        record.controller=connected.controller
+        record.available=connected.available
+        record.targets=connected.targets
+      else
+        record.failedRig=true
+      end
+    end
+    if record.controller and creatureMotionSource then
+      local phase=(os.clock()-record.startedAt)/math.max(record.duration,.12)
+      if motion=="IDLE" or motion=="RUN" or motion=="WALK" or motion=="FLY" then
+        phase=phase%1
+      else
+        phase=math.clamp(phase,0,1)
+      end
+      table.clear(record.targets)
+      local _,matched=creatureMotionSource.SampleProceduralActorMotion(
+        motion,phase,{bodyPlan=plan,actorClass=species=="golem" and "BOSS" or "ENEMY",
+          availableJoints=record.available,
+          mobileTier=UserInputService.TouchEnabled and "LOW" or "HIGH",
+          intensity=1,secondary=.7},record.targets)
+      if matched then
+        record.controller.Step(record.targets,frame)
+      else
+        record.controller.Destroy(true)
+        record.controller=nil
+        record.failedRig=true
+        model:SetAttribute("NativeCreatureMotionState","SOURCE_JOINT_CHANNEL_MISMATCH")
+      end
+    end
   end
 end)
 
