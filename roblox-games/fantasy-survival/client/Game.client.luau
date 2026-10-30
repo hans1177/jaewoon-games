@@ -940,9 +940,9 @@ local function renderMeadowJournal()
       villageLines[#villageLines+1]="【완료】 "..contract.Name.."\n"..contract.Choices[decision].Outcome
     elseif index==villageIndex then
       local found=0
-      for bit=0,2 do if bit32.band(villageMask,bit32.lshift(1,bit))~=0 then found+=1 end end
+      for bit=0,5 do if bit32.band(villageMask,bit32.lshift(1,bit))~=0 then found+=1 end end
       villageLines[#villageLines+1]="【"..(villagePhase==0 and "수락 대기" or villagePhase==2 and "결정 대기" or "조사 중").."】 "..contract.Name..
-        "\n"..contract.Summary.."\n단서 "..found.."/3 · 남쪽 마을의 주민들과 이야기해."
+        "\n"..contract.Summary.."\n단서 "..found.."/6 · 주민 3명과 주변 현장 3곳을 조사해."
     end
   end
   if villageIndex>#Config.VillageContracts then villageLines[#villageLines+1]="마을 의뢰 모두 완료" end
@@ -1054,10 +1054,23 @@ do
   title.TextTruncate=Enum.TextTruncate.AtEnd
   title.ZIndex=71
   title.Parent=dialog
+  local storyScroll=Instance.new("ScrollingFrame")
+  storyScroll.Name="VillageStoryScroll"
+  storyScroll.Position=UDim2.fromOffset(14,49)
+  storyScroll.Size=UDim2.new(1,-28,0,136)
+  storyScroll.BackgroundTransparency=1
+  storyScroll.BorderSizePixel=0
+  storyScroll.ScrollBarThickness=3
+  storyScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  storyScroll.CanvasSize=UDim2.new()
+  storyScroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  storyScroll.ZIndex=71
+  storyScroll.Parent=dialog
   local story=Instance.new("TextLabel")
   story.Name="DialogueText"
-  story.Position=UDim2.fromOffset(14,54)
-  story.Size=UDim2.new(1,-28,0,129)
+  story.Position=UDim2.fromOffset(0,2)
+  story.Size=UDim2.new(1,-7,0,0)
+  story.AutomaticSize=Enum.AutomaticSize.Y
   story.BackgroundTransparency=1
   story.TextColor3=Color3.fromRGB(237,241,224)
   story.Font=Enum.Font.GothamMedium
@@ -1066,7 +1079,7 @@ do
   story.TextYAlignment=Enum.TextYAlignment.Top
   story.TextXAlignment=Enum.TextXAlignment.Left
   story.ZIndex=71
-  story.Parent=dialog
+  story.Parent=storyScroll
   local close=Instance.new("TextButton")
   close.Name="Close"
   close.Position=UDim2.new(1,-42,0,9)
@@ -1112,10 +1125,10 @@ do
     if v.Y>0 then
       local h=math.clamp(v.Y-36,230,320)
       dialog.Size=UDim2.new(.9,0,0,h)
-      local upper=math.max(100,h-194)
-      story.Size=UDim2.new(1,-28,0,upper)
+      storyScroll.Size=UDim2.new(1,-28,0,h-178)
       for i,button in ipairs(choices)do
-        button.Position=UDim2.new(0,14,0,h-132+(i-1)*61)
+        button.Position=UDim2.new(0,14,0,h-128+(i-1)*56)
+        button.Size=UDim2.new(1,-28,0,50)
       end
     end
   end
@@ -1125,6 +1138,7 @@ do
     if kind~="MEADOW_VILLAGE_DIALOG" or typeof(payload)~="table" then return end
     title.Text=tostring(payload.title or "마을 의뢰")
     story.Text=tostring(payload.message or "")
+    storyScroll.CanvasPosition=Vector2.zero
     for i,button in ipairs(choices)do
       local option=typeof(payload.options)=="table" and payload.options[i] or nil
       local action=option and option.action
