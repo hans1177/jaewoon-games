@@ -402,8 +402,10 @@ test('source-bound ESM input repair imports only exact same-game exported action
   assert.equal(deterministicWebInputCandidate(task),null,'already-bound action must not duplicate events');
   const badHtml=[
     originalHtml.replace('id="fight"','id="gather"'),
-    originalHtml.replace('data-gameplay-action="attack"','data-gameplay-action="save"'),
-    originalHtml.replace('data-gameplay-action="attack"','data-gameplay-action="unknownAction"'),
+    originalHtml.replaceAll('data-gameplay-action="attack"','data-gameplay-action="save"')
+      .replaceAll('data-gameplay-action="interact"','data-gameplay-action="save"'),
+    originalHtml.replaceAll('data-gameplay-action="attack"','data-gameplay-action="unknownAction"')
+      .replaceAll('data-gameplay-action="interact"','data-gameplay-action="unknownAction"'),
     originalHtml.replace('./game/actions.mjs','https://attacker.example/actions.mjs'),
     originalHtml.replace('./game/actions.mjs','../outside.mjs'),
     originalHtml.replace('type="module"','type="module" async'),
