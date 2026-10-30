@@ -939,6 +939,59 @@ inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   inventoryQuick.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end)
+-- [왼쪽 시안 메뉴] 이미 존재하는 스킬 안내·장비 정보·옵션만 연결한다.
+-- 미구현 도감/제작/건축을 가짜 버튼으로 만들거나 서버 기능을 새로 생성하지 않는다.
+local meadowQuickPages={
+  {"MeadowSkillQuick","스킬",2,5},
+  {"MeadowGearQuick","장비",3,1},
+  {"MeadowSettingsQuick","설정",6,4},
+}
+local meadowQuickButtons={}
+for index,info in ipairs(meadowQuickPages)do
+  local button=Instance.new("ImageButton")
+  button.Name=info[1]
+  button.Image=""
+  button.Size=UDim2.fromOffset(52,56)
+  button.BackgroundColor3=Color3.fromRGB(19,43,40)
+  button.BorderSizePixel=0
+  button.ZIndex=11
+  button.Parent=gui
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,11)
+  corner.Parent=button
+  local stroke=Instance.new("UIStroke")
+  stroke.Color=Color3.fromRGB(178,205,149)
+  stroke.Thickness=1.8
+  stroke.Parent=button
+  local icon=Instance.new("ImageLabel")
+  icon.Name="CC0MenuQuickIcon"
+  icon.Image=meadowIconAtlas
+  icon.ImageRectOffset=Vector2.fromOffset(info[3]*64,0)
+  icon.ImageRectSize=Vector2.fromOffset(64,64)
+  icon.BackgroundTransparency=1
+  icon.Position=UDim2.fromOffset(7,2)
+  icon.Size=UDim2.fromOffset(38,38)
+  icon.ZIndex=12
+  icon.Parent=button
+  local caption=Instance.new("TextLabel")
+  caption.Name="IconCaption"
+  caption.Position=UDim2.fromOffset(0,40)
+  caption.Size=UDim2.new(1,0,0,14)
+  caption.BackgroundTransparency=1
+  caption.Text=info[2]
+  caption.TextColor3=Color3.fromRGB(247,239,207)
+  caption.Font=Enum.Font.GothamBold
+  caption.TextSize=11
+  caption.ZIndex=12
+  caption.Parent=button
+  button.Activated:Connect(function()meadowMenu.open(info[4])end)
+  meadowQuickButtons[index]=button
+end
+gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
+  for _,button in ipairs(meadowQuickButtons)do
+    button.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  end
+end)
 local questRows={}
 for index=1,#(Config.MainQuests or {}) do
   questRows[index]=journalRow("Quest"..index,146)
@@ -987,12 +1040,15 @@ local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local shortLandscape=v.X>v.Y and v.Y<450
-  -- [간편 메뉴] 세로 화면에서는 왼쪽 한 열, 낮은 가로 화면에서는 한 행에 둔다.
-  -- 하단 조이스틱과 오른쪽 반원형 스킬에 간섭하지 않는다.
-  questTracker.Position=UDim2.fromOffset(9,shortLandscape and 108 or 130)
-  questTracker.Size=UDim2.fromOffset(52,56)
-  inventoryQuick.Position=UDim2.fromOffset(shortLandscape and 70 or 9,shortLandscape and 108 or 194)
+  -- [시안형 아이콘 메뉴] 세로에서는 가방→스킬→장비→퀘스트→설정, 가로에서는 상단 한 줄.
+  -- 하단 조이스틱·전투 반원과 겹치지 않고 모두 최소 52x56 터치 범위를 유지한다.
+  inventoryQuick.Position=UDim2.fromOffset(9,shortLandscape and 122 or 130)
   inventoryQuick.Size=UDim2.fromOffset(52,56)
+  meadowQuickButtons[1].Position=UDim2.fromOffset(shortLandscape and 66 or 9,shortLandscape and 122 or 187)
+  meadowQuickButtons[2].Position=UDim2.fromOffset(shortLandscape and 123 or 9,shortLandscape and 122 or 244)
+  questTracker.Position=UDim2.fromOffset(shortLandscape and 180 or 9,shortLandscape and 122 or 301)
+  questTracker.Size=UDim2.fromOffset(52,56)
+  meadowQuickButtons[3].Position=UDim2.fromOffset(shortLandscape and 237 or 9,shortLandscape and 122 or 358)
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 layoutMeadowJournal()
@@ -1164,12 +1220,16 @@ end
 local function renderMeadowClimate()
   local v=gui.AbsoluteSize
   local shortLandscape=v.X>v.Y and v.Y<450
-  local chipX=shortLandscape and 131 or 9
-  local chipY=shortLandscape and 108 or 258
+  local small=v.X<480
+  local radarTop=small and (v.X<v.Y and (v.Y<440 and 100 or 114) or 8) or 52
+  local radarHeight=small and 118 or 145
+  -- [날씨 배치] 왼쪽 기능 메뉴와 분리해 미니맵 아래에 놓는다.
+  local chipX=shortLandscape and 294 or math.max(9,v.X-64)
+  local chipY=shortLandscape and 122 or radarTop+radarHeight+7
   meadowClimateChip.Position=UDim2.fromOffset(chipX,chipY)
   meadowClimateChip.Size=UDim2.fromOffset(52,56)
-  climateDetails.Position=UDim2.fromOffset(shortLandscape and 9 or 68,
-    shortLandscape and 169 or 268)
+  climateDetails.Position=UDim2.fromOffset(shortLandscape and 9 or math.max(9,v.X-274),
+    chipY+7)
   local show=gui:GetAttribute("GameMenuOpen")~=true
     and gui:GetAttribute("StoryJournalOpen")~=true
   meadowClimateChip.Visible=show
