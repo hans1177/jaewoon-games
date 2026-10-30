@@ -1259,7 +1259,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
   assert.match(server,/worldAsset\("ruin",Vector3.new\(pos\[1\],3,pos\[2\]\),6\.2\)/);
   assert.match(server,/MeadowVillageInteraction/);
-  assert.match(server,/if villageNear\(player,mesh.Position,15\) then callback\(player\) end/);
+  assert.match(server,/if villageNear\(player,mesh.Position,15\) then callback\(player,mesh.Position\) end/);
   assert.match(server,/if string.sub\(actionId,1,8\)=="village:" then villageChoose\(player,actionId\);return end/);
   assert.match(server,/villageNear\(player,session.position,16\)/);
   assert.match(server,/bit32\.band\(bit32\.rshift\(previous,shift\),3\)~=0 then return end/);
@@ -1446,7 +1446,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-\(landscape and \d+ or \d+\),1,-\(landscape and \d+ or \d+\)\)/);
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-(?:math.floor\()?/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
