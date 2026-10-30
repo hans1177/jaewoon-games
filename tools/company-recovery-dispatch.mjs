@@ -147,6 +147,9 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
       /^(?:unity|unreal|godot)-games\//.test(file)))return rec;
     if(mode!=='all'&&mode==='vibe'&&owner!=='VIBE2_VIBE3')return rec;
     if(mode!=='all'&&mode==='system-ai'&&owner!=='SYSTEM_AI')return rec;
+    // 증거가 없는 tester ticket은 대기열에 남긴다. sourceTaskId가 우연히 일치해도 실행 금지.
+    if(owner==='VIBE2_VIBE3'&&clean(rec.sourceQueue).toLowerCase()==='tester-debug'
+      &&normalizedFiles.length===0&&!sourceBoundCandidate)return rec;
     // 복구 원본이 승인·보안 격리 상태라면 관련 작업으로 권한을 우회하지 않는다.
     const restricted=task=>task?.requiresOwnerDecision===true||task?.protectedChange===true
       ||task?.paidResourceRequired===true||task?.securityReviewRequired===true
@@ -209,7 +212,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         }
         // 결정권·유료 자원·보호 정책 변경은 일반 게임별 자동복구 권한 밖이다.
         if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
-          ||restricted(task))return task;
+          ||restricted(task)||clean(task.blocker)==='OFFLINE_RECIPE_UNAVAILABLE')return task;
         if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return task;
         touched++;
         const running=clean(task.status)==='running';
