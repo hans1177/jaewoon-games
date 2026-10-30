@@ -900,9 +900,7 @@ end
 -- [가방 단축키] 일반 메뉴를 열지 않아도 소지품에 바로 접근한다.
 local inventoryQuick=Instance.new("ImageButton")
 inventoryQuick.Name="MeadowInventoryQuick"
-inventoryQuick.Image=meadowIconAtlas
-inventoryQuick.ImageRectOffset=Vector2.new(256,0)
-inventoryQuick.ImageRectSize=Vector2.new(64,64)
+inventoryQuick.Image=""
 inventoryQuick.Size=UDim2.fromOffset(52,56)
 inventoryQuick.BackgroundColor3=Color3.fromRGB(19,43,40)
 inventoryQuick.BorderSizePixel=0
@@ -915,6 +913,16 @@ local quickStroke=Instance.new("UIStroke")
 quickStroke.Color=Color3.fromRGB(178,205,149)
 quickStroke.Thickness=1.8
 quickStroke.Parent=inventoryQuick
+local backpackIcon=Instance.new("ImageLabel")
+backpackIcon.Name="CC0BackpackIcon"
+backpackIcon.Image=meadowIconAtlas
+backpackIcon.ImageRectOffset=Vector2.fromOffset(256,0)
+backpackIcon.ImageRectSize=Vector2.fromOffset(64,64)
+backpackIcon.BackgroundTransparency=1
+backpackIcon.Position=UDim2.fromOffset(7,2)
+backpackIcon.Size=UDim2.fromOffset(38,38)
+backpackIcon.ZIndex=12
+backpackIcon.Parent=inventoryQuick
 local quickCaption=Instance.new("TextLabel")
 quickCaption.Name="BackpackCaption"
 quickCaption.Position=UDim2.fromOffset(0,40)
