@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-30T11:32:22.643Z",
+  "generatedAt": "2026-10-30T11:36:52.548Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,13 +821,13 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-10-30T11:26:21.466Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-10-30T11:34:00.380Z",
+            "checkedAt": "2026-10-30T11:36:25.020Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
+            "f0PassedAt": "2026-10-30T11:34:00.380Z",
             "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
@@ -926,7 +926,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:26:21.466Z"
+      "updatedAt": "2026-10-30T11:36:25.020Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -1605,13 +1605,13 @@
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
             "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
             "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-10-30T11:28:29.717Z",
-            "lastFailureAt": null,
+            "result": "REPAIR_REQUIRED",
+            "verifiedAt": "2026-10-30T11:35:31.416Z",
+            "checkedAt": "2026-10-30T11:35:31.416Z",
+            "lastFailureAt": "2026-10-30T11:35:31.416Z",
             "f0PassedAt": null,
             "candidatePublishedAt": null,
-            "failureCode": null,
+            "failureCode": "roblox-package-asset-binding-failed",
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -1709,7 +1709,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:28:29.717Z"
+      "updatedAt": "2026-10-30T11:35:31.416Z"
     },
     {
       "gameId": "fifty-days",
