@@ -7774,25 +7774,7 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "d3685a0b98feda63cbe52aaa9b6e47affba9ab07",
-      "artifactIdentity": "sha256:1a236dc501f1fcdc5b94bb4f6b28e0ad1b73190142bbdd0b87ef485e2af9eac0",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 41009887021,
-      "testedAt": "2026-10-30T05:48:08.351Z",
-      "repairSurfaces": [
-        "GAME_START"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "adaptive-start-playability",
-          "repairSurface": "GAME_START",
-          "priority": "CRITICAL",
-          "hint": "The start action was unavailable or the observed class selection did not finish. Restore an actionable entry flow and confirm selection before full Studio QA.",
-          "observed": "{\"requiredButtonText\":\"대시\",\"visibleButtons\":0,\"largeBlockingOverlayCount\":0}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "VIBE_INTERNAL_PLAY",
     "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
     "blockers": [
