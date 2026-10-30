@@ -87,6 +87,28 @@ local function createStartingMeadow()
   }) do
     meadowTerrain:FillBall(Vector3.new(ridge.x,ridge.y,ridge.z),ridge.r,Enum.Material.Grass)
   end
+  -- [초원 지형] 기존 이동·자원 지점을 보존하고 외곽만 굴곡 및 초목 질감 보강.
+  for _,knoll in ipairs({
+    {-99,-145,32,9},{-145,-62,28,7},{-111,146,37,10},
+    {98,-148,34,9},{144,-62,27,7},{119,149,36,10},
+    {-161,68,29,7},{166,62,31,8},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(knoll[1],knoll[4]-knoll[3],knoll[2]),
+      knoll[3],Enum.Material.Grass)
+  end
+  for ix=-6,6 do
+    for iz=-6,6 do
+      local x=ix*17+math.sin(ix*2.7+iz)*4
+      local z=iz*17+math.cos(iz*2.3-ix)*5
+      local distance=math.sqrt(x*x+z*z)
+      if distance>34 and distance<135 and (ix*3+iz*5)%4==0 then
+        meadowTerrain:FillBall(Vector3.new(x,-6.2,z),9,Enum.Material.LeafyGrass)
+      end
+    end
+  end
+  meadowTerrain:SetMaterialColor(Enum.Material.Grass,Color3.fromRGB(102,151,82))
+  meadowTerrain:SetMaterialColor(Enum.Material.LeafyGrass,Color3.fromRGB(75,116,63))
+  meadowTerrain:SetMaterialColor(Enum.Material.Ground,Color3.fromRGB(115,94,65))
   -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
   for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
     meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
@@ -199,9 +221,20 @@ local function worldAsset(id, location, targetHeight)
     rayParams.FilterDescendantsInstances={meadowTerrain}
     local ground=workspace:Raycast(location+Vector3.new(0,44,0),Vector3.new(0,-110,0),rayParams)
     if not ground then clone:Destroy();error("MEADOW_ORIGINAL_MESH_GROUND_UNVERIFIED") end
-    local boxCF,boxSize=clone:GetBoundingBox()
-    local underside=boxCF.Position.Y-boxSize.Y*.5
-    clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y-underside,0))
+    -- 실제 보이는 메시의 최저점을 지면에 맞춘다. 빈 루트/리그 기준 금지.
+    local underside=math.huge
+    for _,mesh in ipairs(clone:GetDescendants()) do
+      if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+        local cf=mesh.CFrame
+        local halfY=(math.abs(cf.RightVector.Y)*mesh.Size.X
+          +math.abs(cf.UpVector.Y)*mesh.Size.Y
+          +math.abs(cf.LookVector.Y)*mesh.Size.Z)*.5
+        underside=math.min(underside,cf.Position.Y-halfY)
+      end
+    end
+    if underside==math.huge then clone:Destroy();error("MEADOW_VISIBLE_CC0_MESH_MISSING") end
+    clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y+.15-underside,0))
+    clone:SetAttribute("MeadowSurfaceY",ground.Position.Y)
     clone.Name="Meadow_"..id
     clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
     clone.Parent=gameWorld
@@ -449,8 +482,13 @@ end)
 -- [초원 서식지] 외곽의 여러 숲 가장자리에 기존 CC0 나무와 초식 동물을 배치한다.
 -- 전투·채집/보상 대상이 아닌 배경용이며, 시작 지점과 기존 스폰/자원은 그대로 보존한다.
 -- 같은 나무 1개 에셋 캐시만 재사용하고 순차 로딩으로 처음 접속을 막지 않는다.
-task.delay(8,function()
+task.defer(function()
   local woodland={
+    -- 플레이 시작 화면에서 볼 수 있는 네 방향 숲 가장자리. CC0 나무 원본만 재사용.
+    {-79,-82,18},{-96,-78,14},{-110,-99,20},{-73,-108,16},{-90,-118,18},{-124,-83,13},
+    {81,-77,19},{99,-86,15},{111,-107,20},{72,-107,15},{93,-120,18},{123,-83,14},
+    {-78,87,18},{-95,78,15},{-112,102,19},{-72,111,15},{-92,124,18},{-126,84,14},
+    {82,87,19},{97,76,14},{111,105,18},{75,113,16},{95,126,19},{127,87,13},
     {-274,-238,16},{-252,-202,14},{-218,-255,18},{-230,-180,13},
     {-308,-183,17},{-276,-141,12},{-208,-220,15},
     {232,-240,15},{276,-258,19},{307,-218,13},{222,-185,17},
@@ -472,7 +510,7 @@ task.delay(8,function()
       tree.Name="Meadow_Woodland_"..index
       tree:SetAttribute("MeadowScenery",true)
       -- 28개 숲 나무 중 4개에만 탐색 프롬프트를 배치해 모바일 HUD를 가리지 않는다.
-      if index%7==0 then bindMeadowInspection(tree,"WOODLAND") end
+      if index%6==0 then bindMeadowInspection(tree,"WOODLAND") end
       tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*137)%360),0))
       sceneryCount+=1
     end
@@ -528,6 +566,8 @@ task.delay(8,function()
     task.wait(.14)
   end
   gameWorld:SetAttribute("MeadowWoodlandSceneryCount",sceneryCount)
+  gameWorld:SetAttribute("MeadowWoodlandReady",sceneryCount>0)
+  if sceneryCount==0 then warn("마력숲 초원 나무 로딩 0개: 등록 CC0 자산 및 Place 사용 권한 확인 필요") end
 end)
 
 local function spawnEnemy(isBoss, index)
