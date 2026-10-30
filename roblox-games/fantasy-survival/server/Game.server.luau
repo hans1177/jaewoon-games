@@ -295,6 +295,10 @@ local function spawnEnemy(isBoss, index)
   model.Name = isBoss and "돌 골렘" or (partId=="bee" and "초원 벌" or "초원 늑대")
   model:SetAttribute("Species",partId)
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or (partId=="bee" and "BEE_SWEEP" or "WOLF_BITE"))
+  model:SetAttribute("NativeMobMotion","IDLE")
+  model:SetAttribute("NativeMobRig",#model:GetDescendants()>0 and "SOURCE_MESH" or "UNVERIFIED")
+  model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or
+    (partId=="bee" and "DIVE_STING" or "LEAP_BITE"))
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
@@ -312,7 +316,9 @@ local function spawnEnemy(isBoss, index)
     model=model,HP=hitPoints,maxHP=hitPoints,
     isBoss=isBoss,kind=partId,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
     speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,
-    lastAttack=0,windupUntil=nil,windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE"
+    lastAttack=0,attackSerial=0,attackPattern=nil,windupUntil=nil,
+    windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE",
+    baseHeight=location.Y,visualFacing=Vector3.new(0,0,-1)
   })
   return true
 end
@@ -458,6 +464,10 @@ local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
   enemy.attackState=state
   enemy.model:SetAttribute("AttackState",state)
+  local motion=state=="ANTICIPATION" and "ATTACK" or
+    state=="CHASE" and "RUN" or state=="RETURN_TO_SPAWN" and "WALK" or
+    state=="RECOVERY" and "HIT" or "IDLE"
+  enemy.model:SetAttribute("NativeMobMotion",motion)
   enemy.telegraph.Enabled=state=="ANTICIPATION"
 end
 
@@ -465,6 +475,44 @@ local function cancelEnemyWindup(enemy)
   enemy.windupUntil=nil
   enemy.windupTargetUserId=nil
   setEnemyAttackState(enemy,"RECOVERY")
+end
+
+-- The CC0 wolves, bees and golems are *original* 3D meshes. Some have no
+-- Motor6Ds; never invent limbs or geometry. Visible native model locomotion
+-- and attack anticipation are driven on the original mesh's Model pivot.
+local function animateMeadowOriginalMob(enemy,now)
+  if not enemy.model.Parent then return end
+  local kind=enemy.kind
+  local phase=now*(kind=="bee" and 9 or kind=="wolf" and 7 or 3)
+    +enemy.spawnPosition.X*.11
+  local inMotion=enemy.attackState=="CHASE" or enemy.attackState=="RETURN_TO_SPAWN"
+  local attacking=enemy.attackState=="ANTICIPATION"
+  local movingHeight=kind=="bee" and (1.35+math.sin(phase)*.34)
+    or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .15 or .11) or 0)
+  local attackPitch=attacking and
+    (kind=="golem" and -.13 or kind=="bee" and -.25 or .12) or 0
+  local facing=enemy.visualFacing
+  if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
+  local pivot=enemy.position+Vector3.new(0,movingHeight,0)
+  enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
+    *CFrame.Angles(attackPitch,0,kind=="bee" and math.sin(phase*.5)*.10 or 0))
+end
+
+local function chooseMeadowMobSkill(enemy)
+  enemy.attackSerial+=1
+  local second=enemy.attackSerial%2==0
+  local pattern=enemy.isBoss and (second and "GOLEM_SHOCKWAVE" or "GOLEM_SLAM")
+    or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
+    or (second and "WOLF_LUNGE" or "WOLF_BITE")
+  enemy.attackPattern=pattern
+  enemy.model:SetAttribute("AttackPattern",pattern)
+  enemy.model:SetAttribute("NativeMobSkillActive",second)
+  return pattern
+end
+local function applyMeadowMobHit(player,humanoid,damage)
+  if player:GetAttribute("ProfileReady")~=true or humanoid.Health<=0 then return end
+  humanoid:TakeDamage(damage)
+  setNumber(player,"Health",math.max(0,math.floor(humanoid.Health)))
 end
 
 local function updateEnemyAI(dt,now)
@@ -509,7 +557,7 @@ local function updateEnemyAI(dt,now)
         if homeOffset.Magnitude>1 then
           setEnemyAttackState(enemy,"RETURN_TO_SPAWN")
           enemy.position+=homeOffset.Unit*math.min(enemy.speed*dt,homeOffset.Magnitude)
-          enemy.model:PivotTo(CFrame.lookAt(enemy.position,enemy.position+homeOffset.Unit))
+          enemy.visualFacing=homeOffset.Unit
         else
           setEnemyAttackState(enemy,"IDLE")
         end
@@ -520,15 +568,33 @@ local function updateEnemyAI(dt,now)
         local attackRange=enemy.kind=="bee" and 5.6 or (enemy.isBoss and 5.2 or 4.4)
         if enemy.windupUntil then
           -- 공격 예고 중 대상이 사라지거나 거리를 벌렸다면 피해 없이 취소한다.
-          if targetPlayer.UserId~=enemy.windupTargetUserId or distance>attackRange+1 or targetHuman.Health<=0 then
+          local activeRange=enemy.attackPattern=="GOLEM_SHOCKWAVE" and 8.4
+            or enemy.attackPattern=="WOLF_LUNGE" and 6.5 or attackRange
+          if targetPlayer.UserId~=enemy.windupTargetUserId or distance>activeRange+1 or targetHuman.Health<=0 then
             cancelEnemyWindup(enemy)
           elseif now>=enemy.windupUntil then
             enemy.windupUntil=nil
             enemy.windupTargetUserId=nil
             enemy.lastAttack=now
             setEnemyAttackState(enemy,"RECOVERY")
-            targetHuman:TakeDamage(enemy.damage)
-            setNumber(targetPlayer,"Health",math.max(0,math.floor(targetHuman.Health)))
+            if enemy.attackPattern=="GOLEM_SHOCKWAVE" then
+              -- Boss area skill applies the original damage to each player at
+              -- most once, within its telegraphed range and only on the server.
+              for _,victim in ipairs(Players:GetPlayers()) do
+                local avatar=victim.Character
+                local root=avatar and avatar:FindFirstChild("HumanoidRootPart")
+                local human=avatar and avatar:FindFirstChildOfClass("Humanoid")
+                if root and human and (root.Position-enemy.position).Magnitude<=8.4 then
+                  applyMeadowMobHit(victim,human,enemy.damage)
+                end
+              end
+            else
+              applyMeadowMobHit(targetPlayer,targetHuman,enemy.damage)
+            end
+            enemy.model:SetAttribute("NativeMobLastImpact",workspace:GetServerTimeNow())
+            remote:FireAllClients("MEADOW_MOB_ATTACK",{
+              species=enemy.kind,pattern=enemy.attackPattern,position=enemy.position,
+            })
           end
         elseif distance>attackRange then
           setEnemyAttackState(enemy,"CHASE")
@@ -540,13 +606,16 @@ local function updateEnemyAI(dt,now)
             direction=(direction+tangent*math.sin(now*1.8+enemy.spawnPosition.X)*.42).Unit
           end
           enemy.position+=direction*step
-          enemy.model:PivotTo(CFrame.lookAt(enemy.position,enemy.position+offset.Unit))
+          enemy.visualFacing=offset.Unit
         elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
+          local pattern=chooseMeadowMobSkill(enemy)
           enemy.windupTargetUserId=targetPlayer.UserId
-          enemy.windupUntil=now+(enemy.isBoss and .65 or (enemy.kind=="bee" and .25 or .42))
+          enemy.windupUntil=now+(enemy.isBoss and .68 or
+            (pattern=="WOLF_LUNGE" and .55 or enemy.kind=="bee" and .32 or .42))
           setEnemyAttackState(enemy,"ANTICIPATION")
         end
       end
+      animateMeadowOriginalMob(enemy,now)
     end
   end
 end
