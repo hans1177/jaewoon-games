@@ -76,6 +76,7 @@ local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "ApprovedScopeHud"
+gui:SetAttribute("ClientActionRuntimeVersion",2)
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 local root = Instance.new("Frame")
