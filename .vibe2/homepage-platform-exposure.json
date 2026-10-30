@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-30T05:33:55.882Z",
+  "updatedAt": "2026-10-30T07:07:59.708Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -72,14 +72,14 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -88,20 +88,22 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
-              "movement": true,
+              "movement": false,
               "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
+              "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
-            "artifactIdentity": "sha256:c4fc041a064692a094fb586e9fb90e982f4690a27d1f302afe0d117ead771b13",
-            "verifiedAt": "2026-10-29T15:54:39.519Z"
+            "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
+            "artifactIdentity": "sha256:b5b1a32146cddafc4af0fbbe7dada51cbb9eb298c0d1defa50bebd9074203447",
+            "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -118,7 +120,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": false,
+              "multiplayer": true,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -135,7 +137,6 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -143,9 +144,9 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 79
+            "candidateVersionNumber": 9
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-2cfb0882ff23baaef682",
@@ -164,7 +165,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -313,8 +314,8 @@
               "noRuntimeErrors": false
             },
             "blockers": [],
-            "sourceRevision": "7e5710e7ca758d351ac2da398d45ebde716cb2d8",
-            "artifactIdentity": "sha256:4eb88da3dfe41ef11c3a80916f38d32098453cca1ef1fa3ae404e4786c08053f",
+            "sourceRevision": "d3685a0b98feda63cbe52aaa9b6e47affba9ab07",
+            "artifactIdentity": "sha256:1a236dc501f1fcdc5b94bb4f6b28e0ad1b73190142bbdd0b87ef485e2af9eac0",
             "verifiedAt": null
           },
           "internalReleasePublished": true,
@@ -334,7 +335,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": false,
+              "multiplayer": true,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -351,7 +352,6 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -359,7 +359,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 142
+            "candidateVersionNumber": 144
           },
           "perpetualBuildupActive": true,
           "testerTickets": {
@@ -722,33 +722,35 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": true,
-          "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
-          "internalReleaseReady": true,
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
-            "ready": true,
-            "homepageReady": true,
-            "technicalReady": true,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
             "designReady": true,
-            "lobbyReady": true,
+            "lobbyReady": false,
             "ownerConfirmed": false,
-            "basis": "VERIFIED_LOBBY",
-            "experience": "LOBBY",
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": true,
               "movement": true,
               "noRuntimeErrors": true
             },
-            "blockers": [],
+            "blockers": [
+              "exactRuntime"
+            ],
             "sourceRevision": "b8a307171acac7e1420e193bb8fc4b0ab6261265",
             "artifactIdentity": "sha256:cf482e26c9ee71ee18f7483130365690163592a78623e7e8ebc8a85b268b6a5d",
-            "verifiedAt": "2026-10-30T05:11:20.066Z"
+            "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -765,7 +767,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": true,
+              "multiplayer": false,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -782,6 +784,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -791,7 +794,7 @@
             ],
             "candidateVersionNumber": 86
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-7d114ff3812bf7516f00",
@@ -809,7 +812,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
