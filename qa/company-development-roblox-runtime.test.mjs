@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
 import {spawnSync} from 'node:child_process';
-import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource,synchronizeRobloxCommonModules} from '../tools/company-development-roblox-bootstrap.mjs';
+import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource,synchronizeRobloxCommonModules,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
 import {buildTransformativeRecombination,recombinationDesignAxes,transformativeRecipeCompatibility} from '../tools/vibe3-transformative-recombination.mjs';
@@ -1869,4 +1869,25 @@ test('registered fantasy native assets stop registration repair while missing or
   assert.equal(evaluate({models},ids.replace('wolf =','otherwolf =')),true,'role suffix cannot pass');
   assert.equal(evaluate({models},ids,['VisualAssetIds.luau']),true,'missing Luau binding requires repair');
   assert.equal(evaluate({models},ids,['CC0-ASSET-REGISTRY.json']),true,'missing registry requires repair');
+});
+
+// [원본 표현 연결] 마커가 아닌 선택값·공용 원본 호출·실제 R15/메시 소비를 확인한다.
+test('fantasy original presentation binds selected character environment skills effects and props',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  for(const family of ['CHARACTER','SKILL','VFX'])assert.equal(robloxStudioAssetFamilyBoundInText(client,family),true,family);
+  for(const family of ['ENVIRONMENT','PROP'])assert.equal(robloxStudioAssetFamilyBoundInText(server,family),true,family);
+  assert.equal(robloxStudioAssetFamilyBoundInText(client.replace('hasStudioAssetAtom("CHARACTER","HAND_BARE")','true'),'CHARACTER'),false);
+  for(const [family,moduleName,alias,atom] of [
+    ['SKILL','RobloxCommonSkillPresentation','meadowSkillPresentation','CAST_HAND'],
+    ['VFX','RobloxCommonVFX','meadowCommonVFX','IMPACT_FLASH'],
+  ]){
+    const check=source=>robloxStudioAssetFamilyBoundInText(source,family);
+    const selector='hasStudioAssetAtom("'+family+'","'+atom+'")';
+    assert.equal(check(client.replace(selector,'true')),false,'unselected factory: '+family);
+    assert.equal(check(client.replace(selector,'not '+selector)),false,'negative selection: '+family);
+    assert.equal(check(client.replace(selector,selector+' or true')),false,'selection bypass: '+family);
+    assert.equal(check(client.replace(moduleName,'UntrustedFactory')),false,'unapproved module: '+family);
+    assert.equal(check(client.replace('local actionsById={}',alias+' = function() end\nlocal actionsById={}')),false,'reassigned factory: '+family);
+  }
 });
