@@ -4900,6 +4900,12 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  end
  -- [게임별 컴팩트 모드] 마력숲이 명시한 경우에만 기본 파란 큰 버튼을 교체한다.
  if compact then
+  -- [마력숲 HUD] 화면 뒤가 보이는 작은 상태 패널
+  hud.BackgroundTransparency=.16;hud.BackgroundColor3=Color3.fromRGB(11,26,28)
+  corner(hud,12);stroke(hud,Color3.fromRGB(77,133,116),1,.42)
+  title.TextColor3=Color3.fromRGB(246,251,243)
+  status.BackgroundTransparency=1
+  if multiplayerStatus then multiplayerStatus.BackgroundTransparency=1 end
   local menuCorner=menu:FindFirstChildOfClass("UICorner")
   if menuCorner then menuCorner.CornerRadius=UDim.new(1,0) end
   local menuGradient=menu:FindFirstChildOfClass("UIGradient")
@@ -4918,22 +4924,44 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui
  root.ZIndex=41;list.ZIndex=42;close.ZIndex=43
  for _,item in ipairs(list:GetDescendants())do if item:IsA("GuiObject")then item.ZIndex=43 end end
+ -- [마력숲 UI] 작은 상태창·상단 메뉴·하단 공격 버튼의 위치를 화면에 맞춰 재배치한다.
  local function layout()
   local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
-  hud.Position=UDim2.fromOffset(8,8);hud.Size=UDim2.fromOffset(math.min(380,v.X-16),multiplayerStatus and 100 or 78)
-  title.Position=UDim2.fromOffset(0,0);title.Size=UDim2.new(1,0,0,22);title.TextScaled=false;title.TextSize=14;title.TextTruncate=Enum.TextTruncate.AtEnd
-  status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
-  if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8)end
-  if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
   if compact then
-   menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-14,1,-207);menu.Size=UDim2.fromOffset(58,52)
+   local short=v.Y<440
+   hud.Position=UDim2.fromOffset(9,8)
+   hud.Size=UDim2.fromOffset(math.max(170,math.min(360,v.X-90)),short and 96 or 116)
+   title.Position=UDim2.fromOffset(10,4)
+   title.Size=UDim2.new(1,-20,0,22)
+   title.TextScaled=false;title.TextSize=short and 12 or 14
+   title.TextTruncate=Enum.TextTruncate.AtEnd
+   status.Position=UDim2.fromOffset(10,27)
+   status.Size=UDim2.new(1,-20,0,short and 44 or 61)
+   status.TextScaled=false;status.TextSize=short and 10 or (v.X<400 and 11 or 12)
+   status.TextWrapped=true
+   if healthTrack then healthTrack.Position=UDim2.fromOffset(10,short and 72 or 91);healthTrack.Size=UDim2.new(1,-20,0,6) end
+   if multiplayerStatus then
+    multiplayerStatus.Position=UDim2.fromOffset(10,short and 73 or 94)
+    multiplayerStatus.Size=UDim2.new(1,-20,0,18)
+    multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=short and 10 or 11
+    multiplayerStatus.TextTruncate=Enum.TextTruncate.AtEnd
+   end
+   menu.AnchorPoint=Vector2.new(1,0)
+   menu.Position=UDim2.new(1,-12,0,12)
+   menu.Size=UDim2.fromOffset(56,46)
    if quick then
-    quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-18,1,-34)
-    quick.Size=UDim2.fromOffset(84,84)
+    quick.AnchorPoint=Vector2.new(1,1)
+    quick.Position=UDim2.new(1,-16,1,-24)
+    quick.Size=UDim2.fromOffset(short and 76 or 88,short and 76 or 88)
    end
   else
+   hud.Position=UDim2.fromOffset(8,8);hud.Size=UDim2.fromOffset(math.min(380,v.X-16),multiplayerStatus and 100 or 78)
+   title.Position=UDim2.fromOffset(0,0);title.Size=UDim2.new(1,0,0,22);title.TextScaled=false;title.TextSize=14;title.TextTruncate=Enum.TextTruncate.AtEnd
+   status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
+   if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8) end
+   if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
    menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
-   if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
+   if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56) end
   end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
