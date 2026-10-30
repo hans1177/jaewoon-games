@@ -118578,7 +118578,7 @@
     },
     {
       "id": "recovery-ticket-bug-7d114ff3812bf7516f00",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-7d114ff3812bf7516f00",
@@ -118734,7 +118734,8 @@
         "tester-debug-occurrence-count:549",
         "tester-debug-occurrence-count:550",
         "{\"version\":3,\"platform\":\"ROBLOX\",\"gameId\":\"cozy-island\",\"placeId\":\"116850096561713\",\"placeVersion\":24,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":true,\"requirements\":{\"saveEnabled\":true,\"multiplayerRequired\":true},\"requiredCheckpoints\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\",\"CAMERA_READY\",\"INPUT_READY\",\"MOVEMENT_CONFIRMED\",\"REMOTE_ROUNDTRIP\",\"CORE_LOOP_READY\",\"SAVE_ROUNDTRIP\",\"MULTIPLAYER_SYNC\"],\"checkpointPass\":{\"SERVER_BOOT\":true,\"MODULE_GRAPH_READY\":true,\"WORLD_READY\":true,\"SPAWN_READY\":true,\"CHARACTER_READY\":true,\"GROUND_CONTACT\":true,\"CAMERA_READY\":true,\"INPUT_READY\":true,\"MOVEMENT_CONFIRMED\":true,\"REMOTE_ROUNDTRIP\":true,\"CORE_LOOP_READY\":false,\"SAVE_ROUNDTRIP\":true,\"MULTIPLAYER_SYNC\":false},\"checkpointOrderPassed\":false,\"foundationCausalOrder\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\"],\"f1ServerBootPassed\":true,\"f2WorldFoundationPassed\":true,\"f3CharacterFoundationPassed\":true,\"f4PhysicsAndMovementPassed\":true,\"f5InputCameraUiPassed\":true,\"f6CoreServicesPassed\":true,\"f7MultiplayerFoundationPassed\":false,\"f8GameplaySystemsPassed\":false,\"runtimeFoundationPassed\":false,\"developmentContinuationPassed\":false,\"runtimeAcceptancePassed\":false,\"multiplayerPromotionPending\":true,\"actualRuntimeEvidence\":true,\"state\":\"BLOCKED\",\"blockers\":[\"checkpointOrder\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:MULTIPLAYER_SYNC\"],\"authority\":\"existing-game-tester-roblox-runtime-foundation-v1\",\"sourceRevision\":\"d1453b5ca89eeedbf2d80b02167dd68b4109f98e\",\"artifactIdentity\":\"sha256:877dd29f5e5f595637126caf4f2d21b49eb046177a841dce5d09570fca2e48ed\",\"artifactRunId\":36281294039,\"universeId\":\"10767445741\",\"candidateVersionNumber\":24,\"observedAt\":\"2026-09-27T09:09:05.250Z\",\"workflowRunId\":36308277233}",
-        "tester-debug-occurrence-count:551"
+        "tester-debug-occurrence-count:551",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -118752,7 +118753,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.192Z"
     },
     {
       "id": "recovery-7482d2b825ca91e17b35",
@@ -144207,7 +144208,7 @@
     },
     {
       "id": "recovery-ticket-bug-2cfb0882ff23baaef682",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-2cfb0882ff23baaef682",
@@ -144230,7 +144231,8 @@
         "tester-debug-severity:HIGH",
         "tester-debug-occurrence-count:1",
         "tester-debug-occurrence-count:2",
-        "recovery-reactivated-after-source-refailure"
+        "recovery-reactivated-after-source-refailure",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144248,7 +144250,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.211Z"
     },
     {
       "id": "recovery-f7cd6a198912a519f708",
@@ -144411,7 +144413,7 @@
     },
     {
       "id": "recovery-ticket-bug-97439712d416497ffce0",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-97439712d416497ffce0",
@@ -144438,7 +144440,8 @@
         "recovery-reactivated-after-source-refailure",
         "{\"sourceRevision\":\"86efee2139d6273f2a49155b2bd8c65fe94eb318\",\"buildSourceRevision\":\"86efee2139d6273f2a49155b2bd8c65fe94eb318\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:3",
-        "tester-debug-occurrence-count:4"
+        "tester-debug-occurrence-count:4",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144456,7 +144459,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.229Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144512,7 +144515,8 @@
         "tester-debug-occurrence-count:26",
         "tester-debug-occurrence-count:27",
         "tester-debug-occurrence-count:28",
-        "tester-debug-occurrence-count:29"
+        "tester-debug-occurrence-count:29",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144530,11 +144534,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-10-30T02:33:49.933Z"
+      "updatedAt": "2026-10-30T05:02:04.248Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-ea186d71ff8c7f6300a7",
@@ -144648,7 +144652,10 @@
         "tester-debug-occurrence-count:82",
         "tester-debug-occurrence-count:83",
         "tester-debug-occurrence-count:84",
-        "tester-debug-occurrence-count:85"
+        "tester-debug-occurrence-count:85",
+        "{\"sourceRevision\":\"b7a6eb5219f268759e7f1a8e57d67d450a1032b7\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-surface:ROBLOX",
+        "tester-debug-occurrence-count:86"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144661,16 +144668,16 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 85,
+      "recurrenceCount": 86,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.281Z"
     },
     {
       "id": "recovery-ticket-bug-b021616100dca0c3a206",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-b021616100dca0c3a206",
@@ -144774,7 +144781,8 @@
         "tester-debug-occurrence-count:53",
         "tester-debug-occurrence-count:54",
         "{\"sourceRevision\":\"cddfbda37be15bd8ce93487e53dde67d45587ae9\",\"buildSourceRevision\":\"cddfbda37be15bd8ce93487e53dde67d45587ae9\",\"artifactIdentity\":\"sha256:890817c1bc89e800eadd5ed262e333552eb370ccb87f63a9398406629ebdda34\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:55"
+        "tester-debug-occurrence-count:55",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144792,7 +144800,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.298Z"
     },
     {
       "id": "recovery-8a39ea706e81a30ddc9c",
@@ -145729,7 +145737,7 @@
     },
     {
       "id": "recovery-ticket-bug-8b468210dc1ff863a00f",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-8b468210dc1ff863a00f",
@@ -145779,7 +145787,8 @@
         "tester-debug-occurrence-count:17",
         "tester-debug-occurrence-count:18",
         "tester-debug-occurrence-count:19",
-        "tester-debug-occurrence-count:20"
+        "tester-debug-occurrence-count:20",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145797,11 +145806,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T18:52:44.364Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.316Z"
     },
     {
       "id": "recovery-ticket-bug-a3eadf254608ae413f00",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-a3eadf254608ae413f00",
@@ -145892,7 +145901,8 @@
         "tester-debug-occurrence-count:53",
         "{\"version\":2,\"gameId\":\"daechung-rpg\",\"sourceRevision\":\"6d226665fc3edfa8cbbbdc02245bc97df3cf6973\",\"artifactIdentity\":\"sha256:eeecf1037a0b0f08ce253c14535b6b91d804d3bc7c301762c7a1f15a36de9a96\",\"artifactRunId\":36248088327,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"candidateVersionNumber\":25,\"expectedVersionNumber\":25,\"observedVersionNumber\":24,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":false,\"exactEngineVersion\":false,\"engineExecuted\":false,\"simulationRunning\":false,\"serverBootObserved\":false,\"blockers\":[\"exactVersion\",\"checkpointOrder\",\"checkpoint:SERVER_BOOT\",\"checkpoint:MODULE_GRAPH_READY\",\"checkpoint:WORLD_READY\",\"checkpoint:SPAWN_READY\",\"checkpoint:CHARACTER_READY\",\"checkpoint:GROUND_CONTACT\",\"checkpoint:CAMERA_READY\",\"checkpoint:INPUT_READY\",\"checkpoint:MOVEMENT_CONFIRMED\",\"checkpoint:REMOTE_ROUNDTRIP\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:SAVE_ROUNDTRIP\",\"checkpoint:MULTIPLAYER_SYNC\"],\"observedAt\":\"2026-09-26T16:44:25.333Z\",\"workflowRunId\":36256421336,\"authority\":\"stale-runtime-sentinel-observation\"}",
         "tester-debug-occurrence-count:54",
-        "tester-debug-occurrence-count:55"
+        "tester-debug-occurrence-count:55",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145910,11 +145920,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T19:12:21.440Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.334Z"
     },
     {
       "id": "recovery-ticket-bug-777444144cf066f31475",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-777444144cf066f31475",
@@ -146017,7 +146027,8 @@
         "tester-debug-occurrence-count:67",
         "tester-debug-occurrence-count:68",
         "tester-debug-occurrence-count:69",
-        "tester-debug-occurrence-count:70"
+        "tester-debug-occurrence-count:70",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146035,11 +146046,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.964Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.352Z"
     },
     {
       "id": "recovery-ticket-bug-99f6b8c5bbd5d227e80c",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-99f6b8c5bbd5d227e80c",
@@ -146140,7 +146151,8 @@
         "tester-debug-occurrence-count:68",
         "{\"sourceRevision\":\"4dcb4408028a35c704b41d8aa24259447c98d095\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:69",
-        "tester-debug-occurrence-count:70"
+        "tester-debug-occurrence-count:70",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146158,11 +146170,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.970Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.371Z"
     },
     {
       "id": "recovery-ticket-bug-9435eb3559169c01c615",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-9435eb3559169c01c615",
@@ -146211,7 +146223,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"817873fc1afe06b6da3578e13c5b75b132b71981\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146229,7 +146242,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.976Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.388Z"
     },
     {
       "id": "recovery-ticket-bug-5969b7fa0747b9b98d70",
@@ -146282,7 +146295,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"cc5ea55ceb54d8272fd828a67e111bc59722382c\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146300,11 +146314,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.982Z",
-      "updatedAt": "2026-10-30T02:33:50.076Z"
+      "updatedAt": "2026-10-30T05:02:04.406Z"
     },
     {
       "id": "recovery-ticket-bug-51a493ed692a93859476",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-51a493ed692a93859476",
@@ -146353,7 +146367,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"5abb16097cb808b896582d55622e64bbcb520849\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146371,11 +146386,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.988Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.423Z"
     },
     {
       "id": "recovery-ticket-bug-49df76759806a609a16d",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-49df76759806a609a16d",
@@ -146424,7 +146439,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"9286a802ac240c77fc36b1f5d3ebc60633213352\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146442,11 +146458,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.993Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.442Z"
     },
     {
       "id": "recovery-ticket-bug-2b87c88847d0411e01ed",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-2b87c88847d0411e01ed",
@@ -146495,7 +146511,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"124e3d1a3b70c41e908f6f3f97f71c017de1cff3\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146513,11 +146530,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.998Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.460Z"
     },
     {
       "id": "recovery-ticket-bug-78a6425d32dc2f9ac5c0",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-78a6425d32dc2f9ac5c0",
@@ -146566,7 +146583,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"eb96fe6844bb97d88dfe002ce6d55faf7f7fc2b7\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146584,11 +146602,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.008Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.478Z"
     },
     {
       "id": "recovery-ticket-bug-b4b1c72b7a6a20f90ced",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-b4b1c72b7a6a20f90ced",
@@ -146637,7 +146655,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"4bb92fc13442d91720f1dadafe305bd4e228b875\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146655,11 +146674,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.014Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.496Z"
     },
     {
       "id": "recovery-ticket-bug-f3941a7d905b6b13854f",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-f3941a7d905b6b13854f",
@@ -146708,7 +146727,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"deb598bd1c4050daf7f7ed3ba367de31992ad118\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146726,11 +146746,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.019Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.515Z"
     },
     {
       "id": "recovery-ticket-bug-15c487a53274377db05f",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-15c487a53274377db05f",
@@ -146779,7 +146799,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"a161ef5c892216163be3a480741cb4154d249143\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146797,11 +146818,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.025Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.532Z"
     },
     {
       "id": "recovery-ticket-bug-c4eb20e6fded0c841bfe",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-c4eb20e6fded0c841bfe",
@@ -146850,7 +146871,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"0d8074a2682f73f0dc4a98d0a179d4aa7f6ed4a0\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146868,7 +146890,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.030Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.551Z"
     },
     {
       "id": "recovery-ticket-bug-10ca802409cd056b4944",
@@ -146921,7 +146943,8 @@
         "tester-debug-occurrence-count:25",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"c7bf00dd98fcb64a3e3f3342927a13b2d146b94a\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146939,11 +146962,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.035Z",
-      "updatedAt": "2026-10-30T02:33:50.222Z"
+      "updatedAt": "2026-10-30T05:02:04.569Z"
     },
     {
       "id": "recovery-ticket-bug-024f4b97b649e6962b9e",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-024f4b97b649e6962b9e",
@@ -147192,7 +147215,8 @@
         "tester-debug-occurrence-count:210",
         "tester-debug-occurrence-count:211",
         "tester-debug-occurrence-count:212",
-        "tester-debug-occurrence-count:213"
+        "tester-debug-occurrence-count:213",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147210,7 +147234,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T08:00:39.334Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.587Z"
     },
     {
       "id": "recovery-ticket-bug-464ed398325e5af6fd49",
@@ -147243,7 +147267,8 @@
         "tester-debug-occurrence-count:5",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"271de162b065909cd3c12def0fde087a79c40e85\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:6"
+        "tester-debug-occurrence-count:6",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147261,11 +147286,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T08:00:39.342Z",
-      "updatedAt": "2026-10-30T02:33:50.254Z"
+      "updatedAt": "2026-10-30T05:02:04.606Z"
     },
     {
       "id": "recovery-ticket-bug-61d294a35a5d3145bed3",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-61d294a35a5d3145bed3",
@@ -147326,7 +147351,8 @@
         "tester-debug-occurrence-count:38",
         "tester-debug-occurrence-count:39",
         "tester-debug-occurrence-count:40",
-        "tester-debug-occurrence-count:41"
+        "tester-debug-occurrence-count:41",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147344,11 +147370,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:03:18.586Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.623Z"
     },
     {
       "id": "recovery-ticket-bug-2508af212a171e5e1a00",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-2508af212a171e5e1a00",
@@ -147409,7 +147435,8 @@
         "tester-debug-occurrence-count:38",
         "tester-debug-occurrence-count:39",
         "tester-debug-occurrence-count:40",
-        "tester-debug-occurrence-count:41"
+        "tester-debug-occurrence-count:41",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147427,11 +147454,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:03:18.608Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.642Z"
     },
     {
       "id": "recovery-ticket-bug-f223cac682770a672a1a",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-f223cac682770a672a1a",
@@ -147490,7 +147517,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147508,11 +147536,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.390Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.660Z"
     },
     {
       "id": "recovery-ticket-bug-329c15824bc04d427c2d",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-329c15824bc04d427c2d",
@@ -147571,7 +147599,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147589,7 +147618,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.413Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.678Z"
     },
     {
       "id": "recovery-ticket-bug-44560df9a82d9829889d",
@@ -147652,7 +147681,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147670,7 +147700,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.425Z",
-      "updatedAt": "2026-10-30T02:33:50.336Z"
+      "updatedAt": "2026-10-30T05:02:04.696Z"
     },
     {
       "id": "recovery-ticket-bug-25e6719881325d9e82bc",
@@ -147733,7 +147763,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147751,11 +147782,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.441Z",
-      "updatedAt": "2026-10-30T02:33:50.352Z"
+      "updatedAt": "2026-10-30T05:02:04.714Z"
     },
     {
       "id": "recovery-ticket-bug-5bc440fbe75ba0acb7de",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-5bc440fbe75ba0acb7de",
@@ -147814,7 +147845,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147832,11 +147864,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.463Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.732Z"
     },
     {
       "id": "recovery-ticket-bug-fb272d334f7484ba98cd",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-fb272d334f7484ba98cd",
@@ -147895,7 +147927,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147913,7 +147946,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.498Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.750Z"
     },
     {
       "id": "recovery-ticket-bug-55c89f1f0ada19db03eb",
@@ -147976,7 +148009,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -147994,7 +148028,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.520Z",
-      "updatedAt": "2026-10-30T02:33:50.399Z"
+      "updatedAt": "2026-10-30T05:02:04.768Z"
     },
     {
       "id": "recovery-ticket-bug-2bf05d127fa34aa81a46",
@@ -148057,7 +148091,8 @@
         "tester-debug-occurrence-count:36",
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
-        "tester-debug-occurrence-count:39"
+        "tester-debug-occurrence-count:39",
+        "tester-debug-surface:UNITY"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -148075,11 +148110,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T00:45:48.536Z",
-      "updatedAt": "2026-10-30T02:33:50.414Z"
+      "updatedAt": "2026-10-30T05:02:04.786Z"
     },
     {
       "id": "recovery-ticket-bug-b3e14193de493e2916b5",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-b3e14193de493e2916b5",
@@ -148165,7 +148200,8 @@
         "tester-debug-occurrence-count:78",
         "{\"version\":2,\"gameId\":\"cozy-island\",\"sourceRevision\":\"1bd1049d86c1a2b5c731180e5fa7e19b408e9da5\",\"artifactIdentity\":\"sha256:b74eb5af0c980bb7a9fe42fd93851c83a8acf381753eae3c2a39f0edfd498805\",\"artifactRunId\":36310706302,\"universeId\":\"10767445741\",\"placeId\":\"116850096561713\",\"candidateVersionNumber\":25,\"expectedVersionNumber\":25,\"observedVersionNumber\":24,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":false,\"exactEngineVersion\":true,\"engineExecuted\":true,\"simulationRunning\":false,\"serverBootObserved\":false,\"blockers\":[\"exactVersion\",\"checkpointOrder\",\"checkpoint:SERVER_BOOT\",\"checkpoint:MODULE_GRAPH_READY\",\"checkpoint:WORLD_READY\",\"checkpoint:SPAWN_READY\",\"checkpoint:CHARACTER_READY\",\"checkpoint:GROUND_CONTACT\",\"checkpoint:CAMERA_READY\",\"checkpoint:INPUT_READY\",\"checkpoint:MOVEMENT_CONFIRMED\",\"checkpoint:REMOTE_ROUNDTRIP\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:SAVE_ROUNDTRIP\",\"checkpoint:MULTIPLAYER_SYNC\"],\"observedAt\":\"2026-09-27T11:16:06.342Z\",\"workflowRunId\":36315148770,\"authority\":\"exact-engine-version-awaiting-real-server-boot\"}",
         "tester-debug-occurrence-count:80",
-        "tester-debug-occurrence-count:82"
+        "tester-debug-occurrence-count:82",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -148183,11 +148219,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T02:05:11.809Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.804Z"
     },
     {
       "id": "recovery-ticket-bug-51e28af235567cbda4cf",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-51e28af235567cbda4cf",
@@ -148219,7 +148255,8 @@
         "tester-debug-occurrence-count:5",
         "tester-debug-occurrence-count:6",
         "{\"version\":2,\"gameId\":\"horror-escape-room\",\"sourceRevision\":\"b74a4ac341b7dff0ecd9f2d6cf25375534a2d268\",\"artifactIdentity\":\"sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de\",\"artifactRunId\":36289290111,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"candidateVersionNumber\":24,\"expectedVersionNumber\":24,\"observedVersionNumber\":23,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":false,\"exactEngineVersion\":false,\"engineExecuted\":false,\"simulationRunning\":false,\"serverBootObserved\":false,\"blockers\":[\"exactVersion\",\"checkpointOrder\",\"checkpoint:SERVER_BOOT\",\"checkpoint:MODULE_GRAPH_READY\",\"checkpoint:WORLD_READY\",\"checkpoint:SPAWN_READY\",\"checkpoint:CHARACTER_READY\",\"checkpoint:GROUND_CONTACT\",\"checkpoint:CAMERA_READY\",\"checkpoint:INPUT_READY\",\"checkpoint:MOVEMENT_CONFIRMED\",\"checkpoint:REMOTE_ROUNDTRIP\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:SAVE_ROUNDTRIP\",\"checkpoint:MULTIPLAYER_SYNC\"],\"observedAt\":\"2026-09-27T05:04:41.999Z\",\"workflowRunId\":36296050875,\"authority\":\"stale-runtime-sentinel-observation\"}",
-        "tester-debug-occurrence-count:7"
+        "tester-debug-occurrence-count:7",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -148237,7 +148274,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T02:13:59.004Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.822Z"
     },
     {
       "id": "recovery-ticket-bug-8993f93f8cb272a623ba",
@@ -148262,7 +148299,8 @@
         "tester-debug-ticket:bug-8993f93f8cb272a623ba",
         "tester-debug-category:FOUNDATION",
         "tester-debug-severity:CRITICAL",
-        "tester-debug-occurrence-count:1"
+        "tester-debug-occurrence-count:1",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -148280,7 +148318,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-27T02:13:59.013Z",
-      "updatedAt": "2026-10-30T02:33:50.463Z"
+      "updatedAt": "2026-10-30T05:02:04.841Z"
     },
     {
       "id": "recovery-7179d3cd6233c14d3078",
@@ -148552,7 +148590,7 @@
     },
     {
       "id": "recovery-ticket-bug-3207b3c9f6737f1e55f3",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-3207b3c9f6737f1e55f3",
@@ -148868,7 +148906,8 @@
         "tester-debug-occurrence-count:283",
         "tester-debug-occurrence-count:284",
         "tester-debug-occurrence-count:285",
-        "tester-debug-occurrence-count:286"
+        "tester-debug-occurrence-count:286",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -148886,7 +148925,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-30T10:38:43.636Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.859Z"
     },
     {
       "id": "recovery-d802c0bf795942df10a6",
@@ -148930,7 +148969,7 @@
     },
     {
       "id": "recovery-ticket-bug-760ea20e728c45283307",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-760ea20e728c45283307",
@@ -148957,7 +148996,8 @@
         "{\"sourceRevision\":\"86efee2139d6273f2a49155b2bd8c65fe94eb318\",\"buildSourceRevision\":\"86efee2139d6273f2a49155b2bd8c65fe94eb318\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:3",
         "tester-debug-occurrence-count:4",
-        "tester-debug-occurrence-count:5"
+        "tester-debug-occurrence-count:5",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -148975,11 +149015,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-01T12:11:01.552Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.878Z"
     },
     {
       "id": "recovery-ticket-bug-0e7cbf02f6c9ed5ceffa",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-0e7cbf02f6c9ed5ceffa",
@@ -149032,7 +149072,8 @@
         "tester-debug-occurrence-count:28",
         "tester-debug-occurrence-count:29",
         "tester-debug-occurrence-count:30",
-        "tester-debug-occurrence-count:31"
+        "tester-debug-occurrence-count:31",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -149050,7 +149091,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-05T08:01:33.828Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.896Z"
     },
     {
       "id": "recovery-c6e7736588dc69fb9540",
@@ -172882,7 +172923,7 @@
     },
     {
       "id": "recovery-ticket-bug-71a1355afba5dc85655f",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-71a1355afba5dc85655f",
@@ -173001,7 +173042,8 @@
         "tester-debug-occurrence-count:88",
         "tester-debug-occurrence-count:89",
         "tester-debug-occurrence-count:90",
-        "tester-debug-occurrence-count:91"
+        "tester-debug-occurrence-count:91",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173019,11 +173061,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T00:53:39.491Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.915Z"
     },
     {
       "id": "recovery-ticket-bug-a80fca455b326638e4a8",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-a80fca455b326638e4a8",
@@ -173064,7 +173106,8 @@
         "{\"sourceRevision\":\"236da3443971342ebc84cd4713e663f5f28904c1\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:16",
         "tester-debug-occurrence-count:17",
-        "tester-debug-occurrence-count:18"
+        "tester-debug-occurrence-count:18",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173082,11 +173125,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T00:53:39.502Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.934Z"
     },
     {
       "id": "recovery-ticket-bug-3806f6caa088ebce6a73",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-3806f6caa088ebce6a73",
@@ -173117,7 +173160,8 @@
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
-        "tester-debug-occurrence-count:10"
+        "tester-debug-occurrence-count:10",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173135,11 +173179,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T00:53:39.513Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.953Z"
     },
     {
       "id": "recovery-ticket-bug-e77c14752e9af2bf6b3d",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-e77c14752e9af2bf6b3d",
@@ -173170,7 +173214,8 @@
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
-        "tester-debug-occurrence-count:10"
+        "tester-debug-occurrence-count:10",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173188,11 +173233,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T00:53:39.524Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.972Z"
     },
     {
       "id": "recovery-ticket-bug-b7d86f473cb40a91568d",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-b7d86f473cb40a91568d",
@@ -173246,7 +173291,8 @@
         "tester-debug-occurrence-count:29",
         "tester-debug-occurrence-count:30",
         "tester-debug-occurrence-count:31",
-        "tester-debug-occurrence-count:32"
+        "tester-debug-occurrence-count:32",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173264,7 +173310,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T00:53:39.535Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:04.990Z"
     },
     {
       "id": "recovery-ticket-bug-f19930d732d990cdc52f",
@@ -173299,7 +173345,8 @@
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
-        "tester-debug-occurrence-count:10"
+        "tester-debug-occurrence-count:10",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173317,11 +173364,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T00:53:39.546Z",
-      "updatedAt": "2026-10-30T02:33:50.609Z"
+      "updatedAt": "2026-10-30T05:02:05.008Z"
     },
     {
       "id": "recovery-ticket-bug-f49ec3251406aa0ce5bc",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-f49ec3251406aa0ce5bc",
@@ -173352,7 +173399,8 @@
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
-        "tester-debug-occurrence-count:10"
+        "tester-debug-occurrence-count:10",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173370,7 +173418,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T00:53:39.556Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.028Z"
     },
     {
       "id": "recovery-ticket-bug-32f1aa35f82deecfdfbe",
@@ -173408,7 +173456,8 @@
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
         "tester-debug-occurrence-count:10",
-        "tester-debug-occurrence-count:11"
+        "tester-debug-occurrence-count:11",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173426,7 +173475,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.291Z",
-      "updatedAt": "2026-10-30T02:33:50.641Z"
+      "updatedAt": "2026-10-30T05:02:05.046Z"
     },
     {
       "id": "recovery-ticket-bug-f27498f02ef5670937e1",
@@ -173523,7 +173572,8 @@
         "tester-debug-occurrence-count:64",
         "tester-debug-occurrence-count:65",
         "tester-debug-occurrence-count:66",
-        "tester-debug-occurrence-count:67"
+        "tester-debug-occurrence-count:67",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173541,7 +173591,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.301Z",
-      "updatedAt": "2026-10-30T02:33:50.658Z"
+      "updatedAt": "2026-10-30T05:02:05.065Z"
     },
     {
       "id": "recovery-ticket-bug-035dc6fe2d7d30a8af0e",
@@ -173638,7 +173688,8 @@
         "tester-debug-occurrence-count:63",
         "tester-debug-occurrence-count:64",
         "tester-debug-occurrence-count:65",
-        "tester-debug-occurrence-count:66"
+        "tester-debug-occurrence-count:66",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173656,11 +173707,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.312Z",
-      "updatedAt": "2026-10-30T02:33:50.675Z"
+      "updatedAt": "2026-10-30T05:02:05.084Z"
     },
     {
       "id": "recovery-ticket-bug-cef9d026fb7e3388b60e",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-cef9d026fb7e3388b60e",
@@ -173693,7 +173744,8 @@
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
-        "tester-debug-occurrence-count:10"
+        "tester-debug-occurrence-count:10",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173711,11 +173763,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.322Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.102Z"
     },
     {
       "id": "recovery-ticket-bug-7134958c437dfb92cc9b",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-7134958c437dfb92cc9b",
@@ -173778,7 +173830,8 @@
         "tester-debug-occurrence-count:32",
         "tester-debug-occurrence-count:33",
         "tester-debug-occurrence-count:34",
-        "tester-debug-occurrence-count:35"
+        "tester-debug-occurrence-count:35",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173796,11 +173849,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.333Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.121Z"
     },
     {
       "id": "recovery-ticket-bug-23ec4170b476bd1af1ba",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-23ec4170b476bd1af1ba",
@@ -173863,7 +173916,8 @@
         "tester-debug-occurrence-count:32",
         "tester-debug-occurrence-count:33",
         "tester-debug-occurrence-count:34",
-        "tester-debug-occurrence-count:35"
+        "tester-debug-occurrence-count:35",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173881,7 +173935,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.343Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.138Z"
     },
     {
       "id": "recovery-ticket-bug-918a2e6e5982f33ac42d",
@@ -173917,7 +173971,8 @@
         "tester-debug-occurrence-count:6",
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
-        "tester-debug-occurrence-count:9"
+        "tester-debug-occurrence-count:9",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173935,11 +173990,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.354Z",
-      "updatedAt": "2026-10-30T02:33:50.743Z"
+      "updatedAt": "2026-10-30T05:02:05.157Z"
     },
     {
       "id": "recovery-ticket-bug-6040046f8ce79d893c98",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-6040046f8ce79d893c98",
@@ -173972,7 +174027,8 @@
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
-        "tester-debug-occurrence-count:10"
+        "tester-debug-occurrence-count:10",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -173990,11 +174046,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.364Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.176Z"
     },
     {
       "id": "recovery-ticket-bug-1ff4f25542313ddc96df",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-1ff4f25542313ddc96df",
@@ -174057,7 +174113,8 @@
         "tester-debug-occurrence-count:33",
         "tester-debug-occurrence-count:34",
         "tester-debug-occurrence-count:35",
-        "tester-debug-occurrence-count:36"
+        "tester-debug-occurrence-count:36",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -174075,7 +174132,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.375Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.194Z"
     },
     {
       "id": "recovery-ticket-bug-c595160fc80a8773aadf",
@@ -174113,7 +174170,8 @@
         "tester-debug-occurrence-count:8",
         "tester-debug-occurrence-count:9",
         "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:10"
+        "tester-debug-occurrence-count:10",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -174131,7 +174189,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.385Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:12.471Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-10-30T05:02:12.471Z"
+      ]
     },
     {
       "id": "recovery-ticket-bug-eeff338771d1ea0e9b06",
@@ -174167,7 +174229,8 @@
         "tester-debug-occurrence-count:6",
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
-        "tester-debug-occurrence-count:9"
+        "tester-debug-occurrence-count:9",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -174185,7 +174248,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.396Z",
-      "updatedAt": "2026-10-30T02:33:50.807Z"
+      "updatedAt": "2026-10-30T05:02:05.232Z"
     },
     {
       "id": "recovery-ticket-bug-2808da3b075c848a183e",
@@ -174221,7 +174284,8 @@
         "tester-debug-occurrence-count:6",
         "tester-debug-occurrence-count:7",
         "tester-debug-occurrence-count:8",
-        "tester-debug-occurrence-count:9"
+        "tester-debug-occurrence-count:9",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -174239,7 +174303,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.407Z",
-      "updatedAt": "2026-10-30T02:33:50.824Z"
+      "updatedAt": "2026-10-30T05:02:05.249Z"
     },
     {
       "id": "recovery-ticket-bug-d7a6a2cbcc77054c94a4",
@@ -174290,7 +174354,8 @@
         "{\"sourceRevision\":\"7ea17f0903c7aa51bde392da6741ce573fc4aa5d\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:17",
         "tester-debug-occurrence-count:18",
-        "tester-debug-occurrence-count:19"
+        "tester-debug-occurrence-count:19",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -174308,7 +174373,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.417Z",
-      "updatedAt": "2026-10-30T02:33:50.841Z"
+      "updatedAt": "2026-10-30T05:02:05.268Z"
     },
     {
       "id": "recovery-0e1c423b973d4359f88d",
@@ -174486,7 +174551,7 @@
     },
     {
       "id": "recovery-ticket-bug-1de8b6ce2f4e0230c361",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-1de8b6ce2f4e0230c361",
@@ -174540,7 +174605,8 @@
         "tester-debug-occurrence-count:24",
         "tester-debug-occurrence-count:25",
         "tester-debug-occurrence-count:26",
-        "tester-debug-occurrence-count:27"
+        "tester-debug-occurrence-count:27",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -174558,7 +174624,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T16:07:04.654Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.286Z"
     },
     {
       "id": "recovery-bf0e8c74fd98f30c42fd",
@@ -190189,7 +190255,7 @@
     },
     {
       "id": "recovery-ticket-bug-557ec92f0d8ce8e99cb0",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-557ec92f0d8ce8e99cb0",
@@ -190212,7 +190278,8 @@
         "tester-debug-severity:MEDIUM",
         "tester-debug-occurrence-count:1",
         "tester-debug-occurrence-count:2",
-        "recovery-reactivated-after-source-refailure"
+        "recovery-reactivated-after-source-refailure",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -190230,11 +190297,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-11T23:27:24.074Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.305Z"
     },
     {
       "id": "recovery-ticket-bug-c9f963239a5107c59ad0",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-c9f963239a5107c59ad0",
@@ -190315,7 +190382,8 @@
         "tester-debug-occurrence-count:54",
         "tester-debug-occurrence-count:55",
         "tester-debug-occurrence-count:56",
-        "tester-debug-occurrence-count:57"
+        "tester-debug-occurrence-count:57",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -190333,11 +190401,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-12T05:18:36.813Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.324Z"
     },
     {
       "id": "recovery-ticket-bug-e6986ed37d3999467033",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-e6986ed37d3999467033",
@@ -190418,7 +190486,8 @@
         "tester-debug-occurrence-count:54",
         "tester-debug-occurrence-count:55",
         "tester-debug-occurrence-count:56",
-        "tester-debug-occurrence-count:57"
+        "tester-debug-occurrence-count:57",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -190436,7 +190505,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-12T05:18:36.825Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.342Z"
     },
     {
       "id": "recovery-54d23dda1865dca8634b",
@@ -203107,7 +203176,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-30T04:59:55.332Z"
+      "updatedAt": "2026-10-30T05:02:09.411Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203328,7 +203397,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-30T04:59:55.354Z"
+      "updatedAt": "2026-10-30T05:02:09.433Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -214849,7 +214918,8 @@
         "tester-debug-occurrence-count:68",
         "tester-debug-occurrence-count:69",
         "tester-debug-occurrence-count:70",
-        "tester-debug-occurrence-count:71"
+        "tester-debug-occurrence-count:71",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -214867,7 +214937,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.247Z",
-      "updatedAt": "2026-10-30T02:33:50.922Z"
+      "updatedAt": "2026-10-30T05:02:05.361Z"
     },
     {
       "id": "recovery-ticket-bug-1800ddf75c5bc2fa8c62",
@@ -214980,7 +215050,8 @@
         "tester-debug-occurrence-count:85",
         "tester-debug-occurrence-count:86",
         "tester-debug-occurrence-count:87",
-        "tester-debug-occurrence-count:88"
+        "tester-debug-occurrence-count:88",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -214998,11 +215069,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.262Z",
-      "updatedAt": "2026-10-30T02:33:50.939Z"
+      "updatedAt": "2026-10-30T05:02:05.379Z"
     },
     {
       "id": "recovery-ticket-bug-6a3873f1ad51f266b2b4",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-6a3873f1ad51f266b2b4",
@@ -215100,7 +215171,8 @@
         "tester-debug-occurrence-count:72",
         "tester-debug-occurrence-count:73",
         "tester-debug-occurrence-count:74",
-        "tester-debug-occurrence-count:75"
+        "tester-debug-occurrence-count:75",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215118,11 +215190,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.277Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.398Z"
     },
     {
       "id": "recovery-ticket-bug-c43adcc92da266a0f5df",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-c43adcc92da266a0f5df",
@@ -215213,7 +215285,8 @@
         "tester-debug-occurrence-count:65",
         "tester-debug-occurrence-count:66",
         "tester-debug-occurrence-count:67",
-        "tester-debug-occurrence-count:68"
+        "tester-debug-occurrence-count:68",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215231,11 +215304,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.294Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.418Z"
     },
     {
       "id": "recovery-ticket-bug-c807ea3638b2b4af389f",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-c807ea3638b2b4af389f",
@@ -215332,7 +215405,8 @@
         "tester-debug-occurrence-count:71",
         "tester-debug-occurrence-count:72",
         "tester-debug-occurrence-count:73",
-        "tester-debug-occurrence-count:74"
+        "tester-debug-occurrence-count:74",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215350,7 +215424,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.310Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.436Z"
     },
     {
       "id": "recovery-ticket-bug-16fa4512df19834b8f5d",
@@ -215445,7 +215519,8 @@
         "tester-debug-occurrence-count:65",
         "tester-debug-occurrence-count:66",
         "tester-debug-occurrence-count:67",
-        "tester-debug-occurrence-count:68"
+        "tester-debug-occurrence-count:68",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215463,11 +215538,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.327Z",
-      "updatedAt": "2026-10-30T02:33:51.003Z"
+      "updatedAt": "2026-10-30T05:02:05.474Z"
     },
     {
       "id": "recovery-ticket-bug-38699e986c70cec1cb47",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-38699e986c70cec1cb47",
@@ -215563,7 +215638,8 @@
         "tester-debug-occurrence-count:70",
         "tester-debug-occurrence-count:71",
         "tester-debug-occurrence-count:72",
-        "tester-debug-occurrence-count:73"
+        "tester-debug-occurrence-count:73",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215581,7 +215657,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.342Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.493Z"
     },
     {
       "id": "recovery-ticket-bug-10e004cf6efed11a6512",
@@ -215696,7 +215772,8 @@
         "tester-debug-occurrence-count:87",
         "tester-debug-occurrence-count:88",
         "tester-debug-occurrence-count:89",
-        "tester-debug-occurrence-count:90"
+        "tester-debug-occurrence-count:90",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215714,7 +215791,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.358Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:12.471Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-10-30T05:02:12.471Z"
+      ]
     },
     {
       "id": "recovery-ticket-bug-91bd7be0ee938410805f",
@@ -215767,7 +215848,8 @@
         "tester-debug-occurrence-count:25",
         "tester-debug-occurrence-count:26",
         "tester-debug-occurrence-count:27",
-        "tester-debug-occurrence-count:28"
+        "tester-debug-occurrence-count:28",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215785,11 +215867,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.374Z",
-      "updatedAt": "2026-10-30T02:33:51.070Z"
+      "updatedAt": "2026-10-30T05:02:05.528Z"
     },
     {
       "id": "recovery-ticket-bug-f2c48e2e9e0d2e2a6c6f",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-f2c48e2e9e0d2e2a6c6f",
@@ -215838,7 +215920,8 @@
         "tester-debug-occurrence-count:25",
         "tester-debug-occurrence-count:26",
         "tester-debug-occurrence-count:27",
-        "tester-debug-occurrence-count:28"
+        "tester-debug-occurrence-count:28",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -215856,7 +215939,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-17T13:55:36.389Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.545Z"
     },
     {
       "id": "recovery-5ada659bfc740addea85",
@@ -220268,7 +220351,8 @@
         "tester-debug-occurrence-count:123",
         "tester-debug-occurrence-count:124",
         "tester-debug-occurrence-count:125",
-        "tester-debug-occurrence-count:126"
+        "tester-debug-occurrence-count:126",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -220286,7 +220370,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-19T05:24:44.354Z",
-      "updatedAt": "2026-10-30T02:33:51.102Z"
+      "updatedAt": "2026-10-30T05:02:05.563Z"
     },
     {
       "id": "recovery-7c16eb1e586959ff8050",
@@ -220372,7 +220456,8 @@
         "tester-debug-occurrence-count:1",
         "tester-debug-occurrence-count:2",
         "recovery-reactivated-after-source-refailure",
-        "tester-debug-occurrence-count:3"
+        "tester-debug-occurrence-count:3",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -220390,11 +220475,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-19T06:48:29.273Z",
-      "updatedAt": "2026-10-30T02:33:51.117Z"
+      "updatedAt": "2026-10-30T05:02:05.582Z"
     },
     {
       "id": "recovery-ticket-bug-e20c19cb94cdc494f565",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-e20c19cb94cdc494f565",
@@ -220418,7 +220503,8 @@
         "tester-debug-occurrence-count:1",
         "tester-debug-occurrence-count:2",
         "recovery-reactivated-after-source-refailure",
-        "tester-debug-occurrence-count:3"
+        "tester-debug-occurrence-count:3",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -220436,11 +220522,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-19T06:48:29.288Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.599Z"
     },
     {
       "id": "recovery-ticket-bug-93a63ccd73738e598124",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-93a63ccd73738e598124",
@@ -220464,7 +220550,8 @@
         "tester-debug-occurrence-count:1",
         "tester-debug-occurrence-count:2",
         "recovery-reactivated-after-source-refailure",
-        "tester-debug-occurrence-count:3"
+        "tester-debug-occurrence-count:3",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -220482,7 +220569,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-19T06:48:29.302Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.617Z"
     },
     {
       "id": "recovery-ticket-bug-41705be6a9630936c380",
@@ -220577,7 +220664,8 @@
         "tester-debug-occurrence-count:58",
         "tester-debug-occurrence-count:59",
         "{\"sourceRevision\":\"5d3836f25d73e2378827721464ada2b405d0b663\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:60"
+        "tester-debug-occurrence-count:60",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -220595,7 +220683,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-19T06:48:29.316Z",
-      "updatedAt": "2026-10-30T02:33:51.165Z"
+      "updatedAt": "2026-10-30T05:02:05.635Z"
     },
     {
       "id": "recovery-ticket-bug-92ee8dde6530b40ca382",
@@ -220655,7 +220743,8 @@
         "tester-debug-occurrence-count:32",
         "tester-debug-occurrence-count:33",
         "tester-debug-occurrence-count:34",
-        "tester-debug-occurrence-count:35"
+        "tester-debug-occurrence-count:35",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -220673,7 +220762,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-19T14:07:16.827Z",
-      "updatedAt": "2026-10-30T02:33:51.181Z"
+      "updatedAt": "2026-10-30T05:02:05.652Z"
     },
     {
       "id": "recovery-e6a56d31fb493779ce7b",
@@ -222203,7 +222292,8 @@
         "tester-debug-occurrence-count:48",
         "tester-debug-occurrence-count:49",
         "tester-debug-occurrence-count:50",
-        "tester-debug-occurrence-count:51"
+        "tester-debug-occurrence-count:51",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222221,11 +222311,15 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:00:39.679Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:12.471Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-10-30T05:02:12.471Z"
+      ]
     },
     {
       "id": "recovery-ticket-bug-0adf678b2167f795a87c",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-0adf678b2167f795a87c",
@@ -222294,7 +222388,8 @@
         "tester-debug-occurrence-count:44",
         "tester-debug-occurrence-count:45",
         "tester-debug-occurrence-count:46",
-        "tester-debug-occurrence-count:47"
+        "tester-debug-occurrence-count:47",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222312,11 +222407,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:00:39.695Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.687Z"
     },
     {
       "id": "recovery-ticket-bug-513ab636ac2ba3ec35c3",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-513ab636ac2ba3ec35c3",
@@ -222382,7 +222477,8 @@
         "tester-debug-occurrence-count:41",
         "tester-debug-occurrence-count:42",
         "tester-debug-occurrence-count:43",
-        "tester-debug-occurrence-count:44"
+        "tester-debug-occurrence-count:44",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222400,7 +222496,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:21:54.000Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.705Z"
     },
     {
       "id": "recovery-ticket-bug-11af0e4f87c9e9f69ca8",
@@ -222467,7 +222563,8 @@
         "tester-debug-occurrence-count:38",
         "tester-debug-occurrence-count:39",
         "tester-debug-occurrence-count:40",
-        "tester-debug-occurrence-count:41"
+        "tester-debug-occurrence-count:41",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222485,7 +222582,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:21:54.016Z",
-      "updatedAt": "2026-10-30T02:33:51.243Z"
+      "updatedAt": "2026-10-30T05:02:05.723Z"
     },
     {
       "id": "recovery-ticket-bug-ba4833516b1f21d30a02",
@@ -222553,7 +222650,8 @@
         "tester-debug-occurrence-count:39",
         "tester-debug-occurrence-count:40",
         "tester-debug-occurrence-count:41",
-        "tester-debug-occurrence-count:42"
+        "tester-debug-occurrence-count:42",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222571,7 +222669,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:30:22.788Z",
-      "updatedAt": "2026-10-30T02:33:51.259Z"
+      "updatedAt": "2026-10-30T05:02:05.741Z"
     },
     {
       "id": "recovery-ticket-bug-c75fcba733fec843255e",
@@ -222637,7 +222735,8 @@
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
         "tester-debug-occurrence-count:39",
-        "tester-debug-occurrence-count:40"
+        "tester-debug-occurrence-count:40",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222655,11 +222754,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:51:27.945Z",
-      "updatedAt": "2026-10-30T02:33:51.275Z"
+      "updatedAt": "2026-10-30T05:02:05.759Z"
     },
     {
       "id": "recovery-ticket-bug-817a65e37274f448cdf7",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-817a65e37274f448cdf7",
@@ -222716,7 +222815,8 @@
         "tester-debug-occurrence-count:32",
         "tester-debug-occurrence-count:33",
         "tester-debug-occurrence-count:34",
-        "tester-debug-occurrence-count:35"
+        "tester-debug-occurrence-count:35",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222734,11 +222834,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:51:27.962Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.776Z"
     },
     {
       "id": "recovery-ticket-bug-f34d58a050472a26a2b4",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-f34d58a050472a26a2b4",
@@ -222800,7 +222900,8 @@
         "tester-debug-occurrence-count:37",
         "tester-debug-occurrence-count:38",
         "tester-debug-occurrence-count:39",
-        "tester-debug-occurrence-count:40"
+        "tester-debug-occurrence-count:40",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -222818,7 +222919,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T09:51:27.977Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.795Z"
     },
     {
       "id": "recovery-a81024818b73ba013573",
@@ -223576,7 +223677,7 @@
     },
     {
       "id": "recovery-ticket-bug-66c7c1fb130c52d8e970",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-66c7c1fb130c52d8e970",
@@ -223811,7 +223912,8 @@
         "tester-debug-occurrence-count:211",
         "tester-debug-occurrence-count:212",
         "tester-debug-occurrence-count:213",
-        "tester-debug-occurrence-count:214"
+        "tester-debug-occurrence-count:214",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -223829,11 +223931,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:19:40.687Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.813Z"
     },
     {
       "id": "recovery-ticket-bug-5477fd2157e61a81820a",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-5477fd2157e61a81820a",
@@ -223887,7 +223989,8 @@
         "tester-debug-occurrence-count:26",
         "tester-debug-occurrence-count:27",
         "tester-debug-occurrence-count:28",
-        "tester-debug-occurrence-count:29"
+        "tester-debug-occurrence-count:29",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -223905,7 +224008,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.627Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.831Z"
     },
     {
       "id": "recovery-ticket-bug-4e4042cadaadfa2e98bf",
@@ -223996,7 +224099,8 @@
         "tester-debug-occurrence-count:56",
         "tester-debug-occurrence-count:57",
         "{\"sourceRevision\":\"5d3836f25d73e2378827721464ada2b405d0b663\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:58"
+        "tester-debug-occurrence-count:58",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224014,11 +224118,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.641Z",
-      "updatedAt": "2026-10-30T02:33:51.352Z"
+      "updatedAt": "2026-10-30T05:02:05.849Z"
     },
     {
       "id": "recovery-ticket-bug-3bf4acb6006317789c84",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-3bf4acb6006317789c84",
@@ -224151,7 +224255,8 @@
         "tester-debug-occurrence-count:101",
         "tester-debug-occurrence-count:102",
         "tester-debug-occurrence-count:103",
-        "tester-debug-occurrence-count:104"
+        "tester-debug-occurrence-count:104",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224169,7 +224274,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.656Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.867Z"
     },
     {
       "id": "recovery-ticket-bug-3c25c1b5994cda77d821",
@@ -224231,7 +224336,8 @@
         "tester-debug-occurrence-count:29",
         "tester-debug-occurrence-count:30",
         "tester-debug-occurrence-count:31",
-        "tester-debug-occurrence-count:32"
+        "tester-debug-occurrence-count:32",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224249,11 +224355,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.671Z",
-      "updatedAt": "2026-10-30T02:33:51.383Z"
+      "updatedAt": "2026-10-30T05:02:05.885Z"
     },
     {
       "id": "recovery-ticket-bug-9f952a9b672f60368597",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-9f952a9b672f60368597",
@@ -224305,7 +224411,8 @@
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
         "tester-debug-occurrence-count:25",
-        "tester-debug-occurrence-count:26"
+        "tester-debug-occurrence-count:26",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224323,7 +224430,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.686Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.903Z"
     },
     {
       "id": "recovery-ticket-bug-0971bd84d4eb3be7c2b8",
@@ -224370,7 +224477,8 @@
         "tester-debug-occurrence-count:14",
         "{\"sourceRevision\":\"6217dc7c00974dd72f4a527593cb61ac814a6258\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:15",
-        "tester-debug-occurrence-count:16"
+        "tester-debug-occurrence-count:16",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224388,7 +224496,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.700Z",
-      "updatedAt": "2026-10-30T02:33:51.414Z"
+      "updatedAt": "2026-10-30T05:02:05.920Z"
     },
     {
       "id": "recovery-ticket-bug-35e3d7a9e57c525cc59f",
@@ -224442,7 +224550,8 @@
         "tester-debug-occurrence-count:21",
         "tester-debug-occurrence-count:22",
         "{\"sourceRevision\":\"ca782b2ae35c48ce13792c048bca8a560a7d2bc1\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:23"
+        "tester-debug-occurrence-count:23",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224460,11 +224569,15 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.716Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:12.471Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-10-30T05:02:12.471Z"
+      ]
     },
     {
       "id": "recovery-ticket-bug-684e0d5375999682339d",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-684e0d5375999682339d",
@@ -224510,7 +224623,8 @@
         "tester-debug-occurrence-count:18",
         "{\"sourceRevision\":\"3b467fc4df06500e74524c0aaeb9511e0e6273b0\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:19",
-        "tester-debug-occurrence-count:20"
+        "tester-debug-occurrence-count:20",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224528,7 +224642,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.730Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:05.956Z"
     },
     {
       "id": "recovery-ticket-bug-cc2618b93450a5447351",
@@ -224634,7 +224748,8 @@
         "tester-debug-occurrence-count:74",
         "tester-debug-occurrence-count:75",
         "tester-debug-occurrence-count:76",
-        "tester-debug-occurrence-count:77"
+        "tester-debug-occurrence-count:77",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224652,7 +224767,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.744Z",
-      "updatedAt": "2026-10-30T02:33:51.460Z"
+      "updatedAt": "2026-10-30T05:02:05.973Z"
     },
     {
       "id": "recovery-ticket-bug-bd65041c92d5b75226b2",
@@ -224720,7 +224835,8 @@
         "tester-debug-occurrence-count:32",
         "tester-debug-occurrence-count:33",
         "tester-debug-occurrence-count:34",
-        "tester-debug-occurrence-count:35"
+        "tester-debug-occurrence-count:35",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224738,11 +224854,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.759Z",
-      "updatedAt": "2026-10-30T02:33:51.475Z"
+      "updatedAt": "2026-10-30T05:02:05.991Z"
     },
     {
       "id": "recovery-ticket-bug-6959148008db9f4f281b",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-6959148008db9f4f281b",
@@ -224853,7 +224969,8 @@
         "tester-debug-occurrence-count:79",
         "tester-debug-occurrence-count:80",
         "{\"sourceRevision\":\"9c5da5bc67ff0741258b4a16859b6aadde067e9e\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:81"
+        "tester-debug-occurrence-count:81",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224871,11 +224988,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.774Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.009Z"
     },
     {
       "id": "recovery-ticket-bug-46703b96e99ec5f49e60",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-46703b96e99ec5f49e60",
@@ -224964,7 +225081,8 @@
         "tester-debug-occurrence-count:57",
         "tester-debug-occurrence-count:58",
         "tester-debug-occurrence-count:59",
-        "tester-debug-occurrence-count:60"
+        "tester-debug-occurrence-count:60",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -224982,11 +225100,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.788Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.028Z"
     },
     {
       "id": "recovery-ticket-bug-d1833f8aa4de28bac000",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-d1833f8aa4de28bac000",
@@ -225033,7 +225151,8 @@
         "{\"sourceRevision\":\"9910debecf45c765c14e5d7017ef90ab04e11e52\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:19",
         "{\"sourceRevision\":\"8550277bcdc8b1a25bc31e20a6bd183ad6805091\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:20"
+        "tester-debug-occurrence-count:20",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -225051,11 +225170,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.803Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.046Z"
     },
     {
       "id": "recovery-ticket-bug-16458492c1a32d4afdeb",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-16458492c1a32d4afdeb",
@@ -225115,7 +225234,8 @@
         "tester-debug-occurrence-count:29",
         "{\"sourceRevision\":\"5d3836f25d73e2378827721464ada2b405d0b663\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:30",
-        "tester-debug-occurrence-count:31"
+        "tester-debug-occurrence-count:31",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -225133,11 +225253,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.817Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.065Z"
     },
     {
       "id": "recovery-ticket-bug-275d1ecf23b66fb720e1",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-275d1ecf23b66fb720e1",
@@ -225181,7 +225301,8 @@
         "{\"sourceRevision\":\"ca7213461b51b0dd3ec8326781cd32a5abf34f0c\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "tester-debug-occurrence-count:16",
         "tester-debug-occurrence-count:17",
-        "tester-debug-occurrence-count:18"
+        "tester-debug-occurrence-count:18",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -225199,11 +225320,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.832Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.084Z"
     },
     {
       "id": "recovery-ticket-bug-84ea86c10140a11ea8cf",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-84ea86c10140a11ea8cf",
@@ -225246,7 +225367,8 @@
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
         "{\"sourceRevision\":\"9c5da5bc67ff0741258b4a16859b6aadde067e9e\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -225264,7 +225386,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.846Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.102Z"
     },
     {
       "id": "recovery-ticket-bug-93a1a856998176ca125b",
@@ -225337,7 +225459,8 @@
         "tester-debug-occurrence-count:38",
         "tester-debug-occurrence-count:39",
         "{\"sourceRevision\":\"41aae39c8a737239a5beb94320c99afbbc406d7b\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:40"
+        "tester-debug-occurrence-count:40",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -225355,11 +225478,15 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:29:20.861Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:12.471Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-10-30T05:02:12.471Z"
+      ]
     },
     {
       "id": "recovery-ticket-bug-ab3b8c1925cf27f7cbaf",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-ab3b8c1925cf27f7cbaf",
@@ -225409,7 +225536,8 @@
         "tester-debug-occurrence-count:26",
         "tester-debug-occurrence-count:27",
         "tester-debug-occurrence-count:28",
-        "tester-debug-occurrence-count:29"
+        "tester-debug-occurrence-count:29",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -225427,7 +225555,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-20T21:34:50.184Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.139Z"
     },
     {
       "id": "recovery-c05d434fb3a86d2b80d1",
@@ -238321,7 +238449,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-30T04:59:55.501Z"
+      "updatedAt": "2026-10-30T05:02:09.493Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238413,7 +238541,7 @@
     },
     {
       "id": "recovery-ticket-bug-65a297adfddd5b2f6324",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-65a297adfddd5b2f6324",
@@ -238486,7 +238614,8 @@
         "tester-debug-occurrence-count:42",
         "tester-debug-occurrence-count:43",
         "tester-debug-occurrence-count:44",
-        "tester-debug-occurrence-count:45"
+        "tester-debug-occurrence-count:45",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -238504,7 +238633,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T08:17:27.891Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.156Z"
     },
     {
       "id": "recovery-badfe2010c32b72c63fd",
@@ -239703,7 +239832,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-30T04:59:55.569Z"
+      "updatedAt": "2026-10-30T05:02:09.552Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -242197,7 +242326,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-30T04:59:55.473Z"
+      "updatedAt": "2026-10-30T05:02:09.473Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -244434,7 +244563,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-30T04:59:55.395Z"
+      "updatedAt": "2026-10-30T05:02:09.452Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -244929,7 +245058,7 @@
     },
     {
       "id": "recovery-ticket-bug-eb2ba77e9ef3ee057630",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-eb2ba77e9ef3ee057630",
@@ -245055,7 +245184,8 @@
         "tester-debug-occurrence-count:100",
         "tester-debug-occurrence-count:101",
         "tester-debug-occurrence-count:102",
-        "tester-debug-occurrence-count:103"
+        "tester-debug-occurrence-count:103",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -245073,7 +245203,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T14:39:54.129Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.175Z"
     },
     {
       "id": "recovery-1f744d2e528ecdb1662a",
@@ -247210,7 +247340,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-30T04:59:55.523Z"
+      "updatedAt": "2026-10-30T05:02:09.512Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -248518,7 +248648,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-30T04:59:55.548Z"
+      "updatedAt": "2026-10-30T05:02:09.532Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
@@ -248874,7 +249004,7 @@
     },
     {
       "id": "recovery-ticket-bug-6f2a1be8144bd2f29e2c",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-6f2a1be8144bd2f29e2c",
@@ -248899,7 +249029,8 @@
         "tester-debug-occurrence-count:2",
         "recovery-reactivated-after-source-refailure",
         "{\"sourceRevision\":\"ca782b2ae35c48ce13792c048bca8a560a7d2bc1\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "tester-debug-occurrence-count:3"
+        "tester-debug-occurrence-count:3",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -248917,7 +249048,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-23T23:28:45.915Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.193Z"
     },
     {
       "id": "recovery-df354d130f20da32aa90",
@@ -251083,7 +251214,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-25T08:09:24.576Z",
-      "updatedAt": "2026-10-30T04:59:55.598Z"
+      "updatedAt": "2026-10-30T05:02:09.571Z"
     },
     {
       "id": "recovery-a8e7c5b2447563afc90e",
@@ -255508,7 +255639,7 @@
     },
     {
       "id": "recovery-ticket-bug-c5d944a757e7c627e4aa",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "high",
       "sourceQueue": "tester-debug",
       "sourceTaskId": "bug-c5d944a757e7c627e4aa",
@@ -255531,7 +255662,8 @@
         "tester-debug-severity:MEDIUM",
         "tester-debug-occurrence-count:1",
         "tester-debug-occurrence-count:2",
-        "recovery-reactivated-after-source-refailure"
+        "recovery-reactivated-after-source-refailure",
+        "tester-debug-surface:ROBLOX"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -255549,7 +255681,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-27T12:06:20.152Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:06.211Z"
     },
     {
       "id": "recovery-e1beaa40c7bf07436e09",
@@ -257100,7 +257232,9 @@
         "tester-debug-occurrence-count:5",
         "tester-debug-occurrence-count:6",
         "tester-debug-occurrence-count:7",
-        "tester-debug-occurrence-count:8"
+        "tester-debug-occurrence-count:8",
+        "tester-debug-surface:ROBLOX",
+        "tester-debug-occurrence-count:9"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -257113,12 +257247,16 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 8,
+      "recurrenceCount": 9,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-29T13:04:39.523Z",
-      "updatedAt": "2026-10-30T02:33:57.744Z"
+      "updatedAt": "2026-10-30T05:02:12.471Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-10-30T05:02:12.471Z"
+      ]
     },
     {
       "id": "recovery-d4d1ead51f7503390149",
@@ -257950,7 +258088,8 @@
         "tester-debug-ticket:bug-23d5495d4ca3425b0997",
         "tester-debug-category:UNKNOWN",
         "tester-debug-severity:HIGH",
-        "tester-debug-occurrence-count:1"
+        "tester-debug-occurrence-count:1",
+        "tester-debug-surface:WEB"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -257972,7 +258111,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T02:33:51.693Z",
-      "updatedAt": "2026-10-30T02:33:51.693Z"
+      "updatedAt": "2026-10-30T05:02:06.249Z"
     },
     {
       "id": "recovery-33282d5d931c68d48565",
@@ -258191,7 +258330,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-30T03:07:30.585Z",
-      "updatedAt": "2026-10-30T04:59:55.620Z"
+      "updatedAt": "2026-10-30T05:02:09.591Z"
     }
   ]
 }
