@@ -22,7 +22,7 @@ test('selected Fantasy Survival motion reaches a server-authorized R15 frame sin
     'MOTION'
   ),false,'an unselected module cannot satisfy motion binding');
   assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('GetAttributeChangedSignal("ApprovedCombatMotion")','GetAttributeChangedSignal("UnverifiedMotion")'),
+    source.replaceAll('GetAttributeChangedSignal("ApprovedCombatMotion")','GetAttributeChangedSignal("UnverifiedMotion")'),
     'MOTION'
   ),false,'a motion without server-approved action is not applied');
 });
