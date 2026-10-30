@@ -126,7 +126,7 @@ end
 createStartingMeadow()
 -- [서버 메인: 초원 날씨·새벽/낮/저녁/밤]
 -- 기존 웨이브 갱신 틱에서 함께 실행한다. 날씨는 표현 전용이며 저장·전투를 변경하지 않는다.
--- 12분당 게임 내 하루가 흐르고, 모든 플레이어가 같은 현재 시간/날씨를 관측한다.
+-- 12분당 게임 내 하루, 날씨는 5분마다 바뀌며 모든 플레이어가 같은 상태를 관측한다.
 local meadowWeatherSequence={"CLEAR","RAIN","CLEAR","FOG","SNOW","CLEAR","STORM","CLEAR"}
 local meadowClouds=meadowTerrain:FindFirstChildOfClass("Clouds")
 if not meadowClouds then
@@ -144,7 +144,7 @@ local function updateMeadowClimate()
   local period=hour>=5 and hour<8 and "DAWN"
     or hour>=8 and hour<17.5 and "DAY"
     or hour>=17.5 and hour<20.5 and "DUSK" or "NIGHT"
-  local weather=meadowWeatherSequence[(math.floor(worldClock/90)%#meadowWeatherSequence)+1]
+  local weather=meadowWeatherSequence[(math.floor(worldClock/300)%#meadowWeatherSequence)+1]
   local morning=math.clamp((hour-5.25)/2.5,0,1)
   local evening=math.clamp((20.5-hour)/2.5,0,1)
   local sun=math.min(morning,evening)
