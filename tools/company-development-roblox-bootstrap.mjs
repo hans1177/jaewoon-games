@@ -173,13 +173,20 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     const approvedListener=raw.match(
       /\bplayer\s*:\s*GetAttributeChangedSignal\s*\(\s*["']ApprovedCombatMotion["']\s*\)\s*:\s*Connect\s*\(\s*function\s*\(\s*\)([\s\S]*?)\nend\s*\)/
     )?.[1]||'';
-    const responsibleMotion=raw.match(
-      /\bplayNativeCombatMotion\s*=\s*function\s*\(\s*approvedScope\s*,\s*approvedEvent\s*\)([\s\S]*?)\nend\b/
-    )?.[1]||'';
-    const trustedApproval=[
+    // 예측 연출을 쓰는 최신 무술은 승인 콜백에서 세 번째 인자로 true를 전달한다.
+    // 새 인자를 무조건 허용하지 않고 승인 전달과 실제 승인 플래그 사용을 함께 검증한다.
+    const motionFunction=raw.match(
+      /\bplayNativeCombatMotion\s*=\s*function\s*\(\s*approvedScope\s*,\s*approvedEvent(\s*,\s*serverApproved)?\s*\)([\s\S]*?)\nend\b/
+    );
+    const responsibleMotion=motionFunction?.[2]||'';
+    const expectsServerApproval=Boolean(motionFunction?.[1]);
+    const trustedMotionCall=expectsServerApproval
+      ? /\bplayNativeCombatMotion\s*\(\s*scope\s*,\s*tonumber\s*\(\s*serial\s*\)\s*,\s*true\s*\)/.test(approvedListener)
+        && /\bactiveMartialApproved\s*=\s*serverApproved\s*==\s*true\b/.test(responsibleMotion)
+      : /\bplayNativeCombatMotion\s*\(\s*scope\s*,\s*tonumber\s*\(\s*serial\s*\)\s*\)/.test(approvedListener);
+    const trustedApproval=trustedMotionCall&&[
       /\blocal\s+scope\s*,\s*serial\s*=\s*tostring\s*\(\s*player\s*:\s*GetAttribute\s*\(\s*["']ApprovedCombatMotion["']/,
       /\bif\s+not\s+scope\s+or\s+not\s+serial\s+then\s+return\s+end/,
-      /\bplayNativeCombatMotion\s*\(\s*scope\s*,\s*tonumber\s*\(\s*serial\s*\)\s*\)/,
     ].every(pattern=>pattern.test(approvedListener));
     const trustedMotion=[
       /\bif\s+not\s+authorizedCombatScopes\s*\[\s*approvedScope\s*\]\s+then\s+return\s+false\s+end/,
