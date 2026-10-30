@@ -254,6 +254,9 @@ function RobloxCommonSkillPresentation.CreateProjectileOrb(options)
   tag(orb, "PROJECTILE_ORB")
   orb:SetAttribute("ProjectileMotionAuthority", false)
   orb:SetAttribute("VisualTravelHintOnly", true)
+  if options.autoCleanup ~= false then
+    Debris:AddItem(orb,clamp(options.duration or 1.3,0.2,4.0))
+  end
   return orb
 end
 
@@ -283,9 +286,30 @@ function RobloxCommonSkillPresentation.AttachSkillTrail(hostPart, options)
   trail.Color = ColorSequence.new(color)
   trail.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.08),NumberSequenceKeypoint.new(1,1)})
   trail.WidthScale = NumberSequence.new({NumberSequenceKeypoint.new(0,width),NumberSequenceKeypoint.new(1,0)})
+  trail.Enabled = options.enabled ~= false
   trail.Parent = hostPart
   tag(trail, "SKILL_TRAIL")
-  return trail,{Destroy=function() trail:Destroy();a0:Destroy();a1:Destroy() end}
+  -- Trail is controlled by two moving attachments. Disabling also clears
+  -- stale ribbons as documented by Roblox.
+  local controller = {}
+  function controller.SetEnabled(enabled)
+    if trail.Parent then
+      trail.Enabled = enabled == true
+      if not trail.Enabled then trail:Clear() end
+    end
+  end
+  function controller.Destroy()
+    if trail.Parent then trail:Destroy() end
+    if a0.Parent then a0:Destroy() end
+    if a1.Parent then a1:Destroy() end
+  end
+  if options.autoCleanup ~= false then
+    local cleanupAfter = clamp(options.duration or 0.9,0.15,3.0) + lifetime
+    Debris:AddItem(trail,cleanupAfter)
+    Debris:AddItem(a0,cleanupAfter)
+    Debris:AddItem(a1,cleanupAfter)
+  end
+  return trail,controller
 end
 
 function RobloxCommonSkillPresentation.CreateAreaField(options)
@@ -354,6 +378,9 @@ function RobloxCommonSkillPresentation.CreateShieldShell(options)
   shell.Parent=parent
   tag(shell,"SHIELD_SHELL")
   shell:SetAttribute("DamageReductionAuthority",false)
+  if options.autoCleanup ~= false then
+    Debris:AddItem(shell,clamp(options.cleanupDuration or 2.8,0.2,6.0))
+  end
   return shell
 end
 
