@@ -922,11 +922,11 @@ jobs:
             const native=JSON.parse(git('show',revision+':'+sourceRoot+'/CC0-ASSET-REGISTRY.json'));
             const sha256=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
             if(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
-              ||Object.keys(manifest.models||{}).sort().join(',')!=='bee,boar,deer,golem,rabbit,tree,wolf'
+              ||Object.keys(manifest.models||{}).sort().join(',')!=='bat,bee,boar,deer,golem,mushroom,rabbit,skeleton,tree,wolf'
               ||native.gameId!==manifest.gameId||native.registrationVerified!==true
               ||native.nativeRegistrationVersion!==1||native.grantRequiredAtPublish!==true
               ||native.sourceManifestSha256!==sha256(manifestBytes))throw new Error('FANTASY_NATIVE_PUBLISH_PROVENANCE_INVALID');
-            for(const role of ['wolf','bee','golem','deer','boar','rabbit','tree']){
+            for(const role of Object.keys(manifest.models)){
               const expected=manifest.models[role],row=native.models?.[role];
               if(!row||!Number.isSafeInteger(row.assetId)||row.assetId<1||row.license!=='CC0-1.0'
                 ||row.sourceSha256!==expected.sourceSha256||row.sha256!==expected.sourceSha256
@@ -934,7 +934,8 @@ jobs:
                 ||!new RegExp('(^|[^0-9])'+row.assetId+'([^0-9]|$)').test(gameCode))
                 throw new Error('FANTASY_NATIVE_PUBLISH_MODEL_MISMATCH:'+role);
               if(expected.sourcePath){
-                if(!/^assets\/shared\/forest\/[a-z]+\.(?:fbx|glb)$/.test(expected.sourcePath)
+                if(!(/^assets\/shared\/forest\/[a-z]+\.(?:fbx|glb)$/.test(expected.sourcePath)
+                  ||(['bat','mushroom','skeleton'].includes(role)&&/^assets\/roblox\/actors\/sources\/quaternius-(?:cute|monsters)\/FBX\/[A-Za-z]+\.fbx$/.test(expected.sourcePath)))
                   ||sha256(execFileSync('git',['show',revision+':'+expected.sourcePath]))!==expected.sourceSha256)
                   throw new Error('FANTASY_NATIVE_PUBLISH_SOURCE_MISMATCH:'+role);
               }else if(role!=='golem'||!/^[a-f0-9]{64}$/.test(expected.archiveSha256||'')

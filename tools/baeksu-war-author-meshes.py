@@ -21,7 +21,7 @@ if '--game-id=fantasy-survival' in sys.argv:
  # 공식 Model API가 받는 원본 FBX를 변형 없이 전달한다. Blender/도형 생성 없음.
  manifest_path=ROOT/'roblox-games/fantasy-survival/native-assets.json'
  manifest=json.loads(manifest_path.read_text())
- if manifest.get('gameId')!='fantasy-survival' or manifest.get('ownerApproved') is not True or manifest.get('license')!='CC0-1.0' or set(manifest.get('models',{}))!={'bee','wolf','golem','deer','boar','rabbit','tree'}:
+ if manifest.get('gameId')!='fantasy-survival' or manifest.get('ownerApproved') is not True or manifest.get('license')!='CC0-1.0' or set(manifest.get('models',{}))!={'bee','wolf','golem','deer','boar','rabbit','tree','bat','mushroom','skeleton'}:
   raise RuntimeError('FANTASY_NATIVE_APPROVED_MANIFEST_REQUIRED')
  records={}
  for role,row in manifest['models'].items():
@@ -29,7 +29,9 @@ if '--game-id=fantasy-survival' in sys.argv:
    raise RuntimeError('FANTASY_NATIVE_SOURCE_PROVENANCE_INVALID:'+role)
   if row.get('sourcePath'):
    source=(ROOT/row['sourcePath']).resolve()
-   if not source.is_relative_to((ROOT/'assets/shared/forest').resolve()) or source.suffix.lower() not in ('.fbx','.glb'):
+   if ((not source.is_relative_to((ROOT/'assets/shared/forest').resolve())
+    and not (role in {'bat','mushroom','skeleton'} and source.is_relative_to((ROOT/'assets/roblox/actors/sources').resolve())))
+    or source.suffix.lower() not in ('.fbx','.glb')):
     raise RuntimeError('FANTASY_NATIVE_SOURCE_PATH_INVALID:'+role)
    data=source.read_bytes()
   else:

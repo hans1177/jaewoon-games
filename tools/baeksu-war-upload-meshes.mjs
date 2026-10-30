@@ -61,15 +61,16 @@ async function req(url,opts={}){
  if(!r.ok)throw Error('ROBLOX_ASSET_API_'+r.status+':'+JSON.stringify(data).slice(0,650));
  return data;
 }
-const names=fantasy?['wolf','bee','golem','deer','boar','rabbit','tree']:['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
 const provenance=JSON.parse(await fs.readFile(path.join(dir,'provenance.json'),'utf8'));
 const manifestBytes=fantasy?await fs.readFile('roblox-games/fantasy-survival/native-assets.json'):null;
 const manifest=fantasy?JSON.parse(manifestBytes):null;
+const names=fantasy?Object.keys(manifest.models):['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
 if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
- ||Object.keys(manifest.models||{}).sort().join(',')!=='bee,boar,deer,golem,rabbit,tree,wolf'
+ ||Object.keys(manifest.models||{}).sort().join(',')!=='bat,bee,boar,deer,golem,mushroom,rabbit,skeleton,tree,wolf'
  ||provenance.gameId!=='fantasy-survival'||provenance.sourceManifestSha256!==crypto.createHash('sha256').update(manifestBytes).digest('hex')))throw Error('FANTASY_NATIVE_APPROVAL_OR_MANIFEST_MISMATCH');
 if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
 const ids={};const records={};const verifiedModels=new Map();
+const oldRegistry=fantasy?JSON.parse(await fs.readFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8').catch(()=>'{"models":{}}')):null;
 for(const name of names){
  const extension=fantasy?path.extname(manifest.models[name]?.sourcePath||manifest.models[name]?.archiveEntry||'').slice(1).toLowerCase():'glb';
  if(fantasy&&!['fbx','glb'].includes(extension))throw Error('FANTASY_UNSUPPORTED_NATIVE_FORMAT:'+name);
@@ -82,8 +83,18 @@ for(const name of names){
  verifiedModels.set(name,{bytes,digest,origin,extension});
 }
 // Validate every original before the first irreversible Model registration.
+// Keep existing authorized IDs instead of reuploading the seven deployed originals.
 for(const name of names){
  const {bytes,digest,origin,extension}=verifiedModels.get(name);
+ const prior=oldRegistry?.models?.[name];
+ if(prior&&Number.isSafeInteger(prior.assetId)&&prior.assetId>0
+   &&prior.sourceSha256===digest&&prior.sha256===digest
+   &&prior.license==='CC0-1.0'&&prior.licenseEvidence===origin.licenseEvidence){
+   ids[name]=prior.assetId;
+   records[name]=prior;
+   console.log('FANTASY_NATIVE_MODEL_REUSED='+name+':'+prior.assetId);
+   continue;
+ }
  const form=new FormData();
  form.set('request',JSON.stringify({assetType:'Model',displayName:(fantasy?'마력숲 생존기':'백수대전쟁')+' 3D '+name,
   description:'Licensed CC0 original 3D asset for '+(fantasy?'fantasy-survival':'baeksu-war')+'. Source sha256 '+origin.sourceSha256+'. Model sha256 '+digest,

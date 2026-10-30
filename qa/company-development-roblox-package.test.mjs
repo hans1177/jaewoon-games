@@ -943,12 +943,12 @@ test('native registration stays behind current contract identity and exact publi
   const execute=(nativeRegistry=registry)=>{
     const selected=[];
     runInNewContext(block,{sourceRoot:'roblox-games/fantasy-survival',revision:'a'.repeat(40),
-      gameCode:'local FANTASY_NATIVE_CREATURES_VERSION = 1;'+Array.from({length:7},(_,i)=>123450+i).join(';'),selected,crypto,
+      gameCode:'local FANTASY_NATIVE_CREATURES_VERSION = 1;'+Array.from({length:Object.keys(manifest.models).length},(_,i)=>123450+i).join(';'),selected,crypto,
       execFileSync:(_cmd,args)=>args[1].endsWith('/native-assets.json')?manifestBytes:fs.readFileSync(args[1].slice(41)),
       git:()=>JSON.stringify(nativeRegistry)});
     return selected;
   };
-  assert.deepEqual(execute(),[123450,123451,123452,123453,123454,123455,123456]);
+  assert.deepEqual(execute(),Object.keys(manifest.models).map((_,i)=>123450+i));
   const stale=structuredClone(registry);stale.sourceManifestSha256='0'.repeat(64);
   assert.throws(()=>execute(stale),/PUBLISH_PROVENANCE_INVALID/);
   const broken=structuredClone(registry);broken.models.golem.sha256='0'.repeat(64);
@@ -992,12 +992,12 @@ globalThis.fetch=async(url,options={})=>{
     fs.writeFileSync(path.join(root,'provenance.json'),JSON.stringify(broken));
     const rejected=spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8'});
     assert.notEqual(rejected.status,0);assert.match(rejected.stderr,/CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:golem/);
-    assert.equal(fs.existsSync(path.join(root,'requests.txt')),false,'all seven hashes precede any external write');
+    assert.equal(fs.existsSync(path.join(root,'requests.txt')),false,'all native hashes precede any external write');
     fs.writeFileSync(path.join(root,'provenance.json'),JSON.stringify(provenance));
     const accepted=spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8'});
     assert.equal(accepted.status,0,accepted.stderr);
     const registry=JSON.parse(fs.readFileSync(path.join(game,'CC0-ASSET-REGISTRY.json')));
-    assert.deepEqual(Object.values(registry.models).map(row=>row.assetId),[900001,900002,900003,900004,900005,900006,900007]);
+    assert.deepEqual(Object.values(registry.models).map(row=>row.assetId),Object.keys(manifest.models).map((_,i)=>900001+i));
     assert.equal(registry.runtimeVerified,false);assert.equal(registry.grantRequiredAtPublish,true);
     assert.ok(Object.values(registry.models).every(row=>row.universeId===null));
     const ids=fs.readFileSync(path.join(game,'shared/VisualAssetIds.luau'),'utf8');

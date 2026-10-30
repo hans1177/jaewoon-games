@@ -326,10 +326,32 @@ local function spawnEnemy(isBoss, index)
   local theta = encounterSerial*2.399 + index*.31
   local radius = 51 + (index%3)*11
   local location = Vector3.new(math.cos(theta)*radius, 3, math.sin(theta)*radius)
-  local partId = isBoss and "golem" or (index%3==0 and "bee" or "wolf")
-  local anatomyAtom = isBoss and "HEAD_GOLEM" or (index%3==0 and "HEAD_INSECT" or "HEAD_CANINE")
-  local modelId = table.find(studioCreatureAtoms,anatomyAtom) and NativeCreatureAssets[partId] or nil
-  local nativeScale = table.find(studioCreatureAtoms,anatomyAtom) and (isBoss and 6.3 or 3.15) or nil
+  -- [초원 몬스터] 슬라임 제외. CC0 실물 원본을 등록한 종만 웨이브에 추가한다.
+  -- 기존 전투 피해, 보상, 등장 수는 변경하지 않고 몬스터 종류만 확장한다.
+  local meadowSpecies={
+    {id="wolf",atom="HEAD_CANINE",wave=1,height=3.15},
+    {id="bee",atom="HEAD_INSECT",wave=1,height=3.15},
+    {id="boar",atom="JAW_SHORT",wave=2,height=3.15},
+    {id="mushroom",atom="ROOT_LIMB",wave=3,height=3.15},
+    {id="bat",atom="WING_LEATHER",wave=4,height=3.15},
+    {id="skeleton",atom="HEAD_SKULL",wave=6,height=3.15},
+  }
+  local ready={}
+  if not isBoss then
+    for _,spec in ipairs(meadowSpecies) do
+      if CurrentWave>=spec.wave and table.find(studioCreatureAtoms,spec.atom)
+        and typeof(NativeCreatureAssets[spec.id])=="number"
+        and NativeCreatureAssets[spec.id]>0 then
+        table.insert(ready,spec)
+      end
+    end
+  end
+  local selected=isBoss and {id="golem",atom="HEAD_GOLEM",height=6.3}
+    or ready[((index-1)%math.max(1,#ready))+1]
+  if not selected then return false end
+  local partId=selected.id
+  local modelId=table.find(studioCreatureAtoms,selected.atom) and NativeCreatureAssets[partId] or nil
+  local nativeScale=selected.height
   if typeof(modelId)~="number" or modelId<1 or not nativeScale then
     warn("마력숲 승인 생물 자산 선택 누락: "..partId)
     return false
@@ -457,12 +479,17 @@ local function spawnEnemy(isBoss, index)
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
-  model.Name = isBoss and "돌 골렘" or (partId=="bee" and "초원 벌" or "초원 늑대")
+  local meadowNames={wolf="초원 늑대",bee="초원 벌",boar="사나운 멧돼지",
+    mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
+  model.Name=isBoss and "돌 골렘" or (meadowNames[partId] or partId)
   -- [몹 색·재질] 원본 텍스처/메시는 그대로 쓰고 종별 표면만 차별화한다.
+  local originalTextured=partId=="bat" or partId=="mushroom" or partId=="skeleton"
   local bodyTint=isBoss and Color3.fromRGB(126,135,124)
+    or originalTextured and Color3.fromRGB(255,255,255)
     or partId=="bee" and Color3.fromRGB(241,181,67)
+    or partId=="boar" and Color3.fromRGB(126,91,72)
     or Color3.fromRGB(141,132,119)
-  local bodyMaterial=isBoss and Enum.Material.Slate
+  local bodyMaterial=isBoss and Enum.Material.Slate or originalTextured and Enum.Material.SmoothPlastic
     or partId=="bee" and Enum.Material.SmoothPlastic or Enum.Material.Fabric
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") then
@@ -473,7 +500,9 @@ local function spawnEnemy(isBoss, index)
     end
   end
   model:SetAttribute("Species",partId)
-  model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or (partId=="bee" and "BEE_SWEEP" or "WOLF_BITE"))
+  local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",boar="BOAR_CHARGE",
+    mushroom="MUSHROOM_SPORES",bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
+  model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or firstAttack[partId])
   model:SetAttribute("NativeMobMotion","IDLE")
   model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
   local hasOriginalMotor=false
@@ -486,8 +515,9 @@ local function spawnEnemy(isBoss, index)
   end
   -- 정적 메시에는 실제 걷기 관절이 없음을 표시한다. 판정이나 스폰에는 영향 없다.
   model:SetAttribute("NativeMobRig",hasOriginalMotor and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
-  model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or
-    (partId=="bee" and "DIVE_STING" or "LEAP_BITE"))
+  local secondarySkill={wolf="LEAP_BITE",bee="DIVE_STING",boar="BOAR_RUSH",
+    mushroom="SPORE_CLOUD",bat="NIGHT_DIVE",skeleton="BONE_SWING"}
+  model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
@@ -711,16 +741,18 @@ end
 local function animateMeadowOriginalMob(enemy,now)
   if not enemy.model.Parent then return end
   local kind=enemy.kind
-  local phase=now*(kind=="bee" and 9 or kind=="wolf" and 7 or 3)
+  local phase=now*((kind=="bee" or kind=="bat") and 9 or
+    kind=="wolf" and 7 or kind=="boar" and 6 or 3)
     +enemy.spawnPosition.X*.11
   local inMotion=enemy.attackState=="CHASE" or enemy.attackState=="RETURN_TO_SPAWN"
   local attacking=enemy.attackState=="ANTICIPATION"
   local recoil=enemy.attackState=="RECOVERY"
     and math.exp(-math.max(0,now-enemy.lastAttack)*7) or 0
-  local aerial=kind=="bee"
+  local aerial=kind=="bee" or kind=="bat"
   local movingHeight=aerial and (1.35+math.sin(phase)*.42)
     or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .22 or .2) or 0)
-  local leap=attacking and (kind=="wolf" and .66 or kind=="golem" and .38 or -.48) or 0
+  local leap=attacking and ((kind=="wolf" or kind=="boar") and .66
+    or kind=="golem" and .38 or aerial and .5 or -.18) or 0
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
   local attackPitch=attacking and (kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
@@ -739,6 +771,10 @@ local function chooseMeadowMobSkill(enemy)
   local second=enemy.attackSerial%2==0
   local pattern=enemy.isBoss and (second and "GOLEM_SHOCKWAVE" or "GOLEM_SLAM")
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
+    or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")
+    or enemy.kind=="bat" and (second and "BAT_SWEEP" or "BAT_DIVE")
+    or enemy.kind=="mushroom" and (second and "MUSHROOM_SPORES" or "MUSHROOM_BASH")
+    or enemy.kind=="skeleton" and (second and "SKELETON_THRUST" or "SKELETON_CLEAVE")
     or (second and "WOLF_LUNGE" or "WOLF_BITE")
   enemy.attackPattern=pattern
   enemy.model:SetAttribute("AttackPattern",pattern)
@@ -844,7 +880,8 @@ local function updateEnemyAI(dt,now)
         local offset=Vector3.new(targetRoot.Position.X-enemy.position.X,0,targetRoot.Position.Z-enemy.position.Z)
         local distance=offset.Magnitude
         -- Three source-authored enemy patterns; authoritative damage and saves are unchanged.
-        local attackRange=enemy.kind=="bee" and 5.6 or (enemy.isBoss and 5.2 or 4.4)
+        local attackRange=(enemy.kind=="bee" or enemy.kind=="bat") and 5.6
+          or (enemy.isBoss and 5.2 or 4.4)
         if enemy.windupUntil then
           -- 공격 예고 중 대상이 사라지거나 거리를 벌렸다면 피해 없이 취소한다.
           local activeRange=enemy.attackPattern=="GOLEM_SHOCKWAVE" and 8.4
@@ -879,8 +916,8 @@ local function updateEnemyAI(dt,now)
           setEnemyAttackState(enemy,"CHASE")
           local step=math.min(enemy.speed*dt,distance-attackRange)
           local direction=offset.Unit
-          if enemy.kind=="bee" then
-            -- Bees flank in a slow sweep instead of moving as ground wolves.
+          if enemy.kind=="bee" or enemy.kind=="bat" then
+            -- 원본 날개 몬스터는 지상 몬스터와 달리 좌우로 비행한다.
             local tangent=Vector3.new(-direction.Z,0,direction.X)
             direction=(direction+tangent*math.sin(now*1.8+enemy.spawnPosition.X)*.42).Unit
           end
@@ -890,7 +927,8 @@ local function updateEnemyAI(dt,now)
           local pattern=chooseMeadowMobSkill(enemy)
           enemy.windupTargetUserId=targetPlayer.UserId
           enemy.windupUntil=now+(enemy.isBoss and .68 or
-            (pattern=="WOLF_LUNGE" and .55 or enemy.kind=="bee" and .32 or .42))
+            ((pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE") and .55
+              or (enemy.kind=="bee" or enemy.kind=="bat") and .32 or .42))
           setEnemyAttackState(enemy,"ANTICIPATION")
         end
       end

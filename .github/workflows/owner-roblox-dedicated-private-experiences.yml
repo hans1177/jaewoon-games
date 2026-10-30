@@ -167,7 +167,7 @@ jobs:
           const manifest=JSON.parse(bytes),registry=JSON.parse(fs.readFileSync(root+'/CC0-ASSET-REGISTRY.json','utf8'));
           const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
           const ids=fs.readFileSync(root+'/shared/VisualAssetIds.luau','utf8');
-          const roles=['wolf','bee','golem','deer','boar','rabbit','tree'];
+          const roles=['wolf','bee','golem','deer','boar','rabbit','tree','bat','mushroom','skeleton'];
           if(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
             ||Object.keys(manifest.models||{}).sort().join(',')!==[...roles].sort().join(',')
             ||registry.gameId!==manifest.gameId||registry.registrationVerified!==true
@@ -177,7 +177,8 @@ jobs:
             if(!row||!Number.isSafeInteger(row.assetId)||row.assetId<1||row.license!=='CC0-1.0'
               ||row.sourceSha256!==source.sourceSha256||row.sha256!==source.sourceSha256||row.licenseEvidence!==source.licenseEvidence
               ||!new RegExp('\\b'+role+'\\s*=\\s*'+row.assetId+'\\b').test(ids))throw Error('OWNER_FOREST_MODEL_BINDING_INVALID:'+role);
-            if(source.sourcePath&&(!/^assets\/shared\/forest\/[a-z]+\.(?:fbx|glb)$/.test(source.sourcePath)
+            if(source.sourcePath&&(!(/^assets\/shared\/forest\/[a-z]+\.(?:fbx|glb)$/.test(source.sourcePath)
+              ||(['bat','mushroom','skeleton'].includes(role)&&/^assets\/roblox\/actors\/sources\/quaternius-(?:cute|monsters)\/FBX\/[A-Za-z]+\.fbx$/.test(source.sourcePath)))
               ||sha(fs.readFileSync(source.sourcePath))!==source.sourceSha256))throw Error('OWNER_FOREST_SOURCE_HASH_INVALID:'+role);
             return row.assetId;
           });

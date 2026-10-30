@@ -479,6 +479,10 @@ local telegraphNames={
   WOLF_BITE="초원 늑대 · 물어뜯기",WOLF_LUNGE="초원 늑대 · 도약",
   BEE_SWEEP="초원 벌 · 급강하",BEE_STING="초원 벌 · 독침",
   GOLEM_SLAM="돌 골렘 · 내려찍기",GOLEM_SHOCKWAVE="돌 골렘 · 충격파",
+  BOAR_CHARGE="사나운 멧돼지 · 돌진",BOAR_TUSK="사나운 멧돼지 · 엄니",
+  BAT_DIVE="황혼 박쥐 · 급강하",BAT_SWEEP="황혼 박쥐 · 날개치기",
+  MUSHROOM_SPORES="포자 버섯 · 포자 공격",MUSHROOM_BASH="포자 버섯 · 몸통치기",
+  SKELETON_THRUST="초원 해골 · 찌르기",SKELETON_CLEAVE="초원 해골 · 내려베기",
 }
 local telegraphElapsed=0
 game:GetService("RunService").Heartbeat:Connect(function(dt)
@@ -1438,6 +1442,7 @@ local function mobVfx(pattern,where,stage)
   if not combatVFX or typeof(where)~="Vector3" then return end
   local boss=pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
   local bee=pattern=="BEE_SWEEP" or pattern=="BEE_STING"
+    or pattern=="BAT_DIVE" or pattern=="BAT_SWEEP"
   local tint=boss and Color3.fromRGB(255,114,84) or
     bee and Color3.fromRGB(246,226,117) or Color3.fromRGB(190,238,167)
   local effect=stage=="DEATH" and "DESTRUCTION_BURST" or
@@ -1465,7 +1470,8 @@ local function bindOriginalMob(model)
     return
   end
   if species~="wolf" and species~="bee" and species~="golem"
-    and species~="deer" and species~="boar" and species~="rabbit" then return end
+    and species~="deer" and species~="boar" and species~="rabbit"
+    and species~="bat" and species~="mushroom" and species~="skeleton" then return end
   -- [움직이는 원본 관절] 이름이 다르거나 Blender식 접미사가 붙어도 실제 메시의 뼈를 매핑한다.
   local joints,available={},{}
   local sourceChannels={
@@ -1530,10 +1536,13 @@ local function bindOriginalMob(model)
   end
   local count=0
   for _ in pairs(joints) do count+=1 end
-  local bodyPlan=species=="bee" and "FLYER" or
-    species=="golem" and "GIANT" or "QUADRUPED"
-  local movingJoints=species=="bee" and (available.WingL or available.WingR)
-    or species=="golem" and (available.ThighL or available.ThighR or available.UpperArmL or available.UpperArmR)
+  local bodyPlan=(species=="bee" or species=="bat") and "FLYER" or
+    species=="golem" and "GIANT" or
+    (species=="mushroom" or species=="skeleton") and "BIPED" or "QUADRUPED"
+  local movingJoints=(species=="bee" or species=="bat") and
+      (available.WingL or available.WingR or available.UpperArmL or available.UpperArmR)
+    or (species=="golem" or species=="mushroom" or species=="skeleton") and
+      (available.ThighL or available.ThighR or available.UpperArmL or available.UpperArmR)
     or (available.FLHip or available.FRHip or available.BLHip or available.BRHip)
   local actualRig=count>=2 and movingJoints==true
   local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{

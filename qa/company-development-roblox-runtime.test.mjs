@@ -1863,19 +1863,22 @@ test('registered fantasy native assets stop registration repair while missing or
   const end=workflow.indexOf('const materialRepairPending=',start);
   assert.ok(start>=0&&end>start,'existing registration owner predicate must be present');
   const predicate=workflow.slice(start,end)+'\nnativeCreatureRepairPending;';
-  const roles=['wolf','bee','golem','deer','boar','rabbit','tree'];
+  const roles=['wolf','bee','golem','deer','boar','rabbit','tree','bat','mushroom','skeleton'];
   const models=Object.fromEntries(roles.map((role,index)=>[role,{assetId:10001+index}]));
   const manifest={gameId:'fantasy-survival',ownerApproved:true,license:'CC0-1.0',models};
   const ids='return {\n'+roles.map(role=>' '+role+' = '+models[role].assetId+',').join('\n')+'\n}';
+  const sourceManifestSha256=crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');
   const evaluate=(registry={models},source=ids,missing=[])=>runInNewContext(predicate,{
     item:{gameId:'fantasy-survival'},nativeManifest:manifest,
-    nativeServer:'local FANTASY_NATIVE_CREATURES_VERSION = 1',target:'roblox-games/fantasy-survival',
+    nativeServer:'local FANTASY_NATIVE_CREATURES_VERSION = 1',target:'roblox-games/fantasy-survival',crypto,
     fs:{
       existsSync:file=>!missing.some(name=>file.endsWith(name)),
-      readFileSync:file=>file.endsWith('CC0-ASSET-REGISTRY.json')?JSON.stringify(registry):source,
+      readFileSync:file=>file.endsWith('CC0-ASSET-REGISTRY.json')
+        ?JSON.stringify({sourceManifestSha256,...registry})
+        :file.endsWith('/native-assets.json')?JSON.stringify(manifest):source,
     },
   });
-  assert.equal(evaluate(),false,'all seven registered original models must reuse their IDs');
+  assert.equal(evaluate(),false,'all registered original models must reuse their IDs');
   assert.equal(evaluate({models},ids.replace(/ = /g,'=\t')),false,'Luau whitespace does not invalidate registration');
   assert.equal(evaluate({models:{...models,wolf:{assetId:20001}}}),true,'different asset ID requires repair');
   assert.equal(evaluate({models:Object.fromEntries(Object.entries(models).filter(([role])=>role!=='tree'))}),true,'missing role requires repair');
