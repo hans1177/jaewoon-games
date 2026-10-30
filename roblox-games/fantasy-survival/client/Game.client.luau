@@ -682,13 +682,26 @@ local function startApprovedNativeAction(approved,combatOnly)
   if action.Kind=="COMBAT" or approvedScope=="skill-meadow-heavy" or
     approvedScope=="skill-meadow-sweep" then
     local tool=character:FindFirstChildOfClass("Tool")
-    local equipment=tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or "UNARMED"
-    local profile=equipment=="UNARMED" and "UNARMED" or combatMotionSource.ResolveWeaponProfile(equipment)
-    if not profile then
-      character:SetAttribute("NativeCombatMotionState","MATCHING_WEAPON_MOTION_REQUIRED")
-      return
+    local equipment=tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or nil
+    local weaponProfile=equipment and combatMotionSource.ResolveWeaponProfile(equipment) or nil
+    -- No weapon is a valid, fully animated R15 fighting state. A gathering
+    -- tool or unknown equipment does not lock the player out of barehand moves.
+    local profile=weaponProfile or "UNARMED"
+    local unarmedMoves=nil
+    if profile=="UNARMED" then
+      if approvedScope=="skill-meadow-heavy" then
+        unarmedMoves={"U:UPPERCUT_RIGHT"}
+      elseif approvedScope=="skill-meadow-sweep" then
+        unarmedMoves={"U:HOOK_LEFT"}
+      elseif approvedScope=="scope-coreloop-0-9b2d4dfbc6" then
+        unarmedMoves={"U:CROSS_RIGHT"}
+      elseif approvedScope=="scope-mobileux-5acfb2eaa6" then
+        unarmedMoves={"U:FRONT_KICK_L"}
+      else
+        unarmedMoves={"U:JAB_LEFT"}
+      end
     end
-    local ok,combo=pcall(combatMotionSource.CreateCombatCombo,profile)
+    local ok,combo=pcall(combatMotionSource.CreateCombatCombo,profile,unarmedMoves)
     if not ok or not combo or not combo.steps or #combo.steps==0 then return end
     -- The company source returns frozen combo tables. Select a single actual
     -- server-approved strike without mutating those shared source definitions.
