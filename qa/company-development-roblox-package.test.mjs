@@ -1231,10 +1231,10 @@ test('fantasy original monsters keep server combat authority while true bones dr
   assert.match(client,/raw:match\("\[\._%-\]l%d\*\$"\)/);
   assert.match(client,/NativeMobMotionStartedAt/);
   assert.match(client,/workspace:GetServerTimeNow\(\)-epoch/);
-  assert.match(client,/profile=\{limbArc=1\.3,footContact=1\.28,attackStrike=1\.22\}/);
+  assert.match(client,/profile=\{limbArc=footTravel and 1\.08 or 1\.3,footContact=1\.28,attackStrike=1\.22\}/);
   assert.match(server,/model:SetAttribute\("NativeMobMotionStartedAt",workspace:GetServerTimeNow\(\)\)/);
   assert.match(server,/enemy.model:SetAttribute\("NativeMobMotionStartedAt",workspace:GetServerTimeNow\(\)\)/);
-  assert.match(server,/enemy\.visualPosition=\(enemy\.visualPosition or enemy\.position\):Lerp\(enemy\.position,alpha\)/);
+  assert.match(server,/enemy\.visualPosition=previous:Lerp\(enemy\.position,alpha\)/);
   assert.match(server,/if enemyVisualElapsed>=1\/30 then/);
   assert.match(server,/if enemyUpdateElapsed>=\.12 then/);
   assert.match(server,/damage=\(isBoss and 20 or 6\)\+math\.floor\(CurrentWave\/2\)/);
@@ -1242,6 +1242,35 @@ test('fantasy original monsters keep server combat authority while true bones dr
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
   for(const source of [client,server]){
     assert.doesNotMatch(source,/Instance\.new\("Part"\)/);
+  }
+});
+
+// [마력숲 4족 보행/원본 재질] 원본 다리 관절·서버 판정·저장 보존.
+test('fantasy quadrupeds synchronize diagonal foot contacts with travel and forest palette',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  assert.match(client,/lastPosition=model:GetPivot\(\)\.Position,travel=0,groundSpeed=0/);
+  assert.match(client,/row\.groundSpeed\+=\(rawSpeed-row\.groundSpeed\)/);
+  assert.match(client,/if row\.groundSpeed<\.35 then mode="IDLE" end/);
+  assert.match(client,/phase=\(row\.travel%stride\)\/stride/);
+  assert.match(motion,/local legPhase=\(t\+offset\)%1/);
+  assert.match(motion,/local airborne=locomotion and math\.sin/);
+  assert.match(motion,/local planted=locomotion and math\.sin/);
+  assert.match(server,/animal\.position=desired/);
+  assert.match(server,/animal\.visualPosition=\(animal\.visualPosition or animal\.origin\):Lerp\(animal\.position,alpha\)/);
+  assert.match(server,/enemy\.visualFacing=moved\.Unit/);
+  assert.match(server,/NativeMobFacingYaw/);
+  for(const color of ['grass','leafyGrass','ground','rock','bark','leaves','wolf','boar','deer','rabbit']){
+    assert.ok(server.includes(color+'=Color3.fromRGB('),'missing matte forest color: '+color);
+  }
+  assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.Fabric/);
+  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
+  assert.match(server,/surface\.Reflectance=wing and \.025 or 0/);
+  assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  for(const source of [client,server,motion]){
+    assert.doesNotMatch(source,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
   }
 });
 
