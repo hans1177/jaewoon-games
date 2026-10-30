@@ -129,7 +129,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           if(clean(task.id))set.add(clean(task.id));
         }
       }
-      const recurrenceCount=Math.max(1,Number(rec.recurrenceCount||0),ids.length);
+      // 다른 플랫폼 관련 작업의 개수를 동일 실패의 재발 횟수로 간주하지 않는다.
+      const recurrenceCount=Math.max(1,Number(rec.recurrenceCount||0));
       const repairMode=recurrenceCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
       const saveRepairRequired=uniq(rec.evidence).some(value=>/(?:save|load|migration|persist|storage|저장|불러오기)/i.test(value));
       const multiplayerRepairRequired=uniq(rec.evidence).some(value=>/(?:multiplayer|network|sync|join|rejoin|server|client|remote|멀티|협동|동기화)/i.test(value));
