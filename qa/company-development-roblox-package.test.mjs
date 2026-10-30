@@ -1614,6 +1614,7 @@ test('fantasy unarmed and meadow skills support AnimationConstraint and legacy M
 // 파일 구분: 마력숲 회피 모션 우선권·완벽 막기 연타 중단 회귀 검증.
 test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관절에 연결된다',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   assert.match(client,/if os.clock\(\)<dodgePoseUntil then return false end/);
   assert.match(client,/if os.clock\(\)>=dodgePoseUntil then finishMeadowSkillPose\(\) end/);
   assert.match(client,/if isDodge then dodgePoseUntil=skillMotionDeadline end/);
@@ -1621,6 +1622,22 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.ok(client.includes('skillMotionR15Targets["Left Hip"]=skillMotionTargets.ThighL'));
   assert.ok(client.includes('skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR'));
   assert.match(client,/dodgePoseUntil=0\s*finishMeadowSkillPose\(\)/);
+  // 기존 공식 R15 관절만 사용해 낮추기-옆발-착지까지 포즈가 연속 변화해야 한다.
+  assert.match(client,/skillMotionDuration=isDodge and \.46/);
+  assert.match(client,/local prepare=math\.clamp\(phase\/\.16,0,1\)/);
+  assert.match(client,/local settle=math\.clamp\(\(1-phase\)\/\.32,0,1\)/);
+  assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles/);
+  assert.match(client,/skillMotionTargets\.ThighR=CFrame\.Angles/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles/);
+  assert.doesNotMatch(client,/local ease=math\.sin\(math\.pi\*phase\)/);
+  // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
+  const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
+  assert.match(dodge,/workspace:Raycast\(start,side\*7,ray\)/);
+  assert.match(dodge,/if distance<2 then return false end/);
+  assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
+  assert.match(dodge,/local eased=t\*t\*\(3-2\*t\)/);
+  assert.match(dodge,/character:PivotTo\(dodgeOrigin\+dodgeOffset\*eased\)/);
+  assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
 });
 
 test('마력숲 완벽 막기는 공격자만 기절시키고 연타 총 피해와 저장 구조를 보존한다',()=>{
