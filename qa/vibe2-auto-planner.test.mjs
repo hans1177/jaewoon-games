@@ -92,6 +92,11 @@ test('Vibe reuses exact queued game primary work for unverified per-game bottlen
     const again=synchronizeQueuedBuildUpDirectives(first.queue,[project],root);
     assert.equal((again.queue.tasks[0].goal.match(/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/g)||[]).length,1);
     assert.equal(again.queue.tasks[0].evidence.filter(e=>e.startsWith('game-bottleneck-current:')).length,1);
+    const cleared=synchronizeQueuedBuildUpDirectives(first.queue,
+      [{...project,queueRuntimePassed:true}],root);
+    assert.doesNotMatch(cleared.queue.tasks[0].goal,/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/);
+    assert.ok(!cleared.queue.tasks[0].evidence.some(e=>e.startsWith('game-bottleneck-current:')));
+    assert.equal(cleared.queue.tasks[0].status,'queued');
     for(const changed of [
       {project:{...project,queueRuntimeObserved:false},task},
       {project:{...project,queueRuntimePassed:true},task},
