@@ -27,6 +27,40 @@ test('selected Fantasy Survival motion reaches a server-authorized R15 frame sin
   ),false,'a motion without server-approved action is not applied');
 });
 
+test('Fantasy Survival Roblox R15 unarmed skills select authentic authored actions and server-only contacts',()=>{
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const native=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const sharedIds=['JAB_LEFT','CROSS_RIGHT','HOOK_LEFT','HOOK_RIGHT','UPPERCUT_RIGHT',
+    'UPPERCUT_LEFT','ELBOW_RIGHT','ELBOW_LEFT','KNEE_LEFT','KNEE_RIGHT',
+    'ROUND_KICK_R','SIDE_KICK_L','FRONT_KICK_R','LOW_KICK_R','BACKFIST_LEFT'];
+  for(const id of sharedIds){
+    assert.match(native,new RegExp('id="'+id+'"'),id+' must be an authored native action');
+    assert.ok(client.includes('"U:'+id+'"'),id+' must be directly selected from the shared module');
+  }
+  for(const id of ['meadow-unarmed-rush','meadow-unarmed-uppercut',
+    'meadow-unarmed-kick','meadow-unarmed-elbow']){
+    assert.ok(config.includes('Id = "'+id+'"'),id+' is an approved gameplay action');
+    assert.ok(server.includes('["'+id+'"]=unarmedSkillAttack'),id+' uses existing damage logic');
+    assert.ok(client.includes('["'+id+'"]='),id+' has a dedicated R15 motion route');
+  }
+  assert.match(server,/if not character or character:FindFirstChildOfClass\("Tool"\) then return false end/);
+  assert.match(server,/return attackEnemy\(player\)/,'skill uses the original authoritative combat function');
+  assert.match(server,/remote:FireClient\(player, "MEADOW_IMPACT", \{/);
+  assert.ok(server.indexOf('remote:FireClient(player, "MEADOW_IMPACT"') >
+    server.indexOf('target.HP=math.max(0,target.HP-damage)'),'impact occurs after confirmed damage');
+  assert.match(client,/kind~="MEADOW_IMPACT"/);
+  assert.match(client,/combatVFX.CreateImpactFlash\(/);
+  assert.match(client,/combatVFX.AttachShortTrail/);
+  assert.match(client,/LeftHip=true,RightHip=true,LeftKnee=true,RightKnee=true/);
+  assert.match(client,/pcall\(combatMotionSource.CreateCombatCombo,/);
+  assert.doesNotMatch(client,/combo\.steps\s*=/,'immutable authored combos must never be mutated');
+  assert.match(client,/activeCombatController\.Step\(combatR15Targets, dt\)/);
+  assert.match(client,/GetAttributeChangedSignal\("ApprovedCombatMotion"\)/);
+  assert.doesNotMatch(server,/Instance\.new\("Part"\)/,'do not introduce fake Roblox characters');
+});
+
 test('guarded native bindings distinguish selected atoms from list counts',()=>{
   const environment='if #studioAssetFamily("ENVIRONMENT") > 0 and camp and camp:IsA("BasePart") then\n  camp.Material = Enum.Material.Slate\nend';
   const prop='if #studioAssetFamily("PROP") > 0 and workbench and workbench:IsA("BasePart") then\n  workbench.Material = Enum.Material.WoodPlanks\nend';
