@@ -1741,6 +1741,34 @@ test('마력숲은 전투·요리·제작·채집·건축·사냥·연금술 7�
   assert.match(server,/setNumber\(player,"CombatProficiency",readNumber\(player,"CombatProficiency",0\)\+experience\)/);
 });
 
+// [마력숲 검술] 새 피해·저장 없이 검을 실제 R15 관절로 1·2·3단계 이어 베는지 검증.
+test('마력숲 장검 3연속 검술은 독립 입력 3단계로 연결되고 서버 피해 판정은 그대로 유지된다',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  assert.match(client,/local swordComboStage=0/);
+  assert.match(client,/local swordComboAt=0/);
+  assert.match(client,/local swordComboProfile=nil/);
+  assert.match(client,/local swordComboCharacter=nil/);
+  assert.match(client,/profile=="SWORD" or profile=="LONGSWORD" or profile=="GREATSWORD"/);
+  assert.match(client,/os\.clock\(\)-swordComboAt<=1\.15/);
+  assert.match(client,/swordComboStage%3\+1/);
+  assert.match(client,/chosenMoves\[1\]=route\.steps\[swordProfile and swordStage/);
+  assert.match(client,/character:SetAttribute\("NativeSwordComboStage",swordStage\)/);
+  assert.match(client,/swordComboStage=0\s+swordComboAt=0\s+swordComboProfile=nil/);
+  assert.match(client,/combatMotionSource\.MapCombatPoseToR15\(combatPoseTargets, combatR15Targets\)/);
+  assert.match(client,/activeCombatController\.Step\(combatR15Targets, dt\)/);
+  assert.match(client,/descendant:IsA\("AnimationConstraint"\) or descendant:IsA\("Motor6D"\)/);
+  assert.match(client,/local swordHandle=swordSwing and equipped and equipped:FindFirstChild\("Handle"\)/);
+  assert.match(client,/combatVFX\.AttachShortTrail/);
+  assert.match(motion,/SWORD=\{id="SWORD",family="BLADE",speed=1\.15,hands="ONE",route=\{1,2,3\}\}/);
+  for(const id of ['BLADE_SLASH_R','BLADE_SLASH_L','BLADE_THRUST'])
+    assert.ok(motion.includes('id="'+id+'"'));
+  assert.match(server,/attackCooldown\[player\]=now\+\.42/);
+  assert.match(server,/local damage=math\.floor\(16\+meadowProficiencyPower\(player\)\+weaponTier\*8\)/);
+  assert.doesNotMatch(client,/Instance\.new\("Sword"\)|Instance\.new\("Shield"\)/);
+});
+
 // 파일 구분: 마력숲 회피 모션 우선권·완벽 막기 연타 중단 회귀 검증.
 test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관절에 연결된다',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
