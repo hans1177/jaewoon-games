@@ -25,6 +25,27 @@ test('selected Fantasy Survival motion reaches a server-authorized R15 frame sin
     source.replaceAll('GetAttributeChangedSignal("ApprovedCombatMotion")','GetAttributeChangedSignal("UnverifiedMotion")'),
     'MOTION'
   ),false,'a motion without server-approved action is not applied');
+  // A separately observed learning HUD event does not authorize an R15 attack.
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('verifiedLearningPlayer:GetAttributeChangedSignal("ApprovedCombatMotion")',
+      'verifiedLearningPlayer:GetAttributeChangedSignal("UnverifiedMotion")'),
+    'MOTION'
+  ),true,'changing the HUD observer must not sever the real authorized R15 sink');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('player:GetAttributeChangedSignal("ApprovedCombatMotion")',
+      'player:GetAttributeChangedSignal("UnverifiedMotion")'),
+    'MOTION'
+  ),false,'changing only the R15 event listener must remove authorization');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('if not approvedEvent or not authorizedCombatScopes[approvedScope] then return end',
+      'if false then return end'),
+    'MOTION'
+  ),false,'an unvalidated action cannot authorize R15 pose consumption');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('local approved = tostring(player:GetAttribute("ApprovedCombatMotion") or "")',
+      'local approved = "forged:1"'),
+    'MOTION'
+  ),false,'the actual R15 callback must read the server-supplied action sequence');
 });
 
 test('Fantasy Survival Roblox R15 unarmed skills select authentic authored actions and server-only contacts',()=>{
