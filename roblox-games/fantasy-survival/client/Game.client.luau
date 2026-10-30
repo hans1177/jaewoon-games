@@ -562,7 +562,7 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,nil)
+CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{compact=true,hideButton=true})
 
 -- [화면 터치 공격] UI·조이스틱 터치는 제외하고 월드 빈 화면 탭만 기본 공격.
 -- 로블록스 공식 TouchTapInWorld와 처리 여부를 사용해 버튼을 완전히 없앤다.
@@ -605,10 +605,10 @@ for index,skill in ipairs(meleeSkills) do
   button.AutoButtonColor=true
   button.Parent=meadowSkillDock
   local buttonCorner=Instance.new("UICorner")
-  buttonCorner.CornerRadius=UDim.new(0,14)
+  buttonCorner.CornerRadius=UDim.new(1,0)
   buttonCorner.Parent=button
   local buttonStroke=Instance.new("UIStroke")
-  buttonStroke.Thickness=1.5
+  buttonStroke.Thickness=2
   buttonStroke.Color=skill[3]
   buttonStroke.Transparency=.08
   buttonStroke.Parent=button
