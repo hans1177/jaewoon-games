@@ -85,6 +85,17 @@ local Config = {
     { Id = "meadow-unarmed-uppercut", Label = "승룡 어퍼컷", Kind = "COMBAT", Order = 8, LearningPattern = "r15-unarmed" },
     { Id = "meadow-unarmed-kick", Label = "회전 발차기", Kind = "COMBAT", Order = 9, LearningPattern = "r15-unarmed" },
     { Id = "meadow-unarmed-elbow", Label = "팔꿈치·무릎", Kind = "COMBAT", Order = 10, LearningPattern = "r15-unarmed" },
+    { Id = "skill-meadow-heavy", Label = "강타", Kind = "SKILL", Order = 11, MotionAtom = "HEAVY_ATTACK_1", SkillAtom = "IMPACT_SMALL", VfxAtom = "CRITICAL_BURST", Cooldown = 5, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-sweep", Label = "회전 베기", Kind = "SKILL", Order = 12, MotionAtom = "LIGHT_ATTACK_1", SkillAtom = "SKILL_TRAIL", VfxAtom = "SHAPE_BURST", Cooldown = 9, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-bolt", Label = "마력 탄환", Kind = "SKILL", Order = 13, MotionAtom = "CAST_BURST", SkillAtom = "IMPACT_SMALL", VfxAtom = "IMPACT_FLASH", Cooldown = 7, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-guard", Label = "방어 자세", Kind = "SKILL", Order = 14, MotionAtom = "BLOCK_HOLD", SkillAtom = "SHIELD_SHELL", VfxAtom = "BLOCK_IMPACT", Cooldown = 9, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-parry", Label = "완벽 방어", Kind = "SKILL", Order = 15, MotionAtom = "PARRY_PERFECT", SkillAtom = "IMPACT_SMALL", VfxAtom = "PARRY_PERFECT_FLASH", Cooldown = 7, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-dodge-left", Label = "왼쪽 회피", Kind = "SKILL", Order = 16, MotionAtom = "DODGE_LEFT", SkillAtom = "DASH_STREAK", VfxAtom = "DODGE_EVASION_PULSE", Cooldown = 4, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-dodge-right", Label = "오른쪽 회피", Kind = "SKILL", Order = 17, MotionAtom = "DODGE_RIGHT", SkillAtom = "DASH_STREAK", VfxAtom = "DODGE_EVASION_PULSE", Cooldown = 4, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-sprint", Label = "질주", Kind = "SKILL", Order = 18, MotionAtom = "SPRINT", SkillAtom = "DASH_STREAK", VfxAtom = "BUFF_PULSE", Cooldown = 8, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-heal", Label = "회복", Kind = "SKILL", Order = 19, MotionAtom = "CAST_BURST", SkillAtom = "IMPACT_SMALL", VfxAtom = "HEAL_PULSE", Cooldown = 16, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-focus", Label = "마력 집중", Kind = "SKILL", Order = 20, MotionAtom = "CHANNEL_LOOP", SkillAtom = "IMPACT_SMALL", VfxAtom = "BUFF_PULSE", Cooldown = 13, LearningPattern = "roblox-native-action" },
+    { Id = "skill-meadow-emote", Label = "인사", Kind = "SKILL", Order = 21, MotionAtom = "EMOTE_WAVE", VfxAtom = "QUEST_UPDATE_PULSE", Cooldown = 3, LearningPattern = "roblox-native-action" },
   },
   -- STUDIO_ASSET_BINDING_BEGIN
   StudioAssets = {
