@@ -232,6 +232,45 @@ function gatedGameRepairObservation(task={}){
   };
 }
 
+// F0 source-preflight is observed static QA, not verified Studio runtime.
+function f0SourcePreflightRepairObservation(task={}){
+  const status=clean(task.status).toLowerCase(),id=clean(task.gameId);
+  if(!['queued','running','blocked'].includes(status)
+    ||clean(task.target).toLowerCase()!=='roblox'
+    ||clean(task.department).toLowerCase()!=='development'
+    ||clean(task.type||'implementation').toLowerCase()!=='implementation'
+    ||task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
+    ||task.requiresOwnerDecision===true||task.protectedChange===true
+    ||!(/^[a-z0-9][a-z0-9-]{1,63}$/.test(id))
+    ||clean(task.sourceRoot)!=='roblox-games/'+id)return null;
+  const goal=clean(task.goal);
+  // The existing world/lobby-first contract can legitimately prefix this goal.
+  // Only the bounded exact F0 block is authoritative, not surrounding text.
+  const start=goal.indexOf('[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]');
+  const end=start<0?-1:goal.indexOf('[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]',start);
+  if(start<0||end<0)return null;
+  const f0Goal=goal.slice(start,end);
+  const evidence=(Array.isArray(task.evidence)?task.evidence:[]).map(clean);
+  if(!evidence.includes('roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE')
+    ||!evidence.includes('roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY')
+    ||!evidence.includes('roblox-f0-preflight-failure-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED')
+    ||clean(task.executionLane).toUpperCase()!=='GAME_PRIMARY')return null;
+  const revisions=evidence.filter(value=>value.startsWith('roblox-f0-preflight-source-revision:'));
+  const revision=clean(revisions.at(-1)).slice('roblox-f0-preflight-source-revision:'.length);
+  if(!(/^[0-9a-f]{40}$/i.test(revision))
+    ||!f0Goal.includes('실패한 소스 버전: '+revision)
+    ||!f0Goal.includes('F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED'))return null;
+  const responsible=(Array.isArray(task.responsibleFiles)?task.responsibleFiles:[])
+    .map(clean).filter(file=>file.startsWith('roblox-games/'+id+'/')
+      &&/^roblox-games\/[a-z0-9-]+\/(?:server|client|shared)\/(?:[a-z0-9._-]+\/)*[a-z0-9._-]+\.(?:lua|luau)$/i.test(file)
+      &&!file.split('/').some(part=>part==='.'||part==='..'));
+  if(!responsible.length)return null;
+  return{taskId:clean(task.id),platform:'ROBLOX',status,
+    stage:'F0_SOURCE_INTEGRITY',failureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    sourceRevision:revision,responsibleFiles:responsible.slice(0,10),
+    outcome:'SOURCE_PREFLIGHT_REPAIR_NOT_RUNTIME_PASS'};
+}
+
 export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
   const tasks=Array.isArray(gameQueue?.tasks)?gameQueue.tasks:[];
   const games=new Map();
@@ -243,7 +282,9 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
     if(!games.has(id))games.set(id,{gameId:id,focused:false,ownerDirectTasks:0,
       queued:0,running:0,verifiedPackages:0,failed:0,causalRepairPending:0,
       causalRepairRunning:0,causalRepairBlocked:0,gatedRuntimeRepairPending:0,
-      runtimeRepairStages:[],deploymentVerified:false,gameCompletionVerified:false});
+      f0SourceRepairPending:0,f0SourceRepairRunning:0,f0SourceRepairBlocked:0,
+      runtimeRepairStages:[],f0SourceRepairStages:[],
+      deploymentVerified:false,gameCompletionVerified:false});
     const g=games.get(id);
     if(t.ownerFocusedCaretaker===true||t.focusedCaretaker===true)g.focused=true;
     if(t.ownerDirective===true)g.ownerDirectTasks++;
@@ -253,8 +294,17 @@ export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
     if(status==='verified')g.verifiedPackages++;
     if(status==='failed')g.failed++;
     const gatedRepair=gatedGameRepairObservation(t);
+    const f0Repair=f0SourcePreflightRepairObservation(t);
     const legacyRepair=status==='queued'&&clean(t.lastOutcome)==='FAIL'&&Number(t.retries)>0;
-    if(status==='queued'&&(legacyRepair||gatedRepair))g.causalRepairPending++;
+    if(status==='queued'&&(legacyRepair||gatedRepair||f0Repair))g.causalRepairPending++;
+    if(f0Repair){
+      if(status==='queued')g.f0SourceRepairPending++;
+      if(status==='running')g.f0SourceRepairRunning++;
+      if(status==='blocked')g.f0SourceRepairBlocked++;
+      if(status==='running')g.causalRepairRunning++;
+      if(status==='blocked')g.causalRepairBlocked++;
+      if(g.f0SourceRepairStages.length<40)g.f0SourceRepairStages.push(f0Repair);
+    }
     if(gatedRepair){
       if(status==='queued')g.gatedRuntimeRepairPending++;
       if(status==='running')g.causalRepairRunning++;
@@ -568,6 +618,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_VIBE_REPAIRS='+result.externalLearningApplications.nativeRepairCount);
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SYSTEM_REPAIRS='+result.externalLearningApplications.systemRepairCount);
   console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SECURITY_REVIEW='+result.externalLearningApplications.securityReviewRequiredCount);
+  console.log('SYSTEM_AI_GAME_F0_SOURCE_REPAIR_PENDING='+result.productionOutcome.games.reduce((n,g)=>n+g.f0SourceRepairPending,0));
+  console.log('SYSTEM_AI_GAME_F0_SOURCE_REPAIR_RUNNING='+result.productionOutcome.games.reduce((n,g)=>n+g.f0SourceRepairRunning,0));
+  console.log('SYSTEM_AI_GAME_F0_SOURCE_REPAIR_BLOCKED='+result.productionOutcome.games.reduce((n,g)=>n+g.f0SourceRepairBlocked,0));
   console.log('SYSTEM_AI_GAME_GATED_REPAIR_PENDING='+result.productionOutcome.games.reduce((n,g)=>n+g.gatedRuntimeRepairPending,0));
   console.log('SYSTEM_AI_GAME_GATED_REPAIR_RUNNING='+result.productionOutcome.games.reduce((n,g)=>n+g.causalRepairRunning,0));
   console.log('SYSTEM_AI_GAME_GATED_REPAIR_BLOCKED='+result.productionOutcome.games.reduce((n,g)=>n+g.causalRepairBlocked,0));

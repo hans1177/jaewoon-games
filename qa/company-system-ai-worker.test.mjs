@@ -653,6 +653,104 @@ test('gated game-local sensor refuses event markers with a stale or unproven cur
  assert.equal(noEvent.games[0].causalRepairPending,0);
 });
 
+
+test('F0 game-local repair is counted separately from runtime proof and prioritized by existing sensor',()=>{
+ const make=(id,gameId,status,source='b'.repeat(40))=>{
+   const file='roblox-games/'+gameId+'/server/Game.server.luau';
+   return{id,gameId,target:'roblox',department:'development',type:'implementation',
+     status,executionLane:'GAME_PRIMARY',sourceRoot:'roblox-games/'+gameId,
+     assetProductionLane:false,responsibleFiles:[file],lastOutcome:null,retries:0,
+     goal:'[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\n게임: '+gameId+
+       ' / F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED\n'+
+       '실패한 소스 버전: '+source+'\n[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\nfix original source',
+     evidence:['roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE',
+       'roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY',
+       'roblox-f0-preflight-failure-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+       'roblox-f0-preflight-source-revision:'+source]
+   };
+ };
+ const pending=make('f0-pending','game-1','queued');
+ const running=make('f0-running','game-1','running');
+ const blocked=make('f0-blocked','game-2','blocked');
+ const done=make('f0-done','game-2','verified');
+ const snapshot=analyzeSystemAiBottlenecks({gameQueue:{tasks:[pending,running,blocked,done]},
+   systemAiQueue:{tasks:[]},at:Date.parse('2026-10-30T00:00:00Z')});
+ const a=snapshot.productionOutcome.games.find(x=>x.gameId==='game-1');
+ const b=snapshot.productionOutcome.games.find(x=>x.gameId==='game-2');
+ assert.equal(a.causalRepairPending,1);
+ assert.equal(a.f0SourceRepairPending,1);
+ assert.equal(a.f0SourceRepairRunning,1);
+ assert.equal(a.causalRepairRunning,1);
+ assert.equal(a.gatedRuntimeRepairPending,0);
+ assert.equal(a.runtimeRepairStages.length,0,'F0 is not Studio runtime');
+ assert.deepEqual(a.f0SourceRepairStages.map(x=>x.status),['queued','running']);
+ assert.equal(a.f0SourceRepairStages[0].sourceRevision,'b'.repeat(40));
+ assert.equal(a.f0SourceRepairStages[0].outcome,'SOURCE_PREFLIGHT_REPAIR_NOT_RUNTIME_PASS');
+ assert.equal(b.f0SourceRepairBlocked,1);
+ assert.equal(b.f0SourceRepairPending,0);
+ assert.equal(b.verifiedPackageCount,undefined);
+ assert.equal(b.verifiedPackages,1,'independent verified historical task still counted');
+ assert.equal(a.deploymentVerified,false);
+ assert.equal(a.gameCompletionVerified,false);
+ assert.ok(snapshot.actions.includes('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH'));
+});
+
+test('F0 source repair telemetry survives world-lobby-first prefix without trusting nearby text',()=>{
+ const gameId='game-f0-world',source='e'.repeat(40),root='roblox-games/'+gameId;
+ const evidence=['roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE',
+   'roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY',
+   'roblox-f0-preflight-failure-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+   'roblox-f0-preflight-source-revision:'+source];
+ const main={id:'f0-world',gameId,target:'roblox',department:'development',
+   type:'implementation',status:'queued',executionLane:'GAME_PRIMARY',
+   sourceRoot:root,responsibleFiles:[root+'/client/Game.client.luau'],
+   evidence,goal:'[WORLD_LOBBY_FIRST]\nStart at existing safe lobby.\n'+
+     '[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\n게임: '+gameId+
+     ' / F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED\n'+
+     '실패한 소스 버전: '+source+
+     '\n[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\nkeep existing build-up'};
+ const proper=summarizeVerifiedGameProduction({tasks:[main]}).games[0];
+ assert.equal(proper.f0SourceRepairPending,1);
+ const forged={...main,goal:'[WORLD_LOBBY_FIRST]\nF0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED\n'+
+   '실패한 소스 버전: '+source+'\n[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\nno causal evidence\n'+
+   '[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]'};
+ const ignored=summarizeVerifiedGameProduction({tasks:[forged]}).games[0];
+ assert.equal(ignored.f0SourceRepairPending,0);
+});
+
+test('F0 sensor ignores stale intent, asset-lane tasks, unowned files and owner-held work',()=>{
+ const gameId='game-f0-deny',revision='c'.repeat(40),root='roblox-games/'+gameId;
+ const base={id:'same-id',gameId,target:'roblox',department:'development',
+   type:'implementation',status:'queued',executionLane:'GAME_PRIMARY',
+   sourceRoot:root,responsibleFiles:[root+'/server/Game.server.luau'],
+   goal:'[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\n게임: '+gameId+
+     ' / F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED\n'+
+     '실패한 소스 버전: '+revision,
+   evidence:['roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE',
+     'roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY',
+     'roblox-f0-preflight-failure-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+     'roblox-f0-preflight-source-revision:'+revision]
+ };
+ const rejects=[
+   {goal:'[WEB_AUTONOMOUS_BUILD_UP] new cycle'},
+   {executionLane:'ASSET_DEVELOPMENT'},
+   {sourceRoot:'roblox-games/other'},
+   {target:'unity'},
+   {responsibleFiles:['roblox-games/other/server/Game.server.luau']},
+   {responsibleFiles:[root+'/../other/server/Game.server.luau']},
+   {ownerDevelopmentHold:true},
+   {protectedChange:true},
+   {status:'verified'},
+   {evidence:base.evidence.filter(x=>!x.startsWith('roblox-f0-preflight-source-revision:'))},
+   {goal:base.goal.replace(revision,'d'.repeat(40))}
+ ];
+ for(const patch of rejects){
+   const r=summarizeVerifiedGameProduction({tasks:[{...base,...patch}]}).games[0];
+   assert.equal(r.f0SourceRepairPending,0,JSON.stringify(patch));
+   assert.equal(r.causalRepairPending,0,JSON.stringify(patch));
+ }
+});
+
 // 우선순위 계산은 다른 작업의 생성 본문에 의존하지 않으며 입력 정규화 의미를 보존한다.
 test('repair impact scoring reads peer dependencies without copying unrelated task payloads',()=>{
   const at=Date.parse('2026-10-21T04:20:00Z');
