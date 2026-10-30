@@ -1866,3 +1866,51 @@ test('마력숲 원본 교체 등록은 기존 아이콘·입자 권한 원장�
  const uploader=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
  assert.match(uploader,/JSON.stringify\(\{\.\.\.oldRegistry,version:2,gameId:'fantasy-survival'/);
 });
+
+// [마력숲 입장/로딩] 기존 UI·저장·월드 소유자를 유지하고 실제 모델 로딩으로 입장 진행도를 표시한다.
+test('fantasy arrival shows native world title, actual map preloads, safe resume and confirmed reset',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  assert.match(client,/Name="MeadowArrivalScreen"/);
+  assert.match(client,/Name="MeadowTitle"/);
+  assert.match(client,/Name="MeadowMapLoading"/);
+  assert.match(client,/Name="FirstArrivalScene"/);
+  assert.match(client,/CameraType=Enum.CameraType.Scriptable/);
+  assert.match(client,/restoreCamera\(\)/);
+  assert.match(client,/gui.Enabled=true/);
+  assert.match(client,/meadowVitalsGui.Enabled=true/);
+  assert.match(client,/controls:Enable\(\)/);
+  assert.match(client,/controls:Disable\(\)/);
+  assert.match(client,/skipButton.Activated:Once\(finish\)/);
+  assert.match(client,/ContentProvider:PreloadAsync\(\{asset\}\)/);
+  assert.match(client,/setProgress\(loaded,total,/);
+  assert.match(client,/local mask=player:GetAttribute\("ExplorationGroves"\) or 0/);
+  assert.match(client,/MeadowVillagePrefabReady/);
+  assert.match(client,/meadowEffectsGroup.Volume/);
+  assert.match(client,/meadowAmbienceGroup.Volume/);
+  assert.match(client,/player:GetAttribute\("MeadowProfileHadSave"\)~=true/);
+  assert.match(client,/remote:FireServer\("meadow:new-game:confirm"\)/);
+  assert.match(server,/player:SetAttribute\("MeadowProfileHadSave",validSaved and typeof\(saved\)=="table"\)/);
+  assert.match(server,/if actionId=="meadow:new-game:confirm" then/);
+  assert.match(server,/if persistenceAllowed\[player\]~=true or not store then/);
+  assert.match(server,/player:SetAttribute\("MeadowNewGameResult","SAVE_FAILED"\)/);
+  assert.match(server,/return store:UpdateAsync\("player:"\.\.player.UserId,function\(previous\)/);
+  assert.match(server,/for key,initial in pairs\(Config.InitialState\) do nextProfile\[key\]=initial end/);
+  assert.match(server,/if previous~=nil and typeof\(previous\)~="table" then return nil end/);
+  assert.match(server,/local nextProfile=typeof\(previous\)=="table" and table.clone\(previous\) or \{\}/);
+  assert.match(client,/새 게임 시작/);
+  assert.match(client,/기존 저장은 되돌릴 수 없어/);
+  assert.match(server,/local function saveSurvivalProgress\(player\)/);
+  assert.match(config,/VillageContractOutcomes = 0/);
+  // 기존 세이브에 추가된 숫자 키만 이관하며 실제 서버 위치만 다시 이어간다.
+  assert.match(config,/MeadowResumeValid = 0, MeadowResumeX = 0, MeadowResumeY = 0, MeadowResumeZ = 0/);
+  assert.match(server,/player:SetAttribute\("MeadowResumeReady",resumePosition==nil\)/);
+  assert.match(server,/ray.FilterDescendantsInstances=\{meadowTerrain\}/);
+  assert.match(server,/snapshot.MeadowResumeX=pos.X/);
+  assert.match(server,/snapshot.MeadowResumeY=pos.Y/);
+  assert.match(server,/snapshot.MeadowResumeZ=pos.Z/);
+  assert.match(client,/player:GetAttribute\("MeadowResumeReady"\)==false/);
+  assert.match(client,/setProgress\(loaded,total,"초원 지형 및 캐릭터 준비"\)/);
+  assert.doesNotMatch(client,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
+});
