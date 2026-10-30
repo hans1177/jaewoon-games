@@ -20,6 +20,7 @@ test('common Roblox motion, skill and VFX respect official joint and visual life
   assert.match(skill,/function controller\.SetEnabled\(enabled\)/);
   assert.match(skill,/if not trail\.Enabled then trail:Clear\(\) end/);
   assert.match(skill,/Debris:AddItem\(trail,cleanupAfter\)/);
+  assert.match(skill,/clamp\(options\.width or 0\.28, 0\.05, 1\)/);
   assert.match(skill,/Debris:AddItem\(orb,/);
   assert.match(skill,/Debris:AddItem\(shell,/);
   assert.match(vfx,/Trail\.WidthScale keypoints are restricted/);
