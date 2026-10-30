@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-30T11:08:37.296Z",
+  "generatedAt": "2026-10-30T11:09:41.124Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,13 +821,13 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-10-30T11:01:52.379Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-10-30T11:09:11.262Z",
+            "checkedAt": "2026-10-30T11:09:11.262Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
+            "f0PassedAt": "2026-10-30T11:09:11.262Z",
             "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
@@ -926,7 +926,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:01:52.379Z"
+      "updatedAt": "2026-10-30T11:09:11.262Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -1994,14 +1994,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-30T06:04:21.063Z",
-            "checkedAt": "2026-10-30T11:01:59.881Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-10-30T11:09:33.688Z",
+            "checkedAt": "2026-10-30T11:09:33.688Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
-            "candidatePublishedAt": "2026-10-30T06:04:21.063Z",
+            "f0PassedAt": "2026-10-30T11:09:33.688Z",
+            "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
           },
@@ -2097,7 +2097,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:01:59.881Z"
+      "updatedAt": "2026-10-30T11:09:33.688Z"
     },
     {
       "gameId": "human-go",
