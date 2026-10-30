@@ -1290,6 +1290,30 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowSkillCooldowns={}'));
+  // Registered CC0 icons must match actual action roles; unknown spell artwork is never invented.
+  const icons=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8')).interfaceIcons;
+  assert.equal(icons.assetId,'102668066491590');
+  assert.equal(icons.license,'CC0-1.0');
+  assert.equal(icons.importVerified,true);
+  assert.ok(client.includes('local meadowIconAtlas="rbxassetid://'+icons.assetId+'"'));
+  assert.ok(client.includes('icon.ImageRectOffset=Vector2.new(skill[4]*64,0)'));
+  assert.ok(client.includes('if meadowIconAtlas~="" and skill[4] then'));
+  assert.ok(client.includes('glyph.Name="SkillSymbol"'));
+  // Item cards read existing server-authoritative values, without adding a saved schema.
+  assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
+  assert.ok(client.includes('inventoryQuick.Name="MeadowInventoryQuick"'));
+  assert.ok(client.includes('inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)'));
+  for(const attr of ['Wood','Stone','ResearchRecords','Coins','WeaponTier']){
+    assert.ok(client.includes('{"'+(attr==='Wood'?'나무':attr==='Stone'?'돌':attr==='ResearchRecords'?'연구 일지':attr==='Coins'?'재화':'강화 단계')+'","'+attr+'"'));
+  }
+  assert.ok(client.includes('inventoryCards[index].Text='));
+  assert.ok(client.includes('character:FindFirstChildOfClass("Tool")'));
+  // Minimap renders only real peer coordinates and already discovered server grove sectors.
+  assert.ok(client.includes('radarField.Name="NearbyPlayers"'));
+  assert.ok(client.includes('local discovered=player:GetAttribute("ExplorationGroves") or 0'));
+  assert.ok(client.includes('bit32.band(discovered,point[3])~=0'));
+  assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
+  assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
   assert.ok(client.includes('local centerX=short and 224 or 240'));
   assert.ok(client.includes('local right=landscape and 14 or 5'));
