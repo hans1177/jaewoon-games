@@ -294,6 +294,7 @@ local function spawnEnemy(isBoss, index)
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
   model.Name = isBoss and "돌 골렘" or (partId=="bee" and "초원 벌" or "초원 늑대")
   model:SetAttribute("Species",partId)
+  model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or (partId=="bee" and "BEE_SWEEP" or "WOLF_BITE"))
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
@@ -309,7 +310,7 @@ local function spawnEnemy(isBoss, index)
   model:SetAttribute("AttackState", "IDLE")
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
+    isBoss=isBoss,kind=partId,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
     speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,
     lastAttack=0,windupUntil=nil,windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE"
   })
@@ -451,12 +452,8 @@ end
 
 local function updateEnemyAI(dt,now)
   worldClock+=dt
-  if #enemies==0 then
-    if WaveState=="COMBAT" then finishWave() end
-    if now>=nextWaveAt then startWave() end
-    return
-  end
-  -- Gentle ambient animal motion without fabricated geometry or hitboxes.
+  -- Gentle ambient animal motion continues even between enemy waves.
+  -- No fabricated geometry, collision, rewards or hitboxes are involved.
   for _, animal in ipairs(meadowWildlife) do
     if animal.model.Parent then
       local phase=now*animal.speed+animal.phase
@@ -465,6 +462,11 @@ local function updateEnemyAI(dt,now)
       animal.model:PivotTo(CFrame.lookAt(desired,
         desired+Vector3.new(math.cos(phase),0,-math.sin(phase))))
     end
+  end
+  if #enemies==0 then
+    if WaveState=="COMBAT" then finishWave() end
+    if now>=nextWaveAt then startWave() end
+    return
   end
   for _,enemy in ipairs(enemies) do
     if enemy.HP>0 and enemy.model.Parent then
@@ -497,7 +499,8 @@ local function updateEnemyAI(dt,now)
       else
         local offset=Vector3.new(targetRoot.Position.X-enemy.position.X,0,targetRoot.Position.Z-enemy.position.Z)
         local distance=offset.Magnitude
-        local attackRange=4.4
+        -- Three source-authored enemy patterns; authoritative damage and saves are unchanged.
+        local attackRange=enemy.kind=="bee" and 5.6 or (enemy.isBoss and 5.2 or 4.4)
         if enemy.windupUntil then
           -- 공격 예고 중 대상이 사라지거나 거리를 벌렸다면 피해 없이 취소한다.
           if targetPlayer.UserId~=enemy.windupTargetUserId or distance>attackRange+1 or targetHuman.Health<=0 then
@@ -513,11 +516,17 @@ local function updateEnemyAI(dt,now)
         elseif distance>attackRange then
           setEnemyAttackState(enemy,"CHASE")
           local step=math.min(enemy.speed*dt,distance-attackRange)
-          enemy.position+=offset.Unit*step
+          local direction=offset.Unit
+          if enemy.kind=="bee" then
+            -- Bees flank in a slow sweep instead of moving as ground wolves.
+            local tangent=Vector3.new(-direction.Z,0,direction.X)
+            direction=(direction+tangent*math.sin(now*1.8+enemy.spawnPosition.X)*.42).Unit
+          end
+          enemy.position+=direction*step
           enemy.model:PivotTo(CFrame.lookAt(enemy.position,enemy.position+offset.Unit))
         elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
           enemy.windupTargetUserId=targetPlayer.UserId
-          enemy.windupUntil=now+(enemy.isBoss and .48 or .32)
+          enemy.windupUntil=now+(enemy.isBoss and .65 or (enemy.kind=="bee" and .25 or .42))
           setEnemyAttackState(enemy,"ANTICIPATION")
         end
       end
