@@ -326,7 +326,7 @@
       "counts": {
         "releaseConfirmed": 0,
         "developmentConfirmed": 5,
-        "designOnly": 9
+        "designOnly": 8
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
@@ -342,7 +342,6 @@
         "P0004",
         "P0005",
         "P0007",
-        "P0008",
         "P0009",
         "P0101",
         "P0103"
@@ -355,7 +354,6 @@
           "P0005",
           "P0006",
           "P0007",
-          "P0008",
           "P0009",
           "P0101",
           "P0103",
@@ -368,16 +366,17 @@
         "rebuild": [],
         "retired": [],
         "removed": [
+          "P0008",
           "P0102"
         ]
       },
       "pipeline": {
         "target": 60,
-        "count": 14,
+        "count": 13,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 46
+        "deficit": 47
       },
       "ranking": [
         {
