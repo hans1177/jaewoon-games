@@ -1117,7 +1117,7 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
   assert.match(client,/GetAttributeChangedSignal\("Species"\):Once/);
   assert.doesNotMatch(server,/Instance\.new\("Part"\)/,'no fake creature models or world geometry');
   assert.doesNotMatch(client,/Instance\.new\("Part"\)/,'original CC0 mobs and R15 only');
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2,
     'original save writer is unchanged');
 });
 
@@ -1197,7 +1197,7 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/player:GetAttributeChangedSignal\("MeadowSurvivalHintSerial"\):Connect/);
   assert.match(client,/task.delay\(6,function\(\)/);
   assert.match(client,/meadowSurvivalHint.Active=false/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
   assert.match(server,/local function refreshMeadowEncounters\(now\)/);
 });
 
@@ -1246,7 +1246,7 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/while gameWorld:GetAttribute\("MeadowOuterRegionReady"\)~=true do task.wait\(\.1\) end/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowRuinCount",ruinCount\)/);
   assert.match(server,/local function refreshMeadowEncounters\(now\)/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save semantics unchanged');
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2,'save semantics unchanged');
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
 });
 
@@ -1276,6 +1276,16 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),piece.height,piece.lift\)/);
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
+  // [중세 마을] CC0 모델·원형 건물 배치는 유지하고 진흙길과 노후화된 표면만 변경한다.
+  assert.match(server,/path\[3\],Enum\.Material\.Mud/);
+  assert.match(server,/plaza\[3\],Enum\.Material\.Mud/);
+  assert.match(server,/mesh\.Color=house\.roof/);
+  assert.match(server,/mesh\.Color=house\.timber/);
+  assert.match(server,/mesh\.Material=Enum\.Material\.Slate/);
+  assert.match(server,/mesh\.Material=Enum\.Material\.Wood/);
+  assert.match(server,/MeadowVillageLanternGlow/);
+  assert.match(server,/glow\.Parent=lanternMesh/);
+  assert.doesNotMatch(server,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
   const nativeAuthor=fs.readFileSync('tools/baeksu-war-author-meshes.py','utf8');
   const nativeUpload=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
   const nativeRelease=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
@@ -1329,7 +1339,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(client,/VillageCombatMarker/);
   assert.match(client,/contract\.EnemyName/);
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
   assert.match(server,/local function refreshMeadowEncounters\(now\)/);
 });
 
@@ -1384,9 +1394,9 @@ test('fantasy original monsters keep server combat authority while true bones dr
   assert.match(server,/enemy\.visualPosition=previous:Lerp\(enemy\.position,alpha\)/);
   assert.match(server,/if enemyVisualElapsed>=1\/30 then/);
   assert.match(server,/if enemyUpdateElapsed>=\.12 then/);
-  assert.match(server,/damage=\(isBoss and 20 or 6\)\+math\.floor\(site\.tier\/2\)/);
-  assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.match(server,/damage=isAlpha and 13 or \(\(isBoss and 20 or 6\)\+math\.floor\(site\.tier\/2\)\)/);
+  assert.match(server,/speed=isAlpha and 8\.4 or \(isBoss and 4\.8 or 7\.5\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
   for(const source of [client,server]){
     assert.doesNotMatch(source,/Instance\.new\("Part"\)/);
   }
@@ -1436,8 +1446,8 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   assert.match(server,/surface\.Color=animalTint/);
   assert.match(server,/surface\.Reflectance=0/);
   assert.doesNotMatch(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
-  assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.match(server,/speed=isAlpha and 8\.4 or \(isBoss and 4\.8 or 7\.5\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
   for(const source of [client,server,motion]){
     assert.doesNotMatch(source,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
   }
@@ -1450,7 +1460,7 @@ test('fantasy monster shared actions have restrained impacts stable targets and 
   assert.match(server,/focusUserId=nil/);
   assert.match(server,/if focusPlayer and focusDistance<=range\+3 then/);
   assert.match(server,/enemy\.focusUserId=targetPlayer and targetPlayer\.UserId or nil/);
-  assert.match(server,/local range=140/);
+  assert.match(server,/local range=enemy\.questIndex and 38 or 140/);
   assert.match(server,/local leashDistance=\(enemy\.position-enemy\.spawnPosition\)\.Magnitude/);
   assert.match(server,/radius=enemy\.kind=="wolf" and 5 or 3\.5/);
   assert.match(server,/local weight=enemy\.kind=="wolf" and \.55 or \.32/);
@@ -1469,8 +1479,8 @@ test('fantasy monster shared actions have restrained impacts stable targets and 
   assert.match(client,/row\.controller\.Step\(row\.poses,poseDt\)/);
   assert.match(server,/local hitDamage=math\.floor\(enemy\.damage\/hitCount\)/);
   assert.match(server,/enemy\.windupUntil=now\+\(enemy\.isBoss and \.68 or/);
-  assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.match(server,/speed=isAlpha and 8\.4 or \(isBoss and 4\.8 or 7\.5\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
   assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)/);
 });
 
@@ -1486,7 +1496,7 @@ test('fantasy player death recovers only if original humanoid never auto-respawn
   assert.match(lifecycle,/if not recovered then/);
   assert.match(lifecycle,/player\.CharacterAdded:Connect\(bindCharacter\)/);
   assert.match(server,/player\.RespawnLocation = nativeFoundationSpawn/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
   assert.doesNotMatch(lifecycle,/humanoid\.MaxHealth\s*=|humanoid\.Health\s*=/);
 });
 
@@ -1641,12 +1651,12 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(server,/task.defer\(createResourceNodes\)/);
   assert.match(server,/task.delay\(4,function\(\)\s*local wildlife=\{/);
   assert.match(server,/for index,spec in ipairs\(wildlife\) do/);
-  assert.equal((server.match(/joint.Part1.Anchored=false/g)||[]).length,2);
-  assert.equal((server.match(/joint.Part1.Massless=true/g)||[]).length,2);
+  assert.equal((server.match(/joint.Part1.Anchored=false/g)||[]).length,3,'original rigs and new R15 bandit rig remain articulated');
+  assert.equal((server.match(/joint.Part1.Massless=true/g)||[]).length,3,'original rigs and new R15 bandit rig remain articulated');
   assert.match(server,/remote.OnServerEvent:Connect\(function\(player, actionId\)/);
   assert.match(client,/GetAttributeChangedSignal\("ApprovedCombatMotion"\):Connect/);
   assert.match(client,/GetAttributeChangedSignal\("ApprovedActionMotion"\):Connect/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
 });
 
 // Roblox Avatar Joint Upgrade (2026): verified engine uses AnimationConstraint for R15.
@@ -1663,7 +1673,7 @@ test('fantasy unarmed and meadow skills support AnimationConstraint and legacy M
   assert.match(client,/activeCombatController.Step\(combatR15Targets, dt\)/);
   assert.match(client,/skillMotionR15.Step\(skillMotionR15Targets,dt\)/);
   assert.match(server,/player:SetAttribute\("ApprovedCombatMotion",approved\)/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save key and schema unchanged');
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2,'save key and schema unchanged');
 });
 
 // 파일 구분: 마력숲 포자 버섯 제거·박쥐 원본 8마디 비행/급강하 회귀 검증.
@@ -1677,7 +1687,8 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   assert.doesNotMatch(server,/skeleton="초원 해골"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.doesNotMatch(client,/species~="skeleton"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.equal((sites.match(/id="bat"/g)||[]).length,3,'original three bat habitats remain');
-  assert.equal((sites.match(/id="wolf"/g)||[]).length,4,'wolves remain unchanged');
+  assert.equal((sites.match(/id="wolf"/g)||[]).length,5,'original four wolves and approved alpha boss remain');
+  assert.equal((sites.match(/alpha=true/g)||[]).length,1,'exactly one approved alpha wolf boss');
   assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
   assert.match(config,/bat=105975567112263/,'keep approved original CC0 bat');
   // Bat.fbx actually contains Wing1.L..Wing4.R and original flying/attack takes.
@@ -1804,7 +1815,7 @@ test('마력숲 완벽 막기는 공격자만 기절시키고 연타 총 피해�
   assert.match(server,/enemy.windupUntil=now\+\.22/);
   assert.match(server,/meadowDefense\[player\]=nil/);
   assert.match(server,/GetDataStore\("fantasy-survival-development-v1"\)/);
-  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,2);
 });
 
 // 마력숲 메뉴는 실제 상태와 기존 서버 액션만 사용하며 외부 아이콘 원본을 보존한다.
@@ -1871,7 +1882,8 @@ test('마력숲 초원 수문장은 기존 골렘·지역 서식지·보상을 �
  assert.match(server,/target.model:SetAttribute\("BossPhase",2\)/);
   assert.match(server,/local function spawnEnemy\(site, siteIndex\)/);
  assert.match(server,/NativeMobMotionDuration/);
- assert.match(server,/awardProgress\(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5\)/);
+ assert.match(server,/awardProgress\(player,target.isBoss and 75 or target.isAlpha and 35 or 12,/);
+ assert.match(server,/target.isBoss and 45 or target.isAlpha and 18 or 5\)/);
 });
 
 test('마력숲 숲 교체는 텍스처 내장 CC0 원본과 실제 늑대 스킨 관절을 사용한다',()=>{

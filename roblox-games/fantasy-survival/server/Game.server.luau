@@ -674,12 +674,12 @@ local function createMeadowVillage()
     {-90,0,9},{-104,0,12},{-118,0,11},{-132,0,10},{-146,0,8},
     {-109,-21,7},{-109,21,7},{-130,-32,5},{-132,32,5},
   }) do
-    meadowTerrain:FillBall(Vector3.new(path[2],-1.4,path[1]),path[3],Enum.Material.Ground)
+    meadowTerrain:FillBall(Vector3.new(path[2],-1.4,path[1]),path[3],Enum.Material.Mud)
   end
   for _,plaza in ipairs({
     {-19,-111,11},{19,-111,11},{-17,-146,9},{17,-146,9},
   }) do
-    meadowTerrain:FillBall(Vector3.new(plaza[1],-1.4,plaza[2]),plaza[3],Enum.Material.Ground)
+    meadowTerrain:FillBall(Vector3.new(plaza[1],-1.4,plaza[2]),plaza[3],Enum.Material.Mud)
   end
   -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
   -- 마력숲 Universe의 모델 등록·사용 권한이 없으면 임의 파츠 집으로 대체하지 않는다.
@@ -696,10 +696,10 @@ local function createMeadowVillage()
   if nativeVillageReady then
     -- 같은 원본 벽/문/창/지붕으로 네 동을 지어 마을의 중심 거리를 만든다.
     local houses={
-      {x=-42,z=-112,angle=0,name="Village_HealerHouse"},
-      {x=42,z=-112,angle=math.pi,name="Village_WardenHall"},
-      {x=-42,z=-151,angle=0,name="Village_Workshop"},
-      {x=42,z=-151,angle=math.pi,name="Village_Guesthouse"},
+      {x=-42,z=-112,angle=0,name="Village_HealerHouse",timber=Color3.fromRGB(111,89,70),roof=Color3.fromRGB(78,70,67)},
+      {x=42,z=-112,angle=math.pi,name="Village_WardenHall",timber=Color3.fromRGB(91,78,69),roof=Color3.fromRGB(73,71,72)},
+      {x=-42,z=-151,angle=0,name="Village_Workshop",timber=Color3.fromRGB(100,77,61),roof=Color3.fromRGB(83,70,60)},
+      {x=42,z=-151,angle=math.pi,name="Village_Guesthouse",timber=Color3.fromRGB(117,93,69),roof=Color3.fromRGB(80,74,65)},
     }
     for _,house in ipairs(houses) do
       local created=0
@@ -722,7 +722,17 @@ local function createMeadowVillage()
           model:SetAttribute("MeadowVillageScenery",true)
           model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
           for _,mesh in ipairs(model:GetDescendants()) do
-            if mesh:IsA("MeshPart") then mesh.CanCollide=piece.lift==0 end
+            if mesh:IsA("MeshPart") then
+              mesh.CanCollide=piece.lift==0
+              -- [낡은 중세 마을] CC0 원본 메시·텍스처를 보존하고 목재·지붕의 풍화색만 입힌다.
+              if piece.asset=="villageRoof" or piece.asset=="villageRoofEnd" then
+                mesh.Color=house.roof
+                mesh.Material=Enum.Material.Slate
+              else
+                mesh.Color=house.timber
+                mesh.Material=Enum.Material.Wood
+              end
+            end
           end
           created+=1
         end
@@ -740,6 +750,33 @@ local function createMeadowVillage()
       if model then
         model.Name="Meadow_Village_"..row[1].."_"..villageProps
         model:SetAttribute("MeadowVillageScenery",true)
+        -- [중세 거리] 기존 CC0 울타리·수레·분수는 오래된 목재·석재 색감으로 표현한다.
+        if row[1]=="villageFence" or row[1]=="villageCart" then
+          for _,mesh in ipairs(model:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              mesh.Color=Color3.fromRGB(96,78,62)
+              mesh.Material=Enum.Material.Wood
+            end
+          end
+        elseif row[1]=="villageFountain" then
+          for _,mesh in ipairs(model:GetDescendants()) do
+            if mesh:IsA("MeshPart") then
+              mesh.Color=Color3.fromRGB(92,97,91)
+              mesh.Material=Enum.Material.Slate
+            end
+          end
+        elseif row[1]=="villageLantern" then
+          local lanternMesh=model:FindFirstChildWhichIsA("MeshPart",true)
+          if lanternMesh then
+            local glow=Instance.new("PointLight")
+            glow.Name="MeadowVillageLanternGlow"
+            glow.Color=Color3.fromRGB(255,184,116)
+            glow.Brightness=1.2
+            glow.Range=15
+            glow.Shadows=true
+            glow.Parent=lanternMesh
+          end
+        end
         villageProps+=1
       end
     end
@@ -761,7 +798,11 @@ local function createMeadowVillage()
       wall:SetAttribute("MeadowVillageScenery",true)
       wall:PivotTo(wall:GetPivot()*CFrame.Angles(0,math.rad((index%4)*90),0))
       for _,part in ipairs(wall:GetDescendants()) do
-        if part:IsA("MeshPart") then part.CanCollide=true end
+        if part:IsA("MeshPart") then
+          part.CanCollide=true
+          part.Color=Color3.fromRGB(91,95,88)
+          part.Material=Enum.Material.Slate
+        end
       end
       wallCount+=1
     end

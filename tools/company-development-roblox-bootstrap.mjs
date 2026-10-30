@@ -153,6 +153,22 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     .replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|--\[(=*)\[[\s\S]*?\]\2\]|--[^\n]*/g,(match,literal)=>literal||' ');
   const nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
   if(!nativePattern)return false;
+  // [실제 원본 생물 로딩] 선택한 CREATURE atom → 등록 ID → 허가된 Model
+  // → 실제 원본 메시 복제/배치의 연속 경로를 확인한다. 선언이나 표시만으로 통과 금지.
+  if(family==='CREATURE'){
+    const approvedNativeCreaturePath=[
+      /local\s+studioCreatureAtoms\s*=\s*studioAssetFamily\s*\(\s*["']CREATURE["']\s*\)/,
+      /table\.find\(studioCreatureAtoms,site\.atom\)\s+and\s+NativeCreatureAssets\[partId\]/,
+      /typeof\(modelId\)~="number"\s+or\s+modelId<1/,
+      /template=AssetService:LoadAssetAsync\(modelId\)/,
+      /template:IsA\("Model"\)/,
+      /template:FindFirstChildWhichIsA\("MeshPart",true\)/,
+      /return template:Clone\(\)/,
+      /model:ScaleTo\(/,
+      /model.Parent=gameWorld/
+    ];
+    if(approvedNativeCreaturePath.every(pattern=>pattern.test(raw)))return true;
+  }
   // 모션은 관절 쓰기가 공용 모듈의 BindJointPose 내부에서 발생한다.
   // 선택 atom → 서버 승인 → R15 Motor6D → 실제 샘플·맵핑·프레임 Step이
   // 모두 존재할 때만 소스 수준의 실제 자산 소비로 인정한다.
