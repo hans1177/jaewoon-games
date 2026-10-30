@@ -1246,7 +1246,7 @@ test('fantasy original monsters keep server combat authority while true bones dr
   }
 });
 
-// [마력숲 4족 보행/원본 재질] 원본 다리 관절·서버 판정·저장 보존.
+// [마력숲 4족 보행/토이 재질] 원본 다리 관절·서버 판정·저장 보존.
 test('fantasy quadrupeds synchronize diagonal foot contacts with travel and forest palette',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
@@ -1272,15 +1272,22 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   assert.match(client,/if row\.available\[key\.\."Knee"\] then row\.poses\[key\.\."Knee"\]/);
   assert.match(client,/row\.species=="wolf" and \(mode=="ANTICIPATION"/);
   assert.match(client,/if row\.available\.Head then row\.poses\.Head=/);
-  // 원본 UV/메시 텍스처와 SurfaceAppearance를 보존하면서 통일된 무광 표면으로 바꾼다.
-  assert.match(server,/sourceColor=surface\.Color/);
+  // 원본 메시와 관절은 보존하고 스폰 복제본 본체의 구형 텍스처만 제거한다.
+  assert.match(server,/surface\.Color=surface\.Color:Lerp\(bodyTint,\.78\)/);
   assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
   assert.match(server,/local smoothDetail=wing or partName:find\("eye",1,true\)/);
-  assert.match(server,/surface\.Color=wing and Color3\.fromRGB\(190,228,235\)/);
-  // 정적 Pebble 요철만 사용: 원본 임포트 텍스처에 PBR 맵을 런타임 쓰기하지 않는다.
+  assert.match(server,/surface\.Color=Color3\.fromRGB\(190,228,235\)/);
+  // 미승인 PBR 생성 금지, 구형 Pebble·체크 본체 텍스처 제거 및 승인 전 Plastic 적용.
   assert.doesNotMatch(server,/Instance\.new\("MaterialVariant"\)|Instance\.new\("SurfaceAppearance"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
-  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
+  assert.match(server,/if wing then[\s\S]*?surface\.Material=Enum\.Material\.Glass/);
+  assert.match(server,/elseif smoothDetail then[\s\S]*?surface\.Material=Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/surface\.Material=Enum\.Material\.Plastic/);
+  assert.match(server,/if appearance then appearance:Destroy\(\) end/);
+  assert.match(server,/if surface\.TextureID~="" then surface\.TextureID="" end/);
+  assert.match(server,/surface\.MaterialVariant=""/);
+  assert.match(server,/model:SetAttribute\("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP"\)/);
+  assert.doesNotMatch(server,/surface\.Material=Enum\.Material\.Pebble/);
+  assert.match(server,/surface\.Color=animalTint/);
   assert.match(server,/surface\.Reflectance=0/);
   assert.doesNotMatch(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
   assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
@@ -1416,8 +1423,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/Instance.new\("Beam"\)/);
   assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
-  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
+  assert.match(server,/if wing then[\s\S]*?surface\.Material=Enum\.Material\.Glass/);
+  assert.match(server,/elseif smoothDetail then[\s\S]*?surface\.Material=Enum\.Material\.SmoothPlastic/);
   assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
   assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
