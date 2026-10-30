@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "horror-escape-room-build-up-g23-eae69b3025ed",
-  "directiveFingerprint": "eae69b3025ed03536b80dd65d71816a25f41b6928f52eb86399a666d28bd3c9e",
-  "previousDirectiveFingerprint": "47ab738a7b17ed976cf6edd9bf349cc3970c3a2494783d122cd8cf6f7962220b",
-  "forbiddenRepeatFingerprint": "47ab738a7b17ed976cf6edd9bf349cc3970c3a2494783d122cd8cf6f7962220b",
+  "directiveId": "horror-escape-room-build-up-g24-92c0a705f02e",
+  "directiveFingerprint": "92c0a705f02e188f3a28c5a1c4c8158d4c0237577d4a105ad8c943b1a2d26b89",
+  "previousDirectiveFingerprint": "eae69b3025ed03536b80dd65d71816a25f41b6928f52eb86399a666d28bd3c9e",
+  "forbiddenRepeatFingerprint": "eae69b3025ed03536b80dd65d71816a25f41b6928f52eb86399a666d28bd3c9e",
   "gameId": "horror-escape-room",
   "gameName": "심야 대탈출",
-  "generation": 23,
+  "generation": 24,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/horror-escape-room",
-  "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+  "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
   "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
   "designSourceBuildUp": {
     "version": 1,
@@ -371,7 +371,7 @@
           "정화와 팀 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+        "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -419,7 +419,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
-    "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
     "multiplayerMode": "COMPETITIVE",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -1080,7 +1080,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 74,
     "authoredCounts": {
@@ -1238,7 +1238,7 @@
         "sourceCandidates": [
           {
             "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-            "line": 3015,
+            "line": 3024,
             "symbol": "startResultCeremonyCamera",
             "kind": "FUNCTION"
           }
@@ -7169,7 +7169,7 @@
       "ai": 377,
       "save": 344,
       "multiplayer": 33,
-      "animation": 300,
+      "animation": 309,
       "motionStates": 1777,
       "gameFeel": 105,
       "vfx": 445,
@@ -7190,13 +7190,13 @@
       "feedback": 459,
       "session": 283,
       "content": 1842,
-      "choice": 2089,
+      "choice": 2090,
       "connection": 10,
       "performance": 145,
       "lighting": 339,
       "primitive": 61,
       "todo": 0,
-      "errorRecovery": 170
+      "errorRecovery": 173
     },
     "topFiles": [
       {
@@ -7205,7 +7205,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "score": 1050
+        "score": 1051
       },
       {
         "file": "roblox-games/horror-escape-room/server/Game.server.luau",
@@ -7221,7 +7221,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-        "score": 214
+        "score": 216
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
@@ -7347,7 +7347,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1438,
+        "line": 1447,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "context": "local function combatSkinIdForPlayer(player)",
@@ -7395,7 +7395,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 662,
+        "line": 671,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -7403,7 +7403,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1621,
+        "line": 1630,
         "kind": "FUNCTION",
         "symbol": "markCombatSkinAttack",
         "context": "local function markCombatSkinAttack(userId,origin,duration,stage)",
@@ -7467,7 +7467,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1433,
+        "line": 1442,
         "kind": "FUNCTION",
         "symbol": "combatFormIdForPlayer",
         "context": "local function combatFormIdForPlayer(player)",
@@ -7475,7 +7475,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1899,
+        "line": 1908,
         "kind": "FUNCTION",
         "symbol": "drawMiniMap",
         "context": "local function drawMiniMap(id)",
@@ -7483,7 +7483,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 2609,
+        "line": 2618,
         "kind": "FUNCTION",
         "symbol": "updateCosmeticUI",
         "context": "local function updateCosmeticUI()",
@@ -7611,7 +7611,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1451,
+        "line": 1460,
         "kind": "FUNCTION",
         "symbol": "styleAuthoredCombatModel",
         "context": "local function styleAuthoredCombatModel(model,formId)",
@@ -7619,7 +7619,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 3015,
+        "line": 3024,
         "kind": "FUNCTION",
         "symbol": "startResultCeremonyCamera",
         "context": "local function startResultCeremonyCamera(stage)",
@@ -7643,7 +7643,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-        "line": 1470,
+        "line": 1482,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonMotion.CreateCombatCombo",
         "context": "function RobloxCommonMotion.CreateCombatCombo(equipmentId,ids,options)",
@@ -7651,7 +7651,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-        "line": 1578,
+        "line": 1590,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonMotion.CreateSequence",
         "context": "function RobloxCommonMotion.CreateSequence(atomId)",
@@ -7683,7 +7683,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-        "line": 1449,
+        "line": 1461,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonMotion.ResolveWeaponProfile",
         "context": "function RobloxCommonMotion.ResolveWeaponProfile(equipmentId)",
@@ -7764,11 +7764,11 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 심야 대탈출와 진영 전환과 추격 경로 × 증언과 합의된 현실가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-    "previousFocus": "PRESENTATION",
-    "previousGeneration": 22,
-    "previousSourceTreeFingerprint": "7146a802353cc8be63002c085ccb360842e303e4c4a333edca312e1ea0f2e83f",
-    "currentSourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "previousGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+    "previousFocus": "STABILITY",
+    "previousGeneration": 23,
+    "previousSourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "currentSourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -7794,9 +7794,9 @@
       ]
     },
     "failureStage": "VIBE_INTERNAL_PLAY",
-    "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+    "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
     "blockers": [
-      "roblox-studio-mcp-play-repair-required",
+      "roblox-internal-vibe-play-pending",
       "adaptive-start-playability"
     ],
     "runtimeObserved": true,
@@ -8882,7 +8882,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(VIBE_INTERNAL_PLAY / ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/horror-escape-room/server/Game.server.luau::addEnergyCore, roblox-games/horror-escape-room/server/Game.server.luau::addMapUtility, roblox-games/horror-escape-room/server/Game.server.luau::infectPlayer, roblox-games/horror-escape-room/server/Game.server.luau::addObjectiveStation, roblox-games/horror-escape-room/client/Game.client.luau::combatSkinIdForPlayer, roblox-games/horror-escape-room/server/Game.server.luau::mapById, roblox-games/horror-escape-room/client/Game.client.luau::verifiedLearningBindTrack, roblox-games/horror-escape-room/client/Game.client.luau::markCombatSkinAttack이다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(VIBE_INTERNAL_PLAY / ROBLOX_INTERNAL_VIBE_PLAY_PENDING). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/horror-escape-room/server/Game.server.luau::addEnergyCore, roblox-games/horror-escape-room/server/Game.server.luau::addMapUtility, roblox-games/horror-escape-room/server/Game.server.luau::infectPlayer, roblox-games/horror-escape-room/server/Game.server.luau::addObjectiveStation, roblox-games/horror-escape-room/client/Game.client.luau::combatSkinIdForPlayer, roblox-games/horror-escape-room/server/Game.server.luau::mapById, roblox-games/horror-escape-room/client/Game.client.luau::verifiedLearningBindTrack, roblox-games/horror-escape-room/client/Game.client.luau::markCombatSkinAttack이다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/horror-escape-room/server/Game.server.luau::addEnergyCore, roblox-games/horror-escape-room/server/Game.server.luau::addMapUtility, roblox-games/horror-escape-room/server/Game.server.luau::infectPlayer, roblox-games/horror-escape-room/server/Game.server.luau::addObjectiveStation, roblox-games/horror-escape-room/client/Game.client.luau::combatSkinIdForPlayer, roblox-games/horror-escape-room/server/Game.server.luau::mapById, roblox-games/horror-escape-room/client/Game.client.luau::verifiedLearningBindTrack, roblox-games/horror-escape-room/client/Game.client.luau::markCombatSkinAttack에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "심야 대탈출를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -9030,7 +9030,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 1146076,
+        "sourceBytes": 1147121,
         "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -9222,7 +9222,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "horror-escape-room",
     "sourceRoot": "roblox-games/horror-escape-room",
-    "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -12932,11 +12932,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 23,
-    "previousGeneration": 22,
+    "generation": 24,
+    "previousGeneration": 23,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
-    "priorSourceFingerprint": "7146a802353cc8be63002c085ccb360842e303e4c4a333edca312e1ea0f2e83f",
+    "sourceFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
+    "priorSourceFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -12955,7 +12955,7 @@
     "version": 1,
     "gameId": "horror-escape-room",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -13967,9 +13967,9 @@
       "gameId": "horror-escape-room",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 23,
-        "actorClass": "CREATURE",
-        "sourceOwnerFile": "roblox-games/horror-escape-room/default.project.json",
+        "generation": 24,
+        "actorClass": "ENEMY",
+        "sourceOwnerFile": "roblox-games/horror-escape-room/launch-mvp.json",
         "qualityAxis": "CINEMATIC_ATTACK_ENVELOPE",
         "featureId": "CINEMATIC_ATTACK_ENVELOPE",
         "evidenceCount": 0,
@@ -13982,7 +13982,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "horror-escape-room",
-          "actorClass": "CREATURE",
+          "actorClass": "ENEMY",
           "featureId": "CINEMATIC_ATTACK_ENVELOPE",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -14222,7 +14222,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+      "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -14246,7 +14246,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+      "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
       "sourceFiles": [
         {
           "file": "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
@@ -14314,7 +14314,7 @@
           "file": "roblox-games/horror-escape-room/client/Game.client.luau",
           "sites": [
             {
-              "line": 1284,
+              "line": 1293,
               "source": "local x=Instance.new(\"Part\")"
             }
           ],
@@ -14392,7 +14392,7 @@
     "gameId": "horror-escape-room",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -15007,7 +15007,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1438,
+        "line": 1447,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "currentBehavior": "local function combatSkinIdForPlayer(player)",
@@ -15025,7 +15025,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 662,
+        "line": 671,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "currentBehavior": "local function verifiedLearningBindTrack(state, track)",
@@ -15034,7 +15034,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1621,
+        "line": 1630,
         "kind": "FUNCTION",
         "symbol": "markCombatSkinAttack",
         "currentBehavior": "local function markCombatSkinAttack(userId,origin,duration,stage)",
@@ -15227,7 +15227,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1438,
+        "line": 1447,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "context": "local function combatSkinIdForPlayer(player)",
@@ -15251,7 +15251,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 662,
+        "line": 671,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -15263,7 +15263,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1621,
+        "line": 1630,
         "kind": "FUNCTION",
         "symbol": "markCombatSkinAttack",
         "context": "local function markCombatSkinAttack(userId,origin,duration,stage)",
@@ -15400,11 +15400,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+      "sourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
       "runtimeObserved": true,
       "runtimePassed": false,
       "failureStage": "VIBE_INTERNAL_PLAY",
-      "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED"
+      "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -15462,7 +15462,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 24,
+    "nextGeneration": 25,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -15522,5 +15522,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-30T05:57:58.162Z"
+  "generatedAt": "2026-10-30T10:44:21.337Z"
 }

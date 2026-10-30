@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "cozy-island-build-up-g31-99df58596509",
-  "directiveFingerprint": "99df585965097251d39620cedee1a0204a2bddcf0c7d6400a6ce8ce7fb59fc48",
-  "previousDirectiveFingerprint": "2057df9756c49ef5196d83bad95b5f8768931c365d77a1ddfcb949c04834b0f0",
-  "forbiddenRepeatFingerprint": "2057df9756c49ef5196d83bad95b5f8768931c365d77a1ddfcb949c04834b0f0",
+  "directiveId": "cozy-island-build-up-g32-89b1ea44a4d0",
+  "directiveFingerprint": "89b1ea44a4d0326b2e7940866165a100eeb577132d8615d212ad4d2898328279",
+  "previousDirectiveFingerprint": "99df585965097251d39620cedee1a0204a2bddcf0c7d6400a6ce8ce7fb59fc48",
+  "forbiddenRepeatFingerprint": "99df585965097251d39620cedee1a0204a2bddcf0c7d6400a6ce8ce7fb59fc48",
   "gameId": "cozy-island",
   "gameName": "포근섬",
-  "generation": 31,
+  "generation": 32,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cozy-island",
-  "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+  "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
   "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+        "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
-    "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+    "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -910,7 +910,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+    "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4382,7 +4382,7 @@
       "ai": 253,
       "save": 203,
       "multiplayer": 29,
-      "animation": 138,
+      "animation": 141,
       "motionStates": 1195,
       "gameFeel": 89,
       "vfx": 96,
@@ -4390,7 +4390,7 @@
       "audio": 58,
       "audioDynamics": 18,
       "ui": 1066,
-      "uiFlow": 1282,
+      "uiFlow": 1285,
       "entryFlow": 13,
       "loadingFlow": 0,
       "input": 142,
@@ -4402,7 +4402,7 @@
       "settings": 33,
       "feedback": 172,
       "session": 92,
-      "content": 752,
+      "content": 760,
       "choice": 1823,
       "connection": 8,
       "performance": 59,
@@ -4418,7 +4418,7 @@
       },
       {
         "file": "roblox-games/cozy-island/client/Game.client.luau",
-        "score": 303
+        "score": 306
       },
       {
         "file": "roblox-games/cozy-island/shared/GameConfig.luau",
@@ -4438,7 +4438,7 @@
       },
       {
         "file": "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-        "score": 66
+        "score": 76
       },
       {
         "file": "roblox-games/cozy-island/server/BattleVisual.luau",
@@ -4760,15 +4760,7 @@
       },
       {
         "file": "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-        "line": 67,
-        "kind": "FUNCTION",
-        "symbol": "getJoints",
-        "context": "local function getJoints(model)",
-        "score": 58
-      },
-      {
-        "file": "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-        "line": 459,
+        "line": 470,
         "kind": "FUNCTION",
         "symbol": "Controller:SetState",
         "context": "function Controller:SetState(state, options)",
@@ -4776,7 +4768,7 @@
       },
       {
         "file": "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-        "line": 513,
+        "line": 526,
         "kind": "FUNCTION",
         "symbol": "Animator.bind",
         "context": "function Animator.bind(model, options)",
@@ -4840,7 +4832,15 @@
       },
       {
         "file": "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
-        "line": 280,
+        "line": 67,
+        "kind": "FUNCTION",
+        "symbol": "getJoints",
+        "context": "local function getJoints(model)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/cozy-island/shared/WildlifeAnimator.luau",
+        "line": 284,
         "kind": "FUNCTION",
         "symbol": "attackTargets",
         "context": "local function attackTargets(controller, targets)",
@@ -4947,39 +4947,21 @@
   "previousVersionDelta": {
     "previousGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 30,
-    "previousSourceTreeFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
-    "currentSourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+    "previousGeneration": 31,
+    "previousSourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+    "currentSourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
-      "artifactIdentity": "sha256:a49aa0ce1508d4d8932dad2977997a4f8276e36451c90bdfc421e4e00a4474b5",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 41016446256,
-      "testedAt": "2026-10-30T07:03:26.355Z",
-      "repairSurfaces": [
-        "ROBLOX_OBSERVED_INTERACTION"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "observed-action-365681f8b2605ff0b67d",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-365681f8b2605ff0b67d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode2.ProximityPrompt\",\"targetIdentity\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode2.ProximityPrompt\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"recoveredByInteraction\":false,\"attempts\":1}"
-        }
-      ]
-    },
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "studioQualityFailure": null,
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
     "blockers": [
-      "roblox-runtime-candidate-deploy-pending"
+      "roblox-build-package-revalidation-pending"
     ],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -6215,7 +6197,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 594300,
+        "sourceBytes": 595630,
         "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6248,12 +6230,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=4.",
+    "themeDepth": 9,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 8,
+        "WORLD_ECOLOGY_STORY_CHAIN": 9,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -6267,7 +6249,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6306,7 +6288,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 58,
+        "score": 40,
         "gapDomains": []
       },
       {
@@ -6424,7 +6406,7 @@
     "authority": "EXISTING_BUILD_UP_SOURCE_ONLY",
     "gameId": "cozy-island",
     "sourceRoot": "roblox-games/cozy-island",
-    "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+    "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
     "sourceRevision": null,
     "scan": {
       "complete": true,
@@ -10115,11 +10097,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 31,
-    "previousGeneration": 30,
+    "generation": 32,
+    "previousGeneration": 31,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
-    "priorSourceFingerprint": "63a6a1d14cb26f226cec36dc554e0eeb2fc637e9f130d15fef2b032db0a61e78",
+    "sourceFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
+    "priorSourceFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -10138,7 +10120,7 @@
     "version": 1,
     "gameId": "cozy-island",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+    "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -11061,9 +11043,9 @@
       "gameId": "cozy-island",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 31,
-        "actorClass": "ENEMY",
-        "sourceOwnerFile": "roblox-games/cozy-island/server/Game.server.luau",
+        "generation": 32,
+        "actorClass": "NPC",
+        "sourceOwnerFile": "roblox-games/cozy-island/launch-mvp.json",
         "qualityAxis": "APPROVED_COMBO_CONTINUITY",
         "featureId": "APPROVED_COMBO_CONTINUITY",
         "evidenceCount": 0,
@@ -11076,7 +11058,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "cozy-island",
-          "actorClass": "ENEMY",
+          "actorClass": "NPC",
           "featureId": "APPROVED_COMBO_CONTINUITY",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -11314,7 +11296,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+      "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -11338,7 +11320,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+      "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
       "sourceFiles": [
         {
           "file": "roblox-games/cozy-island/shared/WildlifeFactory.luau",
@@ -11450,7 +11432,7 @@
     "gameId": "cozy-island",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+    "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -12453,16 +12435,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
+      "sourceTreeFingerprint": "b6907e1b673ed9ffc44db149a4a41abbdee126705f2bef64ae359a5613b7f56e",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -12473,8 +12455,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -12520,7 +12502,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 32,
+    "nextGeneration": 33,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -12582,5 +12564,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-30T05:57:57.026Z"
+  "generatedAt": "2026-10-30T10:44:19.764Z"
 }
