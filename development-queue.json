@@ -2370,8 +2370,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -2397,7 +2397,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-30T11:26:02.762Z",
+      "updatedAt": "2026-10-30T11:28:50.331Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -9324,74 +9324,9 @@
         "updatedAt": "2026-10-30T11:28:29.717Z"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T07:55:20.643Z"
-    },
-    {
-      "gameId": "forgotten-continent",
-      "seedId": "AUTO-MISSING-DESIGN-FORGOTTEN-CONTINENT",
-      "gameName": "잊혀진 대륙 | 2D 생존",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
-      "bidirectionalAutoPair": false,
-      "requestEitherStartsBoth": false,
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/forgotten-continent"
-      },
-      "robloxProjectPath": "roblox-games/forgotten-continent",
-      "targetSourcePath": "roblox-games/forgotten-continent",
-      "sourcePath": "roblox-games/forgotten-continent",
-      "designBaselineSource": "design/forgotten-continent/2026-10-26/design-revised.json",
-      "designDate": "2026-10-26",
-      "minimumDesignContract": {
-        "version": 1,
-        "pass": true,
-        "source": "design/forgotten-continent/2026-10-26/design-revised.json",
-        "date": "2026-10-26",
-        "releaseChecklist": {
-          "identity": true,
-          "coreLoop": true,
-          "sessionRules": true,
-          "signatureSystems": true,
-          "presentation": true
-        },
-        "commonCoreReady": true,
-        "platformProfiles": {
-          "ROBLOX": true,
-          "UNITY": true,
-          "distinct": true
-        }
-      },
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/forgotten-continent/2026-10-26/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        }
-      },
-      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
-      "ownerPreservationPresentationUpgrade": false,
-      "presentationFirstPass": null,
-      "internalReleaseTarget": {
-        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
-      },
-      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
-      "enqueuedAt": "2026-10-30T11:20:59.520Z",
-      "updatedAt": "2026-10-30T11:23:05.459Z",
-      "lifecycleState": "ACTIVE",
-      "saveNormalizationRequired": true,
-      "saveMeaningPreservationRequired": true,
-      "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-30T11:28:29.717Z",
+  "updatedAt": "2026-10-30T11:28:50.331Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -9457,6 +9392,5 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "executionContractVersion": 1
 }
