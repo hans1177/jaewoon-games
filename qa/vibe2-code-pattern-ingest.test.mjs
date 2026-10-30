@@ -501,6 +501,27 @@ test('source-bound multi-module ESM repair binds independent same-game actions o
     assert.equal(fs.readFileSync(modulePaths[i],'utf8'),Object.values(modules)[i]);
   fs.writeFileSync(file,updated);
   assert.equal(deterministicWebInputCandidate(args),null,'repeat cannot append duplicate handlers');
+  // A module script is deferred by HTML parsing, so controls below it exist on execution.
+  const deferredHtml=[
+    '<script type="module">',
+    'import {attack} from "./game/attack.mjs";',
+    'import {gather} from "./game/gather.mjs";',
+    'import {rest} from "./game/rest.mjs";',
+    '</script>',
+    '<button id="fight" data-gameplay-action="attack">Fight</button>',
+    '<button id="mining" data-gameplay-action="gather">Gather</button>',
+    '<button id="recover" data-gameplay-action="rest">Rest</button>'
+  ].join('\\n');
+  fs.writeFileSync(file,deferredHtml);
+  const deferredCandidate=deterministicWebInputCandidate(args);
+  assert.equal(deferredCandidate?.deterministicWebModuleInput,true,
+    'deferred ESM must support controls following its script tag');
+  const deferredLinked=deferredHtml.replace(deferredCandidate.edits[0].find,deferredCandidate.edits[0].replace);
+  for(const id of ['fight','mining','recover'])
+    assert.match(deferredLinked,new RegExp('getElementById\\\\("'+id+'"\\\\)\\\\.addEventListener\\\\("click"'));
+  fs.writeFileSync(file,deferredLinked);
+  assert.equal(deterministicWebInputCandidate(args),null,
+    'deferred module button binding remains idempotent');
   const blocked=[
     original.replace('import {rest} from "./game/rest.mjs";','import {attack} from "./game/rest.mjs";'),
     original.replace('import {gather} from "./game/gather.mjs";','import {gather as other} from "./game/gather.mjs";'),
