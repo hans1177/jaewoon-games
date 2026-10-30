@@ -2370,8 +2370,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -2397,7 +2397,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-30T11:28:50.331Z",
+      "updatedAt": "2026-10-30T11:30:28.164Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3142,8 +3142,8 @@
           "GAME_START"
         ],
         "robloxFailureClass": "ROBLOX_TOUCH_INPUT",
-        "testedAt": "2026-10-30T11:26:02.762Z",
-        "workflowRunId": 41046385585,
+        "testedAt": "2026-10-30T11:30:28.164Z",
+        "workflowRunId": 41046711344,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
@@ -3388,8 +3388,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-30T11:26:02.762Z",
-        "workflowRunId": 41046385585,
+        "testedAt": "2026-10-30T11:30:28.164Z",
+        "workflowRunId": 41046711344,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -4117,12 +4117,16 @@
         "artifactIdentity": "sha256:07d86f6c73e55c343cbeaef03a75d28260f2f6569292c8f2d49afa0449054c0f",
         "artifactRunId": 41045107678,
         "candidateVersionNumber": 10,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "COMPLETED_PRODUCT_FAILURE",
         "queuedAt": "2026-10-30T11:18:24.156Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "completedAt": "2026-10-30T11:30:28.164Z",
+        "resultPass": false,
+        "infrastructureFailure": false,
+        "currentSourceArtifactBinding": true
       },
       "robloxNativeFailureClass": "ROBLOX_TOUCH_INPUT",
       "robloxF9PendingInParallel": false
@@ -9326,7 +9330,7 @@
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T07:55:20.643Z"
     }
   ],
-  "updatedAt": "2026-10-30T11:28:50.331Z",
+  "updatedAt": "2026-10-30T11:30:28.164Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
