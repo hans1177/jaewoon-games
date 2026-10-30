@@ -1873,8 +1873,8 @@ test('fantasy arrival shows native world title, actual map preloads, safe resume
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   assert.match(client,/Name="MeadowArrivalScreen"/);
-  assert.match(client,/Name="MeadowTitle"/);
-  assert.match(client,/Name="MeadowMapLoading"/);
+  assert.match(client,/panel\("MeadowTitle",390,306\)/);
+  assert.match(client,/panel\("MeadowMapLoading",440,324\)/);
   assert.match(client,/Name="FirstArrivalScene"/);
   assert.match(client,/CameraType=Enum.CameraType.Scriptable/);
   assert.match(client,/restoreCamera\(\)/);
