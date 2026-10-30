@@ -975,3 +975,61 @@ globalThis.fetch=async(url,options={})=>{
     assert.match(ids,/tree=900007/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill families are actually bound',()=>{
+  const cfg=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const sourceMotion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const sourceSkill=fs.readFileSync('assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau','utf8');
+  const sourceVFX=fs.readFileSync('assets/roblox/common-vfx-v1/RobloxCommonVFX.luau','utf8');
+  const actions=[...cfg.matchAll(/\{ Id = "([^"]+)", Label = "([^"]+)", Kind = "([^"]+)", Order = (\d+)/g)];
+  assert.equal(actions.length,21,'10 existing actions + 11 meadow skills');
+  assert.equal(new Set(actions.map(row=>row[1])).size,21,'all actions have unique real server routes');
+  for(const [,,label,kind] of actions){
+    assert.ok(label.length>0 && ['COMBAT','SURVIVAL','GATHER','PROGRESSION','SKILL'].includes(kind));
+  }
+  const skillRows=cfg.split('\n').filter(row=>row.includes('Id = "skill-meadow-'));
+  assert.equal(skillRows.length,11);
+  for(const row of skillRows){
+    const id=row.match(/Id = "([^"]+)"/)?.[1];
+    const motion=row.match(/MotionAtom = "([^"]+)"/)?.[1];
+    const skill=row.match(/SkillAtom = "([^"]+)"/)?.[1];
+    const vfx=row.match(/VfxAtom = "([^"]+)"/)?.[1];
+    assert.ok(server.includes('["'+id+'"]'),'server handler is wired: '+id);
+    assert.ok(sourceMotion.includes(motion+' = table.freeze('),'real shared R15 motion: '+motion);
+    if(skill)assert.ok(sourceSkill.includes('id == "'+skill+'"'),'real shared skill: '+skill);
+    if(vfx)assert.ok(sourceVFX.includes('id == "'+vfx+'"'),'real shared VFX: '+vfx);
+  }
+  for(const id of ['meadow-unarmed-rush','meadow-unarmed-uppercut','meadow-unarmed-kick',
+    'meadow-unarmed-elbow'])assert.ok(cfg.includes('Id = "'+id+'"'),'existing weaponless martial action is retained');
+  for(const move of ['U:JAB_LEFT','U:CROSS_RIGHT','U:HOOK_LEFT','U:UPPERCUT_RIGHT','U:ROUND_KICK_R']){
+    assert.ok(client.includes('"'+move+'"'),'source-authored weaponless R15 pose retained: '+move);
+    assert.ok(sourceMotion.includes('id="'+move.slice(2)+'"'));
+  }
+  for(const mob of ['wolf','bee','golem'])assert.ok(server.includes('"'+mob+'"'));
+  for(const pattern of ['WOLF_BITE','WOLF_LUNGE','BEE_SWEEP','BEE_STING',
+    'GOLEM_SLAM','GOLEM_SHOCKWAVE'])assert.ok(server.includes('"'+pattern+'"'));
+  assert.match(server,/local function animateMeadowOriginalMob\(/);
+  assert.match(server,/local function chooseMeadowMobSkill\(/);
+  assert.match(server,/model:GetAttribute\("NativeMobMotion"\)/);
+  assert.match(server,/remote:FireAllClients\("MEADOW_MOB_ATTACK"/);
+  assert.match(server,/remote:FireAllClients\("MEADOW_MOB_DEATH"/);
+  assert.match(server,/meadowDefense\[player\]/);
+  assert.match(server,/meadowSkillCooldown\[player\]/);
+  assert.match(server,/player:SetAttribute\("ApprovedActionMotion"/);
+  assert.match(server,/player:SetAttribute\("ApprovedActionFX"/);
+  assert.match(client,/NativeActionGrid/);
+  assert.match(client,/GetAttributeChangedSignal\("ApprovedActionMotion"\)/);
+  assert.match(client,/GetAttributeChangedSignal\("ApprovedActionFX"\)/);
+  assert.match(client,/SampleProceduralActorMotion\(/);
+  assert.match(client,/MapCombatPoseToR15\(/);
+  assert.match(client,/RobloxCommonSkillPresentation/);
+  assert.match(client,/RobloxCommonVFX/);
+  assert.match(client,/GetAttributeChangedSignal\("Species"\):Once/);
+  assert.doesNotMatch(server,/Instance\.new\("Part"\)/,'no fake creature models or world geometry');
+  assert.doesNotMatch(client,/Instance\.new\("Part"\)/,'original CC0 mobs and R15 only');
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,
+    'original save writer is unchanged');
+});
