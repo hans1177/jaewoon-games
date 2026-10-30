@@ -876,6 +876,9 @@ local function spawnEnemy(isBoss, index)
     baseHeight=location.Y,visualFacing=Vector3.new(0,0,-1),
     visualPosition=location,visualFacingSmooth=Vector3.new(0,0,-1)
   })
+  if isBoss then
+    remote:FireAllClients("MEADOW_BOSS_INTRO",{model=model,name=model.Name,wave=CurrentWave})
+  end
   return true
 end
 

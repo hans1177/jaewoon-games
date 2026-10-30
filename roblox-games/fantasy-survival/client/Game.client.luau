@@ -844,15 +844,26 @@ end
 -- 이동·전투·카메라·저장에는 관여하지 않으며 입력 즉시 건너뛸 수 있다.
 do
   local shown=false
+  local lastBossWave=0
+  local sceneCamera,sceneType,sceneSubject,sceneTween=nil,nil,nil,nil
   local intro=nil
   local inputConnection=nil
   local function closeIntro()
+    if sceneTween then sceneTween:Cancel();sceneTween=nil end
+    if sceneCamera and sceneCamera:GetAttribute("MeadowBossScene")==true then
+      sceneCamera.CameraType=sceneType
+      if sceneSubject and sceneSubject.Parent then sceneCamera.CameraSubject=sceneSubject end
+      sceneCamera:SetAttribute("MeadowBossScene",nil)
+    end
+    sceneCamera=nil
     if inputConnection then inputConnection:Disconnect();inputConnection=nil end
     if intro then intro:Destroy();intro=nil end
   end
-  local function showIntro()
-    if shown or player:GetAttribute("ProfileReady")~=true then return end
-    shown=true
+  local function showIntro(boss)
+    local bossScene=typeof(boss)=="table"
+    if (shown and not bossScene) or player:GetAttribute("ProfileReady")~=true then return end
+    if not bossScene then shown=true end
+    closeIntro()
     if gui:GetAttribute("GameMenuOpen")==true then return end
     intro=Instance.new("Frame");intro.Name="MeadowStoryIntro"
     intro.AnchorPoint=Vector2.new(.5,.5);intro.Position=UDim2.fromScale(.5,.43)
@@ -863,13 +874,13 @@ do
     local heading=Instance.new("TextLabel");heading.BackgroundTransparency=1
     heading.Position=UDim2.fromOffset(16,12);heading.Size=UDim2.new(1,-32,0,26)
     heading.Font=Enum.Font.GothamBold;heading.TextSize=18;heading.TextColor3=Color3.fromRGB(245,229,181)
-    heading.Text=Config.StoryRecords and Config.StoryRecords[1].Title or "마력숲 · 초원 탐사"
+    heading.Text=bossScene and tostring(boss.name or "초원 수문장") or (Config.StoryRecords and Config.StoryRecords[1].Title or "마력숲 · 초원 탐사")
     heading.ZIndex=56;heading.Parent=intro
     local detail=Instance.new("TextLabel");detail.BackgroundTransparency=1
     detail.Position=UDim2.fromOffset(16,44);detail.Size=UDim2.new(1,-32,0,52)
     detail.Font=Enum.Font.GothamMedium;detail.TextSize=13;detail.TextWrapped=true
     detail.TextColor3=Color3.fromRGB(231,243,226)
-    detail.Text=Config.StoryRecords and Config.StoryRecords[1].Text or "초원의 단서를 따라 연구 기록을 모아 봐."
+    detail.Text=bossScene and "초원의 수문장이 깨어났다." or (Config.StoryRecords and Config.StoryRecords[1].Text or "초원의 단서를 따라 연구 기록을 모아 봐.")
     detail.ZIndex=56;detail.Parent=intro
     local skip=Instance.new("TextButton");skip.BackgroundTransparency=1
     skip.AnchorPoint=Vector2.new(1,1);skip.Position=UDim2.fromScale(1,1);skip.Size=UDim2.fromOffset(144,44)
@@ -877,13 +888,36 @@ do
     skip.TextColor3=Color3.fromRGB(170,221,190);skip.ZIndex=57;skip.Parent=intro
     skip.Activated:Connect(closeIntro)
     inputConnection=UserInputService.InputBegan:Connect(function(input,processed)
-      if not processed and (input.UserInputType==Enum.UserInputType.Touch
-        or input.UserInputType==Enum.UserInputType.MouseButton1 or input.KeyCode==Enum.KeyCode.W
+      if input.UserInputType==Enum.UserInputType.Touch or (not processed and (input.UserInputType==Enum.UserInputType.MouseButton1 or input.KeyCode==Enum.KeyCode.W
         or input.KeyCode==Enum.KeyCode.A or input.KeyCode==Enum.KeyCode.S or input.KeyCode==Enum.KeyCode.D
-        or input.KeyCode==Enum.KeyCode.Space) then closeIntro() end
+        or input.KeyCode==Enum.KeyCode.Space)) then closeIntro() end
     end)
-    task.delay(2.5,closeIntro)
+    if bossScene then
+      local model=boss.model
+      local mesh=typeof(model)=="Instance" and model:IsDescendantOf(workspace) and model:FindFirstChildWhichIsA("MeshPart",true)
+      local camera=workspace.CurrentCamera
+      if mesh and camera and not reducedEffects then
+        sceneCamera=camera;sceneType=camera.CameraType;sceneSubject=camera.CameraSubject
+        camera:SetAttribute("MeadowBossScene",true);camera.CameraType=Enum.CameraType.Scriptable
+        local focus=mesh.Position
+        local eye=focus+Vector3.new(12,6,14)
+        local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Exclude;ray.FilterDescendantsInstances={model,player.Character}
+        local wall=workspace:Raycast(focus,eye-focus,ray)
+        if wall then eye=wall.Position+(focus-wall.Position).Unit*1.5 end
+        sceneTween=game:GetService("TweenService"):Create(camera,TweenInfo.new(.3),{CFrame=CFrame.lookAt(eye,focus)})
+        sceneTween:Play()
+      end
+    end
+    local current=intro
+    task.delay(bossScene and 1.5 or 2.5,function()if intro==current then closeIntro()end end)
   end
+  remote.OnClientEvent:Connect(function(kind,payload)
+    if kind=="MEADOW_BOSS_INTRO" and typeof(payload)=="table" and typeof(payload.wave)=="number" and payload.wave>lastBossWave then
+      lastBossWave=payload.wave;showIntro(payload)
+    end
+  end)
+  player.CharacterAdded:Connect(closeIntro)
+  player:GetAttributeChangedSignal("Health"):Connect(function()if sceneCamera then closeIntro()end end)
   player:GetAttributeChangedSignal("ProfileReady"):Connect(showIntro)
   gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()if gui:GetAttribute("GameMenuOpen")==true then closeIntro()end end)
   task.defer(showIntro)

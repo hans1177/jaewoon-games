@@ -1336,7 +1336,7 @@ test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한
  assert.match(client,/info.Story or ""/);
  assert.match(client,/questTracker.Activated:Connect\(function\(\)meadowMenu.open\(3\)end\)/);
  assert.doesNotMatch(client,/local journalShade=/);
- assert.match(client,/task.delay\(2\.5,closeIntro\)/);
+ assert.match(client,/task.delay\(bossScene and 1\.5 or 2\.5/);
  assert.match(client,/skip.Activated:Connect\(closeIntro\)/);
  assert.match(client,/PromptShown:Connect/);assert.match(client,/PromptHidden:Connect/);
  assert.match(client,/plate.AlwaysOnTop=false;plate.MaxDistance=55/);
