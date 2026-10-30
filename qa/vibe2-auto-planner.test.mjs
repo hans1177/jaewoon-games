@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks, robloxQualityRepairFiles, webRuntimeFailureBuildUpInstruction } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, adaptiveWebDevelopmentTarget, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks, robloxQualityRepairFiles, webRuntimeFailureBuildUpInstruction, synchronizeQueuedBuildUpDirectives } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
@@ -60,6 +60,56 @@ test('existing Vibe BUILD_UP promotes only source-identified Web runtime failure
   assert.match(webRuntimeFailureBuildUpInstruction({...project,queueRuntimeRootCauseVerified:true}),/root-cause-verified=YES/);
   const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
   assert.match(planner,/if\(project\.engine==='web'\)adaptedGoal\+=webRuntimeFailureBuildUpInstruction\(project\)/);
+});
+
+test('Vibe reuses exact queued game primary work for unverified per-game bottleneck without pretending PASS',()=>{
+  const root=tempRepo(),id='game-bottleneck-a',revision='a'.repeat(40);
+  const sourceRoot='web-games/'+id;
+  fs.mkdirSync(path.join(root,sourceRoot),{recursive:true});
+  fs.writeFileSync(path.join(root,sourceRoot,'index.html'),'<canvas id="game"></canvas>','utf8');
+  const task={id:'existing-game-primary',gameId:id,target:'web',sourceRoot,
+    department:'development',type:'implementation',executionLane:'GAME_PRIMARY',
+    sourceRevision:revision,responsibleFiles:[sourceRoot+'/index.html'],
+    goal:'기존 게임 완성도 향상',priority:'normal',status:'queued',dependencies:[]};
+  const project={gameId:id,engine:'web',projectPath:sourceRoot,
+    queueRuntimeObserved:true,queueRuntimePassed:false,queueRuntimeEvidencePlatform:'WEB',
+    queueRuntimeFailureStage:'WEB_POST_PUBLICATION_PLAYTEST',
+    queueRuntimeFailureSignature:'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED',
+    queueRuntimeSourceRevision:revision,queueRuntimeRootCauseVerified:false};
+  try{
+    const original=createVibeContinuousQueue({tasks:[task],maxConcurrentTasks:5});
+    const first=synchronizeQueuedBuildUpDirectives(original,[project],root);
+    assert.equal(first.queue.tasks.length,1);
+    const routed=first.queue.tasks[0];
+    assert.equal(routed.status,'queued');
+    assert.equal(routed.priority,'high');
+    assert.match(routed.goal,/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/);
+    assert.match(routed.goal,/근본 원인: 미검증/);
+    assert.match(routed.goal,/WEB_POST_PUBLICATION_PLAYTEST/);
+    assert.match(routed.goal,/WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED/);
+    assert.ok(routed.goal.includes('기존 게임 완성도 향상'));
+    assert.ok(routed.evidence.includes('game-bottleneck-current:'+id+'|WEB|WEB_POST_PUBLICATION_PLAYTEST|'+revision));
+    const again=synchronizeQueuedBuildUpDirectives(first.queue,[project],root);
+    assert.equal((again.queue.tasks[0].goal.match(/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/g)||[]).length,1);
+    assert.equal(again.queue.tasks[0].evidence.filter(e=>e.startsWith('game-bottleneck-current:')).length,1);
+    for(const changed of [
+      {project:{...project,queueRuntimeObserved:false},task},
+      {project:{...project,queueRuntimePassed:true},task},
+      {project:{...project,queueRuntimeSourceRevision:'b'.repeat(40)},task},
+      {project:{...project,queueRuntimeEvidencePlatform:'ROBLOX'},task},
+      {project:{...project,ownerDevelopmentHold:true},task},
+      {project,task:{...task,status:'running',reservationId:'live'}},
+      {project,task:{...task,assetProductionLane:true,executionLane:'ASSET_DEVELOPMENT'}},
+      {project,task:{...task,requiresOwnerDecision:true}},
+      {project,task:{...task,responsibleFiles:['web-games/another/index.html']}},
+      {project,task:{...task,sourceRevision:'b'.repeat(40)}}
+    ]){
+      const result=synchronizeQueuedBuildUpDirectives(
+        createVibeContinuousQueue({tasks:[changed.task],maxConcurrentTasks:5}),[changed.project],root);
+      assert.doesNotMatch(result.queue.tasks[0].goal,/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/,
+        'unverified, unowned, reserved, held or mismatched work must stay untouched');
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 // 소스 구조 검사 전용 3D fixture. 실행 성공이나 런타임 검증을 뜻하지 않는다.
