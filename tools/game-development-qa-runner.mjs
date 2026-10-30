@@ -88,12 +88,19 @@ export function runGameQa({selected=[],repoRoot=ROOT,execute=false,timeoutMs=120
     // LAST 3.5k of a 37+ case suite (which frequently contains only PASS lines).
     const failedSubtests=[...String(check.stdout||'').matchAll(/^not ok \d+ - (.+)$/gm)]
       .map(match=>match[1].trim()).slice(0,24);
+    // [QA 오류 진단] 실패한 TAP 블록에서 첫 실제 오류만 수집해 다음 수정이 추측에 의존하지 않게 한다.
+    // 성공/실패 기준과 실행 테스트 집합은 그대로 유지한다.
+    const failedReasons=[...String(check.stdout||'').matchAll(/^not ok \d+ - ([^\r\n]+)\r?\n([\s\S]*?)(?=^(?:not ok |ok \d+ - |1\.\.)|$(?![\s\S]))/gm)]
+      .slice(0,24).map((match)=>{
+        const message=match[2].match(/^\s+error:\s*(?:\|-\s*\r?\n\s*)?([^\r\n]+)/m);
+        return {name:match[1].trim(),reason:String(message?.[1]||'TAP_ASSERTION_DETAIL_NOT_CAPTURED').slice(0,220)};
+      });
     results.push({
       gameId:game.gameId,testCount:game.tests.length,
       state:passed?'GAME_QA_PASSED':'GAME_QA_FAILED',
       exitCode:check.status,
       error:check.error?.message||null,
-      failedSubtests,
+      failedSubtests,failedReasons,
       outputTail:(check.stdout||'').slice(-3500),
       errorTail:(check.stderr||'').slice(-1200)
     });
@@ -160,6 +167,8 @@ function main(){
   for(const r of report.results)console.log('GAME_SCOPED_QA='+r.gameId+':'+r.state);
   for(const r of report.results)for(const name of (r.failedSubtests||[]))
     console.log('GAME_SCOPED_QA_FAILED_SUBTEST='+r.gameId+':'+name);
+  for(const r of report.results)for(const row of (r.failedReasons||[]))
+    console.log('GAME_SCOPED_QA_FAILED_ASSERTION='+r.gameId+':'+row.name+':'+row.reason);
   if(!report.pass||(options['require-merge-ready']===true&&!report.mergeReady))process.exitCode=1;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))main();
