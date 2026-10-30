@@ -977,6 +977,19 @@ test('fantasy meadow uses genuine Roblox R15 motion, skill and VFX modules with 
   assert.match(client,/RobloxCommonSkillPresentation/);
   assert.match(client,/RobloxCommonVFX/);
   assert.match(client,/NativeActionGrid/);
+  assert.match(client,/local profile=weaponProfile or "UNARMED"/);
+  assert.match(client,/combatMotionSource.CreateCombatCombo,profile,unarmedMoves/);
+  for(const move of ["U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:UPPERCUT_RIGHT","U:FRONT_KICK_L"]){
+    assert.ok(client.includes(move),"player weaponless action source: "+move);
+    assert.ok(sourceMotion.includes('id="'+move.slice(2)+'"'),"genuine Roblox unarmed pose: "+move);
+  }
+  assert.ok(server.includes('readNumber(player,"WeaponTier",0)'),
+    "zero weapon tier remains valid for melee damage");
+  assert.ok(!/if not tool then return false/.test(server),
+    "no equipped weapon is never a mandatory combat prerequisite");
+  assert.ok(config.includes('맨손 가능'));
+  assert.ok(config.includes('SHIELD_SHELL'));
+
   assert.doesNotMatch(client,/Humanoid:TakeDamage|DataStoreService|Instance\.new\("Part"\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'preserve exact existing save writer');
 });
