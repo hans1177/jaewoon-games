@@ -1211,7 +1211,7 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   assert.match(client,/constraint and joint.Attachment1.WorldPosition/);
   assert.doesNotMatch(client,/\(joint:IsA\("Motor6D"\) or joint:IsA\("AnimationConstraint"\)\)\s*and joint.Part0/);
   assert.match(client,/joint:IsA\("Bone"\)/);
-  assert.match(client,/if sourceChannels\[name\] and not joints\[name\] then/);
+  assert.match(client,/if sourceChannels\[name\] and \(not joints\[name\] or constraint\) then/);
   assert.match(client,/FLKnee=true,FRKnee=true,BLKnee=true,BRKnee=true/);
   assert.match(client,/local actualRig=count>=2 and movingJoints==true/);
   assert.match(client,/UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET/);
