@@ -273,6 +273,7 @@ jobs:
           if [[ -n "${REUSE_UNIVERSE_ID:-}" && -n "${REUSE_PLACE_ID:-}" ]]; then
             args+=(--reuse-universe-id "$REUSE_UNIVERSE_ID" --reuse-place-id "$REUSE_PLACE_ID")
           fi
+          if [[ "$GAME_ID" == 'fantasy-survival' ]]; then args+=(--avatar-rig R15); fi
           node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
 
       - name: Upload dedicated publication evidence
