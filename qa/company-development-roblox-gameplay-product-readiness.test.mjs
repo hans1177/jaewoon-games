@@ -81,7 +81,7 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/local function createStartingMeadow\(\)/);
   assert.match(server,/meadowTerrain:FillBlock\(/);
   assert.match(server,/meadowTerrain:FillBall\(/);
-  assert.match(server,/local function worldAsset\(id, location, targetHeight\)/);
+  assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
   assert.match(server,/local modelId = NativeCreatureAssets\[id\]/);
   assert.match(server,/AssetService:LoadAssetAsync\(modelId\)/);
   assert.match(server,/template:FindFirstChildWhichIsA\("MeshPart",true\)/);

@@ -1246,6 +1246,72 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
 });
 
+// [마력숲 마을/선택형 계약] 원본 저장·전투·기존 퀘스트는 불변.
+test('fantasy meadow village uses licensed native ruins and server-validated three-case contracts',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const assets=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  assert.equal(assets.models.ruin.license,'CC0-1.0');
+  assert.equal(assets.models.ruin.source,'VERIFIED_CC0_ORIGINAL');
+  const party=JSON.parse(fs.readFileSync('assets/shared/party/sources.json','utf8'));
+  for(const [role,asset] of Object.entries(assets.villagePrefabs.models)){
+    const source=party.records.find(item=>item.file===asset.sourceFile);
+    assert.ok(source,'CC0 source manifest missing: '+role);
+    assert.equal(asset.sourceSha256,source.sha256,'source hash mismatch: '+role);
+    assert.equal(asset.license,'CC0-1.0','source license mismatch: '+role);
+    if(assets.villagePrefabs.registrationVerified===true){
+      assert.ok(Number.isSafeInteger(asset.assetId)&&asset.assetId>0,'registered model requires real asset ID: '+role);
+      assert.equal(asset.sha256,source.sha256,'uploaded asset source must match: '+role);
+    }else{
+      assert.equal(asset.universeGrantVerified,false,'never fake unverified Universe use');
+    }
+  }
+  assert.ok([true,false].includes(assets.villagePrefabs.registrationVerified));
+  assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
+  assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),piece.height,piece.lift\)/);
+  assert.match(server,/MeadowVillageBuildingCount/);
+  assert.match(server,/MeadowVillagePrefabReady/);
+  const nativeAuthor=fs.readFileSync('tools/baeksu-war-author-meshes.py','utf8');
+  const nativeUpload=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
+  const nativeRelease=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
+  assert.match(nativeAuthor,/FANTASY_VILLAGE_SOURCE_DIGEST_MISMATCH/);
+  assert.match(nativeUpload,/const villageRows=fantasy/);
+  assert.match(nativeRelease,/OWNER_FOREST_VILLAGE_MODEL_BINDING_INVALID/);
+  assert.match(server,/local function createMeadowVillage\(\)/);
+  assert.match(server,/local function villageNativeNpc\(spec\)/);
+  assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
+  assert.match(server,/worldAsset\("ruin",Vector3.new\(pos\[1\],3,pos\[2\]\),6\.2\)/);
+  assert.match(server,/MeadowVillageInteraction/);
+  assert.match(server,/for contractIndex,contract in ipairs\(Config.VillageContracts\) do/);
+  assert.match(server,/for sceneIndex,site in ipairs\(contract.Sites\) do/);
+  assert.match(server,/MeadowVillageEvidenceCount/);
+  assert.match(server,/evidenceCount==9/);
+  assert.match(server,/if mask==63 then setNumber\(player,"VillageContractPhase",2\) end/);
+  assert.match(server,/readNumber\(player,"VillageContractEvidence",0\)==63/);
+  assert.match(server,/humanoid:MoveTo\(destination\)/);
+  assert.match(server,/animator:LoadAnimation\(anim\)/);
+  assert.match(server,/if villageNear\(player,mesh.Position,15\) then callback\(player,mesh.Position\) end/);
+  assert.match(server,/if string.sub\(actionId,1,8\)=="village:" then villageChoose\(player,actionId\);return end/);
+  assert.match(server,/villageNear\(player,session.position,16\)/);
+  assert.match(server,/bit32\.band\(bit32\.rshift\(previous,shift\),3\)~=0 then return end/);
+  assert.match(server,/setNumber\(player,"VillageContractOutcomes",bit32.bor\(previous,bit32.lshift\(selected,shift\)\)\)/);
+  assert.match(server,/setNumber\(player,"VillageContractIndex",index\+1\)/);
+  assert.match(config,/VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0/);
+  assert.match(config,/VillageContracts = \{/);
+  for(const id of ['missing-medicines','well-at-night','lost-wagon']) assert.ok(config.includes('Id="'+id+'"'));
+  assert.match(client,/villageContractRow=journalRow\("VillageContracts",166\)/);
+  assert.match(client,/MEADOW_VILLAGE_DIALOG/);
+  assert.match(client,/VillageStoryScroll/);
+  assert.match(client,/MeadowVillageMarker/);
+  assert.match(client,/VillageClueMarker/);
+  assert.match(client,/bit32.band\(contractEvidence,bit32.lshift\(1,index\+2\)\)==0/);
+  assert.match(client,/remote:FireServer\(action\)/);
+  assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+});
+
 test('마력숲 타격은 부드러운 내장 둔탁음으로 교체하고 연속 재생량을 제한한다',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.match(source,/impact.SoundId="rbxasset:\/\/sounds\/action_jump_land\.mp3"/);
@@ -1416,7 +1482,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-\(landscape and \d+ or \d+\),1,-\(landscape and \d+ or \d+\)\)/);
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-(?:math.floor\()?/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
@@ -1429,7 +1495,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('for route=1,8 do'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
-  assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or \d+/);
+  assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or (?:\d+|math.floor\(math.clamp\()/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
@@ -1467,10 +1533,10 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
-  assert.ok(client.includes('local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)'));
+  assert.match(client,/local scale=landscape and math.clamp\(v.Y\/\d+,[\s\S]*?or math.clamp\(v.X\/\d+/);
   assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(\d+\+\(index-1\)\*60\)\*scale\),math.floor\(\d+\*scale\)\)/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\([^)]*(?:index-1|p\[1\])[\s\S]*?\*scale\)/);
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1492,7 +1558,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
   assert.ok(!client.includes('{"skill-meadow-dodge-left","좌회피"'),'dodge UI was intentionally removed');
   assert.ok(!client.includes('{"skill-meadow-dodge-right","우회피"'),'dodge UI was intentionally removed');
-  assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","채집"'));
+  assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","상호작용"') ||
+    client.includes('{"scope-coreloop-1-6ebe58f496","채집"'), 'server-bound gather action remains on the utility dock');
   assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);

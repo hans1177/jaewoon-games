@@ -267,7 +267,7 @@ task.defer(function()
   gameWorld:SetAttribute("MeadowOuterRegionReady",true)
 end)
 
-local function worldAsset(id, location, targetHeight)
+local function worldAsset(id, location, targetHeight, heightAboveGround)
   local modelId = NativeCreatureAssets[id]
   if typeof(modelId) ~= "number" or modelId < 1 then
     warn("마력숲 등록된 CC0 초원 자산 없음: "..id)
@@ -410,7 +410,7 @@ local function worldAsset(id, location, targetHeight)
       end
     end
     if underside==math.huge then clone:Destroy();error("MEADOW_VISIBLE_CC0_MESH_MISSING") end
-    clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y+.15-underside,0))
+    clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y+.15-underside+(heightAboveGround or 0),0))
     clone:SetAttribute("MeadowSurfaceY",ground.Position.Y)
     clone.Name="Meadow_"..id
     clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
@@ -421,6 +421,417 @@ local function worldAsset(id, location, targetHeight)
   if not ok then warn("마력숲 CC0 초원 자산 로딩/권한 실패: "..id..": "..tostring(result)) end
   return ok and result or nil
 end
+
+-- [초원 마을] 원래의 네이티브 Terrain·등록 CC0 석벽·Roblox R15 아바타만 이용한다.
+-- 건축용 임의 Part/실린더를 만들지 않으며 원본 채집·몬스터 좌표와 저장키는 유지한다.
+local villageSessions={}
+local villageInteractionCooldown={}
+local villageCenter=Vector3.new(0,3,-111)
+local function villageNear(player,position,radius)
+  if player.Parent~=Players or player:GetAttribute("ProfileReady")~=true then return false end
+  local character=player.Character
+  local root=character and character:FindFirstChild("HumanoidRootPart")
+  return root~=nil and (root.Position-position).Magnitude<=radius
+end
+local function villageCurrentContract(player)
+  local index=math.clamp(readNumber(player,"VillageContractIndex",1),1,#Config.VillageContracts+1)
+  return index,Config.VillageContracts[index]
+end
+local function villageDialogue(player,title,message,options)
+  remote:FireClient(player,"MEADOW_VILLAGE_DIALOG",{
+    title=title,message=message,options=options or {},
+  })
+end
+local function villageBoardDialogue(player,sourcePosition)
+  local index,contract=villageCurrentContract(player)
+  if not contract then
+    villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 메인 연구 일지는 그대로 이어져.")
+    return
+  end
+  local phase=readNumber(player,"VillageContractPhase",0)
+  villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+40}
+  if phase==0 then
+    villageDialogue(player,"의뢰판 · "..contract.Name,contract.Summary.."\n\n수락하면 마을 주민 세 명의 단서를 확인할 수 있어.",{
+      {label="의뢰 수락",action="village:accept"},
+    })
+  elseif phase==1 then
+    local mask=readNumber(player,"VillageContractEvidence",0)
+    local discovered=0
+    for slot=0,5 do if bit32.band(mask,bit32.lshift(1,slot))~=0 then discovered+=1 end end
+    villageDialogue(player,"조사 중 · "..contract.Name,contract.Summary..
+      "\n\n단서 "..discovered.."/6 · 주민 3명과 현장 조사 지점 3곳을 확인해.")
+  else
+    villageDialogue(player,"결정 · "..contract.Name,contract.Summary..
+      "\n\n단서를 모두 모았어. 어떤 선택에도 결과가 남고 한 번만 보상을 받아.",{
+      {label=contract.Choices[1].Label,action="village:resolve:1"},
+      {label=contract.Choices[2].Label,action="village:resolve:2"},
+    })
+  end
+end
+local function villageInvestigate(player,clueIndex,role,sceneContractIndex)
+  local index,contract=villageCurrentContract(player)
+  if sceneContractIndex and index~=sceneContractIndex then
+    villageDialogue(player,role,"이 흔적은 다른 사건에 속해. 현재 마을 의뢰를 먼저 확인해.")
+    return
+  end
+  if not contract then
+    villageDialogue(player,role,"모든 마을 의뢰가 끝났어. 남은 주민의 사정은 네가 선택한 결과에 따라 달라졌어.")
+    return
+  end
+  if readNumber(player,"VillageContractPhase",0)~=1 then
+    villageDialogue(player,role,"먼저 마을 중앙의 촌장 나린 또는 의뢰판에서 의뢰를 확인해.")
+    return
+  end
+  local mask=readNumber(player,"VillageContractEvidence",0)
+  local bit=bit32.lshift(1,clueIndex-1)
+  if bit32.band(mask,bit)==0 then
+    mask=bit32.bor(mask,bit)
+    setNumber(player,"VillageContractEvidence",mask)
+    if mask==63 then setNumber(player,"VillageContractPhase",2) end
+  end
+  local clue=clueIndex<=3 and contract.Clues[clueIndex] or contract.Scenes[clueIndex-3]
+  local note=mask==63 and "\n\n이제 촌장에게 돌아가 어느 쪽을 믿을지 결정해."
+    or "\n\n마을의 다른 진술과 현장 흔적도 조사해."
+  villageDialogue(player,role,clue..note)
+end
+local function villageChoose(player,actionId)
+  if os.clock()-(villageInteractionCooldown[player] or 0)<.35 then return end
+  local session=villageSessions[player]
+  if not session or os.clock()>session.expires
+    or not villageNear(player,session.position,16) then return end
+  local index,contract=villageCurrentContract(player)
+  if not contract then return end
+  local phase=readNumber(player,"VillageContractPhase",0)
+  if actionId=="village:accept" and phase==0 then
+    setNumber(player,"VillageContractPhase",1)
+    setNumber(player,"VillageContractEvidence",0)
+    villageInteractionCooldown[player]=os.clock()
+    villageSessions[player]=nil
+    villageDialogue(player,"수락 · "..contract.Name,"약초상 미라, 추적자 라온, 경비병 아린의 진술을 각각 확인해.")
+    return
+  end
+  local selected=actionId=="village:resolve:1" and 1 or actionId=="village:resolve:2" and 2 or nil
+  if selected and phase==2 and readNumber(player,"VillageContractEvidence",0)==63 then
+    local choice=contract.Choices[selected]
+    local previous=readNumber(player,"VillageContractOutcomes",0)
+    local shift=(index-1)*2
+    if bit32.band(bit32.rshift(previous,shift),3)~=0 then return end
+    setNumber(player,"VillageContractOutcomes",bit32.bor(previous,bit32.lshift(selected,shift)))
+    setNumber(player,"VillageContractIndex",index+1)
+    setNumber(player,"VillageContractPhase",0)
+    setNumber(player,"VillageContractEvidence",0)
+    setNumber(player,"Coins",readNumber(player,"Coins",0)+choice.Reward)
+    player:SetAttribute("LastApprovedScope","village-contract-conclusion")
+    villageInteractionCooldown[player]=os.clock()
+    villageSessions[player]=nil
+    villageDialogue(player,"의뢰 해결 · "..contract.Name,choice.Outcome..
+      "\n\n의뢰 보상 "..choice.Reward.."코인 · 선택 결과는 기존 저장 프로필에 기록돼.")
+  end
+end
+local function villagePrompt(model,objectName,actionName,callback)
+  local mesh=model and (model:FindFirstChild("Head",true) or model:FindFirstChildWhichIsA("MeshPart",true))
+  if not mesh or not mesh:IsA("BasePart") then return false end
+  local prompt=Instance.new("ProximityPrompt")
+  prompt.Name="MeadowVillageInteraction"
+  prompt.ObjectText=objectName
+  prompt.ActionText=actionName
+  prompt.MaxActivationDistance=12
+  prompt.HoldDuration=.35
+  prompt.RequiresLineOfSight=false
+  prompt.Parent=mesh
+  prompt.Triggered:Connect(function(player)
+    if villageNear(player,mesh.Position,15) then callback(player,mesh.Position) end
+  end)
+  return true
+end
+local function villageNativeNpc(spec)
+  -- Roblox 공식 R15 캐릭터 생성 기능을 사용한다. 임시 신체 Part 제작/타 게임 모델 전용 금지.
+  local ok,npc=pcall(function()
+    local desc=Instance.new("HumanoidDescription")
+    desc.HeadColor=spec.skin
+    desc.LeftArmColor=spec.skin
+    desc.RightArmColor=spec.skin
+    desc.TorsoColor=spec.cloth
+    desc.LeftLegColor=spec.pants
+    desc.RightLegColor=spec.pants
+    local model=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
+    desc:Destroy()
+    return model
+  end)
+  if not ok or not npc then
+    warn("마력숲 마을 NPC R15 생성 실패: "..spec.name..":"..tostring(npc))
+    return nil
+  end
+  npc.Name="Meadow_Villager_"..spec.id
+  npc:SetAttribute("MeadowVillageNPC",true)
+  npc:SetAttribute("VillageRole",spec.role)
+  local humanoid=npc:FindFirstChildOfClass("Humanoid")
+  if humanoid then
+    humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
+    humanoid.HealthDisplayType=Enum.HumanoidHealthDisplayType.AlwaysOff
+  end
+  for _,part in ipairs(npc:GetDescendants()) do
+    if part:IsA("BasePart") then
+      part.CanCollide=part.Name=="LowerTorso"
+      part.CanTouch=false
+    end
+  end
+  local root=npc:FindFirstChild("HumanoidRootPart")
+  if not root then npc:Destroy();return nil end
+  root.Anchored=true
+  npc:PivotTo(CFrame.lookAt(spec.location,Vector3.new(0,spec.location.Y,-111)))
+  npc.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
+  npc.Parent=gameWorld
+  -- Roblox 공식 R15 기본 걷기/대기 동작. 로블록스 서버 NPC Animator에서 재생해 모든 플레이어에 복제한다.
+  if humanoid then
+    humanoid.WalkSpeed=5
+    humanoid.AutoRotate=true
+    local animator=humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator")
+    animator.Parent=humanoid
+    local tracks={}
+    for name,asset in pairs({idle=507766388,walk=507777826}) do
+      local anim=Instance.new("Animation")
+      anim.Name="Village_"..name
+      anim.AnimationId="rbxassetid://"..asset
+      local loaded,track=pcall(function()return animator:LoadAnimation(anim) end)
+      if loaded and track then
+        track.Looped=true
+        track.Priority=Enum.AnimationPriority.Idle
+        tracks[name]=track
+      end
+      anim:Destroy()
+    end
+    if tracks.idle then tracks.idle:Play(.2) end
+    humanoid.Running:Connect(function(speed)
+      local moving=speed>1.2
+      if tracks.walk and tracks.walk.IsPlaying~=moving then
+        if moving then tracks.walk:Play(.15) else tracks.walk:Stop(.2) end
+      end
+      if tracks.idle and tracks.idle.IsPlaying==moving then
+        if moving then tracks.idle:Stop(.15) else tracks.idle:Play(.2) end
+      end
+    end)
+    -- 마을 NPC는 이 지역 안에서만 움직이며 다른 게임의 경로탐색/전투 권한을 건드리지 않는다.
+    root.Anchored=false
+    pcall(function()root:SetNetworkOwner(nil)end)
+    local home=spec.location
+    task.spawn(function()
+      local offsets={Vector3.new(3,0,2),Vector3.new(-3,0,1),Vector3.new(0,0,0)}
+      while npc.Parent==gameWorld and humanoid.Health>0 do
+        for _,offset in ipairs(offsets) do
+          if npc.Parent~=gameWorld or humanoid.Health<=0 then break end
+          local phase=gameWorld:GetAttribute("MeadowDayPhase")
+          local destination=phase=="NIGHT" and home or home+offset
+          humanoid:MoveTo(destination)
+          humanoid.MoveToFinished:Wait()
+          task.wait(2.4)
+        end
+      end
+    end)
+  end
+  local head=npc:FindFirstChild("Head",true)
+  if head then
+    local label=Instance.new("BillboardGui")
+    label.Name="MeadowVillagerName"
+    label.Adornee=head
+    label.Size=UDim2.fromOffset(180,34)
+    label.StudsOffset=Vector3.new(0,2.2,0)
+    label.MaxDistance=42
+    label.AlwaysOnTop=false
+    label.Parent=head
+    local text=Instance.new("TextLabel")
+    text.Size=UDim2.fromScale(1,1)
+    text.BackgroundTransparency=1
+    text.Text=spec.name
+    text.TextColor3=Color3.fromRGB(246,224,180)
+    text.TextStrokeTransparency=.42
+    text.Font=Enum.Font.GothamBold
+    text.TextScaled=true
+    text.Parent=label
+  end
+  return npc
+end
+local function createMeadowVillage()
+  -- 외곽 지형 생성이 끝나고 조사 흔적을 배치해야 월드 확장에 흔적이 묻히지 않는다.
+  while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.15) end
+  -- 시작지(0,0) 및 기존 자원(최대 z=-39)과 떨어진 남쪽 빈 초원에 마을을 놓는다.
+  for _,path in ipairs({
+    {-90,0,9},{-104,0,12},{-118,0,11},{-132,0,10},{-146,0,8},
+    {-109,-21,7},{-109,21,7},{-130,-32,5},{-132,32,5},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(path[2],-1.4,path[1]),path[3],Enum.Material.Ground)
+  end
+  for _,plaza in ipairs({
+    {-19,-111,11},{19,-111,11},{-17,-146,9},{17,-146,9},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(plaza[1],-1.4,plaza[2]),plaza[3],Enum.Material.Ground)
+  end
+  -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
+  -- 마력숲 Universe의 모델 등록·사용 권한이 없으면 임의 파츠 집으로 대체하지 않는다.
+  local villagePrefabKeys={"villageWall","villageDoor","villageWindow","villageRoof",
+    "villageRoofEnd","villageStall","villageFountain","villageFence","villageLantern","villageCart"}
+  local nativeVillageReady=true
+  for _,key in ipairs(villagePrefabKeys) do
+    if typeof(NativeCreatureAssets[key])~="number" or NativeCreatureAssets[key]<1 then
+      nativeVillageReady=false;break
+    end
+  end
+  local villageBuildings=0
+  local villageProps=0
+  if nativeVillageReady then
+    -- 같은 원본 벽/문/창/지붕으로 네 동을 지어 마을의 중심 거리를 만든다.
+    local houses={
+      {x=-42,z=-112,angle=0,name="Village_HealerHouse"},
+      {x=42,z=-112,angle=math.pi,name="Village_WardenHall"},
+      {x=-42,z=-151,angle=0,name="Village_Workshop"},
+      {x=42,z=-151,angle=math.pi,name="Village_Guesthouse"},
+    }
+    for _,house in ipairs(houses) do
+      local created=0
+      local pieces={
+        {asset="villageWall",x=-6,z=0,height=5,lift=0},
+        {asset="villageDoor",x=6,z=0,height=5,lift=0},
+        {asset="villageWindow",x=0,z=-6,height=5,lift=0,angle=math.pi*.5},
+        {asset="villageWall",x=0,z=6,height=5,lift=0,angle=math.pi*.5},
+        {asset="villageRoof",x=0,z=0,height=3.5,lift=4.5},
+        {asset="villageRoofEnd",x=-6,z=0,height=3.5,lift=4.5},
+      }
+      for partIndex,piece in ipairs(pieces) do
+        local rotated=Vector2.new(piece.x,piece.z)
+        local rot=house.angle
+        local x=house.x+rotated.X*math.cos(rot)-rotated.Y*math.sin(rot)
+        local z=house.z+rotated.X*math.sin(rot)+rotated.Y*math.cos(rot)
+        local model=worldAsset(piece.asset,Vector3.new(x,3,z),piece.height,piece.lift)
+        if model then
+          model.Name=house.name.."_"..partIndex
+          model:SetAttribute("MeadowVillageScenery",true)
+          model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
+          for _,mesh in ipairs(model:GetDescendants()) do
+            if mesh:IsA("MeshPart") then mesh.CanCollide=piece.lift==0 end
+          end
+          created+=1
+        end
+      end
+      if created==#pieces then villageBuildings+=1 end
+      task.wait(.1)
+    end
+    for _,row in ipairs({
+      {"villageStall",-15,-123,7.4,0},{"villageStall",15,-123,7.4,0},
+      {"villageFountain",0,-133,5.7,0},{"villageCart",25,-162,6.7,0},
+      {"villageFence",-28,-171,4.2,0},{"villageFence",28,-171,4.2,0},
+      {"villageLantern",-21,-114,5,0},{"villageLantern",21,-114,5,0},
+    }) do
+      local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4],row[5])
+      if model then
+        model.Name="Meadow_Village_"..row[1].."_"..villageProps
+        model:SetAttribute("MeadowVillageScenery",true)
+        villageProps+=1
+      end
+    end
+  end
+  gameWorld:SetAttribute("MeadowVillageBuildingCount",villageBuildings)
+  gameWorld:SetAttribute("MeadowVillagePropCount",villageProps)
+  gameWorld:SetAttribute("MeadowVillagePrefabReady",nativeVillageReady and villageBuildings==4)
+  -- 에셋이 로블록스에 등록되지 않았다면 아래 실제 CC0 유적 메시를 임시 집으로 위장하지 않는다.
+  local wallCount=0
+  -- 등록된 Kenney CC0 파손 석벽을 마을 외벽·작업장 터로 배치한다. 신규 기하 파츠 생성 금지.
+  for index,pos in ipairs({
+    {-45,-104},{-45,-116},{-31,-118},{-31,-102},
+    {32,-105},{45,-105},{45,-118},{32,-118},
+    {-47,-153},{-34,-157},{33,-153},{46,-158},
+  }) do
+    local wall=worldAsset("ruin",Vector3.new(pos[1],3,pos[2]),6.2)
+    if wall then
+      wall.Name="Meadow_Village_StoneWall_"..index
+      wall:SetAttribute("MeadowVillageScenery",true)
+      wall:PivotTo(wall:GetPivot()*CFrame.Angles(0,math.rad((index%4)*90),0))
+      for _,part in ipairs(wall:GetDescendants()) do
+        if part:IsA("MeshPart") then part.CanCollide=true end
+      end
+      wallCount+=1
+    end
+    task.wait(.08)
+  end
+  local board=worldAsset("ruin",Vector3.new(0,3,-101),5.7)
+  if board then
+    board.Name="Meadow_Village_ContractBoard"
+    board:SetAttribute("MeadowVillageScenery",true)
+    villagePrompt(board,"초원 마을 의뢰판","의뢰 살펴보기",villageBoardDialogue)
+  end
+  local villagers={
+    {id="Elder",name="촌장 나린",role="ELDER",location=Vector3.new(-7,5,-109),
+      skin=Color3.fromRGB(208,165,132),cloth=Color3.fromRGB(91,106,83),pants=Color3.fromRGB(72,65,54)},
+    {id="Herbalist",name="약초상 미라",role="HERBALIST",location=Vector3.new(-25,5,-124),
+      skin=Color3.fromRGB(220,177,144),cloth=Color3.fromRGB(77,131,102),pants=Color3.fromRGB(100,82,69)},
+    {id="Tracker",name="추적자 라온",role="TRACKER",location=Vector3.new(22,5,-128),
+      skin=Color3.fromRGB(191,147,114),cloth=Color3.fromRGB(115,87,65),pants=Color3.fromRGB(67,68,69)},
+    {id="Guard",name="경비병 아린",role="GUARD",location=Vector3.new(10,5,-145),
+      skin=Color3.fromRGB(201,157,126),cloth=Color3.fromRGB(95,103,123),pants=Color3.fromRGB(62,70,81)},
+  }
+  local readyCount=0
+  for _,spec in ipairs(villagers) do
+    local npc=villageNativeNpc(spec)
+    if npc then
+      local callback=spec.role=="ELDER" and villageBoardDialogue
+        or spec.role=="HERBALIST" and function(player) villageInvestigate(player,1,spec.name) end
+        or spec.role=="TRACKER" and function(player) villageInvestigate(player,2,spec.name) end
+        or function(player) villageInvestigate(player,3,spec.name) end
+      if villagePrompt(npc,spec.name,"대화하기",callback) then readyCount+=1 end
+    end
+    task.wait(.1)
+  end
+  -- [위치별 사건 단서] 세 의뢰에 각각 세 곳. 단순 NPC 반복 대화 대신 현장 추적을 요구한다.
+  local evidenceCount=0
+  for contractIndex,contract in ipairs(Config.VillageContracts) do
+    for sceneIndex,site in ipairs(contract.Sites) do
+      local scenePosition=Vector3.new(site[1],3,site[2])
+      local model=worldAsset("ruin",scenePosition,3.8)
+      if model then
+        model.Name="Meadow_Village_Evidence_"..contractIndex.."_"..sceneIndex
+        model:SetAttribute("VillageContractIndex",contractIndex)
+        model:SetAttribute("VillageClueIndex",sceneIndex+3)
+        local title=({"흔적이 남은 보관 터","버려진 물길","의심스러운 기록"})[sceneIndex]
+        if villagePrompt(model,title,"현장 조사",function(player)
+          villageInvestigate(player,sceneIndex+3,title,contractIndex)
+        end) then evidenceCount+=1 end
+        local mesh=model:FindFirstChildWhichIsA("MeshPart",true)
+        if mesh then
+          local marker=Instance.new("BillboardGui")
+          marker.Name="MeadowVillageInvestigationMarker"
+          marker.Adornee=mesh
+          marker.Size=UDim2.fromOffset(130,34)
+          marker.StudsOffsetWorldSpace=Vector3.new(0,4.4,0)
+          marker.MaxDistance=35
+          marker.Parent=mesh
+          local caption=Instance.new("TextLabel")
+          caption.Size=UDim2.fromScale(1,1)
+          caption.BackgroundTransparency=1
+          caption.Font=Enum.Font.GothamBold
+          caption.TextSize=13
+          caption.TextStrokeTransparency=.45
+          caption.TextColor3=Color3.fromRGB(239,201,125)
+          caption.Text="조사할 흔적"
+          caption.Parent=marker
+        end
+      end
+      -- 실제 숲 외곽까지 이어지는 다져진 길을 Terrain에만 조성한다.
+      for step=1,9 do
+        local t=step/9
+        local x=scenePosition.X*t
+        local z=-146+(scenePosition.Z+146)*t
+        meadowTerrain:FillBall(Vector3.new(x,-1.5,z),3.2,Enum.Material.Ground)
+      end
+      task.wait(.08)
+    end
+  end
+  -- 원본 CC0 메시 이외에 임시 건축 파츠를 생성하지 않는다.
+  gameWorld:SetAttribute("MeadowVillageEvidenceCount",evidenceCount)
+  gameWorld:SetAttribute("MeadowVillageNPCCount",readyCount)
+  gameWorld:SetAttribute("MeadowVillageWallCount",wallCount)
+  gameWorld:SetAttribute("MeadowVillageBoardReady",board~=nil)
+  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil and evidenceCount==9)
+end
+task.defer(createMeadowVillage)
 
 local function broadcastSurvivalState(actor)
   local participants = Players:GetPlayers()
@@ -2150,6 +2561,8 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 remote.OnServerEvent:Connect(function(player, actionId)
   if typeof(actionId) ~= "string" or player:GetAttribute("ProfileReady") ~= true then return end
+  -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
+  if string.sub(actionId,1,8)=="village:" then villageChoose(player,actionId);return end
   local handler = handlers[actionId]
   if typeof(handler) ~= "function" then return end
   local now = os.clock()
@@ -2209,6 +2622,8 @@ Players.PlayerRemoving:Connect(function(player)
   meadowFocusUntil[player]=nil
   meadowDefense[player]=nil
   meadowInspectReady[player]=nil
+  villageSessions[player]=nil
+  villageInteractionCooldown[player]=nil
 end)
 
 

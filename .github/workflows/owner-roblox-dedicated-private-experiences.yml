@@ -186,6 +186,26 @@ jobs:
               ||sha(fs.readFileSync(source.sourcePath))!==source.sourceSha256))throw Error('OWNER_FOREST_SOURCE_HASH_INVALID:'+role);
             return row.assetId;
           });
+          // [초원 마을] 기존 원본 에셋 사용 권한 검증을 동일한 공식 검수 단계에서 수행한다.
+          const village=registry.villagePrefabs;
+          if(village?.sourceVerified===true){
+            if(village.registrationVerified!==true||Object.keys(village.models||{}).length!==10)
+              throw Error('OWNER_FOREST_VILLAGE_MODEL_REGISTRATION_REQUIRED');
+            const manifest=JSON.parse(fs.readFileSync('assets/shared/party/sources.json','utf8'));
+            const villageIds=Object.entries(village.models).map(([role,row])=>{
+              const original=(manifest.records||[]).find(entry=>entry.file===row.sourceFile);
+              if(!original||original.license!=='CC0-1.0'||row.license!=='CC0-1.0'
+                ||original.sha256!==row.sourceSha256||row.sha256!==row.sourceSha256
+                ||row.licenseEvidence!=='https://kenney.nl/assets/fantasy-town-kit'
+                ||!Number.isSafeInteger(row.assetId)||row.assetId<1
+                ||!row.sourceFile?.startsWith('assets/shared/party/')
+                ||row.sourceFile.includes('..')||sha(fs.readFileSync(row.sourceFile))!==row.sourceSha256
+                ||!new RegExp('\\\\b'+role+'\\\\s*=\\\\s*'+row.assetId+'\\\\b').test(ids))
+                throw Error('OWNER_FOREST_VILLAGE_MODEL_BINDING_INVALID:'+role);
+              return row.assetId;
+            });
+            selected.push(...villageIds);
+          }
           const assetIds=selected;
           if(assetIds.length){
             // Verified CC0 models still require explicit Roblox Universe grants.

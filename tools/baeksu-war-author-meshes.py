@@ -58,6 +58,32 @@ if '--game-id=fantasy-survival' in sys.argv:
   records[role]={'sourceFile':row.get('sourcePath') or row['archiveUrl']+'#'+row['archiveEntry'],
    'sourceSha256':row['sourceSha256'],'sha256':row['sourceSha256'],'format':ext.lstrip('.'),
    'license':'CC0-1.0','licenseEvidence':row['licenseEvidence'],'bytes':len(data)}
+ # [마력숲 마을] 기존 Kenney 원본 GLB만 추가한다. 11종 생물/숲 모델은 그대로 유지한다.
+ village=json.loads((ROOT/'roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json').read_text()).get('villagePrefabs',{})
+ if village.get('sourceVerified') is True:
+  catalog_path=(ROOT/village.get('sourceManifest','')).resolve()
+  if catalog_path!=(ROOT/'assets/shared/party/sources.json').resolve():
+   raise RuntimeError('FANTASY_VILLAGE_SOURCE_CATALOG_MISMATCH')
+  catalog=json.loads(catalog_path.read_text())
+  if village.get('version')!=1 or len(village.get('models',{}))!=10:
+   raise RuntimeError('FANTASY_VILLAGE_APPROVED_SOURCE_SET_REQUIRED')
+  for role,row in village['models'].items():
+   if not re.fullmatch(r'village[A-Z][A-Za-z]+',role):
+    raise RuntimeError('FANTASY_VILLAGE_ROLE_INVALID')
+   filename=row.get('sourceFile','')
+   source=(ROOT/filename).resolve()
+   if not source.is_relative_to((ROOT/'assets/shared/party').resolve()) or source.suffix!='.glb':
+    raise RuntimeError('FANTASY_VILLAGE_ASSET_PATH_INVALID:'+role)
+   entry=next((x for x in catalog.get('records',[]) if x.get('file')==filename),None)
+   if not entry or entry.get('license')!='CC0-1.0' or entry.get('sha256')!=row.get('sourceSha256') or row.get('licenseEvidence')!='https://kenney.nl/assets/fantasy-town-kit':
+    raise RuntimeError('FANTASY_VILLAGE_SOURCE_LICENSE_INVALID:'+role)
+   data=source.read_bytes()
+   if not data.startswith(b'glTF') or not (1000<len(data)<20*1024*1024) or hashlib.sha256(data).hexdigest()!=row.get('sourceSha256'):
+    raise RuntimeError('FANTASY_VILLAGE_SOURCE_DIGEST_MISMATCH:'+role)
+   (OUT/(role+'.glb')).write_bytes(data)
+   records[role]={'sourceFile':filename,'sourceSha256':row['sourceSha256'],
+    'sha256':row['sourceSha256'],'format':'glb','license':'CC0-1.0',
+    'licenseEvidence':row['licenseEvidence'],'bytes':len(data)}
  (OUT/'provenance.json').write_text(json.dumps({'version':5,'gameId':'fantasy-survival',
   'sourceManifestSha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),'roles':records},indent=2)+'\n')
  print('FANTASY_NATIVE_ORIGINALS_VERIFIED='+str(len(records)))
