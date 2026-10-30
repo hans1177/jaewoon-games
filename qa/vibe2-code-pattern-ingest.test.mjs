@@ -288,6 +288,71 @@ test('model-free action authoring handles many distinct controls with one indexe
 });
 
 
+test('model-free Web coder wires declared controls to same-game external JS without modifying scripts or guessing actions',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-external-game-action-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const scriptPath=path.join(root,'scripts','game.js');
+  fs.mkdirSync(path.dirname(scriptPath),{recursive:true});
+  const code='let hp=4;function attack(){hp-=1;}';
+  fs.writeFileSync(scriptPath,code,'utf8');
+  const html='<button id="fight" data-gameplay-action="attack">Fight</button>\n<script src="./scripts/game.js"></script>';
+  const file=path.join(root,'index.html');
+  fs.writeFileSync(file,html,'utf8');
+  const args={order:{target:'web',goal:'모바일 공격 버튼 입력 연결'},
+    sourceRoot:root,responsibleFiles:['index.html'],patternLibrary:{patterns:[]}};
+  const generated=deterministicWebInputCandidate(args);
+  assert.equal(generated?.deterministicWebInput,true);
+  assert.equal(generated.externalGameScriptReadOnly,true);
+  assert.deepEqual(generated.edits.map(x=>x.path),['index.html']);
+  assert.deepEqual(generated.newFiles,[]);
+  assert.deepEqual(generated.replaceFiles,[]);
+  assert.ok(generated.edits[0].replace.startsWith('<script src="./scripts/game.js"></script>'));
+  const updated=html.replace(generated.edits[0].find,generated.edits[0].replace);
+  assert.match(updated,/document\.getElementById\("fight"\)\.addEventListener\("click", attack\)/);
+  const inline=updated.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(inline);
+  const handlers=new Map();
+  const context={document:{getElementById:id=>({addEventListener:(event,fn)=>handlers.set(id+':'+event,fn)})}};
+  runInNewContext(code+'\n'+inline,context);
+  assert.equal(runInNewContext('hp',context),4);
+  handlers.get('fight:click')();
+  assert.equal(runInNewContext('hp',context),3);
+  assert.equal(fs.readFileSync(scriptPath,'utf8'),code,'external game implementation remains read-only');
+  assert.equal(fs.readFileSync(file,'utf8'),html,'candidate generation never writes game source');
+  const blockedHtml=[
+    '<button id="fight" data-gameplay-action="attack">Fight</button><script src="https://cdn.example/game.js"></script>',
+    '<button id="fight" data-gameplay-action="attack">Fight</button><script src="../other-game.js"></script>',
+    '<button id="fight" data-gameplay-action="attack">Fight</button><script src="/scripts/game.js"></script>',
+    '<button id="fight" data-gameplay-action="attack">Fight</button><script type="module" src="./scripts/game.js"></script>',
+    '<button id="fight" data-gameplay-action="attack">Fight</button><script async src="./scripts/game.js"></script>',
+    '<button id="fight" data-gameplay-action="attack">Fight</button><script src="./scripts/game.js">attack()</script>',
+    '<script src="./scripts/game.js"></script><button id="fight" data-gameplay-action="attack">Fight</button>',
+    '<button id="fight" data-gameplay-action="attack">Fight</button><script src="./scripts/game.js"></script><script>attack()</script>',
+    '<button id="fight" data-gameplay-action="save">Save</button><script src="./scripts/game.js"></script>',
+    '<button id="fight" data-gameplay-action="castSpell">Cast</button><script src="./scripts/game.js"></script>'
+  ];
+  for(const bad of blockedHtml){
+    fs.writeFileSync(file,bad,'utf8');
+    assert.equal(deterministicWebInputCandidate(args),null,'reject unsupported or ambiguous source-linked game input');
+  }
+  fs.writeFileSync(file,html,'utf8');
+  for(const badScript of [
+    'let hp=4;function unrelated(){hp--;}', // missing action
+    'let hp=4;function attack(){hp--;}document.addEventListener("click",attack);',
+    'let hp=4;function attack(){hp--;}eval("attack()");',
+    'import "./other.js";function attack(){return 1;}'
+  ]){
+    fs.writeFileSync(scriptPath,badScript,'utf8');
+    assert.equal(deterministicWebInputCandidate(args),null,'reject unverified, delegated or dynamic external game script');
+  }
+  fs.writeFileSync(scriptPath,code,'utf8');
+  fs.unlinkSync(scriptPath);
+  const outside=path.join(root,'outside-game.js');
+  fs.writeFileSync(outside,code,'utf8');
+  fs.symlinkSync(outside,scriptPath);
+  assert.equal(deterministicWebInputCandidate(args),null,'reject symlinked external game source');
+});
+
 test('model-free Roblox coder supports a separate native shutdown hook without touching the world renderer',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-no-model-separated-shutdown-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
