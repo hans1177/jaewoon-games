@@ -856,7 +856,7 @@ local function setEnemyAttackState(enemy, state)
   enemy.model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
   local motion=state=="ANTICIPATION" and "ATTACK" or
     state=="CHASE" and "RUN" or state=="RETURN_TO_SPAWN" and "WALK" or
-    state=="RECOVERY" and "HIT" or "IDLE"
+    (state=="RECOVERY" or state=="STUNNED") and "HIT" or "IDLE"
   enemy.model:SetAttribute("NativeMobMotion",motion)
   enemy.telegraph.Enabled=state=="ANTICIPATION"
 end
@@ -864,6 +864,7 @@ end
 local function cancelEnemyWindup(enemy)
   enemy.windupUntil=nil
   enemy.windupTargetUserId=nil
+  enemy.comboHit=nil
   setEnemyAttackState(enemy,"RECOVERY")
 end
 
@@ -880,6 +881,7 @@ local function animateMeadowOriginalMob(enemy,now)
     +enemy.spawnPosition.X*.11
   local inMotion=enemy.attackState=="CHASE" or enemy.attackState=="RETURN_TO_SPAWN"
   local attacking=enemy.attackState=="ANTICIPATION"
+  local stunned=enemy.attackState=="STUNNED"
   local recoil=enemy.attackState=="RECOVERY"
     and math.exp(-math.max(0,now-enemy.lastAttack)*7) or 0
   local aerial=kind=="bee" or kind=="bat"
@@ -891,7 +893,7 @@ local function animateMeadowOriginalMob(enemy,now)
   local attackPitch=attacking and (kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
   local stridePitch=inMotion and math.sin(phase)*(.05+(kind=="wolf" and .13 or .06)) or 0
-  local bank=aerial and math.sin(phase*.52)*.22
+  local bank=stunned and math.sin(now*9)*.12 or aerial and math.sin(phase*.52)*.22
     or inMotion and math.sin(phase*.65)*.09 or 0
   local facing=enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
@@ -915,12 +917,23 @@ local function chooseMeadowMobSkill(enemy)
   enemy.model:SetAttribute("NativeMobSkillActive",second)
   return pattern
 end
-local function applyMeadowMobHit(player,humanoid,damage)
+local function applyMeadowMobHit(player,humanoid,damage,attacker)
   if player:GetAttribute("ProfileReady")~=true or humanoid.Health<=0 then return end
   local defense=meadowDefense[player] or {}
   local now=os.clock()
   if (defense.dodgeUntil or 0)>now then return end
-  if (defense.parryUntil or 0)>now then
+  -- [완벽 막기] 서버가 승인한 막기 시작 직후만 연타를 끊고 공격자에게 기절을 적용한다.
+  if (defense.parryUntil or 0)>now or (defense.perfectGuardUntil or 0)>now then
+    defense.parryUntil=0
+    defense.perfectGuardUntil=0
+    meadowDefense[player]=defense
+    if attacker and attacker.HP>0 and attacker.model.Parent and (attacker.stunUntil or 0)<=now then
+      cancelEnemyWindup(attacker)
+      attacker.stunUntil=now+(attacker.isBoss and .6 or 1.2)
+      attacker.lastAttack=now
+      attacker.model:SetAttribute("NativeMobStunnedUntil",workspace:GetServerTimeNow()+(attacker.isBoss and .6 or 1.2))
+      setEnemyAttackState(attacker,"STUNNED")
+    end
     player:SetAttribute("MeadowParryConfirmed",workspace:GetServerTimeNow())
     remote:FireClient(player,"MEADOW_REACTION","PARRY")
     return
@@ -1015,6 +1028,15 @@ local function updateEnemyAI(dt,now)
   end
   for _,enemy in ipairs(enemies) do
     if enemy.HP>0 and enemy.model.Parent then
+      -- [기절] 해당 몬스터만 추적·예고·연타를 중지하며 다른 몬스터와 웨이브는 계속 진행한다.
+      if now<(enemy.stunUntil or 0) then
+        setEnemyAttackState(enemy,"STUNNED")
+        continue
+      elseif enemy.stunUntil then
+        enemy.stunUntil=nil
+        enemy.model:SetAttribute("NativeMobStunnedUntil",nil)
+        setEnemyAttackState(enemy,"RECOVERY")
+      end
       local targetPlayer,targetRoot,targetHuman=nil,nil,nil
       local range=140
       for _,player in ipairs(Players:GetPlayers()) do
@@ -1054,6 +1076,11 @@ local function updateEnemyAI(dt,now)
           if targetPlayer.UserId~=enemy.windupTargetUserId or distance>activeRange+1 or targetHuman.Health<=0 then
             cancelEnemyWindup(enemy)
           elseif now>=enemy.windupUntil then
+            local hitIndex=enemy.comboHit or 1
+            local hitCount=enemy.model:GetAttribute("NativeMobSkillActive")==true and 3 or 1
+            -- 연속 스킬의 총 피해량은 기존 1회 피해와 같다. 반올림 잔여는 마지막 타격에 포함한다.
+            local hitDamage=math.floor(enemy.damage/hitCount)
+            if hitIndex==hitCount then hitDamage=enemy.damage-hitDamage*(hitCount-1) end
             enemy.windupUntil=nil
             enemy.windupTargetUserId=nil
             enemy.lastAttack=now
@@ -1066,11 +1093,21 @@ local function updateEnemyAI(dt,now)
                 local root=avatar and avatar:FindFirstChild("HumanoidRootPart")
                 local human=avatar and avatar:FindFirstChildOfClass("Humanoid")
                 if root and human and (root.Position-enemy.position).Magnitude<=8.4 then
-                  applyMeadowMobHit(victim,human,enemy.damage)
+                  applyMeadowMobHit(victim,human,hitDamage,enemy)
+                  if (enemy.stunUntil or 0)>now then break end
                 end
               end
             else
-              applyMeadowMobHit(targetPlayer,targetHuman,enemy.damage)
+              applyMeadowMobHit(targetPlayer,targetHuman,hitDamage,enemy)
+            end
+            if (enemy.stunUntil or 0)>now then continue end
+            if hitIndex<hitCount then
+              enemy.comboHit=hitIndex+1
+              enemy.windupTargetUserId=targetPlayer.UserId
+              enemy.windupUntil=now+.22
+              setEnemyAttackState(enemy,"ANTICIPATION")
+            else
+              enemy.comboHit=nil
             end
             enemy.model:SetAttribute("NativeMobLastImpact",workspace:GetServerTimeNow())
             remote:FireAllClients("MEADOW_MOB_ATTACK",{
@@ -1090,6 +1127,7 @@ local function updateEnemyAI(dt,now)
           enemy.visualFacing=offset.Unit
         elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
           local pattern=chooseMeadowMobSkill(enemy)
+          enemy.comboHit=1
           enemy.windupTargetUserId=targetPlayer.UserId
           enemy.windupUntil=now+(enemy.isBoss and .68 or
             ((pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE") and .55
@@ -1204,6 +1242,7 @@ local function meadowGuard(player)
   return meadowSkill(player,"skill-meadow-guard",function(_,_,root,now)
     local defense=meadowDefense[player] or {}
     defense.guardUntil=now+2.8
+    defense.perfectGuardUntil=now+.28
     meadowDefense[player]=defense
     player:SetAttribute("ApprovedActionTarget",root.Position)
     return true
@@ -1304,6 +1343,8 @@ local handlers={
 
 local function bindSurvivalHealth(player)
   local function bindCharacter(character)
+    -- 리스폰한 캐릭터가 이전 생명의 막기·회피 판정을 물려받지 않는다.
+    meadowDefense[player]=nil
     local humanoid = character:WaitForChild("Humanoid", 10)
     if not humanoid then return end
     -- 플레이어 실제 휴머노이드 체력만 HUD에 전달한다. 서버가 소유하는 체력 판정은 유지한다.
