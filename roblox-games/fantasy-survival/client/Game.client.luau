@@ -719,22 +719,20 @@ remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosit
 end)
 
 
--- The shared Roblox R15 combat library already has real authored joints for
--- jab/cross/hook/uppercut/elbow/knee/kick. Route ONE confirmed hit to ONE strike.
+-- [맨손 액션] 승인된 타격 이벤트 하나에 원본 R15 관절 포즈 5개를 연속 재생한다.
+-- 연타는 순수 시각 효과이며 서버 피해·적중·보상·쿨다운은 기존 그대로 유지한다.
 local basicUnarmedMoves={
-  "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT",
-  "U:BACKFIST_LEFT","U:UPPERCUT_RIGHT","U:ELBOW_LEFT","U:LOW_KICK_R",
+  "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:ELBOW_RIGHT","U:FRONT_KICK_R",
 }
 local skillUnarmedMoves={
-  ["meadow-unarmed-rush"]={"U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT"},
-  ["meadow-unarmed-uppercut"]={"U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT"},
-  ["meadow-unarmed-kick"]={"U:ROUND_KICK_R","U:SIDE_KICK_L","U:FRONT_KICK_R"},
-  ["meadow-unarmed-elbow"]={"U:ELBOW_RIGHT","U:KNEE_LEFT","U:ELBOW_LEFT","U:KNEE_RIGHT"},
+  ["meadow-unarmed-rush"]={"U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT","U:BACKFIST_LEFT"},
+  ["meadow-unarmed-uppercut"]={"U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT","U:CROSS_RIGHT","U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT"},
+  ["meadow-unarmed-kick"]={"U:LOW_KICK_R","U:ROUND_KICK_R","U:SIDE_KICK_L","U:FRONT_KICK_R","U:ROUND_KICK_L"},
+  ["meadow-unarmed-elbow"]={"U:ELBOW_RIGHT","U:KNEE_LEFT","U:ELBOW_LEFT","U:KNEE_RIGHT","U:DIAGONAL_KNEE_LEFT"},
 }
 local activeStrikeTrail=nil
-local activeStrikeTrailToken=0
+local activeStrikeTrailIndex=0
 local function stopStrikeTrail()
-  activeStrikeTrailToken+=1
   if activeStrikeTrail then activeStrikeTrail.Destroy();activeStrikeTrail=nil end
 end
 -- Upper-body and real leg joints are both owned only while a melee pose plays.
@@ -750,6 +748,7 @@ local function finishNativeCombatMotion()
     activeCombatCharacter:SetAttribute("NativeCombatMotionState", "IDLE")
   end
   activeCombatController = nil
+  activeStrikeTrailIndex = 0
   combatRecoveryUntil = nil
   activeCombatCombo = nil
   activeCombatCharacter = nil
@@ -810,65 +809,40 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
     return
   end
   if activeCombatCharacter ~= character then finishNativeCombatMotion() end
+  -- 이미 시작된 5타를 입력/서버 확인 이벤트가 중간에서 끊지 않는다.
+  -- 입력 자체와 서버의 실제 명중·피해 처리는 계속 허용한다.
+  if activeCombatCombo and activeCombatCharacter==character
+    and os.clock()-activeCombatStartedAt < activeCombatCombo.duration then return true end
   local approvedIndex=tonumber(approvedEvent) or 1
-  local chosenMove=nil
+  local chosenMoves={}
   if profile=="UNARMED" then
     local moves=skillUnarmedMoves[approvedScope] or basicUnarmedMoves
-    chosenMove=moves[(approvedIndex-1)%#moves+1]
+    local offset=(approvedIndex-1)%#moves
+    for i=1,5 do chosenMoves[i]=moves[(offset+i-1)%#moves+1] end
   else
-    -- Reuse the weapon-specific authored R15 action list, never a fake punch.
+    -- 장착 무기는 기존 무기별 단타와 공격 밸런스를 그대로 유지한다.
     local routeOk,route=pcall(combatMotionSource.CreateCombatCombo,profile)
     if not routeOk or not route or #route.steps==0 then return end
-    chosenMove=route.steps[(approvedIndex-1)%#route.steps+1].id
+    chosenMoves[1]=route.steps[(approvedIndex-1)%#route.steps+1].id
   end
-  -- CreateCombatCombo is immutable (table.freeze). Build a fresh ONE-strike
-  -- presentation instead of mutating steps or playing unapproved fake hits.
+  -- 공용 CreateCombatCombo는 불변 객체다. 실제 저작된 5개의 관절 포즈를 연결한다.
   local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
-    profile,{chosenMove},{speed=profile=="UNARMED" and 1.08 or 1})
-  if not ok or not combo or not combo.steps or #combo.steps~=1 then return end
+    profile,chosenMoves,{speed=profile=="UNARMED" and 1.22 or 1})
+  if not ok or not combo or not combo.steps or #combo.steps~=#chosenMoves then return end
   combatRecoveryUntil = nil
   activeCombatCharacter = character
   activeCombatCombo = combo
   activeCombatStartedAt = os.clock()
   activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
-    followAnimator = true,
-    response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
+    followAnimator = true,response = 42,
   })
-  -- A real R15 hand/foot carries the short shared-mesh particle trail.
   stopStrikeTrail()
-  if combatVFX and profile=="UNARMED" then
-    local isLegStrike=chosenMove:find("KICK",1,true)~=nil
-      or chosenMove:find("KNEE",1,true)~=nil
-    local isLeftStrike=chosenMove:find("LEFT",1,true)~=nil
-      or chosenMove:match("_L$")~=nil
-    local hostName=isLegStrike
-      and (isLeftStrike and "LeftFoot" or "RightFoot")
-      or (isLeftStrike and "LeftHand" or "RightHand")
-    local host=character:FindFirstChild(hostName)
-    if host and host:IsA("BasePart") then
-      local color=chosenMove:find("KICK",1,true) and Color3.fromRGB(124,245,220)
-        or Color3.fromRGB(255,207,112)
-      local trailOk,_,controller=pcall(combatVFX.AttachShortTrail,host,{
-        color=color,lifetime=nativeTouchEnabled and .12 or .18,
-        width=nativeTouchEnabled and .22 or .42,length=1.1,
-      })
-      if trailOk and controller then
-        activeStrikeTrail=controller
-        controller.SetEnabled(true)
-        local token=activeStrikeTrailToken
-        task.delay(.19,function()
-          if activeStrikeTrailToken==token and activeStrikeTrail==controller then
-            controller.SetEnabled(false)
-          end
-        end)
-      end
-    end
-  end
-  -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
+  activeStrikeTrailIndex=0
 
   character:SetAttribute("NativeCombatJointCount",activeCombatController.jointCount)
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
-  character:SetAttribute("NativeCombatActionId", chosenMove)
+  character:SetAttribute("NativeCombatActionId", chosenMoves[1])
+  character:SetAttribute("NativeCombatStrikeCount", #chosenMoves)
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
   return true
@@ -1002,28 +976,65 @@ RunService.PreSimulation:Connect(function(dt)
     if os.clock() >= combatRecoveryUntil then finishNativeCombatMotion() end
     return
   end
-  local _, _, finished = combatMotionSource.SampleCombatCombo(
-    activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
+  local timeInAction=os.clock()-activeCombatStartedAt
+  local _,strikeIndex,finished=combatMotionSource.SampleCombatCombo(
+    activeCombatCombo,timeInAction,combatPoseTargets
   )
-  if type(combatMotionSource.RefineActorCinematicPose) == "function" then
-    local timeInAction = os.clock() - activeCombatStartedAt
-    local currentStep = activeCombatCombo.steps[#activeCombatCombo.steps]
-    for _, candidateStep in ipairs(activeCombatCombo.steps) do
-      if timeInAction < candidateStep.start + candidateStep.duration then
-        currentStep = candidateStep
-        break
+  local currentStep=activeCombatCombo.steps[strikeIndex]
+  local stepPhase=math.clamp((timeInAction-currentStep.start)/math.max(.05,currentStep.duration),0,1)
+  if type(combatMotionSource.RefineActorCinematicPose)=="function" then
+    combatMotionSource.RefineActorCinematicPose(combatPoseTargets,{
+      actorClass="PLAYER",bodyPlan="BIPED",weaponStyle=activeCombatCombo.profileId,
+      actionPhase=stepPhase,
+      authorizedImpact=true,grounded=humanoid.FloorMaterial~=Enum.Material.Air,
+      visualSpeed=humanoid.MoveDirection.Magnitude,
+      mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
+      comboContinuity=#activeCombatCombo.steps==5 and .82 or 0,
+      intensity=#activeCombatCombo.steps==5 and 1.5 or 1,secondary=.7,
+    })
+  end
+  if activeCombatCombo.profileId=="UNARMED" then
+    -- 기존 저작 포즈의 어깨·골반 회전만 증폭한다. 새 관절·루트 이동은 생성하지 않는다.
+    for name,pose in pairs(combatPoseTargets) do
+      if typeof(pose)=="CFrame" then
+        local axis,angle=pose:ToAxisAngle()
+        local gain=(name=="Spine" or name=="Chest") and 1.34
+          or name=="Head" and 1.13
+          or (name:find("Arm",1,true) or name:find("Thigh",1,true)) and 1.28
+          or (name:find("Shin",1,true) or name:find("Forearm",1,true)) and 1.16
+          or 1.1
+        combatPoseTargets[name]=CFrame.fromAxisAngle(axis,math.min(angle*gain,math.rad(156)))
       end
     end
-    local stepPhase = math.clamp((timeInAction - currentStep.start) / math.max(.05, currentStep.duration), 0, 1)
-    combatMotionSource.RefineActorCinematicPose(combatPoseTargets, {
-      actorClass = "PLAYER", bodyPlan = "BIPED", weaponStyle = activeCombatCombo.profileId,
-      actionPhase = stepPhase,
-      authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
-      visualSpeed = humanoid.MoveDirection.Magnitude,
-      mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
-      comboContinuity = tonumber(player:GetAttribute("ActionSequence") or 0)%3~=0 and .32 or 0,
-      intensity = 1, secondary = .55,
-    })
+  end
+  -- [연타 잔상] 5개의 실제 손·발 타격마다 원본 VFX를 교체한다.
+  if strikeIndex~=activeStrikeTrailIndex then
+    activeStrikeTrailIndex=strikeIndex
+    if activeCombatCharacter then
+      activeCombatCharacter:SetAttribute("NativeCombatStrikeIndex",strikeIndex)
+    end
+    stopStrikeTrail()
+    if combatVFX and activeCombatCombo.profileId=="UNARMED"
+      and timeInAction<activeCombatCombo.duration then
+      local chosenMove=currentStep.id
+      local leg=chosenMove:find("KICK",1,true) or chosenMove:find("KNEE",1,true)
+      local left=chosenMove:find("LEFT",1,true) or chosenMove:match("_L$")
+      local hostName=leg and (left and "LeftFoot" or "RightFoot")
+        or (left and "LeftHand" or "RightHand")
+      local host=character:FindFirstChild(hostName)
+      if host and host:IsA("BasePart") then
+        local color=leg and Color3.fromRGB(124,245,220) or Color3.fromRGB(255,207,112)
+        local ok,_,controller=pcall(combatVFX.AttachShortTrail,host,{
+          color=color,lifetime=nativeTouchEnabled and .13 or .19,
+          width=nativeTouchEnabled and .32 or .5,length=1.3,
+        })
+        if ok and controller then activeStrikeTrail=controller end
+      end
+    end
+  end
+  if activeStrikeTrail then
+    local within=timeInAction-currentStep.start
+    activeStrikeTrail.SetEnabled(within>=currentStep.ready*.4 and within<currentStep.recoil)
   end
   if humanoid.RigType==Enum.HumanoidRigType.R6 then
     -- 기존 R6 관절만 사용한다. 없는 팔꿈치·무릎을 생성하지 않는다.
