@@ -1067,7 +1067,7 @@ local meadowMobMotion=combatMotionSource
 local meadowMobControllers={}
 local nativeMobMotionMap={
   IDLE="IDLE",CHASE="RUN",RUN="RUN",RETURN_TO_SPAWN="WALK",WALK="WALK",
-  ANTICIPATION="ATTACK",ATTACK="ATTACK",RECOVERY="HIT",HIT="HIT",DEATH="DEATH",
+  ANTICIPATION="ANTICIPATION",ATTACK="ATTACK",RECOVERY="RECOVERY",HIT="HIT",DEATH="DEATH",
 }
 local nativeMobJointAlias={
   FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
@@ -1117,12 +1117,16 @@ local function bindOriginalMob(model)
     ForearmL=true,ForearmR=true,
   }
   for _,joint in ipairs(model:GetDescendants()) do
-    -- Only genuine Motor6D or authored skinned-mesh Bones can move.
-    -- Never synthesize joints from a static single-mesh animal.
+    -- Use the real upgraded avatar joint when present, then Motor6D/Bone.
+    -- Static meshes never receive invented limbs.
+    local liveConstraint=joint:IsA("AnimationConstraint") and joint.Attachment0
+      and joint.Attachment1 and joint.Attachment0:IsDescendantOf(model)
+      and joint.Attachment1:IsDescendantOf(model)
     local liveMotor=joint:IsA("Motor6D") and joint.Part0 and joint.Part1
-    if liveMotor or joint:IsA("Bone") then
+      and joint.Part0:IsDescendantOf(model) and joint.Part1:IsDescendantOf(model)
+    if liveConstraint or liveMotor or joint:IsA("Bone") then
       local name=nativeMobJointAlias[joint.Name] or joint.Name
-      if sourceChannels[name] and not joints[name] then
+      if sourceChannels[name] and (not joints[name] or liveConstraint) then
         joints[name]=joint
         available[name]=true
       end
@@ -1178,7 +1182,10 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       row.phase+=math.min(dt,.12)
       local repeating=mode=="IDLE" or mode=="WALK" or mode=="RUN" or mode=="FLY"
       local duration=mode=="DEATH" and 1.32 or mode=="ATTACK" and .75
-        or mode=="HIT" and .46 or mode=="START" and .36 or 1.15
+        or mode=="ANTICIPATION" and (model:GetAttribute("Boss") and .68
+          or row.species=="bee" and .32 or .42)
+        or mode=="RECOVERY" and .38 or mode=="HIT" and .46
+        or mode=="START" and .36 or 1.15
       local phase=repeating and (row.phase%duration)/duration
         or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
       table.clear(row.poses)
