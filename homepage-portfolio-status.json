@@ -4,11 +4,11 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-10-30T09:26:52.785Z",
+  "generatedAt": "2026-10-30T19:12:20.487Z",
   "counts": {
     "ACCELERATE": 0,
-    "CONTINUE": 0,
-    "FOCUSED_REPAIR": 39,
+    "CONTINUE": 3,
+    "FOCUSED_REPAIR": 35,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
@@ -160,25 +160,7 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "mini-empire",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
       "gameId": "moon-ruins",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "ocean-voyage",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -197,15 +179,6 @@
     },
     {
       "gameId": "realistic-builder",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "restaurant-tycoon",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -322,15 +295,6 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "tekken",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
       "gameId": "tower-choice-rpg",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
@@ -362,6 +326,33 @@
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "mini-empire",
+      "decision": "CONTINUE",
+      "label": "정상개발",
+      "priorityRank": 2,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "ocean-voyage",
+      "decision": "CONTINUE",
+      "label": "정상개발",
+      "priorityRank": 2,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "restaurant-tycoon",
+      "decision": "CONTINUE",
+      "label": "정상개발",
+      "priorityRank": 2,
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
