@@ -850,10 +850,9 @@ local function spawnEnemy(isBoss, index)
   local radius = 51 + (index%3)*11
   local location = Vector3.new(math.cos(theta)*radius, 3, math.sin(theta)*radius)
   -- [초원 몬스터] 슬라임 제외. CC0 실물 원본을 등록한 종만 웨이브에 추가한다.
-  -- 기존 전투 피해, 보상, 등장 수는 변경하지 않고 몬스터 종류만 확장한다.
+  -- 초원 벌은 출현 목록에서 제외한다. 기존 전투 피해·보상·등장 수는 유지한다.
   local meadowSpecies={
     {id="wolf",atom="HEAD_CANINE",wave=1,height=3.15},
-    {id="bee",atom="HEAD_INSECT",wave=1,height=3.15},
     {id="boar",atom="JAW_SHORT",wave=2,height=3.15},
     {id="mushroom",atom="ROOT_LIMB",wave=3,height=3.15},
     {id="bat",atom="WING_LEATHER",wave=4,height=3.15},
@@ -1053,10 +1052,10 @@ local function spawnEnemy(isBoss, index)
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
-  local meadowNames={wolf="초원 늑대",bee="초원 벌",boar="사나운 멧돼지",
+  local meadowNames={wolf="초원 늑대",boar="사나운 멧돼지",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
-  -- [몬스터 공통 재질] 늑대·벌·멧돼지·버섯·박쥐·해골·골렘 전 종류에 동일한 토이 플라스틱을 적용한다.
+  -- [몬스터 공통 재질] 늑대·멧돼지·버섯·박쥐·해골·골렘에 동일한 토이 플라스틱을 적용한다.
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
   -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
