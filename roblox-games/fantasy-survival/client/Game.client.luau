@@ -478,7 +478,7 @@ local function render()
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
   if humanoid and humanoid.RigType~=Enum.HumanoidRigType.R15 then
-    status.Text ..= "\\nR15 아바타 설정 필요"
+    status.Text ..= "\nR15 아바타 적용 대기 · 재접속 필요"
   end
   local saveStatus = player:GetAttribute("SaveStatus")
   if player:GetAttribute("ProfileReady") ~= true then
