@@ -1437,7 +1437,7 @@ test('fantasy monster shared actions have restrained impacts stable targets and 
   assert.match(server,/facing=enemy\.visualFacing/);
   assert.match(client,/local function mobVfx\(pattern,where,stage,facing\)/);
   assert.match(client,/stage=="IMPACT" and \(charge and "SHAPE_BURST" or "IMPACT_FLASH"\)/);
-  assert.match(client,/textureKey=\(wolf or skeleton\) and stage=="IMPACT" and "slash" or nil/);
+  assert.match(client,/textureKey=wolf and stage=="IMPACT" and "slash" or nil/);
   assert.match(client,/startDiameter=boss and \(pattern=="GOLEM_SHOCKWAVE" and 16\.8 or 10\.4\) or nil/);
   assert.match(client,/hideRing=pattern=="GOLEM_SLAM" or stage=="IMPACT" and not charge/);
   assert.match(client,/mobVfx\(payload\.pattern,payload\.position,"IMPACT",payload\.facing\)/);
@@ -1618,6 +1618,9 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
   const sites=server.slice(server.indexOf('local meadowEncounterSites = {'),server.indexOf('-- Roblox Terrain'));
   assert.doesNotMatch(sites,/id="mushroom"/);
+  assert.doesNotMatch(sites,/id="skeleton"/,'removed skeleton spawn sites must not return');
+  assert.doesNotMatch(server,/skeleton="초원 해골"|SKELETON_CLEAVE|SKELETON_THRUST/);
+  assert.doesNotMatch(client,/species~="skeleton"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.equal((sites.match(/id="bat"/g)||[]).length,3,'original three bat habitats remain');
   assert.equal((sites.match(/id="wolf"/g)||[]).length,4,'wolves remain unchanged');
   assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
