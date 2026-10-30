@@ -1831,7 +1831,8 @@ export function deterministicWebModuleInputCandidate({order={},sourceRoot='',res
     if([...idCounts.values()].some(count=>count!==1))continue;
     const bindings=[];
     for(const button of html.matchAll(/<button\b([^>]*)>/gi)){
-      if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
+      // Module scripts execute after document parsing, even when controls follow the module tag.
+      if(/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
       const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
       const ids=attrs.filter(row=>row[1].toLowerCase()==='id');
       const actions=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
