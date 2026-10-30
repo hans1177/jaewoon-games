@@ -82,9 +82,7 @@ local meadowEncounterSites = {
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-254,3,-226)},
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(248,3,-224)},
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(239,3,236)},
-  {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(-132,3,-151)},
-  {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(146,3,146)},
-  {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(-168,3,123)},
+  -- [사용자 제거] 해골 몬스터 서식지 3곳도 폐쇄. 저장·기존 나머지 몬스터 배치는 유지.
   {id="golem",atom="HEAD_GOLEM",tier=5,height=8.4,position=Vector3.new(-153,3,-164)},
 }
 -- Roblox Terrain is native collidable terrain, never an assembled visual Part.
@@ -97,7 +95,6 @@ local meadowPalette={
   wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
   deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
-  skeleton=Color3.fromRGB(198,192,174),
   golem=Color3.fromRGB(129,138,126),
 }
 local meadowTerrain = workspace.Terrain
@@ -1597,10 +1594,9 @@ local function spawnEnemy(site, siteIndex)
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13)
-  local meadowNames={wolf="초원 늑대",
-    bat="황혼 박쥐",skeleton="초원 해골"}
+  local meadowNames={wolf="초원 늑대",bat="황혼 박쥐"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
-  -- [몬스터 공통 재질] 늑대·박쥐·해골·골렘에 기존 토이 플라스틱을 적용한다.
+  -- [몬스터 공통 재질] 늑대·박쥐·골렘에 기존 토이 플라스틱을 적용한다.
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
   -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
@@ -1635,8 +1631,7 @@ local function spawnEnemy(site, siteIndex)
   end
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
-  local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",
-    bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
+  local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",bat="BAT_DIVE"}
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or firstAttack[partId])
   model:SetAttribute("NativeMobMotion","IDLE")
   model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
@@ -1650,8 +1645,7 @@ local function spawnEnemy(site, siteIndex)
   end
   -- 정적 메시에는 실제 걷기 관절이 없음을 표시한다. 판정이나 스폰에는 영향 없다.
   model:SetAttribute("NativeMobRig",hasOriginalMotor and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
-  local secondarySkill={wolf="LEAP_BITE",bee="DIVE_STING",
-    bat="NIGHT_DIVE",skeleton="BONE_SWING"}
+  local secondarySkill={wolf="LEAP_BITE",bee="DIVE_STING",bat="NIGHT_DIVE"}
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("EnemyMaxHealth",hitPoints)
@@ -1975,8 +1969,7 @@ local function chooseMeadowMobSkill(enemy)
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
     or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")
     or enemy.kind=="bat" and (second and "BAT_SWEEP" or "BAT_DIVE")
-     or enemy.kind=="skeleton" and (second and "SKELETON_THRUST" or "SKELETON_CLEAVE")
-    or (second and "WOLF_LUNGE" or "WOLF_BITE")
+     or (second and "WOLF_LUNGE" or "WOLF_BITE")
   enemy.attackPattern=pattern
   enemy.model:SetAttribute("AttackPattern",pattern)
   enemy.model:SetAttribute("NativeMobSkillActive",second)
