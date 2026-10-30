@@ -299,10 +299,14 @@ local function worldAsset(id, location, targetHeight)
     local animalTint=id=="deer" and meadowPalette.deer
       or id=="boar" and meadowPalette.boar
       or id=="rabbit" and meadowPalette.rabbit or nil
-    if animalTint or id=="tree" then
+    if animalTint or id=="tree" or id=="ruin" then
       for _,surface in ipairs(clone:GetDescendants()) do
         if surface:IsA("MeshPart") then
-          if id=="tree" then
+          if id=="ruin" then
+            -- 수입 원본 유적 메시를 골렘·지형의 동일한 무광 석재로 연결한다.
+            surface.Color=meadowPalette.rock
+            surface.Material=Enum.Material.Slate
+          elseif id=="tree" then
             local name=surface.Name:lower()
             local bark=name:find("trunk",1,true) or name:find("bark",1,true)
               or name:find("stem",1,true) or name:find("branch",1,true)
