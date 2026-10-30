@@ -408,7 +408,11 @@ local function attackEnemy(player)
   local human=character and character:FindFirstChildOfClass("Humanoid")
   local rootPart=character and character:FindFirstChild("HumanoidRootPart")
   if not human or human.Health<=0 or not rootPart then return false end
-  local target=nearestEnemy(rootPart,25)
+  -- Genuine empty-handed fighting is short range; an equipped approved Tool
+  -- does not have to exist to attack, but punches cannot hit through the meadow.
+  local tool=character:FindFirstChildOfClass("Tool")
+  local distance=tool and 8 or 5.5
+  local target=nearestEnemy(rootPart,distance)
   if not target then return false end
   local now=os.clock()
   if now<(attackCooldown[player] or 0) then return false end
@@ -601,7 +605,8 @@ local function meadowSkill(player,id,execute)
 end
 local function meadowHeavy(player)
   return meadowSkill(player,"skill-meadow-heavy",function(_,_,root,now)
-    local enemy=nearestEnemy(root,9)
+    -- Unarmed uppercut uses the same attack, reward and authority path.
+    local enemy=nearestEnemy(root,7)
     if not enemy or now<(attackCooldown[player] or 0) then return false end
     attackCooldown[player]=now+.65
     local damage=math.floor((16+readNumber(player,"Level",1)*2.2
