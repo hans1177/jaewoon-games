@@ -1167,7 +1167,8 @@ local npcJointToChannel={
  LeftElbow="ForearmL",RightElbow="ForearmR",LeftHip="ThighL",RightHip="ThighR",
  LeftKnee="ShinL",RightKnee="ShinR",LeftAnkle="FootL",RightAnkle="FootR",
 }
-local npcMotionDurations={IDLE=2.4,WALK=.9,RUN=.64,ATTACK=.75,HIT=.46,DEATH=1.32}
+local npcMotionDurations={IDLE=2.4,WALK=.9,RUN=.64,ATTACK=.75,HIT=.46,DEATH=1.32,
+ ANTICIPATION=.42,RECOVERY=.38,INTERACT=.9,GESTURE=1.1,TURN=.45}
 RunService.PreSimulation:Connect(function(dt)
  if not nativeNpcMotionReady then return end
  local ownCharacter=p.Character
@@ -1195,11 +1196,14 @@ RunService.PreSimulation:Connect(function(dt)
    if actorMotionTracks[humanoid] then
     local horizontal=Vector3.new(root.AssemblyLinearVelocity.X,0,root.AssemblyLinearVelocity.Z).Magnitude
     local moving=humanoid.MoveDirection.Magnitude>.08 or horizontal>.65
-    local marker=tostring(root:GetAttribute("MotionState") or rig:GetAttribute("MotionState") or "")
+    -- 루트/모델이 이미 승인한 동작만 플레이한다. 다른 플레이어의
+    -- 이동·서버 체력·스킬 판정은 변경하지 않는다.
+    local marker=string.upper(tostring(root:GetAttribute("MotionState") or rig:GetAttribute("MotionState") or ""))
+    local actionState=(marker=="ANTICIPATION" or marker=="ATTACK" or marker=="RECOVERY"
+      or marker=="HIT" or marker=="INTERACT" or marker=="GESTURE" or marker=="TURN")
+      and marker or nil
     local state=humanoid.Health<=0 and "DEATH"
-     or marker=="HIT" and "HIT"
-     or marker=="ATTACK" and "ATTACK"
-     or moving and (horizontal>12 and "RUN" or "WALK") or "IDLE"
+     or actionState or moving and (horizontal>12 and "RUN" or "WALK") or "IDLE"
     if state~=item.state then item.state=state;item.elapsed=0 end
     local frameDt=math.clamp(dt or 1/60,0,.1)
     local pace=moving and math.clamp(horizontal/8,.65,1.8) or 1
@@ -1244,8 +1248,15 @@ task.spawn(function()
         and #animator:GetPlayingAnimationTracks()==0 then
         local joints,channels={},{}
         for _,motor in ipairs(rig:GetDescendants())do
-         if motor:IsA("Motor6D") and motor.Part0 and motor.Part1
-          and npcJointToChannel[motor.Name] then
+         -- Avatar Joint Upgrade의 AnimationConstraint 우선, 구형 Motor6D 호환.
+         local nativeConstraint=motor:IsA("AnimationConstraint")
+           and motor.Attachment0 and motor.Attachment1
+           and motor.Attachment0:IsDescendantOf(rig)
+           and motor.Attachment1:IsDescendantOf(rig)
+         local nativeMotor=motor:IsA("Motor6D") and motor.Part0 and motor.Part1
+           and motor.Part0:IsDescendantOf(rig) and motor.Part1:IsDescendantOf(rig)
+         if (nativeConstraint or nativeMotor) and npcJointToChannel[motor.Name]
+          and (not joints[motor.Name] or nativeConstraint) then
           joints[motor.Name]=motor
           channels[npcJointToChannel[motor.Name]]=true
          end
