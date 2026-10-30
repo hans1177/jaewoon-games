@@ -73,6 +73,32 @@ local STUDIO_ASSET_FAMILY_STATUS = {
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+-- 입력: 모션은 즉시 재생하고 피해·보상은 기존 서버에만 요청한다.
+local playNativeCombatMotion
+local predictedCombatSequence=0
+local predictedCombatUntil=0
+local pendingCombatMotion={}
+local function activateMeadowAction(actionId)
+  local combat=false
+  for _,action in ipairs(Config.Actions) do
+    if action.Id==actionId then combat=action.Kind=="COMBAT";break end
+  end
+  if combat then
+    local character=player.Character
+    local human=character and character:FindFirstChildOfClass("Humanoid")
+    if not human or human.Health<=0 or player:GetAttribute("ProfileReady")~=true then return end
+    local now=os.clock()
+    if now<predictedCombatUntil then return end
+    predictedCombatUntil=now+.42
+    predictedCombatSequence+=1
+    if playNativeCombatMotion then
+      local ok,started=pcall(playNativeCombatMotion,actionId,predictedCombatSequence)
+      if ok and started then pendingCombatMotion[actionId]=now
+      elseif not ok then warn("마력숲 맨손 포즈 실행 실패: "..tostring(started)) end
+    end
+  end
+  remote:FireServer(actionId)
+end
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "ApprovedScopeHud"
@@ -402,7 +428,7 @@ for index, action in ipairs(Config.Actions) do
   button.Text = CommonUI.ActionLabel(action,index)
   button.Parent = list
   meadowActionButtons[action.Id]=button
-  button.Activated:Connect(function() remote:FireServer(action.Id) end)
+  button.Activated:Connect(function() activateMeadowAction(action.Id) end)
 end
 local readyCountdown=0
 game:GetService("RunService").Heartbeat:Connect(function(dt)
@@ -502,7 +528,7 @@ primaryCombatAction = primaryCombatAction or Config.Actions[1]
 if primaryCombatAction then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
     if inputState == Enum.UserInputState.Begin and gui:GetAttribute("GameMenuOpen")~=true then
-      remote:FireServer(primaryCombatAction.Id)
+      activateMeadowAction(primaryCombatAction.Id)
     end
     return Enum.ContextActionResult.Sink
   end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)
@@ -527,7 +553,7 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",activate=function()remote:FireServer(primaryCombatAction.Id)end}or nil)
+CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",activate=function()activateMeadowAction(primaryCombatAction.Id)end}or nil)
 
 -- Four direct Roblox-native martial skill buttons, visible without opening the menu.
 -- Each sends an existing server-authorized COMBAT action; no client damage authority.
@@ -563,7 +589,7 @@ for index,skill in ipairs(meleeSkills) do
   button.Activated:Connect(function()
     local character=player.Character
     if not character or character:FindFirstChildOfClass("Tool") then return end
-    remote:FireServer(skill[1])
+    activateMeadowAction(skill[1])
   end)
 end
 
@@ -575,7 +601,8 @@ local combatMotionModule = Shared:FindFirstChild("RobloxCommonMotion")
 if combatMotionModule then
   local ok, source = pcall(require, combatMotionModule)
   if ok and type(source) == "table" and source.CreateCombatCombo and source.SampleCombatCombo
-    and source.MapCombatPoseToR15 and source.BindJointPose then combatMotionSource = source end
+    and source.MapCombatPoseToR15 and source.BindJointPose then combatMotionSource = source
+  else warn("마력숲 맨손 모션 원본 로딩 실패: "..tostring(source)) end
 end
 local RunService = game:GetService("RunService")
 local authorizedCombatScopes = {}
@@ -616,6 +643,393 @@ remote.OnClientEvent:Connect(function(kind,payload)
     })
   end
 end)
+
+-- Source-bound Roblox SKILL / VFX packages. Server approval is the only trigger.
+-- UI actions never apply local damage, healing, knockback, cooldown or inventory.
+local meadowSkillLoaded,meadowSkillPresentation=pcall(require,Shared:FindFirstChild("RobloxCommonSkillPresentation"))
+local meadowVfxLoaded,meadowCommonVFX=pcall(require,Shared:FindFirstChild("RobloxCommonVFX"))
+if not meadowSkillLoaded or type(meadowSkillPresentation)~="table" then meadowSkillPresentation=nil end
+if not meadowVfxLoaded or type(meadowCommonVFX)~="table" then meadowCommonVFX=nil end
+local actionsById={}
+for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
+local debris=game:GetService("Debris")
+local alreadyPlayedMeadowFX={}
+local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetPosition,sequence)
+  local action=actionsById[actionId]
+  actorUserId=typeof(actorUserId)=="number" and actorUserId or player.UserId
+  if sequence~=nil then
+    local key=tostring(actorUserId)..":"..tostring(sequence)
+    if alreadyPlayedMeadowFX[key] then return end
+    alreadyPlayedMeadowFX[key]=true
+    task.delay(8,function()alreadyPlayedMeadowFX[key]=nil end)
+  end
+  if not action then return end
+  local sourcePlayer=Players:GetPlayerByUserId(actorUserId)
+  local character=sourcePlayer and sourcePlayer.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart then return end
+  local position=typeof(targetPosition)=="Vector3" and targetPosition or
+    (sourcePlayer and sourcePlayer:GetAttribute("ApprovedActionTarget"))
+  if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
+    position=rootPart.Position
+  end
+  local hostPart=character:FindFirstChild("RightHand") or rootPart
+  local warm=Color3.fromRGB(132,245,169)
+  local accent=Color3.fromRGB(231,255,189)
+  if actionId=="skill-meadow-bolt" then warm=Color3.fromRGB(128,197,255) end
+  if actionId=="skill-meadow-heavy" or actionId=="skill-meadow-sweep" then
+    warm=Color3.fromRGB(255,187,109)
+  end
+  local settings={
+    parent=workspace,cframe=CFrame.new(position),hostPart=hostPart,
+    startPosition=hostPart.Position,endPosition=position,
+    color=warm,accent=accent,duration=.46,
+    radius=actionId=="skill-meadow-sweep" and 10 or 4,
+    scale=1,autoCleanup=true,reducedMotion=UserInputService.TouchEnabled,
+    vfx=meadowCommonVFX,
+  }
+  local selectedFx=overrideVfx or action.VfxAtom
+  if meadowCommonVFX and selectedFx and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
+    local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
+    if not ok then warn("마력숲 VFX source unavailable: "..tostring(err)) end
+  end
+  if meadowSkillPresentation and not overrideVfx and action.SkillAtom and action.SkillAtom~="SKILL_ICON_BADGE" and hasStudioAssetAtom("SKILL","CAST_HAND") then
+    local ok,result,controller=pcall(meadowSkillPresentation.Create,action.SkillAtom,settings)
+    if ok then
+      if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
+        debris:AddItem(result,2.8)
+      elseif (action.SkillAtom=="DASH_STREAK" or action.SkillAtom=="SKILL_TRAIL") and controller then
+        task.delay(.65,function() pcall(function()controller.Destroy() end) end)
+      end
+    else
+      warn("마력숲 skill source unavailable: "..tostring(result))
+    end
+  end
+end
+player:GetAttributeChangedSignal("ApprovedActionFX"):Connect(function()
+  local id,seq=tostring(player:GetAttribute("ApprovedActionFX") or ""):match("^([^:]+):(%d+)$")
+  if id and seq then playApprovedMeadowEffect(id,nil,player.UserId,nil,tonumber(seq)) end
+end)
+remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosition)
+  if kind=="MEADOW_ACTION_FX" then
+    playApprovedMeadowEffect(actionId,nil,payload,targetPosition,sequence)
+  elseif kind=="MEADOW_REACTION" and payload=="PARRY" then
+    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH",player.UserId)
+  end
+end)
+
+
+-- The shared Roblox R15 combat library already has real authored joints for
+-- jab/cross/hook/uppercut/elbow/knee/kick. Route ONE confirmed hit to ONE strike.
+local basicUnarmedMoves={
+  "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT",
+  "U:BACKFIST_LEFT","U:UPPERCUT_RIGHT","U:ELBOW_LEFT","U:LOW_KICK_R",
+}
+local skillUnarmedMoves={
+  ["meadow-unarmed-rush"]={"U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT"},
+  ["meadow-unarmed-uppercut"]={"U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT"},
+  ["meadow-unarmed-kick"]={"U:ROUND_KICK_R","U:SIDE_KICK_L","U:FRONT_KICK_R"},
+  ["meadow-unarmed-elbow"]={"U:ELBOW_RIGHT","U:KNEE_LEFT","U:ELBOW_LEFT","U:KNEE_RIGHT"},
+}
+local activeStrikeTrail=nil
+local activeStrikeTrailToken=0
+local function stopStrikeTrail()
+  activeStrikeTrailToken+=1
+  if activeStrikeTrail then activeStrikeTrail.Destroy();activeStrikeTrail=nil end
+end
+-- Upper-body and real leg joints are both owned only while a melee pose plays.
+-- The normal Roblox walk/run Animator is followed, not replaced.
+local combatUpperJoints = {Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
+  LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true,
+  LeftHip=true,RightHip=true,LeftKnee=true,RightKnee=true,LeftAnkle=true,RightAnkle=true}
+local combatRecoveryUntil = nil
+local function finishNativeCombatMotion()
+  stopStrikeTrail()
+  if activeCombatController then activeCombatController.Destroy(true) end
+  if activeCombatCharacter and activeCombatCharacter.Parent then
+    activeCombatCharacter:SetAttribute("NativeCombatMotionState", "IDLE")
+  end
+  activeCombatController = nil
+  combatRecoveryUntil = nil
+  activeCombatCombo = nil
+  activeCombatCharacter = nil
+  table.clear(combatPoseTargets)
+  table.clear(combatR15Targets)
+end
+player.CharacterAdded:Connect(function()
+  finishNativeCombatMotion()
+  predictedCombatUntil=0
+  table.clear(pendingCombatMotion)
+end)
+playNativeCombatMotion=function(approvedScope,approvedEvent)
+  if not authorizedCombatScopes[approvedScope] then return false end
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not combatMotionSource or not humanoid or humanoid.Health <= 0 then return end
+  local r6=humanoid.RigType==Enum.HumanoidRigType.R6
+  local tool = character:FindFirstChildOfClass("Tool")
+  local equipment = tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or "UNARMED"
+  local profile = equipment == "UNARMED" and "UNARMED" or combatMotionSource.ResolveWeaponProfile(equipment)
+  if not profile then
+    character:SetAttribute("NativeCombatMotionState", "MATCHING_WEAPON_MOTION_REQUIRED")
+    return
+  end
+  -- [공용 자산 실연결] 선택된 스튜디오 모션과 자사 R15 포즈 라이브러리의 동작 ID를 연결한다.
+  -- 자산 카탈로그 ATTACK_LIGHT_1은 공용 포즈 원본 LIGHT_ATTACK_1에 대응한다.
+  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then
+    character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
+    return
+  end
+  -- 승인된 맨손 포즈를 기존 아바타의 실제 관절에만 적용한다.
+  if not hasStudioAssetAtom("CHARACTER","HAND_BARE") then return end
+  local motionOk, authoredMotion = pcall(combatMotionSource.Describe, "LIGHT_ATTACK_1")
+  if not motionOk or not authoredMotion or authoredMotion.rig ~= "R15" then
+    character:SetAttribute("NativeCombatMotionState", "R15_MOTION_SOURCE_REQUIRED")
+    return
+  end
+  local joints = {}
+  for _, descendant in ipairs(character:GetDescendants()) do
+    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1
+      and (combatUpperJoints[descendant.Name] or (r6 and (descendant.Name=="RootJoint" or descendant.Name=="Left Shoulder" or descendant.Name=="Right Shoulder" or descendant.Name=="Left Hip" or descendant.Name=="Right Hip"))) then
+      joints[descendant.Name] = descendant
+    end
+  end
+  if not ((r6 and joints.RootJoint and joints["Left Shoulder"] and joints["Right Shoulder"])
+    or (not r6 and joints.Waist and joints.LeftShoulder and joints.RightShoulder
+    and joints.LeftElbow and joints.RightElbow)) then
+    character:SetAttribute("NativeCombatMotionState", "COMPATIBLE_R15_JOINTS_REQUIRED")
+    return
+  end
+  if activeCombatCharacter ~= character then finishNativeCombatMotion() end
+  local approvedIndex=tonumber(approvedEvent) or 1
+  local chosenMove=nil
+  if profile=="UNARMED" then
+    local moves=skillUnarmedMoves[approvedScope] or basicUnarmedMoves
+    chosenMove=moves[(approvedIndex-1)%#moves+1]
+  else
+    -- Reuse the weapon-specific authored R15 action list, never a fake punch.
+    local routeOk,route=pcall(combatMotionSource.CreateCombatCombo,profile)
+    if not routeOk or not route or #route.steps==0 then return end
+    chosenMove=route.steps[(approvedIndex-1)%#route.steps+1].id
+  end
+  -- CreateCombatCombo is immutable (table.freeze). Build a fresh ONE-strike
+  -- presentation instead of mutating steps or playing unapproved fake hits.
+  local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
+    profile,{chosenMove},{speed=profile=="UNARMED" and 1.08 or 1})
+  if not ok or not combo or not combo.steps or #combo.steps~=1 then return end
+  combatRecoveryUntil = nil
+  activeCombatCharacter = character
+  activeCombatCombo = combo
+  activeCombatStartedAt = os.clock()
+  activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
+    followAnimator = true,
+    response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
+  })
+  -- A real R15 hand/foot carries the short shared-mesh particle trail.
+  stopStrikeTrail()
+  if combatVFX and profile=="UNARMED" then
+    local isLegStrike=chosenMove:find("KICK",1,true)~=nil
+      or chosenMove:find("KNEE",1,true)~=nil
+    local isLeftStrike=chosenMove:find("LEFT",1,true)~=nil
+      or chosenMove:match("_L$")~=nil
+    local hostName=isLegStrike
+      and (isLeftStrike and "LeftFoot" or "RightFoot")
+      or (isLeftStrike and "LeftHand" or "RightHand")
+    local host=character:FindFirstChild(hostName)
+    if host and host:IsA("BasePart") then
+      local color=chosenMove:find("KICK",1,true) and Color3.fromRGB(124,245,220)
+        or Color3.fromRGB(255,207,112)
+      local trailOk,_,controller=pcall(combatVFX.AttachShortTrail,host,{
+        color=color,lifetime=nativeTouchEnabled and .12 or .18,
+        width=nativeTouchEnabled and .22 or .42,length=1.1,
+      })
+      if trailOk and controller then
+        activeStrikeTrail=controller
+        controller.SetEnabled(true)
+        local token=activeStrikeTrailToken
+        task.delay(.19,function()
+          if activeStrikeTrailToken==token and activeStrikeTrail==controller then
+            controller.SetEnabled(false)
+          end
+        end)
+      end
+    end
+  end
+  -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
+
+  character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
+  character:SetAttribute("NativeCombatActionId", chosenMove)
+  character:SetAttribute("NativeCombatMotionProfile", profile)
+  character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
+  return true
+end
+player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
+  local scope,serial=tostring(player:GetAttribute("ApprovedCombatMotion") or ""):match("^([^:]+):(%d+)$")
+  if not scope or not serial then return end
+  local predictedAt=pendingCombatMotion[scope]
+  pendingCombatMotion[scope]=nil
+  -- 동일 입력의 서버 승인으로 모션을 두 번 시작하지 않는다.
+  if predictedAt and os.clock()-predictedAt<1 then return end
+  playNativeCombatMotion(scope,tonumber(serial))
+end)
+-- Original Roblox 61-motion library: cast, guard, parry, dodge, craft,
+-- gather and emote use only available R15 joints and server-approved actions.
+-- Existing Animator continues driving walk/run/jump underneath visual overlays.
+local skillMotionR15=nil
+local skillMotionCharacter=nil
+local skillMotionDeadline=0
+local skillMotionState=nil
+local skillMotionStart=0
+local skillMotionDuration=0
+local skillMotionJoints={}
+local skillMotionAvailable={}
+local skillMotionTargets={}
+local skillMotionR15Targets={}
+local skillMotionMapping={
+  Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
+  LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
+  LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
+}
+local skillMotionStates={
+  INTERACT_USE="INTERACT",GATHER_SWING="INTERACT",CRAFT_LOOP="INTERACT",
+  HEAVY_ATTACK_1="ATTACK",CAST_BURST="ATTACK",PARRY_PERFECT="ATTACK",
+  DODGE_LEFT="GESTURE",DODGE_RIGHT="GESTURE",BLOCK_HOLD="INTERACT",
+  CHANNEL_LOOP="GESTURE",SPRINT="START",EMOTE_WAVE="GESTURE",
+  LIGHT_ATTACK_1="ATTACK",
+}
+local function finishMeadowSkillPose()
+  if skillMotionR15 then skillMotionR15.Destroy(true) end
+  skillMotionR15=nil
+  skillMotionCharacter=nil
+  skillMotionState=nil
+  table.clear(skillMotionJoints)
+  table.clear(skillMotionAvailable)
+  table.clear(skillMotionTargets)
+  table.clear(skillMotionR15Targets)
+end
+player.CharacterAdded:Connect(finishMeadowSkillPose)
+player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(finishMeadowSkillPose)
+player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
+  local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
+  local action=id and actionsById[id]
+  if not serial or not action or action.Kind=="COMBAT" or not action.MotionAtom then return end
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  if not humanoid or humanoid.Health<=0 or humanoid.RigType~=Enum.HumanoidRigType.R15
+    or not combatMotionSource or not combatMotionSource.SampleProceduralActorMotion then return end
+  local state=skillMotionStates[action.MotionAtom]
+  if not state then return end
+  local good,meta=pcall(combatMotionSource.Describe,action.MotionAtom)
+  if not good or not meta or meta.rig~="R15" then return end
+  finishMeadowSkillPose()
+  finishNativeCombatMotion()
+  for _,joint in ipairs(character:GetDescendants()) do
+    if joint:IsA("Motor6D") and joint.Part0 and joint.Part1 and skillMotionMapping[joint.Name] then
+      skillMotionJoints[joint.Name]=joint
+      skillMotionAvailable[skillMotionMapping[joint.Name]]=true
+    end
+  end
+  if not (skillMotionJoints.Waist and skillMotionJoints.LeftShoulder and
+    skillMotionJoints.RightShoulder and skillMotionJoints.LeftElbow and
+    skillMotionJoints.RightElbow) then return end
+  skillMotionAvailable.Chest=true
+  skillMotionR15=combatMotionSource.BindJointPose(skillMotionJoints,{
+    followAnimator=true,response=26,
+  })
+  skillMotionCharacter=character
+  skillMotionState=state
+  skillMotionStart=os.clock()
+  skillMotionDuration=math.clamp(tonumber(meta.duration) or .7,.25,1.4)
+  skillMotionDeadline=skillMotionStart+skillMotionDuration+.16
+  character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
+  character:SetAttribute("NativeSkillActionId",id)
+end)
+RunService.PreSimulation:Connect(function(dt)
+  if not skillMotionR15 or not skillMotionCharacter then return end
+  local humanoid=skillMotionCharacter:FindFirstChildOfClass("Humanoid")
+  if player.Character~=skillMotionCharacter or not humanoid or humanoid.Health<=0
+    or os.clock()>=skillMotionDeadline then
+    finishMeadowSkillPose()
+    return
+  end
+  table.clear(skillMotionTargets)
+  table.clear(skillMotionR15Targets)
+  local phase=math.clamp((os.clock()-skillMotionStart)/skillMotionDuration,0,1)
+  local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
+    bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
+    mobileTier=nativeTouchEnabled and "LOW" or "HIGH",secondary=.65,
+  },skillMotionTargets)
+  if not matched then finishMeadowSkillPose();return end
+  local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
+  if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
+    local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
+    skillMotionTargets.Spine=CFrame.Angles(0,0,sign*.25*math.sin(math.pi*phase))
+  end
+  combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
+  skillMotionR15.Step(skillMotionR15Targets,dt)
+end)
+
+RunService.PreSimulation:Connect(function(dt)
+  if not (activeCombatController and activeCombatCombo and activeCombatCharacter) then return end
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if character ~= activeCombatCharacter or not humanoid or humanoid.Health <= 0 then
+    finishNativeCombatMotion()
+    return
+  end
+  table.clear(combatPoseTargets)
+  table.clear(combatR15Targets)
+  if combatRecoveryUntil then
+    activeCombatController.Step(nil, dt) -- 중립 복귀는 공격 프레임 입력과 구분한다.
+    if os.clock() >= combatRecoveryUntil then finishNativeCombatMotion() end
+    return
+  end
+  local _, _, finished = combatMotionSource.SampleCombatCombo(
+    activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
+  )
+  if type(combatMotionSource.RefineActorCinematicPose) == "function" then
+    local timeInAction = os.clock() - activeCombatStartedAt
+    local currentStep = activeCombatCombo.steps[#activeCombatCombo.steps]
+    for _, candidateStep in ipairs(activeCombatCombo.steps) do
+      if timeInAction < candidateStep.start + candidateStep.duration then
+        currentStep = candidateStep
+        break
+      end
+    end
+    local stepPhase = math.clamp((timeInAction - currentStep.start) / math.max(.05, currentStep.duration), 0, 1)
+    combatMotionSource.RefineActorCinematicPose(combatPoseTargets, {
+      actorClass = "PLAYER", bodyPlan = "BIPED", weaponStyle = activeCombatCombo.profileId,
+      actionPhase = stepPhase,
+      authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
+      visualSpeed = humanoid.MoveDirection.Magnitude,
+      mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
+      comboContinuity = tonumber(player:GetAttribute("ActionSequence") or 0)%3~=0 and .32 or 0,
+      intensity = 1, secondary = .55,
+    })
+  end
+  if humanoid.RigType==Enum.HumanoidRigType.R6 then
+    -- 기존 R6 관절만 사용한다. 없는 팔꿈치·무릎을 생성하지 않는다.
+    local torso=character:FindFirstChild("Torso")
+    local mapping={RootJoint="Spine",Neck="Head",["Left Shoulder"]="UpperArmL",
+      ["Right Shoulder"]="UpperArmR",["Left Hip"]="ThighL",["Right Hip"]="ThighR"}
+    if torso then
+      for _,joint in ipairs(character:GetDescendants()) do
+        local channel=joint:IsA("Motor6D") and mapping[joint.Name]
+        if channel then
+          local pose=combatPoseTargets[channel] or CFrame.identity
+          if channel=="Spine" then pose=pose*(combatPoseTargets.Chest or CFrame.identity) end
+          local basis=joint.C0.Rotation
+          combatR15Targets[joint.Name]=basis:Inverse()*pose*basis
+        end
+      end
+    end
+  else
+    combatMotionSource.MapCombatPoseToR15(combatPoseTargets, combatR15Targets)
+  end
+  activeCombatController.Step(combatR15Targets, dt)
+  if finished then combatRecoveryUntil = os.clock() + .18 end
+end)
+
 
 -- Native 3D mob actions: existing CC0 MeshParts only. The game does not
 -- invent limbs, bones or model parts. Server-owned attack states remain authoritative.
@@ -755,363 +1169,5 @@ remote.OnClientEvent:Connect(function(kind,payload)
   elseif kind=="MEADOW_MOB_DEATH" then
     mobVfx(payload.pattern,payload.position,"DEATH")
   end
-end)
-
--- Source-bound Roblox SKILL / VFX packages. Server approval is the only trigger.
--- UI actions never apply local damage, healing, knockback, cooldown or inventory.
-local meadowSkillLoaded,meadowSkillPresentation=pcall(require,Shared:FindFirstChild("RobloxCommonSkillPresentation"))
-local meadowVfxLoaded,meadowCommonVFX=pcall(require,Shared:FindFirstChild("RobloxCommonVFX"))
-if not meadowSkillLoaded or type(meadowSkillPresentation)~="table" then meadowSkillPresentation=nil end
-if not meadowVfxLoaded or type(meadowCommonVFX)~="table" then meadowCommonVFX=nil end
-local actionsById={}
-for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
-local debris=game:GetService("Debris")
-local alreadyPlayedMeadowFX={}
-local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetPosition,sequence)
-  local action=actionsById[actionId]
-  actorUserId=typeof(actorUserId)=="number" and actorUserId or player.UserId
-  if sequence~=nil then
-    local key=tostring(actorUserId)..":"..tostring(sequence)
-    if alreadyPlayedMeadowFX[key] then return end
-    alreadyPlayedMeadowFX[key]=true
-    task.delay(8,function()alreadyPlayedMeadowFX[key]=nil end)
-  end
-  if not action then return end
-  local sourcePlayer=Players:GetPlayerByUserId(actorUserId)
-  local character=sourcePlayer and sourcePlayer.Character
-  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
-  if not rootPart then return end
-  local position=typeof(targetPosition)=="Vector3" and targetPosition or
-    (sourcePlayer and sourcePlayer:GetAttribute("ApprovedActionTarget"))
-  if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
-    position=rootPart.Position
-  end
-  local hostPart=character:FindFirstChild("RightHand") or rootPart
-  local warm=Color3.fromRGB(132,245,169)
-  local accent=Color3.fromRGB(231,255,189)
-  if actionId=="skill-meadow-bolt" then warm=Color3.fromRGB(128,197,255) end
-  if actionId=="skill-meadow-heavy" or actionId=="skill-meadow-sweep" then
-    warm=Color3.fromRGB(255,187,109)
-  end
-  local settings={
-    parent=workspace,cframe=CFrame.new(position),hostPart=hostPart,
-    startPosition=hostPart.Position,endPosition=position,
-    color=warm,accent=accent,duration=.46,
-    radius=actionId=="skill-meadow-sweep" and 10 or 4,
-    scale=1,autoCleanup=true,reducedMotion=UserInputService.TouchEnabled,
-    vfx=meadowCommonVFX,
-  }
-  local selectedFx=overrideVfx or action.VfxAtom
-  if meadowCommonVFX and selectedFx and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
-    local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
-    if not ok then warn("마력숲 VFX source unavailable: "..tostring(err)) end
-  end
-  if meadowSkillPresentation and not overrideVfx and action.SkillAtom and action.SkillAtom~="SKILL_ICON_BADGE" and hasStudioAssetAtom("SKILL","CAST_HAND") then
-    local ok,result,controller=pcall(meadowSkillPresentation.Create,action.SkillAtom,settings)
-    if ok then
-      if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
-        debris:AddItem(result,2.8)
-      elseif (action.SkillAtom=="DASH_STREAK" or action.SkillAtom=="SKILL_TRAIL") and controller then
-        task.delay(.65,function() pcall(function()controller.Destroy() end) end)
-      end
-    else
-      warn("마력숲 skill source unavailable: "..tostring(result))
-    end
-  end
-end
-player:GetAttributeChangedSignal("ApprovedActionFX"):Connect(function()
-  local id,seq=tostring(player:GetAttribute("ApprovedActionFX") or ""):match("^([^:]+):(%d+)$")
-  if id and seq then playApprovedMeadowEffect(id,nil,player.UserId,nil,tonumber(seq)) end
-end)
-remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosition)
-  if kind=="MEADOW_ACTION_FX" then
-    playApprovedMeadowEffect(actionId,nil,payload,targetPosition,sequence)
-  elseif kind=="MEADOW_REACTION" and payload=="PARRY" then
-    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH",player.UserId)
-  end
-end)
-
-
--- The shared Roblox R15 combat library already has real authored joints for
--- jab/cross/hook/uppercut/elbow/knee/kick. Route ONE confirmed hit to ONE strike.
-local basicUnarmedMoves={
-  "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT",
-  "U:BACKFIST_LEFT","U:UPPERCUT_RIGHT","U:ELBOW_LEFT","U:LOW_KICK_R",
-}
-local skillUnarmedMoves={
-  ["meadow-unarmed-rush"]={"U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT"},
-  ["meadow-unarmed-uppercut"]={"U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT"},
-  ["meadow-unarmed-kick"]={"U:ROUND_KICK_R","U:SIDE_KICK_L","U:FRONT_KICK_R"},
-  ["meadow-unarmed-elbow"]={"U:ELBOW_RIGHT","U:KNEE_LEFT","U:ELBOW_LEFT","U:KNEE_RIGHT"},
-}
-local activeStrikeTrail=nil
-local activeStrikeTrailToken=0
-local function stopStrikeTrail()
-  activeStrikeTrailToken+=1
-  if activeStrikeTrail then activeStrikeTrail.Destroy();activeStrikeTrail=nil end
-end
--- Upper-body and real leg joints are both owned only while a melee pose plays.
--- The normal Roblox walk/run Animator is followed, not replaced.
-local combatUpperJoints = {Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
-  LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true,
-  LeftHip=true,RightHip=true,LeftKnee=true,RightKnee=true,LeftAnkle=true,RightAnkle=true}
-local combatRecoveryUntil = nil
-local function finishNativeCombatMotion()
-  stopStrikeTrail()
-  if activeCombatController then activeCombatController.Destroy(true) end
-  if activeCombatCharacter and activeCombatCharacter.Parent then
-    activeCombatCharacter:SetAttribute("NativeCombatMotionState", "IDLE")
-  end
-  activeCombatController = nil
-  combatRecoveryUntil = nil
-  activeCombatCombo = nil
-  activeCombatCharacter = nil
-  table.clear(combatPoseTargets)
-  table.clear(combatR15Targets)
-end
-player.CharacterAdded:Connect(function() finishNativeCombatMotion() end)
-player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
-  -- [서버 승인] 하나의 속성에 승인된 전투 액션과 이벤트 번호가 함께 전달된다.
-  local approved = tostring(player:GetAttribute("ApprovedCombatMotion") or "")
-  local approvedScope, approvedEvent = approved:match("^([^:]+):(%d+)$")
-  if not approvedEvent or not authorizedCombatScopes[approvedScope] then return end
-  local character = player.Character
-  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-  if not combatMotionSource or not humanoid or humanoid.Health <= 0 then return end
-  if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-    character:SetAttribute("NativeCombatMotionState", "R15_REQUIRED")
-    return
-  end
-  local tool = character:FindFirstChildOfClass("Tool")
-  local equipment = tool and (tool:GetAttribute("WeaponMotionProfile") or tool.Name) or "UNARMED"
-  local profile = equipment == "UNARMED" and "UNARMED" or combatMotionSource.ResolveWeaponProfile(equipment)
-  if not profile then
-    character:SetAttribute("NativeCombatMotionState", "MATCHING_WEAPON_MOTION_REQUIRED")
-    return
-  end
-  -- [공용 자산 실연결] 선택된 스튜디오 모션과 자사 R15 포즈 라이브러리의 동작 ID를 연결한다.
-  -- 자산 카탈로그 ATTACK_LIGHT_1은 공용 포즈 원본 LIGHT_ATTACK_1에 대응한다.
-  if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then
-    character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
-    return
-  end
-  -- 선택된 맨손 캐릭터 계열은 실제 R15 관절 포즈에만 적용한다.
-  if not hasStudioAssetAtom("CHARACTER","HAND_BARE") then return end
-  local motionOk, authoredMotion = pcall(combatMotionSource.Describe, "LIGHT_ATTACK_1")
-  if not motionOk or not authoredMotion or authoredMotion.rig ~= "R15" then
-    character:SetAttribute("NativeCombatMotionState", "R15_MOTION_SOURCE_REQUIRED")
-    return
-  end
-  local joints = {}
-  for _, descendant in ipairs(character:GetDescendants()) do
-    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1
-      and combatUpperJoints[descendant.Name] then
-      joints[descendant.Name] = descendant
-    end
-  end
-  if not (joints.Waist and joints.LeftShoulder and joints.RightShoulder
-    and joints.LeftElbow and joints.RightElbow) then
-    character:SetAttribute("NativeCombatMotionState", "COMPATIBLE_R15_JOINTS_REQUIRED")
-    return
-  end
-  if activeCombatCharacter ~= character then finishNativeCombatMotion() end
-  local approvedIndex=tonumber(approvedEvent) or 1
-  local chosenMove=nil
-  if profile=="UNARMED" then
-    local moves=skillUnarmedMoves[approvedScope] or basicUnarmedMoves
-    chosenMove=moves[(approvedIndex-1)%#moves+1]
-  else
-    -- Reuse the weapon-specific authored R15 action list, never a fake punch.
-    local routeOk,route=pcall(combatMotionSource.CreateCombatCombo,profile)
-    if not routeOk or not route or #route.steps==0 then return end
-    chosenMove=route.steps[(approvedIndex-1)%#route.steps+1].id
-  end
-  -- CreateCombatCombo is immutable (table.freeze). Build a fresh ONE-strike
-  -- presentation instead of mutating steps or playing unapproved fake hits.
-  local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
-    profile,{chosenMove},{speed=profile=="UNARMED" and 1.08 or 1})
-  if not ok or not combo or not combo.steps or #combo.steps~=1 then return end
-  combatRecoveryUntil = nil
-  activeCombatCharacter = character
-  activeCombatCombo = combo
-  activeCombatStartedAt = os.clock()
-  -- A real R15 hand/foot carries the short shared-mesh particle trail.
-  stopStrikeTrail()
-  if combatVFX and profile=="UNARMED" then
-    local isLegStrike=chosenMove:find("KICK",1,true)~=nil
-      or chosenMove:find("KNEE",1,true)~=nil
-    local isLeftStrike=chosenMove:find("LEFT",1,true)~=nil
-      or chosenMove:match("_L$")~=nil
-    local hostName=isLegStrike
-      and (isLeftStrike and "LeftFoot" or "RightFoot")
-      or (isLeftStrike and "LeftHand" or "RightHand")
-    local host=character:FindFirstChild(hostName)
-    if host and host:IsA("BasePart") then
-      local color=chosenMove:find("KICK",1,true) and Color3.fromRGB(124,245,220)
-        or Color3.fromRGB(255,207,112)
-      local trailOk,_,controller=pcall(combatVFX.AttachShortTrail,host,{
-        color=color,lifetime=nativeTouchEnabled and .12 or .18,
-        width=nativeTouchEnabled and .22 or .42,length=1.1,
-      })
-      if trailOk and controller then
-        activeStrikeTrail=controller
-        controller.SetEnabled(true)
-        local token=activeStrikeTrailToken
-        task.delay(.19,function()
-          if activeStrikeTrailToken==token and activeStrikeTrail==controller then
-            controller.SetEnabled(false)
-          end
-        end)
-      end
-    end
-  end
-  -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
-  activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
-    followAnimator = true,
-    response = math.clamp(32 * (0.46 / math.max(authoredMotion.duration, 0.1)), 22, 42),
-  })
-  character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
-  character:SetAttribute("NativeCombatActionId", chosenMove)
-  character:SetAttribute("NativeCombatMotionProfile", profile)
-  character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
-end)
--- Original Roblox 61-motion library: cast, guard, parry, dodge, craft,
--- gather and emote use only available R15 joints and server-approved actions.
--- Existing Animator continues driving walk/run/jump underneath visual overlays.
-local skillMotionR15=nil
-local skillMotionCharacter=nil
-local skillMotionDeadline=0
-local skillMotionState=nil
-local skillMotionStart=0
-local skillMotionDuration=0
-local skillMotionJoints={}
-local skillMotionAvailable={}
-local skillMotionTargets={}
-local skillMotionR15Targets={}
-local skillMotionMapping={
-  Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
-  LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
-  LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
-}
-local skillMotionStates={
-  INTERACT_USE="INTERACT",GATHER_SWING="INTERACT",CRAFT_LOOP="INTERACT",
-  HEAVY_ATTACK_1="ATTACK",CAST_BURST="ATTACK",PARRY_PERFECT="ATTACK",
-  DODGE_LEFT="GESTURE",DODGE_RIGHT="GESTURE",BLOCK_HOLD="INTERACT",
-  CHANNEL_LOOP="GESTURE",SPRINT="START",EMOTE_WAVE="GESTURE",
-  LIGHT_ATTACK_1="ATTACK",
-}
-local function finishMeadowSkillPose()
-  if skillMotionR15 then skillMotionR15.Destroy(true) end
-  skillMotionR15=nil
-  skillMotionCharacter=nil
-  skillMotionState=nil
-  table.clear(skillMotionJoints)
-  table.clear(skillMotionAvailable)
-  table.clear(skillMotionTargets)
-  table.clear(skillMotionR15Targets)
-end
-player.CharacterAdded:Connect(finishMeadowSkillPose)
-player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(finishMeadowSkillPose)
-player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
-  local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
-  local action=id and actionsById[id]
-  if not serial or not action or action.Kind=="COMBAT" or not action.MotionAtom then return end
-  local character=player.Character
-  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
-  if not humanoid or humanoid.Health<=0 or humanoid.RigType~=Enum.HumanoidRigType.R15
-    or not combatMotionSource or not combatMotionSource.SampleProceduralActorMotion then return end
-  local state=skillMotionStates[action.MotionAtom]
-  if not state then return end
-  local good,meta=pcall(combatMotionSource.Describe,action.MotionAtom)
-  if not good or not meta or meta.rig~="R15" then return end
-  finishMeadowSkillPose()
-  finishNativeCombatMotion()
-  for _,joint in ipairs(character:GetDescendants()) do
-    if joint:IsA("Motor6D") and joint.Part0 and joint.Part1 and skillMotionMapping[joint.Name] then
-      skillMotionJoints[joint.Name]=joint
-      skillMotionAvailable[skillMotionMapping[joint.Name]]=true
-    end
-  end
-  if not (skillMotionJoints.Waist and skillMotionJoints.LeftShoulder and
-    skillMotionJoints.RightShoulder and skillMotionJoints.LeftElbow and
-    skillMotionJoints.RightElbow) then return end
-  skillMotionAvailable.Chest=true
-  skillMotionR15=combatMotionSource.BindJointPose(skillMotionJoints,{
-    followAnimator=true,response=26,
-  })
-  skillMotionCharacter=character
-  skillMotionState=state
-  skillMotionStart=os.clock()
-  skillMotionDuration=math.clamp(tonumber(meta.duration) or .7,.25,1.4)
-  skillMotionDeadline=skillMotionStart+skillMotionDuration+.16
-  character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
-  character:SetAttribute("NativeSkillActionId",id)
-end)
-RunService.PreSimulation:Connect(function(dt)
-  if not skillMotionR15 or not skillMotionCharacter then return end
-  local humanoid=skillMotionCharacter:FindFirstChildOfClass("Humanoid")
-  if player.Character~=skillMotionCharacter or not humanoid or humanoid.Health<=0
-    or os.clock()>=skillMotionDeadline then
-    finishMeadowSkillPose()
-    return
-  end
-  table.clear(skillMotionTargets)
-  table.clear(skillMotionR15Targets)
-  local phase=math.clamp((os.clock()-skillMotionStart)/skillMotionDuration,0,1)
-  local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
-    bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
-    mobileTier=nativeTouchEnabled and "LOW" or "HIGH",secondary=.65,
-  },skillMotionTargets)
-  if not matched then finishMeadowSkillPose();return end
-  local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
-  if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
-    local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
-    skillMotionTargets.Spine=CFrame.Angles(0,0,sign*.25*math.sin(math.pi*phase))
-  end
-  combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
-  skillMotionR15.Step(skillMotionR15Targets,dt)
-end)
-
-RunService.PreSimulation:Connect(function(dt)
-  if not (activeCombatController and activeCombatCombo and activeCombatCharacter) then return end
-  local character = player.Character
-  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-  if character ~= activeCombatCharacter or not humanoid or humanoid.Health <= 0 then
-    finishNativeCombatMotion()
-    return
-  end
-  table.clear(combatPoseTargets)
-  table.clear(combatR15Targets)
-  if combatRecoveryUntil then
-    activeCombatController.Step(nil, dt) -- 중립 복귀는 공격 프레임 입력과 구분한다.
-    if os.clock() >= combatRecoveryUntil then finishNativeCombatMotion() end
-    return
-  end
-  local _, _, finished = combatMotionSource.SampleCombatCombo(
-    activeCombatCombo, os.clock() - activeCombatStartedAt, combatPoseTargets
-  )
-  if type(combatMotionSource.RefineActorCinematicPose) == "function" then
-    local timeInAction = os.clock() - activeCombatStartedAt
-    local currentStep = activeCombatCombo.steps[#activeCombatCombo.steps]
-    for _, candidateStep in ipairs(activeCombatCombo.steps) do
-      if timeInAction < candidateStep.start + candidateStep.duration then
-        currentStep = candidateStep
-        break
-      end
-    end
-    local stepPhase = math.clamp((timeInAction - currentStep.start) / math.max(.05, currentStep.duration), 0, 1)
-    combatMotionSource.RefineActorCinematicPose(combatPoseTargets, {
-      actorClass = "PLAYER", bodyPlan = "BIPED", weaponStyle = activeCombatCombo.profileId,
-      actionPhase = stepPhase,
-      authorizedImpact = true, grounded = humanoid.FloorMaterial ~= Enum.Material.Air,
-      visualSpeed = humanoid.MoveDirection.Magnitude,
-      mobileTier = nativeTouchEnabled and "LOW" or "HIGH",
-      comboContinuity = tonumber(player:GetAttribute("ActionSequence") or 0)%3~=0 and .32 or 0,
-      intensity = 1, secondary = .55,
-    })
-  end
-  combatMotionSource.MapCombatPoseToR15(combatPoseTargets, combatR15Targets)
-  activeCombatController.Step(combatR15Targets, dt)
-  if finished then combatRecoveryUntil = os.clock() + .18 end
 end)
 
