@@ -1367,6 +1367,35 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
 });
 
+// [마력숲 상용형 HUD] 외부 CC0 원본 아이콘, 발견 기록, 실제 아이템 수량 보존.
+test('fantasy commercial HUD keeps licensed truthful icons and interactive discovered minimap',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  assert.equal(registry.interfaceIcons.license,'CC0-1.0');
+  assert.equal(registry.interfaceIcons.assetId,'102668066491590');
+  assert.match(client,/local meadowIconAtlas="rbxassetid:\/\/102668066491590"/);
+  for(const attr of ['Wood','Stone','Coins']){
+    assert.ok(client.includes('"'+attr+'",nil,'),'unlicensed/mismatched resource icon: '+attr);
+  }
+  assert.ok(client.includes('if item[3]~=nil then'));
+  assert.ok(client.includes('symbol.Name="ResourceTextIcon"'));
+  assert.ok(client.includes('iconBack.Name="ItemIconBack"'));
+  assert.ok(client.includes('inventoryCards[index].Text='));
+  assert.ok(client.includes('quickCaption.Text="가방"'));
+  assert.ok(client.includes('inventoryQuick.Size=UDim2.fromOffset(50,50)'));
+  assert.ok(client.includes('inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)'));
+  assert.ok(client.includes('radarJournal.Activated:Connect(function()meadowMenu.open(3)end)'));
+  assert.ok(client.includes('radarTitle.Text=gui.AbsoluteSize.Y<450'));
+  assert.ok(client.includes('bit32.band(discovered,point[3])~=0'));
+  assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
+  assert.ok(client.includes('attackIcon.ImageRectOffset=Vector2.fromOffset(0,0)'));
+  assert.ok(client.includes('guardIcon.ImageRectOffset=Vector2.fromOffset(info[4]*64,0)'));
+  assert.ok(client.includes('local meadowArcDegrees={-150,-114,-78,-186,-222,-258}'));
+  assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
+  assert.ok(client.includes('forestBed.Volume=forestAudioEnabled and .045 or 0'));
+  assert.doesNotMatch(client,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
+});
+
 // Roblox Avatar Joint Upgrade (2026): verified engine uses AnimationConstraint for R15.
 test('fantasy unarmed and meadow skills support AnimationConstraint and legacy Motor6D',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
