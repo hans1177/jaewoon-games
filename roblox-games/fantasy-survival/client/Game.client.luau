@@ -1533,7 +1533,7 @@ radarFieldStroke.Transparency=.15
 radarFieldStroke.Parent=radarField
 -- 실제 서버의 4개 흙길과 등록된 유적 3개만 지도에 표시한다.
 local radarTrails={}
-for route=1,4 do
+for route=1,8 do
   local segment=Instance.new("Frame")
   segment.Name="RealTrail"..route;segment.AnchorPoint=Vector2.new(.5,.5)
   segment.BorderSizePixel=0;segment.BackgroundColor3=Color3.fromRGB(220,191,135)
@@ -1550,7 +1550,10 @@ for index=1,3 do
   marker.ZIndex=11;marker.Visible=false;marker.Parent=radarField
   radarRuinMarkers[index]=marker
 end
-local radarTrailEndpoints={{-51,-48,-177,-176},{58,-49,183,-177},{-54,62,-184,188},{56,63,192,196}}
+local radarTrailEndpoints={
+  {-51,-48,-177,-176},{58,-49,183,-177},{-54,62,-184,188},{56,63,192,196},
+  {-177,-176,-228,-219},{183,-177,231,-228},{-184,188,-234,233},{192,196,236,238},
+}
 local radarRuinSites={{-122,-147},{137,139},{-154,122}}
 
 for index=1,3 do
@@ -1639,7 +1642,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local facing=mainRoot.CFrame.LookVector
   radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))
   local world=workspace:FindFirstChild("FantasySurvivalWorld")
-  local trailsReady=world and (world:GetAttribute("MeadowNativeTrails") or 0)>=4
+  local trailsReady=world and (world:GetAttribute("MeadowNativeTrails") or 0)>=8
   local mapSize=radarField.AbsoluteSize
   for index,route in ipairs(radarTrailEndpoints) do
     local frame=radarTrails[index]
