@@ -102,7 +102,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     const gameSourceOwned=uniq(rec.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>clean(file).replaceAll('\\','/').replace(/^\.\//,'').startsWith(prefix)));
     const owner=requestedOwner==='SYSTEM_AI'&&gameSourceOwned?'VIBE2_VIBE3':requestedOwner;
     // 게임마다 실행 플랫폼과 책임 소스가 달라야 한다. 보류 플랫폼이나 교차 게임 범위는 실행하지 않는다.
-    const normalizedFiles=uniq(rec.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/').replace(/^\.\//,''));
+    const normalizedFiles=uniq(rec.responsibleFiles).map(file=>clean(file).replaceAll('\\','/').replace(/^\.\//,''));
     const gameSourceFiles=normalizedFiles.filter(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)));
     const scopes=gameSourceFiles.map(file=>file.match(/^(web|roblox|unity|unreal|godot)-games\/([a-z0-9-]+)\//));
     const scopePlatform=scopes[0]?.[1]||'';
@@ -161,8 +161,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         if(recoveryGameId&&clean(task.gameId)!==recoveryGameId)return task;
         if(exactWebPlaytest&&!exactWebOwner(task))return task;
         if(recoveryGameId){
-          const taskRoot=clean(task.sourceRoot).replaceAll('\\\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
-          const taskFiles=uniq(task.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/').replace(/^\.\//,''))
+          const taskRoot=clean(task.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
+          const taskFiles=uniq(task.responsibleFiles).map(file=>clean(file).replaceAll('\\','/').replace(/^\.\//,''))
             .filter(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)));
           const taskTarget=clean(task.target).toLowerCase();
           if(scopePlatform){
