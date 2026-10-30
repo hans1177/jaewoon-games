@@ -4976,8 +4976,11 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
   if compact then
    local short=v.Y<440
-   hud.Position=UDim2.fromOffset(9,8)
-   hud.Size=UDim2.fromOffset(math.max(170,math.min(320,v.X-90)),short and 86 or 100)
+   -- 마력숲 전용: 일반 메뉴를 좌상단에 두고 상태 HUD는 오른쪽으로 분리한다.
+   -- 다른 공용 UI 사용 게임은 기존 레이아웃을 유지한다.
+   local menuLeft=primary and primary.menuLeft==true
+   hud.Position=menuLeft and UDim2.fromOffset(74,8) or UDim2.fromOffset(9,8)
+   hud.Size=UDim2.fromOffset(math.max(170,math.min(320,v.X-(menuLeft and 82 or 90))),short and 86 or 100)
    title.Position=UDim2.fromOffset(10,4)
    title.Size=UDim2.new(1,-20,0,22)
    title.TextScaled=false;title.TextSize=short and 12 or 14
@@ -4993,9 +4996,15 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
     multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=short and 10 or 11
     multiplayerStatus.TextTruncate=Enum.TextTruncate.AtEnd
    end
-   menu.AnchorPoint=Vector2.new(1,0)
-   menu.Position=UDim2.new(1,-12,0,12)
-   menu.Size=UDim2.fromOffset(56,46)
+   if menuLeft then
+    menu.AnchorPoint=Vector2.new(0,0)
+    menu.Position=UDim2.fromOffset(9,8)
+    menu.Size=UDim2.fromOffset(54,54)
+   else
+    menu.AnchorPoint=Vector2.new(1,0)
+    menu.Position=UDim2.new(1,-12,0,12)
+    menu.Size=UDim2.fromOffset(56,46)
+   end
    if quick then
     quick.AnchorPoint=Vector2.new(1,1)
     quick.Position=UDim2.new(1,-16,1,-24)
