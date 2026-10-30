@@ -170,7 +170,23 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
       /\bcombatMotionSource\.MapCombatPoseToR15\s*\(/,
       /\bactiveCombatController\.Step\s*\(\s*combatR15Targets\s*,\s*dt\s*\)/,
     ];
-    if(motionChain.every(pattern=>pattern.test(raw)))return true;
+    // A separate verified-learning HUD listener may observe the same attribute.
+    // It is not proof that the actual R15 pose sink consumes an authorized hit.
+    // Scope authorization to the callback that creates the combat controller.
+    const approvedListener=raw.match(
+      /\bplayer\s*:\s*GetAttributeChangedSignal\s*\(\s*["']ApprovedCombatMotion["']\s*\)\s*:\s*Connect\s*\(\s*function\s*\(\s*\)([\s\S]*?)\nend\s*\)/
+    )?.[1]||'';
+    const trustedApproval=[
+      /\blocal\s+approved\s*=\s*tostring\s*\(\s*player\s*:\s*GetAttribute\s*\(\s*["']ApprovedCombatMotion["']\s*\)/,
+      /\blocal\s+approvedScope\s*,\s*approvedEvent\s*=\s*approved\s*:\s*match\s*\(/,
+      /\bif\s+not\s+approvedEvent\s+or\s+not\s+authorizedCombatScopes\s*\[\s*approvedScope\s*\]\s+then\s+return\s+end/,
+      /\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']MOTION["']\s*,\s*["']ATTACK_LIGHT_1["']\s*\)\s+then/,
+      /\bcombatMotionSource\.BindJointPose\s*\(/
+    ].every(pattern=>pattern.test(approvedListener));
+    if(trustedApproval&&motionChain.every(pattern=>pattern.test(raw)))return true;
+    // A partially connected combat pipeline must not fall back to unrelated
+    // asset-list or UI rendering as evidence of server-approved MOTION.
+    if(/\bcombatMotionSource\b/.test(raw)&&/\bactiveCombatController\b/.test(raw))return false;
   }
   const renderSink=/(?:\.(?:Color|BackgroundColor3|TextColor3|ImageColor3|Material|MaterialVariant|TextureID|MeshId|Transparency|Size|CFrame|Position|Orientation|Rotation|LightEmission|Rate|Volume|PlaybackSpeed|AnimationId|Transform|Thickness|CornerRadius)\s*=|TweenService\s*:\s*Create\s*\(|:\s*Create\s*\([^\n]*(?:TweenInfo|Position|Rotation|Transform)|Instance\.new\s*\(\s*["'](?:UIStroke|UICorner|UIGradient|SurfaceAppearance|ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\s*\))/i;
   // Model:PivotTo/ScaleTo는 실제 메시 배치/크기 소비다. 목록이나 마커가 아니라
