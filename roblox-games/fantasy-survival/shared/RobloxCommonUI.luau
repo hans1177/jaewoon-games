@@ -4909,8 +4909,17 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   local menuCorner=menu:FindFirstChildOfClass("UICorner")
   if menuCorner then menuCorner.CornerRadius=UDim.new(1,0) end
   local menuGradient=menu:FindFirstChildOfClass("UIGradient")
-  if menuGradient then menuGradient.Color=ColorSequence.new(Color3.fromRGB(42,65,73),Color3.fromRGB(19,30,42)) end
-  menu.TextSize=13
+  if menuGradient then menuGradient.Color=ColorSequence.new(Color3.fromRGB(62,134,91),Color3.fromRGB(31,78,63)) end
+  menu.BackgroundColor3=Color3.fromRGB(49,111,79)
+  menu.TextColor3=Color3.fromRGB(255,255,255)
+  menu.Font=Enum.Font.GothamBold
+  menu.TextSize=15
+  local menuStroke=menu:FindFirstChildOfClass("UIStroke")
+  if menuStroke then
+    menuStroke.Color=Color3.fromRGB(177,224,169)
+    menuStroke.Transparency=.06
+    menuStroke.Thickness=2
+  end
   if quick then
    local quickCorner=quick:FindFirstChildOfClass("UICorner")
    if quickCorner then quickCorner.CornerRadius=UDim.new(1,0) end
