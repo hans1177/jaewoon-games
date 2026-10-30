@@ -1393,13 +1393,27 @@ test('fantasy commercial HUD keeps licensed truthful icons and interactive disco
   assert.ok(client.includes('backpackIcon.Name="CC0BackpackIcon"'));
   assert.ok(client.includes('backpackIcon.ImageRectOffset=Vector2.fromOffset(256,0)'));
   assert.ok(client.includes('inventoryQuick.Size=UDim2.fromOffset(52,56)'));
-  assert.ok(client.includes('shortLandscape and 70 or 9,shortLandscape and 108 or 194'));
+  assert.ok(client.includes('inventoryQuick.Position=UDim2.fromOffset(9,shortLandscape and 122 or 130)'));
+  assert.ok(client.includes('meadowQuickButtons[1].Position=UDim2.fromOffset(shortLandscape and 66 or 9,shortLandscape and 122 or 187)'));
+  assert.ok(client.includes('meadowQuickButtons[2].Position=UDim2.fromOffset(shortLandscape and 123 or 9,shortLandscape and 122 or 244)'));
+  assert.ok(client.includes('questTracker.Position=UDim2.fromOffset(shortLandscape and 180 or 9,shortLandscape and 122 or 301)'));
+  assert.ok(client.includes('meadowQuickButtons[3].Position=UDim2.fromOffset(shortLandscape and 237 or 9,shortLandscape and 122 or 358)'));
+  assert.ok(client.includes('local meadowQuickPages={'));
+  for(const row of ['"MeadowSkillQuick","스킬",2,5','"MeadowGearQuick","장비",3,1','"MeadowSettingsQuick","설정",6,4']){
+    assert.ok(client.includes(row),'invalid quick-menu destination: '+row);
+  }
+  assert.ok(client.includes('button.Activated:Connect(function()meadowMenu.open(info[4])end)'));
+  assert.ok(client.includes('icon.Name="CC0MenuQuickIcon"'));
+  assert.ok(client.includes('icon.ImageRectOffset=Vector2.fromOffset(info[3]*64,0)'));
   assert.ok(client.includes('meadowClimateChip=Instance.new("TextButton")'));
   assert.ok(client.includes('meadowClimateChip.Size=UDim2.fromOffset(52,56)'));
   assert.ok(client.includes('climateDetails.Visible=not climateDetails.Visible'));
   assert.ok(client.includes('meadowClimateChip.Text=string.format("%s\\n%s"'));
   assert.ok(client.includes('MeadowClockMinutes'));
   assert.ok(client.includes('meadowClimateChip.Visible=show'));
+  assert.ok(client.includes('local chipX=shortLandscape and 294 or math.max(9,v.X-64)'));
+  assert.ok(client.includes('local chipY=shortLandscape and 122 or radarTop+radarHeight+7'));
+  assert.ok(client.includes('climateDetails.Position=UDim2.fromOffset(shortLandscape and 9 or math.max(9,v.X-274),'));
   assert.ok(client.includes('inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)'));
   assert.ok(client.includes('radarJournal.Activated:Connect(function()meadowMenu.open(3)end)'));
   assert.ok(client.includes('radarTitle.Text=gui.AbsoluteSize.Y<450'));
