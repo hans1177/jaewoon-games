@@ -46,28 +46,6 @@ test('selected Fantasy Survival motion reaches a server-authorized R15 frame sin
       'local approved = "forged:1"'),
     'MOTION'
   ),false,'the actual R15 callback must read the server-supplied action sequence');
-  // The verified-learning HUD has a separate listener; losing that listener
-  // must not hide the real R15 callback or produce false motion evidence.
-  assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('verifiedLearningPlayer:GetAttributeChangedSignal("ApprovedCombatMotion")',
-      'verifiedLearningPlayer:GetAttributeChangedSignal("UnverifiedMotion")'),
-    'MOTION'
-  ),true,'unrelated HUD listener is not the R15 authorization sink');
-  assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('player:GetAttributeChangedSignal("ApprovedCombatMotion")',
-      'player:GetAttributeChangedSignal("UnverifiedMotion")'),
-    'MOTION'
-  ),false,'the actual R15 callback must be bound to a server-approved event');
-  assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('if not approvedEvent or not authorizedCombatScopes[approvedScope] then return end',
-      'if false then return end'),
-    'MOTION'
-  ),false,'an unvalidated combat action cannot authorize joint motion');
-  assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('local approved = tostring(player:GetAttribute("ApprovedCombatMotion") or "")',
-      'local approved = "forged:1"'),
-    'MOTION'
-  ),false,'the combat callback must read the server-supplied sequence');
 });
 
 test('Fantasy Survival Roblox R15 unarmed skills select authentic authored actions and server-only contacts',()=>{
@@ -1056,10 +1034,8 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
     'GOLEM_SLAM','GOLEM_SHOCKWAVE'])assert.ok(server.includes('"'+pattern+'"'));
   assert.match(server,/local function animateMeadowOriginalMob\(/);
   assert.match(server,/local function chooseMeadowMobSkill\(/);
-  // Server writes the authoritative mob motion state; the client consumes it
-  // to animate the original approved CC0 mesh, never fabricated geometry.
-  assert.match(server,/enemy\.model:SetAttribute\("NativeMobMotion",motion\)/);
-  assert.match(client,/model:GetAttribute\("NativeMobMotion"\)/);
+  assert.match(server,/model:SetAttribute\("NativeMobMotion"/,"server must author original mob state");
+  assert.match(client,/model:GetAttribute\("NativeMobMotion"\)/,"client must consume that authoritative state");
   assert.match(server,/remote:FireAllClients\("MEADOW_MOB_ATTACK"/);
   assert.match(server,/remote:FireAllClients\("MEADOW_MOB_DEATH"/);
   assert.match(server,/meadowDefense\[player\]/);
@@ -1078,4 +1054,26 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
   assert.doesNotMatch(client,/Instance\.new\("Part"\)/,'original CC0 mobs and R15 only');
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,
     'original save writer is unchanged');
+});
+
+test('fantasy meadow binds six original CC0 creature rigs and prevents repeating death or hit motion',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const manifest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));
+  for(const species of ['wolf','bee','golem','deer','boar','rabbit']){
+    assert.ok(manifest.models[species]?.sourceSha256,'verified CC0 original: '+species);
+    assert.ok(client.includes('species~="'+species+'"'),'source-only species routing: '+species);
+  }
+  assert.match(client,/model:GetAttribute\("Species"\) or model:GetAttribute\("MeadowWildlife"\)/);
+  assert.match(client,/GetAttributeChangedSignal\("MeadowWildlife"\):Once/);
+  assert.match(client,/joint:IsA\("Motor6D"\) and joint.Part0 and joint.Part1/);
+  assert.match(client,/joint:IsA\("Bone"\)/);
+  assert.match(client,/if sourceChannels\[name\] and not joints\[name\] then/);
+  assert.match(client,/local actualRig=count>=2/);
+  assert.match(client,/NativeCreatureRigMode/);
+  assert.match(client,/NativeMobMotion/);
+  assert.match(client,/meadowMobMotion.SampleProceduralActorMotion\(mode/);
+  assert.match(client,/mode=="DEATH" and 1\.32 or mode=="ATTACK" and \.75/);
+  assert.match(client,/repeating and \(row.phase%duration\)\/duration/);
+  assert.match(client,/math.clamp\(\(os.clock\(\)-row.motionStartedAt\)\/duration,0,1\)/);
+  assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
 });

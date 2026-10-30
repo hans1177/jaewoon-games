@@ -640,30 +640,50 @@ local function mobVfx(pattern,where,stage)
 end
 local function bindOriginalMob(model)
   if not model:IsA("Model") or meadowMobControllers[model] then return end
-  local species=model:GetAttribute("Species")
+  local species=model:GetAttribute("Species") or model:GetAttribute("MeadowWildlife")
   if species==nil then
-    -- Replication can deliver the Model before its authoritative attributes.
-    model:GetAttributeChangedSignal("Species"):Once(function()
-      if model.Parent then bindOriginalMob(model) end
-    end)
+    -- Attribute replication can arrive after a source CC0 Model. Both enemy
+    -- Species and passive MeadowWildlife are real server-authored roles.
+    local function onceReady()
+      if model.Parent and not meadowMobControllers[model] then bindOriginalMob(model) end
+    end
+    model:GetAttributeChangedSignal("Species"):Once(onceReady)
+    model:GetAttributeChangedSignal("MeadowWildlife"):Once(onceReady)
     return
   end
-  if species~="wolf" and species~="bee" and species~="golem" then return end
+  if species~="wolf" and species~="bee" and species~="golem"
+    and species~="deer" and species~="boar" and species~="rabbit" then return end
   local joints,available={},{}
-  for _,motor in ipairs(model:GetDescendants()) do
-    if motor:IsA("Motor6D") and motor.Part0 and motor.Part1 then
-      local name=nativeMobJointAlias[motor.Name] or motor.Name
-      joints[name]=motor
-      available[name]=true
+  local sourceChannels={
+    FLHip=true,FRHip=true,BLHip=true,BRHip=true,
+    WingL=true,WingR=true,Tail=true,Chest=true,Spine=true,
+    Neck=true,Jaw=true,Head=true,ThighL=true,ThighR=true,
+    ShinL=true,ShinR=true,UpperArmL=true,UpperArmR=true,
+    ForearmL=true,ForearmR=true,
+  }
+  for _,joint in ipairs(model:GetDescendants()) do
+    -- Only genuine Motor6D or authored skinned-mesh Bones can move.
+    -- Never synthesize joints from a static single-mesh animal.
+    local liveMotor=joint:IsA("Motor6D") and joint.Part0 and joint.Part1
+    if liveMotor or joint:IsA("Bone") then
+      local name=nativeMobJointAlias[joint.Name] or joint.Name
+      if sourceChannels[name] and not joints[name] then
+        joints[name]=joint
+        available[name]=true
+      end
     end
   end
-  local actualRig=next(joints)~=nil
-  local bodyPlan=species=="wolf" and "QUADRUPED" or
-    species=="bee" and "FLYER" or "GIANT"
+  local count=0
+  for _ in pairs(joints) do count+=1 end
+  local actualRig=count>=2
+  local bodyPlan=species=="bee" and "FLYER" or
+    species=="golem" and "GIANT" or "QUADRUPED"
   local controller=actualRig and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=24,
   }) or nil
-  local row={controller=controller,available=available,plan=bodyPlan,phase=0,poses={}}
+  local row={controller=controller,available=available,plan=bodyPlan,
+    species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock()}
+  model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
   meadowMobControllers[model]=row
   model:GetAttributeChangedSignal("AttackState"):Connect(function()
     if not model.Parent then return end
@@ -688,11 +708,24 @@ end)
 game:GetService("RunService").PreSimulation:Connect(function(dt)
   for model,row in pairs(meadowMobControllers) do
     if model.Parent and row.controller then
-      row.phase+=dt
-      local mode=nativeMobMotionMap[model:GetAttribute("NativeMobMotion")] or "IDLE"
+      local requested=model:GetAttribute("NativeMobMotion")
+      local mode=nativeMobMotionMap[requested]
+        or (row.species=="deer" or row.species=="boar" or row.species=="rabbit")
+          and "WALK" or "IDLE"
+      if mode~=row.lastMode then
+        row.lastMode=mode
+        row.motionStartedAt=os.clock()
+        row.phase=0
+      end
+      row.phase+=math.min(dt,.12)
+      local repeating=mode=="IDLE" or mode=="WALK" or mode=="RUN" or mode=="FLY"
+      local duration=mode=="DEATH" and 1.32 or mode=="ATTACK" and .75
+        or mode=="HIT" and .46 or mode=="START" and .36 or 1.15
+      local phase=repeating and (row.phase%duration)/duration
+        or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
       table.clear(row.poses)
       local _,matched=meadowMobMotion.SampleProceduralActorMotion(mode,
-        (row.phase%1.25)/1.25,{
+        phase,{
           bodyPlan=row.plan,actorClass=model:GetAttribute("Boss") and "BOSS" or "CREATURE",
           availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
           secondary=.55,
