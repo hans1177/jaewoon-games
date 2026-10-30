@@ -1117,6 +1117,23 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/forestBed.Volume=\.035\+\.085\*forestPresence/);
   assert.match(client,/birdChirp.Volume=\.085\+\.17\*forestPresence/);
   assert.match(client,/nextChirp=os.clock\(\)\+math.random\(17,29\)/);
+  // Survival inspection is meaningful but cannot change existing balance, rewards or save data.
+  assert.match(server,/local function inspectMeadowSurvival\(player,model,subject\)/);
+  assert.match(server,/local function bindMeadowInspection\(model,subject\)/);
+  assert.match(server,/prompt=Instance.new\("ProximityPrompt"\)/);
+  assert.match(server,/prompt.Triggered:Connect\(function\(player\)/);
+  assert.match(server,/meadowInspectReady\[player\]=now\+2\.5/);
+  assert.match(server,/model:IsDescendantOf\(gameWorld\)/);
+  assert.match(server,/rootPart.Position-model:GetPivot\(\).Position\).Magnitude>15/);
+  assert.match(server,/if index%7==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
+  assert.match(server,/bindMeadowInspection\(animal,spec\[1\]\)/);
+  assert.match(server,/bindMeadowInspection\(model,spec.kind\)/);
+  assert.match(server,/animal.escape=\(animal.escape or Vector3.zero\):Lerp\(escape,math.min\(1,dt\*3\)\)/);
+  assert.match(server,/player:SetAttribute\("MeadowSurvivalHint",clue\)/);
+  assert.match(server,/meadowInspectReady\[player\]=nil/);
+  assert.match(client,/player:GetAttributeChangedSignal\("MeadowSurvivalHintSerial"\):Connect/);
+  assert.match(client,/task.delay\(6,function\(\)/);
+  assert.match(client,/meadowSurvivalHint.Active=false/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
   assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
 });
