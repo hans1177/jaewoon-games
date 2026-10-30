@@ -13,6 +13,16 @@ import {bindExistingFantasyNativeCreatures,bindExistingServerStudioMaterial,buil
 test('selected Fantasy Survival motion reaches a server-authorized R15 frame sink, not just an asset list',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.equal(robloxStudioAssetFamilyBoundInText(source,'MOTION'),true);
+  assert.match(source,/playNativeCombatMotion\s*=\s*function\(approvedScope,approvedEvent,serverApproved\)/);
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('playNativeCombatMotion(scope,tonumber(serial),true)',
+      'playNativeCombatMotion(scope,tonumber(serial),false)'),
+    'MOTION'
+  ),false,'server approval must not be forged by a client-only motion prediction');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('activeMartialApproved = serverApproved==true','activeMartialApproved = false'),
+    'MOTION'
+  ),false,'the approved finisher gate must consume the trusted callback argument');
   assert.equal(robloxStudioAssetFamilyBoundInText(
     source.replace('activeCombatController.Step(combatR15Targets, dt)','-- missing render frame'),
     'MOTION'
@@ -1085,7 +1095,22 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local nativeFoundationRemote = ReplicatedStorage:FindFirstChild\("RuntimeFoundationReport"\)/);
   assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
-  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-8,1,-232\)/);
+  assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-104,1,-94\)/);
+  assert.match(client,/meadowSkillDock.Size=UDim2.fromOffset\(176,236\)/);
+  assert.match(client,/meadowSkillScale.Scale=UserInputService.TouchEnabled and \.9 or 1/);
+  assert.match(client,/\{"meadow-unarmed-kick","회전차기",42,116,/);
+  assert.match(client,/compact=true,activate=function\(\)activateMeadowAction/);
+  const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
+  assert.match(ui,/if compact then/);
+  assert.match(ui,/menu.Size=UDim2.fromOffset\(58,52\)/);
+  assert.match(ui,/quick.Size=UDim2.fromOffset\(84,84\)/);
+  assert.match(client,/Instance.new\("Beam"\)/);
+  assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
+  assert.doesNotMatch(client,/Instance.new\("Part"\)/);
+  assert.match(server,/surface.Material=wing and Enum.Material.Glass or bodyMaterial/);
+  assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
+  assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
   assert.match(server,/task.defer\(createResourceNodes\)/);
   assert.match(server,/task.defer\(function\(\)\s*for index,spec in ipairs\(\{/);

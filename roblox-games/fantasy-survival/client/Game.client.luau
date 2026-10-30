@@ -553,34 +553,35 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",activate=function()activateMeadowAction(primaryCombatAction.Id)end}or nil)
+CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",compact=true,activate=function()activateMeadowAction(primaryCombatAction.Id)end}or nil)
 
--- [스킬 UI] 기존 네 전투 입력만 화면 오른쪽의 왼쪽을 향한 반원 호에 배치한다.
--- 가로 4칸 도크 대신 가운데 플레이 영역과 왼쪽 조이스틱을 비우고, 터치 버튼 크기를 유지한다.
+-- [모바일 스킬 UI] 플레이어를 가리지 않는 한손 전투 HUD. 기존 승인된 스킬 ID만 호출한다.
+-- 기본 공격·메뉴 버튼과 충돌하지 않는 오른쪽 아래의 반원형 4칸.
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
-meadowSkillDock.AnchorPoint=Vector2.new(1,.5)
-meadowSkillDock.Position=UDim2.new(1,-8,.55,0)
-meadowSkillDock.Size=UDim2.fromOffset(192,268)
+meadowSkillDock.AnchorPoint=Vector2.new(1,1)
+meadowSkillDock.Position=UDim2.new(1,-104,1,-94)
+meadowSkillDock.Size=UDim2.fromOffset(176,236)
 meadowSkillDock.BackgroundTransparency=1
 meadowSkillDock.Parent=gui
 local meadowSkillScale=Instance.new("UIScale")
-meadowSkillScale.Scale=UserInputService.TouchEnabled and .86 or 1
+meadowSkillScale.Scale=UserInputService.TouchEnabled and .9 or 1
 meadowSkillScale.Parent=meadowSkillDock
 local meleeSkills={
-  {"meadow-unarmed-rush","연속권",101,10},
-  {"meadow-unarmed-uppercut","어퍼컷",49,75},
-  {"meadow-unarmed-kick","회전차기",19,140},
-  {"meadow-unarmed-elbow","팔꿈치",49,205},
+  {"meadow-unarmed-rush","연속권",127,4,Color3.fromRGB(247,192,101)},
+  {"meadow-unarmed-uppercut","승룡권",74,54,Color3.fromRGB(249,118,79)},
+  {"meadow-unarmed-kick","회전차기",42,116,Color3.fromRGB(93,209,219)},
+  {"meadow-unarmed-elbow","팔꿈치",82,174,Color3.fromRGB(175,142,255)},
 }
 for index,skill in ipairs(meleeSkills) do
   local button=Instance.new("TextButton")
   button.Name="R15Skill"..index
-  button.Size=UDim2.fromOffset(76,57)
+  button.Size=UDim2.fromOffset(56,56)
   button.Position=UDim2.fromOffset(skill[3],skill[4])
-  button.BackgroundColor3=Color3.fromRGB(22,76,62)
-  button.TextColor3=Color3.fromRGB(241,255,223)
-  button.TextSize=15
+  button.BackgroundColor3=Color3.fromRGB(25,35,42)
+  button.BorderSizePixel=0
+  button.TextColor3=Color3.fromRGB(252,251,245)
+  button.TextSize=12
   button.TextWrapped=true
   button.Font=Enum.Font.GothamBold
   button.Text=skill[2]
@@ -589,13 +590,24 @@ for index,skill in ipairs(meleeSkills) do
   local corner=Instance.new("UICorner")
   corner.CornerRadius=UDim.new(1,0)
   corner.Parent=button
+  local stroke=Instance.new("UIStroke")
+  stroke.Thickness=2
+  stroke.Color=skill[5]
+  stroke.Transparency=.08
+  stroke.Parent=button
+  local gradient=Instance.new("UIGradient")
+  gradient.Rotation=90
+  gradient.Color=ColorSequence.new(Color3.fromRGB(57,65,75),Color3.fromRGB(18,26,36))
+  gradient.Parent=button
   button.Activated:Connect(function()
     local character=player.Character
     if not character or character:FindFirstChildOfClass("Tool") then return end
     activateMeadowAction(skill[1])
   end)
 end
-
+gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
+  meadowSkillDock.Visible=gui:GetAttribute("GameMenuOpen")~=true
+end)
 -- [모션·액션] 서버가 승인한 기존 COMBAT 입력만 R15 공용 관절 애니메이션에 연결한다.
 -- 서버 피해·이동·콤보 판정, 원래 Animator, 저장값은 수정하지 않는다.
 -- 이 경로는 미게시 원본 포즈를 직접 합성하며 실제 재생 QA 전까지 인증된 AnimationTrack이 아니다.
@@ -791,7 +803,7 @@ local martialSkillTracks={
        hit={-34,-42,-46,-151,-52,-44,-37,7,4,.23,-100,-63}},
       {id="U:UPPERCUT_RIGHT",
        load={-30,53,-47,-54,-34,54,55,91,92,-.21,-89,-124},
-       hit={29,-57,29,-58,-158,-60,-51,5,8,.32,-69,-112}},
+       hit={64,-65,76,-88,-169,-48,-56,24,27,.82,-64,-16}},
     },
   },
   ["meadow-unarmed-kick"]={
@@ -1174,7 +1186,12 @@ RunService.PreSimulation:Connect(function(dt)
       combatPoseTargets[joint]=joint=="Root" and target
         or (source and source:Lerp(target,.97) or target)
     end
-    if activeCombatMartialTrack.name=="TORNADO_TAEKWONDO" then
+    if activeCombatMartialTrack.name=="RISING_DRAGON" then
+      -- 승룡권식 축회전과 공중 상승: R15 관절만 움직이고 실제 위치·피해 권한은 변경하지 않는다.
+      local risePhase=filmEase(math.clamp(elapsed/math.max(.001,currentStep.duration),0,1))
+      combatPoseTargets.Root=(combatPoseTargets.Root or CFrame.identity)*
+        CFrame.Angles(math.rad(-24*risePhase),math.rad(75*risePhase),0)
+    elseif activeCombatMartialTrack.name=="TORNADO_TAEKWONDO" then
       -- 각 타의 한 바퀴 회전을 포즈 보간에 맡기지 않고 프레임별로 구동한다.
       -- CFrame:Lerp는 360도 방향을 최단경로로 접으므로 회전 프레임은 별도로 누적한다.
       local sweep=filmEase(math.clamp(elapsed/math.max(.001,currentStep.duration),0,1))
@@ -1250,35 +1267,62 @@ RunService.PreSimulation:Connect(function(dt)
     if combatPoseTargets.Root then combatR15Targets.Root=combatPoseTargets.Root end
   end
   activeCombatController.Step(combatR15Targets, dt)
-  -- [5타 막타] 서버가 승인한 무술만 실제 다섯 번째 접촉 프레임에 거대한 전용 검광·파동을 방출한다.
-  -- 공격자 주변의 연출 효과이며 적중·피해·처치·쿨다운을 만들지 않는다.
+  -- [5타 막타] 서버 승인·다섯 번째 접촉에서 원본 손발에 곡선 Beam 연출을 만든다.
+  -- 네모 입자 스프라이트 대신 빛의 곡선 궤적을 사용하고, 임의 메시/파트는 만들지 않는다.
   if activeCombatMartialTrack and activeMartialApproved and not activeMartialFinisherPlayed
     and strikeIndex==5 and timeInAction-currentStep.start>=currentStep.contact then
     activeMartialFinisherPlayed=true
-    local limbName=activeCombatMartialTrack.name=="TORNADO_TAEKWONDO" and "LeftFoot"
-      or activeCombatMartialTrack.name=="FLASH_BOXING" and "LeftHand"
-      or activeCombatMartialTrack.name=="RISING_DRAGON" and "RightHand" or "LeftHand"
+    local style=activeCombatMartialTrack
+    local limbName=style.name=="TORNADO_TAEKWONDO" and "LeftFoot"
+      or style.name=="FLASH_BOXING" and "LeftHand"
+      or style.name=="RISING_DRAGON" and "RightHand" or "LeftHand"
     local limb=character:FindFirstChild(limbName)
     local rootPart=character:FindFirstChild("HumanoidRootPart")
-    if combatVFX and rootPart and type(combatVFX.CreateCriticalBurst)=="function" then
-      local origin=limb and (rootPart.Position+limb.Position)*.5+Vector3.new(0,1.2,0)
-        or rootPart.Position+Vector3.new(0,2,0)
-      local frame=CFrame.new(origin)
-      combatVFX.CreateCriticalBurst({
-        cframe=frame,critical=true,color=activeCombatMartialTrack.color,
-        accent=Color3.fromRGB(255,250,217),scale=3.8,
-        startDiameter=4,endDiameter=20,startSize=1.2,endSize=12,
-        count=nativeTouchEnabled and 9 or 19,duration=.42,
-        reducedMotion=nativeTouchEnabled,
-      })
-      combatVFX.CreateImpactFlash({
-        cframe=frame,critical=true,color=activeCombatMartialTrack.color,
-        accent=Color3.fromRGB(255,255,255),scale=3,
-        startDiameter=3,endDiameter=24,startSize=1,endSize=14,
-        textureKey=activeCombatMartialTrack.name=="TORNADO_TAEKWONDO" and "slash" or nil,
-        count=nativeTouchEnabled and 7 or 14,duration=.34,
-        reducedMotion=nativeTouchEnabled,
-      })
+    if limb and limb:IsA("BasePart") and rootPart then
+      for arc=1,4 do
+        local a0=Instance.new("Attachment")
+        a0.Name="MartialFinisherStart"
+        a0.Position=Vector3.new(-1.8+(arc-1)*.65,-.5+(arc-1)*.35,-1.5)
+        a0.CFrame=CFrame.Angles(0,math.rad((arc-1)*26),math.rad(20))
+        a0.Parent=rootPart
+        local a1=Instance.new("Attachment")
+        a1.Name="MartialFinisherEnd"
+        a1.Position=Vector3.new((arc-2)*.25,1.1+arc*.26,0)
+        a1.CFrame=CFrame.Angles(0,math.rad(-25*arc),math.rad(-18))
+        a1.Parent=limb
+        local beam=Instance.new("Beam")
+        beam.Name="MartialFinisherArc"
+        beam.Attachment0=a0
+        beam.Attachment1=a1
+        beam.CurveSize0=style.name=="RISING_DRAGON" and 6.4 or 4.5
+        beam.CurveSize1=style.name=="RISING_DRAGON" and -5.2 or -3.8
+        beam.Segments=24
+        beam.FaceCamera=true
+        beam.LightEmission=1
+        beam.LightInfluence=0
+        beam.Width0=.08+arc*.11
+        beam.Width1=arc==2 and 1.25 or .48
+        beam.Color=ColorSequence.new(Color3.fromRGB(255,255,239),style.color)
+        beam.Transparency=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,.88),
+          NumberSequenceKeypoint.new(.18,.05),
+          NumberSequenceKeypoint.new(.8,.13),
+          NumberSequenceKeypoint.new(1,1),
+        })
+        beam.Parent=a0
+        debris:AddItem(a0,.43)
+        debris:AddItem(a1,.43)
+      end
+      local flash=Instance.new("Highlight")
+      flash.Name="MartialFinisherGlow"
+      flash.Adornee=character
+      flash.FillColor=style.color
+      flash.FillTransparency=.66
+      flash.OutlineColor=Color3.fromRGB(255,245,211)
+      flash.OutlineTransparency=.18
+      flash.DepthMode=Enum.HighlightDepthMode.Occluded
+      flash.Parent=character
+      debris:AddItem(flash,.27)
     end
   end
   if finished then combatRecoveryUntil = os.clock() + .18 end
@@ -1413,7 +1457,20 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
           secondary=.55,
         },row.poses)
-      if matched then row.controller.Step(row.poses,dt) end
+      if matched then
+        -- 실제 원본 관절이 있는 몹에만 종별 공격·추적 동작을 크게 합성한다.
+        local gain=mode=="ATTACK" and (row.species=="golem" and 1.75 or 1.6)
+          or mode=="RUN" and 1.42 or 1.10
+        for joint,pose in pairs(row.poses) do
+          if typeof(pose)=="CFrame" then
+            local axis,angle=pose:ToAxisAngle()
+            if angle>.001 then
+              row.poses[joint]=CFrame.fromAxisAngle(axis,math.min(angle*gain,math.rad(112)))
+            end
+          end
+        end
+        row.controller.Step(row.poses,dt)
+      end
     end
   end
 end)
