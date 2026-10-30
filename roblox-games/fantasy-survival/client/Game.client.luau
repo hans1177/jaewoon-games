@@ -111,6 +111,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
+local meadowRightActionAtlas="" -- RIGHT_ACTION_ICON_ATLAS
 local reducedEffects=game:GetService("UserInputService").TouchEnabled
 local meadowEffectsGroup=Instance.new("SoundGroup")
 meadowEffectsGroup.Name="MeadowEffects";meadowEffectsGroup.Volume=.75
@@ -1431,6 +1432,28 @@ local function paintMeadowActionArt(button,role,tint)
     limb("Wrist",.39,.81,.33,.17,0)
   end
 end
+-- [시안 원본 버튼 자산] 승인된 이미지 등록 후 오른쪽 7개 버튼에 시안 원본을 적용.
+local function applyMeadowRightActionImage(button,slot)
+  if meadowRightActionAtlas=="" then return false end
+  button.BackgroundTransparency=1
+  local rim=button:FindFirstChild("GoldSkillRim")
+  if rim then rim.Enabled=false end
+  local inner=button:FindFirstChild("PolishedInnerRing")
+  if inner then inner.Visible=false end
+  local sprite=Instance.new("ImageLabel")
+  sprite.Name="OriginalRightActionIcon"
+  sprite.BackgroundTransparency=1
+  sprite.Image=meadowRightActionAtlas
+  sprite.ImageRectOffset=Vector2.new((slot-1)*40,0)
+  sprite.ImageRectSize=Vector2.new(40,40)
+  sprite.ScaleType=Enum.ScaleType.Fit
+  sprite.AnchorPoint=Vector2.new(.5,.5)
+  sprite.Position=UDim2.fromScale(.5,.5)
+  sprite.Size=UDim2.fromScale(1.07,1.07)
+  sprite.ZIndex=20
+  sprite.Parent=button
+  return true
+end
 -- [시안 이름표] 어두운 화면에서도 스킬명이 가려지지 않도록 버튼 아래 별도 검정·금색 이름표를 둔다.
 local meadowSkillNameplates={}
 for index,skill in ipairs(meleeSkills)do
@@ -1458,6 +1481,7 @@ for index,skill in ipairs(meleeSkills)do
     -- [발차기] 장화 문자 대신 실제 인체 발차기 동작 실루엣을 그린다.
     paintMeadowActionArt(button,"KICK",Color3.fromRGB(255,216,107))
   end
+  applyMeadowRightActionImage(button,index)
   local nameplate=Instance.new("TextLabel")
   nameplate.Name="SkillNameplate"..index
   nameplate.BackgroundColor3=Color3.fromRGB(18,17,15)
@@ -1469,6 +1493,7 @@ for index,skill in ipairs(meleeSkills)do
   nameplate.TextStrokeTransparency=.55
   nameplate.Font=Enum.Font.GothamBold
   nameplate.TextSize=13;nameplate.ZIndex=17
+  nameplate.Visible=meadowRightActionAtlas==""
   nameplate.Parent=meadowSkillDock
   local plateCorner=Instance.new("UICorner")
   plateCorner.CornerRadius=UDim.new(1,0);plateCorner.Parent=nameplate
@@ -1525,7 +1550,7 @@ for index,info in ipairs(meadowUtilityActions)do
     icon.Size=UDim2.fromScale(.68,.68)
     icon.ZIndex=15;icon.Parent=button
   end
-  if info[6] then
+  if not applyMeadowRightActionImage(button,index+3) and info[6] then
     paintMeadowActionArt(button,info[6],Color3.fromRGB(242,243,237))
   end
   -- [이름표] 작은 하단 버튼에서도 조작 종류가 읽히도록 버튼 안에 표기.
@@ -1536,6 +1561,7 @@ for index,info in ipairs(meadowUtilityActions)do
   label.Size=UDim2.new(1,-2,0,13)
   label.BackgroundTransparency=1
   label.Text=info[2]
+  label.Visible=meadowRightActionAtlas==""
   label.TextColor3=Color3.fromRGB(255,245,222)
   label.TextStrokeColor3=Color3.fromRGB(5,8,13)
   label.TextStrokeTransparency=.25
