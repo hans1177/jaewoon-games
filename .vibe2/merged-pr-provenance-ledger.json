@@ -144436,11 +144436,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3fc4065de720a14ed58507f0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11585",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "224ed432a96cb13da04aa2f5e7a6a5e11e7ca93a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11585,
+        "baseBranch": "main",
+        "headBranch": "development/fantasy-village-witcher-20261031",
+        "baseSha": "224ed432a96cb13da04aa2f5e7a6a5e11e7ca93a",
+        "headSha": "77f7b8e369f6ea668a5b55da226a0efdfed1f81f",
+        "mergeCommitSha": "24efcbd0c1ee7245af2b9928d5940e2f6c3b0403",
+        "mergedAt": "2026-10-30T22:56:17Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e5957dddc7a09c3e25f570eb55a21010a9ea56fb42d0ed409c70447e3946e2d6",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "development/fantasy-village-witcher-20261031",
+        "candidateSha": "77f7b8e369f6ea668a5b55da226a0efdfed1f81f"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 132,
+        "deletedLineCount": 77,
+        "changedFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "assets/homepage-covers/manifest.json",
+          "game-catalog.json",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/game-development-qa-runner.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "assets/homepage-covers/manifest.json",
+          "game-catalog.json",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/game-development-qa-runner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11585",
+        "merge-commit:24efcbd0c1ee7245af2b9928d5940e2f6c3b0403",
+        "base-main:224ed432a96cb13da04aa2f5e7a6a5e11e7ca93a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1146
+    "total": 1147
   }
 }
