@@ -709,7 +709,15 @@ local function playApprovedRpgCombatMotion()
   if not motion then return end
   local joints = {}
   for _, descendant in ipairs(character:GetDescendants()) do
-    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1 then
+    -- Use upgraded animation constraints first, and legacy Motor6D only as fallback.
+    local upgraded=descendant:IsA("AnimationConstraint")
+      and descendant.Attachment0 and descendant.Attachment1
+      and descendant.Attachment0:IsDescendantOf(character)
+      and descendant.Attachment1:IsDescendantOf(character)
+    local legacy=descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1
+      and descendant.Part0:IsDescendantOf(character)
+      and descendant.Part1:IsDescendantOf(character)
+    if (upgraded or legacy) and (not joints[descendant.Name] or upgraded) then
       joints[descendant.Name] = descendant
     end
   end
@@ -730,7 +738,7 @@ local function playApprovedRpgCombatMotion()
   -- and rebinding it on each strike snaps the arms back to their default pose.
   if activeMotionCharacter ~= character or not activeMotionController then
     finishRpgCombatMotion()
-    activeMotionController = commonMotion.BindJointPose(joints, {response = 28})
+    activeMotionController = commonMotion.BindJointPose(joints, {response = 28, followAnimator = true})
   end
   activeMotionCharacter = character
   activeMotionCombo = combo
