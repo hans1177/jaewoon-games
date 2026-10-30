@@ -380,21 +380,44 @@ list.CanvasSize = UDim2.new()
 list.ScrollBarThickness = 4
 list.ClipsDescendants = true
 list.Parent = root
+local meadowActionGrid=Instance.new("UIGridLayout")
+meadowActionGrid.Name="NativeActionGrid"
+meadowActionGrid.SortOrder=Enum.SortOrder.LayoutOrder
+meadowActionGrid.CellSize=UDim2.new(.5,-5,0,54)
+meadowActionGrid.CellPadding=UDim2.fromOffset(6,6)
+meadowActionGrid.Parent=list
+local meadowActionButtons={}
 for index, action in ipairs(Config.Actions) do
   local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
   button.Name = "ScopeAction" .. index
   button.LayoutOrder = index
-  local column = (index - 1) % 2
-  local row = math.floor((index - 1) / 2)
-  button.Size = UDim2.new(0.5, -4, 0, 44)
-  button.Position = UDim2.new(column * 0.5, column == 0 and 0 or 4, 0, row * 50)
+  button.Size=UDim2.new(.5,-5,0,54) -- UIGridLayout sets positions safely
   button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)
   button.TextColor3 = Color3.fromRGB(16, 24, 40)
   button.TextWrapped = true
   button.TextScaled = false;button.TextSize=15
   button.Text = CommonUI.ActionLabel(action,index)
   button.Parent = list
+  meadowActionButtons[action.Id]=button
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
+end
+local readyCountdown=0
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  readyCountdown+=dt
+  if readyCountdown<.24 then return end
+  readyCountdown=0
+  local now=workspace:GetServerTimeNow()
+  for _,action in ipairs(Config.Actions) do
+    local button=meadowActionButtons[action.Id]
+    if button then
+      local deadline=player:GetAttribute("MeadowReady_"..action.Id)
+      local remains=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
+      button.Text=action.Label..(remains>.05 and "  ·  "..math.ceil(remains).."초" or "")
+      button.Active=remains<=.05
+      button.BackgroundColor3=remains>.05 and Color3.fromRGB(80,89,92) or
+        (action.Kind=="SKILL" and Color3.fromRGB(173,232,198) or Color3.fromRGB(235,242,255))
+    end
+  end
 end
 -- Telegraphs are read from actual server-authored enemy models, never predicted hits.
 local meadowPatternBanner=Instance.new("TextLabel")
@@ -678,6 +701,90 @@ remote.OnClientEvent:Connect(function(kind,payload)
     mobVfx(payload.pattern,payload.position,"DEATH")
   end
 end)
+
+-- Source-bound Roblox SKILL / VFX packages. Server approval is the only trigger.
+-- UI actions never apply local damage, healing, knockback, cooldown or inventory.
+local meadowSkillPresentation=nil
+local meadowCommonVFX=nil
+for _,pair in ipairs({
+  {"RobloxCommonSkillPresentation","skill"},{"RobloxCommonVFX","vfx"},
+}) do
+  local module=Shared:FindFirstChild(pair[1])
+  if module and module:IsA("ModuleScript") then
+    local ok,value=pcall(require,module)
+    if ok and type(value)=="table" then
+      if pair[2]=="skill" then meadowSkillPresentation=value else meadowCommonVFX=value end
+    end
+  end
+end
+local actionsById={}
+for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
+local debris=game:GetService("Debris")
+local alreadyPlayedMeadowFX={}
+local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetPosition,sequence)
+  local action=actionsById[actionId]
+  actorUserId=typeof(actorUserId)=="number" and actorUserId or player.UserId
+  if sequence~=nil then
+    local key=tostring(actorUserId)..":"..tostring(sequence)
+    if alreadyPlayedMeadowFX[key] then return end
+    alreadyPlayedMeadowFX[key]=true
+    task.delay(8,function()alreadyPlayedMeadowFX[key]=nil end)
+  end
+  if not action then return end
+  local sourcePlayer=Players:GetPlayerByUserId(actorUserId)
+  local character=sourcePlayer and sourcePlayer.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart then return end
+  local position=typeof(targetPosition)=="Vector3" and targetPosition or
+    (sourcePlayer and sourcePlayer:GetAttribute("ApprovedActionTarget"))
+  if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
+    position=rootPart.Position
+  end
+  local hostPart=character:FindFirstChild("RightHand") or rootPart
+  local warm=Color3.fromRGB(132,245,169)
+  local accent=Color3.fromRGB(231,255,189)
+  if actionId=="skill-meadow-bolt" then warm=Color3.fromRGB(128,197,255) end
+  if actionId=="skill-meadow-heavy" or actionId=="skill-meadow-sweep" then
+    warm=Color3.fromRGB(255,187,109)
+  end
+  local settings={
+    parent=workspace,cframe=CFrame.new(position),hostPart=hostPart,
+    startPosition=hostPart.Position,endPosition=position,
+    color=warm,accent=accent,duration=.46,
+    radius=actionId=="skill-meadow-sweep" and 10 or 4,
+    scale=1,autoCleanup=true,reducedMotion=UserInputService.TouchEnabled,
+    vfx=meadowCommonVFX,
+  }
+  local selectedFx=overrideVfx or action.VfxAtom
+  if meadowCommonVFX and selectedFx then
+    local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
+    if not ok then warn("마력숲 VFX source unavailable: "..tostring(err)) end
+  end
+  if meadowSkillPresentation and not overrideVfx and action.SkillAtom and action.SkillAtom~="SKILL_ICON_BADGE" then
+    local ok,result,controller=pcall(meadowSkillPresentation.Create,action.SkillAtom,settings)
+    if ok then
+      if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
+        debris:AddItem(result,2.8)
+      elseif (action.SkillAtom=="DASH_STREAK" or action.SkillAtom=="SKILL_TRAIL") and controller then
+        task.delay(.65,function() pcall(function()controller.Destroy() end) end)
+      end
+    else
+      warn("마력숲 skill source unavailable: "..tostring(result))
+    end
+  end
+end
+player:GetAttributeChangedSignal("ApprovedActionFX"):Connect(function()
+  local id,seq=tostring(player:GetAttribute("ApprovedActionFX") or ""):match("^([^:]+):(%d+)$")
+  if id and seq then playApprovedMeadowEffect(id,nil,player.UserId,nil,tonumber(seq)) end
+end)
+remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosition)
+  if kind=="MEADOW_ACTION_FX" then
+    playApprovedMeadowEffect(actionId,nil,payload,targetPosition,sequence)
+  elseif kind=="MEADOW_REACTION" and payload=="PARRY" then
+    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH",player.UserId)
+  end
+end)
+
 
 -- The shared Roblox R15 combat library already has real authored joints for
 -- jab/cross/hook/uppercut/elbow/knee/kick. Route ONE confirmed hit to ONE strike.
