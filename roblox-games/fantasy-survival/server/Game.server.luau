@@ -2678,6 +2678,8 @@ end
 -- 실패한 로드의 기본값으로 기존 저장 데이터가 덮어써지는 것을 막는다.
 local persistenceAllowed = {}
 local profileBindingStarted = {}
+-- [첫 화면/새 게임] 기존 프로필 저장소에서만 초기화하며 클라이언트가 보상을 쓰지 못한다.
+local meadowNewGameResetBusy = {}
 local function onSurvivalPlayerAdded(player)
   if profileBindingStarted[player] then return end
   profileBindingStarted[player] = true
@@ -2688,7 +2690,21 @@ local function onSurvivalPlayerAdded(player)
   end)
   if player.Parent ~= Players then return end
   local validSaved = ok and (saved == nil or typeof(saved) == "table")
+  -- [이어하기] 구형 저장에는 위치 필드가 없다. 값이 유효할 때만 원래 서식지로 복귀한다.
+  local resumePosition=nil
+  if validSaved and typeof(saved)=="table" and saved.MeadowResumeValid==1 then
+    local x,y,z=saved.MeadowResumeX,saved.MeadowResumeY,saved.MeadowResumeZ
+    if typeof(x)=="number" and typeof(y)=="number" and typeof(z)=="number"
+      and x==x and y==y and z==z and math.abs(x)<=338
+      and math.abs(z)<=338 and y>=-25 and y<=145 then
+      resumePosition=Vector3.new(x,y,z)
+    end
+  end
+  player:SetAttribute("MeadowResumeReady",resumePosition==nil)
+  player:SetAttribute("MeadowEnteredWorld",false)
   persistenceAllowed[player] = validSaved
+  player:SetAttribute("MeadowProfileHadSave",validSaved and typeof(saved)=="table")
+  player:SetAttribute("MeadowNewGameResult","IDLE")
   if validSaved and typeof(saved) == "table" then
     for key, fallback in pairs(Config.InitialState) do
       local value = saved[key]
@@ -2710,6 +2726,31 @@ local function onSurvivalPlayerAdded(player)
   bindSurvivalHealth(player)
   player:SetAttribute("ProfileReady", true)
   broadcastSurvivalState(player)
+  if resumePosition then
+    task.spawn(function()
+      local deadline=os.clock()+22
+      while player.Parent==Players and gameWorld:GetAttribute("MeadowOuterRegionReady")~=true
+        and os.clock()<deadline do task.wait(.15) end
+      if player.Parent~=Players then return end
+      local character=player.Character or player.CharacterAdded:Wait()
+      local root=character and character:WaitForChild("HumanoidRootPart",12)
+      local human=character and character:FindFirstChildOfClass("Humanoid")
+      if root and human and human.Health>0 and player.Character==character then
+        local ray=RaycastParams.new()
+        ray.FilterType=Enum.RaycastFilterType.Include
+        ray.FilterDescendantsInstances={meadowTerrain}
+        local hit=workspace:Raycast(Vector3.new(resumePosition.X,150,resumePosition.Z),
+          Vector3.new(0,-240,0),ray)
+        if hit and hit.Position.Y>=-22 and hit.Position.Y<=130 then
+          root.CFrame=CFrame.new(resumePosition.X,hit.Position.Y+3.5,resumePosition.Z)
+          root.AssemblyLinearVelocity=Vector3.zero
+        else
+          warn("MEADOW_RESUME_GROUND_UNVERIFIED")
+        end
+      end
+      player:SetAttribute("MeadowResumeReady",true)
+    end)
+  end
 end
 Players.PlayerAdded:Connect(onSurvivalPlayerAdded)
 -- PlayerAdded 이전에 존재하던 플레이어도 동일한 저장 프로필 검증·캐릭터 연결을 수행한다.
@@ -2718,6 +2759,63 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 remote.OnServerEvent:Connect(function(player, actionId)
   if typeof(actionId) ~= "string" or player:GetAttribute("ProfileReady") ~= true then return end
+  if actionId=="meadow:enter-world" then
+    -- 타이틀 입장이 끝난 세션만 종료 시점의 위치와 진행도를 저장한다.
+    player:SetAttribute("MeadowEnteredWorld",true)
+    return
+  end
+  -- [첫 화면] 기존 저장 데이터는 기본적으로 보존한다.
+  -- 삭제 확인이 끝난 새 게임 요청만 서버의 기존 DataStore UpdateAsync로 초기화한다.
+  if actionId=="meadow:new-game:confirm" then
+    if meadowNewGameResetBusy[player] then return end
+    if persistenceAllowed[player]~=true or not store then
+      player:SetAttribute("MeadowNewGameResult","UNAVAILABLE")
+      return
+    end
+    if player:GetAttribute("MeadowProfileHadSave")~=true then
+      player:SetAttribute("MeadowNewGameResult","SUCCESS")
+      return
+    end
+    meadowNewGameResetBusy[player]=true
+    player:SetAttribute("MeadowNewGameResult","IN_PROGRESS")
+    -- 데이터 갱신 중 퇴장하더라도 이전 스냅샷이 새 게임을 덮어쓰지 못하게 한다.
+    persistenceAllowed[player]=false
+    player:SetAttribute("ProfileReady",false)
+    local ok,committed=pcall(function()
+      return store:UpdateAsync("player:"..player.UserId,function(previous)
+        if previous~=nil and typeof(previous)~="table" then return nil end
+        -- 다른 시스템의 미지 필드와 기존 저장 형식을 파괴하지 않는다.
+        local nextProfile=typeof(previous)=="table" and table.clone(previous) or {}
+        for key,initial in pairs(Config.InitialState) do nextProfile[key]=initial end
+        return nextProfile
+      end)
+    end)
+    if player.Parent==Players then
+      persistenceAllowed[player]=true
+      if ok and committed then
+        initializePlayer(player)
+        player:SetAttribute("MeadowStamina",100)
+        player:SetAttribute("MeadowProfileHadSave",false)
+        player:SetAttribute("MeadowResumeReady",true)
+        player:SetAttribute("MeadowEnteredWorld",false)
+        player:SetAttribute("SaveStatus","READY")
+        villageSessions[player]=nil
+        meadowDefense[player]=nil
+        -- 서버가 승인한 현재 캐릭터를 기본 시작 위치로 다시 생성한다.
+        local respawnOk,respawnReason=pcall(function() player:LoadCharacterAsync() end)
+        if not respawnOk then warn("MEADOW_NEW_GAME_RESPAWN_FAILED: "..tostring(respawnReason)) end
+        player:SetAttribute("ProfileReady",true)
+        broadcastSurvivalState(player)
+        player:SetAttribute("MeadowNewGameResult","SUCCESS")
+      else
+        -- 저장소 실패 시 기존 진행도/캐릭터를 건드리지 않고 선택 창으로 복귀한다.
+        player:SetAttribute("ProfileReady",true)
+        player:SetAttribute("MeadowNewGameResult","SAVE_FAILED")
+      end
+    end
+    meadowNewGameResetBusy[player]=nil
+    return
+  end
   -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
   if string.sub(actionId,1,8)=="village:" then villageChoose(player,actionId);return end
   local handler = handlers[actionId]
@@ -2754,8 +2852,23 @@ remote.OnServerEvent:Connect(function(player, actionId)
 end)
 local function saveSurvivalProgress(player)
   if persistenceAllowed[player] ~= true or not store then return false end
+  -- 첫 화면에서 곧바로 나간 경우 예전 위치/진행도를 초기 스폰 값으로 덮어쓰지 않는다.
+  if player:GetAttribute("MeadowEnteredWorld")~=true then return false end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
+  -- [이어하기 위치] 서버 캐릭터의 실제 위치만 저장한다. 클라이언트 좌표는 받지 않는다.
+  local character=player.Character
+  local root=character and character:FindFirstChild("HumanoidRootPart")
+  local human=character and character:FindFirstChildOfClass("Humanoid")
+  if root and human and human.Health>0 then
+    local pos=root.Position
+    if math.abs(pos.X)<=338 and math.abs(pos.Z)<=338 and pos.Y>=-25 and pos.Y<=145 then
+      snapshot.MeadowResumeValid=1
+      snapshot.MeadowResumeX=pos.X
+      snapshot.MeadowResumeY=pos.Y
+      snapshot.MeadowResumeZ=pos.Z
+    end
+  end
   local ok, committed = pcall(function()
     return store:UpdateAsync("player:" .. player.UserId, function(previous)
       -- 다른 버전의 데이터와 알 수 없는 이전 필드는 버리지 않는다.
@@ -2773,6 +2886,7 @@ Players.PlayerRemoving:Connect(function(player)
   saveSurvivalProgress(player)
   persistenceAllowed[player] = nil
   profileBindingStarted[player] = nil
+  meadowNewGameResetBusy[player]=nil
   lastAction[player] = nil
   attackCooldown[player] = nil
   meadowSkillCooldown[player]=nil

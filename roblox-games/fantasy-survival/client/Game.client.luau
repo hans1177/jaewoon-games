@@ -3771,3 +3771,430 @@ task.delay(5,function()
     end
   end
 end)
+
+
+-- [첫 화면] 기존 초원 월드·R15 캐릭터·음향을 그대로 배경에 사용한다.
+-- 새로운 3D 파츠나 배경용 가짜 월드를 만들지 않고, 시작 선택 뒤 기존 HUD를 복원한다.
+do
+  local ContentProvider=game:GetService("ContentProvider")
+  local TweenService=game:GetService("TweenService")
+  local arrivalGui=Instance.new("ScreenGui")
+  arrivalGui.Name="MeadowArrivalScreen"
+  arrivalGui.ResetOnSpawn=false
+  arrivalGui.IgnoreGuiInset=true
+  arrivalGui.DisplayOrder=100
+  arrivalGui.Parent=player.PlayerGui
+  local backdrop=Instance.new("Frame")
+  backdrop.Name="ArrivalBackdrop"
+  backdrop.Size=UDim2.fromScale(1,1)
+  backdrop.BackgroundColor3=Color3.fromRGB(8,20,17)
+  backdrop.BackgroundTransparency=.32
+  backdrop.BorderSizePixel=0
+  backdrop.Active=true
+  backdrop.Parent=arrivalGui
+  local shade=Instance.new("UIGradient")
+  shade.Color=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(17,32,28)),
+    ColorSequenceKeypoint.new(.5,Color3.fromRGB(65,77,64)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(12,24,22)),
+  })
+  shade.Rotation=90
+  shade.Parent=backdrop
+  local function panel(name,width,height)
+    local frame=Instance.new("Frame")
+    frame.Name=name
+    frame.AnchorPoint=Vector2.new(.5,.5)
+    frame.Position=UDim2.fromScale(.5,.5)
+    frame.Size=UDim2.new(.9,0,0,height)
+    frame.BackgroundColor3=Color3.fromRGB(22,34,28)
+    frame.BackgroundTransparency=.10
+    frame.BorderSizePixel=0
+    frame.Parent=backdrop
+    local sizeLimit=Instance.new("UISizeConstraint")
+    sizeLimit.MaxSize=Vector2.new(width,height)
+    sizeLimit.Parent=frame
+    local corner=Instance.new("UICorner")
+    corner.CornerRadius=UDim.new(0,15)
+    corner.Parent=frame
+    local stroke=Instance.new("UIStroke")
+    stroke.Color=Color3.fromRGB(192,157,98)
+    stroke.Thickness=2
+    stroke.Parent=frame
+    return frame
+  end
+  local function label(parent,name,value,y,height,size,color)
+    local t=Instance.new("TextLabel")
+    t.Name=name
+    t.Position=UDim2.new(0,10,0,y)
+    t.Size=UDim2.new(1,-20,0,height)
+    t.BackgroundTransparency=1
+    t.Text=value
+    t.Font=Enum.Font.GothamBold
+    t.TextSize=size
+    t.TextColor3=color or Color3.fromRGB(247,226,176)
+    t.TextWrapped=true
+    t.Parent=parent
+    return t
+  end
+  local function button(parent,name,value,y)
+    local b=Instance.new("TextButton")
+    b.Name=name
+    b.Position=UDim2.new(0,22,0,y)
+    b.Size=UDim2.new(1,-44,0,42)
+    b.BackgroundColor3=Color3.fromRGB(85,66,44)
+    b.TextColor3=Color3.fromRGB(255,246,216)
+    b.Font=Enum.Font.GothamBold
+    b.TextSize=17
+    b.Text=value
+    b.AutoButtonColor=true
+    b.Parent=parent
+    local corner=Instance.new("UICorner")
+    corner.CornerRadius=UDim.new(0,9)
+    corner.Parent=b
+    return b
+  end
+  local titlePanel=panel("MeadowTitle",390,306)
+  label(titlePanel,"GameName","마 력 숲",21,54,35)
+  label(titlePanel,"GameSubtitle","안개가 걷히면, 또 다른 이야기가 시작된다",76,31,13,Color3.fromRGB(211,221,196))
+  local continueButton=button(titlePanel,"Continue","이어하기",116)
+  local newButton=button(titlePanel,"NewGame","새 게임",168)
+  local settingButton=button(titlePanel,"Settings","설정",220)
+  local titleStatus=label(titlePanel,"SaveState","저장 기록 확인 중",266,29,12,Color3.fromRGB(203,214,195))
+
+  local options=panel("MeadowTitleSettings",390,268)
+  options.Visible=false
+  label(options,"SettingsTitle","환경 설정",18,44,25)
+  local effectsButton=button(options,"Effects","효과음",83)
+  local ambienceButton=button(options,"Ambience","환경음",135)
+  local settingsBack=button(options,"Back","돌아가기",193)
+  local function refreshArrivalOptions()
+    effectsButton.Text="효과음  "..math.floor(meadowEffectsGroup.Volume*100+.5).."%"
+    ambienceButton.Text="환경음  "..math.floor(meadowAmbienceGroup.Volume*100+.5).."%"
+  end
+  effectsButton.Activated:Connect(function()
+    meadowEffectsGroup.Volume=meadowEffectsGroup.Volume>.9 and 0 or math.min(1,meadowEffectsGroup.Volume+.25)
+    refreshArrivalOptions()
+  end)
+  ambienceButton.Activated:Connect(function()
+    meadowAmbienceGroup.Volume=meadowAmbienceGroup.Volume>.9 and 0 or math.min(1,meadowAmbienceGroup.Volume+.25)
+    refreshArrivalOptions()
+  end)
+  settingButton.Activated:Connect(function()
+    refreshArrivalOptions()
+    titlePanel.Visible=false
+    options.Visible=true
+  end)
+  settingsBack.Activated:Connect(function()
+    options.Visible=false
+    titlePanel.Visible=true
+  end)
+
+  local confirmPanel=panel("MeadowNewGameConfirm",390,244)
+  confirmPanel.Visible=false
+  label(confirmPanel,"Warning","기존 진행도를 삭제할까?",18,46,24)
+  label(confirmPanel,"Details","숙련도·재화·의뢰·탐험 기록이 처음부터 시작돼.\n기존 저장은 되돌릴 수 없어.",68,54,14,Color3.fromRGB(251,218,185))
+  local confirmButton=button(confirmPanel,"Confirm","삭제 확인 · 새 게임 시작",130)
+  local cancelButton=button(confirmPanel,"Cancel","취소",182)
+  cancelButton.Activated:Connect(function()
+    confirmPanel.Visible=false
+    titlePanel.Visible=true
+  end)
+
+  -- [실제 맵 로딩] 기존 숲 발견 비트·월드 스트리밍 모델만 사용해 양피지 지도를 갱신한다.
+  local loadPanel=panel("MeadowMapLoading",440,324)
+  loadPanel.Visible=false
+  loadPanel.BackgroundColor3=Color3.fromRGB(176,146,99)
+  local mapTitle=label(loadPanel,"Region","초원 지역",8,30,23,Color3.fromRGB(45,36,27))
+  local paper=Instance.new("Frame")
+  paper.Name="DiscoveredMap"
+  paper.Position=UDim2.new(0,18,0,44)
+  paper.Size=UDim2.new(1,-36,0,186)
+  paper.BackgroundColor3=Color3.fromRGB(202,173,120)
+  paper.BorderSizePixel=0
+  paper.Parent=loadPanel
+  local mapBorder=Instance.new("UIStroke")
+  mapBorder.Color=Color3.fromRGB(99,74,42)
+  mapBorder.Thickness=2
+  mapBorder.Parent=paper
+  local fogInfo=label(paper,"FogNote","아직 발견하지 못한 숲은 안개에 가려져 있어",5,20,12,Color3.fromRGB(77,59,40))
+  local mapMarkers={}
+  for index,point in ipairs({
+    {label="북서 숲",x=.16,y=.29,flag=1},
+    {label="북동 숲",x=.83,y=.29,flag=2},
+    {label="남서 숲",x=.16,y=.78,flag=4},
+    {label="남동 숲",x=.83,y=.78,flag=8},
+    {label="초원",x=.50,y=.52,flag=0},
+  }) do
+    local marker=Instance.new("TextLabel")
+    marker.Name="RegionMarker"..index
+    marker.AnchorPoint=Vector2.new(.5,.5)
+    marker.Position=UDim2.fromScale(point.x,point.y)
+    marker.Size=UDim2.fromOffset(78,28)
+    marker.BackgroundColor3=Color3.fromRGB(119,93,56)
+    marker.BackgroundTransparency=.35
+    marker.TextColor3=Color3.fromRGB(50,42,30)
+    marker.TextSize=12
+    marker.Font=Enum.Font.GothamBold
+    marker.Parent=paper
+    mapMarkers[index]={view=marker,point=point}
+  end
+  local villageMarker=label(paper,"Village","⌂ 마을",58,24,13,Color3.fromRGB(58,46,30))
+  villageMarker.Position=UDim2.fromScale(.37,.30)
+  villageMarker.Size=UDim2.fromOffset(86,24)
+  local progressTrack=Instance.new("Frame")
+  progressTrack.Name="ProgressTrack"
+  progressTrack.Position=UDim2.new(0,24,0,241)
+  progressTrack.Size=UDim2.new(1,-48,0,13)
+  progressTrack.BackgroundColor3=Color3.fromRGB(95,83,60)
+  progressTrack.BorderSizePixel=0
+  progressTrack.Parent=loadPanel
+  local progressFill=Instance.new("Frame")
+  progressFill.Name="VerifiedProgress"
+  progressFill.Size=UDim2.fromScale(0,1)
+  progressFill.BackgroundColor3=Color3.fromRGB(53,103,69)
+  progressFill.BorderSizePixel=0
+  progressFill.Parent=progressTrack
+  local loadingStatus=label(loadPanel,"LoadingStatus","월드 준비 중 · 0%",261,25,13,Color3.fromRGB(45,36,27))
+  local loadingTip=label(loadPanel,"LoadingTip","전투 팁 · 우두머리 늑대의 돌진은 회피로 피할 수 있어",286,29,11,Color3.fromRGB(63,51,38))
+
+  local introPanel=Instance.new("Frame")
+  introPanel.Name="FirstArrivalScene"
+  introPanel.Size=UDim2.fromScale(1,1)
+  introPanel.BackgroundTransparency=1
+  introPanel.Visible=false
+  introPanel.Parent=backdrop
+  local regionIntro=label(introPanel,"RegionReveal","초원 지역",24,60,32)
+  regionIntro.Position=UDim2.fromScale(0,.17)
+  regionIntro.Size=UDim2.fromScale(1,.14)
+  label(introPanel,"OpeningText","새벽의 안개 너머로 숲의 울음이 들린다.",105,40,16)
+  local skipButton=button(introPanel,"Skip","건너뛰기",170)
+  skipButton.AnchorPoint=Vector2.new(1,1)
+  skipButton.Position=UDim2.new(1,-20,1,-25)
+  skipButton.Size=UDim2.fromOffset(115,40)
+
+  local entranceOpen=true
+  local openingCamera=workspace.CurrentCamera
+  local originalCameraType=openingCamera and openingCamera.CameraType
+  local originalSubject=openingCamera and openingCamera.CameraSubject
+  local activeTween=nil
+  local runToken=0
+  local function arrivalControls(enabled)
+    local scripts=player:FindFirstChild("PlayerScripts")
+    local module=scripts and scripts:FindFirstChild("PlayerModule")
+    if module then
+      pcall(function()
+        local controls=require(module):GetControls()
+        if enabled then controls:Enable() else controls:Disable() end
+      end)
+    end
+  end
+  local function restoreCamera()
+    if activeTween then activeTween:Cancel();activeTween=nil end
+    if openingCamera and openingCamera.Parent then
+      openingCamera.CameraType=Enum.CameraType.Custom
+      local character=player.Character
+      local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+      if humanoid then openingCamera.CameraSubject=humanoid
+      elseif originalSubject and originalSubject.Parent then openingCamera.CameraSubject=originalSubject end
+    end
+  end
+  local function closeArrival()
+    if not entranceOpen then return end
+    entranceOpen=false
+    runToken+=1
+    remote:FireServer("meadow:enter-world")
+    restoreCamera()
+    gui.Enabled=true
+    meadowVitalsGui.Enabled=true
+    arrivalControls(true)
+    arrivalGui:Destroy()
+  end
+  local function showArrivalCamera()
+    openingCamera=workspace.CurrentCamera
+    if not openingCamera then return end
+    originalCameraType=openingCamera.CameraType
+    originalSubject=openingCamera.CameraSubject
+    openingCamera.CameraType=Enum.CameraType.Scriptable
+    openingCamera.CFrame=CFrame.lookAt(Vector3.new(31,26,44),Vector3.new(0,5,-70))
+  end
+  gui.Enabled=false
+  meadowVitalsGui.Enabled=false
+  arrivalControls(false)
+  showArrivalCamera()
+  player.CharacterAdded:Connect(function()
+    if entranceOpen then task.defer(function()
+      if entranceOpen and titlePanel.Visible then showArrivalCamera() end
+    end) end
+  end)
+  local function updateTitleStatus()
+    local ready=player:GetAttribute("ProfileReady")==true
+    local saved=player:GetAttribute("MeadowProfileHadSave")==true
+    local sessionOnly=player:GetAttribute("SaveStatus")=="SESSION_ONLY"
+    continueButton.Text=saved and "이어하기" or "모험 시작"
+    titleStatus.Text=not ready and "저장 기록 확인 중"
+      or sessionOnly and "임시 플레이 · 저장소 연결 실패"
+      or saved and "저장된 진행도 확인됨" or "새로운 모험 준비 완료"
+    continueButton.Active=ready
+    newButton.Active=ready and not sessionOnly
+    continueButton.BackgroundTransparency=ready and 0 or .55
+    newButton.BackgroundTransparency=(ready and not sessionOnly) and 0 or .55
+  end
+  player:GetAttributeChangedSignal("ProfileReady"):Connect(updateTitleStatus)
+  player:GetAttributeChangedSignal("SaveStatus"):Connect(updateTitleStatus)
+  player:GetAttributeChangedSignal("MeadowProfileHadSave"):Connect(updateTitleStatus)
+  updateTitleStatus()
+
+  local function refreshMapRegion()
+    local name=radarTitle.Text
+    mapTitle.Text=(type(name)=="string" and name~="" and name or "초원 지역").." · 탐험 지도"
+    local mask=player:GetAttribute("ExplorationGroves") or 0
+    for _,row in ipairs(mapMarkers) do
+      local point=row.point
+      local visible=point.flag==0 or bit32.band(mask,point.flag)~=0
+      row.view.Text=visible and point.label or "안개"
+      row.view.TextTransparency=visible and 0 or .36
+    end
+    local world=workspace:FindFirstChild("FantasySurvivalWorld")
+    local built=world and world:GetAttribute("MeadowVillagePrefabReady")==true
+    villageMarker.Text=built and "⌂ 마을" or "마을 미완성"
+    villageMarker.TextTransparency=built and 0 or .46
+  end
+  local function setProgress(done,total,message)
+    local ratio=total>0 and math.clamp(done/total,0,1) or 0
+    progressFill.Size=UDim2.fromScale(ratio,1)
+    loadingStatus.Text=message.." · "..math.floor(ratio*100+.5).."%"
+  end
+  local function startIntro(isFresh)
+    loadPanel.Visible=false
+    introPanel.Visible=isFresh
+    if not isFresh then closeArrival();return end
+    local token=runToken
+    local character=player.Character
+    local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+    if openingCamera and rootPart then
+      openingCamera.CameraType=Enum.CameraType.Scriptable
+      openingCamera.CFrame=CFrame.lookAt(rootPart.Position+Vector3.new(14,12,17),
+        rootPart.Position+Vector3.new(0,2,-15))
+      activeTween=TweenService:Create(openingCamera,TweenInfo.new(4,Enum.EasingStyle.Sine),
+        {CFrame=CFrame.lookAt(rootPart.Position+Vector3.new(-8,6,11),
+          rootPart.Position+Vector3.new(0,3,-12))})
+      activeTween:Play()
+    end
+    regionIntro.Text="초원 지역"
+    local finished=false
+    local function finish()
+      if finished or token~=runToken then return end
+      finished=true
+      closeArrival()
+    end
+    skipButton.Activated:Once(finish)
+    task.delay(4.3,finish)
+  end
+  local function loadRegion(isFresh)
+    if not entranceOpen then return end
+    runToken+=1
+    local token=runToken
+    titlePanel.Visible=false
+    options.Visible=false
+    confirmPanel.Visible=false
+    loadPanel.Visible=true
+    refreshMapRegion()
+    local tips={
+      "전투 팁 · 우두머리 늑대의 돌진은 회피로 피할 수 있어",
+      "조사 팁 · 사건마다 주민 진술과 현장 단서를 확인해",
+      "탐험 팁 · 방문한 숲 지점은 지도에서 확인할 수 있어",
+    }
+    loadingTip.Text=tips[(math.floor(os.clock())%#tips)+1]
+    setProgress(0,0,"지역 정보 확인 중")
+    task.spawn(function()
+      -- 실제 서버 프로필 및 클라이언트 스트리밍된 캐릭터가 준비될 때만 다음 단계로 이동한다.
+      while entranceOpen and token==runToken and player:GetAttribute("ProfileReady")~=true do task.wait(.1) end
+      if not entranceOpen or token~=runToken then return end
+      setProgress(0,0,"저장 데이터 확인")
+      local resumeDeadline=os.clock()+26
+      while entranceOpen and token==runToken
+        and player:GetAttribute("MeadowResumeReady")==false
+        and os.clock()<resumeDeadline do task.wait(.15) end
+      if not entranceOpen or token~=runToken then return end
+      if player:GetAttribute("MeadowResumeReady")==false then
+        loadPanel.Visible=false
+        titlePanel.Visible=true
+        titleStatus.Text="이전 위치 복원 확인 중 · 다시 시도해"
+        return
+      end
+      local world=workspace:WaitForChild("FantasySurvivalWorld",20)
+      local character=player.Character or player.CharacterAdded:Wait()
+      local rootPart=character and character:WaitForChild("HumanoidRootPart",12)
+      if not entranceOpen or token~=runToken then return end
+      if not world or not rootPart then
+        loadPanel.Visible=false
+        titlePanel.Visible=true
+        titleStatus.Text="월드 준비 실패 · 다시 시도해"
+        return
+      end
+      local assets={}
+      for _,descendant in ipairs(world:GetDescendants()) do
+        if descendant:IsA("MeshPart") or descendant:IsA("Decal")
+          or descendant:IsA("Texture") then
+          assets[#assets+1]=descendant
+          if #assets>=20 then break end
+        end
+      end
+      local total=3+#assets
+      local loaded=2
+      setProgress(loaded,total,"초원 지형 및 캐릭터 준비")
+      local failed=0
+      -- 진행 숫자는 실제 완료된 원본 파일의 PreloadAsync 호출 수로만 증가한다.
+      for _,asset in ipairs(assets) do
+        if not entranceOpen or token~=runToken then return end
+        local ok=pcall(function() ContentProvider:PreloadAsync({asset}) end)
+        if not ok then failed+=1 end
+        loaded+=1
+        setProgress(loaded,total,failed>0 and "일부 자산 로딩 실패" or "원본 모델 불러오는 중")
+        task.wait()
+      end
+      if not entranceOpen or token~=runToken then return end
+      loaded+=1
+      setProgress(loaded,total,failed>0 and "일부 자산은 접속 후 다시 로드돼" or "월드 준비 완료")
+      task.wait(.18)
+      startIntro(isFresh)
+    end)
+  end
+  continueButton.Activated:Connect(function()
+    if player:GetAttribute("ProfileReady")~=true then return end
+    loadRegion(player:GetAttribute("MeadowProfileHadSave")~=true)
+  end)
+  newButton.Activated:Connect(function()
+    if player:GetAttribute("ProfileReady")~=true then return end
+    if player:GetAttribute("SaveStatus")=="SESSION_ONLY" then
+      titleStatus.Text="저장 연결 실패 · 기존 데이터 초기화 불가"
+      return
+    end
+    if player:GetAttribute("MeadowProfileHadSave")~=true then
+      loadRegion(true)
+    else
+      titlePanel.Visible=false
+      confirmPanel.Visible=true
+    end
+  end)
+  confirmButton.Activated:Connect(function()
+    if player:GetAttribute("ProfileReady")~=true then return end
+    confirmButton.Active=false
+    confirmButton.Text="서버에서 기존 저장 초기화 중"
+    remote:FireServer("meadow:new-game:confirm")
+  end)
+  player:GetAttributeChangedSignal("MeadowNewGameResult"):Connect(function()
+    if not entranceOpen then return end
+    local result=player:GetAttribute("MeadowNewGameResult")
+    if result=="SUCCESS" then
+      confirmButton.Active=true
+      confirmButton.Text="삭제 확인 · 새 게임 시작"
+      loadRegion(true)
+    elseif result=="SAVE_FAILED" or result=="UNAVAILABLE" then
+      confirmButton.Active=true
+      confirmButton.Text="다시 시도"
+      local warning=confirmPanel:FindFirstChild("Details")
+      if warning then warning.Text="저장소가 초기화를 승인하지 않았어.\n기존 진행도는 보존했어." end
+    end
+  end)
+end
