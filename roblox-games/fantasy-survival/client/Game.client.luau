@@ -529,9 +529,9 @@ CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primar
 -- Each sends an existing server-authorized COMBAT action; no client damage authority.
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
-meadowSkillDock.AnchorPoint=Vector2.new(.5,0)
-meadowSkillDock.Position=UDim2.fromScale(.5,.345)
-meadowSkillDock.Size=UDim2.new(1,-26,0,54)
+meadowSkillDock.AnchorPoint=Vector2.new(.5,1)
+meadowSkillDock.Position=UDim2.new(.5,0,1,-12)
+meadowSkillDock.Size=UDim2.fromOffset(252,100)
 meadowSkillDock.BackgroundTransparency=1
 meadowSkillDock.Parent=gui
 local meleeSkills={
@@ -543,8 +543,8 @@ local meleeSkills={
 for index,skill in ipairs(meleeSkills) do
   local button=Instance.new("TextButton")
   button.Name="R15Skill"..index
-  button.Size=UDim2.new(.25,-5,1,0)
-  button.Position=UDim2.new((index-1)*.25,2,0,0)
+  button.Size=UDim2.new(.5,-4,.5,-4)
+  button.Position=UDim2.new(((index-1)%2)*.5,2,math.floor((index-1)/2)*.5,0)
   button.BackgroundColor3=Color3.fromRGB(22,76,62)
   button.TextColor3=Color3.fromRGB(241,255,223)
   button.TextSize=15

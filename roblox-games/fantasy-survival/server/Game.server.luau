@@ -449,15 +449,19 @@ local function attackEnemy(player)
   local human=character and character:FindFirstChildOfClass("Humanoid")
   local rootPart=character and character:FindFirstChild("HumanoidRootPart")
   if not human or human.Health<=0 or not rootPart then return false end
-  local target=nearestEnemy(rootPart,25)
-  if not target then return false end
   local now=os.clock()
   if now<(attackCooldown[player] or 0) then return false end
   attackCooldown[player]=now+.42
+  local target=nearestEnemy(rootPart,25)
+  -- 유효한 공격 입력은 허공에서도 동작한다. 명중·피해·보상은 분리한다.
+  if not target then
+    player:SetAttribute("ApprovedActionTarget",rootPart.Position)
+    return true,false
+  end
   local level=readNumber(player,"Level",1)
   local weaponTier=readNumber(player,"WeaponTier",0)
   local damage=math.floor(16+level*2.2+weaponTier*8)
-  return applyMeadowDamage(player,target,damage)
+  return applyMeadowDamage(player,target,damage),true
 end
 
 local function unarmedSkillAttack(player)
@@ -915,7 +919,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   local previous = lastAction[player] or 0
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
-  local actionAccepted=handler(player)
+  local actionAccepted,combatHit=handler(player)
   -- [서버 권한] Actual accepted actions only. Existing R15 unarmed
   -- ApprovedCombatMotion and confirmed MEADOW_IMPACT remain untouched.
   if actionAccepted~=true then return end
@@ -927,13 +931,18 @@ remote.OnServerEvent:Connect(function(player, actionId)
   local targetPos=player:GetAttribute("ApprovedActionTarget")
   if typeof(targetPos)~="Vector3" and root then targetPos=root.Position end
   player:SetAttribute("ApprovedActionMotion",approved)
-  player:SetAttribute("ApprovedActionFX",approved)
-  remote:FireAllClients("MEADOW_ACTION_FX",player.UserId,actionId,approvedSequence,targetPos)
+  local combatAction=false
   for _,action in ipairs(Config.Actions) do
     if action.Id==actionId and action.Kind=="COMBAT" then
+      combatAction=true
       player:SetAttribute("ApprovedCombatMotion",approved)
       break
     end
+  end
+  -- 허공 공격은 관절 모션만 재생한다. 명중 효과·처치·점수는 만들지 않는다.
+  if not combatAction or combatHit==true then
+    player:SetAttribute("ApprovedActionFX",approved)
+    remote:FireAllClients("MEADOW_ACTION_FX",player.UserId,actionId,approvedSequence,targetPos)
   end
 end)
 local function saveSurvivalProgress(player)

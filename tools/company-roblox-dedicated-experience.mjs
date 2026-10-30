@@ -124,7 +124,7 @@ export async function createRobloxDedicatedExperience({
 }
 
 export async function configureRobloxExperience({
-  universeId,name,description='',
+  universeId,name,description='',avatarRig='',
   cookie=process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE,
   apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
   fetchImpl=globalThis.fetch,
@@ -132,13 +132,15 @@ export async function configureRobloxExperience({
   if(!validId(universeId))throw new Error('universe id invalid');
   if(!clean(name))throw new Error('experience name required');
   const c=cookieHeader(cookie),key=clean(apiKey);
+  if(avatarRig&&avatarRig!=='R15')throw new Error('UNSUPPORTED_OWNER_AVATAR_RIG');
+  if(avatarRig&&!c)throw new Error('OWNER_R15_CONFIGURATION_AUTH_REQUIRED');
   let response;
   if(c){
     const endpoint=`https://develop.roblox.com/v2/universes/${universeId}/configuration`;
     response=await csrfFetch({
       url:endpoint,method:'PATCH',cookie,fetchImpl,
       headers:{'content-type':'application/json'},
-      body:JSON.stringify({name:clean(name),description:String(description||'')}),
+      body:JSON.stringify({name:clean(name),description:String(description||''),...(avatarRig==='R15'?{universeAvatarType:3}:{})}),
     });
   }else{
     if(!key)throw new Error('Roblox experience configure requires ROBLOX_ROBLOSECURITY or ROBLOX_OPEN_CLOUD_API_KEY');
@@ -155,7 +157,8 @@ export async function configureRobloxExperience({
   }
   const {payload}=await parseResponse(response);
   if(!response.ok)throw new Error(`Roblox experience configure failed HTTP ${response.status}: ${errText(payload)}`);
-  return Object.freeze({configured:true,privateRequested:true});
+  if(avatarRig==='R15'&&Number(payload?.universeAvatarType)!==3)throw new Error('OWNER_R15_CONFIGURATION_NOT_CONFIRMED');
+  return Object.freeze({configured:true,privateRequested:true,...(avatarRig?{avatarRig}: {})});
 }
 
 export async function ensureRobloxExperiencePrivate({
@@ -245,6 +248,7 @@ async function main(){
   const placeFile=clean(args['place-file']);
   const output=clean(args.output);
   const sourceRevision=clean(args['source-revision']);
+  const avatarRig=clean(args['avatar-rig']);
   const reuseUniverseId=clean(args['reuse-universe-id']);
   const reusePlaceId=clean(args['reuse-place-id']);
   if(!gameId||!gameName||!placeFile||!output||!sourceRevision)throw new Error('game-id, game-name, place-file, output, source-revision required');
@@ -267,11 +271,12 @@ async function main(){
       result.universeId=created.universeId; result.placeId=created.placeId; result.created=true; write();
     }
     result.stage='CONFIGURE_EXPERIENCE'; write();
-    await configureRobloxExperience({
-      universeId:result.universeId,
+    const configured=await configureRobloxExperience({
+      universeId:result.universeId,avatarRig,
       name:gameName,
       description:`Private internal build for ${gameName}. Managed from hans1177/jaewoon-games.`,
     });
+    if(configured.avatarRig){result.avatarRig=configured.avatarRig;console.log('ROBLOX_DEDICATED_AVATAR_RIG='+configured.avatarRig);}
     result.configured=true; write();
     result.stage='ENFORCE_PRIVATE'; write();
     await ensureRobloxExperiencePrivate({universeId:result.universeId});
