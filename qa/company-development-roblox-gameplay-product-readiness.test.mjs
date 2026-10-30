@@ -91,9 +91,9 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/local model = spec\.visual and worldAsset\(spec\.visual,spec\.position,11\) or nil/);
   assert.doesNotMatch(server,/WorldProps\.Create\(id/);
   // Real enemy damage flows through the server-owned dodge/parry/guard gate.
-  assert.match(server,/local function applyMeadowMobHit\(player,humanoid,damage\)/);
+  assert.match(server,/local function applyMeadowMobHit\(player,humanoid,damage,attacker\)/);
   assert.match(server,/if \(defense\.dodgeUntil or 0\)>now then return end/);
-  assert.match(server,/if \(defense\.parryUntil or 0\)>now then/);
+  assert.match(server,/\(defense\.parryUntil or 0\)>now or \(defense\.perfectGuardUntil or 0\)>now/);
   assert.match(server,/humanoid:TakeDamage\(damage\)/);
   // The actual world creature must telegraph an authorized strike, and a dodge must cancel damage.
   assert.match(server,/attackTelegraph\.Adornee = model/);
@@ -103,8 +103,8 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/cancelEnemyWindup\(enemy\)/);
   assert.match(server,/targetPlayer\.UserId~=enemy\.windupTargetUserId/);
   assert.match(server,/enemy\.spawnPosition/);
-  assert.match(server,/applyMeadowMobHit\(targetPlayer,targetHuman,enemy.damage\)/);
-  assert.match(server,/applyMeadowMobHit\(victim,human,enemy.damage\)/);
+  assert.match(server,/applyMeadowMobHit\(targetPlayer,targetHuman,hitDamage,enemy\)/);
+  assert.match(server,/applyMeadowMobHit\(victim,human,hitDamage,enemy\)/);
   assert.match(server,/ProximityPrompt/);
   assert.match(server,/if wood<cost or stone<cost then return false end/);
   assert.match(server,/local handler = handlers\[actionId\]/);
