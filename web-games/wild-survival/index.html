@@ -122,6 +122,8 @@ let S=baseState();
 try{const old=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(old&&old.player&&old.inv)S={...baseState(),...old,player:{...baseState().player,...old.player},inv:{...baseState().inv,...old.inv},gear:{...baseState().gear,...old.gear},camp:{...baseState().camp,...old.camp},started:false,dead:false}}catch{}
 const keys={},joy={x:0,y:0,id:null};
 let last=performance.now(),noticeTimer=0;
+// 조작 진단은 저장 상태와 분리한 현재 값만 보관한다.
+let movementTicks=0,movementMs=0;
 const resources=[],animals=[];
 
 // 월드 생성
@@ -335,6 +337,11 @@ function updatePlayer(dt){
     p.x=clamp(p.x+x*speed*dt,22,WORLD.w-22);p.y=clamp(p.y+y*speed*dt,22,WORLD.h-22);
     p.energy=clamp(p.energy-dt*.13,0,100);
   }
+  const proof=document.body.dataset;
+  proof.movementInputX=String(x);proof.movementInputY=String(y);
+  proof.simulationX=String(p.x);proof.simulationY=String(p.y);
+  proof.movementTicks=String(++movementTicks);
+  proof.movementMs=String(movementMs+=dt*1000);
 }
 function respawnResources(dt){
   for(const r of resources){if(r.amount<=0&&r.respawn>0){r.respawn-=dt;if(r.respawn<=0)r.amount=r.type==='tree'?5:3}}
@@ -372,8 +379,15 @@ function loop(now){
 requestAnimationFrame(loop);
 
 // 입력
-addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' ')attack();if(e.key.toLowerCase()==='e')interact()});
-addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+addEventListener('keydown',e=>{
+  keys[e.key.toLowerCase()]=true;
+  if(e.key==='ArrowRight')document.body.dataset.inputRight='true';
+  if(e.key===' ')attack();if(e.key.toLowerCase()==='e')interact();
+});
+addEventListener('keyup',e=>{
+  keys[e.key.toLowerCase()]=false;
+  if(e.key==='ArrowRight')document.body.dataset.inputRight='false';
+});
 const stick=document.getElementById('stick'),knob=document.getElementById('knob');
 function moveJoy(clientX,clientY){
   const r=stick.getBoundingClientRect();let x=clientX-(r.left+r.width/2),y=clientY-(r.top+r.height/2),d=Math.hypot(x,y),m=r.width*.31;

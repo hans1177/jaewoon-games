@@ -862,36 +862,49 @@ try{
    await game.locator('#begin').click();
    assert.equal(await game.locator('#start').evaluate(el=>el.classList.contains('hide')),true,
      'WILD_SURVIVAL_GAMEPLAY_START_FAILED');
-   // [공개판 이동 증거] 기존 500ms 판정은 유지하고 실패 원인만 분리해 기록한다.
-   // 느린 프레임을 PASS로 우회하지 않으며, 키를 누른 동안의 추가 관측도 실패로 남긴다.
-   const beforeInput=await game.evaluate(()=>({
-     x:Number(document.body.dataset.playerWorldX),
-     y:Number(document.body.dataset.playerWorldY),
-     frames:document.body.dataset.webglFrames||'under-60',
-     focus:document.activeElement?.id||document.activeElement?.tagName||'none'
-   }));
-   await game.keyboard.down('ArrowRight');
-   await game.waitForTimeout(500);
-   const movedX=Number(await game.locator('body').getAttribute('data-player-world-x'));
-   let delayedX=movedX;
-   if(!(Number.isFinite(movedX)&&movedX>evidence.x+10)){
-     await game.waitForTimeout(1500);
-     delayedX=Number(await game.locator('body').getAttribute('data-player-world-x'));
+   // [공개판 이동 증거] 입력 수신·게임 좌표·렌더 좌표를 같은 시점에 관측한다.
+   // 500ms 응답 기준은 유지한다. 뒤늦게 움직여도 지연 실패를 통과로 바꾸지 않는다.
+   const readMovement=()=>game.evaluate(()=>{
+     const d=document.body.dataset;
+     const number=key=>d[key]===undefined?null:Number(d[key]);
+     return {x:number('playerWorldX'),y:number('playerWorldY'),
+       simulationX:number('simulationX'),simulationY:number('simulationY'),
+       ticks:number('movementTicks'),simulationMs:number('movementMs'),
+       inputX:number('movementInputX'),inputY:number('movementInputY'),
+       inputRight:d.inputRight==='true',frames:number('webglFrames'),
+       focus:document.activeElement?.id||document.activeElement?.tagName||'none',
+       scene:d.spatialDimension,renderer:d.renderer,
+       started:document.getElementById('start')?.classList.contains('hide')};
+   });
+   // 시작 전 렌더 좌표를 재사용하지 않는다. 첫 실제 시뮬레이션 이후가 기준이다.
+   await game.waitForFunction(()=>Number(document.body.dataset.movementTicks)>0,null,{timeout:5000});
+   const beforeInput=await readMovement();
+   let after500ms,after2000ms;
+   try{
+     await game.keyboard.down('ArrowRight');
+     await game.waitForTimeout(500);
+     after500ms=await readMovement();
+     after2000ms=after500ms;
+     if(!(Number.isFinite(after500ms.x)&&after500ms.x>beforeInput.x+10)){
+       await game.waitForTimeout(1500);
+       after2000ms=await readMovement();
+     }
+   }finally{await game.keyboard.up('ArrowRight');}
+   const afterInput=await readMovement();
+   let failureStage=null;
+   if(!(Number.isFinite(after500ms.x)&&after500ms.x>beforeInput.x+10)){
+     failureStage=!after500ms.inputRight?'INPUT_NOT_RECEIVED'
+       :after500ms.ticks===beforeInput.ticks?'SIMULATION_NOT_ADVANCING'
+       :after500ms.simulationX>beforeInput.simulationX+10?'RENDER_POSITION_STALE'
+       :after2000ms.x>beforeInput.x+10?'MOVEMENT_RESPONSE_DELAYED'
+       :after500ms.simulationMs-beforeInput.simulationMs<110?'INSUFFICIENT_SIMULATION_TIME'
+       :'PLAYER_STATE_NOT_MOVING';
    }
-   await game.keyboard.up('ArrowRight');
-   const afterInput=await game.evaluate(()=>({
-     x:Number(document.body.dataset.playerWorldX),
-     y:Number(document.body.dataset.playerWorldY),
-     frames:document.body.dataset.webglFrames||'under-60',
-     focus:document.activeElement?.id||document.activeElement?.tagName||'none',
-     scene:document.body.dataset.spatialDimension,
-     renderer:document.body.dataset.renderer,
-     started:document.getElementById('start')?.classList.contains('hide')
-   }));
-   assert.ok(Number.isFinite(movedX)&&movedX>evidence.x+10,
+   console.log('WILD_SURVIVAL_MOVEMENT_EVIDENCE '+JSON.stringify({sourceSha:expected,
+     failureStage,beforeInput,after500ms,after2000ms,afterInput}));
+   assert.equal(failureStage,null,
      'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED '+
-     JSON.stringify({sourceSha:expected,initialX:evidence.x,beforeInput,
-       after500ms:movedX,after2000ms:delayedX,afterInput}));
+     JSON.stringify({sourceSha:expected,failureStage,beforeInput,after500ms,after2000ms,afterInput}));
    await game.locator('#interact').click();
    await game.locator('#menuBtn').click();
    assert.equal(await game.locator('#craft').evaluate(el=>el.classList.contains('open')),true,
