@@ -288,7 +288,9 @@ test('offline pattern-coder source revision reopens only the exact safe game wit
   for(const field of ['ownerDevelopmentHold','ownerDevelopmentStopped','requiresOwnerDecision',
     'protectedChange','paidResourceRequired','securityReviewRequired','securityQuarantined']){
     const held={...base,[field]:true};
-    const gated=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[held]}),
+    const normalized=createVibeContinuousQueue({tasks:[held]});
+    assert.equal(normalized.tasks[0][field],true,field+' must survive canonical normalization');
+    const gated=recoverStaleRunningReservations(normalized,
       {nowMs:Date.now()+7*60*60*1000});
     assert.equal(gated.recovered,0,field+' must stay fail-closed even on code revision');
     assert.equal(gated.queue.tasks[0].status,'blocked');

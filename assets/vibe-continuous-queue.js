@@ -382,6 +382,11 @@ function normalizeTask(input = {}, index = 0) {
     priority,
     portfolioValueScore: clampInt(input.portfolioValueScore || 0, 0, 100),
     ownerDevelopmentHold: input.ownerDevelopmentHold === true,
+    // Owner stop and security quarantine are permanent gates, not transient retry hints.
+    // Preserve them across queue normalization and recovery revisions.
+    ownerDevelopmentStopped: input.ownerDevelopmentStopped === true,
+    securityReviewRequired: input.securityReviewRequired === true,
+    securityQuarantined: input.securityQuarantined === true,
     releaseState: normalizeReleaseState(input.releaseState || input.homepageCategory),
     status,
     retries: clampInt(input.retries),
@@ -507,6 +512,9 @@ function taskBlockedReasons(task, completed) {
   const reasons = [];
   if (!task.goal) reasons.push('goal-required');
   if (task.ownerDevelopmentHold) reasons.push('owner-development-hold');
+  if (task.ownerDevelopmentStopped) reasons.push('owner-development-stopped');
+  if (task.securityReviewRequired) reasons.push('security-review-required');
+  if (task.securityQuarantined) reasons.push('security-quarantined');
   if (task.requiresOwnerDecision) reasons.push('owner-decision-required');
   if (task.protectedChange) reasons.push('protected-change-requires-authorization');
   if (task.paidResourceRequired) reasons.push('paid-resource-forbidden');
