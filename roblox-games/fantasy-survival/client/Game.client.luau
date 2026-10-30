@@ -1467,20 +1467,43 @@ radarStroke.Parent=meadowRadar
 local radarTitle=Instance.new("TextLabel")
 radarTitle.Name="Area"
 radarTitle.Position=UDim2.fromOffset(9,3)
-radarTitle.Size=UDim2.new(1,-18,0,24)
+radarTitle.Size=UDim2.new(1,-64,0,24)
 radarTitle.BackgroundTransparency=1
-radarTitle.Text="시작 초원 · 미니맵"
+radarTitle.Text="초원 · 발견 0/4"
+radarTitle.TextXAlignment=Enum.TextXAlignment.Left
 radarTitle.TextColor3=Color3.fromRGB(251,231,186)
 radarTitle.TextSize=12
 radarTitle.Font=Enum.Font.GothamBold
 radarTitle.ZIndex=9
 radarTitle.Parent=meadowRadar
+-- [탐험 지도] 지도를 누르면 이미 존재하는 발견 기록으로 이동한다.
+local radarJournal=Instance.new("TextButton")
+radarJournal.Name="OpenDiscoveryJournal"
+radarJournal.AnchorPoint=Vector2.new(1,0)
+radarJournal.Position=UDim2.new(1,-6,0,4)
+radarJournal.Size=UDim2.fromOffset(49,22)
+radarJournal.BackgroundColor3=Color3.fromRGB(47,75,61)
+radarJournal.BorderSizePixel=0
+radarJournal.Text="기록"
+radarJournal.TextColor3=Color3.fromRGB(244,233,190)
+radarJournal.TextSize=11
+radarJournal.Font=Enum.Font.GothamBold
+radarJournal.ZIndex=11
+radarJournal.Parent=meadowRadar
+local radarJournalCorner=Instance.new("UICorner")
+radarJournalCorner.CornerRadius=UDim.new(0,7)
+radarJournalCorner.Parent=radarJournal
+radarJournal.Activated:Connect(function()meadowMenu.open(3)end)
 local radarField=Instance.new("Frame")
 radarField.Name="NearbyPlayers"
 radarField.Position=UDim2.fromOffset(9,28)
 radarField.Size=UDim2.new(1,-18,1,-53)
 radarField.BackgroundColor3=Color3.fromRGB(39,78,57)
 radarField.BorderSizePixel=0
+local radarTerrainTone=Instance.new("UIGradient")
+radarTerrainTone.Color=ColorSequence.new(Color3.fromRGB(52,95,68),Color3.fromRGB(21,49,45))
+radarTerrainTone.Rotation=65
+radarTerrainTone.Parent=radarField
 radarField.ClipsDescendants=true
 radarField.ZIndex=9
 radarField.Parent=meadowRadar
@@ -1516,8 +1539,9 @@ north.Name="North"
 north.Position=UDim2.fromOffset(3,2)
 north.Size=UDim2.fromOffset(16,16)
 north.BackgroundTransparency=1
-north.Text="N"
+north.Text="북"
 north.TextColor3=Color3.fromRGB(242,216,154)
+north.TextStrokeTransparency=.4
 north.TextSize=12
 north.Font=Enum.Font.GothamBold
 north.ZIndex=11
@@ -1542,11 +1566,12 @@ for index=1,#grovePoints do
   local marker=Instance.new("TextLabel")
   marker.Name="DiscoveredGrove"..index
   marker.AnchorPoint=Vector2.new(.5,.5)
-  marker.Size=UDim2.fromOffset(13,13)
+  marker.Size=UDim2.fromOffset(16,16)
   marker.BackgroundTransparency=1
   marker.Text="✦"
   marker.TextColor3=Color3.fromRGB(204,242,143)
-  marker.TextSize=13
+  marker.TextStrokeTransparency=.25
+  marker.TextSize=15
   marker.Visible=false
   marker.ZIndex=10
   marker.Parent=radarField
@@ -1577,6 +1602,13 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local facing=mainRoot.CFrame.LookVector
   radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))
   local discovered=player:GetAttribute("ExplorationGroves") or 0
+  local discoveredCount=0
+  for _,point in ipairs(grovePoints)do
+    if bit32.band(discovered,point[3])~=0 then discoveredCount+=1 end
+  end
+  radarTitle.Text=gui.AbsoluteSize.Y<450
+    and string.format("초원  %d/4",discoveredCount)
+    or string.format("초원 · 발견 %d/4",discoveredCount)
   for index,point in ipairs(grovePoints)do
     local dx=point[1]-mainRoot.Position.X
     local dz=point[2]-mainRoot.Position.Z
