@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1b358qk",
+      "worker": "vibe2",
+      "taskId": "realistic-builder-web-autonomous-build-up-v1",
+      "gameId": "realistic-builder",
+      "files": [
+        "web-games/realistic-builder/index.html"
+      ],
+      "baseSha": "999e70e2b375939d0893f269fa4b7d64cda3d298",
+      "runId": "41014479257",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-30T06:44:42.015Z",
+      "expiresAt": "2026-10-30T07:29:42.015Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:realistic-builder-web-autonomous-build-up-v1"
+      ]
+    }
+  ]
 }
