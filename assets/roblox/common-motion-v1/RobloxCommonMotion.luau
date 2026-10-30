@@ -1879,12 +1879,18 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
   forgeRot(targets,joints,"ForearmR",impact*.30-interact*.36+charge*.40,0,0)
  end
  if form=="QUADRUPED"or form=="CRAWLER" then
+  -- [4족 원본 관절] 대각선 앞/뒤 발이 교대로 지면을 딛고, 공중에 든 발만 무릎을 접는다.
+  -- 위상은 호출자가 실제 이동 거리로 공급할 수 있다. Root 이동·공격 판정은 손대지 않는다.
   for _,limb in ipairs({"FL","FR","BL","BR"})do
-   local diagonal=(limb=="FR"or limb=="BL")and -1 or 1
-   local signed=gait*diagonal
-   forgeRot(targets,joints,limb.."Hip",signed*.32-(limb:sub(1,1)=="F"and impact*.20 or -impact*.13),0,0)
-   forgeRot(targets,joints,limb.."Knee",math.max(0,signed)*.22*contactGain+impact*.08,0,0)
-   forgeRot(targets,joints,limb.."Ankle",math.max(0,-signed)*.10,0,0)
+   local offset=(limb=="FR"or limb=="BL")and .5 or 0
+   local legPhase=(t+offset)%1
+   local sweep=locomotion and math.sin(legPhase*math.pi*2)*body.stride*intensity*runScale*limbGain or 0
+   local airborne=locomotion and math.sin(math.pi*math.clamp((legPhase-.5)*2,0,1)) or 0
+   local planted=locomotion and math.sin(math.pi*math.clamp(legPhase*2,0,1)) or 0
+   local front=limb:sub(1,1)=="F"
+   forgeRot(targets,joints,limb.."Hip",sweep*.30-(front and impact*.20 or -impact*.13),0,0)
+   forgeRot(targets,joints,limb.."Knee",airborne*.30*contactGain+planted*.035+impact*.08,0,0)
+   forgeRot(targets,joints,limb.."Ankle",-airborne*.13+planted*.035,0,0)
   end
   forgeRot(targets,joints,"Jaw",impact*.34+hit*.07+charge*.10,0,0)
  end
