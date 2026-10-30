@@ -4894,7 +4894,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local close=RobloxCommonUI.CreatePrimaryButton({name="CloseActionsMenu",text="닫기",minWidth=52,minHeight=52})
  close.Parent=root
  local quick=nil
- if primary then
+ if primary and primary.hideButton~=true then
   quick=RobloxCommonUI.CreatePrimaryButton({name="PrimaryGameAction",text=primary.label,minWidth=52,minHeight=56})
   quick.Parent=gui;quick.Activated:Connect(primary.activate)
  end
