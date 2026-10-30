@@ -646,7 +646,7 @@ local function spawnEnemy(isBoss, index)
       end
     end
   end
-  local selected=isBoss and {id="golem",atom="HEAD_GOLEM",height=6.3}
+  local selected=isBoss and {id="golem",atom="HEAD_GOLEM",height=8.4}
     or ready[((index-1)%math.max(1,#ready))+1]
   if not selected then return false end
   local partId=selected.id
@@ -1062,6 +1062,8 @@ end
 local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
   enemy.attackState=state
+  enemy.attackStateStartedAt=os.clock()
+  enemy.model:SetAttribute("NativeMobMotionDuration",state=="ANTICIPATION" and math.max(.12,(enemy.windupUntil or os.clock()+.68)-os.clock()) or .46)
   enemy.model:SetAttribute("AttackState",state)
   enemy.model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
   local motion=state=="ANTICIPATION" and "ATTACK" or
@@ -1102,6 +1104,12 @@ local function animateMeadowOriginalMob(enemy,now)
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
   local attackPitch=attacking and (kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
+  if enemy.isBoss and attacking then
+    local duration=enemy.model:GetAttribute("NativeMobMotionDuration") or .68
+    local preparation=math.clamp((now-(enemy.attackStateStartedAt or now))/duration,0,1)
+    attackPitch=enemy.attackPattern=="GOLEM_SHOCKWAVE" and .18*preparation or -.38*preparation
+    movingHeight+=enemy.attackPattern=="GOLEM_SHOCKWAVE" and math.sin(preparation*math.pi)*.42 or 0
+  end
   local stridePitch=inMotion and math.sin(phase)*(.05+(kind=="wolf" and .13 or .06)) or 0
   local bank=stunned and math.sin(now*9)*.12 or aerial and math.sin(phase*.52)*.22
     or inMotion and math.sin(phase*.65)*.09 or 0

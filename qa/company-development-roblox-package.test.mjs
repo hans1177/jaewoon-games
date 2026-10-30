@@ -1352,5 +1352,7 @@ test('마력숲 초원 수문장은 기존 골렘·5웨이브·보상을 보존�
  assert.match(server,/CurrentWave%5==0 and spawnEnemy\(true,number\+1\)/);
  assert.match(server,/enemy.HP<=enemy.maxHP\*\.5/);
  assert.match(server,/target.model:SetAttribute\("BossPhase",2\)/);
+ assert.match(server,/id="golem",atom="HEAD_GOLEM",height=8\.4/);
+ assert.match(server,/NativeMobMotionDuration/);
  assert.match(server,/awardProgress\(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5\)/);
 });

@@ -1852,11 +1852,19 @@ local function mobVfx(pattern,where,stage)
   local effect=stage=="DEATH" and "DESTRUCTION_BURST" or
     stage=="ANTICIPATION" and (boss and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE") or
     stage=="IMPACT" and "IMPACT_FLASH" or "STATUS_PULSE"
+  local diameter=pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4
+  local ground=nil
+  if boss then
+    local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Include
+    ray.FilterDescendantsInstances={workspace.Terrain}
+    ground=workspace:Raycast(where+Vector3.new(0,24,0),Vector3.new(0,-80,0),ray)
+  end
   local ok,err=pcall(combatVFX.Create,effect,{
-    cframe=CFrame.new(where),parent=workspace,color=tint,
+    cframe=CFrame.new(ground and ground.Position+Vector3.new(0,.08,0) or where),parent=workspace,color=tint,
     accent=Color3.fromRGB(255,239,214),
-    scale=boss and 1.4 or .8,duration=.45,reducedMotion=nativeTouchEnabled,
-    count=nativeTouchEnabled and 4 or 9,
+    scale=boss and 1 or .8,duration=boss and stage=="ANTICIPATION" and .68 or .32,reducedMotion=reducedEffects,
+    startDiameter=boss and diameter or nil,endDiameter=boss and diameter or nil,
+    hideFlash=boss and stage=="ANTICIPATION",hideRing=boss and pattern=="GOLEM_SLAM",count=reducedEffects and 3 or 7,
   })
   if not ok then warn("Original mob VFX unavailable: "..tostring(err)) end
 end
@@ -1897,7 +1905,7 @@ local function bindOriginalMob(model)
         plate.Enabled=hp>0
         name.Text=(model:GetAttribute("Boss") and "보스 · " or "")..model.Name
           ..(model:GetAttribute("BossPhase")==2 and " · 2단계" or "")
-          ..(state=="STUNNED" and " · 기절" or state=="ANTICIPATION" and " · 공격!" or "")
+          ..(state=="STUNNED" and " · 기절" or "")
         control.SetRatio(hp/math.max(1,maximum),string.format("%d",hp))
       end
       model:GetAttributeChangedSignal("EnemyHealth"):Connect(updateEnemyLabel)
@@ -2044,6 +2052,10 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       local duration=mode=="DEATH" and 1.32 or mode=="ATTACK" and .75
         or mode=="HIT" and .46 or mode=="START" and .36
         or mode=="RUN" and .82 or 1.15
+      local authoredDuration=model:GetAttribute("NativeMobMotionDuration")
+      if row.species=="golem" and mode=="ATTACK" and typeof(authoredDuration)=="number" then
+        duration=math.max(.12,authoredDuration)
+      end
       local phase=repeating and (row.phase%duration)/duration
         or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
       if not repeating and serverAge then phase=math.clamp(serverAge/duration,0,1) end
@@ -2056,6 +2068,16 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           profile={limbArc=1.3,footContact=1.28,attackStrike=1.22},
         },row.poses)
       if matched then
+        -- [수문장 액션] 실제 원본 팔·다리만 큰 예비 동작과 충격 뒤 복귀에 연결한다.
+        if row.species=="golem" and (mode=="ATTACK" or mode=="HIT") then
+          local shock=model:GetAttribute("AttackPattern")=="GOLEM_SHOCKWAVE"
+          local lift=mode=="ATTACK" and math.sin(phase*math.pi*.5) or (1-phase)
+          local pitch=mode=="ATTACK" and -(shock and .75 or 1.35)*lift or .5*lift
+          if row.available.UpperArmL then row.poses.UpperArmL=CFrame.Angles(pitch,0,-.22*lift) end
+          if row.available.UpperArmR then row.poses.UpperArmR=CFrame.Angles(pitch,0,.22*lift) end
+          if row.available.ThighL then row.poses.ThighL=CFrame.Angles(shock and -.32*lift or .12*lift,0,0) end
+          if row.available.ThighR then row.poses.ThighR=CFrame.Angles(shock and .26*lift or .12*lift,0,0) end
+        end
         -- 실제 원본 관절이 있는 몹에만 종별 공격·추적 동작을 크게 합성한다.
         local gain=mode=="ATTACK" and (row.species=="golem" and 1.75 or 1.6)
           or mode=="RUN" and 1.42 or 1.10
