@@ -445,6 +445,94 @@ test('source-bound ESM input repair imports only exact same-game exported action
   assert.equal(deterministicWebInputCandidate(task),null,'symlinked module must fail closed');
 });
 
+
+test('source-bound multi-module ESM repair binds independent same-game actions only',t=>{
+  const base=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-multi-esm-'));
+  t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
+  const root=path.join(base,'multi');
+  fs.mkdirSync(path.join(root,'game'),{recursive:true});
+  const file=path.join(root,'index.html');
+  const modules={
+    'attack.mjs':'export function attack(){globalThis.hp-=1;}',
+    'gather.mjs':'export function gather(){globalThis.wood+=2;}',
+    'rest.mjs':'export function rest(){globalThis.energy+=1;}'
+  };
+  const modulePaths=Object.keys(modules).map(name=>path.join(root,'game',name));
+  for(const [name,content] of Object.entries(modules))
+    fs.writeFileSync(path.join(root,'game',name),content);
+  const original=[
+    '<button id="fight" data-gameplay-action="attack">Fight</button>',
+    '<button id="mining" data-gameplay-action="gather">Gather</button>',
+    '<button id="recover" data-gameplay-action="rest">Rest</button>',
+    '<script type="module">',
+    'import {attack} from "./game/attack.mjs";',
+    'import {gather} from "./game/gather.mjs";',
+    'import {rest} from "./game/rest.mjs";',
+    '</script>'
+  ].join('\n');
+  fs.writeFileSync(file,original);
+  const args={order:{target:'web',goal:'모바일 버튼 입력 연결',gameId:'multi'},
+    sourceRoot:root,responsibleFiles:['index.html'],patternLibrary:{patterns:[]}};
+  const candidate=deterministicWebInputCandidate(args);
+  assert.equal(candidate?.deterministicWebModuleInput,true);
+  assert.equal(candidate.linkedModuleCount,3);
+  assert.equal(candidate.sourceWrite,false);
+  assert.equal(candidate.runtimeVerified,false);
+  assert.equal(candidate.modelUsed,false);
+  assert.equal(candidate.linkedModuleReadOnly,true);
+  assert.deepEqual(candidate.edits.map(row=>row.path),['index.html']);
+  assert.deepEqual(candidate.newFiles,[]);
+  assert.deepEqual(candidate.replaceFiles,[]);
+  const updated=original.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  const inline=updated.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(inline);
+  const handlers=new Map(),context={
+    hp:5,wood:0,energy:3,
+    document:{getElementById:id=>({addEventListener:(kind,fn)=>handlers.set(id+':'+kind,fn)})}
+  };
+  runInNewContext(Object.values(modules).join('\n').replaceAll('export ','')+'\n'+
+    inline.replace(/import\s*\{[^}]+\}\s*from\s*["'][^"']+["']\s*;?/g,''),context);
+  handlers.get('fight:click')();
+  handlers.get('mining:click')();
+  handlers.get('recover:click')();
+  assert.deepEqual([context.hp,context.wood,context.energy],[4,2,4]);
+  assert.equal(fs.readFileSync(file,'utf8'),original,'candidate creation is read-only');
+  for(let i=0;i<modulePaths.length;i++)
+    assert.equal(fs.readFileSync(modulePaths[i],'utf8'),Object.values(modules)[i]);
+  fs.writeFileSync(file,updated);
+  assert.equal(deterministicWebInputCandidate(args),null,'repeat cannot append duplicate handlers');
+  const blocked=[
+    original.replace('import {rest} from "./game/rest.mjs";','import {attack} from "./game/rest.mjs";'),
+    original.replace('import {gather} from "./game/gather.mjs";','import {gather as other} from "./game/gather.mjs";'),
+    original.replace('./game/rest.mjs','https://evil.example/rest.mjs'),
+    original.replace('./game/rest.mjs','../rest.mjs'),
+    original.replace('import {rest} from "./game/rest.mjs";','rest();'),
+    original.replace('import {rest} from "./game/rest.mjs";','import("./game/rest.mjs");'),
+    original.replace('type="module"','type="importmap"'),
+    original.replace('</script>','</script><script>rest()</script>'),
+    original.replace('id="fight"','id="mining"'),
+    original.replace('game/rest.mjs','game/missing.mjs'),
+    original.replace('import {rest} from "./game/rest.mjs";',
+      'import {rest} from "./game/rest.mjs";\nimport {rest} from "./game/rest.mjs";'),
+    original.replace('import {rest} from "./game/rest.mjs";',
+      'import {rest} from "./game/rest.mjs";\nimport {attack} from "./game/attack.mjs";\nimport {gather} from "./game/gather.mjs";')
+  ];
+  for(const html of blocked){
+    fs.writeFileSync(file,html);
+    assert.equal(deterministicWebInputCandidate(args),null,'unsupported multi-module shape fails closed');
+  }
+  fs.writeFileSync(file,original);
+  fs.writeFileSync(modulePaths[1],'import "./dependency.mjs";\n'+modules['gather.mjs']);
+  assert.equal(deterministicWebInputCandidate(args),null,'nested imports require separate dependency proof');
+  fs.writeFileSync(modulePaths[1],modules['gather.mjs']);
+  fs.writeFileSync(modulePaths[1],'export function gather(){fetch("/save");}');
+  assert.equal(deterministicWebInputCandidate(args),null,'network or save side effects are blocked');
+  fs.writeFileSync(modulePaths[1],modules['gather.mjs']);
+  fs.unlinkSync(modulePaths[2]);
+  fs.symlinkSync(modulePaths[0],modulePaths[2]);
+  assert.equal(deterministicWebInputCandidate(args),null,'symlinked module fails closed');
+});
+
 test('model-free Roblox coder supports a separate native shutdown hook without touching the world renderer',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-no-model-separated-shutdown-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));

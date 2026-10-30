@@ -1780,42 +1780,55 @@ export function deterministicWebModuleInputCandidate({order={},sourceRoot='',res
     const html=fs.readFileSync(file,'utf8');
     if(/<!--|<(?:form|template)\b|\bon[a-z]+\s*=|\b(?:eval|Function)\s*\(/i.test(html))continue;
     const scripts=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
-    // One executable module only; mixed classic/module, importmaps, async and
-    // decorative modules require separate source ownership evidence.
+    // 단일 인라인 모듈 안의 명시적 상대 경로 import만 허용한다.
+    // importmap, 외부 스크립트, 실행 코드와 섞인 import는 기존대로 차단한다.
     if(scripts.length!==1||!/^ +type=(["'])module\1 *$/i.test(scripts[0][1]))continue;
     const script=scripts[0];
-    const imported=/^\s*import\s*\{\s*([A-Za-z_$][\w$]*(?:\s*,\s*[A-Za-z_$][\w$]*){0,7})\s*\}\s*from\s*(["'])(\.\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.mjs)\2\s*;?\s*$/;
-    const declared=imported.exec(script[2]);
-    if(!declared)continue;
-    const names=declared[1].split(',').map(s=>s.trim());
-    if(new Set(names).size!==names.length)continue;
-    const modulePath=path.resolve(path.dirname(file),declared[3]);
-    if(!modulePath.startsWith(root+path.sep))continue;
-    let moduleText;
-    try{
-      const ms=fs.lstatSync(modulePath),mr=fs.realpathSync(modulePath);
-      if(!ms.isFile()||ms.isSymbolicLink()||ms.size>260000
-        ||!mr.startsWith(root+path.sep))continue;
-      moduleText=fs.readFileSync(modulePath,'utf8');
-    }catch{continue;}
-    const executable=executableText(moduleText,'javascript');
-    if(/\b(?:eval|Function|document\.write|localStorage|sessionStorage|XMLHttpRequest|fetch)\b/.test(executable)
-      ||/addEventListener\s*\(|\bon(?:click|pointerdown|touchstart)\s*=/.test(executable)
-      ||/\bimport\s*\(/.test(executable))continue;
-    const functions=inspectSourceFunctions(moduleText,{language:'javascript',maxFunctions:4096});
-    const valid=new Set();
-    for(const name of names){
-      const exact=new RegExp('(?:^|\\n)\\s*export\\s+function\\s+'+name+'\\s*\\(\\s*\\)\\s*\\{','g');
-      const matches=[...executable.matchAll(exact)];
-      const fn=functions.filter(row=>row.name===name);
-      if(matches.length===1&&fn.length===1
-        &&!functions.some(row=>row!==fn[0]&&row.start<fn[0].start&&row.end>fn[0].end))
-        valid.add(name);
+    const importStatement=/\s*import\s*\{\s*([A-Za-z_$][\w$]*(?:\s*,\s*[A-Za-z_$][\w$]*){0,7})\s*\}\s*from\s*(["'])(\.\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.mjs)\2\s*;?/gy;
+    const imports=[];
+    let offset=0;
+    while(offset<script[2].length&&imports.length<4){
+      importStatement.lastIndex=offset;
+      const match=importStatement.exec(script[2]);
+      if(!match)break;
+      imports.push({names:match[1].split(',').map(s=>s.trim()),path:match[3]});
+      offset=importStatement.lastIndex;
     }
-    if(!valid.size)continue;
+    if(!imports.length||script[2].slice(offset).trim())continue;
+    const names=imports.flatMap(row=>row.names);
+    if(new Set(names).size!==names.length||new Set(imports.map(row=>row.path)).size!==imports.length)continue;
+    const linkedByAction=new Map(),moduleTexts=[];
+    let rejected=false;
+    for(const imported of imports){
+      const modulePath=path.resolve(path.dirname(file),imported.path);
+      if(!modulePath.startsWith(root+path.sep)){rejected=true;break;}
+      let moduleText;
+      try{
+        const ms=fs.lstatSync(modulePath),mr=fs.realpathSync(modulePath);
+        if(!ms.isFile()||ms.isSymbolicLink()||ms.size>260000
+          ||!mr.startsWith(root+path.sep)){rejected=true;break;}
+        moduleText=fs.readFileSync(modulePath,'utf8');
+      }catch{rejected=true;break;}
+      const executable=executableText(moduleText,'javascript');
+      if(/\b(?:eval|Function|document\.write|localStorage|sessionStorage|XMLHttpRequest|fetch)\b/.test(executable)
+        ||/addEventListener\s*\(|\bon(?:click|pointerdown|touchstart)\s*=/.test(executable)
+        ||/\bimport\b|\bexport\s*(?:\{|\*)/.test(executable)){rejected=true;break;}
+      const functions=inspectSourceFunctions(moduleText,{language:'javascript',maxFunctions:4096});
+      for(const name of imported.names){
+        const exact=new RegExp('(?:^|\\n)\\s*export\\s+function\\s+'+name+'\\s*\\(\\s*\\)\\s*\\{','g');
+        const matches=[...executable.matchAll(exact)];
+        const fn=functions.filter(row=>row.name===name);
+        if(matches.length===1&&fn.length===1
+          &&!functions.some(row=>row!==fn[0]&&row.start<fn[0].start&&row.end>fn[0].end))
+          linkedByAction.set(name,moduleText);
+      }
+      moduleTexts.push(moduleText);
+    }
+    if(rejected||!linkedByAction.size)continue;
     const idCounts=new Map();
     for(const match of html.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi))
       idCounts.set(match[2],(idCounts.get(match[2])||0)+1);
+    if([...idCounts.values()].some(count=>count!==1))continue;
     const bindings=[];
     for(const button of html.matchAll(/<button\b([^>]*)>/gi)){
       if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
@@ -1825,18 +1838,18 @@ export function deterministicWebModuleInputCandidate({order={},sourceRoot='',res
       if(ids.length!==1||actions.length!==1)continue;
       const id=ids[0][3],action=actions[0][3];
       if(!/^[A-Za-z_$][\w$-]{0,79}$/.test(id)||idCounts.get(id)!==1
-        ||!valid.has(action)
+        ||!linkedByAction.has(action)
         ||!/^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting|openQuestLog|openQuestBoard|openRegionMap|openDungeonMap)$/.test(action)
-        ||moduleText.includes('"'+id+'"')||moduleText.includes("'"+id+"'"))continue;
+        ||moduleTexts.some(code=>code.includes('"'+id+'"')||code.includes("'"+id+"'")))continue;
       bindings.push('document.getElementById('+JSON.stringify(id)+').addEventListener("click", '+action+');');
     }
     if(!bindings.length||html.split(script[0]).length!==2)continue;
     const replace=script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
-    return {summary:'Vibe2 exact same-game exported module input repair',
-      expectedEffect:'Bind declared browser buttons to existing exported module actions',
+    return {summary:'Vibe2 exact same-game multi-module input repair',
+      expectedEffect:'Bind declared browser buttons to existing exported same-game module actions',
       edits:[{path:relative,find:script[0],replace}],
       newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,
-      deterministicWebModuleInput:true,modelUsed:false,sourceWrite:false,
+      deterministicWebModuleInput:true,linkedModuleCount:imports.length,modelUsed:false,sourceWrite:false,
       runtimeVerified:false,linkedModuleReadOnly:true};
   }
   return null;
