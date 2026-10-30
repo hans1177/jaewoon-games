@@ -1096,3 +1096,20 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/GetAttributeChangedSignal\("ApprovedActionMotion"\):Connect/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
 });
+
+// Roblox Avatar Joint Upgrade (2026): verified engine uses AnimationConstraint for R15.
+test('fantasy unarmed and meadow skills support AnimationConstraint and legacy Motor6D',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(client,/Shared:WaitForChild\("RobloxCommonMotion",12\)/);
+  assert.match(motion,/joint:IsA\("Bone"\)or joint:IsA\("Motor6D"\)or joint:IsA\("AnimationConstraint"\)/);
+  assert.match(client,/local nativeJoint=descendant:IsA\("AnimationConstraint"\) or descendant:IsA\("Motor6D"\)/);
+  assert.match(client,/local nativeJoint=joint:IsA\("AnimationConstraint"\) or joint:IsA\("Motor6D"\)/);
+  assert.match(client,/not joints\[descendant.Name\] or descendant:IsA\("AnimationConstraint"\)/);
+  assert.match(client,/not skillMotionJoints\[joint.Name\] or joint:IsA\("AnimationConstraint"\)/);
+  assert.match(client,/activeCombatController.Step\(combatR15Targets, dt\)/);
+  assert.match(client,/skillMotionR15.Step\(skillMotionR15Targets,dt\)/);
+  assert.match(server,/player:SetAttribute\("ApprovedCombatMotion",approved\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save key and schema unchanged');
+});
