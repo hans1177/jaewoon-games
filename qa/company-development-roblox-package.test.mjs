@@ -1275,7 +1275,12 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   // 원본 UV/메시 텍스처와 SurfaceAppearance를 보존하면서 통일된 무광 표면으로 바꾼다.
   assert.match(server,/sourceColor=surface\.Color/);
   assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/local smoothDetail=wing or partName:find\("eye",1,true\)/);
+  assert.match(server,/surface\.Color=wing and Color3\.fromRGB\(190,228,235\)/);
+  // 정적 Pebble 요철만 사용: 원본 임포트 텍스처에 PBR 맵을 런타임 쓰기하지 않는다.
+  assert.doesNotMatch(server,/Instance\.new\("MaterialVariant"\)|Instance\.new\("SurfaceAppearance"\)/);
+  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
+  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
   assert.match(server,/surface\.Reflectance=0/);
   assert.doesNotMatch(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
   assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
@@ -1395,7 +1400,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/Instance.new\("Beam"\)/);
   assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
+  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
   assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
   assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
