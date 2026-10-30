@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "exorcist-office-build-up-g3-5e26c1e15146",
-  "directiveFingerprint": "5e26c1e1514694e0e5fa89a76c7ef41f9be5972263056bc423d44f59acedcf6b",
-  "previousDirectiveFingerprint": "33164a686554efb5174ac4add17474b9d9001795a73f16a7b063b69adcc1a913",
-  "forbiddenRepeatFingerprint": "33164a686554efb5174ac4add17474b9d9001795a73f16a7b063b69adcc1a913",
+  "directiveId": "exorcist-office-build-up-g1-c57c5145aec4",
+  "directiveFingerprint": "c57c5145aec4ddc9cee8d52ddd7db32be624d050541880e15e6739f5dcf3013f",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "exorcist-office",
   "gameName": "퇴마 사무소",
-  "generation": 3,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/exorcist-office",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "2f22bd86c5e1700181bfdfa08e0e37f86c725c540985b25532105c36b6778c4c",
-    "previousDesignFingerprint": "2f22bd86c5e1700181bfdfa08e0e37f86c725c540985b25532105c36b6778c4c",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "exorcist-office",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "2f22bd86c5e1700181bfdfa08e0e37f86c725c540985b25532105c36b6778c4c",
     "sourceTreeFingerprint": "d187e560b758093c6379161275d0f1c61839cf2fac71e624cc6a363fe1d36d3f",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/exorcist-office",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/exorcist-office",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/exorcist-office/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/exorcist-office/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showShop",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "syncHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showCompendium",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/exorcist-office/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/exorcist-office/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showShop",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "syncHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showCompendium",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/exorcist-office/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/exorcist-office/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showShop",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "syncHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showCompendium",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/exorcist-office/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/exorcist-office/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showShop",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "syncHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "update",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/exorcist-office/index.html",
+            "symbol": "showCompendium",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/exorcist-office/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/exorcist-office/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4400,7 +4542,7 @@
         "kind": "FUNCTION",
         "symbol": "movePlayer",
         "context": "function movePlayer(dt){if(!player.alive||schoolState?.codeModal)return;let dx=(input.right||keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(input.left||keys.has('KeyA')||keys.has('",
-        "score": 826
+        "score": 770
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4408,7 +4550,7 @@
         "kind": "FUNCTION",
         "symbol": "showShop",
         "context": "function showShop(){const box=$('shopContent');if(!save.shopUnlocked){box.innerHTML='<div class=\"shopnote\">퇴마 상점을 해금하면 장신구와 상위 퇴마봉을 살 수 있어.</div><div class=\"card\" style=\"margin-top",
-        "score": 778
+        "score": 730
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4416,7 +4558,7 @@
         "kind": "FUNCTION",
         "symbol": "syncHud",
         "context": "function syncHud(){$('hpText').textContent=Math.ceil(player.hp)+'/'+player.maxHp;$('hpBar').style.width=(clamp(player.hp/player.maxHp,0,1)*100)+'%';if(schoolState&&!schoolState.doo",
-        "score": 778
+        "score": 714
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4424,7 +4566,7 @@
         "kind": "FUNCTION",
         "symbol": "update",
         "context": "function update(dt){player.attackCd=Math.max(0,player.attackCd-dt);player.sealCd=Math.max(0,player.sealCd-dt);player.wardCd=Math.max(0,player.wardCd-dt);player.wardTime=Math.max(0,",
-        "score": 762
+        "score": 706
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4432,7 +4574,7 @@
         "kind": "FUNCTION",
         "symbol": "showCompendium",
         "context": "function showCompendium(){const box=$('ghostList');box.innerHTML='';let found=0;for(const [id,g] of Object.entries(GHOSTS)){const seen=!!save.seen[id],cleared=Number(save.exorcised",
-        "score": 730
+        "score": 682
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4440,7 +4582,7 @@
         "kind": "FUNCTION",
         "symbol": "startMission",
         "context": "function startMission(m){activeMission=m;const trained=save.rooms.training,hpBonus=(save.shop.charm?25:0)+(save.shop.lifeNecklace?35:0),attackBonus=(save.shop.rod?8:0)+(save.shop.s",
-        "score": 722
+        "score": 674
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4448,7 +4590,7 @@
         "kind": "FUNCTION",
         "symbol": "updateProjectiles",
         "context": "function updateProjectiles(dt){for(const p of projectiles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.life>0&&Math.hypot(p.x-player.x,p.y-player.y)<p.r+player.r){hurtPlayer(p.damage",
-        "score": 682
+        "score": 674
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4460,22 +4602,6 @@
       },
       {
         "file": "web-games/exorcist-office/index.html",
-        "line": 209,
-        "kind": "FUNCTION",
-        "symbol": "ws",
-        "context": "function ws(x,y){return{x:x-cam.x,y:y-cam.y}}function drawWorld(){ctx.fillStyle=activeMission.bg;ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);ctx.fillStyle='#fffff",
-        "score": 666
-      },
-      {
-        "file": "web-games/exorcist-office/index.html",
-        "line": 186,
-        "kind": "FUNCTION",
-        "symbol": "investigationTaskReady",
-        "context": "function investigationTaskReady(t,tasks){if((t.requiresClues||[]).some(i=>!clues[i]?.found))return false;if((t.requiresTasks||[]).some(i=>!tasks[i]?.found))return false;return true",
-        "score": 634
-      },
-      {
-        "file": "web-games/exorcist-office/index.html",
         "line": 188,
         "kind": "FUNCTION",
         "symbol": "playerAttack",
@@ -4484,11 +4610,27 @@
       },
       {
         "file": "web-games/exorcist-office/index.html",
+        "line": 186,
+        "kind": "FUNCTION",
+        "symbol": "investigationTaskReady",
+        "context": "function investigationTaskReady(t,tasks){if((t.requiresClues||[]).some(i=>!clues[i]?.found))return false;if((t.requiresTasks||[]).some(i=>!tasks[i]?.found))return false;return true",
+        "score": 610
+      },
+      {
+        "file": "web-games/exorcist-office/index.html",
         "line": 185,
         "kind": "FUNCTION",
         "symbol": "submitSchoolCode",
         "context": "function submitSchoolCode(){if(!schoolState||schoolState.doorOpen)return;const value=$('schoolCodeInput').value.replace(/\\D/g,'').slice(0,4);if(value!==schoolState.code){toast('비밀번",
-        "score": 602
+        "score": 578
+      },
+      {
+        "file": "web-games/exorcist-office/index.html",
+        "line": 209,
+        "kind": "FUNCTION",
+        "symbol": "ws",
+        "context": "function ws(x,y){return{x:x-cam.x,y:y-cam.y}}function drawWorld(){ctx.fillStyle=activeMission.bg;ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);ctx.fillStyle='#fffff",
+        "score": 578
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4496,7 +4638,7 @@
         "kind": "FUNCTION",
         "symbol": "updateInvestigation",
         "context": "function updateInvestigation(){if(!investigationState||investigationState.open)return;const tasks=investigationState.tasks;for(let i=0;i<tasks.length;i++){const t=tasks[i];if(t.fou",
-        "score": 570
+        "score": 562
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4505,14 +4647,6 @@
         "symbol": "useWard",
         "context": "function useWard(){if(!running||!player.alive)return;if(player.wardCd>0)return toast('결계 준비 '+player.wardCd.toFixed(1)+'초');player.wardCd=8;player.wardTime=2.2+player.wardDurationB",
         "score": 554
-      },
-      {
-        "file": "web-games/exorcist-office/index.html",
-        "line": 210,
-        "kind": "FUNCTION",
-        "symbol": "drawClues",
-        "context": "function drawClues(){for(const c of clues){if(c.found)continue;const s=ws(c.x,c.y);ctx.save();ctx.translate(s.x,s.y);ctx.strokeStyle='#e8d38b';ctx.lineWidth=2;ctx.beginPath();ctx.a",
-        "score": 522
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4528,7 +4662,7 @@
         "kind": "FUNCTION",
         "symbol": "clueCount",
         "context": "function clueCount(){return clues.filter(c=>c.found).length}",
-        "score": 474
+        "score": 458
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4536,7 +4670,15 @@
         "kind": "FUNCTION",
         "symbol": "registerSeen",
         "context": "function registerSeen(){if(!ghost.active||ghost.seen)return;ghost.seen=true;if(!save.seen[ghost.type]){save.seen[ghost.type]=Date.now();persist();toast(GHOSTS[ghost.type].name+' · ",
-        "score": 466
+        "score": 450
+      },
+      {
+        "file": "web-games/exorcist-office/index.html",
+        "line": 210,
+        "kind": "FUNCTION",
+        "symbol": "drawClues",
+        "context": "function drawClues(){for(const c of clues){if(c.found)continue;const s=ws(c.x,c.y);ctx.save();ctx.translate(s.x,s.y);ctx.strokeStyle='#e8d38b';ctx.lineWidth=2;ctx.beginPath();ctx.a",
+        "score": 426
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4544,15 +4686,7 @@
         "kind": "FUNCTION",
         "symbol": "updateSchoolInvestigation",
         "context": "function updateSchoolInvestigation(){if(!schoolState)return;for(const b of schoolState.boards)if(!b.found&&dist(player,b)<48){b.found=true;effects.push({x:b.x,y:b.y,life:.7,max:.7,",
-        "score": 418
-      },
-      {
-        "file": "web-games/exorcist-office/index.html",
-        "line": 183,
-        "kind": "FUNCTION",
-        "symbol": "findClues",
-        "context": "function findClues(){for(const c of clues)if(!c.found&&dist(player,c)<42){c.found=true;effects.push({x:c.x,y:c.y,life:.7,max:.7,type:'clue'});if(investigationState&&c.hint){investi",
-        "score": 386
+        "score": 394
       },
       {
         "file": "web-games/exorcist-office/index.html",
@@ -4564,38 +4698,40 @@
       },
       {
         "file": "web-games/exorcist-office/index.html",
-        "line": 172,
-        "kind": "FUNCTION",
-        "symbol": "renderOffice",
-        "context": "function renderOffice(){running=false;$('office').classList.remove('hidden');$('hud').classList.add('hidden');$('controls').classList.add('hidden');$('missionBanner').classList.add",
-        "score": 378
-      },
-      {
-        "file": "web-games/exorcist-office/index.html",
-        "line": 182,
-        "kind": "FUNCTION",
-        "symbol": "maybeInvestigationAmbush",
-        "context": "function maybeInvestigationAmbush(x,y,chance){if((schoolState||investigationState)&&Math.random()<chance)spawnInvestigationAmbush(x,y)}",
-        "score": 370
-      },
-      {
-        "file": "web-games/exorcist-office/index.html",
         "line": 203,
         "kind": "FUNCTION",
         "symbol": "updateFollowers",
         "context": "function updateFollowers(dt){if(GHOSTS[ghost.type].special!=='pack'||!ghost.active||ghost.weakened||ghost.hp<=0){followers=[];return}for(const f of followers){f.flash=Math.max(0,f.",
         "score": 370
+      },
+      {
+        "file": "web-games/exorcist-office/index.html",
+        "line": 172,
+        "kind": "FUNCTION",
+        "symbol": "renderOffice",
+        "context": "function renderOffice(){running=false;$('office').classList.remove('hidden');$('hud').classList.add('hidden');$('controls').classList.add('hidden');$('missionBanner').classList.add",
+        "score": 362
+      },
+      {
+        "file": "web-games/exorcist-office/index.html",
+        "line": 183,
+        "kind": "FUNCTION",
+        "symbol": "findClues",
+        "context": "function findClues(){for(const c of clues)if(!c.found&&dist(player,c)<42){c.found=true;effects.push({x:c.x,y:c.y,life:.7,max:.7,type:'clue'});if(investigationState&&c.hint){investi",
+        "score": 362
+      },
+      {
+        "file": "web-games/exorcist-office/index.html",
+        "line": 192,
+        "kind": "FUNCTION",
+        "symbol": "completeMission",
+        "context": "function completeMission(){running=false;const g=GHOSTS[ghost.type];save.money+=activeMission.reward;save.clears++;save.exorcised[ghost.type]=Number(save.exorcised[ghost.type]||0)+",
+        "score": 362
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "58a754b2f4c20803d6dfa4aaecb7a190fee9af3dbbb6d925aa24d27896ea241b",
-    "currentSourceTreeFingerprint": "d187e560b758093c6379161275d0f1c61839cf2fac71e624cc6a363fe1d36d3f",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5890,22 +6026,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "2 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "2 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5941,7 +6075,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 178,
+        "score": 54,
         "gapDomains": [
           "EQUIPMENT_LOADOUT",
           "SYSTEM_CONNECTION"
@@ -6060,12 +6194,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "d187e560b758093c6379161275d0f1c61839cf2fac71e624cc6a363fe1d36d3f",
-    "priorSourceFingerprint": "58a754b2f4c20803d6dfa4aaecb7a190fee9af3dbbb6d925aa24d27896ea241b",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6577,11 +6711,11 @@
       "gameId": "exorcist-office",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 3,
+        "generation": 1,
         "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/exorcist-office/index.html",
-        "qualityAxis": "POSE_VELOCITY_CROSSFADE",
-        "featureId": "POSE_VELOCITY_CROSSFADE",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -6593,7 +6727,7 @@
           "variants": [],
           "gameId": "exorcist-office",
           "actorClass": "BOSS",
-          "featureId": "POSE_VELOCITY_CROSSFADE",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -7443,7 +7577,44 @@
         "kind": "FUNCTION",
         "symbol": "movePlayer",
         "context": "function movePlayer(dt){if(!player.alive||schoolState?.codeModal)return;let dx=(input.right||keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(input.left||keys.has('KeyA')||keys.has('",
-        "score": 826,
+        "score": 770,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "norm",
+            "clamp"
+          ],
+          "calledBy": [
+            "update"
+          ],
+          "stateReads": [
+            "h",
+            "n",
+            "sp",
+            "dx",
+            "x",
+            "y",
+            "dt"
+          ],
+          "stateWrites": [
+            "n",
+            "sp",
+            "dx",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD",
+            "INTERACTION",
+            "INPUT",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function movePlayer(dt){if(!player.alive||schoolState?.codeModal)return;let dx=(input.right||keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(input.left||keys.has('KeyA')||keys.has('",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 movePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::movePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7455,7 +7626,43 @@
         "kind": "FUNCTION",
         "symbol": "showShop",
         "context": "function showShop(){const box=$('shopContent');if(!save.shopUnlocked){box.innerHTML='<div class=\"shopnote\">퇴마 상점을 해금하면 장신구와 상위 퇴마봉을 살 수 있어.</div><div class=\"card\" style=\"margin-top",
-        "score": 778,
+        "score": 730,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "money",
+            "persist",
+            "toast",
+            "renderOffice"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "SHOP_UNLOCK_COST",
+            "box",
+            "b",
+            "owned",
+            "id"
+          ],
+          "stateWrites": [
+            "box",
+            "b",
+            "owned",
+            "id"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "ECONOMY",
+            "SAVE",
+            "WORLD",
+            "PROGRESSION",
+            "INPUT",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function showShop(){const box=$('shopContent');if(!save.shopUnlocked){box.innerHTML='<div class=\"shopnote\">퇴마 상점을 해금하면 장신구와 상위 퇴마봉을 살 수 있어.</div><div class=\"card\" style=\"margin-top",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 showShop의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::showShop이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7467,7 +7674,42 @@
         "kind": "FUNCTION",
         "symbol": "syncHud",
         "context": "function syncHud(){$('hpText').textContent=Math.ceil(player.hp)+'/'+player.maxHp;$('hpBar').style.width=(clamp(player.hp/player.maxHp,0,1)*100)+'%';if(schoolState&&!schoolState.doo",
-        "score": 778,
+        "score": 714,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "clamp",
+            "clueCount"
+          ],
+          "calledBy": [
+            "startMission",
+            "update"
+          ],
+          "stateReads": [
+            "t",
+            "b",
+            "found",
+            "seen",
+            "tasks",
+            "done",
+            "boards"
+          ],
+          "stateWrites": [
+            "done",
+            "boards"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "INTERACTION",
+            "COMBAT",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function syncHud(){$('hpText').textContent=Math.ceil(player.hp)+'/'+player.maxHp;$('hpBar').style.width=(clamp(player.hp/player.maxHp,0,1)*100)+'%';if(schoolState&&!schoolState.doo",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 syncHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::syncHud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7479,7 +7721,54 @@
         "kind": "FUNCTION",
         "symbol": "update",
         "context": "function update(dt){player.attackCd=Math.max(0,player.attackCd-dt);player.sealCd=Math.max(0,player.sealCd-dt);player.wardCd=Math.max(0,player.wardCd-dt);player.wardTime=Math.max(0,",
-        "score": 762,
+        "score": 706,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast",
+            "syncHud",
+            "movePlayer",
+            "findClues",
+            "updateSchoolInvestigation",
+            "updateInvestigation",
+            "dist",
+            "registerSeen",
+            "ghostAi",
+            "updateFollowers",
+            "updateAmbushes",
+            "updateProjectiles",
+            "clamp"
+          ],
+          "calledBy": [
+            "loop"
+          ],
+          "stateReads": [
+            "GHOSTS",
+            "W",
+            "h",
+            "hit",
+            "x",
+            "y",
+            "dt"
+          ],
+          "stateWrites": [
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "PLACEMENT",
+            "WORLD",
+            "COMBAT",
+            "AI",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function update(dt){player.attackCd=Math.max(0,player.attackCd-dt);player.sealCd=Math.max(0,player.sealCd-dt);player.wardCd=Math.max(0,player.wardCd-dt);player.wardTime=Math.max(0,",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7491,7 +7780,41 @@
         "kind": "FUNCTION",
         "symbol": "showCompendium",
         "context": "function showCompendium(){const box=$('ghostList');box.innerHTML='';let found=0;for(const [id,g] of Object.entries(GHOSTS)){const seen=!!save.seen[id],cleared=Number(save.exorcised",
-        "score": 730,
+        "score": 682,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "danger"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "GHOSTS",
+            "g",
+            "d",
+            "box",
+            "id",
+            "found",
+            "seen",
+            "detail"
+          ],
+          "stateWrites": [
+            "d",
+            "box",
+            "found",
+            "seen",
+            "detail"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "AI",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function showCompendium(){const box=$('ghostList');box.innerHTML='';let found=0;for(const [id,g] of Object.entries(GHOSTS)){const seen=!!save.seen[id],cleared=Number(save.exorcised",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 showCompendium의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::showCompendium이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7503,7 +7826,58 @@
         "kind": "FUNCTION",
         "symbol": "startMission",
         "context": "function startMission(m){activeMission=m;const trained=save.rooms.training,hpBonus=(save.shop.charm?25:0)+(save.shop.lifeNecklace?35:0),attackBonus=(save.shop.rod?8:0)+(save.shop.s",
-        "score": 722,
+        "score": 674,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "money",
+            "syncHud",
+            "toast"
+          ],
+          "calledBy": [
+            "renderOffice"
+          ],
+          "stateReads": [
+            "GHOSTS",
+            "INVESTIGATIONS",
+            "t",
+            "g",
+            "id",
+            "found",
+            "seen",
+            "trained",
+            "clueSpots",
+            "tasks",
+            "i",
+            "now",
+            "hit",
+            "boards",
+            "x",
+            "y"
+          ],
+          "stateWrites": [
+            "g",
+            "trained",
+            "clueSpots"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "SAVE",
+            "PLACEMENT",
+            "WORLD",
+            "INTERACTION",
+            "COMBAT",
+            "AI",
+            "ECONOMY",
+            "PROGRESSION",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function startMission(m){activeMission=m;const trained=save.rooms.training,hpBonus=(save.shop.charm?25:0)+(save.shop.lifeNecklace?35:0),attackBonus=(save.shop.rod?8:0)+(save.shop.s",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 startMission의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::startMission이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7515,7 +7889,34 @@
         "kind": "FUNCTION",
         "symbol": "updateProjectiles",
         "context": "function updateProjectiles(dt){for(const p of projectiles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.life>0&&Math.hypot(p.x-player.x,p.y-player.y)<p.r+player.r){hurtPlayer(p.damage",
-        "score": 682,
+        "score": 674,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "hurtPlayer"
+          ],
+          "calledBy": [
+            "update"
+          ],
+          "stateReads": [
+            "x",
+            "y",
+            "dt"
+          ],
+          "stateWrites": [
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "COMBAT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updateProjectiles(dt){for(const p of projectiles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.life>0&&Math.hypot(p.x-player.x,p.y-player.y)<p.r+player.r){hurtPlayer(p.damage",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateProjectiles의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::updateProjectiles이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7528,6 +7929,27 @@
         "symbol": "trySeal",
         "context": "function trySeal(){if(!running||!player.alive||schoolState?.codeModal)return;if(!ghost.active)return toast('아직 퇴마 대상이 나타나지 않았어');if(player.sealCd>0)return toast('부적 준비 '+player.sea",
         "score": 666,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast",
+            "dist",
+            "completeMission"
+          ],
+          "calledBy": [],
+          "stateReads": [],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "COMBAT",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function trySeal(){if(!running||!player.alive||schoolState?.codeModal)return;if(!ghost.active)return toast('아직 퇴마 대상이 나타나지 않았어');if(player.sealCd>0)return toast('부적 준비 '+player.sea",
         "intendedBehavior": "CORE_FUN primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 퇴마 사무소를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 trySeal의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/exorcist-office/index.html::trySeal이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7622,8 +8044,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 퇴마 사무소의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7642,8 +8064,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7689,12 +8111,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7755,5 +8177,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.589Z"
+  "generatedAt": "2026-10-30T19:11:14.223Z"
 }

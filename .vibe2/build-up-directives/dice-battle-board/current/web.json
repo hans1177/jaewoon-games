@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "dice-battle-board-build-up-g2-0a6bb47d0123",
-  "directiveFingerprint": "0a6bb47d01238db3e2e915b471ac4a6d61a440ab4f6140c19814d1851856305f",
-  "previousDirectiveFingerprint": "d5403fc0f49d3c85c1218f1b9864965e17308c3daca1fbb6c0bbc851503bf2a8",
-  "forbiddenRepeatFingerprint": "d5403fc0f49d3c85c1218f1b9864965e17308c3daca1fbb6c0bbc851503bf2a8",
+  "directiveId": "dice-battle-board-build-up-g1-bafd375cb106",
+  "directiveFingerprint": "bafd375cb106801a4df99ea287b3a44481ed6df79db48a19d8698437b13736fa",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "dice-battle-board",
   "gameName": "주사위 전투 보드",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/dice-battle-board",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
-    "previousDesignFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "dice-battle-board",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
     "sourceTreeFingerprint": "9122980e153ef794a25c5a21252e739affeaefe3a65250447de3f3aa7af92418",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/dice-battle-board",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/dice-battle-board",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/dice-battle-board/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/dice-battle-board/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "rollCurrent",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "startBattle",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "restart",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/dice-battle-board/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/dice-battle-board/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "rollCurrent",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "startBattle",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "restart",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/dice-battle-board/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/dice-battle-board/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "rollCurrent",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "startBattle",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "restart",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/dice-battle-board/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/dice-battle-board/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "load",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "rollCurrent",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "startBattle",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "symbol": "restart",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/dice-battle-board/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/dice-battle-board/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -802,8 +944,8 @@
       "CREATIVE_AT_DELVE": 4,
       "IMPLEMENTATION_TRACE": 4
     },
-    "namedSourceCandidateCount": 0,
-    "sourceReviewRequiredCount": 50,
+    "namedSourceCandidateCount": 1,
+    "sourceReviewRequiredCount": 49,
     "implementationVerifiedCount": 0,
     "runtimeVerifiedCount": 0,
     "authoredCountsAreNotImplementedOrPlayableCounts": true,
@@ -1116,8 +1258,15 @@
           "VIBE_A"
         ],
         "designResponsibleSystem": null,
-        "sourceCandidates": [],
-        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "sourceCandidates": [
+          {
+            "file": "web-games/dice-battle-board/index.html",
+            "line": 268,
+            "symbol": "finishResolution",
+            "kind": "FUNCTION"
+          }
+        ],
+        "sourceEvidenceState": "EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED",
         "implementationVerified": false,
         "runtimeVerified": false,
         "designReviewNeeded": [],
@@ -4512,7 +4661,7 @@
         "kind": "FUNCTION",
         "symbol": "renderPlayers",
         "context": "function renderPlayers(){",
-        "score": 74
+        "score": 66
       },
       {
         "file": "web-games/dice-battle-board/index.html",
@@ -4596,22 +4745,16 @@
       },
       {
         "file": "web-games/dice-battle-board/index.html",
-        "line": 156,
+        "line": 268,
         "kind": "FUNCTION",
-        "symbol": "buildBoard",
-        "context": "function buildBoard(){",
+        "symbol": "finishResolution",
+        "context": "function finishResolution(){state.phase='ROLL';render();nextTurn()}",
         "score": 42
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "dcc4d1171d2bc287e24ab54a7e5735abeb6338ea7ea26dfd91d9ca906127db59",
-    "currentSourceTreeFingerprint": "9122980e153ef794a25c5a21252e739affeaefe3a65250447de3f3aa7af92418",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5946,21 +6089,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5996,7 +6138,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 208,
+        "score": 66,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -6117,12 +6259,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "9122980e153ef794a25c5a21252e739affeaefe3a65250447de3f3aa7af92418",
-    "priorSourceFingerprint": "dcc4d1171d2bc287e24ab54a7e5735abeb6338ea7ea26dfd91d9ca906127db59",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6621,8 +6763,8 @@
       "gameId": "dice-battle-board",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
-        "actorClass": "CREATURE",
+        "generation": 1,
+        "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/dice-battle-board/index.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -6636,7 +6778,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "dice-battle-board",
-          "actorClass": "CREATURE",
+          "actorClass": "BOSS",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -7532,6 +7674,36 @@
         "symbol": "load",
         "context": "function load(){",
         "score": 146,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "render",
+            "updateTurn"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "SAVE_KEY",
+            "state",
+            "battle",
+            "add",
+            "s"
+          ],
+          "stateWrites": [
+            "state",
+            "battle",
+            "s"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function load(){",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 load의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::load이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7544,6 +7716,28 @@
         "symbol": "save",
         "context": "function save(){if(state&&state.phase==='ROLL')localStorage.setItem(SAVE_KEY,JSON.stringify(state))}",
         "score": 138,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "startGame",
+            "nextTurn"
+          ],
+          "stateReads": [
+            "SAVE_KEY",
+            "state"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function save(){if(state&&state.phase==='ROLL')localStorage.setItem(SAVE_KEY,JSON.stringify(state))}",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::save이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7556,6 +7750,43 @@
         "symbol": "rollCurrent",
         "context": "function rollCurrent(){",
         "score": 130,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "addLog",
+            "notice",
+            "render",
+            "resolveTile"
+          ],
+          "calledBy": [
+            "updateTurn"
+          ],
+          "stateReads": [
+            "state",
+            "p",
+            "name",
+            "raw",
+            "total",
+            "gained"
+          ],
+          "stateWrites": [
+            "state",
+            "p",
+            "raw",
+            "total",
+            "gained"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function rollCurrent(){",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 rollCurrent의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::rollCurrent이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7568,6 +7799,39 @@
         "symbol": "startBattle",
         "context": "function startBattle(p,base,isBoss){",
         "score": 130,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "addBattleLine",
+            "renderBattle"
+          ],
+          "calledBy": [
+            "resolveTile",
+            "resolveEvent"
+          ],
+          "stateReads": [
+            "state",
+            "battle",
+            "p",
+            "name"
+          ],
+          "stateWrites": [
+            "state",
+            "battle",
+            "p"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "COMBAT",
+            "AI",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function startBattle(p,base,isBoss){",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 startBattle의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::startBattle이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7580,6 +7844,24 @@
         "symbol": "restart",
         "context": "function restart(){localStorage.removeItem(SAVE_KEY);location.reload()}",
         "score": 122,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [],
+          "stateReads": [
+            "SAVE_KEY"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "SAVE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function restart(){localStorage.removeItem(SAVE_KEY);location.reload()}",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 restart의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::restart이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7592,6 +7874,37 @@
         "symbol": "nextTurn",
         "context": "function nextTurn(){",
         "score": 122,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "save",
+            "render",
+            "updateTurn"
+          ],
+          "calledBy": [
+            "updateTurn",
+            "resolveTile",
+            "finishResolution"
+          ],
+          "stateReads": [
+            "state",
+            "n"
+          ],
+          "stateWrites": [
+            "state",
+            "n"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function nextTurn(){",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nextTurn의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::nextTurn이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7604,6 +7917,25 @@
         "symbol": "playerDef",
         "context": "function playerDef(p){return p.armor>=0?ARMORS[p.armor].def:0}",
         "score": 114,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "renderBattle",
+            "enemyAction"
+          ],
+          "stateReads": [
+            "ARMORS",
+            "p"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function playerDef(p){return p.armor>=0?ARMORS[p.armor].def:0}",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerDef의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::playerDef이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7616,6 +7948,44 @@
         "symbol": "render",
         "context": "function render(){",
         "score": 98,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "renderPlayers",
+            "renderBoard",
+            "renderLog"
+          ],
+          "calledBy": [
+            "startGame",
+            "load",
+            "updateTurn",
+            "nextTurn",
+            "rollCurrent",
+            "finishResolution",
+            "resolveEvent",
+            "endBattle",
+            "openShop",
+            "buyGear"
+          ],
+          "stateReads": [
+            "state",
+            "p",
+            "name"
+          ],
+          "stateWrites": [
+            "p"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "AI",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function render(){",
         "intendedBehavior": "CORE_FUN primary goal \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 주사위 전투 보드를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/dice-battle-board/index.html::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7715,8 +8085,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 주사위 전투 보드의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7735,8 +8105,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7782,12 +8152,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7853,5 +8223,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.493Z"
+  "generatedAt": "2026-10-30T19:11:13.363Z"
 }

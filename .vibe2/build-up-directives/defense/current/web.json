@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "defense-build-up-g3-d48eb31f3fcd",
-  "directiveFingerprint": "d48eb31f3fcdaf252430c24fd01ed0991fd3a68bde1d25d86dcbabc881c3e9c1",
-  "previousDirectiveFingerprint": "8b5c5698bb02140c89d8f5c645ed7267d3cac7b73c73e6b2fa7285af3d75e21d",
-  "forbiddenRepeatFingerprint": "8b5c5698bb02140c89d8f5c645ed7267d3cac7b73c73e6b2fa7285af3d75e21d",
+  "directiveId": "defense-build-up-g1-05e83637eade",
+  "directiveFingerprint": "05e83637eadeb995ac8c1d9ab3b9c581105b5755fe606c2f02b1cee7f480708a",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "defense",
   "gameName": "숲길 디펜스",
-  "generation": 3,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/defense",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
-    "previousDesignFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "defense",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
     "sourceTreeFingerprint": "ab2864656fa8d221fd18aa71842b2fc39bceabc1ffed6f78f99092776ee2352c",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/defense",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/defense",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,45 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/defense/defense3d.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/defense/defense3d.mjs",
+          "web-games/defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "hitEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "checkWaveEnd",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +549,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +560,45 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/defense/defense3d.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/defense/defense3d.mjs",
+          "web-games/defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "hitEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "checkWaveEnd",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +649,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +660,45 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/defense/defense3d.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/defense/defense3d.mjs",
+          "web-games/defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "hitEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "checkWaveEnd",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +748,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +759,45 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/defense/defense3d.mjs"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/defense/defense3d.mjs",
+          "web-games/defense/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "hitEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "updateHud",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/defense/index.html",
+            "symbol": "checkWaveEnd",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +807,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +876,18 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/defense/index.html",
+      "web-games/defense/defense3d.mjs"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/defense/defense3d.mjs"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4431,14 +4578,6 @@
     "sourceAnchors": [
       {
         "file": "web-games/defense/index.html",
-        "line": 130,
-        "kind": "FUNCTION",
-        "symbol": "updateHud",
-        "context": "function updateHud(){",
-        "score": 90
-      },
-      {
-        "file": "web-games/defense/index.html",
         "line": 157,
         "kind": "FUNCTION",
         "symbol": "startWave",
@@ -4452,6 +4591,14 @@
         "symbol": "hitEnemy",
         "context": "function hitEnemy(e,s){",
         "score": 90
+      },
+      {
+        "file": "web-games/defense/index.html",
+        "line": 130,
+        "kind": "FUNCTION",
+        "symbol": "updateHud",
+        "context": "function updateHud(){",
+        "score": 82
       },
       {
         "file": "web-games/defense/index.html",
@@ -4475,14 +4622,6 @@
         "kind": "FUNCTION",
         "symbol": "updateInstanced",
         "context": "function updateInstanced(mesh,items,fn){",
-        "score": 66
-      },
-      {
-        "file": "web-games/defense/defense3d.mjs",
-        "line": 192,
-        "kind": "FUNCTION",
-        "symbol": "pick",
-        "context": "function pick(clientX,clientY){",
         "score": 66
       },
       {
@@ -4559,14 +4698,6 @@
       },
       {
         "file": "web-games/defense/defense3d.mjs",
-        "line": 8,
-        "kind": "FUNCTION",
-        "symbol": "material",
-        "context": "const material=hex=>new THREE.MeshStandardMaterial({color:hex,roughness:.8,metalness:.02});",
-        "score": 50
-      },
-      {
-        "file": "web-games/defense/defense3d.mjs",
         "line": 150,
         "kind": "FUNCTION",
         "symbol": "render",
@@ -4614,19 +4745,19 @@
         "score": 50
       },
       {
-        "file": "web-games/defense/index.html",
-        "line": 294,
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 8,
         "kind": "FUNCTION",
-        "symbol": "updateTowerPanel",
-        "context": "function updateTowerPanel(){",
-        "score": 50
+        "symbol": "material",
+        "context": "const material=hex=>new THREE.MeshStandardMaterial({color:hex,roughness:.8,metalness:.02});",
+        "score": 42
       },
       {
         "file": "web-games/defense/defense3d.mjs",
-        "line": 9,
+        "line": 192,
         "kind": "FUNCTION",
-        "symbol": "createDefense3d",
-        "context": "export function createDefense3d({canvas,PATH_N,PADS_N}){",
+        "symbol": "pick",
+        "context": "function pick(clientX,clientY){",
         "score": 42
       },
       {
@@ -4655,11 +4786,27 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 291,
+        "line": 294,
         "kind": "FUNCTION",
-        "symbol": "selectTower",
-        "context": "function selectTower(t){",
+        "symbol": "updateTowerPanel",
+        "context": "function updateTowerPanel(){",
         "score": 42
+      },
+      {
+        "file": "web-games/defense/index.html",
+        "line": 376,
+        "kind": "FUNCTION",
+        "symbol": "startGame",
+        "context": "function startGame(){",
+        "score": 42
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 9,
+        "kind": "FUNCTION",
+        "symbol": "createDefense3d",
+        "context": "export function createDefense3d({canvas,PATH_N,PADS_N}){",
+        "score": 34
       },
       {
         "file": "web-games/defense/defense3d.mjs",
@@ -4760,13 +4907,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
-    "currentSourceTreeFingerprint": "ab2864656fa8d221fd18aa71842b2fc39bceabc1ffed6f78f99092776ee2352c",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5905,9 +6046,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"숲길 디펜스\", 현재 책임 소스는 web-games/defense/index.html::updateHud, web-games/defense/index.html::startWave, web-games/defense/index.html::hitEnemy, web-games/defense/index.html::damageEnemy, web-games/defense/index.html::checkWaveEnd, web-games/defense/index.html::spawnEnemy, web-games/defense/index.html::clamp, web-games/defense/index.html::loadBest이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"숲길 디펜스\", 현재 책임 소스는 web-games/defense/index.html::startWave, web-games/defense/index.html::hitEnemy, web-games/defense/index.html::updateHud, web-games/defense/index.html::damageEnemy, web-games/defense/index.html::checkWaveEnd, web-games/defense/index.html::spawnEnemy, web-games/defense/index.html::clamp, web-games/defense/index.html::loadBest이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/defense/index.html::updateHud, web-games/defense/index.html::startWave, web-games/defense/index.html::hitEnemy, web-games/defense/index.html::damageEnemy, web-games/defense/index.html::checkWaveEnd, web-games/defense/index.html::spawnEnemy, web-games/defense/index.html::clamp, web-games/defense/index.html::loadBest에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/defense/index.html::startWave, web-games/defense/index.html::hitEnemy, web-games/defense/index.html::updateHud, web-games/defense/index.html::damageEnemy, web-games/defense/index.html::checkWaveEnd, web-games/defense/index.html::spawnEnemy, web-games/defense/index.html::clamp, web-games/defense/index.html::loadBest에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "숲길 디펜스를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "방어 시설 배치 × 역사적 세력 균형가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6076,22 +6217,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -6127,7 +6266,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 202,
+        "score": 78,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -6251,12 +6390,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "ab2864656fa8d221fd18aa71842b2fc39bceabc1ffed6f78f99092776ee2352c",
-    "priorSourceFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6765,8 +6904,8 @@
       "gameId": "defense",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 3,
-        "actorClass": "ENEMY",
+        "generation": 1,
+        "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/defense/defense3d.mjs",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -6780,7 +6919,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "defense",
-          "actorClass": "ENEMY",
+          "actorClass": "BOSS",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -7446,15 +7585,6 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/defense/index.html",
-        "line": 130,
-        "kind": "FUNCTION",
-        "symbol": "updateHud",
-        "currentBehavior": "function updateHud(){",
-        "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/defense/index.html",
         "line": 157,
         "kind": "FUNCTION",
         "symbol": "startWave",
@@ -7469,6 +7599,15 @@
         "symbol": "hitEnemy",
         "currentBehavior": "function hitEnemy(e,s){",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 hitEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/defense/index.html",
+        "line": 130,
+        "kind": "FUNCTION",
+        "symbol": "updateHud",
+        "currentBehavior": "function updateHud(){",
+        "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7520,12 +7659,6 @@
     "serverClientResponsibility": [
       {
         "file": "web-games/defense/index.html",
-        "symbol": "updateHud",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/defense/index.html",
         "symbol": "startWave",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
@@ -7533,6 +7666,12 @@
       {
         "file": "web-games/defense/index.html",
         "symbol": "hitEnemy",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/defense/index.html",
+        "symbol": "updateHud",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7644,23 +7783,35 @@
     "sourceAnchors": [
       {
         "file": "web-games/defense/index.html",
-        "line": 130,
-        "kind": "FUNCTION",
-        "symbol": "updateHud",
-        "context": "function updateHud(){",
-        "score": 90,
-        "currentBehavior": "function updateHud(){",
-        "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/defense/index.html::updateHud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/defense/index.html",
         "line": 157,
         "kind": "FUNCTION",
         "symbol": "startWave",
         "context": "function startWave(){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "buildWave",
+            "updateHud"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [
+            "state"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE",
+            "PLACEMENT",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function startWave(){",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 startWave의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/defense/index.html::startWave이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7673,9 +7824,83 @@
         "symbol": "hitEnemy",
         "context": "function hitEnemy(e,s){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist",
+            "damageEnemy"
+          ],
+          "calledBy": [
+            "updateShots"
+          ],
+          "stateReads": [
+            "state",
+            "e",
+            "s"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "AI",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function hitEnemy(e,s){",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 hitEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/defense/index.html::hitEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/defense/index.html",
+        "line": 130,
+        "kind": "FUNCTION",
+        "symbol": "updateHud",
+        "context": "function updateHud(){",
+        "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "loadBest",
+            "updateTowerPanel"
+          ],
+          "calledBy": [
+            "startWave",
+            "endGame",
+            "buildAt",
+            "tick",
+            "startGame"
+          ],
+          "stateReads": [
+            "state",
+            "TOWERS",
+            "t",
+            "b"
+          ],
+          "stateWrites": [
+            "t",
+            "b"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "CORE_STATE",
+            "SAVE",
+            "PLACEMENT",
+            "ECONOMY"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function updateHud(){",
+        "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/defense/index.html::updateHud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/defense/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7685,6 +7910,35 @@
         "symbol": "damageEnemy",
         "context": "function damageEnemy(e,dmg,shot){",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "hitEnemy"
+          ],
+          "stateReads": [
+            "state",
+            "e",
+            "idx"
+          ],
+          "stateWrites": [
+            "state",
+            "e",
+            "idx"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "AI",
+            "ECONOMY",
+            "PROGRESSION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function damageEnemy(e,dmg,shot){",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damageEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/defense/index.html::damageEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7697,6 +7951,34 @@
         "symbol": "checkWaveEnd",
         "context": "function checkWaveEnd(){",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "saveBest",
+            "endGame",
+            "toast"
+          ],
+          "calledBy": [
+            "tick"
+          ],
+          "stateReads": [
+            "state"
+          ],
+          "stateWrites": [
+            "state"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "ECONOMY",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function checkWaveEnd(){",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 checkWaveEnd의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/defense/index.html::checkWaveEnd이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7709,6 +7991,39 @@
         "symbol": "spawnEnemy",
         "context": "function spawnEnemy(type){",
         "score": 66,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "pathPoints"
+          ],
+          "calledBy": [
+            "tick"
+          ],
+          "stateReads": [
+            "state",
+            "ENEMY_TYPES",
+            "type",
+            "b",
+            "p"
+          ],
+          "stateWrites": [
+            "b",
+            "p"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "AI",
+            "WORLD",
+            "ECONOMY",
+            "PROGRESSION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function spawnEnemy(type){",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/defense/index.html::spawnEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7721,6 +8036,21 @@
         "symbol": "clamp",
         "context": "function clamp(v,a,b){return Math.max(a,Math.min(b,v))}",
         "score": 58,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [],
+          "stateReads": [
+            "b"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function clamp(v,a,b){return Math.max(a,Math.min(b,v))}",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 clamp의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/defense/index.html::clamp이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7733,6 +8063,27 @@
         "symbol": "loadBest",
         "context": "function loadBest(){try{return Math.max(0,Number(JSON.parse(localStorage.getItem(KEY)||'{}').best)||0)}catch(e){return 0}}",
         "score": 58,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "saveBest",
+            "updateHud"
+          ],
+          "stateReads": [
+            "KEY",
+            "e"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function loadBest(){try{return Math.max(0,Number(JSON.parse(localStorage.getItem(KEY)||'{}').best)||0)}catch(e){return 0}}",
         "intendedBehavior": "CORE_FUN primary goal \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 loadBest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/defense/index.html::loadBest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7833,8 +8184,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7853,8 +8204,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7900,12 +8251,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7971,5 +8322,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.393Z"
+  "generatedAt": "2026-10-30T19:11:12.636Z"
 }

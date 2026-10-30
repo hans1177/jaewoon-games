@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "horror-escape-room-build-up-g24-92c0a705f02e",
-  "directiveFingerprint": "92c0a705f02e188f3a28c5a1c4c8158d4c0237577d4a105ad8c943b1a2d26b89",
-  "previousDirectiveFingerprint": "eae69b3025ed03536b80dd65d71816a25f41b6928f52eb86399a666d28bd3c9e",
-  "forbiddenRepeatFingerprint": "eae69b3025ed03536b80dd65d71816a25f41b6928f52eb86399a666d28bd3c9e",
+  "directiveId": "horror-escape-room-build-up-g1-03dd56c74b99",
+  "directiveFingerprint": "03dd56c74b99189d2128b880c8c33fae7b75823065d82b23a40d7c4f6f6b11cd",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "horror-escape-room",
   "gameName": "심야 대탈출",
-  "generation": 24,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/horror-escape-room",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
-    "previousDesignFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -541,7 +541,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/server/ManorLobby.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau"
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau"
         ],
         "inspectedSymbols": [
           {
@@ -681,7 +681,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/server/ManorLobby.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau"
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau"
         ],
         "inspectedSymbols": [
           {
@@ -803,7 +803,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/server/ManorLobby.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau"
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau"
         ],
         "inspectedSymbols": [
           {
@@ -904,7 +904,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/server/ManorLobby.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau"
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau"
         ],
         "inspectedSymbols": [
           {
@@ -1024,7 +1024,12 @@
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
       "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
-      "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
+      "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau",
+      "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+      "roblox-games/horror-escape-room/shared/ManorAssets.luau",
+      "roblox-games/horror-escape-room/shared/MonsterStories.luau",
+      "roblox-games/horror-escape-room/shared/Translations.luau",
+      "roblox-games/horror-escape-room/shared/VisualStyle.luau"
     ],
     "executableCodeCandidateFiles": [
       "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
@@ -7764,13 +7769,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-    "previousFocus": "STABILITY",
-    "previousGeneration": 23,
-    "previousSourceTreeFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
-    "currentSourceTreeFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -7794,9 +7793,9 @@
       ]
     },
     "failureStage": "VIBE_INTERNAL_PLAY",
-    "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
+    "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
     "blockers": [
-      "roblox-internal-vibe-play-pending",
+      "roblox-studio-mcp-play-repair-required",
       "adaptive-start-playability"
     ],
     "runtimeObserved": true,
@@ -8882,9 +8881,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(VIBE_INTERNAL_PLAY / ROBLOX_INTERNAL_VIBE_PLAY_PENDING). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/horror-escape-room/server/Game.server.luau::addEnergyCore, roblox-games/horror-escape-room/server/Game.server.luau::addMapUtility, roblox-games/horror-escape-room/server/Game.server.luau::infectPlayer, roblox-games/horror-escape-room/server/Game.server.luau::addObjectiveStation, roblox-games/horror-escape-room/client/Game.client.luau::combatSkinIdForPlayer, roblox-games/horror-escape-room/server/Game.server.luau::mapById, roblox-games/horror-escape-room/client/Game.client.luau::verifiedLearningBindTrack, roblox-games/horror-escape-room/client/Game.client.luau::markCombatSkinAttack이다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(VIBE_INTERNAL_PLAY / ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/horror-escape-room/client/ManorLobby.client.luau::refreshCode, roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync, roblox-games/horror-escape-room/server/Game.server.luau::addEnergyCore, roblox-games/horror-escape-room/server/Game.server.luau::addMapUtility, roblox-games/horror-escape-room/server/Game.server.luau::infectPlayer, roblox-games/horror-escape-room/shared/QACamera.luau::restoreCamera, roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync, roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync이다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/horror-escape-room/server/Game.server.luau::addEnergyCore, roblox-games/horror-escape-room/server/Game.server.luau::addMapUtility, roblox-games/horror-escape-room/server/Game.server.luau::infectPlayer, roblox-games/horror-escape-room/server/Game.server.luau::addObjectiveStation, roblox-games/horror-escape-room/client/Game.client.luau::combatSkinIdForPlayer, roblox-games/horror-escape-room/server/Game.server.luau::mapById, roblox-games/horror-escape-room/client/Game.client.luau::verifiedLearningBindTrack, roblox-games/horror-escape-room/client/Game.client.luau::markCombatSkinAttack에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/horror-escape-room/client/ManorLobby.client.luau::refreshCode, roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync, roblox-games/horror-escape-room/server/Game.server.luau::addEnergyCore, roblox-games/horror-escape-room/server/Game.server.luau::addMapUtility, roblox-games/horror-escape-room/server/Game.server.luau::infectPlayer, roblox-games/horror-escape-room/shared/QACamera.luau::restoreCamera, roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync, roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "심야 대탈출를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "진영 전환과 추격 경로 × 증언과 합의된 현실가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"진영 전환과 추격 경로: 상대 진영과 이동 경로를 읽고 감염 또는 회피의 시점과 대상을 선택하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -8912,9 +8911,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
-          "roblox-games/horror-escape-room/client/Game.client.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+          "roblox-games/horror-escape-room/server/ManorLobby.luau",
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -8927,9 +8926,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
-          "roblox-games/horror-escape-room/client/Game.client.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+          "roblox-games/horror-escape-room/server/ManorLobby.luau",
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -8942,9 +8941,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
-          "roblox-games/horror-escape-room/client/Game.client.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+          "roblox-games/horror-escape-room/server/ManorLobby.luau",
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -8957,9 +8956,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
-          "roblox-games/horror-escape-room/client/Game.client.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+          "roblox-games/horror-escape-room/server/ManorLobby.luau",
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -8972,9 +8971,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
-          "roblox-games/horror-escape-room/client/Game.client.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+          "roblox-games/horror-escape-room/server/ManorLobby.luau",
+          "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -9030,7 +9029,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 1147121,
+        "sourceBytes": 1147057,
         "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -9062,36 +9061,21 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 9,
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 1,
     "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 12
+        "PRESENTATION_WORLD_COHESION": 0
       },
-      "sequence": [
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY"
-      ],
+      "sequence": [],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -9101,29 +9085,43 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 0,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION"
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION"
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
       {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 68,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 24,
+        "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -9152,16 +9150,6 @@
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": -148,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
       }
     ],
     "coherentContentBundle": [],
@@ -9232,7 +9220,7 @@
       "assetReferences": 1,
       "missingReferences": 0
     },
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "sourceOnly": true,
     "qualityComplete": false,
     "evidenceScope": {
@@ -12932,11 +12920,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 24,
-    "previousGeneration": 23,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "3dba8edd78a14591bb018ecbc82dd576f8a539da813912235092bac0c21263e0",
-    "priorSourceFingerprint": "b540b32fea62a3b9a41ed948af9a813c7a084e4a45d8c602c7162bda42af99d1",
+    "priorSourceFingerprint": null,
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -13967,11 +13955,11 @@
       "gameId": "horror-escape-room",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 24,
-        "actorClass": "ENEMY",
-        "sourceOwnerFile": "roblox-games/horror-escape-room/launch-mvp.json",
-        "qualityAxis": "CINEMATIC_ATTACK_ENVELOPE",
-        "featureId": "CINEMATIC_ATTACK_ENVELOPE",
+        "generation": 1,
+        "actorClass": "BOSS",
+        "sourceOwnerFile": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -13982,8 +13970,8 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "horror-escape-room",
-          "actorClass": "ENEMY",
-          "featureId": "CINEMATIC_ATTACK_ENVELOPE",
+          "actorClass": "BOSS",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -14723,17 +14711,21 @@
     ],
     "responsibleSourceCandidates": [
       "roblox-games/horror-escape-room/server/Game.server.luau",
-      "roblox-games/horror-escape-room/client/Game.client.luau",
-      "roblox-games/horror-escape-room/shared/GameConfig.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
-      "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
+      "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+      "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "roblox-games/horror-escape-room/shared/ManorAssets.luau",
+      "roblox-games/horror-escape-room/shared/MonsterStories.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
-      "roblox-games/horror-escape-room/default.project.json",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau"
+      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+      "roblox-games/horror-escape-room/shared/Translations.luau",
+      "roblox-games/horror-escape-room/shared/VisualStyle.luau",
+      "roblox-games/horror-escape-room/client/Game.client.luau",
+      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -14956,19 +14948,41 @@
     "required": true,
     "responsibleFiles": [
       "roblox-games/horror-escape-room/server/Game.server.luau",
-      "roblox-games/horror-escape-room/client/Game.client.luau",
-      "roblox-games/horror-escape-room/shared/GameConfig.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
-      "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
+      "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+      "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "roblox-games/horror-escape-room/shared/ManorAssets.luau",
+      "roblox-games/horror-escape-room/shared/MonsterStories.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
-      "roblox-games/horror-escape-room/default.project.json",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau"
+      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+      "roblox-games/horror-escape-room/shared/Translations.luau",
+      "roblox-games/horror-escape-room/shared/VisualStyle.luau",
+      "roblox-games/horror-escape-room/client/Game.client.luau",
+      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
+      {
+        "file": "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+        "line": 297,
+        "kind": "FUNCTION",
+        "symbol": "refreshCode",
+        "currentBehavior": "local function refreshCode()",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 refreshCode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/horror-escape-room/client/ManorLobby.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 4335,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
       {
         "file": "roblox-games/horror-escape-room/server/Game.server.luau",
         "line": 1227,
@@ -14997,52 +15011,46 @@
         "observableAcceptance": "roblox-games/horror-escape-room/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/horror-escape-room/server/Game.server.luau",
-        "line": 1120,
+        "file": "roblox-games/horror-escape-room/shared/QACamera.luau",
+        "line": 86,
         "kind": "FUNCTION",
-        "symbol": "addObjectiveStation",
-        "currentBehavior": "local function addObjectiveStation(f,name,pos,index)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addObjectiveStation의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/horror-escape-room/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "restoreCamera",
+        "currentBehavior": "local function restoreCamera(camera,saved)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 restoreCamera의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/QACamera.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1447,
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 3175,
         "kind": "FUNCTION",
-        "symbol": "combatSkinIdForPlayer",
-        "currentBehavior": "local function combatSkinIdForPlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 combatSkinIdForPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/horror-escape-room/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/horror-escape-room/server/Game.server.luau",
-        "line": 329,
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 4374,
         "kind": "FUNCTION",
-        "symbol": "mapById",
-        "currentBehavior": "mapById=function(id)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 mapById의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/horror-escape-room/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 671,
-        "kind": "FUNCTION",
-        "symbol": "verifiedLearningBindTrack",
-        "currentBehavior": "local function verifiedLearningBindTrack(state, track)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 verifiedLearningBindTrack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/horror-escape-room/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1630,
-        "kind": "FUNCTION",
-        "symbol": "markCombatSkinAttack",
-        "currentBehavior": "local function markCombatSkinAttack(userId,origin,duration,stage)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 markCombatSkinAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/horror-escape-room/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+        "symbol": "refreshCode",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "roblox-games/horror-escape-room/server/Game.server.luau",
         "symbol": "addEnergyCore",
@@ -15062,33 +15070,21 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/horror-escape-room/server/Game.server.luau",
-        "symbol": "addObjectiveStation",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/horror-escape-room/shared/QACamera.luau",
+        "symbol": "restoreCamera",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "symbol": "combatSkinIdForPlayer",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/horror-escape-room/server/Game.server.luau",
-        "symbol": "mapById",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "symbol": "verifiedLearningBindTrack",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "symbol": "markCombatSkinAttack",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -15164,19 +15160,74 @@
   "responsibleSystemsAndFiles": {
     "files": [
       "roblox-games/horror-escape-room/server/Game.server.luau",
-      "roblox-games/horror-escape-room/client/Game.client.luau",
-      "roblox-games/horror-escape-room/shared/GameConfig.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
-      "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
+      "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+      "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "roblox-games/horror-escape-room/shared/ManorAssets.luau",
+      "roblox-games/horror-escape-room/shared/MonsterStories.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
-      "roblox-games/horror-escape-room/default.project.json",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau"
+      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+      "roblox-games/horror-escape-room/shared/Translations.luau",
+      "roblox-games/horror-escape-room/shared/VisualStyle.luau",
+      "roblox-games/horror-escape-room/client/Game.client.luau",
+      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "sourceAnchors": [
+      {
+        "file": "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+        "line": 297,
+        "kind": "FUNCTION",
+        "symbol": "refreshCode",
+        "context": "local function refreshCode()",
+        "score": 130,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "open"
+          ],
+          "stateReads": [
+            "invitationCode",
+            "cells",
+            "input",
+            "clean"
+          ],
+          "stateWrites": [
+            "invitationCode",
+            "cells",
+            "input",
+            "clean"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "INPUT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "local function refreshCode()",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 refreshCode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/horror-escape-room/client/ManorLobby.client.luau::refreshCode이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/horror-escape-room/client/ManorLobby.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 4335,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
       {
         "file": "roblox-games/horror-escape-room/server/Game.server.luau",
         "line": 1227,
@@ -15214,64 +15265,62 @@
         "observableAcceptance": "roblox-games/horror-escape-room/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/horror-escape-room/server/Game.server.luau",
-        "line": 1120,
+        "file": "roblox-games/horror-escape-room/shared/QACamera.luau",
+        "line": 86,
         "kind": "FUNCTION",
-        "symbol": "addObjectiveStation",
-        "context": "local function addObjectiveStation(f,name,pos,index)",
-        "score": 98,
-        "currentBehavior": "local function addObjectiveStation(f,name,pos,index)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addObjectiveStation의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/horror-escape-room/server/Game.server.luau::addObjectiveStation이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/horror-escape-room/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "restoreCamera",
+        "context": "local function restoreCamera(camera,saved)",
+        "score": 106,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "QACamera.install"
+          ],
+          "stateReads": [
+            "camera",
+            "saved"
+          ],
+          "stateWrites": [
+            "camera"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "local function restoreCamera(camera,saved)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 restoreCamera의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/horror-escape-room/shared/QACamera.luau::restoreCamera이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/QACamera.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1447,
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 3175,
         "kind": "FUNCTION",
-        "symbol": "combatSkinIdForPlayer",
-        "context": "local function combatSkinIdForPlayer(player)",
-        "score": 90,
-        "currentBehavior": "local function combatSkinIdForPlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 combatSkinIdForPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/horror-escape-room/client/Game.client.luau::combatSkinIdForPlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/horror-escape-room/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/horror-escape-room/server/Game.server.luau",
-        "line": 329,
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 4374,
         "kind": "FUNCTION",
-        "symbol": "mapById",
-        "context": "mapById=function(id)",
-        "score": 90,
-        "currentBehavior": "mapById=function(id)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 mapById의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/horror-escape-room/server/Game.server.luau::mapById이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/horror-escape-room/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 671,
-        "kind": "FUNCTION",
-        "symbol": "verifiedLearningBindTrack",
-        "context": "local function verifiedLearningBindTrack(state, track)",
-        "score": 82,
-        "currentBehavior": "local function verifiedLearningBindTrack(state, track)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 verifiedLearningBindTrack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/horror-escape-room/client/Game.client.luau::verifiedLearningBindTrack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/horror-escape-room/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1630,
-        "kind": "FUNCTION",
-        "symbol": "markCombatSkinAttack",
-        "context": "local function markCombatSkinAttack(userId,origin,duration,stage)",
-        "score": 82,
-        "currentBehavior": "local function markCombatSkinAttack(userId,origin,duration,stage)",
-        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 markCombatSkinAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/horror-escape-room/client/Game.client.luau::markCombatSkinAttack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/horror-escape-room/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -15284,13 +15333,15 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI"
+      "UI",
+      "GAMEPLAY"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -15316,17 +15367,21 @@
     "platform": "ROBLOX",
     "plannedFiles": [
       "roblox-games/horror-escape-room/server/Game.server.luau",
-      "roblox-games/horror-escape-room/client/Game.client.luau",
-      "roblox-games/horror-escape-room/shared/GameConfig.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
-      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
-      "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
+      "roblox-games/horror-escape-room/shared/CombatAssets.luau",
+      "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "roblox-games/horror-escape-room/shared/ManorAssets.luau",
+      "roblox-games/horror-escape-room/shared/MonsterStories.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
-      "roblox-games/horror-escape-room/default.project.json",
-      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau"
+      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonMotion.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+      "roblox-games/horror-escape-room/shared/Translations.luau",
+      "roblox-games/horror-escape-room/shared/VisualStyle.luau",
+      "roblox-games/horror-escape-room/client/Game.client.luau",
+      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "impact": {
       "version": 1,
@@ -15334,13 +15389,15 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI"
+        "UI",
+        "GAMEPLAY"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
@@ -15372,6 +15429,7 @@
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -15404,7 +15462,7 @@
       "runtimeObserved": true,
       "runtimePassed": false,
       "failureStage": "VIBE_INTERNAL_PLAY",
-      "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING"
+      "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -15462,12 +15520,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 25,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -15522,5 +15580,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-30T10:44:21.337Z"
+  "generatedAt": "2026-10-30T19:11:33.552Z"
 }

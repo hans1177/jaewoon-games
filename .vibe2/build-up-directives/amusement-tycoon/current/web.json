@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g3-4b20ab407854",
-  "directiveFingerprint": "4b20ab4078543269b0b5f93c0b365687ca35f140187eb63882435962c7f86d34",
-  "previousDirectiveFingerprint": "97ba0520baf5398bb226c124338100fd4a4194c4d375351aec564904c2817254",
-  "forbiddenRepeatFingerprint": "97ba0520baf5398bb226c124338100fd4a4194c4d375351aec564904c2817254",
+  "directiveId": "amusement-tycoon-build-up-g1-dfdcc1b6fdbe",
+  "directiveFingerprint": "dfdcc1b6fdbe95e61a32159e058ad62a49973e823b79939ae5bd29720f10e51b",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 3,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/amusement-tycoon",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
-    "previousDesignFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "amusement-tycoon",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
     "sourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/amusement-tycoon",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/amusement-tycoon",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/amusement-tycoon/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/amusement-tycoon/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "applyDayLighting",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateDay",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "isCounterBuilt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/amusement-tycoon/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/amusement-tycoon/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "applyDayLighting",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateDay",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "isCounterBuilt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/amusement-tycoon/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/amusement-tycoon/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "applyDayLighting",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateDay",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "isCounterBuilt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/amusement-tycoon/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/amusement-tycoon/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateCamera",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "applyDayLighting",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "updateDay",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "isCounterBuilt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/amusement-tycoon/index.html",
+            "symbol": "save",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/amusement-tycoon/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/amusement-tycoon/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4407,19 +4549,19 @@
       },
       {
         "file": "web-games/amusement-tycoon/index.html",
-        "line": 481,
-        "kind": "FUNCTION",
-        "symbol": "upgradeCost",
-        "context": "function upgradeCost(level){return FOOD_UP_BASE*Math.pow(2,level||0);}",
-        "score": 66
-      },
-      {
-        "file": "web-games/amusement-tycoon/index.html",
         "line": 833,
         "kind": "FUNCTION",
         "symbol": "repairTick",
         "context": "function repairTick(){",
         "score": 66
+      },
+      {
+        "file": "web-games/amusement-tycoon/index.html",
+        "line": 481,
+        "kind": "FUNCTION",
+        "symbol": "upgradeCost",
+        "context": "function upgradeCost(level){return FOOD_UP_BASE*Math.pow(2,level||0);}",
+        "score": 58
       },
       {
         "file": "web-games/amusement-tycoon/index.html",
@@ -4443,14 +4585,6 @@
         "kind": "FUNCTION",
         "symbol": "load",
         "context": "function load(){",
-        "score": 50
-      },
-      {
-        "file": "web-games/amusement-tycoon/index.html",
-        "line": 482,
-        "kind": "FUNCTION",
-        "symbol": "capacity",
-        "context": "function capacity(b){",
         "score": 50
       },
       {
@@ -4532,17 +4666,19 @@
         "symbol": "syncRepairVisuals",
         "context": "function syncRepairVisuals(){",
         "score": 42
+      },
+      {
+        "file": "web-games/amusement-tycoon/index.html",
+        "line": 445,
+        "kind": "FUNCTION",
+        "symbol": "counterEntry",
+        "context": "function counterEntry(){",
+        "score": 42
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
-    "currentSourceTreeFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5862,22 +5998,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5913,7 +6047,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 202,
+        "score": 78,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -6035,12 +6169,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "cc81b1e475b80b179a8ec5ecba24961f009b34909d9d1c97b2f1eef6dccf0f9d",
-    "priorSourceFingerprint": "0d8539257d287976682e21c5c8c2ec343cb279a389ec54778145588ea370b08f",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6538,7 +6672,7 @@
       "gameId": "amusement-tycoon",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 3,
+        "generation": 1,
         "actorClass": null,
         "sourceOwnerFile": null,
         "qualityAxis": null,
@@ -7353,6 +7487,27 @@
         "symbol": "updateCamera",
         "context": "function updateCamera(){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [],
+          "stateReads": [
+            "camera",
+            "cameraAngle",
+            "dist"
+          ],
+          "stateWrites": [
+            "dist"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updateCamera(){",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateCamera의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::updateCamera이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7365,6 +7520,36 @@
         "symbol": "applyDayLighting",
         "context": "function applyDayLighting(){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dayPhase"
+          ],
+          "calledBy": [
+            "updateDay"
+          ],
+          "stateReads": [
+            "scene",
+            "hemi",
+            "sun",
+            "lastPhase",
+            "phase"
+          ],
+          "stateWrites": [
+            "hemi",
+            "sun",
+            "lastPhase",
+            "phase"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function applyDayLighting(){",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 applyDayLighting의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::applyDayLighting이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7377,6 +7562,32 @@
         "symbol": "updateDay",
         "context": "function updateDay(dt){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "finishDay",
+            "applyDayLighting"
+          ],
+          "calledBy": [
+            "loop"
+          ],
+          "stateReads": [
+            "DAY_LENGTH",
+            "state",
+            "dt"
+          ],
+          "stateWrites": [
+            "state"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function updateDay(dt){",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateDay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::updateDay이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7389,6 +7600,30 @@
         "symbol": "isCounterBuilt",
         "context": "function isCounterBuilt(){return state.buildings.some(function(b){return b.type===\"counter\";});}",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "renderBuildBar",
+            "updateHud",
+            "place"
+          ],
+          "stateReads": [
+            "state",
+            "b"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "PLACEMENT",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function isCounterBuilt(){return state.buildings.some(function(b){return b.type===\"counter\";});}",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 isCounterBuilt의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::isCounterBuilt이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7401,6 +7636,41 @@
         "symbol": "save",
         "context": "function save(){",
         "score": 74,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "renderInfo",
+            "breakRide",
+            "repairTick",
+            "finishDay",
+            "changeFee",
+            "place",
+            "loop"
+          ],
+          "stateReads": [
+            "SAVE_KEY",
+            "state",
+            "b",
+            "broken",
+            "gx"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "SAVE",
+            "PLACEMENT",
+            "WORLD",
+            "AI",
+            "PROGRESSION",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function save(){",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::save이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7413,6 +7683,38 @@
         "symbol": "rebuildWorldFromState",
         "context": "function rebuildWorldFromState(){",
         "score": 66,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "key",
+            "createBuildingVisual",
+            "syncCleanerVisuals",
+            "syncRepairVisuals"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "state",
+            "world",
+            "visualById",
+            "b",
+            "gx"
+          ],
+          "stateWrites": [
+            "visualById"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PLACEMENT",
+            "WORLD",
+            "PRESENTATION",
+            "CORE_STATE",
+            "AI"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function rebuildWorldFromState(){",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 rebuildWorldFromState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::rebuildWorldFromState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7425,6 +7727,31 @@
         "symbol": "counter",
         "context": "function counter(){return state.buildings.find(function(b){return b.type===\"counter\";});}",
         "score": 66,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "canPlacePath",
+            "connectedPathKeys",
+            "counterEntry",
+            "spawnGuest"
+          ],
+          "stateReads": [
+            "state",
+            "b"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PLACEMENT",
+            "PRESENTATION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function counter(){return state.buildings.find(function(b){return b.type===\"counter\";});}",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 counter의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::counter이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7437,6 +7764,29 @@
         "symbol": "hasAdjacentPath",
         "context": "function hasAdjacentPath(gx,gz){",
         "score": 66,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "adjacentCells",
+            "key"
+          ],
+          "calledBy": [
+            "place"
+          ],
+          "stateReads": [
+            "p",
+            "gx"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function hasAdjacentPath(gx,gz){",
         "intendedBehavior": "CORE_FUN primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 놀이공원 타이쿤를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 hasAdjacentPath의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/amusement-tycoon/index.html::hasAdjacentPath이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7536,8 +7886,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 놀이공원 타이쿤의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7556,8 +7906,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7603,12 +7953,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7677,5 +8027,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:08.224Z"
+  "generatedAt": "2026-10-30T19:11:09.080Z"
 }

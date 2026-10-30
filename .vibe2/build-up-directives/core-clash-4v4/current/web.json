@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "core-clash-4v4-build-up-g2-0fc06a83034b",
-  "directiveFingerprint": "0fc06a83034be5a549317661644f38b8f75c9e0701a245412f1a2adb79fb71b1",
-  "previousDirectiveFingerprint": "4a9c92bb47d5515b5bad6c92974eace4c105a7aaee58b1abd389cac0b898f636",
-  "forbiddenRepeatFingerprint": "4a9c92bb47d5515b5bad6c92974eace4c105a7aaee58b1abd389cac0b898f636",
+  "directiveId": "core-clash-4v4-build-up-g1-4ac4c143b0da",
+  "directiveFingerprint": "4ac4c143b0da02b429ba7b2ebde4f5ae7c956bf778ad30aa7788699af563bb36",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "core-clash-4v4",
   "gameName": "코어 전장 4대4",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/core-clash-4v4",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "4969d098edc4a6aebc4f55dc48a7fefa3170326dcbb34b62af0b6f9a9794fb52",
-    "previousDesignFingerprint": "4969d098edc4a6aebc4f55dc48a7fefa3170326dcbb34b62af0b6f9a9794fb52",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "core-clash-4v4",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "4969d098edc4a6aebc4f55dc48a7fefa3170326dcbb34b62af0b6f9a9794fb52",
     "sourceTreeFingerprint": "663b23d6adb2e3b94461a05b908f0c01bd3f61c880d2bd8eb64835d16ec525ce",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/core-clash-4v4",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/core-clash-4v4",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/core-clash-4v4/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/core-clash-4v4/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerSkill",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "respawnChampion",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "makeBoss",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/core-clash-4v4/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/core-clash-4v4/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerSkill",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "respawnChampion",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "makeBoss",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/core-clash-4v4/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/core-clash-4v4/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerSkill",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "respawnChampion",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "makeBoss",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/core-clash-4v4/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/core-clash-4v4/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "movePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerSkill",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "respawnChampion",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "playerAttack",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/core-clash-4v4/index.html",
+            "symbol": "makeBoss",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/core-clash-4v4/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/core-clash-4v4/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4445,14 +4587,6 @@
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
-        "line": 223,
-        "kind": "FUNCTION",
-        "symbol": "makeBoss",
-        "context": "function makeBoss(){",
-        "score": 98
-      },
-      {
-        "file": "web-games/core-clash-4v4/index.html",
         "line": 367,
         "kind": "FUNCTION",
         "symbol": "playerSkill",
@@ -4474,6 +4608,14 @@
         "symbol": "playerAttack",
         "context": "function playerAttack(){",
         "score": 90
+      },
+      {
+        "file": "web-games/core-clash-4v4/index.html",
+        "line": 223,
+        "kind": "FUNCTION",
+        "symbol": "makeBoss",
+        "context": "function makeBoss(){",
+        "score": 82
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
@@ -4501,22 +4643,6 @@
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
-        "line": 507,
-        "kind": "FUNCTION",
-        "symbol": "maybeSpawnBoss",
-        "context": "function maybeSpawnBoss(){",
-        "score": 74
-      },
-      {
-        "file": "web-games/core-clash-4v4/index.html",
-        "line": 630,
-        "kind": "FUNCTION",
-        "symbol": "drawLabels",
-        "context": "function drawLabels(){",
-        "score": 74
-      },
-      {
-        "file": "web-games/core-clash-4v4/index.html",
         "line": 163,
         "kind": "FUNCTION",
         "symbol": "persist",
@@ -4533,18 +4659,18 @@
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
-        "line": 511,
+        "line": 507,
         "kind": "FUNCTION",
-        "symbol": "update",
-        "context": "function update(dt){",
+        "symbol": "maybeSpawnBoss",
+        "context": "function maybeSpawnBoss(){",
         "score": 66
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
-        "line": 695,
+        "line": 511,
         "kind": "FUNCTION",
-        "symbol": "off",
-        "context": "const off=e=>{e.preventDefault();input[dir]=false};",
+        "symbol": "update",
+        "context": "function update(dt){",
         "score": 66
       },
       {
@@ -4561,6 +4687,22 @@
         "kind": "FUNCTION",
         "symbol": "fireProjectile",
         "context": "function fireProjectile(source,target,damageAmount,speed=520,r=4){",
+        "score": 58
+      },
+      {
+        "file": "web-games/core-clash-4v4/index.html",
+        "line": 630,
+        "kind": "FUNCTION",
+        "symbol": "drawLabels",
+        "context": "function drawLabels(){",
+        "score": 58
+      },
+      {
+        "file": "web-games/core-clash-4v4/index.html",
+        "line": 695,
+        "kind": "FUNCTION",
+        "symbol": "off",
+        "context": "const off=e=>{e.preventDefault();input[dir]=false};",
         "score": 58
       },
       {
@@ -4621,22 +4763,16 @@
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
-        "line": 114,
+        "line": 166,
         "kind": "FUNCTION",
-        "symbol": "$",
-        "context": "const $=id=>document.getElementById(id);",
+        "symbol": "norm",
+        "context": "function norm(dx,dy){const l=Math.hypot(dx,dy)||1;return{x:dx/l,y:dy/l,d:l}}",
         "score": 42
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "8baba4088f4dac9e69089e1da8c397d6a975cfaba80e730fb340a811d2ccec12",
-    "currentSourceTreeFingerprint": "663b23d6adb2e3b94461a05b908f0c01bd3f61c880d2bd8eb64835d16ec525ce",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5800,9 +5936,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"코어 전장 4대4\", 현재 책임 소스는 web-games/core-clash-4v4/index.html::movePlayer, web-games/core-clash-4v4/index.html::makeBoss, web-games/core-clash-4v4/index.html::playerSkill, web-games/core-clash-4v4/index.html::respawnChampion, web-games/core-clash-4v4/index.html::playerAttack, web-games/core-clash-4v4/index.html::healAtBase, web-games/core-clash-4v4/index.html::performAttack, web-games/core-clash-4v4/index.html::playerDash이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"코어 전장 4대4\", 현재 책임 소스는 web-games/core-clash-4v4/index.html::movePlayer, web-games/core-clash-4v4/index.html::playerSkill, web-games/core-clash-4v4/index.html::respawnChampion, web-games/core-clash-4v4/index.html::playerAttack, web-games/core-clash-4v4/index.html::makeBoss, web-games/core-clash-4v4/index.html::healAtBase, web-games/core-clash-4v4/index.html::performAttack, web-games/core-clash-4v4/index.html::playerDash이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/core-clash-4v4/index.html::movePlayer, web-games/core-clash-4v4/index.html::makeBoss, web-games/core-clash-4v4/index.html::playerSkill, web-games/core-clash-4v4/index.html::respawnChampion, web-games/core-clash-4v4/index.html::playerAttack, web-games/core-clash-4v4/index.html::healAtBase, web-games/core-clash-4v4/index.html::performAttack, web-games/core-clash-4v4/index.html::playerDash에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/core-clash-4v4/index.html::movePlayer, web-games/core-clash-4v4/index.html::playerSkill, web-games/core-clash-4v4/index.html::respawnChampion, web-games/core-clash-4v4/index.html::playerAttack, web-games/core-clash-4v4/index.html::makeBoss, web-games/core-clash-4v4/index.html::healAtBase, web-games/core-clash-4v4/index.html::performAttack, web-games/core-clash-4v4/index.html::playerDash에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "코어 전장 4대4를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "환경 탐색과 자원 확보 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5966,21 +6102,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -6016,7 +6151,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 208,
+        "score": 66,
         "gapDomains": [
           "INVENTORY_USABILITY",
           "EQUIPMENT_LOADOUT",
@@ -6139,12 +6274,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "663b23d6adb2e3b94461a05b908f0c01bd3f61c880d2bd8eb64835d16ec525ce",
-    "priorSourceFingerprint": "8baba4088f4dac9e69089e1da8c397d6a975cfaba80e730fb340a811d2ccec12",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6618,8 +6753,8 @@
       "gameId": "core-clash-4v4",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
-        "actorClass": "ENEMY",
+        "generation": 1,
+        "actorClass": "BOSS",
         "sourceOwnerFile": "web-games/core-clash-4v4/index.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
@@ -6633,7 +6768,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "core-clash-4v4",
-          "actorClass": "ENEMY",
+          "actorClass": "BOSS",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -7306,15 +7441,6 @@
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
-        "line": 223,
-        "kind": "FUNCTION",
-        "symbol": "makeBoss",
-        "currentBehavior": "function makeBoss(){",
-        "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 makeBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/core-clash-4v4/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/core-clash-4v4/index.html",
         "line": 367,
         "kind": "FUNCTION",
         "symbol": "playerSkill",
@@ -7338,6 +7464,15 @@
         "symbol": "playerAttack",
         "currentBehavior": "function playerAttack(){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/core-clash-4v4/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/core-clash-4v4/index.html",
+        "line": 223,
+        "kind": "FUNCTION",
+        "symbol": "makeBoss",
+        "currentBehavior": "function makeBoss(){",
+        "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 makeBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/core-clash-4v4/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7377,12 +7512,6 @@
       },
       {
         "file": "web-games/core-clash-4v4/index.html",
-        "symbol": "makeBoss",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/core-clash-4v4/index.html",
         "symbol": "playerSkill",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
@@ -7396,6 +7525,12 @@
       {
         "file": "web-games/core-clash-4v4/index.html",
         "symbol": "playerAttack",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/core-clash-4v4/index.html",
+        "symbol": "makeBoss",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7499,21 +7634,48 @@
         "symbol": "movePlayer",
         "context": "function movePlayer(dt){",
         "score": 106,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "norm",
+            "clamp"
+          ],
+          "calledBy": [
+            "update"
+          ],
+          "stateReads": [
+            "WORLD",
+            "player",
+            "input",
+            "keys",
+            "n",
+            "dx",
+            "dy",
+            "x",
+            "y",
+            "dt"
+          ],
+          "stateWrites": [
+            "player",
+            "n",
+            "dx",
+            "dy",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD",
+            "INPUT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function movePlayer(dt){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 movePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/core-clash-4v4/index.html::movePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/core-clash-4v4/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/core-clash-4v4/index.html",
-        "line": 223,
-        "kind": "FUNCTION",
-        "symbol": "makeBoss",
-        "context": "function makeBoss(){",
-        "score": 98,
-        "currentBehavior": "function makeBoss(){",
-        "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 makeBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/core-clash-4v4/index.html::makeBoss이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/core-clash-4v4/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7523,6 +7685,47 @@
         "symbol": "playerSkill",
         "context": "function playerSkill(){",
         "score": 98,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast",
+            "enemiesFor",
+            "dist",
+            "damage",
+            "addEffect",
+            "nearestEnemy",
+            "norm",
+            "fireProjectile"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "running",
+            "player",
+            "team",
+            "hit",
+            "t",
+            "n",
+            "x",
+            "y"
+          ],
+          "stateWrites": [
+            "player",
+            "hit",
+            "t",
+            "n",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "AI"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function playerSkill(){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerSkill의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/core-clash-4v4/index.html::playerSkill이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7535,6 +7738,39 @@
         "symbol": "respawnChampion",
         "context": "function respawnChampion(c){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "rnd",
+            "toast"
+          ],
+          "calledBy": [
+            "updateDeaths"
+          ],
+          "stateReads": [
+            "SPAWN",
+            "spawn",
+            "team",
+            "target",
+            "x",
+            "y"
+          ],
+          "stateWrites": [
+            "spawn",
+            "target",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "INTERACTION",
+            "COMBAT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function respawnChampion(c){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 respawnChampion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/core-clash-4v4/index.html::respawnChampion이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7547,9 +7783,74 @@
         "symbol": "playerAttack",
         "context": "function playerAttack(){",
         "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "nearestEnemy",
+            "toast",
+            "performAttack"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "running",
+            "player",
+            "team",
+            "target"
+          ],
+          "stateWrites": [
+            "target"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "INTERACTION",
+            "AI"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function playerAttack(){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/core-clash-4v4/index.html::playerAttack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/core-clash-4v4/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/core-clash-4v4/index.html",
+        "line": 223,
+        "kind": "FUNCTION",
+        "symbol": "makeBoss",
+        "context": "function makeBoss(){",
+        "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "maybeSpawnBoss"
+          ],
+          "stateReads": [
+            "BOSS_POS",
+            "team",
+            "x",
+            "y"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "ECONOMY",
+            "PROGRESSION",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function makeBoss(){",
+        "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 makeBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/core-clash-4v4/index.html::makeBoss이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/core-clash-4v4/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7559,6 +7860,31 @@
         "symbol": "healAtBase",
         "context": "function healAtBase(c,dt){",
         "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist"
+          ],
+          "calledBy": [
+            "aiChampion",
+            "update"
+          ],
+          "stateReads": [
+            "SPAWN",
+            "team",
+            "base",
+            "dt"
+          ],
+          "stateWrites": [
+            "base"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function healAtBase(c,dt){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 healAtBase의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/core-clash-4v4/index.html::healAtBase이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7571,6 +7897,38 @@
         "symbol": "performAttack",
         "context": "function performAttack(actor,target){",
         "score": 74,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "dist",
+            "fireProjectile",
+            "damage",
+            "addEffect"
+          ],
+          "calledBy": [
+            "playerAttack",
+            "aiChampion",
+            "aiMinion",
+            "aiTower",
+            "aiCamp"
+          ],
+          "stateReads": [
+            "team",
+            "target",
+            "x",
+            "y"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "INTERACTION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function performAttack(actor,target){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 performAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/core-clash-4v4/index.html::performAttack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7583,6 +7941,47 @@
         "symbol": "playerDash",
         "context": "function playerDash(){",
         "score": 74,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "toast",
+            "norm",
+            "clamp",
+            "addEffect"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "WORLD",
+            "TEAM_BLUE",
+            "running",
+            "player",
+            "input",
+            "keys",
+            "team",
+            "n",
+            "dx",
+            "dy",
+            "x",
+            "y"
+          ],
+          "stateWrites": [
+            "player",
+            "n",
+            "dx",
+            "dy",
+            "x",
+            "y"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "WORLD",
+            "INPUT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function playerDash(){",
         "intendedBehavior": "CORE_FUN primary goal \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 코어 전장 4대4를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerDash의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/core-clash-4v4/index.html::playerDash이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7682,8 +8081,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 코어 전장 4대4의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7702,8 +8101,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7749,12 +8148,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7822,5 +8221,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.294Z"
+  "generatedAt": "2026-10-30T19:11:10.612Z"
 }

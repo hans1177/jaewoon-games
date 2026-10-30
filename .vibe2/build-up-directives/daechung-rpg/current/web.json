@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g3-c9da34727c49",
-  "directiveFingerprint": "c9da34727c49c55f880eeeadd92c5848b59297d236dabba3d3f0672f558f5ef1",
-  "previousDirectiveFingerprint": "aec5c22169d2503a6b7b256bb1741e521720ca51574787528113779b33b58956",
-  "forbiddenRepeatFingerprint": "aec5c22169d2503a6b7b256bb1741e521720ca51574787528113779b33b58956",
+  "directiveId": "daechung-rpg-build-up-g1-5a9273fd1ca0",
+  "directiveFingerprint": "5a9273fd1ca0c7d9469eb8c8e38b577451821930ca844d6dbf767bca710af362",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "daechung-rpg",
   "gameName": "포탈 알피지",
-  "generation": 3,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/daechung-rpg",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "previousDesignFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "daechung-rpg",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
     "sourceTreeFingerprint": "174e3b6ee6cc5f25cb5849dfdc5b2da21867ea8bb40d61f1c3ca1d68f1726554",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/daechung-rpg",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/daechung-rpg",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,48 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/daechung-rpg/index.html",
+            "web-games/daechung-rpg/patch-core18.js",
+            "web-games/daechung-rpg/patch-v15.js"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/daechung-rpg/index.html",
+          "web-games/daechung-rpg/patch-core18.js",
+          "web-games/daechung-rpg/patch-v15.js"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "autoQuestCheck",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "allArmorsOwned",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "rewardNext",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "unlockAfterReaper",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "spawnReaper",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +552,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +563,48 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/daechung-rpg/index.html",
+            "web-games/daechung-rpg/patch-core18.js",
+            "web-games/daechung-rpg/patch-v15.js"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/daechung-rpg/index.html",
+          "web-games/daechung-rpg/patch-core18.js",
+          "web-games/daechung-rpg/patch-v15.js"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "autoQuestCheck",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "allArmorsOwned",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "rewardNext",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "unlockAfterReaper",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "spawnReaper",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +655,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +666,48 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/daechung-rpg/index.html",
+            "web-games/daechung-rpg/patch-core18.js",
+            "web-games/daechung-rpg/patch-v15.js"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/daechung-rpg/index.html",
+          "web-games/daechung-rpg/patch-core18.js",
+          "web-games/daechung-rpg/patch-v15.js"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "autoQuestCheck",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "allArmorsOwned",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "rewardNext",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "unlockAfterReaper",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "spawnReaper",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +757,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +768,48 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/daechung-rpg/index.html",
+            "web-games/daechung-rpg/patch-core18.js",
+            "web-games/daechung-rpg/patch-v15.js"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/daechung-rpg/index.html",
+          "web-games/daechung-rpg/patch-core18.js",
+          "web-games/daechung-rpg/patch-v15.js"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "autoQuestCheck",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "allArmorsOwned",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "rewardNext",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "unlockAfterReaper",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/daechung-rpg/patch-v15.js",
+            "symbol": "spawnReaper",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +819,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +888,33 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/daechung-rpg/index.html",
+      "web-games/daechung-rpg/patch-v15.js",
+      "web-games/daechung-rpg/unity/Build/daechung-rpg.loader.js",
+      "web-games/daechung-rpg/unity/index.html",
+      "web-games/daechung-rpg/patch-v16.js",
+      "web-games/daechung-rpg/patch-core18.js",
+      "web-games/daechung-rpg/patch-v18.js",
+      "web-games/daechung-rpg/patch-v17.js",
+      "web-games/daechung-rpg/TemplateData/profiler.js"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/daechung-rpg/index.html",
+      "web-games/daechung-rpg/patch-v15.js",
+      "web-games/daechung-rpg/unity/Build/daechung-rpg.loader.js",
+      "web-games/daechung-rpg/unity/index.html",
+      "web-games/daechung-rpg/patch-v16.js",
+      "web-games/daechung-rpg/patch-core18.js",
+      "web-games/daechung-rpg/patch-v18.js",
+      "web-games/daechung-rpg/patch-v17.js",
+      "web-games/daechung-rpg/TemplateData/profiler.js"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4479,7 +4653,7 @@
         "kind": "FUNCTION",
         "symbol": "createUnityInstance",
         "context": "function createUnityInstance(t,n,r=()=>{}){function d(e,t){if(!d.aborted&&n.showBanner)return\"error\"==t&&(d.aborted=!0),n.showBanner(e,t);switch(t){case\"error\":console.error(e);bre",
-        "score": 674
+        "score": 418
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4487,7 +4661,7 @@
         "kind": "FUNCTION",
         "symbol": "autoQuestCheck",
         "context": "function autoQuestCheck(){if(q===7&&p.lv>=5){rewardNext(8,'다음: 전직하기');return true}if(q===8&&p.job&&p.job!=='미전직'){rewardNext(9,'다음: 오우거 처치');return true}if(q===11&&allArmorsOwned()",
-        "score": 250
+        "score": 218
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4495,7 +4669,7 @@
         "kind": "FUNCTION",
         "symbol": "allArmorsOwned",
         "context": "function allArmorsOwned(){return Object.keys(ARMORS).filter(n=>['나무 갑옷','철 갑옷','강철 갑옷'].includes(n)).every(n=>ownedArmors[n])}",
-        "score": 202
+        "score": 162
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4503,7 +4677,7 @@
         "kind": "FUNCTION",
         "symbol": "rewardNext",
         "context": "function rewardNext(next,msg){p.g+=50;q=next;sfx('questReward');hud();toastMsg('퀘스트 완료! +50골드');if(msg)setTimeout(()=>toastMsg(msg),520)}",
-        "score": 170
+        "score": 146
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4511,7 +4685,7 @@
         "kind": "FUNCTION",
         "symbol": "unlockAfterReaper",
         "context": "function unlockAfterReaper(){if(postReaper)return;postReaper=true;if(!P.some(a=>a[0]==='f10'))P.push(['f10',520,1040,'10번 포탈','Lv.21~23']);if(!P.some(a=>a[0]==='f11'))P.push(['f11'",
-        "score": 170
+        "score": 146
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4519,23 +4693,7 @@
         "kind": "FUNCTION",
         "symbol": "spawnReaper",
         "context": "function spawnReaper(){if(zone!=='f9'||reaperRef||reaperDefeated)return;const m={n:'사신',lv:20,x:ALTAR.x,y:ALTAR.y-130,hp:3000,mhp:3000,a:66,spd:72,r:48,xp:0,g:0,type:'reaper',baseT",
-        "score": 154
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 442,
-        "kind": "FUNCTION",
-        "symbol": "renderBag",
-        "context": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
         "score": 146
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 325,
-        "kind": "FUNCTION",
-        "symbol": "damage",
-        "context": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
-        "score": 130
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4543,31 +4701,7 @@
         "kind": "FUNCTION",
         "symbol": "drawTrainer",
         "context": "function drawTrainer(t){drawHuman(t.x,t.y,'smith',Math.floor(performance.now()/45)%34,'idle',false);ctx.fillStyle='#17120e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';c",
-        "score": 130
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 256,
-        "kind": "FUNCTION",
-        "symbol": "spawnCaveMonster",
-        "context": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
-        "score": 114
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 279,
-        "kind": "FUNCTION",
-        "symbol": "buyOrEquipWeapon",
-        "context": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
-        "score": 114
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 327,
-        "kind": "FUNCTION",
-        "symbol": "portals",
-        "context": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
-        "score": 114
+        "score": 122
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4578,92 +4712,44 @@
         "score": 114
       },
       {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 325,
+        "kind": "FUNCTION",
+        "symbol": "damage",
+        "context": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "score": 106
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 442,
+        "kind": "FUNCTION",
+        "symbol": "renderBag",
+        "context": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
+        "score": 106
+      },
+      {
         "file": "web-games/daechung-rpg/patch-v15.js",
         "line": 268,
         "kind": "FUNCTION",
         "symbol": "partyRegisterKill",
         "context": "function partyRegisterKill(m,killerId,xpValue,goldValue){",
-        "score": 114
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 257,
-        "kind": "FUNCTION",
-        "symbol": "spawnHiddenEnemy",
-        "context": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
         "score": 106
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 258,
-        "kind": "FUNCTION",
-        "symbol": "nearest",
-        "context": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
-        "score": 106
+        "line": 443,
+        "kind": "METHOD",
+        "symbol": "bagBtn.onclick",
+        "context": "bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>bag.style.display='none';closeWeapon.onclick=()=>weaponShop.style.display=",
+        "score": 104
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 353,
-        "kind": "FUNCTION",
-        "symbol": "weaponDraw",
-        "context": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
-        "score": 106
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 259,
-        "kind": "FUNCTION",
-        "symbol": "talkNow",
-        "context": "function talkNow(){",
-        "score": 98
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 278,
-        "kind": "FUNCTION",
-        "symbol": "equipWeapon",
-        "context": "function equipWeapon(name){p.weapon=name;sfx('weaponEquip');toastMsg(`${name} 장착 · 공격 ${Math.floor(currentAtk())}`);hud()}",
-        "score": 98
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 323,
-        "kind": "FUNCTION",
-        "symbol": "fireArrow",
-        "context": "function fireArrow(m){const a=Math.atan2(p.y-m.y,p.x-m.x),speed=p.spd*.6,homing=Math.random()<.30;sfx(homing?'homingArrow':'arrowShoot');arrows.push({x:m.x,y:m.y,vx:Math.cos(a)*spe",
-        "score": 98
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 328,
-        "kind": "FUNCTION",
-        "symbol": "stepAnim",
-        "context": "function stepAnim(e,dt,moving=false){e.animTick=(e.animTick||0)+dt*30;if(e.animState==='attack'){e.animFrame=Math.min(33,Math.floor(e.animTick));if(e.animFrame>=33){e.animState=mov",
-        "score": 98
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 329,
-        "kind": "FUNCTION",
-        "symbol": "aggroSoundFor",
-        "context": "function aggroSoundFor(m){if(['slime','blue','caveSlime'].includes(m.type))return 'slimeAggro';if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))return 'bossAggro';if(['boa",
-        "score": 98
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 355,
-        "kind": "FUNCTION",
-        "symbol": "drawMonsterSprite",
-        "context": "function drawMonsterSprite(m){",
-        "score": 98
-      },
-      {
-        "file": "web-games/daechung-rpg/patch-v15.js",
-        "line": 179,
-        "kind": "FUNCTION",
-        "symbol": "hazard",
-        "context": "function hazard(x,y,r,delay,damage,kind){hazards.push({x,y,r,t:delay,damage,kind,hit:false})}",
-        "score": 98
+        "line": 444,
+        "kind": "METHOD",
+        "symbol": "acceptHidden.onclick",
+        "context": "acceptHidden.onclick=()=>{hq=1;hiddenOffer.style.display='none';sfx('questAccept');spawnHiddenEnemy();hud();toastMsg('히든 퀘스트 수락! 적이 비석 앞에 나타났다')};declineHidden.onclick=()=>hiddenOf",
+        "score": 96
       },
       {
         "file": "web-games/daechung-rpg/index.html",
@@ -4675,42 +4761,18 @@
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 280,
+        "line": 256,
         "kind": "FUNCTION",
-        "symbol": "openArmorShop",
-        "context": "function openArmorShop(){sfx('shopOpen');renderArmorShop();armorShop.style.display='flex'}",
+        "symbol": "spawnCaveMonster",
+        "context": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
         "score": 90
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 281,
+        "line": 279,
         "kind": "FUNCTION",
-        "symbol": "renderArmorShop",
-        "context": "function renderArmorShop(){armorList.innerHTML=Object.entries(ARMORS).map(([name,a])=>{const o=ownedArmors[name],e=p.armor===name,l=e?'착용중':o?'착용':`${a.price}G 구매`;return `<div cla",
-        "score": 90
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 314,
-        "kind": "FUNCTION",
-        "symbol": "kill",
-        "context": "function kill(m){",
-        "score": 90
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 324,
-        "kind": "FUNCTION",
-        "symbol": "updateArrows",
-        "context": "function updateArrows(dt){for(let i=arrows.length-1;i>=0;i--){const a=arrows[i];a.life-=dt;a.flyTick+=dt;if(a.flyTick>.65){a.flyTick=0;sfx('arrowFly')}if(a.homing>0){a.homing-=dt;c",
-        "score": 90
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 330,
-        "kind": "FUNCTION",
-        "symbol": "update",
-        "context": "function update(dt){",
+        "symbol": "buyOrEquipWeapon",
+        "context": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
         "score": 90
       },
       {
@@ -4723,10 +4785,10 @@
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
-        "line": 180,
+        "line": 179,
         "kind": "FUNCTION",
-        "symbol": "bossPattern",
-        "context": "function bossPattern(m,dt){m.specialCd=(m.specialCd==null?3:m.specialCd-dt);if(m.specialCd>0)return;if(m.type==='slimeKing'){hazard(p.x,p.y,135,.9,26,'slime');m.specialCd=6;toastMs",
+        "symbol": "hazard",
+        "context": "function hazard(x,y,r,delay,damage,kind){hazards.push({x,y,r,t:delay,damage,kind,hit:false})}",
         "score": 90
       },
       {
@@ -4738,28 +4800,108 @@
         "score": 90
       },
       {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 257,
+        "kind": "FUNCTION",
+        "symbol": "spawnHiddenEnemy",
+        "context": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 258,
+        "kind": "FUNCTION",
+        "symbol": "nearest",
+        "context": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 278,
+        "kind": "FUNCTION",
+        "symbol": "equipWeapon",
+        "context": "function equipWeapon(name){p.weapon=name;sfx('weaponEquip');toastMsg(`${name} 장착 · 공격 ${Math.floor(currentAtk())}`);hud()}",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 281,
+        "kind": "FUNCTION",
+        "symbol": "renderArmorShop",
+        "context": "function renderArmorShop(){armorList.innerHTML=Object.entries(ARMORS).map(([name,a])=>{const o=ownedArmors[name],e=p.armor===name,l=e?'착용중':o?'착용':`${a.price}G 구매`;return `<div cla",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 327,
+        "kind": "FUNCTION",
+        "symbol": "portals",
+        "context": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 328,
+        "kind": "FUNCTION",
+        "symbol": "stepAnim",
+        "context": "function stepAnim(e,dt,moving=false){e.animTick=(e.animTick||0)+dt*30;if(e.animState==='attack'){e.animFrame=Math.min(33,Math.floor(e.animTick));if(e.animFrame>=33){e.animState=mov",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 329,
+        "kind": "FUNCTION",
+        "symbol": "aggroSoundFor",
+        "context": "function aggroSoundFor(m){if(['slime','blue','caveSlime'].includes(m.type))return 'slimeAggro';if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))return 'bossAggro';if(['boa",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 353,
+        "kind": "FUNCTION",
+        "symbol": "weaponDraw",
+        "context": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 355,
+        "kind": "FUNCTION",
+        "symbol": "drawMonsterSprite",
+        "context": "function drawMonsterSprite(m){",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 180,
+        "kind": "FUNCTION",
+        "symbol": "bossPattern",
+        "context": "function bossPattern(m,dt){m.specialCd=(m.specialCd==null?3:m.specialCd-dt);if(m.specialCd>0)return;if(m.type==='slimeKing'){hazard(p.x,p.y,135,.9,26,'slime');m.specialCd=6;toastMs",
+        "score": 82
+      },
+      {
         "file": "web-games/daechung-rpg/patch-v15.js",
         "line": 330,
         "kind": "FUNCTION",
         "symbol": "golemSprite",
         "context": "function golemSprite(m){ctx.save();ctx.translate(m.x,m.y);shadow(0,8,32);ctx.fillStyle=m.dormant?'#55584f':'#666b5e';ctx.beginPath();ctx.moveTo(-35,18);ctx.lineTo(-29,-28);ctx.line",
-        "score": 90
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 276,
-        "kind": "FUNCTION",
-        "symbol": "openWeaponShop",
-        "context": "function openWeaponShop(){sfx('shopOpen');renderWeaponShop();weaponShop.style.display='flex'}",
         "score": 82
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 277,
+        "line": 440,
+        "kind": "METHOD",
+        "symbol": "attack.onpointerdown",
+        "context": "attack.onpointerdown=e=>{e.preventDefault();initAudio();attackNow()};talk.onpointerdown=e=>{e.preventDefault();initAudio();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault()",
+        "score": 80
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 280,
         "kind": "FUNCTION",
-        "symbol": "renderWeaponShop",
-        "context": "function renderWeaponShop(){weaponList.innerHTML=Object.entries(WEAPONS).filter(([,w])=>!w.hidden).map(([name,w])=>{const o=ownedWeapons[name],e=p.weapon===name,l=e?'장착중':o?'장착':`$",
-        "score": 82
+        "symbol": "openArmorShop",
+        "context": "function openArmorShop(){sfx('shopOpen');renderArmorShop();armorShop.style.display='flex'}",
+        "score": 74
       },
       {
         "file": "web-games/daechung-rpg/index.html",
@@ -4767,7 +4909,7 @@
         "kind": "FUNCTION",
         "symbol": "buyOrEquipArmor",
         "context": "function buyOrEquipArmor(name){const a=ARMORS[name],old=maxHp();if(!ownedArmors[name]){if(p.g<a.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=a.price;ownedArmors[name]=true",
-        "score": 82
+        "score": 74
       },
       {
         "file": "web-games/daechung-rpg/index.html",
@@ -4775,23 +4917,39 @@
         "kind": "FUNCTION",
         "symbol": "openSellShop",
         "context": "function openSellShop(){sfx('shopOpen');renderSellShop();sellShop.style.display='flex'}",
-        "score": 82
+        "score": 74
       },
       {
-        "file": "web-games/daechung-rpg/patch-v15.js",
-        "line": 329,
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 323,
         "kind": "FUNCTION",
-        "symbol": "crocSprite",
-        "context": "function crocSprite(m){ctx.save();ctx.translate(m.x,m.y);ctx.scale(m.dir||1,1);shadow(0,5,34);ctx.fillStyle='#315d3c';ctx.beginPath();ctx.ellipse(0,0,42,15,0,0,Math.PI*2);ctx.fill(",
-        "score": 82
+        "symbol": "fireArrow",
+        "context": "function fireArrow(m){const a=Math.atan2(p.y-m.y,p.x-m.x),speed=p.spd*.6,homing=Math.random()<.30;sfx(homing?'homingArrow':'arrowShoot');arrows.push({x:m.x,y:m.y,vx:Math.cos(a)*spe",
+        "score": 74
       },
       {
-        "file": "web-games/daechung-rpg/patch-v15.js",
-        "line": 331,
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 324,
         "kind": "FUNCTION",
-        "symbol": "reaperSprite",
-        "context": "function reaperSprite(m){const att=m.animState==='attack'?Math.sin((m.animFrame||0)/33*Math.PI):0;ctx.save();ctx.translate(m.x,m.y);ctx.scale((m.dir||1)*1.5,1.5);shadow(0,10,50);ct",
-        "score": 82
+        "symbol": "updateArrows",
+        "context": "function updateArrows(dt){for(let i=arrows.length-1;i>=0;i--){const a=arrows[i];a.life-=dt;a.flyTick+=dt;if(a.flyTick>.65){a.flyTick=0;sfx('arrowFly')}if(a.homing>0){a.homing-=dt;c",
+        "score": 74
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 330,
+        "kind": "FUNCTION",
+        "symbol": "update",
+        "context": "function update(dt){",
+        "score": 74
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 343,
+        "kind": "FUNCTION",
+        "symbol": "drawHuman",
+        "context": "function drawHuman(px,py,role,frame,state,flip=false){",
+        "score": 74
       },
       {
         "file": "web-games/daechung-rpg/patch-v15.js",
@@ -4807,6 +4965,22 @@
         "kind": "FUNCTION",
         "symbol": "riverDraw",
         "context": "function riverDraw(){ctx.fillStyle='#315f78';ctx.fillRect(70,520,1660,160);ctx.fillStyle='#5d899a';for(let x=100;x<1700;x+=110){ctx.beginPath();ctx.ellipse(x,550+(x%3)*30,45,8,0,0,",
+        "score": 74
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 329,
+        "kind": "FUNCTION",
+        "symbol": "crocSprite",
+        "context": "function crocSprite(m){ctx.save();ctx.translate(m.x,m.y);ctx.scale(m.dir||1,1);shadow(0,5,34);ctx.fillStyle='#315d3c';ctx.beginPath();ctx.ellipse(0,0,42,15,0,0,Math.PI*2);ctx.fill(",
+        "score": 74
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 331,
+        "kind": "FUNCTION",
+        "symbol": "reaperSprite",
+        "context": "function reaperSprite(m){const att=m.animState==='attack'?Math.sin((m.animFrame||0)/33*Math.PI):0;ctx.save();ctx.translate(m.x,m.y);ctx.scale((m.dir||1)*1.5,1.5);shadow(0,10,50);ct",
         "score": 74
       },
       {
@@ -4856,17 +5030,107 @@
         "symbol": "enterAmazon",
         "context": "function enterAmazon(){WORLD.w=3200;WORLD.h=2200;baseEnter('amazon');mons=[];const c=F.amazon.m[0],g=F.amazon.m[1];[[1035,1110],[1510,760],[1900,1170],[2440,910]].forEach(v=>custom",
         "score": 58
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v16.js",
+        "line": 119,
+        "kind": "FUNCTION",
+        "symbol": "drawCliffClimb",
+        "context": "function drawCliffClimb(){",
+        "score": 42
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v18.js",
+        "line": 5,
+        "kind": "FUNCTION",
+        "symbol": "kill",
+        "context": "kill=function(m){",
+        "score": 42
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v16.js",
+        "line": 29,
+        "kind": "FUNCTION",
+        "symbol": "giveMountainReward",
+        "context": "function giveMountainReward(){",
+        "score": 34
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v16.js",
+        "line": 63,
+        "kind": "FUNCTION",
+        "symbol": "enterMidmount",
+        "context": "function enterMidmount(){",
+        "score": 34
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v17.js",
+        "line": 9,
+        "kind": "FUNCTION",
+        "symbol": "drawGraveGate17",
+        "context": "function drawGraveGate17(x,y){",
+        "score": 34
+      },
+      {
+        "file": "web-games/daechung-rpg/unity/index.html",
+        "line": 124,
+        "kind": "METHOD",
+        "symbol": "script.onerror",
+        "context": "script.onerror = () => unityShowBanner(\"게임 실행 파일을 받지 못했어. 연결을 확인하고 다시 열어줘.\", \"error\");",
+        "score": 32
+      },
+      {
+        "file": "web-games/daechung-rpg/unity/index.html",
+        "line": 125,
+        "kind": "METHOD",
+        "symbol": "script.onload",
+        "context": "script.onload = () => {",
+        "score": 32
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-core18.js",
+        "line": 37,
+        "kind": "FUNCTION",
+        "symbol": "talkNow",
+        "context": "talkNow=function(){const n=nearest();if(n&&n.k==='potion'){sfx('shopOpen');potionShop.style.display='flex';return}talkBeforePotionRestore()};",
+        "score": 26
+      },
+      {
+        "file": "web-games/daechung-rpg/TemplateData/profiler.js",
+        "line": 12,
+        "kind": "FUNCTION",
+        "symbol": "startStatusUpdate",
+        "context": "const startStatusUpdate = () => {",
+        "score": 26
+      },
+      {
+        "file": "web-games/daechung-rpg/TemplateData/profiler.js",
+        "line": 30,
+        "kind": "FUNCTION",
+        "symbol": "updateProfilingStatus",
+        "context": "const updateProfilingStatus = () => {",
+        "score": 26
+      },
+      {
+        "file": "web-games/daechung-rpg/unity/index.html",
+        "line": 40,
+        "kind": "FUNCTION",
+        "symbol": "unityShowBanner",
+        "context": "function unityShowBanner(msg, type) {",
+        "score": 26
+      },
+      {
+        "file": "web-games/daechung-rpg/TemplateData/profiler.js",
+        "line": 17,
+        "kind": "METHOD",
+        "symbol": "profilerButton.onclick",
+        "context": "profilerButton.onclick = () => {",
+        "score": 24
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "aae4f7c6a7b795c943e2ec66611c56b9f851b16631239d790c55cf9a84dd2dd2",
-    "currentSourceTreeFingerprint": "174e3b6ee6cc5f25cb5849dfdc5b2da21867ea8bb40d61f1c3ca1d68f1726554",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -5945,9 +6209,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"5포탈 RPG: 던전 파티\", 현재 책임 소스는 web-games/daechung-rpg/index.html::renderBag, web-games/daechung-rpg/index.html::damage, web-games/daechung-rpg/index.html::spawnCaveMonster, web-games/daechung-rpg/index.html::buyOrEquipWeapon, web-games/daechung-rpg/index.html::portals, web-games/daechung-rpg/index.html::spawnHiddenEnemy, web-games/daechung-rpg/index.html::nearest, web-games/daechung-rpg/index.html::weaponDraw이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"5포탈 RPG: 던전 파티\", 현재 책임 소스는 web-games/daechung-rpg/index.html::damage, web-games/daechung-rpg/index.html::renderBag, web-games/daechung-rpg/index.html::bagBtn.onclick, web-games/daechung-rpg/index.html::acceptHidden.onclick, web-games/daechung-rpg/index.html::hud, web-games/daechung-rpg/index.html::spawnCaveMonster, web-games/daechung-rpg/index.html::buyOrEquipWeapon, web-games/daechung-rpg/index.html::spawnHiddenEnemy이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/daechung-rpg/index.html::renderBag, web-games/daechung-rpg/index.html::damage, web-games/daechung-rpg/index.html::spawnCaveMonster, web-games/daechung-rpg/index.html::buyOrEquipWeapon, web-games/daechung-rpg/index.html::portals, web-games/daechung-rpg/index.html::spawnHiddenEnemy, web-games/daechung-rpg/index.html::nearest, web-games/daechung-rpg/index.html::weaponDraw에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/daechung-rpg/index.html::damage, web-games/daechung-rpg/index.html::renderBag, web-games/daechung-rpg/index.html::bagBtn.onclick, web-games/daechung-rpg/index.html::acceptHidden.onclick, web-games/daechung-rpg/index.html::hud, web-games/daechung-rpg/index.html::spawnCaveMonster, web-games/daechung-rpg/index.html::buyOrEquipWeapon, web-games/daechung-rpg/index.html::spawnHiddenEnemy에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "5포탈 RPG: 던전 파티를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "퀘스트와 인물 관계 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6126,13 +6390,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6140,8 +6404,6 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
@@ -6177,7 +6439,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 158,
+        "score": 34,
         "gapDomains": [
           "GAME_FEEL"
         ]
@@ -6287,12 +6549,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "174e3b6ee6cc5f25cb5849dfdc5b2da21867ea8bb40d61f1c3ca1d68f1726554",
-    "priorSourceFingerprint": "aae4f7c6a7b795c943e2ec66611c56b9f851b16631239d790c55cf9a84dd2dd2",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -7046,9 +7308,9 @@
       "gameId": "daechung-rpg",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 3,
-        "actorClass": "ENEMY",
-        "sourceOwnerFile": "web-games/daechung-rpg/patch-v16.js",
+        "generation": 1,
+        "actorClass": "BOSS",
+        "sourceOwnerFile": "web-games/daechung-rpg/index.html",
         "qualityAxis": "NATIVE_RIG_BINDING",
         "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
@@ -7061,7 +7323,7 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "daechung-rpg",
-          "actorClass": "ENEMY",
+          "actorClass": "BOSS",
           "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
@@ -7783,6 +8045,15 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/daechung-rpg/index.html",
+        "line": 325,
+        "kind": "FUNCTION",
+        "symbol": "damage",
+        "currentBehavior": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
         "line": 442,
         "kind": "FUNCTION",
         "symbol": "renderBag",
@@ -7792,11 +8063,29 @@
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 325,
+        "line": 443,
+        "kind": "METHOD",
+        "symbol": "bagBtn.onclick",
+        "currentBehavior": "bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>bag.style.display='none';closeWeapon.onclick=()=>weaponShop.style.display=",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 bagBtn.onclick의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 444,
+        "kind": "METHOD",
+        "symbol": "acceptHidden.onclick",
+        "currentBehavior": "acceptHidden.onclick=()=>{hq=1;hiddenOffer.style.display='none';sfx('questAccept');spawnHiddenEnemy();hud();toastMsg('히든 퀘스트 수락! 적이 비석 앞에 나타났다')};declineHidden.onclick=()=>hiddenOf",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 acceptHidden.onclick의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 226,
         "kind": "FUNCTION",
-        "symbol": "damage",
-        "currentBehavior": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "symbol": "hud",
+        "currentBehavior": "function hud(){",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 hud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7819,42 +8108,21 @@
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 327,
-        "kind": "FUNCTION",
-        "symbol": "portals",
-        "currentBehavior": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 portals의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
         "line": 257,
         "kind": "FUNCTION",
         "symbol": "spawnHiddenEnemy",
         "currentBehavior": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
         "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnHiddenEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 258,
-        "kind": "FUNCTION",
-        "symbol": "nearest",
-        "currentBehavior": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 353,
-        "kind": "FUNCTION",
-        "symbol": "weaponDraw",
-        "currentBehavior": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 weaponDraw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "damage",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "web-games/daechung-rpg/index.html",
         "symbol": "renderBag",
@@ -7863,7 +8131,19 @@
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "symbol": "damage",
+        "symbol": "bagBtn.onclick",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "acceptHidden.onclick",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "hud",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7881,25 +8161,7 @@
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "symbol": "portals",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
         "symbol": "spawnHiddenEnemy",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "symbol": "nearest",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "symbol": "weaponDraw",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7991,11 +8253,90 @@
     "sourceAnchors": [
       {
         "file": "web-games/daechung-rpg/index.html",
+        "line": 325,
+        "kind": "FUNCTION",
+        "symbol": "damage",
+        "context": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "score": 106,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "sfx",
+            "setAggro",
+            "hud"
+          ],
+          "calledBy": [
+            "updateArrows",
+            "update"
+          ],
+          "stateReads": [
+            "hp",
+            "dead",
+            "run",
+            "inv",
+            "v",
+            "cost"
+          ],
+          "stateWrites": [
+            "hp",
+            "dead",
+            "run",
+            "inv",
+            "cost"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "ECONOMY",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::damage이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
         "line": 442,
         "kind": "FUNCTION",
         "symbol": "renderBag",
         "context": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
-        "score": 146,
+        "score": 106,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "equipWeapon"
+          ],
+          "calledBy": [],
+          "stateReads": [
+            "inv",
+            "ownedWeapons",
+            "b",
+            "v",
+            "k",
+            "weapons"
+          ],
+          "stateWrites": [
+            "b",
+            "weapons"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "WORLD",
+            "COMBAT",
+            "INPUT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
         "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderBag의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/daechung-rpg/index.html::renderBag이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -8003,14 +8344,78 @@
       },
       {
         "file": "web-games/daechung-rpg/index.html",
-        "line": 325,
+        "line": 443,
+        "kind": "METHOD",
+        "symbol": "bagBtn.onclick",
+        "context": "bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>bag.style.display='none';closeWeapon.onclick=()=>weaponShop.style.display=",
+        "score": 104,
+        "currentBehavior": "bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>bag.style.display='none';closeWeapon.onclick=()=>weaponShop.style.display=",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 bagBtn.onclick의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::bagBtn.onclick이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 444,
+        "kind": "METHOD",
+        "symbol": "acceptHidden.onclick",
+        "context": "acceptHidden.onclick=()=>{hq=1;hiddenOffer.style.display='none';sfx('questAccept');spawnHiddenEnemy();hud();toastMsg('히든 퀘스트 수락! 적이 비석 앞에 나타났다')};declineHidden.onclick=()=>hiddenOf",
+        "score": 96,
+        "currentBehavior": "acceptHidden.onclick=()=>{hq=1;hiddenOffer.style.display='none';sfx('questAccept');spawnHiddenEnemy();hud();toastMsg('히든 퀘스트 수락! 적이 비석 앞에 나타났다')};declineHidden.onclick=()=>hiddenOf",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 acceptHidden.onclick의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::acceptHidden.onclick이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 226,
         "kind": "FUNCTION",
-        "symbol": "damage",
-        "context": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
-        "score": 130,
-        "currentBehavior": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/daechung-rpg/index.html::damage이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "hud",
+        "context": "function hud(){",
+        "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "maxHp"
+          ],
+          "calledBy": [
+            "reset",
+            "enter",
+            "talkNow",
+            "equipWeapon",
+            "buyOrEquipArmor",
+            "sellItem",
+            "sellEverything",
+            "kill",
+            "damage",
+            "update"
+          ],
+          "stateReads": [
+            "lv",
+            "hp",
+            "mh"
+          ],
+          "stateWrites": [
+            "lv",
+            "hp",
+            "mh"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "WORLD",
+            "COMBAT",
+            "ECONOMY",
+            "PROGRESSION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
+        "currentBehavior": "function hud(){",
+        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 hud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::hud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -8019,7 +8424,36 @@
         "kind": "FUNCTION",
         "symbol": "spawnCaveMonster",
         "context": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
-        "score": 114,
+        "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "spawnCave"
+          ],
+          "stateReads": [
+            "lv",
+            "hp",
+            "dead",
+            "n",
+            "a",
+            "z",
+            "px",
+            "r",
+            "s"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "PROGRESSION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
         "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnCaveMonster의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/daechung-rpg/index.html::spawnCaveMonster이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -8031,22 +8465,41 @@
         "kind": "FUNCTION",
         "symbol": "buyOrEquipWeapon",
         "context": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
-        "score": 114,
+        "score": 90,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "sfx",
+            "toastMsg",
+            "equipWeapon",
+            "renderWeaponShop"
+          ],
+          "calledBy": [
+            "renderWeaponShop"
+          ],
+          "stateReads": [
+            "WEAPONS",
+            "ownedWeapons",
+            "w"
+          ],
+          "stateWrites": [
+            "ownedWeapons",
+            "w"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "ECONOMY",
+            "PRESENTATION"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
         "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyOrEquipWeapon의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/daechung-rpg/index.html::buyOrEquipWeapon이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 327,
-        "kind": "FUNCTION",
-        "symbol": "portals",
-        "context": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
-        "score": 114,
-        "currentBehavior": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 portals의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/daechung-rpg/index.html::portals이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -8055,34 +8508,40 @@
         "kind": "FUNCTION",
         "symbol": "spawnHiddenEnemy",
         "context": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
-        "score": 106,
+        "score": 82,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "enter"
+          ],
+          "stateReads": [
+            "lv",
+            "hp",
+            "dead",
+            "TOMB",
+            "n",
+            "a",
+            "z",
+            "m",
+            "r"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "COMBAT",
+            "AI",
+            "PROGRESSION",
+            "CORE_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
         "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnHiddenEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/daechung-rpg/index.html::spawnHiddenEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 258,
-        "kind": "FUNCTION",
-        "symbol": "nearest",
-        "context": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
-        "score": 106,
-        "currentBehavior": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/daechung-rpg/index.html::nearest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/daechung-rpg/index.html",
-        "line": 353,
-        "kind": "FUNCTION",
-        "symbol": "weaponDraw",
-        "context": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
-        "score": 106,
-        "currentBehavior": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
-        "intendedBehavior": "CORE_FUN primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 weaponDraw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/daechung-rpg/index.html::weaponDraw이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -8169,8 +8628,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 5포탈 RPG: 던전 파티의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -8189,8 +8648,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8236,12 +8695,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -8298,5 +8757,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:08.108Z"
+  "generatedAt": "2026-10-30T19:11:11.839Z"
 }

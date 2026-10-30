@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g75-f62544310133",
-  "directiveFingerprint": "f625443101332a09172ec97712124829ba729491c4ffa9a82831da4d5f747f15",
-  "previousDirectiveFingerprint": "f4226facc4062b0ca143a0448ec52046739488c254c0daa63ae11149b3efc35c",
-  "forbiddenRepeatFingerprint": "f4226facc4062b0ca143a0448ec52046739488c254c0daa63ae11149b3efc35c",
+  "directiveId": "daechung-rpg-build-up-g1-57e033325838",
+  "directiveFingerprint": "57e03332583802f82778ae91fc330001dccd031ee0f9c8bc0b6e26c1897ff124",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "daechung-rpg",
   "gameName": "포탈 알피지",
-  "generation": 75,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "previousDesignFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -1016,7 +1016,8 @@
       "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
       "roblox-games/daechung-rpg/shared/RobloxCommonCreatureParts.luau",
       "roblox-games/daechung-rpg/client/MaterialPresentation.client.luau",
-      "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau"
+      "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "executableCodeCandidateFiles": [
       "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
@@ -5300,13 +5301,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티와 퀘스트와 인물 관계 × 서사시의 추방과 귀환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-    "previousFocus": "PRESENTATION",
-    "previousGeneration": 74,
-    "previousSourceTreeFingerprint": "5bc848c782cbd9cca61f88d6788522659b47f70f836179a48eb987bac52e6fd7",
-    "currentSourceTreeFingerprint": "6ba8ba611e41917dcf7a09563c70a4d561fd8fcd2c8b37e71d3e401eb45796c2",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -6458,9 +6453,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(VIBE_INTERNAL_PLAY / ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/client/Game.client.luau::endBossCinematic, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::part, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/server/Game.server.luau::enterPrivateRealm, roblox-games/daechung-rpg/client/Game.client.luau::place, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack이다.",
+  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(VIBE_INTERNAL_PLAY / ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/client/Game.client.luau::endBossCinematic, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync, roblox-games/daechung-rpg/server/Game.server.luau::part, roblox-games/daechung-rpg/shared/QACamera.luau::restoreCamera, roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync, roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync이다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/client/Game.client.luau::endBossCinematic, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::part, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/server/Game.server.luau::enterPrivateRealm, roblox-games/daechung-rpg/client/Game.client.luau::place, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/client/Game.client.luau::endBossCinematic, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync, roblox-games/daechung-rpg/server/Game.server.luau::part, roblox-games/daechung-rpg/shared/QACamera.luau::restoreCamera, roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync, roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "5포탈 RPG: 던전 파티를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "퀘스트와 인물 관계 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6488,9 +6483,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/daechung-rpg/server/Game.server.luau",
-          "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
-          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RaceData.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6503,9 +6498,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/daechung-rpg/server/Game.server.luau",
-          "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
-          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RaceData.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6518,9 +6513,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/daechung-rpg/server/Game.server.luau",
-          "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
-          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RaceData.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6533,9 +6528,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/daechung-rpg/server/Game.server.luau",
-          "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
-          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RaceData.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6548,9 +6543,9 @@
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
           "roblox-games/daechung-rpg/server/Game.server.luau",
-          "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
-          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau"
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RaceData.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6606,7 +6601,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 811593,
+        "sourceBytes": 811520,
         "largestFileBytes": 269824,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6638,36 +6633,21 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 17,
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 1,
     "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 10,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
-        "QUEST_STORY_PROGRESSION_CHAIN": 9,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 17,
-        "MID_LATE_ENDGAME_COMPLETION": 9,
-        "PRESENTATION_WORLD_COHESION": 12
+        "WORLD_ECOLOGY_STORY_CHAIN": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "MID_LATE_ENDGAME_COMPLETION": 0,
+        "PRESENTATION_WORLD_COHESION": 0
       },
-      "sequence": [
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM"
-      ],
+      "sequence": [],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -6677,41 +6657,33 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 7,
+      "distinctCovered": 0,
       "totalThemes": 7,
-      "breadthCycleComplete": true,
-      "missingThemes": [],
-      "leastCoveredThemes": [
+      "breadthCycleComplete": false,
+      "missingThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "MID_LATE_ENDGAME_COMPLETION"
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "leastCoveredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
       {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": -124,
-        "gapDomains": []
-      },
-      {
-        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": -146,
-        "gapDomains": []
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -146,
-        "gapDomains": []
-      },
-      {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": -146,
-        "gapDomains": []
-      },
-      {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": -148,
+        "score": 68,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6721,14 +6693,34 @@
       },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": -154,
+        "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
       },
       {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 22,
+        "gapDomains": []
+      },
+      {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": -164,
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 16,
         "gapDomains": []
       }
     ],
@@ -6800,7 +6792,7 @@
       "assetReferences": 0,
       "missingReferences": 0
     },
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "sourceOnly": true,
     "qualityComplete": false,
     "evidenceScope": {
@@ -10487,11 +10479,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 75,
-    "previousGeneration": 74,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "6ba8ba611e41917dcf7a09563c70a4d561fd8fcd2c8b37e71d3e401eb45796c2",
-    "priorSourceFingerprint": "5bc848c782cbd9cca61f88d6788522659b47f70f836179a48eb987bac52e6fd7",
+    "priorSourceFingerprint": null,
     "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -11512,11 +11504,11 @@
       "gameId": "daechung-rpg",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 75,
-        "actorClass": "COMPANION",
-        "sourceOwnerFile": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "qualityAxis": "DIRECTIONAL_HIT_REACTION",
-        "featureId": "DIRECTIONAL_HIT_REACTION",
+        "generation": 1,
+        "actorClass": "BOSS",
+        "sourceOwnerFile": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -11527,8 +11519,8 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "daechung-rpg",
-          "actorClass": "COMPANION",
-          "featureId": "DIRECTIONAL_HIT_REACTION",
+          "actorClass": "BOSS",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -12287,17 +12279,21 @@
     ],
     "responsibleSourceCandidates": [
       "roblox-games/daechung-rpg/server/Game.server.luau",
-      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/shared/RaceData.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCreatureParts.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
-      "roblox-games/daechung-rpg/shared/QACamera.luau",
-      "roblox-games/daechung-rpg/default.project.json",
-      "roblox-games/daechung-rpg/launch-mvp.json",
-      "roblox-games/daechung-rpg/shared/RaceData.luau",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/launch-mvp.json"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -12520,17 +12516,21 @@
     "required": true,
     "responsibleFiles": [
       "roblox-games/daechung-rpg/server/Game.server.luau",
-      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/shared/RaceData.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCreatureParts.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
-      "roblox-games/daechung-rpg/shared/QACamera.luau",
-      "roblox-games/daechung-rpg/default.project.json",
-      "roblox-games/daechung-rpg/launch-mvp.json",
-      "roblox-games/daechung-rpg/shared/RaceData.luau",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/launch-mvp.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
@@ -12561,6 +12561,15 @@
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "line": 4335,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
         "line": 1133,
         "kind": "FUNCTION",
@@ -12570,40 +12579,31 @@
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1674,
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "line": 85,
         "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "currentBehavior": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "restoreCamera",
+        "currentBehavior": "local function restoreCamera(camera,saved)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 restoreCamera의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/QACamera.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1272,
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "line": 3175,
         "kind": "FUNCTION",
-        "symbol": "enterPrivateRealm",
-        "currentBehavior": "local function enterPrivateRealm(player)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 enterPrivateRealm의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 1593,
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "line": 4374,
         "kind": "FUNCTION",
-        "symbol": "place",
-        "currentBehavior": "local function place(item,rect)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 place의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/daechung-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 675,
-        "kind": "FUNCTION",
-        "symbol": "chooseEnemyAttack",
-        "currentBehavior": "local function chooseEnemyAttack(e)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 chooseEnemyAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
@@ -12626,33 +12626,33 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
         "symbol": "part",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "symbol": "spawnEnemy",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "symbol": "restoreCamera",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "symbol": "enterPrivateRealm",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "symbol": "place",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "symbol": "chooseEnemyAttack",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -12728,17 +12728,21 @@
   "responsibleSystemsAndFiles": {
     "files": [
       "roblox-games/daechung-rpg/server/Game.server.luau",
-      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/shared/RaceData.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCreatureParts.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
-      "roblox-games/daechung-rpg/shared/QACamera.luau",
-      "roblox-games/daechung-rpg/default.project.json",
-      "roblox-games/daechung-rpg/launch-mvp.json",
-      "roblox-games/daechung-rpg/shared/RaceData.luau",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/launch-mvp.json"
     ],
     "sourceAnchors": [
       {
@@ -12803,6 +12807,18 @@
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "line": 4335,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
         "line": 1133,
         "kind": "FUNCTION",
@@ -12815,73 +12831,62 @@
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1674,
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "line": 85,
         "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
-        "score": 98,
-        "currentBehavior": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1272,
-        "kind": "FUNCTION",
-        "symbol": "enterPrivateRealm",
-        "context": "local function enterPrivateRealm(player)",
-        "score": 90,
-        "currentBehavior": "local function enterPrivateRealm(player)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 enterPrivateRealm의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::enterPrivateRealm이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 1593,
-        "kind": "FUNCTION",
-        "symbol": "place",
-        "context": "local function place(item,rect)",
-        "score": 82,
+        "symbol": "restoreCamera",
+        "context": "local function restoreCamera(camera,saved)",
+        "score": 106,
         "sourceDependencyEvidence": {
           "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
           "calls": [],
           "calledBy": [
-            "refreshHud"
+            "QACamera.install"
           ],
           "stateReads": [
-            "item"
+            "camera",
+            "saved"
           ],
           "stateWrites": [
-            "item"
+            "camera"
           ],
           "storageKeys": [],
           "events": [],
           "systems": [
-            "PLACEMENT"
+            "SAVE"
           ],
           "runtimeVerified": false,
           "sourceWriteAuthorized": false,
           "dependentFilesNotAuthorized": true
         },
-        "currentBehavior": "local function place(item,rect)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 place의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/daechung-rpg/client/Game.client.luau::place이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/daechung-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function restoreCamera(camera,saved)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 restoreCamera의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/shared/QACamera.luau::restoreCamera이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/QACamera.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 675,
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "line": 3175,
         "kind": "FUNCTION",
-        "symbol": "chooseEnemyAttack",
-        "context": "local function chooseEnemyAttack(e)",
-        "score": 82,
-        "currentBehavior": "local function chooseEnemyAttack(e)",
-        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 chooseEnemyAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "line": 4374,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "STABILITY primary goal \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -12926,17 +12931,21 @@
     "platform": "ROBLOX",
     "plannedFiles": [
       "roblox-games/daechung-rpg/server/Game.server.luau",
-      "roblox-games/daechung-rpg/client/Game.client.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/shared/RaceData.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonCreatureParts.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
-      "roblox-games/daechung-rpg/shared/QACamera.luau",
-      "roblox-games/daechung-rpg/default.project.json",
-      "roblox-games/daechung-rpg/launch-mvp.json",
-      "roblox-games/daechung-rpg/shared/RaceData.luau",
       "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
-      "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+      "roblox-games/daechung-rpg/shared/TechTreeData.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/client/MaterialPresentation.client.luau",
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/launch-mvp.json"
     ],
     "impact": {
       "version": 1,
@@ -13072,12 +13081,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 76,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -13134,5 +13143,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-30T10:44:20.566Z"
+  "generatedAt": "2026-10-30T19:11:23.569Z"
 }

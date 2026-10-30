@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "cat-step-build-up-g15-f85d4db2137d",
-  "directiveFingerprint": "f85d4db2137dcf6a7fbf31064518640c46c39f41dcb551f1deede79fe8dbbc22",
-  "previousDirectiveFingerprint": "9446c1cd3af5ebebe611f36fe384491a1f05362f4679b9e95cff4c522012b2a1",
-  "forbiddenRepeatFingerprint": "9446c1cd3af5ebebe611f36fe384491a1f05362f4679b9e95cff4c522012b2a1",
+  "directiveId": "cat-step-build-up-g1-12e4b85d38c9",
+  "directiveFingerprint": "12e4b85d38c9f3488e30ba7abc97d9439257458c1bf3a01e723133f6ffbd602a",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "cat-step",
   "gameName": "캣 스텝",
-  "generation": 15,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cat-step",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "a8766c41657004c38a0a0390418df9ef72d86f1d189eccbe591f8f54231d8879",
-    "previousDesignFingerprint": "a8766c41657004c38a0a0390418df9ef72d86f1d189eccbe591f8f54231d8879",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -4609,47 +4609,7 @@
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3960,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3976,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3937,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 130
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3993,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
         "score": 122
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 4011,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 114
       },
       {
         "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
@@ -4661,7 +4621,23 @@
       },
       {
         "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 2872,
+        "line": 3960,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3976,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3937,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -4669,42 +4645,26 @@
       },
       {
         "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3466,
+        "line": 4011,
         "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2872,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 90
       },
       {
         "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3952,
+        "line": 3993,
         "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3957,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3973,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3990,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 90
       },
       {
@@ -4733,50 +4693,10 @@
       },
       {
         "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 2581,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateItemStateBadges",
-        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3914,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateInteractionProgress",
-        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 3933,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
-        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 4164,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
-        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
         "line": 4319,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "line": 4373,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
-        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
         "score": 82
       },
       {
@@ -4804,20 +4724,68 @@
         "score": 74
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 87,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2070,
         "kind": "FUNCTION",
-        "symbol": "stroke",
-        "context": "local function stroke(target, transparency)",
-        "score": 58
+        "symbol": "sync",
+        "context": "local function sync(items)",
+        "score": 74
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 243,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3466,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
-        "score": 58
+        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3840,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3870,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2140,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3914,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionProgress",
+        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4904,
+        "kind": "FUNCTION",
+        "symbol": "layout",
+        "context": "local function layout()",
+        "score": 66
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
@@ -4828,36 +4796,28 @@
         "score": 58
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 320,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 1029,
         "kind": "FUNCTION",
-        "symbol": "bindVerifiedLearningControl",
-        "context": "local function bindVerifiedLearningControl(control)",
+        "symbol": "RobloxCommonUI.CreateNpcInteractionMenu",
+        "context": "function RobloxCommonUI.CreateNpcInteractionMenu(options)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 1175,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateEquipmentSlot",
+        "context": "function RobloxCommonUI.CreateEquipmentSlot(options)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 87,
+        "kind": "FUNCTION",
+        "symbol": "stroke",
+        "context": "local function stroke(target, transparency)",
         "score": 50
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 220,
-        "kind": "FUNCTION",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "context": "local function syncVerifiedLearningCharacterMotion(character)",
-        "score": 42
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 43,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 80,
-        "kind": "FUNCTION",
-        "symbol": "round",
-        "context": "local function round(target, radius)",
-        "score": 34
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
@@ -4900,19 +4860,27 @@
         "score": 34
       },
       {
-        "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-        "line": 299,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonMaterials.Apply",
-        "context": "function RobloxCommonMaterials.Apply(part, atomId, options)",
-        "score": 34
-      },
-      {
         "file": "roblox-games/cat-step/client/Game.client.luau",
         "line": 39,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 43,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 80,
+        "kind": "FUNCTION",
+        "symbol": "round",
+        "context": "local function round(target, radius)",
         "score": 26
       },
       {
@@ -4945,6 +4913,30 @@
         "kind": "FUNCTION",
         "symbol": "platformY",
         "context": "local function platformY(index)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 220,
+        "kind": "FUNCTION",
+        "symbol": "syncVerifiedLearningCharacterMotion",
+        "context": "local function syncVerifiedLearningCharacterMotion(character)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 243,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 320,
+        "kind": "FUNCTION",
+        "symbol": "bindVerifiedLearningControl",
+        "context": "local function bindVerifiedLearningControl(control)",
         "score": 26
       },
       {
@@ -4986,17 +4978,59 @@
         "symbol": "clearPlatforms",
         "context": "local function clearPlatforms()",
         "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 670,
+        "kind": "FUNCTION",
+        "symbol": "setControlsEnabled",
+        "context": "local function setControlsEnabled(enabled)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+        "line": 7,
+        "kind": "FUNCTION",
+        "symbol": "flush",
+        "context": "local function flush()",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "enqueue",
+        "context": "local function enqueue(instance)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "line": 236,
+        "kind": "FUNCTION",
+        "symbol": "clamp",
+        "context": "local function clamp(value, minValue, maxValue)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "line": 240,
+        "kind": "FUNCTION",
+        "symbol": "clonePhysicalProperties",
+        "context": "local function clonePhysicalProperties(properties)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "line": 253,
+        "kind": "FUNCTION",
+        "symbol": "resolvePreset",
+        "context": "local function resolvePreset(atomId, variant)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-    "previousFocus": "USABILITY",
-    "previousGeneration": 14,
-    "previousSourceTreeFingerprint": "6611b6d1ee6dac3bccfe5387e866f646ce93ea2d737082fff7ec6d425ee7e533",
-    "currentSourceTreeFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -6092,9 +6126,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"캣 스텝\", 현재 책임 소스는 roblox-games/cat-step/client/Game.client.luau::layoutTouchControls, roblox-games/cat-step/client/Game.client.luau::stroke, roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/cat-step/client/Game.client.luau::showMenu, roblox-games/cat-step/client/Game.client.luau::bindVerifiedLearningControl, roblox-games/cat-step/client/Game.client.luau::syncVerifiedLearningCharacterMotion, roblox-games/cat-step/client/Game.client.luau::hasStudioAssetAtom, roblox-games/cat-step/client/Game.client.luau::round이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"캣 스텝\", 현재 책임 소스는 roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/cat-step/client/Game.client.luau::layoutTouchControls, roblox-games/cat-step/client/Game.client.luau::stroke, roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/cat-step/client/Game.client.luau::showMenu, roblox-games/cat-step/client/Game.client.luau::bindVerifiedLearningControl, roblox-games/cat-step/client/Game.client.luau::syncVerifiedLearningCharacterMotion, roblox-games/cat-step/client/Game.client.luau::hasStudioAssetAtom, roblox-games/cat-step/client/Game.client.luau::round에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync, roblox-games/cat-step/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "캣 스텝를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "단서 조합 × 증언과 합의된 현실가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6121,10 +6155,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/client/Game.client.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/default.project.json"
+          "roblox-games/cat-step/client/Game.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6136,10 +6170,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/client/Game.client.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/default.project.json"
+          "roblox-games/cat-step/client/Game.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6151,10 +6185,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/client/Game.client.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/default.project.json"
+          "roblox-games/cat-step/client/Game.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6166,10 +6200,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/client/Game.client.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/default.project.json"
+          "roblox-games/cat-step/client/Game.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6181,10 +6215,10 @@
         "gameId": "cat-step",
         "status": "PROPOSED_NOT_IMPLEMENTED",
         "sourceOwnerCandidates": [
-          "roblox-games/cat-step/client/Game.client.luau",
           "roblox-games/cat-step/shared/GameConfig.luau",
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
           "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-          "roblox-games/cat-step/default.project.json"
+          "roblox-games/cat-step/client/Game.client.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
         "actualGameplayPass": false
@@ -6272,35 +6306,22 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 12
+        "PRESENTATION_WORLD_COHESION": 1
       },
       "sequence": [
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY"
+        "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6311,11 +6332,12 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 1,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6323,6 +6345,7 @@
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6332,8 +6355,18 @@
     },
     "scoredThemes": [
       {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 76,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 150,
+        "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6362,26 +6395,16 @@
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 14,
         "gapDomains": []
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": -140,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
       }
     ],
     "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -10132,12 +10155,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 15,
-    "previousGeneration": 14,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "0bf6d0c83d1c6baeb6f5fbccf3c8ea1e73a91df5cd6f8e3567c0ee303ac3e446",
-    "priorSourceFingerprint": "6611b6d1ee6dac3bccfe5387e866f646ce93ea2d737082fff7ec6d425ee7e533",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -10946,11 +10969,11 @@
       "gameId": "cat-step",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 15,
-        "actorClass": "NPC",
+        "generation": 1,
+        "actorClass": "BOSS",
         "sourceOwnerFile": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-        "qualityAxis": "BODY_PLAN_LOCOMOTION",
-        "featureId": "BODY_PLAN_LOCOMOTION",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -10961,8 +10984,8 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "cat-step",
-          "actorClass": "NPC",
-          "featureId": "BODY_PLAN_LOCOMOTION",
+          "actorClass": "BOSS",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -11596,12 +11619,12 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-      "roblox-games/cat-step/default.project.json",
       "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/client/Game.client.luau",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/default.project.json"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -11823,134 +11846,134 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-      "roblox-games/cat-step/default.project.json",
       "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/client/Game.client.luau",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 720,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3921,
         "kind": "FUNCTION",
-        "symbol": "layoutTouchControls",
-        "currentBehavior": "local function layoutTouchControls()",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 layoutTouchControls의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 87,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2761,
         "kind": "FUNCTION",
-        "symbol": "stroke",
-        "currentBehavior": "local function stroke(target, transparency)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 stroke의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 243,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3960,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "currentBehavior": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 731,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3976,
         "kind": "FUNCTION",
-        "symbol": "showMenu",
-        "currentBehavior": "local function showMenu(kind)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 showMenu의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 320,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3937,
         "kind": "FUNCTION",
-        "symbol": "bindVerifiedLearningControl",
-        "currentBehavior": "local function bindVerifiedLearningControl(control)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 bindVerifiedLearningControl의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 220,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4011,
         "kind": "FUNCTION",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "currentBehavior": "local function syncVerifiedLearningCharacterMotion(character)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 syncVerifiedLearningCharacterMotion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 43,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2872,
         "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "currentBehavior": "local function hasStudioAssetAtom(familyOrAtom, atom)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 hasStudioAssetAtom의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 80,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3993,
         "kind": "FUNCTION",
-        "symbol": "round",
-        "currentBehavior": "local function round(target, radius)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 round의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "layoutTouchControls",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "stroke",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "showMenu",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "bindVerifiedLearningControl",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "hasStudioAssetAtom",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "round",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -12025,109 +12048,109 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-      "roblox-games/cat-step/default.project.json",
       "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/client/Game.client.luau",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/default.project.json"
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 720,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3921,
         "kind": "FUNCTION",
-        "symbol": "layoutTouchControls",
-        "context": "local function layoutTouchControls()",
-        "score": 74,
-        "currentBehavior": "local function layoutTouchControls()",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 layoutTouchControls의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::layoutTouchControls이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 87,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2761,
         "kind": "FUNCTION",
-        "symbol": "stroke",
-        "context": "local function stroke(target, transparency)",
-        "score": 58,
-        "currentBehavior": "local function stroke(target, transparency)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 stroke의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::stroke이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 243,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3960,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
-        "score": 58,
-        "currentBehavior": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 731,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3976,
         "kind": "FUNCTION",
-        "symbol": "showMenu",
-        "context": "local function showMenu(kind)",
-        "score": 58,
-        "currentBehavior": "local function showMenu(kind)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 showMenu의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::showMenu이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 320,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3937,
         "kind": "FUNCTION",
-        "symbol": "bindVerifiedLearningControl",
-        "context": "local function bindVerifiedLearningControl(control)",
-        "score": 50,
-        "currentBehavior": "local function bindVerifiedLearningControl(control)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 bindVerifiedLearningControl의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::bindVerifiedLearningControl이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 98,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 220,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4011,
         "kind": "FUNCTION",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "context": "local function syncVerifiedLearningCharacterMotion(character)",
-        "score": 42,
-        "currentBehavior": "local function syncVerifiedLearningCharacterMotion(character)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 syncVerifiedLearningCharacterMotion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::syncVerifiedLearningCharacterMotion이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 98,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 43,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2872,
         "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
-        "score": 34,
-        "currentBehavior": "local function hasStudioAssetAtom(familyOrAtom, atom)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 hasStudioAssetAtom의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::hasStudioAssetAtom이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 80,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3993,
         "kind": "FUNCTION",
-        "symbol": "round",
-        "context": "local function round(target, radius)",
-        "score": 34,
-        "currentBehavior": "local function round(target, radius)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 round의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::round이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -12171,12 +12194,12 @@
     "gameId": "cat-step",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
-      "roblox-games/cat-step/default.project.json",
       "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
-      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/client/Game.client.luau",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+      "roblox-games/cat-step/default.project.json"
     ],
     "impact": {
       "version": 1,
@@ -12245,8 +12268,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -12265,8 +12288,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial USABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -12312,12 +12335,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 16,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -12374,5 +12397,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:08.882Z"
+  "generatedAt": "2026-10-30T19:11:19.607Z"
 }

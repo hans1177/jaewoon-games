@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "fifty-days-build-up-g21-82174914438b",
-  "directiveFingerprint": "82174914438b2b05d0f4eb9e0239107802cb175f891e34369d41888dc512daf1",
-  "previousDirectiveFingerprint": "ad611beba2b3ff9da622583a0ef5bd1f342d42baadfedd9db571e30482fc84cc",
-  "forbiddenRepeatFingerprint": "ad611beba2b3ff9da622583a0ef5bd1f342d42baadfedd9db571e30482fc84cc",
+  "directiveId": "fifty-days-build-up-g1-130e21f47691",
+  "directiveFingerprint": "130e21f47691db5f905ff84a6a57d2fddf584a76eed0e1f48bd62cbe736202dd",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "fifty-days",
   "gameName": "50일",
-  "generation": 21,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fifty-days",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
-    "previousDesignFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -486,6 +486,11 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler1",
             "kind": "FUNCTION"
           },
@@ -502,11 +507,6 @@
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler4",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fifty-days/server/Game.server.luau",
-            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -594,6 +594,11 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler1",
             "kind": "FUNCTION"
           },
@@ -610,11 +615,6 @@
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler4",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fifty-days/server/Game.server.luau",
-            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -696,6 +696,11 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler1",
             "kind": "FUNCTION"
           },
@@ -712,11 +717,6 @@
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler4",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fifty-days/server/Game.server.luau",
-            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -797,6 +797,11 @@
         "inspectedSymbols": [
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler1",
             "kind": "FUNCTION"
           },
@@ -813,11 +818,6 @@
           {
             "file": "roblox-games/fifty-days/server/Game.server.luau",
             "symbol": "scopeHandler4",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/fifty-days/server/Game.server.luau",
-            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -4632,47 +4632,7 @@
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3960,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3976,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3937,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 130
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3993,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
         "score": 122
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 4011,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 114
       },
       {
         "file": "roblox-games/fifty-days/client/Game.client.luau",
@@ -4680,14 +4640,6 @@
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
-        "score": 106
-      },
-      {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 209,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "local function render()",
         "score": 106
       },
       {
@@ -4699,51 +4651,35 @@
         "score": 106
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 153,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3960,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3976,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3937,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 98
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 176,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 4011,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 206,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 236,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 266,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 290,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 98
       },
       {
@@ -4752,46 +4688,14 @@
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3466,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
         "score": 90
       },
       {
         "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3952,
+        "line": 3993,
         "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3957,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3973,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3990,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 90
       },
       {
@@ -4819,43 +4723,59 @@
         "score": 82
       },
       {
+        "file": "roblox-games/fifty-days/server/Game.server.luau",
+        "line": 153,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler1",
+        "context": "local function scopeHandler1(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fifty-days/server/Game.server.luau",
+        "line": 176,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler2",
+        "context": "local function scopeHandler2(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fifty-days/server/Game.server.luau",
+        "line": 206,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fifty-days/server/Game.server.luau",
+        "line": 236,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fifty-days/server/Game.server.luau",
+        "line": 266,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "context": "local function scopeHandler5(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/fifty-days/server/Game.server.luau",
+        "line": 290,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "context": "local function scopeHandler6(player)",
+        "score": 82
+      },
+      {
         "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
         "line": 1050,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 2581,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateItemStateBadges",
-        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3914,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateInteractionProgress",
-        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 3933,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
-        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 4164,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
-        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
         "score": 82
       },
       {
@@ -4868,14 +4788,6 @@
       },
       {
         "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "line": 4373,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
-        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
         "line": 4885,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.AdaptActionMenu",
@@ -4883,11 +4795,59 @@
         "score": 82
       },
       {
+        "file": "roblox-games/fifty-days/client/Game.client.luau",
+        "line": 209,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "local function render()",
+        "score": 74
+      },
+      {
         "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
         "line": 1010,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 2070,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(items)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3466,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3840,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3870,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
         "score": 74
       },
       {
@@ -4899,12 +4859,28 @@
         "score": 66
       },
       {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 309,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 2140,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
-        "score": 58
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3914,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionProgress",
+        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 4904,
+        "kind": "FUNCTION",
+        "symbol": "layout",
+        "context": "local function layout()",
+        "score": 66
       },
       {
         "file": "roblox-games/fifty-days/server/Game.server.luau",
@@ -4915,12 +4891,20 @@
         "score": 58
       },
       {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 386,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 1029,
         "kind": "FUNCTION",
-        "symbol": "bindVerifiedLearningControl",
-        "context": "local function bindVerifiedLearningControl(control)",
-        "score": 50
+        "symbol": "RobloxCommonUI.CreateNpcInteractionMenu",
+        "context": "function RobloxCommonUI.CreateNpcInteractionMenu(options)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 1175,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateEquipmentSlot",
+        "context": "function RobloxCommonUI.CreateEquipmentSlot(options)",
+        "score": 58
       },
       {
         "file": "roblox-games/fifty-days/server/Game.server.luau",
@@ -4929,14 +4913,6 @@
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
         "score": 50
-      },
-      {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 286,
-        "kind": "FUNCTION",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "context": "local function syncVerifiedLearningCharacterMotion(character)",
-        "score": 42
       },
       {
         "file": "roblox-games/fifty-days/server/Game.server.luau",
@@ -4964,34 +4940,18 @@
       },
       {
         "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 38,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 124,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAtom",
-        "context": "local function hasStudioAtom(familyOrAtom, atom)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
-        "line": 299,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonMaterials.Apply",
-        "context": "function RobloxCommonMaterials.Apply(part, atomId, options)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
         "line": 34,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/client/Game.client.luau",
+        "line": 38,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
         "score": 26
       },
       {
@@ -5003,23 +4963,81 @@
         "score": 26
       },
       {
+        "file": "roblox-games/fifty-days/client/Game.client.luau",
+        "line": 124,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAtom",
+        "context": "local function hasStudioAtom(familyOrAtom, atom)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/client/Game.client.luau",
+        "line": 286,
+        "kind": "FUNCTION",
+        "symbol": "syncVerifiedLearningCharacterMotion",
+        "context": "local function syncVerifiedLearningCharacterMotion(character)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/client/Game.client.luau",
+        "line": 309,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/client/Game.client.luau",
+        "line": 386,
+        "kind": "FUNCTION",
+        "symbol": "bindVerifiedLearningControl",
+        "context": "local function bindVerifiedLearningControl(control)",
+        "score": 26
+      },
+      {
         "file": "roblox-games/fifty-days/client/MaterialPresentation.client.luau",
         "line": 7,
         "kind": "FUNCTION",
         "symbol": "flush",
         "context": "local function flush()",
         "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/client/MaterialPresentation.client.luau",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "enqueue",
+        "context": "local function enqueue(instance)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
+        "line": 236,
+        "kind": "FUNCTION",
+        "symbol": "clamp",
+        "context": "local function clamp(value, minValue, maxValue)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
+        "line": 240,
+        "kind": "FUNCTION",
+        "symbol": "clonePhysicalProperties",
+        "context": "local function clonePhysicalProperties(properties)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
+        "line": 253,
+        "kind": "FUNCTION",
+        "symbol": "resolvePreset",
+        "context": "local function resolvePreset(atomId, variant)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-    "previousFocus": "USABILITY",
-    "previousGeneration": 20,
-    "previousSourceTreeFingerprint": "f2e4d677abe672a249e5d1a7e3fe9707ae553757c0596fc666585facf31c4b32",
-    "currentSourceTreeFingerprint": "b1cd2ec39db6086bcbc3dab50fbf8bea1588fbf4958be89965a3edb12947b61a",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -6115,9 +6133,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"50일\", 현재 책임 소스는 roblox-games/fifty-days/client/Game.client.luau::reportNativeFoundationReady, roblox-games/fifty-days/client/Game.client.luau::render, roblox-games/fifty-days/server/Game.server.luau::scopeHandler1, roblox-games/fifty-days/server/Game.server.luau::scopeHandler2, roblox-games/fifty-days/server/Game.server.luau::scopeHandler3, roblox-games/fifty-days/server/Game.server.luau::scopeHandler4, roblox-games/fifty-days/server/Game.server.luau::scopeHandler5, roblox-games/fifty-days/server/Game.server.luau::scopeHandler6이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"50일\", 현재 책임 소스는 roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/client/Game.client.luau::reportNativeFoundationReady, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/fifty-days/client/Game.client.luau::reportNativeFoundationReady, roblox-games/fifty-days/client/Game.client.luau::render, roblox-games/fifty-days/server/Game.server.luau::scopeHandler1, roblox-games/fifty-days/server/Game.server.luau::scopeHandler2, roblox-games/fifty-days/server/Game.server.luau::scopeHandler3, roblox-games/fifty-days/server/Game.server.luau::scopeHandler4, roblox-games/fifty-days/server/Game.server.luau::scopeHandler5, roblox-games/fifty-days/server/Game.server.luau::scopeHandler6에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/client/Game.client.luau::reportNativeFoundationReady, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync, roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "50일를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "환경 탐색과 자원 확보 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6146,7 +6164,7 @@
         "sourceOwnerCandidates": [
           "roblox-games/fifty-days/server/Game.server.luau",
           "roblox-games/fifty-days/shared/GameConfig.luau",
-          "roblox-games/fifty-days/client/Game.client.luau",
+          "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
           "roblox-games/fifty-days/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6161,7 +6179,7 @@
         "sourceOwnerCandidates": [
           "roblox-games/fifty-days/server/Game.server.luau",
           "roblox-games/fifty-days/shared/GameConfig.luau",
-          "roblox-games/fifty-days/client/Game.client.luau",
+          "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
           "roblox-games/fifty-days/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6176,7 +6194,7 @@
         "sourceOwnerCandidates": [
           "roblox-games/fifty-days/server/Game.server.luau",
           "roblox-games/fifty-days/shared/GameConfig.luau",
-          "roblox-games/fifty-days/client/Game.client.luau",
+          "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
           "roblox-games/fifty-days/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6191,7 +6209,7 @@
         "sourceOwnerCandidates": [
           "roblox-games/fifty-days/server/Game.server.luau",
           "roblox-games/fifty-days/shared/GameConfig.luau",
-          "roblox-games/fifty-days/client/Game.client.luau",
+          "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
           "roblox-games/fifty-days/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6206,7 +6224,7 @@
         "sourceOwnerCandidates": [
           "roblox-games/fifty-days/server/Game.server.luau",
           "roblox-games/fifty-days/shared/GameConfig.luau",
-          "roblox-games/fifty-days/client/Game.client.luau",
+          "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
           "roblox-games/fifty-days/shared/RobloxCommonUI.luau"
         ],
         "evidenceRequired": "EXACT_CHANGED_RESPONSIBLE_SOURCE_AND_SAME_BUILD_INPUT_STATE_FEEDBACK_RETRY_WHEN_APPLICABLE",
@@ -6295,35 +6313,22 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 9,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 12
+        "PRESENTATION_WORLD_COHESION": 1
       },
       "sequence": [
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY"
+        "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6334,11 +6339,12 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 1,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6346,6 +6352,7 @@
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6355,8 +6362,18 @@
     },
     "scoredThemes": [
       {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 76,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 42,
+        "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6385,26 +6402,16 @@
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 14,
         "gapDomains": []
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": -140,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
       }
     ],
     "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -10157,12 +10164,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 21,
-    "previousGeneration": 20,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "b1cd2ec39db6086bcbc3dab50fbf8bea1588fbf4958be89965a3edb12947b61a",
-    "priorSourceFingerprint": "f2e4d677abe672a249e5d1a7e3fe9707ae553757c0596fc666585facf31c4b32",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -11013,11 +11020,11 @@
       "gameId": "fifty-days",
       "platform": "ROBLOX",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 21,
-        "actorClass": "MOUNT",
-        "sourceOwnerFile": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-        "qualityAxis": "BODY_PLAN_LOCOMOTION",
-        "featureId": "BODY_PLAN_LOCOMOTION",
+        "generation": 1,
+        "actorClass": "BOSS",
+        "sourceOwnerFile": "roblox-games/fifty-days/shared/GameConfig.luau",
+        "qualityAxis": "NATIVE_RIG_BINDING",
+        "featureId": "NATIVE_RIG_BINDING",
         "evidenceCount": 0,
         "previousVerifiedScore": null,
         "bodyPlan": "UNCONFIRMED",
@@ -11028,8 +11035,8 @@
           "status": "ACTUAL_RIG_BODY_PLAN_CONFIRMATION_REQUIRED",
           "variants": [],
           "gameId": "fifty-days",
-          "actorClass": "MOUNT",
-          "featureId": "BODY_PLAN_LOCOMOTION",
+          "actorClass": "BOSS",
+          "featureId": "NATIVE_RIG_BINDING",
           "requiresSameActorNativeRuntime": true,
           "noProductionPromotionWithoutQA": true,
           "noGameplayAuthority": true
@@ -11682,11 +11689,11 @@
     "responsibleSourceCandidates": [
       "roblox-games/fifty-days/server/Game.server.luau",
       "roblox-games/fifty-days/shared/GameConfig.luau",
-      "roblox-games/fifty-days/client/Game.client.luau",
-      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-      "roblox-games/fifty-days/default.project.json",
       "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fifty-days/client/MaterialPresentation.client.luau"
+      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+      "roblox-games/fifty-days/client/Game.client.luau",
+      "roblox-games/fifty-days/client/MaterialPresentation.client.luau",
+      "roblox-games/fifty-days/default.project.json"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -11910,13 +11917,22 @@
     "responsibleFiles": [
       "roblox-games/fifty-days/server/Game.server.luau",
       "roblox-games/fifty-days/shared/GameConfig.luau",
-      "roblox-games/fifty-days/client/Game.client.luau",
-      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-      "roblox-games/fifty-days/default.project.json",
       "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fifty-days/client/MaterialPresentation.client.luau"
+      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+      "roblox-games/fifty-days/client/Game.client.luau",
+      "roblox-games/fifty-days/client/MaterialPresentation.client.luau",
+      "roblox-games/fifty-days/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3921,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
       {
         "file": "roblox-games/fifty-days/client/Game.client.luau",
         "line": 76,
@@ -11927,70 +11943,67 @@
         "observableAcceptance": "roblox-games/fifty-days/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 209,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 2761,
         "kind": "FUNCTION",
-        "symbol": "render",
-        "currentBehavior": "local function render()",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fifty-days/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 153,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3960,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 176,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3976,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 206,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3937,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 236,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 4011,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 266,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 2872,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 290,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "roblox-games/fifty-days/client/Game.client.luau",
         "symbol": "reportNativeFoundationReady",
@@ -11998,45 +12011,39 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "symbol": "render",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "symbol": "scopeHandler1",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "symbol": "scopeHandler2",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "symbol": "scopeHandler3",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "symbol": "scopeHandler4",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "symbol": "scopeHandler5",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "symbol": "scopeHandler6",
-        "role": "SERVER_AUTHORITY",
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -12113,13 +12120,25 @@
     "files": [
       "roblox-games/fifty-days/server/Game.server.luau",
       "roblox-games/fifty-days/shared/GameConfig.luau",
-      "roblox-games/fifty-days/client/Game.client.luau",
-      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-      "roblox-games/fifty-days/default.project.json",
       "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fifty-days/client/MaterialPresentation.client.luau"
+      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+      "roblox-games/fifty-days/client/Game.client.luau",
+      "roblox-games/fifty-days/client/MaterialPresentation.client.luau",
+      "roblox-games/fifty-days/default.project.json"
     ],
     "sourceAnchors": [
+      {
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3921,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
       {
         "file": "roblox-games/fifty-days/client/Game.client.luau",
         "line": 76,
@@ -12127,94 +12146,108 @@
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
         "score": 106,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [],
+          "stateReads": [
+            "player",
+            "foundationRemote",
+            "nativeTouchEnabled",
+            "nativeFoundationCamera",
+            "character",
+            "humanoid"
+          ],
+          "stateWrites": [
+            "character",
+            "humanoid"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "AI",
+            "INPUT"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "local function reportNativeFoundationReady()",
         "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/fifty-days/client/Game.client.luau::reportNativeFoundationReady이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/fifty-days/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/client/Game.client.luau",
-        "line": 209,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 2761,
         "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "local function render()",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 106,
-        "currentBehavior": "local function render()",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fifty-days/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fifty-days/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 153,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3960,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fifty-days/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 176,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3976,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fifty-days/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 206,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 3937,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 98,
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fifty-days/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 236,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 4011,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 98,
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fifty-days/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 266,
+        "file": "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+        "line": 2872,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fifty-days/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/fifty-days/server/Game.server.luau",
-        "line": 290,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fifty-days/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fifty-days/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/fifty-days/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/fifty-days/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -12260,11 +12293,11 @@
     "plannedFiles": [
       "roblox-games/fifty-days/server/Game.server.luau",
       "roblox-games/fifty-days/shared/GameConfig.luau",
-      "roblox-games/fifty-days/client/Game.client.luau",
-      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
-      "roblox-games/fifty-days/default.project.json",
       "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
-      "roblox-games/fifty-days/client/MaterialPresentation.client.luau"
+      "roblox-games/fifty-days/shared/RobloxCommonUI.luau",
+      "roblox-games/fifty-days/client/Game.client.luau",
+      "roblox-games/fifty-days/client/MaterialPresentation.client.luau",
+      "roblox-games/fifty-days/default.project.json"
     ],
     "impact": {
       "version": 1,
@@ -12333,8 +12366,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -12353,8 +12386,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial USABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -12400,12 +12433,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 22,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -12462,5 +12495,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:09.801Z"
+  "generatedAt": "2026-10-30T19:11:30.841Z"
 }

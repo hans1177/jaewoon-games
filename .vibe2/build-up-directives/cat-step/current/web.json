@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "directiveId": "cat-step-build-up-g2-2b5c35f6b2ff",
-  "directiveFingerprint": "2b5c35f6b2ffb87722830eac6ae5855ac224a8ecc00ee0a4c8b79e05e40b7558",
-  "previousDirectiveFingerprint": "4f025b9de2bc80289ead0cb17000d8b3a9fdd53b6923db647dae233b5b0340e1",
-  "forbiddenRepeatFingerprint": "4f025b9de2bc80289ead0cb17000d8b3a9fdd53b6923db647dae233b5b0340e1",
+  "directiveId": "cat-step-build-up-g1-d64e770339a0",
+  "directiveFingerprint": "d64e770339a0aca20b56acf72e1e836b8c810ccbe66e789033fea94c0858802d",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "cat-step",
   "gameName": "캣 스텝",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/cat-step",
@@ -20,8 +20,8 @@
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "a8766c41657004c38a0a0390418df9ef72d86f1d189eccbe591f8f54231d8879",
-    "previousDesignFingerprint": "a8766c41657004c38a0a0390418df9ef72d86f1d189eccbe591f8f54231d8879",
-    "sameApprovedDesign": true,
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -353,9 +353,9 @@
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "cat-step",
     "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "originalSourcePlatform": "ROBLOX",
-    "originalSourceLanguage": "LUAU",
+    "activePlatform": "WEB",
+    "originalSourcePlatform": "WEB",
+    "originalSourceLanguage": "JAVASCRIPT",
     "unityWebSourceSync": null,
     "designFingerprint": "a8766c41657004c38a0a0390418df9ef72d86f1d189eccbe591f8f54231d8879",
     "sourceTreeFingerprint": "ad519d4cbb1bd838b0ecb347c20c2f322c190f54b20264d485e7c90edcaa00f8",
@@ -363,6 +363,16 @@
     "multiplayerRequired": false,
     "minimumParticipants": 1,
     "platformCodingPlans": [
+      {
+        "platform": "WEB",
+        "canonicalGameSourceRoot": "web-games/cat-step",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "WEB",
+        "requiresSameServerTwoClientPlay": false,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "3D",
+        "inspectedInThisDirective": true
+      },
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/cat-step",
@@ -433,7 +443,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +454,44 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/cat-step/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/cat-step/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawPlatform",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawCat",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "$",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "resize",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "clamp",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +548,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +559,44 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/cat-step/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/cat-step/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawPlatform",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawCat",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "$",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "resize",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "clamp",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +647,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +658,44 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/cat-step/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/cat-step/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawPlatform",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawCat",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "$",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "resize",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "clamp",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +745,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +756,44 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "web-games/cat-step/index.html"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "web-games/cat-step/index.html"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawPlatform",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "drawCat",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "$",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "resize",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "web-games/cat-step/index.html",
+            "symbol": "clamp",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +803,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -737,10 +872,17 @@
       "unverifiedDesignedGenreRemainsPending": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "web-games/cat-step/index.html"
+    ],
+    "executableCodeCandidateFiles": [
+      "web-games/cat-step/index.html"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -4605,13 +4747,7 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-    "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "abf3864ffaa4b4fc28f27e508eccefd2db2590d86786d451a2b9565929efa01e",
-    "currentSourceTreeFingerprint": "ad519d4cbb1bd838b0ecb347c20c2f322c190f54b20264d485e7c90edcaa00f8",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -6006,12 +6142,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "5 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 1,
+    "selectedThemeReason": "5 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 2,
+        "WORLD_ECOLOGY_STORY_CHAIN": 1,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -6020,7 +6156,6 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
       ],
       "requiredThemes": [
@@ -6056,7 +6191,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 231,
+        "score": 89,
         "gapDomains": [
           "MAP_EXPANSION",
           "REGIONS",
@@ -6188,12 +6323,12 @@
   "robloxHolisticQualityPlan": null,
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 1,
+    "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "ad519d4cbb1bd838b0ecb347c20c2f322c190f54b20264d485e7c90edcaa00f8",
-    "priorSourceFingerprint": "abf3864ffaa4b4fc28f27e508eccefd2db2590d86786d451a2b9565929efa01e",
-    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "priorSourceFingerprint": null,
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6654,7 +6789,7 @@
       "gameId": "cat-step",
       "platform": "WEB",
       "nextGameSpecificMotionWorkUnit": {
-        "generation": 2,
+        "generation": 1,
         "actorClass": null,
         "sourceOwnerFile": null,
         "qualityAxis": null,
@@ -7469,6 +7604,38 @@
         "symbol": "drawPlatform",
         "context": "function drawPlatform(x,y,w,isGold){",
         "score": 34,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "roundRect"
+          ],
+          "calledBy": [
+            "draw"
+          ],
+          "stateReads": [
+            "ctx",
+            "COLORS",
+            "x",
+            "y",
+            "h"
+          ],
+          "stateWrites": [
+            "ctx",
+            "h"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "SAVE",
+            "WORLD",
+            "ECONOMY",
+            "GOAL_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function drawPlatform(x,y,w,isGold){",
         "intendedBehavior": "CORE_FUN primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 drawPlatform의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cat-step/index.html::drawPlatform이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7481,6 +7648,37 @@
         "symbol": "drawCat",
         "context": "function drawCat(x,y,tilt=0,squash=1){",
         "score": 34,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [
+            "roundRect"
+          ],
+          "calledBy": [
+            "draw"
+          ],
+          "stateReads": [
+            "ctx",
+            "COLORS",
+            "x",
+            "y",
+            "arc",
+            "tilt"
+          ],
+          "stateWrites": [
+            "ctx"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [
+            "PRESENTATION",
+            "SAVE",
+            "WORLD",
+            "GOAL_STATE"
+          ],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function drawCat(x,y,tilt=0,squash=1){",
         "intendedBehavior": "CORE_FUN primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 drawCat의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cat-step/index.html::drawCat이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7505,6 +7703,26 @@
         "symbol": "resize",
         "context": "function resize(){",
         "score": 26,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [],
+          "stateReads": [
+            "canvas",
+            "ctx",
+            "W"
+          ],
+          "stateWrites": [
+            "canvas",
+            "W"
+          ],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function resize(){",
         "intendedBehavior": "CORE_FUN primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 resize의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cat-step/index.html::resize이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7517,6 +7735,24 @@
         "symbol": "clamp",
         "context": "function clamp(v,a,b){return Math.max(a,Math.min(b,v))}",
         "score": 26,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "laneX",
+            "catPose"
+          ],
+          "stateReads": [
+            "a"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function clamp(v,a,b){return Math.max(a,Math.min(b,v))}",
         "intendedBehavior": "CORE_FUN primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 clamp의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cat-step/index.html::clamp이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7529,6 +7765,24 @@
         "symbol": "lerp",
         "context": "function lerp(a,b,t){return a+(b-a)*t}",
         "score": 26,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "catPose"
+          ],
+          "stateReads": [
+            "t",
+            "a"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function lerp(a,b,t){return a+(b-a)*t}",
         "intendedBehavior": "CORE_FUN primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 lerp의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cat-step/index.html::lerp이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7541,6 +7795,23 @@
         "symbol": "easeOut",
         "context": "function easeOut(t){return 1-Math.pow(1-t,3)}",
         "score": 26,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "catPose"
+          ],
+          "stateReads": [
+            "t"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function easeOut(t){return 1-Math.pow(1-t,3)}",
         "intendedBehavior": "CORE_FUN primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 easeOut의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cat-step/index.html::easeOut이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7553,6 +7824,23 @@
         "symbol": "easeIn",
         "context": "function easeIn(t){return t*t*t}",
         "score": 26,
+        "sourceDependencyEvidence": {
+          "authority": "BOUNDED_STATIC_SAME_FILE_SOURCE_EVIDENCE",
+          "calls": [],
+          "calledBy": [
+            "catPose"
+          ],
+          "stateReads": [
+            "t"
+          ],
+          "stateWrites": [],
+          "storageKeys": [],
+          "events": [],
+          "systems": [],
+          "runtimeVerified": false,
+          "sourceWriteAuthorized": false,
+          "dependentFilesNotAuthorized": true
+        },
         "currentBehavior": "function easeIn(t){return t*t*t}",
         "intendedBehavior": "CORE_FUN primary goal \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 캣 스텝를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 easeIn의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cat-step/index.html::easeIn이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7657,8 +7945,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "캣 스텝. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 캣 스텝에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 캣 스텝의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7677,8 +7965,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7724,12 +8012,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7807,5 +8095,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-29T13:12:12.196Z"
+  "generatedAt": "2026-10-30T19:11:09.730Z"
 }
