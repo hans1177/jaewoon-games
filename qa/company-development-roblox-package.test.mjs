@@ -1054,3 +1054,25 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,
     'original save writer is unchanged');
 });
+
+test('fantasy meadow binds six original CC0 creature rigs and prevents repeating death or hit motion',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const manifest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));
+  for(const species of ['wolf','bee','golem','deer','boar','rabbit']){
+    assert.ok(manifest.models[species]?.sourceSha256,'verified CC0 original: '+species);
+    assert.ok(client.includes('species~="'+species+'"'),'source-only species routing: '+species);
+  }
+  assert.match(client,/model:GetAttribute\("Species"\) or model:GetAttribute\("MeadowWildlife"\)/);
+  assert.match(client,/GetAttributeChangedSignal\("MeadowWildlife"\):Once/);
+  assert.match(client,/joint:IsA\("Motor6D"\) and joint.Part0 and joint.Part1/);
+  assert.match(client,/joint:IsA\("Bone"\)/);
+  assert.match(client,/if sourceChannels\[name\] and not joints\[name\] then/);
+  assert.match(client,/local actualRig=count>=2/);
+  assert.match(client,/NativeCreatureRigMode/);
+  assert.match(client,/NativeMobMotion/);
+  assert.match(client,/meadowMobMotion.SampleProceduralActorMotion\(mode/);
+  assert.match(client,/mode=="DEATH" and 1\.32 or mode=="ATTACK" and \.75/);
+  assert.match(client,/repeating and \(row.phase%duration\)\/duration/);
+  assert.match(client,/math.clamp\(\(os.clock\(\)-row.motionStartedAt\)\/duration,0,1\)/);
+  assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
+});
