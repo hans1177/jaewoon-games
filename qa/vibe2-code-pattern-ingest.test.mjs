@@ -511,14 +511,14 @@ test('source-bound multi-module ESM repair binds independent same-game actions o
     '<button id="fight" data-gameplay-action="attack">Fight</button>',
     '<button id="mining" data-gameplay-action="gather">Gather</button>',
     '<button id="recover" data-gameplay-action="rest">Rest</button>'
-  ].join('\\n');
+  ].join('\n');
   fs.writeFileSync(file,deferredHtml);
   const deferredCandidate=deterministicWebInputCandidate(args);
   assert.equal(deferredCandidate?.deterministicWebModuleInput,true,
     'deferred ESM must support controls following its script tag');
   const deferredLinked=deferredHtml.replace(deferredCandidate.edits[0].find,deferredCandidate.edits[0].replace);
   for(const id of ['fight','mining','recover'])
-    assert.match(deferredLinked,new RegExp('getElementById\\\\("'+id+'"\\\\)\\\\.addEventListener\\\\("click"'));
+    assert.match(deferredLinked,new RegExp('getElementById\\("'+id+'"\\)\\.addEventListener\\("click"'));
   fs.writeFileSync(file,deferredLinked);
   assert.equal(deterministicWebInputCandidate(args),null,
     'deferred module button binding remains idempotent');
