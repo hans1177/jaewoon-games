@@ -98,6 +98,8 @@ local Config = {
      Instruction="몬스터 공격을 타이밍 맞춰 1회 막기",Message="연속 공격이 오면 막기 시작 순간을 노려 봐. 성공하면 상대의 빈틈이 생겨."},
     {Id="return-route",Name="동료 조사원 · 귀환로 확보",UnlockMainStage=5,Event="WAVE",Goal=1,
      Instruction="웨이브 1회 생존",Message="세계수 조사 기록과 함께 안전한 귀환 경로도 남기자."},
+    {Id="dawn-trace",Name="동료 조사원 · 새벽의 흔적",UnlockMainStage=6,Event="DAWN_TRACE",Goal=1,
+     Instruction="새벽에 숲 가장자리 조사",Message="새벽에만 보이는 마력 흔적을 기록해 줘. 메인 탐사는 기다리지 않아도 돼."},
   },
   StoryRecords = {
     {Title="연구 일지 1화 · 구조 요청",
@@ -114,7 +116,7 @@ local Config = {
     SharedObjective = 0, RoundScore = 0, XP = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
-    ResearchRecords = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
+    ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "생존 시작", Kind = "SURVIVAL", Order = 1, LearningPattern = "idle-reward" },

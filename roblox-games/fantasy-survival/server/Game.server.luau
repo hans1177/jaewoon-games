@@ -548,9 +548,33 @@ local function inspectMeadowSurvival(player,model,subject)
   if threatName then
     clue=string.format("주의: %s 흔적이 약 %d걸음 거리야.  ",threatName,math.floor(threatDist+.5))..clue
   end
+  if subject=="RUIN" then
+    local index=model:GetAttribute("RuinsIndex")
+    if typeof(index)=="number" and index>=1 and index<=3 then
+      local mask=math.clamp(readNumber(player,"RuinsDiscovered",0),0,7)
+      setNumber(player,"RuinsDiscovered",bit32.bor(mask,bit32.lshift(1,index-1)))
+      clue="오래된 유적 발견 · 연구 일지에 석벽의 흔적과 위치를 기록했어."
+    end
+  end
+  if subject=="WOODLAND" then
+    -- [탐험 기록] 실제 조사 위치와 서버 시각으로만 발견을 저장한다. 재화·전투 보상 없음.
+    local point=model:GetPivot().Position
+    local sector=(point.X>=0 and 1 or 0)+(point.Z>=0 and 2 or 0)
+    local mask=math.clamp(readNumber(player,"ExplorationGroves",0),0,15)
+    setNumber(player,"ExplorationGroves",bit32.bor(mask,bit32.lshift(1,sector)))
+    local period=gameWorld:GetAttribute("MeadowDayPhase")
+    if period=="DAWN" then
+      setNumber(player,"DawnTraceFound",1)
+      recordMeadowQuest(player,"DAWN_TRACE")
+      clue="새벽 연구 흔적 발견 · 낮은 안개 사이로 남은 마력의 흐름을 기록했어.  "..clue
+    elseif period=="NIGHT" then
+      setNumber(player,"NightTraceFound",1)
+      clue="밤의 숲 연구 기록 · 푸른 마력이 모이는 숲 가장자리를 확인했어.  "..clue
+    end
+  end
   player:SetAttribute("MeadowSurvivalHint",clue)
   player:SetAttribute("MeadowSurvivalHintSerial",(player:GetAttribute("MeadowSurvivalHintSerial") or 0)+1)
-  recordMeadowQuest(player,subject=="WOODLAND" and "WOODLAND" or "INSPECT")
+  recordMeadowQuest(player,subject=="WOODLAND" and "WOODLAND" or subject=="RUIN" and "RUIN" or "INSPECT")
 end
 
 local function bindMeadowInspection(model,subject)
@@ -558,8 +582,8 @@ local function bindMeadowInspection(model,subject)
   if not mesh then return end
   local prompt=Instance.new("ProximityPrompt")
   prompt.Name="MeadowSurvivalInspect"
-  prompt.ActionText=subject=="WOODLAND" and "주변 살피기" or "동물 관찰"
-  prompt.ObjectText=subject=="WOODLAND" and "숲 가장자리"
+  prompt.ActionText=(subject=="WOODLAND" or subject=="RUIN") and "주변 살피기" or "동물 관찰"
+  prompt.ObjectText=subject=="RUIN" and "오래된 유적" or subject=="WOODLAND" and "숲 가장자리"
     or subject=="deer" and "사슴" or subject=="boar" and "멧돼지" or "토끼"
   prompt.HoldDuration=.45
   prompt.MaxActivationDistance=10
@@ -598,6 +622,10 @@ end)
 task.defer(function()
   local woodland={
     -- 플레이 시작 화면에서 볼 수 있는 네 방향 숲 가장자리. CC0 나무 원본만 재사용.
+    {-48,-57,13},{-59,-52,15},{-68,-62,12},{-49,-72,14},{-61,-79,16},{-78,-53,13},
+    {49,-57,14},{61,-51,12},{72,-64,16},{52,-76,13},{65,-83,15},{81,-54,12},
+    {-48,58,15},{-61,51,13},{-72,66,16},{-51,78,12},{-64,85,14},{-82,56,15},
+    {48,59,13},{61,53,16},{73,67,14},{51,79,15},{65,86,12},{83,57,14},
     {-79,-82,18},{-96,-78,14},{-110,-99,20},{-73,-108,16},{-90,-118,18},{-124,-83,13},
     {81,-77,19},{99,-86,15},{111,-107,20},{72,-107,15},{93,-120,18},{123,-83,14},
     {-78,87,18},{-95,78,15},{-112,102,19},{-72,111,15},{-92,124,18},{-126,84,14},
@@ -680,6 +708,17 @@ task.defer(function()
   end
   gameWorld:SetAttribute("MeadowWoodlandSceneryCount",sceneryCount)
   gameWorld:SetAttribute("MeadowWoodlandReady",sceneryCount>0)
+  -- 원본 CC0 파손 석벽 1종만 재사용한다. 가짜 파츠 구조물은 만들지 않는다.
+  local ruinCount=0
+  for index,site in ipairs({Vector3.new(-122,3,-147),Vector3.new(137,3,139),Vector3.new(-154,3,122)})do
+    local ruin=worldAsset("ruin",site,6)
+    if ruin then
+      ruin.Name="Meadow_Ruin_"..index;ruin:SetAttribute("RuinsIndex",index)
+      bindMeadowInspection(ruin,"RUIN");ruinCount+=1
+    end
+    task.wait(.1)
+  end
+  gameWorld:SetAttribute("MeadowRuinCount",ruinCount)
   if sceneryCount==0 then warn("마력숲 초원 나무 로딩 0개: 등록 CC0 자산 및 Place 사용 권한 확인 필요") end
 end)
 
@@ -1133,7 +1172,7 @@ local function setEnemyAttackState(enemy, state)
   enemy.model:SetAttribute("AttackState",state)
   enemy.model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
   local motion=state=="ANTICIPATION" and "ATTACK" or
-    state=="CHASE" and "RUN" or state=="RETURN_TO_SPAWN" and "WALK" or
+    state=="CHASE" and "RUN" or (state=="RETURN_TO_SPAWN" or state=="PATROL") and "WALK" or
     (state=="RECOVERY" or state=="STUNNED") and "HIT" or "IDLE"
   enemy.model:SetAttribute("NativeMobMotion",motion)
   enemy.telegraph.Enabled=state=="ANTICIPATION"
@@ -1157,7 +1196,7 @@ local function animateMeadowOriginalMob(enemy,now)
   local phase=now*((kind=="bee" or kind=="bat") and 9 or
     kind=="wolf" and 7 or kind=="boar" and 6 or 3)
     +enemy.spawnPosition.X*.11
-  local inMotion=enemy.attackState=="CHASE" or enemy.attackState=="RETURN_TO_SPAWN"
+  local inMotion=enemy.attackState=="CHASE" or enemy.attackState=="RETURN_TO_SPAWN" or enemy.attackState=="PATROL"
   local attacking=enemy.attackState=="ANTICIPATION"
   local stunned=enemy.attackState=="STUNNED"
   local recoil=enemy.attackState=="RECOVERY"
@@ -1372,6 +1411,14 @@ local function updateEnemyAI(dt,now)
           setEnemyAttackState(enemy,"RETURN_TO_SPAWN")
           enemy.position+=homeOffset.Unit*math.min(enemy.speed*dt,homeOffset.Magnitude)
           enemy.visualFacing=homeOffset.Unit
+        elseif enemy.kind=="wolf" then
+          local patrol=enemy.spawnPosition+Vector3.new(math.sin(now*.24+enemy.spawnPosition.X)*5,0,math.cos(now*.24+enemy.spawnPosition.Z)*5)
+          local direction=Vector3.new(patrol.X-enemy.position.X,0,patrol.Z-enemy.position.Z)
+          if direction.Magnitude>.4 then
+            setEnemyAttackState(enemy,"PATROL")
+            enemy.position+=direction.Unit*math.min(enemy.speed*dt*.4,direction.Magnitude)
+            enemy.visualFacing=direction.Unit
+          else setEnemyAttackState(enemy,"IDLE") end
         else
           setEnemyAttackState(enemy,"IDLE")
         end
@@ -1430,6 +1477,18 @@ local function updateEnemyAI(dt,now)
           setEnemyAttackState(enemy,"CHASE")
           local step=math.min(enemy.speed*dt,distance-attackRange)
           local direction=offset.Unit
+          if enemy.kind=="wolf" and distance>attackRange+2 then
+            -- [무리 접근] 이웃 늑대와만 간격을 벌린다. 감지 거리·속도·공격력은 유지한다.
+            local spacing=Vector3.zero
+            for _,neighbor in ipairs(enemies) do
+              if neighbor~=enemy and neighbor.kind=="wolf" and neighbor.HP>0 then
+                local separation=Vector3.new(enemy.position.X-neighbor.position.X,0,enemy.position.Z-neighbor.position.Z)
+                if separation.Magnitude>.1 and separation.Magnitude<5 then spacing+=separation.Unit*(1-separation.Magnitude/5) end
+              end
+            end
+            local steered=direction+spacing*.55
+            if steered.Magnitude>.1 then direction=steered.Unit end
+          end
           if enemy.kind=="bee" or enemy.kind=="bat" then
             -- 원본 날개 몬스터는 지상 몬스터와 달리 좌우로 비행한다.
             local tangent=Vector3.new(-direction.Z,0,direction.X)

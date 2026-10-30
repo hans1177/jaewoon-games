@@ -1115,7 +1115,7 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/birdChirp.SoundId="rbxassetid:\/\/140708444684424"/);
   assert.match(client,/birdChirp.Looped=false/);
   assert.match(client,/forestBed.Volume=\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)/);
-  assert.match(client,/local quiet=weather=="RAIN" or weather=="STORM" or timePhase=="NIGHT"/);
+  assert.match(client,/local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="SNOW" or sky=="STORM"/);
   assert.match(client,/birdChirp.Volume=\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)/);
   assert.match(client,/nextChirp=os.clock\(\)\+math.random\(17,29\)/);
   // Survival inspection is meaningful but cannot change existing balance, rewards or save data.
@@ -1220,8 +1220,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","승룡권"'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
-  assert.match(client,/if processedByUI or meadowJournalOpen or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
-  assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,nil,multiplayerStatus,\{compact=true,hideButton=true\}\)/);
+  assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
+  assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,/);
+  assert.match(client,/pages=meadowPages/);
   assert.ok(client.includes('hideButton=true'),
     'the default attack button must remain hidden for world-tap combat');
   const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
@@ -1356,4 +1357,33 @@ test('마력숲 초원 수문장은 기존 골렘·5웨이브·보상을 보존�
  assert.match(server,/id="golem",atom="HEAD_GOLEM",height=8\.4/);
  assert.match(server,/NativeMobMotionDuration/);
  assert.match(server,/awardProgress\(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5\)/);
+});
+
+test('마력숲 숲 교체는 텍스처 내장 CC0 원본과 실제 늑대 스킨 관절을 사용한다',()=>{
+ const manifest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));
+ for(const role of ['tree','ruin']){
+  const source=manifest.models[role];const bytes=fs.readFileSync(source.sourcePath);
+  assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),source.sourceSha256);
+  const n=bytes.readUInt32LE(12);const glb=JSON.parse(bytes.subarray(20,20+n).toString());
+  assert.ok(glb.meshes.length>0);assert.ok(glb.images.some(x=>Number.isInteger(x.bufferView)));
+  assert.ok((glb.buffers||[]).every(x=>!x.uri));
+ }
+ const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+ assert.match(client,/bone014="FRHip",bone015="FRKnee",bone016="FRAnkle"/);
+ assert.match(client,/bone017="FLHip",bone018="FLKnee",bone019="FLAnkle"/);
+ assert.match(client,/wolfSourceChannels\[key\]/);
+ assert.match(client,/lights<6/);
+ assert.match(client,/ForestGroundMist/);
+ const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+ assert.match(server,/setEnemyAttackState\(enemy,"PATROL"\)/);
+ assert.match(server,/neighbor.kind=="wolf" and neighbor.HP>0/);
+ assert.match(server,/bit32.bor\(mask,bit32.lshift\(1,sector\)\)/);
+ assert.match(server,/recordMeadowQuest\(player,"DAWN_TRACE"\)/);
+ assert.match(server,/bindMeadowInspection\(ruin,"RUIN"\)/);
+ assert.doesNotMatch(server,/Instance.new\("Part"\)/);
+});
+
+test('마력숲 원본 교체 등록은 기존 아이콘·입자 권한 원장을 보존한다',()=>{
+ const uploader=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
+ assert.match(uploader,/JSON.stringify\(\{\.\.\.oldRegistry,version:2,gameId:'fantasy-survival'/);
 });
