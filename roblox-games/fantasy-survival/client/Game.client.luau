@@ -439,7 +439,7 @@ for index, action in ipairs(Config.Actions) do
   button.TextWrapped = true
   button.TextScaled = false;button.TextSize=15
   button.Text = CommonUI.ActionLabel(action,index)
-  -- 공격/수동 회피 버튼은 이중 노출하지 않고 전용 반원형 도크에서 관리한다.
+  -- 메인 전투 기술은 오른쪽 원형 도크에서만 표시하고, 기존 메뉴의 중복 버튼을 숨긴다.
   local hidden=action.Kind=="COMBAT" or action.Id=="skill-meadow-bolt"
     or action.Id=="skill-meadow-guard" or action.Id=="skill-meadow-parry"
     or action.Id=="skill-meadow-heal" or action.Id=="skill-meadow-dodge-left"
@@ -623,7 +623,7 @@ local function renderMeadowPages()
     or tier<10 and (player:GetAttribute("Wood") or 0)>=cost and (player:GetAttribute("Stone") or 0)>=cost
       and "강화 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
     or "나무와 돌 가까이에서 채집해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
-  meadowLabels[5].Text="지금 할 일\n\n"..(quest and quest.Instruction.."\n\n" or "")..suggestion..string.format("\n\n다음 강화 비용  나무 %d · 돌 %d\n\n조작 안내\n화면 탭: 기본 공격\n연속권·승룡권: 맨손 스킬\n막기 직후 적중: 완벽 막기\n회피: 능력치에 따라 자동 발동",cost,cost)
+  meadowLabels[5].Text="지금 할 일\n\n"..(quest and quest.Instruction.."\n\n" or "")..suggestion..string.format("\n\n다음 강화 비용  나무 %d · 돌 %d\n\n조작 안내\n화면 탭: 기본 공격\n연속권·승룡권: 맨손 스킬\n막기 직후 적중: 완벽 막기\n어퍼컷: 스테미너 20 소모\n발차기: 스테미너 14 소모",cost,cost)
   local companionStage=player:GetAttribute("CompanionQuestStage") or 1
   local companionLines={"동료 통신 · 선택 의뢰","메인 퀘스트와 독립적으로 진행돼."}
   for index,request in ipairs(Config.CompanionRequests or {})do
@@ -1301,8 +1301,8 @@ UserInputService.InputBegan:Connect(function(input,processed)
   end
 end)
 
--- [전투 UI] 최종 시안: 6개 스킬을 공격 버튼 왼쪽 반원에 배치한다.
--- 기존 Config.Actions 및 서버 쿨다운을 재사용한다. 스킬/피해/세이브 의미는 바꾸지 않는다.
+-- [전투 UI] 오른쪽 원형 버튼: 어퍼컷·발차기·막기 세 기술만 배치한다.
+-- 기존 서버 스킬 ID와 공격 판정·세이브 호환은 그대로 두고 스테미너 비용만 반영한다.
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
 meadowSkillDock.BackgroundTransparency=1
