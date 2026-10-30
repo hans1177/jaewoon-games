@@ -279,7 +279,9 @@ jobs:
           cd /tmp/company-runtime
           git config user.name 'jaewoon-roblox-source-sync'
           git config user.email 'actions@users.noreply.github.com'
-          for i in 1 2 3 4 5; do
+          # [공유 저장 충돌 복구] 다른 게임의 company-runtime 쓰기와 충돌해도
+          # 이 게임의 변경 소스만 재검증하여 기존 원자적 push를 더 오래 복구한다.
+          for i in 1 2 3 4 5 6 7 8 9 10; do
             assert_source_current
             git add development-queue.json homepage-platform-exposure.json
             git diff --cached --check
@@ -295,7 +297,7 @@ jobs:
             cd "$GITHUB_WORKSPACE"
             regenerate_runtime_state
             cd /tmp/company-runtime
-            sleep "$i"
+            sleep "$((i<=5 ? i : 5))"
           done
           echo 'ROBLOX_SOURCE_SYNC_RUNTIME_PERSIST=FAILED' >&2
           exit 1

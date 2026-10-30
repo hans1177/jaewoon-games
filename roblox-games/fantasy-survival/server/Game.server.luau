@@ -76,9 +76,9 @@ local MAX_ENEMIES = 22
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
 -- [숲 표면] 원본 CC0 메시·텍스처를 보존하는 공통 자연색 팔레트.
 local meadowPalette={
-  grass=Color3.fromRGB(99,142,95),leafyGrass=Color3.fromRGB(76,117,80),
-  ground=Color3.fromRGB(113,98,79),rock=Color3.fromRGB(123,130,120),
-  bark=Color3.fromRGB(111,91,72),leaves=Color3.fromRGB(82,123,80),
+  grass=Color3.fromRGB(100,151,97),leafyGrass=Color3.fromRGB(69,128,78),
+  ground=Color3.fromRGB(124,102,79),rock=Color3.fromRGB(123,130,120),
+  bark=Color3.fromRGB(112,87,66),leaves=Color3.fromRGB(88,154,91),
   wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
   deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
@@ -134,7 +134,7 @@ local function createStartingMeadow()
   Lighting.EnvironmentSpecularScale=.16
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
-  gameWorld:SetAttribute("MeadowVisualStyle", "MOSS_FOREST_MATTE_V2")
+  gameWorld:SetAttribute("MeadowVisualStyle", "SOFT_TOY_FOREST_CC0_MESH_V3")
   gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
   gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
@@ -326,15 +326,27 @@ local function worldAsset(id, location, targetHeight)
             surface.Color=meadowPalette.rock
             surface.Material=Enum.Material.Slate
           elseif id=="tree" then
+            -- [기존 CC0 나무 표면 교체] 원본 MeshId·모양·비율은 보존하고 복제본만 부드러운 토이 숲 재질로 변경한다.
             local name=surface.Name:lower()
             local bark=name:find("trunk",1,true) or name:find("bark",1,true)
               or name:find("stem",1,true) or name:find("branch",1,true)
               or name:find("wood",1,true)
-            surface.Color=bark and meadowPalette.bark or meadowPalette.leaves
-            surface.Material=bark and Enum.Material.Wood or Enum.Material.Fabric
+            local tone=(math.sin(location.X*.28+location.Z*.19)+1)*.5
+            local crown=meadowPalette.leaves:Lerp(Color3.fromRGB(151,184,107),tone*.40)
+            if not bark then
+              -- 과거 모서리/천 질감을 삭제하고 표면이 고르게 보이도록 직접 지정한다.
+              local appearance=surface:FindFirstChildOfClass("SurfaceAppearance")
+              if appearance then appearance:Destroy() end
+              if surface.TextureID~="" then surface.TextureID="" end
+            end
+            surface.MaterialVariant=""
+            surface.Color=bark and meadowPalette.bark or crown
+            surface.Material=bark and Enum.Material.Wood or Enum.Material.SmoothPlastic
           else
+            -- [야생동물 토이 표면] 자갈/천 직물 대신 유광을 억제한 장난감 플라스틱.
+            -- 원본 모델, 메시·리그·판정은 그대로 유지한다.
             surface.Color=animalTint
-            surface.Material=Enum.Material.Fabric
+            surface.Material=Enum.Material.Plastic
           end
           surface.Reflectance=0
         end
@@ -412,16 +424,15 @@ local function broadcastSurvivalState(actor)
 end
 
 local function awardProgress(player, experience, coinReward)
-  local xp = readNumber(player, "XP", 0) + experience
-  local level = readNumber(player, "Level", 1)
-  while xp >= (25 + level*12) and level < 50 do
-    xp -= (25 + level*12)
-    level += 1
-  end
-  setNumber(player, "XP", xp)
-  setNumber(player, "Level", level)
-  setNumber(player, "Coins", readNumber(player, "Coins", 0) + coinReward)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + experience)
+  -- 레벨은 더 이상 증가시키지 않는다. 과거 Level/XP는 기존 저장 호환 전용.
+  setNumber(player,"CombatProficiency",readNumber(player,"CombatProficiency",0)+experience)
+  setNumber(player,"Coins",readNumber(player,"Coins",0)+coinReward)
+  setNumber(player,"Progress",readNumber(player,"Progress",0)+experience)
+end
+-- 이전 레벨 전투력을 보존하면서 숙련도 점수에 따라 연속 성장한다.
+local function meadowProficiencyPower(player)
+  local points=math.max(0,readNumber(player,"CombatProficiency",0))
+  return 2.2*(1+math.max(0,(math.sqrt(961+24*points)-31)/12))
 end
 
 -- [메인 퀘스트·연구 기록 아이템]
@@ -669,6 +680,8 @@ end)
 -- 전투·채집/보상 대상이 아닌 배경용이며, 시작 지점과 기존 스폰/자원은 그대로 보존한다.
 -- 같은 나무 1개 에셋 캐시만 재사용하고 순차 로딩으로 처음 접속을 막지 않는다.
 task.defer(function()
+  -- 외곽 지형이 마지막에 채워지면 개울이 다시 매몰되므로 지형 완료 뒤 수로를 판다.
+  while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.1) end
   local woodland={
     -- 플레이 시작 화면에서 볼 수 있는 네 방향 숲 가장자리. CC0 나무 원본만 재사용.
     {-48,-57,13},{-59,-52,15},{-68,-62,12},{-49,-72,14},{-61,-79,16},{-78,-53,13},
@@ -692,6 +705,26 @@ task.defer(function()
     {98,-75,13},{121,-99,14},{143,-128,11},
     {-91,84,13},{-116,102,12},{-139,130,14},
     {97,81,12},{123,105,14},{146,135,11},
+    -- [숲 군락] 승인된 원본 나무만 간격을 달리해 군락의 빈틈을 메운다.
+    {-82,-69,14},{-105,-112,12},{-132,-97,17},{-90,-137,13},
+    {87,-88,14},{104,-129,12},{137,-109,17},{91,-142,13},
+    {-86,96,15},{-104,138,12},{-137,113,16},{-96,151,13},
+    {87,98,15},{106,134,12},{139,117,16},{95,152,13},
+    -- [숲 밀도] 시작 초원을 남겨 두고 외곽 기존 나무 군락만 여러 겹으로 보강한다.
+    {-138,-151,15},{-162,-126,13},{-167,-176,16},{-185,-146,12},
+    {136,-154,15},{161,-128,13},{168,-171,16},{187,-146,12},
+    {-140,164,15},{-161,141,13},{-176,190,16},{-195,161,12},
+    {143,161,15},{164,140,13},{174,187,16},{190,160,12},
+    -- [깊은 숲] 4개의 기존 숲 군락에서만 원본 CC0 나무를 층층이 확장한다.
+    -- 길과 3개 기존 탐사 유적은 열린 공간으로 남겨 두고 모델만 가볍게 재사용한다.
+    {-154,-201,16},{-181,-196,13},{-206,-166,17},{-219,-124,14},
+    {-187,-108,17},{-145,-218,13},{-235,-189,15},{-201,-232,17},
+    {153,-202,16},{182,-192,13},{205,-166,17},{219,-125,14},
+    {183,-111,17},{145,-221,13},{235,-188,15},{201,-232,17},
+    {-157,202,16},{-181,194,13},{-207,167,17},{-219,126,14},
+    {-189,109,17},{-143,221,13},{-238,190,15},{-203,234,17},
+    {155,201,16},{181,193,13},{208,165,17},{221,125,14},
+    {187,111,17},{145,223,13},{235,188,15},{205,231,17},
   }
   -- [숲 조성 / 원본 에셋] 멀리 분산된 나무를 8개 숲 군락으로 이어 화면 가장자리를 울창하게 채운다.
   -- 기존 수입 CC0 나무 원본만 복제한다. 시작지·공격 반경과 채집 나무 좌표는 그대로 둔다.
@@ -768,12 +801,15 @@ task.defer(function()
           surface.Color=surface.Color:Lerp(leafTone,.33)
         end
       end
-      -- 최초 24그루의 4개 장소만 탐색 대상이다. 새 배경 숲은 프롬프트를 만들지 않는다.
-      if index<=24 and index%6==0 then bindMeadowInspection(tree,"WOODLAND") end
+      -- [접근성] 기존 네 초원 입구의 조사 지점만 남겨 프롬프트가 숲 전체를 가리지 않는다.
+      -- 네 사분면별 발견 비트·퀘스트·저장 의미는 그대로 사용한다.
+      if index==6 or index==12 or index==18 or index==24 then
+        bindMeadowInspection(tree,"WOODLAND")
+      end
       tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*137)%360),0))
       sceneryCount+=1
     end
-    -- [로딩 분할] 나무를 3그루씩 조성한 뒤 양보한다. 최초 숲 화면 출현 지연을 줄인다.
+    -- 기존 CC0 메시는 재사용하며 한 번에 세 그루씩만 배치한다.
     if index%3==0 then task.wait(.06) end
   end
   -- 흙길·바위·잔디 연결은 Roblox Terrain으로만 구성한다. 장식용 Part 생성 금지.
@@ -811,7 +847,23 @@ task.defer(function()
       if step%4==0 then task.wait(.025) end
     end
   end
-  gameWorld:SetAttribute("MeadowNativeTrails",#tracks)
+  -- [오솔길 분기] 네 탐험 입구에서 깊은 숲으로 이어지는 실제 Terrain 길이다.
+  -- 기존 시작·전투·채집 좌표는 건드리지 않고 지도에도 동일한 분기를 표시한다.
+  local trailSpurs={
+    {from=Vector2.new(-177,-176),to=Vector2.new(-228,-219)},
+    {from=Vector2.new(183,-177),to=Vector2.new(231,-228)},
+    {from=Vector2.new(-184,188),to=Vector2.new(-234,233)},
+    {from=Vector2.new(192,196),to=Vector2.new(236,238)},
+  }
+  for index,track in ipairs(trailSpurs) do
+    for step=1,12 do
+      local t=step/12
+      local p=track.from:Lerp(track.to,t)
+      meadowTerrain:FillBall(Vector3.new(p.X,-1.7,p.Y),3.2,Enum.Material.Ground)
+      task.wait(.02)
+    end
+  end
+  gameWorld:SetAttribute("MeadowNativeTrails",#tracks+#trailSpurs)
   -- [이끼 낀 암석] 나무 군락 바깥에만 Terrain 암반을 겹쳐 자연스럽게 노출한다.
   local forestRockCount=0
   for _,rock in ipairs({
@@ -827,6 +879,22 @@ task.defer(function()
     task.wait(.02)
   end
   gameWorld:SetAttribute("MeadowForestRockCount",forestRockCount)
+  -- [덤불 같은 지표] 원본 지형 재질로 오솔길 옆 숲의 잎·잔디 밀도를 높인다.
+  -- 캐릭터·자원·전투 스폰 주변은 피하고 새 파츠나 가짜 식생 모델은 만들지 않는다.
+  for _,brush in ipairs({
+    {-91,-101,3.8},{-115,-75,3.1},{-137,-116,3.4},{-75,-124,3.2},
+    {88,-100,3.7},{125,-79,3.2},{145,-116,3.3},{76,-128,3.1},
+    {-87,119,3.7},{-126,94,3.4},{-151,123,3.2},{-75,145,3.1},
+    {90,117,3.8},{126,91,3.2},{151,120,3.4},{77,146,3.1},
+    -- [숲 바닥] 기존 지형 재질을 이용해 네 깊은 숲의 빈 곳을 잔디로 잇는다.
+    {-165,-194,3.9},{-212,-192,3.4},{-194,-134,3.7},{-236,-154,3.3},
+    {166,-193,3.9},{212,-188,3.4},{194,-139,3.7},{234,-153,3.3},
+    {-169,193,3.9},{-210,190,3.4},{-196,143,3.7},{-236,159,3.3},
+    {169,192,3.9},{211,192,3.4},{195,142,3.7},{236,162,3.3},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(brush[1],-1.3,brush[2]),brush[3],Enum.Material.LeafyGrass)
+    task.wait()
+  end
   -- 추가 야생동물은 이미 검증된 사슴/멧돼지/토끼 모델만 사용한다.
   for index,spec in ipairs({
     {"deer",-245,-191,4.4},{"deer",251,211,4.4},{"deer",202,-232,4.4},
@@ -850,10 +918,17 @@ task.defer(function()
   gameWorld:SetAttribute("MeadowWoodlandSceneryCount",sceneryCount)
   gameWorld:SetAttribute("MeadowForestCanopyCount",canopyCount)
   gameWorld:SetAttribute("MeadowForestFloorCount",forestFloorCount)
+  gameWorld:SetAttribute("MeadowWoodlandScene","FOUR_GROVES_FOUR_REAL_TRAIL_SPURS")
+  gameWorld:SetAttribute("MeadowForestSoftToyMaterial",sceneryCount>0 and "ORIGINAL_CC0_TREE_MESH_SMOOTH_MATTE" or "NO_NATIVE_MESH")
   gameWorld:SetAttribute("MeadowWoodlandReady",sceneryCount>0)
   -- 원본 CC0 파손 석벽 1종만 재사용한다. 가짜 파츠 구조물은 만들지 않는다.
   local ruinCount=0
   for index,site in ipairs({Vector3.new(-122,3,-147),Vector3.new(137,3,139),Vector3.new(-154,3,122)})do
+    -- [유적 마당] 원본 석벽이 드러나도록 구역만 지형 흙길과 잔디로 꾸민다.
+    meadowTerrain:FillBall(Vector3.new(site.X,-7.2,site.Z),9.2,Enum.Material.Ground)
+    for _,offset in ipairs({Vector2.new(16,2),Vector2.new(-15,-3),Vector2.new(2,16),Vector2.new(-3,-15)}) do
+      meadowTerrain:FillBall(Vector3.new(site.X+offset.X,-1.6,site.Z+offset.Y),3.4,Enum.Material.LeafyGrass)
+    end
     local ruin=worldAsset("ruin",site,6)
     if ruin then
       ruin.Name="Meadow_Ruin_"..index;ruin:SetAttribute("RuinsIndex",index)
@@ -862,6 +937,23 @@ task.defer(function()
     task.wait(.1)
   end
   gameWorld:SetAttribute("MeadowRuinCount",ruinCount)
+  -- [건축 흔적] 승인된 CC0 석벽 메시만 재사용해 세 탐사 유적의 외곽을 보강한다.
+  -- 기존 1~3번 조사 대상과 저장 비트마스크, 퀘스트 진행은 그대로 유지한다.
+  for index,site in ipairs({Vector3.new(-122,3,-147),Vector3.new(137,3,139),Vector3.new(-154,3,122)})do
+    for section,offset in ipairs({
+      Vector3.new(9,0,8),Vector3.new(-9,0,7),
+      Vector3.new(9,0,-8),Vector3.new(-9,0,-8),
+    })do
+      local wall=worldAsset("ruin",site+offset,4.8)
+      if wall then
+        wall.Name="Meadow_Ruin_Outer_"..index.."_"..section
+        wall:SetAttribute("MeadowScenery",true)
+        wall:PivotTo(wall:GetPivot()*CFrame.Angles(0,math.rad(
+          section==1 and 90 or section==2 and -80 or section==3 and 165 or -160),0))
+      end
+      task.wait(.12)
+    end
+  end
   -- [석벽 흔적] 원본 CC0 석벽 조각만 주변 오솔길 가장자리에 배치한다.
   -- 별도 RuinsIndex/관찰 이벤트를 만들지 않아 기존 3개 유적 발견 및 저장 비트는 불변.
   local forestFragmentCount=0
@@ -889,10 +981,9 @@ local function spawnEnemy(isBoss, index)
   local radius = 51 + (index%3)*11
   local location = Vector3.new(math.cos(theta)*radius, 3, math.sin(theta)*radius)
   -- [초원 몬스터] 슬라임 제외. CC0 실물 원본을 등록한 종만 웨이브에 추가한다.
-  -- 기존 전투 피해, 보상, 등장 수는 변경하지 않고 몬스터 종류만 확장한다.
+  -- 초원 벌은 출현 목록에서 제외한다. 기존 전투 피해·보상·등장 수는 유지한다.
   local meadowSpecies={
     {id="wolf",atom="HEAD_CANINE",wave=1,height=3.15},
-    {id="bee",atom="HEAD_INSECT",wave=1,height=3.15},
     {id="boar",atom="JAW_SHORT",wave=2,height=3.15},
     {id="mushroom",atom="ROOT_LIMB",wave=3,height=3.15},
     {id="bat",atom="WING_LEATHER",wave=4,height=3.15},
@@ -1092,37 +1183,43 @@ local function spawnEnemy(isBoss, index)
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
-  local meadowNames={wolf="초원 늑대",bee="초원 벌",boar="사나운 멧돼지",
+  local meadowNames={wolf="초원 늑대",boar="사나운 멧돼지",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
-  -- [몬스터 공통 재질] 원본 텍스처·메시·종별 실루엣은 유지한다.
-  -- 숲의 무광 저채도 색감만 맞추며 보스의 암석 재질과 벌의 투명 날개는 보존한다.
-  -- 몸통과 숲 초목의 무광색을 맞춘다. 원본 TextureID/SurfaceAppearance는 유지.
+  -- [몬스터 공통 재질] 늑대·멧돼지·버섯·박쥐·해골·골렘에 동일한 토이 플라스틱을 적용한다.
+  -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
+  -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
+  -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
   local bodyTint=isBoss and meadowPalette.golem
     or meadowPalette[partId] or meadowPalette.wolf
-  -- [소프트 스터드 재질] 로블록스 기본 Pebble의 둥근 미세 요철과 매끈한 Plastic 장식을 조합한다.
-  -- 임의 파츠/텍스처를 만들지 않으며 원본 UV, TextureID, SurfaceAppearance, MaterialVariant는 보존한다.
-  -- PBR 맵은 실시간 LuaU에서 쓰기 권한이 없으므로 기존 원본 재질을 덮어쓰지 않는다.
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") then
       local partName=surface.Name:lower()
-      local wing=partId=="bee" and partName:find("wing",1,true)
+      local wing=(partId=="bee" or partId=="bat") and partName:find("wing",1,true)
       local smoothDetail=wing or partName:find("eye",1,true)
-        or partName:find("tooth",1,true) or partName:find("teeth",1,true)
-        or partName:find("claw",1,true) or partName:find("horn",1,true)
-        or partName:find("crystal",1,true)
-      local sourceColor=surface.Color
-      local hasSourceDetail=(surface.TextureID~=""
-        or surface:FindFirstChildOfClass("SurfaceAppearance")~=nil)
-      -- 원본 색상·얼굴·눈·날개는 읽히도록 유지하고, 몸통만 둥근 요철을 사용한다.
-      surface.Color=wing and Color3.fromRGB(190,228,235)
-        or hasSourceDetail and sourceColor:Lerp(bodyTint,.16)
-        or sourceColor:Lerp(bodyTint,.38)
-      surface.Material=wing and Enum.Material.Glass
-        or smoothDetail and Enum.Material.SmoothPlastic or Enum.Material.Pebble
+        or partName:find("pupil",1,true) or partName:find("tooth",1,true)
+        or partName:find("teeth",1,true) or partName:find("claw",1,true)
+        or partName:find("horn",1,true) or partName:find("crystal",1,true)
+      if wing then
+        -- 투명 날개와 비행 몬스터의 읽기 쉬운 실루엣은 유지한다.
+        surface.Material=Enum.Material.Glass
+        surface.Color=Color3.fromRGB(190,228,235)
+      elseif smoothDetail then
+        surface.Material=Enum.Material.SmoothPlastic
+      else
+        -- 구형 Pebble 돌무늬/체크 무늬는 원본 메시의 본체에서 제거한다.
+        -- 원본 모델 템플릿은 유지하므로 기존 에셋을 파괴하거나 덮어쓰지 않는다.
+        local appearance=surface:FindFirstChildOfClass("SurfaceAppearance")
+        if appearance then appearance:Destroy() end
+        if surface.TextureID~="" then surface.TextureID="" end
+        surface.MaterialVariant=""
+        surface.Material=Enum.Material.Plastic
+        surface.Color=surface.Color:Lerp(bodyTint,.78)
+      end
       surface.Reflectance=0
     end
   end
+  model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
   local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",boar="BOAR_CHARGE",
     mushroom="MUSHROOM_SPORES",bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
@@ -1303,18 +1400,21 @@ local function attackEnemy(player)
     player:SetAttribute("ApprovedActionTarget",rootPart.Position)
     return true,false
   end
-  local level=readNumber(player,"Level",1)
   local weaponTier=readNumber(player,"WeaponTier",0)
-  local damage=math.floor(16+level*2.2+weaponTier*8)
+  local damage=math.floor(16+meadowProficiencyPower(player)+weaponTier*8)
   return applyMeadowDamage(player,target,damage),true
 end
 
-local function unarmedSkillAttack(player)
-  -- The skill toolbar is a genuine bare-hand mode; equipped tools retain their
-  -- original weapon attack path. Damage, range and cooldown are all unchanged.
+local function unarmedSkillAttack(player,staminaCost)
+  -- 실제로 승인된 맨손 입력에만 스테미너를 차감한다.
   local character=player.Character
   if not character or character:FindFirstChildOfClass("Tool") then return false end
-  return attackEnemy(player)
+  local cost=staminaCost or 0
+  local stamina=player:GetAttribute("MeadowStamina") or 0
+  if stamina<cost then return false end
+  local accepted,hit=attackEnemy(player)
+  if accepted and cost>0 then player:SetAttribute("MeadowStamina",math.max(0,stamina-cost)) end
+  return accepted,hit
 end
 
 local function gatherNearestResource(player)
@@ -1469,8 +1569,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   -- [자동 회피] 기존 Level 능력치를 기준으로만 계산하며 저장 구조는 유지한다.
   -- 4초 간격, 현재 방어 중이 아닐 때 좌/우 실제 공간이 비어 있는 경우만 발동한다.
   if (defense.guardUntil or 0)<=now and now>=(defense.nextAutoDodgeAt or 0) then
-    local level=readNumber(player,"Level",1)
-    local chance=math.clamp(.06+level*.007,.067,.28)
+    local chance=math.clamp(.06+(meadowProficiencyPower(player)/2.2)*.007,.067,.28)
     if math.random()<chance then
       local character,_,root=liveMeadowCharacter(player)
       if character and root then
@@ -1736,10 +1835,26 @@ end
 -- 렌더링할 원본 모델 피벗만 30Hz로 보간해 8Hz 점프 이동을 제거한다.
 local enemyUpdateElapsed=0
 local enemyVisualElapsed=0
+local staminaRegenElapsed=0
 RunService.Heartbeat:Connect(function(dt)
   local step=math.min(dt,.15)
   enemyUpdateElapsed+=step
   enemyVisualElapsed+=step
+  staminaRegenElapsed+=step
+  if staminaRegenElapsed>=.25 then
+    local elapsed=staminaRegenElapsed
+    staminaRegenElapsed=0
+    for _,member in ipairs(Players:GetPlayers()) do
+      if member:GetAttribute("ProfileReady")==true then
+        local current=member:GetAttribute("MeadowStamina")
+        local character=member.Character
+        local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+        if typeof(current)=="number" and current<100 and humanoid and humanoid.Health>0 then
+          member:SetAttribute("MeadowStamina",math.min(100,current+elapsed*10))
+        end
+      end
+    end
+  end
   if enemyUpdateElapsed>=.12 then
     local logicStep=math.min(enemyUpdateElapsed,.25)
     enemyUpdateElapsed=0
@@ -1812,7 +1927,7 @@ local function meadowHeavy(player)
     local enemy=nearestEnemy(root,7)
     if not enemy or now<(attackCooldown[player] or 0) then return false end
     attackCooldown[player]=now+.65
-    local damage=math.floor((16+readNumber(player,"Level",1)*2.2
+    local damage=math.floor((16+meadowProficiencyPower(player)
       +readNumber(player,"WeaponTier",0)*8)*1.7)
     return applyMeadowDamage(player,enemy,damage)
   end)
@@ -1827,7 +1942,7 @@ local function meadowSweep(player)
       end
     end
     if #targets==0 then return false end
-    local damage=math.floor((16+readNumber(player,"Level",1)*2.2
+    local damage=math.floor((16+meadowProficiencyPower(player)
       +readNumber(player,"WeaponTier",0)*8)*.85)
     player:SetAttribute("ApprovedActionTarget",root.Position)
     for _,enemy in ipairs(targets) do applyMeadowDamage(player,enemy,damage) end
@@ -1845,7 +1960,7 @@ local function meadowBolt(player)
     local delta=enemy.position-(root.Position+Vector3.new(0,2,0))
     local wall=workspace:Raycast(root.Position+Vector3.new(0,2,0),delta,ray)
     if wall and wall.Distance<delta.Magnitude-2 then return false end
-    local damage=math.floor(12+readNumber(player,"Level",1)*1.8
+    local damage=math.floor(12+meadowProficiencyPower(player)*1.8/2.2
       +readNumber(player,"WeaponTier",0)*4)
     return applyMeadowDamage(player,enemy,damage)
   end)
@@ -1933,8 +2048,8 @@ local handlers={
   ["scope-coreloop-2-6c927cfa40"]=upgradeEquipment,
   ["scope-mobileux-5acfb2eaa6"]=attackEnemy,
   ["meadow-unarmed-rush"]=unarmedSkillAttack,
-  ["meadow-unarmed-uppercut"]=unarmedSkillAttack,
-  ["meadow-unarmed-kick"]=unarmedSkillAttack,
+  ["meadow-unarmed-uppercut"]=function(player) return unarmedSkillAttack(player,20) end,
+  ["meadow-unarmed-kick"]=function(player) return unarmedSkillAttack(player,14) end,
   ["meadow-unarmed-elbow"]=unarmedSkillAttack,
   ["skill-meadow-heavy"]=meadowHeavy,
   ["skill-meadow-sweep"]=meadowSweep,
@@ -1957,6 +2072,7 @@ local function bindSurvivalHealth(player)
   local function bindCharacter(character)
     -- 리스폰한 캐릭터가 이전 생명의 막기·회피 판정을 물려받지 않는다.
     meadowDefense[player]=nil
+    player:SetAttribute("MeadowStamina",100)
     local humanoid = character:WaitForChild("Humanoid", 10)
     if not humanoid then return end
     -- 플레이어 실제 휴머노이드 체력만 HUD에 전달한다. 서버가 소유하는 체력 판정은 유지한다.
@@ -1968,6 +2084,18 @@ local function bindSurvivalHealth(player)
     humanoid.Died:Connect(function()
       player:SetAttribute("RunActive", false)
       player:SetAttribute("LastApprovedScope", "survival-respawn")
+      -- [실제 부활 복구] Roblox 자동 리스폰의 기본 대기시간을 먼저 보장한다.
+      -- 이후에도 같은 죽은 캐릭터가 남아 있을 때만 LoadCharacterAsync로 복구한다.
+      -- 새 캐릭터가 생성됐다면 호출하지 않아 중복 스폰과 저장 상태 손실을 피한다.
+      task.delay(Players.RespawnTime+1,function()
+        if player.Parent~=Players or player.Character~=character or humanoid.Health>0 then return end
+        local recovered,reason=pcall(function()
+          player:LoadCharacterAsync()
+        end)
+        if not recovered then
+          warn("SURVIVAL_RESPAWN_RECOVERY_FAILED: "..tostring(reason))
+        end
+      end)
     end)
   end
   player.CharacterAdded:Connect(bindCharacter)
@@ -1994,12 +2122,19 @@ local function onSurvivalPlayerAdded(player)
       local value = saved[key]
       if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
     end
+    -- 기존 레벨과 경험치의 누적 합을 숙련도로 이관해 기존 피해 수치를 유지한다.
+    if typeof(saved.CombatProficiency)~="number" then
+      local oldLevel=math.max(1,math.floor(tonumber(saved.Level) or 1))
+      local oldXp=math.max(0,tonumber(saved.XP) or 0)
+      player:SetAttribute("CombatProficiency",(oldLevel-1)*(6*oldLevel+25)+oldXp)
+    end
     player:SetAttribute("ActionSequence", 0)
     player:SetAttribute("LastApprovedScope", "ready")
   else
     initializePlayer(player)
   end
   player:SetAttribute("SaveStatus", validSaved and "READY" or "SESSION_ONLY")
+  player:SetAttribute("MeadowStamina",100)
   bindSurvivalHealth(player)
   player:SetAttribute("ProfileReady", true)
   broadcastSurvivalState(player)

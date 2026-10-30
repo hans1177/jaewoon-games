@@ -1174,7 +1174,13 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(server,/meadowInspectReady\[player\]=now\+2\.5/);
   assert.match(server,/model:IsDescendantOf\(gameWorld\)/);
   assert.match(server,/rootPart.Position-model:GetPivot\(\).Position\).Magnitude>15/);
-  assert.match(server,/if index<=24 and index%6==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
+  // 네 입구에만 조사 프롬프트를 표시해 사분면 기록을 유지하고 중복 HUD를 막는다.
+  assert.match(server,/if index==6 or index==12 or index==18 or index==24 then/);
+  assert.match(server,/bindMeadowInspection\(tree,"WOODLAND"\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\+#trailSpurs\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowWoodlandScene","FOUR_GROVES_FOUR_REAL_TRAIL_SPURS"\)/);
+  assert.match(server,/Vector3.new\(site.X,-7\.2,site.Z\)/);
+  assert.match(server,/Vector3.new\(9,0,-8\),Vector3.new\(-9,0,-8\)/);
   assert.match(server,/bindMeadowInspection\(animal,spec\[1\]\)/);
   assert.match(server,/bindMeadowInspection\(model,spec.kind\)/);
   assert.match(server,/animal.escape=\(animal.escape or Vector3.zero\):Lerp\(escape,math.min\(1,dt\*3\)\)/);
@@ -1210,9 +1216,9 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestFloorCount",forestFloorCount\)/);
   assert.match(server,/index%6==0 and Enum.Material.Ground or Enum.Material.LeafyGrass/);
   assert.match(server,/if distance>84 and math.abs\(x\)<330/);
-  assert.match(server,/if index<=24 and index%6==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
+  assert.match(server,/if index==6 or index==12 or index==18 or index==24 then/);
   assert.match(server,/for step=1,34 do/);
-  assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\+#trailSpurs\)/);
   assert.match(server,/for step=-44,44 do/);
   assert.match(server,/local z=step\*3\.5/);
   assert.match(server,/local x=266\+8\*math.sin\(z\*\.029\)\+2\*math.cos\(z\*\.073\)/);
@@ -1226,6 +1232,10 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestRockCount",forestRockCount\)/);
   assert.match(server,/local fragment=worldAsset\("ruin",site,4\.7\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestStoneFragmentCount",forestFragmentCount\)/);
+  assert.match(server,/local trailSpurs=\{/);
+  assert.match(server,/Meadow_Ruin_Outer_/);
+  assert.match(server,/MeadowForestSoftToyMaterial/);
+  assert.match(server,/while gameWorld:GetAttribute\("MeadowOuterRegionReady"\)~=true do task.wait\(\.1\) end/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowRuinCount",ruinCount\)/);
   assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save semantics unchanged');
@@ -1291,7 +1301,7 @@ test('fantasy original monsters keep server combat authority while true bones dr
   }
 });
 
-// [마력숲 4족 보행/원본 재질] 원본 다리 관절·서버 판정·저장 보존.
+// [마력숲 4족 보행/토이 재질] 원본 다리 관절·서버 판정·저장 보존.
 test('fantasy quadrupeds synchronize diagonal foot contacts with travel and forest palette',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
@@ -1310,22 +1320,29 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   for(const color of ['grass','leafyGrass','ground','rock','bark','leaves','wolf','boar','deer','rabbit']){
     assert.ok(server.includes(color+'=Color3.fromRGB('),'missing matte forest color: '+color);
   }
-  assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.Fabric/);
+  assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.SmoothPlastic/);
   // 모션은 원본 스킨 관절의 4족 접지와 전방 물기만 조절한다.
   assert.match(client,/local quadrupedFootPhases=/);
   assert.match(client,/local wolfFourLegRig=species~="wolf"/);
   assert.match(client,/if row\.available\[key\.\."Knee"\] then row\.poses\[key\.\."Knee"\]/);
   assert.match(client,/row\.species=="wolf" and \(mode=="ANTICIPATION"/);
   assert.match(client,/if row\.available\.Head then row\.poses\.Head=/);
-  // 원본 UV/메시 텍스처와 SurfaceAppearance를 보존하면서 통일된 무광 표면으로 바꾼다.
-  assert.match(server,/sourceColor=surface\.Color/);
+  // 원본 메시와 관절은 보존하고 스폰 복제본 본체의 구형 텍스처만 제거한다.
+  assert.match(server,/surface\.Color=surface\.Color:Lerp\(bodyTint,\.78\)/);
   assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
   assert.match(server,/local smoothDetail=wing or partName:find\("eye",1,true\)/);
-  assert.match(server,/surface\.Color=wing and Color3\.fromRGB\(190,228,235\)/);
-  // 정적 Pebble 요철만 사용: 원본 임포트 텍스처에 PBR 맵을 런타임 쓰기하지 않는다.
+  assert.match(server,/surface\.Color=Color3\.fromRGB\(190,228,235\)/);
+  // 미승인 PBR 생성 금지, 구형 Pebble·체크 본체 텍스처 제거 및 승인 전 Plastic 적용.
   assert.doesNotMatch(server,/Instance\.new\("MaterialVariant"\)|Instance\.new\("SurfaceAppearance"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
-  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
+  assert.match(server,/if wing then[\s\S]*?surface\.Material=Enum\.Material\.Glass/);
+  assert.match(server,/elseif smoothDetail then[\s\S]*?surface\.Material=Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/surface\.Material=Enum\.Material\.Plastic/);
+  assert.match(server,/if appearance then appearance:Destroy\(\) end/);
+  assert.match(server,/if surface\.TextureID~="" then surface\.TextureID="" end/);
+  assert.match(server,/surface\.MaterialVariant=""/);
+  assert.match(server,/model:SetAttribute\("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP"\)/);
+  assert.doesNotMatch(server,/surface\.Material=Enum\.Material\.Pebble/);
+  assert.match(server,/surface\.Color=animalTint/);
   assert.match(server,/surface\.Reflectance=0/);
   assert.doesNotMatch(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
   assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
@@ -1366,6 +1383,22 @@ test('fantasy monster shared actions have restrained impacts stable targets and 
   assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)/);
 });
 
+// [마력숲 캐릭터 부활] 엔진 기본 타이머 이후의 실패만 복구하고 기존 프로필·전투 수치는 그대로 유지한다.
+test('fantasy player death recovers only if original humanoid never auto-respawned',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(server,/local function bindSurvivalHealth\(player\)/);
+  const lifecycle=server.slice(server.indexOf('local function bindSurvivalHealth('),server.indexOf('-- 데이터 읽기가 실패한 세션에서는'));
+  assert.match(lifecycle,/humanoid\.Died:Connect\(function\(\)/);
+  assert.match(lifecycle,/task\.delay\(Players\.RespawnTime\+1,function\(\)/);
+  assert.match(lifecycle,/player\.Parent~=Players or player\.Character~=character or humanoid\.Health>0/);
+  assert.match(lifecycle,/player:LoadCharacterAsync\(\)/);
+  assert.match(lifecycle,/if not recovered then/);
+  assert.match(lifecycle,/player\.CharacterAdded:Connect\(bindCharacter\)/);
+  assert.match(server,/player\.RespawnLocation = nativeFoundationSpawn/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.doesNotMatch(lifecycle,/humanoid\.MaxHealth\s*=|humanoid\.Health\s*=/);
+});
+
 // Existing server/input authority must boot before slow CC0 asset imports.
 test('fantasy native controls do not wait on asset import and source rigs can move',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
@@ -1374,10 +1407,30 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
-  // Current mobile combat: six real skills in an anchored left semicircle, plus native primary attack.
-  assert.ok(client.includes('local meadowArcDegrees={-150,-114,-78,-186,-222,-258}'));
+  // 모바일 전투: 실제 발차기·어퍼컷·막기가 기본 공격 주변의 반원에 배치된다.
+  assert.ok(client.includes('local meadowArcDegrees={-105,-135,-165,-195,-225,-255}'));
+  assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
+  assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-right,1,-bottom)'));
+  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-(landscape and 62 or 7),1,-(landscape and 19 or 102))'));
+  assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
+  assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
+  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.new(1,-18,0,18)'));
+  assert.ok(client.includes('local radarTrailEndpoints={'));
+  assert.ok(client.includes('{-51,-48,-177,-176},{58,-49,183,-177}'));
+  assert.ok(client.includes('{-177,-176,-228,-219},{183,-177,231,-228}'));
+  assert.ok(client.includes('for route=1,8 do'));
+  assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
+  assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
+  assert.ok(client.includes('local mapDiameter=compactLandscape and 102 or small and 106 or 120'));
+  assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
+  assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
+  assert.ok(client.includes('meadowAttackIcon.ImageRectOffset=Vector2.new(0,0)'));
+  assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
+  assert.ok(client.includes('local energyDeadline=player:GetAttribute("MeadowReady_skill-meadow-sprint")'));
+  assert.ok(client.includes('energyCooldown=math.max(.1,action.Cooldown or 8)'));
   assert.ok(client.includes('meadowPrimaryAttack.Activated:Connect(function()'));
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
@@ -1393,8 +1446,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('glyph.Name="SkillSymbol"'));
   // Item cards read existing server-authoritative values, without adding a saved schema.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
-  assert.ok(client.includes('inventoryQuick.Name="MeadowInventoryQuick"'));
-  assert.ok(client.includes('inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)'));
+  assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'left pocket shortcut must be removed');
+  assert.ok(client.includes('meadowMenu.open(3)end'), 'journal shortcut remains');
+  assert.ok(client.includes('pages=meadowPages'), 'inventory page remains inside original menu');
   for(const attr of ['Wood','Stone','ResearchRecords','Coins','WeaponTier']){
     assert.ok(client.includes('{"'+(attr==='Wood'?'나무':attr==='Stone'?'돌':attr==='ResearchRecords'?'연구 일지':attr==='Coins'?'재화':'강화 단계')+'","'+attr+'"'));
   }
@@ -1407,10 +1461,10 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
-  assert.ok(client.includes('local centerX=short and 224 or 240'));
-  assert.ok(client.includes('local right=landscape and 14 or 5'));
-  assert.ok(client.includes('local bottom=landscape and (short and 130 or 160) or 136'));
-  assert.ok(client.includes('button.Position=UDim2.fromOffset(8,56+(index-1)*(size+7))'));
+  assert.ok(client.includes('local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)'));
+  assert.ok(client.includes('local x=centerX+math.cos(angle)*radius'));
+  assert.ok(client.includes('local y=centerY+math.sin(angle)*radius'));
+  assert.ok(client.includes('math.floor((93+(index-1)*58)*scale)'));
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1418,15 +1472,23 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(dodge,/ground.Normal.Y>=\.65/);
   assert.match(dodge,/ground.Material~=Enum.Material.Water/);
   assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
-  assert.ok(client.includes('button.Size=UDim2.fromOffset(icon,icon)'));
+  assert.ok(client.includes('button.Size=UDim2.fromOffset(size,size)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
-  for(const id of ['skill-meadow-heavy','skill-meadow-sweep','skill-meadow-bolt',
-    'skill-meadow-parry','skill-meadow-heal','skill-meadow-focus']){
-    assert.ok(client.includes('{"'+id+'",'), 'semicircle skill missing: '+id);
+  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut','skill-meadow-guard',
+    'skill-meadow-parry','skill-meadow-heal','skill-meadow-bolt']){
+    assert.ok(client.includes('{"'+id+'",'), 'real combat dock skill missing: '+id);
+  }
+  // 나머지 기존 스킬을 지우지 않고 원본 Config에서 메뉴로 접근 가능해야 한다.
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  for(const id of ['skill-meadow-heavy','skill-meadow-sweep','skill-meadow-focus']){
+    assert.ok(config.includes('Id = "'+id+'"'), 'existing skill must remain in config: '+id);
+    assert.ok(!client.includes('or action.Id=="'+id+'"'), 'unplaced skill must remain reachable in menu: '+id);
   }
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
   assert.ok(client.includes('{"skill-meadow-dodge-left","좌회피"'));
   assert.ok(client.includes('{"skill-meadow-dodge-right","우회피"'));
+  assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","채집"'));
+  assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
   assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,/);
@@ -1445,8 +1507,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/Instance.new\("Beam"\)/);
   assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
-  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
+  assert.match(server,/if wing then[\s\S]*?surface\.Material=Enum\.Material\.Glass/);
+  assert.match(server,/elseif smoothDetail then[\s\S]*?surface\.Material=Enum\.Material\.SmoothPlastic/);
   assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
   assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);

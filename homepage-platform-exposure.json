@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-30T13:05:17.264Z",
+  "generatedAt": "2026-10-30T20:04:23.072Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -168,7 +168,7 @@
             "stage": "ROBLOX_F0_SOURCE_PREFLIGHT",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-10-30T11:40:58.803Z",
-            "checkedAt": "2026-10-30T11:49:40.633Z",
+            "checkedAt": "2026-10-30T19:48:16.727Z",
             "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
@@ -272,7 +272,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:49:40.633Z"
+      "updatedAt": "2026-10-30T19:48:16.727Z"
     },
     {
       "gameId": "bug-defense",
@@ -825,7 +825,7 @@
             "stage": "VIBE_INTERNAL_PLAY",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-10-30T11:45:11.458Z",
-            "checkedAt": "2026-10-30T12:36:34.551Z",
+            "checkedAt": "2026-10-30T19:59:53.753Z",
             "lastFailureAt": "2026-10-30T11:45:11.458Z",
             "f0PassedAt": "2026-10-30T11:34:00.380Z",
             "candidatePublishedAt": null,
@@ -926,7 +926,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T12:36:34.551Z"
+      "updatedAt": "2026-10-30T19:59:53.753Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -947,11 +947,11 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "REPAIR_REQUIRED",
-            "stage": "REPAIR_REQUIRED",
+            "currentFloor": "VIBE_INTERNAL_PLAY",
+            "stage": "VIBE_INTERNAL_PLAY",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-10-30T11:50:28.436Z",
-            "checkedAt": "2026-10-30T11:50:28.436Z",
+            "checkedAt": "2026-10-30T19:59:11.279Z",
             "lastFailureAt": "2026-10-30T11:50:28.436Z",
             "f0PassedAt": "2026-10-30T11:37:59.019Z",
             "candidatePublishedAt": null,
@@ -1054,7 +1054,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:50:28.436Z"
+      "updatedAt": "2026-10-30T19:59:11.279Z"
     },
     {
       "gameId": "defense",
@@ -1471,14 +1471,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-10-30T13:00:21.691Z",
-            "checkedAt": "2026-10-30T13:04:53.229Z",
+            "currentFloor": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+            "stage": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
+            "verifiedAt": "2026-10-30T19:57:48.601Z",
+            "checkedAt": "2026-10-30T20:03:38.470Z",
             "lastFailureAt": null,
-            "f0PassedAt": "2026-10-30T13:00:21.691Z",
-            "candidatePublishedAt": null,
+            "f0PassedAt": "2026-10-30T19:55:14.558Z",
+            "candidatePublishedAt": "2026-10-30T19:57:48.601Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -1493,26 +1493,24 @@
             "homepageReady": false,
             "technicalReady": false,
             "designReady": true,
-            "lobbyReady": false,
+            "lobbyReady": true,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
               "design": true,
               "publication": false,
-              "exactRuntime": false,
-              "lobby": false,
+              "exactRuntime": true,
+              "lobby": true,
               "movement": true,
               "noRuntimeErrors": true
             },
             "blockers": [
-              "publication",
-              "exactRuntime",
-              "lobby"
+              "publication"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
-            "verifiedAt": null
+            "sourceRevision": "76dae75bb5bdcf0dd6ae661005e0a5024b50da7a",
+            "artifactIdentity": "sha256:b28d091f03bc6443744cba96d31b358cbe99638aed048f608e397e8cb2015d47",
+            "verifiedAt": "2026-10-30T20:03:38.470Z"
           },
           "executionAvailable": false,
           "historicalInternalRelease": false,
@@ -1578,7 +1576,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T13:04:53.229Z"
+      "updatedAt": "2026-10-30T20:03:38.470Z"
     },
     {
       "gameId": "fifty-days",
@@ -1867,7 +1865,7 @@
             "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-10-30T11:30:28.164Z",
-            "checkedAt": "2026-10-30T11:49:40.633Z",
+            "checkedAt": "2026-10-30T19:48:16.727Z",
             "lastFailureAt": "2026-10-30T11:30:28.164Z",
             "f0PassedAt": "2026-10-30T11:09:33.688Z",
             "candidatePublishedAt": "2026-10-30T11:14:54.669Z",
@@ -1966,7 +1964,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:49:40.633Z"
+      "updatedAt": "2026-10-30T19:48:16.727Z"
     },
     {
       "gameId": "human-go",
@@ -5399,138 +5397,6 @@
         }
       ],
       "updatedAt": "2026-10-19T04:38:51.415Z"
-    },
-    {
-      "gameId": "tekken",
-      "gameName": "철권",
-      "authority": "company-runtime",
-      "internalCompanySurface": true,
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "completion": {
-            "count": 0,
-            "lastCompletedAt": null,
-            "evidenceUrl": null,
-            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
-            "records": []
-          },
-          "floorProgress": {
-            "tracked": false,
-            "queueState": "NOT_IN_ACTIVE_ROBLOX_RUNTIME_QUEUE",
-            "currentFloor": null,
-            "stage": null,
-            "result": "UNCONFIRMED",
-            "verifiedAt": null,
-            "checkedAt": null,
-            "lastFailureAt": null,
-            "f0PassedAt": null,
-            "candidatePublishedAt": null,
-            "failureCode": null,
-            "completedCycles": 0
-          },
-          "developmentState": "WAITING_SOURCE",
-          "runtimePassed": false,
-          "independentQaPassed": false,
-          "regressionPassed": false,
-          "internalReleaseReady": false,
-          "releaseReadiness": {
-            "version": 1,
-            "ready": false,
-            "homepageReady": false,
-            "technicalReady": false,
-            "designReady": false,
-            "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
-            "checks": {
-              "design": false,
-              "publication": false,
-              "exactRuntime": false,
-              "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
-            },
-            "blockers": [
-              "design",
-              "publication",
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
-            "verifiedAt": null
-          },
-          "executionAvailable": false,
-          "historicalInternalRelease": false,
-          "internalReleaseState": "NOT_READY",
-          "publicReleaseReady": false,
-          "publicRelease": false,
-          "publicReleaseState": "INTERNAL_ONLY",
-          "placeId": null,
-          "internalUrl": null,
-          "publicUrl": null,
-          "internalLinkSuppressedReason": null
-        },
-        {
-          "platform": "UNITY",
-          "completion": {
-            "count": 0,
-            "lastCompletedAt": null,
-            "evidenceUrl": null,
-            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
-            "records": []
-          },
-          "developmentState": "WAITING_SOURCE",
-          "buildRunId": null,
-          "executionAvailable": false,
-          "runtimePassed": false,
-          "independentQaPassed": false,
-          "regressionPassed": false,
-          "internalReleaseReady": false,
-          "releaseReadiness": {
-            "version": 1,
-            "ready": false,
-            "homepageReady": false,
-            "technicalReady": false,
-            "designReady": false,
-            "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
-            "checks": {
-              "design": false,
-              "publication": false,
-              "exactRuntime": false,
-              "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
-            },
-            "blockers": [
-              "design",
-              "publication",
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
-            "verifiedAt": null
-          },
-          "internalReleaseState": "NOT_READY",
-          "publicReleaseReady": false,
-          "publicRelease": false,
-          "publicReleaseState": "INTERNAL_ONLY",
-          "internalUrl": null,
-          "publicUrl": null
-        }
-      ],
-      "updatedAt": "2026-10-18T12:57:54.843Z"
     },
     {
       "gameId": "territory-war",
