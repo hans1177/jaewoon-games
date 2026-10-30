@@ -74,6 +74,9 @@ local MAX_ENEMIES = 22
 -- Roblox Terrain is native collidable terrain, never an assembled visual Part.
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
 local meadowTerrain = workspace.Terrain
+-- [초원 오픈월드] 플레이 시작 부분 312x312은 먼저 만들고 696x696 외곽은 이후 분할 생성한다.
+-- 면적 약 4.98배. 시작/적/자원 좌표 및 전투 수치를 옮기지 않는다.
+local meadowWorldSize=696
 local function createStartingMeadow()
   meadowTerrain:FillBlock(CFrame.new(0, -4, 0), Vector3.new(312, 12, 312), Enum.Material.Grass)
   for _, ridge in ipairs({
@@ -93,8 +96,37 @@ local function createStartingMeadow()
   Lighting.OutdoorAmbient = Color3.fromRGB(154,175,151)
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
+  gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
+  gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
+  gameWorld:SetAttribute("MeadowOuterRegionReady",false)
 end
 createStartingMeadow()
+-- [초원 외곽] 기존 중앙 지역 바깥에 겹치지 않는 Terrain 4구획을 순차적으로 생성한다.
+-- 새 메시/Part는 만들지 않으며, 최초 입력과 플레이어 프로필/전투 이벤트 초기화를 막지 않는다.
+task.defer(function()
+  for _,section in ipairs({
+    {x=-252,z=0,width=192,depth=696},
+    {x=252,z=0,width=192,depth=696},
+    {x=0,z=-252,width=312,depth=192},
+    {x=0,z=252,width=312,depth=192},
+  }) do
+    meadowTerrain:FillBlock(CFrame.new(section.x,-4,section.z),
+      Vector3.new(section.width,12,section.depth),Enum.Material.Grass)
+    task.wait()
+  end
+  -- 외곽의 낮은 능선만 Terrain으로 만들고 기존 시작 지형·채집 장소는 보존한다.
+  for _,ridge in ipairs({
+    {x=-292,z=-210,r=35,y=-13},{x=287,z=225,r=40,y=-13},
+    {x=-225,z=288,r=32,y=-13},{x=219,z=-289,r=36,y=-14},
+    {x=-303,z=110,r=29,y=-14},{x=310,z=-95,r=31,y=-14},
+    {x=-115,z=-293,r=34,y=-14},{x=123,z=296,r=32,y=-13},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(ridge.x,ridge.y,ridge.z),
+      ridge.r,Enum.Material.Grass)
+    task.wait()
+  end
+  gameWorld:SetAttribute("MeadowOuterRegionReady",true)
+end)
 
 local function worldAsset(id, location, targetHeight)
   local modelId = NativeCreatureAssets[id]
@@ -170,6 +202,7 @@ local function worldAsset(id, location, targetHeight)
     local underside=boxCF.Position.Y-boxSize.Y*.5
     clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y-underside,0))
     clone.Name="Meadow_"..id
+    clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
     clone.Parent=gameWorld
     clone:SetAttribute("CC0SourceModelId",modelId)
     return clone
@@ -266,8 +299,9 @@ task.defer(createResourceNodes)
 -- Passive original wildlife are presentation only. They never change combat,
 -- progression, drops or the original save schema.
 local meadowWildlife={}
--- Native asset loading runs after authoritative action listeners are installed.
-task.defer(function()
+-- [입장 로딩] 장식 동물은 첫 입력/프로필/기본 지형이 준비된 뒤 불러온다.
+-- CC0 소스와 기존 출현 위치/종 수는 유지한다.
+task.delay(4,function()
 for index,spec in ipairs({
   {kind="deer",position=Vector3.new(-68,3,-22),height=4.4},
   {kind="deer",position=Vector3.new(61,3,34),height=4.4},
@@ -338,6 +372,7 @@ local function spawnEnemy(isBoss, index)
   if nativeHeight<=0 then model:Destroy();return false end
   model:ScaleTo(model:GetScale()*nativeScale/nativeHeight)
   model:PivotTo(CFrame.new(location))
+  model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
   model.Name = isBoss and "돌 골렘" or (partId=="bee" and "초원 벌" or "초원 늑대")
