@@ -121,6 +121,15 @@ local function worldAsset(id, location, targetHeight)
           part.CanQuery=false
         end
       end
+      -- Keep the real source rig root anchored for server-pivot movement,
+      -- but let genuine Motor6D child parts articulate. Bone-skinned
+      -- single meshes remain anchored and animate through source Bones.
+      for _,joint in ipairs(template:GetDescendants()) do
+        if joint:IsA("Motor6D") and joint.Part0 and joint.Part1 then
+          joint.Part1.Anchored=false
+          joint.Part1.Massless=true
+        end
+      end
       template.Parent=nil
       nativeCreatureTemplates[modelId]=template
     end
@@ -238,11 +247,14 @@ local function createResourceNodes()
     end
   end
 end
-createResourceNodes()
+-- AssetService may yield: never block player input and profile bootstrap.
+task.defer(createResourceNodes)
 
 -- Passive original wildlife are presentation only. They never change combat,
 -- progression, drops or the original save schema.
 local meadowWildlife={}
+-- Native asset loading runs after authoritative action listeners are installed.
+task.defer(function()
 for index,spec in ipairs({
   {kind="deer",position=Vector3.new(-68,3,-22),height=4.4},
   {kind="deer",position=Vector3.new(61,3,34),height=4.4},
@@ -257,6 +269,7 @@ for index,spec in ipairs({
       range=spec.kind=="rabbit" and 5 or 9,speed=spec.kind=="rabbit" and .48 or .2})
   end
 end
+end)
 
 local function spawnEnemy(isBoss, index)
   if #enemies >= MAX_ENEMIES then return false end
@@ -285,6 +298,15 @@ local function spawnEnemy(isBoss, index)
           item:Destroy()
         elseif item:IsA("BasePart") then
           item.Anchored=true;item.CanCollide=false;item.CanTouch=false;item.CanQuery=false
+        end
+      end
+      -- Keep the real source rig root anchored for server-pivot movement,
+      -- but let genuine Motor6D child parts articulate. Bone-skinned
+      -- single meshes remain anchored and animate through source Bones.
+      for _,joint in ipairs(template:GetDescendants()) do
+        if joint:IsA("Motor6D") and joint.Part0 and joint.Part1 then
+          joint.Part1.Anchored=false
+          joint.Part1.Massless=true
         end
       end
       template.Parent=nil
