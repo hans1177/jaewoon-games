@@ -661,7 +661,7 @@ local nativeCreatureJointNames={
   LeftHip="ThighL",RightHip="ThighR",
   LeftKnee="ShinL",RightKnee="ShinR",
 }
-local creaturePlans={wolf="QUADRUPED",bee="FLYER",golem="GIANT"}
+local creaturePlans={wolf="QUADRUPED",bee="FLYER",golem="GIANT",deer="QUADRUPED",boar="QUADRUPED",rabbit="QUADRUPED"}
 local creatureVfx={
   WOLF_BITE="SHAPE_BURST",WOLF_POUNCE="CRITICAL_BURST",
   BEE_SWEEP="SHAPE_BURST",BEE_SPIRAL_STING="DODGE_EVASION_PULSE",
@@ -708,7 +708,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   if not world then return end
   for _,model in ipairs(world:GetChildren()) do
     if not model:IsA("Model") then continue end
-    local species=model:GetAttribute("Species")
+    local species=model:GetAttribute("Species") or model:GetAttribute("MeadowWildlife")
     local plan=creaturePlans[species]
     if not plan then continue end
     local record=creatureActionState[model]
