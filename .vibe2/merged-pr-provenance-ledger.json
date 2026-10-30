@@ -141158,11 +141158,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1197fe731dd5881da6ed60e6",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11437",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9e2eb1a8bd09ae3a4110ea69df479639a47c0aae",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11437,
+        "baseBranch": "main",
+        "headBranch": "owner/forest-mob-walk-rig-20261030",
+        "baseSha": "9e2eb1a8bd09ae3a4110ea69df479639a47c0aae",
+        "headSha": "a53fca937178098f233f49bb1d66cefdff7eabab",
+        "mergeCommitSha": "8933b8cf4bddcd834d7101a83ed1fd7f050abeda",
+        "mergedAt": "2026-10-30T07:57:59Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0a98034df429358278866b6353eaa0ac3c65849237b05bf4e9b295b74ea89b8b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/forest-mob-walk-rig-20261030",
+        "candidateSha": "a53fca937178098f233f49bb1d66cefdff7eabab"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 149,
+        "deletedLineCount": 34,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11437",
+        "merge-commit:8933b8cf4bddcd834d7101a83ed1fd7f050abeda",
+        "base-main:9e2eb1a8bd09ae3a4110ea69df479639a47c0aae"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1120
+    "total": 1121
   }
 }
