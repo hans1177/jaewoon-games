@@ -1510,7 +1510,7 @@ for index,skill in ipairs(meleeSkills)do
   cooldown.Font=Enum.Font.GothamBold
   cooldown.TextSize=17
   cooldown.Visible=false
-  cooldown.ZIndex=16
+  cooldown.ZIndex=22 -- 등록된 시안 그림 위에 실제 서버 스킬 쿨다운 표시
   cooldown.Parent=button
   local cooldownCorner=Instance.new("UICorner")
   cooldownCorner.CornerRadius=UDim.new(1,0)
