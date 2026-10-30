@@ -405,16 +405,15 @@ local function broadcastSurvivalState(actor)
 end
 
 local function awardProgress(player, experience, coinReward)
-  local xp = readNumber(player, "XP", 0) + experience
-  local level = readNumber(player, "Level", 1)
-  while xp >= (25 + level*12) and level < 50 do
-    xp -= (25 + level*12)
-    level += 1
-  end
-  setNumber(player, "XP", xp)
-  setNumber(player, "Level", level)
-  setNumber(player, "Coins", readNumber(player, "Coins", 0) + coinReward)
-  setNumber(player, "Progress", readNumber(player, "Progress", 0) + experience)
+  -- 레벨은 더 이상 증가시키지 않는다. 과거 Level/XP는 기존 저장 호환 전용.
+  setNumber(player,"CombatProficiency",readNumber(player,"CombatProficiency",0)+experience)
+  setNumber(player,"Coins",readNumber(player,"Coins",0)+coinReward)
+  setNumber(player,"Progress",readNumber(player,"Progress",0)+experience)
+end
+-- 이전 레벨 전투력을 보존하면서 숙련도 점수에 따라 연속 성장한다.
+local function meadowProficiencyPower(player)
+  local points=math.max(0,readNumber(player,"CombatProficiency",0))
+  return 2.2*(1+math.max(0,(math.sqrt(961+24*points)-31)/12))
 end
 
 -- [메인 퀘스트·연구 기록 아이템]
@@ -1269,18 +1268,21 @@ local function attackEnemy(player)
     player:SetAttribute("ApprovedActionTarget",rootPart.Position)
     return true,false
   end
-  local level=readNumber(player,"Level",1)
   local weaponTier=readNumber(player,"WeaponTier",0)
-  local damage=math.floor(16+level*2.2+weaponTier*8)
+  local damage=math.floor(16+meadowProficiencyPower(player)+weaponTier*8)
   return applyMeadowDamage(player,target,damage),true
 end
 
-local function unarmedSkillAttack(player)
-  -- The skill toolbar is a genuine bare-hand mode; equipped tools retain their
-  -- original weapon attack path. Damage, range and cooldown are all unchanged.
+local function unarmedSkillAttack(player,staminaCost)
+  -- 실제로 승인된 맨손 입력에만 스테미너를 차감한다.
   local character=player.Character
   if not character or character:FindFirstChildOfClass("Tool") then return false end
-  return attackEnemy(player)
+  local cost=staminaCost or 0
+  local stamina=player:GetAttribute("MeadowStamina") or 0
+  if stamina<cost then return false end
+  local accepted,hit=attackEnemy(player)
+  if accepted and cost>0 then player:SetAttribute("MeadowStamina",math.max(0,stamina-cost)) end
+  return accepted,hit
 end
 
 local function gatherNearestResource(player)
@@ -1435,8 +1437,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
   -- [자동 회피] 기존 Level 능력치를 기준으로만 계산하며 저장 구조는 유지한다.
   -- 4초 간격, 현재 방어 중이 아닐 때 좌/우 실제 공간이 비어 있는 경우만 발동한다.
   if (defense.guardUntil or 0)<=now and now>=(defense.nextAutoDodgeAt or 0) then
-    local level=readNumber(player,"Level",1)
-    local chance=math.clamp(.06+level*.007,.067,.28)
+    local chance=math.clamp(.06+(meadowProficiencyPower(player)/2.2)*.007,.067,.28)
     if math.random()<chance then
       local character,_,root=liveMeadowCharacter(player)
       if character and root then
@@ -1702,10 +1703,26 @@ end
 -- 렌더링할 원본 모델 피벗만 30Hz로 보간해 8Hz 점프 이동을 제거한다.
 local enemyUpdateElapsed=0
 local enemyVisualElapsed=0
+local staminaRegenElapsed=0
 RunService.Heartbeat:Connect(function(dt)
   local step=math.min(dt,.15)
   enemyUpdateElapsed+=step
   enemyVisualElapsed+=step
+  staminaRegenElapsed+=step
+  if staminaRegenElapsed>=.25 then
+    local elapsed=staminaRegenElapsed
+    staminaRegenElapsed=0
+    for _,member in ipairs(Players:GetPlayers()) do
+      if member:GetAttribute("ProfileReady")==true then
+        local current=member:GetAttribute("MeadowStamina")
+        local character=member.Character
+        local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+        if typeof(current)=="number" and current<100 and humanoid and humanoid.Health>0 then
+          member:SetAttribute("MeadowStamina",math.min(100,current+elapsed*10))
+        end
+      end
+    end
+  end
   if enemyUpdateElapsed>=.12 then
     local logicStep=math.min(enemyUpdateElapsed,.25)
     enemyUpdateElapsed=0
@@ -1778,7 +1795,7 @@ local function meadowHeavy(player)
     local enemy=nearestEnemy(root,7)
     if not enemy or now<(attackCooldown[player] or 0) then return false end
     attackCooldown[player]=now+.65
-    local damage=math.floor((16+readNumber(player,"Level",1)*2.2
+    local damage=math.floor((16+meadowProficiencyPower(player)
       +readNumber(player,"WeaponTier",0)*8)*1.7)
     return applyMeadowDamage(player,enemy,damage)
   end)
@@ -1793,7 +1810,7 @@ local function meadowSweep(player)
       end
     end
     if #targets==0 then return false end
-    local damage=math.floor((16+readNumber(player,"Level",1)*2.2
+    local damage=math.floor((16+meadowProficiencyPower(player)
       +readNumber(player,"WeaponTier",0)*8)*.85)
     player:SetAttribute("ApprovedActionTarget",root.Position)
     for _,enemy in ipairs(targets) do applyMeadowDamage(player,enemy,damage) end
@@ -1811,7 +1828,7 @@ local function meadowBolt(player)
     local delta=enemy.position-(root.Position+Vector3.new(0,2,0))
     local wall=workspace:Raycast(root.Position+Vector3.new(0,2,0),delta,ray)
     if wall and wall.Distance<delta.Magnitude-2 then return false end
-    local damage=math.floor(12+readNumber(player,"Level",1)*1.8
+    local damage=math.floor(12+meadowProficiencyPower(player)*1.8/2.2
       +readNumber(player,"WeaponTier",0)*4)
     return applyMeadowDamage(player,enemy,damage)
   end)
@@ -1899,8 +1916,8 @@ local handlers={
   ["scope-coreloop-2-6c927cfa40"]=upgradeEquipment,
   ["scope-mobileux-5acfb2eaa6"]=attackEnemy,
   ["meadow-unarmed-rush"]=unarmedSkillAttack,
-  ["meadow-unarmed-uppercut"]=unarmedSkillAttack,
-  ["meadow-unarmed-kick"]=unarmedSkillAttack,
+  ["meadow-unarmed-uppercut"]=function(player) return unarmedSkillAttack(player,20) end,
+  ["meadow-unarmed-kick"]=function(player) return unarmedSkillAttack(player,14) end,
   ["meadow-unarmed-elbow"]=unarmedSkillAttack,
   ["skill-meadow-heavy"]=meadowHeavy,
   ["skill-meadow-sweep"]=meadowSweep,
@@ -1923,6 +1940,7 @@ local function bindSurvivalHealth(player)
   local function bindCharacter(character)
     -- 리스폰한 캐릭터가 이전 생명의 막기·회피 판정을 물려받지 않는다.
     meadowDefense[player]=nil
+    player:SetAttribute("MeadowStamina",100)
     local humanoid = character:WaitForChild("Humanoid", 10)
     if not humanoid then return end
     -- 플레이어 실제 휴머노이드 체력만 HUD에 전달한다. 서버가 소유하는 체력 판정은 유지한다.
@@ -1972,12 +1990,19 @@ local function onSurvivalPlayerAdded(player)
       local value = saved[key]
       if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
     end
+    -- 기존 레벨과 경험치의 누적 합을 숙련도로 이관해 기존 피해 수치를 유지한다.
+    if typeof(saved.CombatProficiency)~="number" then
+      local oldLevel=math.max(1,math.floor(tonumber(saved.Level) or 1))
+      local oldXp=math.max(0,tonumber(saved.XP) or 0)
+      player:SetAttribute("CombatProficiency",(oldLevel-1)*(6*oldLevel+25)+oldXp)
+    end
     player:SetAttribute("ActionSequence", 0)
     player:SetAttribute("LastApprovedScope", "ready")
   else
     initializePlayer(player)
   end
   player:SetAttribute("SaveStatus", validSaved and "READY" or "SESSION_ONLY")
+  player:SetAttribute("MeadowStamina",100)
   bindSurvivalHealth(player)
   player:SetAttribute("ProfileReady", true)
   broadcastSurvivalState(player)

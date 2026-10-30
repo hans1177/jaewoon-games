@@ -109,11 +109,12 @@ local Config = {
     {Title="연구 일지 3화 · 화산과 오아시스",
      Text="화염 골렘의 뜨거운 핵을 식힌 뒤 오아시스 지하의 초거대 벌레와 맞서 살아남는다."},
   },
+  -- 기존 Level/XP는 저장 호환에만 남기고 신규 성장은 누적 숙련도로 기록.
   InitialState = {
     Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
-    SharedObjective = 0, RoundScore = 0, XP = 0, Wood = 0,
+    SharedObjective = 0, RoundScore = 0, XP = 0, CombatProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
     ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
