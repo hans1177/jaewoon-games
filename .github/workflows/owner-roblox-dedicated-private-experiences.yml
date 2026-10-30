@@ -74,18 +74,21 @@ jobs:
           if(requested&&!games.some(row=>row.gameId===requested))throw Error('OWNER_GAME_NOT_SUPPORTED');
           const changed=fs.readFileSync('/tmp/owner-changed-source.txt','utf8').split('\n').filter(Boolean);
           const exact=games.filter(row=>changed.some(file=>file.startsWith('roblox-games/'+row.gameId+'/')));
-          const selected=requested?games.filter(row=>row.gameId===requested):exact.length?exact:games.filter(row=>row.gameId!=='fantasy-survival');
+          const selected=requested?games.filter(row=>row.gameId===requested):exact.length?exact:process.env.EVENT_NAME==='workflow_dispatch'?games.filter(row=>row.gameId!=='fantasy-survival'):[];
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include:selected})+'\ncount='+selected.length+'\n');
           console.log('OWNER_DIRECT_SELECTED_GAMES='+selected.map(row=>row.gameId).join(','));
           NODE
 
   publish:
     needs: contract
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && needs.contract.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix: ${{ fromJSON(needs.contract.outputs.matrix) }}
+    concurrency:
+      group: owner-roblox-private-game-${{ matrix.gameId }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -305,7 +308,7 @@ jobs:
 
   persist:
     needs: [contract, publish]
-    if: always() && github.event_name != 'pull_request'
+    if: always() && github.event_name != 'pull_request' && needs.contract.outputs.count != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
