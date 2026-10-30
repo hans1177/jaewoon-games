@@ -1326,36 +1326,41 @@ meadowSkillDock.Parent=gui
 local meleeSkills={
   -- 실제 R15 발차기·어퍼컷과 서버 방어 스킬 ID에 각각 연결한다.
   {"meadow-unarmed-kick","발차기",Color3.fromRGB(244,179,105),nil},
-  {"meadow-unarmed-uppercut","어퍼컷",Color3.fromRGB(253,126,110),0},
-  {"skill-meadow-guard","막기",Color3.fromRGB(109,216,234),1},
+  {"meadow-unarmed-uppercut","어퍼컷",Color3.fromRGB(94,178,255),0},
+  {"skill-meadow-guard","막기",Color3.fromRGB(253,203,112),1},
 }
 local meadowSkillButtons={}
 local meadowSkillCooldowns={}
+-- [스킬 원형 테마] 처음 시안의 금빛 원형 테두리·검정 청동 배경을 기존 버튼에 직접 적용한다.
 local function styleMeadowCombatButton(button,color)
-  button.BackgroundColor3=Color3.fromRGB(17,25,31)
-  button.TextColor3=Color3.fromRGB(255,249,231)
+  button.BackgroundColor3=Color3.fromRGB(24,25,23)
+  button.TextColor3=Color3.fromRGB(255,242,207)
   button.BorderSizePixel=0
   button.AutoButtonColor=true
   button.Font=Enum.Font.GothamBold
   button.TextWrapped=true
   button.ZIndex=14
   local corner=Instance.new("UICorner")
-  corner.CornerRadius=UDim.new(1,0)
-  corner.Parent=button
+  corner.CornerRadius=UDim.new(1,0);corner.Parent=button
   local border=Instance.new("UIStroke")
-  border.Color=color
-  border.Thickness=2.5
-  border.Transparency=.06
-  border.Parent=button
+  border.Name="GoldSkillRim"
+  border.Color=Color3.fromRGB(229,185,108)
+  border.Thickness=3;border.Transparency=.04;border.Parent=button
   local gradient=Instance.new("UIGradient")
-  gradient.Rotation=105
-  gradient.Color=ColorSequence.new(Color3.fromRGB(56,66,75),Color3.fromRGB(11,18,26))
+  gradient.Rotation=110
+  gradient.Color=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(84,66,42)),
+    ColorSequenceKeypoint.new(.32,Color3.fromRGB(27,34,37)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(6,14,23))
+  })
   gradient.Parent=button
 end
+-- [시안 이름표] 어두운 화면에서도 스킬명이 가려지지 않도록 버튼 아래 별도 검정·금색 이름표를 둔다.
+local meadowSkillNameplates={}
 for index,skill in ipairs(meleeSkills)do
   local button=Instance.new("TextButton")
   button.Name="R15Skill"..index
-  button.Text=skill[2]
+  button.Text=""
   styleMeadowCombatButton(button,skill[3])
   button.Parent=meadowSkillDock
   if meadowIconAtlas~="" and skill[4]~=nil then
@@ -1366,27 +1371,44 @@ for index,skill in ipairs(meleeSkills)do
     icon.ImageRectSize=Vector2.new(64,64)
     icon.BackgroundTransparency=1
     icon.AnchorPoint=Vector2.new(.5,0)
-    icon.Position=UDim2.fromScale(.5,.05)
-    icon.Size=UDim2.fromScale(.59,.59)
+    icon.Position=UDim2.fromScale(.5,.11)
+    icon.Size=UDim2.fromScale(.72,.72)
     icon.ScaleType=Enum.ScaleType.Fit
     icon.ZIndex=15
     icon.Parent=button
-    button.TextYAlignment=Enum.TextYAlignment.Bottom
+    -- 어퍼컷은 CC0 장갑 원본, 막기는 CC0 방패 원본을 사용한다.
   else
-    -- CC0 아틀라스에 발차기 원본은 없으므로 모바일 발 그림 문자를 사용한다.
+    -- 발차기는 아직 업로드/권한 검증된 장화 이미지가 없어 글자 대신 장화 이모지로 구분한다.
     local glyph=Instance.new("TextLabel")
     glyph.Name="SkillSymbol"
     glyph.BackgroundTransparency=1
-    glyph.Position=UDim2.fromScale(.15,.03)
-    glyph.Size=UDim2.fromScale(.7,.62)
-    glyph.Text="🦶"
+    glyph.Position=UDim2.fromScale(.10,.09)
+    glyph.Size=UDim2.fromScale(.8,.78)
+    glyph.Text="🥾"
     glyph.TextColor3=skill[3]
     glyph.Font=Enum.Font.GothamBold
     glyph.TextScaled=true
     glyph.ZIndex=15
     glyph.Parent=button
-    button.TextYAlignment=Enum.TextYAlignment.Bottom
   end
+  local nameplate=Instance.new("TextLabel")
+  nameplate.Name="SkillNameplate"..index
+  nameplate.BackgroundColor3=Color3.fromRGB(18,17,15)
+  nameplate.BackgroundTransparency=.04
+  nameplate.BorderSizePixel=0
+  nameplate.Text=skill[2]
+  nameplate.TextColor3=Color3.fromRGB(255,237,188)
+  nameplate.TextStrokeColor3=Color3.fromRGB(15,11,8)
+  nameplate.TextStrokeTransparency=.55
+  nameplate.Font=Enum.Font.GothamBold
+  nameplate.TextSize=13;nameplate.ZIndex=17
+  nameplate.Parent=meadowSkillDock
+  local plateCorner=Instance.new("UICorner")
+  plateCorner.CornerRadius=UDim.new(1,0);plateCorner.Parent=nameplate
+  local plateStroke=Instance.new("UIStroke")
+  plateStroke.Color=Color3.fromRGB(202,160,93)
+  plateStroke.Thickness=1.4;plateStroke.Parent=nameplate
+  meadowSkillNameplates[index]=nameplate
   local cooldown=Instance.new("TextLabel")
   cooldown.Name="Cooldown"
   cooldown.Size=UDim2.fromScale(1,1)
@@ -1411,17 +1433,28 @@ end
 -- 기본 공격은 기존 화면 터치/키보드로 계속 사용하고 별도 공격 버튼은 제거한다.
 -- [보조 버튼] 회피 제거. 서버 승인 질주와 채집만 둔다.
 local meadowUtilityActions={
-  {"skill-meadow-sprint","질주",Color3.fromRGB(112,185,244),"⇧"},
-  {"scope-coreloop-1-6ebe58f496","채집",Color3.fromRGB(146,210,157),"✥"},
+  {"skill-meadow-sprint","질주",Color3.fromRGB(112,185,244),"🏃"},
+  {"scope-coreloop-1-6ebe58f496","채집",Color3.fromRGB(146,210,157),"",4},
 }
 local meadowUtilityButtons={}
 for index,info in ipairs(meadowUtilityActions)do
   local button=Instance.new("TextButton")
   button.Name="MeadowUtility"..index
-  button.Text=info[4].."\n"..info[2]
-  button.TextSize=12
+  button.Text=info[4]
+  button.TextSize=26
   styleMeadowCombatButton(button,info[3])
   button.Parent=meadowSkillDock
+  if info[5] and meadowIconAtlas~="" then
+    local icon=Instance.new("ImageLabel")
+    icon.Name="CC0UtilityIcon"
+    icon.Image=meadowIconAtlas
+    icon.ImageRectOffset=Vector2.new(info[5]*64,0)
+    icon.ImageRectSize=Vector2.new(64,64)
+    icon.BackgroundTransparency=1
+    icon.Position=UDim2.fromScale(.16,.12)
+    icon.Size=UDim2.fromScale(.68,.68)
+    icon.ZIndex=15;icon.Parent=button
+  end
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")~=true then activateMeadowAction(info[1]) end
   end)
@@ -1429,25 +1462,55 @@ for index,info in ipairs(meadowUtilityActions)do
 end
 -- [오른쪽 스킬 배치] 3개 기술을 겹치지 않는 가로열로 표시한다.
 -- 작은 모바일 가로 화면에서는 자동 축소해서 미니맵·점프/이동 조작을 가리지 않는다.
+-- [모바일 실제 배치] 시안: 메인 스킬 3개는 같은 가로열, 보조 2개는 그 아래.
+-- 점프는 Roblox CoreGui 기본 버튼 그대로, 우측 맨 아래에 자리를 남긴다.
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)
-  meadowSkillDock.Size=UDim2.fromOffset(math.floor(286*scale),math.floor(160*scale))
-  meadowSkillDock.Position=UDim2.new(1,-(landscape and 83 or 7),1,-(landscape and 37 or 103))
-  for index,button in ipairs(meadowSkillButtons)do
-    local size=math.floor(68*scale)
-    button.Size=UDim2.fromOffset(size,size)
-    button.Position=UDim2.fromOffset(math.floor((12+(index-1)*91)*scale),math.floor(10*scale))
-    button.TextSize=math.max(11,math.floor(14*scale))
-  end
-  -- 질주/채집은 작은 보조 버튼으로 아래에 두고 점프 버튼과 겹치지 않게 한다.
-  for index,button in ipairs(meadowUtilityButtons)do
-    local utilitySize=math.floor(48*scale)
-    button.Size=UDim2.fromOffset(utilitySize,utilitySize)
-    button.Position=UDim2.fromOffset(math.floor((109+(index-1)*60)*scale),math.floor(103*scale))
-    button.TextSize=math.max(9,math.floor(11*scale))
+  local scale=landscape and math.clamp(v.Y/690,.64,1.08) or math.clamp(v.X/440,.62,.87)
+  if landscape then
+    local width=408*scale
+    local height=196*scale
+    meadowSkillDock.Size=UDim2.fromOffset(math.floor(width),math.floor(height))
+    meadowSkillDock.Position=UDim2.new(1,-math.floor(125*scale),1,-math.floor(55*scale))
+    for index,button in ipairs(meadowSkillButtons)do
+      local size=math.floor(101*scale)
+      local centerX=(56+(index-1)*141)*scale
+      button.Size=UDim2.fromOffset(size,size)
+      button.Position=UDim2.fromOffset(math.floor(centerX-size/2),0)
+      local nameplate=meadowSkillNameplates[index]
+      nameplate.Size=UDim2.fromOffset(math.floor(94*scale),math.floor(28*scale))
+      nameplate.Position=UDim2.fromOffset(math.floor(centerX-47*scale),math.floor(102*scale))
+      nameplate.TextSize=math.max(11,math.floor(14*scale))
+    end
+    for index,button in ipairs(meadowUtilityButtons)do
+      local size=math.floor(60*scale)
+      button.Size=UDim2.fromOffset(size,size)
+      button.Position=UDim2.fromOffset(math.floor((148+(index-1)*91)*scale),math.floor(135*scale))
+      button.TextSize=math.floor(25*scale)
+    end
+  else
+    -- 세로 화면에서도 HUD 및 점프와 겹치지 않는 우측 2열.
+    meadowSkillDock.Size=UDim2.fromOffset(math.floor(180*scale),math.floor(276*scale))
+    meadowSkillDock.Position=UDim2.new(1,-7,1,-math.floor(100*scale))
+    for index,button in ipairs(meadowSkillButtons)do
+      local size=math.floor(76*scale)
+      local x=(index==2 and 93 or index==3 and 93 or 5)*scale
+      local y=(index==3 and 87 or index==2 and 0 or 43)*scale
+      button.Size=UDim2.fromOffset(size,size)
+      button.Position=UDim2.fromOffset(math.floor(x),math.floor(y))
+      local nameplate=meadowSkillNameplates[index]
+      nameplate.Size=UDim2.fromOffset(math.floor(74*scale),math.floor(23*scale))
+      nameplate.Position=UDim2.fromOffset(math.floor(x),math.floor(y+78*scale))
+      nameplate.TextSize=11
+    end
+    for index,button in ipairs(meadowUtilityButtons)do
+      local size=math.floor(52*scale)
+      button.Size=UDim2.fromOffset(size,size)
+      button.Position=UDim2.fromOffset(math.floor((27+(index-1)*72)*scale),math.floor(205*scale))
+      button.TextSize=19
+    end
   end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)
@@ -1470,8 +1533,8 @@ local radarCorner=Instance.new("UICorner")
 radarCorner.CornerRadius=UDim.new(0,13)
 radarCorner.Parent=meadowRadar
 local radarStroke=Instance.new("UIStroke")
-radarStroke.Color=Color3.fromRGB(182,153,97)
-radarStroke.Thickness=1.6
+radarStroke.Color=Color3.fromRGB(220,176,91)
+radarStroke.Thickness=2.5
 radarStroke.Transparency=.12
 radarStroke.Parent=meadowRadar
 local radarTitle=Instance.new("TextLabel")
@@ -1502,8 +1565,8 @@ radarTint.Color=ColorSequence.new(Color3.fromRGB(41,83,58),Color3.fromRGB(15,43,
 radarTint.Rotation=110
 radarTint.Parent=radarField
 local radarFieldStroke=Instance.new("UIStroke")
-radarFieldStroke.Color=Color3.fromRGB(98,141,106)
-radarFieldStroke.Transparency=.15
+radarFieldStroke.Color=Color3.fromRGB(163,170,112)
+radarFieldStroke.Transparency=.06
 radarFieldStroke.Parent=radarField
 -- 실제 서버의 흙길과 유적, 근처 몬스터만 지도에 표시한다.
 local radarTrails={}
@@ -1613,6 +1676,20 @@ for index=1,12 do
   marker.Visible=false;marker.ZIndex=11;marker.Parent=radarField
   radarEnemies[index]=marker
 end
+local radarWoodlandMarkers={}
+for index=1,20 do
+  local marker=Instance.new("TextLabel")
+  marker.Name="RealWoodland"..index
+  marker.Size=UDim2.fromOffset(12,12)
+  marker.AnchorPoint=Vector2.new(.5,.5)
+  marker.BackgroundTransparency=1
+  marker.Text="▲"
+  marker.TextColor3=Color3.fromRGB(108,165,91)
+  marker.TextSize=11;marker.Font=Enum.Font.GothamBold
+  marker.ZIndex=10;marker.Visible=false
+  marker.Parent=radarField
+  radarWoodlandMarkers[index]=marker
+end
 local radarPeers={}
 local radarElapsed=0
 game:GetService("RunService").Heartbeat:Connect(function(dt)
@@ -1633,8 +1710,14 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local radarHalf=radarSpan*.5
   for index,route in ipairs(radarTrailEndpoints) do
     local frame=radarTrails[index]
-    frame.Visible=trailsReady
-    if trailsReady then
+    -- 기존 대각선 X 버그: 레이더 밖 끝점을 갖는 길은 표시하지 않는다.
+    -- 좌표를 원 끝으로 강제 잘라 길 전체가 중앙을 관통하는 표시를 방지한다.
+    local dx1=route[1]-mainRoot.Position.X
+    local dz1=route[2]-mainRoot.Position.Z
+    local dx2=route[3]-mainRoot.Position.X
+    local dz2=route[4]-mainRoot.Position.Z
+    frame.Visible=trailsReady and math.max(math.abs(dx1),math.abs(dz1),math.abs(dx2),math.abs(dz2))<=radarHalf
+    if frame.Visible then
       local x1=.5+(route[1]-mainRoot.Position.X)/radarSpan
       local y1=.5+(route[2]-mainRoot.Position.Z)/radarSpan
       local x2=.5+(route[3]-mainRoot.Position.X)/radarSpan
@@ -1669,10 +1752,21 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     end
   end
   local visibleEnemies=0
+  local visibleWoodlands=0
   if world then
     for _,model in ipairs(world:GetChildren()) do
-      if visibleEnemies>=#radarEnemies then break end
-      if model:IsA("Model") and typeof(model:GetAttribute("EnemyHealth"))=="number"
+      if model:IsA("Model") and visibleWoodlands<#radarWoodlandMarkers
+        and model.Name:sub(1,16)=="Meadow_Woodland_" then
+        local pos=model:GetPivot().Position
+        local dx=pos.X-mainRoot.Position.X
+        local dz=pos.Z-mainRoot.Position.Z
+        if dx*dx+dz*dz<=radarHalf*radarHalf then
+          visibleWoodlands+=1
+          local marker=radarWoodlandMarkers[visibleWoodlands]
+          marker.Visible=true;marker.Position=UDim2.fromScale(.5+dx/radarSpan,.5+dz/radarSpan)
+        end
+      end
+      if visibleEnemies<#radarEnemies and model:IsA("Model") and typeof(model:GetAttribute("EnemyHealth"))=="number"
         and model:GetAttribute("EnemyHealth")>0 then
         local pos=model:GetPivot().Position
         local dx=pos.X-mainRoot.Position.X
@@ -1690,6 +1784,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     end
   end
   for index=visibleEnemies+1,#radarEnemies do radarEnemies[index].Visible=false end
+  for index=visibleWoodlands+1,#radarWoodlandMarkers do radarWoodlandMarkers[index].Visible=false end
   local existing={}
   for _,peer in ipairs(Players:GetPlayers())do
     if peer~=player then
@@ -1727,16 +1822,16 @@ local function layoutMeadowRadar()
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
   -- [교체 지도] 원형 탐사면 안에 길·실제 유적·목표·동료를 유지한다.
-  local mapDiameter=compactLandscape and 100 or small and 105 or 116
-  meadowRadar.Size=UDim2.fromOffset(mapDiameter+16,mapDiameter+38)
+  local mapDiameter=compactLandscape and 108 or small and 118 or math.floor(math.clamp(v.Y*.255,128,190))
+  meadowRadar.Size=UDim2.fromOffset(mapDiameter+22,mapDiameter+53)
   meadowRadar.AnchorPoint=Vector2.new(1,0)
-  meadowRadar.Position=UDim2.new(1,-8,0,8)
-  radarTitle.TextSize=11
-  radarTitle.Size=UDim2.new(1,-18,0,20)
+  meadowRadar.Position=UDim2.new(1,-10,0,12)
+  radarTitle.TextSize=12
+  radarTitle.Size=UDim2.new(1,-18,0,23)
   radarField.AnchorPoint=Vector2.new(.5,0)
-  radarField.Position=UDim2.new(.5,0,0,23)
+  radarField.Position=UDim2.new(.5,0,0,28)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
-  radarCoordinates.Position=UDim2.new(0,6,1,-18)
+  radarCoordinates.Position=UDim2.new(0,6,1,-23)
   radarCoordinates.TextSize=10
   meadowRadar.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end
@@ -1761,20 +1856,20 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     local cost=skill[1]=="meadow-unarmed-uppercut" and 20 or skill[1]=="meadow-unarmed-kick" and 14 or 0
     button.Active=ready and remaining<=.05 and stamina>=cost
-    button.Text=skill[2]
-    button.TextTransparency=ready and 0 or .45
+    button.Text=""
+    meadowSkillNameplates[index].TextTransparency=ready and 0 or .25
     local cooldown=meadowSkillCooldowns[index]
     cooldown.Visible=remaining>.05
     cooldown.Text=remaining>0 and string.format("%.1f",remaining) or ""
-    button.BackgroundColor3=remaining>.05 and Color3.fromRGB(22,30,40) or Color3.fromRGB(41,58,62)
+    button.BackgroundColor3=remaining>.05 and Color3.fromRGB(24,28,34) or Color3.fromRGB(30,31,29)
   end
   for index,button in ipairs(meadowUtilityButtons)do
     local info=meadowUtilityActions[index]
     local deadline=player:GetAttribute("MeadowReady_"..info[1])
     local remains=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     button.Active=ready and remains<=.05
-    button.Text=info[4].."\n"..info[2]..(remains>.05 and " "..math.ceil(remains) or "")
-    button.TextTransparency=button.Active and 0 or .45
+    button.Text=info[4]
+    button.TextTransparency=button.Active and 0 or .3
   end
 end)
 end
