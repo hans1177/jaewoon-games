@@ -101,17 +101,20 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     // Existing System AI worker cannot write game source. Recover legacy misrouted work in-place.
     const gameSourceOwned=uniq(rec.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>clean(file).replaceAll('\\','/').replace(/^\.\//,'').startsWith(prefix)));
     const owner=requestedOwner==='SYSTEM_AI'&&gameSourceOwned?'VIBE2_VIBE3':requestedOwner;
-    // WEB은 활성 개발 플랫폼이다. 보류 플랫폼·게임 소유권 불명확 복구만 차단한다.
+    // 게임마다 실행 플랫폼과 책임 소스가 달라야 한다. 보류 플랫폼이나 교차 게임 범위는 실행하지 않는다.
     const normalizedFiles=uniq(rec.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/').replace(/^\.\//,''));
-    if(owner==='VIBE2_VIBE3'&&normalizedFiles.some(file=>
-      /^(?:unity|unreal|godot)-games\//.test(file)))return rec;
-    const webFiles=normalizedFiles.filter(file=>file.startsWith('web-games/'));
-    if(owner==='VIBE2_VIBE3'&&webFiles.length){
-      const gameId=clean(rec.gameId);
-      if(!gameId||!webFiles.every(file=>file.startsWith('web-games/'+gameId+'/')&&!file.includes('..'))
-        ||gameQueue.tasks.some(task=>clean(task.gameId)===gameId
+    const gameSourceFiles=normalizedFiles.filter(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)));
+    const scopes=gameSourceFiles.map(file=>file.match(/^(web|roblox|unity|unreal|godot)-games\/([a-z0-9-]+)\//));
+    const scopePlatform=scopes[0]?.[1]||'';
+    const scopedGameId=clean(rec.gameId);
+    if(owner==='VIBE2_VIBE3'&&gameSourceFiles.length){
+      if(!['web','roblox'].includes(scopePlatform)||!scopedGameId
+        ||scopes.some((match,index)=>!match||match[1]!==scopePlatform||match[2]!==scopedGameId||gameSourceFiles[index].includes('..'))
+        ||gameQueue.tasks.some(task=>clean(task.gameId)===scopedGameId
           &&(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true)))return rec;
     }
+    if(owner==='VIBE2_VIBE3'&&normalizedFiles.some(file=>
+      /^(?:unity|unreal|godot)-games\//.test(file)))return rec;
     if(mode!=='all'&&mode==='vibe'&&owner!=='VIBE2_VIBE3')return rec;
     if(mode!=='all'&&mode==='system-ai'&&owner!=='SYSTEM_AI')return rec;
     const ids=uniq([rec.sourceTaskId,...(rec.relatedTaskIds||[])]);
@@ -134,6 +137,17 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         if(!set.has(clean(task.id)))return task;
         // 동일 실패 서명이나 relatedTaskIds에 타 게임 작업이 있어도 해당 게임만 재개한다.
         if(recoveryGameId&&clean(task.gameId)!==recoveryGameId)return task;
+        if(recoveryGameId){
+          const taskRoot=clean(task.sourceRoot).replaceAll('\\\\','/').match(/^(web|roblox|unity|unreal|godot)-games\//);
+          const taskFile=uniq(task.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/'))
+            .find(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)))||'';
+          const taskFilePlatform=taskFile.match(/^(web|roblox|unity|unreal|godot)-games\//)?.[1]||'';
+          const taskPlatform=taskRoot?.[1]||taskFilePlatform||clean(task.target).toLowerCase();
+          if(scopePlatform&&taskPlatform!==scopePlatform)return task;
+          // 소스/플랫폼이 확인되지 않은 작업을 relatedTaskIds만으로 자동 수정하지 않는다.
+          if(!taskPlatform&&clean(task.id)!==clean(rec.sourceTaskId))return task;
+          if(!scopePlatform&&clean(task.id)!==clean(rec.sourceTaskId))return task;
+        }
         if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true)return task;
         if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return task;
         touched++;
