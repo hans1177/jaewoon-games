@@ -1352,21 +1352,26 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
-  // 모바일 전투: 발차기·어퍼컷·막기가 실제 ID로 연결된 2열 도크.
-  assert.ok(client.includes('local meadowSkillGrid={{66,12},{128,12},{66,69},{128,69},{66,126},{128,126}}'));
+  // 모바일 전투: 실제 발차기·어퍼컷·막기가 기본 공격 주변의 반원에 배치된다.
+  assert.ok(client.includes('local meadowArcDegrees={-105,-135,-165,-195,-225,-255}'));
   assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-6,1,-(landscape and 7 or 22))'));
+  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-(landscape and 62 or 7),1,-(landscape and 19 or 102))'));
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
   assert.ok(client.includes('meadowHealthTrack.Size=UDim2.new(1,-18,0,18)'));
   assert.ok(client.includes('local radarTrailEndpoints={{-51,-48,-177,-176}'));
+  assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
+  assert.ok(client.includes('local mapDiameter=compactLandscape and 102 or small and 106 or 120'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
   assert.ok(client.includes('meadowAttackIcon.ImageRectOffset=Vector2.new(0,0)'));
+  assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
+  assert.ok(client.includes('local energyDeadline=player:GetAttribute("MeadowReady_skill-meadow-sprint")'));
+  assert.ok(client.includes('energyCooldown=math.max(.1,action.Cooldown or 8)'));
   assert.ok(client.includes('meadowPrimaryAttack.Activated:Connect(function()'));
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
@@ -1382,8 +1387,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('glyph.Name="SkillSymbol"'));
   // Item cards read existing server-authoritative values, without adding a saved schema.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
-  assert.ok(client.includes('inventoryQuick.Name="MeadowInventoryQuick"'));
-  assert.ok(client.includes('inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)'));
+  assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'left pocket shortcut must be removed');
+  assert.ok(client.includes('meadowMenu.open(3)end'), 'journal shortcut remains');
+  assert.ok(client.includes('pages=meadowPages'), 'inventory page remains inside original menu');
   for(const attr of ['Wood','Stone','ResearchRecords','Coins','WeaponTier']){
     assert.ok(client.includes('{"'+(attr==='Wood'?'나무':attr==='Stone'?'돌':attr==='ResearchRecords'?'연구 일지':attr==='Coins'?'재화':'강화 단계')+'","'+attr+'"'));
   }
@@ -1396,9 +1402,10 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
-  assert.ok(client.includes('local scale=landscape and 1 or math.clamp(v.X/430,.76,.94)'));
-  assert.ok(client.includes('button.Position=UDim2.fromOffset(math.floor(cell[1]*scale),math.floor(cell[2]*scale))'));
-  assert.ok(client.includes('math.floor((14+(index-1)*57)*scale)'));
+  assert.ok(client.includes('local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)'));
+  assert.ok(client.includes('local x=centerX+math.cos(angle)*radius'));
+  assert.ok(client.includes('local y=centerY+math.sin(angle)*radius'));
+  assert.ok(client.includes('math.floor((93+(index-1)*58)*scale)'));
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
