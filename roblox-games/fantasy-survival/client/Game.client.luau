@@ -111,7 +111,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowRightActionAtlas="" -- RIGHT_ACTION_ICON_ATLAS
+local meadowRightActionAtlas="rbxassetid://81665484719308" -- RIGHT_ACTION_ICON_ATLAS
 local reducedEffects=game:GetService("UserInputService").TouchEnabled
 local meadowEffectsGroup=Instance.new("SoundGroup")
 meadowEffectsGroup.Name="MeadowEffects";meadowEffectsGroup.Volume=.75

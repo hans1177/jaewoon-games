@@ -992,9 +992,8 @@ local function inspectMeadowSurvival(player,model,subject)
       end
     end
   end
+  -- [생존 관찰] 삭제된 사슴·멧돼지 힌트는 더 이상 노출하지 않는다.
   local hints={
-    deer="사슴은 숲 가장자리의 풀밭을 따라 이동해. 가까이 다가가면 경계해.",
-    boar="멧돼지는 나무가 많은 낮은 지형을 돌아다녀. 급히 다가가지 마.",
     rabbit="토끼는 수풀 근처에서 움직여. 조용히 접근하면 더 오래 관찰할 수 있어.",
   }
   local clue=hints[subject]
@@ -1055,7 +1054,7 @@ local function bindMeadowInspection(model,subject)
   prompt.Name="MeadowSurvivalInspect"
   prompt.ActionText=(subject=="WOODLAND" or subject=="RUIN") and "주변 살피기" or "동물 관찰"
   prompt.ObjectText=subject=="RUIN" and "오래된 유적" or subject=="WOODLAND" and "숲 가장자리"
-    or subject=="deer" and "사슴" or subject=="boar" and "멧돼지" or "토끼"
+    or "토끼"
   prompt.HoldDuration=.45
   prompt.MaxActivationDistance=10
   prompt.RequiresLineOfSight=false
@@ -1065,13 +1064,10 @@ local function bindMeadowInspection(model,subject)
     inspectMeadowSurvival(player,model,subject)
   end)
 end
--- [입장 로딩] 장식 동물은 첫 입력/프로필/기본 지형이 준비된 뒤 불러온다.
--- CC0 소스와 기존 출현 위치/종 수는 유지한다.
+-- [입장 로딩] 오너 요청: 사슴·멧돼지 삭제. 기존 토끼 배치는 그대로 유지한다.
+-- 기본 지형과 입력·프로필 준비 이후에만 동물을 불러온다.
 task.delay(4,function()
 for index,spec in ipairs({
-  {kind="deer",position=Vector3.new(-68,3,-22),height=4.4},
-  {kind="deer",position=Vector3.new(61,3,34),height=4.4},
-  {kind="boar",position=Vector3.new(52,3,-65),height=3.1},
   {kind="rabbit",position=Vector3.new(-39,3,62),height=1.8},
   {kind="rabbit",position=Vector3.new(41,3,67),height=1.8},
 }) do
@@ -1306,10 +1302,8 @@ task.defer(function()
     meadowTerrain:FillBall(Vector3.new(brush[1],-1.3,brush[2]),brush[3],Enum.Material.LeafyGrass)
     task.wait()
   end
-  -- 추가 야생동물은 이미 검증된 사슴/멧돼지/토끼 모델만 사용한다.
+  -- [외곽 서식지] 사슴·멧돼지는 더 이상 생성하지 않고 기존 토끼 좌표만 유지한다.
   for index,spec in ipairs({
-    {"deer",-245,-191,4.4},{"deer",251,211,4.4},{"deer",202,-232,4.4},
-    {"boar",-263,210,3.1},{"boar",259,-179,3.1},
     {"rabbit",-205,265,1.8},{"rabbit",233,263,1.8},{"rabbit",-295,-205,1.8},
   }) do
     local animal=worldAsset(spec[1],Vector3.new(spec[2],3,spec[3]),spec[4])
@@ -1391,11 +1385,10 @@ local function spawnEnemy(isBoss, index)
   local theta = encounterSerial*2.399 + index*.31
   local radius = 51 + (index%3)*11
   local location = Vector3.new(math.cos(theta)*radius, 3, math.sin(theta)*radius)
-  -- [초원 몬스터] 슬라임 제외. CC0 실물 원본을 등록한 종만 웨이브에 추가한다.
-  -- 초원 벌은 출현 목록에서 제외한다. 기존 전투 피해·보상·등장 수는 유지한다.
+  -- [초원 몬스터] 사슴·멧돼지는 등장하지 않는다. 나머지 몬스터의 웨이브·스탯은 유지한다.
+  -- 멧돼지 출현만 제거하며 웨이브 진행과 몬스터 등장 수는 변경하지 않는다.
   local meadowSpecies={
     {id="wolf",atom="HEAD_CANINE",wave=1,height=3.15},
-    {id="boar",atom="JAW_SHORT",wave=2,height=3.15},
     {id="mushroom",atom="ROOT_LIMB",wave=3,height=3.15},
     {id="bat",atom="WING_LEATHER",wave=4,height=3.15},
     {id="skeleton",atom="HEAD_SKULL",wave=6,height=3.15},
@@ -1594,10 +1587,10 @@ local function spawnEnemy(isBoss, index)
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
-  local meadowNames={wolf="초원 늑대",boar="사나운 멧돼지",
+  local meadowNames={wolf="초원 늑대",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
-  -- [몬스터 공통 재질] 늑대·멧돼지·버섯·박쥐·해골·골렘에 동일한 토이 플라스틱을 적용한다.
+  -- [몬스터 공통 재질] 늑대·버섯·박쥐·해골·골렘에 기존 토이 플라스틱을 적용한다.
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
   -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
@@ -1632,7 +1625,7 @@ local function spawnEnemy(isBoss, index)
   end
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
-  local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",boar="BOAR_CHARGE",
+  local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",
     mushroom="MUSHROOM_SPORES",bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or firstAttack[partId])
   model:SetAttribute("NativeMobMotion","IDLE")
@@ -1647,7 +1640,7 @@ local function spawnEnemy(isBoss, index)
   end
   -- 정적 메시에는 실제 걷기 관절이 없음을 표시한다. 판정이나 스폰에는 영향 없다.
   model:SetAttribute("NativeMobRig",hasOriginalMotor and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
-  local secondarySkill={wolf="LEAP_BITE",bee="DIVE_STING",boar="BOAR_RUSH",
+  local secondarySkill={wolf="LEAP_BITE",bee="DIVE_STING",
     mushroom="SPORE_CLOUD",bat="NIGHT_DIVE",skeleton="BONE_SWING"}
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
