@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-30T12:36:00.509Z",
+  "generatedAt": "2026-10-30T12:40:18.588Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -821,11 +821,11 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_BEFORE_SOURCE_BIND",
-            "stage": "TARGET_PLATFORM_SOURCE_BIND",
+            "currentFloor": "VIBE_INTERNAL_PLAY",
+            "stage": "VIBE_INTERNAL_PLAY",
             "result": "REPAIR_REQUIRED",
             "verifiedAt": "2026-10-30T11:45:11.458Z",
-            "checkedAt": "2026-10-30T11:49:40.633Z",
+            "checkedAt": "2026-10-30T12:36:34.551Z",
             "lastFailureAt": "2026-10-30T11:45:11.458Z",
             "f0PassedAt": "2026-10-30T11:34:00.380Z",
             "candidatePublishedAt": null,
@@ -926,7 +926,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T11:49:40.633Z"
+      "updatedAt": "2026-10-30T12:36:34.551Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -1603,14 +1603,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-10-30T12:35:48.140Z",
-            "checkedAt": "2026-10-30T12:35:48.140Z",
+            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
+            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
+            "verifiedAt": "2026-10-30T12:37:29.943Z",
+            "checkedAt": "2026-10-30T12:39:17.841Z",
             "lastFailureAt": null,
             "f0PassedAt": "2026-10-30T12:35:48.140Z",
-            "candidatePublishedAt": null,
+            "candidatePublishedAt": "2026-10-30T12:37:29.943Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -1633,16 +1633,19 @@
               "design": true,
               "publication": false,
               "exactRuntime": false,
-              "lobby": true,
-              "movement": true,
-              "noRuntimeErrors": true
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
             },
             "blockers": [
               "publication",
-              "exactRuntime"
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "76ad97d2b4f40b7592152164e420a8bee2e4ced8",
+            "artifactIdentity": "sha256:0fa148701429c151a2911b984ed78fa4cd014dfac8fc7d4a6e843be90a2afc35",
             "verifiedAt": null
           },
           "executionAvailable": false,
@@ -1709,7 +1712,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-30T12:35:48.140Z"
+      "updatedAt": "2026-10-30T12:39:17.841Z"
     },
     {
       "gameId": "fifty-days",
