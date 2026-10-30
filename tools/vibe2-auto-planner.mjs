@@ -4090,19 +4090,46 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         }
       }
     }
-    // Existing queued Roblox build-up work is the canonical repair carrier.
+    // Route the canonical F0 source failure through an already-owned GAME_PRIMARY
+    // task, including legacy tasks whose sharded record has no buildUpDirective.
+    // An ASSET_DEVELOPMENT task cannot independently execute the source repair.
+    const f0Marker='roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE';
+    const hadF0=(candidate.evidence||[]).includes(f0Marker);
+    const f0SourceRoot='roblox-games/'+gameId;
+    const f0OwnedSource=clean(candidate.sourceRoot)===f0SourceRoot
+      &&(candidate.responsibleFiles||[]).some(raw=>{
+        const file=posix(raw);
+        if(!file.startsWith(f0SourceRoot+'/'))return false;
+        const parts=file.slice(f0SourceRoot.length+1).split('/');
+        if(parts.length<2||!['client','server','shared'].includes(parts[0])
+          ||parts.some(part=>!part||part==='.'||part==='..')
+          ||!(/\.(?:lua|luau)$/i.test(file)))return false;
+        try{
+          const root=fs.realpathSync(sourceFile(repoRoot,f0SourceRoot));
+          const actual=fs.realpathSync(sourceFile(repoRoot,file));
+          const relative=path.relative(root,actual);
+          return relative!==''&&!relative.startsWith('..'+path.sep)
+            &&relative!=='..'&&!path.isAbsolute(relative)&&fs.statSync(actual).isFile();
+        }catch{return false;}
+      });
+    const eligibleF0=exactRobloxF0PreflightFailure(project)&&f0OwnedSource
+      &&candidate.requiresOwnerDecision!==true
+      &&candidate.protectedChange!==true
+      &&candidate.paidResourceRequired!==true;
     // Do not create duplicate game tasks or modify a running reservation.
-    if(lane==='roblox'&&candidate?.buildUpDirective){
+    if(lane==='roblox'&&(candidate?.buildUpDirective||eligibleF0||hadF0)){
       const currentF0=exactRobloxF0PreflightFailure(project);
       const repairStart='[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]';
       const repairEnd='[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]';
       const stripF0=goal=>clean(goal).replace(/\[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n[\s\S]*?\n\[\/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR\]\n?/g,'').trim();
       const originalGoal=clean(candidate.goal),restoredGoal=stripF0(originalGoal);
-      if(currentF0&&!project.queueRobloxQualityBuildUpRequired){
-        const updated=applyRobloxF0PreflightRepairDirective(candidate.buildUpDirective,project,lane);
-        if(JSON.stringify(updated)!==JSON.stringify(candidate.buildUpDirective)){
-          candidate=bindSharedBuildUpDirective(candidate,updated);
-          changed+=1;
+      if(currentF0&&eligibleF0&&!project.queueRobloxQualityBuildUpRequired){
+        if(candidate.buildUpDirective){
+          const updated=applyRobloxF0PreflightRepairDirective(candidate.buildUpDirective,project,lane);
+          if(JSON.stringify(updated)!==JSON.stringify(candidate.buildUpDirective)){
+            candidate=bindSharedBuildUpDirective(candidate,updated);
+            changed+=1;
+          }
         }
         const f0Goal=[repairStart,
           '게임: '+gameId+' / F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
@@ -4126,11 +4153,27 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         if(priority!==candidate.priority||evidence.length!==(candidate.evidence||[]).length){
           candidate={...candidate,priority,evidence};changed+=1;
         }
-      }else if(originalGoal!==restoredGoal){
+        if(candidate.assetProductionLane===true
+          ||(candidate.evidence||[]).includes('asset-production-parallel:v1')){
+          candidate={...candidate,
+            assetProductionLane:false,
+            executionLane:'GAME_PRIMARY',
+            evidence:[...new Set([...(candidate.evidence||[]).filter(value=>
+              value!=='asset-production-parallel:v1'),
+              'roblox-f0-preflight-original-asset-lane:YES'])]};
+          changed+=1;
+        }
+      }else if(hadF0||originalGoal!==restoredGoal){
         // The current source no longer carries this exact F0 failure.
         // Remove the stale diagnosis without converting it into a QA pass.
         candidate={...candidate,goal:restoredGoal};
         changed+=1;
+        if((candidate.evidence||[]).includes('roblox-f0-preflight-original-asset-lane:YES')){
+          candidate={...candidate,assetProductionLane:true,executionLane:'ASSET_DEVELOPMENT',
+            evidence:[...new Set([...(candidate.evidence||[]).filter(value=>
+              value!=='roblox-f0-preflight-original-asset-lane:YES'), 'asset-production-parallel:v1'])]};
+          changed+=1;
+        }
         if(!project.queueRobloxQualityBuildUpRequired
           &&candidate.buildUpDirective?.playtestRuntimeFindings?.f0SourcePreflightFailure){
           const old=candidate.buildUpDirective;
