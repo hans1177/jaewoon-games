@@ -600,6 +600,16 @@ local function renderMeadowPages()
   meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 웨이브  %d\n남은 적  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
     player:GetAttribute("CurrentWave") or 0,player:GetAttribute("AliveEnemies") or 0,
     #meadowJournal>0 and table.concat(meadowJournal,"\n\n") or "주변 동물과 숲의 조사 지점을 살펴봐. 발견한 단서가 여기에 기록돼.")
+  local groveMask=math.clamp(player:GetAttribute("ExplorationGroves") or 0,0,15)
+  local explored=0
+  for sector=0,3 do if bit32.band(groveMask,bit32.lshift(1,sector))~=0 then explored+=1 end end
+  meadowLabels[3].Text..=string.format("\n\n숲 가장자리 발견  %d / 4\n새벽 흔적  %s\n밤의 숲 기록  %s",explored,
+    (player:GetAttribute("DawnTraceFound") or 0)>0 and "발견" or "미발견",
+    (player:GetAttribute("NightTraceFound") or 0)>0 and "발견" or "미발견")
+  local ruinsMask=math.clamp(player:GetAttribute("RuinsDiscovered") or 0,0,7)
+  local ruinsCount=0
+  for index=0,2 do if bit32.band(ruinsMask,bit32.lshift(1,index))~=0 then ruinsCount+=1 end end
+  meadowLabels[3].Text..=string.format("\n유적 조사  %d / 3",ruinsCount)
   local tier=player:GetAttribute("WeaponTier") or 0
   local cost=2+tier
   local ready=player:GetAttribute("ProfileReady")==true
@@ -632,6 +642,9 @@ player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
+for _,name in ipairs({"ExplorationGroves","DawnTraceFound","NightTraceFound","RuinsDiscovered"})do
+  player:GetAttributeChangedSignal(name):Connect(renderMeadowPages)
+end
 for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
   local button=CommonUI.CreatePrimaryButton({name="MeadowHelper"..index,text=row[1],minHeight=52})
   button.LayoutOrder=index;button.Size=UDim2.new(1,-8,0,54);button.Parent=meadowPages[5]
@@ -902,6 +915,46 @@ local function bindMeadowRain(character)
 end
 if player.Character then task.defer(bindMeadowRain,player.Character) end
 player.CharacterAdded:Connect(bindMeadowRain)
+-- [숲 생명감] 원본 나무와 승인된 CC0 입자만 사용하고 근거리·개수 제한을 둔다.
+local forestClimateRows={}
+local function bindForestClimate(model)
+  if not model:IsA("Model") or model:GetAttribute("MeadowScenery")~=true or forestClimateRows[model] then return end
+  local row={pivot=model:GetPivot(),parts={},phase=model:GetPivot().Position.X*.13,lastWet=nil}
+  for _,mesh in ipairs(model:GetDescendants())do
+    if mesh:IsA("MeshPart") then row.parts[#row.parts+1]={mesh=mesh,reflectance=mesh.Reflectance,color=mesh.Color} end
+  end
+  local index=tonumber(model.Name:match("(%d+)$")) or 1
+  local host=model:FindFirstChildWhichIsA("MeshPart",true)
+  if host and index%8==0 then
+    local anchor=Instance.new("Attachment");anchor.Name="ForestMagicSource";anchor.Parent=host
+    local groundRay=RaycastParams.new();groundRay.FilterType=Enum.RaycastFilterType.Include;groundRay.FilterDescendantsInstances={workspace.Terrain}
+    local pivot=model:GetPivot().Position
+    local floor=workspace:Raycast(pivot+Vector3.new(0,30,0),Vector3.new(0,-90,0),groundRay)
+    if floor then anchor.Position=host.CFrame:PointToObjectSpace(floor.Position+Vector3.new(0,.5,0))end
+    local fireflies=Instance.new("ParticleEmitter");fireflies.Name="ForestFireflies"
+    fireflies.Texture="rbxassetid://120799643869835";fireflies.Rate=0
+    fireflies.Lifetime=NumberRange.new(1.8,3);fireflies.Speed=NumberRange.new(.2,.55)
+    fireflies.Size=NumberSequence.new(.08);fireflies.LightEmission=.9
+    fireflies.Color=ColorSequence.new(Color3.fromRGB(122,213,245),Color3.fromRGB(185,246,182))
+    fireflies.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.25,.25),NumberSequenceKeypoint.new(.7,.3),NumberSequenceKeypoint.new(1,1)})
+    fireflies.SpreadAngle=Vector2.new(180,180);fireflies.Parent=anchor
+    local mist=Instance.new("ParticleEmitter");mist.Name="ForestGroundMist"
+    mist.Texture="rbxassetid://71208441396858";mist.Rate=0;mist.Lifetime=NumberRange.new(3,5)
+    mist.Speed=NumberRange.new(.08,.2);mist.Size=NumberSequence.new(3,5)
+    mist.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.3,.94),NumberSequenceKeypoint.new(1,1)})
+    mist.Color=ColorSequence.new(Color3.fromRGB(196,218,222));mist.SpreadAngle=Vector2.new(180,0);mist.Parent=anchor
+    row.anchor=anchor;row.fireflies=fireflies;row.mist=mist
+  end
+  forestClimateRows[model]=row
+end
+if meadowClimateWorld then
+  meadowClimateWorld.ChildAdded:Connect(function(model)task.defer(bindForestClimate,model)end)
+  meadowClimateWorld.ChildRemoved:Connect(function(model)
+    local row=forestClimateRows[model]
+    if row and row.anchor then row.anchor:Destroy()end
+    forestClimateRows[model]=nil
+  end)
+end
 local function renderMeadowClimate()
   local v=gui.AbsoluteSize
   local short=v.Y>0 and v.Y<440
@@ -961,7 +1014,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local rainy=weather=="RAIN"
   local night=period=="NIGHT"
   local snow=weather=="SNOW"
-  local targetDensity=fog and .40 or storm and .32 or rainy and .27 or snow and .25 or .17
+  local targetDensity=fog and .40 or storm and .32 or rainy and .27 or snow and .25 or period=="DAWN" and .24 or .17
   local targetHaze=fog and 2.5 or storm and 1.65 or rainy and 1.35 or snow and 1.25 or .85
   if atmosphere and atmosphere:IsA("Atmosphere") then
     atmosphere.Density=atmosphere.Density+(targetDensity-atmosphere.Density)*.14
@@ -976,6 +1029,32 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   elseif rainy then tint=tint:Lerp(Color3.fromRGB(211,220,230),.20)
   elseif snow then tint=tint:Lerp(Color3.fromRGB(222,235,246),.25) end
   local now=os.clock()
+  local camera=workspace.CurrentCamera
+  local wet=rainy or storm
+  local lights=0
+  for _,model in ipairs(meadowClimateWorld:GetChildren())do bindForestClimate(model)end
+  for model,row in pairs(forestClimateRows)do
+    if model.Parent then
+      local near=camera and (row.pivot.Position-camera.CFrame.Position).Magnitude<95
+      if near then
+        local amplitude=reducedEffects and .002 or storm and .013 or rainy and .008 or .004
+        model:PivotTo(row.pivot*CFrame.Angles(math.sin(now*.8+row.phase)*amplitude,0,math.sin(now*.65+row.phase)*amplitude))
+      end
+      if row.lastWet~=wet then
+        row.lastWet=wet
+        for _,part in ipairs(row.parts)do
+          if part.mesh.Parent then part.mesh.Reflectance=wet and .1 or part.reflectance;part.mesh.Color=wet and part.color:Lerp(Color3.new(0,0,0),.08) or part.color end
+        end
+      end
+      if row.fireflies then
+        local active=near and night and not storm and not rainy and lights<6
+        row.fireflies.Rate=active and (reducedEffects and .5 or 1.4) or 0
+        local morning=near and (period=="DAWN" or fog) and lights<6
+        if row.mist then row.mist.Rate=morning and (reducedEffects and .12 or .3) or 0 end
+        if active or morning then lights+=1 end
+      end
+    end
+  end
   if storm and now>=climateNextLightningAt then
     climateLightningUntil=now+.18
     climateNextLightningAt=now+math.random(16,30)
@@ -2115,6 +2194,15 @@ local function bindOriginalMob(model)
     ShinL=true,ShinR=true,UpperArmL=true,UpperArmR=true,
     ForearmL=true,ForearmR=true,
   }
+  -- [늑대 원본 리그] 해시 확인 FBX의 실제 스킨 관절과 IK 기준으로 앞·뒤·좌·우를 연결한다.
+  -- IK 조작용 뼈를 가짜 다리로 쓰지 않고 실제 가중치가 있는 Bone.008~019만 구동한다.
+  local wolfSourceChannels={
+    bone001="Chest",bone002="Neck",bone003="Head",bone004="Tail",
+    bone014="FRHip",bone015="FRKnee",bone016="FRAnkle",
+    bone017="FLHip",bone018="FLKnee",bone019="FLAnkle",
+    bone008="BLHip",bone009="BLKnee",bone010="BLAnkle",
+    bone011="BRHip",bone012="BRKnee",bone013="BRAnkle",
+  }
   local bounds,size=model:GetBoundingBox()
   for _,joint in ipairs(model:GetDescendants()) do
     -- 실제 관절 종류별 연결점을 읽는다. AnimationConstraint에는 Part0/Part1이 없다.
@@ -2123,7 +2211,7 @@ local function bindOriginalMob(model)
     if motor or constraint or joint:IsA("Bone") then
       local raw=joint.Name:lower()
       local key=raw:gsub("[^%w]","")
-      local name=nativeMobJointAlias[joint.Name] or joint.Name
+      local name=(species=="wolf" and wolfSourceChannels[key]) or nativeMobJointAlias[joint.Name] or joint.Name
       local location=joint:IsA("Bone") and joint.WorldPosition
         or constraint and joint.Attachment1.WorldPosition or joint.Part1.Position
       local relative=bounds:PointToObjectSpace(location)

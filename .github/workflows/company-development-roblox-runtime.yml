@@ -423,7 +423,7 @@ jobs:
             const nativeCreatureRepairPending=item.gameId==='fantasy-survival'
               &&nativeManifest?.gameId==='fantasy-survival'&&nativeManifest?.ownerApproved===true
               &&nativeManifest?.license==='CC0-1.0'
-              &&Object.keys(nativeManifest.models||{}).sort().join(',')==='bat,bee,boar,deer,golem,mushroom,rabbit,skeleton,tree,wolf'
+              &&Object.keys(nativeManifest.models||{}).sort().join(',')==='bat,bee,boar,deer,golem,mushroom,rabbit,ruin,skeleton,tree,wolf'
               &&(
                 (nativeServer.includes('CreatureParts.Create(')
                   &&!nativeServer.includes('local FANTASY_NATIVE_CREATURES_VERSION = 1'))

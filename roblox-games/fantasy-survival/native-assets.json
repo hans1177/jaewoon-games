@@ -2,7 +2,7 @@
   "version": 1,
   "gameId": "fantasy-survival",
   "ownerApproved": true,
-  "ownerDirective": "2026-10-30_OWNER_MEADOW_CC0_HOSTILE_BAT_MUSHROOM_SKELETON_NO_SLIME",
+  "ownerDirective": "2026-10-30_OWNER_REPLACE_GREY_TREE_WITH_CC0_LEAFY_TREE_AND_REPAIR_WOLF_WALK",
   "license": "CC0-1.0",
   "models": {
     "wolf": {
@@ -48,9 +48,9 @@
     },
     "tree": {
       "atom": "TREE_CROWN_ROUND",
-      "sourcePath": "assets/shared/forest/tree.fbx",
-      "sourceSha256": "03330f2622b48c465447e8314aabdd2c7533a4af9f41d2bd765c52a23f237cc6",
-      "licenseEvidence": "https://opengameart.org/content/textured-cute-monster-pack",
+      "sourcePath": "assets/shared/party/tree.glb",
+      "sourceSha256": "bf32ae3bc0892c5975b90c9492a22d78e53ef0ccb0e4d58990b218ce31d1fb67",
+      "licenseEvidence": "https://kenney.nl/assets/fantasy-town-kit",
       "role": "MEADOW_ENVIRONMENT"
     },
     "bat": {
@@ -73,6 +73,13 @@
       "sourceSha256": "be0a5992b677e563c6c9601e76fdcb9d50e91c195aebb1eb70604fbfe8fb26d5",
       "licenseEvidence": "https://opengameart.org/content/lowpoly-animated-monsters",
       "role": "HOSTILE_MEADOW_CREATURE"
+    },
+    "ruin": {
+      "atom": "RUIN_WALL",
+      "sourcePath": "assets/shared/party/wall-broken.glb",
+      "sourceSha256": "c5c347a39ae0c508fb97fa198b8b8a8c8d68b170d3f8ac232535cb01d2c8d808",
+      "licenseEvidence": "https://kenney.nl/assets/fantasy-town-kit",
+      "role": "MEADOW_EXPLORATION_RUIN"
     }
   },
   "runtimeVerified": false,

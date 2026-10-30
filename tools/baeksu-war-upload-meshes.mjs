@@ -66,7 +66,7 @@ const manifestBytes=fantasy?await fs.readFile('roblox-games/fantasy-survival/nat
 const manifest=fantasy?JSON.parse(manifestBytes):null;
 const names=fantasy?Object.keys(manifest.models):['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
 if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
- ||Object.keys(manifest.models||{}).sort().join(',')!=='bat,bee,boar,deer,golem,mushroom,rabbit,skeleton,tree,wolf'
+ ||Object.keys(manifest.models||{}).sort().join(',')!=='bat,bee,boar,deer,golem,mushroom,rabbit,ruin,skeleton,tree,wolf'
  ||provenance.gameId!=='fantasy-survival'||provenance.sourceManifestSha256!==crypto.createHash('sha256').update(manifestBytes).digest('hex')))throw Error('FANTASY_NATIVE_APPROVAL_OR_MANIFEST_MISMATCH');
 if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
 const ids={};const records={};const verifiedModels=new Map();
@@ -131,5 +131,5 @@ const lua=[
  ''
 ].join('\n');
 await fs.writeFile('roblox-games/'+(fantasy?'fantasy-survival':'baeksu-war')+'/shared/VisualAssetIds.luau',fantasy?lua.replace('-- V4: source-verified CC0 real-model IDs, with baeksu-war Universe permissions.','-- Source-verified original CC0 FBX/GLB models. Exact Universe grant is required by canonical publishing.'):lua);
-if(fantasy)await fs.writeFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',JSON.stringify({version:2,gameId:'fantasy-survival',nativeRegistrationVersion:1,registrationVerified:true,sourceManifestSha256:provenance.sourceManifestSha256,grantRequiredAtPublish:true,runtimeVerified:false,models:records},null,2)+'\n');
+if(fantasy)await fs.writeFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',JSON.stringify({...oldRegistry,version:2,gameId:'fantasy-survival',nativeRegistrationVersion:1,registrationVerified:true,sourceManifestSha256:provenance.sourceManifestSha256,grantRequiredAtPublish:true,runtimeVerified:false,models:records},null,2)+'\n');
 console.log((fantasy?'FANTASY_NATIVE_REGISTERED_MODELS=':'BAEKSU_WAR_VERIFIED_CC0_MODELS=')+names.length);

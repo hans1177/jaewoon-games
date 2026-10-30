@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
@@ -1863,7 +1864,7 @@ test('registered fantasy native assets stop registration repair while missing or
   const end=workflow.indexOf('const materialRepairPending=',start);
   assert.ok(start>=0&&end>start,'existing registration owner predicate must be present');
   const predicate=workflow.slice(start,end)+'\nnativeCreatureRepairPending;';
-  const roles=['wolf','bee','golem','deer','boar','rabbit','tree','bat','mushroom','skeleton'];
+  const roles=Object.keys(JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8')).models);
   const models=Object.fromEntries(roles.map((role,index)=>[role,{assetId:10001+index}]));
   const manifest={gameId:'fantasy-survival',ownerApproved:true,license:'CC0-1.0',models};
   const ids='return {\n'+roles.map(role=>' '+role+' = '+models[role].assetId+',').join('\n')+'\n}';
