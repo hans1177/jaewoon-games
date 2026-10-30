@@ -478,7 +478,15 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   end
   local joints = {}
   for _, descendant in ipairs(character:GetDescendants()) do
-    if descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1 then
+    -- 실물 R15 업그레이드 관절을 우선하고 기존 Motor6D 리그도 유지한다.
+    local upgraded=descendant:IsA("AnimationConstraint")
+      and descendant.Attachment0 and descendant.Attachment1
+      and descendant.Attachment0:IsDescendantOf(character)
+      and descendant.Attachment1:IsDescendantOf(character)
+    local legacy=descendant:IsA("Motor6D") and descendant.Part0 and descendant.Part1
+      and descendant.Part0:IsDescendantOf(character)
+      and descendant.Part1:IsDescendantOf(character)
+    if (upgraded or legacy) and (not joints[descendant.Name] or upgraded) then
       joints[descendant.Name] = descendant
     end
   end
@@ -493,7 +501,7 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   activeCombatCharacter = character
   activeCombatCombo = combo
   activeCombatStartedAt = os.clock()
-  activeCombatController = combatMotionSource.BindJointPose(joints, {response = 32})
+  activeCombatController = combatMotionSource.BindJointPose(joints, {response = 32, followAnimator = true})
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
 end)
