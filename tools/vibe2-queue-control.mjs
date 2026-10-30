@@ -584,7 +584,11 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
         :noModel?'source-no-model-retry-at:':'external-ai-quota-retry-at:';
       const marker=evidence.findLast(value=>clean(value).startsWith(prefix));
       const readyAt=Date.parse(clean(marker).slice(prefix.length));
-      if(!codegenChanged&&(!Number.isFinite(readyAt)||Number(nowMs)<readyAt))return task;
+      // A timer is not new causal evidence. Retrying an unchanged offline recipe
+      // only repeats the same non-executable candidate; await a real generator revision.
+      // Keep provider quota/model cooldowns independent from this game-local gate.
+      if(offlinePattern&&!codegenChanged)return task;
+      if(!offlinePattern&&(!Number.isFinite(readyAt)||Number(nowMs)<readyAt))return task;
       recovered+=1;
       return {...task,...clearedReservation(),status:'queued',blocker:null,
         lastOutcome:offlinePattern?'OFFLINE_RECIPE_CAPABILITY_RECHECK':noModel?'MODEL_FREE_SOURCE_RECHECK':'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
@@ -1365,7 +1369,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
       // A missing approved code recipe cannot be repaired by retrying the same worker
       // immediately. Do not consume game retries, claim a model was used, or fabricate a
       // patch. Release the lease for independent playable game work instead.
-      const retryAt=new Date(Date.now()+6*60*60*1000).toISOString();
+      const sourceFingerprint='source-offline-pattern-codegen-sha256:'+SOURCE_CODEGEN_SHA256;
       queue=createVibeContinuousQueue({
         maxConcurrentTasks:queue.maxConcurrentTasks,
         tasks:queue.tasks.map(task=>{
@@ -1377,11 +1381,12 @@ export function applyVibeFanInResults(queueInput, results = []) {
             lastOutcome:'OFFLINE_RECIPE_CAPABILITY_GAP',
             neuronExpectedVariants:0,neuronResults:[],
             evidence:[...new Set([...retained,'offline-recipe-capability-gap:v1',
-              'source-offline-pattern-retry-at:'+retryAt,
-              'source-offline-pattern-codegen-sha256:'+SOURCE_CODEGEN_SHA256])] };
+              'source-offline-pattern-retry-mode:SOURCE_WORKER_REVISION',
+              sourceFingerprint])] };
         })
       });
-      applied.push({taskId,outcome:'DEFERRED_OFFLINE_RECIPE',retryAt,
+      applied.push({taskId,outcome:'DEFERRED_OFFLINE_RECIPE',
+        retryMode:'SOURCE_WORKER_REVISION',
         capability:'VERIFIED_SOURCE_BOUND_RECIPE_REQUIRED'});
       continue;
     }
