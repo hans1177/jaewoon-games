@@ -1483,6 +1483,15 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.doesNotMatch(client,/GuiService.TouchControlsEnabled=false|Controls:Disable\(\)/);
   assert.match(controls,/meadowSkillDock.Position=UDim2.new/);
   assert.match(client,/meadowSkillDock.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
+  // 세로가 좁은 모바일도 고려해 기존 전투 UI 묶음을 위로 옮긴다.
+  assert.match(client,/landscape and \(v\.Y<420 and 22 or 45\) or 112/);
+  // 좌표 표시를 원형 지도 위에 붙이고 기존 지도·제목·마커는 그대로 유지한다.
+  assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+18,mapDiameter\+58\)/);
+  assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,22\)/);
+  assert.match(client,/radarTitle.Position=UDim2.fromOffset\(5,mapDiameter\+28\)/);
+  assert.match(client,/radarCoordinates.Position=UDim2.fromOffset\(7,1\)/);
+  assert.match(client,/radarCoordinates.Size=UDim2.new\(1,-14,0,18\)/);
+  assert.match(client,/radarCoordinates.TextSize=10/);
 });
 
 // Existing server/input authority must boot before slow CC0 asset imports.

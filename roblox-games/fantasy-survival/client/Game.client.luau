@@ -1738,7 +1738,7 @@ for index,info in ipairs(meadowUtilityActions)do
   end)
   meadowUtilityButtons[index]=button
 end
--- [오른쪽 시안 배치] 어퍼컷 중앙 위, 발차기 왼쪽, 막기 오른쪽, 보조 4개 아래.
+-- [오른쪽 시안 배치] 기존 3개 전투·4개 보조 버튼의 간격을 유지하며 묶음 전체를 위로 올린다.
 -- 오른쪽에만 고정하며 기존 왼쪽 조이스틱과 중앙 스테미너 HUD는 보존한다.
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
@@ -1746,7 +1746,7 @@ local function layoutMeadowCombatUi()
   local landscape=v.X>v.Y
   local scale=landscape and math.clamp(v.Y/315,.76,1.12) or math.clamp(v.X/390,.76,1)
   meadowSkillDock.Size=UDim2.fromOffset(math.floor(216*scale),math.floor(188*scale))
-  meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor((landscape and 7 or 78)*scale))
+  meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor((landscape and (v.Y<420 and 22 or 45) or 112)*scale))
   local positions={{55,82,60},{109,44,70},{179,82,60}}
   for index,button in ipairs(meadowSkillButtons)do
     local p=positions[index]
@@ -2154,18 +2154,19 @@ local function layoutMeadowRadar()
   local small=v.X<480
   -- [오른쪽 원형 지도] 기존 실제 탐험 마커와 좌표 표시를 유지한다.
   local mapDiameter=compactLandscape and 100 or small and 106 or math.floor(math.clamp(v.Y*.24,110,170))
-  meadowRadar.Size=UDim2.fromOffset(mapDiameter+18,mapDiameter+48)
+  -- 좌표는 지도 맨 위, 원형 지도와 제목은 그 아래에 붙여 한 묶음으로 배치한다.
+  meadowRadar.Size=UDim2.fromOffset(mapDiameter+18,mapDiameter+58)
   meadowRadar.AnchorPoint=Vector2.new(1,0)
   meadowRadar.Position=UDim2.new(1,-8,0,8)
   radarField.AnchorPoint=Vector2.new(.5,0)
-  radarField.Position=UDim2.new(.5,0,0,4)
+  radarField.Position=UDim2.new(.5,0,0,22)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
-  radarTitle.Position=UDim2.fromOffset(5,mapDiameter+9)
+  radarTitle.Position=UDim2.fromOffset(5,mapDiameter+28)
   radarTitle.Size=UDim2.new(1,-10,0,24)
   radarTitle.TextSize=11
-  radarCoordinates.Position=UDim2.fromOffset(7,mapDiameter+34)
-  radarCoordinates.Size=UDim2.new(1,-14,0,12)
-  radarCoordinates.TextSize=8
+  radarCoordinates.Position=UDim2.fromOffset(7,1)
+  radarCoordinates.Size=UDim2.new(1,-14,0,18)
+  radarCoordinates.TextSize=10
   meadowRadar.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
