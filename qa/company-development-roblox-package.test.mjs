@@ -1260,13 +1260,24 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
     assert.ok(source,'CC0 source manifest missing: '+role);
     assert.equal(asset.sourceSha256,source.sha256,'source hash mismatch: '+role);
     assert.equal(asset.license,'CC0-1.0','source license mismatch: '+role);
-    assert.equal(asset.universeGrantVerified,false,'never fake unverified Universe use');
+    if(assets.villagePrefabs.registrationVerified===true){
+      assert.ok(Number.isSafeInteger(asset.assetId)&&asset.assetId>0,'registered model requires real asset ID: '+role);
+      assert.equal(asset.sha256,source.sha256,'uploaded asset source must match: '+role);
+    }else{
+      assert.equal(asset.universeGrantVerified,false,'never fake unverified Universe use');
+    }
   }
-  assert.equal(assets.villagePrefabs.registrationVerified,false);
+  assert.ok([true,false].includes(assets.villagePrefabs.registrationVerified));
   assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
   assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),piece.height,piece.lift\)/);
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
+  const nativeAuthor=fs.readFileSync('tools/baeksu-war-author-meshes.py','utf8');
+  const nativeUpload=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
+  const nativeRelease=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
+  assert.match(nativeAuthor,/FANTASY_VILLAGE_SOURCE_DIGEST_MISMATCH/);
+  assert.match(nativeUpload,/const villageRows=fantasy/);
+  assert.match(nativeRelease,/OWNER_FOREST_VILLAGE_MODEL_BINDING_INVALID/);
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
