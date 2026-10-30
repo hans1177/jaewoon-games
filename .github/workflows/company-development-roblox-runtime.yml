@@ -435,6 +435,17 @@ jobs:
                     ||!new RegExp('\\\\b'+role+'\\\\s*=\\\\s*'+registered.assetId+'\\\\b').test(ids);
                 })
               );
+            // A native asset upload may resolve the owner only against the
+            // verified, isolated private Roblox validation Universe.
+            const nativeCreatureTarget=item.robloxValidationTarget||{};
+            const nativeCreatureUniverseId=nativeCreatureRepairPending
+              &&nativeCreatureTarget.verified===true
+              &&nativeCreatureTarget.dedicated===true
+              &&nativeCreatureTarget.internalOnly===true
+              &&/^[1-9][0-9]*$/.test(String(nativeCreatureTarget.universeId||''))
+              ?String(nativeCreatureTarget.universeId):'';
+            if(nativeCreatureRepairPending&&!nativeCreatureUniverseId)
+              throw new Error('ROBLOX_FANTASY_NATIVE_UNIVERSE_TARGET_UNVERIFIED:'+item.gameId);
             const materialRepairPending=reconciliationRow?.sourceRepairPending===true
               &&reconciliationRow?.sourceContractRepairRequired!==true
               &&reconciliationRow?.failure==='existing-source-package-asset-repair-required'
@@ -497,6 +508,7 @@ jobs:
               existingSourceLearningRebind,
               studioMaterialRepair:materialRepairPending,
               nativeCreatureRepair:nativeCreatureRepairPending,
+              nativeCreatureUniverseId,
               reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||(nativeCreatureRepairPending
                 ?execFileSync('git',['rev-parse','HEAD:'+target],{encoding:'utf8'}).trim():'')),
               foundationRepair:f0FoundationRepair,
@@ -589,6 +601,7 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ matrix.nativeCreatureRepair && secrets.ROBLOX_ROBLOSECURITY || '' }}
           ROBLOX_SECURITY_COOKIE: ${{ matrix.nativeCreatureRepair && secrets.ROBLOX_SECURITY_COOKIE || '' }}
           ROBLOX_CREATOR_USER_ID: ${{ matrix.nativeCreatureRepair && secrets.ROBLOX_CREATOR_USER_ID || '' }}
+          ROBLOX_UNIVERSE_ID: ${{ matrix.nativeCreatureRepair && matrix.nativeCreatureUniverseId || '' }}
           BUILD_UP_DIRECTIVE: /tmp/build-up-directive-${{ matrix.gameId }}.json
           RECONCILIATION_SOURCE_TREE_SHA: ${{ matrix.reconciliationSourceTreeSha || '' }}
           SOURCE_PLAN_CONTRACT_FINGERPRINT: ${{ needs.source-plan.outputs.contract_fingerprint }}
