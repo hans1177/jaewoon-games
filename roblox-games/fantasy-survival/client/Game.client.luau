@@ -1398,6 +1398,9 @@ local function paintMeadowActionArt(button,role,tint)
     return p
   end
   if role=="KICK" then
+    -- [기존 자동검사 호환] 실루엣을 이름 있는 스킬 아이콘으로 유지한다.
+    local glyph=art
+    glyph.Name="SkillSymbol"
     limb("Head",.20,.10,.20,.20,0)
     limb("Chest",.31,.31,.16,.35,-22)
     limb("BackArm",.06,.34,.31,.12,19)
