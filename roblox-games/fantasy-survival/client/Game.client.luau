@@ -380,21 +380,44 @@ list.CanvasSize = UDim2.new()
 list.ScrollBarThickness = 4
 list.ClipsDescendants = true
 list.Parent = root
+local meadowActionGrid=Instance.new("UIGridLayout")
+meadowActionGrid.Name="NativeActionGrid"
+meadowActionGrid.SortOrder=Enum.SortOrder.LayoutOrder
+meadowActionGrid.CellSize=UDim2.new(.5,-5,0,54)
+meadowActionGrid.CellPadding=UDim2.fromOffset(6,6)
+meadowActionGrid.Parent=list
+local meadowActionButtons={}
 for index, action in ipairs(Config.Actions) do
   local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
   button.Name = "ScopeAction" .. index
   button.LayoutOrder = index
-  local column = (index - 1) % 2
-  local row = math.floor((index - 1) / 2)
-  button.Size = UDim2.new(0.5, -4, 0, 44)
-  button.Position = UDim2.new(column * 0.5, column == 0 and 0 or 4, 0, row * 50)
+  button.Size=UDim2.new(.5,-5,0,54) -- UIGridLayout sets positions safely
   button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)
   button.TextColor3 = Color3.fromRGB(16, 24, 40)
   button.TextWrapped = true
   button.TextScaled = false;button.TextSize=15
   button.Text = CommonUI.ActionLabel(action,index)
   button.Parent = list
+  meadowActionButtons[action.Id]=button
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
+end
+local readyCountdown=0
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  readyCountdown+=dt
+  if readyCountdown<.24 then return end
+  readyCountdown=0
+  local now=workspace:GetServerTimeNow()
+  for _,action in ipairs(Config.Actions) do
+    local button=meadowActionButtons[action.Id]
+    if button then
+      local deadline=player:GetAttribute("MeadowReady_"..action.Id)
+      local remains=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
+      button.Text=action.Label..(remains>.05 and "  ·  "..math.ceil(remains).."초" or "")
+      button.Active=remains<=.05
+      button.BackgroundColor3=remains>.05 and Color3.fromRGB(80,89,92) or
+        (action.Kind=="SKILL" and Color3.fromRGB(173,232,198) or Color3.fromRGB(235,242,255))
+    end
+  end
 end
 -- Telegraphs are read from actual server-authored enemy models, never predicted hits.
 local meadowPatternBanner=Instance.new("TextLabel")
@@ -582,6 +605,194 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end
 end)
 
+-- Native 3D mob actions: existing CC0 MeshParts only. The game does not
+-- invent limbs, bones or model parts. Server-owned attack states remain authoritative.
+local meadowMobWorld=workspace:WaitForChild("FantasySurvivalWorld")
+local meadowMobMotion=require(Shared:WaitForChild("RobloxCommonMotion"))
+local meadowMobControllers={}
+local nativeMobMotionMap={
+  IDLE="IDLE",CHASE="RUN",RUN="RUN",RETURN_TO_SPAWN="WALK",WALK="WALK",
+  ANTICIPATION="ATTACK",ATTACK="ATTACK",RECOVERY="HIT",HIT="HIT",DEATH="DEATH",
+}
+local nativeMobJointAlias={
+  FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
+  RearLeftHip="BLHip",RearRightHip="BRHip",
+  TailBaseJoint="Tail",ChestJoint="Chest",SpineJoint="Spine",
+  NeckJoint="Neck",JawJoint="Jaw",TailBase="Tail",TailTip="Tail",
+  WingLeft="WingL",WingRight="WingR",
+}
+local function mobVfx(pattern,where,stage)
+  if not combatVFX or typeof(where)~="Vector3" then return end
+  local boss=pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
+  local bee=pattern=="BEE_SWEEP" or pattern=="BEE_STING"
+  local tint=boss and Color3.fromRGB(255,114,84) or
+    bee and Color3.fromRGB(246,226,117) or Color3.fromRGB(190,238,167)
+  local effect=stage=="DEATH" and "DESTRUCTION_BURST" or
+    stage=="ANTICIPATION" and (boss and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE") or
+    stage=="IMPACT" and "IMPACT_FLASH" or "STATUS_PULSE"
+  local ok,err=pcall(combatVFX.Create,effect,{
+    cframe=CFrame.new(where),parent=workspace,color=tint,
+    accent=Color3.fromRGB(255,239,214),
+    scale=boss and 1.4 or .8,duration=.45,reducedMotion=nativeTouchEnabled,
+    count=nativeTouchEnabled and 4 or 9,
+  })
+  if not ok then warn("Original mob VFX unavailable: "..tostring(err)) end
+end
+local function bindOriginalMob(model)
+  if not model:IsA("Model") or meadowMobControllers[model] then return end
+  local species=model:GetAttribute("Species")
+  if species==nil then
+    -- Replication can deliver the Model before its authoritative attributes.
+    model:GetAttributeChangedSignal("Species"):Once(function()
+      if model.Parent then bindOriginalMob(model) end
+    end)
+    return
+  end
+  if species~="wolf" and species~="bee" and species~="golem" then return end
+  local joints,available={},{}
+  for _,motor in ipairs(model:GetDescendants()) do
+    if motor:IsA("Motor6D") and motor.Part0 and motor.Part1 then
+      local name=nativeMobJointAlias[motor.Name] or motor.Name
+      joints[name]=motor
+      available[name]=true
+    end
+  end
+  local actualRig=next(joints)~=nil
+  local bodyPlan=species=="wolf" and "QUADRUPED" or
+    species=="bee" and "FLYER" or "GIANT"
+  local controller=actualRig and meadowMobMotion.BindJointPose(joints,{
+    followAnimator=true,response=24,
+  }) or nil
+  local row={controller=controller,available=available,plan=bodyPlan,phase=0,poses={}}
+  meadowMobControllers[model]=row
+  model:GetAttributeChangedSignal("AttackState"):Connect(function()
+    if not model.Parent then return end
+    if model:GetAttribute("AttackState")=="ANTICIPATION" then
+      mobVfx(model:GetAttribute("AttackPattern"),model:GetPivot().Position,"ANTICIPATION")
+    end
+  end)
+  model.Destroying:Connect(function()
+    if controller then controller.Destroy(false) end
+    meadowMobControllers[model]=nil
+  end)
+end
+for _,model in ipairs(meadowMobWorld:GetChildren()) do bindOriginalMob(model) end
+meadowMobWorld.ChildAdded:Connect(function(model)
+  if model:IsA("Model") then
+    bindOriginalMob(model)
+    if not meadowMobControllers[model] then
+      task.defer(function() if model.Parent then bindOriginalMob(model) end end)
+    end
+  end
+end)
+game:GetService("RunService").PreSimulation:Connect(function(dt)
+  for model,row in pairs(meadowMobControllers) do
+    if model.Parent and row.controller then
+      row.phase+=dt
+      local mode=nativeMobMotionMap[model:GetAttribute("NativeMobMotion")] or "IDLE"
+      table.clear(row.poses)
+      local _,matched=meadowMobMotion.SampleProceduralActorMotion(mode,
+        (row.phase%1.25)/1.25,{
+          bodyPlan=row.plan,actorClass=model:GetAttribute("Boss") and "BOSS" or "CREATURE",
+          availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
+          secondary=.55,
+        },row.poses)
+      if matched then row.controller.Step(row.poses,dt) end
+    end
+  end
+end)
+remote.OnClientEvent:Connect(function(kind,payload)
+  if typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
+  if kind=="MEADOW_MOB_ATTACK" then mobVfx(payload.pattern,payload.position,"IMPACT")
+  elseif kind=="MEADOW_MOB_DEATH" then
+    mobVfx(payload.pattern,payload.position,"DEATH")
+  end
+end)
+
+-- Source-bound Roblox SKILL / VFX packages. Server approval is the only trigger.
+-- UI actions never apply local damage, healing, knockback, cooldown or inventory.
+local meadowSkillPresentation=nil
+local meadowCommonVFX=nil
+for _,pair in ipairs({
+  {"RobloxCommonSkillPresentation","skill"},{"RobloxCommonVFX","vfx"},
+}) do
+  local module=Shared:FindFirstChild(pair[1])
+  if module and module:IsA("ModuleScript") then
+    local ok,value=pcall(require,module)
+    if ok and type(value)=="table" then
+      if pair[2]=="skill" then meadowSkillPresentation=value else meadowCommonVFX=value end
+    end
+  end
+end
+local actionsById={}
+for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
+local debris=game:GetService("Debris")
+local alreadyPlayedMeadowFX={}
+local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetPosition,sequence)
+  local action=actionsById[actionId]
+  actorUserId=typeof(actorUserId)=="number" and actorUserId or player.UserId
+  if sequence~=nil then
+    local key=tostring(actorUserId)..":"..tostring(sequence)
+    if alreadyPlayedMeadowFX[key] then return end
+    alreadyPlayedMeadowFX[key]=true
+    task.delay(8,function()alreadyPlayedMeadowFX[key]=nil end)
+  end
+  if not action then return end
+  local sourcePlayer=Players:GetPlayerByUserId(actorUserId)
+  local character=sourcePlayer and sourcePlayer.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not rootPart then return end
+  local position=typeof(targetPosition)=="Vector3" and targetPosition or
+    (sourcePlayer and sourcePlayer:GetAttribute("ApprovedActionTarget"))
+  if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
+    position=rootPart.Position
+  end
+  local hostPart=character:FindFirstChild("RightHand") or rootPart
+  local warm=Color3.fromRGB(132,245,169)
+  local accent=Color3.fromRGB(231,255,189)
+  if actionId=="skill-meadow-bolt" then warm=Color3.fromRGB(128,197,255) end
+  if actionId=="skill-meadow-heavy" or actionId=="skill-meadow-sweep" then
+    warm=Color3.fromRGB(255,187,109)
+  end
+  local settings={
+    parent=workspace,cframe=CFrame.new(position),hostPart=hostPart,
+    startPosition=hostPart.Position,endPosition=position,
+    color=warm,accent=accent,duration=.46,
+    radius=actionId=="skill-meadow-sweep" and 10 or 4,
+    scale=1,autoCleanup=true,reducedMotion=UserInputService.TouchEnabled,
+    vfx=meadowCommonVFX,
+  }
+  local selectedFx=overrideVfx or action.VfxAtom
+  if meadowCommonVFX and selectedFx then
+    local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
+    if not ok then warn("마력숲 VFX source unavailable: "..tostring(err)) end
+  end
+  if meadowSkillPresentation and not overrideVfx and action.SkillAtom and action.SkillAtom~="SKILL_ICON_BADGE" then
+    local ok,result,controller=pcall(meadowSkillPresentation.Create,action.SkillAtom,settings)
+    if ok then
+      if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
+        debris:AddItem(result,2.8)
+      elseif (action.SkillAtom=="DASH_STREAK" or action.SkillAtom=="SKILL_TRAIL") and controller then
+        task.delay(.65,function() pcall(function()controller.Destroy() end) end)
+      end
+    else
+      warn("마력숲 skill source unavailable: "..tostring(result))
+    end
+  end
+end
+player:GetAttributeChangedSignal("ApprovedActionFX"):Connect(function()
+  local id,seq=tostring(player:GetAttribute("ApprovedActionFX") or ""):match("^([^:]+):(%d+)$")
+  if id and seq then playApprovedMeadowEffect(id,nil,player.UserId,nil,tonumber(seq)) end
+end)
+remote.OnClientEvent:Connect(function(kind,payload,actionId,sequence,targetPosition)
+  if kind=="MEADOW_ACTION_FX" then
+    playApprovedMeadowEffect(actionId,nil,payload,targetPosition,sequence)
+  elseif kind=="MEADOW_REACTION" and payload=="PARRY" then
+    playApprovedMeadowEffect("skill-meadow-parry","PARRY_PERFECT_FLASH",player.UserId)
+  end
+end)
+
+
 -- The shared Roblox R15 combat library already has real authored joints for
 -- jab/cross/hook/uppercut/elbow/knee/kick. Route ONE confirmed hit to ONE strike.
 local basicUnarmedMoves={
@@ -723,6 +934,103 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
 end)
+-- Original Roblox 61-motion library: cast, guard, parry, dodge, craft,
+-- gather and emote use only available R15 joints and server-approved actions.
+-- Existing Animator continues driving walk/run/jump underneath visual overlays.
+local skillMotionR15=nil
+local skillMotionCharacter=nil
+local skillMotionDeadline=0
+local skillMotionState=nil
+local skillMotionStart=0
+local skillMotionDuration=0
+local skillMotionJoints={}
+local skillMotionAvailable={}
+local skillMotionTargets={}
+local skillMotionR15Targets={}
+local skillMotionMapping={
+  Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
+  LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
+  LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
+}
+local skillMotionStates={
+  INTERACT_USE="INTERACT",GATHER_SWING="INTERACT",CRAFT_LOOP="INTERACT",
+  HEAVY_ATTACK_1="ATTACK",CAST_BURST="ATTACK",PARRY_PERFECT="ATTACK",
+  DODGE_LEFT="GESTURE",DODGE_RIGHT="GESTURE",BLOCK_HOLD="INTERACT",
+  CHANNEL_LOOP="GESTURE",SPRINT="START",EMOTE_WAVE="GESTURE",
+  LIGHT_ATTACK_1="ATTACK",
+}
+local function finishMeadowSkillPose()
+  if skillMotionR15 then skillMotionR15.Destroy(true) end
+  skillMotionR15=nil
+  skillMotionCharacter=nil
+  skillMotionState=nil
+  table.clear(skillMotionJoints)
+  table.clear(skillMotionAvailable)
+  table.clear(skillMotionTargets)
+  table.clear(skillMotionR15Targets)
+end
+player.CharacterAdded:Connect(finishMeadowSkillPose)
+player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(finishMeadowSkillPose)
+player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
+  local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
+  local action=id and actionsById[id]
+  if not serial or not action or action.Kind=="COMBAT" or not action.MotionAtom then return end
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  if not humanoid or humanoid.Health<=0 or humanoid.RigType~=Enum.HumanoidRigType.R15
+    or not combatMotionSource or not combatMotionSource.SampleProceduralActorMotion then return end
+  local state=skillMotionStates[action.MotionAtom]
+  if not state then return end
+  local good,meta=pcall(combatMotionSource.Describe,action.MotionAtom)
+  if not good or not meta or meta.rig~="R15" then return end
+  finishMeadowSkillPose()
+  finishNativeCombatMotion()
+  for _,joint in ipairs(character:GetDescendants()) do
+    if joint:IsA("Motor6D") and joint.Part0 and joint.Part1 and skillMotionMapping[joint.Name] then
+      skillMotionJoints[joint.Name]=joint
+      skillMotionAvailable[skillMotionMapping[joint.Name]]=true
+    end
+  end
+  if not (skillMotionJoints.Waist and skillMotionJoints.LeftShoulder and
+    skillMotionJoints.RightShoulder and skillMotionJoints.LeftElbow and
+    skillMotionJoints.RightElbow) then return end
+  skillMotionAvailable.Chest=true
+  skillMotionR15=combatMotionSource.BindJointPose(skillMotionJoints,{
+    followAnimator=true,response=26,
+  })
+  skillMotionCharacter=character
+  skillMotionState=state
+  skillMotionStart=os.clock()
+  skillMotionDuration=math.clamp(tonumber(meta.duration) or .7,.25,1.4)
+  skillMotionDeadline=skillMotionStart+skillMotionDuration+.16
+  character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
+  character:SetAttribute("NativeSkillActionId",id)
+end)
+RunService.PreSimulation:Connect(function(dt)
+  if not skillMotionR15 or not skillMotionCharacter then return end
+  local humanoid=skillMotionCharacter:FindFirstChildOfClass("Humanoid")
+  if player.Character~=skillMotionCharacter or not humanoid or humanoid.Health<=0
+    or os.clock()>=skillMotionDeadline then
+    finishMeadowSkillPose()
+    return
+  end
+  table.clear(skillMotionTargets)
+  table.clear(skillMotionR15Targets)
+  local phase=math.clamp((os.clock()-skillMotionStart)/skillMotionDuration,0,1)
+  local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
+    bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
+    mobileTier=nativeTouchEnabled and "LOW" or "HIGH",secondary=.65,
+  },skillMotionTargets)
+  if not matched then finishMeadowSkillPose();return end
+  local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
+  if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
+    local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
+    skillMotionTargets.Spine=CFrame.Angles(0,0,sign*.25*math.sin(math.pi*phase))
+  end
+  combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
+  skillMotionR15.Step(skillMotionR15Targets,dt)
+end)
+
 RunService.PreSimulation:Connect(function(dt)
   if not (activeCombatController and activeCombatCombo and activeCombatCharacter) then return end
   local character = player.Character
