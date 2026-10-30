@@ -163,3 +163,22 @@ test('dedicated Roblox workflow recovers and persists the durable target registr
   assert.match(workflow,/item\.routingBlockers=\['roblox-internal-vibe-play-pending'\]/);
   assert.doesNotMatch(workflow,/robloxInternalReleaseEvidence=\{[\s\S]{0,400}sourceRevision:r\.sourceRevision/);
 });
+
+
+test('Forest original village models register before private publishing without inventing IDs',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
+  const registry=JSON.parse(fs.readFileSync(new URL('../roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',import.meta.url),'utf8'));
+  const source=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
+  assert.equal(registry.villagePrefabs.sourceVerified,true);
+  assert.equal(Object.keys(registry.villagePrefabs.models).length,10);
+  assert.match(workflow,/Register approved Forest village originals through the existing asset pipeline/);
+  assert.match(workflow,/python3 tools\/baeksu-war-author-meshes\.py -- \/tmp\/forest-village-assets --game-id=fantasy-survival/);
+  assert.match(workflow,/node tools\/baeksu-war-upload-meshes\.mjs \/tmp\/forest-village-assets \/tmp\/forest-village-receipt\.json --game-id=fantasy-survival/);
+  assert.match(workflow,/gh pr create --base main --head asset\/fantasy-village-originals/);
+  assert.match(workflow,/FOREST_VILLAGE_REGISTRATION_AWAIT_MAIN_MERGE/);
+  assert.match(workflow,/exit 1\s+\n\s*- name: Grant original Forest models/);
+  assert.match(source,/FANTASY_NATIVE_MODEL_REUSED/);
+  assert.match(source,/registrationVerified:Object\.keys\(village\)\.length===Object\.keys\(villageRows\)\.length/);
+  assert.match(workflow,/OWNER_FOREST_VILLAGE_MODEL_REGISTRATION_REQUIRED/);
+  assert.doesNotMatch(workflow,/new RegExp\('\\\\\\\\b'\+role/);
+});
