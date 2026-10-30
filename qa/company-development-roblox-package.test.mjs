@@ -764,11 +764,13 @@ ${familyRows}
   }
 });
 
-test('fantasy survival binds selected MATERIAL atoms to an existing visible world part',()=>{
+test('fantasy survival keeps selected MATERIAL atoms while using genuine Roblox Terrain instead of a visual Part',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   assert.ok(source.includes('studioAssetFamily("MATERIAL")'));
-  assert.ok(source.includes('nativeFoundationSpawn.Material = table.find(studioMaterialAtoms, "METAL")'));
-  assert.equal(robloxStudioAssetFamilyBoundInText(source,'MATERIAL'),true);
+  assert.match(source,/meadowTerrain:FillBlock\(/);
+  assert.match(source,/meadowTerrain:FillBall\(/);
+  assert.ok(source.includes('studioAssetFamily("MATERIAL")'));
+  assert.doesNotMatch(source,/Instance\.new\("Part"\)/,'visual cubes are prohibited');
   assert.ok(source.includes('nativeFoundationSpawn.CanCollide = false'));
 });
 
@@ -876,12 +878,12 @@ test('native registration stays behind current contract identity and exact publi
   const execute=(nativeRegistry=registry)=>{
     const selected=[];
     runInNewContext(block,{sourceRoot:'roblox-games/fantasy-survival',revision:'a'.repeat(40),
-      gameCode:'local FANTASY_NATIVE_CREATURES_VERSION = 1;123450;123451;123452;',selected,crypto,
+      gameCode:'local FANTASY_NATIVE_CREATURES_VERSION = 1;'+Array.from({length:7},(_,i)=>123450+i).join(';'),selected,crypto,
       execFileSync:(_cmd,args)=>args[1].endsWith('/native-assets.json')?manifestBytes:fs.readFileSync(args[1].slice(41)),
       git:()=>JSON.stringify(nativeRegistry)});
     return selected;
   };
-  assert.deepEqual(execute(),[123450,123451,123452]);
+  assert.deepEqual(execute(),[123450,123451,123452,123453,123454,123455,123456]);
   const stale=structuredClone(registry);stale.sourceManifestSha256='0'.repeat(64);
   assert.throws(()=>execute(stale),/PUBLISH_PROVENANCE_INVALID/);
   const broken=structuredClone(registry);broken.models.golem.sha256='0'.repeat(64);
@@ -894,12 +896,13 @@ test('native uploader verifies all originals before registration and emits real 
     const game=path.join(root,'roblox-games/fantasy-survival');fs.mkdirSync(path.join(game,'shared'),{recursive:true});
     const manifestBytes=fs.readFileSync('roblox-games/fantasy-survival/native-assets.json');
     const manifest=JSON.parse(manifestBytes);
-    // Small deterministic test FBX buffers keep the test independent of network and binary assets.
+    // Deterministic FBX/GLB fixtures keep the test independent of live uploads.
     const roles={};let index=0;
     for(const [role,row] of Object.entries(manifest.models)){
-      const bytes=Buffer.concat([Buffer.from('Kaydara FBX Binary'),Buffer.alloc(1200,++index)]);
+      const extension=path.extname(row.sourcePath||row.archiveEntry||'').slice(1);
+      const bytes=Buffer.concat([Buffer.from(extension==='glb'?'glTF':'Kaydara FBX Binary'),Buffer.alloc(1200,++index)]);
       row.sourceSha256=crypto.createHash('sha256').update(bytes).digest('hex');
-      fs.writeFileSync(path.join(root,role+'.fbx'),bytes);
+      fs.writeFileSync(path.join(root,role+'.'+extension),bytes);
       roles[role]={sha256:row.sourceSha256,sourceSha256:row.sourceSha256,license:'CC0-1.0',licenseEvidence:row.licenseEvidence};
     }
     const input=Buffer.from(JSON.stringify(manifest));fs.writeFileSync(path.join(game,'native-assets.json'),input);
@@ -911,7 +914,7 @@ let serial=0;globalThis.setTimeout=(callback)=>{callback();return 0};
 globalThis.fetch=async(url,options={})=>{
  if(options.method==='POST'){
   const request=JSON.parse(options.body.get('request'));const file=options.body.get('fileContent');
-  if(request.assetType!=='Model'||file.type!=='model/fbx'||!file.name.endsWith('.fbx'))throw Error('WRONG_UPLOAD');
+  if(request.assetType!=='Model'||!((file.type==='model/fbx'&&file.name.endsWith('.fbx'))||(file.type==='model/gltf-binary'&&file.name.endsWith('.glb'))))throw Error('WRONG_UPLOAD');
   fs.appendFileSync('requests.txt',request.displayName+'\\n');
   return {ok:true,json:async()=>({path:'operations/'+(++serial)})};
  }
@@ -924,14 +927,17 @@ globalThis.fetch=async(url,options={})=>{
     fs.writeFileSync(path.join(root,'provenance.json'),JSON.stringify(broken));
     const rejected=spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8'});
     assert.notEqual(rejected.status,0);assert.match(rejected.stderr,/CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:golem/);
-    assert.equal(fs.existsSync(path.join(root,'requests.txt')),false,'all three hashes precede any external write');
+    assert.equal(fs.existsSync(path.join(root,'requests.txt')),false,'all seven hashes precede any external write');
     fs.writeFileSync(path.join(root,'provenance.json'),JSON.stringify(provenance));
     const accepted=spawnSync(process.execPath,args,{cwd:root,env,encoding:'utf8'});
     assert.equal(accepted.status,0,accepted.stderr);
     const registry=JSON.parse(fs.readFileSync(path.join(game,'CC0-ASSET-REGISTRY.json')));
-    assert.deepEqual(Object.values(registry.models).map(row=>row.assetId),[900001,900002,900003]);
+    assert.deepEqual(Object.values(registry.models).map(row=>row.assetId),[900001,900002,900003,900004,900005,900006,900007]);
     assert.equal(registry.runtimeVerified,false);assert.equal(registry.grantRequiredAtPublish,true);
     assert.ok(Object.values(registry.models).every(row=>row.universeId===null));
-    assert.match(fs.readFileSync(path.join(game,'shared/VisualAssetIds.luau'),'utf8'),/golem=900003/);
+    const ids=fs.readFileSync(path.join(game,'shared/VisualAssetIds.luau'),'utf8');
+    assert.match(ids,/golem=900003/);
+    assert.match(ids,/deer=900004/);
+    assert.match(ids,/tree=900007/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
