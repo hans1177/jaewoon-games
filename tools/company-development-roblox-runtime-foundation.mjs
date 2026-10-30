@@ -418,7 +418,7 @@ export async function probeRobloxOpenCloudEngine({
     // Five read-only Cloud scenario observations; no client simulation or save mutation.
     'local cloudServerScenarios={{"EXACT_VERSION",tostring(game.PlaceId)=="' + place + '" and tonumber(game.PlaceVersion)==' + version + '},{"SERVER_SCRIPT",deployedGameScript~=nil and deployedGameScript:IsA("Script") and deployedGameScript.Enabled},{"WORLD_GEOMETRY",finiteWorldBounds and basePartCount>0},{"SPAWN_SUPPORT",spawnCount>0 and unsupportedSpawns==0 and floatingSpawns==0},{"INTERACTION_BINDINGS",worldObjectDuplicateIds==0 and resourcePromptEnabledCount<=resourcePromptCount}}',
     'for i,scenario in ipairs(cloudServerScenarios) do print("JAEWOON_OPEN_CLOUD_SERVER_SCENARIO_"..tostring(i).."="..scenario[1].."|"..tostring(scenario[2])) end',
-  ].join(';');
+  ].join('\n');
   const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
   const decode=async(response,label)=>{
     const text=await response.text();

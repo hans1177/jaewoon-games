@@ -102,7 +102,7 @@ end
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "ApprovedScopeHud"
-gui:SetAttribute("ClientActionRuntimeVersion",2)
+gui:SetAttribute("ClientActionRuntimeVersion",3)
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 local root = Instance.new("Frame")
@@ -866,6 +866,7 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
   end
   -- 저작된 포즈의 실제 길이로 관절 블렌드 반응을 결정한다. 피해·쿨다운은 서버가 소유한다.
 
+  character:SetAttribute("NativeCombatJointCount",activeCombatController.jointCount)
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
   character:SetAttribute("NativeCombatActionId", chosenMove)
   character:SetAttribute("NativeCombatMotionProfile", profile)
