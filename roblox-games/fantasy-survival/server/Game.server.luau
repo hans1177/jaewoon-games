@@ -337,6 +337,88 @@ local function spawnEnemy(isBoss, index)
   local nativeHeight=model:GetExtentsSize().Y
   if nativeHeight<=0 then model:Destroy();return false end
   model:ScaleTo(model:GetScale()*nativeScale/nativeHeight)
+  -- [원본 몬스터 관절] 분리된 실제 MeshPart 사지에만 Motor6D 연결.
+  -- 통짜/스킨 가중치 없는 메시에는 가짜 다리나 Bone을 추가하지 않는다.
+  local existingRig=false
+  for _,part in ipairs(model:GetDescendants()) do
+    if part:IsA("Bone") or part:IsA("Motor6D") or part:IsA("AnimationConstraint") then
+      existingRig=true;break
+    end
+  end
+  if not existingRig then
+    local meshes={}
+    local body=nil
+    for _,part in ipairs(model:GetDescendants()) do
+      if part:IsA("MeshPart") then
+        table.insert(meshes,part)
+        local name=part.Name:lower()
+        if (name:find("body") or name:find("torso") or name:find("chest"))
+          and (not body or part.Size.Magnitude>body.Size.Magnitude) then body=part end
+      end
+    end
+    if not body then
+      for _,part in ipairs(meshes) do
+        if not body or part.Size.Magnitude>body.Size.Magnitude then body=part end
+      end
+    end
+    local limbs={}
+    if body then
+      local cf=model:GetPivot()
+      for _,part in ipairs(meshes) do
+        if part~=body then
+          local name=part.Name:lower()
+          local key=name:gsub("[^%w]","")
+          local relative=cf:PointToObjectSpace(part.Position)
+          local side=(key:find("left",1,true) or key:match("^l(eg|arm|wing)")) and "L"
+            or (key:find("right",1,true) or key:match("^r(eg|arm|wing)")) and "R"
+            or (math.abs(relative.X)>.15 and (relative.X<0 and "L" or "R")) or nil
+          local leg=key:find("leg",1,true) or key:find("paw",1,true)
+            or key:find("hip",1,true) or key:find("thigh",1,true)
+            or key:find("shin",1,true) or key:find("foot",1,true)
+          local wing=key:find("wing",1,true)
+          local arm=key:find("arm",1,true) or key:find("hand",1,true)
+          if side and (leg or wing or (isBoss and arm)) then
+            local channel
+            if wing then channel="Wing"..side
+            elseif isBoss then
+              channel=(key:find("shin",1,true) or key:find("knee",1,true)
+                or key:find("foot",1,true)) and "Shin"..side or (arm and "UpperArm"..side or "Thigh"..side)
+            else
+              local front=key:find("front",1,true) or key:find("fore",1,true)
+              local rear=key:find("rear",1,true) or key:find("hind",1,true)
+              local pair=front and "F" or rear and "B" or relative.Z<0 and "F" or "B"
+              channel=pair..side..((key:find("shin",1,true) or key:find("knee",1,true)) and "Knee"
+                or (key:find("foot",1,true) or key:find("paw",1,true)) and "Ankle" or "Hip")
+            end
+            if channel then table.insert(limbs,{part=part,channel=channel}) end
+          end
+        end
+      end
+      if #limbs>=2 then
+        body.Anchored=true
+        for _,limb in ipairs(limbs) do
+          local part=limb.part
+          local free=true
+          for _,joint in ipairs(part:GetChildren()) do
+            if joint:IsA("WeldConstraint") or joint:IsA("Weld") or joint:IsA("Motor6D") then
+              free=false;break
+            end
+          end
+          if free then
+            local joint=Instance.new("Motor6D")
+            joint.Name=limb.channel
+            joint.Part0=body
+            joint.Part1=part
+            joint.C0=body.CFrame:ToObjectSpace(part.CFrame)
+            joint.C1=CFrame.new()
+            joint.Parent=body
+            part.Anchored=false
+            part.Massless=true
+          end
+        end
+      end
+    end
+  end
   model:PivotTo(CFrame.new(location))
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
@@ -637,6 +719,40 @@ local function applyMeadowMobHit(player,humanoid,damage)
     player:SetAttribute("MeadowParryConfirmed",workspace:GetServerTimeNow())
     remote:FireClient(player,"MEADOW_REACTION","PARRY")
     return
+  end
+  -- [자동 회피] 기존 Level 능력치를 기준으로만 계산하며 저장 구조는 유지한다.
+  -- 4초 간격, 현재 방어 중이 아닐 때 좌/우 실제 공간이 비어 있는 경우만 발동한다.
+  if (defense.guardUntil or 0)<=now and now>=(defense.nextAutoDodgeAt or 0) then
+    local level=readNumber(player,"Level",1)
+    local chance=math.clamp(.06+level*.007,.067,.28)
+    if math.random()<chance then
+      local character,_,root=liveMeadowCharacter(player)
+      if character and root then
+        local sign=math.random(0,1)==0 and -1 or 1
+        local direction=root.CFrame.RightVector
+        local params=RaycastParams.new()
+        params.FilterType=Enum.RaycastFilterType.Exclude
+        params.FilterDescendantsInstances={character}
+        local origin=root.Position+Vector3.new(0,1,0)
+        local distance=3.8
+        local blocked=workspace:Raycast(origin,direction*sign*distance,params)
+        if blocked then sign=-sign;blocked=workspace:Raycast(origin,direction*sign*distance,params) end
+        if not blocked then
+          character:PivotTo(character:GetPivot()+direction*sign*distance)
+          defense.dodgeUntil=now+.48
+          defense.nextAutoDodgeAt=now+4
+          meadowDefense[player]=defense
+          local id=sign<0 and "skill-meadow-dodge-left" or "skill-meadow-dodge-right"
+          local seq=readNumber(player,"ActionSequence",0)+1
+          setNumber(player,"ActionSequence",seq)
+          player:SetAttribute("ApprovedActionTarget",root.Position)
+          player:SetAttribute("ApprovedActionMotion",id..":"..tostring(seq))
+          player:SetAttribute("ApprovedActionFX",id..":"..tostring(seq))
+          remote:FireClient(player,"MEADOW_REACTION","DODGE")
+          return
+        end
+      end
+    end
   end
   if (defense.guardUntil or 0)>now then damage=math.ceil(damage*.5) end
   humanoid:TakeDamage(damage)
