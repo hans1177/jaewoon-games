@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1p8b4n8",
+      "worker": "vibe2",
+      "taskId": "seed-roblox-simulator-tycoon-i-adopt-me-studio-evolution-roblox-usability-v3",
+      "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "files": [
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/GameConfig.luau",
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/server/Game.server.luau",
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/MaterialPresentation.client.luau",
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/RobloxCommonMaterials.luau"
+      ],
+      "baseSha": "ae5dcf9dc03e40f7fa26530a70f895398d22c76b",
+      "runId": "41131143623",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-30T21:56:48.057Z",
+      "expiresAt": "2026-10-30T22:41:48.057Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-roblox-simulator-tycoon-i-adopt-me-studio-evolution-roblox-usability-v3"
+      ]
+    }
+  ]
 }
