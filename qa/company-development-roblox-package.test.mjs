@@ -1199,6 +1199,12 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/woodland\[#woodland\+1\]=\{x,z,11\+\(\(index\*7\+groveIndex\*3\)%9\)\}/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestCanopyCount",canopyCount\)/);
   assert.match(server,/local leafTones=\{/);
+  // 낮/밤/비/안개와 동기화한 네이티브 숲 대기 효과만 사용한다.
+  assert.match(server,/meadowAtmosphere=Lighting:FindFirstChildOfClass\("Atmosphere"\)/);
+  assert.match(server,/meadowAtmosphere=Instance.new\("Atmosphere"\)/);
+  assert.match(server,/forestAirDensity=weather=="FOG" and \.39/);
+  assert.match(server,/meadowAtmosphere.Density\+=\(forestAirDensity-meadowAtmosphere.Density\)\*\.12/);
+  assert.match(server,/meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp\(/);
   assert.match(server,/surface.Color=surface.Color:Lerp\(leafTone,\.33\)/);
   assert.match(server,/surface.Material==Enum.Material.Fabric/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestFloorCount",forestFloorCount\)/);
