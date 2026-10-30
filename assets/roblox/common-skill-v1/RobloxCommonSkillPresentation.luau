@@ -264,7 +264,8 @@ function RobloxCommonSkillPresentation.AttachSkillTrail(hostPart, options)
   options = options or {}
   assert(typeof(hostPart) == "Instance" and hostPart:IsA("BasePart"), "COMMON_SKILL_TRAIL_HOST_PART_REQUIRED")
   local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
-  local width = clamp(options.width or 0.28, 0.05, 1.4)
+  -- Roblox Trail.WidthScale accepts normalized values only.
+  local width = clamp(options.width or 0.28, 0.05, 1)
   local lifetime = clamp(options.lifetime or 0.16, 0.05, 0.45)
   local a0 = Instance.new("Attachment")
   a0.Name = "SkillTrailA"
