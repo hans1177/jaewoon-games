@@ -417,7 +417,6 @@ local function attackEnemy(player)
   local weaponTier=readNumber(player,"WeaponTier",0)
   local damage=math.floor(16+level*2.2+weaponTier*8)
   return applyMeadowDamage(player,target,damage)
-  return true
 end
 
 local function gatherNearestResource(player)
@@ -591,15 +590,13 @@ local function meadowSkill(player,id,execute)
   if now<(cooldowns[id] or 0) then return false end
   local character,humanoid,root=liveMeadowCharacter(player)
   if not character then return false end
+  player:SetAttribute("ApprovedActionTarget",root.Position)
   local accepted=execute(character,humanoid,root,now)
   if accepted~=true then return false end
   cooldowns[id]=now+interval
   meadowSkillCooldown[player]=cooldowns
   -- Server time is synchronized for mobile countdown labels.
   player:SetAttribute("MeadowReady_"..id,workspace:GetServerTimeNow()+interval)
-  if not player:GetAttribute("ApprovedActionTarget") then
-    player:SetAttribute("ApprovedActionTarget",root.Position)
-  end
   return true
 end
 local function meadowHeavy(player)
@@ -805,6 +802,10 @@ remote.OnServerEvent:Connect(function(player, actionId)
   local previous = lastAction[player] or 0
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
+  -- Target selection evidence is valid only for this accepted action.
+  local activeCharacter=player.Character
+  local activeRoot=activeCharacter and activeCharacter:FindFirstChild("HumanoidRootPart")
+  if activeRoot then player:SetAttribute("ApprovedActionTarget",activeRoot.Position) end
   local actionAccepted=handler(player)
   -- [서버 권한] 성공한 모든 실제 액션만 R15 모션·스킬·VFX로 전달.
   if actionAccepted~=true then return end
@@ -817,6 +818,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   end
   player:SetAttribute("ApprovedActionMotion",actionId..":"..tostring(approvedSequence))
   player:SetAttribute("ApprovedActionFX",actionId..":"..tostring(approvedSequence))
+  remote:FireAllClients("MEADOW_ACTION_FX",player.UserId,actionId,approvedSequence,player:GetAttribute("ApprovedActionTarget"))
   for _,action in ipairs(Config.Actions) do
     if action.Id==actionId and action.Kind=="COMBAT" then
       player:SetAttribute("ApprovedCombatMotion",actionId..":"..tostring(approvedSequence))
