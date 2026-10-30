@@ -822,6 +822,9 @@ try{
  // Owner-required: only real published, rendered WebGL 3D counts as wild-survival 3D.
  // A live 200 for index.html or a valid model preview does NOT prove gameplay is 3D.
  if(liveBase){
+   // Report the exact published revision from this game lane, not a variable in cozy-island's scope.
+   const wildSourceSha=String(process.env.GITHUB_SHA||'').trim();
+   assert.match(wildSourceSha,/^[a-f0-9]{40}$/i,'WILD_SURVIVAL_PUBLIC_SOURCE_SHA_REQUIRED');
    activeGameId='wild-survival';
    const moduleUrl=liveBase+'web-games/wild-survival/wild3d.mjs';
    const moduleResponse=await page.request.get(moduleUrl,{timeout:15000});
@@ -900,11 +903,11 @@ try{
        :after500ms.simulationMs-beforeInput.simulationMs<110?'INSUFFICIENT_SIMULATION_TIME'
        :'PLAYER_STATE_NOT_MOVING';
    }
-   console.log('WILD_SURVIVAL_MOVEMENT_EVIDENCE '+JSON.stringify({sourceSha:expected,
+   console.log('WILD_SURVIVAL_MOVEMENT_EVIDENCE '+JSON.stringify({sourceSha:wildSourceSha,
      failureStage,beforeInput,after500ms,after2000ms,afterInput}));
    assert.equal(failureStage,null,
      'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED '+
-     JSON.stringify({sourceSha:expected,failureStage,beforeInput,after500ms,after2000ms,afterInput}));
+     JSON.stringify({sourceSha:wildSourceSha,failureStage,beforeInput,after500ms,after2000ms,afterInput}));
    await game.locator('#interact').click();
    await game.locator('#menuBtn').click();
    assert.equal(await game.locator('#craft').evaluate(el=>el.classList.contains('open')),true,
