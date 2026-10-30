@@ -1029,7 +1029,8 @@ local function spawnEnemy(isBoss, index)
     lastAttack=0,attackSerial=0,attackPattern=nil,windupUntil=nil,
     windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE",
     baseHeight=location.Y,visualFacing=Vector3.new(0,0,-1),
-    visualPosition=location,visualFacingSmooth=Vector3.new(0,0,-1)
+    visualPosition=location,visualFacingSmooth=Vector3.new(0,0,-1),
+    focusUserId=nil
   })
   if isBoss then
     remote:FireAllClients("MEADOW_BOSS_INTRO",{model=model,name=model.Name,wave=CurrentWave})
@@ -1273,9 +1274,13 @@ local function animateMeadowOriginalMob(enemy,now)
     attackPitch=enemy.attackPattern=="GOLEM_SHOCKWAVE" and .18*preparation or -.38*preparation
     movingHeight+=enemy.attackPattern=="GOLEM_SHOCKWAVE" and math.sin(preparation*math.pi)*.42 or 0
   end
-  local stridePitch=inMotion and math.sin(phase)*(kind=="wolf" and .025 or .045) or 0
+  -- [공통 행동 연출] 종별 체중·날갯짓·경계 자세를 원본 피벗에만 소폭 반영한다.
+  local heavy=kind=="golem" or kind=="boar"
+  local stridePitch=inMotion and math.sin(phase)*(kind=="wolf" and .025 or heavy and .018 or .04) or 0
+  local idleBreath=not inMotion and not attacking and not stunned and recoil<.02
+    and math.sin(now*(heavy and 1.35 or 2.0)+enemy.spawnPosition.X*.07)*.012 or 0
   local bank=stunned and math.sin(now*9)*.12 or aerial and math.sin(phase*.52)*.22
-    or inMotion and math.sin(phase*.65)*.025 or 0
+    or inMotion and math.sin(phase*.65)*(heavy and .014 or .025) or 0
   local facing=enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
   local pivot=(enemy.visualPosition or enemy.position)
@@ -1283,7 +1288,7 @@ local function animateMeadowOriginalMob(enemy,now)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
     *CFrame.Angles(0,enemy.model:GetAttribute("NativeMobFacingYaw") or 0,0)
-    *CFrame.Angles(attackPitch+stridePitch,0,bank))
+    *CFrame.Angles(attackPitch+stridePitch+idleBreath,0,bank))
 end
 
 local function chooseMeadowMobSkill(enemy)
@@ -1449,7 +1454,10 @@ local function updateEnemyAI(dt,now)
         enemy.model:SetAttribute("NativeMobStunnedUntil",nil)
         setEnemyAttackState(enemy,"RECOVERY")
       end
+      -- [공통 AI 표적 기억] 두 플레이어가 비슷한 거리에 있을 때 매 틱 목표가 바뀌지 않게 한다.
+      -- 기존 140 탐지 범위와 서버의 사거리·공격·피해 검증은 그대로 사용한다.
       local targetPlayer,targetRoot,targetHuman=nil,nil,nil
+      local focusPlayer,focusRoot,focusHuman,focusDistance=nil,nil,nil,nil
       local range=140
       for _,player in ipairs(Players:GetPlayers()) do
         local character=player.Character
@@ -1458,8 +1466,15 @@ local function updateEnemyAI(dt,now)
         if player:GetAttribute("ProfileReady")==true and rootPart and human and human.Health>0 then
           local d=(rootPart.Position-enemy.position).Magnitude
           if d<range then targetPlayer,targetRoot,targetHuman,range=player,rootPart,human,d end
+          if player.UserId==enemy.focusUserId and d<140 then
+            focusPlayer,focusRoot,focusHuman,focusDistance=player,rootPart,human,d
+          end
         end
       end
+      if focusPlayer and focusDistance<=range+3 then
+        targetPlayer,targetRoot,targetHuman,range=focusPlayer,focusRoot,focusHuman,focusDistance
+      end
+      enemy.focusUserId=targetPlayer and targetPlayer.UserId or nil
       local leashDistance=(enemy.position-enemy.spawnPosition).Magnitude
       if leashDistance>145 then
         -- 시야 밖으로 유인되면 추적을 끊고 최초 스폰 지점으로 귀환한다.
@@ -1489,6 +1504,10 @@ local function updateEnemyAI(dt,now)
         -- Three source-authored enemy patterns; authoritative damage and saves are unchanged.
         local attackRange=(enemy.kind=="bee" or enemy.kind=="bat") and 5.6
           or (enemy.isBoss and 5.2 or 4.4)
+        -- [공통 전방 주시] 공격 예고 중에는 실제 목표 방향을 바라보되 판정은 기존 서버 규칙으로만 한다.
+        if distance>.05 and (enemy.windupUntil or distance<=attackRange) then
+          enemy.visualFacing=offset.Unit
+        end
         if enemy.windupUntil then
           -- 공격 예고 중 대상이 사라지거나 거리를 벌렸다면 피해 없이 취소한다.
           local activeRange=enemy.attackPattern=="GOLEM_SHOCKWAVE" and 8.4
@@ -1532,22 +1551,28 @@ local function updateEnemyAI(dt,now)
             enemy.model:SetAttribute("NativeMobLastImpact",workspace:GetServerTimeNow())
             remote:FireAllClients("MEADOW_MOB_ATTACK",{
               species=enemy.kind,pattern=enemy.attackPattern,position=enemy.position,
+              facing=enemy.visualFacing,
             })
           end
         elseif distance>attackRange then
           setEnemyAttackState(enemy,"CHASE")
           local step=math.min(enemy.speed*dt,distance-attackRange)
           local direction=offset.Unit
-          if enemy.kind=="wolf" and distance>attackRange+2 then
-            -- [무리 접근] 이웃 늑대와만 간격을 벌린다. 감지 거리·속도·공격력은 유지한다.
+          -- [공통 AI 군집 분리] 같은 종 몬스터가 한 점에 겹치지 않게 이동 방향만 살짝 분리한다.
+          -- 늑대의 기존 무리 반응은 유지하며 속도·표적·공격 범위·피해는 변경하지 않는다.
+          if not enemy.isBoss and distance>attackRange+2 and enemy.kind~="bee" and enemy.kind~="bat" then
             local spacing=Vector3.zero
+            local radius=enemy.kind=="wolf" and 5 or 3.5
             for _,neighbor in ipairs(enemies) do
-              if neighbor~=enemy and neighbor.kind=="wolf" and neighbor.HP>0 then
+              if neighbor~=enemy and neighbor.kind==enemy.kind and neighbor.HP>0 then
                 local separation=Vector3.new(enemy.position.X-neighbor.position.X,0,enemy.position.Z-neighbor.position.Z)
-                if separation.Magnitude>.1 and separation.Magnitude<5 then spacing+=separation.Unit*(1-separation.Magnitude/5) end
+                if separation.Magnitude>.1 and separation.Magnitude<radius then
+                  spacing+=separation.Unit*(1-separation.Magnitude/radius)
+                end
               end
             end
-            local steered=direction+spacing*.55
+            local weight=enemy.kind=="wolf" and .55 or .32
+            local steered=direction+spacing*weight
             if steered.Magnitude>.1 then direction=steered.Unit end
           end
           if enemy.kind=="bee" or enemy.kind=="bat" then
