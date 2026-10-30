@@ -69,7 +69,7 @@ function scopedExternalRepairEligible(task={}){
 }
 function gameRepairRoute(task={}){
   const target=clean(task.target).toLowerCase();
-  const source=clean(task.sourceRoot);
+  const source=clean(task.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
   const files=uniq(task.responsibleFiles).map(file=>file.replaceAll('\\','/').replace(/^\.\//,''));
   // System AI is read-only for game source. Preserve original Vibe worker authority.
   const gameSource=/^(web|roblox|unity|unreal|godot)-games\//.test(source)
@@ -80,10 +80,17 @@ function gameRepairRoute(task={}){
 }
 function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-task',relatedTaskIds=[]}){
   const exactExternalApplication=VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(clean(signature));
-  const gameSourceOwned=uniq(task.responsibleFiles).some(file=>/^(?:web|roblox|unity|unreal|godot)-games\//.test(file));
+  const gameSourceOwned=/^(?:web|roblox|unity|unreal|godot)-games\//.test(
+    clean(task.sourceRoot).replaceAll('\\','/').replace(/^\.\//,''))
+    ||uniq(task.responsibleFiles).some(file=>/^(?:web|roblox|unity|unreal|godot)-games\//.test(
+      file.replaceAll('\\','/').replace(/^\.\//,'')));
   // System AI는 원인을 분류하고 복구를 예약한다. 게임 소스 변경은 기존 Vibe 게임 작업자가 수행한다.
   const route=sourceQueue==='system-ai'&&!gameSourceOwned?'SYSTEM_AI':gameRepairRoute(task);
   const sharedInfrastructure=sourceQueue==='system-ai'&&signature==='system-ai-infrastructure-contract-failed';
+  // 실제 동일 작업의 복구 세대·명시적 반복 횟수만 사용한다.
+  // portfolio relatedTaskIds 크기는 같은 오류의 재발 횟수가 아니다.
+  const recurrenceCount=Math.max(1,...[task.recurrenceCount,task.recoveryGeneration]
+    .map(Number).filter(value=>Number.isSafeInteger(value)&&value>=0));
   const responsibleFiles=sharedInfrastructure
     ?['tools/company-system-ai-worker.mjs','.github/workflows/company-system-ai-workers.yml','qa/company-system-ai-worker.test.mjs','qa/company-system-ai-supervision-loop.test.mjs']
     :uniq(task.responsibleFiles);
@@ -97,7 +104,7 @@ function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-tas
       :exactExternalApplication?clean(task.goal)+' Repair the exact verified external-learning application failure '+clean(signature)+' in existing assigned source; apply game-specific semantic mapping with actual source evidence, preserve verified checkpoints, and re-run the failed canonical stage. Never copy commercial code or assets.'
       :clean(task.goal),
     relatedTaskIds,
-    failureStage:stage,failureSignature:signature,blastRadius,
+    failureStage:stage,failureSignature:signature,blastRadius,recurrenceCount,
     checkpoint:clean(task.candidateSha||task.sourceRevision||task.baseMainSha||task.reservedAt)||null,
     evidence:uniq([...(task.evidence||[]),...(exactExternalApplication?['system-ai-external-application-bottleneck:DETECTED','system-ai-external-application-repair-owner:'+route,'system-ai-external-application-signature:'+clean(signature)]:[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route,'primary-ai-collaboration:REQUESTED','primary-ai-collaboration-reason:'+(sharedInfrastructure?'SHARED_SYSTEM_AI_INFRASTRUCTURE':blastRadius.startsWith('portfolio')||blastRadius.startsWith('shared-worker-contract')?'COMMON_BOTTLENECK':'REPEATED_FAILURE_SIGNATURE'),'primary-ai-collaboration-task:'+clean(task.id),...(sharedInfrastructure?['shared-system-ai-infrastructure-repair:YES','representative-canary-required:YES']:[])]),
     recoveryOwner:route,
