@@ -1174,7 +1174,7 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(server,/meadowInspectReady\[player\]=now\+2\.5/);
   assert.match(server,/model:IsDescendantOf\(gameWorld\)/);
   assert.match(server,/rootPart.Position-model:GetPivot\(\).Position\).Magnitude>15/);
-  assert.match(server,/if index%6==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
+  assert.match(server,/if index<=24 and index%6==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
   assert.match(server,/bindMeadowInspection\(animal,spec\[1\]\)/);
   assert.match(server,/bindMeadowInspection\(model,spec.kind\)/);
   assert.match(server,/animal.escape=\(animal.escape or Vector3.zero\):Lerp\(escape,math.min\(1,dt\*3\)\)/);
@@ -1185,6 +1185,41 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/meadowSurvivalHint.Active=false/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
   assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+});
+
+// [숲 밀도·유적·흙길] 사용자 시안에 맞는 자연환경. 자산 등록·전투 판정·저장키는 그대로.
+test('fantasy grove composition reuses licensed meshes and terrain without introducing procedural parts',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const assets=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  for(const id of ['tree','ruin']){
+    assert.equal(assets.models[id].license,'CC0-1.0');
+    assert.equal(assets.models[id].source,'VERIFIED_CC0_ORIGINAL');
+  }
+  assert.match(server,/local forestGroves=\{/);
+  assert.match(server,/woodland\[#woodland\+1\]=\{x,z,11\+\(\(index\*7\+groveIndex\*3\)%9\)\}/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestCanopyCount",canopyCount\)/);
+  assert.match(server,/local leafTones=\{/);
+  assert.match(server,/surface.Color=surface.Color:Lerp\(leafTone,\.33\)/);
+  assert.match(server,/surface.Material==Enum.Material.Fabric/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestFloorCount",forestFloorCount\)/);
+  assert.match(server,/index%6==0 and Enum.Material.Ground or Enum.Material.LeafyGrass/);
+  assert.match(server,/if distance>84 and math.abs\(x\)<330/);
+  assert.match(server,/if index<=24 and index%6==0 then bindMeadowInspection\(tree,"WOODLAND"\) end/);
+  assert.match(server,/for step=1,34 do/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\)/);
+  assert.match(server,/for step=-44,44 do/);
+  assert.match(server,/local z=step\*3\.5/);
+  assert.match(server,/local x=266\+8\*math.sin\(z\*\.029\)\+2\*math.cos\(z\*\.073\)/);
+  assert.match(server,/meadowTerrain:FillBall\(bank,6,Enum.Material.Air\)/);
+  assert.match(server,/meadowTerrain:FillBall\(Vector3.new\(x,-2\.8,z\),4\.5,Enum.Material.Water\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestStreamSections",streamLength\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestRockCount",forestRockCount\)/);
+  assert.match(server,/local fragment=worldAsset\("ruin",site,4\.7\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowForestStoneFragmentCount",forestFragmentCount\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowRuinCount",ruinCount\)/);
+  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save semantics unchanged');
+  assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
 });
 
 test('마력숲 타격은 부드러운 내장 둔탁음으로 교체하고 연속 재생량을 제한한다',()=>{
