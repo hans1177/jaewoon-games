@@ -143940,11 +143940,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b1fefd42a04b7a808127949b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11572",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c9670ba5c45374009f1e852c9d977b9fa475d1f5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11572,
+        "baseBranch": "main",
+        "headBranch": "feat/meadow-village-combat-20261031",
+        "baseSha": "c9670ba5c45374009f1e852c9d977b9fa475d1f5",
+        "headSha": "4f35e514b6e9dac8b56c8cca49b42327eb72c00a",
+        "mergeCommitSha": "bb1cd5ede76b746e4591a2d41d50f54cc303434a",
+        "mergedAt": "2026-10-30T22:11:53Z",
+        "authorLogin": "hans1177",
+        "titleHash": "54b9c396e345984b193ca8fc3652c91308c0247b0b21593f206d963bd8005014",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/meadow-village-combat-20261031",
+        "candidateSha": "4f35e514b6e9dac8b56c8cca49b42327eb72c00a"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 562,
+        "deletedLineCount": 187,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11572",
+        "merge-commit:bb1cd5ede76b746e4591a2d41d50f54cc303434a",
+        "base-main:c9670ba5c45374009f1e852c9d977b9fa475d1f5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1142
+    "total": 1143
   }
 }
