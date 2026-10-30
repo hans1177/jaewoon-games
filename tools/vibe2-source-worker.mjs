@@ -1828,6 +1828,7 @@ export function deterministicWebModuleInputCandidate({order={},sourceRoot='',res
     const idCounts=new Map();
     for(const match of html.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi))
       idCounts.set(match[2],(idCounts.get(match[2])||0)+1);
+    if([...idCounts.values()].some(count=>count!==1))continue;
     const bindings=[];
     for(const button of html.matchAll(/<button\b([^>]*)>/gi)){
       if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
