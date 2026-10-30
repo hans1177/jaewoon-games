@@ -157,9 +157,12 @@ on:
       - '.github/workflows/company-evolution-qa.yml'
   workflow_dispatch:
 
+# Main's canonical recovery and game QA must finish after starting: frequent source
+# publications may replace a pending run, but cannot erase the only in-progress proof.
+# PR revisions may still cancel obsolete PR-only checks; no QA gate is bypassed.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
