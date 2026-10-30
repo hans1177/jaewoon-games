@@ -142761,11 +142761,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c8bb45be7163284eb0992dc1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11473",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b490e1ee2d6248bac1322bd4f5fb5108cb85c523",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11473,
+        "baseBranch": "main",
+        "headBranch": "fix/magic-forest-living-woods",
+        "baseSha": "b490e1ee2d6248bac1322bd4f5fb5108cb85c523",
+        "headSha": "addac0322e0bab3af6d3295757f557298e6e1ccd",
+        "mergeCommitSha": "8615e64175074c622b620b2a616791bb1f3a36ef",
+        "mergedAt": "2026-10-30T10:07:38Z",
+        "authorLogin": "hans1177",
+        "titleHash": "920e950e90a99d01e14bd158154df6f81652460421cca7e06b04ad89d4d0d6ed",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/magic-forest-living-woods",
+        "candidateSha": "addac0322e0bab3af6d3295757f557298e6e1ccd"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 214,
+        "deletedLineCount": 24,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/native-assets.json",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/baeksu-war-upload-meshes.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "qa/company-development-roblox-package.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/native-assets.json",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/baeksu-war-upload-meshes.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11473",
+        "merge-commit:8615e64175074c622b620b2a616791bb1f3a36ef",
+        "base-main:b490e1ee2d6248bac1322bd4f5fb5108cb85c523"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1133
+    "total": 1134
   }
 }
