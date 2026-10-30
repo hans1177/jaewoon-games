@@ -3024,7 +3024,8 @@ local nativeMobMotionMap={
 }
 -- [4족 애니메이션] 걷기는 네 발 순차 접지, 질주는 앞·뒷발 묶음 접지를 사용한다.
 local quadrupedFootPhases={
-  {"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0},
+  -- [실제 보행] 네 발의 접지가 1/4주기씩 어긋난다. 질주는 기존 대각 발 트로트.
+  {"FL",0,0},{"FR",.5,.5},{"BL",.75,.5},{"BR",.25,0},
 }
 -- [몹 실제 리깅] 기존 Bone/Motor6D/AnimationConstraint의 채널명을 재사용한다.
 local nativeMobJointAlias={
@@ -3200,7 +3201,9 @@ local function bindOriginalMob(model)
           local front=key:find("front",1,true) or key:find("fore",1,true)
           local rear=key:find("rear",1,true) or key:find("hind",1,true)
             or key:find("back",1,true)
-          local position=front and "F" or rear and "B" or relative.Z<0 and "F" or "B"
+          -- [신규 암사슴 +Z 전방] 원본 GLB의 방향은 -Z 전방인 늑대와 반대다.
+          local position=front and "F" or rear and "B"
+            or ((species=="deer") == (relative.Z>0)) and "F" or "B"
           name=position..side..(foot and "Ankle" or lower and "Knee" or "Hip")
         end
       elseif not sourceChannels[name] and (species=="bee" or species=="bat") then
@@ -3226,21 +3229,62 @@ local function bindOriginalMob(model)
     or (species=="golem" or species=="mushroom" or species=="skeleton") and
       (available.ThighL or available.ThighR or available.UpperArmL or available.UpperArmR)
     or (available.FLHip or available.FRHip or available.BLHip or available.BRHip)
-  -- [늑대 리그] 실제 네 고관절 없이는 정상 4족 리그로 처리하지 않는다.
+  -- [실제 원본 사슴·늑대 모션] 등록된 AnimationId가 있으면 저작된 걷기/달리기를 우선한다.
+  -- 단순 뼈 회전은 원본 애니메이션을 찾지 못할 때만 기존 책임 관절에 적용한다.
+  local nativeAnimations={}
+  if species=="deer" or species=="wolf" then
+    for _,animation in ipairs(model:GetDescendants()) do
+      if animation:IsA("Animation") and animation.AnimationId:match("^rbxassetid://[1-9]%d*$") then
+        local key=animation.Name:lower()
+        local mode=key:find("walk",1,true) and "WALK"
+          or key:find("run",1,true) and "RUN"
+          or key:find("idle",1,true) and "IDLE"
+          or key:find("attack",1,true) and "ATTACK"
+          or key:find("dead",1,true) and "DEATH"
+          or key:find("death",1,true) and "DEATH" or nil
+        if mode and not nativeAnimations[mode] then nativeAnimations[mode]=animation end
+      end
+    end
+  end
+  local nativeTracks=nil
+  if nativeAnimations.IDLE and nativeAnimations.WALK then
+    local animationController=model:FindFirstChildWhichIsA("AnimationController",true)
+    if not animationController then
+      animationController=Instance.new("AnimationController")
+      animationController.Name="OriginalWildlifeAnimationController"
+      animationController.Parent=model
+    end
+    local animator=animationController:FindFirstChildOfClass("Animator")
+    if not animator then animator=Instance.new("Animator");animator.Parent=animationController end
+    local tracks={}
+    for mode,animation in pairs(nativeAnimations) do
+      local ok,track=pcall(function()return animator:LoadAnimation(animation)end)
+      if ok and track then
+        track.Looped=mode=="WALK" or mode=="RUN" or mode=="IDLE"
+        track.Priority=(mode=="ATTACK" or mode=="DEATH") and Enum.AnimationPriority.Action
+          or Enum.AnimationPriority.Movement
+        tracks[mode]=track
+      end
+    end
+    if tracks.IDLE and tracks.WALK then nativeTracks=tracks end
+  end
+  -- [실제 원본 4족 관절] 네 고관절 또는 원본 걷기 애니메이션이 있어야 정상 모션으로 인정.
   local wolfFourLegRig=species~="wolf" or
     (available.FLHip and available.FRHip and available.BLHip and available.BRHip)
-  local actualRig=count>=2 and movingJoints==true and wolfFourLegRig==true
-  local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
+  local deerFourLegRig=species~="deer" or
+    (available.FLHip and available.FRHip and available.BLHip and available.BRHip)
+  local actualRig=count>=2 and movingJoints==true and wolfFourLegRig==true and deerFourLegRig==true
+  local controller=not nativeTracks and actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=26,
   }) or nil
-  local row={controller=controller,available=available,plan=bodyPlan,
+  local row={controller=controller,nativeTracks=nativeTracks,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
     lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0,
     -- [모션] 실제 관절의 직전 포즈를 저장해 정지·추적·공격 사이를 매끄럽게 잇는다.
     transitionFrom={},renderedPoses={},transitionStartedAt=0,transitionDuration=0}
-  model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG"
-    or "UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET")
-  if not actualRig and not meadowMobRigWarnings[species] then
+  model:SetAttribute("NativeCreatureRigMode",nativeTracks and "ORIGINAL_ANIMATION_TRACKS"
+    or actualRig and "ORIGINAL_JOINT_RIG" or "UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET")
+  if not actualRig and not nativeTracks and not meadowMobRigWarnings[species] then
     meadowMobRigWarnings[species]=true
     warn("마력숲 원본 애니메이션 뼈 미연결: "..species..", 탐지 관절="..count)
   end
@@ -3253,6 +3297,7 @@ local function bindOriginalMob(model)
   end)
   model.Destroying:Connect(function()
     if controller then controller.Destroy(false) end
+    if nativeTracks then for _,track in pairs(nativeTracks) do track:Stop(0) end end
     meadowMobControllers[model]=nil
   end)
 end
@@ -3271,17 +3316,35 @@ meadowMobWorld.ChildRemoved:Connect(function(model)
   local row=meadowMobControllers[model]
   if not row then return end
   if row.controller then row.controller.Destroy(false) end
+  if row.nativeTracks then for _,track in pairs(row.nativeTracks) do track:Stop(0) end end
   meadowMobControllers[model]=nil
 end)
 game:GetService("RunService").PreSimulation:Connect(function(dt)
   for model,row in pairs(meadowMobControllers) do
-    if model.Parent and row.controller then
+    if model.Parent and (row.controller or row.nativeTracks) then
       local requested=model:GetAttribute("NativeMobMotion")
       -- 상태값을 먼저 보존하고, 서버 상태가 없을 때만 종별 기본 모션을 사용한다.
       local mode=nativeMobMotionMap[requested]
       if not mode then
         local wildlife=row.species=="deer" or row.species=="boar" or row.species=="rabbit"
         mode=wildlife and "WALK" or "IDLE"
+      end
+      -- [원본 애니메이션] Idle/Walk/Run/Attack 클립은 실제 메쉬의 Animator가 구동한다.
+      -- 질주 클립이 없는 사슴은 걷기 클립을 빠르게 재생한다. 합성 관절은 동시에 구동하지 않는다.
+      if row.nativeTracks then
+        local track=row.nativeTracks[mode] or
+          (mode=="RUN" and row.nativeTracks.WALK)
+          or (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT") and row.nativeTracks.IDLE
+          or row.nativeTracks.IDLE
+        if track and track~=row.playingTrack then
+          if row.playingTrack then row.playingTrack:Stop(.16) end
+          track:Play(.16,1,mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
+          row.playingTrack=track
+        end
+        if track and track.IsPlaying then
+          track:AdjustSpeed(mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
+        end
+        continue
       end
       -- 서버 적중시각으로 공격 충격과 복귀만 연출한다. 피해 판정은 서버가 유지한다.
       local forcedPhase=nil
