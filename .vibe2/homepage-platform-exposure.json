@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-30T19:12:21.224Z",
+  "updatedAt": "2026-10-30T19:24:44.585Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -955,18 +955,19 @@
             "checks": {
               "design": true,
               "publication": false,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": true,
               "noRuntimeErrors": true
             },
             "blockers": [
               "publication",
+              "exactRuntime",
               "lobby"
             ],
-            "sourceRevision": "ea73b103b85bbc3bf2c526b439ff5cac49f2f447",
-            "artifactIdentity": "sha256:7bb50d620e200f69cb2299bd2afb96fae62a13006eb585f0485b29fdb9e6ccf2",
-            "verifiedAt": "2026-10-30T15:22:39.450Z"
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
           },
           "internalReleasePublished": false,
           "internalPlaytestPassed": false,
@@ -1010,7 +1011,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 39
+            "candidateVersionNumber": 0
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
