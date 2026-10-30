@@ -225,6 +225,7 @@ test('published WEB playtest intake rejects stale trees and deduplicates the sam
   assert.equal(first.tickets.tickets[0].severity,'HIGH','real-world movement failure must enter the existing recovery lane');
   assert.equal(first.tickets.tickets[0].exactFailedStage,'WEB_POST_PUBLICATION_PLAYTEST');
   assert.equal(first.recovery.tasks.length,1,'same-source Web failure uses the existing recovery queue');
+ assert.equal(first.recovery.tasks[0].recoveryOwner,'VIBE2_VIBE3','game source must belong to Vibe primary, not System AI');
   assert.equal(first.recovery.tasks[0].recoveryStrategy,
     'REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE');
   for(const required of [
@@ -255,4 +256,40 @@ test('published WEB playtest intake rejects stale trees and deduplicates the sam
     assert.equal(ingestTesterDebug({repoRoot:root,webPlaytestReport:altered}).ingested,0);
   }
  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('real Web runtime repair targets only its own runnable source and preserves offline capability blocks',()=>{
+ const rec={id:'web-smoke-recovery',sourceQueue:'tester-debug',sourceTaskId:'web-smoke-ticket',
+   gameId:'demo',status:'queued',recoveryOwner:'VIBE2_VIBE3',
+   responsibleFiles:['web-games/demo/index.html'],failureStage:'WEB_POST_PUBLICATION_PLAYTEST',
+   failureSignature:'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED',
+   evidence:['web-browser-playtest-source:'+'a'.repeat(40)],recurrenceCount:1};
+ const task=(id,target,files,blocker=null)=>({
+   id,gameId:'demo',target,sourceRoot:target+'-games/demo',
+   department:'development',type:'implementation',status:blocker?'blocked':'queued',
+   blocker,responsibleFiles:files,goal:'existing '+id,priority:'normal'
+ });
+ const candidates={tasks:[
+   task('exact','web',['web-games/demo/index.html']),
+   task('other-platform','roblox',['roblox-games/demo/server/Game.server.luau']),
+   task('other-source','web',['web-games/demo/other.js']),
+   task('offline','web',['web-games/demo/index.html'],'OFFLINE_RECIPE_UNAVAILABLE'),
+   {...task('another-game','web',['web-games/demo/index.html']),gameId:'another-game'}
+ ]};
+ const result=dispatchRecovery({recoveryInput:{tasks:[rec]},gameQueueInput:candidates,
+   systemAiQueueInput:{tasks:[]},route:'all'});
+ assert.equal(result.recovery.tasks[0].status,'dispatched');
+ assert.deepEqual(result.gameRequeuedTaskIds,['exact']);
+ assert.equal(result.gameQueue.tasks.find(t=>t.id==='exact').priority,'critical');
+ for(const id of ['other-platform','other-source','another-game'])
+   assert.equal(result.gameQueue.tasks.find(t=>t.id===id).priority,'normal');
+ assert.equal(result.gameQueue.tasks.find(t=>t.id==='offline').status,'blocked');
+ assert.equal(result.gameQueue.tasks.find(t=>t.id==='offline').blocker,'OFFLINE_RECIPE_UNAVAILABLE');
+ assert.equal(result.systemAi.tasks.length,0);
+ const pending=dispatchRecovery({recoveryInput:{tasks:[rec]},
+   gameQueueInput:{tasks:[candidates.tasks[1],candidates.tasks[3]]},
+   systemAiQueueInput:{tasks:[]},route:'all'});
+ assert.equal(pending.recovery.tasks[0].status,'queued');
+ assert.equal(pending.dispatched.length,0);
 });
