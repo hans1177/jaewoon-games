@@ -33,6 +33,60 @@ test('recovery wake counts unique newly dispatched queued games and preserves ac
   assert.deepEqual(systemOnly.gameRequeuedTaskIds,[]);
 });
 
+test('game recovery escalation uses the latest exact failure instead of historical cause markers',()=>{
+  const gameQueueInput={tasks:[
+    {id:'forest-current',gameId:'forest',target:'web',status:'failed',
+      sourceRoot:'web-games/forest',responsibleFiles:['web-games/forest/index.html'],
+      sourceRevision:'forest-verified-checkpoint',currentStep:'WEB_SETUP',
+      blocker:'historical-input-failure',failureStage:'WEB_POST_PUBLICATION_PLAYTEST',
+      failureSignature:'CURRENT_TOUCH_INPUT_FAILURE',
+      evidence:['recovery-exact-stage:WEB_SETUP','failure-cause:historical-input-failure']},
+    {id:'desert-current',gameId:'desert',target:'web',status:'failed',
+      sourceRoot:'web-games/desert',responsibleFiles:['web-games/desert/index.html'],
+      currentStep:'WEB_SETUP',blocker:'historical-input-failure',
+      failureStage:'WEB_RUNTIME',failureSignature:'CURRENT_TOUCH_INPUT_FAILURE',
+      evidence:['recovery-exact-stage:WEB_SETUP','failure-cause:historical-input-failure']}
+  ]};
+  const first=escalateRecoveryCandidates({gameQueueInput});
+  assert.equal(first.added.length,2);
+  assert.equal(first.queue.tasks.length,2);
+  const forest=first.queue.tasks.find(row=>row.gameId==='forest');
+  const desert=first.queue.tasks.find(row=>row.gameId==='desert');
+  assert.equal(forest.failureStage,'WEB_POST_PUBLICATION_PLAYTEST');
+  assert.equal(forest.failureSignature,'CURRENT_TOUCH_INPUT_FAILURE');
+  assert.equal(forest.checkpoint,'forest-verified-checkpoint');
+  assert.equal(forest.blastRadius,'single-task');
+  assert.equal(desert.failureStage,'WEB_RUNTIME');
+  assert.equal(desert.failureSignature,'CURRENT_TOUCH_INPUT_FAILURE');
+  const again=escalateRecoveryCandidates({gameQueueInput,recoveryInput:first.queue});
+  assert.equal(again.added.length,0);
+  assert.equal(again.queue.tasks.length,2);
+  const next=escalateRecoveryCandidates({gameQueueInput:{tasks:[{
+    ...gameQueueInput.tasks[0],failureStage:'WEB_RUNTIME',
+    failureSignature:'NEW_ANIMATION_BLOCK',evidence:[
+      ...gameQueueInput.tasks[0].evidence,
+      'recovery-exact-stage:WEB_POST_PUBLICATION_PLAYTEST',
+      'failure-cause:CURRENT_TOUCH_INPUT_FAILURE'
+    ]
+  }]},recoveryInput:first.queue});
+  assert.equal(next.added.length,1);
+  const latest=next.queue.tasks.find(row=>row.failureSignature==='NEW_ANIMATION_BLOCK');
+  assert.equal(latest.gameId,'forest');
+  assert.equal(latest.failureStage,'WEB_RUNTIME');
+  assert.equal(next.queue.tasks.filter(row=>row.sourceTaskId==='forest-current').length,2);
+});
+
+test('commercial source quarantine cannot be overridden by a newer ordinary failure signature',()=>{
+  const result=escalateRecoveryCandidates({gameQueueInput:{tasks:[{
+    id:'quarantined',gameId:'forest',target:'web',status:'failed',
+    sourceRoot:'web-games/forest',responsibleFiles:['web-games/forest/index.html'],
+    failureSignature:'NEW_ORDINARY_RUNTIME_ERROR',failureStage:'WEB_RUNTIME',
+    evidence:['failure-cause:RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED']
+  }]}});
+  assert.deepEqual(result.added,[]);
+  assert.deepEqual(result.queue.tasks,[]);
+});
+
 test('generic cross-game failures retain separate game-source checkpoint recovery',()=>{
   const gameQueueInput={tasks:['g1','g2','g3'].map(id=>({
     id,gameId:id,status:'failed',target:'web',sourceRoot:'web-games/'+id,
