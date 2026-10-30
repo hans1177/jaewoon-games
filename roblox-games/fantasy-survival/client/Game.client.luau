@@ -475,6 +475,40 @@ local telegraphCorner=Instance.new("UICorner")
 telegraphCorner.CornerRadius=UDim.new(0,12)
 telegraphCorner.Parent=meadowPatternBanner
 -- 서버가 사용하는 여섯 공격 패턴을 모두 같은 예고 UI에 연결한다.
+-- [생존 탐색 피드백] 4개 숲 관찰 지점·기존 동물 프롬프트에서 받은 서버 단서만 표시한다.
+-- 6초 뒤 자동 사라지는 작은 알림. 기존 위험 예고·스킬·조이스틱을 가리지 않는다.
+local meadowSurvivalHint=Instance.new("TextLabel")
+meadowSurvivalHint.Name="MeadowSurvivalHint"
+meadowSurvivalHint.AnchorPoint=Vector2.new(.5,0)
+meadowSurvivalHint.Position=UDim2.new(.5,0,.255,0)
+meadowSurvivalHint.Size=UDim2.new(.75,0,0,50)
+meadowSurvivalHint.BackgroundColor3=Color3.fromRGB(21,47,37)
+meadowSurvivalHint.BackgroundTransparency=.13
+meadowSurvivalHint.TextColor3=Color3.fromRGB(241,248,225)
+meadowSurvivalHint.TextSize=14
+meadowSurvivalHint.TextWrapped=true
+meadowSurvivalHint.Font=Enum.Font.GothamMedium
+meadowSurvivalHint.BorderSizePixel=0
+meadowSurvivalHint.Active=false
+meadowSurvivalHint.ZIndex=8
+meadowSurvivalHint.Visible=false
+meadowSurvivalHint.Parent=gui
+local meadowSurvivalHintCorner=Instance.new("UICorner")
+meadowSurvivalHintCorner.CornerRadius=UDim.new(0,12)
+meadowSurvivalHintCorner.Parent=meadowSurvivalHint
+local meadowSurvivalHintToken=0
+player:GetAttributeChangedSignal("MeadowSurvivalHintSerial"):Connect(function()
+  local value=player:GetAttribute("MeadowSurvivalHint")
+  if type(value)~="string" or #value==0 then return end
+  meadowSurvivalHint.Text=value
+  meadowSurvivalHint.Visible=true
+  meadowSurvivalHintToken+=1
+  local token=meadowSurvivalHintToken
+  task.delay(6,function()
+    if token==meadowSurvivalHintToken then meadowSurvivalHint.Visible=false end
+  end)
+end)
+
 local telegraphNames={
   WOLF_BITE="초원 늑대 · 물어뜯기",WOLF_LUNGE="초원 늑대 · 도약",
   BEE_SWEEP="초원 벌 · 급강하",BEE_STING="초원 벌 · 독침",
