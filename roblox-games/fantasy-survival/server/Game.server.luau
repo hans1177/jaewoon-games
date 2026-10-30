@@ -536,9 +536,11 @@ local function setEnemyAttackState(enemy, state)
   if enemy.attackState==state then return end
   enemy.attackState=state
   enemy.model:SetAttribute("AttackState",state)
-  local motion=state=="ANTICIPATION" and "ATTACK" or
-    state=="CHASE" and "RUN" or state=="RETURN_TO_SPAWN" and "WALK" or
-    state=="RECOVERY" and "HIT" or "IDLE"
+  -- 서버의 실제 예고/복귀 상태를 클라이언트 원본 관절 모션에 그대로 전달한다.
+  -- 적중·피해·쿨다운은 이 시각 상태와 독립적으로 기존 서버만 판정한다.
+  local motion=state=="CHASE" and "RUN" or state=="RETURN_TO_SPAWN" and "WALK" or
+    (state=="ANTICIPATION" or state=="ATTACK" or state=="RECOVERY"
+      or state=="HIT" or state=="DEATH") and state or "IDLE"
   enemy.model:SetAttribute("NativeMobMotion",motion)
   enemy.telegraph.Enabled=state=="ANTICIPATION"
 end
