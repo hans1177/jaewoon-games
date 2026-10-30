@@ -27,9 +27,12 @@ function explicitFact(row=''){
 
 function failureStage(rows=[],task={}){
   for(const prefix of ['recovery-exact-stage:','web-stage:','requested-stage=','queue-step:']){
-    const row=rows.find(value=>value.startsWith(prefix));
+    // 같은 게임의 연속 복구에서는 마지막으로 확인된 실패 단계가 기존 기록보다 우선한다.
+    const row=[...rows].reverse().find(value=>value.startsWith(prefix));
     if(row)return clean(row.slice(prefix.length)).replace(/^VIBE_/,'');
   }
+  const exactStage=clean(task.failureStage);
+  if(exactStage)return exactStage;
   const blocker=clean(task.blocker);
   if(blocker)return blocker;
   return null;
