@@ -64,14 +64,32 @@ if not gameWorld then
 end
 local enemies = {}
 local resourceNodes = {}
+-- [오픈월드] 이전 저장 필드만 숫자 0으로 호환하며 웨이브 타이머는 폐기.
 local CurrentWave = 0
-local WaveState = "PREPARE"
-local nextWaveAt = os.clock() + 8
+local WaveState = "OPEN_WORLD"
 local worldClock = 0
-local encounterSerial = 0
 local attackCooldown = {}
-local LastWaveReward = 0
 local MAX_ENEMIES = 22
+local nextEncounterCheck = 0
+-- [지역 서식지] 기존 숲·유적 좌표에 고정된 몬스터 서식 위치.
+-- 이전 종별 체력·공격식은 각 지역의 고정 위험도로 평가하며 저장 구조는 그대로 둔다.
+local meadowEncounterSites = {
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-83,3,-91)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(83,3,-91)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-84,3,94)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(81,3,96)},
+  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(-191,3,-185)},
+  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(191,3,-183)},
+  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(-196,3,179)},
+  {id="mushroom",atom="ROOT_LIMB",tier=3,height=3.15,position=Vector3.new(196,3,183)},
+  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-254,3,-226)},
+  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(248,3,-224)},
+  {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(239,3,236)},
+  {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(-132,3,-151)},
+  {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(146,3,146)},
+  {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(-168,3,123)},
+  {id="golem",atom="HEAD_GOLEM",tier=5,height=8.4,position=Vector3.new(-153,3,-164)},
+}
 -- Roblox Terrain is native collidable terrain, never an assembled visual Part.
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
 -- [숲 표면] 원본 CC0 메시·텍스처를 보존하는 공통 자연색 팔레트.
@@ -436,7 +454,7 @@ local function meadowProficiencyPower(player)
 end
 
 -- [메인 퀘스트·연구 기록 아이템]
--- 기존 서버의 채집·관찰·실제 처치·웨이브 판정에만 연결한다.
+-- 채집·관찰·실제 몬스터 처치·유적 수문장 처치에만 연결한다.
 -- 수집 기록은 숫자형 저장 필드이며 기존 DataStore/전투 보상 수치를 유지한다.
 local function recordMeadowQuest(player, eventName)
   if player:GetAttribute("ProfileReady")~=true then return end
@@ -473,7 +491,7 @@ local function recordMeadowQuest(player, eventName)
     if eventName~="KILL" then return end
     progress+=1
   elseif stage==4 then
-    if eventName~="WAVE" then return end
+    if eventName~="KILL" then return end
     progress+=1
   elseif stage==5 then
     if eventName~="WOODLAND" then return end
@@ -968,36 +986,14 @@ task.defer(function()
   if sceneryCount==0 then warn("마력숲 초원 나무 로딩 0개: 등록 CC0 자산 및 Place 사용 권한 확인 필요") end
 end)
 
-local function spawnEnemy(isBoss, index)
+-- [지역 몬스터] 서식지의 위치와 위험도를 서버가 소유한다.
+local function spawnEnemy(site, siteIndex)
   if #enemies >= MAX_ENEMIES then return false end
-  encounterSerial += 1
-  local theta = encounterSerial*2.399 + index*.31
-  local radius = 51 + (index%3)*11
-  local location = Vector3.new(math.cos(theta)*radius, 3, math.sin(theta)*radius)
-  -- [초원 몬스터] 사슴·멧돼지는 등장하지 않는다. 나머지 몬스터의 웨이브·스탯은 유지한다.
-  -- 멧돼지 출현만 제거하며 웨이브 진행과 몬스터 등장 수는 변경하지 않는다.
-  local meadowSpecies={
-    {id="wolf",atom="HEAD_CANINE",wave=1,height=3.15},
-    {id="mushroom",atom="ROOT_LIMB",wave=3,height=3.15},
-    {id="bat",atom="WING_LEATHER",wave=4,height=3.15},
-    {id="skeleton",atom="HEAD_SKULL",wave=6,height=3.15},
-  }
-  local ready={}
-  if not isBoss then
-    for _,spec in ipairs(meadowSpecies) do
-      if CurrentWave>=spec.wave and table.find(studioCreatureAtoms,spec.atom)
-        and typeof(NativeCreatureAssets[spec.id])=="number"
-        and NativeCreatureAssets[spec.id]>0 then
-        table.insert(ready,spec)
-      end
-    end
-  end
-  local selected=isBoss and {id="golem",atom="HEAD_GOLEM",height=8.4}
-    or ready[((index-1)%math.max(1,#ready))+1]
-  if not selected then return false end
-  local partId=selected.id
-  local modelId=table.find(studioCreatureAtoms,selected.atom) and NativeCreatureAssets[partId] or nil
-  local nativeScale=selected.height
+  local isBoss=site.id=="golem"
+  local location=site.position
+  local partId=site.id
+  local modelId=table.find(studioCreatureAtoms,site.atom) and NativeCreatureAssets[partId] or nil
+  local nativeScale=site.height
   if typeof(modelId)~="number" or modelId<1 or not nativeScale then
     warn("마력숲 승인 생물 자산 선택 누락: "..partId)
     return false
@@ -1175,7 +1171,7 @@ local function spawnEnemy(isBoss, index)
   end
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
-  local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
+  local hitPoints = (isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13)
   local meadowNames={wolf="초원 늑대",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
@@ -1234,7 +1230,7 @@ local function spawnEnemy(isBoss, index)
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("EnemyMaxHealth",hitPoints)
-  model:SetAttribute("CurrentWave",CurrentWave)
+  model:SetAttribute("OpenWorldRegionTier",site.tier)
   model:SetAttribute("Boss",isBoss)
   if isBoss then model:SetAttribute("BossPhase",1) end
   -- 기존 공용 생물 모델 위에만 공격 예고를 표시한다. 판정용 가짜 파츠를 만들지 않는다.
@@ -1249,8 +1245,8 @@ local function spawnEnemy(isBoss, index)
   model:SetAttribute("AttackState", "IDLE")
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,kind=partId,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
-    speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,
+    isBoss=isBoss,kind=partId,damage=(isBoss and 20 or 6)+math.floor(site.tier/2),
+    speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,siteIndex=siteIndex,
     visibleGroundOffset=meshOffset,spawnGroundY=groundHit.Position.Y,
     terrainGroundOffset=0,nextGroundSample=0,
     lastAttack=0,attackSerial=0,attackPattern=nil,windupUntil=nil,
@@ -1260,43 +1256,40 @@ local function spawnEnemy(isBoss, index)
     focusUserId=nil
   })
   if isBoss then
-    remote:FireAllClients("MEADOW_BOSS_INTRO",{model=model,name=model.Name,wave=CurrentWave})
+    remote:FireAllClients("MEADOW_BOSS_INTRO",{model=model,name=model.Name,site=siteIndex})
   end
   return true
 end
 
-local function startWave()
-  if #Players:GetPlayers()==0 then
-    nextWaveAt=os.clock()+6
-    return
+-- [오픈월드 서식지 갱신] 가까운 구역의 몬스터만 생성하고 처치 후 같은 자리에서 다시 출현한다.
+-- 진행 단계나 웨이브 타이머 없이 위치가 유일한 출현 기준이다.
+local function refreshMeadowEncounters(now)
+  if #enemies>=MAX_ENEMIES then return end
+  for index,site in ipairs(meadowEncounterSites) do
+    if not site.occupied and not site.loading and now>=(site.respawnAt or 0) then
+      local nearby=false
+      for _,player in ipairs(Players:GetPlayers()) do
+        local character=player.Character
+        local root=character and character:FindFirstChild("HumanoidRootPart")
+        local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+        if player:GetAttribute("ProfileReady")==true and root and humanoid and humanoid.Health>0
+          and (root.Position-site.position).Magnitude<165 then nearby=true;break end
+      end
+      if nearby then
+        site.loading=true
+        task.defer(function()
+          local ok,spawned=pcall(spawnEnemy,site,index)
+          site.loading=false
+          site.occupied=ok and spawned==true
+          if not site.occupied then
+            site.respawnAt=os.clock()+25
+            if not ok then warn("MEADOW_REGION_SPAWN_FAILED: "..tostring(spawned)) end
+          end
+          broadcastSurvivalState(nil)
+        end)
+      end
+    end
   end
-  WaveState="COMBAT"
-  CurrentWave += 1
-  local number=math.min(3+CurrentWave*2, MAX_ENEMIES)
-  if CurrentWave%5==0 then number=math.max(2,number-1) end
-  local spawned=0
-  for n=1,number do
-    if spawnEnemy(false,n) then spawned+=1 end
-  end
-  if CurrentWave%5==0 and spawnEnemy(true,number+1) then spawned+=1 end
-  if spawned==0 then
-    WaveState="PREPARE"
-    nextWaveAt=os.clock()+8
-  end
-  broadcastSurvivalState(nil)
-end
-
-local function finishWave()
-  if WaveState~="COMBAT" then return end
-  WaveState="REST"
-  nextWaveAt=os.clock()+10
-  LastWaveReward=CurrentWave
-  for _,player in ipairs(Players:GetPlayers()) do
-    awardProgress(player,8+CurrentWave*2,4+CurrentWave)
-    player:SetAttribute("LastApprovedScope","survived-wave")
-    recordMeadowQuest(player,"WAVE")
-  end
-  broadcastSurvivalState(nil)
 end
 
 local function nearestEnemy(rootPart, range)
@@ -1371,7 +1364,11 @@ local function applyMeadowDamage(player,target,damage)
     if Config.CompetitiveRequired then
       setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+(target.isBoss and 5 or 1))
     end
-    if #enemies==0 then finishWave() end
+    -- [지역 리스폰] 해당 위치만 재출현 예약. 일괄 웨이브 보상은 없다.
+    if target.siteIndex then
+      local site=meadowEncounterSites[target.siteIndex]
+      if site then site.occupied=false;site.respawnAt=os.clock()+45 end
+    end
   else
     setNumber(player,"EnemyHealth",target.HP)
   end
@@ -1442,8 +1439,8 @@ end
 local function startSurvivalRun(player)
   if player:GetAttribute("RunActive")==true then return false end
   player:SetAttribute("RunActive",true)
-  player:SetAttribute("CurrentWave",CurrentWave)
-  player:SetAttribute("LastApprovedScope","survival-run-started")
+  player:SetAttribute("CurrentWave",0)
+  player:SetAttribute("LastApprovedScope","open-world-exploration-started")
   broadcastSurvivalState(player)
   return true
 end
@@ -1612,7 +1609,7 @@ end
 
 local function updateEnemyAI(dt,now)
   worldClock+=dt
-  -- Gentle ambient animal motion continues even between enemy waves.
+  -- [지역 생태] 플레이어 위치와 무관하게 자연스러운 동물 이동을 유지한다.
   -- No fabricated geometry, collision, rewards or hitboxes are involved.
   for _, animal in ipairs(meadowWildlife) do
     if animal.model.Parent then
@@ -1657,10 +1654,9 @@ local function updateEnemyAI(dt,now)
       animal.position=desired
     end
   end
-  if #enemies==0 then
-    if WaveState=="COMBAT" then finishWave() end
-    if now>=nextWaveAt then startWave() end
-    return
+  if now>=nextEncounterCheck then
+    nextEncounterCheck=now+7
+    refreshMeadowEncounters(now)
   end
   for _,enemy in ipairs(enemies) do
     if enemy.HP>0 and enemy.model.Parent then
