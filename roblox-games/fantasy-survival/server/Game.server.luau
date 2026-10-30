@@ -76,9 +76,9 @@ local MAX_ENEMIES = 22
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
 -- [숲 표면] 원본 CC0 메시·텍스처를 보존하는 공통 자연색 팔레트.
 local meadowPalette={
-  grass=Color3.fromRGB(99,142,95),leafyGrass=Color3.fromRGB(76,117,80),
-  ground=Color3.fromRGB(113,98,79),rock=Color3.fromRGB(123,130,120),
-  bark=Color3.fromRGB(111,91,72),leaves=Color3.fromRGB(82,123,80),
+  grass=Color3.fromRGB(100,151,97),leafyGrass=Color3.fromRGB(69,128,78),
+  ground=Color3.fromRGB(124,102,79),rock=Color3.fromRGB(123,130,120),
+  bark=Color3.fromRGB(112,87,66),leaves=Color3.fromRGB(88,154,91),
   wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
   deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
@@ -134,7 +134,7 @@ local function createStartingMeadow()
   Lighting.EnvironmentSpecularScale=.16
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
-  gameWorld:SetAttribute("MeadowVisualStyle", "MOSS_FOREST_MATTE_V2")
+  gameWorld:SetAttribute("MeadowVisualStyle", "SOFT_TOY_FOREST_CC0_MESH_V3")
   gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
   gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
@@ -307,12 +307,22 @@ local function worldAsset(id, location, targetHeight)
             surface.Color=meadowPalette.rock
             surface.Material=Enum.Material.Slate
           elseif id=="tree" then
+            -- [기존 CC0 나무 표면 교체] 원본 MeshId·모양·비율은 보존하고 복제본만 부드러운 토이 숲 재질로 변경한다.
             local name=surface.Name:lower()
             local bark=name:find("trunk",1,true) or name:find("bark",1,true)
               or name:find("stem",1,true) or name:find("branch",1,true)
               or name:find("wood",1,true)
-            surface.Color=bark and meadowPalette.bark or meadowPalette.leaves
-            surface.Material=bark and Enum.Material.Wood or Enum.Material.Fabric
+            local tone=(math.sin(location.X*.28+location.Z*.19)+1)*.5
+            local crown=meadowPalette.leaves:Lerp(Color3.fromRGB(151,184,107),tone*.40)
+            if not bark then
+              -- 과거 모서리/천 질감을 삭제하고 표면이 고르게 보이도록 직접 지정한다.
+              local appearance=surface:FindFirstChildOfClass("SurfaceAppearance")
+              if appearance then appearance:Destroy() end
+              if surface.TextureID~="" then surface.TextureID="" end
+            end
+            surface.MaterialVariant=""
+            surface.Color=bark and meadowPalette.bark or crown
+            surface.Material=bark and Enum.Material.Wood or Enum.Material.SmoothPlastic
           else
             -- [야생동물 토이 표면] 자갈/천 직물 대신 유광을 억제한 장난감 플라스틱.
             -- 원본 모델, 메시·리그·판정은 그대로 유지한다.
@@ -680,6 +690,11 @@ task.defer(function()
     {87,-88,14},{104,-129,12},{137,-109,17},{91,-142,13},
     {-86,96,15},{-104,138,12},{-137,113,16},{-96,151,13},
     {87,98,15},{106,134,12},{139,117,16},{95,152,13},
+    -- [숲 밀도] 시작 초원을 남겨 두고 외곽 기존 나무 군락만 여러 겹으로 보강한다.
+    {-138,-151,15},{-162,-126,13},{-167,-176,16},{-185,-146,12},
+    {136,-154,15},{161,-128,13},{168,-171,16},{187,-146,12},
+    {-140,164,15},{-161,141,13},{-176,190,16},{-195,161,12},
+    {143,161,15},{164,140,13},{174,187,16},{190,160,12},
   }
   local sceneryCount=0
   for index,spec in ipairs(woodland) do
@@ -755,6 +770,7 @@ task.defer(function()
     task.wait(.14)
   end
   gameWorld:SetAttribute("MeadowWoodlandSceneryCount",sceneryCount)
+  gameWorld:SetAttribute("MeadowForestSoftToyMaterial",sceneryCount>0 and "ORIGINAL_CC0_TREE_MESH_SMOOTH_MATTE" or "NO_NATIVE_MESH")
   gameWorld:SetAttribute("MeadowWoodlandReady",sceneryCount>0)
   -- 원본 CC0 파손 석벽 1종만 재사용한다. 가짜 파츠 구조물은 만들지 않는다.
   local ruinCount=0
