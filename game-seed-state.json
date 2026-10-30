@@ -10071,7 +10071,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-30T05:37:18.241Z",
+      "updatedAt": "2026-10-30T06:26:54.379Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -25569,7 +25569,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-30T05:37:18.241Z",
+      "updatedAt": "2026-10-30T06:26:54.379Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -35251,7 +35251,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-30T05:37:18.241Z",
+      "updatedAt": "2026-10-30T06:26:54.379Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -38666,7 +38666,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-30T05:37:18.241Z",
+      "updatedAt": "2026-10-30T06:26:54.379Z",
       "ROBLOX_GENRE": "Survival",
       "ROBLOX_SUBGENRE": null,
       "ROBLOX_GENRE_LABEL_KO": "서바이벌",
@@ -92107,9 +92107,9 @@
       "gameName": "잊혀진 대륙 | 2D 생존",
       "status": "ACTIVE",
       "generation": "AUTO_MISSING_DESIGN_INTAKE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "REFERENCE_INPUTS": [
@@ -94306,7 +94306,7 @@
       "MOBILE_FIRST": true,
       "autoMissingDesignIntake": true,
       "createdAt": "2026-10-24T15:16:14.985Z",
-      "updatedAt": "2026-10-24T15:16:14.985Z",
+      "updatedAt": "2026-10-30T06:26:54.379Z",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -94329,6 +94329,41 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/forgotten-continent/2026-10-26/design-revised.json",
+        "date": "2026-10-26"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/forgotten-continent/2026-10-26/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_ROBLOX_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/forgotten-continent"
+        },
+        "designBaselineSource": "design/forgotten-continent/2026-10-26/design-revised.json",
+        "designDate": "2026-10-26",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-30T06:26:54.379Z"
       }
     },
     {
@@ -100187,7 +100222,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-30T05:37:18.241Z",
+      "updatedAt": "2026-10-30T06:26:54.379Z",
       "ROBLOX_GENRE": "Strategy",
       "ROBLOX_SUBGENRE": null,
       "ROBLOX_GENRE_LABEL_KO": "전략",
@@ -109933,7 +109968,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-30T05:37:18.241Z",
+  "updatedAt": "2026-10-30T06:26:54.379Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -110095,5 +110130,6 @@
       "survival2",
       "territory-war"
     ]
-  }
+  },
+  "policyAuthority": "company-learning/platform-release-roadmap.json"
 }
