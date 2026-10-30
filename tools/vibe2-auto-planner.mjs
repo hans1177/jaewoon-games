@@ -1076,6 +1076,30 @@ function platformAdaptationInstruction(engine=''){
   return'';
 }
 const DESIGN_IMPLEMENTATION_GOAL='\n[DESIGN_IMPLEMENTATION_FLOW] 구현 순서는 MAIN 첫 플레이→A↔B 공유 상태와 선택의 결과→c/@ 변형과 성장→해당 컨셉의 배경·연출이다. 이미 실측된 차단 오류는 먼저 수리하고, 필수 설계 항목의 GAP가 남았으면 무관한 장식 확장으로 회차를 소비하지 않는다. 오토 바이옴은 승인된 동일 게임 공간 설계의 지형·바이옴·기후·동선·랜드마크·예약 영역을 기존 생성 도구에 전달하고 전경/플레이 중경/원경을 실제 Luau 소스에 구현한다. 설계 공간 정보가 없으면 임의 기본 숲을 적용하지 말고 기존 설계 보완 경로로 돌린다. MAIN/A/B/c/@ 설계 원본의 규칙 ID와 기준선 버전을 실제 Luau 파일·책임 함수·입력/상태 전이/출력 및 같은 빌드의 플레이 시나리오에 대응시킨다. 장르 핵심 루프, 컨셉·세계·스토리 진행, 시스템 연결·실패 복구, 그래픽·모션·VFX·오디오·UI, 첫 플레이→세션 완료→재도전→필요한 저장 복구를 PASS/GAP/NOT_APPLICABLE로 근거와 함께 판정한다. 실제 플레이의 첫 진입·진행·실패·재도전 화면을 같은 소스/패키지에 묶고 기존 golden scene 및 runtimeVisualReview 픽셀 검사로 자산 누락·UI 겹침·잘림·가독성·스타일을 검수한다. 캐릭터 동작은 연속 프레임/실행 증거로 검증하고 정지 이미지로 동작 성공을 주장하지 않는다. 썸네일·생성 이미지·메타데이터는 실제 플레이 화면 증거를 대신하지 못한다. 발견한 문제는 기존 BUILD_UP 책임 소스에 연결해 수정한 뒤 같은 화면에서 재촬영한다. 현재 책임 범위의 GAP를 실제 구현하고 다음 GAP를 기존 BUILD_UP에 연결한다. 소스 검사·작업 시간·학습 기록만으로 실제 플레이 GAP를 닫지 않는다. 동일 소스/패키지의 기존 F0~F9 검증을 유지하고 검증 학습 재사용도 새 빌드에서 재검증한다.';
+// [웹 사후실행] 실패 증거는 현재 게임/플랫폼/소스에만 결합한다.
+// 단순 CI 실패나 오래된 공개본은 수리 완료나 작업 파일 소유권의 증거가 아니다.
+export function webRuntimeFailureBuildUpInstruction(project={}){
+  if(clean(project.engine).toLowerCase()!=='web'
+    ||project.queueRuntimeObserved!==true||project.queueRuntimePassed!==false
+    ||clean(project.queueRuntimeEvidencePlatform).toUpperCase()!=='WEB')return '';
+  const revision=clean(project.queueRuntimeSourceRevision);
+  const signature=clean(project.queueRuntimeFailureSignature).slice(0,320);
+  const stage=clean(project.queueRuntimeFailureStage).slice(0,100);
+  if(!/^[a-f0-9]{40}$/.test(revision)||!signature||!stage)return '';
+  const verified=project.queueRuntimeRootCauseVerified===true;
+  return [
+    '',
+    '[WEB_POST_PUBLICATION_CAUSAL_REPAIR]',
+    'source-revision='+revision,
+    'failure-stage='+JSON.stringify(stage),
+    'failure-signature='+JSON.stringify(signature),
+    'root-cause-verified='+(verified?'YES':'NO'),
+    'GitHub Pages 공개본의 실제 실패 로그와 소스 트리 SHA를 현재 후보에 대조한다. 교체된 공개본·다른 게임·다른 플랫폼의 실패를 이 작업의 소스 원인으로 단정하지 않는다.',
+    '첫 입력→실제 플레이어 좌표/상태 변화→3D 렌더→기존 세이브 복원까지 데스크톱 키보드와 모바일 터치를 각각 검증한다. 한 방향의 충돌은 반대/수직 이동 증거로 분리하고, 모든 방향 실패는 입력 수신·상태·지형 충돌·씬 준비·포커스 로그로 정확히 분류한다.',
+    '원인이 확인된 책임 파일만 기존 Vibe BUILD_UP/REPAIR에서 수정한다. 게임 원본, 세이브 의미, 에셋 해시와 보안/오너/F0–F9 관문을 보존한다.',
+    '정확히 같은 소스 후보의 실제 브라우저 검증과 독립 회귀가 모두 성공하기 전에는 PASS·배포 성공·다음 BUILD_UP 기대치 상승을 주장하지 않는다.'
+  ].join('\n');
+}
 const FOCUSED_BUILD_COMPLETION_GOAL='\n[FOCUSED_BUILD_COMPLETION] 집중개발 3개 게임의 완성까지 같은 게임을 유지한다. 집중 여부와 관계없이 모든 게임은 같은 설계 구현·플레이 검증 규칙을 따른다.';
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
   const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];
@@ -1083,6 +1107,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   let adaptedGoal=adaptation?goal+adaptation:goal;
   if(project.engine==='roblox')adaptedGoal+=DESIGN_IMPLEMENTATION_GOAL;
+  if(project.engine==='web')adaptedGoal+=webRuntimeFailureBuildUpInstruction(project);
   const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox'||project.firstStageUnityWeb===true;
   const completion=focused&&project.engine==='roblox'?project.focusCompletionContract:null;
   if(focused)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL; // Web keeps its own verified browser/runtime gates.

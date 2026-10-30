@@ -33,14 +33,24 @@ test('OWNER LOCK: every main merge triggers the existing Pages publisher without
   assert.match(publishHeader,/group: magic-forest-pages-main-publish/);
   assert.match(publishHeader,/cancel-in-progress: false/);
   const publicationJob=workflow.split('  publish-pages:')[1].split('  post-publication-3d-smoke:')[0];
-  assert.doesNotMatch(publicationJob,/director_live_qa|xargs|curl/, 'slow HTTP QA must not retain the publication lock');
-  assert.match(workflow,/PAGES_IDENTICAL_PUBLICATION_INPUTS=PASS/);
-  assert.match(workflow,/id: latest_main/);
-  assert.match(publicationJob,/actions: write/,'stale Pages repair must dispatch through the same canonical workflow');
-  assert.match(publicationJob,/PAGES_LATEST_MAIN_CANONICAL_REQUEUED/);
-  assert.match(publicationJob,/gh workflow run magic-forest-pages\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
-  assert.match(publicationJob,/head_sha=\$latest/);
-  assert.match(publicationJob,/STALE_PAGES_REVISION_SKIPPED/);
+  // The publication lock may read ONE bounded, exact official source manifest.
+  // It must never wait for per-game HTTP checks or post-publication Director QA.
+  assert.doesNotMatch(publicationJob,/director_live_qa|xargs|WEB_PAGES_(?:ROUTE|ASSET)_NOT_LIVE|WEB_PAGES_PARALLEL_HTTP_QA_FAILED/,
+    'slow bulk game HTTP QA must remain outside the publication lock');
+  const boundedReads=publicationJob.match(/^\s*curl /gm)||[];
+  assert.equal(boundedReads.length,1,'publication lock may perform only one metadata HTTP check');
+  assert.match(publicationJob,/--connect-timeout 10 --max-time 30/);
+  assert.match(publicationJob,/Cache-Control: no-cache/);
+  assert.match(publicationJob,/https:\/\/hans1177\.github\.io\/jaewoon-games\/web-games\/publish-manifest\.json\?publication_check=\$GITHUB_RUN_ID/);
+  assert.match(publicationJob,/PAGES_ALREADY_PUBLIC=\$GITHUB_SHA/);
+  assert.match(publicationJob,/PAGES_MONOTONIC_PUBLICATION_ADMITTED=/);
+  assert.match(publicationJob,/PAGES_PUBLIC_ROLLBACK_SKIPPED=/);
+  assert.match(publicationJob,/PAGES_PUBLIC_ANCESTRY_UNVERIFIED=/);
+  assert.match(publicationJob,/id: latest_main/);
+  assert.match(publicationJob,/actions: write/,'existing canonical workflow must retain repair authority');
+  assert.match(workflow,/PAGES_OBSOLETE_RUN_LATEST_MAIN_REQUEUED=/);
+  assert.match(workflow,/gh workflow run magic-forest-pages\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(workflow,/head_sha=\$latest/);
   assert.match(workflow,/if: steps.latest_main.outputs.publish == 'true'/);
   assert.match(workflow,/id: live_revision/);
   assert.match(workflow,/post-publication-3d-smoke:/);

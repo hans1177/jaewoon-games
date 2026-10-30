@@ -525,14 +525,56 @@ try{
       assert.ok(Number(await game.locator('body').getAttribute('data-native-triangles'))>400,
         'CC0 avatar replacement did not preserve real WebGL geometry');
     }
-    // Test the existing gameplay state authority, not a replacement 3D demo.
-    const firstX=metrics.playerX;
-    await game.keyboard.down('d');
-    await game.waitForTimeout(850);
-    await game.keyboard.up('d');
-    const lastX=await game.locator('body').getAttribute('data-player-x');
-    assert.ok(Number(lastX)>firstX+1,
-     viewport.name+': keyboard input failed to move original game state');
+    // [실게임 입력 검증] 움직임은 실제 저장 좌표로 판정한다.
+    // 오른쪽이 장애물/지형에 막힌 경우까지 키보드 실패로 오인하지 않도록
+    // 반대·수직 방향도 실행한다. 모두 막히면 진짜 실패로 남기고 상세 증거를 기록한다.
+    const startingPosition={x:metrics.playerX,y:metrics.playerY};
+    const movementAttempts=[];
+    let movedPosition=null;
+    // 모바일은 키보드 에뮬레이션으로 통과시키지 않는다. 실제 Chromium 터치 패킷이
+    // 원본 #stick 포인터 핸들러와 게임 상태로 이어지는지 별도로 검사한다.
+    const touchSession=viewport.mobile?await game.context().newCDPSession(game):null;
+    const stickBox=viewport.mobile?await game.locator('#stick').boundingBox():null;
+    if(viewport.mobile)assert.ok(stickBox?.width>30&&stickBox?.height>30,
+      'MAGIC_FOREST_TOUCH_JOYSTICK_MISSING');
+    const directions={d:[1,0],a:[-1,0],w:[0,-1],s:[0,1]};
+    for(const key of ['d','a','w','s']){
+      const before=await game.evaluate(()=>({
+       x:Number(document.body.dataset.playerX),y:Number(document.body.dataset.playerY)
+      }));
+      let touchPoint=null;
+      if(viewport.mobile){
+        const [dx,dy]=directions[key],centerX=stickBox.x+stickBox.width/2,
+          centerY=stickBox.y+stickBox.height/2;
+        const start={x:centerX,y:centerY,id:1};
+        touchPoint={x:centerX+dx*stickBox.width*.25,y:centerY+dy*stickBox.height*.25,id:1};
+        await touchSession.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[start]});
+        await touchSession.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[touchPoint]});
+      }else await game.keyboard.down(key);
+      let observed;
+      try{
+        await game.waitForTimeout(850);
+        observed=await game.evaluate(()=>({
+         x:Number(document.body.dataset.playerX),y:Number(document.body.dataset.playerY),
+         motion:document.body.dataset.motionState||'',
+         area:document.body.dataset.area||'',
+         nativeBlocked:document.body.dataset.nativeBlocked||'',
+         activeElement:document.activeElement?.id||document.activeElement?.tagName||''
+        }));
+      }finally{
+        if(viewport.mobile)await touchSession.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+        else await game.keyboard.up(key);
+      }
+      const delta=Math.hypot(observed.x-before.x,observed.y-before.y);
+      movementAttempts.push({key,input:viewport.mobile?'real-chromium-touch':'keyboard',from:before,to:observed,delta});
+      if(delta>1){movedPosition=observed;break;}
+    }
+    assert.ok(movedPosition,
+     (viewport.mobile?'MAGIC_FOREST_TOUCH_WORLD_MOVEMENT_FAILED ':'MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED ')+viewport.name+' '+
+     JSON.stringify({startingPosition,movementAttempts,sourceSha:requiredRevision,errors:gameErrors}));
+    const lastX=String(movedPosition.x),lastY=String(movedPosition.y);
+    assert.equal(movedPosition.nativeBlocked,'false',
+     viewport.name+': 3D game became blocked after input');
     const afterMode=await game.locator('body').getAttribute('data-spatial-dimension');
     assert.equal(afterMode,'3d',viewport.name+': 3D disappeared after real game input');
     // Original pagehide handler writes the existing save. A reload must recover it.
@@ -542,8 +584,9 @@ try{
     await game.waitForFunction(()=>document.body.dataset.spatialDimension==='3d',
      null,{timeout:60000});
     const restoredX=Number(await game.locator('body').getAttribute('data-player-x'));
-    assert.ok(Math.abs(restoredX-Number(lastX))<100,
-     viewport.name+': saved player position was not restored');
+    const restoredY=Number(await game.locator('body').getAttribute('data-player-y'));
+    assert.ok(Math.hypot(restoredX-Number(lastX),restoredY-Number(lastY))<100,
+     viewport.name+': saved player position was not restored in the original game');
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught errors in save/reload cycle');
     if(!viewport.mobile){
       await game.waitForFunction(()=>document.body.dataset.nativePlayerSource?.endsWith('/assets/roblox/actors/native/mage.glb'),
