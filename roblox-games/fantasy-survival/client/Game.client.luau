@@ -753,19 +753,10 @@ end)
 
 -- Source-bound Roblox SKILL / VFX packages. Server approval is the only trigger.
 -- UI actions never apply local damage, healing, knockback, cooldown or inventory.
-local meadowSkillPresentation=nil
-local meadowCommonVFX=nil
-for _,pair in ipairs({
-  {"RobloxCommonSkillPresentation","skill"},{"RobloxCommonVFX","vfx"},
-}) do
-  local module=Shared:FindFirstChild(pair[1])
-  if module and module:IsA("ModuleScript") then
-    local ok,value=pcall(require,module)
-    if ok and type(value)=="table" then
-      if pair[2]=="skill" then meadowSkillPresentation=value else meadowCommonVFX=value end
-    end
-  end
-end
+local meadowSkillLoaded,meadowSkillPresentation=pcall(require,Shared:FindFirstChild("RobloxCommonSkillPresentation"))
+local meadowVfxLoaded,meadowCommonVFX=pcall(require,Shared:FindFirstChild("RobloxCommonVFX"))
+if not meadowSkillLoaded or type(meadowSkillPresentation)~="table" then meadowSkillPresentation=nil end
+if not meadowVfxLoaded or type(meadowCommonVFX)~="table" then meadowCommonVFX=nil end
 local actionsById={}
 for _,action in ipairs(Config.Actions) do actionsById[action.Id]=action end
 local debris=game:GetService("Debris")
@@ -805,11 +796,11 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     vfx=meadowCommonVFX,
   }
   local selectedFx=overrideVfx or action.VfxAtom
-  if meadowCommonVFX and selectedFx then
+  if meadowCommonVFX and selectedFx and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
     local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
     if not ok then warn("마력숲 VFX source unavailable: "..tostring(err)) end
   end
-  if meadowSkillPresentation and not overrideVfx and action.SkillAtom and action.SkillAtom~="SKILL_ICON_BADGE" then
+  if meadowSkillPresentation and not overrideVfx and action.SkillAtom and action.SkillAtom~="SKILL_ICON_BADGE" and hasStudioAssetAtom("SKILL","CAST_HAND") then
     local ok,result,controller=pcall(meadowSkillPresentation.Create,action.SkillAtom,settings)
     if ok then
       if action.SkillAtom=="SHIELD_SHELL" and typeof(result)=="Instance" then
@@ -898,6 +889,8 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
     character:SetAttribute("NativeCombatMotionState", "APPROVED_MOTION_ATOM_REQUIRED")
     return
   end
+  -- 선택된 맨손 캐릭터 계열은 실제 R15 관절 포즈에만 적용한다.
+  if not hasStudioAssetAtom("CHARACTER","HAND_BARE") then return end
   local motionOk, authoredMotion = pcall(combatMotionSource.Describe, "LIGHT_ATTACK_1")
   if not motionOk or not authoredMotion or authoredMotion.rig ~= "R15" then
     character:SetAttribute("NativeCombatMotionState", "R15_MOTION_SOURCE_REQUIRED")
