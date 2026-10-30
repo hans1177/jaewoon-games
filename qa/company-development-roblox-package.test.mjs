@@ -1033,3 +1033,34 @@ test('fantasy meadow preserves genuine unarmed R15, server-owned 11 skills, and 
   assert.match(client,/local actionGrid=Instance\.new\("UIGridLayout"\)/);
   assert.match(client,/list\.CanvasSize = UDim2\.fromOffset\(0,math\.ceil\(#Config\.Actions\/2\)\*60\+12\)/);
 });
+
+test('fantasy meadow uses six source-native creature action families with no proxy mobs',()=>{
+  const root='roblox-games/fantasy-survival/';
+  const server=fs.readFileSync(root+'server/Game.server.luau','utf8');
+  const client=fs.readFileSync(root+'client/Game.client.luau','utf8');
+  const manifest=JSON.parse(fs.readFileSync(root+'native-assets.json','utf8'));
+  const expected=['wolf','bee','golem','deer','boar','rabbit'];
+  for(const species of expected){
+    assert.ok(manifest.models[species]?.sourceSha256,species+' must retain its original CC0 hash');
+    assert.match(client,new RegExp(species+'="(?:QUADRUPED|FLYER|GIANT)"'),species);
+  }
+  for(const pattern of ['WOLF_BITE','WOLF_POUNCE','BEE_SWEEP',
+      'BEE_SPIRAL_STING','GOLEM_SLAM','GOLEM_STOMP']){
+    assert.ok(server.includes('"'+pattern+'"'),pattern+' must be selected by authoritative AI');
+    assert.ok(client.includes(pattern+'='),pattern+' must get native readable telegraph and effects');
+  }
+  assert.match(server,/model:SetAttribute\("CreatureMotionState","IDLE"\)/);
+  assert.match(server,/model:SetAttribute\("CreatureMotionState","WALK"\)/);
+  assert.match(server,/target\.model:SetAttribute\("CreatureMotionState",target\.HP>0 and "HIT" or "DEATH"\)/);
+  assert.match(server,/task\.delay\(\.72,function\(\)/,'corpse animation survives death for 0.72s');
+  assert.match(client,/creatureMotionSource\.SampleProceduralActorMotion\(/);
+  assert.match(client,/creatureMotionSource\.BindJointPose\(/);
+  assert.match(client,/model:GetAttribute\("Species"\) or model:GetAttribute\("MeadowWildlife"\)/);
+  assert.match(client,/ORIGINAL_RIG_JOINTS_REQUIRED/);
+  assert.match(client,/SOURCE_JOINT_CHANNEL_MISMATCH/);
+  assert.match(client,/meadowCommonVFX\.Create/);
+  assert.match(server,/local defense=meadowDefense\[targetPlayer\] or \{\}/);
+  assert.match(server,/if enemy\.attackPattern=="GOLEM_STOMP" then/);
+  assert.doesNotMatch(client,/Instance\.new\("Part"\)/,'no fake geometry in source creature movement');
+  assert.doesNotMatch(server,/Instance\.new\("Part"\)/,'no proxy mobs or Part floor');
+});
