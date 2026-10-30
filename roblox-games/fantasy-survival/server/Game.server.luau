@@ -106,19 +106,22 @@ local function createStartingMeadow()
       end
     end
   end
-  meadowTerrain:SetMaterialColor(Enum.Material.Grass,Color3.fromRGB(102,151,82))
-  meadowTerrain:SetMaterialColor(Enum.Material.LeafyGrass,Color3.fromRGB(75,116,63))
-  meadowTerrain:SetMaterialColor(Enum.Material.Ground,Color3.fromRGB(115,94,65))
+  -- [숲 색감] 초원·수풀·흙·돌을 같은 저채도 자연 팔레트로 맞춘다.
+  meadowTerrain:SetMaterialColor(Enum.Material.Grass,Color3.fromRGB(101,145,96))
+  meadowTerrain:SetMaterialColor(Enum.Material.LeafyGrass,Color3.fromRGB(70,111,75))
+  meadowTerrain:SetMaterialColor(Enum.Material.Ground,Color3.fromRGB(114,97,76))
+  meadowTerrain:SetMaterialColor(Enum.Material.Rock,Color3.fromRGB(117,126,117))
   -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
   for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
     meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
   end
   Lighting.ClockTime = 10.5
   Lighting.Brightness = 2
-  Lighting.Ambient = Color3.fromRGB(95,113,105)
-  Lighting.OutdoorAmbient = Color3.fromRGB(154,175,151)
+  Lighting.Ambient = Color3.fromRGB(97,118,107)
+  Lighting.OutdoorAmbient = Color3.fromRGB(155,176,149)
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
+  gameWorld:SetAttribute("MeadowVisualStyle", "MOSS_FOREST_MATTE_V1")
   gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
   gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
@@ -151,8 +154,8 @@ local function updateMeadowClimate()
   local damp=weather=="STORM" and .66 or weather=="RAIN" and .79
     or weather=="FOG" and .88 or weather=="SNOW" and .86 or 1
   local brightness=math.max(.78,(.82+1.6*sun)*damp)
-  local lightColor=Color3.fromRGB(72,88,118):Lerp(Color3.fromRGB(155,175,146),sun)
-  local airColor=Color3.fromRGB(83,99,128):Lerp(Color3.fromRGB(177,196,163),sun)
+  local lightColor=Color3.fromRGB(79,103,111):Lerp(Color3.fromRGB(148,167,143),sun)
+  local airColor=Color3.fromRGB(92,113,119):Lerp(Color3.fromRGB(169,188,165),sun)
   if weather=="STORM" or weather=="RAIN" then
     lightColor=lightColor:Lerp(Color3.fromRGB(83,102,118),weather=="STORM" and .5 or .25)
     airColor=airColor:Lerp(Color3.fromRGB(110,129,139),weather=="STORM" and .65 or .3)
@@ -278,15 +281,26 @@ local function worldAsset(id, location, targetHeight)
       nativeWorldScale=propScale
     end
     clone:ScaleTo(nativeWorldScale)
-    -- [야생동물 표면] CC0 원본 메시의 색·재질만 조정한다.
-    local animalTint=id=="deer" and Color3.fromRGB(167,122,89)
-      or id=="boar" and Color3.fromRGB(105,78,60)
-      or id=="rabbit" and Color3.fromRGB(199,192,174) or nil
-    if animalTint then
+    -- [원본 CC0 숲 표면] 새 파츠 없이 수목·야생동물을 같은 무광 팔레트로 맞춘다.
+    -- 원본 MeshId/TextureID/리그 및 자원·저장·충돌은 수정하지 않는다.
+    local animalTint=id=="deer" and Color3.fromRGB(164,124,96)
+      or id=="boar" and Color3.fromRGB(110,86,68)
+      or id=="rabbit" and Color3.fromRGB(186,181,159) or nil
+    if animalTint or id=="tree" then
       for _,surface in ipairs(clone:GetDescendants()) do
         if surface:IsA("MeshPart") then
-          surface.Color=animalTint
-          surface.Material=Enum.Material.Fabric
+          if id=="tree" then
+            local name=surface.Name:lower()
+            local bark=name:find("trunk",1,true) or name:find("bark",1,true)
+              or name:find("stem",1,true) or name:find("branch",1,true)
+              or name:find("wood",1,true)
+            surface.Color=bark and Color3.fromRGB(113,88,65)
+              or Color3.fromRGB(74,121,78)
+            surface.Material=bark and Enum.Material.Wood or Enum.Material.Fabric
+          else
+            surface.Color=animalTint
+            surface.Material=Enum.Material.Fabric
+          end
           surface.Reflectance=0
         end
       end
@@ -916,13 +930,16 @@ local function spawnEnemy(isBoss, index)
   local meadowNames={wolf="초원 늑대",bee="초원 벌",boar="사나운 멧돼지",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
-  -- [몹 색·재질] 원본 텍스처/메시는 그대로 쓰고 종별 표면만 차별화한다.
+  -- [몬스터 공통 재질] 원본 텍스처·메시·종별 실루엣은 유지한다.
+  -- 숲의 무광 저채도 색감만 맞추며 보스의 암석 재질과 벌의 투명 날개는 보존한다.
   local originalTextured=partId=="bat" or partId=="mushroom" or partId=="skeleton"
-  local bodyTint=isBoss and Color3.fromRGB(126,135,124)
-    or originalTextured and Color3.fromRGB(255,255,255)
-    or partId=="bee" and Color3.fromRGB(241,181,67)
-    or partId=="boar" and Color3.fromRGB(126,91,72)
-    or Color3.fromRGB(141,132,119)
+  local bodyTint=isBoss and Color3.fromRGB(132,143,128)
+    or partId=="bat" and Color3.fromRGB(121,125,139)
+    or partId=="mushroom" and Color3.fromRGB(166,139,110)
+    or partId=="skeleton" and Color3.fromRGB(204,195,172)
+    or partId=="bee" and Color3.fromRGB(225,176,91)
+    or partId=="boar" and Color3.fromRGB(131,101,82)
+    or Color3.fromRGB(145,137,123)
   local bodyMaterial=isBoss and Enum.Material.Slate or originalTextured and Enum.Material.SmoothPlastic
     or partId=="bee" and Enum.Material.SmoothPlastic or Enum.Material.Fabric
   for _,surface in ipairs(model:GetDescendants()) do
