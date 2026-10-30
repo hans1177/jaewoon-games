@@ -791,10 +791,11 @@ inventoryGridLayout.CellPadding=UDim2.fromOffset(8,8)
 inventoryGridLayout.SortOrder=Enum.SortOrder.LayoutOrder
 inventoryGridLayout.Parent=inventoryGrid
 local inventoryData={
-  {"나무","Wood",4,Color3.fromRGB(199,154,91)},
-  {"돌","Stone",4,Color3.fromRGB(173,193,197)},
+  -- 등록된 CC0 아틀라스에 없는 자원은 엉뚱한 가방 그림 대신 글자로 식별한다.
+  {"나무","Wood",nil,Color3.fromRGB(209,167,106),"나무"},
+  {"돌","Stone",nil,Color3.fromRGB(184,206,209),"돌"},
   {"연구 일지","ResearchRecords",5,Color3.fromRGB(229,195,120)},
-  {"재화","Coins",4,Color3.fromRGB(238,201,92)},
+  {"재화","Coins",nil,Color3.fromRGB(243,211,120),"코인"},
   {"장착 장비","Equipment",3,Color3.fromRGB(144,202,232)},
   {"강화 단계","WeaponTier",2,Color3.fromRGB(183,151,243)},
 }
@@ -803,31 +804,62 @@ for index,item in ipairs(inventoryData)do
   local card=Instance.new("Frame")
   card.Name="ItemSlot"..index
   card.LayoutOrder=index
-  card.BackgroundColor3=Color3.fromRGB(20,39,40)
+  card.BackgroundColor3=Color3.fromRGB(18,35,36)
+  card.BackgroundTransparency=.04
   card.BorderSizePixel=0
   card.Parent=inventoryGrid
+  local cardGradient=Instance.new("UIGradient")
+  cardGradient.Rotation=90
+  cardGradient.Color=ColorSequence.new(Color3.fromRGB(43,61,57),Color3.fromRGB(13,27,32))
+  cardGradient.Parent=card
   local corner=Instance.new("UICorner")
   corner.CornerRadius=UDim.new(0,11)
   corner.Parent=card
   local outline=Instance.new("UIStroke")
   outline.Color=item[4]
-  outline.Thickness=1.2
-  outline.Transparency=.32
+  outline.Thickness=1.5
+  outline.Transparency=.18
   outline.Parent=card
-  local icon=Instance.new("ImageLabel")
-  icon.Name="CC0ItemIcon"
-  icon.BackgroundTransparency=1
-  icon.Image=meadowIconAtlas
-  icon.ImageRectOffset=Vector2.new(item[3]*64,0)
-  icon.ImageRectSize=Vector2.new(64,64)
-  icon.Size=UDim2.fromOffset(45,45)
-  icon.Position=UDim2.fromOffset(7,10)
-  icon.ZIndex=45
-  icon.Parent=card
+  local iconBack=Instance.new("Frame")
+  iconBack.Name="ItemIconBack"
+  iconBack.Position=UDim2.fromOffset(7,11)
+  iconBack.Size=UDim2.fromOffset(48,52)
+  iconBack.BackgroundColor3=item[4]
+  iconBack.BackgroundTransparency=.80
+  iconBack.BorderSizePixel=0
+  iconBack.ZIndex=44
+  iconBack.Parent=card
+  local iconCorner=Instance.new("UICorner")
+  iconCorner.CornerRadius=UDim.new(0,9)
+  iconCorner.Parent=iconBack
+  if item[3]~=nil then
+    local icon=Instance.new("ImageLabel")
+    icon.Name="CC0ItemIcon"
+    icon.BackgroundTransparency=1
+    icon.Image=meadowIconAtlas
+    icon.ImageRectOffset=Vector2.new(item[3]*64,0)
+    icon.ImageRectSize=Vector2.new(64,64)
+    icon.Size=UDim2.fromOffset(43,43)
+    icon.Position=UDim2.fromOffset(2,4)
+    icon.ZIndex=45
+    icon.Parent=iconBack
+  else
+    local symbol=Instance.new("TextLabel")
+    symbol.Name="ResourceTextIcon"
+    symbol.BackgroundTransparency=1
+    symbol.Size=UDim2.fromScale(1,1)
+    symbol.Text=item[5]
+    symbol.TextColor3=item[4]
+    symbol.TextStrokeTransparency=.65
+    symbol.Font=Enum.Font.GothamBold
+    symbol.TextSize=item[5]=="코인" and 15 or 17
+    symbol.ZIndex=45
+    symbol.Parent=iconBack
+  end
   local title=Instance.new("TextLabel")
   title.Name="ItemName"
-  title.Position=UDim2.fromOffset(56,8)
-  title.Size=UDim2.new(1,-61,0,23)
+  title.Position=UDim2.fromOffset(62,10)
+  title.Size=UDim2.new(1,-67,0,22)
   title.BackgroundTransparency=1
   title.Text=item[1]
   title.TextXAlignment=Enum.TextXAlignment.Left
@@ -839,8 +871,8 @@ for index,item in ipairs(inventoryData)do
   title.Parent=card
   local count=Instance.new("TextLabel")
   count.Name="OwnedCount"
-  count.Position=UDim2.fromOffset(56,33)
-  count.Size=UDim2.new(1,-61,0,30)
+  count.Position=UDim2.fromOffset(62,34)
+  count.Size=UDim2.new(1,-67,0,30)
   count.BackgroundTransparency=1
   count.Text="불러오는 중"
   count.TextXAlignment=Enum.TextXAlignment.Left
@@ -858,7 +890,7 @@ inventoryQuick.Name="MeadowInventoryQuick"
 inventoryQuick.Image=meadowIconAtlas
 inventoryQuick.ImageRectOffset=Vector2.new(256,0)
 inventoryQuick.ImageRectSize=Vector2.new(64,64)
-inventoryQuick.Size=UDim2.fromOffset(46,46)
+inventoryQuick.Size=UDim2.fromOffset(50,50)
 inventoryQuick.BackgroundColor3=Color3.fromRGB(19,43,40)
 inventoryQuick.BorderSizePixel=0
 inventoryQuick.ZIndex=11
@@ -868,8 +900,20 @@ quickCorner.CornerRadius=UDim.new(0,11)
 quickCorner.Parent=inventoryQuick
 local quickStroke=Instance.new("UIStroke")
 quickStroke.Color=Color3.fromRGB(178,205,149)
-quickStroke.Thickness=1.5
+quickStroke.Thickness=1.8
 quickStroke.Parent=inventoryQuick
+local quickCaption=Instance.new("TextLabel")
+quickCaption.Name="BackpackCaption"
+quickCaption.Position=UDim2.fromOffset(0,50)
+quickCaption.Size=UDim2.fromOffset(50,17)
+quickCaption.BackgroundTransparency=1
+quickCaption.Text="가방"
+quickCaption.TextColor3=Color3.fromRGB(247,239,207)
+quickCaption.TextStrokeTransparency=.34
+quickCaption.Font=Enum.Font.GothamBold
+quickCaption.TextSize=11
+quickCaption.ZIndex=12
+quickCaption.Parent=inventoryQuick
 inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   inventoryQuick.Visible=gui:GetAttribute("GameMenuOpen")~=true
