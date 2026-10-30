@@ -1887,7 +1887,7 @@ test('fantasy original presentation binds selected character environment skills 
     assert.equal(check(client.replace(selector,'true')),false,'unselected factory: '+family);
     assert.equal(check(client.replace(selector,'not '+selector)),false,'negative selection: '+family);
     assert.equal(check(client.replace(selector,selector+' or true')),false,'selection bypass: '+family);
-    assert.equal(check(client.replace(moduleName,'UntrustedFactory')),false,'unapproved module: '+family);
+    assert.equal(check(client.replaceAll(moduleName,'UntrustedFactory')),false,'unapproved module: '+family);
     assert.equal(check(client.replace('local actionsById={}',alias+' = function() end\nlocal actionsById={}')),false,'reassigned factory: '+family);
   }
 });
