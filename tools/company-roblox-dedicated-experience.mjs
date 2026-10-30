@@ -157,7 +157,17 @@ export async function configureRobloxExperience({
   }
   const {payload}=await parseResponse(response);
   if(!response.ok)throw new Error(`Roblox experience configure failed HTTP ${response.status}: ${errText(payload)}`);
-  if(avatarRig==='R15'&&Number(payload?.universeAvatarType)!==3)throw new Error('OWNER_R15_CONFIGURATION_NOT_CONFIRMED');
+  if(avatarRig==='R15'){
+    let actual=payload?.universeAvatarType;
+    if(actual!==3&&actual!=='MorphToR15'){
+      const current=await fetchImpl(`https://develop.roblox.com/v1/universes/${universeId}/configuration`,{headers:{cookie:c}});
+      const checked=await parseResponse(current);
+      if(!current.ok)throw new Error('OWNER_R15_CONFIGURATION_READ_FAILED_HTTP_'+current.status);
+      actual=checked.payload?.universeAvatarType;
+    }
+    console.log('ROBLOX_OWNER_AVATAR_TYPE='+String(actual||'UNCONFIRMED'));
+    if(actual!==3&&actual!=='MorphToR15')throw new Error('OWNER_R15_CONFIGURATION_NOT_CONFIRMED');
+  }
   return Object.freeze({configured:true,privateRequested:true,...(avatarRig?{avatarRig}: {})});
 }
 
