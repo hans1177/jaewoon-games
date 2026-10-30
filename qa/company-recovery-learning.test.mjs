@@ -727,11 +727,55 @@ test('single historical game-source task is handed to matching existing Vibe rep
   assert.deepEqual(second.systemAi,first.systemAi);
 });
 
-test('Roblox-only development does not reactivate held web game recovery',async()=>{
+test('active web game recovers its own failure without touching another game or a held game',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
-  const web={id:'web-repair',gameId:'legacy-web',target:'web',sourceRoot:'web-games/legacy-web',type:'implementation',status:'queued',priority:'normal'};
+  const forest={id:'forest-repair',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    type:'implementation',status:'failed',blocker:'WEB_INPUT_STALL',priority:'normal',
+    responsibleFiles:['web-games/forest/index.html'],evidence:[]};
+  const sibling={id:'desert-repair',gameId:'desert',target:'web',sourceRoot:'web-games/desert',
+    type:'implementation',status:'queued',priority:'normal',evidence:[]};
+  const held={id:'held-repair',gameId:'held',target:'web',sourceRoot:'web-games/held',
+    type:'implementation',status:'queued',ownerDevelopmentHold:true,priority:'normal',evidence:[]};
+  const recovery={id:'forest-recovery',status:'queued',gameId:'forest',sourceQueue:'vibe2',
+    recoveryOwner:'VIBE2_VIBE3',sourceTaskId:forest.id,relatedTaskIds:[sibling.id,held.id],
+    failureStage:'WEB_RUNTIME',failureSignature:'WEB_INPUT_STALL',
+    recoveryStrategy:'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT',
+    responsibleFiles:['web-games/forest/index.html'],evidence:[]};
+  const result=dispatchRecovery({route:'vibe',recoveryInput:{tasks:[recovery]},
+    gameQueueInput:{tasks:[forest,sibling,held]}});
+  assert.equal(result.recovery.tasks[0].status,'dispatched');
+  assert.equal(result.gameQueue.tasks[0].status,'queued');
+  assert.equal(result.gameQueue.tasks[0].priority,'critical');
+  assert.equal(result.gameQueue.tasks[0].sourceMutationRequired,true);
+  assert.ok(result.gameQueue.tasks[0].evidence.includes('recovery-exact-stage:WEB_RUNTIME'));
+  assert.deepEqual(result.gameQueue.tasks[1],sibling);
+  assert.deepEqual(result.gameQueue.tasks[2],held);
+  assert.deepEqual(result.gameRequeuedTaskIds,[forest.id]);
+  const again=dispatchRecovery({route:'vibe',recoveryInput:result.recovery,gameQueueInput:result.gameQueue});
+  assert.deepEqual(again.gameQueue,result.gameQueue);
+  assert.equal(again.dispatched.length,0);
+});
+
+test('web recovery cannot write another game or revive an owner hold',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const task={id:'forest-task',gameId:'forest',target:'web',sourceRoot:'web-games/forest',status:'queued'};
+  const wrong={id:'bad-scope',status:'queued',gameId:'forest',recoveryOwner:'VIBE2_VIBE3',
+    sourceTaskId:task.id,responsibleFiles:['web-games/desert/index.html']};
+  const blocked=dispatchRecovery({recoveryInput:{tasks:[wrong]},gameQueueInput:{tasks:[task]}});
+  assert.deepEqual(blocked.gameQueue.tasks,[task]);
+  assert.equal(blocked.recovery.tasks[0].status,'queued');
+  const held={...task,ownerDevelopmentStopped:true};
+  const scoped={...wrong,id:'held-game',responsibleFiles:['web-games/forest/index.html']};
+  const heldResult=dispatchRecovery({recoveryInput:{tasks:[scoped]},gameQueueInput:{tasks:[held]}});
+  assert.deepEqual(heldResult.gameQueue.tasks,[held]);
+  assert.equal(heldResult.recovery.tasks[0].status,'queued');
+});
+
+test('held web game recovery remains queued instead of reactivating it',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const web={id:'web-repair',gameId:'legacy-web',target:'web',sourceRoot:'web-games/legacy-web',type:'implementation',status:'queued',priority:'normal',ownerDevelopmentHold:true};
   const old={id:'game-legacy-web',status:'queued',responsibleFiles:['web-games/legacy-web/index.html']};
-  const rec={id:'recovery-web',status:'queued',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'web-repair',responsibleFiles:['web-games/legacy-web/index.html']};
+  const rec={id:'recovery-web',status:'queued',gameId:'legacy-web',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'web-repair',responsibleFiles:['web-games/legacy-web/index.html']};
   const result=dispatchRecovery({route:'vibe',gameQueueInput:{tasks:[web]},systemAiQueueInput:{tasks:[old]},recoveryInput:{tasks:[rec]}});
   assert.deepEqual(result.gameQueue.tasks,[web]);
   assert.deepEqual(result.systemAi.tasks,[old]);
