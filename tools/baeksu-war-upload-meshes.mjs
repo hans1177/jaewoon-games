@@ -7,6 +7,7 @@ import crypto from 'node:crypto';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 const UNIVERSE='10773115989', PLACE='120481433333785';
 const fantasy=process.argv.includes('--game-id=fantasy-survival');
+const targetUniverse=fantasy?String(process.env.ROBLOX_UNIVERSE_ID||'').trim():UNIVERSE;
 const dir=process.argv[2]||'/tmp/baeksu-art';
 const receipt=process.argv[3]||'/tmp/baeksu-art-upload.json';
 const key=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
@@ -14,11 +15,11 @@ if(!key)throw new Error('OPEN_CLOUD_KEY_REQUIRED');
 const raw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
 const cookie=raw?(raw.includes('.ROBLOSECURITY=')?raw:'.ROBLOSECURITY='+raw+';'):'';
 let creator=String(process.env.ROBLOX_CREATOR_USER_ID||'').trim();
-if(!creator&&cookie){
- const r=await fetch('https://develop.roblox.com/v1/universes/'+UNIVERSE,{
+if(!creator&&cookie&&/^[1-9][0-9]*$/.test(targetUniverse)){
+ const r=await fetch('https://develop.roblox.com/v1/universes/'+targetUniverse,{
    headers:{cookie},signal:AbortSignal.timeout(16000)});
  const data=await r.json().catch(()=>({}));
- if(r.ok&&String(data.id)===UNIVERSE&&data.creatorType==='User')creator=String(data.creatorTargetId||'');
+ if(r.ok&&String(data.id)===targetUniverse&&data.creatorType==='User')creator=String(data.creatorTargetId||'');
 }
 if(!creator){
  const scope=await introspectRobloxApiKey({apiKey:key});
