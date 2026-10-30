@@ -4259,9 +4259,11 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       candidate.sourceRevision,candidate.sourceCommit,candidate.sourceSha,candidate.buildSourceRevision,
       ...existingEvidence.map(row=>row.match(/^(?:source-revision|runtime-source-revision|source-commit|build-source-revision):([0-9a-f]{40})$/i)?.[1]||'')
     ].map(clean).filter(row=>/^[0-9a-f]{40}$/i.test(row)))];
-    const sameSource=declaredRevisions.length>0
-      ?declaredRevisions.every(row=>row===revision)
-      :/^[0-9a-f]{40}$/i.test(tree)&&currentSourceTreeSha({repoRoot,sourcePath:root})===tree;
+    const sameSource=project.queueRuntimeObserved===true
+      &&/^[0-9a-f]{40}$/i.test(revision)
+      &&(declaredRevisions.length>0
+        ?declaredRevisions.every(row=>row===revision)
+        :/^[0-9a-f]{40}$/i.test(tree)&&currentSourceTreeSha({repoRoot,sourcePath:root})===tree);
     const ownerHeld=project.ownerDevelopmentHold===true||project.ownerDevelopmentStopped===true
       ||clean(centralPolicy?.developmentAccess?.[platform])==='OWNER_HOLD';
     const workOwned=clean(candidate.executionLane)==='GAME_PRIMARY'
@@ -4310,6 +4312,16 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate={...candidate,goal:diagnosis,priority,evidence};
         changed+=1;
       }
+    }else if(clean(item.status).toLowerCase()==='queued'
+      &&project.queueRuntimeObserved===true&&project.queueRuntimePassed===true
+      &&sameSource&&workOwned&&!ownerHeld
+      &&clean(candidate.goal).includes(activeBottleneckStart)){
+      // 같은 게임·소스의 새 성공 관측은 낡은 진단 목표만 걷어낸다.
+      // 성공한 실제 플랫폼 게이트 판정과 릴리스 상태는 여기서 변경하지 않는다.
+      const goal=clean(candidate.goal).replace(/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]\n[\s\S]*?\n\[\/GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]\n?/g,'').trim();
+      const evidence=existingEvidence.filter(row=>!row.startsWith('game-bottleneck-current:'));
+      candidate={...candidate,goal,evidence};
+      changed+=1;
     }
     const checkedCandidate={
       ...candidate,
