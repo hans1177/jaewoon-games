@@ -155,15 +155,20 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         if(recoveryGameId&&clean(task.gameId)!==recoveryGameId)return task;
         if(exactWebPlaytest&&!exactWebOwner(task))return task;
         if(recoveryGameId){
-          const taskRoot=clean(task.sourceRoot).replaceAll('\\\\','/').match(/^(web|roblox|unity|unreal|godot)-games\//);
-          const taskFile=uniq(task.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/'))
-            .find(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)))||'';
-          const taskFilePlatform=taskFile.match(/^(web|roblox|unity|unreal|godot)-games\//)?.[1]||'';
-          const taskPlatform=taskRoot?.[1]||taskFilePlatform||clean(task.target).toLowerCase();
-          if(scopePlatform&&taskPlatform!==scopePlatform)return task;
-          // 소스/플랫폼이 확인되지 않은 작업을 relatedTaskIds만으로 자동 수정하지 않는다.
-          if(!taskPlatform&&clean(task.id)!==clean(rec.sourceTaskId))return task;
-          if(!scopePlatform&&clean(task.id)!==clean(rec.sourceTaskId))return task;
+          const taskRoot=clean(task.sourceRoot).replaceAll('\\\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
+          const taskFiles=uniq(task.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/').replace(/^\.\//,''))
+            .filter(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)));
+          const taskTarget=clean(task.target).toLowerCase();
+          if(scopePlatform){
+            const expectedRoot=scopePlatform+'-games/'+recoveryGameId;
+            // 플랫폼만 같은 다른 게임의 소스 또는 같은 게임의 무관한 책임 파일을 재예약하지 않는다.
+            if(taskRoot&&taskRoot!==expectedRoot&&!taskRoot.startsWith(expectedRoot+'/'))return task;
+            if(taskFiles.some(file=>!file.startsWith(expectedRoot+'/')||file.includes('..')))return task;
+            if(taskTarget&&taskTarget!==scopePlatform)return task;
+            const primary=clean(task.id)===clean(rec.sourceTaskId);
+            if(!primary&&(!taskFiles.length||!taskFiles.some(file=>gameSourceFiles.includes(file))))return task;
+            if(primary&&!taskRoot&&!taskFiles.length&&taskTarget!==scopePlatform)return task;
+          }else if(clean(task.id)!==clean(rec.sourceTaskId))return task;
         }
         if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true)return task;
         if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return task;
