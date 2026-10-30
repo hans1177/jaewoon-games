@@ -1253,25 +1253,34 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
-  // Current mobile combat: 2 skills + guard, world-tap basic attack, dynamic semicircle.
-  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-14,1,-142)'));
+  // Current mobile combat: six real skills in an anchored left semicircle, plus native primary attack.
+  assert.ok(client.includes('local meadowArcDegrees={-150,-114,-78,-186,-222,-258}'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.match(client,/v.Y-dockHeight-110/);
+  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-right,1,-bottom)'));
+  assert.ok(client.includes('meadowPrimaryAttack.Activated:Connect(function()'));
+  assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
+  assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
+  assert.ok(client.includes('local meadowSkillCooldowns={}'));
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
   assert.match(dodge,/params.RespectCanCollide=true/);
   assert.match(dodge,/ground.Normal.Y>=\.65/);
   assert.match(dodge,/ground.Material~=Enum.Material.Water/);
   assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
-  assert.ok(client.includes('button.Size=UDim2.fromOffset(dockWidth,buttonHeight)'));
+  assert.ok(client.includes('button.Size=UDim2.fromOffset(icon,icon)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
+  for(const id of ['skill-meadow-heavy','skill-meadow-sweep','skill-meadow-bolt',
+    'skill-meadow-parry','skill-meadow-heal','skill-meadow-focus']){
+    assert.ok(client.includes('{"'+id+'",'), 'semicircle skill missing: '+id);
+  }
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
-  assert.ok(client.includes('{"meadow-unarmed-uppercut","승룡권"'));
+  assert.ok(client.includes('{"skill-meadow-dodge-left","좌회피"'));
+  assert.ok(client.includes('{"skill-meadow-dodge-right","우회피"'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
   assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,/);
   assert.match(client,/pages=meadowPages/);
   assert.ok(client.includes('hideButton=true'),
-    'the default attack button must remain hidden for world-tap combat');
+    'the default menu attack remains hidden; world-tap and main attack share the existing server action');
   const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
   assert.match(ui,/if compact then/);
   assert.ok(ui.includes('if primary and primary.hideButton~=true then'));
