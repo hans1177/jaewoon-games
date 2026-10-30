@@ -508,7 +508,7 @@ end)
 -- [전투 HUD] 실제 휴머노이드 최대 체력을 기준으로 표시한다.
 local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="MeadowHealth",text="체력",textSize=11})
 meadowHealthTrack.Parent=root
-local watched = {"Score","Coins","CombatProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
+local watched = {"Score","Coins","CombatProficiency","CookingProficiency","CraftingProficiency","GatheringProficiency","BuildingProficiency","HuntingProficiency","AlchemyProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text = string.format("오픈월드 · 주변 몬스터 %d",player:GetAttribute("AliveEnemies") or 0)
   local character=player.Character
@@ -591,9 +591,18 @@ local function renderMeadowPages()
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
   local tool=character and character:FindFirstChildOfClass("Tool")
-  meadowLabels[1].Text=string.format("%s\n\n전투 숙련도  %d\n체력  %d / %d\n장비  %s\n무기 강화  %d단계\n보스 처치  %d\n\n숙련도는 전투와 생존 행동으로 상승해.",
-    player.DisplayName,math.floor(player:GetAttribute("CombatProficiency") or 0),humanoid and humanoid.Health or 0,
-    humanoid and humanoid.MaxHealth or 100,tool and tool.Name or "맨손",player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
+  -- [캐릭터 숙련도] 이전 전투 숙련도 값을 유지하고 일곱 분야를 독립 표시한다.
+  -- 사냥은 실제 늑대·박쥐 처치, 채집은 실제 수확, 제작은 장비 강화 성공에서만 증가한다.
+  local proficiencyLines={}
+  for _,entry in ipairs(Config.Proficiencies or {}) do
+    proficiencyLines[#proficiencyLines+1]=string.format("%s  %d",
+      entry.Name,math.floor(player:GetAttribute(entry.Key) or 0))
+  end
+  meadowLabels[1].Text=string.format("%s\n\n숙련도 · 7가지\n%s\n\n체력  %d / %d\n장비  %s\n무기 강화  %d단계\n보스 처치  %d\n\n요리·건축·연금술은 실제 제작 기능 연결 전에는 오르지 않아.",
+    player.DisplayName,table.concat(proficiencyLines,"\n"),
+    humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
+    tool and tool.Name or "맨손",player:GetAttribute("WeaponTier") or 0,
+    player:GetAttribute("Bosses") or 0)
   meadowLabels[2].Text=string.format("소지품 · 서버 기록\n숙련도 %d  ·  장착 %s\n저장 %s",
     math.floor(player:GetAttribute("CombatProficiency") or 0),tool and tool.Name or "맨손",
     tostring(player:GetAttribute("SaveStatus") or "불러오는 중"))
