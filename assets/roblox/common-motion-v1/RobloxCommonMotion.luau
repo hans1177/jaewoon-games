@@ -1924,7 +1924,10 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
  assert(root and root:IsA("BasePart"),"RIG_ROOT_REQUIRED")
  local motors,byParent,names={}, {}, {}
  for _,joint in ipairs(rig:GetDescendants())do
-  if joint:IsA("Motor6D")and joint.Part0 and joint.Part1
+  -- AnimationConstraint exposes read-only Part0/Part1 aliases, so the same
+  -- real-part Pose tree works for upgraded R15 NPC rigs and legacy Motor6Ds.
+  if (joint:IsA("Motor6D")or joint:IsA("AnimationConstraint"))
+   and joint.Part0 and joint.Part1
    and joint.Part0:IsDescendantOf(rig)and joint.Part1:IsDescendantOf(rig)
    and joint.Part0~=joint.Part1 then
    motors[#motors+1]=joint
