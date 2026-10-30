@@ -1146,15 +1146,21 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
-  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-104,1,-94\)/);
-  assert.match(client,/meadowSkillDock.Size=UDim2.fromOffset\(176,236\)/);
-  assert.match(client,/meadowSkillScale.Scale=UserInputService.TouchEnabled and \.9 or 1/);
-  assert.match(client,/\{"meadow-unarmed-kick","회전차기",42,116,/);
-  assert.match(client,/compact=true,activate=function\(\)activateMeadowAction/);
+  // Current mobile combat: 2 skills + guard, world-tap basic attack, dynamic semicircle.
+  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-14,1,-142)'));
+  assert.ok(client.includes('local function layoutMeadowCombatUi()'));
+  assert.ok(client.includes('button.Size=UDim2.fromOffset(buttonSize,buttonSize)'));
+  assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
+  assert.ok(client.includes('{"skill-meadow-guard","막기"'));
+  assert.ok(client.includes('{"meadow-unarmed-uppercut","승룡권"'));
+  assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
+  assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
+  assert.ok(client.includes('{compact=true,hideButton=true}'),
+    'the default attack button must remain hidden for world-tap combat');
   const ui=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
   assert.match(ui,/if compact then/);
-  assert.match(ui,/menu.Size=UDim2.fromOffset\(58,52\)/);
-  assert.match(ui,/quick.Size=UDim2.fromOffset\(84,84\)/);
+  assert.ok(ui.includes('if primary and primary.hideButton~=true then'));
+  assert.ok(ui.includes('menu.Size=UDim2.fromOffset(56,46)'));
   assert.match(client,/Instance.new\("Beam"\)/);
   assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)/);
@@ -1163,7 +1169,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
   assert.match(server,/task.defer\(createResourceNodes\)/);
-  assert.match(server,/task.defer\(function\(\)\s*for index,spec in ipairs\(\{/);
+  assert.match(server,/task.delay\(4,function\(\)\s*for index,spec in ipairs\(\{/);
   assert.equal((server.match(/joint.Part1.Anchored=false/g)||[]).length,2);
   assert.equal((server.match(/joint.Part1.Massless=true/g)||[]).length,2);
   assert.match(server,/remote.OnServerEvent:Connect\(function\(player, actionId\)/);
