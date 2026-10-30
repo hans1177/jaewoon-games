@@ -1631,7 +1631,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
   assert.match(server,/task.defer\(createResourceNodes\)/);
-  assert.match(server,/task.delay\(4,function\(\)\s*for index,spec in ipairs\(\{/);
+  assert.match(server,/task.delay\(4,function\(\)\s*local wildlife=\{/);
+  assert.match(server,/for index,spec in ipairs\(wildlife\) do/);
   assert.equal((server.match(/joint.Part1.Anchored=false/g)||[]).length,2);
   assert.equal((server.match(/joint.Part1.Massless=true/g)||[]).length,2);
   assert.match(server,/remote.OnServerEvent:Connect\(function\(player, actionId\)/);

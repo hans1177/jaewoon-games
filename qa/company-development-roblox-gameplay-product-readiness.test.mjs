@@ -43,7 +43,7 @@ test('fantasy survival keeps a source-owned open-world encounter, attack, harves
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const project=fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8');
   const baseline={content:{
-    identity:'Explore open-world regions with real combat and boss encounters.',
+    identity:'Action survival exploration across open-world regions with real combat and boss encounters.',
     coreLoop:['Explore region-based enemies','Gather wood and stone resources to upgrade equipment','Defeat boss enemies and improve proficiency'],
     signatureSystems:[{name:'Forest local encounters and boss',purpose:'Enemy AI affects progression'},
       {name:'Gather resources for equipment',purpose:'Weapons and progression require collected materials'}],
