@@ -694,7 +694,7 @@ for index,name in ipairs({"효과음","환경음","타격 효과"}) do
 end
 renderMeadowPages()
 local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,{
-  compact=true,hideButton=true,pages=meadowPages,pageNames=meadowPageNames,onPageChanged=renderMeadowPages,iconAtlas=meadowIconAtlas,
+  compact=true,hideButton=true,menuLeft=true,pages=meadowPages,pageNames=meadowPageNames,onPageChanged=renderMeadowPages,iconAtlas=meadowIconAtlas,
 })
 local meadowHud=gui:FindFirstChild("MobileGameStatus")
 if meadowHud then meadowAvatar.Parent=meadowHud;meadowAvatar.Visible=false end
@@ -1283,8 +1283,8 @@ for index,info in ipairs(meadowUtilityActions)do
   end)
   meadowUtilityButtons[index]=button
 end
--- 레이아웃: 3→2→1 스킬이 위에, 4→5→6 스킬이 아래에 놓이는 왼쪽 반원.
--- 모바일 세로 모드에서는 기본 점프 버튼과 겹치지 않게 반원 전체를 올린다.
+-- 레이아웃: 오른쪽 끝 전투 반원과 왼쪽 보조 조작을 분리한다.
+-- 기존 Roblox 점프 버튼의 터치 영역을 비우고 화면 비율별 높이를 직접 조정한다.
 local meadowArcDegrees={-150,-114,-78,-186,-222,-258}
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
@@ -1294,12 +1294,12 @@ local function layoutMeadowCombatUi()
   local radius=short and 89 or v.X<520 and 91 or 105
   local icon=short and 51 or 55
   local attackSize=short and 86 or 98
-  local centerX=short and 179 or 191
+  local centerX=short and 224 or 240
   local centerY=short and 143 or 158
   local width=short and 286 or 305
   local height=short and 263 or 286
-  local bottom=landscape and (short and 76 or 46) or 136
-  local right=landscape and 54 or 5
+  local bottom=landscape and (short and 130 or 160) or 136
+  local right=landscape and 14 or 5
   meadowSkillDock.Size=UDim2.fromOffset(width,height)
   meadowSkillDock.Position=UDim2.new(1,-right,1,-bottom)
   for index,button in ipairs(meadowSkillButtons)do
@@ -1316,7 +1316,7 @@ local function layoutMeadowCombatUi()
   for index,button in ipairs(meadowUtilityButtons)do
     local size=short and 48 or 52
     button.Size=UDim2.fromOffset(size,size)
-    button.Position=UDim2.fromOffset(13+(index-1)*(size+7),height-size-3)
+    button.Position=UDim2.fromOffset(8,56+(index-1)*(size+7))
     button.TextSize=short and 10 or 11
   end
 end
@@ -1519,27 +1519,6 @@ promptService.PromptHidden:Connect(function(prompt)
   shownMeadowPrompts[prompt]=nil;updateMeadowPromptHighlight()
 end)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(updateMeadowPromptHighlight)
-end
-
-do
--- [전투 버튼 상태] 서버 쿨다운과 장착 상태를 표시하며 공격 판정은 변경하지 않는다.
-local skillDisplayElapsed=0
-game:GetService("RunService").Heartbeat:Connect(function(dt)
-  skillDisplayElapsed+=dt;if skillDisplayElapsed<.1 then return end;skillDisplayElapsed=0
-  local character=player.Character
-  local tool=character and character:FindFirstChildOfClass("Tool")
-  local now=workspace:GetServerTimeNow()
-  for index,button in ipairs(meadowSkillButtons) do
-    local skill=meleeSkills[index]
-    local deadline=player:GetAttribute("MeadowReady_"..skill[1])
-    local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
-    local locked=skill[1]~="skill-meadow-guard" and tool~=nil
-    button.Active=not locked and remaining<=0
-    button.Text=locked and "맨손 전용" or (meadowIconAtlas~="" and "    " or "")..skill[2]..(remaining>0 and "\n"..string.format("%.1f",remaining) or "")
-    button.TextTransparency=locked and .45 or 0
-    button.BackgroundColor3=(locked or remaining>0) and Color3.fromRGB(21,29,34) or Color3.fromRGB(32,52,52)
-  end
-end)
 end
 
 -- [모션·액션] 서버가 승인한 기존 COMBAT 입력만 R15 공용 관절 애니메이션에 연결한다.
