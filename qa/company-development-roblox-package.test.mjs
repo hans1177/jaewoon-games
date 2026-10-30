@@ -21,10 +21,28 @@ test('selected Fantasy Survival motion reaches a server-authorized R15 frame sin
     source.replace('if not hasStudioAssetAtom("MOTION", "ATTACK_LIGHT_1") then','if not true then'),
     'MOTION'
   ),false,'an unselected module cannot satisfy motion binding');
+  // The verified-learning HUD has a separate listener; losing that listener
+  // must not hide the real R15 callback or produce false motion evidence.
   assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('GetAttributeChangedSignal("ApprovedCombatMotion")','GetAttributeChangedSignal("UnverifiedMotion")'),
+    source.replace('verifiedLearningPlayer:GetAttributeChangedSignal("ApprovedCombatMotion")',
+      'verifiedLearningPlayer:GetAttributeChangedSignal("UnverifiedMotion")'),
     'MOTION'
-  ),false,'a motion without server-approved action is not applied');
+  ),true,'unrelated HUD listener is not the R15 authorization sink');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('player:GetAttributeChangedSignal("ApprovedCombatMotion")',
+      'player:GetAttributeChangedSignal("UnverifiedMotion")'),
+    'MOTION'
+  ),false,'the actual R15 callback must be bound to a server-approved event');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('if not approvedEvent or not authorizedCombatScopes[approvedScope] then return end',
+      'if false then return end'),
+    'MOTION'
+  ),false,'an unvalidated combat action cannot authorize joint motion');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('local approved = tostring(player:GetAttribute("ApprovedCombatMotion") or "")',
+      'local approved = "forged:1"'),
+    'MOTION'
+  ),false,'the combat callback must read the server-supplied sequence');
 });
 
 test('guarded native bindings distinguish selected atoms from list counts',()=>{
