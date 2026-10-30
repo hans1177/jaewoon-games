@@ -1010,6 +1010,9 @@ RunService.PreSimulation:Connect(function(dt)
   -- [연타 잔상] 5개의 실제 손·발 타격마다 원본 VFX를 교체한다.
   if strikeIndex~=activeStrikeTrailIndex then
     activeStrikeTrailIndex=strikeIndex
+    if activeCombatCharacter then
+      activeCombatCharacter:SetAttribute("NativeCombatStrikeIndex",strikeIndex)
+    end
     stopStrikeTrail()
     if combatVFX and activeCombatCombo.profileId=="UNARMED"
       and timeInAction<activeCombatCombo.duration then
@@ -1032,9 +1035,6 @@ RunService.PreSimulation:Connect(function(dt)
   if activeStrikeTrail then
     local within=timeInAction-currentStep.start
     activeStrikeTrail.SetEnabled(within>=currentStep.ready*.4 and within<currentStep.recoil)
-  end
-  if activeCombatCharacter then
-    activeCombatCharacter:SetAttribute("NativeCombatStrikeIndex",strikeIndex)
   end
   if humanoid.RigType==Enum.HumanoidRigType.R6 then
     -- 기존 R6 관절만 사용한다. 없는 팔꿈치·무릎을 생성하지 않는다.
