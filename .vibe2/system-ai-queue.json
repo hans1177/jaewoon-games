@@ -172246,23 +172246,24 @@
       ],
       "dependencies": [],
       "relatedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:0bd4dc4bccc4d1547153a7bf5dd64007d90dc6db:fantasy-survival"
+        "deployment:.github/workflows/magic-forest-pages.yml:0bd4dc4bccc4d1547153a7bf5dd64007d90dc6db:fantasy-survival",
+        "recovery-recovery-021775fc27e9f4dd7c79"
       ],
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:0bd4dc4bccc4d1547153a7bf5dd64007d90dc6db:fantasy-survival"
       ],
-      "retries": 18,
+      "retries": 0,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
-      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureSignature": "stale-system-ai-reservation-reclaimed",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 1,
       "previousReservationId": "system-ai:40988978794:1",
-      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "0bd4dc4bccc4d1547153a7bf5dd64007d90dc6db",
+      "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -172270,7 +172271,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "stale-system-ai-reservation-reclaimed",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:40124089335:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -172342,7 +172343,10 @@
         "system-ai-handoff-to-reservation:PENDING",
         "system-ai-exact-checkpoint-resume:YES",
         "retry-budget-consumed:NO",
-        "learning-penalty:NO"
+        "learning-penalty:NO",
+        "recovery-queue:recovery-33282d5d931c68d48565",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+        "failure-cause:stale-system-ai-reservation-reclaimed"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2327,
@@ -172357,7 +172361,20 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T19:22:33.836Z",
-      "updatedAt": "2026-10-30T02:36:32.017Z"
+      "updatedAt": "2026-10-30T02:40:37.674Z",
+      "repairMode": "FOCUSED_REPAIR",
+      "userAssistanceRequired": false,
+      "gameRepairContract": {
+        "version": 1,
+        "mode": "FOCUSED_REPAIR",
+        "prePatchReproductionRequired": true,
+        "causalResponsibleSystemRequired": true,
+        "originalScenarioReplayRequired": true,
+        "invariantValidationRequired": true,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "multiplayerUserAssistanceRequired": false
+      }
     },
     {
       "id": "recovery-recovery-9a838fb1109024466f82",
