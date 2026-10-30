@@ -1000,6 +1000,10 @@ test('native registration stays behind current contract identity and exact publi
     return selected;
   };
   assert.deepEqual(execute(),Object.keys(manifest.models).map((_,i)=>123450+i));
+  // 유효한 다중 단어 원본 파일명은 허용하되 등록 SHA 및 원본 경로를 계속 검증한다.
+  assert.match(release,/\[a-z\]\+\(\?:-\[a-z\]\+\)\*/);
+  const ownerWorkflow=fs.readFileSync('.github/workflows/owner-roblox-dedicated-private-experiences.yml','utf8');
+  assert.match(ownerWorkflow,/\[a-z\]\+\(\?:-\[a-z\]\+\)\*/);
   const stale=structuredClone(registry);stale.sourceManifestSha256='0'.repeat(64);
   assert.throws(()=>execute(stale),/PUBLISH_PROVENANCE_INVALID/);
   const broken=structuredClone(registry);broken.models.golem.sha256='0'.repeat(64);
@@ -1138,8 +1142,8 @@ test('fantasy meadow is five times larger while preserving fast central spawn an
   assert.match(server,/model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic/);
   assert.match(client,/meadowMobWorld.ChildRemoved:Connect\(function\(model\)/);
   assert.match(client,/row.controller.Destroy\(false\)/);
-  assert.match(server,/local location = Vector3.new\(math.cos\(theta\)\*radius, 3, math.sin\(theta\)\*radius\)/);
-  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+  assert.match(server,/local location=site.position/);
+  assert.match(server,/local function refreshMeadowEncounters\(now\)/);
   assert.match(server,/store:UpdateAsync\("player:"/);
   assert.doesNotMatch(server,/Instance.new\("Part"\)/);
 });
@@ -1194,7 +1198,7 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/task.delay\(6,function\(\)/);
   assert.match(client,/meadowSurvivalHint.Active=false/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
-  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+  assert.match(server,/local function refreshMeadowEncounters\(now\)/);
 });
 
 // [숲 밀도·유적·흙길] 사용자 시안에 맞는 자연환경. 자산 등록·전투 판정·저장키는 그대로.
@@ -1241,7 +1245,7 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/MeadowForestSoftToyMaterial/);
   assert.match(server,/while gameWorld:GetAttribute\("MeadowOuterRegionReady"\)~=true do task.wait\(\.1\) end/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowRuinCount",ruinCount\)/);
-  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+  assert.match(server,/local function refreshMeadowEncounters\(now\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save semantics unchanged');
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
 });
@@ -1309,7 +1313,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(client,/remote:FireServer\(action\)/);
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
-  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+  assert.match(server,/local function refreshMeadowEncounters\(now\)/);
 });
 
 test('마력숲 타격은 부드러운 내장 둔탁음으로 교체하고 연속 재생량을 제한한다',()=>{
@@ -1363,7 +1367,7 @@ test('fantasy original monsters keep server combat authority while true bones dr
   assert.match(server,/enemy\.visualPosition=previous:Lerp\(enemy\.position,alpha\)/);
   assert.match(server,/if enemyVisualElapsed>=1\/30 then/);
   assert.match(server,/if enemyUpdateElapsed>=\.12 then/);
-  assert.match(server,/damage=\(isBoss and 20 or 6\)\+math\.floor\(CurrentWave\/2\)/);
+  assert.match(server,/damage=\(isBoss and 20 or 6\)\+math\.floor\(site\.tier\/2\)/);
   assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
   for(const source of [client,server]){
@@ -1469,6 +1473,31 @@ test('fantasy player death recovers only if original humanoid never auto-respawn
   assert.doesNotMatch(lifecycle,/humanoid\.MaxHealth\s*=|humanoid\.Health\s*=/);
 });
 
+// [마력숲 기본 점프 UI] 조이스틱과 기존 오른쪽 스킬을 그대로 두고 네이티브 버튼만 숨긴다.
+test('fantasy meadow hides only the default mobile JumpButton including respawn',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const controls=client.slice(client.indexOf('local function layoutMeadowCombatUi()'),
+    client.indexOf('-- [미니맵]'));
+  assert.match(controls,/touchGui:FindFirstChild\("JumpButton",true\)/);
+  assert.match(controls,/jump.Visible=false/);
+  assert.match(controls,/jump.Active=false/);
+  assert.match(controls,/jump:GetPropertyChangedSignal\("Visible"\):Connect/);
+  assert.match(controls,/player.PlayerGui.DescendantAdded:Connect/);
+  assert.doesNotMatch(controls,/jump.Position=|jump:Destroy\(\)|TouchGui:Destroy\(\)/);
+  assert.doesNotMatch(client,/GuiService.TouchControlsEnabled=false|Controls:Disable\(\)/);
+  assert.match(controls,/meadowSkillDock.Position=UDim2.new/);
+  assert.match(client,/meadowSkillDock.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
+  // 세로가 좁은 모바일도 고려해 기존 전투 UI 묶음을 위로 옮긴다.
+  assert.match(client,/landscape and \(v\.Y<420 and 22 or 45\) or 112/);
+  // 좌표 표시를 원형 지도 위에 붙이고 기존 지도·제목·마커는 그대로 유지한다.
+  assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+18,mapDiameter\+58\)/);
+  assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,22\)/);
+  assert.match(client,/radarTitle.Position=UDim2.fromOffset\(5,mapDiameter\+28\)/);
+  assert.match(client,/radarCoordinates.Position=UDim2.fromOffset\(7,1\)/);
+  assert.match(client,/radarCoordinates.Size=UDim2.new\(1,-14,0,18\)/);
+  assert.match(client,/radarCoordinates.TextSize=10/);
+});
+
 // Existing server/input authority must boot before slow CC0 asset imports.
 test('fantasy native controls do not wait on asset import and source rigs can move',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
@@ -1560,7 +1589,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(!client.includes('{"skill-meadow-dodge-right","우회피"'),'dodge UI was intentionally removed');
   assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","상호작용"') ||
     client.includes('{"scope-coreloop-1-6ebe58f496","채집"'), 'server-bound gather action remains on the utility dock');
-  assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
+  assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.75,.5},{"BR",.25,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
   assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,(?:nil|meadowHealthTrack),multiplayerStatus,/);
