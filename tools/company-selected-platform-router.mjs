@@ -217,7 +217,10 @@ export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_G
     .filter(item=>DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
     .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE'}))
     .sort((a,b)=>{
-      // 집중 대상은 먼저 배정하고, 남는 용량은 기존 대기 순서로 일반 개발에 사용한다.
+      // 명시적인 최신 오너 요청: 마력숲 Roblox을 기존 집중 대상보다 먼저 개발한다.
+      // 다른 게임은 기존 유효성·대기 상태·남는 용량 규칙으로 계속 개발한다.
+      const ownerMeadowFirst=Number(clean(b.gameId)==='fantasy-survival')-Number(clean(a.gameId)==='fantasy-survival');
+      if(ownerMeadowFirst)return ownerMeadowFirst;
       const focusOrder=Number(focusedRobloxGameIds.has(clean(b.gameId)))-Number(focusedRobloxGameIds.has(clean(a.gameId)));
       if(focusOrder)return focusOrder;
       const at=Date.parse(a.enqueuedAt||'')||0;
