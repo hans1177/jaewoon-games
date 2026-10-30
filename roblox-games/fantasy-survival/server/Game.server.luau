@@ -553,7 +553,7 @@ local function villageNativeNpc(spec)
   end
   for _,part in ipairs(npc:GetDescendants()) do
     if part:IsA("BasePart") then
-      part.CanCollide=false
+      part.CanCollide=part.Name=="LowerTorso"
       part.CanTouch=false
     end
   end
@@ -563,6 +563,53 @@ local function villageNativeNpc(spec)
   npc:PivotTo(CFrame.lookAt(spec.location,Vector3.new(0,spec.location.Y,-111)))
   npc.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   npc.Parent=gameWorld
+  -- Roblox 공식 R15 기본 걷기/대기 동작. 로블록스 서버 NPC Animator에서 재생해 모든 플레이어에 복제한다.
+  if humanoid then
+    humanoid.WalkSpeed=5
+    humanoid.AutoRotate=true
+    local animator=humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator")
+    animator.Parent=humanoid
+    local tracks={}
+    for name,asset in pairs({idle=507766388,walk=507777826}) do
+      local anim=Instance.new("Animation")
+      anim.Name="Village_"..name
+      anim.AnimationId="rbxassetid://"..asset
+      local loaded,track=pcall(function()return animator:LoadAnimation(anim) end)
+      if loaded and track then
+        track.Looped=true
+        track.Priority=Enum.AnimationPriority.Idle
+        tracks[name]=track
+      end
+      anim:Destroy()
+    end
+    if tracks.idle then tracks.idle:Play(.2) end
+    humanoid.Running:Connect(function(speed)
+      local moving=speed>1.2
+      if tracks.walk and tracks.walk.IsPlaying~=moving then
+        if moving then tracks.walk:Play(.15) else tracks.walk:Stop(.2) end
+      end
+      if tracks.idle and tracks.idle.IsPlaying==moving then
+        if moving then tracks.idle:Stop(.15) else tracks.idle:Play(.2) end
+      end
+    end)
+    -- 마을 NPC는 이 지역 안에서만 움직이며 다른 게임의 경로탐색/전투 권한을 건드리지 않는다.
+    root.Anchored=false
+    pcall(function()root:SetNetworkOwner(nil)end)
+    local home=spec.location
+    task.spawn(function()
+      local offsets={Vector3.new(3,0,2),Vector3.new(-3,0,1),Vector3.new(0,0,0)}
+      while npc.Parent==gameWorld and humanoid.Health>0 do
+        for _,offset in ipairs(offsets) do
+          if npc.Parent~=gameWorld or humanoid.Health<=0 then break end
+          local phase=gameWorld:GetAttribute("MeadowDayPhase")
+          local destination=phase=="NIGHT" and home or home+offset
+          humanoid:MoveTo(destination)
+          humanoid.MoveToFinished:Wait()
+          task.wait(2.4)
+        end
+      end
+    end)
+  end
   local head=npc:FindFirstChild("Head",true)
   if head then
     local label=Instance.new("BillboardGui")
