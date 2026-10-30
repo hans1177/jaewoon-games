@@ -1066,6 +1066,33 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
     'original save writer is unchanged');
 });
 
+test('fantasy meadow is five times larger while preserving fast central spawn and streamed mobile play',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8'));
+  const workspace=project.tree.Workspace?.$properties||{};
+  assert.equal(workspace.StreamingEnabled,true,'large meadow must use engine instance streaming');
+  assert.equal(workspace.StreamingMinRadius,64);
+  assert.equal(workspace.StreamingTargetRadius,256);
+  assert.match(server,/local meadowWorldSize=696/);
+  assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(0, -4, 0\), Vector3.new\(312, 12, 312\), Enum.Material.Grass\)/);
+  for(const coord of ['x=-252,z=0,width=192,depth=696','x=252,z=0,width=192,depth=696',
+    'x=0,z=-252,width=312,depth=192','x=0,z=252,width=312,depth=192']){
+    assert.ok(server.includes(coord),'missing non-overlapping outer meadow strip: '+coord);
+  }
+  assert.equal((696*696)/(312*312)>4.9,true,'meadow area must be nearly 5x');
+  assert.match(server,/task.defer\(function\(\)[\s\S]*?MeadowOuterRegionReady",true/);
+  assert.match(server,/task.delay\(4,function\(\)/,'decorative wildlife must not delay first player entry');
+  assert.match(server,/clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic/);
+  assert.match(server,/model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic/);
+  assert.match(client,/meadowMobWorld.ChildRemoved:Connect\(function\(model\)/);
+  assert.match(client,/row.controller.Destroy\(false\)/);
+  assert.match(server,/local location = Vector3.new\(math.cos\(theta\)\*radius, 3, math.sin\(theta\)\*radius\)/);
+  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+  assert.match(server,/store:UpdateAsync\("player:"/);
+  assert.doesNotMatch(server,/Instance.new\("Part"\)/);
+});
+
 test('fantasy meadow binds six original CC0 creature rigs and prevents repeating death or hit motion',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const manifest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));

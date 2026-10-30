@@ -1568,6 +1568,14 @@ meadowMobWorld.ChildAdded:Connect(function(model)
     end
   end
 end)
+-- [거리별 로딩] Roblox 스트리밍으로 멀어진 몬스터가 사라지면 기존 관절 제어기를 정리한다.
+-- 다시 근처로 오면 위 ChildAdded에서 새로 연결한다. 서버의 몬스터/보상 상태와 무관하다.
+meadowMobWorld.ChildRemoved:Connect(function(model)
+  local row=meadowMobControllers[model]
+  if not row then return end
+  if row.controller then row.controller.Destroy(false) end
+  meadowMobControllers[model]=nil
+end)
 game:GetService("RunService").PreSimulation:Connect(function(dt)
   for model,row in pairs(meadowMobControllers) do
     if model.Parent and row.controller then
