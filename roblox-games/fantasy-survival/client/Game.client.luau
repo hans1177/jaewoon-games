@@ -4002,6 +4002,7 @@ do
     if not entranceOpen then return end
     entranceOpen=false
     runToken+=1
+    remote:FireServer("meadow:enter-world")
     restoreCamera()
     gui.Enabled=true
     meadowVitalsGui.Enabled=true

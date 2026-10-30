@@ -1899,6 +1899,9 @@ test('fantasy arrival shows native world title, actual map preloads, safe resume
   assert.match(server,/for key,initial in pairs\(Config.InitialState\) do nextProfile\[key\]=initial end/);
   assert.match(server,/if previous~=nil and typeof\(previous\)~="table" then return nil end/);
   assert.match(server,/local nextProfile=typeof\(previous\)=="table" and table.clone\(previous\) or \{\}/);
+  assert.match(server,/MeadowEnteredWorld/);
+  assert.match(client,/meadow:enter-world/);
+  assert.match(server,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true then return false end/);
   assert.match(client,/새 게임 시작/);
   assert.match(client,/기존 저장은 되돌릴 수 없어/);
   assert.match(server,/local function saveSurvivalProgress\(player\)/);

@@ -2701,6 +2701,7 @@ local function onSurvivalPlayerAdded(player)
     end
   end
   player:SetAttribute("MeadowResumeReady",resumePosition==nil)
+  player:SetAttribute("MeadowEnteredWorld",false)
   persistenceAllowed[player] = validSaved
   player:SetAttribute("MeadowProfileHadSave",validSaved and typeof(saved)=="table")
   player:SetAttribute("MeadowNewGameResult","IDLE")
@@ -2758,6 +2759,11 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 remote.OnServerEvent:Connect(function(player, actionId)
   if typeof(actionId) ~= "string" or player:GetAttribute("ProfileReady") ~= true then return end
+  if actionId=="meadow:enter-world" then
+    -- 타이틀 입장이 끝난 세션만 종료 시점의 위치와 진행도를 저장한다.
+    player:SetAttribute("MeadowEnteredWorld",true)
+    return
+  end
   -- [첫 화면] 기존 저장 데이터는 기본적으로 보존한다.
   -- 삭제 확인이 끝난 새 게임 요청만 서버의 기존 DataStore UpdateAsync로 초기화한다.
   if actionId=="meadow:new-game:confirm" then
@@ -2791,6 +2797,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
         player:SetAttribute("MeadowStamina",100)
         player:SetAttribute("MeadowProfileHadSave",false)
         player:SetAttribute("MeadowResumeReady",true)
+        player:SetAttribute("MeadowEnteredWorld",false)
         player:SetAttribute("SaveStatus","READY")
         villageSessions[player]=nil
         meadowDefense[player]=nil
@@ -2845,6 +2852,8 @@ remote.OnServerEvent:Connect(function(player, actionId)
 end)
 local function saveSurvivalProgress(player)
   if persistenceAllowed[player] ~= true or not store then return false end
+  -- 첫 화면에서 곧바로 나간 경우 예전 위치/진행도를 초기 스폰 값으로 덮어쓰지 않는다.
+  if player:GetAttribute("MeadowEnteredWorld")~=true then return false end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
   -- [이어하기 위치] 서버 캐릭터의 실제 위치만 저장한다. 클라이언트 좌표는 받지 않는다.
