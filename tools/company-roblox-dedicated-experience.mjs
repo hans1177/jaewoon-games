@@ -63,6 +63,9 @@ export async function introspectRobloxApiKey({
   return Object.freeze({
     enabled:payload?.enabled===true,
     expired:payload?.expired===true,
+    // Roblox key introspection supplies this verified owner when asset scopes use '*'.
+    authorizedUserId:/^[1-9][0-9]*$/.test(clean(payload?.authorizedUserId))
+      ?clean(payload.authorizedUserId):null,
     scopes:Object.freeze(safeScopes),
   });
 }

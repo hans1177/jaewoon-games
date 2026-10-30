@@ -75,12 +75,14 @@ test('introspectRobloxApiKey exposes only safe scope metadata', async()=>{
     return new Response(JSON.stringify({
       enabled:true,
       expired:false,
+      authorizedUserId:234,
       scopes:[{name:'universe-places',operations:['write'],universeIds:['*']}],
     }),{status:200});
   };
   const result=await introspectRobloxApiKey({apiKey:'key',fetchImpl});
   assert.equal(result.enabled,true);
   assert.equal(result.expired,false);
+  assert.equal(result.authorizedUserId,'234');
   assert.deepEqual(result.scopes,[{
     name:'universe-places',
     operations:['write'],
