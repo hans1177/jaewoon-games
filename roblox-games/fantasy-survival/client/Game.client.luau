@@ -78,7 +78,9 @@ local playNativeCombatMotion
 local predictedCombatSequence=0
 local predictedCombatUntil=0
 local pendingCombatMotion={}
+local meadowJournalOpen=false
 local function activateMeadowAction(actionId)
+  if meadowJournalOpen then return end
   local combat=false
   for _,action in ipairs(Config.Actions) do
     if action.Id==actionId then combat=action.Kind=="COMBAT";break end
@@ -574,7 +576,7 @@ end
 primaryCombatAction = primaryCombatAction or Config.Actions[1]
 if primaryCombatAction then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
-    if inputState == Enum.UserInputState.Begin and gui:GetAttribute("GameMenuOpen")~=true then
+    if inputState == Enum.UserInputState.Begin and not meadowJournalOpen and gui:GetAttribute("GameMenuOpen")~=true then
       activateMeadowAction(primaryCombatAction.Id)
     end
     return Enum.ContextActionResult.Sink
@@ -600,16 +602,236 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{compact=true,hideButton=true})
+local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{compact=true,hideButton=true})
+
+-- [스토리·아이템 HUD] 실제 서버 퀘스트와 DataStore 소장 기록만 보여준다.
+-- 중앙 게임 화면과 점프/전투 영역은 비워 두고 좌상단에 펼침 단추만 둔다.
+local questTracker=Instance.new("TextButton")
+questTracker.Name="MeadowMainQuest"
+questTracker.Size=UDim2.fromOffset(290,64)
+questTracker.Position=UDim2.fromOffset(10,130)
+questTracker.BackgroundColor3=Color3.fromRGB(22,47,39)
+questTracker.BackgroundTransparency=.08
+questTracker.BorderSizePixel=0
+questTracker.AutoButtonColor=true
+questTracker.Text=""
+questTracker.ZIndex=8
+questTracker.Parent=gui
+local trackerCorner=Instance.new("UICorner")
+trackerCorner.CornerRadius=UDim.new(0,11)
+trackerCorner.Parent=questTracker
+local trackerStroke=Instance.new("UIStroke")
+trackerStroke.Color=Color3.fromRGB(131,194,150)
+trackerStroke.Transparency=.25
+trackerStroke.Thickness=1.2
+trackerStroke.Parent=questTracker
+local trackerTitle=Instance.new("TextLabel")
+trackerTitle.Name="QuestTitle"
+trackerTitle.Position=UDim2.fromOffset(12,5)
+trackerTitle.Size=UDim2.new(1,-22,0,25)
+trackerTitle.BackgroundTransparency=1
+trackerTitle.TextColor3=Color3.fromRGB(255,238,174)
+trackerTitle.TextXAlignment=Enum.TextXAlignment.Left
+trackerTitle.Font=Enum.Font.GothamBold
+trackerTitle.TextSize=15
+trackerTitle.ZIndex=9
+trackerTitle.Parent=questTracker
+local trackerDetail=Instance.new("TextLabel")
+trackerDetail.Name="QuestObjective"
+trackerDetail.Position=UDim2.fromOffset(12,30)
+trackerDetail.Size=UDim2.new(1,-22,0,29)
+trackerDetail.BackgroundTransparency=1
+trackerDetail.TextColor3=Color3.fromRGB(233,250,238)
+trackerDetail.TextXAlignment=Enum.TextXAlignment.Left
+trackerDetail.Font=Enum.Font.GothamMedium
+trackerDetail.TextSize=12
+trackerDetail.TextWrapped=true
+trackerDetail.ZIndex=9
+trackerDetail.Parent=questTracker
+
+local journalShade=Instance.new("TextButton")
+journalShade.Name="MeadowJournalShade"
+journalShade.Size=UDim2.fromScale(1,1)
+journalShade.BackgroundColor3=Color3.fromRGB(5,12,10)
+journalShade.BackgroundTransparency=.28
+journalShade.BorderSizePixel=0
+journalShade.Text=""
+journalShade.ZIndex=70
+journalShade.Visible=false
+journalShade.Active=true
+journalShade.Parent=gui
+local journalCard=Instance.new("Frame")
+journalCard.Name="MeadowJournalCard"
+journalCard.AnchorPoint=Vector2.new(.5,.5)
+journalCard.Position=UDim2.fromScale(.5,.5)
+journalCard.Size=UDim2.fromOffset(520,450)
+journalCard.BackgroundColor3=Color3.fromRGB(16,35,31)
+journalCard.BorderSizePixel=0
+journalCard.ZIndex=71
+journalCard.Parent=journalShade
+local journalCorner=Instance.new("UICorner")
+journalCorner.CornerRadius=UDim.new(0,16)
+journalCorner.Parent=journalCard
+local journalStroke=Instance.new("UIStroke")
+journalStroke.Color=Color3.fromRGB(102,169,132)
+journalStroke.Transparency=.12
+journalStroke.Parent=journalCard
+local journalHeading=Instance.new("TextLabel")
+journalHeading.Name="Heading"
+journalHeading.Size=UDim2.new(1,-92,0,49)
+journalHeading.Position=UDim2.fromOffset(16,7)
+journalHeading.BackgroundTransparency=1
+journalHeading.Text="연구 일지  ·  메인 퀘스트 / 가방"
+journalHeading.TextColor3=Color3.fromRGB(255,245,216)
+journalHeading.TextXAlignment=Enum.TextXAlignment.Left
+journalHeading.Font=Enum.Font.GothamBold
+journalHeading.TextSize=18
+journalHeading.ZIndex=72
+journalHeading.Parent=journalCard
+local journalClose=Instance.new("TextButton")
+journalClose.Name="CloseJournal"
+journalClose.AnchorPoint=Vector2.new(1,0)
+journalClose.Position=UDim2.new(1,-10,0,9)
+journalClose.Size=UDim2.fromOffset(66,46)
+journalClose.BackgroundColor3=Color3.fromRGB(67,93,77)
+journalClose.TextColor3=Color3.fromRGB(255,255,255)
+journalClose.Text="닫기"
+journalClose.TextSize=15
+journalClose.Font=Enum.Font.GothamBold
+journalClose.ZIndex=72
+journalClose.Parent=journalCard
+local journalCloseCorner=Instance.new("UICorner")
+journalCloseCorner.CornerRadius=UDim.new(0,9)
+journalCloseCorner.Parent=journalClose
+local journalScroll=Instance.new("ScrollingFrame")
+journalScroll.Name="QuestAndInventory"
+journalScroll.Position=UDim2.fromOffset(10,58)
+journalScroll.Size=UDim2.new(1,-20,1,-68)
+journalScroll.BackgroundTransparency=1
+journalScroll.BorderSizePixel=0
+journalScroll.ScrollBarThickness=4
+journalScroll.ScrollBarImageColor3=Color3.fromRGB(165,213,165)
+journalScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+journalScroll.CanvasSize=UDim2.new()
+journalScroll.ZIndex=72
+journalScroll.Parent=journalCard
+local journalLayout=Instance.new("UIListLayout")
+journalLayout.Padding=UDim.new(0,7)
+journalLayout.SortOrder=Enum.SortOrder.LayoutOrder
+journalLayout.Parent=journalScroll
+local journalPadding=Instance.new("UIPadding")
+journalPadding.PaddingLeft=UDim.new(0,3)
+journalPadding.PaddingRight=UDim.new(0,8)
+journalPadding.PaddingBottom=UDim.new(0,10)
+journalPadding.Parent=journalScroll
+local function journalRow(name,height)
+  local row=Instance.new("TextLabel")
+  row.Name=name
+  row.Size=UDim2.new(1,0,0,height)
+  row.BackgroundColor3=Color3.fromRGB(30,60,48)
+  row.BackgroundTransparency=.08
+  row.BorderSizePixel=0
+  row.TextXAlignment=Enum.TextXAlignment.Left
+  row.TextYAlignment=Enum.TextYAlignment.Center
+  row.TextColor3=Color3.fromRGB(240,251,238)
+  row.Font=Enum.Font.GothamMedium
+  row.TextSize=14
+  row.TextWrapped=true
+  row.ZIndex=73
+  row.Parent=journalScroll
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,9)
+  corner.Parent=row
+  local padding=Instance.new("UIPadding")
+  padding.PaddingLeft=UDim.new(0,11)
+  padding.PaddingRight=UDim.new(0,9)
+  padding.Parent=row
+  return row
+end
+local inventoryRow=journalRow("ResourceItems",52)
+local questRows={}
+for index=1,#(Config.MainQuests or {}) do
+  questRows[index]=journalRow("Quest"..index,61)
+end
+local storyRows={}
+for index=1,#(Config.StoryRecords or {}) do
+  storyRows[index]=journalRow("ResearchRecord"..index,91)
+end
+local function renderMeadowJournal()
+  local stage=math.clamp(player:GetAttribute("QuestStage") or 1,1,#Config.MainQuests+1)
+  local progress=player:GetAttribute("QuestProgress") or 0
+  local quest=Config.MainQuests[stage]
+  trackerTitle.Text=quest and ("메인  "..quest.Name.."  ▸") or "메인  초원 조사 기록 완료  ▸"
+  trackerDetail.Text=quest and string.format("%s  (%d/%d)",quest.Instruction,progress,quest.Goal)
+    or "연구 기록을 가방에서 다시 볼 수 있어"
+  inventoryRow.Text=string.format("가방  ·  나무 %d개   /   돌 %d개   /   연구 일지 %d/3",
+    player:GetAttribute("Wood") or 0,player:GetAttribute("Stone") or 0,
+    math.clamp(player:GetAttribute("ResearchRecords") or 0,0,3))
+  for index,info in ipairs(Config.MainQuests) do
+    local state=index<stage and "완료" or index==stage and "진행 중" or "잠김"
+    local count=index<stage and info.Goal or index==stage and progress or 0
+    questRows[index].Text=string.format("【%s】 %s\n%s  %d/%d",state,info.Name,info.Instruction,count,info.Goal)
+    questRows[index].TextColor3=index>stage and Color3.fromRGB(153,176,156) or Color3.fromRGB(246,251,236)
+  end
+  local owned=player:GetAttribute("ResearchRecords") or 0
+  for index,record in ipairs(Config.StoryRecords) do
+    local has=owned>=index
+    storyRows[index].Text=has and ("【소장 아이템】 "..record.Title.."\n"..record.Text)
+      or ("【미획득 연구 기록】 "..record.Title.."\n메인 퀘스트를 진행해 원본을 해금")
+    storyRows[index].TextColor3=has and Color3.fromRGB(245,244,208) or Color3.fromRGB(161,180,164)
+  end
+end
+local function setMeadowJournalOpen(open)
+  meadowJournalOpen=open
+  gui:SetAttribute("StoryJournalOpen",open)
+  journalShade.Visible=open
+  if open then meadowMenu.close() end
+  questTracker.Visible=not open and gui:GetAttribute("GameMenuOpen")~=true
+end
+questTracker.Activated:Connect(function() setMeadowJournalOpen(true) end)
+journalClose.Activated:Connect(function() setMeadowJournalOpen(false) end)
+journalShade.Activated:Connect(function() setMeadowJournalOpen(false) end)
+gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
+  questTracker.Visible=not meadowJournalOpen and gui:GetAttribute("GameMenuOpen")~=true
+end)
+local function layoutMeadowJournal()
+  local v=gui.AbsoluteSize
+  if v.X<=0 or v.Y<=0 then return end
+  local short=v.Y<440
+  questTracker.Position=UDim2.fromOffset(9,short and 106 or 132)
+  questTracker.Size=UDim2.fromOffset(math.max(180,math.min(294,v.X-112)),short and 57 or 64)
+  trackerTitle.TextSize=short and 12 or 15
+  trackerDetail.TextSize=short and 10 or 12
+  journalCard.Size=UDim2.fromOffset(math.max(250,math.min(540,v.X-24)),
+    math.max(210,math.min(460,v.Y-24)))
+  journalHeading.TextSize=v.X<450 and 14 or 18
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
+layoutMeadowJournal()
+for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","ResearchRecords","Wood","Stone"}) do
+  player:GetAttributeChangedSignal(name):Connect(renderMeadowJournal)
+end
+renderMeadowJournal()
+remote.OnClientEvent:Connect(function(kind,payload)
+  if kind~="MEADOW_QUEST_UPDATE" or typeof(payload)~="table" then return end
+  meadowSurvivalHint.Text="메인 완료: "..tostring(payload.completed or "")
+    ..(payload.record and ("  ·  연구 일지 "..payload.record.." 획득!") or "")
+  meadowSurvivalHint.Visible=true
+  meadowSurvivalHintToken+=1
+  local token=meadowSurvivalHintToken
+  task.delay(5,function()
+    if token==meadowSurvivalHintToken then meadowSurvivalHint.Visible=false end
+  end)
+end)
 
 -- [화면 터치 공격] UI·조이스틱 터치는 제외하고 월드 빈 화면 탭만 기본 공격.
 -- 로블록스 공식 TouchTapInWorld와 처리 여부를 사용해 버튼을 완전히 없앤다.
 UserInputService.TouchTapInWorld:Connect(function(_,processedByUI)
-  if processedByUI or gui:GetAttribute("GameMenuOpen")==true then return end
+  if processedByUI or meadowJournalOpen or gui:GetAttribute("GameMenuOpen")==true then return end
   if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
-  if processed or UserInputService.TouchEnabled or gui:GetAttribute("GameMenuOpen")==true then return end
+  if processed or meadowJournalOpen or UserInputService.TouchEnabled or gui:GetAttribute("GameMenuOpen")==true then return end
   if input.UserInputType==Enum.UserInputType.MouseButton1 and primaryCombatAction then
     activateMeadowAction(primaryCombatAction.Id)
   end
@@ -643,7 +865,7 @@ for index,skill in ipairs(meleeSkills) do
   button.AutoButtonColor=true
   button.Parent=meadowSkillDock
   local buttonCorner=Instance.new("UICorner")
-  buttonCorner.CornerRadius=UDim.new(1,0)
+  buttonCorner.CornerRadius=UDim.new(0,12)
   buttonCorner.Parent=button
   local buttonStroke=Instance.new("UIStroke")
   buttonStroke.Thickness=2
@@ -652,7 +874,7 @@ for index,skill in ipairs(meleeSkills) do
   buttonStroke.Parent=button
   local buttonGradient=Instance.new("UIGradient")
   buttonGradient.Rotation=90
-  buttonGradient.Color=ColorSequence.new(Color3.fromRGB(58,71,76),Color3.fromRGB(17,27,36))
+  buttonGradient.Color=ColorSequence.new(Color3.fromRGB(55,104,75),Color3.fromRGB(22,53,46))
   buttonGradient.Parent=button
   meadowSkillButtons[index]=button
   button.Activated:Connect(function()
@@ -662,32 +884,25 @@ for index,skill in ipairs(meleeSkills) do
     activateMeadowAction(skill[1])
   end)
 end
--- [반원 배치] 조이스틱과 기본 점프 영역을 피해 오른쪽 중단에 3개 버튼 배치.
+-- [모바일 전투 UI] 점프 영역 아래쪽을 비우고 오른쪽 중앙에 읽기 쉬운 세로형 단축키.
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local short=v.Y<440
-  local buttonSize=short and 47 or (v.X<370 and 51 or 59)
-  local dockWidth=buttonSize*2+44
-  local dockHeight=buttonSize*3+18
+  local buttonHeight=short and 46 or 54
+  local dockWidth=short and 78 or 91
+  local dockHeight=buttonHeight*3+16
+  meadowSkillDock.AnchorPoint=Vector2.new(1,0)
   meadowSkillDock.Size=UDim2.fromOffset(dockWidth,dockHeight)
-  -- 화면 높이에 맞춰 상단 여유를 확보하면서 기본 점프 영역을 피한다.
-  local bottomInset=math.min(short and 100 or 142,math.max(8,v.Y-dockHeight-54))
-  meadowSkillDock.Position=UDim2.new(1,-(v.X<390 and 8 or 15),1,-bottomInset)
-  -- 오른쪽 가장자리를 따라 왼쪽을 향해 굽은 반원.
-  local centers={
-    Vector2.new(dockWidth-buttonSize*.62,buttonSize*.55),
-    Vector2.new(dockWidth-buttonSize*1.43,dockHeight*.5),
-    Vector2.new(dockWidth-buttonSize*.62,dockHeight-buttonSize*.55),
-  }
+  meadowSkillDock.Position=UDim2.new(1,-12,0,math.max(80,math.min(v.Y-dockHeight-110,math.floor(v.Y*.30))))
   for index,button in ipairs(meadowSkillButtons) do
-    button.Position=UDim2.fromOffset(centers[index].X-buttonSize/2,centers[index].Y-buttonSize/2)
-    button.Size=UDim2.fromOffset(buttonSize,buttonSize)
-    button.TextSize=short and 11 or 14
-    button.ZIndex=6
+    button.Position=UDim2.fromOffset(0,(index-1)*(buttonHeight+8))
+    button.Size=UDim2.fromOffset(dockWidth,buttonHeight)
+    button.TextSize=short and 12 or 14
+    button.ZIndex=8
   end
-  meadowPatternBanner.Position=UDim2.new(.5,0,0,short and 108 or 130)
-  meadowPatternBanner.Size=UDim2.fromOffset(math.max(130,math.min(v.X-24,short and 300 or 400)),short and 34 or 42)
+  meadowPatternBanner.Position=UDim2.new(.5,0,0,short and 100 or 118)
+  meadowPatternBanner.Size=UDim2.fromOffset(math.max(130,math.min(v.X-24,short and 290 or 410)),short and 34 or 42)
   meadowPatternBanner.TextSize=short and 13 or 16
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)
