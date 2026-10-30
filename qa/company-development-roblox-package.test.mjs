@@ -1611,6 +1611,36 @@ test('fantasy unarmed and meadow skills support AnimationConstraint and legacy M
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save key and schema unchanged');
 });
 
+// 파일 구분: 마력숲 포자 버섯 제거·박쥐 원본 8마디 비행/급강하 회귀 검증.
+test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈로 비행한다',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+  const sites=server.slice(server.indexOf('local meadowEncounterSites = {'),server.indexOf('-- Roblox Terrain'));
+  assert.doesNotMatch(sites,/id="mushroom"/);
+  assert.equal((sites.match(/id="bat"/g)||[]).length,3,'original three bat habitats remain');
+  assert.equal((sites.match(/id="wolf"/g)||[]).length,4,'wolves remain unchanged');
+  assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
+  assert.match(config,/bat=105975567112263/,'keep approved original CC0 bat');
+  // Bat.fbx actually contains Wing1.L..Wing4.R and original flying/attack takes.
+  assert.match(client,/local batWingSegment=species=="bat" and key:match\("wing\(\[1-4\]\)"\)/);
+  for(const channel of ['WingL','WingR','WingL2','WingR2','WingL3','WingR3','WingL4','WingR4']){
+    assert.ok(client.includes(channel+'=true'),'missing real wing channel '+channel);
+    assert.ok(client.includes('available.'+channel),'missing rig validation '+channel);
+  }
+  assert.match(client,/local batEightWingRig=species~="bat"/);
+  assert.match(client,/species=="bat" and nativeAnimations\.FLY and nativeAnimations\.ATTACK/);
+  assert.match(client,/track\.Looped=mode=="WALK" or mode=="RUN" or mode=="IDLE" or mode=="FLY"/);
+  assert.match(client,/row\.species=="bat" and \(mode=="IDLE" or mode=="WALK" or mode=="RUN"\)/);
+  assert.match(client,/local lag=\(segment-1\)\*\.31/,'wing tips must follow leading joints');
+  assert.match(client,/local fold=\.42\*ready-\.52\*strike/,'dive wing fold');
+  assert.match(server,/local batDive=0/);
+  assert.match(server,/movingHeight=1\.4\+math\.sin\(phase\)\*\.16\+batWindup\*\.34-batDive\*\.83/);
+  assert.match(server,/enemy\.model:SetAttribute\("NativeMobMotion",motion\)/,'keep server authoritative motion');
+  assert.match(server,/setNumber\(player,"HuntingProficiency",readNumber\(player,"HuntingProficiency",0\)\+1\)/);
+  assert.match(server,/store:UpdateAsync\("player:"/);
+});
+
 // 파일 구분: 마력숲 레벨 제거 후 7개 독립 숙련도와 기존 저장·보상 보존 검증.
 test('마력숲은 전투·요리·제작·채집·건축·사냥·연금술 7개만 별도 저장한다',()=>{
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
