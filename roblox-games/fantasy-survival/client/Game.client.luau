@@ -3080,12 +3080,10 @@ local function mobVfx(pattern,where,stage,facing)
     or pattern=="BAT_DIVE" or pattern=="BAT_SWEEP"
   local wolf=pattern=="WOLF_BITE" or pattern=="WOLF_LUNGE"
   local boar=pattern=="BOAR_CHARGE" or pattern=="BOAR_TUSK"
-  local skeleton=pattern=="SKELETON_CLEAVE" or pattern=="SKELETON_THRUST"
   local tint=boss and Color3.fromRGB(255,131,91)
     or flying and Color3.fromRGB(243,224,123)
     or wolf and Color3.fromRGB(173,217,245)
     or boar and Color3.fromRGB(210,157,119)
-    or skeleton and Color3.fromRGB(188,176,232)
     or Color3.fromRGB(163,219,164)
   local accent=boss and Color3.fromRGB(255,222,168)
     or wolf and Color3.fromRGB(222,246,255)
@@ -3122,7 +3120,7 @@ local function mobVfx(pattern,where,stage,facing)
     -- [공격 범위 의미] 실제 광역 판정은 기존 수문장 충격파에만 있다.
     startDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
     endDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
-    textureKey=(wolf or skeleton) and stage=="IMPACT" and "slash" or nil,
+    textureKey=wolf and stage=="IMPACT" and "slash" or nil,
     hideFlash=stage=="ANTICIPATION",
     hideRing=pattern=="GOLEM_SLAM" or stage=="IMPACT" and not charge,
     mist=stage=="DEATH" and not reducedEffects,
@@ -3145,7 +3143,7 @@ local function bindOriginalMob(model)
   end
   if species~="wolf" and species~="bee" and species~="golem"
     and species~="deer" and species~="boar" and species~="rabbit"
-    and species~="bat" and species~="skeleton" then return end
+    and species~="bat" then return end
   -- [적 표시] 실제 서버 적 모델만 표시하고 벽 뒤·먼 거리의 화면 혼잡을 줄인다.
   if model:GetAttribute("Species") and not model:FindFirstChild("MeadowEnemyLabel") then
     local host=model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart",true)
@@ -3240,7 +3238,7 @@ local function bindOriginalMob(model)
           or key:find("calf",1,true)
         local foot=key:find("foot",1,true) or key:find("paw",1,true)
           or key:find("ankle",1,true)
-        if species=="golem" or species=="skeleton" then
+        if species=="golem" then
           name=(lower or foot) and ("Shin"..side) or ("Thigh"..side)
         else
           local front=key:find("front",1,true) or key:find("fore",1,true)
@@ -3253,7 +3251,7 @@ local function bindOriginalMob(model)
         end
       elseif not sourceChannels[name] and (species=="bee" or species=="bat") then
         if key:find("wing",1,true) and side then name="Wing"..side end
-      elseif not sourceChannels[name] and (species=="golem" or species=="skeleton") then
+      elseif not sourceChannels[name] and species=="golem" then
         if (key:find("arm",1,true) or key:find("shoulder",1,true)) and side then
           name="UpperArm"..side
         end
@@ -3267,11 +3265,10 @@ local function bindOriginalMob(model)
   local count=0
   for _ in pairs(joints) do count+=1 end
   local bodyPlan=(species=="bee" or species=="bat") and "FLYER" or
-    species=="golem" and "GIANT" or
-    species=="skeleton" and "BIPED" or "QUADRUPED"
+    species=="golem" and "GIANT" or "QUADRUPED"
   local movingJoints=(species=="bee" or species=="bat") and
       (available.WingL or available.WingR or available.UpperArmL or available.UpperArmR)
-    or (species=="golem" or species=="skeleton") and
+    or species=="golem" and
       (available.ThighL or available.ThighR or available.UpperArmL or available.UpperArmR)
     or (available.FLHip or available.FRHip or available.BLHip or available.BRHip)
   -- [실제 원본 사슴·늑대 모션] 등록된 AnimationId가 있으면 저작된 걷기/달리기를 우선한다.
