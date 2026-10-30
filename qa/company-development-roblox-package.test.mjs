@@ -1093,6 +1093,34 @@ test('fantasy meadow is five times larger while preserving fast central spawn an
   assert.doesNotMatch(server,/Instance.new\("Part"\)/);
 });
 
+test('fantasy meadow forest edges reuse verified trees and wildlife with quiet delayed birdsong',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const visual=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  for(const species of ['tree','deer','boar','rabbit']){
+    assert.ok(registry.models[species]?.license==='CC0-1.0','use verified original CC0 only: '+species);
+    assert.match(visual,new RegExp('\\b'+species+'\\s*=\\s*'+registry.models[species].assetId+'\\b'));
+  }
+  assert.match(server,/task.delay\(8,function\(\)/);
+  assert.match(server,/tree=worldAsset\("tree",Vector3.new\(spec\[1\],3,spec\[2\]\),spec\[3\]\)/);
+  assert.match(server,/tree:SetAttribute\("MeadowScenery",true\)/);
+  assert.match(server,/gameWorld:SetAttribute\("MeadowWoodlandSceneryCount",sceneryCount\)/);
+  assert.match(server,/local animal=worldAsset\(spec\[1\],Vector3.new\(spec\[2\],3,spec\[3\]\),spec\[4\]\)/);
+  assert.match(server,/table.insert\(meadowWildlife,\{/);
+  assert.match(server,/meadowTerrain:FillBall\(Vector3.new\(patch\[1\],-2,patch\[2\]\),patch\[3\],patch\[4\]\)/);
+  assert.doesNotMatch(server,/Instance.new\("Part"\)/);
+  assert.match(client,/task.delay\(5,function\(\)/);
+  assert.match(client,/forestBed.SoundId="rbxassetid:\/\/9116971475"/);
+  assert.match(client,/birdChirp.SoundId="rbxassetid:\/\/140708444684424"/);
+  assert.match(client,/birdChirp.Looped=false/);
+  assert.match(client,/forestBed.Volume=\.035\+\.085\*forestPresence/);
+  assert.match(client,/birdChirp.Volume=\.085\+\.17\*forestPresence/);
+  assert.match(client,/nextChirp=os.clock\(\)\+math.random\(17,29\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+});
+
 test('fantasy meadow binds six original CC0 creature rigs and prevents repeating death or hit motion',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const manifest=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));
