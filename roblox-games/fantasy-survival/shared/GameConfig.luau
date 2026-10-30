@@ -139,12 +139,25 @@ local Config = {
     {Title="연구 일지 3화 · 화산과 오아시스",
      Text="화염 골렘의 뜨거운 핵을 식힌 뒤 오아시스 지하의 초거대 벌레와 맞서 살아남는다."},
   },
+  -- [마력숲 7개 숙련도] 캐릭터 레벨 없이 기존 게임 행동의 누적 숙련도만 기록한다.
+  -- 미구현 생산 활동은 실제 성공 이벤트 전에는 점수를 생성하지 않는다.
+  Proficiencies = {
+    {Key="CombatProficiency",Name="전투",Source="실제 전투"},
+    {Key="CookingProficiency",Name="요리",Source="음식 조리"},
+    {Key="CraftingProficiency",Name="제작",Source="장비 제작·강화"},
+    {Key="GatheringProficiency",Name="채집",Source="실제 자원 채집"},
+    {Key="BuildingProficiency",Name="건축",Source="시설 설치"},
+    {Key="HuntingProficiency",Name="사냥",Source="야생동물 사냥"},
+    {Key="AlchemyProficiency",Name="연금술",Source="물약 조합"},
+  },
   -- 기존 Level/XP는 저장 호환에만 남기고 신규 성장은 누적 숙련도로 기록.
   InitialState = {
     Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
-    SharedObjective = 0, RoundScore = 0, XP = 0, CombatProficiency = 0, Wood = 0,
+    SharedObjective = 0, RoundScore = 0, XP = 0, CombatProficiency = 0,
+    CookingProficiency = 0, CraftingProficiency = 0, GatheringProficiency = 0,
+    BuildingProficiency = 0, HuntingProficiency = 0, AlchemyProficiency = 0, Wood = 0,
     Stone = 0, WeaponTier = 0, Bosses = 0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
     ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
