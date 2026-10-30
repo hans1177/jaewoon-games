@@ -146,6 +146,19 @@ local function worldAsset(id, location, targetHeight)
       nativeWorldScale=propScale
     end
     clone:ScaleTo(nativeWorldScale)
+    -- [야생동물 표면] CC0 원본 메시의 색·재질만 조정한다.
+    local animalTint=id=="deer" and Color3.fromRGB(167,122,89)
+      or id=="boar" and Color3.fromRGB(105,78,60)
+      or id=="rabbit" and Color3.fromRGB(199,192,174) or nil
+    if animalTint then
+      for _,surface in ipairs(clone:GetDescendants()) do
+        if surface:IsA("MeshPart") then
+          surface.Color=animalTint
+          surface.Material=Enum.Material.Fabric
+          surface.Reflectance=0
+        end
+      end
+    end
     clone:PivotTo(CFrame.new(location))
     -- Align the original source mesh to a measured native Terrain hit.
     local rayParams=RaycastParams.new()
@@ -326,6 +339,20 @@ local function spawnEnemy(isBoss, index)
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
   model.Name = isBoss and "돌 골렘" or (partId=="bee" and "초원 벌" or "초원 늑대")
+  -- [몹 색·재질] 원본 텍스처/메시는 그대로 쓰고 종별 표면만 차별화한다.
+  local bodyTint=isBoss and Color3.fromRGB(126,135,124)
+    or partId=="bee" and Color3.fromRGB(241,181,67)
+    or Color3.fromRGB(141,132,119)
+  local bodyMaterial=isBoss and Enum.Material.Slate
+    or partId=="bee" and Enum.Material.SmoothPlastic or Enum.Material.Fabric
+  for _,surface in ipairs(model:GetDescendants()) do
+    if surface:IsA("MeshPart") then
+      local wing=partId=="bee" and surface.Name:lower():find("wing",1,true)
+      surface.Color=wing and Color3.fromRGB(190,228,235) or bodyTint
+      surface.Material=wing and Enum.Material.Glass or bodyMaterial
+      surface.Reflectance=wing and .08 or 0
+    end
+  end
   model:SetAttribute("Species",partId)
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or (partId=="bee" and "BEE_SWEEP" or "WOLF_BITE"))
   model:SetAttribute("NativeMobMotion","IDLE")
@@ -552,6 +579,8 @@ end
 -- The CC0 wolves, bees and golems are *original* 3D meshes. Some have no
 -- Motor6Ds; never invent limbs or geometry. Visible native model locomotion
 -- and attack anticipation are driven on the original mesh's Model pivot.
+-- [몹 원본 액션] 관절 없는 소스 메시도 기존 서버 Pivot 동작을 종별 공격에 맞게 연출한다.
+-- 서버 타격 위치·스폰 위치·속도·공격 빈도는 바꾸지 않는다.
 local function animateMeadowOriginalMob(enemy,now)
   if not enemy.model.Parent then return end
   local kind=enemy.kind
@@ -559,15 +588,23 @@ local function animateMeadowOriginalMob(enemy,now)
     +enemy.spawnPosition.X*.11
   local inMotion=enemy.attackState=="CHASE" or enemy.attackState=="RETURN_TO_SPAWN"
   local attacking=enemy.attackState=="ANTICIPATION"
-  local movingHeight=kind=="bee" and (1.35+math.sin(phase)*.34)
-    or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .15 or .11) or 0)
-  local attackPitch=attacking and
-    (kind=="golem" and -.13 or kind=="bee" and -.25 or .12) or 0
+  local recoil=enemy.attackState=="RECOVERY"
+    and math.exp(-math.max(0,now-enemy.lastAttack)*7) or 0
+  local aerial=kind=="bee"
+  local movingHeight=aerial and (1.35+math.sin(phase)*.42)
+    or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .22 or .2) or 0)
+  local leap=attacking and (kind=="wolf" and .66 or kind=="golem" and .38 or -.48) or 0
+  movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
+  local attackPitch=attacking and (kind=="golem" and -.34 or aerial and -.58 or .42)
+    or recoil and (kind=="golem" and .22 or aerial and .35 or -.26) or 0
+  local stridePitch=inMotion and math.sin(phase)*(.05+(kind=="wolf" and .13 or .06)) or 0
+  local bank=aerial and math.sin(phase*.52)*.22
+    or inMotion and math.sin(phase*.65)*.09 or 0
   local facing=enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
   local pivot=enemy.position+Vector3.new(0,movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
-    *CFrame.Angles(attackPitch,0,kind=="bee" and math.sin(phase*.5)*.10 or 0))
+    *CFrame.Angles(attackPitch+stridePitch,0,bank))
 end
 
 local function chooseMeadowMobSkill(enemy)
