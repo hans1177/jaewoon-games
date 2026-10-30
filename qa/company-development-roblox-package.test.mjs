@@ -1112,7 +1112,7 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   assert.match(client,/GetAttributeChangedSignal\("MeadowWildlife"\):Once/);
   assert.match(client,/joint:IsA\("Motor6D"\) and joint.Part0 and joint.Part1/);
   assert.match(client,/joint:IsA\("Bone"\)/);
-  assert.match(client,/if sourceChannels\[name\] and not joints\[name\] then/);
+  assert.match(client,/if sourceChannels\[name\] and \(not joints\[name\] or liveConstraint\) then/);
   assert.match(client,/local actualRig=count>=2/);
   assert.match(client,/NativeCreatureRigMode/);
   assert.match(client,/NativeMobMotion/);
