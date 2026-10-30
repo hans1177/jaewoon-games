@@ -56,8 +56,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -83,7 +83,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-30T11:11:03.629Z",
+      "updatedAt": "2026-10-30T11:16:03.023Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -804,10 +804,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1349,13 +1349,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
+      "robloxQualityBuildUpSourceRevision": "9ad18505b619c8e5c44beeb607e702ff80b82e16",
       "robloxQualityFailureClass": "PRODUCT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
-        "artifactIdentity": "sha256:b5b1a32146cddafc4af0fbbe7dada51cbb9eb298c0d1defa50bebd9074203447",
-        "versionNumber": 9,
+        "sourceRevision": "9ad18505b619c8e5c44beeb607e702ff80b82e16",
+        "artifactIdentity": "sha256:88d87b73cba89de0eacd1ce35050f28e18501effecf06d61d6da442f6ba20223",
+        "versionNumber": 41044806434,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
@@ -1372,7 +1372,7 @@
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 3041.3046875,
+              "memoryMb": 2997.4140625,
               "descendantCount": 7151
             }
           },
@@ -1407,7 +1407,7 @@
             "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
             "observed": {
               "keysObserved": true,
-              "movementDistance": 5.547254137555493,
+              "movementDistance": 1.4737781136027814,
               "changedFrames": true,
               "realTargetDamageObserved": false,
               "studioRejoinStatePreserved": false
@@ -1420,7 +1420,7 @@
             "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
             "observed": {
               "keysObserved": true,
-              "movementDistance": 5.547254137555493,
+              "movementDistance": 1.4737781136027814,
               "changedFrames": true,
               "realTargetDamageObserved": false,
               "studioRejoinStatePreserved": false
@@ -1434,8 +1434,8 @@
           "ACTION_IMPLEMENTATION"
         ],
         "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
-        "testedAt": "2026-10-30T07:08:34.303Z",
-        "workflowRunId": 41016562066,
+        "testedAt": "2026-10-30T11:16:03.023Z",
+        "workflowRunId": 41046054212,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxThumbnailEvidence": {
@@ -1572,12 +1572,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
-        "artifactIdentity": "sha256:b5b1a32146cddafc4af0fbbe7dada51cbb9eb298c0d1defa50bebd9074203447",
-        "artifactRunId": 41014712149,
-        "universeId": "10773323492",
-        "placeId": "109461850273425",
-        "versionNumber": 9,
+        "sourceRevision": "9ad18505b619c8e5c44beeb607e702ff80b82e16",
+        "artifactIdentity": "sha256:88d87b73cba89de0eacd1ce35050f28e18501effecf06d61d6da442f6ba20223",
+        "artifactRunId": 41044806434,
+        "universeId": "",
+        "placeId": "",
+        "versionNumber": 41044806434,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -2138,8 +2138,8 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 5,
-          "primaryActionDisplacement": 5.547254137555493,
-          "primaryActionVelocity": 0.02613446492049872,
+          "primaryActionDisplacement": 1.473778068431796,
+          "primaryActionVelocity": 0.029477160428350187,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -2179,7 +2179,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 3041.3046875,
+              "memoryMb": 2997.4140625,
               "descendantCount": 7151
             },
             "multiplayer": {
@@ -2202,8 +2202,8 @@
                 "clientReceive": true,
                 "twoParticipantCapablePath": true
               },
-              "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
-              "artifactIdentity": "sha256:b5b1a32146cddafc4af0fbbe7dada51cbb9eb298c0d1defa50bebd9074203447",
+              "sourceRevision": "9ad18505b619c8e5c44beeb607e702ff80b82e16",
+              "artifactIdentity": "sha256:88d87b73cba89de0eacd1ce35050f28e18501effecf06d61d6da442f6ba20223",
               "sameUserRejoinVerified": false
             },
             "saveRejoin": {
@@ -2452,7 +2452,7 @@
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 3041.3046875,
+              "memoryMb": 2997.4140625,
               "descendantCount": 7151
             }
           },
@@ -2487,7 +2487,7 @@
             "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
             "observed": {
               "keysObserved": true,
-              "movementDistance": 5.547254137555493,
+              "movementDistance": 1.4737781136027814,
               "changedFrames": true,
               "realTargetDamageObserved": false,
               "studioRejoinStatePreserved": false
@@ -2500,7 +2500,7 @@
             "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
             "observed": {
               "keysObserved": true,
-              "movementDistance": 5.547254137555493,
+              "movementDistance": 1.4737781136027814,
               "changedFrames": true,
               "realTargetDamageObserved": false,
               "studioRejoinStatePreserved": false
@@ -2514,8 +2514,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-30T07:08:34.303Z",
-        "workflowRunId": 41016562066,
+        "testedAt": "2026-10-30T11:16:03.023Z",
+        "workflowRunId": 41046054212,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -2582,9 +2582,9 @@
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
-        "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
-        "artifactIdentity": "sha256:b5b1a32146cddafc4af0fbbe7dada51cbb9eb298c0d1defa50bebd9074203447",
-        "candidateVersionNumber": 9,
+        "sourceRevision": "9ad18505b619c8e5c44beeb607e702ff80b82e16",
+        "artifactIdentity": "sha256:88d87b73cba89de0eacd1ce35050f28e18501effecf06d61d6da442f6ba20223",
+        "candidateVersionNumber": 41044806434,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -2596,7 +2596,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-30T07:08:34.303Z"
+        "verifiedAt": "2026-10-30T11:16:03.023Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-30T06:54:54.830Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-29T14:55:31.573Z",
@@ -2611,12 +2611,16 @@
         "artifactIdentity": "sha256:88d87b73cba89de0eacd1ce35050f28e18501effecf06d61d6da442f6ba20223",
         "artifactRunId": 41044806434,
         "candidateVersionNumber": 41044806434,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "COMPLETED_PRODUCT_FAILURE",
         "queuedAt": "2026-10-30T11:10:59.806Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "completedAt": "2026-10-30T11:16:03.023Z",
+        "resultPass": false,
+        "infrastructureFailure": false,
+        "currentSourceArtifactBinding": true
       },
       "robloxNativeFailureClass": "ROBLOX_STUDIO_RUNTIME",
       "robloxValidationPublishRepairRequired": true,
@@ -9687,7 +9691,7 @@
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T07:55:20.643Z"
     }
   ],
-  "updatedAt": "2026-10-30T11:15:10.337Z",
+  "updatedAt": "2026-10-30T11:16:03.023Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
