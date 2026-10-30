@@ -555,36 +555,39 @@ task.defer(reportNativeFoundationReady)
 
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",activate=function()activateMeadowAction(primaryCombatAction.Id)end}or nil)
 
--- Four direct Roblox-native martial skill buttons, visible without opening the menu.
--- Each sends an existing server-authorized COMBAT action; no client damage authority.
+-- [스킬 UI] 기존 네 전투 입력만 화면 오른쪽의 왼쪽을 향한 반원 호에 배치한다.
+-- 가로 4칸 도크 대신 가운데 플레이 영역과 왼쪽 조이스틱을 비우고, 터치 버튼 크기를 유지한다.
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
--- Stay above the existing primary attack/menu buttons and clear of the left joystick.
-meadowSkillDock.AnchorPoint=Vector2.new(1,1)
-meadowSkillDock.Position=UDim2.new(1,-8,1,-232)
-meadowSkillDock.Size=UDim2.fromOffset(128,188)
+meadowSkillDock.AnchorPoint=Vector2.new(1,.5)
+meadowSkillDock.Position=UDim2.new(1,-8,.55,0)
+meadowSkillDock.Size=UDim2.fromOffset(192,268)
 meadowSkillDock.BackgroundTransparency=1
 meadowSkillDock.Parent=gui
+local meadowSkillScale=Instance.new("UIScale")
+meadowSkillScale.Scale=UserInputService.TouchEnabled and .86 or 1
+meadowSkillScale.Parent=meadowSkillDock
 local meleeSkills={
-  {"meadow-unarmed-rush","연속권"},
-  {"meadow-unarmed-uppercut","어퍼컷"},
-  {"meadow-unarmed-kick","회전차기"},
-  {"meadow-unarmed-elbow","팔꿈치"},
+  {"meadow-unarmed-rush","연속권",101,10},
+  {"meadow-unarmed-uppercut","어퍼컷",49,75},
+  {"meadow-unarmed-kick","회전차기",19,140},
+  {"meadow-unarmed-elbow","팔꿈치",49,205},
 }
 for index,skill in ipairs(meleeSkills) do
   local button=Instance.new("TextButton")
   button.Name="R15Skill"..index
-  button.Size=UDim2.new(1,0,0,43)
-  button.Position=UDim2.fromOffset(0,(index-1)*47)
+  button.Size=UDim2.fromOffset(76,57)
+  button.Position=UDim2.fromOffset(skill[3],skill[4])
   button.BackgroundColor3=Color3.fromRGB(22,76,62)
   button.TextColor3=Color3.fromRGB(241,255,223)
   button.TextSize=15
+  button.TextWrapped=true
   button.Font=Enum.Font.GothamBold
   button.Text=skill[2]
   button.AutoButtonColor=true
   button.Parent=meadowSkillDock
   local corner=Instance.new("UICorner")
-  corner.CornerRadius=UDim.new(0,11)
+  corner.CornerRadius=UDim.new(1,0)
   corner.Parent=button
   button.Activated:Connect(function()
     local character=player.Character
@@ -724,27 +727,27 @@ end)
 local basicUnarmedMoves={
   "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:ELBOW_RIGHT","U:FRONT_KICK_R",
 }
--- 네 무술의 실제 전신 연기: 준비-타격-이어받기 3구간, 각 기술에 고유한 5타.
--- 원본 전투 ID와 서버 판정은 유지하고 기존 R15/R6 관절 Transform만 조종한다.
--- 영화식 회전은 Root 관절의 시각 자세일 뿐 HumanoidRootPart/물리 이동이 아니다.
+-- [전신 무술] 4종 × 각 5타의 원본 키포즈를 관절별로 대폭 확장한다.
+-- 허리·어깨·골반 회전 및 무릎과 공중 중심 이동만 조절한다. HRP/서버 물리 이동·피해량은 불변.
 local function martialShot(key)
   local yaw,lean,twist,armL,armR,hipL,hipR,kneeL,kneeR,rise,elbowL,elbowR=unpack(key)
   local deg=math.rad
   return {
-    Root=CFrame.new(0,rise or 0,0)*CFrame.Angles(deg(lean*.27),deg(yaw),deg(twist*.12)),
-    Spine=CFrame.Angles(deg(lean),deg(twist),deg(-twist*.27)),
-    Chest=CFrame.Angles(deg(-lean*.34),deg(twist*.58),deg(twist*.18)),
-    Head=CFrame.Angles(deg(-lean*.18),deg(-twist*.42),0),
-    UpperArmL=CFrame.Angles(deg(armL),deg(-twist*.24),deg(-22-twist*.13)),
-    UpperArmR=CFrame.Angles(deg(armR),deg(twist*.24),deg(22-twist*.13)),
-    ForearmL=CFrame.Angles(deg(elbowL or -65),0,deg(-12)),
-    ForearmR=CFrame.Angles(deg(elbowR or -65),0,deg(12)),
-    ThighL=CFrame.Angles(deg(hipL),deg(twist*.14),deg(-8)),
-    ThighR=CFrame.Angles(deg(hipR),deg(-twist*.14),deg(8)),
-    ShinL=CFrame.Angles(deg(kneeL),0,0),
-    ShinR=CFrame.Angles(deg(kneeR),0,0),
-    FootL=CFrame.Angles(deg(-kneeL*.18),0,0),
-    FootR=CFrame.Angles(deg(-kneeR*.18),0,0),
+    Root=CFrame.new(0,math.clamp((rise or 0)*2.4,-.55,1.9),0)*
+      CFrame.Angles(deg(lean*.47),deg(yaw*1.16),deg(twist*.23)),
+    Spine=CFrame.Angles(deg(math.clamp(lean*1.43,-82,82)),deg(twist*1.32),deg(-twist*.40)),
+    Chest=CFrame.Angles(deg(-lean*.49),deg(twist*.82),deg(twist*.27)),
+    Head=CFrame.Angles(deg(-lean*.25),deg(-twist*.57),0),
+    UpperArmL=CFrame.Angles(deg(math.clamp(armL*1.36,-166,150)),deg(-twist*.36),deg(-31-twist*.19)),
+    UpperArmR=CFrame.Angles(deg(math.clamp(armR*1.36,-166,150)),deg(twist*.36),deg(31-twist*.19)),
+    ForearmL=CFrame.Angles(deg(math.clamp((elbowL or -65)*1.16,-168,24)),0,deg(-17)),
+    ForearmR=CFrame.Angles(deg(math.clamp((elbowR or -65)*1.16,-168,24)),0,deg(17)),
+    ThighL=CFrame.Angles(deg(math.clamp(hipL*1.34,-162,125)),deg(twist*.24),deg(-15)),
+    ThighR=CFrame.Angles(deg(math.clamp(hipR*1.34,-162,125)),deg(-twist*.24),deg(15)),
+    ShinL=CFrame.Angles(deg(math.clamp(kneeL*1.11,-35,145)),0,0),
+    ShinR=CFrame.Angles(deg(math.clamp(kneeR*1.11,-35,145)),0,0),
+    FootL=CFrame.Angles(deg(-kneeL*.26),0,0),
+    FootR=CFrame.Angles(deg(-kneeR*.26),0,0),
   }
 end
 -- 수치는 각 타격의 [루트회전, 전후기울기, 허리꼬임, 좌/우팔,
@@ -752,7 +755,7 @@ end
 -- 같은 동작을 다섯 번 복사하지 않고 총 40개의 독립된 영화식 키포즈를 저작한다.
 local martialSkillTracks={
   ["meadow-unarmed-rush"]={
-    name="FLASH_BOXING",speed=1.12,color=Color3.fromRGB(255,209,104),trailWidth=.54,
+    name="FLASH_BOXING",speed=1.12,color=Color3.fromRGB(255,209,104),trailWidth=1.16,
     beats={
       {id="U:JAB_LEFT",
        load={-23,18,-31,-50,-58,27,-24,22,18,-.07,-78,-84},
@@ -772,7 +775,7 @@ local martialSkillTracks={
     },
   },
   ["meadow-unarmed-uppercut"]={
-    name="RISING_DRAGON",speed=.92,color=Color3.fromRGB(255,151,105),trailWidth=.68,
+    name="RISING_DRAGON",speed=.92,color=Color3.fromRGB(255,151,105),trailWidth=1.24,
     beats={
       {id="U:UPPERCUT_RIGHT",
        load={-18,39,-23,-52,-24,50,48,68,71,-.18,-94,-119},
@@ -792,27 +795,27 @@ local martialSkillTracks={
     },
   },
   ["meadow-unarmed-kick"]={
-    name="TORNADO_TAEKWONDO",speed=.96,color=Color3.fromRGB(111,241,237),trailWidth=.76,
+    name="TORNADO_TAEKWONDO",speed=.96,color=Color3.fromRGB(111,241,237),trailWidth=1.42,
     beats={
       {id="U:LOW_KICK_R",
        load={0,21,-33,-50,-43,26,51,17,85,-.08,-82,-87},
        hit={49,-22,43,-67,-83,23,-66,26,10,.06,-82,-79}},
       {id="U:ROUND_KICK_R",
        load={77,11,42,-58,-72,39,42,30,91,-.06,-80,-75},
-       hit={136,-24,-52,-88,-36,45,-113,29,11,.14,-63,-75}},
+       hit={152,-27,-65,-104,-38,45,-126,17,4,.56,-59,-75}},
       {id="U:SIDE_KICK_L",
        load={151,18,-49,-78,-48,59,30,94,25,-.09,-69,-78},
-       hit={217,-31,53,-39,-107,-113,38,8,32,.19,-85,-76}},
+       hit={228,-33,65,-43,-119,-127,38,3,30,.71,-85,-76}},
       {id="U:FRONT_KICK_R",
        load={235,12,42,-67,-58,35,63,21,94,-.07,-65,-86},
-       hit={294,-32,-54,-101,-48,39,-127,35,8,.23,-80,-75}},
+       hit={312,-36,-61,-113,-48,39,-138,27,3,.87,-80,-75}},
       {id="U:ROUND_KICK_L",
-       load={305,21,-57,-92,-49,61,24,91,23,-.10,-68,-78},
-       hit={387,-38,72,-44,-117,-135,42,9,37,.29,-74,-81}},
+       load={325,24,-64,-106,-51,75,27,74,27,.36,-68,-78},
+       hit={432,-43,79,-43,-130,-149,47,2,30,1.19,-74,-81}},
     },
   },
   ["meadow-unarmed-elbow"]={
-    name="CLOSE_QUARTERS_MUAY_THAI",speed=1.08,color=Color3.fromRGB(168,143,255),trailWidth=.65,
+    name="CLOSE_QUARTERS_MUAY_THAI",speed=1.08,color=Color3.fromRGB(168,143,255),trailWidth=1.18,
     beats={
       {id="U:ELBOW_RIGHT",
        load={-37,24,-51,-71,-91,44,39,54,41,-.13,-113,-141},
@@ -841,6 +844,9 @@ end
 -- 재생 중 다른 기술을 누르면 그 기술의 5연타를 마지막에 이어서 재생한다.
 -- 새 서버 타격은 절대 만들지 않고 이미 승인된 입력의 시각 포즈만 예약한다.
 local activeCombatMartialTrack=nil
+local activeMartialScope=nil
+local activeMartialApproved=false
+local activeMartialFinisherPlayed=false
 local queuedMartialAction=nil
 local function filmEase(t)
   t=math.clamp(t,0,1)
@@ -868,6 +874,9 @@ local function finishNativeCombatMotion()
   combatRecoveryUntil = nil
   activeCombatCombo = nil
   activeCombatMartialTrack = nil
+  activeMartialScope = nil
+  activeMartialApproved = false
+  activeMartialFinisherPlayed = false
   queuedMartialAction = nil
   activeCombatCharacter = nil
   table.clear(combatPoseTargets)
@@ -878,7 +887,7 @@ player.CharacterAdded:Connect(function()
   predictedCombatUntil=0
   table.clear(pendingCombatMotion)
 end)
-playNativeCombatMotion=function(approvedScope,approvedEvent)
+playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   if not authorizedCombatScopes[approvedScope] then return false end
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -933,7 +942,9 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
     and os.clock()-activeCombatStartedAt < activeCombatCombo.duration then
     if profile=="UNARMED" and martialSkillTracks[approvedScope]
       and martialSkillTracks[approvedScope]~=activeCombatMartialTrack then
-      queuedMartialAction={scope=approvedScope,sequence=approvedEvent}
+      queuedMartialAction={scope=approvedScope,sequence=approvedEvent,confirmed=serverApproved==true}
+    elseif serverApproved==true and activeMartialScope==approvedScope then
+      activeMartialApproved=true
     end
     return true
   end
@@ -960,6 +971,9 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
   activeCombatCharacter = character
   activeCombatCombo = combo
   activeCombatMartialTrack = martialTrack
+  activeMartialScope = martialTrack and approvedScope or nil
+  activeMartialApproved = serverApproved==true
+  activeMartialFinisherPlayed = false
   queuedMartialAction = nil
   activeCombatStartedAt = os.clock()
   activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
@@ -983,8 +997,15 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   local predictedAt=pendingCombatMotion[scope]
   pendingCombatMotion[scope]=nil
   -- 동일 입력의 서버 승인으로 모션을 두 번 시작하지 않는다.
-  if predictedAt and os.clock()-predictedAt<1 then return end
-  playNativeCombatMotion(scope,tonumber(serial))
+  if predictedAt and os.clock()-predictedAt<1 then
+    -- 예측 모션은 끊지 않고 서버 승인 사실만 동기화한다.
+    if activeMartialScope==scope then activeMartialApproved=true end
+    if queuedMartialAction and queuedMartialAction.scope==scope then
+      queuedMartialAction.confirmed=true
+    end
+    return
+  end
+  playNativeCombatMotion(scope,tonumber(serial),true)
 end)
 -- Original Roblox 61-motion library: cast, guard, parry, dodge, craft,
 -- gather and emote use only available R15 joints and server-approved actions.
@@ -1106,7 +1127,7 @@ RunService.PreSimulation:Connect(function(dt)
     if os.clock() >= combatRecoveryUntil then
       local queued=queuedMartialAction
       finishNativeCombatMotion()
-      if queued then playNativeCombatMotion(queued.scope,queued.sequence) end
+      if queued then playNativeCombatMotion(queued.scope,queued.sequence,queued.confirmed) end
     end
     return
   end
@@ -1149,9 +1170,16 @@ RunService.PreSimulation:Connect(function(dt)
     for joint,from in pairs(fromPose) do
       local target=from:Lerp(toPose and toPose[joint] or CFrame.identity,alpha)
       local source=combatPoseTargets[joint]
-      -- 특화 전신 연기는 공통 원본과 혼합한다. Root는 완전한 회전 연속성을 유지한다.
+      -- 4개 무술의 저작된 팔·허리·다리 폭을 95% 이상 사용해 작은 기본 포즈에 묻히지 않게 한다.
       combatPoseTargets[joint]=joint=="Root" and target
-        or (source and source:Lerp(target,.84) or target)
+        or (source and source:Lerp(target,.97) or target)
+    end
+    if activeCombatMartialTrack.name=="TORNADO_TAEKWONDO" then
+      -- 각 타의 한 바퀴 회전을 포즈 보간에 맡기지 않고 프레임별로 구동한다.
+      -- CFrame:Lerp는 360도 방향을 최단경로로 접으므로 회전 프레임은 별도로 누적한다.
+      local sweep=filmEase(math.clamp(elapsed/math.max(.001,currentStep.duration),0,1))
+      combatPoseTargets.Root=(combatPoseTargets.Root or CFrame.identity)*
+        CFrame.Angles(0,math.rad(360*sweep),0)
     end
   elseif activeCombatCombo.profileId=="UNARMED" then
     -- 기본 공격은 기존 저작 포즈를 보존하되 팔·골반의 가시성을 높인다.
@@ -1187,9 +1215,9 @@ RunService.PreSimulation:Connect(function(dt)
         local color=style and style.color or
           (leg and Color3.fromRGB(124,245,220) or Color3.fromRGB(255,207,112))
         local ok,_,controller=pcall(combatVFX.AttachShortTrail,host,{
-          color=color,lifetime=nativeTouchEnabled and .17 or .26,
-          width=nativeTouchEnabled and .42 or (style and style.trailWidth or .5),
-          length=style and 1.8 or 1.3,
+          color=color,lifetime=nativeTouchEnabled and .19 or .32,
+          width=style and style.trailWidth or (nativeTouchEnabled and .6 or .76),
+          length=style and 3.2 or 1.3,
         })
         if ok and controller then activeStrikeTrail=controller end
       end
@@ -1222,6 +1250,37 @@ RunService.PreSimulation:Connect(function(dt)
     if combatPoseTargets.Root then combatR15Targets.Root=combatPoseTargets.Root end
   end
   activeCombatController.Step(combatR15Targets, dt)
+  -- [5타 막타] 서버가 승인한 무술만 실제 다섯 번째 접촉 프레임에 거대한 전용 검광·파동을 방출한다.
+  -- 공격자 주변의 연출 효과이며 적중·피해·처치·쿨다운을 만들지 않는다.
+  if activeCombatMartialTrack and activeMartialApproved and not activeMartialFinisherPlayed
+    and strikeIndex==5 and timeInAction-currentStep.start>=currentStep.contact then
+    activeMartialFinisherPlayed=true
+    local limbName=activeCombatMartialTrack.name=="TORNADO_TAEKWONDO" and "LeftFoot"
+      or activeCombatMartialTrack.name=="FLASH_BOXING" and "LeftHand"
+      or activeCombatMartialTrack.name=="RISING_DRAGON" and "RightHand" or "LeftHand"
+    local limb=character:FindFirstChild(limbName)
+    local rootPart=character:FindFirstChild("HumanoidRootPart")
+    if combatVFX and rootPart and type(combatVFX.CreateCriticalBurst)=="function" then
+      local origin=limb and (rootPart.Position+limb.Position)*.5+Vector3.new(0,1.2,0)
+        or rootPart.Position+Vector3.new(0,2,0)
+      local frame=CFrame.new(origin)
+      combatVFX.CreateCriticalBurst({
+        cframe=frame,critical=true,color=activeCombatMartialTrack.color,
+        accent=Color3.fromRGB(255,250,217),scale=3.8,
+        startDiameter=4,endDiameter=20,startSize=1.2,endSize=12,
+        count=nativeTouchEnabled and 9 or 19,duration=.42,
+        reducedMotion=nativeTouchEnabled,
+      })
+      combatVFX.CreateImpactFlash({
+        cframe=frame,critical=true,color=activeCombatMartialTrack.color,
+        accent=Color3.fromRGB(255,255,255),scale=3,
+        startDiameter=3,endDiameter=24,startSize=1,endSize=14,
+        textureKey=activeCombatMartialTrack.name=="TORNADO_TAEKWONDO" and "slash" or nil,
+        count=nativeTouchEnabled and 7 or 14,duration=.34,
+        reducedMotion=nativeTouchEnabled,
+      })
+    end
+  end
   if finished then combatRecoveryUntil = os.clock() + .18 end
 end)
 
