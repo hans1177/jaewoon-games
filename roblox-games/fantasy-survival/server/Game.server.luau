@@ -333,8 +333,9 @@ local function worldAsset(id, location, targetHeight)
     clone:ScaleTo(nativeWorldScale)
     -- [원본 CC0 숲 표면] 새 파츠 없이 수목·야생동물을 같은 무광 팔레트로 맞춘다.
     -- 원본 MeshId/TextureID/리그 및 자원·저장·충돌은 수정하지 않는다.
-    local animalTint=id=="deer" and meadowPalette.deer
-      or id=="boar" and meadowPalette.boar
+    -- [새 사슴] 다운로드한 원본 암사슴의 실제 재질·색을 그대로 사용한다.
+    -- 기존 오류 사슴 FBX의 강제 단색 재질 처리는 더 이상 적용하지 않는다.
+    local animalTint=id=="boar" and meadowPalette.boar
       or id=="rabbit" and meadowPalette.rabbit or nil
     if animalTint or id=="tree" or id=="ruin" then
       for _,surface in ipairs(clone:GetDescendants()) do
@@ -601,6 +602,7 @@ local function inspectMeadowSurvival(player,model,subject)
   end
   -- [생존 관찰] 삭제된 사슴·멧돼지 힌트는 더 이상 노출하지 않는다.
   local hints={
+    deer="새 사슴은 숲 가장자리에서 이동하다가 가까이 다가오는 사람을 피해 달아나.",
     rabbit="토끼는 수풀 근처에서 움직여. 조용히 접근하면 더 오래 관찰할 수 있어.",
   }
   local clue=hints[subject]
@@ -661,7 +663,7 @@ local function bindMeadowInspection(model,subject)
   prompt.Name="MeadowSurvivalInspect"
   prompt.ActionText=(subject=="WOODLAND" or subject=="RUIN") and "주변 살피기" or "동물 관찰"
   prompt.ObjectText=subject=="RUIN" and "오래된 유적" or subject=="WOODLAND" and "숲 가장자리"
-    or "토끼"
+    or subject=="deer" and "사슴" or "토끼"
   prompt.HoldDuration=.45
   prompt.MaxActivationDistance=10
   prompt.RequiresLineOfSight=false
@@ -671,13 +673,19 @@ local function bindMeadowInspection(model,subject)
     inspectMeadowSurvival(player,model,subject)
   end)
 end
--- [입장 로딩] 오너 요청: 사슴·멧돼지 삭제. 기존 토끼 배치는 그대로 유지한다.
--- 기본 지형과 입력·프로필 준비 이후에만 동물을 불러온다.
+-- [입장 로딩] 기본 지형과 입력·프로필 준비 뒤 실제 등록된 야생동물만 출현.
+-- 오너가 거부한 옛 오류 사슴 ID는 어떤 경우에도 사용하지 않는다.
 task.delay(4,function()
-for index,spec in ipairs({
+local wildlife={
   {kind="rabbit",position=Vector3.new(-39,3,62),height=1.8},
   {kind="rabbit",position=Vector3.new(41,3,67),height=1.8},
-}) do
+}
+if typeof(NativeCreatureAssets.deer)=="number" and NativeCreatureAssets.deer>0
+  and NativeCreatureAssets.deer~=78093904896855 then
+  table.insert(wildlife,{kind="deer",position=Vector3.new(-68,3,-22),height=4.4})
+  table.insert(wildlife,{kind="deer",position=Vector3.new(61,3,34),height=4.4})
+end
+for index,spec in ipairs(wildlife) do
   local model=worldAsset(spec.kind,spec.position,spec.height)
   if model then
     model:SetAttribute("MeadowWildlife",spec.kind)
@@ -909,10 +917,17 @@ task.defer(function()
     meadowTerrain:FillBall(Vector3.new(brush[1],-1.3,brush[2]),brush[3],Enum.Material.LeafyGrass)
     task.wait()
   end
-  -- [외곽 서식지] 사슴·멧돼지는 더 이상 생성하지 않고 기존 토끼 좌표만 유지한다.
-  for index,spec in ipairs({
+  -- [외곽 서식지] 새 원본 사슴이 승인·등록된 뒤에만 세 구역에 출현한다.
+  local forestWildlife={
     {"rabbit",-205,265,1.8},{"rabbit",233,263,1.8},{"rabbit",-295,-205,1.8},
-  }) do
+  }
+  if typeof(NativeCreatureAssets.deer)=="number" and NativeCreatureAssets.deer>0
+    and NativeCreatureAssets.deer~=78093904896855 then
+    table.insert(forestWildlife,{"deer",-245,-191,4.4})
+    table.insert(forestWildlife,{"deer",251,211,4.4})
+    table.insert(forestWildlife,{"deer",202,-232,4.4})
+  end
+  for index,spec in ipairs(forestWildlife) do
     local animal=worldAsset(spec[1],Vector3.new(spec[2],3,spec[3]),spec[4])
     if animal then
       animal:SetAttribute("MeadowWildlife",spec[1])
