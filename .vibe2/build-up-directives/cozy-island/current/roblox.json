@@ -4951,33 +4951,7 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "ab9f5fab5ec530fc697c140a65d9c4a0bc90aedb",
-      "artifactIdentity": "sha256:6729a08b70ca97e6ce823e2cbad272efa2a108e99e9b321d3316077ff9825bc5",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 41049442451,
-      "testedAt": "2026-10-30T11:45:11.458Z",
-      "repairSurfaces": [
-        "MAP_ROUTEABILITY",
-        "ROBLOX_OBSERVED_INTERACTION"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "adaptive-map-route-coverage",
-          "repairSurface": "MAP_ROUTEABILITY",
-          "priority": "CRITICAL",
-          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
-          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"ok\":false,\"initialOk\":false,\"recoveredByInteraction\":false,\"moved\":0,\"fall\":0,\"floorBelow\":true}]}"
-        },
-        {
-          "id": "observed-action-bffe3be7e56e2b237f34",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-bffe3be7e56e2b237f34\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"targetIdentity\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode1.ProximityPrompt\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"recoveredByInteraction\":false,\"attempts\":1}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "VIBE_INTERNAL_PLAY",
     "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
     "blockers": [
