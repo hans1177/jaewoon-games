@@ -1383,7 +1383,23 @@ test('fantasy commercial HUD keeps licensed truthful icons and interactive disco
   assert.ok(client.includes('iconBack.Name="ItemIconBack"'));
   assert.ok(client.includes('inventoryCards[index].Text='));
   assert.ok(client.includes('quickCaption.Text="가방"'));
-  assert.ok(client.includes('inventoryQuick.Size=UDim2.fromOffset(50,50)'));
+  // 상단 기존 메뉴는 유지하고 왼쪽의 퀘스트·가방·날씨를 큰 패널 없이 아이콘 메뉴로 정리한다.
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('questTracker.Activated:Connect(function()meadowMenu.open(3)end)'));
+  assert.ok(client.includes('trackerTitle.Visible=false'));
+  assert.ok(client.includes('trackerDetail.Visible=false'));
+  assert.ok(client.includes('questCaption.Text="퀘스트"'));
+  assert.ok(client.includes('icon.Name="CC0QuestIcon"'));
+  assert.ok(client.includes('backpackIcon.Name="CC0BackpackIcon"'));
+  assert.ok(client.includes('backpackIcon.ImageRectOffset=Vector2.fromOffset(256,0)'));
+  assert.ok(client.includes('inventoryQuick.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('shortLandscape and 70 or 9,shortLandscape and 108 or 194'));
+  assert.ok(client.includes('meadowClimateChip=Instance.new("TextButton")'));
+  assert.ok(client.includes('meadowClimateChip.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('climateDetails.Visible=not climateDetails.Visible'));
+  assert.ok(client.includes('meadowClimateChip.Text=string.format("%s\\n%s"'));
+  assert.ok(client.includes('MeadowClockMinutes'));
+  assert.ok(client.includes('meadowClimateChip.Visible=show'));
   assert.ok(client.includes('inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)'));
   assert.ok(client.includes('radarJournal.Activated:Connect(function()meadowMenu.open(3)end)'));
   assert.ok(client.includes('radarTitle.Text=gui.AbsoluteSize.Y<450'));
