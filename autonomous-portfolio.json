@@ -269,14 +269,14 @@
       "id": "P0006",
       "slug": "daechung-rpg",
       "name": "포탈 알피지",
-      "sourcePath": "web-games/daechung-rpg",
+      "sourcePath": "roblox-games/daechung-rpg",
       "productionSourcePath": "unity-games/daechung-rpg",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "UNITY",
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "selectedPlatform": "ROBLOX",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -299,16 +299,23 @@
       ],
       "lifecycleState": "ACTIVE",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/daechung-rpg",
-        "UNITY": "unity-games/daechung-rpg"
+        "ROBLOX": "roblox-games/daechung-rpg"
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/daechung-rpg/2026-10-26/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-10-26/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-30T10:51:18.022Z",
+      "productionTier": 2
     },
     {
       "id": "P0007",
@@ -437,16 +444,14 @@
       "name": "포근섬",
       "sourcePath": "roblox-games/cozy-island",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cozy-island",
-        "UNITY": "unity-games/cozy-island"
+        "ROBLOX": "roblox-games/cozy-island"
       },
       "developmentFocus": {
         "total": 0
@@ -454,11 +459,20 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/cozy-island/2026-10-25/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-30T10:51:18.022Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-fantasy-survival",
@@ -466,16 +480,14 @@
       "name": "마력숲 생존기",
       "sourcePath": "roblox-games/fantasy-survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival",
-        "UNITY": "unity-games/fantasy-survival"
+        "ROBLOX": "roblox-games/fantasy-survival"
       },
       "developmentFocus": {
         "total": 0
@@ -483,11 +495,20 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/fantasy-survival/2026-10-27/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/fantasy-survival/2026-10-27/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-30T10:51:18.022Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-horror-escape-room",
@@ -495,16 +516,14 @@
       "name": "심야 대탈출",
       "sourcePath": "roblox-games/horror-escape-room",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
+        "ROBLOX": "roblox-games/horror-escape-room"
       },
       "developmentFocus": {
         "total": 0
@@ -512,11 +531,20 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/horror-escape-room/2026-10-25/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-30T10:51:18.022Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-baeksu-war",
@@ -524,16 +552,14 @@
       "name": "백수대전쟁",
       "sourcePath": "roblox-games/baeksu-war",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/baeksu-war",
-        "UNITY": "unity-games/baeksu-war"
+        "ROBLOX": "roblox-games/baeksu-war"
       },
       "developmentFocus": {
         "total": 0
@@ -541,11 +567,52 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/baeksu-war/2026-10-27/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/baeksu-war/2026-10-27/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-30T10:51:18.022Z",
+      "productionTier": 2
+    },
+    {
+      "id": "SEED-AUTO-MISSING-DESIGN-FORGOTTEN-CONTINENT",
+      "slug": "forgotten-continent",
+      "name": "잊혀진 대륙 | 2D 생존",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/forgotten-continent"
+      },
+      "sourcePath": "roblox-games/forgotten-continent",
+      "designBaselineSource": "design/forgotten-continent/2026-10-26/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/forgotten-continent/2026-10-26/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-30T10:51:18.022Z"
     }
   ],
   "productionClassState": {
@@ -760,5 +827,6 @@
         "sourceReady": true
       }
     ]
-  }
+  },
+  "updatedAt": "2026-10-30T10:51:18.022Z"
 }
