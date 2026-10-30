@@ -1767,6 +1767,8 @@ export function deterministicWebModuleInputCandidate({order={},sourceRoot='',res
     .map(clean).join(' ');
   if(!/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent))return null;
   let root;try{root=fs.realpathSync(sourceRoot);}catch{return null;}
+  const gameId=clean(order.selectedTask?.gameId||order.gameId);
+  if(gameId&&path.basename(root)!==gameId)return null;
   for(const relative of unique(responsibleFiles)){
     if(!/\.html?$/i.test(relative)||path.isAbsolute(relative)||relative.includes('\\')
       ||relative.split('/').some(v=>!v||v==='.'||v==='..'))continue;
