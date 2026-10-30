@@ -1740,15 +1740,16 @@ for index,info in ipairs(meadowUtilityActions)do
   end)
   meadowUtilityButtons[index]=button
 end
--- [오른쪽 시안 배치] 기존 3개 전투·4개 보조 버튼의 간격을 유지하며 묶음 전체를 위로 올린다.
--- 오른쪽에만 고정하며 기존 왼쪽 조이스틱과 중앙 스테미너 HUD는 보존한다.
+-- [오른쪽 터치 UI] 버튼의 크기·간격·액션 ID는 유지하고 묶음만 오른쪽·위쪽으로 이동한다.
+-- 낮은 가로 화면에서는 미니맵과 상단 막기/어퍼컷 버튼이 겹치지 않도록 이동량을 제한한다.
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
   local scale=landscape and math.clamp(v.Y/315,.76,1.12) or math.clamp(v.X/390,.76,1)
   meadowSkillDock.Size=UDim2.fromOffset(math.floor(216*scale),math.floor(188*scale))
-  meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor((landscape and (v.Y<420 and 22 or 45) or 112)*scale))
+  meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,
+    -math.floor((landscape and (v.Y<350 and 32 or v.Y<420 and 44 or 83) or 136)*scale))
   local positions={{55,82,60},{109,44,70},{179,82,60}}
   for index,button in ipairs(meadowSkillButtons)do
     local p=positions[index]
@@ -1820,17 +1821,17 @@ radarTitle.Position=UDim2.fromOffset(5,116)
 radarTitle.Size=UDim2.new(1,-10,0,24)
 radarTitle.BackgroundColor3=Color3.fromRGB(27,30,28)
 radarTitle.BackgroundTransparency=.06
-radarTitle.Text="◆ 마력숲 지도"
+radarTitle.Text="초원지역"
 radarTitle.TextColor3=Color3.fromRGB(251,231,186)
-radarTitle.TextSize=12
-radarTitle.Font=Enum.Font.GothamBold
+radarTitle.TextSize=10
+radarTitle.Font=Enum.Font.Gotham
 radarTitle.ZIndex=9
 radarTitle.Parent=meadowRadar
 local radarTitleCorner=Instance.new("UICorner")
 radarTitleCorner.CornerRadius=UDim.new(1,0);radarTitleCorner.Parent=radarTitle
 local radarTitleStroke=Instance.new("UIStroke")
 radarTitleStroke.Color=Color3.fromRGB(216,174,102)
-radarTitleStroke.Thickness=1.3;radarTitleStroke.Parent=radarTitle
+radarTitleStroke.Thickness=1.3;radarTitleStroke.Transparency=1;radarTitleStroke.Parent=radarTitle
 local radarField=Instance.new("Frame")
 radarField.Name="NearbyPlayers"
 radarField.Position=UDim2.fromOffset(9,5)
@@ -2018,6 +2019,34 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local facing=mainRoot.CFrame.LookVector
   radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))
   local world=workspace:FindFirstChild("FantasySurvivalWorld")
+  -- [현재 위치 이름] 실제 생성된 마을·유적과 기존 숲 좌표에만 대응한다.
+  -- 실물이 없는 던전은 지어내지 않고 기본 초원지역으로 표시한다.
+  local areaName="초원지역"
+  if world then
+    local x,z=mainRoot.Position.X,mainRoot.Position.Z
+    if (world:GetAttribute("MeadowVillageNPCCount") or 0)>0
+      and x*x+(z+111)*(z+111)<72*72 then
+      areaName="초원 마을"
+    else
+      for index,site in ipairs(radarRuinSites) do
+        local dx,dz=x-site[1],z-site[2]
+        if world:FindFirstChild("Meadow_Ruin_"..index) and dx*dx+dz*dz<48*48 then
+          areaName="오래된 유적"
+          break
+        end
+      end
+      if areaName=="초원지역" then
+        for _,site in ipairs(grovePoints) do
+          local dx,dz=x-site[1],z-site[2]
+          if dx*dx+dz*dz<78*78 then
+            areaName="숲 가장자리"
+            break
+          end
+        end
+      end
+    end
+  end
+  radarTitle.Text=areaName
   local trailsReady=world and (world:GetAttribute("MeadowNativeTrails") or 0)>=8
   local mapSize=radarField.AbsoluteSize
   local radarSpan=270 -- 플레이어 주위 실제 135스터드 반경
@@ -2155,21 +2184,20 @@ local function layoutMeadowRadar()
   if v.X<=0 or v.Y<=0 then return end
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  -- [오른쪽 원형 지도] 기존 실제 탐험 마커와 좌표 표시를 유지한다.
+  -- [상단 우측 미니맵] 화면 안전 영역 맨 위에 지도를 붙이고 아래에 지역명·작은 좌표만 놓는다.
   local mapDiameter=compactLandscape and 100 or small and 106 or math.floor(math.clamp(v.Y*.24,110,170))
-  -- 좌표는 지도 맨 위, 원형 지도와 제목은 그 아래에 붙여 한 묶음으로 배치한다.
-  meadowRadar.Size=UDim2.fromOffset(mapDiameter+18,mapDiameter+58)
+  meadowRadar.Size=UDim2.fromOffset(mapDiameter+14,mapDiameter+40)
   meadowRadar.AnchorPoint=Vector2.new(1,0)
-  meadowRadar.Position=UDim2.new(1,-8,0,8)
+  meadowRadar.Position=UDim2.new(1,-4,0,0)
   radarField.AnchorPoint=Vector2.new(.5,0)
-  radarField.Position=UDim2.new(.5,0,0,22)
+  radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
-  radarTitle.Position=UDim2.fromOffset(5,mapDiameter+28)
-  radarTitle.Size=UDim2.new(1,-10,0,24)
-  radarTitle.TextSize=11
-  radarCoordinates.Position=UDim2.fromOffset(7,1)
-  radarCoordinates.Size=UDim2.new(1,-14,0,18)
-  radarCoordinates.TextSize=10
+  radarTitle.Position=UDim2.fromOffset(3,mapDiameter+7)
+  radarTitle.Size=UDim2.new(1,-6,0,18)
+  radarTitle.TextSize=10
+  radarCoordinates.Position=UDim2.fromOffset(3,mapDiameter+25)
+  radarCoordinates.Size=UDim2.new(1,-6,0,13)
+  radarCoordinates.TextSize=9
   meadowRadar.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
