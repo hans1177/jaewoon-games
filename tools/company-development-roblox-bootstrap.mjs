@@ -169,6 +169,29 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     ];
     if(approvedNativeCreaturePath.every(pattern=>pattern.test(raw)))return true;
   }
+  // [실제 원본 건물] 승인 BUILDING atom → 등록된 원본 Model ID →
+  // AssetService 메시 검증 → worldAsset 배치의 책임 경로만 인정한다.
+  if(family==='BUILDING'){
+    const approvedNativeVillagePath=[
+      /local\s+studioBuildingAtoms\s*=\s*studioAssetFamily\s*\(\s*["']BUILDING["']\s*\)/,
+      /local\s+nativeVillageReady\s*=\s*table\.find\(studioBuildingAtoms,"WALL_SOLID"\)~=nil/,
+      /table\.find\(studioBuildingAtoms,"DOOR_SINGLE"\)~=nil/,
+      /table\.find\(studioBuildingAtoms,"ROOF_GABLE"\)~=nil/,
+      /NativeCreatureAssets\[key\]<1/,
+      /if\s+nativeVillageReady\s+then/,
+      /local\s+function\s+worldAsset\(id,\s*location/,
+      /local\s+modelId\s*=\s*NativeCreatureAssets\[id\]/,
+      /template\s*=\s*AssetService:LoadAssetAsync\(modelId\)/,
+      /template:IsA\("Model"\)/,
+      /template:FindFirstChildWhichIsA\("MeshPart",true\)/,
+      /local\s+clone=template:Clone\(\)/,
+      /clone:ScaleTo\(nativeWorldScale\)/,
+      /local\s+model=worldAsset\(piece\.asset,Vector3\.new\(/,
+      /model:SetAttribute\("MeadowVillageScenery",true\)/,
+      /mesh:IsA\("MeshPart"\)/,
+    ];
+    if(approvedNativeVillagePath.every(pattern=>pattern.test(raw)))return true;
+  }
   // 모션은 관절 쓰기가 공용 모듈의 BindJointPose 내부에서 발생한다.
   // 선택 atom → 서버 승인 → R15 Motor6D → 실제 샘플·맵핑·프레임 Step이
   // 모두 존재할 때만 소스 수준의 실제 자산 소비로 인정한다.

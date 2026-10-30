@@ -1973,3 +1973,21 @@ test('fantasy arrival shows native world title, actual map preloads, safe resume
   assert.match(client,/setProgress\(loaded,total,"초원 지형 및 캐릭터 준비"\)/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
 });
+
+
+test('registered Forest buildings consume selected BUILDING atoms and real native Model instances',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(source,'BUILDING'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('table.find(studioBuildingAtoms,"WALL_SOLID")~=nil','true'),
+    'BUILDING'
+  ),false,'building selection cannot be an unbound status flag');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('local model=worldAsset(piece.asset,Vector3.new(','local model=nil -- blocked worldAsset(piece.asset,Vector3.new('),
+    'BUILDING'
+  ),false,'an unspawned prefab is not an applied building');
+  assert.equal(robloxStudioAssetFamilyBoundInText(
+    source.replace('template = AssetService:LoadAssetAsync(modelId)','template = nil'),
+    'BUILDING'
+  ),false,'a missing original-model load cannot pass building verification');
+});
