@@ -1991,3 +1991,25 @@ test('registered Forest buildings consume selected BUILDING atoms and real nativ
     'BUILDING'
   ),false,'a missing original-model load cannot pass building verification');
 });
+
+
+test('Forest title is created before blocking world waits and entry stays save-safe',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const titleAt=client.indexOf('Name="MeadowArrivalScreen"');
+  const weatherWaitAt=client.indexOf('local meadowClimateWorld=workspace:WaitForChild("FantasySurvivalWorld",15)');
+  const mobWaitAt=client.indexOf('local meadowMobWorld=workspace:WaitForChild("FantasySurvivalWorld")');
+  assert.ok(titleAt>0&&titleAt<weatherWaitAt&&titleAt<mobWaitAt,
+    'title must appear before either weather or mob world readiness waits');
+  assert.match(client,/local meadowVitalsGui\s+do\s+-- \[게임 메뉴\]/);
+  assert.match(client,/meadowVitalsGui=Instance\.new\("ScreenGui"\)/);
+  assert.match(client,/meadowVitalsGui.Enabled=false/);
+  assert.match(client,/meadowVitalsGui.Enabled=true/);
+  assert.match(client,/gui:FindFirstChild\("Area",true\)/);
+  assert.match(client,/continueButton\.Active=true/);
+  assert.match(client,/local profileDeadline=os\.clock\(\)\+35/);
+  assert.match(client,/local newGameWaiting=false/);
+  assert.match(client,/if player:GetAttribute\("SaveStatus"\)=="SESSION_ONLY" then/);
+  assert.match(client,/remote:FireServer\("meadow:new-game:confirm"\)/);
+  assert.match(client,/if player:GetAttribute\("MeadowProfileHadSave"\)~=true then\s+loadRegion\(true\)/);
+  assert.match(client,/player:GetAttribute\("MeadowNewGameResult"\)/);
+});
