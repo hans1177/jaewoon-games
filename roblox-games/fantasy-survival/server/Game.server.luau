@@ -726,6 +726,26 @@ local function spawnEnemy(isBoss, index)
     end
   end
   model:PivotTo(CFrame.new(location))
+  -- [매몰 수정] CC0 실제 메시 하단을 서버 Terrain에 정렬. 보상/공격 범위는 불변.
+  local bottom=math.huge
+  for _,mesh in ipairs(model:GetDescendants()) do
+    if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+      local cf=mesh.CFrame
+      local halfY=(math.abs(cf.RightVector.Y)*mesh.Size.X
+        +math.abs(cf.UpVector.Y)*mesh.Size.Y
+        +math.abs(cf.LookVector.Y)*mesh.Size.Z)*.5
+      bottom=math.min(bottom,cf.Position.Y-halfY)
+    end
+  end
+  if bottom==math.huge then model:Destroy();warn("마력숲 몬스터 보이는 메시 없음: "..partId);return false end
+  local groundRay=RaycastParams.new()
+  groundRay.FilterType=Enum.RaycastFilterType.Include
+  groundRay.FilterDescendantsInstances={meadowTerrain}
+  local groundHit=workspace:Raycast(location+Vector3.new(0,90,0),
+    Vector3.new(0,-180,0),groundRay)
+  if not groundHit then model:Destroy();warn("마력숲 몬스터 지면 미확인: "..partId);return false end
+  local meshOffset=groundHit.Position.Y+.12-bottom
+  model:PivotTo(model:GetPivot()+Vector3.new(0,meshOffset,0))
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
@@ -785,6 +805,8 @@ local function spawnEnemy(isBoss, index)
     model=model,HP=hitPoints,maxHP=hitPoints,
     isBoss=isBoss,kind=partId,damage=(isBoss and 20 or 6)+math.floor(CurrentWave/2),
     speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,
+    visibleGroundOffset=meshOffset,spawnGroundY=groundHit.Position.Y,
+    terrainGroundOffset=0,nextGroundSample=0,
     lastAttack=0,attackSerial=0,attackPattern=nil,windupUntil=nil,
     windupTargetUserId=nil,telegraph=attackTelegraph,attackState="IDLE",
     baseHeight=location.Y,visualFacing=Vector3.new(0,0,-1),
@@ -1015,7 +1037,9 @@ local function animateMeadowOriginalMob(enemy,now)
     or inMotion and math.sin(phase*.65)*.09 or 0
   local facing=enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
-  local pivot=(enemy.visualPosition or enemy.position)+Vector3.new(0,movingHeight,0)
+  local pivot=(enemy.visualPosition or enemy.position)
+    +Vector3.new(0,(enemy.visibleGroundOffset or 0)
+      +(enemy.terrainGroundOffset or 0)+movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
     *CFrame.Angles(attackPitch+stridePitch,0,bank))
 end
@@ -1136,6 +1160,20 @@ local function updateEnemyAI(dt,now)
       desired+=animal.escape
       local forward=Vector3.new(math.cos(phase),0,-math.sin(phase))
       if animal.escape.Magnitude>1 then forward=animal.escape.Unit end
+      -- 야생동물의 기존 원본 피벗과 발 지면 간 오프셋을 유지해 지하 이동을 방지한다.
+      if now>=(animal.nextGroundSample or 0) then
+        local ray=RaycastParams.new()
+        ray.FilterType=Enum.RaycastFilterType.Include
+        ray.FilterDescendantsInstances={meadowTerrain}
+        local hit=workspace:Raycast(desired+Vector3.new(0,80,0),
+          Vector3.new(0,-160,0),ray)
+        if hit then
+          animal.groundDelta=hit.Position.Y
+            -(animal.model:GetAttribute("MeadowSurfaceY") or hit.Position.Y)
+        end
+        animal.nextGroundSample=now+.5
+      end
+      desired+=Vector3.new(0,animal.groundDelta or 0,0)
       animal.model:PivotTo(CFrame.lookAt(desired,desired+forward))
     end
   end
@@ -1146,6 +1184,16 @@ local function updateEnemyAI(dt,now)
   end
   for _,enemy in ipairs(enemies) do
     if enemy.HP>0 and enemy.model.Parent then
+      -- [경사 보정] 실제 모델의 높이만 갱신하고 전투/추적의 기존 좌표는 유지한다.
+      if now>=(enemy.nextGroundSample or 0) then
+        local ray=RaycastParams.new()
+        ray.FilterType=Enum.RaycastFilterType.Include
+        ray.FilterDescendantsInstances={meadowTerrain}
+        local hit=workspace:Raycast(enemy.position+Vector3.new(0,90,0),
+          Vector3.new(0,-180,0),ray)
+        if hit then enemy.terrainGroundOffset=hit.Position.Y-(enemy.spawnGroundY or hit.Position.Y) end
+        enemy.nextGroundSample=now+.45
+      end
       -- [기절] 해당 몬스터만 추적·예고·연타를 중지하며 다른 몬스터와 웨이브는 계속 진행한다.
       if now<(enemy.stunUntil or 0) then
         setEnemyAttackState(enemy,"STUNNED")
