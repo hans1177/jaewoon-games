@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1yk0fh8",
+      "worker": "vibe2",
+      "taskId": "simple-rpg-studio-evolution-roblox-usability-v4",
+      "gameId": "simple-rpg",
+      "files": [
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/client/MaterialPresentation.client.luau",
+        "roblox-games/simple-rpg/client/WeatherVFX.luau",
+        "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau"
+      ],
+      "baseSha": "2daeb14010292c0801c3311350dc108b193ff2ee",
+      "runId": "41132300410",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-30T22:03:18.037Z",
+      "expiresAt": "2026-10-30T22:48:18.037Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:simple-rpg-studio-evolution-roblox-usability-v4"
+      ]
+    }
+  ]
 }
