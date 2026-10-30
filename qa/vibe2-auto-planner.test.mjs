@@ -97,6 +97,48 @@ test('Vibe reuses exact queued game primary work for unverified per-game bottlen
     assert.doesNotMatch(cleared.queue.tasks[0].goal,/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/);
     assert.ok(!cleared.queue.tasks[0].evidence.some(e=>e.startsWith('game-bottleneck-current:')));
     assert.equal(cleared.queue.tasks[0].status,'queued');
+    // Unavailable offline source generation must not discard verified
+    // same-game failure context or invent a successful worker recovery.
+    const retryAt='2026-10-31T06:00:00Z';
+    const blocked={...task,status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE',
+      retries:7,priority:'critical',evidence:[...task.evidence,
+        'source-offline-pattern-retry-at:'+retryAt,
+        'source-offline-pattern-codegen-sha256:'+'f'.repeat(64)]};
+    const blockedOriginal=createVibeContinuousQueue({tasks:[blocked],maxConcurrentTasks:5});
+    const blockedFirst=synchronizeQueuedBuildUpDirectives(blockedOriginal,[project],root);
+    const blockedTask=blockedFirst.queue.tasks[0];
+    assert.equal(blockedFirst.queue.tasks.length,1);
+    assert.equal(blockedTask.status,'blocked');
+    assert.equal(blockedTask.blocker,'OFFLINE_RECIPE_UNAVAILABLE');
+    assert.equal(blockedTask.retries,7);
+    assert.equal(blockedTask.priority,'critical');
+    assert.equal(blockedTask.reservationId,null);
+    assert.ok(blockedTask.evidence.includes('source-offline-pattern-retry-at:'+retryAt));
+    assert.match(blockedTask.goal,/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/);
+    assert.match(blockedTask.goal,/복구 조건이 충족되기 전에는 이 작업을 재예약하거나 PASS로 취급하지 않는다/);
+    assert.ok(blockedTask.evidence.includes(
+      'game-bottleneck-current:'+id+'|WEB|WEB_POST_PUBLICATION_PLAYTEST|'+revision));
+    const blockedAgain=synchronizeQueuedBuildUpDirectives(blockedFirst.queue,[project],root);
+    assert.equal(blockedAgain.queue.tasks[0].goal,blockedTask.goal);
+    assert.equal(blockedAgain.queue.tasks[0].status,'blocked');
+    assert.equal(blockedAgain.queue.tasks[0].evidence.filter(row=>row.startsWith('game-bottleneck-current:')).length,1);
+    const blockedPassed=synchronizeQueuedBuildUpDirectives(blockedFirst.queue,
+      [{...project,queueRuntimePassed:true}],root);
+    assert.doesNotMatch(blockedPassed.queue.tasks[0].goal,/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/);
+    assert.equal(blockedPassed.queue.tasks[0].status,'blocked',
+      'even a new runtime observation must not bypass offline capability admission');
+    assert.equal(blockedPassed.queue.tasks[0].blocker,'OFFLINE_RECIPE_UNAVAILABLE');
+    for(const untrusted of [
+      {task:{...blocked,blocker:'SECURITY_APPROVAL_PENDING'},project},
+      {task:{...blocked,ownerDevelopmentHold:true},project},
+      {task:blocked,project:{...project,queueRuntimeSourceRevision:'e'.repeat(40)}},
+      {task:blocked,project:{...project,queueRuntimeRootCauseVerified:true}},
+      {task:blocked,project:{...project,queueRuntimeEvidencePlatform:'ROBLOX'}}
+    ]){
+      const isolated=synchronizeQueuedBuildUpDirectives(
+        createVibeContinuousQueue({tasks:[untrusted.task],maxConcurrentTasks:5}),[untrusted.project],root);
+      assert.doesNotMatch(isolated.queue.tasks[0].goal,/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]/);
+    }
     for(const changed of [
       {project:{...project,queueRuntimeObserved:false},task},
       {project:{...project,queueRuntimePassed:true},task},

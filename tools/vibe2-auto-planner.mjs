@@ -4279,7 +4279,13 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         &&!posix(file).split('/').some(part=>part==='.'||part==='..'))
       &&!clean(candidate.goal).includes('[VERIFIED_GAME_RUNTIME_BOTTLENECK]')
       &&!clean(candidate.goal).includes('[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]');
-    const currentFailure=clean(item.status).toLowerCase()==='queued'&&!ownerHeld&&workOwned
+    // Preserve diagnosis for temporarily blocked source workers too. This is
+    // evidence-only routing: no cooldown, blocker, retry count or lease is cleared.
+    const originalTaskStatus=clean(item.status).toLowerCase();
+    const sourceWorkerHeld=['OFFLINE_RECIPE_UNAVAILABLE','SOURCE_MODEL_UNAVAILABLE','EXTERNAL_AI_QUOTA_COOLDOWN'].includes(clean(item.blocker));
+    const diagnosedTaskEligible=originalTaskStatus==='queued'
+      ||(originalTaskStatus==='blocked'&&sourceWorkerHeld);
+    const currentFailure=diagnosedTaskEligible&&!ownerHeld&&workOwned
       &&project.queueRuntimeObserved===true&&project.queueRuntimePassed===false
       &&clean(project.queueRuntimeEvidencePlatform).toUpperCase()===platform
       &&/^[0-9a-f]{40}$/i.test(revision)&&sameSource
@@ -4297,14 +4303,18 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         '검증할 소스 버전: '+revision,
         tree?'검증할 게임 트리: '+tree:'',
         '근본 원인: 미검증. 기존 담당 함수와 원본 소스에서 같은 실패를 먼저 재현·관측한다.',
+        originalTaskStatus==='blocked'
+          ?'현재 소스 생성 기능이 차단되어 있다. 기존 오프라인 레시피/모델 복구 조건이 충족되기 전에는 이 작업을 재예약하거나 PASS로 취급하지 않는다.':'',
         '입력·충돌·렌더 프레임·진행·저장·서버 권한 중 증거로 확인된 책임만 직접 수정한다.',
         '원래 개발 작업과 저장·밸런스·기존 게임 기능을 보존하고 새 큐·워크플로·우회패치를 만들지 않는다.',
         '같은 소스의 실제 런타임·모바일·독립 QA·회귀와 실패 단계 재검증 전에는 PASS 또는 출시에 승격하지 않는다.',
         activeBottleneckEnd,
         baseGoal
       ].filter(Boolean).join('\n');
-      const priority=['owner-immediate','critical'].includes(clean(candidate.priority).toLowerCase())
-        ?candidate.priority:'high';
+      const priority=originalTaskStatus==='blocked'
+        ?candidate.priority
+        :['owner-immediate','critical'].includes(clean(candidate.priority).toLowerCase())
+          ?candidate.priority:'high';
       const evidence=[...new Set([...existingEvidence.filter(row=>!row.startsWith(evidencePrefix)),
         evidencePrefix+[gameId,platform,failureStage,revision].join('|')])];
       if(candidate.goal!==diagnosis||candidate.priority!==priority
@@ -4312,7 +4322,7 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate={...candidate,goal:diagnosis,priority,evidence};
         changed+=1;
       }
-    }else if(clean(item.status).toLowerCase()==='queued'
+    }else if(['queued','blocked'].includes(clean(item.status).toLowerCase())
       &&project.queueRuntimeObserved===true&&project.queueRuntimePassed===true
       &&sameSource&&workOwned&&!ownerHeld
       &&clean(project.queueRuntimeEvidencePlatform).toUpperCase()===platform
