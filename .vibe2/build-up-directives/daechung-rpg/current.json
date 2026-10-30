@@ -5162,11 +5162,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "93f4a1a30a5b3965ee937aa0bffcdc739bae0795",
-      "artifactIdentity": "sha256:c4fc041a064692a094fb586e9fb90e982f4690a27d1f302afe0d117ead771b13",
+      "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
+      "artifactIdentity": "sha256:b5b1a32146cddafc4af0fbbe7dada51cbb9eb298c0d1defa50bebd9074203447",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 40902032265,
-      "testedAt": "2026-10-29T15:54:39.519Z",
+      "workflowRunId": 41016562066,
+      "testedAt": "2026-10-30T07:08:34.303Z",
       "repairSurfaces": [
         "PERFORMANCE",
         "SAVE_REJOIN",
@@ -5179,7 +5179,7 @@
           "repairSurface": "PERFORMANCE",
           "priority": "HIGH",
           "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
-          "observed": "{\"memoryMb\":3016.78125,\"descendantCount\":7151}"
+          "observed": "{\"memoryMb\":3041.3046875,\"descendantCount\":7151}"
         },
         {
           "id": "adaptive-save-rejoin-persistence",
@@ -5200,14 +5200,14 @@
           "repairSurface": "ACTION_IMPLEMENTATION",
           "priority": "CRITICAL",
           "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
-          "observed": "{\"keysObserved\":true,\"movementDistance\":5.027856348223162,\"changedFrames\":true,\"realTargetDamageObserved\":false,\"studioRejoinStatePreserved\":false}"
+          "observed": "{\"keysObserved\":true,\"movementDistance\":5.547254137555493,\"changedFrames\":true,\"realTargetDamageObserved\":false,\"studioRejoinStatePreserved\":false}"
         },
         {
           "id": "daechung-cloud-studio-save-rejoin",
           "repairSurface": "SAVE_REJOIN",
           "priority": "CRITICAL",
           "hint": "Exact Daechung Studio client evidence missing; require actual input, visual frames, damage and save rejoin.",
-          "observed": "{\"keysObserved\":true,\"movementDistance\":5.027856348223162,\"changedFrames\":true,\"realTargetDamageObserved\":false,\"studioRejoinStatePreserved\":false}"
+          "observed": "{\"keysObserved\":true,\"movementDistance\":5.547254137555493,\"changedFrames\":true,\"realTargetDamageObserved\":false,\"studioRejoinStatePreserved\":false}"
         }
       ]
     },

@@ -4955,13 +4955,31 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "1ec44c06de9918684edafff2061ee9ff08e2053e",
+      "artifactIdentity": "sha256:a49aa0ce1508d4d8932dad2977997a4f8276e36451c90bdfc421e4e00a4474b5",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 41016446256,
+      "testedAt": "2026-10-30T07:03:26.355Z",
+      "repairSurfaces": [
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "observed-action-365681f8b2605ff0b67d",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-365681f8b2605ff0b67d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode2.ProximityPrompt\",\"targetIdentity\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode2.ProximityPrompt\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"recoveredByInteraction\":false,\"attempts\":1}"
+        }
+      ]
+    },
     "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
     "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
     "blockers": [
       "roblox-runtime-candidate-deploy-pending"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -12435,9 +12453,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "b7f2972b0ab6da39938a350068b4a3390bb3c8f1b8609bfdfc5a88b42d5259dd",
@@ -12455,8 +12473,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
