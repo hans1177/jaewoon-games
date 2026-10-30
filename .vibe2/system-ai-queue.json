@@ -118695,7 +118695,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -118729,7 +118729,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 16,
-      "previousReservationId": "system-ai:40991230794:1",
+      "previousReservationId": "system-ai:40992118596:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -118737,12 +118737,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40992118596:1",
-      "reservedAt": "2026-10-30T02:36:33.081Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -119953,7 +119953,8 @@
         "actions-run:40990553760",
         "system-ai-handoff-to-reservation:system-ai:40991230794:1",
         "actions-run:40991230794",
-        "system-ai-handoff-to-reservation:system-ai:40992118596:1"
+        "system-ai-handoff-to-reservation:system-ai:40992118596:1",
+        "actions-run:40992118596"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1722,
@@ -119968,7 +119969,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-30T02:36:33.081Z"
+      "updatedAt": "2026-10-30T02:42:25.418Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -172361,20 +172362,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T19:22:33.836Z",
-      "updatedAt": "2026-10-30T02:40:37.674Z",
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "multiplayerUserAssistanceRequired": false
-      }
+      "updatedAt": "2026-10-30T02:40:37.674Z"
     },
     {
       "id": "recovery-recovery-9a838fb1109024466f82",
