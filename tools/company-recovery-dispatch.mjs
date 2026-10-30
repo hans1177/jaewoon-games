@@ -176,6 +176,9 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           priority:'critical',
           blocker:running?task.blocker:null,
           retries:running?task.retries:0,
+          // 정확한 게임별 실패를 기존 작업 항목에도 기록해 다음 예약·진단에 전달한다.
+          failureStage:clean(rec.failureStage)||task.failureStage||null,
+          failureSignature:clean(rec.failureSignature)||task.failureSignature||null,
           sourceMutationRequired:rec.sourceMutationRequired!==false,
           sourceMutationBaseline:clean(task.sourceMutationBaseline||task.sourceRevision||task.candidateSha||task.baseMainSha||rec.sourceMutationBaseline||rec.checkpoint)||null,
           recurrenceCount,
@@ -205,6 +208,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             'recovery-queue:'+clean(rec.id),
             'recovery-strategy:'+clean(rec.recoveryStrategy),
             'recovery-exact-stage:'+clean(rec.failureStage),
+            ...(clean(rec.failureSignature)?['failure-cause:'+clean(rec.failureSignature)]:[]),
             'source-mutation-required:YES',
             'game-repair-mode:'+repairMode,
             'game-repair-repeat-count:'+recurrenceCount,

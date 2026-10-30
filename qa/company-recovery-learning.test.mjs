@@ -269,6 +269,31 @@ test('game-source recovery without explicit scoped files stays with Vibe',()=>{
   assert.equal(result.queue.tasks[0].recoveryOwner,'VIBE2_VIBE3');
 });
 
+test('requeued Vibe work carries the latest exact game failure without replacing unrelated game evidence',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const original={id:'forest-task',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    responsibleFiles:['web-games/forest/index.html'],status:'failed',
+    failureStage:'WEB_INPUT',failureSignature:'OLD_INPUT_FAILURE',
+    sourceRevision:'verified-old-checkpoint',evidence:['recovery-exact-stage:WEB_INPUT']};
+  const unrelated={id:'desert-task',gameId:'desert',target:'web',sourceRoot:'web-games/desert',
+    responsibleFiles:['web-games/desert/index.html'],status:'queued',priority:'normal'};
+  const rec={id:'forest-runtime-recovery',status:'queued',sourceQueue:'vibe2',
+    sourceTaskId:original.id,relatedTaskIds:[unrelated.id],gameId:'forest',
+    responsibleFiles:['web-games/forest/index.html'],recoveryOwner:'VIBE2_VIBE3',
+    failureStage:'WEB_POST_PUBLICATION_PLAYTEST',failureSignature:'WEB_TOUCH_BLOCKED',
+    recoveryStrategy:'RESUME_EXACT_FAILED_GAME_STAGE',evidence:[]};
+  const result=dispatchRecovery({recoveryInput:{tasks:[rec]},gameQueueInput:{tasks:[original,unrelated]}});
+  assert.equal(result.dispatched.length,1);
+  const repaired=result.gameQueue.tasks[0];
+  assert.equal(repaired.status,'queued');
+  assert.equal(repaired.failureStage,'WEB_POST_PUBLICATION_PLAYTEST');
+  assert.equal(repaired.failureSignature,'WEB_TOUCH_BLOCKED');
+  assert.equal(repaired.sourceMutationBaseline,'verified-old-checkpoint');
+  assert.ok(repaired.evidence.includes('recovery-exact-stage:WEB_POST_PUBLICATION_PLAYTEST'));
+  assert.ok(repaired.evidence.includes('failure-cause:WEB_TOUCH_BLOCKED'));
+  assert.deepEqual(result.gameQueue.tasks[1],unrelated);
+});
+
 test('scoped game-source recovery requeues the original Vibe task, never System AI source writing',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const original={id:'game-task',gameId:'demo',status:'failed',target:'roblox',
