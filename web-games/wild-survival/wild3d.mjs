@@ -333,7 +333,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
       const label=document.getElementById('renderStatus');
       if(label)label.hidden=true;
     }
-    if(frames%60===0)document.body.dataset.webglFrames=String(frames);
+    document.body.dataset.webglFrames=String(frames);
     previous=now;
   }
   // Movement flags are deliberately read-only: simulation still runs in the original game.
