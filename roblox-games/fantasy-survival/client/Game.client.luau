@@ -863,7 +863,7 @@ local climateCorner=Instance.new("UICorner")
 climateCorner.CornerRadius=UDim.new(0,8)
 climateCorner.Parent=meadowClimateChip
 local climatePeriodNames={DAWN="새벽",DAY="낮",DUSK="저녁",NIGHT="밤"}
-local climateWeatherNames={CLEAR="맑음",RAIN="비",FOG="안개",STORM="폭풍"}
+local climateWeatherNames={CLEAR="맑음",RAIN="비",FOG="안개",SNOW="눈",STORM="폭풍"}
 local climateEmitter=nil
 local climateLightningUntil=0
 local climateNextLightningAt=os.clock()+19
@@ -917,7 +917,25 @@ local function renderMeadowClimate()
   meadowClimateChip.Text=string.format("%s  ·  %s  ·  %02d:%02d",
     climatePeriodNames[period] or "초원",climateWeatherNames[weather] or "맑음",
     math.floor(clock/60),clock%60)
-  if climateEmitter then climateEmitter.Enabled=weather=="RAIN" or weather=="STORM" end
+  if climateEmitter then
+    climateEmitter.Enabled=weather=="RAIN" or weather=="STORM" or weather=="SNOW"
+    -- 한 에미터에서 실제 날씨에 맞춰 강수 모양·속도·밀도를 전환한다.
+    if weather=="SNOW" then
+      climateEmitter.Rate=nativeTouchEnabled and 22 or 38
+      climateEmitter.Speed=NumberRange.new(5,9)
+      climateEmitter.Lifetime=NumberRange.new(1.4,2.1)
+      climateEmitter.Acceleration=Vector3.new(1,-2.5,0)
+      climateEmitter.Size=NumberSequence.new(.22)
+      climateEmitter.Color=ColorSequence.new(Color3.fromRGB(246,251,255))
+    else
+      climateEmitter.Rate=nativeTouchEnabled and 55 or 85
+      climateEmitter.Speed=NumberRange.new(42,56)
+      climateEmitter.Lifetime=NumberRange.new(.42,.68)
+      climateEmitter.Acceleration=Vector3.new(3,-12,0)
+      climateEmitter.Size=NumberSequence.new(.10)
+      climateEmitter.Color=ColorSequence.new(Color3.fromRGB(179,213,234))
+    end
+  end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(renderMeadowClimate)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(renderMeadowClimate)
@@ -936,14 +954,15 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   if not meadowClimateWorld then return end
   local weather=meadowClimateWorld:GetAttribute("MeadowWeather") or "CLEAR"
   local period=meadowClimateWorld:GetAttribute("MeadowDayPhase") or "DAWN"
-  if climateEmitter then climateEmitter.Enabled=weather=="RAIN" or weather=="STORM" end
+  if climateEmitter then climateEmitter.Enabled=weather=="RAIN" or weather=="STORM" or weather=="SNOW" end
   local atmosphere=verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
   local fog=weather=="FOG"
   local storm=weather=="STORM"
   local rainy=weather=="RAIN"
   local night=period=="NIGHT"
-  local targetDensity=fog and .40 or storm and .32 or rainy and .27 or .17
-  local targetHaze=fog and 2.5 or storm and 1.65 or rainy and 1.35 or .85
+  local snow=weather=="SNOW"
+  local targetDensity=fog and .40 or storm and .32 or rainy and .27 or snow and .25 or .17
+  local targetHaze=fog and 2.5 or storm and 1.65 or rainy and 1.35 or snow and 1.25 or .85
   if atmosphere and atmosphere:IsA("Atmosphere") then
     atmosphere.Density=atmosphere.Density+(targetDensity-atmosphere.Density)*.14
     atmosphere.Haze=atmosphere.Haze+(targetHaze-atmosphere.Haze)*.14
@@ -954,7 +973,8 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     or period=="DUSK" and Color3.fromRGB(255,210,177)
     or Color3.fromRGB(255,255,255)
   if storm then tint=tint:Lerp(Color3.fromRGB(183,199,212),.35)
-  elseif rainy then tint=tint:Lerp(Color3.fromRGB(211,220,230),.20) end
+  elseif rainy then tint=tint:Lerp(Color3.fromRGB(211,220,230),.20)
+  elseif snow then tint=tint:Lerp(Color3.fromRGB(222,235,246),.25) end
   local now=os.clock()
   if storm and now>=climateNextLightningAt then
     climateLightningUntil=now+.18
@@ -2314,7 +2334,7 @@ task.delay(5,function()
       local climate=workspace:FindFirstChild("FantasySurvivalWorld")
       local phase=climate and climate:GetAttribute("MeadowDayPhase") or "DAY"
       local sky=climate and climate:GetAttribute("MeadowWeather") or "CLEAR"
-      local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="STORM"
+      local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="SNOW" or sky=="STORM"
       forestBed.Volume=(.035+.085*forestPresence)*(quiet and .28 or 1)
       birdChirp.Volume=(.085+.17*forestPresence)*(quiet and .18 or 1)
       if os.clock()>=nextChirp then
