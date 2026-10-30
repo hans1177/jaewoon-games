@@ -1254,11 +1254,32 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   const assets=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
   assert.equal(assets.models.ruin.license,'CC0-1.0');
   assert.equal(assets.models.ruin.source,'VERIFIED_CC0_ORIGINAL');
+  const party=JSON.parse(fs.readFileSync('assets/shared/party/sources.json','utf8'));
+  for(const [role,asset] of Object.entries(assets.villagePrefabs.models)){
+    const source=party.records.find(item=>item.file===asset.sourceFile);
+    assert.ok(source,'CC0 source manifest missing: '+role);
+    assert.equal(asset.sourceSha256,source.sha256,'source hash mismatch: '+role);
+    assert.equal(asset.license,'CC0-1.0','source license mismatch: '+role);
+    assert.equal(asset.universeGrantVerified,false,'never fake unverified Universe use');
+  }
+  assert.equal(assets.villagePrefabs.registrationVerified,false);
+  assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
+  assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),piece.height,piece.lift\)/);
+  assert.match(server,/MeadowVillageBuildingCount/);
+  assert.match(server,/MeadowVillagePrefabReady/);
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
   assert.match(server,/worldAsset\("ruin",Vector3.new\(pos\[1\],3,pos\[2\]\),6\.2\)/);
   assert.match(server,/MeadowVillageInteraction/);
+  assert.match(server,/for contractIndex,contract in ipairs\(Config.VillageContracts\) do/);
+  assert.match(server,/for sceneIndex,site in ipairs\(contract.Sites\) do/);
+  assert.match(server,/MeadowVillageEvidenceCount/);
+  assert.match(server,/evidenceCount==9/);
+  assert.match(server,/if mask==63 then setNumber\(player,"VillageContractPhase",2\) end/);
+  assert.match(server,/readNumber\(player,"VillageContractEvidence",0\)==63/);
+  assert.match(server,/humanoid:MoveTo\(destination\)/);
+  assert.match(server,/animator:LoadAnimation\(anim\)/);
   assert.match(server,/if villageNear\(player,mesh.Position,15\) then callback\(player,mesh.Position\) end/);
   assert.match(server,/if string.sub\(actionId,1,8\)=="village:" then villageChoose\(player,actionId\);return end/);
   assert.match(server,/villageNear\(player,session.position,16\)/);
@@ -1270,6 +1291,10 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   for(const id of ['missing-medicines','well-at-night','lost-wagon']) assert.ok(config.includes('Id="'+id+'"'));
   assert.match(client,/villageContractRow=journalRow\("VillageContracts",166\)/);
   assert.match(client,/MEADOW_VILLAGE_DIALOG/);
+  assert.match(client,/VillageStoryScroll/);
+  assert.match(client,/MeadowVillageMarker/);
+  assert.match(client,/VillageClueMarker/);
+  assert.match(client,/bit32.band\(contractEvidence,bit32.lshift\(1,index\+2\)\)==0/);
   assert.match(client,/remote:FireServer\(action\)/);
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
