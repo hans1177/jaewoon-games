@@ -238,9 +238,11 @@ local function verifiedLearningBindMotionActor(character)
   }
 
   for _, descendant in ipairs(character:GetDescendants()) do
-    if descendant:IsA("Motor6D") then
+    -- Avatar Joint Upgrade: prefer real AnimationConstraint over legacy Motor6D.
+    if descendant:IsA("AnimationConstraint") or descendant:IsA("Motor6D") then
       state.motorCount += 1
-      if not state.motionJoint or descendant.Name == "Waist" then
+      if not state.motionJoint or descendant.Name == "Waist"
+        or descendant:IsA("AnimationConstraint") and state.motionJoint.Name ~= "Waist" then
         state.motionJoint = descendant
       end
     end
@@ -304,7 +306,7 @@ local function verifiedLearningMotionFailureReason(state)
   return nil
 end
 
-verifiedLearningRunService.RenderStepped:Connect(function(dt)
+verifiedLearningRunService.PreSimulation:Connect(function(dt)
   dt = math.min(dt, 0.1)
   local instantFps = 1 / math.max(dt, 1 / 240)
   verifiedLearningMotionFps += (instantFps - verifiedLearningMotionFps) * math.clamp(dt * 3, 0, 1)
@@ -326,7 +328,8 @@ verifiedLearningRunService.RenderStepped:Connect(function(dt)
         end
         state.lastJointTransform = currentTransform
         if state.hitKick > 0.001 then
-          state.motionJoint.Transform = currentTransform * CFrame.Angles(math.rad(-5) * state.hitKick, 0, 0)
+          -- Animator evaluates before PreSimulation; do not modify C0 or C1.
+          state.motionJoint.Transform = CFrame.Angles(math.rad(-5) * state.hitKick, 0, 0) * currentTransform
           state.hitKick *= math.exp(-dt * 10)
         end
       end
