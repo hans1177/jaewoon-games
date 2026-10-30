@@ -14,6 +14,11 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function evidenceSignature(task={}){
   const ev=uniq(task.evidence);
+  // 보안 격리 신호는 새 복구 항목의 일반 실패 서명으로 덮어쓸 수 없다.
+  if(ev.some(value=>/RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED/i.test(value)))return 'RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED';
+  // 직전 게임 복구가 기록한 현재 실패 서명은 과거 failure-cause보다 우선한다.
+  const currentSignature=clean(task.failureSignature);
+  if(currentSignature)return currentSignature;
   // 실제 실패 서명만 허용한다. 외부 학습 후보/알고리즘 추천 문구는 복구 트리거가 아니다.
   const currentFanInMissing=clean(task.lastOutcome)==='FAN_IN_REVIEW_BLOCKED_REQUEUE'
     ?[...ev].reverse().find(x=>x.startsWith('package-review-missing:'))||'':'';
@@ -38,6 +43,8 @@ function failureStage(task={}){
   const ev=uniq(task.evidence);
   if(clean(task.lastOutcome)==='FAN_IN_REVIEW_BLOCKED_REQUEUE'
     &&ev.some(x=>x.startsWith('package-review-missing:')&&VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(x)))return'FAN_IN_REVIEW';
+  // 재예약된 작업의 명시적인 현재 실패 단계는 누적된 과거 체크포인트보다 우선한다.
+  if(clean(task.failureStage))return clean(task.failureStage);
   const recoveryExact=[...ev].reverse().find(x=>x.startsWith('recovery-exact-stage:'));
   if(recoveryExact)return clean(recoveryExact.slice('recovery-exact-stage:'.length));
   const explicit=[...ev].reverse().find(x=>x.startsWith('failure-stage:'));
