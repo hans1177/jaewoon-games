@@ -510,9 +510,7 @@ local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="Mead
 meadowHealthTrack.Parent=root
 local watched = {"Score","Coins","CombatProficiency","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","MeadowStamina","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
-  status.Text = string.format("웨이브 %d · 적 %d",
-    player:GetAttribute("CurrentWave") or 0,
-    player:GetAttribute("AliveEnemies") or 0)
+  status.Text = string.format("오픈월드 · 주변 몬스터 %d",player:GetAttribute("AliveEnemies") or 0)
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
   local hp=humanoid and humanoid.Health or (player:GetAttribute("Health") or 0)
@@ -599,8 +597,8 @@ local function renderMeadowPages()
   meadowLabels[2].Text=string.format("소지품 · 서버 기록\n숙련도 %d  ·  장착 %s\n저장 %s",
     math.floor(player:GetAttribute("CombatProficiency") or 0),tool and tool.Name or "맨손",
     tostring(player:GetAttribute("SaveStatus") or "불러오는 중"))
-  meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 웨이브  %d\n남은 적  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
-    player:GetAttribute("CurrentWave") or 0,player:GetAttribute("AliveEnemies") or 0,
+  meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 지역 몬스터  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
+    player:GetAttribute("AliveEnemies") or 0,
     #meadowJournal>0 and table.concat(meadowJournal,"\n\n") or "주변 동물과 숲의 조사 지점을 살펴봐. 발견한 단서가 여기에 기록돼.")
   local groveMask=math.clamp(player:GetAttribute("ExplorationGroves") or 0,0,15)
   local explored=0
@@ -1224,7 +1222,7 @@ end
 -- 이동·전투·카메라·저장에는 관여하지 않으며 입력 즉시 건너뛸 수 있다.
 do
   local shown=false
-  local lastBossWave=0
+  local lastBossModel=nil
   local sceneCamera,sceneType,sceneSubject,sceneTween=nil,nil,nil,nil
   local intro=nil
   local inputConnection=nil
@@ -1292,8 +1290,9 @@ do
     task.delay(bossScene and 1.5 or 2.5,function()if intro==current then closeIntro()end end)
   end
   remote.OnClientEvent:Connect(function(kind,payload)
-    if kind=="MEADOW_BOSS_INTRO" and typeof(payload)=="table" and typeof(payload.wave)=="number" and payload.wave>lastBossWave then
-      lastBossWave=payload.wave;showIntro(payload)
+    if kind=="MEADOW_BOSS_INTRO" and typeof(payload)=="table"
+      and typeof(payload.model)=="Instance" and payload.model~=lastBossModel then
+      lastBossModel=payload.model;showIntro(payload)
     end
   end)
   player.CharacterAdded:Connect(closeIntro)
