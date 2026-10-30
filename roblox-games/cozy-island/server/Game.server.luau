@@ -465,12 +465,23 @@ local function spawnMob(kind,pos,visualIndex,islandTopY)
  local pr=prompt(r,isRaider and"섬 약탈병"or"멧돼지","공격")
  r:SetAttribute("CozyActorType",kind);r:SetAttribute("CozyMotionState","IDLE");r:SetAttribute("CozyMotionSpeed",0)
  CollectionService:AddTag(r,"CozyCombatActor")
+ -- Real hit feedback: effects are dormant until server-authored damage occurs.
+ local impactParticles=Instance.new("ParticleEmitter")
+ impactParticles.Name="CombatImpactParticles"
+ impactParticles.Rate=0;impactParticles.Lifetime=NumberRange.new(.18,.35)
+ impactParticles.Speed=NumberRange.new(4,8);impactParticles.SpreadAngle=Vector2.new(180,180)
+ impactParticles.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.8),NumberSequenceKeypoint.new(1,0)})
+ impactParticles.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.15),NumberSequenceKeypoint.new(1,1)})
+ impactParticles.Color=ColorSequence.new(Color3.fromRGB(255,208,122))
+ impactParticles.LightEmission=.5
+ impactParticles.Parent=r
  local e={part=r,kind=kind,hp=hp,max=hp,damage=damage,spawn=r.Position,lastHit=0}
  table.insert(mobs,e);r:SetAttribute("HP",hp)
  e.takeHit=function(amount,attacker)
   if e.hp<=0 or not r.Parent then return end
   e.hp=math.max(0,e.hp-math.max(0,amount))
   r:SetAttribute("HP",e.hp);r:SetAttribute("CozyMotionState",e.hp==0 and "DEATH" or "HIT")
+  impactParticles:Emit(e.hp==0 and 22 or 9)
   r:SetAttribute("CozyMotionUntil",os.clock()+(e.hp==0 and .65 or .3))
   if attacker then feedback(attacker,"HIT")end
   if e.hp==0 then
@@ -577,9 +588,14 @@ end)
   part(world,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
   if index~=1 then decorateRemoteIsland(world,r,topY,index)end
   if index==1 then
-   foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.CanCollide=true;foundationSpawn.Transparency=1;foundationSpawn.Position=Vector3.new(0,topY+1.5,18);foundationSpawn.Parent=world
+   foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.CanCollide=true;foundationSpawn.Transparency=1;foundationSpawn.Position=Vector3.new(0,topY+1.5,34);foundationSpawn.Parent=world
    part(world,"BeachShelf",Vector3.new(216,1.6,216),Vector3.new(0,seaLevel-12,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
    part(world,"VillagePlaza",Vector3.new(104,1,92),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
+   -- Studio route audit: make a clear walkable approach to FoundationSpawn,
+   -- outside the solid Base_1/Roof_1 footprint. Preserve all save/spawn authority.
+   local spawnApproach=part(world,"SpawnApproachWest",Vector3.new(92,.6,10),
+    Vector3.new(-48,topY+.56,54),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)
+   spawnApproach.CanCollide=true
     part(world,"VillageGreen",Vector3.new(76,1,58),Vector3.new(62,topY+.58,36),Color3.fromRGB(132,181,108),Enum.Material.Grass)
    part(world,"FarmPlot",Vector3.new(46,1,34),Vector3.new(-56,topY+.7,-42),Color3.fromRGB(116,91,56),Enum.Material.Ground)
    part(world,"BarracksYard",Vector3.new(48,1,36),Vector3.new(57,topY+.65,-40),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
