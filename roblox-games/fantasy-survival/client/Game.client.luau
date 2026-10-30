@@ -1345,7 +1345,23 @@ local function styleMeadowCombatButton(button,color)
   local border=Instance.new("UIStroke")
   border.Name="GoldSkillRim"
   border.Color=color
-  border.Thickness=3;border.Transparency=.04;border.Parent=button
+  border.Thickness=3.2;border.Transparency=.02;border.Parent=button
+  -- [광택 금속 이중 링] 이미지가 아니라 실제 버튼 형태의 테두리만 강화한다.
+  local inner=Instance.new("Frame")
+  inner.Name="PolishedInnerRing"
+  inner.AnchorPoint=Vector2.new(.5,.5)
+  inner.Position=UDim2.fromScale(.5,.5)
+  inner.Size=UDim2.fromScale(.89,.89)
+  inner.BackgroundTransparency=1
+  inner.ZIndex=15
+  inner.Parent=button
+  local innerCorner=Instance.new("UICorner")
+  innerCorner.CornerRadius=UDim.new(1,0);innerCorner.Parent=inner
+  local innerStroke=Instance.new("UIStroke")
+  innerStroke.Color=Color3.fromRGB(255,235,202)
+  innerStroke.Thickness=1.4
+  innerStroke.Transparency=.41
+  innerStroke.Parent=inner
   local gradient=Instance.new("UIGradient")
   gradient.Rotation=110
   gradient.Color=ColorSequence.new({
@@ -1354,6 +1370,63 @@ local function styleMeadowCombatButton(button,color)
     ColorSequenceKeypoint.new(1,Color3.fromRGB(6,14,23))
   })
   gradient.Parent=button
+end
+-- [오른쪽 전용 그림 아이콘] 맨손 발차기·회피·질주·손동작은 실제 Gui 그림으로 표시한다.
+-- 몬스터·맵 파츠가 아닌 UI 레이어이며 기존 CC0 장갑/방패/가방 자산은 그대로 사용한다.
+local function paintMeadowActionArt(button,role,tint)
+  local art=Instance.new("Frame")
+  art.Name="ActionArtwork"
+  art.AnchorPoint=Vector2.new(.5,0)
+  art.Position=UDim2.fromScale(.5,.08)
+  art.Size=UDim2.fromScale(.78,.72)
+  art.BackgroundTransparency=1
+  art.ZIndex=15
+  art.Parent=button
+  local function limb(name,x,y,w,h,angle)
+    local p=Instance.new("Frame")
+    p.Name=name
+    p.Position=UDim2.fromScale(x,y)
+    p.Size=UDim2.fromScale(w,h)
+    p.Rotation=angle or 0
+    p.BackgroundColor3=tint
+    p.BorderSizePixel=0
+    p.ZIndex=16
+    p.Parent=art
+    local c=Instance.new("UICorner")
+    c.CornerRadius=UDim.new(1,0)
+    c.Parent=p
+    return p
+  end
+  if role=="KICK" then
+    limb("Head",.20,.10,.20,.20,0)
+    limb("Chest",.31,.31,.16,.35,-22)
+    limb("BackArm",.06,.34,.31,.12,19)
+    limb("FrontArm",.45,.32,.27,.11,-26)
+    limb("FlyingKick",.48,.56,.50,.14,-10)
+    limb("Shoe",.84,.49,.15,.19,-11)
+    limb("GroundLeg",.28,.57,.15,.37,29)
+  elseif role=="DODGE" or role=="SPRINT" then
+    limb("Head",.47,.04,.19,.19,0)
+    limb("Chest",.39,.26,.16,.38,24)
+    limb("FrontArm",.53,.38,.33,.11,-35)
+    limb("BackArm",.16,.31,.29,.11,35)
+    limb("FrontLeg",.45,.60,.41,.13,-35)
+    limb("RearLeg",.15,.67,.33,.12,28)
+    if role=="SPRINT" then
+      limb("SpeedTrailOne",.00,.37,.18,.055,0)
+      limb("SpeedTrailTwo",.00,.57,.14,.055,0)
+    else
+      limb("EvadeTrail",.03,.54,.16,.055,-31)
+    end
+  elseif role=="HAND" then
+    limb("Palm",.29,.43,.49,.44,-5)
+    limb("Thumb",.12,.48,.27,.14,-34)
+    limb("FingerOne",.31,.10,.12,.43,-6)
+    limb("FingerTwo",.45,.04,.13,.44,0)
+    limb("FingerThree",.59,.13,.12,.37,5)
+    limb("FingerFour",.71,.26,.11,.28,12)
+    limb("Wrist",.39,.81,.33,.17,0)
+  end
 end
 -- [시안 이름표] 어두운 화면에서도 스킬명이 가려지지 않도록 버튼 아래 별도 검정·금색 이름표를 둔다.
 local meadowSkillNameplates={}
@@ -1371,30 +1444,21 @@ for index,skill in ipairs(meleeSkills)do
     icon.ImageRectSize=Vector2.new(64,64)
     icon.BackgroundTransparency=1
     icon.AnchorPoint=Vector2.new(.5,0)
-    icon.Position=UDim2.fromScale(.5,.11)
-    icon.Size=UDim2.fromScale(.72,.72)
+    icon.Position=UDim2.fromScale(.5,.07)
+    icon.Size=UDim2.fromScale(.78,.73)
     icon.ScaleType=Enum.ScaleType.Fit
-    icon.ZIndex=15
+    icon.ZIndex=16
+    icon.ImageColor3=index==2 and Color3.fromRGB(255,225,188) or Color3.fromRGB(213,235,255)
     icon.Parent=button
     -- 어퍼컷은 CC0 장갑 원본, 막기는 CC0 방패 원본을 사용한다.
   else
-    -- 발차기는 아직 업로드/권한 검증된 장화 이미지가 없어 글자 대신 장화 이모지로 구분한다.
-    local glyph=Instance.new("TextLabel")
-    glyph.Name="SkillSymbol"
-    glyph.BackgroundTransparency=1
-    glyph.Position=UDim2.fromScale(.10,.09)
-    glyph.Size=UDim2.fromScale(.8,.78)
-    glyph.Text="🦵"
-    glyph.TextColor3=skill[3]
-    glyph.Font=Enum.Font.GothamBold
-    glyph.TextScaled=true
-    glyph.ZIndex=15
-    glyph.Parent=button
+    -- [발차기] 장화 문자 대신 실제 인체 발차기 동작 실루엣을 그린다.
+    paintMeadowActionArt(button,"KICK",Color3.fromRGB(255,216,107))
   end
   local nameplate=Instance.new("TextLabel")
   nameplate.Name="SkillNameplate"..index
   nameplate.BackgroundColor3=Color3.fromRGB(18,17,15)
-  nameplate.BackgroundTransparency=.04
+  nameplate.BackgroundTransparency=.11
   nameplate.BorderSizePixel=0
   nameplate.Text=skill[2]
   nameplate.TextColor3=Color3.fromRGB(255,237,188)
@@ -1406,7 +1470,7 @@ for index,skill in ipairs(meleeSkills)do
   local plateCorner=Instance.new("UICorner")
   plateCorner.CornerRadius=UDim.new(1,0);plateCorner.Parent=nameplate
   local plateStroke=Instance.new("UIStroke")
-  plateStroke.Color=Color3.fromRGB(202,160,93)
+  plateStroke.Color=skill[3]
   plateStroke.Thickness=1.4;plateStroke.Parent=nameplate
   meadowSkillNameplates[index]=nameplate
   local cooldown=Instance.new("TextLabel")
@@ -1433,9 +1497,9 @@ end
 -- 기본 공격은 기존 화면 터치/키보드로 계속 사용하고 별도 공격 버튼은 제거한다.
 -- [오른쪽 보조 버튼] 기존 회피·질주·채집과 인벤토리 탭을 시안의 4개 원형 버튼에 연결.
 local meadowUtilityActions={
-  {"skill-meadow-dodge-left","회피",Color3.fromRGB(193,200,209),"↗"},
-  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"➤"},
-  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"✋"},
+  {"skill-meadow-dodge-left","회피",Color3.fromRGB(193,200,209),"",nil,"DODGE"},
+  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"",nil,"SPRINT"},
+  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"",nil,"HAND"},
   {"MEADOW_INVENTORY","가방",Color3.fromRGB(219,184,124),"",4},
 }
 local meadowUtilityButtons={}
@@ -1458,6 +1522,9 @@ for index,info in ipairs(meadowUtilityActions)do
     icon.Size=UDim2.fromScale(.68,.68)
     icon.ZIndex=15;icon.Parent=button
   end
+  if info[6] then
+    paintMeadowActionArt(button,info[6],Color3.fromRGB(242,243,237))
+  end
   -- [이름표] 작은 하단 버튼에서도 조작 종류가 읽히도록 버튼 안에 표기.
   local label=Instance.new("TextLabel")
   label.Name="UtilityCaption"
@@ -1471,7 +1538,7 @@ for index,info in ipairs(meadowUtilityActions)do
   label.TextStrokeTransparency=.25
   label.Font=Enum.Font.GothamBold
   label.TextScaled=true
-  label.ZIndex=16
+  label.ZIndex=17
   label.Parent=button
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
@@ -1489,7 +1556,7 @@ local function layoutMeadowCombatUi()
   local scale=landscape and math.clamp(v.Y/315,.76,1.12) or math.clamp(v.X/390,.76,1)
   meadowSkillDock.Size=UDim2.fromOffset(math.floor(216*scale),math.floor(188*scale))
   meadowSkillDock.Position=UDim2.new(1,-math.floor(8*scale),1,-math.floor((landscape and 7 or 78)*scale))
-  local positions={{55,75,60},{109,7,70},{179,75,60}}
+  local positions={{55,82,60},{109,44,70},{179,82,60}}
   for index,button in ipairs(meadowSkillButtons)do
     local p=positions[index]
     local size=math.floor(p[3]*scale)
