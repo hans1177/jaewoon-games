@@ -2,7 +2,7 @@
   "version": 1,
   "gameId": "fantasy-survival",
   "ownerApproved": true,
-  "ownerDirective": "2026-10-30_OWNER_MEADOW_EXISTING_CC0_ROLE_MATCHED_EXTENSIONS",
+  "ownerDirective": "2026-10-30_OWNER_MEADOW_CC0_HOSTILE_BAT_MUSHROOM_SKELETON_NO_SLIME",
   "license": "CC0-1.0",
   "models": {
     "wolf": {
@@ -52,6 +52,27 @@
       "sourceSha256": "03330f2622b48c465447e8314aabdd2c7533a4af9f41d2bd765c52a23f237cc6",
       "licenseEvidence": "https://opengameart.org/content/textured-cute-monster-pack",
       "role": "MEADOW_ENVIRONMENT"
+    },
+    "bat": {
+      "atom": "WING_LEATHER",
+      "sourcePath": "assets/roblox/actors/sources/quaternius-monsters/FBX/Bat.fbx",
+      "sourceSha256": "b31b1f94800c4fbd9204c42bd8853d91c0df16e27612ae6c0d6168c6bc64be51",
+      "licenseEvidence": "https://opengameart.org/content/lowpoly-animated-monsters",
+      "role": "HOSTILE_MEADOW_CREATURE"
+    },
+    "mushroom": {
+      "atom": "ROOT_LIMB",
+      "sourcePath": "assets/roblox/actors/sources/quaternius-cute/FBX/Mushroom.fbx",
+      "sourceSha256": "d329b5cdc503c500aa9d915969e228fed103597f3885a7b0b9ee1aa0f1406158",
+      "licenseEvidence": "https://opengameart.org/content/textured-cute-monster-pack",
+      "role": "HOSTILE_MEADOW_CREATURE"
+    },
+    "skeleton": {
+      "atom": "HEAD_SKULL",
+      "sourcePath": "assets/roblox/actors/sources/quaternius-monsters/FBX/Skeleton.fbx",
+      "sourceSha256": "be0a5992b677e563c6c9601e76fdcb9d50e91c195aebb1eb70604fbfe8fb26d5",
+      "licenseEvidence": "https://opengameart.org/content/lowpoly-animated-monsters",
+      "role": "HOSTILE_MEADOW_CREATURE"
     }
   },
   "runtimeVerified": false,
