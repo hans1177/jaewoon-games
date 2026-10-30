@@ -934,7 +934,7 @@ jobs:
                 ||!new RegExp('(^|[^0-9])'+row.assetId+'([^0-9]|$)').test(gameCode))
                 throw new Error('FANTASY_NATIVE_PUBLISH_MODEL_MISMATCH:'+role);
               if(expected.sourcePath){
-                if(!(/^assets\/shared\/forest\/[a-z]+\.(?:fbx|glb)$/.test(expected.sourcePath)
+                if(!(/^assets\/shared\/forest\/[a-z]+(?:-[a-z]+)*\.(?:fbx|glb)$/.test(expected.sourcePath)
                   ||((['tree','ruin'].includes(role)&&expected.sourcePath===(role==='tree'?'assets/shared/party/tree.glb':'assets/shared/party/wall-broken.glb')))
                   ||(['bat','mushroom','skeleton'].includes(role)&&/^assets\/roblox\/actors\/sources\/quaternius-(?:cute|monsters)\/FBX\/[A-Za-z]+\.fbx$/.test(expected.sourcePath)))
                   ||sha256(execFileSync('git',['show',revision+':'+expected.sourcePath]))!==expected.sourceSha256)

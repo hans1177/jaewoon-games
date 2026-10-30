@@ -180,7 +180,7 @@ jobs:
             if(!row||!Number.isSafeInteger(row.assetId)||row.assetId<1||row.license!=='CC0-1.0'
               ||row.sourceSha256!==source.sourceSha256||row.sha256!==source.sourceSha256||row.licenseEvidence!==source.licenseEvidence
               ||!new RegExp('\\b'+role+'\\s*=\\s*'+row.assetId+'\\b').test(ids))throw Error('OWNER_FOREST_MODEL_BINDING_INVALID:'+role);
-            if(source.sourcePath&&(!(/^assets\/shared\/forest\/[a-z]+\.(?:fbx|glb)$/.test(source.sourcePath)
+            if(source.sourcePath&&(!(/^assets\/shared\/forest\/[a-z]+(?:-[a-z]+)*\.(?:fbx|glb)$/.test(source.sourcePath)
               ||((['tree','ruin'].includes(role)&&source.sourcePath===(role==='tree'?'assets/shared/party/tree.glb':'assets/shared/party/wall-broken.glb')))
                   ||(['bat','mushroom','skeleton'].includes(role)&&/^assets\/roblox\/actors\/sources\/quaternius-(?:cute|monsters)\/FBX\/[A-Za-z]+\.fbx$/.test(source.sourcePath)))
               ||sha(fs.readFileSync(source.sourcePath))!==source.sourceSha256))throw Error('OWNER_FOREST_SOURCE_HASH_INVALID:'+role);
