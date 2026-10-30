@@ -752,6 +752,37 @@ test('single historical game-source task is handed to matching existing Vibe rep
   assert.deepEqual(second.systemAi,first.systemAi);
 });
 
+test('owner approval, protected source, and paid-resource blockers cannot be bypassed by related game recovery',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const primary={id:'primary',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    responsibleFiles:['web-games/forest/index.html'],status:'failed',priority:'normal'};
+  const related={...primary,id:'related',status:'queued'};
+  const rec={id:'restricted-rec',status:'queued',sourceQueue:'vibe2',
+    sourceTaskId:primary.id,relatedTaskIds:[related.id],gameId:'forest',
+    recoveryOwner:'VIBE2_VIBE3',responsibleFiles:['web-games/forest/index.html'],
+    failureStage:'WEB_RUNTIME',failureSignature:'WEB_FAILED',recoveryStrategy:'EXACT_STAGE_REPAIR'};
+  for(const field of ['requiresOwnerDecision','protectedChange','paidResourceRequired','securityReviewRequired','securityQuarantined']){
+    const restrictedTask={...primary,[field]:true};
+    const denied=dispatchRecovery({
+      recoveryInput:{tasks:[rec]},gameQueueInput:{tasks:[restrictedTask,related]}
+    });
+    assert.deepEqual(denied.gameQueue.tasks,[restrictedTask,related]);
+    assert.equal(denied.recovery.tasks[0].status,'queued');
+    assert.deepEqual(denied.dispatched,[]);
+    const restrictedRec={...rec,[field]:true};
+    const deniedRec=dispatchRecovery({
+      recoveryInput:{tasks:[restrictedRec]},gameQueueInput:{tasks:[primary,related]}
+    });
+    assert.deepEqual(deniedRec.gameQueue.tasks,[primary,related]);
+    assert.equal(deniedRec.recovery.tasks[0].status,'queued');
+  }
+  const restrictedSibling={...related,requiresOwnerDecision:true};
+  const mixed=dispatchRecovery({recoveryInput:{tasks:[rec]},
+    gameQueueInput:{tasks:[primary,restrictedSibling]}});
+  assert.deepEqual(mixed.gameRequeuedTaskIds,[primary.id]);
+  assert.deepEqual(mixed.gameQueue.tasks[1],restrictedSibling);
+});
+
 test('game-local recovery rejects spoofed source roots and unrelated files within the same platform',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const primary={id:'forest-primary',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
