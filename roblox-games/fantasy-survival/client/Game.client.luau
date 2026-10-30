@@ -1434,12 +1434,22 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
 end)
 local function layoutMeadowRadar()
   local v=gui.AbsoluteSize
-  local short=v.Y>0 and v.Y<450
+  if v.X<=0 or v.Y<=0 then return end
+  local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  meadowRadar.Size=UDim2.fromOffset(short and 133 or small and 138 or 164,short and 102 or small and 108 or 130)
-  meadowRadar.Position=UDim2.new(1,-(short and 9 or 12),0,short and 46 or 52)
-  radarTitle.TextSize=short and 10 or 12
-  radarCoordinates.TextSize=short and 9 or 10
+  meadowRadar.Size=UDim2.fromOffset(compactLandscape and 132 or small and 138 or 164,
+    compactLandscape and 86 or small and 108 or 130)
+  -- 작은 가로 화면은 오른쪽 전투 반원과 겹치지 않도록 레이더를 상단 중앙에 둔다.
+  -- 좁은 세로 화면은 퀘스트 패널 위에서 끝나도록 우상단에 밀착시킨다.
+  if compactLandscape then
+    meadowRadar.AnchorPoint=Vector2.new(.5,0)
+    meadowRadar.Position=UDim2.new(.5,0,0,8)
+  else
+    meadowRadar.AnchorPoint=Vector2.new(1,0)
+    meadowRadar.Position=UDim2.new(1,-12,0,small and 8 or 52)
+  end
+  radarTitle.TextSize=compactLandscape and 10 or small and 11 or 12
+  radarCoordinates.TextSize=compactLandscape and 9 or small and 9 or 10
   meadowRadar.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
