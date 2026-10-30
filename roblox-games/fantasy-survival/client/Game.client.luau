@@ -78,9 +78,7 @@ local playNativeCombatMotion
 local predictedCombatSequence=0
 local predictedCombatUntil=0
 local pendingCombatMotion={}
-local meadowJournalOpen=false
 local function activateMeadowAction(actionId)
-  if meadowJournalOpen then return end
   local combat=false
   for _,action in ipairs(Config.Actions) do
     if action.Id==actionId then combat=action.Kind=="COMBAT";break end
@@ -107,6 +105,15 @@ gui.Name = "ApprovedScopeHud"
 gui:SetAttribute("ClientActionRuntimeVersion",3)
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
+-- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
+local meadowIconAtlas="" -- CC0_INTERFACE_ATLAS
+local reducedEffects=game:GetService("UserInputService").TouchEnabled
+local meadowEffectsGroup=Instance.new("SoundGroup")
+meadowEffectsGroup.Name="MeadowEffects";meadowEffectsGroup.Volume=.75
+meadowEffectsGroup.Parent=game:GetService("SoundService")
+local meadowAmbienceGroup=Instance.new("SoundGroup")
+meadowAmbienceGroup.Name="MeadowAmbience";meadowAmbienceGroup.Volume=.75
+meadowAmbienceGroup.Parent=game:GetService("SoundService")
 local root = Instance.new("Frame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
@@ -543,9 +550,12 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   if closest then meadowPatternBanner.Text="위험! "..telegraphNames[closest].." 공격 예고" end
 end)
 
-local watched = {"Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
+-- [전투 HUD] 실제 휴머노이드 최대 체력을 기준으로 표시한다.
+local meadowHealthTrack,meadowHealthControl=CommonUI.CreateHealthBar({name="MeadowHealth",text="체력",textSize=11})
+meadowHealthTrack.Parent=root
+local watched = {"Coins","Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
-  status.Text = string.format("HP %d · Lv %d · 웨이브 %d · 적 %d\nXP %d · 나무 %d · 돌 %d · 강화 %d · 점수 %d",
+  status.Text = string.format("체력 %d · 레벨 %d · 웨이브 %d · 적 %d\n경험치 %d · 나무 %d · 돌 %d · 강화 %d · 점수 %d",
     player:GetAttribute("Health") or 100, player:GetAttribute("Level") or 1,
     player:GetAttribute("CurrentWave") or 0, player:GetAttribute("AliveEnemies") or 0,
     player:GetAttribute("XP") or 0, player:GetAttribute("Wood") or 0,
@@ -553,9 +563,9 @@ local function render()
     player:GetAttribute("RoundScore") or 0)
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
-  if humanoid and humanoid.RigType~=Enum.HumanoidRigType.R15 then
-    status.Text ..= "\nR15 아바타 적용 대기 · 재접속 필요"
-  end
+  local hp=humanoid and humanoid.Health or (player:GetAttribute("Health") or 0)
+  local maxHp=humanoid and humanoid.MaxHealth or 100
+  meadowHealthControl.SetRatio(maxHp>0 and hp/maxHp or 0,string.format("체력 %d / %d",hp,maxHp))
   local saveStatus = player:GetAttribute("SaveStatus")
   if player:GetAttribute("ProfileReady") ~= true then
     status.Text = "프로필 불러오는 중 · 전투 잠시 대기"
@@ -576,7 +586,7 @@ end
 primaryCombatAction = primaryCombatAction or Config.Actions[1]
 if primaryCombatAction then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
-    if inputState == Enum.UserInputState.Begin and not meadowJournalOpen and gui:GetAttribute("GameMenuOpen")~=true then
+    if inputState == Enum.UserInputState.Begin and gui:GetAttribute("GameMenuOpen")~=true then
       activateMeadowAction(primaryCombatAction.Id)
     end
     return Enum.ContextActionResult.Sink
@@ -602,8 +612,128 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{compact=true,hideButton=true})
-
+do
+-- [게임 메뉴] 현재 서버 상태만 읽는 캐릭터·소지품·저널과 실제 동작하는 옵션.
+local meadowPages={}
+local meadowLabels={}
+local meadowPageNames={"캐릭터","인벤토리","저널","옵션","도우미","동료"}
+for index,name in ipairs(meadowPageNames) do
+  local page=Instance.new("ScrollingFrame")
+  page.Name="MeadowPage"..index;page.BackgroundTransparency=1;page.BorderSizePixel=0
+  page.AutomaticCanvasSize=Enum.AutomaticSize.Y;page.CanvasSize=UDim2.new()
+  page.ScrollBarThickness=3;page.ScrollingDirection=Enum.ScrollingDirection.Y
+  page.Visible=false;page.Parent=root
+  local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,10)
+  layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=page
+  meadowPages[index]=page
+  if index<4 or index>=5 then
+    local label=Instance.new("TextLabel")
+    label.Name="LiveDetails";label.BackgroundTransparency=1
+    label.Size=UDim2.new(1,-8,0,0);label.AutomaticSize=Enum.AutomaticSize.Y
+    label.TextColor3=Color3.fromRGB(229,239,228);label.Font=Enum.Font.GothamMedium
+    label.TextSize=15;label.TextWrapped=true;label.TextXAlignment=Enum.TextXAlignment.Left
+    label.TextYAlignment=Enum.TextYAlignment.Top;label.Parent=page;meadowLabels[index]=label
+  end
+end
+local meadowJournal={}
+local meadowHelperButtons={}
+local function renderMeadowPages()
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local tool=character and character:FindFirstChildOfClass("Tool")
+  meadowLabels[1].Text=string.format("%s\n\n레벨  %d\n체력  %d / %d\n장비  %s\n무기 강화  %d단계\n보스 처치  %d\n\n능력치는 서버의 현재 상태를 표시해.",
+    player.DisplayName,player:GetAttribute("Level") or 1,humanoid and humanoid.Health or 0,
+    humanoid and humanoid.MaxHealth or 100,tool and tool.Name or "맨손",player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
+  meadowLabels[2].Text=string.format("소지품\n\n재화  %d\n경험치  %d\n\n장착 중  %s\n\n채집·장비 강화는 활동 탭에서 할 수 있어.\n저장 상태  %s",
+    player:GetAttribute("Coins") or 0,
+    player:GetAttribute("XP") or 0,tool and tool.Name or "맨손",tostring(player:GetAttribute("SaveStatus") or "불러오는 중"))
+  meadowLabels[3].Text=string.format("초원 탐험 저널\n\n현재 웨이브  %d\n남은 적  %d\n\n%s\n\n관찰 기록은 이번 접속 중 발견한 단서야.",
+    player:GetAttribute("CurrentWave") or 0,player:GetAttribute("AliveEnemies") or 0,
+    #meadowJournal>0 and table.concat(meadowJournal,"\n\n") or "주변 동물과 숲의 조사 지점을 살펴봐. 발견한 단서가 여기에 기록돼.")
+  local tier=player:GetAttribute("WeaponTier") or 0
+  local cost=2+tier
+  local ready=player:GetAttribute("ProfileReady")==true
+  local save=player:GetAttribute("SaveStatus")
+  local quest=Config.MainQuests and Config.MainQuests[player:GetAttribute("QuestStage") or 1]
+  local suggestion=not ready and "프로필을 불러오고 있어. 잠시 기다려 줘."
+    or save=="SESSION_ONLY" and "이번 접속은 임시 플레이야. 진행이 저장되지 않으니 재접속 후 상태를 확인해."
+    or save=="SAVE_FAILED" and "저장에 실패했어. 기존 저장은 보호 중이야."
+    or player:GetAttribute("RunActive")~=true and "생존 시작을 눌러 초원 전투를 시작해."
+    or tier<10 and (player:GetAttribute("Wood") or 0)>=cost and (player:GetAttribute("Stone") or 0)>=cost
+      and "강화 재료가 준비됐어. 아래 장비 강화를 누르면 서버가 비용을 확인해."
+    or "나무와 돌 가까이에서 채집해. 전투 중에는 공격 예고에 맞춰 막으면 연타를 끊을 수 있어."
+  meadowLabels[5].Text="지금 할 일\n\n"..(quest and quest.Instruction.."\n\n" or "")..suggestion..string.format("\n\n다음 강화 비용  나무 %d · 돌 %d\n\n조작 안내\n화면 탭: 기본 공격\n연속권·승룡권: 맨손 스킬\n막기 직후 적중: 완벽 막기\n회피: 능력치에 따라 자동 발동",cost,cost)
+  local companionStage=player:GetAttribute("CompanionQuestStage") or 1
+  local companionLines={"동료 통신 · 선택 의뢰","메인 퀘스트와 독립적으로 진행돼."}
+  for index,request in ipairs(Config.CompanionRequests or {})do
+    local unlocked=(player:GetAttribute("QuestStage") or 1)>=request.UnlockMainStage
+    local status=index<companionStage and "완료" or index==companionStage and unlocked and "진행 중" or "대기"
+    local progress=index<companionStage and request.Goal or index==companionStage and (player:GetAttribute("CompanionQuestProgress") or 0) or 0
+    companionLines[#companionLines+1]=string.format("【%s】 %s\n%s\n%s  %d/%d",status,request.Name,request.Message,request.Instruction,progress,request.Goal)
+  end
+  meadowLabels[6].Text=table.concat(companionLines,"\n\n")
+  for _,button in ipairs(meadowHelperButtons) do
+    button.Active=ready
+    button.TextTransparency=ready and 0 or .5
+  end
+end
+for _,name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(renderMeadowPages) end
+player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
+player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
+player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
+player:GetAttributeChangedSignal("CompanionQuestProgress"):Connect(renderMeadowPages)
+for index,row in ipairs({{"생존 시작","genre-core"},{"가까운 자원 채집","scope-coreloop-1-6ebe58f496"},{"장비 강화","scope-coreloop-2-6c927cfa40"}})do
+  local button=CommonUI.CreatePrimaryButton({name="MeadowHelper"..index,text=row[1],minHeight=52})
+  button.LayoutOrder=index;button.Size=UDim2.new(1,-8,0,54);button.Parent=meadowPages[5]
+  meadowHelperButtons[index]=button
+  button.Activated:Connect(function()
+    if player:GetAttribute("ProfileReady")==true then activateMeadowAction(row[2]) end
+  end)
+end
+player:GetAttributeChangedSignal("MeadowSurvivalHintSerial"):Connect(function()
+  local clue=player:GetAttribute("MeadowSurvivalHint")
+  if typeof(clue)=="string" and clue~="" and not table.find(meadowJournal,clue) then
+    table.insert(meadowJournal,1,clue)
+    if #meadowJournal>24 then table.remove(meadowJournal) end
+    renderMeadowPages()
+  end
+end)
+local function bindMeadowMenuCharacter(character)
+  local human=character:WaitForChild("Humanoid",8)
+  if human then
+    human.HealthChanged:Connect(function()render();renderMeadowPages()end)
+    human:GetPropertyChangedSignal("MaxHealth"):Connect(function()render();renderMeadowPages()end)
+  end
+  character.ChildAdded:Connect(renderMeadowPages)
+  character.ChildRemoved:Connect(renderMeadowPages)
+  renderMeadowPages()
+end
+player.CharacterAdded:Connect(function(character)task.defer(bindMeadowMenuCharacter,character)end)
+if player.Character then task.defer(bindMeadowMenuCharacter,player.Character) end
+for index,name in ipairs({"효과음","환경음","타격 효과"}) do
+  local button=CommonUI.CreatePrimaryButton({name="MeadowOption"..index,text=name,minHeight=52})
+  button.Size=UDim2.new(1,-8,0,54);button.LayoutOrder=index;button.Parent=meadowPages[4]
+  local function refreshOption()
+    local value=index==1 and meadowEffectsGroup.Volume or meadowAmbienceGroup.Volume
+    button.Text=index==3 and ("타격 효과  ·  "..(reducedEffects and "간소화" or "기본"))
+      or name.."  ·  "..math.floor(value*100+.5).."%   눌러 조절"
+  end
+  button.Activated:Connect(function()
+    if index==3 then reducedEffects=not reducedEffects
+    else
+      local group=index==1 and meadowEffectsGroup or meadowAmbienceGroup
+      group.Volume=group.Volume>.9 and 0 or math.min(1,group.Volume+.25)
+    end
+    refreshOption()
+  end)
+  refreshOption()
+end
+renderMeadowPages()
+local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,{
+  compact=true,hideButton=true,pages=meadowPages,pageNames=meadowPageNames,onPageChanged=renderMeadowPages,iconAtlas=meadowIconAtlas,
+})
+local meadowHud=gui:FindFirstChild("MobileGameStatus")
+if meadowHud then meadowAvatar.Parent=meadowHud;meadowAvatar.Visible=false end
 -- [스토리·아이템 HUD] 실제 서버 퀘스트와 DataStore 소장 기록만 보여준다.
 -- 중앙 게임 화면과 점프/전투 영역은 비워 두고 좌상단에 펼침 단추만 둔다.
 local questTracker=Instance.new("TextButton")
@@ -636,6 +766,12 @@ trackerTitle.Font=Enum.Font.GothamBold
 trackerTitle.TextSize=15
 trackerTitle.ZIndex=9
 trackerTitle.Parent=questTracker
+if meadowIconAtlas~="" then
+  local icon=Instance.new("ImageLabel");icon.Name="CC0QuestIcon";icon.BackgroundTransparency=1
+  icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new(320,0);icon.ImageRectSize=Vector2.new(64,64)
+  icon.Size=UDim2.fromOffset(22,22);icon.Position=UDim2.fromOffset(8,7);icon.ZIndex=10;icon.Parent=questTracker
+  trackerTitle.Position=UDim2.fromOffset(36,5);trackerTitle.Size=UDim2.new(1,-44,0,25)
+end
 local trackerDetail=Instance.new("TextLabel")
 trackerDetail.Name="QuestObjective"
 trackerDetail.Position=UDim2.fromOffset(12,30)
@@ -649,81 +785,7 @@ trackerDetail.TextWrapped=true
 trackerDetail.ZIndex=9
 trackerDetail.Parent=questTracker
 
-local journalShade=Instance.new("TextButton")
-journalShade.Name="MeadowJournalShade"
-journalShade.Size=UDim2.fromScale(1,1)
-journalShade.BackgroundColor3=Color3.fromRGB(5,12,10)
-journalShade.BackgroundTransparency=.28
-journalShade.BorderSizePixel=0
-journalShade.Text=""
-journalShade.ZIndex=70
-journalShade.Visible=false
-journalShade.Active=true
-journalShade.Parent=gui
-local journalCard=Instance.new("Frame")
-journalCard.Name="MeadowJournalCard"
-journalCard.AnchorPoint=Vector2.new(.5,.5)
-journalCard.Position=UDim2.fromScale(.5,.5)
-journalCard.Size=UDim2.fromOffset(520,450)
-journalCard.BackgroundColor3=Color3.fromRGB(16,35,31)
-journalCard.BorderSizePixel=0
-journalCard.ZIndex=71
-journalCard.Parent=journalShade
-local journalCorner=Instance.new("UICorner")
-journalCorner.CornerRadius=UDim.new(0,16)
-journalCorner.Parent=journalCard
-local journalStroke=Instance.new("UIStroke")
-journalStroke.Color=Color3.fromRGB(102,169,132)
-journalStroke.Transparency=.12
-journalStroke.Parent=journalCard
-local journalHeading=Instance.new("TextLabel")
-journalHeading.Name="Heading"
-journalHeading.Size=UDim2.new(1,-92,0,49)
-journalHeading.Position=UDim2.fromOffset(16,7)
-journalHeading.BackgroundTransparency=1
-journalHeading.Text="연구 일지  ·  메인 퀘스트 / 가방"
-journalHeading.TextColor3=Color3.fromRGB(255,245,216)
-journalHeading.TextXAlignment=Enum.TextXAlignment.Left
-journalHeading.Font=Enum.Font.GothamBold
-journalHeading.TextSize=18
-journalHeading.ZIndex=72
-journalHeading.Parent=journalCard
-local journalClose=Instance.new("TextButton")
-journalClose.Name="CloseJournal"
-journalClose.AnchorPoint=Vector2.new(1,0)
-journalClose.Position=UDim2.new(1,-10,0,9)
-journalClose.Size=UDim2.fromOffset(66,46)
-journalClose.BackgroundColor3=Color3.fromRGB(67,93,77)
-journalClose.TextColor3=Color3.fromRGB(255,255,255)
-journalClose.Text="닫기"
-journalClose.TextSize=15
-journalClose.Font=Enum.Font.GothamBold
-journalClose.ZIndex=72
-journalClose.Parent=journalCard
-local journalCloseCorner=Instance.new("UICorner")
-journalCloseCorner.CornerRadius=UDim.new(0,9)
-journalCloseCorner.Parent=journalClose
-local journalScroll=Instance.new("ScrollingFrame")
-journalScroll.Name="QuestAndInventory"
-journalScroll.Position=UDim2.fromOffset(10,58)
-journalScroll.Size=UDim2.new(1,-20,1,-68)
-journalScroll.BackgroundTransparency=1
-journalScroll.BorderSizePixel=0
-journalScroll.ScrollBarThickness=4
-journalScroll.ScrollBarImageColor3=Color3.fromRGB(165,213,165)
-journalScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
-journalScroll.CanvasSize=UDim2.new()
-journalScroll.ZIndex=72
-journalScroll.Parent=journalCard
-local journalLayout=Instance.new("UIListLayout")
-journalLayout.Padding=UDim.new(0,7)
-journalLayout.SortOrder=Enum.SortOrder.LayoutOrder
-journalLayout.Parent=journalScroll
-local journalPadding=Instance.new("UIPadding")
-journalPadding.PaddingLeft=UDim.new(0,3)
-journalPadding.PaddingRight=UDim.new(0,8)
-journalPadding.PaddingBottom=UDim.new(0,10)
-journalPadding.Parent=journalScroll
+local journalScroll=meadowPages[3]
 local function journalRow(name,height)
   local row=Instance.new("TextLabel")
   row.Name=name
@@ -749,13 +811,17 @@ local function journalRow(name,height)
   return row
 end
 local inventoryRow=journalRow("ResourceItems",52)
+inventoryRow.Parent=meadowPages[2]
+inventoryRow.LayoutOrder=1
 local questRows={}
 for index=1,#(Config.MainQuests or {}) do
-  questRows[index]=journalRow("Quest"..index,61)
+  questRows[index]=journalRow("Quest"..index,146)
+  questRows[index].LayoutOrder=10+index
 end
 local storyRows={}
 for index=1,#(Config.StoryRecords or {}) do
-  storyRows[index]=journalRow("ResearchRecord"..index,91)
+  storyRows[index]=journalRow("ResearchRecord"..index,120)
+  storyRows[index].LayoutOrder=30+index
 end
 local function renderMeadowJournal()
   local stage=math.clamp(player:GetAttribute("QuestStage") or 1,1,#Config.MainQuests+1)
@@ -770,7 +836,7 @@ local function renderMeadowJournal()
   for index,info in ipairs(Config.MainQuests) do
     local state=index<stage and "완료" or index==stage and "진행 중" or "잠김"
     local count=index<stage and info.Goal or index==stage and progress or 0
-    questRows[index].Text=string.format("【%s】 %s\n%s  %d/%d",state,info.Name,info.Instruction,count,info.Goal)
+    questRows[index].Text=string.format("【%s】 %s\n%s  %d/%d\n\n%s",state,info.Name,info.Instruction,count,info.Goal,info.Story or "")
     questRows[index].TextColor3=index>stage and Color3.fromRGB(153,176,156) or Color3.fromRGB(246,251,236)
   end
   local owned=player:GetAttribute("ResearchRecords") or 0
@@ -781,18 +847,9 @@ local function renderMeadowJournal()
     storyRows[index].TextColor3=has and Color3.fromRGB(245,244,208) or Color3.fromRGB(161,180,164)
   end
 end
-local function setMeadowJournalOpen(open)
-  meadowJournalOpen=open
-  gui:SetAttribute("StoryJournalOpen",open)
-  journalShade.Visible=open
-  if open then meadowMenu.close() end
-  questTracker.Visible=not open and gui:GetAttribute("GameMenuOpen")~=true
-end
-questTracker.Activated:Connect(function() setMeadowJournalOpen(true) end)
-journalClose.Activated:Connect(function() setMeadowJournalOpen(false) end)
-journalShade.Activated:Connect(function() setMeadowJournalOpen(false) end)
+questTracker.Activated:Connect(function()meadowMenu.open(3)end)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
-  questTracker.Visible=not meadowJournalOpen and gui:GetAttribute("GameMenuOpen")~=true
+  questTracker.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end)
 local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
@@ -802,9 +859,7 @@ local function layoutMeadowJournal()
   questTracker.Size=UDim2.fromOffset(math.max(180,math.min(294,v.X-112)),short and 57 or 64)
   trackerTitle.TextSize=short and 12 or 15
   trackerDetail.TextSize=short and 10 or 12
-  journalCard.Size=UDim2.fromOffset(math.max(250,math.min(540,v.X-24)),
-    math.max(210,math.min(460,v.Y-24)))
-  journalHeading.TextSize=v.X<450 and 14 or 18
+
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 layoutMeadowJournal()
@@ -813,6 +868,15 @@ for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","Res
 end
 renderMeadowJournal()
 remote.OnClientEvent:Connect(function(kind,payload)
+  if kind=="MEADOW_COMPANION_UPDATE" and typeof(payload)=="table" then
+    meadowSurvivalHint.Text="동료 의뢰 완료 · "..tostring(payload.completed or "")
+    meadowSurvivalHint.Visible=true
+    meadowSurvivalHintToken+=1
+    local token=meadowSurvivalHintToken
+    task.delay(5,function()if token==meadowSurvivalHintToken then meadowSurvivalHint.Visible=false end end)
+    renderMeadowPages()
+    return
+  end
   if kind~="MEADOW_QUEST_UPDATE" or typeof(payload)~="table" then return end
   meadowSurvivalHint.Text="메인 완료: "..tostring(payload.completed or "")
     ..(payload.record and ("  ·  연구 일지 "..payload.record.." 획득!") or "")
@@ -824,14 +888,65 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end)
 end)
 
+end
+
+-- [짧은 인트로] 실제 시작 초원 위에 연구 일지의 첫 사건만 표시한다.
+-- 이동·전투·카메라·저장에는 관여하지 않으며 입력 즉시 건너뛸 수 있다.
+do
+  local shown=false
+  local intro=nil
+  local inputConnection=nil
+  local function closeIntro()
+    if inputConnection then inputConnection:Disconnect();inputConnection=nil end
+    if intro then intro:Destroy();intro=nil end
+  end
+  local function showIntro()
+    if shown or player:GetAttribute("ProfileReady")~=true then return end
+    shown=true
+    if gui:GetAttribute("GameMenuOpen")==true then return end
+    intro=Instance.new("Frame");intro.Name="MeadowStoryIntro"
+    intro.AnchorPoint=Vector2.new(.5,.5);intro.Position=UDim2.fromScale(.5,.43)
+    intro.Size=UDim2.new(.76,0,0,146);intro.BackgroundColor3=Color3.fromRGB(12,29,27)
+    intro.BackgroundTransparency=.13;intro.BorderSizePixel=0;intro.Active=false;intro.ZIndex=55;intro.Parent=gui
+    local size=Instance.new("UISizeConstraint");size.MaxSize=Vector2.new(540,146);size.Parent=intro
+    local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,14);corner.Parent=intro
+    local heading=Instance.new("TextLabel");heading.BackgroundTransparency=1
+    heading.Position=UDim2.fromOffset(16,12);heading.Size=UDim2.new(1,-32,0,26)
+    heading.Font=Enum.Font.GothamBold;heading.TextSize=18;heading.TextColor3=Color3.fromRGB(245,229,181)
+    heading.Text=Config.StoryRecords and Config.StoryRecords[1].Title or "마력숲 · 초원 탐사"
+    heading.ZIndex=56;heading.Parent=intro
+    local detail=Instance.new("TextLabel");detail.BackgroundTransparency=1
+    detail.Position=UDim2.fromOffset(16,44);detail.Size=UDim2.new(1,-32,0,52)
+    detail.Font=Enum.Font.GothamMedium;detail.TextSize=13;detail.TextWrapped=true
+    detail.TextColor3=Color3.fromRGB(231,243,226)
+    detail.Text=Config.StoryRecords and Config.StoryRecords[1].Text or "초원의 단서를 따라 연구 기록을 모아 봐."
+    detail.ZIndex=56;detail.Parent=intro
+    local skip=Instance.new("TextButton");skip.BackgroundTransparency=1
+    skip.AnchorPoint=Vector2.new(1,1);skip.Position=UDim2.fromScale(1,1);skip.Size=UDim2.fromOffset(144,44)
+    skip.Text="건너뛰기  ›";skip.TextSize=13;skip.Font=Enum.Font.GothamBold
+    skip.TextColor3=Color3.fromRGB(170,221,190);skip.ZIndex=57;skip.Parent=intro
+    skip.Activated:Connect(closeIntro)
+    inputConnection=UserInputService.InputBegan:Connect(function(input,processed)
+      if not processed and (input.UserInputType==Enum.UserInputType.Touch
+        or input.UserInputType==Enum.UserInputType.MouseButton1 or input.KeyCode==Enum.KeyCode.W
+        or input.KeyCode==Enum.KeyCode.A or input.KeyCode==Enum.KeyCode.S or input.KeyCode==Enum.KeyCode.D
+        or input.KeyCode==Enum.KeyCode.Space) then closeIntro() end
+    end)
+    task.delay(2.5,closeIntro)
+  end
+  player:GetAttributeChangedSignal("ProfileReady"):Connect(showIntro)
+  gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()if gui:GetAttribute("GameMenuOpen")==true then closeIntro()end end)
+  task.defer(showIntro)
+end
+
 -- [화면 터치 공격] UI·조이스틱 터치는 제외하고 월드 빈 화면 탭만 기본 공격.
 -- 로블록스 공식 TouchTapInWorld와 처리 여부를 사용해 버튼을 완전히 없앤다.
 UserInputService.TouchTapInWorld:Connect(function(_,processedByUI)
-  if processedByUI or meadowJournalOpen or gui:GetAttribute("GameMenuOpen")==true then return end
+  if processedByUI or gui:GetAttribute("GameMenuOpen")==true then return end
   if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
-  if processed or meadowJournalOpen or UserInputService.TouchEnabled or gui:GetAttribute("GameMenuOpen")==true then return end
+  if processed or UserInputService.TouchEnabled or gui:GetAttribute("GameMenuOpen")==true then return end
   if input.UserInputType==Enum.UserInputType.MouseButton1 and primaryCombatAction then
     activateMeadowAction(primaryCombatAction.Id)
   end
@@ -876,6 +991,13 @@ for index,skill in ipairs(meleeSkills) do
   buttonGradient.Rotation=90
   buttonGradient.Color=ColorSequence.new(Color3.fromRGB(55,104,75),Color3.fromRGB(22,53,46))
   buttonGradient.Parent=button
+  if meadowIconAtlas~="" then
+    local icon=Instance.new("ImageLabel");icon.Name="CC0SkillIcon";icon.BackgroundTransparency=1
+    icon.Image=meadowIconAtlas;icon.ImageRectOffset=Vector2.new((index-1)*64,0)
+    icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromScale(.44,.44)
+    icon.Size=UDim2.fromOffset(24,24);icon.Position=UDim2.new(0,6,.5,-12);icon.ZIndex=9;icon.Parent=button
+    button.TextYAlignment=Enum.TextYAlignment.Center
+  end
   meadowSkillButtons[index]=button
   button.Activated:Connect(function()
     local character=player.Character
@@ -910,6 +1032,58 @@ layoutMeadowCombatUi()
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   meadowSkillDock.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end)
+do
+-- [상호작용 표시] 네이티브 프롬프트가 실제로 표시될 때만 대상 테두리를 강조한다.
+local promptHighlight=Instance.new("Highlight")
+promptHighlight.Name="MeadowInteractionTarget";promptHighlight.FillTransparency=1
+promptHighlight.OutlineColor=Color3.fromRGB(150,231,182)
+promptHighlight.OutlineTransparency=.12;promptHighlight.DepthMode=Enum.HighlightDepthMode.Occluded
+promptHighlight.Enabled=false;promptHighlight.Parent=gui
+local shownMeadowPrompts={}
+local function updateMeadowPromptHighlight()
+  promptHighlight.Enabled=false
+  if gui:GetAttribute("GameMenuOpen")==true then return end
+  for prompt in pairs(shownMeadowPrompts) do
+    if prompt.Parent and prompt.Enabled then
+      local host=prompt.Parent:IsA("Attachment") and prompt.Parent.Parent or prompt.Parent
+      if host and (host:IsA("BasePart") or host:IsA("Model")) then
+        promptHighlight.Adornee=host;promptHighlight.Enabled=true;return
+      end
+    end
+  end
+end
+local promptService=game:GetService("ProximityPromptService")
+promptService.PromptShown:Connect(function(prompt)
+  local world=workspace:FindFirstChild("FantasySurvivalWorld")
+  if world and prompt:IsDescendantOf(world) then shownMeadowPrompts[prompt]=true;updateMeadowPromptHighlight() end
+end)
+promptService.PromptHidden:Connect(function(prompt)
+  shownMeadowPrompts[prompt]=nil;updateMeadowPromptHighlight()
+end)
+gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(updateMeadowPromptHighlight)
+end
+
+do
+-- [전투 버튼 상태] 서버 쿨다운과 장착 상태를 표시하며 공격 판정은 변경하지 않는다.
+local skillDisplayElapsed=0
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  skillDisplayElapsed+=dt;if skillDisplayElapsed<.1 then return end;skillDisplayElapsed=0
+  local character=player.Character
+  local tool=character and character:FindFirstChildOfClass("Tool")
+  local now=workspace:GetServerTimeNow()
+  for index,button in ipairs(meadowSkillButtons) do
+    local skill=meleeSkills[index]
+    local deadline=player:GetAttribute("MeadowReady_"..skill[1])
+    local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
+    local locked=skill[1]~="skill-meadow-guard" and tool~=nil
+    button.Active=not locked and remaining<=0
+    button.Text=locked and "맨손 전용" or (meadowIconAtlas~="" and "    " or "")..skill[2]..(remaining>0 and "\n"..string.format("%.1f",remaining) or "")
+    button.TextTransparency=locked and .45 or 0
+    button.BackgroundColor3=(locked or remaining>0) and Color3.fromRGB(21,29,34) or Color3.fromRGB(32,52,52)
+  end
+end)
+end
+
 -- [모션·액션] 서버가 승인한 기존 COMBAT 입력만 R15 공용 관절 애니메이션에 연결한다.
 -- 서버 피해·이동·콤보 판정, 원래 Animator, 저장값은 수정하지 않는다.
 -- 이 경로는 미게시 원본 포즈를 직접 합성하며 실제 재생 QA 전까지 인증된 AnimationTrack이 아니다.
@@ -951,8 +1125,9 @@ remote.OnClientEvent:Connect(function(kind,payload)
   if combatVFX then combatVFX.CreateImpactFlash({
     cframe=CFrame.new(payload.position+Vector3.new(0,2,0)),
     color=color,accent=Color3.fromRGB(255,255,237),
-    reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 8 or 18,
-    scale=payload.boss and 2.05 or 1.48,
+    reducedMotion=reducedEffects,count=reducedEffects and 4 or 10,
+    scale=payload.boss and 1.4 or .85,
+    textureKey="slash",hideRing=true,duration=.22,distance=1.8,
   }) end
   -- [부드러운 타격음] 날카로운 검 휘두르기 대신 기존 내장 착지 둔탁음의 작은 음량 사용.
   -- 연타 소리가 겹쳐 시끄러워지는 것을 0.11초 간격 제한으로 방지한다.
@@ -969,6 +1144,7 @@ remote.OnClientEvent:Connect(function(kind,payload)
       impact.PlaybackSpeed=payload.finisher and .88 or .98
       impact.RollOffMinDistance=4
       impact.RollOffMaxDistance=22
+      impact.SoundGroup=meadowEffectsGroup
       impact.Parent=soundRoot
       impact:Play()
       game:GetService("Debris"):AddItem(impact,1.2)
@@ -979,7 +1155,7 @@ remote.OnClientEvent:Connect(function(kind,payload)
   hitFlash.Size=UDim2.fromScale(1,1)
   hitFlash.BackgroundColor3=payload.finisher and Color3.fromRGB(255,202,110)
     or Color3.fromRGB(240,250,224)
-  hitFlash.BackgroundTransparency=payload.finisher and .86 or .94
+  hitFlash.BackgroundTransparency=reducedEffects and 1 or (payload.finisher and .93 or .98)
   hitFlash.BorderSizePixel=0
   hitFlash.ZIndex=2
   hitFlash.Parent=gui
@@ -987,10 +1163,10 @@ remote.OnClientEvent:Connect(function(kind,payload)
     BackgroundTransparency=1
   }):Play()
   game:GetService("Debris"):AddItem(hitFlash,.22)
-  if payload.finisher and type(combatVFX.CreateCriticalBurst)=="function" then
+  if payload.finisher and combatVFX and type(combatVFX.CreateCriticalBurst)=="function" then
     combatVFX.CreateCriticalBurst({
       cframe=CFrame.new(payload.position+Vector3.new(0,2.5,0)),
-      reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 6 or 12,
+      reducedMotion=reducedEffects,count=reducedEffects and 3 or 8,
     })
   end
 end)
@@ -1753,6 +1929,35 @@ local function bindOriginalMob(model)
   if species~="wolf" and species~="bee" and species~="golem"
     and species~="deer" and species~="boar" and species~="rabbit"
     and species~="bat" and species~="mushroom" and species~="skeleton" then return end
+  -- [적 표시] 실제 서버 적 모델만 표시하고 벽 뒤·먼 거리의 화면 혼잡을 줄인다.
+  if model:GetAttribute("Species") and not model:FindFirstChild("MeadowEnemyLabel") then
+    local host=model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart",true)
+    if host then
+      local _,bounds=model:GetBoundingBox()
+      local plate=Instance.new("BillboardGui");plate.Name="MeadowEnemyLabel"
+      plate.Adornee=host;plate.AlwaysOnTop=false;plate.MaxDistance=55
+      plate.Size=UDim2.fromOffset(154,44);plate.StudsOffsetWorldSpace=Vector3.new(0,bounds.Y*.65+1,0)
+      plate.Parent=model
+      local name=Instance.new("TextLabel");name.Name="EnemyIdentity";name.BackgroundTransparency=1
+      name.Size=UDim2.new(1,0,0,24);name.Font=Enum.Font.GothamBold;name.TextSize=13
+      name.TextColor3=Color3.fromRGB(255,236,219);name.TextStrokeTransparency=.25;name.Parent=plate
+      local bar,control=CommonUI.CreateHealthBar({name="EnemyHealth",textSize=10})
+      bar.Position=UDim2.fromOffset(12,25);bar.Size=UDim2.new(1,-24,0,12);bar.Parent=plate
+      local function updateEnemyLabel()
+        local hp=model:GetAttribute("EnemyHealth") or 0
+        local maximum=model:GetAttribute("EnemyMaxHealth") or math.max(1,hp)
+        local state=model:GetAttribute("AttackState")
+        plate.Enabled=hp>0
+        name.Text=(model:GetAttribute("Boss") and "보스 · " or "")..model.Name
+          ..(state=="STUNNED" and " · 기절" or state=="ANTICIPATION" and " · 공격!" or "")
+        control.SetRatio(hp/math.max(1,maximum),string.format("%d",hp))
+      end
+      model:GetAttributeChangedSignal("EnemyHealth"):Connect(updateEnemyLabel)
+      model:GetAttributeChangedSignal("EnemyMaxHealth"):Connect(updateEnemyLabel)
+      model:GetAttributeChangedSignal("AttackState"):Connect(updateEnemyLabel)
+      updateEnemyLabel()
+    end
+  end
   -- [움직이는 원본 관절] 이름이 다르거나 Blender식 접미사가 붙어도 실제 메시의 뼈를 매핑한다.
   local joints,available={},{}
   local sourceChannels={
@@ -1938,12 +2143,14 @@ task.delay(5,function()
   forestBed.Volume=.045
   forestBed.Looped=true
   forestBed.PlaybackSpeed=.96
+  forestBed.SoundGroup=meadowAmbienceGroup
   forestBed.Parent=soundService
   local birdChirp=Instance.new("Sound")
   birdChirp.Name="MeadowNearbyBirds"
   birdChirp.SoundId="rbxassetid://140708444684424" -- Creator Store: Birds Chirping SFX
   birdChirp.Volume=.14
   birdChirp.Looped=false
+  birdChirp.SoundGroup=meadowAmbienceGroup
   birdChirp.Parent=soundService
   local groves={
     Vector2.new(-258,-206),Vector2.new(261,-219),

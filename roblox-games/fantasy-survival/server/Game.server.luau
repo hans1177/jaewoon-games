@@ -284,6 +284,19 @@ end
 local function recordMeadowQuest(player, eventName)
   if player:GetAttribute("ProfileReady")~=true then return end
   local stage=readNumber(player,"QuestStage",1)
+  -- [동료 서브 퀘스트] 검증된 행동만 기록하며 메인 완료 후에도 독립적으로 진행한다.
+  local sideStage=readNumber(player,"CompanionQuestStage",1)
+  local request=Config.CompanionRequests and Config.CompanionRequests[sideStage]
+  if request and stage>=request.UnlockMainStage and eventName==request.Event then
+    local sideProgress=math.min(request.Goal,readNumber(player,"CompanionQuestProgress",0)+1)
+    if sideProgress>=request.Goal then
+      setNumber(player,"CompanionQuestStage",sideStage+1)
+      setNumber(player,"CompanionQuestProgress",0)
+      remote:FireClient(player,"MEADOW_COMPANION_UPDATE",{completed=request.Name})
+    else
+      setNumber(player,"CompanionQuestProgress",sideProgress)
+    end
+  end
   local quest=Config.MainQuests and Config.MainQuests[stage]
   if not quest then return end
   local progress=readNumber(player,"QuestProgress",0)
@@ -789,6 +802,7 @@ local function spawnEnemy(isBoss, index)
     mushroom="SPORE_CLOUD",bat="NIGHT_DIVE",skeleton="BONE_SWING"}
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
+  model:SetAttribute("EnemyMaxHealth",hitPoints)
   model:SetAttribute("CurrentWave",CurrentWave)
   model:SetAttribute("Boss",isBoss)
   -- 기존 공용 생물 모델 위에만 공격 예고를 표시한다. 판정용 가짜 파츠를 만들지 않는다.
@@ -1076,6 +1090,7 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
       attacker.model:SetAttribute("NativeMobStunnedUntil",workspace:GetServerTimeNow()+(attacker.isBoss and .6 or 1.2))
       setEnemyAttackState(attacker,"STUNNED")
     end
+    recordMeadowQuest(player,"PARRY")
     player:SetAttribute("MeadowParryConfirmed",workspace:GetServerTimeNow())
     remote:FireClient(player,"MEADOW_REACTION","PARRY")
     return

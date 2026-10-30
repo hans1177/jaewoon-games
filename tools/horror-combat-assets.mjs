@@ -55,7 +55,7 @@ if(!creator){
 // 공용 원본도 이 기존 네이티브 등록 경로를 사용한다. 원본 파일은 수정하지 않는다.
 const registryPath='company-asset-library.json';
 const registry=process.argv.includes('--include-shared-models')?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
-const candidates=(process.argv.includes('--shared-ui-only')||process.argv.includes('--shared-vfx-only'))?[]:[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
+const candidates=(process.argv.includes('--shared-ui-only')||process.argv.includes('--shared-vfx-only')||process.argv.includes('--magic-ui-only'))?[]:[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
 const failures=[];
 for(const asset of registry?.assets||[]){
  if(asset.companyCommonBase!==true||!['CC0-1.0','project-original'].includes(asset.license))continue;
@@ -315,4 +315,66 @@ if(process.argv.includes('--shared-vfx-only')){
   console.log('VFX_NATIVE_IMPORTED='+art.key+':'+assetId);
  }
  if(seen.size!==5)throw Error('VFX_REQUIRED_SPRITES_MISSING');
+}
+
+// 파일 구분: 마력숲 CC0 아이콘을 기존 이미지 등록·사용 권한 경로로만 연결한다.
+if(process.argv.includes('--magic-ui-only')){
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const art=registry.interfaceIcons;
+ if(art?.license!=='CC0-1.0'||art.path!=='roblox-games/fantasy-survival/icons.png'
+  ||art.universeId!=='10773436325'||art.width!==512||art.height!==64)throw Error('MAGIC_UI_CONTRACT_INVALID');
+ for(const source of art.sourceArchives||[]){
+  if(!['assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip','assets/external/simple-rpg/icons-vfx-npc/game-icons.zip'].includes(source.path)
+   ||crypto.createHash('sha256').update(fs.readFileSync(source.path)).digest('hex')!==source.sha256)throw Error('MAGIC_UI_ARCHIVE_MISMATCH');
+ }
+ const bytes=fs.readFileSync(art.path);
+ if(art.sourceArchives?.length!==2||crypto.createHash('sha256').update(bytes).digest('hex')!==art.sha256
+  ||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+  ||bytes.readUInt32BE(16)!==512||bytes.readUInt32BE(20)!==64)throw Error('MAGIC_UI_HASH_MISMATCH');
+ let assetId=art.assetId;
+ if(!/^[1-9]\d*$/.test(String(assetId||''))||art.importedSourceHash!==art.sha256){
+  const form=new FormData();
+  form.append('request',JSON.stringify({assetType:'Image',displayName:'Mana Forest CC0 Interface Icons',description:'Preserved Drummyfish and Kenney CC0 icon atlas '+art.sha256,creationContext:{creator}}));
+  form.append('fileContent',new Blob([bytes],{type:'image/png'}),'magic-icons.png');
+  let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+  if(!/^operations\/[a-zA-Z0-9-]+$/.test(op.path||''))throw Error('MAGIC_UI_OPERATION_INVALID');
+  const operationPath=op.path,deadline=Date.now()+240000;
+  while(!op.done&&Date.now()<deadline){
+   await new Promise(resolve=>setTimeout(resolve,4000));
+   op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+  }
+  if(!op.done||op.error||!(/^[1-9]\d*$/.test(String(op.response?.assetId||''))))throw Error('MAGIC_UI_IMPORT_FAILED');
+  assetId=String(op.response.assetId);art.assetId=assetId;art.importedSourceHash=art.sha256;
+  art.importedRevision=process.env.GITHUB_SHA;fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ }
+ const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+  method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+  body:JSON.stringify({subjectType:'Universe',subjectId:art.universeId,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})
+ });
+ if(grant.errors?.length)throw Error('MAGIC_UI_PERMISSION_FAILED');
+ art.importVerified=true;art.authorizedUniverseIds=[art.universeId];art.runtimeVerified=false;
+ fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
+ const client=fs.readFileSync(clientPath,'utf8');
+ const anchor=/local meadowIconAtlas="[^"]*" -- CC0_INTERFACE_ATLAS/;
+ if(!anchor.test(client))throw Error('MAGIC_UI_BINDING_ANCHOR_MISSING');
+ fs.writeFileSync(clientPath,client.replace(anchor,'local meadowIconAtlas="rbxassetid://'+assetId+'" -- CC0_INTERFACE_ATLAS'));
+ // 이미 등록된 CC0 입자 이미지는 새로 업로드하지 않고 마력숲 사용 권한만 부여한다.
+ const vfx=JSON.parse(fs.readFileSync('assets/roblox/common-vfx-v1/catalog.json','utf8'));
+ registry.interfaceVfx=[];
+ for(const sprite of vfx.nativeSprites||[]){
+  if(!['spark','ring','slash','smoke','light'].includes(sprite.key)||sprite.license!=='CC0-1.0'
+   ||sprite.importVerified!==true||!Number(sprite.assetId)
+   ||crypto.createHash('sha256').update(fs.readFileSync(sprite.path)).digest('hex')!==sprite.sha256)throw Error('MAGIC_VFX_SOURCE_INVALID');
+  const result=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:art.universeId,action:'Use',requests:[{assetId:Number(sprite.assetId),grantToDependencies:true}]})
+  });
+  if(result.errors?.length)throw Error('MAGIC_VFX_PERMISSION_FAILED:'+sprite.key);
+  registry.interfaceVfx.push({key:sprite.key,assetId:sprite.assetId,sourceSha256:sprite.sha256,license:sprite.license,authorizedUniverseIds:[art.universeId],runtimeVerified:false});
+  fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ }
+ if(registry.interfaceVfx.length!==5)throw Error('MAGIC_VFX_REQUIRED_SPRITES_MISSING');
+ console.log('MAGIC_UI_NATIVE_IMPORTED='+assetId);
 }
