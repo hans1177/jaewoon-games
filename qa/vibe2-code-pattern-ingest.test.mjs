@@ -353,6 +353,98 @@ test('model-free Web coder wires declared controls to same-game external JS with
   assert.equal(deterministicWebInputCandidate(args),null,'reject symlinked external game source');
 });
 
+test('source-bound ESM input repair imports only exact same-game exported actions and replays game state',t=>{
+  const base=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-esm-game-input-'));
+  t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
+  const root=path.join(base,'test');
+  fs.mkdirSync(path.join(root,'game'),{recursive:true});
+  const htmlPath=path.join(root,'index.html'),modulePath=path.join(root,'game','actions.mjs');
+  const originalModule=[
+    'export function attack(){globalThis.hp-=1;}',
+    'export function interact(){globalThis.wood+=1;}'
+  ].join('\n');
+  const originalHtml=[
+    '<button id="fight" data-gameplay-action="attack">Attack</button>',
+    '<button id="gather" data-gameplay-action="interact">Interact</button>',
+    '<script type="module">import {attack,interact} from "./game/actions.mjs";</script>'
+  ].join('\n');
+  fs.writeFileSync(modulePath,originalModule);
+  fs.writeFileSync(htmlPath,originalHtml);
+  const task={order:{target:'web',goal:'모바일 조작 버튼 입력 연결',gameId:'test'},
+    sourceRoot:root,responsibleFiles:['index.html'],patternLibrary:{patterns:[]}};
+  assert.equal(deterministicWebInputCandidate({...task,
+    order:{...task.order,gameId:'another-game'}}),null,
+    'same script cannot be reused to repair an unrelated game');
+  const first=deterministicWebInputCandidate(task);
+  assert.equal(first?.deterministicWebModuleInput,true);
+  assert.equal(first.modelUsed,false);
+  assert.equal(first.sourceWrite,false);
+  assert.equal(first.runtimeVerified,false);
+  assert.equal(first.linkedModuleReadOnly,true);
+  assert.deepEqual(first.edits.map(row=>row.path),['index.html']);
+  assert.deepEqual(first.newFiles,[]);
+  assert.deepEqual(first.replaceFiles,[]);
+  const updated=originalHtml.replace(first.edits[0].find,first.edits[0].replace);
+  assert.match(updated,/getElementById\("fight"\)\.addEventListener\("click", attack\)/);
+  assert.match(updated,/getElementById\("gather"\)\.addEventListener\("click", interact\)/);
+  const handlers=new Map(),context={
+    hp:5,wood:0,
+    document:{getElementById:id=>({addEventListener:(kind,fn)=>handlers.set(id+':'+kind,fn)})}
+  };
+  const linked=updated.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(linked);
+  runInNewContext(originalModule.replaceAll('export ','')+'\n'
+    +linked.replace(/import\s*\{[^}]+\}\s*from\s*["'][^"']+["']\s*;?/,'')
+    ,context);
+  handlers.get('fight:click')();
+  handlers.get('gather:click')();
+  assert.equal(context.hp,4);
+  assert.equal(context.wood,1);
+  assert.equal(fs.readFileSync(modulePath,'utf8'),originalModule,'original gameplay module is read-only');
+  assert.equal(fs.readFileSync(htmlPath,'utf8'),originalHtml,'candidate generation does not write HTML');
+  fs.writeFileSync(htmlPath,updated);
+  assert.equal(deterministicWebInputCandidate(task),null,'already-bound action must not duplicate events');
+  const badHtml=[
+    originalHtml.replace('id="fight"','id="gather"'),
+    originalHtml.replaceAll('data-gameplay-action="attack"','data-gameplay-action="save"')
+      .replaceAll('data-gameplay-action="interact"','data-gameplay-action="save"'),
+    originalHtml.replaceAll('data-gameplay-action="attack"','data-gameplay-action="unknownAction"')
+      .replaceAll('data-gameplay-action="interact"','data-gameplay-action="unknownAction"'),
+    originalHtml.replace('./game/actions.mjs','https://attacker.example/actions.mjs'),
+    originalHtml.replace('./game/actions.mjs','../outside.mjs'),
+    originalHtml.replace('type="module"','type="module" async'),
+    originalHtml.replace('import {attack,interact}','import {attack as other,interact}'),
+    originalHtml.replace('</script>','attack();</script>'),
+    originalHtml+'<script>document.body.dataset.ok=1</script>',
+    originalHtml.replace('type="module"','type="importmap"'),
+    originalHtml.replace('<script type="module">','<script type="module" src="./game/actions.mjs">')
+  ];
+  for(const html of badHtml){
+    fs.writeFileSync(htmlPath,html);
+    const candidate=deterministicWebInputCandidate(task);
+    assert.equal(candidate,null,'reject untrusted, already bound or semantically ambiguous module');
+  }
+  fs.writeFileSync(htmlPath,originalHtml);
+  for(const badModule of [
+    'export function other(){return 1;}',
+    '// export function attack(){}\nexport function interact(){}',
+    'export function attack(amount){}\nexport function interact(){}',
+    'export function attack(){}\nexport function attack(){}\nexport function interact(){}',
+    'export function attack(){localStorage.clear()}\nexport function interact(){}',
+    'export function attack(){document.addEventListener("click",attack)}\nexport function interact(){}'
+  ]){
+    fs.writeFileSync(modulePath,badModule);
+    const candidate=deterministicWebInputCandidate(task);
+    // A partial match may still legitimately bind a different proven action.
+    assert.ok(!candidate||!candidate.edits[0].replace.includes('getElementById("fight")'),
+      'unsafe or unmatched exported attack is never bound');
+  }
+  fs.unlinkSync(modulePath);
+  fs.writeFileSync(path.join(root,'other.mjs'),originalModule);
+  fs.symlinkSync(path.join(root,'other.mjs'),modulePath);
+  assert.equal(deterministicWebInputCandidate(task),null,'symlinked module must fail closed');
+});
+
 test('model-free Roblox coder supports a separate native shutdown hook without touching the world renderer',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-no-model-separated-shutdown-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
