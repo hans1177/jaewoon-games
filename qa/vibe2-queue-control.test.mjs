@@ -322,24 +322,32 @@ test('zero-attempt Vibe4 missing pattern defers and frees capacity without prete
   assert.equal(waiting.neuronExpectedVariants,0);
   assert.ok(!waiting.evidence.includes('source-qa-verified'));
   assert.ok(waiting.evidence.includes('offline-recipe-capability-gap:v1'));
-  const retry=Date.parse(settled.applied[0].retryAt);
-  assert.ok(retry>Date.now()+5*60*60*1000);
-  assert.equal(recoverStaleRunningReservations(settled.queue,{nowMs:retry-1000}).recovered,0);
+  assert.equal(settled.applied[0].retryMode,'SOURCE_WORKER_REVISION');
+  assert.equal(settled.applied[0].retryAt,undefined);
+  assert.ok(waiting.evidence.includes('source-offline-pattern-retry-mode:SOURCE_WORKER_REVISION'));
+  assert.equal(waiting.evidence.some(value=>value.startsWith('source-offline-pattern-retry-at:')),false);
+  const muchLater=Date.now()+12*60*60*1000;
+  assert.equal(recoverStaleRunningReservations(settled.queue,{nowMs:muchLater}).recovered,0,
+    'six-hour elapsed time is not new causal evidence');
   const oldGenerator={...waiting,evidence:waiting.evidence.filter(v=>!v.startsWith('source-offline-pattern-codegen-sha256:'))};
-  const revised=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[oldGenerator]}),{nowMs:retry-1000});
+  const revised=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[oldGenerator]}),{nowMs:Date.now()});
   assert.equal(revised.recovered,1,'a real generator revision bypasses the six-hour wait');
   const blockedAgain={...revised.queue.tasks[0],status:'blocked',blocker:'OFFLINE_RECIPE_UNAVAILABLE'};
-  assert.equal(recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[blockedAgain]}),{nowMs:retry-1000}).recovered,0,'the same revision cannot reopen a failure loop');
+  assert.equal(recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[blockedAgain]}),{nowMs:muchLater}).recovered,0,
+    'the same revision cannot reopen a failure loop even after twelve hours');
   const independent=reserveVibeTaskBatch(settled.queue,{maxConcurrentTasks:1,lane:'game-primary'});
   assert.deepEqual(independent.tasks.map(row=>row.id),['independent-game']);
-  const resumed=recoverStaleRunningReservations(settled.queue,{nowMs:retry+1000});
-  assert.equal(resumed.recovered,1);
-  assert.equal(resumed.queue.tasks.find(row=>row.id===base.id).status,'queued');
+  const resumed=recoverStaleRunningReservations(settled.queue,{nowMs:muchLater});
+  assert.equal(resumed.recovered,0);
+  assert.equal(resumed.queue.tasks.find(row=>row.id===base.id).status,'blocked');
   assert.equal(resumed.queue.tasks.find(row=>row.id===base.id).retries,2);
   const replay={...waiting,status:'running',reservationId:'next-lease'};
   const again=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[replay]}),
     [{...failed,reservationId:'next-lease'}]);
-  assert.equal(again.queue.tasks[0].evidence.filter(v=>v.startsWith('source-offline-pattern-retry-at:')).length,1);
+  assert.equal(again.queue.tasks[0].evidence.filter(v=>v.startsWith('source-offline-pattern-codegen-sha256:')).length,1);
+  assert.equal(again.applied[0].retryMode,'SOURCE_WORKER_REVISION');
+  assert.equal(recoverStaleRunningReservations(again.queue,{nowMs:muchLater}).recovered,0,
+    'same generator must remain blocked after another identical failure');
 });
 
 test('unverified offline failures cannot masquerade as recipe capability gaps',()=>{
