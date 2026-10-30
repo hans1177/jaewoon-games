@@ -1145,6 +1145,8 @@ test('마력숲 타격은 부드러운 내장 둔탁음으로 교체하고 연�
   assert.match(source,/soundNow-lastSoftHitAt>=\.11/);
   assert.match(source,/impact.Volume=payload.finisher and \.26 or \(payload.boss and \.21 or \.16\)/);
   assert.match(source,/impact.RollOffMaxDistance=22/);
+  const impact=source.slice(source.indexOf('local lastSoftHitAt=0'),source.indexOf('local hitFlash=Instance.new'));
+  assert.doesNotMatch(impact,/if not combatVFX then return end/);
 });
 
 test('fantasy meadow binds six original CC0 creature rigs and prevents repeating death or hit motion',()=>{
@@ -1156,7 +1158,10 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   }
   assert.match(client,/model:GetAttribute\("Species"\) or model:GetAttribute\("MeadowWildlife"\)/);
   assert.match(client,/GetAttributeChangedSignal\("MeadowWildlife"\):Once/);
-  assert.match(client,/joint:IsA\("Motor6D"\) or joint:IsA\("AnimationConstraint"\)/);
+  assert.match(client,/local motor=joint:IsA\("Motor6D"\) and joint.Part0 and joint.Part1/);
+  assert.match(client,/local constraint=joint:IsA\("AnimationConstraint"\) and joint.Attachment0 and joint.Attachment1/);
+  assert.match(client,/constraint and joint.Attachment1.WorldPosition/);
+  assert.doesNotMatch(client,/\(joint:IsA\("Motor6D"\) or joint:IsA\("AnimationConstraint"\)\)\s*and joint.Part0/);
   assert.match(client,/joint:IsA\("Bone"\)/);
   assert.match(client,/if sourceChannels\[name\] and not joints\[name\] then/);
   assert.match(client,/FLKnee=true,FRKnee=true,BLKnee=true,BRKnee=true/);
@@ -1203,6 +1208,12 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   // Current mobile combat: 2 skills + guard, world-tap basic attack, dynamic semicircle.
   assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-14,1,-142)'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
+  assert.match(client,/v.Y-dockHeight-54/);
+  const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
+  assert.match(dodge,/params.RespectCanCollide=true/);
+  assert.match(dodge,/ground.Normal.Y>=\.65/);
+  assert.match(dodge,/ground.Material~=Enum.Material.Water/);
+  assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
   assert.ok(client.includes('button.Size=UDim2.fromOffset(buttonSize,buttonSize)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));

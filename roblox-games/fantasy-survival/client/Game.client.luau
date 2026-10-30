@@ -668,11 +668,12 @@ local function layoutMeadowCombatUi()
   if v.X<=0 or v.Y<=0 then return end
   local short=v.Y<440
   local buttonSize=short and 47 or (v.X<370 and 51 or 59)
-  local inset=6
   local dockWidth=buttonSize*2+44
   local dockHeight=buttonSize*3+18
   meadowSkillDock.Size=UDim2.fromOffset(dockWidth,dockHeight)
-  meadowSkillDock.Position=UDim2.new(1,-(v.X<390 and 8 or 15),1,-(short and 100 or 142))
+  -- 화면 높이에 맞춰 상단 여유를 확보하면서 기본 점프 영역을 피한다.
+  local bottomInset=math.min(short and 100 or 142,math.max(8,v.Y-dockHeight-54))
+  meadowSkillDock.Position=UDim2.new(1,-(v.X<390 and 8 or 15),1,-bottomInset)
   -- 오른쪽 가장자리를 따라 왼쪽을 향해 굽은 반원.
   local centers={
     Vector2.new(dockWidth-buttonSize*.62,buttonSize*.55),
@@ -728,16 +729,15 @@ local lastSoftHitAt=0
 remote.OnClientEvent:Connect(function(kind,payload)
   if kind~="MEADOW_IMPACT" or typeof(payload)~="table"
     or typeof(payload.position)~="Vector3" then return end
-  if not combatVFX then return end
   local color=payload.boss and Color3.fromRGB(255,164,91)
     or payload.species=="bee" and Color3.fromRGB(255,234,124)
     or Color3.fromRGB(128,250,201)
-  combatVFX.CreateImpactFlash({
+  if combatVFX then combatVFX.CreateImpactFlash({
     cframe=CFrame.new(payload.position+Vector3.new(0,2,0)),
     color=color,accent=Color3.fromRGB(255,255,237),
     reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 8 or 18,
     scale=payload.boss and 2.05 or 1.48,
-  })
+  }) end
   -- [부드러운 타격음] 날카로운 검 휘두르기 대신 기존 내장 착지 둔탁음의 작은 음량 사용.
   -- 연타 소리가 겹쳐 시끄러워지는 것을 0.11초 간격 제한으로 방지한다.
   local soundNow=os.clock()
@@ -1526,13 +1526,15 @@ local function bindOriginalMob(model)
   }
   local bounds,size=model:GetBoundingBox()
   for _,joint in ipairs(model:GetDescendants()) do
-    local motor=(joint:IsA("Motor6D") or joint:IsA("AnimationConstraint"))
-      and joint.Part0 and joint.Part1
-    if motor or joint:IsA("Bone") then
+    -- 실제 관절 종류별 연결점을 읽는다. AnimationConstraint에는 Part0/Part1이 없다.
+    local motor=joint:IsA("Motor6D") and joint.Part0 and joint.Part1
+    local constraint=joint:IsA("AnimationConstraint") and joint.Attachment0 and joint.Attachment1
+    if motor or constraint or joint:IsA("Bone") then
       local raw=joint.Name:lower()
       local key=raw:gsub("[^%w]","")
       local name=nativeMobJointAlias[joint.Name] or joint.Name
-      local location=joint:IsA("Bone") and joint.WorldPosition or joint.Part1.Position
+      local location=joint:IsA("Bone") and joint.WorldPosition
+        or constraint and joint.Attachment1.WorldPosition or joint.Part1.Position
       local relative=bounds:PointToObjectSpace(location)
       local left=key:find("left",1,true) or raw:match("[._%-]l%d*$")
       local right=key:find("right",1,true) or raw:match("[._%-]r%d*$")
@@ -1553,7 +1555,7 @@ local function bindOriginalMob(model)
           or key:find("calf",1,true)
         local foot=key:find("foot",1,true) or key:find("paw",1,true)
           or key:find("ankle",1,true)
-        if species=="golem" then
+        if species=="golem" or species=="mushroom" or species=="skeleton" then
           name=(lower or foot) and ("Shin"..side) or ("Thigh"..side)
         else
           local front=key:find("front",1,true) or key:find("fore",1,true)
@@ -1562,9 +1564,9 @@ local function bindOriginalMob(model)
           local position=front and "F" or rear and "B" or relative.Z<0 and "F" or "B"
           name=position..side..(foot and "Ankle" or lower and "Knee" or "Hip")
         end
-      elseif not sourceChannels[name] and species=="bee" then
+      elseif not sourceChannels[name] and (species=="bee" or species=="bat") then
         if key:find("wing",1,true) and side then name="Wing"..side end
-      elseif not sourceChannels[name] and species=="golem" then
+      elseif not sourceChannels[name] and (species=="golem" or species=="mushroom" or species=="skeleton") then
         if (key:find("arm",1,true) or key:find("shoulder",1,true)) and side then
           name="UpperArm"..side
         end

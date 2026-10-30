@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/fantasy-survival/server/Game.server.luau
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
@@ -939,9 +940,22 @@ local function applyMeadowMobHit(player,humanoid,damage)
         params.FilterDescendantsInstances={character}
         local origin=root.Position+Vector3.new(0,1,0)
         local distance=3.8
-        local blocked=workspace:Raycast(origin,direction*sign*distance,params)
-        if blocked then sign=-sign;blocked=workspace:Raycast(origin,direction*sign*distance,params) end
-        if not blocked then
+        -- [회피 안전] 양쪽 후보의 몸통 통로와 착지 바닥을 확인한다.
+        -- 절벽·급경사·물 위로 회피하지 않으며 확률·거리·재사용 시간은 유지한다.
+        params.RespectCanCollide=true
+        local safe=false
+        for attempt=1,2 do
+          local offset=direction*sign*distance
+          local blocked=workspace:Raycast(origin,offset,params)
+          local ground=workspace:Raycast(root.Position+offset,Vector3.new(0,-(humanoid.HipHeight+root.Size.Y/2+1),0),params)
+          if not blocked and ground and ground.Normal.Y>=.65
+            and ground.Material~=Enum.Material.Water then
+            safe=true
+            break
+          end
+          sign=-sign
+        end
+        if safe then
           character:PivotTo(character:GetPivot()+direction*sign*distance)
           defense.dodgeUntil=now+.48
           defense.nextAutoDodgeAt=now+4
