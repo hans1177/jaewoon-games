@@ -105,7 +105,7 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.match(server,/if wood<cost or stone<cost then return false end/);
   assert.match(server,/local handler = handlers\[actionId\]/);
   assert.match(server,/if typeof\(handler\) ~= "function" then return end/);
-  assert.match(server,/local actionAccepted=handler\(player\)/);
+  assert.match(server,/local actionAccepted,combatHit=handler\(player\)/);
   assert.match(server,/if actionAccepted~=true then return end/);
   assert.match(server,/if action.Id==actionId and action.Kind=="COMBAT" then/);
   assert.match(server,/local approvedSequence=readNumber\(player,"ActionSequence",0\)\+1/);
