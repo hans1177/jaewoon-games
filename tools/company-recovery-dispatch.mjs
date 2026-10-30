@@ -170,7 +170,10 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             if(primary&&!taskRoot&&!taskFiles.length&&taskTarget!==scopePlatform)return task;
           }else if(clean(task.id)!==clean(rec.sourceTaskId))return task;
         }
-        if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true)return task;
+        // 결정권·유료 자원·보호 정책 변경은 일반 게임별 자동복구 권한 밖이다.
+        if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
+          ||task.requiresOwnerDecision===true||task.protectedChange===true
+          ||task.paidResourceRequired===true)return task;
         if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return task;
         touched++;
         const running=clean(task.status)==='running';
