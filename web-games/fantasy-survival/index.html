@@ -483,7 +483,7 @@ body:has(#optionsPanel.open) .regionTravel,body:has(#multiPanel.open) .regionTra
 <div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick" data-joystick="true" data-touch-control="move" data-gameplay-action="move" data-mechanic-id="movement-joystick"><div id="knob" class="knob"></div></div>
 <nav class="quickMenu" aria-label="빠른 메뉴"><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button></nav><div class="actions" aria-label="전투 조작"><button id="attack" hidden class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary" aria-label="장착 무기 기술"><img class="skillIcon" src="./icons/sword.png" alt=""><span id="weaponSkillName">무기 기술</span><small id="weaponSkillCooldown">무기 필요</small></button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="accessoryDash" hidden class="act accessoryDash" data-gameplay-action="accessory-dash" aria-label="돌진 액세서리"><img class="skillIcon" src="./icons/aurared.png" alt=""><span>돌진</span><small id="accessoryDashCooldown">사용 가능</small></button><button id="petSpecial" hidden class="act companionSkill" data-gameplay-action="pet-special" aria-label="악어 특수공격" disabled><img class="skillIcon" src="./icons/aurared.png" alt=""><span>동료 기술</span><small>악어 탑승</small></button><button id="dismount" hidden class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount"><span id="mountLabel">동료 탑승</span><small id="mountStatus">동료 필요</small></button><button id="quickHeal" hidden type="button" aria-label="회복 아이템 사용"><img class="skillIcon" src="./icons/potionred.png" alt=""><span>회복</span><small id="healCount">0개</small></button><button id="quickFood" hidden type="button" aria-label="음식 사용"><img class="skillIcon" src="./icons/bag.png" alt=""><span>음식</span><small id="foodCount">0개</small></button><button id="autoCombat" hidden type="button" data-gameplay-action="auto-combat" data-mechanic-id="auto-combat-toggle" aria-label="자동 전투 전환" aria-pressed="true"><span>자동 전투</span><small id="autoCombatStatus">켜짐</small></button></div>
 <div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="jungleBenchTab" class="tab">독점석 제작대</button><button id="sunstoneBenchTab" class="tab">태양석 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
-<div id="smeltPanel" class="smelt"><h3 id="smeltTitle">화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">사슴고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정사슴고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="squidSmeltBtn" class="smeltBtn">오징어고기 굽기</button><button id="sunstoneSmeltBtn" class="smeltBtn" hidden>태양석 · 20초</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
+<div id="smeltPanel" class="smelt"><h3 id="smeltTitle">화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">숲 식재료고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정거미고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="squidSmeltBtn" class="smeltBtn">오징어고기 굽기</button><button id="sunstoneSmeltBtn" class="smeltBtn" hidden>태양석 · 20초</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
 <div class="legend">자동 채집 · C 제작 · I 인벤토리 · 화로 두 번 누르기 · WASD 이동</div><div id="recorderOverlay" class="recorderOverlay"><div class="recorderTitle">연구소 녹음기</div><div id="recorderCaption" class="recorderCaption"></div><div id="recorderState" class="recorderState">재생 중</div></div><div id="flash" class="flash"></div>
 <div id="multiPanel" class="multiPanel">
  <div class="multiHead"><b>멀티플레이</b><button id="multiClose">×</button></div>
@@ -802,12 +802,12 @@ const recipes=[
 {id:'shadow-wolf-incubator',name:'그림자 늑대 부화기',where:'hand',cost:{wood:3,stone:5,ironIngot:4},desc:'그림자 늑대 알을 넣으면 5분 뒤 부화',kind:'structure'},
 {id:'shadow-wolf-egg',name:'그림자 늑대 알',where:'egg',cost:{},desc:'세계수 동쪽 끝 · 솔로 1개 / 멀티 2개 · 플레이어당 1개',kind:'ingredient'},
 {id:'giant-croc-egg',name:'거대 악어 알',where:'egg',cost:{},desc:'거대 호수 중앙 남쪽에서 발견 · 부화기에서 10분 부화',kind:'ingredient'},
-{id:'raw-deer-meat',name:'수액사슴고기',where:'loot',cost:{},desc:'화로에서 10초 구우면 구운 사슴고기가 됨',kind:'ingredient'},
+{id:'raw-deer-meat',name:'숲 식재료',where:'loot',cost:{},desc:'화로에서 10초 구우면 숲 구이가 됨',kind:'ingredient'},
 {id:'raw-bug-meat',name:'초거대 벌레고기',where:'loot',cost:{},desc:'화로에서 15초 구우면 구운 벌레고기가 됨',kind:'ingredient'},
 {id:'carrot',name:'당근',where:'gather',cost:{},desc:'먹으면 밥 게이지 +10',kind:'consumable',hunger:10},
 {id:'carrot-seed',name:'당근 씨앗',where:'gather',cost:{},desc:'지상에 심으면 45초 뒤 당근 2개와 씨앗 1개 수확',kind:'seed'},
 {id:'greens-seed',name:'야채 씨앗',where:'gather',cost:{},desc:'지상에 심으면 45초 뒤 야채 2개와 씨앗 1개 수확',kind:'seed'},
-{id:'cooked-deer-meat',name:'구운 사슴고기',where:'smelt',cost:{},desc:'밥 게이지 +50',kind:'consumable',hunger:50},
+{id:'cooked-deer-meat',name:'숲 구이',where:'smelt',cost:{},desc:'밥 게이지 +50',kind:'consumable',hunger:50},
 {id:'cooked-bug-meat',name:'구운 벌레고기',where:'smelt',cost:{},desc:'밥 게이지 +65',kind:'consumable',hunger:65},
 {id:'firewolf-cooked-meat',name:'화염늑대 구운고기',where:'loot',cost:{},desc:'이미 익은 고기 · 밥 게이지 +50',kind:'consumable',hunger:50},
 {id:'forest-hare-meat',name:'숲토끼고기',where:'loot',cost:{},desc:'일반지역의 숲토끼 고기 · 요리대 재료',kind:'ingredient'},
@@ -825,12 +825,12 @@ const recipes=[
 {id:'meal-canyon-greens',name:'협곡 고기 채소볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 20 회복 · 4초',kind:'consumable',hunger:85,foodRegen:20,foodRegenSeconds:4},
 {id:'meal-crystal-greens',name:'수정염소 채소전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
 {id:'meal-carrot-carrot',name:'당근 샐러드',where:'meal',cost:{},desc:'밥 +30 · 초당 체력 5 회복 · 3초',kind:'consumable',hunger:30,foodRegen:5,foodRegenSeconds:3},
-{id:'meal-carrot-deer',name:'사슴 고기 볶음',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 20 회복 · 3초',kind:'consumable',hunger:70,foodRegen:20,foodRegenSeconds:3},
+{id:'meal-carrot-deer',name:'숲 고기볶음',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 20 회복 · 3초',kind:'consumable',hunger:70,foodRegen:20,foodRegenSeconds:3},
 {id:'meal-carrot-bug',name:'벌레고기 당근 볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 15 회복 · 4초',kind:'consumable',hunger:85,foodRegen:15,foodRegenSeconds:4},
 {id:'meal-carrot-firewolf',name:'화염고기 당근구이',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 18 회복 · 3초',kind:'consumable',hunger:70,foodRegen:18,foodRegenSeconds:3},
-{id:'meal-deer-deer',name:'사슴 스테이크 모둠',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 4초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:4},
-{id:'meal-deer-bug',name:'사슴·벌레 혼합구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
-{id:'meal-deer-firewolf',name:'화염 사슴구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 4초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:4},
+{id:'meal-deer-deer',name:'숲 스테이크 모둠',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 4초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:4},
+{id:'meal-deer-bug',name:'숲·벌레 혼합구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
+{id:'meal-deer-firewolf',name:'화염 숲구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 4초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:4},
 {id:'meal-bug-bug',name:'벌레고기 대접',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 20 회복 · 5초',kind:'consumable',hunger:100,foodRegen:20,foodRegenSeconds:5},
 {id:'meal-bug-firewolf',name:'화염 벌레구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
 {id:'meal-firewolf-firewolf',name:'화염 고기 만찬',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
@@ -843,17 +843,17 @@ const recipes=[
 {id:'cooked-squid-meat',name:'구운 오징어고기',where:'smelt',cost:{},desc:'밥 +80 · 요리대 재료로 사용 가능',kind:'consumable',hunger:80},
 {id:'raw-fish',name:'생선',where:'loot',cost:{},desc:'물고기 전리품 · 화로에서 10초 굽기',kind:'ingredient'},
 {id:'cooked-fish',name:'구운생선',where:'loot',cost:{},desc:'밥 +55 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:55},
-{id:'raw-crystal-deer-meat',name:'수정 사슴고기',where:'loot',cost:{},desc:'거대 호수 수정사슴 고기 · 화로에서 굽기',kind:'ingredient'},
-{id:'cooked-crystal-deer-meat',name:'구운 수정사슴고기',where:'loot',cost:{},desc:'밥 +70 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:70},
+{id:'raw-crystal-deer-meat',name:'수정거미 식재료',where:'loot',cost:{},desc:'거대 호수 수정거미 고기 · 화로에서 굽기',kind:'ingredient'},
+{id:'cooked-crystal-deer-meat',name:'구운 수정거미',where:'loot',cost:{},desc:'밥 +70 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:70},
 {id:'cooked-hare-meat',name:'구운 숲토끼고기',where:'loot',cost:{},desc:'밥 +50 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:50},
 {id:'cooked-lizard-meat',name:'구운 도마뱀고기',where:'loot',cost:{},desc:'밥 +60 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:60},
 {id:'cooked-greens',name:'구운 야채',where:'loot',cost:{},desc:'당근이 아닌 잎채소 구이 · 밥 +35 · 요리대 재료',kind:'consumable',hunger:35},
 {id:'meal-lake-fish-greens',name:'호수 생선 야채찜',where:'meal',cost:{},desc:'밥 +90 · 초당 체력 24 회복 · 4초',kind:'consumable',hunger:90,foodRegen:24,foodRegenSeconds:4},
-{id:'meal-lake-fish-deer',name:'생선 수정사슴 모둠',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
+{id:'meal-lake-fish-deer',name:'생선 수정거미 모둠',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
 {id:'meal-lake-fish-fish',name:'거대 호수 생선 만찬',where:'meal',cost:{},desc:'밥 +90 · 초당 체력 22 회복 · 5초',kind:'consumable',hunger:90,foodRegen:22,foodRegenSeconds:5},
 {id:'meal-lake-hare-greens',name:'토끼 야채구이',where:'meal',cost:{},desc:'밥 +80 · 초당 체력 18 회복 · 4초',kind:'consumable',hunger:80,foodRegen:18,foodRegenSeconds:4},
 {id:'meal-lake-lizard-greens',name:'도마뱀 야채볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 20 회복 · 4초',kind:'consumable',hunger:85,foodRegen:20,foodRegenSeconds:4},
-{id:'meal-lake-deer-greens',name:'수정사슴 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5},
+{id:'meal-lake-deer-greens',name:'수정거미 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5},
 {id:'meal-cooked-greens',name:'구운 야채 한상',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 16 회복 · 4초',kind:'consumable',hunger:70,foodRegen:16,foodRegenSeconds:4},
 {id:'leech-cleaver',name:'거머리 흡혈도',where:'junglebench',cost:{leechSucker:4,monopolyIngot:5,goldIngot:4},desc:'공격력 185 · 밀림 3티어 무기',kind:'weapon',power:185,range:88,cooldown:800},
 {id:'gorilla-armor',name:'고릴라 중갑',where:'junglebench',cost:{gorillaHide:6,monopolyIngot:8,goldIngot:7},desc:'최대 체력 +250 · 받는 피해 23% 감소 · 4티어',kind:'armor',maxHp:250,reduce:.23},
@@ -939,10 +939,10 @@ const AUTO_COOKING_NAMES={
  'cooked-bird-meat|cooked-deer-meat':'세계수 사냥구이',
  'cooked-deer-meat|cooked-lizard-meat':'협곡 사냥구이',
  'cooked-crystal-goat-meat|cooked-deer-meat':'수정 들판구이',
- 'cooked-deer-meat|cooked-greens':'사슴 채소전골',
+ 'cooked-deer-meat|cooked-greens':'숲 채소전골',
  'cooked-deer-meat|cooked-fish':'호수 사냥꾼 정식',
- 'cooked-crystal-deer-meat|cooked-deer-meat':'쌍사슴 수정구이',
- 'cooked-deer-meat|cooked-squid-meat':'사슴 오징어 불판구이',
+ 'cooked-crystal-deer-meat|cooked-deer-meat':'숲·수정거미 구이',
+ 'cooked-deer-meat|cooked-squid-meat':'숲·오징어 불판구이',
  'cooked-bug-meat|cooked-hare-meat':'숲속 단백질 꼬치',
  'cooked-bird-meat|cooked-bug-meat':'수관 사냥꾼 꼬치',
  'cooked-bug-meat|cooked-lizard-meat':'돌껍질 바삭구이',
@@ -957,7 +957,7 @@ const AUTO_COOKING_NAMES={
  'cooked-crystal-goat-meat|firewolf-cooked-meat':'화염수정 산적',
  'cooked-greens|firewolf-cooked-meat':'불꽃 채소고기볶음',
  'cooked-fish|firewolf-cooked-meat':'화염어 직화구이',
- 'cooked-crystal-deer-meat|firewolf-cooked-meat':'화염수정 사슴구이',
+ 'cooked-crystal-deer-meat|firewolf-cooked-meat':'화염수정 숲 식재료구이',
  'cooked-squid-meat|firewolf-cooked-meat':'용암 오징어구이',
  'cooked-bird-meat|cooked-hare-meat':'숲날개 모둠구이',
  'cooked-hare-meat|cooked-lizard-meat':'들숲 꼬치구이',
@@ -979,7 +979,7 @@ const AUTO_COOKING_NAMES={
  'cooked-crystal-goat-meat|cooked-squid-meat':'수정심해 꼬치',
  'cooked-greens|cooked-squid-meat':'심해 채소볶음',
  'cooked-fish|cooked-squid-meat':'심해 해산물구이',
- 'cooked-crystal-deer-meat|cooked-crystal-deer-meat':'수정사슴 왕실구이',
+ 'cooked-crystal-deer-meat|cooked-crystal-deer-meat':'수정거미 왕실구이',
  'cooked-crystal-deer-meat|cooked-squid-meat':'수정심해 만찬',
  'cooked-squid-meat|cooked-squid-meat':'심해 오징어 통구이'
 };
@@ -1025,7 +1025,7 @@ function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},
 goblinCrossbow:{id:'goblinCrossbow',name:'쇠뇌 숲 고블린',mood:'aggressive',hp:88,dmg:23,speed:68,r:20,color:'#738a49',detect:1050,attackCooldown:2800,goblinOutpost:true,goblinCrossbow:true},
 goblinHeavy:{id:'goblinHeavy',name:'중갑 숲 고블린',mood:'aggressive',hp:350,dmg:17,speed:54,r:25,color:'#58614c',detect:760,attackCooldown:3000,goblinOutpost:true,goblinHeavy:true},
-goblinGeneral:{id:'goblinGeneral',name:'숲 고블린 장군',mood:'aggressive',hp:600,dmg:47,speed:82,r:32,color:'#4f693d',detect:1200,attackCooldown:1500,goblinOutpost:true,goblinGeneral:true,noTierLabel:true},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},foreststag:{id:'foreststag',name:'이끼뿔사슴',mood:'neutral',hp:105,dmg:12,speed:68,r:21,color:'#789766',detect:420,attackCooldown:1100,foodDrop:'raw-deer-meat'},thornhound:{id:'thornhound',name:'가시숲 사냥개',mood:'aggressive',hp:128,dmg:18,speed:86,r:20,color:'#536f4f',detect:480,attackCooldown:950},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},sporegiant:{id:'sporegiant',name:'독포자 거대버섯',mood:'aggressive',hp:340,dmg:24,speed:54,r:32,color:'#76609a',detect:500,attackCooldown:1100,worldtree:true,mushroomGas:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
+goblinGeneral:{id:'goblinGeneral',name:'숲 고블린 장군',mood:'aggressive',hp:600,dmg:47,speed:82,r:32,color:'#4f693d',detect:1200,attackCooldown:1500,goblinOutpost:true,goblinGeneral:true,noTierLabel:true},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},foreststag:{id:'foreststag',name:'이끼 애벌레',mood:'neutral',hp:105,dmg:12,speed:68,r:21,color:'#789766',detect:420,attackCooldown:1100,foodDrop:'raw-deer-meat'},thornhound:{id:'thornhound',name:'가시숲 사냥개',mood:'aggressive',hp:128,dmg:18,speed:86,r:20,color:'#536f4f',detect:480,attackCooldown:950},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},sporegiant:{id:'sporegiant',name:'독포자 거대버섯',mood:'aggressive',hp:340,dmg:24,speed:54,r:32,color:'#76609a',detect:500,attackCooldown:1100,worldtree:true,mushroomGas:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
 giantburrower:{id:'giantburrower',name:'초거대 잠복벌레',mood:'aggressive',hp:300,dmg:20,speed:68,r:35,color:'#8c5c34',detect:460,attackCooldown:1000,burrower:true,volcanoZone:'wasteland'},
 sandwalker:{id:'sandwalker',name:'오아시스 샌드 워커',mood:'neutral',hp:500,dmg:44,speed:58,r:40,color:'#8f7048',detect:430,attackCooldown:1000,volcanoZone:'wasteland'},
@@ -1033,7 +1033,7 @@ firegolemneutral:{id:'firegolemneutral',name:'중립 화염 골렘',mood:'neutra
 firegolemaggressive:{id:'firegolemaggressive',name:'공격적 화염 골렘',mood:'aggressive',hp:555,dmg:30,speed:42,r:35,color:'#c33d2c',detect:480,attackCooldown:2500,volcanoZone:'core'},
 firesnake:{id:'firesnake',name:'화염 뱀',mood:'aggressive',hp:300,dmg:25,speed:105,r:23,color:'#e66a2d',detect:540,attackCooldown:1000,flame:true,volcanoZone:'volcano'},
 ironibex:{id:'ironibex',name:'철갑 산양',mood:'neutral',hp:180,dmg:18,speed:64,r:23,color:'#78868a',detect:420,attackCooldown:1200,canyon:true},
-sapdeer:{id:'sapdeer',name:'수액사슴',mood:'harmless',hp:120,dmg:0,speed:72,r:22,color:'#8bb476',detect:0,worldtree:true,huntable:true},
+sapdeer:{id:'sapdeer',name:'수액버섯',mood:'harmless',hp:120,dmg:0,speed:72,r:22,color:'#8bb476',detect:0,worldtree:true,huntable:true},
 crystalboar:{id:'crystalboar',name:'수정 멧돼지',mood:'aggressive',hp:350,dmg:40,speed:82,r:25,color:'#7d65c9',detect:560,attackCooldown:1100,crystalZone:true,crystalSpecial:true},
 crystalboarjunior:{id:'crystalboarjunior',name:'수정 멧돼지 주니어',mood:'aggressive',hp:140,dmg:16,speed:82,r:17,color:'#a391e2',detect:500,attackCooldown:1000,crystalZone:true,summoned:true},
 crystalguardian:{id:'crystalguardian',name:'수정 수호자',mood:'aggressive',hp:500,dmg:50,speed:76,r:31,color:'#5f49a8',detect:1050,attackCooldown:1050,crystalZone:true,guardian:true},
@@ -1053,7 +1053,7 @@ crystallizard:{id:'crystallizard',name:'크리스털 리자드',mood:'aggressive
 crystalgoat:{id:'crystalgoat',name:'수정염소',mood:'neutral',hp:135,dmg:16,speed:70,r:20,color:'#a58ddd',detect:420,attackCooldown:1100,crystalZone:true,foodDrop:'crystal-goat-meat'},
 lakecroc:{id:'lakecroc',name:'거대 호수 악어',mood:'aggressive',hp:777,dmg:58,speed:88,r:31,color:'#446c48',detect:760,lakeZone:true,crocodile:true},
 lakebuffalo:{id:'lakebuffalo',name:'호수 물소',mood:'neutral',hp:560,dmg:42,speed:58,r:31,color:'#667b72',detect:440,lakeZone:true},
-crystaldeer:{id:'crystaldeer',name:'수정 사슴',mood:'neutral',hp:360,dmg:28,speed:82,r:23,color:'#90a8d8',detect:460,crystalZone:true,foodDrop:'raw-crystal-deer-meat'},
+crystaldeer:{id:'crystaldeer',name:'수정거미',mood:'neutral',hp:360,dmg:28,speed:82,r:23,color:'#90a8d8',detect:460,crystalZone:true,foodDrop:'raw-crystal-deer-meat'},
 lakeheron:{id:'lakeheron',name:'호수 왜가리',mood:'harmless',hp:95,dmg:0,speed:78,r:17,color:'#cad8d3',detect:0,lakeZone:true,huntable:true},
 shark:{id:'shark',name:'거대 호수 상어',mood:'neutral',hp:800,dmg:50,speed:104,r:30,color:'#5a7f96',detect:620,underwater:true,sharkSpecial:true},
 giantSquid:{id:'giantSquid',name:'대왕오징어',mood:'aggressive',hp:1111,dmg:66,speed:86,r:42,color:'#7c496f',detect:820,underwater:true,deepSea:true,squidInk:true},
@@ -1976,7 +1976,7 @@ function applyOwnerInventoryGift(){
   addInv('cooked-crystal-deer-meat',10);
   try{localStorage.setItem(key,'1')}catch{}
   state.dirty=true;saveGame(false);
-  showNotice('가방 지급 · 예티 뿔 대검 · 예티 방어구 · 구운 수정사슴고기 10개');
+  showNotice('가방 지급 · 예티 뿔 대검 · 예티 방어구 · 구운 수정거미 10개');
   return true
  }
  if(gift==='resources-100-20261003'){
@@ -2774,7 +2774,7 @@ function drawMiniMap(now=performance.now()){
 }
 const BESTIARY_INFO={
 // 메인 · 실제 몬스터 정의에 존재하지만 도감에서 빠졌던 기존 3종 복원.
- foreststag:{cat:'neutral',desc:'숲의 이끼뿔사슴. 평소에는 온순하지만 공격받으면 반격한다.'},
+ foreststag:{cat:'neutral',desc:'숲 이끼 아래에서 자라는 애벌레. 평소에는 느긋하지만 건드리면 몸통으로 반격한다.'},
  thornhound:{cat:'aggressive',desc:'가시숲을 돌아다니는 사냥개. 빠르게 접근해 공격한다.'},
  sporegiant:{cat:'aggressive',desc:'세계수 안쪽의 거대 독포자 버섯. 독성 포자를 내뿜는다.'},
   // 기존 늪지 몬스터 4종의 누락된 도감 항목만 복원한다.
@@ -2804,7 +2804,7 @@ const BESTIARY_INFO={
  firegolemaggressive:{cat:'aggressive',desc:'불안정한 열기를 품은 화염 골렘. 자신의 영역에 들어온 생명체를 오래 쫓아내려는 성향이 강하다.'},
  firesnake:{cat:'aggressive',desc:'화산의 갈라진 바위틈과 뜨거운 지면을 오가는 뱀. 열기가 강한 곳일수록 더 활발하게 움직인다.'},
  ironibex:{cat:'neutral',desc:'협곡의 철분이 많은 풀과 광물을 먹고 자란 산양. 단단한 뿔을 지녔지만 먼저 건드리지 않으면 조용히 지나간다.'},
- sapdeer:{cat:'harmless',desc:'세계수의 수액과 어린 잎을 먹고 사는 온순한 사슴. 낯선 움직임을 느끼면 싸우기보다 숲 안쪽으로 달아난다.'},
+ sapdeer:{cat:'harmless',desc:'세계수의 수액을 흡수하며 자라는 작은 버섯 생명체. 위협을 받으면 뿌리를 움직여 도망친다.'},
  crystalboar:{cat:'aggressive',desc:'수정 지대의 빛을 오래 받아 몸 곳곳에 결정이 자란 멧돼지. 자신의 무리와 영역을 매우 거칠게 지킨다.'},
  crystalboarjunior:{cat:'aggressive',desc:'수정 멧돼지 주변을 따라다니는 어린 개체. 성체 곁에서 떨어지지 않으며 위협이 나타나면 함께 움직인다.'},
  crystalguardian:{cat:'aggressive',desc:'수정 지대 깊은 곳을 지키는 수호자. 주변의 결정과 통로를 순찰하며 낯선 존재의 접근을 허용하지 않는다.'},
@@ -2836,7 +2836,7 @@ const BESTIARY_INFO={
  giantspiderling:{cat:'aggressive',desc:'거대 거미 주변을 따라다니는 어린 거미. 단독으로 멀리 이동하기보다 성체가 있는 곳에 모여 있는 경우가 많다.'},
  lakecroc:{cat:'aggressive',desc:'거대 호수의 얕은 물과 물가를 오가는 포식자. 물속에서는 거의 움직이지 않는 것처럼 보이지만 주변의 움직임을 계속 지켜본다.'},
  lakebuffalo:{cat:'neutral',desc:'거대 호숫가의 풀을 뜯으며 무리 없이 돌아다니는 물소. 평소에는 느긋하지만 가까이에서 위협하면 쉽게 물러나지 않는다.'},
- crystaldeer:{cat:'neutral',desc:'호수 주변의 마력을 오래 받아 뿔과 등에 수정이 자란 사슴. 물가와 숲의 경계를 천천히 돌아다닌다.'},
+ crystaldeer:{cat:'neutral',desc:'수정 지대의 빛에 적응한 거미. 광물 틈에 숨어 있다가 공격받으면 방어한다.'},
  lakeheron:{cat:'harmless',desc:'거대 호숫가의 얕은 물에서 먹이를 찾는 왜가리. 플레이어가 가까이 와도 일정 거리만 두고 조용히 자리를 옮긴다.'},
  shark:{cat:'neutral',desc:'거대 호수의 깊은 물을 넓게 돌아다니는 상어. 평소에는 일정한 길을 따라 헤엄치지만 자신을 위협하는 존재는 오래 기억한다.'},
  giantSquid:{cat:'aggressive',desc:'심해 산호숲의 어두운 틈에 숨어 지내는 대왕오징어. 거대한 촉수를 산호 사이에 감춘 채 주변을 경계한다.'},
@@ -2875,17 +2875,17 @@ function bestiaryPortrait(id){
  if(id==='fearbear')return svg('<circle cx="61" cy="40" r="15" fill="#44364b"/><circle cx="119" cy="40" r="15" fill="#44364b"/><path d="M50 72 Q50 39 90 34 Q131 38 133 73 Q127 98 90 99 Q54 97 50 72Z" fill="#392e3f"/><ellipse cx="90" cy="72" rx="25" ry="18" fill="#8e7a98"/>'+eye+'<ellipse cx="90" cy="68" rx="6" ry="4" fill="#1f1823"/><path d="M59 91 l-16 13 M121 91 l16 13" stroke="#1f1823" stroke-width="9" stroke-linecap="round"/>');
  if(id==='rootsovereign')return svg('<path d="M90 13 L110 35 L133 31 L126 53 L151 67 L128 79 L132 102 L106 92 L90 108 L74 92 L48 102 L52 78 L28 66 L53 52 L47 30 L71 36Z" fill="#371524"/><path d="M90 28 Q111 43 116 67 Q108 91 90 96 Q70 90 64 67 Q70 42 90 28Z" fill="#5a2039"/><circle cx="78" cy="58" r="4" fill="#ff5d86"/><circle cx="102" cy="58" r="4" fill="#ff5d86"/><path d="M72 74 Q90 88 108 74" fill="none" stroke="#d43b69" stroke-width="4"/><path d="M54 48 l-24-17 M126 48 l24-17 M59 83 l-24 21 M121 83 l24 21" stroke="#7b3153" stroke-width="7" stroke-linecap="round"/>');
  if(id==='firewolf')return svg('<path d="M45 76 Q49 45 78 39 L69 18 L87 34 Q111 31 129 47 L139 25 L141 58 Q153 74 135 90 L58 91 Q43 87 45 76Z" fill="#c94b2f"/><path d="M63 72 Q90 91 124 69" fill="none" stroke="#ff9c52" stroke-width="5"/><circle cx="80" cy="54" r="4" fill="#ffe46e"/><circle cx="111" cy="54" r="4" fill="#ffe46e"/><path d="M42 68 Q24 51 29 33" fill="none" stroke="#f06b35" stroke-width="9" stroke-linecap="round"/>');
- if(id==='giantburrower')return svg('<ellipse cx="90" cy="76" rx="60" ry="26" fill="#765134"/><path d="M42 72 L21 54 M51 84 L24 99 M138 72 L160 52 M129 85 L156 101" stroke="#4e3423" stroke-width="8" stroke-linecap="round"/><path d="M59 67 Q89 35 122 66 L112 90 L70 90Z" fill="#a77745"/><circle cx="77" cy="67" r="3" fill="#f4cf72"/><circle cx="104" cy="67" r="3" fill="#f4cf72"/><path d="M84 79 l7 9 8-9" fill="#2f1f16"/>');
+ if(id==='giantburrower'||id==='foreststag')return svg('<ellipse cx="90" cy="76" rx="60" ry="26" fill="#765134"/><path d="M42 72 L21 54 M51 84 L24 99 M138 72 L160 52 M129 85 L156 101" stroke="#4e3423" stroke-width="8" stroke-linecap="round"/><path d="M59 67 Q89 35 122 66 L112 90 L70 90Z" fill="#a77745"/><circle cx="77" cy="67" r="3" fill="#f4cf72"/><circle cx="104" cy="67" r="3" fill="#f4cf72"/><path d="M84 79 l7 9 8-9" fill="#2f1f16"/>');
  if(id==='sandwalker')return svg('<ellipse cx="90" cy="60" rx="27" ry="39" fill="#80613d"/><ellipse cx="90" cy="31" rx="20" ry="18" fill="#9c7b51"/><path d="M68 45 L35 20 M112 45 L145 20 M66 60 L28 61 M114 60 L152 61 M68 75 L37 101 M112 75 L143 101" stroke="#6a4b2f" stroke-width="7" stroke-linecap="round"/><path d="M83 19 l-13-14 M97 19 l13-14" stroke="#b59662" stroke-width="3"/><circle cx="83" cy="30" r="3" fill="#edf0b0"/><circle cx="98" cy="30" r="3" fill="#edf0b0"/>');
  if(id==='firegolemneutral'||id==='firegolemaggressive')return svg('<polygon points="47,88 38,58 57,33 83,27 99,38 119,25 143,49 140,82 119,99 75,96" fill="'+(id==='firegolemaggressive'?'#b33928':'#8b4938')+'"/><path d="M70 61 l15-15 11 20 16-15 10 27-24 14-27-12Z" fill="#e46634"/><circle cx="78" cy="60" r="4" fill="#ffd764"/><circle cx="111" cy="59" r="4" fill="#ffd764"/><path d="M55 88 l-15 16 M130 88 l16 15" stroke="#6d2f25" stroke-width="10" stroke-linecap="round"/>');
  if(id==='firesnake')return svg('<path d="M32 83 C48 42 76 98 94 56 C109 22 142 46 148 25" fill="none" stroke="#d9572b" stroke-width="18" stroke-linecap="round"/><path d="M139 27 L159 16 L154 40Z" fill="#ef7c39"/><circle cx="150" cy="25" r="2.5" fill="#fff078"/><path d="M41 77 C61 54 74 91 91 62" fill="none" stroke="#ffb14f" stroke-width="4"/>');
  if(id==='ironibex')return svg('<path d="M52 78 Q52 49 83 42 Q116 40 132 62 Q137 82 120 91 L68 92 Q52 88 52 78Z" fill="#738085"/><path d="M72 45 Q58 20 43 18 Q55 43 63 55 M111 44 Q124 19 139 18 Q126 43 120 55" fill="none" stroke="#c5d0d0" stroke-width="7" stroke-linecap="round"/><circle cx="81" cy="58" r="3" fill="#eef9ff"/><circle cx="108" cy="58" r="3" fill="#eef9ff"/><rect x="62" y="88" width="9" height="15" rx="3" fill="#596468"/><rect x="112" y="88" width="9" height="15" rx="3" fill="#596468"/>');
- if(id==='sapdeer')return svg('<path d="M54 78 Q57 49 86 43 Q115 44 128 63 Q130 83 115 91 L69 91 Q54 87 54 78Z" fill="#87ac73"/><path d="M72 45 L61 25 L48 18 M72 45 L76 23 L84 14 M111 45 L119 24 L132 15 M111 45 L105 22 L98 14" stroke="#d3c39a" stroke-width="4" stroke-linecap="round"/><circle cx="82" cy="58" r="3" fill="#f1ffd7"/><circle cx="106" cy="58" r="3" fill="#f1ffd7"/><path d="M67 89 l-4 15 M116 89 l5 15" stroke="#647f56" stroke-width="6" stroke-linecap="round"/><circle cx="91" cy="74" r="7" fill="#b6da91" opacity=".7"/>');
+ if(id==='sapdeer')return svg('<path d="M44 76 Q42 46 90 40 Q137 45 136 76 L44 76Z" fill="#84ac6b"/><rect x="75" y="72" width="30" height="31" rx="7" fill="#c7db9e"/><ellipse cx="90" cy="78" rx="29" ry="12" fill="#56865c"/><circle cx="80" cy="63" r="4" fill="#eaf7c5"/><circle cx="100" cy="63" r="4" fill="#eaf7c5"/>');
  if(id==='crystalboar'||id==='crystalboarjunior')return svg('<path d="M42 72 Q45 44 78 39 Q116 37 139 60 Q145 79 128 91 L58 91 Q41 86 42 72Z" fill="'+(id==='crystalboar'?'#7259bd':'#9d8ad9')+'"/><path d="M66 41 l10-23 11 20 M101 39 l12-22 8 24" fill="none" stroke="#d8ccff" stroke-width="6"/><circle cx="80" cy="57" r="4" fill="#f8f0ff"/><circle cx="111" cy="57" r="4" fill="#f8f0ff"/><path d="M133 68 l17 7 -16 5" fill="#e8dcff"/><rect x="58" y="87" width="10" height="15" rx="4" fill="#55458e"/><rect x="112" y="87" width="10" height="15" rx="4" fill="#55458e"/>');
  if(id==='flowergoblin')return svg('<path d="M68 31 L51 18 L58 47 Q48 62 57 80 Q70 94 91 92 Q115 93 126 74 Q130 58 119 46 L128 18 L108 32 Q91 24 68 31Z" fill="#a7c957"/><circle cx="76" cy="50" r="4" fill="#fff3a8"/><circle cx="106" cy="50" r="4" fill="#fff3a8"/><path d="M62 82 l-13 18 M118 82 l14 18" stroke="#718e39" stroke-width="8" stroke-linecap="round"/><circle cx="91" cy="28" r="8" fill="#f6a8cf"/><circle cx="80" cy="30" r="6" fill="#ffd3e8"/><circle cx="102" cy="31" r="6" fill="#ffe6a8"/>');
  if(id==='giantbee')return svg('<ellipse cx="90" cy="61" rx="35" ry="26" fill="#e3b341"/><path d="M66 46 H114 M62 60 H118 M67 75 H113" stroke="#34291b" stroke-width="8"/><ellipse cx="58" cy="45" rx="24" ry="13" transform="rotate(-28 58 45)" fill="#dff7ff" opacity=".8"/><ellipse cx="122" cy="45" rx="24" ry="13" transform="rotate(28 122 45)" fill="#dff7ff" opacity=".8"/><circle cx="78" cy="54" r="4" fill="#fff8c9"/><circle cx="101" cy="54" r="4" fill="#fff8c9"/><path d="M125 64 l28 8 -28 8Z" fill="#b7b8a8"/>');
  if(id==='thornmantis')return svg('<path d="M90 25 L108 55 L103 88 L77 88 L72 55Z" fill="#668f52"/><circle cx="82" cy="41" r="4" fill="#ffe98a"/><circle cx="99" cy="41" r="4" fill="#ffe98a"/><path d="M74 57 L43 35 M106 57 L137 35 M71 70 L45 93 M109 70 L135 93" stroke="#557844" stroke-width="8" stroke-linecap="round"/><path d="M43 35 l-17-17 M137 35 l17-17" stroke="#c6d4a2" stroke-width="5"/><path d="M90 24 L81 8 M91 24 L101 8" stroke="#7ea56b" stroke-width="4"/>');
- if(id==='giantspider'||id==='giantspiderling')return svg('<ellipse cx="90" cy="62" rx="'+(id==='giantspider'?'30':'21')+'" ry="'+(id==='giantspider'?'25':'18')+'" fill="#4d3d52"/><circle cx="90" cy="39" r="'+(id==='giantspider'?'18':'13')+'" fill="#76627a"/><path d="M69 56 L38 35 M66 65 L31 64 M71 75 L40 96 M111 56 L142 35 M114 65 L149 64 M109 75 L140 96" stroke="#453749" stroke-width="'+(id==='giantspider'?'7':'5')+'" stroke-linecap="round"/><circle cx="84" cy="36" r="3" fill="#ff9db6"/><circle cx="96" cy="36" r="3" fill="#ff9db6"/>');
+ if(id==='giantspider'||id==='giantspiderling'||id==='crystaldeer')return svg('<ellipse cx="90" cy="62" rx="'+(id==='giantspider'?'30':'21')+'" ry="'+(id==='giantspider'?'25':'18')+'" fill="#4d3d52"/><circle cx="90" cy="39" r="'+(id==='giantspider'?'18':'13')+'" fill="#76627a"/><path d="M69 56 L38 35 M66 65 L31 64 M71 75 L40 96 M111 56 L142 35 M114 65 L149 64 M109 75 L140 96" stroke="#453749" stroke-width="'+(id==='giantspider'?'7':'5')+'" stroke-linecap="round"/><circle cx="84" cy="36" r="3" fill="#ff9db6"/><circle cx="96" cy="36" r="3" fill="#ff9db6"/>');
  if(id==='giantSquid')return svg('<ellipse cx="90" cy="48" rx="31" ry="34" fill="#7c496f"/><circle cx="79" cy="46" r="5" fill="#d9f7ff"/><circle cx="101" cy="46" r="5" fill="#d9f7ff"/><path d="M65 72 C52 87 48 101 39 109 M76 77 C69 93 70 103 62 111 M90 78 C90 96 89 105 90 113 M104 77 C111 92 111 104 119 111 M115 72 C128 87 132 101 141 109" fill="none" stroke="#6e3e64" stroke-width="8" stroke-linecap="round"/><path d="M62 26 Q90 7 118 26" fill="#9b5d8a"/>');
  if(id==='deepAngler')return svg('<path d="M52 63 Q58 35 91 30 Q126 32 139 60 Q135 88 104 94 L72 90 Q50 82 52 63Z" fill="#334b57"/><circle cx="82" cy="52" r="4" fill="#d7f3ff"/><circle cx="111" cy="52" r="4" fill="#d7f3ff"/><path d="M70 71 Q92 84 118 69" fill="none" stroke="#d7e4d8" stroke-width="4"/><path d="M108 31 Q111 12 127 10 Q139 11 140 23" fill="none" stroke="#5f7580" stroke-width="5"/><circle cx="141" cy="23" r="9" fill="#d9ff9d"/><path d="M57 72 l-19 15 M126 75 l19 15" stroke="#283d47" stroke-width="7" stroke-linecap="round"/>');
  return svg('<circle cx="90" cy="60" r="30" fill="#777"/>')
@@ -3569,7 +3569,7 @@ function awardLoot(e){
    else showNotice('전리품 · 단단한 갑각 +1');
    return
  }
- if(e.type.id==='sapdeer'){addInv('raw-deer-meat',1);showNotice('전리품 · 수액사슴고기 +1')}
+ if(e.type.id==='sapdeer'){addInv('raw-deer-meat',1);showNotice('전리품 · 숲 식재료 +1')}
  if(e.type.id==='giantburrower'){addInv('raw-bug-meat',1)}
  if(e.type.id==='firewolf'){addInv('firewolf-cooked-meat',1)}
  const d=drops[e.type.id];
@@ -4353,12 +4353,12 @@ const SMELT_SPECS={
  sunstone:{name:'태양석',duration:20000,has:()=>materialAmount('sunstoneOre')>0,take:()=>{state.player.loot.sunstoneOre=Math.max(0,materialAmount('sunstoneOre')-1)},give:()=>addMaterial('sunstoneIngot',1)},
  iron:{name:'철',duration:5000,has:()=>state.player.ironOre>0,take:()=>state.player.ironOre--,give:()=>{state.player.ironIngot++;rememberMaterial('ironIngot')}},
  gold:{name:'화산 금',duration:10000,has:()=>state.player.goldOre>0,take:()=>state.player.goldOre--,give:()=>{state.player.goldIngot++;rememberMaterial('goldIngot')}},
- deer:{name:'수액사슴고기',duration:10000,has:()=>invCount('raw-deer-meat')>0,take:()=>state.player.inventory['raw-deer-meat']--,give:()=>addInv('cooked-deer-meat',1)},
+ deer:{name:'숲 식재료',duration:10000,has:()=>invCount('raw-deer-meat')>0,take:()=>state.player.inventory['raw-deer-meat']--,give:()=>addInv('cooked-deer-meat',1)},
  bug:{name:'초거대 벌레고기',duration:15000,has:()=>invCount('raw-bug-meat')>0,take:()=>state.player.inventory['raw-bug-meat']--,give:()=>addInv('cooked-bug-meat',1)},
  fish:{name:'생선',duration:10000,has:()=>invCount('raw-fish')>0,take:()=>state.player.inventory['raw-fish']--,give:()=>addInv('cooked-fish',1)},
  hare:{name:'숲토끼고기',duration:10000,has:()=>invCount('forest-hare-meat')>0,take:()=>state.player.inventory['forest-hare-meat']--,give:()=>addInv('cooked-hare-meat',1)},
  lizard:{name:'도마뱀고기',duration:10000,has:()=>invCount('canyon-lizard-meat')>0,take:()=>state.player.inventory['canyon-lizard-meat']--,give:()=>addInv('cooked-lizard-meat',1)},
- crystaldeer:{name:'수정 사슴고기',duration:10000,has:()=>invCount('raw-crystal-deer-meat')>0,take:()=>state.player.inventory['raw-crystal-deer-meat']--,give:()=>addInv('cooked-crystal-deer-meat',1)},
+ crystaldeer:{name:'수정거미 식재료',duration:10000,has:()=>invCount('raw-crystal-deer-meat')>0,take:()=>state.player.inventory['raw-crystal-deer-meat']--,give:()=>addInv('cooked-crystal-deer-meat',1)},
  greens:{name:'야채',duration:10000,has:()=>invCount('worldtree-greens')>0,take:()=>state.player.inventory['worldtree-greens']--,give:()=>addInv('cooked-greens',1)},
  bird:{name:'세계수 꿩고기',duration:10000,has:()=>invCount('world-bird-meat')>0,take:()=>state.player.inventory['world-bird-meat']--,give:()=>addInv('cooked-bird-meat',1)},
  goat:{name:'수정염소고기',duration:10000,has:()=>invCount('crystal-goat-meat')>0,take:()=>state.player.inventory['crystal-goat-meat']--,give:()=>addInv('cooked-crystal-goat-meat',1)},
@@ -4401,11 +4401,11 @@ function updateSmeltUi(){
  const end=process.endAt,now=Date.now(),type=process.type,spec=SMELT_SPECS[type],duration=process.duration||smeltDuration(type),q=Array.isArray(process.queue)?process.queue:[];
  const counts={iron:0,gold:0,deer:0,bug:0,fish:0,hare:0,lizard:0,crystaldeer:0,greens:0,bird:0,goat:0,squid:0,monopoly:0};for(const x of q)if(x in counts)counts[x]++;
  if(end>now){const remain=Math.max(0,end-now),pct=100*(1-remain/duration);ui.smeltText.textContent=(spec?.name||'재료')+' 처리 중 · '+(remain/1000).toFixed(1)+'초 · 대기 '+q.length;ui.smeltProgress.style.width=clamp(pct,0,100)+'%'}
- else{ui.smeltText.textContent='철 '+state.player.ironOre+' · 금 '+state.player.goldOre+' · 수액사슴 '+invCount('raw-deer-meat')+' · 벌레 '+invCount('raw-bug-meat')+' · 생선 '+invCount('raw-fish')+' · 토끼 '+invCount('forest-hare-meat')+' · 꿩 '+invCount('world-bird-meat')+' · 도마뱀 '+invCount('canyon-lizard-meat')+' · 수정염소 '+invCount('crystal-goat-meat')+' · 수정사슴 '+invCount('raw-crystal-deer-meat')+' · 야채 '+invCount('worldtree-greens')+' · 오징어 '+invCount('raw-squid-meat')+' · 독점석 '+materialAmount('monopolyStone');ui.smeltProgress.style.width='0%'}
+ else{ui.smeltText.textContent='철 '+state.player.ironOre+' · 금 '+state.player.goldOre+' · 수액버섯 '+invCount('raw-deer-meat')+' · 벌레 '+invCount('raw-bug-meat')+' · 생선 '+invCount('raw-fish')+' · 토끼 '+invCount('forest-hare-meat')+' · 꿩 '+invCount('world-bird-meat')+' · 도마뱀 '+invCount('canyon-lizard-meat')+' · 수정염소 '+invCount('crystal-goat-meat')+' · 수정거미 '+invCount('raw-crystal-deer-meat')+' · 야채 '+invCount('worldtree-greens')+' · 오징어 '+invCount('raw-squid-meat')+' · 독점석 '+materialAmount('monopolyStone');ui.smeltProgress.style.width='0%'}
  const buttons={sunstone:ui.sunstoneSmeltBtn,iron:ui.smeltBtn,gold:ui.goldSmeltBtn,deer:ui.deerSmeltBtn,bug:ui.bugSmeltBtn,fish:ui.fishSmeltBtn,hare:ui.hareSmeltBtn,lizard:ui.lizardSmeltBtn,crystaldeer:ui.crystalDeerSmeltBtn,greens:ui.greensSmeltBtn,bird:ui.birdSmeltBtn,goat:ui.goatSmeltBtn,squid:ui.squidSmeltBtn,monopoly:ui.monopolySmeltBtn};
  for(const [k,b] of Object.entries(buttons))if(b){b.hidden=toxic?k!=='sunstone':k==='sunstone';b.disabled=!SMELT_SPECS[k].has()};
  if(toxic&&end<=now)ui.smeltText.textContent='태양석 광석 '+materialAmount('sunstoneOre')+' · 구운 태양석 '+materialAmount('sunstoneIngot');
- ui.smeltBtn.textContent='철 · 5초';ui.goldSmeltBtn.textContent='금 · 10초';ui.deerSmeltBtn.textContent='수액사슴 · 10초';ui.bugSmeltBtn.textContent='벌레 · 15초';ui.fishSmeltBtn.textContent='생선 · 10초';ui.hareSmeltBtn.textContent='토끼 · 10초';ui.lizardSmeltBtn.textContent='도마뱀 · 10초';ui.crystalDeerSmeltBtn.textContent='수정사슴 · 10초';ui.greensSmeltBtn.textContent='야채 · 10초';ui.birdSmeltBtn.textContent='꿩 · 10초';ui.goatSmeltBtn.textContent='수정염소 · 10초';ui.squidSmeltBtn.textContent='오징어 · 12초';ui.monopolySmeltBtn.textContent='독점석 · 20초'
+ ui.smeltBtn.textContent='철 · 5초';ui.goldSmeltBtn.textContent='금 · 10초';ui.deerSmeltBtn.textContent='수액버섯 · 10초';ui.bugSmeltBtn.textContent='벌레 · 15초';ui.fishSmeltBtn.textContent='생선 · 10초';ui.hareSmeltBtn.textContent='토끼 · 10초';ui.lizardSmeltBtn.textContent='도마뱀 · 10초';ui.crystalDeerSmeltBtn.textContent='수정거미 · 10초';ui.greensSmeltBtn.textContent='야채 · 10초';ui.birdSmeltBtn.textContent='꿩 · 10초';ui.goatSmeltBtn.textContent='수정염소 · 10초';ui.squidSmeltBtn.textContent='오징어 · 12초';ui.monopolySmeltBtn.textContent='독점석 · 20초'
 }
 function openSmelt(station='furnace'){if(!['furnace','toxicFurnace'].includes(station)||!state[station]||state.area!=='surface')return;if(!nearStructure(state[station],175)){showNotice('용광로 가까이 가야 해');return}ui.smeltStation=station;ui.smeltPanel.classList.add('open');updateSmeltUi()}
 function enterWorldTreeInterior(){
@@ -5056,7 +5056,9 @@ function commonEnemySpecialProfile(type){
  if(['golem','ironspirit','crystalironspirit','firegolemneutral','firegolemaggressive','icegolem'].includes(id))return{name:'충격파',mult:1.35,effect:'stun',duration:1000};
  if(['goblin','crystalgoblin'].includes(id))return{name:'기습 3연타',mult:.55,hits:3};
  if(['shadowwolf','thornhound','ironhidehound'].includes(id))return{name:'도약 물기',mult:1.35,effect:'attackblock',duration:800};
- if(['ironibex','crystalibex','crystalgoat','foreststag','sapdeer','crystaldeer'].includes(id))return{name:'뿔 돌진',mult:1.4,effect:'stun',duration:800};
+ if(['ironibex','crystalibex','crystalgoat'].includes(id))return{name:'뿔 돌진',mult:1.4,effect:'stun',duration:800};
+ if(id==='foreststag')return{name:'애벌레 몸통박치기',mult:1.4,effect:'stun',duration:800};
+ if(id==='crystaldeer')return{name:'수정거미 돌진',mult:1.4,effect:'stun',duration:800};
  if(id==='lakebuffalo')return{name:'폭주 들이받기',mult:1.5,effect:'stun',duration:900};
  if(id==='sandwalker')return{name:'갑각 회전',mult:1.35,effect:'slow30',duration:1600};
  if(id==='thornmantis')return{name:'쌍낫 베기',mult:.78,hits:2};
@@ -6778,7 +6780,9 @@ function fantasyCreatureVisualKind(type){
  if(id==='crystalguardian')return'guardian';
  if(id==='rootsovereign')return'rootboss';
  if(['ironibex','crystalibex','crystalgoat'].includes(id))return'goat';
- if(['foreststag','sapdeer','crystaldeer'].includes(id))return'deer';
+ if(id==='foreststag')return'burrower';
+ if(id==='sapdeer')return'mushroom';
+ if(id==='crystaldeer')return'spider';
  if(id==='lakebuffalo')return'buffalo';
  if(['foresthare','polarfox'].includes(id))return'small';
  if(['worldpheasant','lakeheron'].includes(id))return'bird';

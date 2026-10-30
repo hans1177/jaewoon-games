@@ -40,15 +40,14 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'tree.fbx':['worldtreegolem','swampArrowTower'],
   'greendemon.fbx':['goblin','goblinCrossbow','goblinHeavy','goblinGeneral','crystalgoblin','flowergoblin'],
   'hog.glb':['mossboar','crystalboar','crystalboarjunior'],
-  'deer.fbx':['foreststag','sapdeer','crystaldeer'],
   'monster-18.obj':['ironibex','crystalibex','crystalgoat'],
   'panda.fbx':['worldtreebear','crystalbear','polarbear','fearbear'],
   'bunny.glb':['foresthare'], 'chick.glb':['worldpheasant'],
   'monster-7.obj':['fairy'],
   'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
-  'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb'],
+  'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb','sapdeer'],
   'monster-35.obj':['rootsovereign'],
-  'caterpillar.glb':['giantburrower','crystallizard'], 'monster-31.obj':['sandwalker','mudwalker'],
+  'caterpillar.glb':['giantburrower','crystallizard','foreststag'], 'monster-31.obj':['sandwalker','mudwalker'],
   'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc','crystalbiter'],
   'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
   'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish','shark'],
@@ -57,7 +56,7 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'tiger.glb':['jungletiger','jungletigerleader'],
   'yeti.fbx':['yetileader','yeticub','froststalker'], 'cat.glb':['polarfox'],
   'bee.fbx':['giantbee'], 'monster-15.obj':['thornmantis'],
-  'monster-53.obj':['giantspider','giantspiderling','giantVenomScorpion'],
+  'monster-53.obj':['giantspider','giantspiderling','giantVenomScorpion','crystaldeer'],
   // 원시인: 기존 CC0 인간형 3D 리그를 공유한다. 전투/능력은 변경하지 않는다.
   'barbarian.glb':['primitiveSpearman','primitiveArcher','swampPrimitiveSpearman','swampPrimitiveArcher','swampPrimitiveGuard']
 });
@@ -304,6 +303,19 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // 같은 원본 모델을 쓰는 여러 종도 게임에 이미 정의된 색상으로 구분한다.
   // 종별 재질을 공유해 개체마다 GPU 재질을 반복 생성하지 않는다.
   const nativeSpeciesMaterials=new Map();
+  // 재질 · 다운로드된 작은 돌기 노멀맵을 원본 3D 몬스터 UV에만 적용한다.
+  // 원본 메시·애니메이션·기본 색상·전투 판정·세이브는 변경하지 않는다.
+  const monsterStudTextures=new Map(Object.entries({
+    lego:'lego_studs.png',micro:'micro_studs.png',soft:'soft_studs.png'
+  }).map(([name,file])=>{
+    const texture=new THREE.TextureLoader().load(
+      new URL('./materials/'+file,import.meta.url).href,undefined,undefined,
+      error=>console.warn('몬스터 돌기 재질 로딩 실패 · '+file,error));
+    texture.colorSpace=THREE.NoColorSpace;
+    texture.wrapS=THREE.RepeatWrapping;texture.wrapT=THREE.RepeatWrapping;
+    texture.repeat.set(2,2);
+    return [name,texture];
+  }));
   let loadingCreatureCount=0,nextCreatureScan=0;
   async function loadCreatureSource(file){
     if(disposed||nativeCreatureSources.has(file)||creatureRequests.has(file))return;
@@ -865,6 +877,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             if(!material){
               material=original.clone();
               if(material.color)material.color.lerp(tint,.22);
+              if(child.geometry?.getAttribute('uv')&&'normalMap' in material){
+                const finish=(file==='monster-41.obj'||speciesId==='crystaldeer')?'lego':
+                  (speciesId==='sapdeer'||file==='mushroom.fbx')?'soft':'micro';
+                material.normalMap=monsterStudTextures.get(finish);
+                material.normalScale?.set(.92,.92);
+                if(typeof material.roughness==='number')material.roughness=.48;
+                material.needsUpdate=true;
+              }
               materials.set(original.uuid,material);
             }
             return material;
@@ -1562,6 +1582,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const materials of nativeSpeciesMaterials.values())
       for(const material of materials.values())material.dispose();
     nativeSpeciesMaterials.clear();
+    for(const texture of monsterStudTextures.values())texture.dispose();
     for(const source of nativeCreatureSources.values())source.model.traverse(o=>{
       if(!o.isMesh)return;
       o.geometry?.dispose();
