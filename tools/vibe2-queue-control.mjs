@@ -524,16 +524,17 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
     if(task.status==='blocked'&&['EXTERNAL_AI_QUOTA_COOLDOWN','SOURCE_MODEL_UNAVAILABLE','OFFLINE_RECIPE_UNAVAILABLE'].includes(clean(task.blocker))){
       const noModel=clean(task.blocker)==='SOURCE_MODEL_UNAVAILABLE';
       const offlinePattern=clean(task.blocker)==='OFFLINE_RECIPE_UNAVAILABLE';
-      // A newer code recipe is not an owner approval or security review.
-      // Only a runnable existing Web/Roblox development task may be reconsidered.
+      // A code revision or elapsed provider cooldown never overrides owner/security gates.
+      // Apply before both the native no-model fast-path and time-based provider retries.
+      if(task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
+        ||task.requiresOwnerDecision===true||task.protectedChange===true
+        ||task.paidResourceRequired===true||task.securityReviewRequired===true
+        ||task.securityQuarantined===true)return task;
+      // Only a runnable existing Web/Roblox task may retry a changed offline recipe.
       if(offlinePattern&&(
         !['web','roblox'].includes(clean(task.target).toLowerCase())
         ||clean(task.department).toLowerCase()!=='development'
-        ||clean(task.type).toLowerCase()!=='implementation'
-        ||task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
-        ||task.requiresOwnerDecision===true||task.protectedChange===true
-        ||task.paidResourceRequired===true||task.securityReviewRequired===true
-        ||task.securityQuarantined===true))return task;
+        ||clean(task.type).toLowerCase()!=='implementation'))return task;
       const evidence=Array.isArray(task.evidence)?task.evidence:[];
       const deterministicRoblox=noModel&&clean(task.target).toLowerCase()==='roblox'
         &&(evidence.includes('source-no-model-failure-kind:DETERMINISTIC_ROBLOX')

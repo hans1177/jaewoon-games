@@ -299,6 +299,42 @@ test('offline pattern-coder source revision reopens only the exact safe game wit
   }
 });
 
+test('model-free and external quota retries never reopen owner-stopped or security-held game tasks',()=>{
+  const nowMs=Date.now();
+  const past=new Date(nowMs-60_000).toISOString();
+  const scenarios=[
+    {name:'native-no-model',target:'roblox',blocker:'SOURCE_MODEL_UNAVAILABLE',
+      evidence:['source-no-model-failure-kind:DETERMINISTIC_ROBLOX']},
+    {name:'web-no-model',target:'web',blocker:'SOURCE_MODEL_UNAVAILABLE',
+      evidence:['source-no-model-retry-at:'+past]},
+    {name:'external-quota',target:'web',blocker:'EXTERNAL_AI_QUOTA_COOLDOWN',
+      evidence:['external-ai-quota-retry-at:'+past]}
+  ];
+  const gates=['ownerDevelopmentHold','ownerDevelopmentStopped','requiresOwnerDecision',
+    'protectedChange','paidResourceRequired','securityReviewRequired','securityQuarantined'];
+  for(const scenario of scenarios){
+    const base={id:'retry-'+scenario.name,gameId:'safe-test',target:scenario.target,
+      department:'development',type:'implementation',goal:'retry unchanged game safely',
+      sourceRoot:scenario.target+'-games/safe-test',responsibleFiles:['index.html'],
+      status:'blocked',blocker:scenario.blocker,retries:3,evidence:scenario.evidence};
+    const allowed=recoverStaleRunningReservations(createVibeContinuousQueue({tasks:[base]}),{nowMs});
+    assert.equal(allowed.recovered,1,scenario.name+' must preserve ordinary retry eligibility');
+    assert.equal(allowed.queue.tasks[0].status,'queued');
+    for(const gate of gates){
+      const held={...base,[gate]:true};
+      const normalized=createVibeContinuousQueue({tasks:[held]});
+      assert.equal(normalized.tasks[0][gate],true,scenario.name+':'+gate+' normalized');
+      const result=recoverStaleRunningReservations(normalized,{nowMs});
+      assert.equal(result.recovered,0,scenario.name+':'+gate+' must remain blocked');
+      const task=result.queue.tasks[0];
+      assert.equal(task.status,'blocked');
+      assert.equal(task.blocker,scenario.blocker);
+      assert.equal(task.retries,3);
+      assert.deepEqual(task.evidence,scenario.evidence);
+    }
+  }
+});
+
 test('zero-attempt Vibe4 missing pattern defers and frees capacity without pretending source QA passed',()=>{
   const base={id:'owner-offline-missing',gameId:'owner-web-game',target:'web',
     department:'development',type:'implementation',goal:'owner change requires a verified source recipe',
