@@ -90,7 +90,7 @@ local meadowEncounterSites = {
   {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(-168,3,123)},
   {id="golem",atom="HEAD_GOLEM",tier=5,height=8.4,position=Vector3.new(-153,3,-164)},
   -- [마을 전투] 기존 생태 위치/수치는 건드리지 않고, 별도 의뢰 적만 실제 서식지에 둔다.
-  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-69,3,-193),questIndex=1},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-69,3,-193),questIndex=1,alpha=true},
   {id="ghost",atom="HEAD_SKULL",tier=2,height=4.4,position=Vector3.new(15,3,-214),questIndex=2},
   {id="bandit",atom="HUMANOID",tier=3,height=5.5,position=Vector3.new(80,3,-236),questIndex=3},
 }
@@ -1437,6 +1437,7 @@ end)
 local function spawnEnemy(site, siteIndex)
   if #enemies >= MAX_ENEMIES then return false end
   local isBoss=site.id=="golem"
+  local isAlpha=site.alpha==true -- 우두머리 늑대는 돌 골렘과 별도 보스 패턴을 가진다.
   local location=site.position
   local partId=site.id
   local modelId=partId=="ghost" and NativeCreatureAssets.skeleton
@@ -1647,8 +1648,8 @@ local function spawnEnemy(site, siteIndex)
   end
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
-  local hitPoints = (isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13)
-  local meadowNames={wolf=site.questIndex==1 and "약초길 늑대" or "초원 늑대",
+  local hitPoints = isAlpha and 220 or ((isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13))
+  local meadowNames={wolf=isAlpha and "우두머리 늑대" or "초원 늑대",
     mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골",
     ghost="우물 원혼",bandit="수레 습격 도적"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
@@ -1656,7 +1657,7 @@ local function spawnEnemy(site, siteIndex)
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
   -- 원본 템플릿은 수정하지 않고 스폰 복제본만 바꾼다. 새 장식 파츠를 만들지 않는다.
   -- 별도 미세 돌기 PBR 노멀맵은 Roblox에 업로드·권한 확인된 승인 자산이 있어야 실제 적용 가능.
-  local bodyTint=isBoss and meadowPalette.golem
+  local bodyTint=isBoss and meadowPalette.golem or isAlpha and Color3.fromRGB(78,87,94)
     or meadowPalette[partId] or meadowPalette.wolf
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") then
@@ -1717,13 +1718,13 @@ local function spawnEnemy(site, siteIndex)
   model:SetAttribute("EnemyMaxHealth",hitPoints)
   model:SetAttribute("OpenWorldRegionTier",site.tier)
   if site.questIndex then model:SetAttribute("VillageQuestEnemy",site.questIndex) end
-  model:SetAttribute("Boss",isBoss)
-  if isBoss then model:SetAttribute("BossPhase",1) end
+  model:SetAttribute("Boss",isBoss or isAlpha)
+  if isBoss or isAlpha then model:SetAttribute("BossPhase",1) end
   -- 기존 공용 생물 모델 위에만 공격 예고를 표시한다. 판정용 가짜 파츠를 만들지 않는다.
   local attackTelegraph = Instance.new("Highlight")
   attackTelegraph.Name = "AttackAnticipation"
   attackTelegraph.Adornee = model
-  attackTelegraph.FillColor = isBoss and Color3.fromRGB(238,65,65) or Color3.fromRGB(255,185,89)
+  attackTelegraph.FillColor = (isBoss or isAlpha) and Color3.fromRGB(238,65,65) or Color3.fromRGB(255,185,89)
   attackTelegraph.FillTransparency = .72
   attackTelegraph.OutlineTransparency = .2
   attackTelegraph.Enabled = false
@@ -1754,10 +1755,10 @@ local function spawnEnemy(site, siteIndex)
   end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,kind=partId,questIndex=site.questIndex,
+    isBoss=isBoss,isAlpha=isAlpha,kind=partId,questIndex=site.questIndex,
     banditIdle=banditIdle,banditWalk=banditWalk,
-    damage=(isBoss and 20 or 6)+math.floor(site.tier/2),
-    speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,siteIndex=siteIndex,
+    damage=isAlpha and 13 or ((isBoss and 20 or 6)+math.floor(site.tier/2)),
+    speed=isAlpha and 8.4 or (isBoss and 4.8 or 7.5),position=location,spawnPosition=location,siteIndex=siteIndex,
     visibleGroundOffset=meshOffset,spawnGroundY=groundHit.Position.Y,
     terrainGroundOffset=0,nextGroundSample=0,
     lastAttack=0,attackSerial=0,attackPattern=nil,windupUntil=nil,
@@ -1766,7 +1767,7 @@ local function spawnEnemy(site, siteIndex)
     visualPosition=location,visualFacingSmooth=Vector3.new(0,0,-1),
     focusUserId=nil
   })
-  if isBoss then
+  if isBoss or isAlpha then
     remote:FireAllClients("MEADOW_BOSS_INTRO",{model=model,name=model.Name,site=siteIndex})
   end
   return true
@@ -1835,7 +1836,7 @@ local function applyMeadowDamage(player,target,damage)
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
-  if target.isBoss and target.HP>0 and target.HP<=target.maxHP*.5 then
+  if (target.isBoss or target.isAlpha) and target.HP>0 and target.HP<=target.maxHP*.5 then
     target.model:SetAttribute("BossPhase",2)
   end
   -- Server-authorized impact location is sent only after a real target took damage.
@@ -1843,7 +1844,7 @@ local function applyMeadowDamage(player,target,damage)
   remote:FireClient(player, "MEADOW_IMPACT", {
     position=target.position,
     species=target.kind,
-    boss=target.isBoss,
+    boss=target.isBoss or target.isAlpha,
     finisher=target.HP<=0,
     damage=damage,
   })
@@ -1856,7 +1857,7 @@ local function applyMeadowDamage(player,target,damage)
     remote:FireAllClients("MEADOW_MOB_DEATH",{
       species=target.kind,
       pattern=target.model:GetAttribute("AttackPattern"),
-      position=target.position,boss=target.isBoss,
+      position=target.position,boss=target.isBoss or target.isAlpha,
     })
     local fallenModel=target.model
     -- Only the original mesh is rotated/faded. No surrogate corpse or Part.
@@ -1865,7 +1866,8 @@ local function applyMeadowDamage(player,target,damage)
       if fallenModel.Parent then fallenModel:Destroy() end
     end)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
-    awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
+    awardProgress(player,target.isBoss and 75 or target.isAlpha and 35 or 12,
+      target.isBoss and 45 or target.isAlpha and 18 or 5)
     recordMeadowQuest(player,"KILL")
     -- [마을 전투] 실제 서버 처치만 완료로 기록한다. 기존 저장 숫자의 6번 비트를 재사용.
     if target.questIndex then
@@ -1881,12 +1883,13 @@ local function applyMeadowDamage(player,target,damage)
       end
     end
     setNumber(player,"EnemyHealth",0)
-    if target.isBoss then
+    if target.isBoss or target.isAlpha then
       setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1)
-      recordMeadowQuest(player,"BOSS_KILL")
+      -- 메인 수문장 연구 의뢰는 우두머리 늑대가 아니라 원래의 돌 골렘 처치만 인정한다.
+      if target.isBoss then recordMeadowQuest(player,"BOSS_KILL") end
     end
     if Config.CompetitiveRequired then
-      setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+(target.isBoss and 5 or 1))
+      setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+((target.isBoss or target.isAlpha) and 5 or 1))
     end
     -- [지역 리스폰] 해당 위치만 재출현 예약. 일괄 웨이브 보상은 없다.
     if target.siteIndex then
@@ -2052,7 +2055,8 @@ end
 local function chooseMeadowMobSkill(enemy)
   enemy.attackSerial+=1
   -- 수문장 후반부는 충격파 연타를 사용하되 원래 총 피해·체력·보상은 보존한다.
-  local second=(enemy.isBoss and enemy.HP<=enemy.maxHP*.5) or enemy.attackSerial%2==0
+  local second=((enemy.isBoss or enemy.isAlpha) and enemy.HP<=enemy.maxHP*.5)
+    or enemy.attackSerial%2==0
   local pattern=enemy.isBoss and (second and "GOLEM_SHOCKWAVE" or "GOLEM_SLAM")
     or enemy.kind=="bee" and (second and "BEE_STING" or "BEE_SWEEP")
     or enemy.kind=="boar" and (second and "BOAR_TUSK" or "BOAR_CHARGE")
@@ -2272,7 +2276,7 @@ local function updateEnemyAI(dt,now)
         local distance=offset.Magnitude
         -- Three source-authored enemy patterns; authoritative damage and saves are unchanged.
         local attackRange=(enemy.kind=="bee" or enemy.kind=="bat") and 5.6
-          or (enemy.isBoss and 5.2 or 4.4)
+          or (enemy.isBoss and 5.2 or enemy.isAlpha and 5.0 or 4.4)
         -- [공통 전방 주시] 공격 예고 중에는 실제 목표 방향을 바라보되 판정은 기존 서버 규칙으로만 한다.
         if distance>.05 and (enemy.windupUntil or distance<=attackRange) then
           enemy.visualFacing=offset.Unit

@@ -92,8 +92,8 @@ local Config = {
   -- 기존 저장 키·선택별 보상은 유지하고, 이전 조사 기록 비트는 마이그레이션 호환한다.
   VillageContracts = {
     {Id="missing-medicines",Name="01 · 사라진 약초 꾸러미",Issuer="촌장 나린",
-     Summary="아픈 아이에게 줄 약초가 사라졌다. 약초 꾸러미의 행방을 찾고 숲길의 늑대를 물리쳐.",
-     Witness=1,WitnessName="약초상 미라",Enemy="wolf",EnemyName="약초길 늑대",EnemySite={-69,-193},
+     Summary="사라진 약초 꾸러미를 찾으러 숲길에 간 주민이 우두머리 늑대에게 쫓겼다. 늑대 보스를 쓰러뜨리고 약초를 되찾아.",
+     Witness=1,WitnessName="약초상 미라",Enemy="wolf",EnemyName="우두머리 늑대",EnemySite={-69,-193},
      Clues={"약초상 미라: 약초는 열병에 걸린 아이에게 전하려던 거야."},
      Sites={{-41,-128}},
      Scenes={"뜯긴 약초 포대 옆에 작은 발자국과 늑대 발톱 자국이 함께 남았다."},

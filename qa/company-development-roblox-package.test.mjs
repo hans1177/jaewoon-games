@@ -1311,6 +1311,13 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   for(const enemy of ['wolf','ghost','bandit']) assert.ok(config.includes('Enemy="'+enemy+'"'));
   assert.match(config,/Name="02 · 원혼이 깃든 우물"/);
   assert.match(config,/Name="03 · 도적의 보급 수레 습격"/);
+  // 약초길의 우두머리 늑대만 별도 보스이며, 돌 골렘 본편 처치 조건은 그대로다.
+  assert.match(config,/EnemyName="우두머리 늑대"/);
+  assert.match(server,/alpha=true/);
+  assert.match(server,/isAlpha and 220/);
+  assert.match(server,/isAlpha and 13/);
+  assert.match(server,/isAlpha and 8\.4/);
+  assert.match(server,/if target\.isBoss then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
   assert.match(server,/target\.questIndex/);
   assert.match(server,/bit32\.bor\(readNumber\(player,"VillageContractEvidence",0\),64\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
