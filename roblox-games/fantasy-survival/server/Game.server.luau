@@ -459,6 +459,11 @@ task.delay(8,function()
     {-307,137,13},{-209,177,15},{-265,294,17},
     {241,194,15},{281,225,18},{308,276,14},{216,270,16},
     {301,153,13},{219,153,15},{278,296,17},
+    -- 시작 초원에서 사방 숲으로 자연스럽게 이어지는 기존 CC0 나무 원본.
+    {-92,-67,12},{-113,-89,14},{-126,-122,11},
+    {98,-75,13},{121,-99,14},{143,-128,11},
+    {-91,84,13},{-116,102,12},{-139,130,14},
+    {97,81,12},{123,105,14},{146,135,11},
   }
   local sceneryCount=0
   for index,spec in ipairs(woodland) do
@@ -483,6 +488,25 @@ task.delay(8,function()
     meadowTerrain:FillBall(Vector3.new(patch[1],-2,patch[2]),patch[3],patch[4])
     task.wait()
   end
+  -- [1차 초원 디테일] 인공 파츠 없이 Roblox Terrain 표면에 자연스러운 흙길을 만든다.
+  -- 기존 시작점·자원 좌표·전투 위치는 이동시키지 않는다. 신규 충돌 모델은 없다.
+  local tracks={
+    {from=Vector2.new(-51,-48),to=Vector2.new(-177,-176)},
+    {from=Vector2.new(58,-49),to=Vector2.new(183,-177)},
+    {from=Vector2.new(-54,62),to=Vector2.new(-184,188)},
+    {from=Vector2.new(56,63),to=Vector2.new(192,196)},
+  }
+  for route,track in ipairs(tracks) do
+    for step=1,18 do
+      local t=step/18
+      local p=track.from:Lerp(track.to,t)
+      local bend=math.sin(t*math.pi*2+route)*3.4
+      meadowTerrain:FillBall(Vector3.new(p.X+bend,-1.8,p.Y-bend*.45),
+        3.8+math.sin(t*12+route)*.35,Enum.Material.Ground)
+      task.wait(.025)
+    end
+  end
+  gameWorld:SetAttribute("MeadowNativeTrails",#tracks)
   -- 추가 야생동물은 이미 검증된 사슴/멧돼지/토끼 모델만 사용한다.
   for index,spec in ipairs({
     {"deer",-245,-191,4.4},{"deer",251,211,4.4},{"deer",202,-232,4.4},
