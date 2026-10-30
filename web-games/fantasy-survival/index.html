@@ -2773,7 +2773,11 @@ function drawMiniMap(now=performance.now()){
  m.fillStyle='#e9fff1';m.font='bold 8px system-ui';m.textAlign='center';m.fillText('N',cx,10)
 }
 const BESTIARY_INFO={
- // 기존 늪지 몬스터 4종의 누락된 도감 항목만 복원한다.
+// 메인 · 실제 몬스터 정의에 존재하지만 도감에서 빠졌던 기존 3종 복원.
+ foreststag:{cat:'neutral',desc:'숲의 이끼뿔사슴. 평소에는 온순하지만 공격받으면 반격한다.'},
+ thornhound:{cat:'aggressive',desc:'가시숲을 돌아다니는 사냥개. 빠르게 접근해 공격한다.'},
+ sporegiant:{cat:'aggressive',desc:'세계수 안쪽의 거대 독포자 버섯. 독성 포자를 내뿜는다.'},
+  // 기존 늪지 몬스터 4종의 누락된 도감 항목만 복원한다.
  toxicmycelium:{cat:'aggressive',desc:'늪에 서식하는 맹독 균사체 버섯. 강한 독성 공격을 한다.'},
  toxicsporeorb:{cat:'aggressive',desc:'맹독 균사체가 소환하는 독성 포자 구슬.'},
  swampgolem:{cat:'neutral',desc:'늪의 무거운 골렘. 공격을 받으면 몸을 단단하게 만든다.'},
