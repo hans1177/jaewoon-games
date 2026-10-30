@@ -257,7 +257,7 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
       sourceQueue:'tester-debug',sourceTaskId:t.id,gameId:t.gameId,responsibleFiles:t.responsibleFiles,
       failureStage:t.exactFailedStage,failureSignature:t.signature,blastRadius:'single-ticket',
       recurrenceCount:Math.max(1,Number(t.occurrenceCount||1)),
-      evidence:uniq([...(t.evidence||[]),`tester-debug-ticket:${t.id}`,`tester-debug-category:${t.category}`,`tester-debug-severity:${t.severity}`,`tester-debug-occurrence-count:${Math.max(1,Number(t.occurrenceCount||1))}`]),
+      evidence:uniq([...(t.evidence||[]),`tester-debug-ticket:${t.id}`,`tester-debug-category:${t.category}`,`tester-debug-severity:${t.severity}`,`tester-debug-surface:${t.surface}`,`tester-debug-occurrence-count:${Math.max(1,Number(t.occurrenceCount||1))}`]),
       recoveryStrategy:'REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE',
       verificationPlan:[...(t.surface==='WEB'&&t.phase==='POST_PUBLICATION_PLAYTEST'
         ?['VERIFY_EXACT_PUBLISHED_GAME_AND_SHARED_SOURCE_TREES',
