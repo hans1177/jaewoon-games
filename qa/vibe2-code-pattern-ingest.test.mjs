@@ -354,8 +354,9 @@ test('model-free Web coder wires declared controls to same-game external JS with
 });
 
 test('source-bound ESM input repair imports only exact same-game exported actions and replays game state',t=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-esm-game-input-'));
-  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const base=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-esm-game-input-'));
+  t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
+  const root=path.join(base,'test');
   fs.mkdirSync(path.join(root,'game'),{recursive:true});
   const htmlPath=path.join(root,'index.html'),modulePath=path.join(root,'game','actions.mjs');
   const originalModule=[
@@ -371,6 +372,9 @@ test('source-bound ESM input repair imports only exact same-game exported action
   fs.writeFileSync(htmlPath,originalHtml);
   const task={order:{target:'web',goal:'모바일 조작 버튼 입력 연결',gameId:'test'},
     sourceRoot:root,responsibleFiles:['index.html'],patternLibrary:{patterns:[]}};
+  assert.equal(deterministicWebInputCandidate({...task,
+    order:{...task.order,gameId:'another-game'}}),null,
+    'same script cannot be reused to repair an unrelated game');
   const first=deterministicWebInputCandidate(task);
   assert.equal(first?.deterministicWebModuleInput,true);
   assert.equal(first.modelUsed,false);
