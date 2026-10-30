@@ -52,6 +52,95 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
+// [마력숲 사슴 원본 교체] 기존 잘못된 사슴 FBX는 사용하지 않는다.
+// 원본 GLB를 공식 무료 목록에서 검증해 저장하고, 기존 네이티브 모델 등록 경로로 전송한다.
+if(process.argv.includes('--forest-deer-only')){
+ const sourceUrl='https://gobkit.com/freebies/animal006/Doe.glb';
+ const libraryUrl='https://gobkit.com/api/free';
+ const libraryResponse=await fetch(libraryUrl,{signal:AbortSignal.timeout(30000)});
+ if(!libraryResponse.ok)throw Error('FOREST_DEER_CATALOG_HTTP_'+libraryResponse.status);
+ const library=await libraryResponse.json();
+ const approved=(library.packs||[]).flatMap(pack=>(pack.models||[]).map(model=>({...model,packLicense:pack.license})))
+  .find(model=>model.id==='doe'&&model.name==='Doe'&&model.url===sourceUrl);
+ if(!approved||approved.rigged!==true||!/CC0/i.test(String(approved.license||approved.packLicense||''))
+  ||!approved.animations?.some(a=>a.name==='walk')||!approved.animations?.some(a=>a.name==='idle'))
+  throw Error('FOREST_DEER_PROVENANCE_OR_WALK_MISSING');
+ const response=await fetch(sourceUrl,{signal:AbortSignal.timeout(60000)});
+ if(!response.ok)throw Error('FOREST_DEER_DOWNLOAD_HTTP_'+response.status);
+ const bytes=Buffer.from(await response.arrayBuffer());
+ if(bytes.length<1000||bytes.length>18*1024*1024||bytes.toString('ascii',0,4)!=='glTF'
+    ||bytes.readUInt32LE(4)!==2||bytes.readUInt32LE(8)!==bytes.length
+    ||bytes.readUInt32LE(16)!==0x4e4f534a)throw Error('FOREST_DEER_INVALID_GLB');
+ const jsonSize=bytes.readUInt32LE(12);
+ if(20+jsonSize>bytes.length)throw Error('FOREST_DEER_GLB_JSON_BOUNDS');
+ const gltf=JSON.parse(bytes.subarray(20,20+jsonSize).toString('utf8'));
+ if(!Array.isArray(gltf.meshes)||gltf.meshes.length===0||!Array.isArray(gltf.skins)||gltf.skins.length===0
+    ||!Array.isArray(gltf.animations)||gltf.animations.length<2
+    ||!Array.isArray(gltf.nodes)||gltf.nodes.length<4)throw Error('FOREST_DEER_NOT_REAL_RIGGED_MODEL');
+ const digest=crypto.createHash('sha256').update(bytes).digest('hex');
+ const nativePath='assets/shared/forest/deer-real.glb';
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const manifestPath='roblox-games/fantasy-survival/native-assets.json';
+ const visualPath='roblox-games/fantasy-survival/shared/VisualAssetIds.luau';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const native=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+ if(native.gameId!=='fantasy-survival'||native.ownerApproved!==true
+    ||registry.gameId!=='fantasy-survival'||!registry.models?.deer
+    ||native.models?.deer?.role!=='PASSIVE_MEADOW_WILDLIFE')
+    throw Error('FOREST_DEER_CROSS_GAME_PROVENANCE_INVALID');
+ const oldId=Number(registry.models.deer.assetId);
+ let assetId=Number(registry.models.deer.assetId);
+ if(registry.models.deer.sha256!==digest||registry.models.deer.sourceFile!==nativePath||!Number.isSafeInteger(assetId)||assetId<1){
+   const form=new FormData();
+   form.append('request',JSON.stringify({
+     assetType:'Model',displayName:'Mana Forest CC0 Doe Animated Deer',
+     description:'Gobkit rigged original Doe CC0 glb sha256 '+digest,
+     creationContext:{creator}
+   }));
+   form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),'deer-real.glb');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))throw Error('FOREST_DEER_IMPORT_OPERATION_INVALID');
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+     await new Promise(resolve=>setTimeout(resolve,4000));
+     op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   assetId=Number(op.response?.assetId);
+   if(!op.done||op.error||!Number.isSafeInteger(assetId)||assetId<1||assetId===oldId)
+     throw Error('FOREST_DEER_NATIVE_UPLOAD_FAILED');
+ }
+ const permission=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:'10773436325',action:'Use',
+     requests:[{assetId,grantToDependencies:true}]})
+ });
+ if(permission.errors?.length)throw Error('FOREST_DEER_UNIVERSE_PERMISSION_FAILED');
+ // 등록과 권한이 확인된 뒤에만 활성 ID를 바꾼다.
+ native.models.deer={
+   atom:'ANTLER',sourcePath:nativePath,sourceSha256:digest,
+   licenseEvidence:'https://gobkit.com/api/free',role:'PASSIVE_MEADOW_WILDLIFE'
+ };
+ const newNative=JSON.stringify(native,null,2)+'\n';
+ registry.models.deer={
+   assetId,sha256:digest,source:'VERIFIED_CC0_ORIGINAL',
+   sourceFile:nativePath,sourceSha256:digest,license:'CC0-1.0',
+   licenseEvidence:'https://gobkit.com/api/free',universeId:'10773436325',
+   creator:'Gobkit',sourceUrl,importedRevision:process.env.GITHUB_SHA,
+   rigged:true,walkAnimation:true,runtimeVerified:false
+ };
+ registry.sourceManifestSha256=crypto.createHash('sha256').update(newNative).digest('hex');
+ registry.runtimeVerified=false;
+ const visual=fs.readFileSync(visualPath,'utf8');
+ if(!/^\s*deer=\d+,/m.test(visual))throw Error('FOREST_DEER_NATIVE_ID_ANCHOR_MISSING');
+ fs.writeFileSync(nativePath,bytes);
+ fs.writeFileSync(manifestPath,newNative);
+ fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ fs.writeFileSync(visualPath,visual.replace(/^\s*deer=\d+,/m,' deer='+assetId+','));
+ console.log('FOREST_DEER_NEW_CC0_NATIVE_REGISTERED='+assetId);
+ console.log('FOREST_DEER_SOURCE_SHA256='+digest);
+ console.log('FOREST_DEER_ORIGINAL_ASSET_REPLACED='+oldId+':'+assetId);
+ process.exit(0);
+}
 // 공용 원본도 이 기존 네이티브 등록 경로를 사용한다. 원본 파일은 수정하지 않는다.
 const registryPath='company-asset-library.json';
 const registry=process.argv.includes('--include-shared-models')?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
