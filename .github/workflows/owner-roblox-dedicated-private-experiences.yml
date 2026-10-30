@@ -59,7 +59,7 @@ jobs:
           set -euo pipefail
           if [[ "$EVENT_NAME" == 'push' && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != '0000000000000000000000000000000000000000' ]]; then
             git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
-            git diff --name-only "$BEFORE_SHA" HEAD -- roblox-games/ > /tmp/owner-changed-source.txt
+            git diff --name-only "$BEFORE_SHA" HEAD -- roblox-games/ .github/workflows/owner-roblox-dedicated-private-experiences.yml > /tmp/owner-changed-source.txt
           else
             : > /tmp/owner-changed-source.txt
           fi
@@ -74,7 +74,8 @@ jobs:
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!games.some(row=>row.gameId===requested))throw Error('OWNER_GAME_NOT_SUPPORTED');
           const changed=fs.readFileSync('/tmp/owner-changed-source.txt','utf8').split('\n').filter(Boolean);
-          const exact=games.filter(row=>changed.some(file=>file.startsWith('roblox-games/'+row.gameId+'/')));
+          const exact=games.filter(row=>changed.some(file=>file.startsWith('roblox-games/'+row.gameId+'/'))
+            ||(row.gameId==='fantasy-survival'&&changed.includes('.github/workflows/owner-roblox-dedicated-private-experiences.yml')));
           const selected=requested?games.filter(row=>row.gameId===requested):exact.length?exact:process.env.EVENT_NAME==='workflow_dispatch'?games.filter(row=>row.gameId!=='fantasy-survival'):[];
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include:selected})+'\ncount='+selected.length+'\n');
           console.log('OWNER_DIRECT_SELECTED_GAMES='+selected.map(row=>row.gameId).join(','));
