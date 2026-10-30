@@ -106,7 +106,7 @@ gui:SetAttribute("ClientActionRuntimeVersion",3)
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
-local meadowIconAtlas="" -- CC0_INTERFACE_ATLAS
+local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
 local reducedEffects=game:GetService("UserInputService").TouchEnabled
 local meadowEffectsGroup=Instance.new("SoundGroup")
 meadowEffectsGroup.Name="MeadowEffects";meadowEffectsGroup.Volume=.75
