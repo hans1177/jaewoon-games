@@ -189,9 +189,9 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   -- 메뉴 클릭은 버튼 응답만. 전투/카메라 연출은 서버가 확인한 해당 행동만 사용한다.
   if serverConfirmed~=true then return end
   local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
-  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true)or approvedScope:find("COMBAT",1,true))then return end
 
-  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
+  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
   local camera = workspace.CurrentCamera
   if camera then
     local baseFov = camera.FieldOfView
@@ -202,7 +202,7 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   end
   end
 
-  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
+  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
   local character = verifiedLearningPlayer.Character
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
   if character and rootPart then
@@ -268,8 +268,13 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
+  -- ApprovedCombatMotion is the per-hit server-authorized sequence.
+  -- Avoid a duplicate VFX burst from LastApprovedScope's coarse state.
   verifiedLearningLastControl = nil
+end)
+verifiedLearningPlayer:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl,true)
+  verifiedLearningLastControl=nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 
@@ -303,7 +308,14 @@ root.AnchorPoint = Vector2.new(0.5, 1)
 root.Position = UDim2.fromScale(0.5, 0.98)
 root.Size = UDim2.new(1, -24, 0.54, 0)
 root.BackgroundTransparency = 0.15
-root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
+root.BackgroundColor3 = Color3.fromRGB(14, 28, 25)
+local meadowPanelCorner=Instance.new("UICorner")
+meadowPanelCorner.CornerRadius=UDim.new(0,18)
+meadowPanelCorner.Parent=root
+local meadowPanelGradient=Instance.new("UIGradient")
+meadowPanelGradient.Rotation=90
+meadowPanelGradient.Color=ColorSequence.new(Color3.fromRGB(26,53,46),Color3.fromRGB(9,18,25))
+meadowPanelGradient.Parent=root
 root.Parent = gui
 local title = Instance.new("TextLabel")
 title.Name = "Title"
@@ -312,14 +324,21 @@ title.Position = UDim2.fromOffset(10, 8)
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(245, 248, 255)
 title.TextScaled = true
-title.Text = Config.GameName
+title.Text = "마력숲  ·  시작 초원"
+title.TextXAlignment=Enum.TextXAlignment.Left
+title.TextSize=19
+title.TextScaled=false
+title.Size=UDim2.new(1,-96,0,44)
 title.Parent = root
 local status = Instance.new("TextLabel")
 status.Name = "Status"
 status.Size = UDim2.new(1, -20, 0, 48)
 status.Position = UDim2.fromOffset(10, 54)
 status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)
-status.TextColor3 = Color3.fromRGB(220, 232, 250)
+status.TextColor3 = Color3.fromRGB(220, 243, 222)
+status.TextWrapped=true
+status.TextSize=15
+status.TextScaled=false
 status.TextScaled = true
 status.Parent = root
 
@@ -330,7 +349,25 @@ multiplayerStatus.Position = UDim2.fromOffset(10, 104)
 multiplayerStatus.BackgroundTransparency = 1
 multiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)
 multiplayerStatus.TextScaled = true
-multiplayerStatus.Text = "Multiplayer sync ready"
+multiplayerStatus.Text = "초원 생존 · 동료 연결 대기"
+multiplayerStatus.TextXAlignment=Enum.TextXAlignment.Left
+local meadowAvatar=Instance.new("ImageLabel")
+meadowAvatar.Name="NativeR15Avatar"
+meadowAvatar.Size=UDim2.fromOffset(58,58)
+meadowAvatar.Position=UDim2.new(1,-70,0,7)
+meadowAvatar.BackgroundColor3=Color3.fromRGB(43,68,53)
+meadowAvatar.BorderSizePixel=0
+meadowAvatar.ImageTransparency=0
+meadowAvatar.Parent=root
+local meadowAvatarCorner=Instance.new("UICorner")
+meadowAvatarCorner.CornerRadius=UDim.new(1,0)
+meadowAvatarCorner.Parent=meadowAvatar
+task.spawn(function()
+  local ok,thumbnail=pcall(function()
+    return Players:GetUserThumbnailAsync(player.UserId,Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size150x150)
+  end)
+  if ok and type(thumbnail)=="string" and player.Parent then meadowAvatar.Image=thumbnail end
+end)
 multiplayerStatus.Parent = root
 remote.OnClientEvent:Connect(function(kind, payload)
   if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end
@@ -364,6 +401,47 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
+-- Telegraphs are read from actual server-authored enemy models, never predicted hits.
+local meadowPatternBanner=Instance.new("TextLabel")
+meadowPatternBanner.Name="MeadowAttackTelegraph"
+meadowPatternBanner.AnchorPoint=Vector2.new(.5,0)
+meadowPatternBanner.Position=UDim2.fromScale(.5,.09)
+meadowPatternBanner.Size=UDim2.new(.83,0,0,46)
+meadowPatternBanner.BackgroundColor3=Color3.fromRGB(76,28,28)
+meadowPatternBanner.BackgroundTransparency=.17
+meadowPatternBanner.TextColor3=Color3.fromRGB(255,233,211)
+meadowPatternBanner.TextSize=19
+meadowPatternBanner.Font=Enum.Font.GothamBold
+meadowPatternBanner.TextWrapped=true
+meadowPatternBanner.Visible=false
+meadowPatternBanner.Parent=gui
+local telegraphCorner=Instance.new("UICorner")
+telegraphCorner.CornerRadius=UDim.new(0,12)
+telegraphCorner.Parent=meadowPatternBanner
+local telegraphNames={WOLF_BITE="초원 늑대 · 물어뜯기",BEE_SWEEP="초원 벌 · 급강하",GOLEM_SLAM="돌 골렘 · 내려찍기"}
+local telegraphElapsed=0
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  telegraphElapsed+=dt
+  if telegraphElapsed<.22 then return end
+  telegraphElapsed=0
+  local character=player.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  local world=workspace:FindFirstChild("FantasySurvivalWorld")
+  if not rootPart or not world then meadowPatternBanner.Visible=false;return end
+  local closest,distance=nil,50
+  for _,model in ipairs(world:GetChildren()) do
+    if model:IsA("Model") and model:GetAttribute("AttackState")=="ANTICIPATION" then
+      local pattern=model:GetAttribute("AttackPattern")
+      if telegraphNames[pattern] then
+        local d=(rootPart.Position-model:GetPivot().Position).Magnitude
+        if d<distance then closest=pattern;distance=d end
+      end
+    end
+  end
+  meadowPatternBanner.Visible=closest~=nil
+  if closest then meadowPatternBanner.Text="위험! "..telegraphNames[closest].." 공격 예고" end
+end)
+
 local watched = {"Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
   status.Text = string.format("웨이브 %d · 적 %d · HP %d · Lv %d  |  경험치 %d\n나무 %d · 돌 %d · 무기 강화 %d · 처치 점수 %d",
@@ -372,6 +450,11 @@ local function render()
     player:GetAttribute("XP") or 0, player:GetAttribute("Wood") or 0,
     player:GetAttribute("Stone") or 0, player:GetAttribute("WeaponTier") or 0,
     player:GetAttribute("RoundScore") or 0)
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  if humanoid and humanoid.RigType~=Enum.HumanoidRigType.R15 then
+    status.Text ..= "\\nR15 아바타 설정 필요"
+  end
   local saveStatus = player:GetAttribute("SaveStatus")
   if player:GetAttribute("ProfileReady") ~= true then
     status.Text = "프로필 불러오는 중 · 전투 잠시 대기"

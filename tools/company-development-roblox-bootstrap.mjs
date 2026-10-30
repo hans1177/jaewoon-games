@@ -1298,7 +1298,7 @@ export function bindExistingFantasyNativeCreatures({source='',manifest={},regist
     ||registry.gameId!=='fantasy-survival'||registry.registrationVerified!==true
     ||registry.nativeRegistrationVersion!==1||registry.grantRequiredAtPublish!==true)
     throw new Error('FANTASY_NATIVE_VERIFIED_REGISTRATION_REQUIRED');
-  for(const role of ['wolf','bee','golem']){
+  for(const role of Object.keys(manifest.models||{})){
     const row=registry.models?.[role],expected=manifest.models?.[role];
     if(!expected||!row||!Number.isSafeInteger(row.assetId)||row.assetId<1||row.license!=='CC0-1.0'
       ||row.sourceSha256!==expected.sourceSha256||row.sha256!==expected.sourceSha256

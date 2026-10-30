@@ -2,7 +2,7 @@
   "version": 1,
   "gameId": "fantasy-survival",
   "ownerApproved": true,
-  "ownerDirective": "2026-10-28_POK_STONE_GOLEM_WITH_EXISTING_BEE_AND_WOLF",
+  "ownerDirective": "2026-10-30_OWNER_MEADOW_EXISTING_CC0_ROLE_MATCHED_EXTENSIONS",
   "license": "CC0-1.0",
   "models": {
     "wolf": {
@@ -24,8 +24,37 @@
       "archiveEntry": "Pok optimized.fbx",
       "sourceSha256": "680a0acf04101e96943b49044eddf0f92d855c660978c7495884115088076096",
       "licenseEvidence": "https://opengameart.org/content/pok"
+    },
+    "deer": {
+      "atom": "ANTLER",
+      "sourcePath": "assets/shared/forest/deer.fbx",
+      "sourceSha256": "6b037dbf9e1a198d31841ef9e67f2db10eabd90f842fedd0611a862c62980f27",
+      "licenseEvidence": "https://opengameart.org/content/textured-cute-monster-pack",
+      "role": "PASSIVE_MEADOW_WILDLIFE"
+    },
+    "boar": {
+      "atom": "JAW_SHORT",
+      "sourcePath": "assets/shared/forest/hog.glb",
+      "sourceSha256": "cdb47daa5e2392f7ab931356d0836e97dd5029aa16305115f7e19da4ce1d8180",
+      "licenseEvidence": "https://opengameart.org/content/cube-pets",
+      "role": "PASSIVE_MEADOW_WILDLIFE"
+    },
+    "rabbit": {
+      "atom": "EAR_POINTED",
+      "sourcePath": "assets/shared/forest/bunny.glb",
+      "sourceSha256": "3e694e98c48f0556587d9a3202da2f20344aa21a15f70bb3736eec5048129548",
+      "licenseEvidence": "https://opengameart.org/content/cube-pets",
+      "role": "PASSIVE_MEADOW_WILDLIFE"
+    },
+    "tree": {
+      "atom": "TREE_CROWN_ROUND",
+      "sourcePath": "assets/shared/forest/tree.fbx",
+      "sourceSha256": "03330f2622b48c465447e8314aabdd2c7533a4af9f41d2bd765c52a23f237cc6",
+      "licenseEvidence": "https://opengameart.org/content/textured-cute-monster-pack",
+      "role": "MEADOW_ENVIRONMENT"
     }
   },
   "runtimeVerified": false,
-  "universeUseGrant": "REQUIRED_FOR_EACH_EXACT_PUBLISH_TARGET"
+  "universeUseGrant": "REQUIRED_FOR_EACH_EXACT_PUBLISH_TARGET",
+  "sourceOnlyUntilRegisteredAndExactUniverseGranted": true
 }
