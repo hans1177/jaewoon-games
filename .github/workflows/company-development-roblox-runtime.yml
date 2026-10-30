@@ -390,7 +390,8 @@ jobs:
           const focusedRobloxGameIds=new Set(focused.enabled===true&&focused.completionPursuit?.enabled===true
             ?(focused.ownerFocusedGameIds||[]).filter(id=>focused.ownerFocusedGamePlatforms?.[id]==='ROBLOX'):[]);
           const candidates=[...globalWindow].sort((a,b)=>
-            Number(focusedRobloxGameIds.has(b.gameId))-Number(focusedRobloxGameIds.has(a.gameId))
+            Number(b.gameId==='fantasy-survival')-Number(a.gameId==='fantasy-survival')
+            ||Number(focusedRobloxGameIds.has(b.gameId))-Number(focusedRobloxGameIds.has(a.gameId))
             ||Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
             if(rows.length>=EXECUTION_BATCH_MAX)break;
@@ -1231,7 +1232,8 @@ jobs:
           const focusedRobloxGameIds=new Set(focused.enabled===true&&focused.completionPursuit?.enabled===true
             ?(focused.ownerFocusedGameIds||[]).filter(id=>focused.ownerFocusedGamePlatforms?.[id]==='ROBLOX'):[]);
           const candidates=[...globalWindow].sort((a,b)=>
-            Number(focusedRobloxGameIds.has(b.gameId))-Number(focusedRobloxGameIds.has(a.gameId))
+            Number(b.gameId==='fantasy-survival')-Number(a.gameId==='fantasy-survival')
+            ||Number(focusedRobloxGameIds.has(b.gameId))-Number(focusedRobloxGameIds.has(a.gameId))
             ||Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
