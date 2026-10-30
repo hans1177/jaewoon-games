@@ -724,12 +724,128 @@ end)
 local basicUnarmedMoves={
   "U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:ELBOW_RIGHT","U:FRONT_KICK_R",
 }
-local skillUnarmedMoves={
-  ["meadow-unarmed-rush"]={"U:JAB_LEFT","U:CROSS_RIGHT","U:HOOK_LEFT","U:HOOK_RIGHT","U:BACKFIST_LEFT"},
-  ["meadow-unarmed-uppercut"]={"U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT","U:CROSS_RIGHT","U:UPPERCUT_RIGHT","U:UPPERCUT_LEFT"},
-  ["meadow-unarmed-kick"]={"U:LOW_KICK_R","U:ROUND_KICK_R","U:SIDE_KICK_L","U:FRONT_KICK_R","U:ROUND_KICK_L"},
-  ["meadow-unarmed-elbow"]={"U:ELBOW_RIGHT","U:KNEE_LEFT","U:ELBOW_LEFT","U:KNEE_RIGHT","U:DIAGONAL_KNEE_LEFT"},
+-- 네 무술의 실제 전신 연기: 준비-타격-이어받기 3구간, 각 기술에 고유한 5타.
+-- 원본 전투 ID와 서버 판정은 유지하고 기존 R15/R6 관절 Transform만 조종한다.
+-- 영화식 회전은 Root 관절의 시각 자세일 뿐 HumanoidRootPart/물리 이동이 아니다.
+local function martialShot(key)
+  local yaw,lean,twist,armL,armR,hipL,hipR,kneeL,kneeR,rise,elbowL,elbowR=unpack(key)
+  local deg=math.rad
+  return {
+    Root=CFrame.new(0,rise or 0,0)*CFrame.Angles(deg(lean*.27),deg(yaw),deg(twist*.12)),
+    Spine=CFrame.Angles(deg(lean),deg(twist),deg(-twist*.27)),
+    Chest=CFrame.Angles(deg(-lean*.34),deg(twist*.58),deg(twist*.18)),
+    Head=CFrame.Angles(deg(-lean*.18),deg(-twist*.42),0),
+    UpperArmL=CFrame.Angles(deg(armL),deg(-twist*.24),deg(-22-twist*.13)),
+    UpperArmR=CFrame.Angles(deg(armR),deg(twist*.24),deg(22-twist*.13)),
+    ForearmL=CFrame.Angles(deg(elbowL or -65),0,deg(-12)),
+    ForearmR=CFrame.Angles(deg(elbowR or -65),0,deg(12)),
+    ThighL=CFrame.Angles(deg(hipL),deg(twist*.14),deg(-8)),
+    ThighR=CFrame.Angles(deg(hipR),deg(-twist*.14),deg(8)),
+    ShinL=CFrame.Angles(deg(kneeL),0,0),
+    ShinR=CFrame.Angles(deg(kneeR),0,0),
+    FootL=CFrame.Angles(deg(-kneeL*.18),0,0),
+    FootR=CFrame.Angles(deg(-kneeR*.18),0,0),
+  }
+end
+-- 수치는 각 타격의 [루트회전, 전후기울기, 허리꼬임, 좌/우팔,
+-- 좌/우허벅지, 좌/우무릎, 공중중심, 좌/우팔꿈치]를 지정한다.
+-- 같은 동작을 다섯 번 복사하지 않고 총 40개의 독립된 영화식 키포즈를 저작한다.
+local martialSkillTracks={
+  ["meadow-unarmed-rush"]={
+    name="FLASH_BOXING",speed=1.12,color=Color3.fromRGB(255,209,104),trailWidth=.54,
+    beats={
+      {id="U:JAB_LEFT",
+       load={-23,18,-31,-50,-58,27,-24,22,18,-.07,-78,-84},
+       hit={28,-25,39,-122,-57,-32,30,8,28,.06,-10,-72}},
+      {id="U:CROSS_RIGHT",
+       load={35,15,42,-58,-67,-19,32,17,11,-.04,-81,-85},
+       hit={-35,-29,-48,-48,-133,35,-31,30,7,.08,-78,-8}},
+      {id="U:HOOK_LEFT",
+       load={-39,12,-48,-72,-54,32,-26,24,16,-.08,-87,-79},
+       hit={38,-25,55,-86,-45,-36,34,8,27,.07,-99,-69}},
+      {id="U:HOOK_RIGHT",
+       load={44,18,48,-54,-78,-23,35,16,23,-.06,-84,-92},
+       hit={-41,-29,-54,-49,-98,36,-35,27,9,.10,-74,-102}},
+      {id="U:BACKFIST_LEFT",
+       load={-45,16,-47,-96,-53,35,-25,18,19,-.07,-110,-81},
+       hit={49,-38,67,-128,-51,-38,44,8,32,.16,-23,-77}},
+    },
+  },
+  ["meadow-unarmed-uppercut"]={
+    name="RISING_DRAGON",speed=.92,color=Color3.fromRGB(255,151,105),trailWidth=.68,
+    beats={
+      {id="U:UPPERCUT_RIGHT",
+       load={-18,39,-23,-52,-24,50,48,68,71,-.18,-94,-119},
+       hit={22,-34,32,-42,-136,-31,-41,8,5,.10,-73,-96}},
+      {id="U:UPPERCUT_LEFT",
+       load={25,43,28,-18,-65,46,49,74,80,-.17,-122,-97},
+       hit={-27,-35,-38,-143,-44,-39,-34,7,8,.14,-93,-74}},
+      {id="U:CROSS_RIGHT",
+       load={-24,31,-29,-57,-35,39,47,68,58,-.16,-74,-98},
+       hit={31,-31,48,-47,-132,-41,38,12,24,.14,-71,-9}},
+      {id="U:UPPERCUT_LEFT",
+       load={30,44,38,-33,-60,43,51,76,76,-.19,-127,-86},
+       hit={-34,-42,-46,-151,-52,-44,-37,7,4,.23,-100,-63}},
+      {id="U:UPPERCUT_RIGHT",
+       load={-30,53,-47,-54,-34,54,55,91,92,-.21,-89,-124},
+       hit={29,-57,29,-58,-158,-60,-51,5,8,.32,-69,-112}},
+    },
+  },
+  ["meadow-unarmed-kick"]={
+    name="TORNADO_TAEKWONDO",speed=.96,color=Color3.fromRGB(111,241,237),trailWidth=.76,
+    beats={
+      {id="U:LOW_KICK_R",
+       load={0,21,-33,-50,-43,26,51,17,85,-.08,-82,-87},
+       hit={49,-22,43,-67,-83,23,-66,26,10,.06,-82,-79}},
+      {id="U:ROUND_KICK_R",
+       load={77,11,42,-58,-72,39,42,30,91,-.06,-80,-75},
+       hit={136,-24,-52,-88,-36,45,-113,29,11,.14,-63,-75}},
+      {id="U:SIDE_KICK_L",
+       load={151,18,-49,-78,-48,59,30,94,25,-.09,-69,-78},
+       hit={217,-31,53,-39,-107,-113,38,8,32,.19,-85,-76}},
+      {id="U:FRONT_KICK_R",
+       load={235,12,42,-67,-58,35,63,21,94,-.07,-65,-86},
+       hit={294,-32,-54,-101,-48,39,-127,35,8,.23,-80,-75}},
+      {id="U:ROUND_KICK_L",
+       load={305,21,-57,-92,-49,61,24,91,23,-.10,-68,-78},
+       hit={387,-38,72,-44,-117,-135,42,9,37,.29,-74,-81}},
+    },
+  },
+  ["meadow-unarmed-elbow"]={
+    name="CLOSE_QUARTERS_MUAY_THAI",speed=1.08,color=Color3.fromRGB(168,143,255),trailWidth=.65,
+    beats={
+      {id="U:ELBOW_RIGHT",
+       load={-37,24,-51,-71,-91,44,39,54,41,-.13,-113,-141},
+       hit={29,-29,58,-48,-88,-36,39,6,41,.06,-112,-151}},
+      {id="U:KNEE_LEFT",
+       load={22,32,42,-91,-85,34,43,44,51,-.15,-119,-112},
+       hit={-25,-25,-35,-133,-109,-110,47,118,36,.15,-128,-111}},
+      {id="U:ELBOW_LEFT",
+       load={-39,19,-48,-110,-89,39,45,37,52,-.13,-141,-111},
+       hit={31,-29,56,-91,-44,42,-34,39,8,.10,-148,-104}},
+      {id="U:KNEE_RIGHT",
+       load={39,33,48,-78,-112,39,35,44,42,-.16,-118,-126},
+       hit={-30,-26,-43,-114,-132,48,-116,32,121,.17,-108,-129}},
+      {id="U:DIAGONAL_KNEE_LEFT",
+       load={-44,29,-52,-119,-93,53,45,57,61,-.17,-127,-115},
+       hit={43,-38,64,-147,-99,-119,55,125,41,.22,-142,-116}},
+    },
+  },
 }
+for _,style in pairs(martialSkillTracks) do
+  for _,beat in ipairs(style.beats) do
+    beat.loadPose=martialShot(beat.load)
+    beat.hitPose=martialShot(beat.hit)
+  end
+end
+-- 재생 중 다른 기술을 누르면 그 기술의 5연타를 마지막에 이어서 재생한다.
+-- 새 서버 타격은 절대 만들지 않고 이미 승인된 입력의 시각 포즈만 예약한다.
+local activeCombatMartialTrack=nil
+local queuedMartialAction=nil
+local function filmEase(t)
+  t=math.clamp(t,0,1)
+  return t*t*(3-2*t)
+end
 local activeStrikeTrail=nil
 local activeStrikeTrailIndex=0
 local function stopStrikeTrail()
@@ -737,7 +853,7 @@ local function stopStrikeTrail()
 end
 -- Upper-body and real leg joints are both owned only while a melee pose plays.
 -- The normal Roblox walk/run Animator is followed, not replaced.
-local combatUpperJoints = {Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
+local combatUpperJoints = {Root=true, Waist=true, Neck=true, LeftShoulder=true, RightShoulder=true,
   LeftElbow=true, RightElbow=true, LeftWrist=true, RightWrist=true,
   LeftHip=true,RightHip=true,LeftKnee=true,RightKnee=true,LeftAnkle=true,RightAnkle=true}
 local combatRecoveryUntil = nil
@@ -751,6 +867,8 @@ local function finishNativeCombatMotion()
   activeStrikeTrailIndex = 0
   combatRecoveryUntil = nil
   activeCombatCombo = nil
+  activeCombatMartialTrack = nil
+  queuedMartialAction = nil
   activeCombatCharacter = nil
   table.clear(combatPoseTargets)
   table.clear(combatR15Targets)
@@ -812,13 +930,22 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
   -- 이미 시작된 5타를 입력/서버 확인 이벤트가 중간에서 끊지 않는다.
   -- 입력 자체와 서버의 실제 명중·피해 처리는 계속 허용한다.
   if activeCombatCombo and activeCombatCharacter==character
-    and os.clock()-activeCombatStartedAt < activeCombatCombo.duration then return true end
+    and os.clock()-activeCombatStartedAt < activeCombatCombo.duration then
+    if profile=="UNARMED" and martialSkillTracks[approvedScope]
+      and martialSkillTracks[approvedScope]~=activeCombatMartialTrack then
+      queuedMartialAction={scope=approvedScope,sequence=approvedEvent}
+    end
+    return true
+  end
   local approvedIndex=tonumber(approvedEvent) or 1
   local chosenMoves={}
-  if profile=="UNARMED" then
-    local moves=skillUnarmedMoves[approvedScope] or basicUnarmedMoves
-    local offset=(approvedIndex-1)%#moves
-    for i=1,5 do chosenMoves[i]=moves[(offset+i-1)%#moves+1] end
+  local martialTrack=profile=="UNARMED" and martialSkillTracks[approvedScope] or nil
+  if martialTrack then
+    -- 각 버튼의 1~5타는 고정된 영화식 연출. 승인 시퀀스가 순서를 섞지 않는다.
+    for i,beat in ipairs(martialTrack.beats) do chosenMoves[i]=beat.id end
+  elseif profile=="UNARMED" then
+    local offset=(approvedIndex-1)%#basicUnarmedMoves
+    for i=1,5 do chosenMoves[i]=basicUnarmedMoves[(offset+i-1)%#basicUnarmedMoves+1] end
   else
     -- 장착 무기는 기존 무기별 단타와 공격 밸런스를 그대로 유지한다.
     local routeOk,route=pcall(combatMotionSource.CreateCombatCombo,profile)
@@ -827,11 +954,13 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
   end
   -- 공용 CreateCombatCombo는 불변 객체다. 실제 저작된 5개의 관절 포즈를 연결한다.
   local ok,combo=pcall(combatMotionSource.CreateCombatCombo,
-    profile,chosenMoves,{speed=profile=="UNARMED" and 1.22 or 1})
+    profile,chosenMoves,{speed=martialTrack and martialTrack.speed or (profile=="UNARMED" and 1.22 or 1)})
   if not ok or not combo or not combo.steps or #combo.steps~=#chosenMoves then return end
   combatRecoveryUntil = nil
   activeCombatCharacter = character
   activeCombatCombo = combo
+  activeCombatMartialTrack = martialTrack
+  queuedMartialAction = nil
   activeCombatStartedAt = os.clock()
   activeCombatController = activeCombatController or combatMotionSource.BindJointPose(joints, {
     followAnimator = true,response = 42,
@@ -843,6 +972,7 @@ playNativeCombatMotion=function(approvedScope,approvedEvent)
   character:SetAttribute("NativeCombatMotionAtom", "LIGHT_ATTACK_1")
   character:SetAttribute("NativeCombatActionId", chosenMoves[1])
   character:SetAttribute("NativeCombatStrikeCount", #chosenMoves)
+  character:SetAttribute("NativeCombatStyle", martialTrack and martialTrack.name or "BASIC")
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
   return true
@@ -973,7 +1103,11 @@ RunService.PreSimulation:Connect(function(dt)
   table.clear(combatR15Targets)
   if combatRecoveryUntil then
     activeCombatController.Step(nil, dt) -- 중립 복귀는 공격 프레임 입력과 구분한다.
-    if os.clock() >= combatRecoveryUntil then finishNativeCombatMotion() end
+    if os.clock() >= combatRecoveryUntil then
+      local queued=queuedMartialAction
+      finishNativeCombatMotion()
+      if queued then playNativeCombatMotion(queued.scope,queued.sequence) end
+    end
     return
   end
   local timeInAction=os.clock()-activeCombatStartedAt
@@ -993,8 +1127,34 @@ RunService.PreSimulation:Connect(function(dt)
       intensity=#activeCombatCombo.steps==5 and 1.5 or 1,secondary=.7,
     })
   end
-  if activeCombatCombo.profileId=="UNARMED" then
-    -- 기존 저작 포즈의 어깨·골반 회전만 증폭한다. 새 관절·루트 이동은 생성하지 않는다.
+  if activeCombatMartialTrack then
+    -- 공통 잽/킥 반복 대신 4개 무술 × 5타의 독립된 실제 관절 키포즈를 샘플한다.
+    -- 준비 자세에서 타격으로 폭발하고, 다음 타의 준비 자세로 연속 블렌딩한다.
+    local beat=activeCombatMartialTrack.beats[strikeIndex]
+    local elapsed=timeInAction-currentStep.start
+    local fromPose,toPose,alpha
+    if elapsed<currentStep.ready then
+      fromPose=beat.loadPose;toPose=beat.loadPose;alpha=0
+    elseif elapsed<currentStep.contact then
+      fromPose=beat.loadPose;toPose=beat.hitPose
+      alpha=filmEase((elapsed-currentStep.ready)/math.max(.001,currentStep.contact-currentStep.ready))
+    elseif elapsed<currentStep.recoil then
+      fromPose=beat.hitPose;toPose=beat.hitPose;alpha=0
+    else
+      local nextBeat=activeCombatMartialTrack.beats[strikeIndex+1]
+      fromPose=beat.hitPose
+      toPose=nextBeat and nextBeat.loadPose or nil
+      alpha=filmEase((elapsed-currentStep.recoil)/math.max(.001,currentStep.duration-currentStep.recoil))
+    end
+    for joint,from in pairs(fromPose) do
+      local target=from:Lerp(toPose and toPose[joint] or CFrame.identity,alpha)
+      local source=combatPoseTargets[joint]
+      -- 특화 전신 연기는 공통 원본과 혼합한다. Root는 완전한 회전 연속성을 유지한다.
+      combatPoseTargets[joint]=joint=="Root" and target
+        or (source and source:Lerp(target,.84) or target)
+    end
+  elseif activeCombatCombo.profileId=="UNARMED" then
+    -- 기본 공격은 기존 저작 포즈를 보존하되 팔·골반의 가시성을 높인다.
     for name,pose in pairs(combatPoseTargets) do
       if typeof(pose)=="CFrame" then
         local axis,angle=pose:ToAxisAngle()
@@ -1023,10 +1183,13 @@ RunService.PreSimulation:Connect(function(dt)
         or (left and "LeftHand" or "RightHand")
       local host=character:FindFirstChild(hostName)
       if host and host:IsA("BasePart") then
-        local color=leg and Color3.fromRGB(124,245,220) or Color3.fromRGB(255,207,112)
+        local style=activeCombatMartialTrack
+        local color=style and style.color or
+          (leg and Color3.fromRGB(124,245,220) or Color3.fromRGB(255,207,112))
         local ok,_,controller=pcall(combatVFX.AttachShortTrail,host,{
-          color=color,lifetime=nativeTouchEnabled and .13 or .19,
-          width=nativeTouchEnabled and .32 or .5,length=1.3,
+          color=color,lifetime=nativeTouchEnabled and .17 or .26,
+          width=nativeTouchEnabled and .42 or (style and style.trailWidth or .5),
+          length=style and 1.8 or 1.3,
         })
         if ok and controller then activeStrikeTrail=controller end
       end
@@ -1046,7 +1209,9 @@ RunService.PreSimulation:Connect(function(dt)
         local channel=joint:IsA("Motor6D") and mapping[joint.Name]
         if channel then
           local pose=combatPoseTargets[channel] or CFrame.identity
-          if channel=="Spine" then pose=pose*(combatPoseTargets.Chest or CFrame.identity) end
+          if channel=="Spine" then
+            pose=(combatPoseTargets.Root or CFrame.identity)*pose*(combatPoseTargets.Chest or CFrame.identity)
+          end
           local basis=joint.C0.Rotation
           combatR15Targets[joint.Name]=basis:Inverse()*pose*basis
         end
@@ -1054,6 +1219,7 @@ RunService.PreSimulation:Connect(function(dt)
     end
   else
     combatMotionSource.MapCombatPoseToR15(combatPoseTargets, combatR15Targets)
+    if combatPoseTargets.Root then combatR15Targets.Root=combatPoseTargets.Root end
   end
   activeCombatController.Step(combatR15Targets, dt)
   if finished then combatRecoveryUntil = os.clock() + .18 end
