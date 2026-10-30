@@ -477,6 +477,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     queueRuntimeFailureStage:clean(executionEvidence.failureStage),
     queueRuntimeFailureSignature:clean(executionEvidence.failureSignature),
     queueRuntimeSourceRevision:clean(executionEvidence.sourceRevision),
+    queueRuntimeSourceTreeSha:clean(executionEvidence.sourceTreeSha),
     queueRuntimeArtifactIdentity:clean(executionEvidence.artifactIdentity),
     queueRuntimeRootCauseVerified:executionEvidence.rootCauseVerified===true,
     queueRuntimeResponsibleSystem:clean(executionEvidence.responsibleSystem||executionEvidence.rootCauseSystem),
@@ -3854,8 +3855,9 @@ function hasCurrentAutonomousContentExpansionDirective(directive={},productionPo
   );
 }
 
-function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
-  const productionPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{})?.robloxStudioProductionFlowContract||{};
+export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
+  const centralPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{});
+  const productionPolicy=centralPolicy?.robloxStudioProductionFlowContract||{};
   const projectByScope=new Map();
   for(const project of projects||[]){
     const gameId=clean(project?.gameId);
@@ -4240,6 +4242,87 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       candidate={...candidate,priority:'critical',focusedCaretaker:true,caretakerStickyOwnership:true,
         packageLongWorkProtected:true,packageRole:'implementation-owner',focusCompletionContract:project.focusCompletionContract,
         goal:clean(candidate.goal).includes('[FOCUSED_BUILD_COMPLETION]')?candidate.goal:clean(candidate.goal)+FOCUSED_BUILD_COMPLETION_GOAL};
+    }
+    // [게임별 병목 자율수리] 이미 대기 중인 동일 게임의 원본 개발 작업만 사용한다.
+    // 원인이 미확정이면 진단·재현 계약만 제공한다. 신경 게이트의 검증된 원인 재예약과
+    // 혼동하지 않고, 소스 버전·게임 트리·오너 보류가 불확실하면 아무것도 승격하지 않는다.
+    const activeBottleneckStart='[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS]';
+    const activeBottleneckEnd='[/GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS]';
+    const platform=clean(project.engine).toUpperCase();
+    const root=posix(project.projectPath);
+    const revision=clean(project.queueRuntimeSourceRevision);
+    const tree=clean(project.queueRuntimeSourceTreeSha);
+    const failureStage=clean(project.queueRuntimeFailureStage).slice(0,100);
+    const failureSignature=clean(project.queueRuntimeFailureSignature).replace(/[\r\n]+/g,' ').slice(0,320);
+    const existingEvidence=(candidate.evidence||[]).map(clean);
+    const declaredRevisions=[...new Set([
+      candidate.sourceRevision,candidate.sourceCommit,candidate.sourceSha,candidate.buildSourceRevision,
+      ...existingEvidence.map(row=>row.match(/^(?:source-revision|runtime-source-revision|source-commit|build-source-revision):([0-9a-f]{40})$/i)?.[1]||'')
+    ].map(clean).filter(row=>/^[0-9a-f]{40}$/i.test(row)))];
+    const sameSource=project.queueRuntimeObserved===true
+      &&/^[0-9a-f]{40}$/i.test(revision)
+      &&(declaredRevisions.length>0
+        ?declaredRevisions.every(row=>row===revision)
+        :/^[0-9a-f]{40}$/i.test(tree)&&currentSourceTreeSha({repoRoot,sourcePath:root})===tree);
+    const ownerHeld=project.ownerDevelopmentHold===true||project.ownerDevelopmentStopped===true
+      ||clean(centralPolicy?.developmentAccess?.[platform])==='OWNER_HOLD';
+    const workOwned=clean(candidate.executionLane)==='GAME_PRIMARY'
+      &&candidate.assetProductionLane!==true
+      &&candidate.requiresOwnerDecision!==true&&candidate.protectedChange!==true
+      &&candidate.paidResourceRequired!==true
+      &&candidate.ownerDevelopmentHold!==true&&candidate.ownerDevelopmentStopped!==true
+      &&root===platform.toLowerCase()+'-games/'+gameId
+      &&posix(candidate.sourceRoot)===root
+      &&clean(candidate.target).toUpperCase()===platform
+      &&(candidate.responsibleFiles||[]).length>0
+      &&(candidate.responsibleFiles||[]).every(file=>posix(file).startsWith(root+'/')
+        &&!posix(file).split('/').some(part=>part==='.'||part==='..'))
+      &&!clean(candidate.goal).includes('[VERIFIED_GAME_RUNTIME_BOTTLENECK]')
+      &&!clean(candidate.goal).includes('[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]');
+    const currentFailure=clean(item.status).toLowerCase()==='queued'&&!ownerHeld&&workOwned
+      &&project.queueRuntimeObserved===true&&project.queueRuntimePassed===false
+      &&clean(project.queueRuntimeEvidencePlatform).toUpperCase()===platform
+      &&/^[0-9a-f]{40}$/i.test(revision)&&sameSource
+      &&failureStage&&failureSignature
+      &&/(?:RUNTIME|PLAYTEST|INDEPENDENT_QA|REGRESSION|(?:^|_)F[0-9](?:_|$))/.test(failureStage)
+      &&project.queueRuntimeRootCauseVerified!==true;
+    if(currentFailure){
+      const baseGoal=clean(candidate.goal).replace(/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]\n[\s\S]*?\n\[\/GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]\n?/g,'').trim();
+      const evidencePrefix='game-bottleneck-current:';
+      const diagnosis=[
+        activeBottleneckStart,
+        '게임: '+gameId+' / 플랫폼: '+platform,
+        '관측 실패 단계: '+failureStage,
+        '관측 실패 식별자: '+failureSignature,
+        '검증할 소스 버전: '+revision,
+        tree?'검증할 게임 트리: '+tree:'',
+        '근본 원인: 미검증. 기존 담당 함수와 원본 소스에서 같은 실패를 먼저 재현·관측한다.',
+        '입력·충돌·렌더 프레임·진행·저장·서버 권한 중 증거로 확인된 책임만 직접 수정한다.',
+        '원래 개발 작업과 저장·밸런스·기존 게임 기능을 보존하고 새 큐·워크플로·우회패치를 만들지 않는다.',
+        '같은 소스의 실제 런타임·모바일·독립 QA·회귀와 실패 단계 재검증 전에는 PASS 또는 출시에 승격하지 않는다.',
+        activeBottleneckEnd,
+        baseGoal
+      ].filter(Boolean).join('\n');
+      const priority=['owner-immediate','critical'].includes(clean(candidate.priority).toLowerCase())
+        ?candidate.priority:'high';
+      const evidence=[...new Set([...existingEvidence.filter(row=>!row.startsWith(evidencePrefix)),
+        evidencePrefix+[gameId,platform,failureStage,revision].join('|')])];
+      if(candidate.goal!==diagnosis||candidate.priority!==priority
+        ||JSON.stringify(candidate.evidence||[])!==JSON.stringify(evidence)){
+        candidate={...candidate,goal:diagnosis,priority,evidence};
+        changed+=1;
+      }
+    }else if(clean(item.status).toLowerCase()==='queued'
+      &&project.queueRuntimeObserved===true&&project.queueRuntimePassed===true
+      &&sameSource&&workOwned&&!ownerHeld
+      &&clean(project.queueRuntimeEvidencePlatform).toUpperCase()===platform
+      &&clean(candidate.goal).includes(activeBottleneckStart)){
+      // 같은 게임·소스의 새 성공 관측은 낡은 진단 목표만 걷어낸다.
+      // 성공한 실제 플랫폼 게이트 판정과 릴리스 상태는 여기서 변경하지 않는다.
+      const goal=clean(candidate.goal).replace(/\[GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]\n[\s\S]*?\n\[\/GAME_SPECIFIC_BOTTLENECK_DIAGNOSIS\]\n?/g,'').trim();
+      const evidence=existingEvidence.filter(row=>!row.startsWith('game-bottleneck-current:'));
+      candidate={...candidate,goal,evidence};
+      changed+=1;
     }
     const checkedCandidate={
       ...candidate,
