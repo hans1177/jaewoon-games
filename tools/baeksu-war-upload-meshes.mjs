@@ -64,29 +64,33 @@ async function req(url,opts={}){
 const provenance=JSON.parse(await fs.readFile(path.join(dir,'provenance.json'),'utf8'));
 const manifestBytes=fantasy?await fs.readFile('roblox-games/fantasy-survival/native-assets.json'):null;
 const manifest=fantasy?JSON.parse(manifestBytes):null;
-const names=fantasy?Object.keys(manifest.models):['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
+const oldRegistry=fantasy?JSON.parse(await fs.readFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8').catch(()=>'{"models":{}}')):null;
+const villageRows=fantasy&&oldRegistry.villagePrefabs?.sourceVerified===true
+ ?oldRegistry.villagePrefabs.models||{}:{};
+const names=fantasy?[...Object.keys(manifest.models),...Object.keys(villageRows)]
+ :['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
 if(fantasy&&(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
  ||Object.keys(manifest.models||{}).sort().join(',')!=='bat,bee,boar,deer,golem,mushroom,rabbit,ruin,skeleton,tree,wolf'
  ||provenance.gameId!=='fantasy-survival'||provenance.sourceManifestSha256!==crypto.createHash('sha256').update(manifestBytes).digest('hex')))throw Error('FANTASY_NATIVE_APPROVAL_OR_MANIFEST_MISMATCH');
 if(provenance.version!==(fantasy?5:4)||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
 const ids={};const records={};const verifiedModels=new Map();
-const oldRegistry=fantasy?JSON.parse(await fs.readFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8').catch(()=>'{"models":{}}')):null;
 for(const name of names){
- const extension=fantasy?path.extname(manifest.models[name]?.sourcePath||manifest.models[name]?.archiveEntry||'').slice(1).toLowerCase():'glb';
+ const originSource=fantasy?(manifest.models[name]||villageRows[name]):null;
+ const extension=fantasy?path.extname(originSource?.sourcePath||originSource?.sourceFile||originSource?.archiveEntry||'').slice(1).toLowerCase():'glb';
  if(fantasy&&!['fbx','glb'].includes(extension))throw Error('FANTASY_UNSUPPORTED_NATIVE_FORMAT:'+name);
  const file=path.join(dir,name+'.'+extension);
  const bytes=await fs.readFile(file);
  if(bytes.length<1000||bytes.length>18*1024*1024||(extension==='fbx'?!bytes.subarray(0,18).toString().startsWith('Kaydara FBX Binary'):bytes.subarray(0,4).toString()!=='glTF'))throw Error('BAD_NATIVE_MODEL:'+name);
  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
  const origin=provenance.roles[name];
- if(!origin||(fantasy?origin.sha256!==digest||manifest.models[name]?.sourceSha256!==digest||origin.sourceSha256!==digest||origin.licenseEvidence!==manifest.models[name]?.licenseEvidence:origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
+ if(!origin||(fantasy?origin.sha256!==digest||originSource?.sourceSha256!==digest||origin.sourceSha256!==digest||origin.licenseEvidence!==originSource?.licenseEvidence:origin.glbSha256!==digest)||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||(!fantasy&&(!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4))){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
  verifiedModels.set(name,{bytes,digest,origin,extension});
 }
 // Validate every original before the first irreversible Model registration.
 // Keep existing authorized IDs instead of reuploading the seven deployed originals.
 for(const name of names){
  const {bytes,digest,origin,extension}=verifiedModels.get(name);
- const prior=oldRegistry?.models?.[name];
+ const prior=oldRegistry?.models?.[name]||villageRows[name];
  if(prior&&Number.isSafeInteger(prior.assetId)&&prior.assetId>0
    &&prior.sourceSha256===digest&&prior.sha256===digest
    &&prior.license==='CC0-1.0'&&prior.licenseEvidence===origin.licenseEvidence){
@@ -131,5 +135,21 @@ const lua=[
  ''
 ].join('\n');
 await fs.writeFile('roblox-games/'+(fantasy?'fantasy-survival':'baeksu-war')+'/shared/VisualAssetIds.luau',fantasy?lua.replace('-- V4: source-verified CC0 real-model IDs, with baeksu-war Universe permissions.','-- Source-verified original CC0 FBX/GLB models. Exact Universe grant is required by canonical publishing.'):lua);
-if(fantasy)await fs.writeFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',JSON.stringify({...oldRegistry,version:2,gameId:'fantasy-survival',nativeRegistrationVersion:1,registrationVerified:true,sourceManifestSha256:provenance.sourceManifestSha256,grantRequiredAtPublish:true,runtimeVerified:false,models:records},null,2)+'\n');
+if(fantasy){
+ const core={};
+ const village={};
+ for(const [role,row] of Object.entries(records)){
+   if(Object.prototype.hasOwnProperty.call(manifest.models,role))core[role]=row;
+   else if(Object.prototype.hasOwnProperty.call(villageRows,role))village[role]=row;
+   else throw Error('FOREST_UNEXPECTED_ASSET_ROLE:'+role);
+ }
+ const villagePrefabs=oldRegistry.villagePrefabs&&Object.keys(villageRows).length>0
+   ?{...oldRegistry.villagePrefabs,models:village,registrationVerified:Object.keys(village).length===Object.keys(villageRows).length,
+     status:'REGISTERED_PENDING_EXACT_UNIVERSE_GRANT',runtimeVerified:false}
+   :oldRegistry.villagePrefabs;
+ await fs.writeFile('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json',
+  JSON.stringify({...oldRegistry,version:2,gameId:'fantasy-survival',nativeRegistrationVersion:1,
+   registrationVerified:true,sourceManifestSha256:provenance.sourceManifestSha256,
+   grantRequiredAtPublish:true,runtimeVerified:false,models:core,villagePrefabs},null,2)+'\n');
+}
 console.log((fantasy?'FANTASY_NATIVE_REGISTERED_MODELS=':'BAEKSU_WAR_VERIFIED_CC0_MODELS=')+names.length);
