@@ -138,3 +138,26 @@ test('ordinary no-op prohibition text does not masquerade as observed source-gen
   assert.equal(d.pipelinePrediction.nextBlockingSystem,'GAME_INPUT');
   assert.equal(d.pipelinePrediction.basis,'RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER');
 });
+
+test('autonomous per-game recovery diagnoses the latest exact failed stage, not the old checkpoint',()=>{
+  const task={
+    id:'forest-web-repair',gameId:'forest',target:'web',
+    failureStage:'WEB_POST_PUBLICATION_PLAYTEST',
+    failureSignature:'WEB_TOUCH_BLOCKED',
+    evidence:[
+      'recovery-exact-stage:WEB_INPUT',
+      'failure-cause:WEB_INPUT_FAILED',
+      'recovery-exact-stage:WEB_POST_PUBLICATION_PLAYTEST',
+      'failure-cause:WEB_TOUCH_BLOCKED'
+    ]
+  };
+  const diagnosis=buildNeuralDiagnosis({task});
+  assert.equal(diagnosis.actionRecommendation.failureStage,'WEB_POST_PUBLICATION_PLAYTEST');
+  assert.equal(diagnosis.actionRecommendation.restartFromBeginning,false);
+  assert.equal(diagnosis.learning.eligible,false);
+  const fallback=buildNeuralDiagnosis({task:{
+    gameId:'forest',failureStage:'ROBLOX_RUNTIME',
+    failureSignature:'SOURCE_BOUND_RUNTIME_FAILURE',evidence:[]
+  }});
+  assert.equal(fallback.actionRecommendation.failureStage,'ROBLOX_RUNTIME');
+});
