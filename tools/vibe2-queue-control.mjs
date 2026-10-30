@@ -30,7 +30,10 @@ import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemet
 
 const clean = (value) => String(value ?? '').trim();
 // 실제 생성기 의존 코드가 바뀌면 기존 실패를 새 버전에서 한 번 재검토한다.
-const SOURCE_CODEGEN_SHA256 = createHash('sha256').update([
+export const SOURCE_CODEGEN_SHA256 = createHash('sha256').update([
+  // The offline pattern coder is a real candidate generator. A changed recipe
+  // implementation must re-open the exact blocked game once before the cooldown.
+  'vibe2-v4-pattern-coder.mjs',
   'vibe2-source-worker.mjs','vibe2-v59-autonomy.mjs','vibe2-complex-intent.mjs',
   'vibe2-complex-work-planner.mjs','vibe2-game-source-index.mjs',
   'company-build-up-directive.mjs'
@@ -521,6 +524,16 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
     if(task.status==='blocked'&&['EXTERNAL_AI_QUOTA_COOLDOWN','SOURCE_MODEL_UNAVAILABLE','OFFLINE_RECIPE_UNAVAILABLE'].includes(clean(task.blocker))){
       const noModel=clean(task.blocker)==='SOURCE_MODEL_UNAVAILABLE';
       const offlinePattern=clean(task.blocker)==='OFFLINE_RECIPE_UNAVAILABLE';
+      // A newer code recipe is not an owner approval or security review.
+      // Only a runnable existing Web/Roblox development task may be reconsidered.
+      if(offlinePattern&&(
+        !['web','roblox'].includes(clean(task.target).toLowerCase())
+        ||clean(task.department).toLowerCase()!=='development'
+        ||clean(task.type).toLowerCase()!=='implementation'
+        ||task.ownerDevelopmentHold===true||task.ownerDevelopmentStopped===true
+        ||task.requiresOwnerDecision===true||task.protectedChange===true
+        ||task.paidResourceRequired===true||task.securityReviewRequired===true
+        ||task.securityQuarantined===true))return task;
       const evidence=Array.isArray(task.evidence)?task.evidence:[];
       const deterministicRoblox=noModel&&clean(task.target).toLowerCase()==='roblox'
         &&(evidence.includes('source-no-model-failure-kind:DETERMINISTIC_ROBLOX')
