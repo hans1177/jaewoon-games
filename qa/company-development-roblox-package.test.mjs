@@ -1261,6 +1261,13 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowSkillCooldowns={}'));
+  assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
+  assert.ok(client.includes('local centerX=short and 224 or 240'));
+  assert.ok(client.includes('local right=landscape and 14 or 5'));
+  assert.ok(client.includes('local bottom=landscape and (short and 130 or 160) or 136'));
+  assert.ok(client.includes('button.Position=UDim2.fromOffset(8,56+(index-1)*(size+7))'));
+  assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
+    'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
   assert.match(dodge,/params.RespectCanCollide=true/);
   assert.match(dodge,/ground.Normal.Y>=\.65/);
@@ -1285,6 +1292,11 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(ui,/if compact then/);
   assert.ok(ui.includes('if primary and primary.hideButton~=true then'));
   assert.ok(ui.includes('menu.Size=UDim2.fromOffset(56,46)'));
+  assert.ok(ui.includes('local menuLeft=primary and primary.menuLeft==true'));
+  assert.ok(ui.includes('menu.Position=UDim2.fromOffset(9,8)'));
+  assert.ok(ui.includes('hud.Position=menuLeft and UDim2.fromOffset(74,8) or UDim2.fromOffset(9,8)'));
+  assert.ok(ui.includes('menu.Position=UDim2.new(1,-12,0,12)'),
+    'other compact games must retain their existing menu position');
   assert.match(client,/Instance.new\("Beam"\)/);
   assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)/);
