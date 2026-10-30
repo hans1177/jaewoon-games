@@ -1755,8 +1755,26 @@ local function layoutMeadowCombatUi()
     button.Position=UDim2.fromOffset(math.floor((8+(index-1)*53)*scale),math.floor(144*scale))
     button.TextSize=math.max(16,math.floor(23*scale))
   end
+  -- [오른쪽 점프 버튼] 로블록스 원본 TouchGui.JumpButton을 그대로 사용한다.
+  -- 스킬 원형 버튼들과 겹치지 않게 오른쪽 스킬 묶음의 왼쪽 위로 올린다.
+  -- 새 점프 버튼/입력 동작을 만들지 않고 Roblox 기본 점프·터치를 유지한다.
+  if UserInputService.TouchEnabled then
+    local touchGui=player.PlayerGui:FindFirstChild("TouchGui")
+    local jump=touchGui and touchGui:FindFirstChild("JumpButton",true)
+    if jump and jump:IsA("GuiButton") then
+      jump.AnchorPoint=Vector2.new(1,1)
+      jump.Position=UDim2.new(1,-math.floor(237*scale),1,-math.floor((landscape and 167 or 248)*scale))
+      jump.ZIndex=math.max(jump.ZIndex,18)
+    end
+  end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)
+-- 기본 모바일 JumpButton은 화면 GUI보다 늦게 생성될 수 있으므로 생성 시 기존 배치만 갱신한다.
+player.PlayerGui.DescendantAdded:Connect(function(descendant)
+  if UserInputService.TouchEnabled and descendant.Name=="JumpButton" and descendant:IsA("GuiButton") then
+    task.defer(layoutMeadowCombatUi)
+  end
+end)
 layoutMeadowCombatUi()
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   meadowSkillDock.Visible=gui:GetAttribute("GameMenuOpen")~=true
