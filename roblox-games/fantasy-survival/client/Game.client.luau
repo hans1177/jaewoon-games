@@ -774,6 +774,137 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end)
 end)
 
+-- [초원 날씨 표시·네이티브 강수] 서버의 같은 날씨/시각을 모든 플레이어가 관측한다.
+-- 날씨는 시각 효과 전용이다. 스킬 입력·몬스터 전투·저장/성장은 변경하지 않는다.
+local meadowClimateWorld=workspace:WaitForChild("FantasySurvivalWorld",15)
+local meadowClimateChip=Instance.new("TextLabel")
+meadowClimateChip.Name="MeadowClimateStatus"
+meadowClimateChip.Position=UDim2.fromOffset(9,203)
+meadowClimateChip.Size=UDim2.fromOffset(202,28)
+meadowClimateChip.BackgroundColor3=Color3.fromRGB(20,44,46)
+meadowClimateChip.BackgroundTransparency=.13
+meadowClimateChip.BorderSizePixel=0
+meadowClimateChip.TextColor3=Color3.fromRGB(243,249,235)
+meadowClimateChip.TextSize=13
+meadowClimateChip.Font=Enum.Font.GothamBold
+meadowClimateChip.TextXAlignment=Enum.TextXAlignment.Center
+meadowClimateChip.Text="초원 날씨 불러오는 중"
+meadowClimateChip.Active=false
+meadowClimateChip.ZIndex=8
+meadowClimateChip.Parent=gui
+local climateCorner=Instance.new("UICorner")
+climateCorner.CornerRadius=UDim.new(0,8)
+climateCorner.Parent=meadowClimateChip
+local climatePeriodNames={DAWN="새벽",DAY="낮",DUSK="저녁",NIGHT="밤"}
+local climateWeatherNames={CLEAR="맑음",RAIN="비",FOG="안개",STORM="폭풍"}
+local climateEmitter=nil
+local climateLightningUntil=0
+local climateNextLightningAt=os.clock()+19
+local climateElapsed=0
+
+-- 기존 아바타의 루트에 Roblox 네이티브 파티클만 붙인다. 도형 파츠·새 에셋 불필요.
+local function bindMeadowRain(character)
+  if climateEmitter and climateEmitter.Parent then climateEmitter:Destroy() end
+  climateEmitter=nil
+  local rootPart=character:WaitForChild("HumanoidRootPart",12)
+  if not rootPart or not rootPart.Parent then return end
+  local anchor=Instance.new("Attachment")
+  anchor.Name="MeadowRainOrigin"
+  anchor.Position=Vector3.new(0,17,0)
+  anchor.Parent=rootPart
+  local drops=Instance.new("ParticleEmitter")
+  drops.Name="MeadowNativeRain"
+  drops.Enabled=false
+  drops.Rate=nativeTouchEnabled and 55 or 85
+  drops.Lifetime=NumberRange.new(.42,.68)
+  drops.Speed=NumberRange.new(42,56)
+  drops.Acceleration=Vector3.new(3,-12,0)
+  drops.SpreadAngle=Vector2.new(27,27)
+  drops.EmissionDirection=Enum.NormalId.Bottom
+  drops.Size=NumberSequence.new(.10)
+  drops.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,.38),
+    NumberSequenceKeypoint.new(.8,.24),
+    NumberSequenceKeypoint.new(1,1),
+  })
+  drops.Color=ColorSequence.new(Color3.fromRGB(179,213,234))
+  drops.LightEmission=.12
+  drops.LightInfluence=0
+  drops.Parent=anchor
+  climateEmitter=drops
+end
+if player.Character then task.defer(bindMeadowRain,player.Character) end
+player.CharacterAdded:Connect(bindMeadowRain)
+local function renderMeadowClimate()
+  local v=gui.AbsoluteSize
+  local short=v.Y>0 and v.Y<440
+  meadowClimateChip.Position=UDim2.fromOffset(9,short and 172 or 203)
+  meadowClimateChip.Size=UDim2.fromOffset(math.max(160,math.min(208,v.X-110)),short and 24 or 28)
+  meadowClimateChip.TextSize=short and 11 or 13
+  meadowClimateChip.Visible=gui:GetAttribute("GameMenuOpen")~=true
+    and gui:GetAttribute("StoryJournalOpen")~=true
+  if not meadowClimateWorld then return end
+  local weather=meadowClimateWorld:GetAttribute("MeadowWeather") or "CLEAR"
+  local period=meadowClimateWorld:GetAttribute("MeadowDayPhase") or "DAWN"
+  local clock=meadowClimateWorld:GetAttribute("MeadowClockMinutes") or 315
+  meadowClimateChip.Text=string.format("%s  ·  %s  ·  %02d:%02d",
+    climatePeriodNames[period] or "초원",climateWeatherNames[weather] or "맑음",
+    math.floor(clock/60),clock%60)
+  if climateEmitter then climateEmitter.Enabled=weather=="RAIN" or weather=="STORM" end
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(renderMeadowClimate)
+gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(renderMeadowClimate)
+gui:GetAttributeChangedSignal("StoryJournalOpen"):Connect(renderMeadowClimate)
+if meadowClimateWorld then
+  for _,name in ipairs({"MeadowWeather","MeadowDayPhase","MeadowClockMinutes"}) do
+    meadowClimateWorld:GetAttributeChangedSignal(name):Connect(renderMeadowClimate)
+  end
+end
+renderMeadowClimate()
+-- 기존 생존 대기·색보정 객체를 재활용하고 상태 변화는 부드럽게 보간한다.
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+  climateElapsed+=dt
+  if climateElapsed<.3 then return end
+  climateElapsed=0
+  if not meadowClimateWorld then return end
+  local weather=meadowClimateWorld:GetAttribute("MeadowWeather") or "CLEAR"
+  local period=meadowClimateWorld:GetAttribute("MeadowDayPhase") or "DAWN"
+  if climateEmitter then climateEmitter.Enabled=weather=="RAIN" or weather=="STORM" end
+  local atmosphere=verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
+  local fog=weather=="FOG"
+  local storm=weather=="STORM"
+  local rainy=weather=="RAIN"
+  local night=period=="NIGHT"
+  local targetDensity=fog and .40 or storm and .32 or rainy and .27 or .17
+  local targetHaze=fog and 2.5 or storm and 1.65 or rainy and 1.35 or .85
+  if atmosphere and atmosphere:IsA("Atmosphere") then
+    atmosphere.Density=atmosphere.Density+(targetDensity-atmosphere.Density)*.14
+    atmosphere.Haze=atmosphere.Haze+(targetHaze-atmosphere.Haze)*.14
+    atmosphere.Glare=atmosphere.Glare+((storm and .01 or .07)-atmosphere.Glare)*.14
+  end
+  local tint=night and Color3.fromRGB(176,193,226)
+    or period=="DAWN" and Color3.fromRGB(255,222,183)
+    or period=="DUSK" and Color3.fromRGB(255,210,177)
+    or Color3.fromRGB(255,255,255)
+  if storm then tint=tint:Lerp(Color3.fromRGB(183,199,212),.35)
+  elseif rainy then tint=tint:Lerp(Color3.fromRGB(211,220,230),.20) end
+  local now=os.clock()
+  if storm and now>=climateNextLightningAt then
+    climateLightningUntil=now+.18
+    climateNextLightningAt=now+math.random(16,30)
+  elseif not storm then
+    climateNextLightningAt=now+19
+    climateLightningUntil=0
+  end
+  verifiedLearningColorGrade.TintColor=verifiedLearningColorGrade.TintColor:Lerp(tint,.12)
+  verifiedLearningColorGrade.Saturation=verifiedLearningColorGrade.Saturation
+    +((fog and -.18 or storm and -.13 or -.02)-verifiedLearningColorGrade.Saturation)*.12
+  local flash=storm and now<climateLightningUntil
+  local brightness=flash and .34 or (night and -.035 or 0)
+  verifiedLearningColorGrade.Brightness=verifiedLearningColorGrade.Brightness
+    +(brightness-verifiedLearningColorGrade.Brightness)*(flash and .9 or .15)
+end)
+
 -- [화면 터치 공격] UI·조이스틱 터치는 제외하고 월드 빈 화면 탭만 기본 공격.
 -- 로블록스 공식 TouchTapInWorld와 처리 여부를 사용해 버튼을 완전히 없앤다.
 UserInputService.TouchTapInWorld:Connect(function(_,processedByUI)
@@ -1910,10 +2041,13 @@ task.delay(5,function()
         distance=math.min(distance,math.sqrt(dx*dx+dz*dz))
       end
       local forestPresence=1-math.clamp((distance-25)/235,0,1)
-      forestBed.Volume=.035+.085*forestPresence
-      birdChirp.Volume=.085+.17*forestPresence
+      local timePhase=meadowClimateWorld and meadowClimateWorld:GetAttribute("MeadowDayPhase") or "DAY"
+      local weather=meadowClimateWorld and meadowClimateWorld:GetAttribute("MeadowWeather") or "CLEAR"
+      local quiet=weather=="RAIN" or weather=="STORM" or timePhase=="NIGHT"
+      forestBed.Volume=(.035+.085*forestPresence)*(quiet and .28 or 1)
+      birdChirp.Volume=(.085+.17*forestPresence)*(quiet and .18 or 1)
       if os.clock()>=nextChirp then
-        if forestPresence>.12 then
+        if forestPresence>.12 and not quiet then
           birdChirp.PlaybackSpeed=.91+math.random()*.17
           birdChirp:Play()
         end
