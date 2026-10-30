@@ -2504,6 +2504,10 @@ local nativeMobMotionMap={
   IDLE="IDLE",CHASE="RUN",RUN="RUN",RETURN_TO_SPAWN="WALK",WALK="WALK",
   ANTICIPATION="ANTICIPATION",ATTACK="ATTACK",RECOVERY="RECOVERY",HIT="HIT",DEATH="DEATH",
 }
+-- [4족 애니메이션] 걷기는 네 발 순차 접지, 질주는 앞·뒷발 묶음 접지를 사용한다.
+local quadrupedFootPhases={
+  {"FL",0,0},{"FR",.5,.12},{"BL",.75,.53},{"BR",.25,.65},
+}
 -- [몹 실제 리깅] 기존 Bone/Motor6D/AnimationConstraint의 채널명을 재사용한다.
 local nativeMobJointAlias={
   FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
@@ -2672,7 +2676,10 @@ local function bindOriginalMob(model)
     or (species=="golem" or species=="mushroom" or species=="skeleton") and
       (available.ThighL or available.ThighR or available.UpperArmL or available.UpperArmR)
     or (available.FLHip or available.FRHip or available.BLHip or available.BRHip)
-  local actualRig=count>=2 and movingJoints==true
+  -- [늑대 리그] 실제 네 고관절 없이는 정상 4족 리그로 처리하지 않는다.
+  local wolfFourLegRig=species~="wolf" or
+    (available.FLHip and available.FRHip and available.BLHip and available.BRHip)
+  local actualRig=count>=2 and movingJoints==true and wolfFourLegRig==true
   local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=26,
   }) or nil
@@ -2787,6 +2794,60 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           profile={limbArc=footTravel and 1.08 or 1.3,footContact=1.28,attackStrike=1.22},
         },row.poses)
       if matched then
+        -- [4족 걷기/질주] 원본 스킨 관절의 접지/회수 단계를 분리하고 속도에 따라 보폭을 조절한다.
+        -- 공용 모션/서버 좌표/공격판정/보상/저장에는 영향을 주지 않는다.
+        if row.plan=="QUADRUPED" then
+          if mode=="WALK" or mode=="RUN" then
+            local running=mode=="RUN"
+            local amplitude=(running and .52 or .36)*math.clamp(row.groundSpeed/(running and 7 or 3),.5,1)
+            local stance=running and .41 or .61
+            for _,foot in ipairs(quadrupedFootPhases) do
+              local key=foot[1]
+              local legPhase=(phase+(running and foot[3] or foot[2]))%1
+              local hip,knee,ankle
+              if legPhase<stance then
+                -- 접지 동안 무릎을 펴고 발로 땅을 뒤로 민다.
+                local p=legPhase/stance
+                hip=amplitude*(1-p*2)
+                knee=.015
+                ankle=.025
+              else
+                -- 발이 공중에 있을 때만 무릎을 굽혀 앞으로 회수한다.
+                local p=(legPhase-stance)/(1-stance)
+                local lift=math.sin(math.pi*p)
+                hip=-amplitude*math.cos(math.pi*p)
+                knee=lift*(running and .72 or .48)
+                ankle=-lift*(running and .23 or .15)
+              end
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(hip,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(knee,0,0) end
+              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(ankle,0,0) end
+            end
+            local cycle=phase*math.pi*2
+            local bounce=math.sin(cycle*(running and 2 or 1))*(running and .050 or .025)
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(bounce,0,0) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(-bounce*.62,0,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(-bounce*.40,0,0) end
+          elseif row.species=="wolf" and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY") then
+            -- [늑대 전방 물기] 예비 자세 -> 목과 머리 전방 급습 -> 접촉 뒤 복귀.
+            -- 실제 원본에 턱 관절이 있을 때만 개폐시키고 없으면 목/머리로 물기 동작을 연출한다.
+            local windup=mode=="ANTICIPATION" and math.sin(phase*math.pi*.5) or 0
+            local bite=mode=="ATTACK" and math.sin(math.pi*phase) or 0
+            local settle=mode=="RECOVERY" and (1-phase) or 0
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(-.12*windup-.36*bite+.13*settle,0,0) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.24*windup-.48*bite+.13*settle,0,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(.30*windup-.56*bite+.18*settle,0,0) end
+            if row.available.Jaw then row.poses.Jaw=CFrame.Angles(.18*windup+.70*bite,0,0) end
+            for _,key in ipairs({"FL","FR"}) do
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(-.23*windup+.26*bite,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.20*windup+.10*bite,0,0) end
+            end
+            for _,key in ipairs({"BL","BR"}) do
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(.17*windup-.25*bite,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.24*windup,0,0) end
+            end
+          end
+        end
         -- [수문장 액션] 실제 원본 팔·다리만 큰 예비 동작과 충격 뒤 복귀에 연결한다.
         if row.species=="golem" and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY" or mode=="HIT") then
           local shock=model:GetAttribute("AttackPattern")=="GOLEM_SHOCKWAVE"

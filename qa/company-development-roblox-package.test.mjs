@@ -1161,9 +1161,10 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/forestBed.SoundId="rbxassetid:\/\/9116971475"/);
   assert.match(client,/birdChirp.SoundId="rbxassetid:\/\/140708444684424"/);
   assert.match(client,/birdChirp.Looped=false/);
-  assert.match(client,/forestBed.Volume=\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)/);
+  assert.match(client,/local forestAudioEnabled=hasStudioAssetAtom\("AUDIO","ENV_FOREST"\)/);
+  assert.match(client,/forestBed.Volume=forestAudioEnabled and \(\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)\) or 0/);
   assert.match(client,/local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="SNOW" or sky=="STORM"/);
-  assert.match(client,/birdChirp.Volume=\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)/);
+  assert.match(client,/birdChirp.Volume=forestAudioEnabled and \(\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)\) or 0/);
   assert.match(client,/nextChirp=os.clock\(\)\+math.random\(17,29\)/);
   // Survival inspection is meaningful but cannot change existing balance, rewards or save data.
   assert.match(server,/local function inspectMeadowSurvival\(player,model,subject\)/);
@@ -1265,8 +1266,18 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
     assert.ok(server.includes(color+'=Color3.fromRGB('),'missing matte forest color: '+color);
   }
   assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.Fabric/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
-  assert.match(server,/surface\.Reflectance=wing and \.025 or 0/);
+  // 모션은 원본 스킨 관절의 4족 접지와 전방 물기만 조절한다.
+  assert.match(client,/local quadrupedFootPhases=/);
+  assert.match(client,/local wolfFourLegRig=species~="wolf"/);
+  assert.match(client,/if row\.available\[key\.\."Knee"\] then row\.poses\[key\.\."Knee"\]/);
+  assert.match(client,/row\.species=="wolf" and \(mode=="ANTICIPATION"/);
+  assert.match(client,/if row\.available\.Head then row\.poses\.Head=/);
+  // 원본 UV/메시 텍스처와 SurfaceAppearance를 보존하면서 통일된 무광 표면으로 바꾼다.
+  assert.match(server,/sourceColor=surface\.Color/);
+  assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
+  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/surface\.Reflectance=0/);
+  assert.doesNotMatch(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
   assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
   for(const source of [client,server,motion]){
@@ -1353,7 +1364,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/Instance.new\("Beam"\)/);
   assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)/);
-  assert.match(server,/surface.Material=wing and Enum.Material.Glass or bodyMaterial/);
+  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or Enum\.Material\.SmoothPlastic/);
   assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
   assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);

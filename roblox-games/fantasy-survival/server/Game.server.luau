@@ -970,14 +970,20 @@ local function spawnEnemy(isBoss, index)
   -- 몸통과 숲 초목의 무광색을 맞춘다. 원본 TextureID/SurfaceAppearance는 유지.
   local bodyTint=isBoss and meadowPalette.golem
     or meadowPalette[partId] or meadowPalette.wolf
-  local bodyMaterial=isBoss and Enum.Material.Slate
-    or partId=="skeleton" and Enum.Material.SmoothPlastic or Enum.Material.Fabric
+  -- [몬스터 재질 통일] 기존 Fabric 강제 덮어쓰기 대신 무광 판타지 스타일을 사용한다.
+  -- 원본 UV, TextureID, SurfaceAppearance, MaterialVariant는 그대로 두어 디테일을 보존한다.
+  -- 날개의 원래 투명성만 예외로 두고 모든 불투명 몬스터에 같은 표면 재질을 사용한다.
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") then
       local wing=partId=="bee" and surface.Name:lower():find("wing",1,true)
-      surface.Color=wing and Color3.fromRGB(190,228,235) or bodyTint
-      surface.Material=wing and Enum.Material.Glass or bodyMaterial
-      surface.Reflectance=wing and .025 or 0
+      local sourceColor=surface.Color
+      local hasSourceDetail=(surface.TextureID~=""
+        or surface:FindFirstChildOfClass("SurfaceAppearance")~=nil)
+      surface.Color=wing and Color3.fromRGB(190,228,235)
+        or hasSourceDetail and sourceColor:Lerp(bodyTint,.22)
+        or sourceColor:Lerp(bodyTint,.46)
+      surface.Material=wing and Enum.Material.Glass or Enum.Material.SmoothPlastic
+      surface.Reflectance=0
     end
   end
   model:SetAttribute("Species",partId)
@@ -1254,10 +1260,12 @@ local function animateMeadowOriginalMob(enemy,now)
   -- 네발 몹은 가짜 몸체 점프 대신 실제 다리 관절로 접지를 표현한다.
   local movingHeight=aerial and (1.35+math.sin(phase)*.42)
     or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .14 or .035) or 0)
-  local leap=attacking and ((kind=="wolf" or kind=="boar") and .66
+  -- [늑대 물기] 예비 동작은 제자리에서 몸을 낮춘다. 급습은 원본 목/앞다리 관절이 담당한다.
+  local leap=attacking and (kind=="wolf" and -.12 or kind=="boar" and .66
     or kind=="golem" and .38 or aerial and .5 or -.18) or 0
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
-  local attackPitch=attacking and (kind=="golem" and -.34 or aerial and -.58 or .42)
+  local attackPitch=attacking and (kind=="wolf" and -.14
+    or kind=="golem" and -.34 or aerial and -.58 or .42)
     or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
   if enemy.isBoss and attacking then
     local duration=enemy.model:GetAttribute("NativeMobMotionDuration") or .68
