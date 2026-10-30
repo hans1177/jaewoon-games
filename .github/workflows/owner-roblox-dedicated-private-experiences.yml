@@ -3,6 +3,11 @@ name: Owner Roblox Dedicated Private Experiences
 
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact owner-selected game id
+        required: false
+        type: string
   pull_request:
     paths:
       - '.github/workflows/owner-roblox-dedicated-private-experiences.yml'
@@ -15,13 +20,14 @@ on:
       - 'tools/company-roblox-dedicated-experience.mjs'
       - 'qa/company-roblox-dedicated-experience.test.mjs'
       - 'roblox-games/cozy-island/**'
+      - 'roblox-games/fantasy-survival/**'
 
 permissions:
   contents: write
 
 concurrency:
-  group: owner-roblox-dedicated-private-experiences
-  cancel-in-progress: true
+  group: owner-roblox-dedicated-private-experiences-${{ inputs.game_id || github.sha }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -29,12 +35,49 @@ env:
 jobs:
   contract:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.targets.outputs.matrix }}
+      count: ${{ steps.targets.outputs.count }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test qa/company-roblox-dedicated-experience.test.mjs
+      - if: github.event_name == 'pull_request'
+        run: node --test qa/company-roblox-dedicated-experience.test.mjs
+      - name: Select exact owner publication targets
+        id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == 'push' && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != '0000000000000000000000000000000000000000' ]]; then
+            git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+            git diff --name-only "$BEFORE_SHA" HEAD -- roblox-games/ > /tmp/owner-changed-source.txt
+          else
+            : > /tmp/owner-changed-source.txt
+          fi
+          node <<'NODE'
+          const fs=require('fs');
+          const games=[
+            {gameId:'cozy-island',gameName: '포근섬: 작은 왕국 키우기'},
+            {gameId:'daechung-rpg',gameName: '포탈 알피지'},
+            {gameId:'horror-escape-room',gameName: '심야 대탈출'},
+            {gameId:'fantasy-survival',gameName: '마력숲 생존기'},
+          ];
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!games.some(row=>row.gameId===requested))throw Error('OWNER_GAME_NOT_SUPPORTED');
+          const changed=fs.readFileSync('/tmp/owner-changed-source.txt','utf8').split('\n').filter(Boolean);
+          const exact=games.filter(row=>changed.some(file=>file.startsWith('roblox-games/'+row.gameId+'/')));
+          const selected=requested?games.filter(row=>row.gameId===requested):exact.length?exact:games.filter(row=>row.gameId!=='fantasy-survival');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include:selected})+'\ncount='+selected.length+'\n');
+          console.log('OWNER_DIRECT_SELECTED_GAMES='+selected.map(row=>row.gameId).join(','));
+          NODE
 
   publish:
     needs: contract
@@ -42,14 +85,7 @@ jobs:
     strategy:
       fail-fast: false
       max-parallel: 1
-      matrix:
-        include:
-          - gameId: cozy-island
-            gameName: '포근섬: 작은 왕국 키우기'
-          - gameId: daechung-rpg
-            gameName: '포탈 알피지'
-          - gameId: horror-escape-room
-            gameName: '심야 대탈출'
+      matrix: ${{ fromJSON(needs.contract.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -95,7 +131,7 @@ jobs:
           const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
           if(!item)throw new Error('queue item missing: '+process.env.GAME_ID);
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
-          const t=item.robloxPublicationTarget||{};
+          const t=item.robloxPublicationTarget||(process.env.GAME_ID==='fantasy-survival'?item.robloxValidationTarget:null)||{};
           const registryPath='../runtime/roblox-dedicated-targets.json';
           const registry=fs.existsSync(registryPath)?JSON.parse(fs.readFileSync(registryPath,'utf8')):{targets:[]};
           const registered=(registry.targets||[]).find(row=>row.gameId===process.env.GAME_ID)||{};
@@ -103,6 +139,7 @@ jobs:
           const registeredDedicated=registered.dedicated===true&&registered.shared!==true&&valid(registered.universeId)&&valid(registered.placeId);
           const chosen=currentDedicated?t:(registeredDedicated?registered:{});
           const dedicated=valid(chosen.universeId)&&valid(chosen.placeId);
+          if(process.env.GAME_ID==='fantasy-survival'&&(!dedicated||chosen.verified!==true||String(chosen.universeId)!=='10773436325'||String(chosen.placeId)!=='108565970231899'))throw Error('OWNER_FOREST_EXISTING_PRIVATE_TARGET_REQUIRED');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+(dedicated?chosen.universeId:'')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+(dedicated?chosen.placeId:'')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'reuse='+(dedicated?'true':'false')+'\n');
@@ -110,7 +147,94 @@ jobs:
           if(registeredDedicated&&!currentDedicated)console.log('ROBLOX_DEDICATED_TARGET_RECOVERED_FROM_REGISTRY=YES');
           NODE
 
+      - name: Grant original Forest models to the existing private Universe
+        if: matrix.gameId == 'fantasy-survival'
+        working-directory: main
+        env:
+          ROBLOX_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ROBLOX_UNIVERSE_ID" = '10773436325'
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          const root='roblox-games/fantasy-survival';
+          const bytes=fs.readFileSync(root+'/native-assets.json');
+          const manifest=JSON.parse(bytes),registry=JSON.parse(fs.readFileSync(root+'/CC0-ASSET-REGISTRY.json','utf8'));
+          const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+          const ids=fs.readFileSync(root+'/shared/VisualAssetIds.luau','utf8');
+          const roles=['wolf','bee','golem','deer','boar','rabbit','tree'];
+          if(manifest.gameId!=='fantasy-survival'||manifest.ownerApproved!==true||manifest.license!=='CC0-1.0'
+            ||Object.keys(manifest.models||{}).sort().join(',')!==[...roles].sort().join(',')
+            ||registry.gameId!==manifest.gameId||registry.registrationVerified!==true
+            ||registry.nativeRegistrationVersion!==1||registry.sourceManifestSha256!==sha(bytes))throw Error('OWNER_FOREST_CC0_PROVENANCE_REQUIRED');
+          const selected=roles.map(role=>{
+            const row=registry.models?.[role],source=manifest.models[role];
+            if(!row||!Number.isSafeInteger(row.assetId)||row.assetId<1||row.license!=='CC0-1.0'
+              ||row.sourceSha256!==source.sourceSha256||row.sha256!==source.sourceSha256||row.licenseEvidence!==source.licenseEvidence
+              ||!new RegExp('\\b'+role+'\\s*=\\s*'+row.assetId+'\\b').test(ids))throw Error('OWNER_FOREST_MODEL_BINDING_INVALID:'+role);
+            if(source.sourcePath&&(!/^assets\/shared\/forest\/[a-z]+\.(?:fbx|glb)$/.test(source.sourcePath)
+              ||sha(fs.readFileSync(source.sourcePath))!==source.sourceSha256))throw Error('OWNER_FOREST_SOURCE_HASH_INVALID:'+role);
+            return row.assetId;
+          });
+          const assetIds=selected;
+          if(assetIds.length){
+            // Verified CC0 models still require explicit Roblox Universe grants.
+            // An owner-authenticated cookie is an official alternative to an API
+            // key without asset-permissions:write; never skip grant verification.
+            const url='https://apis.roblox.com/asset-permissions-api/v1/assets/permissions';
+            const body=JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
+              action:'Use',requests:assetIds.map(assetId=>({assetId,grantToDependencies:true}))});
+            const apiKey=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
+            const ownerRaw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+            if(!apiKey&&!ownerRaw)throw new Error('ROBLOX_CC0_GRANT_OWNER_CREDENTIAL_REQUIRED');
+            const request=async headers=>fetch(url,{method:'PATCH',headers,body,signal:AbortSignal.timeout(30000)});
+            const decode=async result=>result.json().catch(()=>({}));
+            const complete=(result,answer)=>{
+              const granted=new Set(Array.isArray(answer?.successAssetIds)?answer.successAssetIds.map(String):[]);
+              return result?.ok===true
+                &&(!Array.isArray(answer?.errors)||answer.errors.length===0)
+                &&assetIds.every(assetId=>granted.has(String(assetId)));
+            };
+            let grant=null,answer=null,authority='API_KEY';
+            if(apiKey){
+              grant=await request({'x-api-key':apiKey,'content-type':'application/json'});
+              answer=await decode(grant);
+            }
+            if((!grant||grant.status===403)&&!complete(grant,answer)&&ownerRaw){
+              // Roblox validates the owner and issues the CSRF challenge.
+              const cookie=ownerRaw.includes('.ROBLOSECURITY=')?ownerRaw:'.ROBLOSECURITY='+ownerRaw+';';
+              let headers={'content-type':'application/json',cookie};
+              grant=await request(headers);
+              if(grant.status===403){
+                const csrf=grant.headers.get('x-csrf-token');
+                if(csrf){
+                  headers={...headers,'x-csrf-token':csrf};
+                  grant=await request(headers);
+                }
+              }
+              answer=await decode(grant);
+              authority='OWNER_COOKIE_CSRF';
+            }
+            if(!complete(grant,answer)){
+              // Do not log response bodies or auth material.
+              const reason=String(answer?.error?.code||answer?.errors?.[0]?.code||'UNSPECIFIED')
+                .replace(/[^A-Za-z0-9_]/g,'_').slice(0,64);
+              console.error('ROBLOX_CC0_UNIVERSE_GRANT_DENIAL_CODE='+reason);
+              if(grant?.status===403)console.error('ROBLOX_CC0_GRANT_RIGHTS_REQUIRED=ASSET_PERMISSIONS_WRITE_AND_ASSET_SUBJECT_ACCESS');
+              throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+(grant?.status||0));
+            }
+            console.log('ROBLOX_CC0_UNIVERSE_GRANT_AUTHORITY='+authority);
+            console.log('ROBLOX_CC0_UNIVERSE_GRANT_ACCEPTED='+assetIds.length);
+          }else console.log('ROBLOX_CC0_UNIVERSE_GRANT=NO_REGISTERED_ACTOR_USE');
+          NODE
+
       - name: Build exact current main Roblox place
+        id: build
         working-directory: main
         env:
           GAME_ID: ${{ matrix.gameId }}
@@ -121,6 +245,7 @@ jobs:
           mkdir -p /tmp/roblox-dedicated
           /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/roblox-dedicated/$GAME_ID.rbxlx"
           test -s "/tmp/roblox-dedicated/$GAME_ID.rbxlx"
+          echo "source_revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_DEDICATED_BUILD_SHA256=$(sha256sum "/tmp/roblox-dedicated/$GAME_ID.rbxlx" | awk '{print $1}')"
 
       - name: Create private dedicated Experience and publish
@@ -142,7 +267,7 @@ jobs:
             --game-id "$GAME_ID"
             --game-name "$GAME_NAME"
             --place-file "/tmp/roblox-dedicated/$GAME_ID.rbxlx"
-            --source-revision "$GITHUB_SHA"
+            --source-revision "${{ steps.build.outputs.source_revision }}"
             --output "/tmp/roblox-dedicated/$GAME_ID.result.json"
           )
           if [[ -n "${REUSE_UNIVERSE_ID:-}" && -n "${REUSE_PLACE_ID:-}" ]]; then
@@ -176,7 +301,7 @@ jobs:
           NODE
 
   persist:
-    needs: publish
+    needs: [contract, publish]
     if: always() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -192,6 +317,7 @@ jobs:
       - name: Download latest dedicated publication result per game
         env:
           GH_TOKEN: ${{ github.token }}
+          OWNER_TARGETS_JSON: ${{ needs.contract.outputs.matrix }}
         shell: bash
         run: |
           set -euo pipefail
@@ -201,10 +327,8 @@ jobs:
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             "$api" > /tmp/roblox-artifacts.json
-          for name in \
-            roblox-dedicated-cozy-island \
-            roblox-dedicated-daechung-rpg \
-            roblox-dedicated-horror-escape-room
+          mapfile -t names < <(node -e "const p=JSON.parse(process.env.OWNER_TARGETS_JSON);for(const row of p.include||[])console.log('roblox-dedicated-'+row.gameId)")
+          for name in "${names[@]}"
           do
             id="$(jq -r --arg n "$name" '[.artifacts[] | select(.name==$n and (.expired|not))] | sort_by(.created_at) | last | .id // empty' /tmp/roblox-artifacts.json)"
             test -n "$id" || { echo "Missing latest artifact: $name" >&2; exit 1; }
@@ -241,6 +365,15 @@ jobs:
             const r=JSON.parse(fs.readFileSync(path.join(root,name),'utf8'));
             const item=(q.items||[]).find(x=>x.gameId===r.gameId);
             if(!item)throw new Error('queue item missing: '+r.gameId);
+            if(r.gameId==='fantasy-survival'){
+              if(String(r.universeId)!=='10773436325'||String(r.placeId)!=='108565970231899')throw Error('OWNER_FOREST_RESULT_TARGET_MISMATCH');
+              item.robloxOwnerDirectPublication={...r,workflowRunId:Number(process.env.GITHUB_RUN_ID)||null,
+                authority:'owner-direct-github-dedicated-private-publish',releaseClaim:false,f9PassClaim:false,
+                postPublishVerification:'PENDING',updatedAt:stamp};
+              item.updatedAt=stamp;
+              if(r.pass!==true||r.published!==true||r.private!==true)failures.push(r.gameId+':'+String(r.stage||'unknown')+':'+String(r.error||'unknown'));
+              continue;
+            }
             const canonicalSourceRevision=String(item.robloxSourceCommit||'').trim();
             const canonicalArtifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
             const artifactRunId=Number(
@@ -426,7 +559,7 @@ jobs:
             done
           fi
 
-      - name: Require all three dedicated publications
+      - name: Require selected owner publications
         shell: bash
         run: |
           node - <<'NODE'

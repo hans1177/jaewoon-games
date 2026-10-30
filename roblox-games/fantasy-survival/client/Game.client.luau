@@ -1,4 +1,5 @@
 -- 파일명: roblox-games/fantasy-survival/client/Game.client.luau
+-- 게시: 기존 오너 전용 비공개 게시 경로에서 이 게임의 수정본만 배포한다.
 -- [Vibe 공용 프레젠테이션] 기존 버튼에만 TweenService/글로우 적용 (세이브·판정 불변).
 task.defer(function()
   local player = game:GetService("Players").LocalPlayer
