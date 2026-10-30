@@ -245,6 +245,56 @@ local function awardProgress(player, experience, coinReward)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + experience)
 end
 
+-- [메인 퀘스트·연구 기록 아이템]
+-- 기존 서버의 채집·관찰·실제 처치·웨이브 판정에만 연결한다.
+-- 수집 기록은 숫자형 저장 필드이며 기존 DataStore/전투 보상 수치를 유지한다.
+local function recordMeadowQuest(player, eventName)
+  if player:GetAttribute("ProfileReady")~=true then return end
+  local stage=readNumber(player,"QuestStage",1)
+  local quest=Config.MainQuests and Config.MainQuests[stage]
+  if not quest then return end
+  local progress=readNumber(player,"QuestProgress",0)
+  if stage==1 then
+    if eventName~="INSPECT" then return end
+    progress+=1
+  elseif stage==2 then
+    if eventName=="WOOD" and readNumber(player,"QuestWood",0)==0 then
+      setNumber(player,"QuestWood",1)
+    elseif eventName=="STONE" and readNumber(player,"QuestStone",0)==0 then
+      setNumber(player,"QuestStone",1)
+    else
+      return
+    end
+    progress=readNumber(player,"QuestWood",0)+readNumber(player,"QuestStone",0)
+  elseif stage==3 then
+    if eventName~="KILL" then return end
+    progress+=1
+  elseif stage==4 then
+    if eventName~="WAVE" then return end
+    progress+=1
+  elseif stage==5 then
+    if eventName~="WOODLAND" then return end
+    progress+=1
+  end
+  progress=math.min(quest.Goal,progress)
+  if progress>=quest.Goal then
+    -- 퀘스트 종료 시 해당 연구 일지 원본을 읽을 수 있는 소장 아이템으로 등록.
+    local recordIndex=stage==1 and 1 or stage==3 and 2 or stage==5 and 3 or nil
+    if recordIndex then
+      setNumber(player,"ResearchRecords",math.max(readNumber(player,"ResearchRecords",0),recordIndex))
+    end
+    setNumber(player,"QuestStage",stage+1)
+    setNumber(player,"QuestProgress",0)
+    remote:FireClient(player,"MEADOW_QUEST_UPDATE",{
+      completed=quest.Name,
+      nextQuest=Config.MainQuests[stage+1] and Config.MainQuests[stage+1].Name or "초원 연구 기록 완료",
+      record=recordIndex,
+    })
+  else
+    setNumber(player,"QuestProgress",progress)
+  end
+end
+
 local function gatherResource(player, node)
   local character = player.Character
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
@@ -261,6 +311,7 @@ local function gatherResource(player, node)
   setNumber(player, material, readNumber(player, material, 0) + 2)
   awardProgress(player, 3, 1)
   player:SetAttribute("LastApprovedScope", "resource-harvest")
+  recordMeadowQuest(player,node.kind)
   broadcastSurvivalState(player)
   return true
 end
@@ -353,6 +404,7 @@ local function inspectMeadowSurvival(player,model,subject)
   end
   player:SetAttribute("MeadowSurvivalHint",clue)
   player:SetAttribute("MeadowSurvivalHintSerial",(player:GetAttribute("MeadowSurvivalHintSerial") or 0)+1)
+  recordMeadowQuest(player,subject=="WOODLAND" and "WOODLAND" or "INSPECT")
 end
 
 local function bindMeadowInspection(model,subject)
@@ -706,6 +758,7 @@ local function finishWave()
   for _,player in ipairs(Players:GetPlayers()) do
     awardProgress(player,8+CurrentWave*2,4+CurrentWave)
     player:SetAttribute("LastApprovedScope","survived-wave")
+    recordMeadowQuest(player,"WAVE")
   end
   broadcastSurvivalState(nil)
 end
@@ -770,6 +823,7 @@ local function applyMeadowDamage(player,target,damage)
     end)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
+    recordMeadowQuest(player,"KILL")
     setNumber(player,"EnemyHealth",0)
     if target.isBoss then setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1) end
     if Config.CompetitiveRequired then
