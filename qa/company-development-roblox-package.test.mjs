@@ -29,6 +29,22 @@ test('common Roblox motion, skill and VFX respect official joint and visual life
   assert.match(vfx,/if not trail\.Enabled then trail:Clear\(\) end/);
 });
 
+test('native NPC and mob animation states keep telegraphs, recovery, and gameplay authority separate',()=>{
+  const common=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(common,/ANTICIPATION=\{duration=\.42,looped=false\}/);
+  assert.match(common,/RECOVERY=\{duration=\.38,looped=false\}/);
+  assert.match(common,/local npcGesture=actorRole=="NPC" and interact or 0/);
+  assert.match(common,/forgeRot\(targets,joints,"Jaw",impact\*\.34\+hit\*\.07\+charge\*\.10/);
+  assert.match(client,/ANTICIPATION="ANTICIPATION",ATTACK="ATTACK",RECOVERY="RECOVERY"/);
+  assert.match(client,/local liveConstraint=joint:IsA\("AnimationConstraint"\)/);
+  assert.match(client,/meadowMobMotion\.SampleProceduralActorMotion\(mode,/);
+  assert.match(server,/setEnemyAttackState\(enemy,"ANTICIPATION"\)/);
+  assert.match(server,/setEnemyAttackState\(enemy,"RECOVERY"\)/);
+  assert.doesNotMatch(common,/Humanoid:TakeDamage\(/);
+});
+
 test('selected Fantasy Survival motion reaches a server-authorized R15 frame sink, not just an asset list',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.equal(robloxStudioAssetFamilyBoundInText(source,'MOTION'),true);
