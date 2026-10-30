@@ -150,6 +150,17 @@ if not meadowClouds then
   meadowClouds.Name="MeadowNativeClouds"
   meadowClouds.Parent=meadowTerrain
 end
+-- [숲 공기감] 기존 Lighting에 원래 Roblox 안개 효과만 더한다.
+-- 다른 월드용 파츠·이미지·후처리 중첩 없이 날씨 갱신 루프에서 그대로 관리한다.
+local meadowAtmosphere=Lighting:FindFirstChildOfClass("Atmosphere")
+if not meadowAtmosphere then
+  meadowAtmosphere=Instance.new("Atmosphere")
+  meadowAtmosphere.Name="MeadowForestAtmosphere"
+  meadowAtmosphere.Parent=Lighting
+end
+meadowAtmosphere.Color=Color3.fromRGB(181,210,193)
+meadowAtmosphere.Decay=Color3.fromRGB(98,121,108)
+meadowAtmosphere.Glare=.10
 local lastMeadowClimateTick=-1
 local lastMeadowWeather=""
 
@@ -181,6 +192,14 @@ local function updateMeadowClimate()
   Lighting.FogStart=weather=="FOG" and 35 or weather=="STORM" and 55 or 110
   Lighting.FogEnd=weather=="FOG" and 210 or weather=="STORM" and 390
     or weather=="RAIN" and 680 or 1600
+  -- [원근감] 수관 뒤는 옅게, 비/안개에는 서서히 짙게. 근처 적 시야는 보존한다.
+  local forestAirDensity=weather=="FOG" and .39 or weather=="STORM" and .31
+    or weather=="RAIN" and .26 or weather=="SNOW" and .22 or .17
+  local forestHaze=weather=="FOG" and 2.0 or weather=="STORM" and 1.5 or .95
+  meadowAtmosphere.Density+=(forestAirDensity-meadowAtmosphere.Density)*.12
+  meadowAtmosphere.Haze+=(forestHaze-meadowAtmosphere.Haze)*.12
+  meadowAtmosphere.Color=meadowAtmosphere.Color:Lerp(
+    airColor:Lerp(meadowPalette.leaves,.11),.12)
   local cover=weather=="STORM" and .94 or weather=="RAIN" and .79
     or weather=="FOG" and .67 or weather=="SNOW" and .76 or .22
   local density=weather=="STORM" and .86 or weather=="RAIN" and .66
