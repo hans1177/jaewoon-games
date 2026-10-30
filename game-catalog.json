@@ -1,6 +1,6 @@
 {
   "version": 33,
-  "updatedAt": "2026-10-28",
+  "updatedAt": "2026-10-30T21:15:15.817Z",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -37,7 +37,6 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -279,28 +278,27 @@
         "전투"
       ],
       "image": "assets/roblox-thumbnails/daechung-rpg.svg",
-      "webPath": "web-games/daechung-rpg",
+      "webPath": null,
       "hasWebArchive": true,
       "featured": true,
       "unityProjectPath": "unity-games/daechung-rpg",
       "preferredPlatform": "unity-android",
-      "selectedPlatform": "WEB",
+      "selectedPlatform": "ROBLOX",
       "homepagePublicationApproved": false,
       "publishTestBuildWhenReady": true,
       "homepageWebPlayable": false,
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Roblox 개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -487,14 +485,12 @@
       "ownerWebEntryFile": "web-games/daechung-rpg/index.html",
       "webDevelopmentResetRequired": true,
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/daechung-rpg",
-        "UNITY": "unity-games/daechung-rpg"
+        "ROBLOX": "roblox-games/daechung-rpg"
       },
-      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "updatedAt": "2026-10-30T21:15:15.817Z",
       "nameEnglish": "Five Portal RPG: Dungeon Party",
       "internationalTitle": "Five Portal RPG: Dungeon Party",
       "aliases": [
@@ -552,7 +548,10 @@
         "verified": true,
         "thumbnailId": "70964674124147",
         "runtimeScreenshot": false
-      }
+      },
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "horror-escape-room",
@@ -564,28 +563,26 @@
         "비대칭 멀티"
       ],
       "image": "assets/roblox-thumbnails/horror-escape-room.svg",
-      "webPath": "web-games/horror-escape-room",
+      "webPath": null,
       "hasWebArchive": true,
       "featured": true,
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-      "selectedPlatform": "WEB",
+      "homepageStage": "개발확정 · Roblox 개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+      "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
+        "ROBLOX": "roblox-games/horror-escape-room"
       },
       "playModes": [
         "SINGLE_WITH_AI",
@@ -595,7 +592,7 @@
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
       "catalogOrder": 3,
-      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "updatedAt": "2026-10-30T21:15:15.817Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -787,7 +784,6 @@
       "internationalTitle": "Midnight Escape",
       "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
       "homepageDisplayMode": "",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebSourceRevision": "a3c1cb488faa42368a6cb74fd6ae305ea1db41fb20c25b10f40a3b54a51c152c",
@@ -844,7 +840,10 @@
         "verified": true,
         "thumbnailId": "90934341733499",
         "runtimeScreenshot": false
-      }
+      },
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "line-defense",
@@ -870,7 +869,6 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1124,7 +1122,6 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -1382,7 +1379,6 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1626,19 +1622,18 @@
       "hasWebArchive": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_CONTINUOUS_DEVELOPMENT_20261027",
       "ownerExistingGame": true,
       "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "robloxProjectPath": "roblox-games/baeksu-war",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageStage": "개발확정 · Roblox 개발",
       "sourceIntake": {
         "kind": "EXISTING_ROJO_PROJECT",
         "designVerified": false,
@@ -1794,7 +1789,14 @@
         "style": "ROBLOX_BLOCK_AVATAR_V1",
         "source": "HOMEPAGE_MANAGER_TITLE_ARTWORK",
         "runtimeScreenshot": false
-      }
+      },
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/baeksu-war"
+      },
+      "webPath": null,
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+      "updatedAt": "2026-10-30T21:15:15.817Z",
+      "productionTier": 2
     },
     {
       "id": "human-go-temp",
@@ -2068,7 +2070,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -2256,7 +2257,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -2444,7 +2444,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -3388,7 +3387,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -3637,7 +3635,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -4467,22 +4464,21 @@
         "낚시"
       ],
       "image": "assets/roblox-thumbnails/cozy-island.svg",
-      "webPath": "web-games/cozy-island",
+      "webPath": null,
       "hasWebArchive": true,
       "featured": false,
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Roblox 개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -4660,13 +4656,12 @@
         }
       },
       "catalogOrder": 21,
-      "selectedPlatform": "WEB",
+      "selectedPlatform": "ROBLOX",
       "nameEnglish": "Cozy Island: Build a Tiny Kingdom",
       "internationalTitle": "Cozy Island: Build a Tiny Kingdom",
-      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "updatedAt": "2026-10-30T21:15:15.817Z",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "marketingThumbnail": "assets/roblox-thumbnails/cozy-island.svg",
       "homepageDisplayMode": "",
@@ -4727,7 +4722,13 @@
         "verified": true,
         "thumbnailId": "105710373452121",
         "runtimeScreenshot": false
-      }
+      },
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island"
+      },
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "defense",
@@ -5484,7 +5485,7 @@
         "보드"
       ],
       "image": "assets/homepage-covers/fantasy-survival.webp",
-      "webPath": "web-games/fantasy-survival",
+      "webPath": null,
       "hasWebArchive": true,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -5492,7 +5493,7 @@
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -5524,7 +5525,7 @@
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
-      "selectedPlatform": "WEB",
+      "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
         "catalogOrder": 25,
@@ -5671,19 +5672,16 @@
         }
       },
       "catalogOrder": 25,
-      "productionTarget": "ROBLOX_UNITY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "productionTarget": "ROBLOX",
+      "homepageStage": "개발확정 · Roblox 개발",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival",
-        "UNITY": "unity-games/fantasy-survival"
+        "ROBLOX": "roblox-games/fantasy-survival"
       },
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "updatedAt": "2026-09-21T15:09:50.123Z",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+      "updatedAt": "2026-10-30T21:15:15.817Z",
       "homepageMedia": {
         "gameId": "fantasy-survival",
         "titleEn": "MANA FOREST",
@@ -5727,7 +5725,8 @@
       "webPublishedSourceTreeSha": "adc0915ec88a44ae3214ff900ffc7520c9e67d05",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true,
-      "marketingThumbnail": "assets/homepage-covers/fantasy-survival.webp"
+      "marketingThumbnail": "assets/homepage-covers/fantasy-survival.webp",
+      "productionTier": 2
     },
     {
       "id": "fifty-days",
@@ -6494,7 +6493,6 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "실시간 3D 지도, 주택·농장·제철소·병영·전차 공장·포탑, 보병·전차·헬기, 거점 3곳, 저장 기능",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -6876,7 +6874,6 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
       "catalogOrder": 31,
       "updatedAt": "2026-10-20T19:38:00+09:00",
@@ -7565,7 +7562,6 @@
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "초기 메뉴 3종, 영업 2분 후 메뉴 2종 해금, 손님 주문·조리·서빙, 테이블 확장, 요리사 고용, 저장",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -7760,7 +7756,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8502,7 +8497,6 @@
       "developmentHandling": "OWNER_NEW_GAME_DESIGN_PIPELINE",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8754,7 +8748,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -8946,7 +8939,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -9193,7 +9185,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -9445,7 +9436,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -9626,7 +9616,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -9999,7 +9988,6 @@
       },
       "updatedAt": "2026-09-21T15:09:50.123Z",
       "homepageDisplayMode": "",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "ownerWebSourceRevision": "1430d58b33bc169ea7e8f01593872a7e96aade8c4b5ef9de07463380583666e5",
@@ -10072,7 +10060,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -10258,7 +10245,6 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
         "developmentActive": true,
@@ -10486,6 +10472,34 @@
       "webPublishedSourceTreeSha": "bd1cd06ff49b156e284f3d5946e8f9d368819175",
       "ownerWebIntakeEngine": "HTML_CSS_JAVASCRIPT",
       "web3dRedevelopmentRequired": true
+    },
+    {
+      "id": "forgotten-continent",
+      "name": "잊혀진 대륙 | 2D 생존",
+      "description": "개발확정 · Roblox 개발",
+      "genre": [
+        "ACTION SURVIVAL ROGUELITE"
+      ],
+      "image": "",
+      "featured": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "productionTarget": "ROBLOX",
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/forgotten-continent"
+      },
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "homepageStage": "개발확정 · Roblox 개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox 개발 진행",
+      "homepageWebPlayable": false,
+      "updatedAt": "2026-10-30T21:15:15.817Z"
     }
   ],
   "runtimeAuthority": "company-runtime",
