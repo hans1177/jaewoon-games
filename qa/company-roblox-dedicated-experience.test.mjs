@@ -182,3 +182,12 @@ test('Forest original village models register before private publishing without 
   assert.match(workflow,/OWNER_FOREST_VILLAGE_MODEL_REGISTRATION_REQUIRED/);
   assert.doesNotMatch(workflow,/new RegExp\('\\\\\\\\b'\+role/);
 });
+
+
+test('owner-direct push selects Forest when the dedicated workflow changes',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-roblox-dedicated-private-experiences.yml',import.meta.url),'utf8');
+  assert.match(workflow,/git diff --name-only "\$BEFORE_SHA" HEAD -- roblox-games\/ \.github\/workflows\/owner-roblox-dedicated-private-experiences\.yml/);
+  assert.match(workflow,/row\.gameId==='fantasy-survival'&&changed\.includes\('\.github\/workflows\/owner-roblox-dedicated-private-experiences\.yml'\)/);
+  assert.match(workflow,/needs\.contract\.outputs\.count != '0'/);
+  assert.match(workflow,/OWNER_DIRECT_SELECTED_GAMES=/);
+});
