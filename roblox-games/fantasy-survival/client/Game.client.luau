@@ -3145,7 +3145,7 @@ local function bindOriginalMob(model)
   end
   if species~="wolf" and species~="bee" and species~="golem"
     and species~="deer" and species~="boar" and species~="rabbit"
-    and species~="bat" and species~="mushroom" and species~="skeleton" then return end
+    and species~="bat" and species~="skeleton" then return end
   -- [적 표시] 실제 서버 적 모델만 표시하고 벽 뒤·먼 거리의 화면 혼잡을 줄인다.
   if model:GetAttribute("Species") and not model:FindFirstChild("MeadowEnemyLabel") then
     local host=model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart",true)
@@ -3183,7 +3183,8 @@ local function bindOriginalMob(model)
     FLHip=true,FRHip=true,BLHip=true,BRHip=true,
     FLKnee=true,FRKnee=true,BLKnee=true,BRKnee=true,
     FLAnkle=true,FRAnkle=true,BLAnkle=true,BRAnkle=true,
-    WingL=true,WingR=true,Tail=true,Chest=true,Spine=true,
+    WingL=true,WingR=true,WingL2=true,WingR2=true,WingL3=true,WingR3=true,
+    WingL4=true,WingR4=true,Tail=true,Chest=true,Spine=true,
     Neck=true,Jaw=true,Head=true,ThighL=true,ThighR=true,
     ShinL=true,ShinR=true,UpperArmL=true,UpperArmR=true,
     ForearmL=true,ForearmR=true,
@@ -3223,12 +3224,23 @@ local function bindOriginalMob(model)
         limb=relative.Y<-.08*size.Y and math.abs(relative.X)>.12*size.X
           and math.abs(relative.Z)>.12*size.Z
       end
-      if not sourceChannels[name] and limb and side then
+      -- [박쥐 실제 FBX 뼈] Wing1.L~Wing4.R 8마디를 각각 독립 채널로 연결한다.
+      -- 날개 뼈를 다리나 만들어 낸 관절로 잘못 분류하지 않는다.
+      local batWingSegment=species=="bat" and key:match("wing([1-4])") or nil
+      if batWingSegment and side then
+        name="Wing"..side..(batWingSegment=="1" and "" or batWingSegment)
+      elseif species=="bat" and key=="bodyroot" then
+        name="Spine"
+      elseif species=="bat" and key=="body" then
+        name="Chest"
+      elseif species=="bat" and limb and side then
+        name=(key:find("lower",1,true) and "Shin" or "Thigh")..side
+      elseif not sourceChannels[name] and limb and side then
         local lower=key:find("knee",1,true) or key:find("shin",1,true)
           or key:find("calf",1,true)
         local foot=key:find("foot",1,true) or key:find("paw",1,true)
           or key:find("ankle",1,true)
-        if species=="golem" or species=="mushroom" or species=="skeleton" then
+        if species=="golem" or species=="skeleton" then
           name=(lower or foot) and ("Shin"..side) or ("Thigh"..side)
         else
           local front=key:find("front",1,true) or key:find("fore",1,true)
@@ -3241,7 +3253,7 @@ local function bindOriginalMob(model)
         end
       elseif not sourceChannels[name] and (species=="bee" or species=="bat") then
         if key:find("wing",1,true) and side then name="Wing"..side end
-      elseif not sourceChannels[name] and (species=="golem" or species=="mushroom" or species=="skeleton") then
+      elseif not sourceChannels[name] and (species=="golem" or species=="skeleton") then
         if (key:find("arm",1,true) or key:find("shoulder",1,true)) and side then
           name="UpperArm"..side
         end
@@ -3256,20 +3268,21 @@ local function bindOriginalMob(model)
   for _ in pairs(joints) do count+=1 end
   local bodyPlan=(species=="bee" or species=="bat") and "FLYER" or
     species=="golem" and "GIANT" or
-    (species=="mushroom" or species=="skeleton") and "BIPED" or "QUADRUPED"
+    species=="skeleton" and "BIPED" or "QUADRUPED"
   local movingJoints=(species=="bee" or species=="bat") and
       (available.WingL or available.WingR or available.UpperArmL or available.UpperArmR)
-    or (species=="golem" or species=="mushroom" or species=="skeleton") and
+    or (species=="golem" or species=="skeleton") and
       (available.ThighL or available.ThighR or available.UpperArmL or available.UpperArmR)
     or (available.FLHip or available.FRHip or available.BLHip or available.BRHip)
   -- [실제 원본 사슴·늑대 모션] 등록된 AnimationId가 있으면 저작된 걷기/달리기를 우선한다.
   -- 단순 뼈 회전은 원본 애니메이션을 찾지 못할 때만 기존 책임 관절에 적용한다.
   local nativeAnimations={}
-  if species=="deer" or species=="wolf" then
+  if species=="deer" or species=="wolf" or species=="bat" then
     for _,animation in ipairs(model:GetDescendants()) do
       if animation:IsA("Animation") and animation.AnimationId:match("^rbxassetid://[1-9]%d*$") then
         local key=animation.Name:lower()
-        local mode=key:find("walk",1,true) and "WALK"
+        local mode=key:find("fly",1,true) and "FLY"
+          or key:find("walk",1,true) and "WALK"
           or key:find("run",1,true) and "RUN"
           or key:find("idle",1,true) and "IDLE"
           or key:find("attack",1,true) and "ATTACK"
@@ -3280,7 +3293,8 @@ local function bindOriginalMob(model)
     end
   end
   local nativeTracks=nil
-  if nativeAnimations.IDLE and nativeAnimations.WALK then
+  if (nativeAnimations.IDLE and nativeAnimations.WALK)
+    or (species=="bat" and nativeAnimations.FLY and nativeAnimations.ATTACK) then
     local animationController=model:FindFirstChildWhichIsA("AnimationController",true)
     if not animationController then
       animationController=Instance.new("AnimationController")
@@ -3293,20 +3307,26 @@ local function bindOriginalMob(model)
     for mode,animation in pairs(nativeAnimations) do
       local ok,track=pcall(function()return animator:LoadAnimation(animation)end)
       if ok and track then
-        track.Looped=mode=="WALK" or mode=="RUN" or mode=="IDLE"
+        track.Looped=mode=="WALK" or mode=="RUN" or mode=="IDLE" or mode=="FLY"
         track.Priority=(mode=="ATTACK" or mode=="DEATH") and Enum.AnimationPriority.Action
           or Enum.AnimationPriority.Movement
         tracks[mode]=track
       end
     end
-    if tracks.IDLE and tracks.WALK then nativeTracks=tracks end
+    if (tracks.IDLE and tracks.WALK)
+      or (species=="bat" and tracks.FLY and tracks.ATTACK) then nativeTracks=tracks end
   end
   -- [실제 원본 4족 관절] 네 고관절 또는 원본 걷기 애니메이션이 있어야 정상 모션으로 인정.
   local wolfFourLegRig=species~="wolf" or
     (available.FLHip and available.FRHip and available.BLHip and available.BRHip)
   local deerFourLegRig=species~="deer" or
     (available.FLHip and available.FRHip and available.BLHip and available.BRHip)
-  local actualRig=count>=2 and movingJoints==true and wolfFourLegRig==true and deerFourLegRig==true
+  -- 좌우 원본 날개가 네 마디씩 실제로 존재해야 박쥐를 정상 리깅으로 인정한다.
+  local batEightWingRig=species~="bat" or (available.WingL and available.WingR
+    and available.WingL2 and available.WingR2 and available.WingL3 and available.WingR3
+    and available.WingL4 and available.WingR4)
+  local actualRig=count>=2 and movingJoints==true and wolfFourLegRig==true
+    and deerFourLegRig==true and batEightWingRig==true
   local controller=not nativeTracks and actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=26,
   }) or nil
@@ -3362,11 +3382,16 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         local wildlife=row.species=="deer" or row.species=="boar" or row.species=="rabbit"
         mode=wildlife and "WALK" or "IDLE"
       end
+      -- [박쥐 비행] 걷기/질주/대기도 지상 발구르기 대신 원본 날개 비행으로 재생한다.
+      if row.species=="bat" and (mode=="IDLE" or mode=="WALK" or mode=="RUN") then
+        mode="FLY"
+      end
       -- [원본 애니메이션] Idle/Walk/Run/Attack 클립은 실제 메쉬의 Animator가 구동한다.
       -- 질주 클립이 없는 사슴은 걷기 클립을 빠르게 재생한다. 합성 관절은 동시에 구동하지 않는다.
       if row.nativeTracks then
         local track=row.nativeTracks[mode] or
-          (mode=="RUN" and row.nativeTracks.WALK)
+          (row.species=="bat" and row.nativeTracks.FLY)
+          or (mode=="RUN" and row.nativeTracks.WALK)
           or (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT") and row.nativeTracks.IDLE
           or row.nativeTracks.IDLE
         if track and track~=row.playingTrack then
@@ -3427,7 +3452,7 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       local duration=mode=="DEATH" and 1.32 or mode=="ATTACK" and .75
         or mode=="ANTICIPATION" and .42 or mode=="RECOVERY" and .38
         or mode=="HIT" and .46 or mode=="START" and .36
-        or mode=="RUN" and .82 or 1.15
+        or mode=="RUN" and .82 or mode=="FLY" and .86 or 1.15
       local authoredDuration=model:GetAttribute("NativeMobMotionDuration")
       if mode=="ANTICIPATION" and typeof(authoredDuration)=="number" then
         duration=math.max(.12,authoredDuration)
@@ -3509,6 +3534,46 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             if row.available.UpperArmL then row.poses.UpperArmL=CFrame.Angles(-ready*.55+strike*.80,0,-ready*.20) end
             if row.available.UpperArmR then row.poses.UpperArmR=CFrame.Angles(-ready*.48+strike*.90,0,ready*.20) end
           end
+        end
+        -- [황혼 박쥐 8마디 실제 날개] 원본 Bat.fbx의 좌·우 Wing1~Wing4 뼈를 연속 구동한다.
+        -- 날갯짓 파동은 몸쪽에서 날개 끝으로 늦게 전달된다. 서버 피해/충돌과 무관하다.
+        if row.species=="bat" then
+          local cycle=phase*math.pi*2
+          local ready=mode=="ANTICIPATION" and math.sin(phase*math.pi*.5) or 0
+          local strike=mode=="ATTACK" and math.sin(phase*math.pi) or 0
+          local recover=mode=="RECOVERY" and 1-phase or 0
+          local hit=mode=="HIT" and math.sin(phase*math.pi) or 0
+          local death=mode=="DEATH" and math.sin(phase*math.pi*.5) or 0
+          local flapStrength=mode=="FLY" and .74 or mode=="IDLE" and .35
+            or mode=="ANTICIPATION" and .22 or mode=="RECOVERY" and .28 or .12
+          for _,side in ipairs({"L","R"}) do
+            local direction=side=="L" and 1 or -1
+            for segment=1,4 do
+              local channel="Wing"..side..(segment==1 and "" or tostring(segment))
+              if row.available[channel] then
+                local lag=(segment-1)*.31
+                local wave=math.sin(cycle-lag)
+                local spread=flapStrength*wave*(1-(segment-1)*.13)
+                local fold=.42*ready-.52*strike+.24*recover-.25*hit-.62*death
+                local extension=(segment-1)*(.065*math.cos(cycle-lag)-.11*strike)
+                row.poses[channel]=CFrame.Angles(.04*wave*(segment-1),extension,
+                  direction*(spread+fold))
+              end
+            end
+          end
+          if row.available.Chest then
+            row.poses.Chest=CFrame.Angles(-.12*ready+.24*strike-.10*recover,0,0)
+          end
+          if row.available.Neck then
+            row.poses.Neck=CFrame.Angles(.12*ready-.22*strike,0,0)
+          end
+          if row.available.Head then
+            row.poses.Head=CFrame.Angles(.15*ready-.30*strike+.08*recover,0,0)
+          end
+          if row.available.ThighL then row.poses.ThighL=CFrame.Angles(.25+.14*strike,0,0) end
+          if row.available.ThighR then row.poses.ThighR=CFrame.Angles(.25+.14*strike,0,0) end
+          if row.available.ShinL then row.poses.ShinL=CFrame.Angles(-.18,0,0) end
+          if row.available.ShinR then row.poses.ShinR=CFrame.Angles(-.18,0,0) end
         end
         -- [4족 걷기/질주] 원본 스킨 관절의 접지/회수 단계를 분리하고 속도에 따라 보폭을 조절한다.
         -- 공용 모션/서버 좌표/공격판정/보상/저장에는 영향을 주지 않는다.
