@@ -1256,7 +1256,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.equal(assets.models.ruin.source,'VERIFIED_CC0_ORIGINAL');
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
-  assert.match(server,/Players:CreateHumanoidModelFromDescription\(desc,Enum.HumanoidRigType.R15\)/);
+  assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
   assert.match(server,/worldAsset\("ruin",Vector3.new\(pos\[1\],3,pos\[2\]\),6\.2\)/);
   assert.match(server,/MeadowVillageInteraction/);
   assert.match(server,/if villageNear\(player,mesh.Position,15\) then callback\(player\) end/);
