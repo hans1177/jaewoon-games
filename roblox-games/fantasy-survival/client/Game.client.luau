@@ -2759,7 +2759,9 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   skillMotionCharacter=character
   skillMotionState=state
   skillMotionStart=os.clock()
-  skillMotionDuration=math.clamp(tonumber(meta.duration) or .7,.25,1.4)
+  -- [회피 시간] 실제 서버 무적 판정(.48초) 동안 예비 자세·측면 이동·착지까지 끝낸다.
+  -- 기존 쿨다운·스태미너·이동 거리 및 다른 스킬 길이는 그대로 둔다.
+  skillMotionDuration=isDodge and .46 or math.clamp(tonumber(meta.duration) or .7,.25,1.4)
   skillMotionDeadline=skillMotionStart+skillMotionDuration+.16
   if isDodge then dodgePoseUntil=skillMotionDeadline end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
@@ -2776,23 +2778,45 @@ RunService.PreSimulation:Connect(function(dt)
   table.clear(skillMotionTargets)
   table.clear(skillMotionR15Targets)
   local phase=math.clamp((os.clock()-skillMotionStart)/skillMotionDuration,0,1)
-  local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
-    bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
-    mobileTier=nativeTouchEnabled and "LOW" or "HIGH",secondary=.65,
-  },skillMotionTargets)
-  if not matched then finishMeadowSkillPose();return end
   local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
-  if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
-    -- [자동 회피 포즈] 서버가 회피에 성공한 경우 실제 골반·양다리를 옆으로 젖힌다.
+  local isDodge=actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right"
+  -- [회피 전용 관절 포즈] 일반 손짓 제스처를 섞지 않고 원본 R15 몸통·팔·양다리만 구동한다.
+  -- 서버가 회피를 승인했을 때만 실행하며 실제 위치·피해·무적 판정은 서버 소유.
+  if isDodge then
     local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
-    local ease=math.sin(math.pi*phase)
-    skillMotionTargets.Spine=CFrame.Angles(-.15*ease,sign*.18*ease,sign*.53*ease)
-    skillMotionTargets.ThighL=CFrame.Angles(-.38*ease,0,sign*.32*ease)
-    skillMotionTargets.ThighR=CFrame.Angles(.46*ease,0,sign*.42*ease)
-    skillMotionTargets.ShinL=CFrame.Angles(.56*ease,0,0)
-    skillMotionTargets.ShinR=CFrame.Angles(.42*ease,0,0)
-    skillMotionTargets.UpperArmL=CFrame.Angles(-.45*ease,0,-sign*.35*ease)
-    skillMotionTargets.UpperArmR=CFrame.Angles(-.55*ease,0,sign*.35*ease)
+    local prepare=math.clamp(phase/.16,0,1)
+    prepare=prepare*prepare*(3-2*prepare)
+    local settle=math.clamp((1-phase)/.32,0,1)
+    settle=settle*settle*(3-2*settle)
+    local lean=prepare*settle
+    local travel=math.sin(math.pi*math.clamp((phase-.1)/.76,0,1))
+    local recovery=math.sin(math.pi*math.clamp((phase-.20)/.67,0,1))
+    -- 무게 중심을 먼저 낮추고, 진행 방향으로 몸통을 기울인 뒤 착지 시 바로 세운다.
+    skillMotionTargets.Spine=CFrame.new(0,-.045*lean,0)
+      *CFrame.Angles(-.24*lean,sign*.16*travel,sign*.36*lean)
+    skillMotionTargets.Chest=CFrame.Angles(-.09*lean,0,-sign*.12*travel)
+    skillMotionTargets.Head=CFrame.Angles(.10*lean,-sign*.10*travel,-sign*.08*lean)
+    -- 좌우 회피 모두 선행 다리로 내딛고 반대쪽 다리를 접어 회수한다.
+    local leadLeft=sign<0
+    local leadHip= -.34*lean+.10*recovery
+    local trailHip=.22*lean-.13*recovery
+    skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadHip or trailHip,0,sign*.13*lean)
+    skillMotionTargets.ThighR=CFrame.Angles(leadLeft and trailHip or leadHip,0,sign*.13*lean)
+    skillMotionTargets.ShinL=CFrame.Angles((leadLeft and .26 or .48)*lean+.10*recovery,0,0)
+    skillMotionTargets.ShinR=CFrame.Angles((leadLeft and .48 or .26)*lean+.10*recovery,0,0)
+    skillMotionTargets.FootL=CFrame.Angles(-(leadLeft and .12 or .22)*lean,0,0)
+    skillMotionTargets.FootR=CFrame.Angles(-(leadLeft and .22 or .12)*lean,0,0)
+    -- 양팔은 다리와 반대로 흔들려 중심을 잡고 종료 시 중립 자세로 복귀한다.
+    skillMotionTargets.UpperArmL=CFrame.Angles(-.25*lean,sign*.12*travel,-sign*.32*lean)
+    skillMotionTargets.UpperArmR=CFrame.Angles(-.34*lean,-sign*.12*travel,sign*.32*lean)
+    skillMotionTargets.ForearmL=CFrame.Angles(-.32*lean,0,0)
+    skillMotionTargets.ForearmR=CFrame.Angles(-.32*lean,0,0)
+  else
+    local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
+      bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
+      mobileTier=nativeTouchEnabled and "LOW" or "HIGH",secondary=.65,
+    },skillMotionTargets)
+    if not matched then finishMeadowSkillPose();return end
   end
   if humanoid.RigType==Enum.HumanoidRigType.R6 then
     -- [구형 아바타 회피] 기존 실제 몸통·팔·다리 관절에 같은 좌우 피하기 포즈를 연결한다.
