@@ -26,6 +26,19 @@ if(!creator){
  const ids=new Set();
  for(const entry of scope.scopes)if(/asset/i.test(entry.name||'')&&entry.operations.some(x=>/write|create/i.test(x)))for(const id of entry.userIds)ids.add(id);
  if(ids.size===1)creator=[...ids][0];
+ // Resolve an ambiguous asset-scoped key against the verified game's
+ // actual Roblox creator, never from a guessed GitHub or account ID.
+ if(!creator&&/^[1-9][0-9]*$/.test(targetUniverse)){
+  const response=await fetch('https://games.roblox.com/v1/games?universeIds='+targetUniverse,{
+   signal:AbortSignal.timeout(16000)});
+  const result=await response.json().catch(()=>({}));
+  const matching=Array.isArray(result.data)
+   ?result.data.filter(game=>String(game.id)===targetUniverse):[];
+  const owner=matching.length===1?matching[0].creator:null;
+  const candidate=String(owner?.id||'');
+  if(response.ok&&owner?.type==='User'&&/^[1-9][0-9]*$/.test(candidate)
+     &&(ids.size===0||ids.has(candidate)))creator=candidate;
+ }
 }
 if(!/^[1-9][0-9]*$/.test(creator))throw Error('MODEL_CREATOR_UNKNOWN_FAIL_CLOSED');
 let csrf='';
