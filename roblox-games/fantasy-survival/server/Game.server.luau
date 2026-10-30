@@ -596,7 +596,7 @@ local function animateMeadowOriginalMob(enemy,now)
   local leap=attacking and (kind=="wolf" and .66 or kind=="golem" and .38 or -.48) or 0
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
   local attackPitch=attacking and (kind=="golem" and -.34 or aerial and -.58 or .42)
-    or recoil and (kind=="golem" and .22 or aerial and .35 or -.26) or 0
+    or recoil>.02 and (kind=="golem" and .22 or aerial and .35 or -.26)*recoil or 0
   local stridePitch=inMotion and math.sin(phase)*(.05+(kind=="wolf" and .13 or .06)) or 0
   local bank=aerial and math.sin(phase*.52)*.22
     or inMotion and math.sin(phase*.65)*.09 or 0
