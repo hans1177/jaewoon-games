@@ -30,6 +30,10 @@ on:
         description: 공용 CC0 이펙트 이미지만 등록
         type: boolean
         default: false
+      forest_deer_only:
+        description: 마력숲 새 CC0 암사슴 원본 다운로드·등록
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -56,11 +60,14 @@ jobs:
           MAGIC_UI_ONLY: ${{ inputs.magic_ui_only || false }}
           UI_ONLY: ${{ inputs.ui_only || false }}
           VFX_ONLY: ${{ inputs.vfx_only || false }}
+          FOREST_DEER_ONLY: ${{ inputs.forest_deer_only || false }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$MAGIC_UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/icons.png roblox-games/fantasy-survival/right-icons.png | grep -q .; then
+          if [ "$FOREST_DEER_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q .; then
+            node tools/horror-combat-assets.mjs --forest-deer-only
+          elif [ "$MAGIC_UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/icons.png roblox-games/fantasy-survival/right-icons.png | grep -q .; then
             node tools/horror-combat-assets.mjs --magic-ui-only
           elif [ "$VFX_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-vfx-v1/sources | grep -q .; then
             node tools/horror-combat-assets.mjs --shared-vfx-only
@@ -79,6 +86,9 @@ jobs:
             assets/roblox/world-ghosts/native/combat-roblox-assets.json
             company-asset-library.json
             roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json
+            roblox-games/fantasy-survival/native-assets.json
+            roblox-games/fantasy-survival/shared/VisualAssetIds.luau
+            assets/shared/forest/deer-real.glb
             assets/roblox/common-ui-v1/catalog.json
             assets/roblox/common-vfx-v1/catalog.json
           if-no-files-found: ignore
@@ -91,7 +101,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-horror-combat-assets'
           git config user.email 'actions@users.noreply.github.com'
-          for binding_path in roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/client/Game.client.luau assets/roblox/common-vfx-v1/catalog.json roblox-games/daechung-rpg/shared/RPGMenu.luau assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/horror-escape-room/shared/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
+          for binding_path in assets/shared/forest/deer-real.glb roblox-games/fantasy-survival/native-assets.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/client/Game.client.luau assets/roblox/common-vfx-v1/catalog.json roblox-games/daechung-rpg/shared/RPGMenu.luau assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/horror-escape-room/shared/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
             if test -f "$binding_path"; then git add -- "$binding_path"; fi
           done
           if git diff --cached --quiet; then
