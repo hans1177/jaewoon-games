@@ -496,9 +496,9 @@ end)
 
 local watched = {"Score","Coins","Level","Progress","Health","Wave","CurrentWave","AliveEnemies","RunPhase","XP","Wood","Stone","WeaponTier","Bosses","SharedObjective","RoundScore","LastApprovedScope","ProfileReady","SaveStatus"}
 local function render()
-  status.Text = string.format("웨이브 %d · 적 %d · HP %d · Lv %d  |  경험치 %d\n나무 %d · 돌 %d · 무기 강화 %d · 처치 점수 %d",
-    player:GetAttribute("CurrentWave") or 0, player:GetAttribute("AliveEnemies") or 0,
+  status.Text = string.format("HP %d · Lv %d · 웨이브 %d · 적 %d\nXP %d · 나무 %d · 돌 %d · 강화 %d · 점수 %d",
     player:GetAttribute("Health") or 100, player:GetAttribute("Level") or 1,
+    player:GetAttribute("CurrentWave") or 0, player:GetAttribute("AliveEnemies") or 0,
     player:GetAttribute("XP") or 0, player:GetAttribute("Wood") or 0,
     player:GetAttribute("Stone") or 0, player:GetAttribute("WeaponTier") or 0,
     player:GetAttribute("RoundScore") or 0)
@@ -555,30 +555,26 @@ task.defer(reportNativeFoundationReady)
 
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",compact=true,activate=function()activateMeadowAction(primaryCombatAction.Id)end}or nil)
 
--- [모바일 스킬 UI] 플레이어를 가리지 않는 한손 전투 HUD. 기존 승인된 스킬 ID만 호출한다.
--- 기본 공격·메뉴 버튼과 충돌하지 않는 오른쪽 아래의 반원형 4칸.
+-- [모바일 전투 UI] 맨손 무술 4종을 오른쪽 아래 2×2로 정렬하고 기존 공격·메뉴에서 분리한다.
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
 meadowSkillDock.AnchorPoint=Vector2.new(1,1)
-meadowSkillDock.Position=UDim2.new(1,-104,1,-94)
-meadowSkillDock.Size=UDim2.fromOffset(176,236)
+meadowSkillDock.Position=UDim2.new(1,-14,1,-142)
+meadowSkillDock.Size=UDim2.fromOffset(139,139)
 meadowSkillDock.BackgroundTransparency=1
 meadowSkillDock.Parent=gui
-local meadowSkillScale=Instance.new("UIScale")
-meadowSkillScale.Scale=UserInputService.TouchEnabled and .9 or 1
-meadowSkillScale.Parent=meadowSkillDock
 local meleeSkills={
-  {"meadow-unarmed-rush","연속권",127,4,Color3.fromRGB(247,192,101)},
-  {"meadow-unarmed-uppercut","승룡권",74,54,Color3.fromRGB(249,118,79)},
-  {"meadow-unarmed-kick","회전차기",42,116,Color3.fromRGB(93,209,219)},
-  {"meadow-unarmed-elbow","팔꿈치",82,174,Color3.fromRGB(175,142,255)},
+  {"meadow-unarmed-rush","연속권",Color3.fromRGB(247,192,101)},
+  {"meadow-unarmed-uppercut","승룡권",Color3.fromRGB(249,118,79)},
+  {"meadow-unarmed-kick","회전차기",Color3.fromRGB(93,209,219)},
+  {"meadow-unarmed-elbow","팔꿈치",Color3.fromRGB(175,142,255)},
 }
+local meadowSkillButtons={}
 for index,skill in ipairs(meleeSkills) do
   local button=Instance.new("TextButton")
   button.Name="R15Skill"..index
-  button.Size=UDim2.fromOffset(56,56)
-  button.Position=UDim2.fromOffset(skill[3],skill[4])
-  button.BackgroundColor3=Color3.fromRGB(25,35,42)
+  button.Size=UDim2.fromOffset(58,58)
+  button.BackgroundColor3=Color3.fromRGB(28,39,45)
   button.BorderSizePixel=0
   button.TextColor3=Color3.fromRGB(252,251,245)
   button.TextSize=12
@@ -587,24 +583,49 @@ for index,skill in ipairs(meleeSkills) do
   button.Text=skill[2]
   button.AutoButtonColor=true
   button.Parent=meadowSkillDock
-  local corner=Instance.new("UICorner")
-  corner.CornerRadius=UDim.new(1,0)
-  corner.Parent=button
-  local stroke=Instance.new("UIStroke")
-  stroke.Thickness=2
-  stroke.Color=skill[5]
-  stroke.Transparency=.08
-  stroke.Parent=button
-  local gradient=Instance.new("UIGradient")
-  gradient.Rotation=90
-  gradient.Color=ColorSequence.new(Color3.fromRGB(57,65,75),Color3.fromRGB(18,26,36))
-  gradient.Parent=button
+  local buttonCorner=Instance.new("UICorner")
+  buttonCorner.CornerRadius=UDim.new(0,14)
+  buttonCorner.Parent=button
+  local buttonStroke=Instance.new("UIStroke")
+  buttonStroke.Thickness=1.5
+  buttonStroke.Color=skill[3]
+  buttonStroke.Transparency=.08
+  buttonStroke.Parent=button
+  local buttonGradient=Instance.new("UIGradient")
+  buttonGradient.Rotation=90
+  buttonGradient.Color=ColorSequence.new(Color3.fromRGB(58,71,76),Color3.fromRGB(17,27,36))
+  buttonGradient.Parent=button
+  meadowSkillButtons[index]=button
   button.Activated:Connect(function()
     local character=player.Character
     if not character or character:FindFirstChildOfClass("Tool") then return end
     activateMeadowAction(skill[1])
   end)
 end
+-- [화면 배치] 가로·세로 회전 시 무술과 위험 경고를 안전한 위치로 다시 정렬한다.
+local function layoutMeadowCombatUi()
+  local v=gui.AbsoluteSize
+  if v.X<=0 or v.Y<=0 then return end
+  local short=v.Y<440
+  local buttonSize=short and 48 or (v.X<340 and 52 or 58)
+  local gap=7
+  local inset=8
+  local dockSize=buttonSize*2+gap+inset*2
+  meadowSkillDock.Size=UDim2.fromOffset(dockSize,dockSize)
+  meadowSkillDock.Position=UDim2.new(1,-(v.X<390 and 10 or 14),1,-(short and 104 or 142))
+  for index,button in ipairs(meadowSkillButtons) do
+    local col=(index-1)%2
+    local row=math.floor((index-1)/2)
+    button.Position=UDim2.fromOffset(inset+col*(buttonSize+gap),inset+row*(buttonSize+gap))
+    button.Size=UDim2.fromOffset(buttonSize,buttonSize)
+    button.TextSize=short and 10 or 12
+  end
+  meadowPatternBanner.Position=UDim2.new(.5,0,0,short and 108 or 130)
+  meadowPatternBanner.Size=UDim2.fromOffset(math.max(130,math.min(v.X-24,short and 300 or 400)),short and 34 or 42)
+  meadowPatternBanner.TextSize=short and 13 or 16
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)
+layoutMeadowCombatUi()
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   meadowSkillDock.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end)
