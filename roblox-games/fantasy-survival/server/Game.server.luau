@@ -242,6 +242,8 @@ for index,spec in ipairs({
   local model=worldAsset(spec.kind,spec.position,spec.height)
   if model then
     model:SetAttribute("MeadowWildlife",spec.kind)
+    model:SetAttribute("CreatureMotionState","WALK")
+    model:SetAttribute("CreatureRuntimeRig","ORIGINAL_MODEL_JOINTS_ONLY")
     table.insert(meadowWildlife,{model=model,origin=model:GetPivot().Position,phase=index*1.7,
       range=spec.kind=="rabbit" and 5 or 9,speed=spec.kind=="rabbit" and .48 or .2})
   end
