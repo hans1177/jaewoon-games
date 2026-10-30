@@ -731,7 +731,7 @@ task.defer(function()
     {-87,119,3.7},{-126,94,3.4},{-151,123,3.2},{-75,145,3.1},
     {90,117,3.8},{126,91,3.2},{151,120,3.4},{77,146,3.1},
   }) do
-    meadowTerrain:FillBall(Vector3.new(brush[1],-2.9,brush[2]),brush[3],Enum.Material.LeafyGrass)
+    meadowTerrain:FillBall(Vector3.new(brush[1],-1.3,brush[2]),brush[3],Enum.Material.LeafyGrass)
     task.wait()
   end
   -- 추가 야생동물은 이미 검증된 사슴/멧돼지/토끼 모델만 사용한다.
