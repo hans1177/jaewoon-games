@@ -1265,7 +1265,7 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   for(const color of ['grass','leafyGrass','ground','rock','bark','leaves','wolf','boar','deer','rabbit']){
     assert.ok(server.includes(color+'=Color3.fromRGB('),'missing matte forest color: '+color);
   }
-  assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.Fabric/);
+  assert.match(server,/surface\.Material=bark and Enum\.Material\.Wood or Enum\.Material\.SmoothPlastic/);
   // 모션은 원본 스킨 관절의 4족 접지와 전방 물기만 조절한다.
   assert.match(client,/local quadrupedFootPhases=/);
   assert.match(client,/local wolfFourLegRig=species~="wolf"/);
