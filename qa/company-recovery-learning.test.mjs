@@ -87,6 +87,61 @@ test('commercial source quarantine cannot be overridden by a newer ordinary fail
   assert.deepEqual(result.queue.tasks,[]);
 });
 
+test('third actual game recovery generation enters ROOT_CAUSE_MODE with original checkpoint',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const original={id:'forest-repeat',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    responsibleFiles:['web-games/forest/index.html'],status:'failed',
+    recoveryGeneration:3,sourceRevision:'known-good-forest',
+    failureStage:'WEB_RUNTIME',failureSignature:'CURRENT_GAME_COLLISION_FAILURE',evidence:[]};
+  const observed=escalateRecoveryCandidates({gameQueueInput:{tasks:[original]}});
+  assert.equal(observed.added.length,1);
+  const rec=observed.queue.tasks[0];
+  assert.equal(rec.recurrenceCount,3);
+  assert.equal(rec.failureStage,'WEB_RUNTIME');
+  assert.equal(rec.failureSignature,'CURRENT_GAME_COLLISION_FAILURE');
+  assert.equal(rec.checkpoint,'known-good-forest');
+  const resumed=dispatchRecovery({recoveryInput:observed.queue,
+    gameQueueInput:{tasks:[original]}});
+  assert.equal(resumed.dispatched.length,1);
+  assert.equal(resumed.gameQueue.tasks[0].repairMode,'ROOT_CAUSE_MODE');
+  assert.equal(resumed.gameQueue.tasks[0].gameRepairContract.mode,'ROOT_CAUSE_MODE');
+  assert.equal(resumed.gameQueue.tasks[0].sourceMutationBaseline,'known-good-forest');
+  assert.ok(resumed.gameQueue.tasks[0].evidence.includes('game-repair-repeat-count:3'));
+  const once=escalateRecoveryCandidates({gameQueueInput:{tasks:[{
+    ...original,recoveryGeneration:0,recurrenceCount:1
+  }]}});
+  assert.equal(once.queue.tasks[0].recurrenceCount,1);
+  const focused=dispatchRecovery({recoveryInput:once.queue,
+    gameQueueInput:{tasks:[{...original,recoveryGeneration:0}]}});
+  assert.equal(focused.gameQueue.tasks[0].repairMode,'FOCUSED_REPAIR');
+});
+
+test('three related tasks are not three recurrences of one game failure',()=>{
+  const tasks=['a','b','c'].map(id=>({
+    id:'forest-'+id,gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    responsibleFiles:['web-games/forest/index.html'],status:'failed',
+    recoveryGeneration:0,recurrenceCount:1,sourceRevision:'forest-checkpoint',
+    failureStage:'WEB_RUNTIME',failureSignature:'SHARED_INPUT_BLOCKER',evidence:[]
+  }));
+  const result=escalateRecoveryCandidates({gameQueueInput:{tasks}});
+  assert.equal(result.added.length,1);
+  assert.equal(result.queue.tasks[0].blastRadius,'portfolio:3');
+  assert.equal(result.queue.tasks[0].relatedTaskIds.length,3);
+  assert.equal(result.queue.tasks[0].recurrenceCount,1);
+});
+
+test('Windows game-source responsibility can never be assigned to System AI source writer',()=>{
+  const row={id:'sys-game',gameId:'forest',status:'failed',
+    sourceRoot:'roblox-games\\forest',
+    responsibleFiles:['roblox-games\\forest\\server\\Game.server.luau'],
+    failureStage:'ROBLOX_RUNTIME',failureSignature:'SCRIPT_RUNTIME_FAILURE',
+    retries:3,blocker:'SCRIPT_RUNTIME_FAILURE'};
+  const result=escalateRecoveryCandidates({systemAiQueueInput:{tasks:[row]}});
+  assert.equal(result.added.length,1);
+  assert.equal(result.queue.tasks[0].recoveryOwner,'VIBE2_VIBE3');
+  assert.equal(result.queue.tasks[0].gameId,'forest');
+});
+
 test('generic cross-game failures retain separate game-source checkpoint recovery',()=>{
   const gameQueueInput={tasks:['g1','g2','g3'].map(id=>({
     id,gameId:id,status:'failed',target:'web',sourceRoot:'web-games/'+id,
