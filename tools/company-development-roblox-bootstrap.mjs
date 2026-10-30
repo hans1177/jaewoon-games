@@ -158,38 +158,42 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
   // 모두 존재할 때만 소스 수준의 실제 자산 소비로 인정한다.
   // 이 판정은 Roblox 런타임 재생·프레임 품질 검증을 대체하지 않는다.
   if(family==='MOTION'||family==='CHARACTER'){
+    // 현재 마력숲은 서버 승인 콜백에서 책임 함수로 위임한다.
+    // 실제 승인값 수신 -> 허용 액션 검증 -> 원본 관절 바인딩 -> 프레임 적용을 모두 검사한다.
     const motionChain=[
-      /Shared\s*:\s*FindFirstChild\s*\(\s*["']RobloxCommonMotion["']\s*\)/,
+      /Shared\s*:\s*(?:FindFirstChild|WaitForChild)\s*\(\s*["']RobloxCommonMotion["']/,
       /\bpcall\s*\(\s*require\s*,\s*combatMotionModule\s*\)/,
       /GetAttributeChangedSignal\s*\(\s*["']ApprovedCombatMotion["']\s*\)/,
-      /\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']MOTION["']\s*,\s*["'][A-Z0-9_]+["']\s*\)\s*then\s*[\s\S]{0,220}?\breturn\b/,
-      /:\s*IsA\s*\(\s*["']Motor6D["']\s*\)/,
       /\bcombatMotionSource\.CreateCombatCombo\b/,
       /\bcombatMotionSource\.BindJointPose\s*\(/,
       /\bcombatMotionSource\.SampleCombatCombo\s*\(/,
       /\bcombatMotionSource\.MapCombatPoseToR15\s*\(/,
       /\bactiveCombatController\.Step\s*\(\s*combatR15Targets\s*,\s*dt\s*\)/,
     ];
-    // A separate verified-learning HUD listener may observe the same attribute.
-    // It is not proof that the actual R15 pose sink consumes an authorized hit.
-    // Scope authorization to the callback that creates the combat controller.
     const approvedListener=raw.match(
       /\bplayer\s*:\s*GetAttributeChangedSignal\s*\(\s*["']ApprovedCombatMotion["']\s*\)\s*:\s*Connect\s*\(\s*function\s*\(\s*\)([\s\S]*?)\nend\s*\)/
     )?.[1]||'';
+    const responsibleMotion=raw.match(
+      /\bplayNativeCombatMotion\s*=\s*function\s*\(\s*approvedScope\s*,\s*approvedEvent\s*\)([\s\S]*?)\nend\b/
+    )?.[1]||'';
     const trustedApproval=[
-      /\blocal\s+approved\s*=\s*tostring\s*\(\s*player\s*:\s*GetAttribute\s*\(\s*["']ApprovedCombatMotion["']\s*\)/,
-      /\blocal\s+approvedScope\s*,\s*approvedEvent\s*=\s*approved\s*:\s*match\s*\(/,
-      /\bif\s+not\s+approvedEvent\s+or\s+not\s+authorizedCombatScopes\s*\[\s*approvedScope\s*\]\s+then\s+return\s+end/,
-      /\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']MOTION["']\s*,\s*["']ATTACK_LIGHT_1["']\s*\)\s+then/,
-      /\bcombatMotionSource\.BindJointPose\s*\(/
+      /\blocal\s+scope\s*,\s*serial\s*=\s*tostring\s*\(\s*player\s*:\s*GetAttribute\s*\(\s*["']ApprovedCombatMotion["']/,
+      /\bif\s+not\s+scope\s+or\s+not\s+serial\s+then\s+return\s+end/,
+      /\bplayNativeCombatMotion\s*\(\s*scope\s*,\s*tonumber\s*\(\s*serial\s*\)\s*\)/,
     ].every(pattern=>pattern.test(approvedListener));
+    const trustedMotion=[
+      /\bif\s+not\s+authorizedCombatScopes\s*\[\s*approvedScope\s*\]\s+then\s+return\s+false\s+end/,
+      /\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']MOTION["']\s*,\s*["']ATTACK_LIGHT_1["']\s*\)\s+then/,
+      /\bcombatMotionSource\.BindJointPose\s*\(/,
+      /\bdescendant\s*:\s*IsA\s*\(\s*["'](?:Motor6D|AnimationConstraint)["']\s*\)/,
+    ].every(pattern=>pattern.test(responsibleMotion));
     const selectedCharacter=family==='MOTION'
-      ||/\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']CHARACTER["']\s*,\s*["']HAND_BARE["']\s*\)\s+then\s+return\s+end/.test(approvedListener);
-    if(selectedCharacter&&trustedApproval&&motionChain.every(pattern=>pattern.test(raw)))return true;
-    // A partially connected combat pipeline must not fall back to unrelated
-    // asset-list or UI rendering as evidence of server-approved MOTION.
+      ||/\bif\s+not\s+hasStudioAssetAtom\s*\(\s*["']CHARACTER["']\s*,\s*["']HAND_BARE["']\s*\)\s+then\s+return\s+end/.test(responsibleMotion);
+    if(selectedCharacter&&trustedApproval&&trustedMotion&&motionChain.every(pattern=>pattern.test(raw)))return true;
+    // 승인 권한 없는 연출이나 UI 버튼 존재만으로 모션 통과를 만들지 않는다.
     if(/\bcombatMotionSource\b/.test(raw)&&/\bactiveCombatController\b/.test(raw))return false;
   }
+
   // 공용 원본 factory를 직접 require한 별칭만 추적한다. 선택 atom이 실제
   // Create 호출을 지배해야 하며 목록·마커·임의 함수·재할당은 연결 증거가 아니다.
   if(family==='SKILL'||family==='VFX'){

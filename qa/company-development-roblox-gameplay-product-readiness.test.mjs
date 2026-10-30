@@ -54,7 +54,9 @@ test('fantasy survival now drives a real source-owned survival wave, attack, har
   assert.equal(check.antiSkeletonPassed,true);
   assert.match(client,/player:GetAttribute\("CurrentWave"\)/);
   assert.match(client,/player:GetAttribute\("WeaponTier"\)/);
-  assert.match(client,/remote:FireServer\(primaryCombatAction.Id\)/);
+  assert.match(client,/activateMeadowAction\(primaryCombatAction.Id\)/);
+  assert.match(client,/local function activateMeadowAction\(actionId\)/);
+  assert.match(client,/remote:FireServer\(actionId\)/);
   assert.match(client,/ProfileReady/);
   assert.match(client,/SaveStatus/);
   assert.match(client,/임시 플레이 · 이번 접속의 진행은 저장되지 않음/);

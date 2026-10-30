@@ -37,13 +37,13 @@ test('selected Fantasy Survival motion reaches a server-authorized R15 frame sin
     'MOTION'
   ),false,'changing only the R15 event listener must remove authorization');
   assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('if not approvedEvent or not authorizedCombatScopes[approvedScope] then return end',
-      'if false then return end'),
+    source.replace('if not authorizedCombatScopes[approvedScope] then return false end',
+      'if false then return false end'),
     'MOTION'
   ),false,'an unvalidated action cannot authorize R15 pose consumption');
   assert.equal(robloxStudioAssetFamilyBoundInText(
-    source.replace('local approved = tostring(player:GetAttribute("ApprovedCombatMotion") or "")',
-      'local approved = "forged:1"'),
+    source.replace('local scope,serial=tostring(player:GetAttribute("ApprovedCombatMotion") or ""):match("^([^:]+):(%d+)$")',
+      'local scope,serial="forged","1"'),
     'MOTION'
   ),false,'the actual R15 callback must read the server-supplied action sequence');
 });
