@@ -199,7 +199,7 @@ test('source drift sync has a dedicated non-starving concurrency lane',()=>{
   assert.doesNotMatch(workflow,/queue: max/);
   assert.match(workflow,/github\.event\.pull_request\.merge_commit_sha/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
-  assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/for i in 1 2 3 4 5 6 7 8 9 10; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/regenerate_runtime_state/);
   assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });

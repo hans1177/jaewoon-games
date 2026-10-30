@@ -120,11 +120,15 @@ test('Fantasy Survival Roblox R15 unarmed skills select authentic authored actio
   for(const id of ['meadow-unarmed-rush','meadow-unarmed-uppercut',
     'meadow-unarmed-kick','meadow-unarmed-elbow']){
     assert.ok(config.includes('Id = "'+id+'"'),id+' is an approved gameplay action');
-    assert.ok(server.includes('["'+id+'"]=unarmedSkillAttack'),id+' uses existing damage logic');
+    const expectedCost=id==='meadow-unarmed-uppercut'?20:id==='meadow-unarmed-kick'?14:null;
+    const handler='["'+id+'"]='+(expectedCost===null?'unarmedSkillAttack':'function(player) return unarmedSkillAttack(player,'+expectedCost+') end');
+    assert.ok(server.includes(handler),id+' preserves original attack authority and stamina cost');
     assert.ok(client.includes('["'+id+'"]='),id+' has a dedicated R15 motion route');
   }
   assert.match(server,/if not character or character:FindFirstChildOfClass\("Tool"\) then return false end/);
-  assert.match(server,/return attackEnemy\(player\)/,'skill uses the original authoritative combat function');
+  assert.match(server,/local accepted,hit=attackEnemy\(player\)/,'skill uses the original authoritative combat function');
+  assert.match(server,/if accepted and cost>0 then player:SetAttribute\("MeadowStamina",math.max\(0,stamina-cost\)\) end/,'stamina is deducted only after accepted attacks');
+  assert.match(server,/return accepted,hit/,'accepted attack and hit status are preserved');
   assert.match(server,/remote:FireClient\(player, "MEADOW_IMPACT", \{/);
   assert.ok(server.indexOf('remote:FireClient(player, "MEADOW_IMPACT"') >
     server.indexOf('target.HP=math.max(0,target.HP-damage)'),'impact occurs after confirmed damage');
@@ -1408,7 +1412,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
   // 모바일 전투: 실제 발차기·어퍼컷·막기가 기본 공격 주변의 반원에 배치된다.
-  assert.ok(client.includes('local meadowArcDegrees={-105,-135,-165,-195,-225,-255}'));
+  assert.ok(client.includes('local meadowArcDegrees={-155,-95,-35}'));
   assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
@@ -1416,7 +1420,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
-  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.new(1,-18,0,18)'));
+  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,21)'));
+  assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
+  assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
   assert.ok(client.includes('local radarTrailEndpoints={'));
   assert.ok(client.includes('{-51,-48,-177,-176},{58,-49,183,-177}'));
   assert.ok(client.includes('{-177,-176,-228,-219},{183,-177,231,-228}'));
@@ -1427,11 +1433,11 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
-  assert.ok(client.includes('meadowAttackIcon.ImageRectOffset=Vector2.new(0,0)'));
+  assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
-  assert.ok(client.includes('local energyDeadline=player:GetAttribute("MeadowReady_skill-meadow-sprint")'));
-  assert.ok(client.includes('energyCooldown=math.max(.1,action.Cooldown or 8)'));
-  assert.ok(client.includes('meadowPrimaryAttack.Activated:Connect(function()'));
+  assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
+  assert.ok(client.includes('meadowSkillCooldowns[index]=cooldown'));
+  assert.ok(!client.includes('meadowPrimaryAttack.Activated:Connect(function()'),'default attack is on world tap, not another button');
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowSkillCooldowns={}'));
@@ -1464,7 +1470,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)'));
   assert.ok(client.includes('local x=centerX+math.cos(angle)*radius'));
   assert.ok(client.includes('local y=centerY+math.sin(angle)*radius'));
-  assert.ok(client.includes('math.floor((93+(index-1)*58)*scale)'));
+  assert.ok(client.includes('button.Position=UDim2.fromOffset(math.floor((122+(index-1)*60)*scale),math.floor(185*scale))'));
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1474,8 +1480,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
   assert.ok(client.includes('button.Size=UDim2.fromOffset(size,size)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
-  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut','skill-meadow-guard',
-    'skill-meadow-parry','skill-meadow-heal','skill-meadow-bolt']){
+  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut','skill-meadow-guard']){
     assert.ok(client.includes('{"'+id+'",'), 'real combat dock skill missing: '+id);
   }
   // 나머지 기존 스킬을 지우지 않고 원본 Config에서 메뉴로 접근 가능해야 한다.
@@ -1485,8 +1490,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
     assert.ok(!client.includes('or action.Id=="'+id+'"'), 'unplaced skill must remain reachable in menu: '+id);
   }
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
-  assert.ok(client.includes('{"skill-meadow-dodge-left","좌회피"'));
-  assert.ok(client.includes('{"skill-meadow-dodge-right","우회피"'));
+  assert.ok(!client.includes('{"skill-meadow-dodge-left","좌회피"'),'dodge UI was intentionally removed');
+  assert.ok(!client.includes('{"skill-meadow-dodge-right","우회피"'),'dodge UI was intentionally removed');
   assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","채집"'));
   assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
