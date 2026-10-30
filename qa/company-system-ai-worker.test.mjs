@@ -695,6 +695,29 @@ test('F0 game-local repair is counted separately from runtime proof and prioriti
  assert.ok(snapshot.actions.includes('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH'));
 });
 
+test('F0 source repair telemetry survives world-lobby-first prefix without trusting nearby text',()=>{
+ const gameId='game-f0-world',source='e'.repeat(40),root='roblox-games/'+gameId;
+ const evidence=['roblox-f0-preflight-causal-repair:EXACT_GAME_STAGE',
+   'roblox-f0-preflight-failure-stage:F0_SOURCE_INTEGRITY',
+   'roblox-f0-preflight-failure-signature:ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+   'roblox-f0-preflight-source-revision:'+source];
+ const main={id:'f0-world',gameId,target:'roblox',department:'development',
+   type:'implementation',status:'queued',executionLane:'GAME_PRIMARY',
+   sourceRoot:root,responsibleFiles:[root+'/client/Game.client.luau'],
+   evidence,goal:'[WORLD_LOBBY_FIRST]\nStart at existing safe lobby.\n'+
+     '[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\n게임: '+gameId+
+     ' / F0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED\n'+
+     '실패한 소스 버전: '+source+
+     '\n[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\nkeep existing build-up'};
+ const proper=summarizeVerifiedGameProduction({tasks:[main]}).games[0];
+ assert.equal(proper.f0SourceRepairPending,1);
+ const forged={...main,goal:'[WORLD_LOBBY_FIRST]\nF0_SOURCE_INTEGRITY / ROBLOX_F0_SOURCE_PREFLIGHT_FAILED\n'+
+   '실패한 소스 버전: '+source+'\n[ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]\nno causal evidence\n'+
+   '[/ROBLOX_F0_PREFLIGHT_CAUSAL_REPAIR]'};
+ const ignored=summarizeVerifiedGameProduction({tasks:[forged]}).games[0];
+ assert.equal(ignored.f0SourceRepairPending,0);
+});
+
 test('F0 sensor ignores stale intent, asset-lane tasks, unowned files and owner-held work',()=>{
  const gameId='game-f0-deny',revision='c'.repeat(40),root='roblox-games/'+gameId;
  const base={id:'same-id',gameId,target:'roblox',department:'development',
