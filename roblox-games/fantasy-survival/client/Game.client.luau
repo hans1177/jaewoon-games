@@ -582,6 +582,103 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end
 end)
 
+-- Native 3D mob actions: existing CC0 MeshParts only. The game does not
+-- invent limbs, bones or model parts. Server-owned attack states remain authoritative.
+local meadowMobWorld=workspace:WaitForChild("FantasySurvivalWorld")
+local meadowMobMotion=require(Shared:WaitForChild("RobloxCommonMotion"))
+local meadowMobControllers={}
+local nativeMobMotionMap={
+  IDLE="IDLE",CHASE="RUN",RUN="RUN",RETURN_TO_SPAWN="WALK",WALK="WALK",
+  ANTICIPATION="ATTACK",ATTACK="ATTACK",RECOVERY="HIT",HIT="HIT",DEATH="DEATH",
+}
+local nativeMobJointAlias={
+  FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
+  RearLeftHip="BLHip",RearRightHip="BRHip",
+  TailBaseJoint="Tail",ChestJoint="Chest",SpineJoint="Spine",
+  NeckJoint="Neck",JawJoint="Jaw",TailBase="Tail",TailTip="Tail",
+  WingLeft="WingL",WingRight="WingR",
+}
+local function mobVfx(pattern,where,stage)
+  if not combatVFX or typeof(where)~="Vector3" then return end
+  local boss=pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
+  local bee=pattern=="BEE_SWEEP" or pattern=="BEE_STING"
+  local tint=boss and Color3.fromRGB(255,114,84) or
+    bee and Color3.fromRGB(246,226,117) or Color3.fromRGB(190,238,167)
+  local effect=stage=="DEATH" and "DESTRUCTION_BURST" or
+    stage=="ANTICIPATION" and (boss and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE") or
+    stage=="IMPACT" and "IMPACT_FLASH" or "STATUS_PULSE"
+  local ok,err=pcall(combatVFX.Create,effect,{
+    cframe=CFrame.new(where),parent=workspace,color=tint,
+    accent=Color3.fromRGB(255,239,214),
+    scale=boss and 1.4 or .8,duration=.45,reducedMotion=nativeTouchEnabled,
+    count=nativeTouchEnabled and 4 or 9,
+  })
+  if not ok then warn("Original mob VFX unavailable: "..tostring(err)) end
+end
+local function bindOriginalMob(model)
+  if not model:IsA("Model") or meadowMobControllers[model] then return end
+  local species=model:GetAttribute("Species")
+  if species~="wolf" and species~="bee" and species~="golem" then return end
+  local joints,available={},{}
+  for _,motor in ipairs(model:GetDescendants()) do
+    if motor:IsA("Motor6D") and motor.Part0 and motor.Part1 then
+      local name=nativeMobJointAlias[motor.Name] or motor.Name
+      joints[name]=motor
+      available[name]=true
+    end
+  end
+  local actualRig=next(joints)~=nil
+  local bodyPlan=species=="wolf" and "QUADRUPED" or
+    species=="bee" and "FLYER" or "GIANT"
+  local controller=actualRig and meadowMobMotion.BindJointPose(joints,{
+    followAnimator=true,response=24,
+  }) or nil
+  local row={controller=controller,available=available,plan=bodyPlan,phase=0,poses={}}
+  meadowMobControllers[model]=row
+  model:GetAttributeChangedSignal("AttackState"):Connect(function()
+    if not model.Parent then return end
+    if model:GetAttribute("AttackState")=="ANTICIPATION" then
+      mobVfx(model:GetAttribute("AttackPattern"),model:GetPivot().Position,"ANTICIPATION")
+    end
+  end)
+  model.Destroying:Connect(function()
+    if controller then controller.Destroy(false) end
+    meadowMobControllers[model]=nil
+  end)
+end
+for _,model in ipairs(meadowMobWorld:GetChildren()) do bindOriginalMob(model) end
+meadowMobWorld.ChildAdded:Connect(function(model)
+  if model:IsA("Model") then
+    bindOriginalMob(model)
+    if not meadowMobControllers[model] then
+      task.defer(function() if model.Parent then bindOriginalMob(model) end end)
+    end
+  end
+end)
+game:GetService("RunService").PreSimulation:Connect(function(dt)
+  for model,row in pairs(meadowMobControllers) do
+    if model.Parent and row.controller then
+      row.phase+=dt
+      local mode=nativeMobMotionMap[model:GetAttribute("NativeMobMotion")] or "IDLE"
+      table.clear(row.poses)
+      local _,matched=meadowMobMotion.SampleProceduralActorMotion(mode,
+        (row.phase%1.25)/1.25,{
+          bodyPlan=row.plan,actorClass=model:GetAttribute("Boss") and "BOSS" or "CREATURE",
+          availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
+          secondary=.55,
+        },row.poses)
+      if matched then row.controller.Step(row.poses,dt) end
+    end
+  end
+end)
+remote.OnClientEvent:Connect(function(kind,payload)
+  if typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
+  if kind=="MEADOW_MOB_ATTACK" then mobVfx(payload.pattern,payload.position,"IMPACT")
+  elseif kind=="MEADOW_MOB_DEATH" then
+    mobVfx(payload.pattern,payload.position,"DEATH")
+  end
+end)
+
 -- The shared Roblox R15 combat library already has real authored joints for
 -- jab/cross/hook/uppercut/elbow/knee/kick. Route ONE confirmed hit to ONE strike.
 local basicUnarmedMoves={
