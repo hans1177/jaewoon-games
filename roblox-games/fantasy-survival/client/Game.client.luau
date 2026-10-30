@@ -927,6 +927,103 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   character:SetAttribute("NativeCombatMotionProfile", profile)
   character:SetAttribute("NativeCombatMotionState", "SOURCE_POSE_PLAYING_UNVERIFIED")
 end)
+-- Original Roblox 61-motion library: cast, guard, parry, dodge, craft,
+-- gather and emote use only available R15 joints and server-approved actions.
+-- Existing Animator continues driving walk/run/jump underneath visual overlays.
+local skillMotionR15=nil
+local skillMotionCharacter=nil
+local skillMotionDeadline=0
+local skillMotionState=nil
+local skillMotionStart=0
+local skillMotionDuration=0
+local skillMotionJoints={}
+local skillMotionAvailable={}
+local skillMotionTargets={}
+local skillMotionR15Targets={}
+local skillMotionMapping={
+  Waist="Spine",Neck="Head",LeftShoulder="UpperArmL",RightShoulder="UpperArmR",
+  LeftElbow="ForearmL",RightElbow="ForearmR",LeftWrist="HandL",RightWrist="HandR",
+  LeftHip="ThighL",RightHip="ThighR",LeftKnee="ShinL",RightKnee="ShinR",
+}
+local skillMotionStates={
+  INTERACT_USE="INTERACT",GATHER_SWING="INTERACT",CRAFT_LOOP="INTERACT",
+  HEAVY_ATTACK_1="ATTACK",CAST_BURST="ATTACK",PARRY_PERFECT="ATTACK",
+  DODGE_LEFT="GESTURE",DODGE_RIGHT="GESTURE",BLOCK_HOLD="INTERACT",
+  CHANNEL_LOOP="GESTURE",SPRINT="START",EMOTE_WAVE="GESTURE",
+  LIGHT_ATTACK_1="ATTACK",
+}
+local function finishMeadowSkillPose()
+  if skillMotionR15 then skillMotionR15.Destroy(true) end
+  skillMotionR15=nil
+  skillMotionCharacter=nil
+  skillMotionState=nil
+  table.clear(skillMotionJoints)
+  table.clear(skillMotionAvailable)
+  table.clear(skillMotionTargets)
+  table.clear(skillMotionR15Targets)
+end
+player.CharacterAdded:Connect(finishMeadowSkillPose)
+player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(finishMeadowSkillPose)
+player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
+  local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
+  local action=id and actionsById[id]
+  if not serial or not action or action.Kind=="COMBAT" or not action.MotionAtom then return end
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  if not humanoid or humanoid.Health<=0 or humanoid.RigType~=Enum.HumanoidRigType.R15
+    or not combatMotionSource or not combatMotionSource.SampleProceduralActorMotion then return end
+  local state=skillMotionStates[action.MotionAtom]
+  if not state then return end
+  local good,meta=pcall(combatMotionSource.Describe,action.MotionAtom)
+  if not good or not meta or meta.rig~="R15" then return end
+  finishMeadowSkillPose()
+  finishNativeCombatMotion()
+  for _,joint in ipairs(character:GetDescendants()) do
+    if joint:IsA("Motor6D") and joint.Part0 and joint.Part1 and skillMotionMapping[joint.Name] then
+      skillMotionJoints[joint.Name]=joint
+      skillMotionAvailable[skillMotionMapping[joint.Name]]=true
+    end
+  end
+  if not (skillMotionJoints.Waist and skillMotionJoints.LeftShoulder and
+    skillMotionJoints.RightShoulder and skillMotionJoints.LeftElbow and
+    skillMotionJoints.RightElbow) then return end
+  skillMotionAvailable.Chest=true
+  skillMotionR15=combatMotionSource.BindJointPose(skillMotionJoints,{
+    followAnimator=true,response=26,
+  })
+  skillMotionCharacter=character
+  skillMotionState=state
+  skillMotionStart=os.clock()
+  skillMotionDuration=math.clamp(tonumber(meta.duration) or .7,.25,1.4)
+  skillMotionDeadline=skillMotionStart+skillMotionDuration+.16
+  character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
+  character:SetAttribute("NativeSkillActionId",id)
+end)
+RunService.PreSimulation:Connect(function(dt)
+  if not skillMotionR15 or not skillMotionCharacter then return end
+  local humanoid=skillMotionCharacter:FindFirstChildOfClass("Humanoid")
+  if player.Character~=skillMotionCharacter or not humanoid or humanoid.Health<=0
+    or os.clock()>=skillMotionDeadline then
+    finishMeadowSkillPose()
+    return
+  end
+  table.clear(skillMotionTargets)
+  table.clear(skillMotionR15Targets)
+  local phase=math.clamp((os.clock()-skillMotionStart)/skillMotionDuration,0,1)
+  local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
+    bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
+    mobileTier=nativeTouchEnabled and "LOW" or "HIGH",secondary=.65,
+  },skillMotionTargets)
+  if not matched then finishMeadowSkillPose();return end
+  local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
+  if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
+    local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
+    skillMotionTargets.Spine=CFrame.Angles(0,0,sign*.25*math.sin(math.pi*phase))
+  end
+  combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
+  skillMotionR15.Step(skillMotionR15Targets,dt)
+end)
+
 RunService.PreSimulation:Connect(function(dt)
   if not (activeCombatController and activeCombatCombo and activeCombatCharacter) then return end
   local character = player.Character
