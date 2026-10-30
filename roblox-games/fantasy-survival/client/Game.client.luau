@@ -641,6 +641,13 @@ end
 local function bindOriginalMob(model)
   if not model:IsA("Model") or meadowMobControllers[model] then return end
   local species=model:GetAttribute("Species")
+  if species==nil then
+    -- Replication can deliver the Model before its authoritative attributes.
+    model:GetAttributeChangedSignal("Species"):Once(function()
+      if model.Parent then bindOriginalMob(model) end
+    end)
+    return
+  end
   if species~="wolf" and species~="bee" and species~="golem" then return end
   local joints,available={},{}
   for _,motor in ipairs(model:GetDescendants()) do
