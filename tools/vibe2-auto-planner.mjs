@@ -4253,7 +4253,7 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     const revision=clean(project.queueRuntimeSourceRevision);
     const tree=clean(project.queueRuntimeSourceTreeSha);
     const failureStage=clean(project.queueRuntimeFailureStage).slice(0,100);
-    const failureSignature=clean(project.queueRuntimeFailureSignature).slice(0,320);
+    const failureSignature=clean(project.queueRuntimeFailureSignature).replace(/[\r\n]+/g,' ').slice(0,320);
     const existingEvidence=(candidate.evidence||[]).map(clean);
     const declaredRevisions=[...new Set([
       candidate.sourceRevision,candidate.sourceCommit,candidate.sourceSha,candidate.buildSourceRevision,
@@ -4315,6 +4315,7 @@ export function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     }else if(clean(item.status).toLowerCase()==='queued'
       &&project.queueRuntimeObserved===true&&project.queueRuntimePassed===true
       &&sameSource&&workOwned&&!ownerHeld
+      &&clean(project.queueRuntimeEvidencePlatform).toUpperCase()===platform
       &&clean(candidate.goal).includes(activeBottleneckStart)){
       // 같은 게임·소스의 새 성공 관측은 낡은 진단 목표만 걷어낸다.
       // 성공한 실제 플랫폼 게이트 판정과 릴리스 상태는 여기서 변경하지 않는다.
