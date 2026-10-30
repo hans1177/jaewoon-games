@@ -727,6 +727,50 @@ test('single historical game-source task is handed to matching existing Vibe rep
   assert.deepEqual(second.systemAi,first.systemAi);
 });
 
+test('a single game repairs only the failed platform lane, not its sibling platform',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const web={id:'forest-web',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    responsibleFiles:['web-games/forest/index.html'],status:'failed',priority:'normal',evidence:[]};
+  const roblox={id:'forest-roblox',gameId:'forest',target:'roblox',sourceRoot:'roblox-games/forest',
+    responsibleFiles:['roblox-games/forest/server/Game.server.luau'],status:'queued',priority:'normal',evidence:[]};
+  const recovery={id:'web-recovery',status:'queued',sourceQueue:'vibe2',sourceTaskId:web.id,
+    relatedTaskIds:[roblox.id],gameId:'forest',recoveryOwner:'VIBE2_VIBE3',
+    responsibleFiles:['web-games/forest/index.html'],failureStage:'WEB_RUNTIME',
+    failureSignature:'WEB_STALL',recoveryStrategy:'EXACT_STAGE_REPAIR',evidence:[]};
+  const result=dispatchRecovery({recoveryInput:{tasks:[recovery]},gameQueueInput:{tasks:[web,roblox]}});
+  assert.equal(result.dispatched.length,1);
+  assert.deepEqual(result.gameRequeuedTaskIds,[web.id]);
+  assert.equal(result.gameQueue.tasks[0].status,'queued');
+  assert.deepEqual(result.gameQueue.tasks[1],roblox);
+  const reverse={...recovery,id:'roblox-recovery',sourceTaskId:roblox.id,
+    relatedTaskIds:[web.id],responsibleFiles:['roblox-games/forest/server/Game.server.luau'],
+    failureStage:'ROBLOX_RUNTIME',failureSignature:'ROBLOX_STALL'};
+  const other=dispatchRecovery({recoveryInput:{tasks:[reverse]},gameQueueInput:{tasks:[web,roblox]}});
+  assert.equal(other.dispatched.length,1);
+  assert.deepEqual(other.gameQueue.tasks[0],web);
+  assert.equal(other.gameQueue.tasks[1].priority,'critical');
+  assert.deepEqual(other.gameRequeuedTaskIds,[roblox.id]);
+});
+
+test('mixed game or platform responsible files cannot trigger autonomous source recovery',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const task={id:'web-task',gameId:'forest',sourceRoot:'web-games/forest',target:'web',status:'failed'};
+  const base={id:'mixed',status:'queued',sourceQueue:'vibe2',sourceTaskId:task.id,
+    gameId:'forest',recoveryOwner:'VIBE2_VIBE3',failureStage:'WEB_RUNTIME',
+    failureSignature:'WEB_STALL',recoveryStrategy:'EXACT_STAGE_REPAIR'};
+  for(const responsibleFiles of [
+    ['web-games/forest/index.html','web-games/desert/index.html'],
+    ['web-games/forest/index.html','roblox-games/forest/server/Game.server.luau'],
+    ['web-games/forest/../desert/index.html']
+  ]){
+    const result=dispatchRecovery({recoveryInput:{tasks:[{...base,responsibleFiles}]},
+      gameQueueInput:{tasks:[task]}});
+    assert.equal(result.dispatched.length,0);
+    assert.equal(result.recovery.tasks[0].status,'queued');
+    assert.deepEqual(result.gameQueue.tasks,[task]);
+  }
+});
+
 test('active web game recovers its own failure without touching another game or a held game',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const forest={id:'forest-repair',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
