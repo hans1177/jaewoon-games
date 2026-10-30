@@ -10,6 +10,24 @@ import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRo
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {bindExistingFantasyNativeCreatures,bindExistingServerStudioMaterial,buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('common Roblox motion, skill and VFX respect official joint and visual lifecycle',()=>{
+  const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
+  const skill=fs.readFileSync('assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau','utf8');
+  const vfx=fs.readFileSync('assets/roblox/common-vfx-v1/RobloxCommonVFX.luau','utf8');
+  assert.match(motion,/joint:IsA\("AnimationConstraint"\)/);
+  assert.match(motion,/row\.joint\.Transform=row\.pose\*row\.base/);
+  assert.match(motion,/row\.joint\.Transform==row\.lastApplied/);
+  assert.match(skill,/function controller\.SetEnabled\(enabled\)/);
+  assert.match(skill,/if not trail\.Enabled then trail:Clear\(\) end/);
+  assert.match(skill,/Debris:AddItem\(trail,cleanupAfter\)/);
+  assert.match(skill,/Debris:AddItem\(orb,/);
+  assert.match(skill,/Debris:AddItem\(shell,/);
+  assert.match(vfx,/Trail\.WidthScale keypoints are restricted/);
+  assert.match(vfx,/clamp\(options\.width or DEFAULT\.TrailWidth, 0\.05, 1\)/);
+  assert.match(vfx,/ring\.Orientation=Enum\.ParticleOrientation\.FacingCamera/);
+  assert.match(vfx,/if not trail\.Enabled then trail:Clear\(\) end/);
+});
+
 test('selected Fantasy Survival motion reaches a server-authorized R15 frame sink, not just an asset list',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.equal(robloxStudioAssetFamilyBoundInText(source,'MOTION'),true);
