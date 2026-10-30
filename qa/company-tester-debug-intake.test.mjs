@@ -152,6 +152,47 @@ test('source-less tester recovery stays queued if exact game responsibility is m
 });
 
 
+test('same-game F0 ticket cannot bind a different failure signature or stage',()=>{
+ const recovery={tasks:[{
+  id:'f0-exact-cause',status:'queued',sourceQueue:'tester-debug',sourceTaskId:'bug-f0',
+  gameId:'forest',responsibleFiles:[],failureStage:'F0_SOURCE_INTEGRITY',
+  failureSignature:'F0_ORIGINAL_FAILURE',recurrenceCount:3,
+  evidence:['tester-debug-surface:ROBLOX'],recoveryOwner:'VIBE2_VIBE3',
+  recoveryStrategy:'EXACT_STAGE_REPAIR'
+ }]};
+ const base={id:'forest-real-source',gameId:'forest',target:'roblox',
+  sourceRoot:'roblox-games/forest',currentStep:'F0_SOURCE_INTEGRITY',
+  responsibleFiles:['roblox-games/forest/server/Game.server.luau'],
+  status:'failed',priority:'normal',evidence:[]};
+ const currentDifferent={...base,failureSignature:'F0_DIFFERENT_FAILURE'};
+ const wrongCause=dispatchRecovery({recoveryInput:recovery,
+  gameQueueInput:{tasks:[currentDifferent]}});
+ assert.equal(wrongCause.dispatched.length,0);
+ assert.equal(wrongCause.recovery.tasks[0].status,'queued');
+ assert.deepEqual(wrongCause.gameQueue.tasks,[currentDifferent]);
+ const staleCause={...base,evidence:['failure-cause:F0_DIFFERENT_FAILURE']};
+ const wrongHistory=dispatchRecovery({recoveryInput:recovery,
+  gameQueueInput:{tasks:[staleCause]}});
+ assert.equal(wrongHistory.dispatched.length,0);
+ assert.deepEqual(wrongHistory.gameQueue.tasks,[staleCause]);
+ const wrongStage={...base,currentStep:'TARGET_PLATFORM_RUNTIME',
+  failureSignature:'F0_ORIGINAL_FAILURE'};
+ const result=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[wrongStage]}});
+ assert.equal(result.dispatched.length,0);
+ assert.deepEqual(result.gameQueue.tasks,[wrongStage]);
+ const signatureOnly={...base,currentStep:null,failureSignature:'F0_ORIGINAL_FAILURE'};
+ const unproven=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[signatureOnly]}});
+ assert.equal(unproven.dispatched.length,0);
+ assert.deepEqual(unproven.gameQueue.tasks,[signatureOnly]);
+ const exact={...base,failureStage:'F0_SOURCE_INTEGRITY',
+  failureSignature:'F0_ORIGINAL_FAILURE'};
+ const verified=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[exact]}});
+ assert.equal(verified.dispatched.length,1);
+ assert.equal(verified.gameQueue.tasks[0].repairMode,'ROOT_CAUSE_MODE');
+ assert.ok(verified.gameQueue.tasks[0].evidence.includes(
+  'recovery-source-bound-from-canonical-game-task:'+base.id));
+});
+
 test('exact Roblox runtime failure keeps repair active but does not block internal flow',()=>{
  const dev={items:[{
   gameId:'daechung-rpg',status:'ACTIVE',selectedPlatform:'ROBLOX',targetSourcePath:'roblox-games/daechung-rpg',
