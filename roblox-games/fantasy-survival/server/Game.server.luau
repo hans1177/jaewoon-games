@@ -74,6 +74,17 @@ local LastWaveReward = 0
 local MAX_ENEMIES = 22
 -- Roblox Terrain is native collidable terrain, never an assembled visual Part.
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
+-- [숲 표면] 원본 CC0 메시·텍스처를 보존하는 공통 자연색 팔레트.
+local meadowPalette={
+  grass=Color3.fromRGB(99,142,95),leafyGrass=Color3.fromRGB(76,117,80),
+  ground=Color3.fromRGB(113,98,79),rock=Color3.fromRGB(123,130,120),
+  bark=Color3.fromRGB(111,91,72),leaves=Color3.fromRGB(82,123,80),
+  wolf=Color3.fromRGB(144,136,121),boar=Color3.fromRGB(126,101,83),
+  deer=Color3.fromRGB(157,125,102),rabbit=Color3.fromRGB(181,176,157),
+  bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
+  mushroom=Color3.fromRGB(163,142,117),skeleton=Color3.fromRGB(198,192,174),
+  golem=Color3.fromRGB(129,138,126),
+}
 local meadowTerrain = workspace.Terrain
 -- [초원 오픈월드] 플레이 시작 부분 312x312은 먼저 만들고 696x696 외곽은 이후 분할 생성한다.
 -- 면적 약 4.98배. 시작/적/자원 좌표 및 전투 수치를 옮기지 않는다.
@@ -107,10 +118,10 @@ local function createStartingMeadow()
     end
   end
   -- [숲 색감] 초원·수풀·흙·돌을 같은 저채도 자연 팔레트로 맞춘다.
-  meadowTerrain:SetMaterialColor(Enum.Material.Grass,Color3.fromRGB(101,145,96))
-  meadowTerrain:SetMaterialColor(Enum.Material.LeafyGrass,Color3.fromRGB(70,111,75))
-  meadowTerrain:SetMaterialColor(Enum.Material.Ground,Color3.fromRGB(114,97,76))
-  meadowTerrain:SetMaterialColor(Enum.Material.Rock,Color3.fromRGB(117,126,117))
+  meadowTerrain:SetMaterialColor(Enum.Material.Grass,meadowPalette.grass)
+  meadowTerrain:SetMaterialColor(Enum.Material.LeafyGrass,meadowPalette.leafyGrass)
+  meadowTerrain:SetMaterialColor(Enum.Material.Ground,meadowPalette.ground)
+  meadowTerrain:SetMaterialColor(Enum.Material.Rock,meadowPalette.rock)
   -- Existing stone gathering sites are terrain outcrops, not fake rock parts.
   for _, pos in ipairs({Vector3.new(-35,2,31),Vector3.new(11,2,-39),Vector3.new(-7,2,43)}) do
     meadowTerrain:FillBall(pos-Vector3.new(0,4.5,0),5,Enum.Material.Rock)
@@ -119,9 +130,11 @@ local function createStartingMeadow()
   Lighting.Brightness = 2
   Lighting.Ambient = Color3.fromRGB(97,118,107)
   Lighting.OutdoorAmbient = Color3.fromRGB(155,176,149)
+  Lighting.EnvironmentDiffuseScale=.83
+  Lighting.EnvironmentSpecularScale=.16
   gameWorld:SetAttribute("StartingRegion", "MEADOW")
   gameWorld:SetAttribute("GroundVisualSource", "ROBLOX_NATIVE_TERRAIN")
-  gameWorld:SetAttribute("MeadowVisualStyle", "MOSS_FOREST_MATTE_V1")
+  gameWorld:SetAttribute("MeadowVisualStyle", "MOSS_FOREST_MATTE_V2")
   gameWorld:SetAttribute("MeadowRegionWidth",meadowWorldSize)
   gameWorld:SetAttribute("MeadowRegionAreaScale",math.floor((meadowWorldSize/312)^2*100)/100)
   gameWorld:SetAttribute("MeadowOuterRegionReady",false)
@@ -283,9 +296,9 @@ local function worldAsset(id, location, targetHeight)
     clone:ScaleTo(nativeWorldScale)
     -- [원본 CC0 숲 표면] 새 파츠 없이 수목·야생동물을 같은 무광 팔레트로 맞춘다.
     -- 원본 MeshId/TextureID/리그 및 자원·저장·충돌은 수정하지 않는다.
-    local animalTint=id=="deer" and Color3.fromRGB(164,124,96)
-      or id=="boar" and Color3.fromRGB(110,86,68)
-      or id=="rabbit" and Color3.fromRGB(186,181,159) or nil
+    local animalTint=id=="deer" and meadowPalette.deer
+      or id=="boar" and meadowPalette.boar
+      or id=="rabbit" and meadowPalette.rabbit or nil
     if animalTint or id=="tree" then
       for _,surface in ipairs(clone:GetDescendants()) do
         if surface:IsA("MeshPart") then
@@ -294,8 +307,7 @@ local function worldAsset(id, location, targetHeight)
             local bark=name:find("trunk",1,true) or name:find("bark",1,true)
               or name:find("stem",1,true) or name:find("branch",1,true)
               or name:find("wood",1,true)
-            surface.Color=bark and Color3.fromRGB(113,88,65)
-              or Color3.fromRGB(74,121,78)
+            surface.Color=bark and meadowPalette.bark or meadowPalette.leaves
             surface.Material=bark and Enum.Material.Wood or Enum.Material.Fabric
           else
             surface.Color=animalTint
@@ -924,6 +936,25 @@ local function spawnEnemy(isBoss, index)
   if not groundHit then model:Destroy();warn("마력숲 몬스터 지면 미확인: "..partId);return false end
   local meshOffset=groundHit.Position.Y+.12-bottom
   model:PivotTo(model:GetPivot()+Vector3.new(0,meshOffset,0))
+  -- [늑대 실제 전방] 확인된 원본 사지 Bone으로 제작 메시의 앞축을 정렬한다.
+  if partId=="wolf" then
+    local front,rear={},{}
+    for _,bone in ipairs(model:GetDescendants()) do
+      if bone:IsA("Bone") then
+        local key=bone.Name:lower():gsub("[^%w]","")
+        if key=="bone014" or key=="bone017" then front[#front+1]=bone.WorldPosition end
+        if key=="bone008" or key=="bone011" then rear[#rear+1]=bone.WorldPosition end
+      end
+    end
+    if #front==2 and #rear==2 then
+      local axis=model:GetPivot():VectorToObjectSpace(
+        Vector3.new((front[1].X+front[2].X-rear[1].X-rear[2].X)*.5,0,
+          (front[1].Z+front[2].Z-rear[1].Z-rear[2].Z)*.5))
+      if axis.Magnitude>.01 then
+        model:SetAttribute("NativeMobFacingYaw",math.atan2(axis.X,-axis.Z))
+      end
+    end
+  end
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + CurrentWave*(isBoss and 60 or 13)
@@ -932,22 +963,17 @@ local function spawnEnemy(isBoss, index)
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
   -- [몬스터 공통 재질] 원본 텍스처·메시·종별 실루엣은 유지한다.
   -- 숲의 무광 저채도 색감만 맞추며 보스의 암석 재질과 벌의 투명 날개는 보존한다.
-  local originalTextured=partId=="bat" or partId=="mushroom" or partId=="skeleton"
-  local bodyTint=isBoss and Color3.fromRGB(132,143,128)
-    or partId=="bat" and Color3.fromRGB(121,125,139)
-    or partId=="mushroom" and Color3.fromRGB(166,139,110)
-    or partId=="skeleton" and Color3.fromRGB(204,195,172)
-    or partId=="bee" and Color3.fromRGB(225,176,91)
-    or partId=="boar" and Color3.fromRGB(131,101,82)
-    or Color3.fromRGB(145,137,123)
-  local bodyMaterial=isBoss and Enum.Material.Slate or originalTextured and Enum.Material.SmoothPlastic
-    or partId=="bee" and Enum.Material.SmoothPlastic or Enum.Material.Fabric
+  -- 몸통과 숲 초목의 무광색을 맞춘다. 원본 TextureID/SurfaceAppearance는 유지.
+  local bodyTint=isBoss and meadowPalette.golem
+    or meadowPalette[partId] or meadowPalette.wolf
+  local bodyMaterial=isBoss and Enum.Material.Slate
+    or partId=="skeleton" and Enum.Material.SmoothPlastic or Enum.Material.Fabric
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") then
       local wing=partId=="bee" and surface.Name:lower():find("wing",1,true)
       surface.Color=wing and Color3.fromRGB(190,228,235) or bodyTint
       surface.Material=wing and Enum.Material.Glass or bodyMaterial
-      surface.Reflectance=wing and .08 or 0
+      surface.Reflectance=wing and .025 or 0
     end
   end
   model:SetAttribute("Species",partId)
@@ -1221,8 +1247,9 @@ local function animateMeadowOriginalMob(enemy,now)
   local recoil=enemy.attackState=="RECOVERY"
     and math.exp(-math.max(0,now-enemy.lastAttack)*7) or 0
   local aerial=kind=="bee" or kind=="bat"
+  -- 네발 몹은 가짜 몸체 점프 대신 실제 다리 관절로 접지를 표현한다.
   local movingHeight=aerial and (1.35+math.sin(phase)*.42)
-    or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .22 or .2) or 0)
+    or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .14 or .035) or 0)
   local leap=attacking and ((kind=="wolf" or kind=="boar") and .66
     or kind=="golem" and .38 or aerial and .5 or -.18) or 0
   movingHeight+=leap+recoil*(kind=="golem" and -.28 or .24)
@@ -1234,15 +1261,16 @@ local function animateMeadowOriginalMob(enemy,now)
     attackPitch=enemy.attackPattern=="GOLEM_SHOCKWAVE" and .18*preparation or -.38*preparation
     movingHeight+=enemy.attackPattern=="GOLEM_SHOCKWAVE" and math.sin(preparation*math.pi)*.42 or 0
   end
-  local stridePitch=inMotion and math.sin(phase)*(.05+(kind=="wolf" and .13 or .06)) or 0
+  local stridePitch=inMotion and math.sin(phase)*(kind=="wolf" and .025 or .045) or 0
   local bank=stunned and math.sin(now*9)*.12 or aerial and math.sin(phase*.52)*.22
-    or inMotion and math.sin(phase*.65)*.09 or 0
+    or inMotion and math.sin(phase*.65)*.025 or 0
   local facing=enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
   local pivot=(enemy.visualPosition or enemy.position)
     +Vector3.new(0,(enemy.visibleGroundOffset or 0)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
   enemy.model:PivotTo(CFrame.lookAt(pivot,pivot+facing)
+    *CFrame.Angles(0,enemy.model:GetAttribute("NativeMobFacingYaw") or 0,0)
     *CFrame.Angles(attackPitch+stridePitch,0,bank))
 end
 
@@ -1362,8 +1390,7 @@ local function updateEnemyAI(dt,now)
       end
       animal.escape=(animal.escape or Vector3.zero):Lerp(escape,math.min(1,dt*3))
       desired+=animal.escape
-      local forward=Vector3.new(math.cos(phase),0,-math.sin(phase))
-      if animal.escape.Magnitude>1 then forward=animal.escape.Unit end
+      -- 목표 지점의 실제 이동 벡터로 동물의 전방을 설정한다.
       -- 야생동물의 기존 원본 피벗과 발 지면 간 오프셋을 유지해 지하 이동을 방지한다.
       if now>=(animal.nextGroundSample or 0) then
         local ray=RaycastParams.new()
@@ -1378,7 +1405,10 @@ local function updateEnemyAI(dt,now)
         animal.nextGroundSample=now+.5
       end
       desired+=Vector3.new(0,animal.groundDelta or 0,0)
-      animal.model:PivotTo(CFrame.lookAt(desired,desired+forward))
+      local previous=animal.position or animal.origin
+      local movement=Vector3.new(desired.X-previous.X,0,desired.Z-previous.Z)
+      if movement.Magnitude>.025 then animal.visualFacing=movement.Unit end
+      animal.position=desired
     end
   end
   if #enemies==0 then
@@ -1547,9 +1577,26 @@ RunService.Heartbeat:Connect(function(dt)
     enemyVisualElapsed=0
     local alpha=1-math.exp(-visualStep*18)
     local now=os.clock()
+    -- [야생동물 렌더] 기존 AI 속도는 그대로, 원본 메시만 30Hz 보간한다.
+    for _,animal in ipairs(meadowWildlife) do
+      if animal.model.Parent and animal.position then
+        animal.visualPosition=(animal.visualPosition or animal.origin):Lerp(animal.position,alpha)
+        local facing=animal.visualFacing or Vector3.new(0,0,-1)
+        local smooth=(animal.visualFacingSmooth or facing):Lerp(facing,alpha)
+        if smooth.Magnitude>.01 then animal.visualFacingSmooth=smooth.Unit end
+        local forward=animal.visualFacingSmooth or facing
+        animal.model:PivotTo(CFrame.lookAt(animal.visualPosition,animal.visualPosition+forward))
+      end
+    end
     for _,enemy in ipairs(enemies) do
       if enemy.HP>0 and enemy.model.Parent then
-        enemy.visualPosition=(enemy.visualPosition or enemy.position):Lerp(enemy.position,alpha)
+        local previous=enemy.visualPosition or enemy.position
+        enemy.visualPosition=previous:Lerp(enemy.position,alpha)
+        if enemy.kind=="wolf" then
+          local moved=Vector3.new(enemy.visualPosition.X-previous.X,0,enemy.visualPosition.Z-previous.Z)
+          if moved.Magnitude>.01 and (enemy.attackState=="CHASE" or enemy.attackState=="PATROL"
+            or enemy.attackState=="RETURN_TO_SPAWN") then enemy.visualFacing=moved.Unit end
+        end
         local desired=enemy.visualFacing
         if desired.Magnitude>.01 then
           local smooth=(enemy.visualFacingSmooth or desired):Lerp(desired,alpha)
