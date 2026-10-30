@@ -143546,11 +143546,153 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_765dab69588d790f58feddd2",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-11561",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8f6fddcd166c8288cc02752e0ce945960dad8c88",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11561,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/fantasy-survival-meadow-village-contracts-20261031",
+        "baseSha": "8f6fddcd166c8288cc02752e0ce945960dad8c88",
+        "headSha": "bb3c784bc110ec2dd3693346023318a9fa99ea1d",
+        "mergeCommitSha": "07b9986f892a85ce275f34c0923db79bd73156d3",
+        "mergedAt": "2026-10-30T21:20:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fb93d420f3a353d543f23460aea02fa737ff27e161f93bf9bc15d4ed6d5485c6",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-meadow-village-contracts-20261031",
+        "candidateSha": "bb3c784bc110ec2dd3693346023318a9fa99ea1d"
+      },
+      "changeStats": {
+        "changedFileCount": 14,
+        "codingRelevantFileCount": 14,
+        "addedLineCount": 1134,
+        "deletedLineCount": 126,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/horror-combat-assets.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/baeksu-war-upload-meshes.mjs",
+          "tools/horror-combat-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/horror-combat-assets.yml",
+          ".github/workflows/owner-roblox-dedicated-private-experiences.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-development-roblox-package.test.mjs",
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/client/Game.client.luau",
+          "roblox-games/fantasy-survival/server/Game.server.luau",
+          "roblox-games/fantasy-survival/shared/GameConfig.luau",
+          "tools/baeksu-war-author-meshes.py",
+          "tools/baeksu-war-upload-meshes.mjs",
+          "tools/horror-combat-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11561",
+        "merge-commit:07b9986f892a85ce275f34c0923db79bd73156d3",
+        "base-main:8f6fddcd166c8288cc02752e0ce945960dad8c88"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1139
+    "total": 1140
   }
 }
