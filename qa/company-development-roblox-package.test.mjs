@@ -1161,9 +1161,10 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/forestBed.SoundId="rbxassetid:\/\/9116971475"/);
   assert.match(client,/birdChirp.SoundId="rbxassetid:\/\/140708444684424"/);
   assert.match(client,/birdChirp.Looped=false/);
-  assert.match(client,/forestBed.Volume=\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)/);
+  assert.match(client,/local forestAudioEnabled=hasStudioAssetAtom\("AUDIO","ENV_FOREST"\)/);
+  assert.match(client,/forestBed\.Volume=forestAudioEnabled and \(\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)\) or 0/);
   assert.match(client,/local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="SNOW" or sky=="STORM"/);
-  assert.match(client,/birdChirp.Volume=\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)/);
+  assert.match(client,/birdChirp\.Volume=forestAudioEnabled and \(\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)\) or 0/);
   assert.match(client,/nextChirp=os.clock\(\)\+math.random\(17,29\)/);
   // Survival inspection is meaningful but cannot change existing balance, rewards or save data.
   assert.match(server,/local function inspectMeadowSurvival\(player,model,subject\)/);
@@ -1365,6 +1366,65 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/GetAttributeChangedSignal\("ApprovedCombatMotion"\):Connect/);
   assert.match(client,/GetAttributeChangedSignal\("ApprovedActionMotion"\):Connect/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+});
+
+// [마력숲 상용형 HUD] 외부 CC0 원본 아이콘, 발견 기록, 실제 아이템 수량 보존.
+test('fantasy commercial HUD keeps licensed truthful icons and interactive discovered minimap',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  assert.equal(registry.interfaceIcons.license,'CC0-1.0');
+  assert.equal(registry.interfaceIcons.assetId,'102668066491590');
+  assert.match(client,/local meadowIconAtlas="rbxassetid:\/\/102668066491590"/);
+  for(const attr of ['Wood','Stone','Coins']){
+    assert.ok(client.includes('"'+attr+'",nil,'),'unlicensed/mismatched resource icon: '+attr);
+  }
+  assert.ok(client.includes('if item[3]~=nil then'));
+  assert.ok(client.includes('symbol.Name="ResourceTextIcon"'));
+  assert.ok(client.includes('iconBack.Name="ItemIconBack"'));
+  assert.ok(client.includes('inventoryCards[index].Text='));
+  assert.ok(client.includes('quickCaption.Text="가방"'));
+  // 상단 기존 메뉴는 유지하고 왼쪽의 퀘스트·가방·날씨를 큰 패널 없이 아이콘 메뉴로 정리한다.
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('questTracker.Activated:Connect(function()meadowMenu.open(3)end)'));
+  assert.ok(client.includes('trackerTitle.Visible=false'));
+  assert.ok(client.includes('trackerDetail.Visible=false'));
+  assert.ok(client.includes('questCaption.Text="퀘스트"'));
+  assert.ok(client.includes('icon.Name="CC0QuestIcon"'));
+  assert.ok(client.includes('backpackIcon.Name="CC0BackpackIcon"'));
+  assert.ok(client.includes('backpackIcon.ImageRectOffset=Vector2.fromOffset(256,0)'));
+  assert.ok(client.includes('inventoryQuick.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('inventoryQuick.Position=UDim2.fromOffset(9,shortLandscape and 122 or 130)'));
+  assert.ok(client.includes('meadowQuickButtons[1].Position=UDim2.fromOffset(shortLandscape and 66 or 9,shortLandscape and 122 or 187)'));
+  assert.ok(client.includes('meadowQuickButtons[2].Position=UDim2.fromOffset(shortLandscape and 123 or 9,shortLandscape and 122 or 244)'));
+  assert.ok(client.includes('questTracker.Position=UDim2.fromOffset(shortLandscape and 180 or 9,shortLandscape and 122 or 301)'));
+  assert.ok(client.includes('meadowQuickButtons[3].Position=UDim2.fromOffset(shortLandscape and 237 or 9,shortLandscape and 122 or 358)'));
+  assert.ok(client.includes('local meadowQuickPages={'));
+  for(const row of ['"MeadowSkillQuick","스킬",2,5','"MeadowGearQuick","장비",3,1','"MeadowSettingsQuick","설정",6,4']){
+    assert.ok(client.includes(row),'invalid quick-menu destination: '+row);
+  }
+  assert.ok(client.includes('button.Activated:Connect(function()meadowMenu.open(info[4])end)'));
+  assert.ok(client.includes('icon.Name="CC0MenuQuickIcon"'));
+  assert.ok(client.includes('icon.ImageRectOffset=Vector2.fromOffset(info[3]*64,0)'));
+  assert.ok(client.includes('meadowClimateChip=Instance.new("TextButton")'));
+  assert.ok(client.includes('meadowClimateChip.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('climateDetails.Visible=not climateDetails.Visible'));
+  assert.ok(client.includes('meadowClimateChip.Text=string.format("%s\\n%s"'));
+  assert.ok(client.includes('MeadowClockMinutes'));
+  assert.ok(client.includes('meadowClimateChip.Visible=show'));
+  assert.ok(client.includes('local chipX=shortLandscape and 294 or math.max(9,v.X-64)'));
+  assert.ok(client.includes('local chipY=shortLandscape and 122 or radarTop+radarHeight+7'));
+  assert.ok(client.includes('climateDetails.Position=UDim2.fromOffset(shortLandscape and 9 or math.max(9,v.X-274),'));
+  assert.ok(client.includes('inventoryQuick.Activated:Connect(function()meadowMenu.open(2)end)'));
+  assert.ok(client.includes('radarJournal.Activated:Connect(function()meadowMenu.open(3)end)'));
+  assert.ok(client.includes('radarTitle.Text=gui.AbsoluteSize.Y<450'));
+  assert.ok(client.includes('bit32.band(discovered,point[3])~=0'));
+  assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
+  assert.ok(client.includes('attackIcon.ImageRectOffset=Vector2.fromOffset(0,0)'));
+  assert.ok(client.includes('guardIcon.ImageRectOffset=Vector2.fromOffset(info[4]*64,0)'));
+  assert.ok(client.includes('local meadowArcDegrees={-150,-114,-78,-186,-222,-258}'));
+  assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
+  assert.ok(client.includes('forestBed.Volume=forestAudioEnabled and .045 or 0'));
+  assert.doesNotMatch(client,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
 });
 
 // Roblox Avatar Joint Upgrade (2026): verified engine uses AnimationConstraint for R15.
