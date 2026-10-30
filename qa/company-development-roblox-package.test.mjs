@@ -1611,6 +1611,29 @@ test('fantasy unarmed and meadow skills support AnimationConstraint and legacy M
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1,'save key and schema unchanged');
 });
 
+// 파일 구분: 마력숲 레벨 제거 후 7개 독립 숙련도와 기존 저장·보상 보존 검증.
+test('마력숲은 전투·요리·제작·채집·건축·사냥·연금술 7개만 별도 저장한다',()=>{
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const section=config.slice(config.indexOf('  Proficiencies = {'),config.indexOf('  InitialState = {'));
+  const names=[...section.matchAll(/Name="([^"]+)",Source=/g)].map(m=>m[1]);
+  assert.deepEqual(names,['전투','요리','제작','채집','건축','사냥','연금술']);
+  for(const key of ['Combat','Cooking','Crafting','Gathering','Building','Hunting','Alchemy']){
+    assert.match(config,new RegExp(key+'Proficiency\\s*=\\s*0'));
+    assert.ok(client.includes('"' +key+'Proficiency"'),'UI attribute watcher missing: '+key);
+  }
+  assert.match(server,/store:UpdateAsync\("player:"/);
+  assert.match(server,/for key, fallback in pairs\(Config.InitialState\) do snapshot\[key\]/);
+  assert.match(server,/if typeof\(saved.CombatProficiency\)~="number" then/);
+  assert.match(server,/setNumber\(player,"GatheringProficiency"/);
+  assert.match(server,/setNumber\(player,"CraftingProficiency"/);
+  assert.match(server,/if target.kind=="wolf" or target.kind=="bat" then\s*setNumber\(player,"HuntingProficiency"/);
+  assert.match(server,/target.HP<=0 then/);
+  assert.match(client,/table.concat\(proficiencyLines,"\\n"\)/);
+  assert.match(server,/setNumber\(player,"CombatProficiency",readNumber\(player,"CombatProficiency",0\)\+experience\)/);
+});
+
 // 파일 구분: 마력숲 회피 모션 우선권·완벽 막기 연타 중단 회귀 검증.
 test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관절에 연결된다',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
