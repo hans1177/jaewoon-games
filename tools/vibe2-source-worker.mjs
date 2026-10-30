@@ -1754,6 +1754,89 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     return{summary:'Vibe2 source-grounded mobile action implementation',expectedEffect:'Connect declared controls directly to existing gameplay actions',edits:[{path:relative,find:script[0],replace:replacement}],newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,learnedCodePatternIds:unique(learnedPatternIds),
       externalGameScriptReadOnly:externalScript};
   }
+  return deterministicWebModuleInputCandidate({order,sourceRoot,responsibleFiles});
+}
+
+// [게임별 무모델 입력 수리] 기존 HTML 모듈이 명시적으로 가져온 같은 게임의
+// exported 함수에만 이미 선언된 조작 버튼을 연결한다. 모듈 소스는 읽기 전용이다.
+// 임의 함수 추측, 외부 패키지, 비동기 import, 저장/경제 수정은 금지한다.
+export function deterministicWebModuleInputCandidate({order={},sourceRoot='',responsibleFiles=[]}={}){
+  if(clean(order.target).toLowerCase()!=='web'||!sourceRoot||!Array.isArray(responsibleFiles)
+    ||worldLobbySourceWorkRequired(order))return null;
+  const intent=[order.goal,order.selectedTask?.goal,order.selectedTask?.description,order.selectedTask?.title]
+    .map(clean).join(' ');
+  if(!/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent))return null;
+  let root;try{root=fs.realpathSync(sourceRoot);}catch{return null;}
+  for(const relative of unique(responsibleFiles)){
+    if(!/\.html?$/i.test(relative)||path.isAbsolute(relative)||relative.includes('\\')
+      ||relative.split('/').some(v=>!v||v==='.'||v==='..'))continue;
+    const file=path.resolve(root,relative);
+    if(!file.startsWith(root+path.sep))continue;
+    let stat,real;try{stat=fs.lstatSync(file);real=fs.realpathSync(file);}catch{continue;}
+    if(!stat.isFile()||stat.isSymbolicLink()||stat.size>260000
+      ||!real.startsWith(root+path.sep))continue;
+    const html=fs.readFileSync(file,'utf8');
+    if(/<!--|<(?:form|template)\b|\bon[a-z]+\s*=|\b(?:eval|Function)\s*\(/i.test(html))continue;
+    const scripts=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+    // One executable module only; mixed classic/module, importmaps, async and
+    // decorative modules require separate source ownership evidence.
+    if(scripts.length!==1||!/^ +type=(["'])module\1 *$/i.test(scripts[0][1]))continue;
+    const script=scripts[0];
+    const imported=/^\s*import\s*\{\s*([A-Za-z_$][\w$]*(?:\s*,\s*[A-Za-z_$][\w$]*){0,7})\s*\}\s*from\s*(["'])(\.\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.mjs)\2\s*;?\s*$/;
+    const declared=imported.exec(script[2]);
+    if(!declared)continue;
+    const names=declared[1].split(',').map(s=>s.trim());
+    if(new Set(names).size!==names.length)continue;
+    const modulePath=path.resolve(path.dirname(file),declared[3]);
+    if(!modulePath.startsWith(root+path.sep))continue;
+    let moduleText;
+    try{
+      const ms=fs.lstatSync(modulePath),mr=fs.realpathSync(modulePath);
+      if(!ms.isFile()||ms.isSymbolicLink()||ms.size>260000
+        ||!mr.startsWith(root+path.sep))continue;
+      moduleText=fs.readFileSync(modulePath,'utf8');
+    }catch{continue;}
+    const executable=executableText(moduleText,'javascript');
+    if(/\b(?:eval|Function|document\.write|localStorage|sessionStorage|XMLHttpRequest|fetch)\b/.test(executable)
+      ||/addEventListener\s*\(|\bon(?:click|pointerdown|touchstart)\s*=/.test(executable)
+      ||/\bimport\s*\(/.test(executable))continue;
+    const functions=inspectSourceFunctions(moduleText,{language:'javascript',maxFunctions:4096});
+    const valid=new Set();
+    for(const name of names){
+      const exact=new RegExp('(?:^|\\n)\\s*export\\s+function\\s+'+name+'\\s*\\(\\s*\\)\\s*\\{','g');
+      const matches=[...executable.matchAll(exact)];
+      const fn=functions.filter(row=>row.name===name);
+      if(matches.length===1&&fn.length===1
+        &&!functions.some(row=>row!==fn[0]&&row.start<fn[0].start&&row.end>fn[0].end))
+        valid.add(name);
+    }
+    if(!valid.size)continue;
+    const idCounts=new Map();
+    for(const match of html.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi))
+      idCounts.set(match[2],(idCounts.get(match[2])||0)+1);
+    const bindings=[];
+    for(const button of html.matchAll(/<button\b([^>]*)>/gi)){
+      if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
+      const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
+      const ids=attrs.filter(row=>row[1].toLowerCase()==='id');
+      const actions=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
+      if(ids.length!==1||actions.length!==1)continue;
+      const id=ids[0][3],action=actions[0][3];
+      if(!/^[A-Za-z_$][\w$-]{0,79}$/.test(id)||idCounts.get(id)!==1
+        ||!valid.has(action)
+        ||!/^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting|openQuestLog|openQuestBoard|openRegionMap|openDungeonMap)$/.test(action)
+        ||moduleText.includes('"'+id+'"')||moduleText.includes("'"+id+"'"))continue;
+      bindings.push('document.getElementById('+JSON.stringify(id)+').addEventListener("click", '+action+');');
+    }
+    if(!bindings.length||html.split(script[0]).length!==2)continue;
+    const replace=script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
+    return {summary:'Vibe2 exact same-game exported module input repair',
+      expectedEffect:'Bind declared browser buttons to existing exported module actions',
+      edits:[{path:relative,find:script[0],replace}],
+      newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,
+      deterministicWebModuleInput:true,modelUsed:false,sourceWrite:false,
+      runtimeVerified:false,linkedModuleReadOnly:true};
+  }
   return null;
 }
 
