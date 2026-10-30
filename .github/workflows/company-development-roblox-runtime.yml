@@ -421,7 +421,7 @@ jobs:
             const nativeCreatureRepairPending=item.gameId==='fantasy-survival'
               &&nativeManifest?.gameId==='fantasy-survival'&&nativeManifest?.ownerApproved===true
               &&nativeManifest?.license==='CC0-1.0'
-              &&Object.keys(nativeManifest.models||{}).sort().join(',')==='bee,boar,deer,golem,rabbit,tree,wolf'
+              &&Object.keys(nativeManifest.models||{}).sort().join(',')==='bat,bee,boar,deer,golem,mushroom,rabbit,skeleton,tree,wolf'
               &&(
                 (nativeServer.includes('CreatureParts.Create(')
                   &&!nativeServer.includes('local FANTASY_NATIVE_CREATURES_VERSION = 1'))
@@ -430,6 +430,7 @@ jobs:
                   const idsPath=target+'/shared/VisualAssetIds.luau';
                   const existingRegistry=fs.existsSync(registryPath)?JSON.parse(fs.readFileSync(registryPath,'utf8')):{};
                   const ids=fs.existsSync(idsPath)?fs.readFileSync(idsPath,'utf8'):'';
+                  if(existingRegistry.sourceManifestSha256!==require('node:crypto').createHash('sha256').update(fs.readFileSync(nativeManifestPath)).digest('hex'))return true;
                   const registered=existingRegistry.models?.[role];
                   return !registered||!Number.isSafeInteger(registered.assetId)||registered.assetId<1
                     ||!new RegExp('\\b'+role+'\\s*=\\s*'+registered.assetId+'\\b').test(ids);
