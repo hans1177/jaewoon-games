@@ -29,9 +29,9 @@ if '--game-id=fantasy-survival' in sys.argv:
    raise RuntimeError('FANTASY_NATIVE_SOURCE_PROVENANCE_INVALID:'+role)
   if row.get('sourcePath'):
    source=(ROOT/row['sourcePath']).resolve()
-   if (not source.is_relative_to((ROOT/'assets/shared/forest').resolve())
+   if ((not source.is_relative_to((ROOT/'assets/shared/forest').resolve())
     and not (role in {'bat','mushroom','skeleton'} and source.is_relative_to((ROOT/'assets/roblox/actors/sources').resolve())))
-    or source.suffix.lower() not in ('.fbx','.glb'):
+    or source.suffix.lower() not in ('.fbx','.glb')):
     raise RuntimeError('FANTASY_NATIVE_SOURCE_PATH_INVALID:'+role)
    data=source.read_bytes()
   else:
