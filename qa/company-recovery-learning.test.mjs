@@ -752,6 +752,90 @@ test('single historical game-source task is handed to matching existing Vibe rep
   assert.deepEqual(second.systemAi,first.systemAi);
 });
 
+test('owner approval, protected source, and paid-resource blockers cannot be bypassed by related game recovery',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const primary={id:'primary',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    responsibleFiles:['web-games/forest/index.html'],status:'failed',priority:'normal'};
+  const related={...primary,id:'related',status:'queued'};
+  const rec={id:'restricted-rec',status:'queued',sourceQueue:'vibe2',
+    sourceTaskId:primary.id,relatedTaskIds:[related.id],gameId:'forest',
+    recoveryOwner:'VIBE2_VIBE3',responsibleFiles:['web-games/forest/index.html'],
+    failureStage:'WEB_RUNTIME',failureSignature:'WEB_FAILED',recoveryStrategy:'EXACT_STAGE_REPAIR'};
+  for(const field of ['requiresOwnerDecision','protectedChange','paidResourceRequired','securityReviewRequired','securityQuarantined']){
+    const restrictedTask={...primary,[field]:true};
+    const denied=dispatchRecovery({
+      recoveryInput:{tasks:[rec]},gameQueueInput:{tasks:[restrictedTask,related]}
+    });
+    assert.deepEqual(denied.gameQueue.tasks,[restrictedTask,related]);
+    assert.equal(denied.recovery.tasks[0].status,'queued');
+    assert.deepEqual(denied.dispatched,[]);
+    const restrictedRec={...rec,[field]:true};
+    const deniedRec=dispatchRecovery({
+      recoveryInput:{tasks:[restrictedRec]},gameQueueInput:{tasks:[primary,related]}
+    });
+    assert.deepEqual(deniedRec.gameQueue.tasks,[primary,related]);
+    assert.equal(deniedRec.recovery.tasks[0].status,'queued');
+  }
+  const restrictedSibling={...related,requiresOwnerDecision:true};
+  const mixed=dispatchRecovery({recoveryInput:{tasks:[rec]},
+    gameQueueInput:{tasks:[primary,restrictedSibling]}});
+  assert.deepEqual(mixed.gameRequeuedTaskIds,[primary.id]);
+  assert.deepEqual(mixed.gameQueue.tasks[1],restrictedSibling);
+});
+
+test('Windows-style game source paths use the same strict scope guard',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const task={id:'forest-windows',gameId:'forest',target:'web',
+    sourceRoot:'web-games\\forest',responsibleFiles:['web-games\\forest\\index.html'],
+    status:'failed',priority:'normal'};
+  const rec={id:'forest-windows-recovery',status:'queued',sourceQueue:'vibe2',
+    sourceTaskId:task.id,gameId:'forest',recoveryOwner:'VIBE2_VIBE3',
+    failureStage:'WEB_INPUT',failureSignature:'WEB_BLOCKED',
+    recoveryStrategy:'EXACT_STAGE_REPAIR',responsibleFiles:['web-games\\forest\\index.html']};
+  const valid=dispatchRecovery({recoveryInput:{tasks:[rec]},gameQueueInput:{tasks:[task]}});
+  assert.equal(valid.dispatched.length,1);
+  assert.deepEqual(valid.gameRequeuedTaskIds,[task.id]);
+  const wrongGame={...rec,id:'spoofed-windows-game',
+    responsibleFiles:['web-games\\desert\\index.html']};
+  const denied=dispatchRecovery({recoveryInput:{tasks:[wrongGame]},gameQueueInput:{tasks:[task]}});
+  assert.deepEqual(denied.dispatched,[]);
+  assert.equal(denied.recovery.tasks[0].status,'queued');
+  assert.deepEqual(denied.gameQueue.tasks,[task]);
+});
+
+test('game-local recovery rejects spoofed source roots and unrelated files within the same platform',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const primary={id:'forest-primary',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
+    responsibleFiles:['web-games/forest/index.html'],status:'failed',priority:'normal',evidence:[]};
+  const wrongRoot={...primary,id:'forest-wrong-root',sourceRoot:'web-games/desert',
+    responsibleFiles:['web-games/desert/index.html'],status:'queued'};
+  const wrongFile={...primary,id:'forest-wrong-file',
+    responsibleFiles:['web-games/desert/index.html'],status:'queued'};
+  const unrelatedFile={...primary,id:'forest-unrelated-file',
+    responsibleFiles:['web-games/forest/unrelated.js'],status:'queued'};
+  const matchedFile={...primary,id:'forest-matched-file',status:'queued'};
+  const recovery={id:'forest-specific-recovery',status:'queued',sourceQueue:'vibe2',
+    sourceTaskId:primary.id,relatedTaskIds:[
+      wrongRoot.id,wrongFile.id,unrelatedFile.id,matchedFile.id
+    ],gameId:'forest',recoveryOwner:'VIBE2_VIBE3',
+    responsibleFiles:['web-games/forest/index.html'],failureStage:'WEB_INPUT',
+    failureSignature:'WEB_INPUT_BLOCKED',recoveryStrategy:'EXACT_STAGE_REPAIR',evidence:[]};
+  const input={tasks:[primary,wrongRoot,wrongFile,unrelatedFile,matchedFile]};
+  const result=dispatchRecovery({recoveryInput:{tasks:[recovery]},gameQueueInput:input,route:'vibe'});
+  assert.equal(result.dispatched.length,1);
+  assert.deepEqual(result.gameRequeuedTaskIds,[primary.id,matchedFile.id]);
+  assert.equal(result.gameQueue.tasks[0].priority,'critical');
+  assert.deepEqual(result.gameQueue.tasks[1],wrongRoot);
+  assert.deepEqual(result.gameQueue.tasks[2],wrongFile);
+  assert.deepEqual(result.gameQueue.tasks[3],unrelatedFile);
+  assert.equal(result.gameQueue.tasks[4].priority,'critical');
+  assert.equal(result.gameQueue.tasks[4].sourceMutationRequired,true);
+  assert.equal(result.gameQueue.tasks[4].failureStage,'WEB_INPUT');
+  const replay=dispatchRecovery({recoveryInput:result.recovery,gameQueueInput:result.gameQueue,route:'vibe'});
+  assert.deepEqual(replay.gameQueue,result.gameQueue);
+  assert.deepEqual(replay.dispatched,[]);
+});
+
 test('a single game repairs only the failed platform lane, not its sibling platform',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const web={id:'forest-web',gameId:'forest',target:'web',sourceRoot:'web-games/forest',
