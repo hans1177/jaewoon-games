@@ -1174,6 +1174,20 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         local wildlife=row.species=="deer" or row.species=="boar" or row.species=="rabbit"
         mode=wildlife and "WALK" or "IDLE"
       end
+      -- 피해 발생을 재판정하지 않는다. 기존 서버가 기록한 타격 시각만
+      -- 사용해 타격→복귀 관절 동작을 한 번 재생한다.
+      local forcedPhase=nil
+      local impactAt=tonumber(model:GetAttribute("NativeMobLastImpact")) or 0
+      local impactAge=workspace:GetServerTimeNow()-impactAt
+      if requested~="DEATH" and impactAt>0 and impactAge>=0 then
+        if impactAge<.20 then
+          mode="ATTACK"
+          forcedPhase=math.clamp(.38+impactAge/.20*.45,0,1)
+        elseif impactAge<.56 then
+          mode="RECOVERY"
+          forcedPhase=math.clamp((impactAge-.20)/.36,0,1)
+        end
+      end
       if mode~=row.lastMode then
         row.lastMode=mode
         row.motionStartedAt=os.clock()
@@ -1186,8 +1200,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           or row.species=="bee" and .32 or .42)
         or mode=="RECOVERY" and .38 or mode=="HIT" and .46
         or mode=="START" and .36 or 1.15
-      local phase=repeating and (row.phase%duration)/duration
-        or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
+      local phase=forcedPhase or (repeating and (row.phase%duration)/duration
+        or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1))
       table.clear(row.poses)
       local _,matched=meadowMobMotion.SampleProceduralActorMotion(mode,
         phase,{
