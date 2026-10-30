@@ -46,6 +46,11 @@ on:
       - 'qa/company-native-learning-real-evidence-contract.test.mjs'
       - 'qa/company-platform-score-learning-contract.test.mjs'
       - 'qa/company-recovery-learning.test.mjs'
+      - 'qa/company-tester-debug-intake.test.mjs'
+      - 'tools/company-tester-debug-intake.mjs'
+      - 'tools/company-recovery-dispatch.mjs'
+      - 'tools/company-recovery-escalation.mjs'
+      - 'tools/company-recovery-queue.mjs'
       - 'qa/company-release-production-cycle.test.mjs'
       - 'qa/company-status-sync-direct-native.test.mjs'
       - 'qa/company-strict-learning-delta-contract.test.mjs'
@@ -118,6 +123,11 @@ on:
       - 'qa/company-native-learning-real-evidence-contract.test.mjs'
       - 'qa/company-platform-score-learning-contract.test.mjs'
       - 'qa/company-recovery-learning.test.mjs'
+      - 'qa/company-tester-debug-intake.test.mjs'
+      - 'tools/company-tester-debug-intake.mjs'
+      - 'tools/company-recovery-dispatch.mjs'
+      - 'tools/company-recovery-escalation.mjs'
+      - 'tools/company-recovery-queue.mjs'
       - 'qa/company-release-production-cycle.test.mjs'
       - 'qa/company-status-sync-direct-native.test.mjs'
       - 'qa/company-strict-learning-delta-contract.test.mjs'
@@ -178,6 +188,10 @@ jobs:
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-incremental-qa.mjs
           node --check tools/vibe2-learning-motor.mjs
+          node --check tools/company-tester-debug-intake.mjs
+          node --check tools/company-recovery-dispatch.mjs
+          node --check tools/company-recovery-escalation.mjs
+          node --check tools/company-recovery-queue.mjs
           node --check tools/vibe2-practice-distillation.mjs
           node --check tools/company-baseline-gate.mjs
           node --check qa/company-release-production-cycle.test.mjs
@@ -312,7 +326,8 @@ jobs:
       - name: Validate learning and deterministic recovery contracts
         run: |
           set -euo pipefail
-          node --test qa/company-recovery-learning.test.mjs qa/vibe2-experience-control.test.mjs
+          # 게임별 tester-debug F0/웹 반복 실패·근거 기반 재예약도 동일 정식 QA에서 실행한다.
+          node --test qa/company-recovery-learning.test.mjs qa/company-tester-debug-intake.test.mjs qa/vibe2-experience-control.test.mjs
           node --test qa/company-design-checkpoint-recovery.test.mjs qa/vibe2-release-dispatch-recovery.test.mjs
           node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-evolution.test.mjs qa/company-system-ai-supervision-loop.test.mjs
 
