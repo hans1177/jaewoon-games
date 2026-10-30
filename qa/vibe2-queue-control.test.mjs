@@ -70,6 +70,20 @@ test('폐기된 웹 소스 예약을 보류하고 정상 웹과 네이티브 작
   assert.equal(reopened.tasks.find(task=>task.id==='old-web').ownerDevelopmentHold,false);
 });
 
+test('오너 마력숲 최우선 바이브 구현 예약은 기존 3종 집중개발보다 우선, 나머지는 계속 진행',()=>{
+  const policy={developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}};
+  const task=(id,gameId)=>({id,gameId,target:'roblox',department:'development',
+    type:'implementation',goal:'implement current Roblox game',status:'queued',priority:'normal',
+    sourceRoot:'roblox-games/'+gameId,responsibleFiles:['server/Game.server.luau']});
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
+    task('ordinary-roblox','simple-rpg'),task('forest','fantasy-survival')
+  ]});
+  const one=reserveVibeTaskBatch(queue,{policy,maxConcurrentTasks:1,lane:'game-primary'});
+  assert.deepEqual(one.tasks.map(t=>t.id),['forest']);
+  const two=reserveVibeTaskBatch(queue,{policy,maxConcurrentTasks:2,lane:'game-primary'});
+  assert.deepEqual(new Set(two.tasks.map(t=>t.id)),new Set(['forest','ordinary-roblox']));
+});
+
 test('focused existing queues get exact game-platform priority and spare workers still develop other games',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
     enabled:true,ownerFocusedGameIds:['simple-rpg','insect-survival','cozy-island'],
