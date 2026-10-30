@@ -1574,8 +1574,8 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     if(!fs.existsSync(file)||!fs.statSync(file).isFile()||!fs.realpathSync(file).startsWith(root+path.sep))continue;
     const source=fs.readFileSync(file,'utf8');
     const scripts=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
-    // 단일 일반 스크립트만 지원한다. 모듈/외부 로더/이벤트 위임의 책임을 추측하지 않는다.
-    if(scripts.length!==1||scripts[0][1].trim()||/<!--|<(?:form|template)\b|\b(?:querySelectorAll|eval|Function)\s*\(|\bimport\b/.test(source))continue;
+    // One classic inline or exact local synchronous script. Never infer module or delegated event behavior.
+    if(scripts.length!==1||/<!--|<(?:form|template)\b|\b(?:querySelectorAll|eval|Function)\s*\(|\bimport\b/.test(source))continue;
     const script=scripts[0];
     let code=script[2],externalScript=false;
     if(script[1].trim()){
@@ -1583,7 +1583,7 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       // only writable file; the referenced gameplay implementation is read-only.
       // No CDN, module, async/defer, path traversal or symlinked dependency.
       if(code.trim())continue;
-      const src=/^\s+src=(["'])(\.?\/?[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.js)\1\s*$/i.exec(script[1]);
+      const src=/^\s+src=(["'])((?:\.\/)?[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.js)\1\s*$/i.exec(script[1]);
       if(!src)continue;
       const relativeJs=src[2].replace(/^\.\//,'');
       const linked=path.resolve(path.dirname(file),relativeJs);
