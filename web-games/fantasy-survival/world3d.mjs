@@ -878,8 +878,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
               material=original.clone();
               if(material.color)material.color.lerp(tint,.22);
               if(child.geometry?.getAttribute('uv')&&'normalMap' in material){
-                const finish=(file==='monster-41.obj'||speciesId==='crystaldeer')?'lego':
-                  (speciesId==='sapdeer'||file==='mushroom.fbx')?'soft':'micro';
+                const finish=(kind==='monster-41.obj'||speciesId==='crystaldeer')?'lego':
+                  (speciesId==='sapdeer'||kind==='mushroom.fbx')?'soft':'micro';
                 material.normalMap=monsterStudTextures.get(finish);
                 material.normalScale?.set(.92,.92);
                 if(typeof material.roughness==='number')material.roughness=.48;
