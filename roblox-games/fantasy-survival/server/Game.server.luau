@@ -2138,10 +2138,24 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
           sign=-sign
         end
         if safe then
-          character:PivotTo(character:GetPivot()+direction*sign*distance)
+          -- [자동 회피] 순간이동을 없애고 기존 3.8스터드를 .40초 측면 스텝으로 연결한다.
+          -- 무적 .48초·재사용 4초·지면 검사·공격 판정은 기존 서버 권한 그대로다.
+          local dodgeOrigin=character:GetPivot()
+          local dodgeOffset=direction*sign*distance
           defense.dodgeUntil=now+.48
           defense.nextAutoDodgeAt=now+4
           meadowDefense[player]=defense
+          task.spawn(function()
+            local began=os.clock()
+            while character.Parent and player.Character==character
+              and root:IsDescendantOf(character) and humanoid.Health>0 do
+              local t=math.clamp((os.clock()-began)/.40,0,1)
+              local ease=.5-.5*math.cos(math.pi*t)
+              character:PivotTo(dodgeOrigin+dodgeOffset*ease)
+              if t>=1 then break end
+              RunService.Heartbeat:Wait()
+            end
+          end)
           local id=sign<0 and "skill-meadow-dodge-left" or "skill-meadow-dodge-right"
           local seq=readNumber(player,"ActionSequence",0)+1
           setNumber(player,"ActionSequence",seq)
@@ -2548,11 +2562,21 @@ local function meadowDodge(player,sign,id)
     ray.FilterType=Enum.RaycastFilterType.Exclude
     ray.FilterDescendantsInstances={character}
     local start=root.Position+Vector3.new(0,1.5,0)
+    ray.RespectCanCollide=true
     local wall=workspace:Raycast(start,side*7,ray)
     local distance=wall and math.max(0,wall.Distance-2) or 7
     if distance<2 then return false end
-    -- [서버 승인 회피] 기존 7스터드 이동·장애물 검사와 .48초 무적은 유지한다.
-    -- 한번에 순간이동하지 않고 실제 R15 발 내딛기 길이(.22초)에 맞춰 측면으로 이동한다.
+    -- [회피 안전] 낭떠러지·물·급경사에 착지하지 않는다. 최대 7스터드 범위는 유지.
+    local floorRay=RaycastParams.new()
+    floorRay.FilterType=Enum.RaycastFilterType.Include
+    floorRay.FilterDescendantsInstances={meadowTerrain}
+    local landing=root.Position+side*distance
+    local floor=workspace:Raycast(landing+Vector3.new(0,8,0),
+      Vector3.new(0,-18,0),floorRay)
+    local terrainGround=root.Position.Y-root.Size.Y*.5
+    if not floor or floor.Material==Enum.Material.Water
+      or floor.Normal.Y<.65 or math.abs(floor.Position.Y-terrainGround)>4 then return false end
+    -- [서버 승인 회피] 기존 이동 거리·.48초 무적은 유지하며 .40초 자연스러운 측면 스텝.
     local dodgeOrigin=character:GetPivot()
     local dodgeOffset=side*distance
     local defense=meadowDefense[player] or {}
@@ -2564,9 +2588,9 @@ local function meadowDodge(player,sign,id)
       local humanoid=character:FindFirstChildOfClass("Humanoid")
       while character.Parent and player.Character==character
         and root:IsDescendantOf(character) and humanoid and humanoid.Health>0 do
-        local t=math.clamp((os.clock()-movementStarted)/.22,0,1)
-        -- 시작/종료 속도는 0, 중간에만 가속하는 3차 보간.
-        local eased=t*t*(3-2*t)
+        local t=math.clamp((os.clock()-movementStarted)/.40,0,1)
+        -- 위쳐식 사이드 스텝: 사인 곡선으로 출발·착지 속도를 0에 가깝게 연결.
+        local eased=.5-.5*math.cos(math.pi*t)
         character:PivotTo(dodgeOrigin+dodgeOffset*eased)
         if t>=1 then break end
         RunService.Heartbeat:Wait()

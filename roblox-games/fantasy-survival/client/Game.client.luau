@@ -2766,6 +2766,8 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   local action=id and actionsById[id]
   if not serial or not action or action.Kind=="COMBAT" or not action.MotionAtom then return end
   local isDodge=id=="skill-meadow-dodge-left" or id=="skill-meadow-dodge-right"
+  local isGuard=id=="skill-meadow-guard"
+  local isParry=id=="skill-meadow-parry"
   if os.clock()<dodgePoseUntil and not isDodge then return end
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
@@ -2793,22 +2795,24 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   end
   local r6=humanoid.RigType==Enum.HumanoidRigType.R6
   if r6 then
-    if not isDodge or not (skillMotionJoints.RootJoint and skillMotionJoints["Left Shoulder"]
+    if not (skillMotionJoints.RootJoint and skillMotionJoints["Left Shoulder"]
       and skillMotionJoints["Right Shoulder"]) then return end
   elseif not (skillMotionJoints.Waist and skillMotionJoints.LeftShoulder and
     skillMotionJoints.RightShoulder and skillMotionJoints.LeftElbow and
     skillMotionJoints.RightElbow) then return end
   skillMotionAvailable.Chest=true
+  -- Roblox 공식 Transform 방식: Animator 위에 PreSimulation 관절만 혼합한다.
   skillMotionR15=combatMotionSource.BindJointPose(skillMotionJoints,{
-    followAnimator=true,response=26,
+    followAnimator=true,response=23,
   })
   skillMotionCharacter=character
   skillMotionState=state
   skillMotionStart=os.clock()
-  -- [회피 시간] 실제 서버 무적 판정(.48초) 동안 예비 자세·측면 이동·착지까지 끝낸다.
-  -- 기존 쿨다운·스태미너·이동 거리 및 다른 스킬 길이는 그대로 둔다.
-  skillMotionDuration=isDodge and .46 or math.clamp(tonumber(meta.duration) or .7,.25,1.4)
-  skillMotionDeadline=skillMotionStart+skillMotionDuration+.16
+  -- [막기/회피] 서버의 기존 판정 시간과 캐릭터 자세를 일치시킨다.
+  -- 막기 2.8초, 패링 .42초, 회피 .46초. 서버 피해/무적/스태미너는 변경하지 않는다.
+  skillMotionDuration=isGuard and 2.8 or isParry and .42 or isDodge and .46
+    or math.clamp(tonumber(meta.duration) or .7,.25,1.4)
+  skillMotionDeadline=skillMotionStart+skillMotionDuration+(isGuard and 0 or .12)
   if isDodge then dodgePoseUntil=skillMotionDeadline end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
   character:SetAttribute("NativeSkillActionId",id)
@@ -2826,17 +2830,20 @@ RunService.PreSimulation:Connect(function(dt)
   local phase=math.clamp((os.clock()-skillMotionStart)/skillMotionDuration,0,1)
   local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
   local isDodge=actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right"
+  local isGuard=actionId=="skill-meadow-guard"
+  local isParry=actionId=="skill-meadow-parry"
   -- [회피 전용 관절 포즈] 일반 손짓 제스처를 섞지 않고 원본 R15 몸통·팔·양다리만 구동한다.
   -- 서버가 회피를 승인했을 때만 실행하며 실제 위치·피해·무적 판정은 서버 소유.
   if isDodge then
     local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
-    local prepare=math.clamp(phase/.16,0,1)
+    -- 발 내딛기(.08) -> 측면 이동(.34) -> 착지(.46)로 이어지는 탄력 곡선.
+    local prepare=math.clamp(phase/.17,0,1)
     prepare=prepare*prepare*(3-2*prepare)
-    local settle=math.clamp((1-phase)/.32,0,1)
+    local settle=math.clamp((1-phase)/.27,0,1)
     settle=settle*settle*(3-2*settle)
     local lean=prepare*settle
-    local travel=math.sin(math.pi*math.clamp((phase-.1)/.76,0,1))
-    local recovery=math.sin(math.pi*math.clamp((phase-.20)/.67,0,1))
+    local travel=math.sin(math.pi*math.clamp((phase-.05)/.88,0,1))
+    local recovery=math.sin(math.pi*math.clamp((phase-.25)/.7,0,1))
     -- 무게 중심을 먼저 낮추고, 진행 방향으로 몸통을 기울인 뒤 착지 시 바로 세운다.
     skillMotionTargets.Spine=CFrame.new(0,-.045*lean,0)
       *CFrame.Angles(-.24*lean,sign*.16*travel,sign*.36*lean)
@@ -2853,10 +2860,34 @@ RunService.PreSimulation:Connect(function(dt)
     skillMotionTargets.FootL=CFrame.Angles(-(leadLeft and .12 or .22)*lean,0,0)
     skillMotionTargets.FootR=CFrame.Angles(-(leadLeft and .22 or .12)*lean,0,0)
     -- 양팔은 다리와 반대로 흔들려 중심을 잡고 종료 시 중립 자세로 복귀한다.
-    skillMotionTargets.UpperArmL=CFrame.Angles(-.25*lean,sign*.12*travel,-sign*.32*lean)
-    skillMotionTargets.UpperArmR=CFrame.Angles(-.34*lean,-sign*.12*travel,sign*.32*lean)
-    skillMotionTargets.ForearmL=CFrame.Angles(-.32*lean,0,0)
-    skillMotionTargets.ForearmR=CFrame.Angles(-.32*lean,0,0)
+    skillMotionTargets.UpperArmL=CFrame.Angles(-.42*lean,sign*.15*travel,-sign*.32*lean)
+    skillMotionTargets.UpperArmR=CFrame.Angles(-.48*lean,-sign*.15*travel,sign*.32*lean)
+    skillMotionTargets.ForearmL=CFrame.Angles(-.45*lean,0,0)
+    skillMotionTargets.ForearmR=CFrame.Angles(-.45*lean,0,0)
+  elseif isGuard or isParry then
+    -- [방어 동작] 기존 팔·척추·다리 관절로 무게중심을 낮추고 양팔을 얼굴 앞에 세운다.
+    -- 위쳐식 방어: 짧은 들어올리기 → 안정된 막기 → 자연스러운 자세 복귀.
+    -- 캐릭터를 움직이거나 외형 파츠/무기를 생성하지 않는다.
+    local rise=math.clamp(phase/(isParry and .22 or .09),0,1)
+    rise=rise*rise*(3-2*rise)
+    local release=math.clamp((1-phase)/(isParry and .45 or .08),0,1)
+    release=release*release*(3-2*release)
+    local guard=rise*release
+    local counter=isParry and math.sin(math.pi*phase) or 0
+    skillMotionTargets.Spine=CFrame.new(0,-.06*guard,0)
+      *CFrame.Angles(-.14*guard+.08*counter,-.10*guard,.07*guard)
+    skillMotionTargets.Chest=CFrame.Angles(-.11*guard,-.08*guard,0)
+    skillMotionTargets.Head=CFrame.Angles(.12*guard,.1*guard,0)
+    skillMotionTargets.UpperArmL=CFrame.Angles(-1.12*guard-.18*counter,-.17*guard,-.28*guard)
+    skillMotionTargets.UpperArmR=CFrame.Angles(-1.24*guard-.24*counter,.20*guard,.28*guard)
+    skillMotionTargets.ForearmL=CFrame.Angles(-1.08*guard,0,-.12*guard)
+    skillMotionTargets.ForearmR=CFrame.Angles(-1.16*guard,0,.12*guard)
+    skillMotionTargets.HandL=CFrame.Angles(-.12*guard,0,0)
+    skillMotionTargets.HandR=CFrame.Angles(-.12*guard,0,0)
+    skillMotionTargets.ThighL=CFrame.Angles(.12*guard,0,-.09*guard)
+    skillMotionTargets.ThighR=CFrame.Angles(.16*guard,0,.09*guard)
+    skillMotionTargets.ShinL=CFrame.Angles(.19*guard,0,0)
+    skillMotionTargets.ShinR=CFrame.Angles(.17*guard,0,0)
   else
     local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
       bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
