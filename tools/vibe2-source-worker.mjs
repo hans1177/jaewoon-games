@@ -1576,7 +1576,28 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     const scripts=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
     // 단일 일반 스크립트만 지원한다. 모듈/외부 로더/이벤트 위임의 책임을 추측하지 않는다.
     if(scripts.length!==1||scripts[0][1].trim()||/<!--|<(?:form|template)\b|\b(?:querySelectorAll|eval|Function)\s*\(|\bimport\b/.test(source))continue;
-    const script=scripts[0],code=script[2],functions=inspectSourceFunctions(code,{language:'javascript'});
+    const script=scripts[0];
+    let code=script[2],externalScript=false;
+    if(script[1].trim()){
+      // One synchronous, local, classic JS script is allowed. HTML remains the
+      // only writable file; the referenced gameplay implementation is read-only.
+      // No CDN, module, async/defer, path traversal or symlinked dependency.
+      if(code.trim())continue;
+      const src=/^\s+src=(["'])(\.?\/?[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.js)\1\s*$/i.exec(script[1]);
+      if(!src)continue;
+      const relativeJs=src[2].replace(/^\.\//,'');
+      const linked=path.resolve(path.dirname(file),relativeJs);
+      if(!linked.startsWith(root+path.sep))continue;
+      try{
+        const stat=fs.lstatSync(linked),real=fs.realpathSync(linked);
+        if(!stat.isFile()||stat.isSymbolicLink()||stat.size>260000||
+          !real.startsWith(root+path.sep))continue;
+        code=fs.readFileSync(linked,'utf8');
+      }catch{continue;}
+      if(/\b(?:eval|Function)\s*\(|\bimport\b|\bdocument\.write\s*\(/.test(code))continue;
+      externalScript=true;
+    }
+    const functions=inspectSourceFunctions(code,{language:'javascript'});
     if(/addEventListener\s*\(\s*["'](?:click|pointerdown|touchstart)["']/.test(code))continue;
     // 코딩 성능: 중복 id를 한 번만 인덱싱한다. 버튼마다 HTML 전체를 재스캔하지 않는다.
     // 기존 정확한 id 유일성/보존 게이트는 동일하며, 데이터나 이벤트를 추정하지 않는다.
@@ -1724,8 +1745,14 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       }
     }
     if(!bindings.length)continue;
-    const replacement=script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
-    return{summary:'Vibe2 source-grounded mobile action implementation',expectedEffect:'Connect declared controls directly to existing gameplay actions',edits:[{path:relative,find:script[0],replace:replacement}],newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,learnedCodePatternIds:unique(learnedPatternIds)};
+    if(source.split(script[0]).length!==2)continue;
+    // Synchronous external JS has already declared the exact function by
+    // the time the appended inline binding script executes below it.
+    const replacement=externalScript
+      ?script[0]+'\n<script>\n'+bindings.join('\n')+'\n</script>'
+      :script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
+    return{summary:'Vibe2 source-grounded mobile action implementation',expectedEffect:'Connect declared controls directly to existing gameplay actions',edits:[{path:relative,find:script[0],replace:replacement}],newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,learnedCodePatternIds:unique(learnedPatternIds),
+      externalGameScriptReadOnly:externalScript};
   }
   return null;
 }
