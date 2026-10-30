@@ -455,6 +455,6 @@ test('two taps register an unrecorded monster before first-hit combat, then rend
  assert.match(renderer,/function syncBestiaryName\(actor,e,state,height\)/);
  assert.match(renderer,/state\.bestiary\?\.\[e\.type\?\.id\]/);
  assert.match(renderer,/projected\.project\(camera\)/);
- for(const species of ['toxicmycelium','toxicsporeorb','swampgolem','fearbear'])
+ for(const species of ['toxicmycelium','toxicsporeorb','swampgolem','fearbear','foreststag','thornhound','sporegiant'])
   assert.match(source,new RegExp(species+':\\{cat:'),'missing bestiary record: '+species);
 });
