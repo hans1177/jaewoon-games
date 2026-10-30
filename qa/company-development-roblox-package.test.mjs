@@ -1213,6 +1213,10 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/meadowTerrain:FillBall\(bank,6,Enum.Material.Air\)/);
   assert.match(server,/meadowTerrain:FillBall\(Vector3.new\(x,-2\.8,z\),4\.5,Enum.Material.Water\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestStreamSections",streamLength\)/);
+  // 개울의 지형을 조성한 뒤 원본 CC0 나무를 지면에 정렬한다. 3그루 단위로 시각 갱신.
+  assert.ok(server.indexOf('local streamLength=0')<server.indexOf('local sceneryCount=0'));
+  assert.ok(server.indexOf('meadowTerrain:FillBall(bank,6,Enum.Material.Air)')<server.indexOf('local sceneryCount=0'));
+  assert.match(server,/if index%3==0 then task.wait\(\.06\) end/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestRockCount",forestRockCount\)/);
   assert.match(server,/local fragment=worldAsset\("ruin",site,4\.7\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestStoneFragmentCount",forestFragmentCount\)/);
