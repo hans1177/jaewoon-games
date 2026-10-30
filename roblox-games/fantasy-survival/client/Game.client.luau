@@ -2520,29 +2520,61 @@ local nativeMobJointAlias={
   NeckJoint="Neck",JawJoint="Jaw",TailBase="Tail",TailTip="Tail",
   WingLeft="WingL",WingRight="WingR",
 }
-local function mobVfx(pattern,where,stage)
+-- [몬스터 공통 임팩트] 기존 공용 풀링 VFX만 사용한다. 피해·쿨다운·히트박스는 서버 전용.
+local function mobVfx(pattern,where,stage,facing)
   if not combatVFX or typeof(where)~="Vector3" then return end
   local boss=pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
-  local bee=pattern=="BEE_SWEEP" or pattern=="BEE_STING"
+  local flying=pattern=="BEE_SWEEP" or pattern=="BEE_STING"
     or pattern=="BAT_DIVE" or pattern=="BAT_SWEEP"
-  local tint=boss and Color3.fromRGB(255,114,84) or
-    bee and Color3.fromRGB(246,226,117) or Color3.fromRGB(190,238,167)
-  local effect=stage=="DEATH" and "DESTRUCTION_BURST" or
-    stage=="ANTICIPATION" and (boss and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE") or
-    stage=="IMPACT" and "IMPACT_FLASH" or "STATUS_PULSE"
-  local diameter=pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4
+  local wolf=pattern=="WOLF_BITE" or pattern=="WOLF_LUNGE"
+  local boar=pattern=="BOAR_CHARGE" or pattern=="BOAR_TUSK"
+  local skeleton=pattern=="SKELETON_CLEAVE" or pattern=="SKELETON_THRUST"
+  local tint=boss and Color3.fromRGB(255,131,91)
+    or flying and Color3.fromRGB(243,224,123)
+    or wolf and Color3.fromRGB(173,217,245)
+    or boar and Color3.fromRGB(210,157,119)
+    or skeleton and Color3.fromRGB(188,176,232)
+    or Color3.fromRGB(163,219,164)
+  local accent=boss and Color3.fromRGB(255,222,168)
+    or wolf and Color3.fromRGB(222,246,255)
+    or Color3.fromRGB(244,241,219)
+  local charge=pattern=="WOLF_LUNGE" or pattern=="BOAR_CHARGE"
+    or pattern=="GOLEM_SLAM" or pattern=="GOLEM_SHOCKWAVE"
+  local effect=stage=="DEATH" and "DESTRUCTION_BURST"
+    or stage=="ANTICIPATION" and (boss and "BOSS_WARNING_PULSE" or "ATTACK_TELEGRAPH_PULSE")
+    or stage=="IMPACT" and (charge and "SHAPE_BURST" or "IMPACT_FLASH")
+    or "STATUS_PULSE"
+  local forward=typeof(facing)=="Vector3"
+    and Vector3.new(facing.X,0,facing.Z) or Vector3.zero
+  if forward.Magnitude>.1 then forward=forward.Unit else forward=Vector3.zero end
+  local impactPoint=where
+  if stage=="IMPACT" and forward.Magnitude>.1 then
+    impactPoint+=forward*(boss and 1.2 or wolf and 1.45 or 1.0)
+      +Vector3.new(0,boss and 1.0 or flying and 1.7 or .85,0)
+  end
   local ground=nil
   if boss then
     local ray=RaycastParams.new();ray.FilterType=Enum.RaycastFilterType.Include
     ray.FilterDescendantsInstances={workspace.Terrain}
     ground=workspace:Raycast(where+Vector3.new(0,24,0),Vector3.new(0,-80,0),ray)
   end
+  if ground and stage=="ANTICIPATION" then impactPoint=ground.Position+Vector3.new(0,.08,0) end
+  local cframe=forward.Magnitude>.1 and CFrame.lookAt(impactPoint,impactPoint+forward)
+    or CFrame.new(impactPoint)
   local ok,err=pcall(combatVFX.Create,effect,{
-    cframe=CFrame.new(ground and ground.Position+Vector3.new(0,.08,0) or where),parent=workspace,color=tint,
-    accent=Color3.fromRGB(255,239,214),
-    scale=boss and 1 or .8,duration=boss and stage=="ANTICIPATION" and .68 or .32,reducedMotion=reducedEffects,
-    startDiameter=boss and diameter or nil,endDiameter=boss and diameter or nil,
-    hideFlash=boss and stage=="ANTICIPATION",hideRing=boss and pattern=="GOLEM_SLAM",count=reducedEffects and 3 or 7,
+    cframe=cframe,parent=workspace,color=tint,accent=accent,
+    scale=boss and 1 or charge and .86 or .72,
+    duration=stage=="ANTICIPATION" and (boss and .68 or .4)
+      or stage=="DEATH" and .55 or .28,
+    reducedMotion=reducedEffects,
+    -- [공격 범위 의미] 실제 광역 판정은 기존 수문장 충격파에만 있다.
+    startDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
+    endDiameter=boss and (pattern=="GOLEM_SHOCKWAVE" and 16.8 or 10.4) or nil,
+    textureKey=(wolf or skeleton) and stage=="IMPACT" and "slash" or nil,
+    hideFlash=stage=="ANTICIPATION",
+    hideRing=pattern=="GOLEM_SLAM" or stage=="IMPACT" and not charge,
+    mist=stage=="DEATH" and not reducedEffects,
+    count=reducedEffects and 2 or stage=="DEATH" and 7 or stage=="IMPACT" and 5 or 3,
   })
   if not ok then warn("Original mob VFX unavailable: "..tostring(err)) end
 end
@@ -2685,7 +2717,7 @@ local function bindOriginalMob(model)
   }) or nil
   local row={controller=controller,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
-    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0}
+    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0}
   model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG"
     or "UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET")
   if not actualRig and not meadowMobRigWarnings[species] then
@@ -2785,6 +2817,15 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       end
       if not repeating and serverAge then phase=math.clamp(serverAge/duration,0,1) end
       if forcedPhase then phase=forcedPhase end
+      -- [모바일 최적화] 멀리 있는 관절만 저주기로 갱신한다. 서버 AI/피해/표적 상태는 그대로 둔다.
+      row.renderAccumulator+=dt
+      local camera=workspace.CurrentCamera
+      local visualDistance=camera and (camera.CFrame.Position-position).Magnitude or 0
+      local sampleInterval=visualDistance>(nativeTouchEnabled and 90 or 150) and 1/18
+        or visualDistance>55 and nativeTouchEnabled and 1/28 or 0
+      if sampleInterval>0 and row.renderAccumulator<sampleInterval then continue end
+      local poseDt=math.min(row.renderAccumulator,.12)
+      row.renderAccumulator=0
       table.clear(row.poses)
       local _,matched=meadowMobMotion.SampleProceduralActorMotion(mode,
         phase,{
@@ -2794,6 +2835,57 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           profile={limbArc=footTravel and 1.08 or 1.3,footContact=1.28,attackStrike=1.22},
         },row.poses)
       if matched then
+        -- [공통 생동감] 원본 리그가 갖춘 관절만 사용한다. 정지·피격·죽음·예고를 종별로 보간한다.
+        local cycle=phase*math.pi*2
+        local heavy=row.species=="golem" or row.species=="boar"
+        if mode=="IDLE" then
+          local breath=math.sin(cycle)*(heavy and .018 or .032)
+          if row.available.Chest then row.poses.Chest=CFrame.Angles(breath,0,0) end
+          if row.available.Spine then row.poses.Spine=CFrame.Angles(breath*.65,0,0) end
+          if row.available.Neck then row.poses.Neck=CFrame.Angles(-breath*.6,0,0) end
+          if row.available.Head then row.poses.Head=CFrame.Angles(-breath*.55,math.sin(cycle*.5)*.065,0) end
+          if row.available.Tail then row.poses.Tail=CFrame.Angles(0,math.sin(cycle*.7)*.105,0) end
+          if row.plan=="FLYER" then
+            local flap=math.sin(cycle*2)*.24
+            if row.available.WingL then row.poses.WingL=CFrame.Angles(0,0,flap) end
+            if row.available.WingR then row.poses.WingR=CFrame.Angles(0,0,-flap) end
+          end
+        elseif mode=="HIT" or mode=="DEATH" then
+          local reaction=mode=="DEATH" and math.sin(math.min(phase,1)*math.pi*.5)
+            or math.sin(phase*math.pi)
+          if row.available.Chest then row.poses.Chest=CFrame.Angles(-reaction*(heavy and .18 or .28),0,reaction*.12) end
+          if row.available.Head then row.poses.Head=CFrame.Angles(reaction*.23,0,-reaction*.16) end
+          if row.available.Neck then row.poses.Neck=CFrame.Angles(reaction*.15,0,0) end
+          if row.available.Tail then row.poses.Tail=CFrame.Angles(0,-reaction*.25,0) end
+          if row.plan=="FLYER" then
+            if row.available.WingL then row.poses.WingL=CFrame.Angles(0,0,reaction*.35) end
+            if row.available.WingR then row.poses.WingR=CFrame.Angles(0,0,-reaction*.35) end
+          end
+        elseif row.species~="wolf" and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY") then
+          local ready=mode=="ANTICIPATION" and math.sin(phase*math.pi*.5) or 0
+          local strike=mode=="ATTACK" and math.sin(phase*math.pi) or 0
+          local release=mode=="RECOVERY" and 1-phase or 0
+          if row.available.Chest then
+            row.poses.Chest=CFrame.Angles(-ready*.20+strike*(heavy and .40 or .30)-release*.08,0,0)
+          end
+          if row.available.Head then
+            row.poses.Head=CFrame.Angles(ready*.16-strike*.26+release*.12,0,0)
+          end
+          if row.available.Neck then row.poses.Neck=CFrame.Angles(ready*.12-strike*.25,0,0) end
+          if row.available.Jaw then row.poses.Jaw=CFrame.Angles(ready*.12+strike*.42,0,0) end
+          if row.plan=="QUADRUPED" then
+            for _,key in ipairs({"FL","FR"}) do
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(-ready*.20+strike*.28,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(ready*.17+strike*.10,0,0) end
+            end
+          elseif row.plan=="FLYER" then
+            if row.available.WingL then row.poses.WingL=CFrame.Angles(0,0,ready*.40-strike*.48) end
+            if row.available.WingR then row.poses.WingR=CFrame.Angles(0,0,-ready*.40+strike*.48) end
+          else
+            if row.available.UpperArmL then row.poses.UpperArmL=CFrame.Angles(-ready*.55+strike*.80,0,-ready*.20) end
+            if row.available.UpperArmR then row.poses.UpperArmR=CFrame.Angles(-ready*.48+strike*.90,0,ready*.20) end
+          end
+        end
         -- [4족 걷기/질주] 원본 스킨 관절의 접지/회수 단계를 분리하고 속도에 따라 보폭을 조절한다.
         -- 공용 모션/서버 좌표/공격판정/보상/저장에는 영향을 주지 않는다.
         if row.plan=="QUADRUPED" then
@@ -2870,14 +2962,14 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             end
           end
         end
-        row.controller.Step(row.poses,dt)
+        row.controller.Step(row.poses,poseDt)
       end
     end
   end
 end)
 remote.OnClientEvent:Connect(function(kind,payload)
   if typeof(payload)~="table" or typeof(payload.position)~="Vector3" then return end
-  if kind=="MEADOW_MOB_ATTACK" then mobVfx(payload.pattern,payload.position,"IMPACT")
+  if kind=="MEADOW_MOB_ATTACK" then mobVfx(payload.pattern,payload.position,"IMPACT",payload.facing)
   elseif kind=="MEADOW_MOB_DEATH" then
     mobVfx(payload.pattern,payload.position,"DEATH")
   end

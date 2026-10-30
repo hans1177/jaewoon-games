@@ -1275,7 +1275,12 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   // 원본 UV/메시 텍스처와 SurfaceAppearance를 보존하면서 통일된 무광 표면으로 바꾼다.
   assert.match(server,/sourceColor=surface\.Color/);
   assert.match(server,/surface:FindFirstChildOfClass\("SurfaceAppearance"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/local smoothDetail=wing or partName:find\("eye",1,true\)/);
+  assert.match(server,/surface\.Color=wing and Color3\.fromRGB\(190,228,235\)/);
+  // 정적 Pebble 요철만 사용: 원본 임포트 텍스처에 PBR 맵을 런타임 쓰기하지 않는다.
+  assert.doesNotMatch(server,/Instance\.new\("MaterialVariant"\)|Instance\.new\("SurfaceAppearance"\)/);
+  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
+  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
   assert.match(server,/surface\.Reflectance=0/);
   assert.doesNotMatch(server,/surface\.Material=wing and Enum\.Material\.Glass or bodyMaterial/);
   assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
@@ -1283,6 +1288,37 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   for(const source of [client,server,motion]){
     assert.doesNotMatch(source,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
   }
+});
+
+// [마력숲 공통 AI/시각 연출] 변경된 표현이 서버 권한과 전투 밸런스를 침범하지 않는다.
+test('fantasy monster shared actions have restrained impacts stable targets and mobile pose LOD',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(server,/focusUserId=nil/);
+  assert.match(server,/if focusPlayer and focusDistance<=range\+3 then/);
+  assert.match(server,/enemy\.focusUserId=targetPlayer and targetPlayer\.UserId or nil/);
+  assert.match(server,/local range=140/);
+  assert.match(server,/local leashDistance=\(enemy\.position-enemy\.spawnPosition\)\.Magnitude/);
+  assert.match(server,/radius=enemy\.kind=="wolf" and 5 or 3\.5/);
+  assert.match(server,/local weight=enemy\.kind=="wolf" and \.55 or \.32/);
+  assert.match(server,/enemy\.visualFacing=offset\.Unit/);
+  assert.match(server,/facing=enemy\.visualFacing/);
+  assert.match(client,/local function mobVfx\(pattern,where,stage,facing\)/);
+  assert.match(client,/stage=="IMPACT" and \(charge and "SHAPE_BURST" or "IMPACT_FLASH"\)/);
+  assert.match(client,/textureKey=\(wolf or skeleton\) and stage=="IMPACT" and "slash" or nil/);
+  assert.match(client,/startDiameter=boss and \(pattern=="GOLEM_SHOCKWAVE" and 16\.8 or 10\.4\) or nil/);
+  assert.match(client,/hideRing=pattern=="GOLEM_SLAM" or stage=="IMPACT" and not charge/);
+  assert.match(client,/mobVfx\(payload\.pattern,payload\.position,"IMPACT",payload\.facing\)/);
+  assert.match(client,/if mode=="IDLE" then/);
+  assert.match(client,/elseif mode=="HIT" or mode=="DEATH" then/);
+  assert.match(client,/row\.species~="wolf" and \(mode=="ANTICIPATION"/);
+  assert.match(client,/row\.renderAccumulator\+=dt/);
+  assert.match(client,/row\.controller\.Step\(row\.poses,poseDt\)/);
+  assert.match(server,/local hitDamage=math\.floor\(enemy\.damage\/hitCount\)/);
+  assert.match(server,/enemy\.windupUntil=now\+\(enemy\.isBoss and \.68 or/);
+  assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)/);
 });
 
 // Existing server/input authority must boot before slow CC0 asset imports.
@@ -1364,7 +1400,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/Instance.new\("Beam"\)/);
   assert.match(client,/beam.CurveSize0=style.name=="RISING_DRAGON"/);
   assert.doesNotMatch(client,/Instance.new\("Part"\)/);
-  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass or Enum\.Material\.SmoothPlastic/);
+  assert.match(server,/surface\.Material=wing and Enum\.Material\.Glass/);
+  assert.match(server,/or smoothDetail and Enum\.Material\.SmoothPlastic or Enum\.Material\.Pebble/);
   assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
   assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
@@ -1508,7 +1545,7 @@ test('마력숲 숲 교체는 텍스처 내장 CC0 원본과 실제 늑대 스�
  assert.match(client,/ForestGroundMist/);
  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
  assert.match(server,/setEnemyAttackState\(enemy,"PATROL"\)/);
- assert.match(server,/neighbor.kind=="wolf" and neighbor.HP>0/);
+ assert.match(server,/neighbor.kind==enemy.kind and neighbor.HP>0/);
  assert.match(server,/bit32.bor\(mask,bit32.lshift\(1,sector\)\)/);
  assert.match(server,/recordMeadowQuest\(player,"DAWN_TRACE"\)/);
  assert.match(server,/bindMeadowInspection\(ruin,"RUIN"\)/);
