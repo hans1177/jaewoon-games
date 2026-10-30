@@ -1034,7 +1034,8 @@ test('Fantasy Survival melee, 11 skills and 3 original CC0 mob motion/skill fami
     'GOLEM_SLAM','GOLEM_SHOCKWAVE'])assert.ok(server.includes('"'+pattern+'"'));
   assert.match(server,/local function animateMeadowOriginalMob\(/);
   assert.match(server,/local function chooseMeadowMobSkill\(/);
-  assert.match(server,/model:GetAttribute\("NativeMobMotion"\)/);
+  assert.match(server,/model:SetAttribute\("NativeMobMotion"/,"server must author original mob state");
+  assert.match(client,/model:GetAttribute\("NativeMobMotion"\)/,"client must consume that authoritative state");
   assert.match(server,/remote:FireAllClients\("MEADOW_MOB_ATTACK"/);
   assert.match(server,/remote:FireAllClients\("MEADOW_MOB_DEATH"/);
   assert.match(server,/meadowDefense\[player\]/);
