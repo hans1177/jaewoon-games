@@ -249,7 +249,7 @@ task.defer(function()
   gameWorld:SetAttribute("MeadowOuterRegionReady",true)
 end)
 
-local function worldAsset(id, location, targetHeight)
+local function worldAsset(id, location, targetHeight, heightAboveGround)
   local modelId = NativeCreatureAssets[id]
   if typeof(modelId) ~= "number" or modelId < 1 then
     warn("마력숲 등록된 CC0 초원 자산 없음: "..id)
@@ -391,7 +391,7 @@ local function worldAsset(id, location, targetHeight)
       end
     end
     if underside==math.huge then clone:Destroy();error("MEADOW_VISIBLE_CC0_MESH_MISSING") end
-    clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y+.15-underside,0))
+    clone:PivotTo(clone:GetPivot()+Vector3.new(0,ground.Position.Y+.15-underside+(heightAboveGround or 0),0))
     clone:SetAttribute("MeadowSurfaceY",ground.Position.Y)
     clone.Name="Meadow_"..id
     clone.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
@@ -600,6 +600,73 @@ local function createMeadowVillage()
   }) do
     meadowTerrain:FillBall(Vector3.new(plaza[1],-1.4,plaza[2]),plaza[3],Enum.Material.Ground)
   end
+  -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
+  -- 마력숲 Universe의 모델 등록·사용 권한이 없으면 임의 파츠 집으로 대체하지 않는다.
+  local villagePrefabKeys={"villageWall","villageDoor","villageWindow","villageRoof",
+    "villageRoofEnd","villageStall","villageFountain","villageFence","villageLantern","villageCart"}
+  local nativeVillageReady=true
+  for _,key in ipairs(villagePrefabKeys) do
+    if typeof(NativeCreatureAssets[key])~="number" or NativeCreatureAssets[key]<1 then
+      nativeVillageReady=false;break
+    end
+  end
+  local villageBuildings=0
+  local villageProps=0
+  if nativeVillageReady then
+    -- 같은 원본 벽/문/창/지붕으로 네 동을 지어 마을의 중심 거리를 만든다.
+    local houses={
+      {x=-42,z=-112,angle=0,name="Village_HealerHouse"},
+      {x=42,z=-112,angle=math.pi,name="Village_WardenHall"},
+      {x=-42,z=-151,angle=0,name="Village_Workshop"},
+      {x=42,z=-151,angle=math.pi,name="Village_Guesthouse"},
+    }
+    for _,house in ipairs(houses) do
+      local created=0
+      local pieces={
+        {asset="villageWall",x=-6,z=0,height=5,lift=0},
+        {asset="villageDoor",x=6,z=0,height=5,lift=0},
+        {asset="villageWindow",x=0,z=-6,height=5,lift=0,angle=math.pi*.5},
+        {asset="villageWall",x=0,z=6,height=5,lift=0,angle=math.pi*.5},
+        {asset="villageRoof",x=0,z=0,height=3.5,lift=4.5},
+        {asset="villageRoofEnd",x=-6,z=0,height=3.5,lift=4.5},
+      }
+      for partIndex,piece in ipairs(pieces) do
+        local rotated=Vector2.new(piece.x,piece.z)
+        local rot=house.angle
+        local x=house.x+rotated.X*math.cos(rot)-rotated.Y*math.sin(rot)
+        local z=house.z+rotated.X*math.sin(rot)+rotated.Y*math.cos(rot)
+        local model=worldAsset(piece.asset,Vector3.new(x,3,z),piece.height,piece.lift)
+        if model then
+          model.Name=house.name.."_"..partIndex
+          model:SetAttribute("MeadowVillageScenery",true)
+          model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
+          for _,mesh in ipairs(model:GetDescendants()) do
+            if mesh:IsA("MeshPart") then mesh.CanCollide=piece.lift==0 end
+          end
+          created+=1
+        end
+      end
+      if created==#pieces then villageBuildings+=1 end
+      task.wait(.1)
+    end
+    for _,row in ipairs({
+      {"villageStall",-15,-123,7.4,0},{"villageStall",15,-123,7.4,0},
+      {"villageFountain",0,-133,5.7,0},{"villageCart",25,-162,6.7,0},
+      {"villageFence",-28,-171,4.2,0},{"villageFence",28,-171,4.2,0},
+      {"villageLantern",-21,-114,5,0},{"villageLantern",21,-114,5,0},
+    }) do
+      local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4],row[5])
+      if model then
+        model.Name="Meadow_Village_"..row[1].."_"..villageProps
+        model:SetAttribute("MeadowVillageScenery",true)
+        villageProps+=1
+      end
+    end
+  end
+  gameWorld:SetAttribute("MeadowVillageBuildingCount",villageBuildings)
+  gameWorld:SetAttribute("MeadowVillagePropCount",villageProps)
+  gameWorld:SetAttribute("MeadowVillagePrefabReady",nativeVillageReady and villageBuildings==4)
+  -- 에셋이 로블록스에 등록되지 않았다면 아래 실제 CC0 유적 메시를 임시 집으로 위장하지 않는다.
   local wallCount=0
   -- 등록된 Kenney CC0 파손 석벽을 마을 외벽·작업장 터로 배치한다. 신규 기하 파츠 생성 금지.
   for index,pos in ipairs({
