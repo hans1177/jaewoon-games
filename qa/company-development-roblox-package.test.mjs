@@ -1011,6 +1011,14 @@ test('native registration stays behind current contract identity and exact publi
 });
 
 test('native uploader verifies all originals before registration and emits real returned IDs without guessing grants',()=>{
+  // [원본 등록] Gobkit 공식 CC0 사슴만 기존 엄격 원본 검증 경로에 포함한다.
+  const author=fs.readFileSync('tools/baeksu-war-author-meshes.py','utf8');
+  assert.match(author,/verified_deer_license=\(role=='deer'/);
+  assert.match(author,/row\.get\('sourcePath'\)=='assets\/shared\/forest\/deer-real\.glb'/);
+  assert.match(author,/row\.get\('licenseEvidence'\)=='https:\/\/gobkit\.com\/api\/free'/);
+  assert.match(author,/if not re\.fullmatch\('\[a-f0-9\]\{64\}',row\.get\('sourceSha256',''\)\) or not verified_license:/);
+  assert.match(author,/hashlib\.sha256\(data\)\.hexdigest\(\)!=row\['sourceSha256'\]/);
+  assert.match(author,/FANTASY_VILLAGE_SOURCE_DIGEST_MISMATCH/);
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'fantasy-native-upload-'));
   try{
     const game=path.join(root,'roblox-games/fantasy-survival');fs.mkdirSync(path.join(game,'shared'),{recursive:true});
