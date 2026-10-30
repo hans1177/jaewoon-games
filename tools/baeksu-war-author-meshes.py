@@ -21,7 +21,7 @@ if '--game-id=fantasy-survival' in sys.argv:
  # 공식 Model API가 받는 원본 FBX를 변형 없이 전달한다. Blender/도형 생성 없음.
  manifest_path=ROOT/'roblox-games/fantasy-survival/native-assets.json'
  manifest=json.loads(manifest_path.read_text())
- if manifest.get('gameId')!='fantasy-survival' or manifest.get('ownerApproved') is not True or manifest.get('license')!='CC0-1.0' or set(manifest.get('models',{}))!={'bee','wolf','golem'}:
+ if manifest.get('gameId')!='fantasy-survival' or manifest.get('ownerApproved') is not True or manifest.get('license')!='CC0-1.0' or set(manifest.get('models',{}))!={'bee','wolf','golem','deer','boar','rabbit','tree'}:
   raise RuntimeError('FANTASY_NATIVE_APPROVED_MANIFEST_REQUIRED')
  records={}
  for role,row in manifest['models'].items():
@@ -29,7 +29,7 @@ if '--game-id=fantasy-survival' in sys.argv:
    raise RuntimeError('FANTASY_NATIVE_SOURCE_PROVENANCE_INVALID:'+role)
   if row.get('sourcePath'):
    source=(ROOT/row['sourcePath']).resolve()
-   if not source.is_relative_to((ROOT/'assets/shared/forest').resolve()) or source.suffix.lower()!='.fbx':
+   if not source.is_relative_to((ROOT/'assets/shared/forest').resolve()) or source.suffix.lower() not in ('.fbx','.glb'):
     raise RuntimeError('FANTASY_NATIVE_SOURCE_PATH_INVALID:'+role)
    data=source.read_bytes()
   else:
@@ -47,15 +47,17 @@ if '--game-id=fantasy-survival' in sys.argv:
     if info.file_size>20*1024*1024 or '..' in Path(info.filename).parts or Path(info.filename).is_absolute():
      raise RuntimeError('FANTASY_NATIVE_ARCHIVE_ENTRY_INVALID')
     data=z.read(info)
-  if not data.startswith(b'Kaydara FBX Binary') or len(data)>20*1024*1024 or hashlib.sha256(data).hexdigest()!=row['sourceSha256']:
+  ext=Path(row.get('sourcePath') or row.get('archiveEntry','')).suffix.lower()
+  signature_ok=data.startswith(b'Kaydara FBX Binary') if ext=='.fbx' else data.startswith(b'glTF') if ext=='.glb' else False
+  if not signature_ok or len(data)>20*1024*1024 or hashlib.sha256(data).hexdigest()!=row['sourceSha256']:
    raise RuntimeError('FANTASY_NATIVE_ORIGINAL_HASH_MISMATCH:'+role)
-  (OUT/(role+'.fbx')).write_bytes(data)
+  (OUT/(role+ext)).write_bytes(data)
   records[role]={'sourceFile':row.get('sourcePath') or row['archiveUrl']+'#'+row['archiveEntry'],
-   'sourceSha256':row['sourceSha256'],'sha256':row['sourceSha256'],'format':'fbx',
+   'sourceSha256':row['sourceSha256'],'sha256':row['sourceSha256'],'format':ext.lstrip('.'),
    'license':'CC0-1.0','licenseEvidence':row['licenseEvidence'],'bytes':len(data)}
  (OUT/'provenance.json').write_text(json.dumps({'version':5,'gameId':'fantasy-survival',
   'sourceManifestSha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),'roles':records},indent=2)+'\n')
- print('FANTASY_NATIVE_ORIGINALS_VERIFIED=3')
+ print('FANTASY_NATIVE_ORIGINALS_VERIFIED='+str(len(records)))
  sys.exit(0)
 
 import bpy
