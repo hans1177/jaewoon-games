@@ -453,7 +453,7 @@ local function makeButton(parent,text,color)
  return b
 end
 
--- 캐릭터 모션: 기본 Animator를 유지하고 Motor6D C0에 작은 보조 움직임만 합성한다.
+-- 캐릭터 모션: 기존 Animator 평가 포즈 위에 실제 Motor6D/AnimationConstraint Transform만 합성한다.
 -- 캐릭터 동작 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.
 local setMotionImpulse
 do
@@ -470,10 +470,14 @@ setMotionImpulse=function(kind,duration)
 end
 
 local function findMotionJoint(character,names)
+ local fallback=nil
  for _,d in ipairs(character:GetDescendants())do
-  if d:IsA("Motor6D")and table.find(names,d.Name)then return d end
+  if table.find(names,d.Name) then
+   if d:IsA("AnimationConstraint") and d.Attachment0 and d.Attachment1 then return d end
+   if d:IsA("Motor6D") then fallback=d end
+  end
  end
- return nil
+ return fallback
 end
 
 local function bindCharacterMotion(character)
@@ -497,17 +501,22 @@ local function bindCharacterMotion(character)
  end
  for key,names in pairs(specs)do
   local joint=findMotionJoint(character,names)
-  if joint then motionJoints[key]={joint=joint,baseC0=joint.C0}end
+  if joint then motionJoints[key]={joint=joint,base=joint.Transform,pose=CFrame.identity,lastApplied=nil}end
  end
 end
 
 local function applyMotionJoint(key,offset,alpha)
  local row=motionJoints[key]
  if not row or not row.joint or not row.joint.Parent then return end
- row.joint.C0=row.joint.C0:Lerp(row.baseC0*offset,alpha)
+ -- Animator updates Transform before PreSimulation. Blend only the extra pose.
+ local current=row.joint.Transform
+ if current~=row.lastApplied then row.base=current end
+ row.pose=row.pose:Lerp(offset,alpha)
+ row.joint.Transform=row.pose*row.base
+ row.lastApplied=row.joint.Transform
 end
 
-RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Character.Value+1,function(dt)
+RunService.PreSimulation:Connect(function(dt)
  local humanoid=motionHumanoid
  local root=motionRoot
  if not humanoid or not root or not root.Parent or humanoid.Health<=0 then return end

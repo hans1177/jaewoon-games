@@ -1197,9 +1197,9 @@ function RobloxCommonMotion.BindJointPose(joints, options)
  local rows={}
  local closed=false
  for name,joint in pairs(joints or {})do
-  if typeof(joint)=="Instance"and(joint:IsA("Bone")or joint:IsA("Motor6D"))then
+  if typeof(joint)=="Instance"and(joint:IsA("Bone")or joint:IsA("Motor6D")or joint:IsA("AnimationConstraint"))then
    rows[#rows+1]={name=name,joint=joint,base=joint.Transform,pose=CFrame.identity,
-    response=math.max(1,tonumber((options.responseByJoint or {})[name])or tonumber(options.response)or 18)}
+    response=math.max(1,tonumber((options.responseByJoint or {})[name])or tonumber(options.response)or 18),lastApplied=nil}
   end
  end
  local controller={jointCount=#rows}
@@ -1209,11 +1209,19 @@ function RobloxCommonMotion.BindJointPose(joints, options)
   local response=math.clamp(tonumber(responseScale)or 1,.1,4)
   for _,row in ipairs(rows)do
    if row.joint.Parent then
+    -- 기존 Animator가 이번 프레임에 쓴 포즈 위에만 액션을 혼합한다.
+    -- Animator가 없는 리그에서는 직전 적용값의 재누적을 막는다.
+    if options.followAnimator==true and row.joint.Transform~=row.lastApplied then
+     row.base=row.joint.Transform
+    end
     local target=targets and targets[row.name]
     if typeof(target)~="CFrame"then target=CFrame.identity end
     local alpha=1-math.exp(-row.response*response*elapsed)
     row.pose=row.pose:Lerp(target,alpha)
-    row.joint.Transform=row.base*row.pose
+    -- Roblox Animator writes Transform before PreSimulation. Layer the action
+    -- on that frame's evaluated pose instead of replacing its locomotion.
+    row.joint.Transform=row.pose*row.base
+    row.lastApplied=row.joint.Transform
    end
   end
  end
@@ -1221,7 +1229,11 @@ function RobloxCommonMotion.BindJointPose(joints, options)
   if closed then return end
   for _,row in ipairs(rows)do
    row.pose=CFrame.identity
-   if row.joint.Parent then row.joint.Transform=row.base end
+   -- Animator may already have written its next pose; never roll it back.
+   if row.joint.Parent and row.joint.Transform==row.lastApplied then
+    row.joint.Transform=row.base
+   end
+   row.lastApplied=nil
   end
  end
  function controller.Destroy(restore)

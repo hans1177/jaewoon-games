@@ -143,10 +143,12 @@ local function bindCombatActor(actor)
  if not actor:IsA("BasePart")or combatActors[actor]then return end
  local joints={}
  for _,item in ipairs(actor:GetDescendants())do
-  if item:IsA("Motor6D")and item.Part1 then table.insert(joints,item)end
+  if (item:IsA("AnimationConstraint")or item:IsA("Motor6D")) and item.Part1 then
+   table.insert(joints,item)
+  end
  end
  combatActors[actor]={
-  joints=joints,elapsed=0,nextVisibility=0,visible=true,interval=1/30,
+  joints=joints,poses={},baseTransforms={},lastApplied={},elapsed=0,nextVisibility=0,visible=true,interval=1/30,
   phase=math.random()*math.pi*2,gaitPhase=0,gaitBlend=0,smoothSpeed=0,
   state="IDLE",stateAge=0,turnLean=0,lookYaw=0,lastFacing=actor.CFrame.LookVector,
  }
@@ -163,8 +165,12 @@ RunService.PreSimulation:Connect(function(dt)
    -- [리깅] 비동기로 연결된 실제 원본 관절을 같은 책임 함수에서 다시 수집한다.
    if not record.originalChecked and (actor:GetAttribute("CC0VisualReady")or actor:GetAttribute("SharedMonsterVisualReady"))then
     record.joints={}
+    table.clear(record.poses)
+    table.clear(record.baseTransforms)
+    table.clear(record.lastApplied)
     for _,joint in ipairs(actor:GetDescendants())do
-     if joint:IsA("Motor6D")and joint.Part1 then table.insert(record.joints,joint)end
+     if (joint:IsA("AnimationConstraint")or joint:IsA("Motor6D"))
+       and joint.Part1 then table.insert(record.joints,joint)end
     end
     record.originalChecked=true
    end
@@ -274,7 +280,14 @@ RunService.PreSimulation:Connect(function(dt)
       if arm or leg or head or tail or body or visual then
        local target=CFrame.Angles(x,y,z)
        local response=state=="HIT"and 22 or state=="ATTACK"and 17 or state=="DEATH"and 10 or 13
-       joint.Transform=joint.Transform:Lerp(target,1-math.exp(-step*response))
+       local current=joint.Transform
+       local base=current~=record.lastApplied[joint] and current
+         or record.baseTransforms[joint] or CFrame.identity
+       record.baseTransforms[joint]=base
+       local pose=(record.poses[joint] or CFrame.identity):Lerp(target,1-math.exp(-step*response))
+       record.poses[joint]=pose
+       joint.Transform=pose*base
+       record.lastApplied[joint]=joint.Transform
       end
      end
     end

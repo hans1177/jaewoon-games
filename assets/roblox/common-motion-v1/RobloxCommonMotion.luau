@@ -1218,7 +1218,9 @@ function RobloxCommonMotion.BindJointPose(joints, options)
     if typeof(target)~="CFrame"then target=CFrame.identity end
     local alpha=1-math.exp(-row.response*response*elapsed)
     row.pose=row.pose:Lerp(target,alpha)
-    row.joint.Transform=row.base*row.pose
+    -- Roblox Animator writes Transform before PreSimulation. Layer the action
+    -- on that frame's evaluated pose instead of replacing its locomotion.
+    row.joint.Transform=row.pose*row.base
     row.lastApplied=row.joint.Transform
    end
   end
@@ -1227,7 +1229,11 @@ function RobloxCommonMotion.BindJointPose(joints, options)
   if closed then return end
   for _,row in ipairs(rows)do
    row.pose=CFrame.identity
-   if row.joint.Parent then row.joint.Transform=row.base end
+   -- Animator may already have written its next pose; never roll it back.
+   if row.joint.Parent and row.joint.Transform==row.lastApplied then
+    row.joint.Transform=row.base
+   end
+   row.lastApplied=nil
   end
  end
  function controller.Destroy(restore)
@@ -1777,7 +1783,8 @@ local ACTOR_MOTION_STATES=table.freeze({
  IDLE={duration=2.4,looped=true},WALK={duration=.9,looped=true},
  RUN={duration=.64,looped=true},TURN={duration=.45,looped=false},
  START={duration=.36,looped=false},STOP={duration=.43,looped=false},
- ATTACK={duration=.75,looped=false},HIT={duration=.46,looped=false},
+ ANTICIPATION={duration=.42,looped=false},ATTACK={duration=.75,looped=false},
+ RECOVERY={duration=.38,looped=false},HIT={duration=.46,looped=false},
  DEATH={duration=1.32,looped=false},INTERACT={duration=.9,looped=false},
  GESTURE={duration=1.1,looped=false},FLY={duration=.86,looped=true},
 })
@@ -1822,8 +1829,9 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
  local recoverGain=gain("recovery",.7,1.3)
  local smoothingGain=gain("poseSmoothing",.65,1.35)
  local limbGain=gain("limbArc",.65,1.3)
- local bossGain=string.upper(tostring(options.actorClass or ""))=="BOSS" and gain("bossWeight",.7,1.3) or 1
- local gestureGain=string.upper(tostring(options.actorClass or ""))=="NPC" and gain("npcGesture",.5,1.4) or 1
+ local actorRole=string.upper(tostring(options.actorClass or ""))
+ local bossGain=actorRole=="BOSS" and gain("bossWeight",.7,1.3) or 1
+ local gestureGain=actorRole=="NPC" and gain("npcGesture",.5,1.4) or 1
  local tailGain=gain("tailFollow",.5,1.4)
  local hitGain=gain("hitRecoil",.65,1.35)
  local detailGain=gain("mobileDetail",.5,1.15)
@@ -1837,31 +1845,38 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
  local strike=easeUnit(math.clamp((t-.25)/.24,0,1))
  local finish=1-easeUnit(math.clamp((t-.62)/(.38*recoverGain),0,1))
  local contact=math.clamp((strike-load*.14)*finish,0,1)
+ -- Telegraph and recovery are distinct visual poses; neither creates a hit.
+ local charge=mode=="ANTICIPATION" and easeUnit(t)*bossGain or 0
+ local unwind=mode=="RECOVERY" and (1-easeUnit(t)) or 0
  local impact=mode=="ATTACK" and contact*attackGain or 0
  local hit=mode=="HIT" and math.sin(math.pi*t)*hitGain or 0
  local fall=mode=="DEATH" and easeUnit(t) or 0
  local interact=(mode=="GESTURE"or mode=="INTERACT")and math.sin(math.pi*t)*gestureGain or 0
+ -- NPCs communicate through the existing face/arm joints, not new parts.
+ local npcGesture=actorRole=="NPC" and interact or 0
  local turn=mode=="TURN"and math.sin(math.pi*t)*.22 or 0
  local transition=(mode=="START"or mode=="STOP")and math.sin(math.pi*t)*.10 or 0
  local intensity=bounded(options.intensity,.35,1.3,1)
  local secondary=bounded(options.secondary,0,1,.5)*secondaryGain*detailGain*(options.mobileTier=="LOW" and .42 or 1)
  local gait=locomotion and rise*body.stride*intensity*runScale*limbGain or 0
  local counter=locomotion and math.sin(cyc+math.pi)*body.stride*intensity*runScale*limbGain or 0
- local chest=(impact*.24*body.load*bossGain-hit*.18-fall*.54+transition)*smoothingGain
+ local chest=(impact*.24*body.load*bossGain-hit*.18-fall*.54+transition+charge*.14-unwind*.10)*smoothingGain
  forgeRot(targets,joints,"Spine",chest*.68,turn*.43,locomotion and gait*.038 or 0)
  forgeRot(targets,joints,"Chest",chest,turn*.7,locomotion and -gait*.06 or 0)
- forgeRot(targets,joints,"Head",-chest*.48+hit*.13-fall*.20,turn*.82*headGain,
-  math.sin(cyc)*.027*secondary*body.head)
+ forgeRot(targets,joints,"Head",-chest*.48+hit*.13-fall*.20+npcGesture*.10,
+  turn*.82*headGain+npcGesture*.12,math.sin(cyc)*.027*secondary*body.head)
  forgeRot(targets,joints,"Neck",-chest*.33,turn*.6*headGain,0)
  if form=="BIPED"or form=="GIANT"or form=="CRAWLER" then
   forgeRot(targets,joints,"ThighL",gait*.35+impact*.14-fall*.21,0,0)
   forgeRot(targets,joints,"ThighR",counter*.35-impact*.08-fall*.21,0,0)
   forgeRot(targets,joints,"ShinL",math.max(0,gait)*.21*contactGain+fall*.16,0,0)
   forgeRot(targets,joints,"ShinR",math.max(0,counter)*.21*contactGain+fall*.16,0,0)
-  forgeRot(targets,joints,"UpperArmL",-gait*.28+impact*.24+interact*.18,0,-impact*.13)
-  forgeRot(targets,joints,"UpperArmR",-counter*.28-impact*.48+interact*.45,0,impact*.11)
-  forgeRot(targets,joints,"ForearmL",impact*.14+interact*.24,0,0)
-  forgeRot(targets,joints,"ForearmR",impact*.30+interact*.25,0,0)
+  forgeRot(targets,joints,"UpperArmL",-gait*.28+impact*.24+interact*.18-charge*.34+unwind*.18,
+   0,-impact*.13-npcGesture*.17)
+  forgeRot(targets,joints,"UpperArmR",-counter*.28-impact*.48-interact*.50-charge*.66+unwind*.26,
+   0,impact*.11+npcGesture*.30)
+  forgeRot(targets,joints,"ForearmL",impact*.14-interact*.24+charge*.20,0,0)
+  forgeRot(targets,joints,"ForearmR",impact*.30-interact*.36+charge*.40,0,0)
  end
  if form=="QUADRUPED"or form=="CRAWLER" then
   for _,limb in ipairs({"FL","FR","BL","BR"})do
@@ -1871,7 +1886,7 @@ function RobloxCommonMotion.SampleProceduralActorMotion(state,phase,options,targ
    forgeRot(targets,joints,limb.."Knee",math.max(0,signed)*.22*contactGain+impact*.08,0,0)
    forgeRot(targets,joints,limb.."Ankle",math.max(0,-signed)*.10,0,0)
   end
-  forgeRot(targets,joints,"Jaw",impact*.34+hit*.07,0,0)
+  forgeRot(targets,joints,"Jaw",impact*.34+hit*.07+charge*.10,0,0)
  end
  if form=="FLYER" then
   local flap=math.sin(cyc)*.42*secondary*intensity
@@ -1909,7 +1924,10 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
  assert(root and root:IsA("BasePart"),"RIG_ROOT_REQUIRED")
  local motors,byParent,names={}, {}, {}
  for _,joint in ipairs(rig:GetDescendants())do
-  if joint:IsA("Motor6D")and joint.Part0 and joint.Part1
+  -- AnimationConstraint exposes read-only Part0/Part1 aliases, so the same
+  -- real-part Pose tree works for upgraded R15 NPC rigs and legacy Motor6Ds.
+  if (joint:IsA("Motor6D")or joint:IsA("AnimationConstraint"))
+   and joint.Part0 and joint.Part1
    and joint.Part0:IsDescendantOf(rig)and joint.Part1:IsDescendantOf(rig)
    and joint.Part0~=joint.Part1 then
    motors[#motors+1]=joint
@@ -1945,7 +1963,7 @@ function RobloxCommonMotion.CreateProceduralActorSequence(rig,state,options)
  local source=Instance.new("KeyframeSequence")
  source.Name="JG_Actor_"..plan.."_"..mode
  source.Loop=descriptor.looped
- source.Priority=(mode=="ATTACK"or mode=="HIT"or mode=="DEATH")
+ source.Priority=(mode=="ATTACK"or mode=="ANTICIPATION"or mode=="RECOVERY"or mode=="HIT"or mode=="DEATH")
   and Enum.AnimationPriority.Action or mode=="IDLE"and Enum.AnimationPriority.Idle or Enum.AnimationPriority.Movement
  source:SetAttribute("CompanyMotionForgeVersion",3)
  source:SetAttribute("BodyPlan",plan)
