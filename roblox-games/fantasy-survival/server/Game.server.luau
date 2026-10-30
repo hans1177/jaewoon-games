@@ -423,14 +423,14 @@ local function villageDialogue(player,title,message,options)
     title=title,message=message,options=options or {},
   })
 end
-local function villageBoardDialogue(player)
+local function villageBoardDialogue(player,sourcePosition)
   local index,contract=villageCurrentContract(player)
   if not contract then
     villageDialogue(player,"초원 마을 · 의뢰 완료","세 의뢰의 진상을 모두 기록했어. 메인 연구 일지는 그대로 이어져.")
     return
   end
   local phase=readNumber(player,"VillageContractPhase",0)
-  villageSessions[player]={position=villageCenter,expires=os.clock()+24}
+  villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+24}
   if phase==0 then
     villageDialogue(player,"의뢰판 · "..contract.Name,contract.Summary.."\n\n수락하면 마을 주민 세 명의 단서를 확인할 수 있어.",{
       {label="의뢰 수락",action="village:accept"},
@@ -515,7 +515,7 @@ local function villagePrompt(model,objectName,actionName,callback)
   prompt.RequiresLineOfSight=false
   prompt.Parent=mesh
   prompt.Triggered:Connect(function(player)
-    if villageNear(player,mesh.Position,15) then callback(player) end
+    if villageNear(player,mesh.Position,15) then callback(player,mesh.Position) end
   end)
   return true
 end
