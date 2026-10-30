@@ -431,7 +431,7 @@ jobs:
                   const idsPath=target+'/shared/VisualAssetIds.luau';
                   const existingRegistry=fs.existsSync(registryPath)?JSON.parse(fs.readFileSync(registryPath,'utf8')):{};
                   const ids=fs.existsSync(idsPath)?fs.readFileSync(idsPath,'utf8'):'';
-                  if(existingRegistry.sourceManifestSha256!==crypto.createHash('sha256').update(fs.readFileSync(nativeManifestPath)).digest('hex'))return true;
+                  if(existingRegistry.sourceManifestSha256!==crypto.createHash('sha256').update(fs.readFileSync(target+'/native-assets.json')).digest('hex'))return true;
                   const registered=existingRegistry.models?.[role];
                   return !registered||!Number.isSafeInteger(registered.assetId)||registered.assetId<1
                     ||!new RegExp('\\b'+role+'\\s*=\\s*'+registered.assetId+'\\b').test(ids);
