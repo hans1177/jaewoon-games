@@ -966,8 +966,10 @@ local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local short=v.Y<440
+  local narrowPortrait=v.X<480 and v.X<v.Y
   questTracker.Position=UDim2.fromOffset(9,short and 106 or 132)
-  questTracker.Size=UDim2.fromOffset(math.max(180,math.min(294,v.X-112)),short and 57 or 64)
+  -- [모바일 배치] 오른쪽 탐험 지도의 폭을 남겨 퀘스트와 버튼이 서로 덮이지 않게 한다.
+  questTracker.Size=UDim2.fromOffset(math.max(120,math.min(294,v.X-(narrowPortrait and 173 or 112))),short and 57 or 64)
   inventoryQuick.Position=UDim2.fromOffset(10,short and 213 or 249)
   trackerTitle.TextSize=short and 12 or 15
   trackerDetail.TextSize=short and 10 or 12
@@ -1107,8 +1109,10 @@ end
 local function renderMeadowClimate()
   local v=gui.AbsoluteSize
   local short=v.Y>0 and v.Y<440
+  local narrowPortrait=v.X<480 and v.X<v.Y
   meadowClimateChip.Position=UDim2.fromOffset(9,short and 172 or 203)
-  meadowClimateChip.Size=UDim2.fromOffset(math.max(160,math.min(208,v.X-110)),short and 24 or 28)
+  -- 실제 지도와 날씨 상태창이 겹치지 않도록 좁은 화면의 왼쪽 열 너비를 맞춘다.
+  meadowClimateChip.Size=UDim2.fromOffset(math.max(120,math.min(208,v.X-(narrowPortrait and 174 or 110))),short and 24 or 28)
   meadowClimateChip.TextSize=short and 11 or 13
   meadowClimateChip.Visible=gui:GetAttribute("GameMenuOpen")~=true
     and gui:GetAttribute("StoryJournalOpen")~=true
@@ -1733,7 +1737,9 @@ local function layoutMeadowRadar()
     meadowRadar.Position=UDim2.new(.5,0,0,8)
   else
     meadowRadar.AnchorPoint=Vector2.new(1,0)
-    meadowRadar.Position=UDim2.new(1,-12,0,small and 8 or 52)
+    -- [작은 세로 화면] 상단 체력·메뉴를 가리지 않고 오른쪽 열에 지도 고정.
+    local narrowPortrait=small and v.X<v.Y
+    meadowRadar.Position=UDim2.new(1,-12,0,narrowPortrait and (v.Y<440 and 100 or 114) or small and 8 or 52)
   end
   radarTitle.TextSize=compactLandscape and 10 or small and 11 or 12
   radarCoordinates.TextSize=compactLandscape and 9 or 10
