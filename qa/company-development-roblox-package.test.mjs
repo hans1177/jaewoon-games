@@ -1469,6 +1469,22 @@ test('fantasy player death recovers only if original humanoid never auto-respawn
   assert.doesNotMatch(lifecycle,/humanoid\.MaxHealth\s*=|humanoid\.Health\s*=/);
 });
 
+// [마력숲 기본 점프 UI] 조이스틱과 기존 오른쪽 스킬을 그대로 두고 네이티브 버튼만 숨긴다.
+test('fantasy meadow hides only the default mobile JumpButton including respawn',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const controls=client.slice(client.indexOf('local function layoutMeadowCombatUi()'),
+    client.indexOf('-- [미니맵]'));
+  assert.match(controls,/touchGui:FindFirstChild\("JumpButton",true\)/);
+  assert.match(controls,/jump.Visible=false/);
+  assert.match(controls,/jump.Active=false/);
+  assert.match(controls,/jump:GetPropertyChangedSignal\("Visible"\):Connect/);
+  assert.match(controls,/player.PlayerGui.DescendantAdded:Connect/);
+  assert.doesNotMatch(controls,/jump.Position=|jump:Destroy\(\)|TouchGui:Destroy\(\)/);
+  assert.doesNotMatch(client,/GuiService.TouchControlsEnabled=false|Controls:Disable\(\)/);
+  assert.match(controls,/meadowSkillDock.Position=UDim2.new/);
+  assert.match(client,/meadowSkillDock.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
+});
+
 // Existing server/input authority must boot before slow CC0 asset imports.
 test('fantasy native controls do not wait on asset import and source rigs can move',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
