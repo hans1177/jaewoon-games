@@ -2425,12 +2425,27 @@ local function meadowDodge(player,sign,id)
     local wall=workspace:Raycast(start,side*7,ray)
     local distance=wall and math.max(0,wall.Distance-2) or 7
     if distance<2 then return false end
-    -- Short movement is only applied on the server after obstruction checks.
-    character:PivotTo(character:GetPivot()+side*distance)
+    -- [서버 승인 회피] 기존 7스터드 이동·장애물 검사와 .48초 무적은 유지한다.
+    -- 한번에 순간이동하지 않고 실제 R15 발 내딛기 길이(.22초)에 맞춰 측면으로 이동한다.
+    local dodgeOrigin=character:GetPivot()
+    local dodgeOffset=side*distance
     local defense=meadowDefense[player] or {}
     defense.dodgeUntil=now+.48
     meadowDefense[player]=defense
     player:SetAttribute("ApprovedActionTarget",root.Position)
+    task.spawn(function()
+      local movementStarted=os.clock()
+      local humanoid=character:FindFirstChildOfClass("Humanoid")
+      while character.Parent and player.Character==character
+        and root:IsDescendantOf(character) and humanoid and humanoid.Health>0 do
+        local t=math.clamp((os.clock()-movementStarted)/.22,0,1)
+        -- 시작/종료 속도는 0, 중간에만 가속하는 3차 보간.
+        local eased=t*t*(3-2*t)
+        character:PivotTo(dodgeOrigin+dodgeOffset*eased)
+        if t>=1 then break end
+        RunService.Heartbeat:Wait()
+      end
+    end)
     return true
   end)
 end
