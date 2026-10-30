@@ -337,7 +337,7 @@ local function finishLoading(status,character,sequence)
  local tween=TweenService:Create(loadingLayer,TweenInfo.new(table.find(studioAssetFamily("MOTION"),"START")and .2 or .24),{BackgroundTransparency=1});tween:Play();tween.Completed:Wait()
  -- 페이드 도중 새 캐릭터나 다음 이동이 시작되면 이전 접지 증거를 재사용하지 않는다.
  local root=character:FindFirstChild("HumanoidRootPart");local humanoid=character:FindFirstChildOfClass("Humanoid")
- if p.Character~=character or character:GetAttribute("SpawnGroundingSequence")~=sequence or character:GetAttribute("SpawnGroundedSequence")~=sequence or not root or not humanoid or humanoid.Health<=0 or root.Anchored or humanoid.PlatformStand or humanoid.FloorMaterial==Enum.Material.Air or math.abs(root.AssemblyLinearVelocity.Y)>=2 then
+ if p.Character~=character or character:GetAttribute("SpawnGroundingSequence")~=sequence or character:GetAttribute("SpawnGroundedSequence")~=sequence or not root or not humanoid or humanoid.Health<=0 or root.Anchored or humanoid.PlatformStand or math.abs(root.AssemblyLinearVelocity.Y)>=2 then
   loadingLayer.BackgroundTransparency=0
   return false
  end
@@ -377,7 +377,7 @@ task.spawn(function()
   local destination=scope=="LOBBY"and room or scope=="ARENA"and arena or nil
   local serverGrounded=sequence~=nil and character:GetAttribute("SpawnGroundedSequence")==sequence and character:GetAttribute("SpawnGroundedAt")~=nil
   local grounded=false
-  if serverGrounded and destination and root and humanoid and humanoid.Health>0 and not root.Anchored and not humanoid.PlatformStand and humanoid.FloorMaterial~=Enum.Material.Air then
+  if serverGrounded and destination and root and humanoid and humanoid.Health>0 and not root.Anchored and not humanoid.PlatformStand then
    local grounds={}
    for _,d in ipairs(destination:GetDescendants())do
     if d:IsA("BasePart")and d.CanCollide and d.Anchored and d:GetAttribute("WalkableGround")==true and d:GetAttribute("SpawnMarkerOnly")~=true and not d:IsA("SpawnLocation")then table.insert(grounds,d)end
@@ -390,6 +390,8 @@ task.spawn(function()
     offset=root.Size.Y*.5+(leg and leg.Size.Y or 2)
    end
    local hit=workspace:Raycast(root.Position,Vector3.new(0,-offset-.75,0),params)
+   -- The server grounding sequence plus a local exact walkable-ground raycast
+   -- is stronger than transient client FloorMaterial during Studio startup.
    grounded=hit~=nil and hit.Normal.Y>=.75 and math.abs(root.Position.Y-hit.Position.Y-offset)<=.4 and math.abs(root.AssemblyLinearVelocity.Y)<2
   end
   groundedSamples=grounded and(groundedSamples+1)or 0
