@@ -133,8 +133,9 @@ local function createCombatPulse(atomId, options, profile)
   flash.Rotation=NumberRange.new(tonumber(options.rotation)or 0)
   flash.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,flashStart),NumberSequenceKeypoint.new(.18,reduced and flashStart or flashEnd*.7),NumberSequenceKeypoint.new(1,reduced and flashStart or flashEnd)})
   if options.hideFlash~=true and options.particlesOnly~=true then flash:Emit(1)end
-  ring.Texture=SPRITES.ring;ring.Orientation=Enum.ParticleOrientation.VelocityPerpendicular
-  ring.Speed=NumberRange.new(.01);ring.Lifetime=NumberRange.new(duration)
+  -- A stationary radial flash faces the camera instead of a nearly-zero velocity.
+  ring.Texture=SPRITES.ring;ring.Orientation=Enum.ParticleOrientation.FacingCamera
+  ring.Speed=NumberRange.new(0);ring.Lifetime=NumberRange.new(duration)
   ring.Rotation=NumberRange.new(0);ring.Color=ColorSequence.new(accent)
   ring.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,ringStart),NumberSequenceKeypoint.new(1,reduced and ringStart or ringEnd)})
   if options.hideRing~=true and options.particlesOnly~=true then ring:Emit(1)end
@@ -182,7 +183,8 @@ function RobloxCommonVFX.AttachShortTrail(hostPart, options)
   assert(typeof(hostPart) == "Instance" and hostPart:IsA("BasePart"), "COMMON_TRAIL_HOST_PART_REQUIRED")
 
   local lifetime = clamp(options.lifetime or DEFAULT.TrailLifetime, 0.05, 0.45)
-  local width = clamp(options.width or DEFAULT.TrailWidth, 0.05, 1.5)
+  -- Trail.WidthScale keypoints are restricted to [0,1] by Roblox.
+  local width = clamp(options.width or DEFAULT.TrailWidth, 0.05, 1)
   local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Accent
   local axis = typeof(options.axis) == "Vector3" and options.axis or Vector3.new(0, 0, 1)
   if axis.Magnitude < 0.001 then
@@ -232,7 +234,10 @@ function RobloxCommonVFX.AttachShortTrail(hostPart, options)
   local controller = {}
 
   function controller.SetEnabled(enabled)
-    trail.Enabled = enabled == true
+    if trail.Parent then
+      trail.Enabled = enabled == true
+      if not trail.Enabled then trail:Clear() end
+    end
   end
 
   function controller.Destroy()
