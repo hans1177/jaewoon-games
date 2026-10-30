@@ -59,6 +59,7 @@ jobs:
     timeout-minutes: 8
     outputs:
       task_id: ${{ steps.local.outputs.task_id }}
+      game_id: ${{ steps.local.outputs.game_id }}
       files: ${{ steps.local.outputs.files }}
       queued: ${{ steps.ingest.outputs.queued }}
     steps:
@@ -93,7 +94,7 @@ jobs:
             actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY
           });
           fs.writeFileSync('/tmp/pwa-next.json',JSON.stringify({task})+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'has_work=true\n'+'task_id='+task.id+'\n'+'files='+task.files+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'has_work=true\n'+'task_id='+task.id+'\n'+'game_id='+task.game_id+'\n'+'files='+task.files+'\n');
           console.log('LOCAL_WEB_OWNER_DIRECTIVE=AUTHORIZED');
           NODE
 
@@ -343,6 +344,7 @@ jobs:
     outputs:
       selected: ${{ steps.select.outputs.selected }}
       task_id: ${{ steps.select.outputs.task_id }}
+      game_id: ${{ steps.select.outputs.game_id }}
       files: ${{ steps.select.outputs.files }}
     steps:
       - uses: actions/checkout@v4
@@ -375,22 +377,48 @@ jobs:
               break
             fi
           done
-          # 학습 저장 충돌 시 이전 상태로 과거 합격을 위장하지 않고 최신 큐를 다시 읽는다.
-          gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-head.json
-          jq -r '.content' /tmp/web-recovery-head.json | base64 -d > /tmp/web-recovery-queue.json
-          node tools/web-vibe-recovery.mjs select /tmp/web-recovery-queue.json > /tmp/web-recovery-selection.json
-          if jq -e 'type=="object" and .taskId != null' /tmp/web-recovery-selection.json >/dev/null; then
+          # Claim the next eligible authenticated task on the existing WEB
+          # control branch before dispatch. SHA CAS prevents duplicate cron
+          # workers, and a 75-minute lease recovers abandoned runners.
+          claim_written=0
+          for claim_attempt in 1 2 3; do
+            gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-head.json
+            jq -r '.content' /tmp/web-recovery-head.json | base64 -d > /tmp/web-recovery-queue.json
+            node tools/web-vibe-recovery.mjs select /tmp/web-recovery-queue.json > /tmp/web-recovery-selection.json
+            if ! jq -e 'type=="object" and .taskId != null' /tmp/web-recovery-selection.json >/dev/null; then
+              echo "selected=false" >> "$GITHUB_OUTPUT"
+              echo 'WEB_VIBE_RECOVERY=NO_ELIGIBLE_OWNER_QUEUE'
+              exit 0
+            fi
             task_id="$(jq -r '.taskId' /tmp/web-recovery-selection.json)"
             files="$(jq -r '.files' /tmp/web-recovery-selection.json)"
+            game_id="$(jq -r '.gameId' /tmp/web-recovery-selection.json)"
+            [[ "$game_id" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$ ]] || exit 1
             [[ "$task_id" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$ ]] || exit 1
-            echo "selected=true" >> "$GITHUB_OUTPUT"
-            echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
-            echo "files=$files" >> "$GITHUB_OUTPUT"
-            echo 'WEB_VIBE_RECOVERY=EXACT_OWNER_TASK_SELECTED'
-          else
-            echo "selected=false" >> "$GITHUB_OUTPUT"
-            echo 'WEB_VIBE_RECOVERY=NO_ELIGIBLE_OWNER_QUEUE'
+            node tools/web-vibe-recovery.mjs claim /tmp/web-recovery-queue.json "pwa-$task_id" \
+              /tmp/web-recovery-claimed.json "$GITHUB_RUN_ID" > /tmp/web-recovery-claim.json
+            content="$(base64 -w0 /tmp/web-recovery-claimed.json)"
+            sha="$(jq -r '.sha' /tmp/web-recovery-head.json)"
+            jq -nc --arg message "web-vibe: bounded watchdog claim [skip ci]" \
+              --arg content "$content" --arg sha "$sha" \
+              '{message:$message,content:$content,sha:$sha,branch:"web-vibe-control"}' \
+              > /tmp/web-recovery-claim-payload.json
+            if gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json" \
+                --input /tmp/web-recovery-claim-payload.json >/dev/null; then
+              claim_written=1
+              break
+            fi
+          done
+          if [ "$claim_written" != 1 ]; then
+            echo 'WEB_VIBE_RECOVERY=CLAIM_CONFLICT_NOT_DISPATCHED' >&2
+            exit 1
           fi
+          echo "selected=true" >> "$GITHUB_OUTPUT"
+          echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
+          echo "game_id=$game_id" >> "$GITHUB_OUTPUT"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+          echo 'WEB_VIBE_RECOVERY=EXACT_OWNER_TASK_CLAIMED'
+
 
   web-recovery-onepatch:
     needs: web-recovery-select
@@ -398,7 +426,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 55
     concurrency:
-      group: web-vibe-onepatch-${{ needs.web-recovery-select.outputs.task_id }}
+      group: web-vibe-onepatch-${{ needs.web-recovery-select.outputs.game_id }}
       cancel-in-progress: false
     permissions:
       contents: write
@@ -487,7 +515,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 55
     concurrency:
-      group: web-vibe-onepatch-${{ needs.bridge.outputs.task_id }}
+      group: web-vibe-onepatch-${{ needs.bridge.outputs.game_id }}
       cancel-in-progress: false
     env:
       WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN || github.token }}
@@ -521,14 +549,45 @@ jobs:
           node --check tools/web-vibe-organization.mjs
           node --test qa/web-vibe-worker.test.mjs qa/web-vibe-organization.test.mjs qa/pwa-command-vibe2-task.test.mjs
       - name: Run existing WEB_VIBE_1 patch on GitHub and create reviewable PR
+        id: run_owner
         shell: bash
         run: |
           set -euo pipefail
           [[ "$WEB_OWNER_TASK_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$ ]] || exit 1
           if [ "$WEB_OWNER_FILES" = '*' ]; then
-            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" --all --cloud --apply --pr
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" --all --cloud --apply --pr 2>&1 | tee "$RUNNER_TEMP/web-vibe-direct.log"
           else
-            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" "--files=$WEB_OWNER_FILES" --cloud --apply --pr
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" "--files=$WEB_OWNER_FILES" --cloud --apply --pr 2>&1 | tee "$RUNNER_TEMP/web-vibe-direct.log"
           fi
           echo 'WEB_VIBE_CLOUD_PR_CREATED=YES'
           echo 'WEB_VIBE_CLOUD_MERGE_AND_PUBLICATION=NOT_VERIFIED'
+      - name: Persist direct WEB failure classification in existing queue
+        if: failure() && steps.run_owner.outcome == 'failure'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Reuse the existing bounded checkpoint. No new job or queue.
+          for attempt in 1 2 3; do
+            gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-vibe-direct-current.json
+            jq -r '.content' /tmp/web-vibe-direct-current.json | base64 -d > /tmp/web-vibe-direct-queue.json
+            node tools/web-vibe-recovery.mjs failure /tmp/web-vibe-direct-queue.json "pwa-$WEB_OWNER_TASK_ID" /tmp/web-vibe-direct-updated.json "$RUNNER_TEMP/web-vibe-direct.log" > /tmp/web-vibe-direct-outcome.json
+            if ! jq -e '.changed == true' /tmp/web-vibe-direct-outcome.json >/dev/null; then
+              echo 'WEB_VIBE_DIRECT_FAILURE_CHECKPOINT=NO_ELIGIBLE_TASK'
+              exit 0
+            fi
+            content="$(base64 -w0 /tmp/web-vibe-direct-updated.json)"
+            sha="$(jq -r '.sha' /tmp/web-vibe-direct-current.json)"
+            jq -nc --arg message "web-vibe: checkpoint direct WEB repair failure [skip ci]" \
+              --arg content "$content" --arg sha "$sha" \
+              '{message:$message,content:$content,sha:$sha,branch:"web-vibe-control"}' \
+              > /tmp/web-vibe-direct-checkpoint.json
+            if gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json" \
+                --input /tmp/web-vibe-direct-checkpoint.json >/dev/null; then
+              echo 'WEB_VIBE_DIRECT_FAILURE_CHECKPOINT=WRITTEN'
+              exit 0
+            fi
+          done
+          echo 'WEB_VIBE_DIRECT_FAILURE_CHECKPOINT=CONFLICT_REQUIRES_REVIEW' >&2
+          exit 1

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {emptyWebVibeQueue,assertWebVibeQueue,ingestWebVibeTask,buildWebVibeSync,WEB_VIBE_QUEUE_FILE,WEB_VIBE_CONTROL_BRANCH,WEB_VIBE_ENGINE} from '../tools/web-vibe-organization.mjs';
+import {emptyWebVibeQueue,assertWebVibeQueue,ingestWebVibeTask,buildWebVibeSync,buildWebVibeQueueHealth,WEB_VIBE_QUEUE_FILE,WEB_VIBE_CONTROL_BRANCH,WEB_VIBE_ENGINE} from '../tools/web-vibe-organization.mjs';
 const uuid='11111111-2222-4333-8444-555555555555';
 function fixture(){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-vibe-fixture-'));
@@ -122,7 +122,7 @@ test('PWA cloud queue recovery keeps existing owner intake and independent QA',(
   assert.match(w,/web-recovery-select:/);
   assert.match(w,/github.event_name == 'schedule' \|\| github.event_name == 'workflow_dispatch'/);
   assert.match(w,/node tools\/web-vibe-recovery\.mjs select/);
-  assert.match(w,/web-recovery-onepatch:[\s\S]*?group: web-vibe-onepatch-\$\{\{ needs.web-recovery-select.outputs.task_id \}\}/);
+  assert.match(w,/web-recovery-onepatch:[\s\S]*?group: web-vibe-onepatch-\$\{\{ needs.web-recovery-select.outputs.game_id \}\}/);
   assert.match(w,/company-constitution-enforcer\.mjs --phase=worker-before-source-write/);
   assert.match(w,/node --test qa\/web-vibe-worker\.test\.mjs/);
   assert.match(w,/node tools\/web-vibe-worker\.mjs "--task=pwa-\$WEB_OWNER_TASK_ID"/);
@@ -209,4 +209,143 @@ test('WEB autonomous evolution stays review-only until exact merged PR browser a
  assert.match(recovery,/web-playtest-report\.json/);
  assert.match(recovery,/report\.exactPublishedRevision!==true/);
  assert.match(recovery,/g\.sourceRevision===sha/);
+});
+
+
+test('WEB queue selects fresh games before retries without skipping same-game owner sequence',async()=>{
+  const {selectWebVibeRecoveryTask}=await import('../tools/web-vibe-recovery.mjs');
+  const id=n=>'pwa-'+String(n).padStart(8,'0')+'-2222-4333-8444-555555555555';
+  const item=(n,gameId,extra={})=>({id:id(n),gameId,target:'web',
+    sourceRoot:'web-games/'+gameId,status:'queued',goal:'owner-directed game repair',
+    ownerDirective:true,evidence:['owner-source-authenticated'],...extra});
+  const queue={...emptyWebVibeQueue(),tasks:[
+    item(1,'fantasy-survival',{recoveryAttempts:2,recoveryLastFailureAt:'2026-10-29T00:00:00Z'}),
+    item(2,'fantasy-survival'),
+    item(3,'cozy-island',{recoveryAttempts:0}),
+    item(4,'wild-survival',{recoveryAttempts:0})
+  ]};
+  assert.equal(selectWebVibeRecoveryTask(queue,{now:'2026-10-30T01:00:00Z'}).gameId,'cozy-island');
+  const withoutCozy={...queue,tasks:queue.tasks.map(t=>t.gameId==='cozy-island'?{...t,status:'review'}:t)};
+  assert.equal(selectWebVibeRecoveryTask(withoutCozy,{now:'2026-10-30T01:00:00Z'}).gameId,'wild-survival');
+  const afterWild={...withoutCozy,tasks:withoutCozy.tasks.map(t=>t.gameId==='wild-survival'?{...t,status:'review'}:t)};
+  assert.equal(selectWebVibeRecoveryTask(afterWild,{now:'2026-10-30T01:00:00Z'}).id,id(1),
+    'a later task in the same game must not overtake its older owner directive');
+  const running={...queue,tasks:queue.tasks.map(t=>t.gameId==='cozy-island'?{...t,status:'running'}:t)};
+  assert.equal(selectWebVibeRecoveryTask(running,{now:'2026-10-30T01:00:00Z'}).gameId,'wild-survival');
+  const cooldown={...withoutCozy,tasks:withoutCozy.tasks.map(t=>t.gameId==='wild-survival'
+    ?{...t,recoveryNextAt:'2026-10-30T02:00:00Z'}:t)};
+  assert.equal(selectWebVibeRecoveryTask(cooldown,{now:'2026-10-30T01:00:00Z'}).gameId,'fantasy-survival');
+});
+
+test('WEB transient checkout errors use bounded infrastructure retries, never source budget',async()=>{
+  const {recordWebVibeRecoveryFailure,selectWebVibeRecoveryTask}=await import('../tools/web-vibe-recovery.mjs');
+  const item={id:'pwa-'+uuid,gameId:'wild-survival',target:'web',
+    sourceRoot:'web-games/wild-survival',status:'queued',goal:'fix exact published movement issue',
+    ownerDirective:true,recoveryAttempts:2,evidence:['owner-source-authenticated']};
+  let queue={...emptyWebVibeQueue(),tasks:[item]};
+  const errorLog='WEB_VIBE_CLOUD_CHECKOUT_DIRTY=8\nWEB_VIBE_WORKER_BLOCKED=WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:8';
+  for(let i=1;i<=4;i++){
+    const result=recordWebVibeRecoveryFailure(queue,item.id,{now:'2026-10-30T01:00:00Z',failureLog:errorLog});
+    assert.equal(result.failureClass,'EPHEMERAL_CHECKOUT');
+    assert.equal(result.attempts,2);
+    assert.equal(result.infraAttempts,i);
+    assert.equal(result.queue.tasks[0].recoveryAttempts,2);
+    assert.equal(result.queue.tasks[0].status,i===4?'blocked':'queued');
+    queue=result.queue;
+  }
+  assert.equal(queue.tasks[0].blocker,'WEB_VIBE_EPHEMERAL_CHECKOUT_REVIEW_REQUIRED');
+  assert.equal(selectWebVibeRecoveryTask(queue,{now:'2026-10-30T09:00:00Z'}),null);
+  const drift=recordWebVibeRecoveryFailure({...queue,tasks:[item]},item.id,{
+    now:'2026-10-30T01:00:00Z',
+    failureLog:'WEB_VIBE_WORKER_BLOCKED=WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST'});
+  assert.equal(drift.failureClass,'EPHEMERAL_CHECKOUT');
+  assert.equal(drift.queue.tasks[0].recoveryNextAt,'2026-10-30T01:15:00.000Z');
+  const revoked=recordWebVibeRecoveryFailure({...queue,tasks:[item]},item.id,{
+    now:'2026-10-30T01:00:00Z',
+    failureLog:'WEB_VIBE_WORKER_BLOCKED=WEB_VIBE_FREE_MODEL_KEY_MISSING:web-games/wild-survival/wild3d.mjs'});
+  assert.equal(revoked.failureClass,'FREE_PROVIDER_NOT_CONFIGURED');
+  assert.equal(revoked.queue.tasks[0].recoveryAttempts,2);
+  assert.equal(revoked.queue.tasks[0].status,'blocked');
+  assert.equal(revoked.queue.tasks[0].blocker,'WEB_VIBE_VERIFIED_FREE_MODEL_CREDENTIAL_REQUIRED');
+  const paidOrAuth=recordWebVibeRecoveryFailure({...queue,tasks:[item]},item.id,{
+    now:'2026-10-30T01:00:00Z',
+    failureLog:'WEB_VIBE_WORKER_BLOCKED=WEB_VIBE_POLICY_UNVERIFIED'});
+  assert.equal(paidOrAuth.failureClass,'SOURCE_OR_UNCLASSIFIED');
+  assert.equal(paidOrAuth.exhausted,true,'cannot silently treat policy failures as transient infra');
+});
+
+test('WEB queue health reports backpressure without claiming runtime QA passed',()=>{
+  const make=(n,gameId,status,extra={})=>({id:'pwa-'+String(n).padStart(8,'0')+
+    '-2222-4333-8444-555555555555',gameId,target:'web',
+    sourceRoot:'web-games/'+gameId,status,goal:'owner-authenticated game task',
+    ownerDirective:true,evidence:['owner-source-authenticated'],...extra});
+  const q={...emptyWebVibeQueue(),tasks:[
+    make(1,'wild-survival','queued'),make(2,'cozy-island','queued',{
+      recoveryNextAt:'2026-10-31T08:00:00Z',recoveryAttempts:1,
+      recoveryFailureClass:'PROVIDER_COOLDOWN'}),
+    make(3,'cozy-island','review'),make(4,'fantasy-survival','blocked',{
+      blocker:'WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW',recoveryInfraAttempts:4,
+      recoveryFailureClass:'EPHEMERAL_CHECKOUT'})
+  ]};
+  const health=buildWebVibeQueueHealth(q,{now:'2026-10-30T01:00:00Z'});
+  assert.equal(health.total,4);
+  assert.equal(health.ready,1);
+  assert.equal(health.cooldown,1);
+  assert.equal(health.retried,2);
+  assert.equal(health.byGame['cozy-island'].review,1);
+  assert.equal(health.failures.EPHEMERAL_CHECKOUT,1);
+  assert.equal(health.proofAuthority,'QUEUE_HEALTH_ONLY_NOT_RUNTIME_VERIFICATION');
+  assert.throws(()=>buildWebVibeQueueHealth(q,{now:'invalid'}),/QUEUE_HEALTH_TIME_INVALID/);
+});
+
+test('existing WEB direct and recovery jobs serialize per game, not all games globally',()=>{
+  const workflow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  assert.match(workflow,/game_id: \$\{\{ steps\.local\.outputs\.game_id \}\}/);
+  assert.match(workflow,/game_id: \$\{\{ steps\.select\.outputs\.game_id \}\}/);
+  assert.match(workflow,/group: web-vibe-onepatch-\$\{\{ needs\.bridge\.outputs\.game_id \}\}/);
+  assert.match(workflow,/group: web-vibe-onepatch-\$\{\{ needs\.web-recovery-select\.outputs\.game_id \}\}/);
+  assert.match(workflow,/WEB_VIBE_DIRECT_FAILURE_CHECKPOINT/);
+  assert.doesNotMatch(workflow,/group: web-vibe-onepatch-\$\{\{ needs\.(?:bridge|web-recovery-select)\.outputs\.task_id \}\}/);
+});
+
+test('WEB watchdog uses expiring exact-owner CAS claims to suppress duplicate 5-minute dispatch',async()=>{
+  const {selectWebVibeRecoveryTask,claimWebVibeRecoveryTask,recordWebVibeRecoveryFailure}=
+    await import('../tools/web-vibe-recovery.mjs');
+  const item={id:'pwa-'+uuid,gameId:'wild-survival',target:'web',
+    sourceRoot:'web-games/wild-survival',status:'queued',goal:'public player movement repair',
+    ownerDirective:true,evidence:['owner-source-authenticated']};
+  const other={...item,id:'pwa-22222222-2222-4333-8444-555555555555',
+    gameId:'cozy-island',sourceRoot:'web-games/cozy-island'};
+  const queue={...emptyWebVibeQueue(),tasks:[item,other]};
+  const now='2026-10-30T01:00:00Z';
+  assert.equal(selectWebVibeRecoveryTask(queue,{now}).id,item.id);
+  assert.throws(()=>claimWebVibeRecoveryTask(queue,item.id,{now,runId:0}),/CLAIM_AUTHORITY_INVALID/);
+  assert.throws(()=>claimWebVibeRecoveryTask(queue,other.id,{now,runId:40918533815}),/CLAIM_SELECTION_STALE/);
+  const claim=claimWebVibeRecoveryTask(queue,item.id,{now,runId:40918533815});
+  assert.equal(claim.claimUntil,'2026-10-30T02:15:00.000Z');
+  assert.equal(claim.queue.tasks[0].status,'queued','claim does not forge a running or PASS checkpoint');
+  assert.equal(claim.queue.tasks[0].recoveryClaimRunId,40918533815);
+  const claimedHealth=buildWebVibeQueueHealth(claim.queue,{now:'2026-10-30T01:05:00Z'});
+  assert.equal(claimedHealth.claimed,1);
+  assert.equal(claimedHealth.ready,1,'another game remains ready while this lease is active');
+  assert.equal(selectWebVibeRecoveryTask(claim.queue,{now:'2026-10-30T01:05:00Z'}).id,other.id,
+    'another eligible WEB game must not be blocked by the first game claim');
+  const one={...emptyWebVibeQueue(),tasks:[claim.queue.tasks[0]]};
+  assert.equal(selectWebVibeRecoveryTask(one,{now:'2026-10-30T01:05:00Z'}),null);
+  const sameGame={...one,tasks:[one.tasks[0],{...one.tasks[0],id:other.id}]};
+  assert.equal(selectWebVibeRecoveryTask(sameGame,{now:'2026-10-30T01:05:00Z'}),null,
+    'leased owner repair blocks a younger edit of the same game, not unrelated games');
+  assert.equal(selectWebVibeRecoveryTask(one,{now:'2026-10-30T02:15:00Z'}).id,item.id);
+  assert.throws(()=>claimWebVibeRecoveryTask(one,item.id,{now:'2026-10-30T01:05:00Z',
+    runId:40918533816}),/CLAIM_SELECTION_STALE/);
+  const failure=recordWebVibeRecoveryFailure(one,item.id,{now:'2026-10-30T01:10:00Z',
+    failureLog:'WEB_VIBE_WORKER_BLOCKED=WEB_VIBE_CLOUD_CHECKOUT_STILL_DIRTY:8'});
+  assert.equal(failure.queue.tasks[0].recoveryClaimUntil,null);
+  assert.equal(failure.queue.tasks[0].recoveryClaimRunId,null);
+  assert.equal(failure.queue.tasks[0].recoveryAttempts,undefined);
+  const workflow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  assert.match(workflow,/node tools\/web-vibe-recovery\.mjs claim/);
+  assert.match(workflow,/WEB_VIBE_RECOVERY=EXACT_OWNER_TASK_CLAIMED/);
+  assert.match(workflow,/WEB_VIBE_RECOVERY=CLAIM_CONFLICT_NOT_DISPATCHED/);
+  assert.match(workflow,/web-vibe: bounded watchdog claim \[skip ci\]/);
 });

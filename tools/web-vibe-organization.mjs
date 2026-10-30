@@ -91,6 +91,32 @@ export function buildWebVibeSync(queue){
   }
   return {action:'sync',updates};
 }
+// Read-only queue health is diagnostic only; it cannot complete, promote,
+// change owner authority, or modify any queued game source.
+export function buildWebVibeQueueHealth(input,{now=new Date().toISOString()}={}){
+  const q=assertWebVibeQueue(input),at=Date.parse(now);
+  if(!Number.isFinite(at))throw Error('WEB_VIBE_QUEUE_HEALTH_TIME_INVALID');
+  const byGame={},failures={},states={};
+  let ready=0,cooldown=0,claimed=0,retried=0;
+  for(const row of q.tasks){
+    states[row.status]=(states[row.status]||0)+1;
+    const game=byGame[row.gameId]||(byGame[row.gameId]={queued:0,review:0,blocked:0});
+    if(['queued','review','blocked'].includes(row.status))game[row.status]++;
+    if(row.status==='queued'&&row.ownerDirective===true
+      &&row.evidence?.includes('owner-source-authenticated')){
+      const next=Date.parse(row.recoveryNextAt||'');
+      const claimUntil=Date.parse(row.recoveryClaimUntil||'');
+      if(Number.isFinite(claimUntil)&&claimUntil>at)claimed++;
+      else if(Number.isFinite(next)&&next>at)cooldown++;
+      else ready++;
+    }
+    if(Number(row.recoveryAttempts)>0||Number(row.recoveryInfraAttempts)>0)retried++;
+    if(row.recoveryFailureClass)
+      failures[row.recoveryFailureClass]=(failures[row.recoveryFailureClass]||0)+1;
+  }
+  return {total:q.tasks.length,ready,cooldown,claimed,retried,states,byGame,failures,
+    proofAuthority:'QUEUE_HEALTH_ONLY_NOT_RUNTIME_VERIFICATION'};
+}
 function argsOf(argv){const result={};for(const str of argv){if(!str.startsWith('--'))continue;const i=str.indexOf('=');if(i>2)result[str.slice(2,i)]=str.slice(i+1);else result[str.slice(2)]=true;}return result;}
 function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
 function save(file,value){fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');}
@@ -98,7 +124,7 @@ export function runWebVibeQueueCommand(argv=process.argv.slice(2)){
   const [command='']=argv.filter(x=>!x.startsWith('--')),args=argsOf(argv);
   if(!['ingest','sync','status'].includes(command))throw new Error('WEB_VIBE_COMMAND_NOT_SUPPORTED');
   const data=assertWebVibeQueue(readJson(args.queue||WEB_VIBE_QUEUE_FILE));
-  if(command==='status')return {engine:data.engine,organization:data.organization,queued:data.tasks.filter(x=>x.status==='queued').length,states:data.tasks.map(x=>({id:x.id,gameId:x.gameId,status:x.status}))};
+  if(command==='status')return {engine:data.engine,organization:data.organization,queued:data.tasks.filter(x=>x.status==='queued').length,states:data.tasks.map(x=>({id:x.id,gameId:x.gameId,status:x.status})),health:buildWebVibeQueueHealth(data)};
   if(command==='sync'){const value=buildWebVibeSync(data);if(args.output)save(args.output,value);return value;}
   if(!args.task||!args.catalog||!args.status||!args.root||!args.output)throw new Error('WEB_VIBE_INGEST_INPUT_REQUIRED');
   const payload=readJson(args.task),task=payload.task||payload;
