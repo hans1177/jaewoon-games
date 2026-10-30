@@ -1075,10 +1075,12 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   }
   assert.match(client,/model:GetAttribute\("Species"\) or model:GetAttribute\("MeadowWildlife"\)/);
   assert.match(client,/GetAttributeChangedSignal\("MeadowWildlife"\):Once/);
-  assert.match(client,/joint:IsA\("Motor6D"\) and joint.Part0 and joint.Part1/);
+  assert.match(client,/joint:IsA\("Motor6D"\) or joint:IsA\("AnimationConstraint"\)/);
   assert.match(client,/joint:IsA\("Bone"\)/);
   assert.match(client,/if sourceChannels\[name\] and not joints\[name\] then/);
-  assert.match(client,/local actualRig=count>=2/);
+  assert.match(client,/FLKnee=true,FRKnee=true,BLKnee=true,BRKnee=true/);
+  assert.match(client,/local actualRig=count>=2 and movingJoints==true/);
+  assert.match(client,/UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET/);
   assert.match(client,/NativeCreatureRigMode/);
   assert.match(client,/NativeMobMotion/);
   assert.match(client,/meadowMobMotion.SampleProceduralActorMotion\(mode/);
@@ -1086,6 +1088,27 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   assert.match(client,/repeating and \(row.phase%duration\)\/duration/);
   assert.match(client,/math.clamp\(\(os.clock\(\)-row.motionStartedAt\)\/duration,0,1\)/);
   assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
+});
+
+test('fantasy original monsters keep server combat authority while true bones drive synced locomotion',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(client,/local bounds,size=model:GetBoundingBox\(\)/);
+  assert.match(client,/raw:match\("\[\._%-\]l%d\*\$"\)/);
+  assert.match(client,/NativeMobMotionStartedAt/);
+  assert.match(client,/workspace:GetServerTimeNow\(\)-epoch/);
+  assert.match(client,/profile=\{limbArc=1\.3,footContact=1\.28,attackStrike=1\.22\}/);
+  assert.match(server,/model:SetAttribute\("NativeMobMotionStartedAt",workspace:GetServerTimeNow\(\)\)/);
+  assert.match(server,/enemy.model:SetAttribute\("NativeMobMotionStartedAt",workspace:GetServerTimeNow\(\)\)/);
+  assert.match(server,/enemy\.visualPosition=\(enemy\.visualPosition or enemy\.position\):Lerp\(enemy\.position,alpha\)/);
+  assert.match(server,/if enemyVisualElapsed>=1\/30 then/);
+  assert.match(server,/if enemyUpdateElapsed>=\.12 then/);
+  assert.match(server,/damage=\(isBoss and 20 or 6\)\+math\.floor\(CurrentWave\/2\)/);
+  assert.match(server,/speed=isBoss and 4\.8 or 7\.5/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  for(const source of [client,server]){
+    assert.doesNotMatch(source,/Instance\.new\("Part"\)/);
+  }
 });
 
 // Existing server/input authority must boot before slow CC0 asset imports.
