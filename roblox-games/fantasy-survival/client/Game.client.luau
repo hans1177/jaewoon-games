@@ -1358,7 +1358,7 @@ for index,skill in ipairs(meleeSkills)do
     glyph.Position=UDim2.fromScale(.2,.04)
     glyph.Size=UDim2.fromScale(.6,.48)
     glyph.Text=skill[1]=="meadow-unarmed-kick" and "발"
-      or skill[1]=="meadow-unarmed-uppercut" and "拳"
+      or skill[1]=="meadow-unarmed-uppercut" and "권"
       or skill[1]=="skill-meadow-bolt" and "✦"
       or skill[1]=="skill-meadow-heal" and "+" or "✧"
     glyph.TextColor3=skill[3]
