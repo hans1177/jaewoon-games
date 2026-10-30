@@ -695,6 +695,16 @@ task.defer(function()
     {136,-154,15},{161,-128,13},{168,-171,16},{187,-146,12},
     {-140,164,15},{-161,141,13},{-176,190,16},{-195,161,12},
     {143,161,15},{164,140,13},{174,187,16},{190,160,12},
+    -- [깊은 숲] 4개의 기존 숲 군락에서만 원본 CC0 나무를 층층이 확장한다.
+    -- 길과 3개 기존 탐사 유적은 열린 공간으로 남겨 두고 모델만 가볍게 재사용한다.
+    {-154,-201,16},{-181,-196,13},{-206,-166,17},{-219,-124,14},
+    {-187,-108,17},{-145,-218,13},{-235,-189,15},{-201,-232,17},
+    {153,-202,16},{182,-192,13},{205,-166,17},{219,-125,14},
+    {183,-111,17},{145,-221,13},{235,-188,15},{201,-232,17},
+    {-157,202,16},{-181,194,13},{-207,167,17},{-219,126,14},
+    {-189,109,17},{-143,221,13},{-238,190,15},{-203,234,17},
+    {155,201,16},{181,193,13},{208,165,17},{221,125,14},
+    {187,111,17},{145,223,13},{235,188,15},{205,231,17},
   }
   local sceneryCount=0
   for index,spec in ipairs(woodland) do
@@ -702,8 +712,11 @@ task.defer(function()
     if tree then
       tree.Name="Meadow_Woodland_"..index
       tree:SetAttribute("MeadowScenery",true)
-      -- 28개 숲 나무 중 4개에만 탐색 프롬프트를 배치해 모바일 HUD를 가리지 않는다.
-      if index%6==0 then bindMeadowInspection(tree,"WOODLAND") end
+      -- [접근성] 기존 네 초원 입구의 조사 지점만 남겨 프롬프트가 숲 전체를 가리지 않는다.
+      -- 네 사분면별 발견 비트·퀘스트·저장 의미는 그대로 사용한다.
+      if index==6 or index==12 or index==18 or index==24 then
+        bindMeadowInspection(tree,"WOODLAND")
+      end
       tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*137)%360),0))
       sceneryCount+=1
     end
@@ -737,7 +750,23 @@ task.defer(function()
       task.wait(.025)
     end
   end
-  gameWorld:SetAttribute("MeadowNativeTrails",#tracks)
+  -- [오솔길 분기] 네 탐험 입구에서 깊은 숲으로 이어지는 실제 Terrain 길이다.
+  -- 기존 시작·전투·채집 좌표는 건드리지 않고 지도에도 동일한 분기를 표시한다.
+  local trailSpurs={
+    {from=Vector2.new(-177,-176),to=Vector2.new(-228,-219)},
+    {from=Vector2.new(183,-177),to=Vector2.new(231,-228)},
+    {from=Vector2.new(-184,188),to=Vector2.new(-234,233)},
+    {from=Vector2.new(192,196),to=Vector2.new(236,238)},
+  }
+  for index,track in ipairs(trailSpurs) do
+    for step=1,12 do
+      local t=step/12
+      local p=track.from:Lerp(track.to,t)
+      meadowTerrain:FillBall(Vector3.new(p.X,-1.7,p.Y),3.2,Enum.Material.Ground)
+      task.wait(.02)
+    end
+  end
+  gameWorld:SetAttribute("MeadowNativeTrails",#tracks+#trailSpurs)
   -- [덤불 같은 지표] 원본 지형 재질로 오솔길 옆 숲의 잎·잔디 밀도를 높인다.
   -- 캐릭터·자원·전투 스폰 주변은 피하고 새 파츠나 가짜 식생 모델은 만들지 않는다.
   for _,brush in ipairs({
@@ -745,6 +774,11 @@ task.defer(function()
     {88,-100,3.7},{125,-79,3.2},{145,-116,3.3},{76,-128,3.1},
     {-87,119,3.7},{-126,94,3.4},{-151,123,3.2},{-75,145,3.1},
     {90,117,3.8},{126,91,3.2},{151,120,3.4},{77,146,3.1},
+    -- [숲 바닥] 기존 지형 재질을 이용해 네 깊은 숲의 빈 곳을 잔디로 잇는다.
+    {-165,-194,3.9},{-212,-192,3.4},{-194,-134,3.7},{-236,-154,3.3},
+    {166,-193,3.9},{212,-188,3.4},{194,-139,3.7},{234,-153,3.3},
+    {-169,193,3.9},{-210,190,3.4},{-196,143,3.7},{-236,159,3.3},
+    {169,192,3.9},{211,192,3.4},{195,142,3.7},{236,162,3.3},
   }) do
     meadowTerrain:FillBall(Vector3.new(brush[1],-1.3,brush[2]),brush[3],Enum.Material.LeafyGrass)
     task.wait()
@@ -770,11 +804,17 @@ task.defer(function()
     task.wait(.14)
   end
   gameWorld:SetAttribute("MeadowWoodlandSceneryCount",sceneryCount)
+  gameWorld:SetAttribute("MeadowWoodlandScene","FOUR_GROVES_FOUR_REAL_TRAIL_SPURS")
   gameWorld:SetAttribute("MeadowForestSoftToyMaterial",sceneryCount>0 and "ORIGINAL_CC0_TREE_MESH_SMOOTH_MATTE" or "NO_NATIVE_MESH")
   gameWorld:SetAttribute("MeadowWoodlandReady",sceneryCount>0)
   -- 원본 CC0 파손 석벽 1종만 재사용한다. 가짜 파츠 구조물은 만들지 않는다.
   local ruinCount=0
   for index,site in ipairs({Vector3.new(-122,3,-147),Vector3.new(137,3,139),Vector3.new(-154,3,122)})do
+    -- [유적 마당] 원본 석벽이 드러나도록 구역만 지형 흙길과 잔디로 꾸민다.
+    meadowTerrain:FillBall(Vector3.new(site.X,-7.2,site.Z),9.2,Enum.Material.Ground)
+    for _,offset in ipairs({Vector2.new(16,2),Vector2.new(-15,-3),Vector2.new(2,16),Vector2.new(-3,-15)}) do
+      meadowTerrain:FillBall(Vector3.new(site.X+offset.X,-1.6,site.Z+offset.Y),3.4,Enum.Material.LeafyGrass)
+    end
     local ruin=worldAsset("ruin",site,6)
     if ruin then
       ruin.Name="Meadow_Ruin_"..index;ruin:SetAttribute("RuinsIndex",index)
@@ -786,12 +826,16 @@ task.defer(function()
   -- [건축 흔적] 승인된 CC0 석벽 메시만 재사용해 세 탐사 유적의 외곽을 보강한다.
   -- 기존 1~3번 조사 대상과 저장 비트마스크, 퀘스트 진행은 그대로 유지한다.
   for index,site in ipairs({Vector3.new(-122,3,-147),Vector3.new(137,3,139),Vector3.new(-154,3,122)})do
-    for section,offset in ipairs({Vector3.new(9,0,8),Vector3.new(-9,0,7)})do
+    for section,offset in ipairs({
+      Vector3.new(9,0,8),Vector3.new(-9,0,7),
+      Vector3.new(9,0,-8),Vector3.new(-9,0,-8),
+    })do
       local wall=worldAsset("ruin",site+offset,4.8)
       if wall then
         wall.Name="Meadow_Ruin_Outer_"..index.."_"..section
         wall:SetAttribute("MeadowScenery",true)
-        wall:PivotTo(wall:GetPivot()*CFrame.Angles(0,math.rad(section==1 and 90 or -80),0))
+        wall:PivotTo(wall:GetPivot()*CFrame.Angles(0,math.rad(
+          section==1 and 90 or section==2 and -80 or section==3 and 165 or -160),0))
       end
       task.wait(.12)
     end
