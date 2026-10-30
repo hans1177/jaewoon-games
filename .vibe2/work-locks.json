@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1n3cj53",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-studio-evolution-roblox-stability-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "roblox-games/horror-escape-room/client/Game.client.luau",
+        "roblox-games/horror-escape-room/shared/VisualStyle.luau",
+        "roblox-games/horror-escape-room/shared/GameConfig.luau",
+        "roblox-games/horror-escape-room/server/Game.server.luau",
+        "roblox-games/horror-escape-room/server/ManorLobby.luau",
+        "roblox-games/horror-escape-room/shared/CombatAssets.luau"
+      ],
+      "baseSha": "71bfd6fc77142855b1e59096d8915d5a37303000",
+      "runId": "41116258262",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-30T19:44:55.825Z",
+      "expiresAt": "2026-10-30T20:29:55.825Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
