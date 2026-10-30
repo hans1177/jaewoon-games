@@ -1334,13 +1334,19 @@ end)
 local meadowMobWorld=workspace:WaitForChild("FantasySurvivalWorld")
 local meadowMobMotion=combatMotionSource
 local meadowMobControllers={}
+local meadowMobRigWarnings={}
 local nativeMobMotionMap={
   IDLE="IDLE",CHASE="RUN",RUN="RUN",RETURN_TO_SPAWN="WALK",WALK="WALK",
   ANTICIPATION="ATTACK",ATTACK="ATTACK",RECOVERY="HIT",HIT="HIT",DEATH="DEATH",
 }
+-- [몹 실제 리깅] 기존 Bone/Motor6D/AnimationConstraint의 채널명을 재사용한다.
 local nativeMobJointAlias={
   FrontLeftShoulder="FLHip",FrontRightShoulder="FRHip",
+  FrontLeftHip="FLHip",FrontRightHip="FRHip",
+  HindLeftHip="BLHip",HindRightHip="BRHip",
   RearLeftHip="BLHip",RearRightHip="BRHip",
+  FrontLeftKnee="FLKnee",FrontRightKnee="FRKnee",
+  RearLeftKnee="BLKnee",RearRightKnee="BRKnee",
   TailBaseJoint="Tail",ChestJoint="Chest",SpineJoint="Spine",
   NeckJoint="Neck",JawJoint="Jaw",TailBase="Tail",TailTip="Tail",
   WingLeft="WingL",WingRight="WingR",
@@ -1377,20 +1383,62 @@ local function bindOriginalMob(model)
   end
   if species~="wolf" and species~="bee" and species~="golem"
     and species~="deer" and species~="boar" and species~="rabbit" then return end
+  -- [움직이는 원본 관절] 이름이 다르거나 Blender식 접미사가 붙어도 실제 메시의 뼈를 매핑한다.
   local joints,available={},{}
   local sourceChannels={
     FLHip=true,FRHip=true,BLHip=true,BRHip=true,
+    FLKnee=true,FRKnee=true,BLKnee=true,BRKnee=true,
+    FLAnkle=true,FRAnkle=true,BLAnkle=true,BRAnkle=true,
     WingL=true,WingR=true,Tail=true,Chest=true,Spine=true,
     Neck=true,Jaw=true,Head=true,ThighL=true,ThighR=true,
     ShinL=true,ShinR=true,UpperArmL=true,UpperArmR=true,
     ForearmL=true,ForearmR=true,
   }
+  local bounds,size=model:GetBoundingBox()
   for _,joint in ipairs(model:GetDescendants()) do
-    -- Only genuine Motor6D or authored skinned-mesh Bones can move.
-    -- Never synthesize joints from a static single-mesh animal.
-    local liveMotor=joint:IsA("Motor6D") and joint.Part0 and joint.Part1
-    if liveMotor or joint:IsA("Bone") then
+    local motor=(joint:IsA("Motor6D") or joint:IsA("AnimationConstraint"))
+      and joint.Part0 and joint.Part1
+    if motor or joint:IsA("Bone") then
+      local raw=joint.Name:lower()
+      local key=raw:gsub("[^%w]","")
       local name=nativeMobJointAlias[joint.Name] or joint.Name
+      local location=joint:IsA("Bone") and joint.WorldPosition or joint.Part1.Position
+      local relative=bounds:PointToObjectSpace(location)
+      local left=key:find("left",1,true) or raw:match("[._%-]l%d*$")
+      local right=key:find("right",1,true) or raw:match("[._%-]r%d*$")
+      local side=left and "L" or right and "R"
+      if not side and math.abs(relative.X)>size.X*.09 then
+        side=relative.X<0 and "L" or "R"
+      end
+      local limb=key:find("leg",1,true) or key:find("hip",1,true)
+        or key:find("thigh",1,true) or key:find("shin",1,true)
+        or key:find("knee",1,true) or key:find("paw",1,true)
+        or key:find("foot",1,true) or key:find("ankle",1,true)
+      if not limb and joint:IsA("Bone") then
+        limb=relative.Y<-.08*size.Y and math.abs(relative.X)>.12*size.X
+          and math.abs(relative.Z)>.12*size.Z
+      end
+      if not sourceChannels[name] and limb and side then
+        local lower=key:find("knee",1,true) or key:find("shin",1,true)
+          or key:find("calf",1,true)
+        local foot=key:find("foot",1,true) or key:find("paw",1,true)
+          or key:find("ankle",1,true)
+        if species=="golem" then
+          name=(lower or foot) and ("Shin"..side) or ("Thigh"..side)
+        else
+          local front=key:find("front",1,true) or key:find("fore",1,true)
+          local rear=key:find("rear",1,true) or key:find("hind",1,true)
+            or key:find("back",1,true)
+          local position=front and "F" or rear and "B" or relative.Z<0 and "F" or "B"
+          name=position..side..(foot and "Ankle" or lower and "Knee" or "Hip")
+        end
+      elseif not sourceChannels[name] and species=="bee" then
+        if key:find("wing",1,true) and side then name="Wing"..side end
+      elseif not sourceChannels[name] and species=="golem" then
+        if (key:find("arm",1,true) or key:find("shoulder",1,true)) and side then
+          name="UpperArm"..side
+        end
+      end
       if sourceChannels[name] and not joints[name] then
         joints[name]=joint
         available[name]=true
@@ -1399,15 +1447,23 @@ local function bindOriginalMob(model)
   end
   local count=0
   for _ in pairs(joints) do count+=1 end
-  local actualRig=count>=2
   local bodyPlan=species=="bee" and "FLYER" or
     species=="golem" and "GIANT" or "QUADRUPED"
+  local movingJoints=species=="bee" and (available.WingL or available.WingR)
+    or species=="golem" and (available.ThighL or available.ThighR or available.UpperArmL or available.UpperArmR)
+    or (available.FLHip or available.FRHip or available.BLHip or available.BRHip)
+  local actualRig=count>=2 and movingJoints==true
   local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
-    followAnimator=true,response=24,
+    followAnimator=true,response=26,
   }) or nil
   local row={controller=controller,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock()}
-  model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
+  model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG"
+    or "UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET")
+  if not actualRig and not meadowMobRigWarnings[species] then
+    meadowMobRigWarnings[species]=true
+    warn("마력숲 원본 애니메이션 뼈 미연결: "..species..", 탐지 관절="..count)
+  end
   meadowMobControllers[model]=row
   model:GetAttributeChangedSignal("AttackState"):Connect(function()
     if not model.Parent then return end
@@ -1444,18 +1500,23 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         row.motionStartedAt=os.clock()
         row.phase=0
       end
-      row.phase+=math.min(dt,.12)
+      local epoch=model:GetAttribute("NativeMobMotionStartedAt")
+      local serverAge=typeof(epoch)=="number" and math.max(0,workspace:GetServerTimeNow()-epoch) or nil
+      if serverAge then row.phase=serverAge else row.phase+=math.min(dt,.12) end
       local repeating=mode=="IDLE" or mode=="WALK" or mode=="RUN" or mode=="FLY"
       local duration=mode=="DEATH" and 1.32 or mode=="ATTACK" and .75
-        or mode=="HIT" and .46 or mode=="START" and .36 or 1.15
+        or mode=="HIT" and .46 or mode=="START" and .36
+        or mode=="RUN" and .82 or 1.15
       local phase=repeating and (row.phase%duration)/duration
         or math.clamp((os.clock()-row.motionStartedAt)/duration,0,1)
+      if not repeating and serverAge then phase=math.clamp(serverAge/duration,0,1) end
       table.clear(row.poses)
       local _,matched=meadowMobMotion.SampleProceduralActorMotion(mode,
         phase,{
           bodyPlan=row.plan,actorClass=model:GetAttribute("Boss") and "BOSS" or "CREATURE",
           availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
-          secondary=.55,
+          secondary=.7,intensity=1.24,
+          profile={limbArc=1.3,footContact=1.28,attackStrike=1.22},
         },row.poses)
       if matched then
         -- 실제 원본 관절이 있는 몹에만 종별 공격·추적 동작을 크게 합성한다.
