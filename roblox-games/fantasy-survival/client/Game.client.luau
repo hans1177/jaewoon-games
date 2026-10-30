@@ -426,9 +426,18 @@ for index, action in ipairs(Config.Actions) do
   button.TextWrapped = true
   button.TextScaled = false;button.TextSize=15
   button.Text = CommonUI.ActionLabel(action,index)
-  button.Parent = list
-  meadowActionButtons[action.Id]=button
-  button.Activated:Connect(function() activateMeadowAction(action.Id) end)
+  -- 공격/수동 회피 버튼은 이중 노출하지 않고 전용 반원형 도크에서 관리한다.
+  local hidden=action.Kind=="COMBAT" or action.Id=="skill-meadow-heavy"
+    or action.Id=="skill-meadow-sweep" or action.Id=="skill-meadow-bolt"
+    or action.Id=="skill-meadow-guard" or action.Id=="skill-meadow-parry"
+    or action.Id=="skill-meadow-dodge-left" or action.Id=="skill-meadow-dodge-right"
+  if hidden then
+    button:Destroy()
+  else
+    button.Parent = list
+    meadowActionButtons[action.Id]=button
+    button.Activated:Connect(function() activateMeadowAction(action.Id) end)
+  end
 end
 local readyCountdown=0
 game:GetService("RunService").Heartbeat:Connect(function(dt)
@@ -553,9 +562,22 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primaryCombatAction and{label="공격",compact=true,activate=function()activateMeadowAction(primaryCombatAction.Id)end}or nil)
+CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,nil)
 
--- [모바일 전투 UI] 맨손 무술 4종을 오른쪽 아래 2×2로 정렬하고 기존 공격·메뉴에서 분리한다.
+-- [화면 터치 공격] UI·조이스틱 터치는 제외하고 월드 빈 화면 탭만 기본 공격.
+-- 로블록스 공식 TouchTapInWorld와 처리 여부를 사용해 버튼을 완전히 없앤다.
+UserInputService.TouchTapInWorld:Connect(function(_,processedByUI)
+  if processedByUI or gui:GetAttribute("GameMenuOpen")==true then return end
+  if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end
+end)
+UserInputService.InputBegan:Connect(function(input,processed)
+  if processed or UserInputService.TouchEnabled or gui:GetAttribute("GameMenuOpen")==true then return end
+  if input.UserInputType==Enum.UserInputType.MouseButton1 and primaryCombatAction then
+    activateMeadowAction(primaryCombatAction.Id)
+  end
+end)
+
+-- [모바일 전투 UI] 실제 공격 스킬 2개와 막기를 오른쪽 반원형으로 배치한다.
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
 meadowSkillDock.AnchorPoint=Vector2.new(1,1)
@@ -565,9 +587,8 @@ meadowSkillDock.BackgroundTransparency=1
 meadowSkillDock.Parent=gui
 local meleeSkills={
   {"meadow-unarmed-rush","연속권",Color3.fromRGB(247,192,101)},
+  {"skill-meadow-guard","막기",Color3.fromRGB(114,215,229)},
   {"meadow-unarmed-uppercut","승룡권",Color3.fromRGB(249,118,79)},
-  {"meadow-unarmed-kick","회전차기",Color3.fromRGB(93,209,219)},
-  {"meadow-unarmed-elbow","팔꿈치",Color3.fromRGB(175,142,255)},
 }
 local meadowSkillButtons={}
 for index,skill in ipairs(meleeSkills) do
@@ -598,27 +619,33 @@ for index,skill in ipairs(meleeSkills) do
   meadowSkillButtons[index]=button
   button.Activated:Connect(function()
     local character=player.Character
-    if not character or character:FindFirstChildOfClass("Tool") then return end
+    if not character then return end
+    if skill[1]~="skill-meadow-guard" and character:FindFirstChildOfClass("Tool") then return end
     activateMeadowAction(skill[1])
   end)
 end
--- [화면 배치] 가로·세로 회전 시 무술과 위험 경고를 안전한 위치로 다시 정렬한다.
+-- [반원 배치] 조이스틱과 기본 점프 영역을 피해 오른쪽 중단에 3개 버튼 배치.
 local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local short=v.Y<440
-  local buttonSize=short and 48 or (v.X<340 and 52 or 58)
-  local gap=7
-  local inset=8
-  local dockSize=buttonSize*2+gap+inset*2
-  meadowSkillDock.Size=UDim2.fromOffset(dockSize,dockSize)
-  meadowSkillDock.Position=UDim2.new(1,-(v.X<390 and 10 or 14),1,-(short and 104 or 142))
+  local buttonSize=short and 47 or (v.X<370 and 51 or 59)
+  local inset=6
+  local dockWidth=buttonSize*2+44
+  local dockHeight=buttonSize*3+18
+  meadowSkillDock.Size=UDim2.fromOffset(dockWidth,dockHeight)
+  meadowSkillDock.Position=UDim2.new(1,-(v.X<390 and 8 or 15),1,-(short and 100 or 142))
+  -- 오른쪽 가장자리를 따라 왼쪽을 향해 굽은 반원.
+  local centers={
+    Vector2.new(dockWidth-buttonSize*.62,buttonSize*.55),
+    Vector2.new(dockWidth-buttonSize*1.43,dockHeight*.5),
+    Vector2.new(dockWidth-buttonSize*.62,dockHeight-buttonSize*.55),
+  }
   for index,button in ipairs(meadowSkillButtons) do
-    local col=(index-1)%2
-    local row=math.floor((index-1)/2)
-    button.Position=UDim2.fromOffset(inset+col*(buttonSize+gap),inset+row*(buttonSize+gap))
+    button.Position=UDim2.fromOffset(centers[index].X-buttonSize/2,centers[index].Y-buttonSize/2)
     button.Size=UDim2.fromOffset(buttonSize,buttonSize)
-    button.TextSize=short and 10 or 12
+    button.TextSize=short and 11 or 14
+    button.ZIndex=6
   end
   meadowPatternBanner.Position=UDim2.new(.5,0,0,short and 108 or 130)
   meadowPatternBanner.Size=UDim2.fromOffset(math.max(130,math.min(v.X-24,short and 300 or 400)),short and 34 or 42)
@@ -669,9 +696,36 @@ remote.OnClientEvent:Connect(function(kind,payload)
   combatVFX.CreateImpactFlash({
     cframe=CFrame.new(payload.position+Vector3.new(0,2,0)),
     color=color,accent=Color3.fromRGB(255,255,237),
-    reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 5 or 12,
-    scale=payload.boss and 1.65 or 1.1,
+    reducedMotion=nativeTouchEnabled,count=nativeTouchEnabled and 8 or 18,
+    scale=payload.boss and 2.05 or 1.48,
   })
+  -- [실제 명중 타격음] Roblox 기본 내장 효과음만 사용 (외부 오디오 권한 불필요).
+  local myCharacter=player.Character
+  local soundRoot=myCharacter and (myCharacter:FindFirstChild("HumanoidRootPart") or myCharacter.PrimaryPart)
+  if soundRoot then
+    local impact=Instance.new("Sound")
+    impact.Name="MeadowConfirmedHit"
+    impact.SoundId="rbxasset://sounds/swordlunge.wav"
+    impact.Volume=payload.finisher and 1.55 or (payload.boss and 1.4 or 1.15)
+    impact.PlaybackSpeed=payload.finisher and .78 or 1.05
+    impact.RollOffMaxDistance=55
+    impact.Parent=soundRoot
+    impact:Play()
+    game:GetService("Debris"):AddItem(impact,2)
+  end
+  local hitFlash=Instance.new("Frame")
+  hitFlash.Name="MeadowHitScreenFeedback"
+  hitFlash.Size=UDim2.fromScale(1,1)
+  hitFlash.BackgroundColor3=payload.finisher and Color3.fromRGB(255,202,110)
+    or Color3.fromRGB(240,250,224)
+  hitFlash.BackgroundTransparency=payload.finisher and .86 or .94
+  hitFlash.BorderSizePixel=0
+  hitFlash.ZIndex=2
+  hitFlash.Parent=gui
+  game:GetService("TweenService"):Create(hitFlash,TweenInfo.new(.16),{
+    BackgroundTransparency=1
+  }):Play()
+  game:GetService("Debris"):AddItem(hitFlash,.22)
   if payload.finisher and type(combatVFX.CreateCriticalBurst)=="function" then
     combatVFX.CreateCriticalBurst({
       cframe=CFrame.new(payload.position+Vector3.new(0,2.5,0)),
@@ -1138,8 +1192,16 @@ RunService.PreSimulation:Connect(function(dt)
   if not matched then finishMeadowSkillPose();return end
   local actionId=skillMotionCharacter:GetAttribute("NativeSkillActionId")
   if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
+    -- [자동 회피 포즈] 서버가 회피에 성공한 경우 실제 골반·양다리를 옆으로 젖힌다.
     local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
-    skillMotionTargets.Spine=CFrame.Angles(0,0,sign*.25*math.sin(math.pi*phase))
+    local ease=math.sin(math.pi*phase)
+    skillMotionTargets.Spine=CFrame.Angles(-.15*ease,sign*.18*ease,sign*.53*ease)
+    skillMotionTargets.ThighL=CFrame.Angles(-.38*ease,0,sign*.32*ease)
+    skillMotionTargets.ThighR=CFrame.Angles(.46*ease,0,sign*.42*ease)
+    skillMotionTargets.ShinL=CFrame.Angles(.56*ease,0,0)
+    skillMotionTargets.ShinR=CFrame.Angles(.42*ease,0,0)
+    skillMotionTargets.UpperArmL=CFrame.Angles(-.45*ease,0,-sign*.35*ease)
+    skillMotionTargets.UpperArmR=CFrame.Angles(-.55*ease,0,sign*.35*ease)
   end
   combatMotionSource.MapCombatPoseToR15(skillMotionTargets,skillMotionR15Targets)
   skillMotionR15.Step(skillMotionR15Targets,dt)
