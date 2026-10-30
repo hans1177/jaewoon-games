@@ -190,8 +190,22 @@ local function worldAsset(id, location, targetHeight)
     end
     local clone=template:Clone()
     if not clone:IsA("Model") then return nil end
-    local originalHeight=clone:GetExtentsSize().Y
-    if originalHeight <= 0 then clone:Destroy();error("MEADOW_MESH_BOUNDS_INVALID") end
+    -- 원본 래퍼/숨은 피벗 크기를 제외한 보이는 CC0 메시 높이로 원본 크기를 정한다.
+    local meshMinY,meshMaxY=math.huge,-math.huge
+    for _,mesh in ipairs(clone:GetDescendants()) do
+      if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+        local cf=mesh.CFrame
+        local halfY=(math.abs(cf.RightVector.Y)*mesh.Size.X
+          +math.abs(cf.UpVector.Y)*mesh.Size.Y
+          +math.abs(cf.LookVector.Y)*mesh.Size.Z)*.5
+        meshMinY=math.min(meshMinY,cf.Position.Y-halfY)
+        meshMaxY=math.max(meshMaxY,cf.Position.Y+halfY)
+      end
+    end
+    local originalHeight=meshMaxY-meshMinY
+    if originalHeight <= .01 or originalHeight==math.huge then
+      clone:Destroy();error("MEADOW_VISIBLE_MESH_BOUNDS_INVALID")
+    end
     local nativeWorldScale=clone:GetScale()*(targetHeight or 5)/originalHeight
     if id=="tree" then
       -- 실제 등록된 채집 나무의 배경·자원 선택값을 같은 원본 메시 크기에 연결한다.
@@ -215,6 +229,26 @@ local function worldAsset(id, location, targetHeight)
       end
     end
     clone:PivotTo(CFrame.new(location))
+    -- 수입 FBX의 래퍼가 장식 본체에서 떨어져 있어도 나무/동물 중심을 원래 위치에 정렬.
+    local minX,maxX,minZ,maxZ=math.huge,-math.huge,math.huge,-math.huge
+    for _,mesh in ipairs(clone:GetDescendants()) do
+      if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+        local cf=mesh.CFrame
+        local halfX=(math.abs(cf.RightVector.X)*mesh.Size.X
+          +math.abs(cf.UpVector.X)*mesh.Size.Y
+          +math.abs(cf.LookVector.X)*mesh.Size.Z)*.5
+        local halfZ=(math.abs(cf.RightVector.Z)*mesh.Size.X
+          +math.abs(cf.UpVector.Z)*mesh.Size.Y
+          +math.abs(cf.LookVector.Z)*mesh.Size.Z)*.5
+        minX=math.min(minX,cf.Position.X-halfX)
+        maxX=math.max(maxX,cf.Position.X+halfX)
+        minZ=math.min(minZ,cf.Position.Z-halfZ)
+        maxZ=math.max(maxZ,cf.Position.Z+halfZ)
+      end
+    end
+    if minX==math.huge then clone:Destroy();error("MEADOW_CC0_VISIBLE_MESH_MISSING") end
+    clone:PivotTo(clone:GetPivot()
+      +Vector3.new(location.X-(minX+maxX)*.5,0,location.Z-(minZ+maxZ)*.5))
     -- Align the original source mesh to a measured native Terrain hit.
     local rayParams=RaycastParams.new()
     rayParams.FilterType=Enum.RaycastFilterType.Include
@@ -640,8 +674,20 @@ local function spawnEnemy(isBoss, index)
     return false
   end
   if not model:IsA("Model") then return nil end
-  local nativeHeight=model:GetExtentsSize().Y
-  if nativeHeight<=0 then model:Destroy();return false end
+  -- 몬스터도 비가시 루트 크기를 빼고 원본 메시의 실제 세로 크기를 사용한다.
+  local actualMin,actualMax=math.huge,-math.huge
+  for _,mesh in ipairs(model:GetDescendants()) do
+    if mesh:IsA("MeshPart") and mesh.Transparency<.98 then
+      local cf=mesh.CFrame
+      local halfY=(math.abs(cf.RightVector.Y)*mesh.Size.X
+        +math.abs(cf.UpVector.Y)*mesh.Size.Y
+        +math.abs(cf.LookVector.Y)*mesh.Size.Z)*.5
+      actualMin=math.min(actualMin,cf.Position.Y-halfY)
+      actualMax=math.max(actualMax,cf.Position.Y+halfY)
+    end
+  end
+  local nativeHeight=actualMax-actualMin
+  if nativeHeight<=.01 or nativeHeight==math.huge then model:Destroy();return false end
   model:ScaleTo(model:GetScale()*nativeScale/nativeHeight)
   -- [원본 몬스터 관절] 분리된 실제 MeshPart 사지에만 Motor6D 연결.
   -- 통짜/스킨 가중치 없는 메시에는 가짜 다리나 Bone을 추가하지 않는다.
