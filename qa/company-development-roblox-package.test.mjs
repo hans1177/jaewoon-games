@@ -1352,10 +1352,21 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
-  // Current mobile combat: six real skills in an anchored left semicircle, plus native primary attack.
-  assert.ok(client.includes('local meadowArcDegrees={-150,-114,-78,-186,-222,-258}'));
+  // 모바일 전투: 발차기·어퍼컷·막기가 실제 ID로 연결된 2열 도크.
+  assert.ok(client.includes('local meadowSkillGrid={{66,12},{128,12},{66,69},{128,69},{66,126},{128,126}}'));
+  assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
+  assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-right,1,-bottom)'));
+  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-6,1,-(landscape and 7 or 22))'));
+  assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
+  assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
+  assert.ok(client.includes('meadowHealthTrack.Size=UDim2.new(1,-18,0,18)'));
+  assert.ok(client.includes('local radarTrailEndpoints={{-51,-48,-177,-176}'));
+  assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
+  assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
+  assert.ok(client.includes('meadowAttackIcon.ImageRectOffset=Vector2.new(0,0)'));
   assert.ok(client.includes('meadowPrimaryAttack.Activated:Connect(function()'));
   assert.ok(client.includes('activateMeadowAction(primaryCombatAction.Id)'));
   assert.ok(client.includes('local meadowRadar=Instance.new("Frame")'));
@@ -1385,10 +1396,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
-  assert.ok(client.includes('local centerX=short and 224 or 240'));
-  assert.ok(client.includes('local right=landscape and 14 or 5'));
-  assert.ok(client.includes('local bottom=landscape and (short and 130 or 160) or 136'));
-  assert.ok(client.includes('button.Position=UDim2.fromOffset(8,56+(index-1)*(size+7))'));
+  assert.ok(client.includes('local scale=landscape and 1 or math.clamp(v.X/430,.76,.94)'));
+  assert.ok(client.includes('button.Position=UDim2.fromOffset(math.floor(cell[1]*scale),math.floor(cell[2]*scale))'));
+  assert.ok(client.includes('math.floor((14+(index-1)*57)*scale)'));
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1396,15 +1406,23 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(dodge,/ground.Normal.Y>=\.65/);
   assert.match(dodge,/ground.Material~=Enum.Material.Water/);
   assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
-  assert.ok(client.includes('button.Size=UDim2.fromOffset(icon,icon)'));
+  assert.ok(client.includes('button.Size=UDim2.fromOffset(size,size)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
-  for(const id of ['skill-meadow-heavy','skill-meadow-sweep','skill-meadow-bolt',
-    'skill-meadow-parry','skill-meadow-heal','skill-meadow-focus']){
-    assert.ok(client.includes('{"'+id+'",'), 'semicircle skill missing: '+id);
+  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut','skill-meadow-guard',
+    'skill-meadow-parry','skill-meadow-heal','skill-meadow-bolt']){
+    assert.ok(client.includes('{"'+id+'",'), 'real combat dock skill missing: '+id);
+  }
+  // 나머지 기존 스킬을 지우지 않고 원본 Config에서 메뉴로 접근 가능해야 한다.
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  for(const id of ['skill-meadow-heavy','skill-meadow-sweep','skill-meadow-focus']){
+    assert.ok(config.includes('Id = "'+id+'"'), 'existing skill must remain in config: '+id);
+    assert.ok(!client.includes('or action.Id=="'+id+'"'), 'unplaced skill must remain reachable in menu: '+id);
   }
   assert.ok(client.includes('{"skill-meadow-guard","막기"'));
   assert.ok(client.includes('{"skill-meadow-dodge-left","좌회피"'));
   assert.ok(client.includes('{"skill-meadow-dodge-right","우회피"'));
+  assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","채집"'));
+  assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
   assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,/);
