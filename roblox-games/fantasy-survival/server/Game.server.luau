@@ -320,6 +320,63 @@ for index,spec in ipairs({
 end
 end)
 
+-- [초원 서식지] 외곽의 여러 숲 가장자리에 기존 CC0 나무와 초식 동물을 배치한다.
+-- 전투·채집/보상 대상이 아닌 배경용이며, 시작 지점과 기존 스폰/자원은 그대로 보존한다.
+-- 같은 나무 1개 에셋 캐시만 재사용하고 순차 로딩으로 처음 접속을 막지 않는다.
+task.delay(8,function()
+  local woodland={
+    {-274,-238,16},{-252,-202,14},{-218,-255,18},{-230,-180,13},
+    {-308,-183,17},{-276,-141,12},{-208,-220,15},
+    {232,-240,15},{276,-258,19},{307,-218,13},{222,-185,17},
+    {255,-146,14},{305,-173,16},{212,-271,13},
+    {-281,193,16},{-243,228,19},{-301,254,14},{-220,275,17},
+    {-307,137,13},{-209,177,15},{-265,294,17},
+    {241,194,15},{281,225,18},{308,276,14},{216,270,16},
+    {301,153,13},{219,153,15},{278,296,17},
+  }
+  local sceneryCount=0
+  for index,spec in ipairs(woodland) do
+    local tree=worldAsset("tree",Vector3.new(spec[1],3,spec[2]),spec[3])
+    if tree then
+      tree.Name="Meadow_Woodland_"..index
+      tree:SetAttribute("MeadowScenery",true)
+      tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*137)%360),0))
+      sceneryCount+=1
+    end
+    task.wait(.1)
+  end
+  -- 흙길·바위·잔디 연결은 Roblox Terrain으로만 구성한다. 장식용 Part 생성 금지.
+  for _,patch in ipairs({
+    {-177,-240,7,Enum.Material.Ground},{178,-252,8,Enum.Material.Ground},
+    {-248,105,8,Enum.Material.Ground},{261,101,7,Enum.Material.Ground},
+    {-218,310,6,Enum.Material.Rock},{213,309,5,Enum.Material.Rock},
+    {-313,-110,5,Enum.Material.Rock},{316,-82,5,Enum.Material.Rock},
+  }) do
+    meadowTerrain:FillBall(Vector3.new(patch[1],-2,patch[2]),patch[3],patch[4])
+    task.wait()
+  end
+  -- 추가 야생동물은 이미 검증된 사슴/멧돼지/토끼 모델만 사용한다.
+  for index,spec in ipairs({
+    {"deer",-245,-191,4.4},{"deer",251,211,4.4},{"deer",202,-232,4.4},
+    {"boar",-263,210,3.1},{"boar",259,-179,3.1},
+    {"rabbit",-205,265,1.8},{"rabbit",233,263,1.8},{"rabbit",-295,-205,1.8},
+  }) do
+    local animal=worldAsset(spec[1],Vector3.new(spec[2],3,spec[3]),spec[4])
+    if animal then
+      animal:SetAttribute("MeadowWildlife",spec[1])
+      animal:SetAttribute("NativeMobMotion","WALK")
+      animal:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
+      table.insert(meadowWildlife,{
+        model=animal,origin=animal:GetPivot().Position,phase=(index+5)*1.7,
+        range=spec[1]=="rabbit" and 5 or 9,
+        speed=spec[1]=="rabbit" and .48 or .2,
+      })
+    end
+    task.wait(.14)
+  end
+  gameWorld:SetAttribute("MeadowWoodlandSceneryCount",sceneryCount)
+end)
+
 local function spawnEnemy(isBoss, index)
   if #enemies >= MAX_ENEMIES then return false end
   encounterSerial += 1
