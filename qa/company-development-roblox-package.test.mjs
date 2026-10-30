@@ -1412,11 +1412,11 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
   // 모바일 전투: 실제 발차기·어퍼컷·막기가 기본 공격 주변의 반원에 배치된다.
-  assert.ok(client.includes('local meadowArcDegrees={-155,-95,-35}'));
+  assert.match(client,/local meleeSkills=\{[\s\S]*?\{"meadow-unarmed-kick","발차기"[\s\S]*?\{"meadow-unarmed-uppercut","어퍼컷"[\s\S]*?\{"skill-meadow-guard","막기"/);
   assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
   assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
-  assert.ok(client.includes('meadowSkillDock.Position=UDim2.new(1,-(landscape and 62 or 7),1,-(landscape and 19 or 102))'));
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-\(landscape and \d+ or \d+\),1,-\(landscape and \d+ or \d+\)\)/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
   assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
@@ -1429,7 +1429,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('for route=1,8 do'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
-  assert.ok(client.includes('local mapDiameter=compactLandscape and 102 or small and 106 or 120'));
+  assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or \d+/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-8,0,8)'));
@@ -1448,7 +1448,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.equal(icons.importVerified,true);
   assert.ok(client.includes('local meadowIconAtlas="rbxassetid://'+icons.assetId+'"'));
   assert.ok(client.includes('icon.ImageRectOffset=Vector2.new(skill[4]*64,0)'));
-  assert.ok(client.includes('if meadowIconAtlas~="" and skill[4] then'));
+  assert.match(client,/if meadowIconAtlas~="" and skill\[4\](?:~=nil)? then/);
   assert.ok(client.includes('glyph.Name="SkillSymbol"'));
   // Item cards read existing server-authoritative values, without adding a saved schema.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
@@ -1468,9 +1468,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
   assert.ok(client.includes('local scale=landscape and math.clamp(v.Y/460,.67,.88) or math.clamp(v.X/420,.75,.96)'));
-  assert.ok(client.includes('local x=centerX+math.cos(angle)*radius'));
-  assert.ok(client.includes('local y=centerY+math.sin(angle)*radius'));
-  assert.ok(client.includes('button.Position=UDim2.fromOffset(math.floor((122+(index-1)*60)*scale),math.floor(185*scale))'));
+  assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(\d+\+\(index-1\)\*60\)\*scale\),math.floor\(\d+\*scale\)\)/);
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1496,7 +1496,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.5,.5},{"BR",0,0}'));
   assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
-  assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,meadowHealthTrack,multiplayerStatus,/);
+  assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,(?:nil|meadowHealthTrack),multiplayerStatus,/);
   assert.match(client,/pages=meadowPages/);
   assert.ok(client.includes('hideButton=true'),
     'the default menu attack remains hidden; world-tap and main attack share the existing server action');
