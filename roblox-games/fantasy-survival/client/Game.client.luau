@@ -2494,7 +2494,7 @@ local function bindOriginalMob(model)
   }) or nil
   local row={controller=controller,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
-    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0}
+    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,motionHoldUntil=0}
   model:SetAttribute("NativeCreatureRigMode",actualRig and "ORIGINAL_JOINT_RIG"
     or "UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET")
   if not actualRig and not meadowMobRigWarnings[species] then
@@ -2554,19 +2554,22 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           forcedPhase=math.clamp((impactAge-.20)/.36,0,1)
         end
       end
-      -- [4족 접지] 시간만으로 다리를 휘두르면 제자리에서도 발이 미끄러진다.
-      -- 실제 서버 메시 피벗의 수평 이동거리로 보폭을 맞추고 멈추면 가볍게 정지한다.
+      -- [4족 접지] 서버 피벗은 초당 30회만 갱신될 수 있다. 그 사이의 빈
+      -- 렌더 프레임에서 걷기/대기를 계속 전환하지 않고 보폭은 실거리만 누적한다.
+      -- 관절만 갱신하며 몬스터 이동 속도·AI·공격 판정은 서버 그대로 유지한다.
       local position=model:GetPivot().Position
       local moved=Vector3.new(position.X-row.lastPosition.X,0,position.Z-row.lastPosition.Z)
       row.lastPosition=position
       local traveled=moved.Magnitude
       local step=math.clamp(dt,1/120,.12)
-      local rawSpeed=traveled>5 and 0 or math.min(traveled/step,24)
-      row.groundSpeed+=(rawSpeed-row.groundSpeed)*math.min(1,step*9)
+      local movedEnough=traveled>.03 and traveled<=5
+      local rawSpeed=movedEnough and math.min(traveled/step,24) or 0
+      row.groundSpeed+=(rawSpeed-row.groundSpeed)*math.min(1,step*(movedEnough and 9 or 6))
+      if movedEnough then row.motionHoldUntil=os.clock()+.16 end
       local footTravel=(mode=="WALK" or mode=="RUN") and row.plan=="QUADRUPED"
       if footTravel then
-        if traveled<=5 then row.travel+=traveled end
-        if row.groundSpeed<.35 then mode="IDLE" end
+        if movedEnough then row.travel+=traveled end
+        if row.groundSpeed<1.1 and os.clock()>=row.motionHoldUntil then mode="IDLE" end
       end
       if mode~=row.lastMode then
         row.lastMode=mode
@@ -2599,7 +2602,7 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         phase,{
           bodyPlan=row.plan,actorClass=model:GetAttribute("Boss") and "BOSS" or "CREATURE",
           availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
-          secondary=.7,intensity=footTravel and 1.08 or 1.24,
+          secondary=.7,intensity=footTravel and math.clamp(row.groundSpeed/7.5,.6,1.08) or 1.24,
           profile={limbArc=footTravel and 1.08 or 1.3,footContact=1.28,attackStrike=1.22},
         },row.poses)
       if matched then
