@@ -1844,6 +1844,36 @@ for index=1,20 do
   marker.Parent=radarField
   radarWoodlandMarkers[index]=marker
 end
+-- [마을·의뢰 지도] 기존 미니맵에 실제 마을 중심 및 현재 계약 조사 좌표만 표시.
+local radarVillage=Instance.new("TextLabel")
+radarVillage.Name="MeadowVillageMarker"
+radarVillage.BackgroundTransparency=1
+radarVillage.AnchorPoint=Vector2.new(.5,.5)
+radarVillage.Size=UDim2.fromOffset(23,23)
+radarVillage.Text="⌂"
+radarVillage.TextSize=21
+radarVillage.TextColor3=Color3.fromRGB(252,221,145)
+radarVillage.TextStrokeTransparency=.3
+radarVillage.ZIndex=12
+radarVillage.Visible=false
+radarVillage.Parent=radarField
+local radarContractSites={}
+for index=1,3 do
+  local marker=Instance.new("TextLabel")
+  marker.Name="VillageClueMarker"..index
+  marker.BackgroundTransparency=1
+  marker.AnchorPoint=Vector2.new(.5,.5)
+  marker.Size=UDim2.fromOffset(19,19)
+  marker.Text="?"
+  marker.TextSize=19
+  marker.Font=Enum.Font.GothamBold
+  marker.TextColor3=Color3.fromRGB(247,207,125)
+  marker.TextStrokeTransparency=.35
+  marker.ZIndex=12
+  marker.Visible=false
+  marker.Parent=radarField
+  radarContractSites[index]=marker
+end
 local radarPeers={}
 local radarElapsed=0
 game:GetService("RunService").Heartbeat:Connect(function(dt)
@@ -1862,6 +1892,25 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local mapSize=radarField.AbsoluteSize
   local radarSpan=270 -- 플레이어 주위 실제 135스터드 반경
   local radarHalf=radarSpan*.5
+  local villageDx=0-mainRoot.Position.X
+  local villageDz=-111-mainRoot.Position.Z
+  radarVillage.Visible=world~=nil and (world:GetAttribute("MeadowVillageNPCCount") or 0)>0
+    and villageDx*villageDx+villageDz*villageDz<radarHalf*radarHalf
+  if radarVillage.Visible then
+    radarVillage.Position=UDim2.fromScale(.5+villageDx/radarSpan,.5+villageDz/radarSpan)
+  end
+  local activeContract=Config.VillageContracts[player:GetAttribute("VillageContractIndex") or 1]
+  local contractEvidence=player:GetAttribute("VillageContractEvidence") or 0
+  for index,marker in ipairs(radarContractSites) do
+    local site=activeContract and activeContract.Sites and activeContract.Sites[index]
+    local dx=site and site[1]-mainRoot.Position.X or math.huge
+    local dz=site and site[2]-mainRoot.Position.Z or math.huge
+    marker.Visible=site~=nil
+      and (player:GetAttribute("VillageContractPhase") or 0)==1
+      and bit32.band(contractEvidence,bit32.lshift(1,index+2))==0
+      and dx*dx+dz*dz<radarHalf*radarHalf
+    if marker.Visible then marker.Position=UDim2.fromScale(.5+dx/radarSpan,.5+dz/radarSpan) end
+  end
   for index,route in ipairs(radarTrailEndpoints) do
     local frame=radarTrails[index]
     -- 기존 대각선 X 버그: 레이더 밖 끝점을 갖는 길은 표시하지 않는다.
