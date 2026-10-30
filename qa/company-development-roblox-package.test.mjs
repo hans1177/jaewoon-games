@@ -1161,9 +1161,10 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(client,/forestBed.SoundId="rbxassetid:\/\/9116971475"/);
   assert.match(client,/birdChirp.SoundId="rbxassetid:\/\/140708444684424"/);
   assert.match(client,/birdChirp.Looped=false/);
-  assert.match(client,/forestBed.Volume=\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)/);
+  assert.match(client,/local forestAudioEnabled=hasStudioAssetAtom\("AUDIO","ENV_FOREST"\)/);
+  assert.match(client,/forestBed\.Volume=forestAudioEnabled and \(\(\.035\+\.085\*forestPresence\)\*\(quiet and \.28 or 1\)\) or 0/);
   assert.match(client,/local quiet=phase=="NIGHT" or sky=="RAIN" or sky=="SNOW" or sky=="STORM"/);
-  assert.match(client,/birdChirp.Volume=\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)/);
+  assert.match(client,/birdChirp\.Volume=forestAudioEnabled and \(\(\.085\+\.17\*forestPresence\)\*\(quiet and \.18 or 1\)\) or 0/);
   assert.match(client,/nextChirp=os.clock\(\)\+math.random\(17,29\)/);
   // Survival inspection is meaningful but cannot change existing balance, rewards or save data.
   assert.match(server,/local function inspectMeadowSurvival\(player,model,subject\)/);
