@@ -15,7 +15,10 @@ function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of arg
 function evidenceSignature(task={}){
   const ev=uniq(task.evidence);
   // 보안 격리 신호는 새 복구 항목의 일반 실패 서명으로 덮어쓸 수 없다.
-  if(ev.some(value=>/RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED/i.test(value)))return 'RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED';
+  if([task.failureSignature,task.blocker,task.lastOutcome,
+    ...ev.filter(value=>/^(?:failure-cause:|failure-stage:|system-steward:failure-signature:|security-quarantine:)/i.test(value))]
+    .some(value=>/\bRAW_COMMERCIAL_EXPRESSION_COPY_DETECTED\b/i.test(clean(value))))
+    return 'RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED';
   // 직전 게임 복구가 기록한 현재 실패 서명은 과거 failure-cause보다 우선한다.
   const currentSignature=clean(task.failureSignature);
   if(currentSignature)return currentSignature;
