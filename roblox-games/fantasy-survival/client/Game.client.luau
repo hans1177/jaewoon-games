@@ -1079,6 +1079,7 @@ do
   close.Parent=dialog
   close.Activated:Connect(function()dialog.Visible=false end)
   local choices={}
+  local choiceActions={}
   for i=1,2 do
     local button=Instance.new("TextButton")
     button.Name="Choice"..i
@@ -1096,6 +1097,15 @@ do
     rounded.CornerRadius=UDim.new(0,8)
     rounded.Parent=button
     choices[i]=button
+    button.Activated:Connect(function()
+      local action=choiceActions[i]
+      if action and dialog.Visible then
+        dialog.Visible=false
+        choiceActions[1]=nil
+        choiceActions[2]=nil
+        remote:FireServer(action)
+      end
+    end)
   end
   local function layoutDialogue()
     local v=gui.AbsoluteSize
@@ -1120,14 +1130,8 @@ do
       local action=option and option.action
       local permitted=action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2"
       button.Visible=permitted
-      if permitted then
-        button.Text=tostring(option.label or "선택")
-        button.Activated:Once(function()
-          if not dialog.Visible then return end
-          dialog.Visible=false
-          remote:FireServer(action)
-        end)
-      end
+      choiceActions[i]=permitted and action or nil
+      if permitted then button.Text=tostring(option.label or "선택") end
     end
     dialog.Visible=true
   end)
