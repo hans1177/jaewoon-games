@@ -691,9 +691,13 @@ player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
   -- A real R15 hand/foot carries the short shared-mesh particle trail.
   stopStrikeTrail()
   if combatVFX and profile=="UNARMED" then
-    local hostName=(chosenMove:find("KICK",1,true) or chosenMove:find("KNEE",1,true))
-      and (chosenMove:find("LEFT",1,true) or chosenMove:match("_L$")) and "LeftFoot" or "RightFoot"
-      or (chosenMove:find("LEFT",1,true) and "LeftHand" or "RightHand")
+    local isLegStrike=chosenMove:find("KICK",1,true)~=nil
+      or chosenMove:find("KNEE",1,true)~=nil
+    local isLeftStrike=chosenMove:find("LEFT",1,true)~=nil
+      or chosenMove:match("_L$")~=nil
+    local hostName=isLegStrike
+      and (isLeftStrike and "LeftFoot" or "RightFoot")
+      or (isLeftStrike and "LeftHand" or "RightHand")
     local host=character:FindFirstChild(hostName)
     if host and host:IsA("BasePart") then
       local color=chosenMove:find("KICK",1,true) and Color3.fromRGB(124,245,220)
