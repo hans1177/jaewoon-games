@@ -364,24 +364,28 @@ local function nearestEnemy(rootPart, range)
   return selected
 end
 
-local function attackEnemy(player)
+-- Authoritative damage and original progression are shared by basic attacks and
+-- meadow skills. Existing XP, boss rewards, scoring and saved schema stay exact.
+local meadowFocusUntil={}
+local meadowSkillCooldown={}
+local meadowDefense={}
+local function liveMeadowCharacter(player)
   local character=player.Character
-  local human=character and character:FindFirstChildOfClass("Humanoid")
-  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
-  if not human or human.Health<=0 or not rootPart then return false end
-  local target=nearestEnemy(rootPart,25)
-  if not target then return false end
-  local now=os.clock()
-  if now<(attackCooldown[player] or 0) then return false end
-  attackCooldown[player]=now+.42
-  local level=readNumber(player,"Level",1)
-  local weaponTier=readNumber(player,"WeaponTier",0)
-  local damage=math.floor(16+level*2.2+weaponTier*8)
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local root=character and character:FindFirstChild("HumanoidRootPart")
+  if not humanoid or humanoid.Health<=0 or not root then return nil,nil,nil end
+  return character,humanoid,root
+end
+local function applyMeadowDamage(player,target,damage)
+  if not target or target.HP<=0 or not target.model.Parent then return false end
+  local focus=(meadowFocusUntil[player] or 0)>os.clock()
+  if focus then damage=math.floor(damage*1.25) end
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
   setNumber(player,"Combo",readNumber(player,"Combo",0)+1)
   setNumber(player,"Score",readNumber(player,"Score",0)+damage)
   player:SetAttribute("LastApprovedScope","combat-impact")
+  player:SetAttribute("ApprovedActionTarget",target.position)
   if target.HP<=0 then
     target.model:Destroy()
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
@@ -396,6 +400,23 @@ local function attackEnemy(player)
     setNumber(player,"EnemyHealth",target.HP)
   end
   broadcastSurvivalState(player)
+  return true
+end
+
+local function attackEnemy(player)
+  local character=player.Character
+  local human=character and character:FindFirstChildOfClass("Humanoid")
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  if not human or human.Health<=0 or not rootPart then return false end
+  local target=nearestEnemy(rootPart,25)
+  if not target then return false end
+  local now=os.clock()
+  if now<(attackCooldown[player] or 0) then return false end
+  attackCooldown[player]=now+.42
+  local level=readNumber(player,"Level",1)
+  local weaponTier=readNumber(player,"WeaponTier",0)
+  local damage=math.floor(16+level*2.2+weaponTier*8)
+  return applyMeadowDamage(player,target,damage)
   return true
 end
 
@@ -510,7 +531,18 @@ local function updateEnemyAI(dt,now)
             enemy.windupTargetUserId=nil
             enemy.lastAttack=now
             setEnemyAttackState(enemy,"RECOVERY")
-            targetHuman:TakeDamage(enemy.damage)
+            local defense=meadowDefense[targetPlayer] or {}
+            local incoming=enemy.damage
+            if (defense.dodgeUntil or 0)>now then
+              incoming=0 -- accepted timed evasion; no client-trusted dodge flag
+            elseif (defense.parryUntil or 0)>now then
+              incoming=0
+              targetPlayer:SetAttribute("MeadowParryConfirmed",workspace:GetServerTimeNow())
+              remote:FireClient(targetPlayer,"MEADOW_REACTION","PARRY")
+            elseif (defense.guardUntil or 0)>now then
+              incoming=math.ceil(incoming*.5)
+            end
+            if incoming>0 then targetHuman:TakeDamage(incoming) end
             setNumber(targetPlayer,"Health",math.max(0,math.floor(targetHuman.Health)))
           end
         elseif distance>attackRange then
@@ -542,6 +574,151 @@ RunService.Heartbeat:Connect(function(dt)
   updateEnemyAI(step,os.clock())
 end)
 
+-- Exact owner-selected Roblox action IDs. Cooldowns, health, hit detection and
+-- short evasion windows are server-owned; the client only draws approved effects.
+local meadowSkillSeconds={
+  ["skill-meadow-heavy"]=5,["skill-meadow-sweep"]=9,["skill-meadow-bolt"]=7,
+  ["skill-meadow-guard"]=9,["skill-meadow-parry"]=7,
+  ["skill-meadow-dodge-left"]=4,["skill-meadow-dodge-right"]=4,
+  ["skill-meadow-sprint"]=8,["skill-meadow-heal"]=16,
+  ["skill-meadow-focus"]=13,["skill-meadow-emote"]=3,
+}
+local function meadowSkill(player,id,execute)
+  local interval=meadowSkillSeconds[id]
+  if not interval then return false end
+  local cooldowns=meadowSkillCooldown[player] or {}
+  local now=os.clock()
+  if now<(cooldowns[id] or 0) then return false end
+  local character,humanoid,root=liveMeadowCharacter(player)
+  if not character then return false end
+  local accepted=execute(character,humanoid,root,now)
+  if accepted~=true then return false end
+  cooldowns[id]=now+interval
+  meadowSkillCooldown[player]=cooldowns
+  -- Server time is synchronized for mobile countdown labels.
+  player:SetAttribute("MeadowReady_"..id,workspace:GetServerTimeNow()+interval)
+  if not player:GetAttribute("ApprovedActionTarget") then
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+  end
+  return true
+end
+local function meadowHeavy(player)
+  return meadowSkill(player,"skill-meadow-heavy",function(_,_,root,now)
+    local enemy=nearestEnemy(root,9)
+    if not enemy or now<(attackCooldown[player] or 0) then return false end
+    attackCooldown[player]=now+.65
+    local damage=math.floor((16+readNumber(player,"Level",1)*2.2
+      +readNumber(player,"WeaponTier",0)*8)*1.7)
+    return applyMeadowDamage(player,enemy,damage)
+  end)
+end
+local function meadowSweep(player)
+  return meadowSkill(player,"skill-meadow-sweep",function(_,_,root)
+    local targets={}
+    for _,enemy in ipairs(enemies) do
+      if enemy.HP>0 and enemy.model.Parent and
+        (enemy.position-root.Position).Magnitude<=10 and #targets<5 then
+        table.insert(targets,enemy)
+      end
+    end
+    if #targets==0 then return false end
+    local damage=math.floor((16+readNumber(player,"Level",1)*2.2
+      +readNumber(player,"WeaponTier",0)*8)*.85)
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    for _,enemy in ipairs(targets) do applyMeadowDamage(player,enemy,damage) end
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
+local function meadowBolt(player)
+  return meadowSkill(player,"skill-meadow-bolt",function(character,_,root)
+    local enemy=nearestEnemy(root,32)
+    if not enemy then return false end
+    local ray=RaycastParams.new()
+    ray.FilterType=Enum.RaycastFilterType.Exclude
+    ray.FilterDescendantsInstances={character,enemy.model}
+    local delta=enemy.position-(root.Position+Vector3.new(0,2,0))
+    local wall=workspace:Raycast(root.Position+Vector3.new(0,2,0),delta,ray)
+    if wall and wall.Distance<delta.Magnitude-2 then return false end
+    local damage=math.floor(12+readNumber(player,"Level",1)*1.8
+      +readNumber(player,"WeaponTier",0)*4)
+    return applyMeadowDamage(player,enemy,damage)
+  end)
+end
+local function meadowGuard(player)
+  return meadowSkill(player,"skill-meadow-guard",function(_,_,root,now)
+    local defense=meadowDefense[player] or {}
+    defense.guardUntil=now+2.8
+    meadowDefense[player]=defense
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
+local function meadowParry(player)
+  return meadowSkill(player,"skill-meadow-parry",function(_,_,root,now)
+    local defense=meadowDefense[player] or {}
+    defense.parryUntil=now+.42
+    meadowDefense[player]=defense
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
+local function meadowDodge(player,sign,id)
+  return meadowSkill(player,id,function(character,_,root,now)
+    local side=root.CFrame.RightVector*sign
+    local ray=RaycastParams.new()
+    ray.FilterType=Enum.RaycastFilterType.Exclude
+    ray.FilterDescendantsInstances={character}
+    local start=root.Position+Vector3.new(0,1.5,0)
+    local wall=workspace:Raycast(start,side*7,ray)
+    local distance=wall and math.max(0,wall.Distance-2) or 7
+    if distance<2 then return false end
+    -- Short movement is only applied on the server after obstruction checks.
+    character:PivotTo(character:GetPivot()+side*distance)
+    local defense=meadowDefense[player] or {}
+    defense.dodgeUntil=now+.48
+    meadowDefense[player]=defense
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
+local function meadowSprint(player)
+  return meadowSkill(player,"skill-meadow-sprint",function(_,humanoid,root)
+    local prior=humanoid.WalkSpeed
+    humanoid.WalkSpeed=math.min(26,prior+5)
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    task.delay(3,function()
+      if humanoid.Parent and humanoid.Health>0 and humanoid.WalkSpeed==math.min(26,prior+5) then
+        humanoid.WalkSpeed=prior
+      end
+    end)
+    return true
+  end)
+end
+local function meadowHeal(player)
+  return meadowSkill(player,"skill-meadow-heal",function(_,humanoid,root)
+    if humanoid.Health>=humanoid.MaxHealth then return false end
+    humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+26)
+    setNumber(player,"Health",math.floor(humanoid.Health))
+    player:SetAttribute("LastApprovedScope","survival-heal")
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
+local function meadowFocus(player)
+  return meadowSkill(player,"skill-meadow-focus",function(_,_,root,now)
+    meadowFocusUntil[player]=now+5
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
+local function meadowEmote(player)
+  return meadowSkill(player,"skill-meadow-emote",function(_,_,root)
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+    return true
+  end)
+end
+
 local handlers={
   ["genre-core"]=startSurvivalRun,
   ["scope-corefun-ea77622450"]=attackEnemy,
@@ -549,6 +726,21 @@ local handlers={
   ["scope-coreloop-1-6ebe58f496"]=gatherNearestResource,
   ["scope-coreloop-2-6c927cfa40"]=upgradeEquipment,
   ["scope-mobileux-5acfb2eaa6"]=attackEnemy,
+  ["skill-meadow-heavy"]=meadowHeavy,
+  ["skill-meadow-sweep"]=meadowSweep,
+  ["skill-meadow-bolt"]=meadowBolt,
+  ["skill-meadow-guard"]=meadowGuard,
+  ["skill-meadow-parry"]=meadowParry,
+  ["skill-meadow-dodge-left"]=function(player)
+    return meadowDodge(player,-1,"skill-meadow-dodge-left")
+  end,
+  ["skill-meadow-dodge-right"]=function(player)
+    return meadowDodge(player,1,"skill-meadow-dodge-right")
+  end,
+  ["skill-meadow-sprint"]=meadowSprint,
+  ["skill-meadow-heal"]=meadowHeal,
+  ["skill-meadow-focus"]=meadowFocus,
+  ["skill-meadow-emote"]=meadowEmote,
 }
 
 local function bindSurvivalHealth(player)
@@ -614,14 +806,20 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   local actionAccepted=handler(player)
-  -- [서버 권한] 실제 승인된 공격 판정이 있을 때만 전투 모션 이벤트를 보낸다.
-  for _, action in ipairs(Config.Actions) do
-    if actionAccepted and action.Id == actionId and action.Kind == "COMBAT" then
-      -- Roblox 속성 변경 이벤트는 같은 문자열을 재전송하면 발생하지 않는다.
-      -- 피해 판정이 성공한 공격마다 별도 승인 번호를 발급해 연속 타격 모션을 유지한다.
-      local approvedSequence = readNumber(player, "ActionSequence", 0) + 1
-      setNumber(player, "ActionSequence", approvedSequence)
-      player:SetAttribute("ApprovedCombatMotion", actionId .. ":" .. tostring(approvedSequence))
+  -- [서버 권한] 성공한 모든 실제 액션만 R15 모션·스킬·VFX로 전달.
+  if actionAccepted~=true then return end
+  local approvedSequence=readNumber(player,"ActionSequence",0)+1
+  setNumber(player,"ActionSequence",approvedSequence)
+  local character=player.Character
+  local root=character and character:FindFirstChild("HumanoidRootPart")
+  if root and typeof(player:GetAttribute("ApprovedActionTarget"))~="Vector3" then
+    player:SetAttribute("ApprovedActionTarget",root.Position)
+  end
+  player:SetAttribute("ApprovedActionMotion",actionId..":"..tostring(approvedSequence))
+  player:SetAttribute("ApprovedActionFX",actionId..":"..tostring(approvedSequence))
+  for _,action in ipairs(Config.Actions) do
+    if action.Id==actionId and action.Kind=="COMBAT" then
+      player:SetAttribute("ApprovedCombatMotion",actionId..":"..tostring(approvedSequence))
       break
     end
   end
@@ -649,6 +847,9 @@ Players.PlayerRemoving:Connect(function(player)
   profileBindingStarted[player] = nil
   lastAction[player] = nil
   attackCooldown[player] = nil
+  meadowSkillCooldown[player]=nil
+  meadowDefense[player]=nil
+  meadowFocusUntil[player]=nil
 end)
 
 
