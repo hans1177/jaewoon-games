@@ -531,7 +531,12 @@ function scoreTask(task, index) {
   const type=clean(task.type).toLowerCase();
   const developmentImplementation=department==='development'&&!['inspect','research','qa'].includes(type);
   const nonBlockingSupervisionResearch=department==='system-supervision'&&['inspect','research','qa'].includes(type);
-  return (task.ownerDirective ? 10000 : 0)
+  // 오너 2026-10-30: 실행 가능한 마력숲 Roblox 게임개발 작업을 우선한다.
+  // 검증·출시·보안 문턱과 다른 게임의 실행 자격/기존 실행은 변경하지 않는다.
+  const meadowFirst=isGamePrimaryTask(task)&&clean(task.gameId)==='fantasy-survival'
+    &&clean(task.target).toLowerCase()==='roblox';
+  return (meadowFirst ? 25000 : 0)
+    + (task.ownerDirective ? 10000 : 0)
     + (task.systemSteward ? 8000 : 0)
     + (developmentImplementation ? 2000 : 0)
     + (isPostReleaseFocused(task) ? 1200 : 0)
@@ -796,7 +801,10 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   }
   // 오너 직접 작업(2) > 정확한 집중 게임 작업(1) > 일반 개발(0) 순서.
   // 집중 대상을 우대하되 더 높은 오너 직접 지시는 침범하지 않는다.
-  const strictOwnerRank=(task)=>task.ownerDirective===true?2:task.ownerFocusedCaretaker===true?1:0;
+  const strictOwnerRank=(task)=>
+    isGamePrimaryTask(task)&&clean(task.gameId)==='fantasy-survival'
+      &&clean(task.target).toLowerCase()==='roblox'?3
+      :task.ownerDirective===true?2:task.ownerFocusedCaretaker===true?1:0;
   const strictReleaseRank=(task)=>RELEASE_STATE_SCORE[task.releaseState]||0;
   const strictlyHigherPlatformPriority=(left,right)=>{
     const demandDelta=assetDemandRank(left)-assetDemandRank(right);
