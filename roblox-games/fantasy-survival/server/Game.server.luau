@@ -970,19 +970,26 @@ local function spawnEnemy(isBoss, index)
   -- 몸통과 숲 초목의 무광색을 맞춘다. 원본 TextureID/SurfaceAppearance는 유지.
   local bodyTint=isBoss and meadowPalette.golem
     or meadowPalette[partId] or meadowPalette.wolf
-  -- [몬스터 재질 통일] 기존 Fabric 강제 덮어쓰기 대신 무광 판타지 스타일을 사용한다.
-  -- 원본 UV, TextureID, SurfaceAppearance, MaterialVariant는 그대로 두어 디테일을 보존한다.
-  -- 날개의 원래 투명성만 예외로 두고 모든 불투명 몬스터에 같은 표면 재질을 사용한다.
+  -- [소프트 스터드 재질] 로블록스 기본 Pebble의 둥근 미세 요철과 매끈한 Plastic 장식을 조합한다.
+  -- 임의 파츠/텍스처를 만들지 않으며 원본 UV, TextureID, SurfaceAppearance, MaterialVariant는 보존한다.
+  -- PBR 맵은 실시간 LuaU에서 쓰기 권한이 없으므로 기존 원본 재질을 덮어쓰지 않는다.
   for _,surface in ipairs(model:GetDescendants()) do
     if surface:IsA("MeshPart") then
-      local wing=partId=="bee" and surface.Name:lower():find("wing",1,true)
+      local partName=surface.Name:lower()
+      local wing=partId=="bee" and partName:find("wing",1,true)
+      local smoothDetail=wing or partName:find("eye",1,true)
+        or partName:find("tooth",1,true) or partName:find("teeth",1,true)
+        or partName:find("claw",1,true) or partName:find("horn",1,true)
+        or partName:find("crystal",1,true)
       local sourceColor=surface.Color
       local hasSourceDetail=(surface.TextureID~=""
         or surface:FindFirstChildOfClass("SurfaceAppearance")~=nil)
+      -- 원본 색상·얼굴·눈·날개는 읽히도록 유지하고, 몸통만 둥근 요철을 사용한다.
       surface.Color=wing and Color3.fromRGB(190,228,235)
-        or hasSourceDetail and sourceColor:Lerp(bodyTint,.22)
-        or sourceColor:Lerp(bodyTint,.46)
-      surface.Material=wing and Enum.Material.Glass or Enum.Material.SmoothPlastic
+        or hasSourceDetail and sourceColor:Lerp(bodyTint,.16)
+        or sourceColor:Lerp(bodyTint,.38)
+      surface.Material=wing and Enum.Material.Glass
+        or smoothDetail and Enum.Material.SmoothPlastic or Enum.Material.Pebble
       surface.Reflectance=0
     end
   end
