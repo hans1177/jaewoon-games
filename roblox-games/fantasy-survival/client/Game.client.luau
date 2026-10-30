@@ -512,15 +512,18 @@ end
 -- native-foundation-sentinel-v1 client readiness
 local nativeFoundationInput = game:GetService("UserInputService")
 local nativeTouchEnabled = nativeFoundationInput.TouchEnabled
-local nativeFoundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
+local nativeFoundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
 local nativeFoundationCamera = workspace.CurrentCamera
 local function reportNativeFoundationReady()
+  -- Readiness reporting must never suspend skill buttons or combat animation.
+  local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild("RuntimeFoundationReport",12)
+  if not endpoint or not endpoint:IsA("RemoteEvent") then return end
   local character = player.Character or player.CharacterAdded:Wait()
   local humanoid = character:WaitForChild("Humanoid")
   if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
-    nativeFoundationRemote:FireServer("CAMERA_READY")
+    endpoint:FireServer("CAMERA_READY")
   end
-  nativeFoundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
+  endpoint:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
 end
 task.defer(reportNativeFoundationReady)
 
@@ -530,9 +533,10 @@ CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,primar
 -- Each sends an existing server-authorized COMBAT action; no client damage authority.
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
-meadowSkillDock.AnchorPoint=Vector2.new(.5,1)
-meadowSkillDock.Position=UDim2.new(.5,0,1,-12)
-meadowSkillDock.Size=UDim2.fromOffset(252,100)
+-- Stay above the existing primary attack/menu buttons and clear of the left joystick.
+meadowSkillDock.AnchorPoint=Vector2.new(1,1)
+meadowSkillDock.Position=UDim2.new(1,-8,1,-232)
+meadowSkillDock.Size=UDim2.fromOffset(128,188)
 meadowSkillDock.BackgroundTransparency=1
 meadowSkillDock.Parent=gui
 local meleeSkills={
@@ -544,8 +548,8 @@ local meleeSkills={
 for index,skill in ipairs(meleeSkills) do
   local button=Instance.new("TextButton")
   button.Name="R15Skill"..index
-  button.Size=UDim2.new(.5,-4,.5,-4)
-  button.Position=UDim2.new(((index-1)%2)*.5,2,math.floor((index-1)/2)*.5,0)
+  button.Size=UDim2.new(1,0,0,43)
+  button.Position=UDim2.fromOffset(0,(index-1)*47)
   button.BackgroundColor3=Color3.fromRGB(22,76,62)
   button.TextColor3=Color3.fromRGB(241,255,223)
   button.TextSize=15
@@ -616,7 +620,7 @@ end)
 -- Native 3D mob actions: existing CC0 MeshParts only. The game does not
 -- invent limbs, bones or model parts. Server-owned attack states remain authoritative.
 local meadowMobWorld=workspace:WaitForChild("FantasySurvivalWorld")
-local meadowMobMotion=require(Shared:WaitForChild("RobloxCommonMotion"))
+local meadowMobMotion=combatMotionSource
 local meadowMobControllers={}
 local nativeMobMotionMap={
   IDLE="IDLE",CHASE="RUN",RUN="RUN",RETURN_TO_SPAWN="WALK",WALK="WALK",
@@ -686,7 +690,7 @@ local function bindOriginalMob(model)
   local actualRig=count>=2
   local bodyPlan=species=="bee" and "FLYER" or
     species=="golem" and "GIANT" or "QUADRUPED"
-  local controller=actualRig and meadowMobMotion.BindJointPose(joints,{
+  local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=24,
   }) or nil
   local row={controller=controller,available=available,plan=bodyPlan,
