@@ -1286,9 +1286,9 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/for contractIndex,contract in ipairs\(Config.VillageContracts\) do/);
   assert.match(server,/for sceneIndex,site in ipairs\(contract.Sites\) do/);
   assert.match(server,/MeadowVillageEvidenceCount/);
-  assert.match(server,/evidenceCount==9/);
-  assert.match(server,/if mask==63 then setNumber\(player,"VillageContractPhase",2\) end/);
-  assert.match(server,/readNumber\(player,"VillageContractEvidence",0\)==63/);
+  assert.match(server,/evidenceCount==3/);
+  assert.match(server,/bit32\.band\(mask,required\)==required/);
+  assert.match(server,/mask~=63 then return end/);
   assert.match(server,/humanoid:MoveTo\(destination\)/);
   assert.match(server,/animator:LoadAnimation\(anim\)/);
   assert.match(server,/if villageNear\(player,mesh.Position,15\) then callback\(player,mesh.Position\) end/);
@@ -1305,8 +1305,18 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(client,/VillageStoryScroll/);
   assert.match(client,/MeadowVillageMarker/);
   assert.match(client,/VillageClueMarker/);
-  assert.match(client,/bit32.band\(contractEvidence,bit32.lshift\(1,index\+2\)\)==0/);
+  assert.match(client,/bit32\.band\(contractEvidence,requiredBit\)==0/);
   assert.match(client,/remote:FireServer\(action\)/);
+  // 새 1+1+전투 계약은 기존 임무 비트·보상·저장 키를 재사용한다.
+  for(const enemy of ['wolf','ghost','bandit']) assert.ok(config.includes('Enemy="'+enemy+'"'));
+  assert.match(config,/Name="02 · 원혼이 깃든 우물"/);
+  assert.match(config,/Name="03 · 도적의 보급 수레 습격"/);
+  assert.match(server,/target\.questIndex/);
+  assert.match(server,/bit32\.bor\(readNumber\(player,"VillageContractEvidence",0\),64\)/);
+  assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
+  assert.match(server,/NativeCreatureAssets\.skeleton/);
+  assert.match(client,/VillageCombatMarker/);
+  assert.match(client,/contract\.EnemyName/);
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
   assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
   assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);

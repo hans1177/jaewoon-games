@@ -938,10 +938,12 @@ local function renderMeadowJournal()
     if decision==1 or decision==2 then
       villageLines[#villageLines+1]="【완료】 "..contract.Name.."\n"..contract.Choices[decision].Outcome
     elseif index==villageIndex then
-      local found=0
-      for bit=0,5 do if bit32.band(villageMask,bit32.lshift(1,bit))~=0 then found+=1 end end
+      local witness=bit32.lshift(1,contract.Witness-1)
+      local found=(bit32.band(villageMask,witness)~=0 and 1 or 0)
+        +(bit32.band(villageMask,8)~=0 and 1 or 0)
+        +(bit32.band(villageMask,64)~=0 and 1 or 0)
       villageLines[#villageLines+1]="【"..(villagePhase==0 and "수락 대기" or villagePhase==2 and "결정 대기" or "조사 중").."】 "..contract.Name..
-        "\n"..contract.Summary.."\n단서 "..found.."/6 · 주민 3명과 주변 현장 3곳을 조사해."
+        "\n"..contract.Summary.."\n진행 "..found.."/3 · "..contract.WitnessName.." 진술 · 현장 1곳 · "..contract.EnemyName.." 처치."
     end
   end
   if villageIndex>#Config.VillageContracts then villageLines[#villageLines+1]="마을 의뢰 모두 완료" end
@@ -1972,13 +1974,13 @@ radarVillage.ZIndex=12
 radarVillage.Visible=false
 radarVillage.Parent=radarField
 local radarContractSites={}
-for index=1,3 do
+for index=1,2 do
   local marker=Instance.new("TextLabel")
-  marker.Name="VillageClueMarker"..index
+  marker.Name=index==1 and "VillageClueMarker1" or "VillageCombatMarker"
   marker.BackgroundTransparency=1
   marker.AnchorPoint=Vector2.new(.5,.5)
   marker.Size=UDim2.fromOffset(19,19)
-  marker.Text="?"
+  marker.Text=index==1 and "?" or "⚔"
   marker.TextSize=19
   marker.Font=Enum.Font.GothamBold
   marker.TextColor3=Color3.fromRGB(247,207,125)
@@ -2016,12 +2018,13 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
   local activeContract=Config.VillageContracts[player:GetAttribute("VillageContractIndex") or 1]
   local contractEvidence=player:GetAttribute("VillageContractEvidence") or 0
   for index,marker in ipairs(radarContractSites) do
-    local site=activeContract and activeContract.Sites and activeContract.Sites[index]
+    local site=activeContract and (index==1 and activeContract.Sites[1] or activeContract.EnemySite)
     local dx=site and site[1]-mainRoot.Position.X or math.huge
     local dz=site and site[2]-mainRoot.Position.Z or math.huge
+    local requiredBit=index==1 and 8 or 64
     marker.Visible=site~=nil
       and (player:GetAttribute("VillageContractPhase") or 0)==1
-      and bit32.band(contractEvidence,bit32.lshift(1,index+2))==0
+      and bit32.band(contractEvidence,requiredBit)==0
       and dx*dx+dz*dz<radarHalf*radarHalf
     if marker.Visible then marker.Position=UDim2.fromScale(.5+dx/radarSpan,.5+dz/radarSpan) end
   end

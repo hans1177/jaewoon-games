@@ -89,6 +89,10 @@ local meadowEncounterSites = {
   {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(146,3,146)},
   {id="skeleton",atom="HEAD_SKULL",tier=6,height=3.15,position=Vector3.new(-168,3,123)},
   {id="golem",atom="HEAD_GOLEM",tier=5,height=8.4,position=Vector3.new(-153,3,-164)},
+  -- [마을 전투] 기존 생태 위치/수치는 건드리지 않고, 별도 의뢰 적만 실제 서식지에 둔다.
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-69,3,-193),questIndex=1},
+  {id="ghost",atom="HEAD_SKULL",tier=2,height=4.4,position=Vector3.new(15,3,-214),questIndex=2},
+  {id="bandit",atom="HUMANOID",tier=3,height=5.5,position=Vector3.new(80,3,-236),questIndex=3},
 }
 -- Roblox Terrain is native collidable terrain, never an assembled visual Part.
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
@@ -102,6 +106,7 @@ local meadowPalette={
   bee=Color3.fromRGB(217,177,106),bat=Color3.fromRGB(125,129,138),
   mushroom=Color3.fromRGB(163,142,117),skeleton=Color3.fromRGB(198,192,174),
   golem=Color3.fromRGB(129,138,126),
+  ghost=Color3.fromRGB(131,210,226),bandit=Color3.fromRGB(111,76,67),
 }
 local meadowTerrain = workspace.Terrain
 -- [초원 오픈월드] 플레이 시작 부분 312x312은 먼저 만들고 696x696 외곽은 이후 분할 생성한다.
@@ -426,6 +431,7 @@ end
 -- 건축용 임의 Part/실린더를 만들지 않으며 원본 채집·몬스터 좌표와 저장키는 유지한다.
 local villageSessions={}
 local villageInteractionCooldown={}
+-- 기존 단서 비트(0~5)는 보존하고 전투 완료에 6번 비트를 사용한다.
 local villageCenter=Vector3.new(0,3,-111)
 local function villageNear(player,position,radius)
   if player.Parent~=Players or player:GetAttribute("ProfileReady")~=true then return false end
@@ -451,18 +457,21 @@ local function villageBoardDialogue(player,sourcePosition)
   local phase=readNumber(player,"VillageContractPhase",0)
   villageSessions[player]={position=sourcePosition or villageCenter,expires=os.clock()+40}
   if phase==0 then
-    villageDialogue(player,"의뢰판 · "..contract.Name,contract.Summary.."\n\n수락하면 마을 주민 세 명의 단서를 확인할 수 있어.",{
+    villageDialogue(player,"의뢰판 · "..contract.Name,contract.Summary..
+      "\n\n진술 1개, 현장 단서 1개, "..contract.EnemyName.." 처치가 필요해.",{
       {label="의뢰 수락",action="village:accept"},
     })
   elseif phase==1 then
     local mask=readNumber(player,"VillageContractEvidence",0)
-    local discovered=0
-    for slot=0,5 do if bit32.band(mask,bit32.lshift(1,slot))~=0 then discovered+=1 end end
-    villageDialogue(player,"조사 중 · "..contract.Name,contract.Summary..
-      "\n\n단서 "..discovered.."/6 · 주민 3명과 현장 조사 지점 3곳을 확인해.")
+    local witness=bit32.lshift(1,contract.Witness-1)
+    local found=(bit32.band(mask,witness)~=0 and 1 or 0)
+      +(bit32.band(mask,8)~=0 and 1 or 0)
+      +(bit32.band(mask,64)~=0 and 1 or 0)
+    villageDialogue(player,"진행 중 · "..contract.Name,contract.Summary..
+      "\n\n진행 "..found.."/3 · "..contract.WitnessName.." 진술 1개 · 현장 1곳 · "..contract.EnemyName.." 처치.")
   else
     villageDialogue(player,"결정 · "..contract.Name,contract.Summary..
-      "\n\n단서를 모두 모았어. 어떤 선택에도 결과가 남고 한 번만 보상을 받아.",{
+      "\n\n사건을 해결했어. 선택한 결과가 저장되고 보상은 한 번만 받아.",{
       {label=contract.Choices[1].Label,action="village:resolve:1"},
       {label=contract.Choices[2].Label,action="village:resolve:2"},
     })
@@ -475,23 +484,31 @@ local function villageInvestigate(player,clueIndex,role,sceneContractIndex)
     return
   end
   if not contract then
-    villageDialogue(player,role,"모든 마을 의뢰가 끝났어. 남은 주민의 사정은 네가 선택한 결과에 따라 달라졌어.")
+    villageDialogue(player,role,"모든 마을 의뢰가 끝났어.")
     return
   end
   if readNumber(player,"VillageContractPhase",0)~=1 then
     villageDialogue(player,role,"먼저 마을 중앙의 촌장 나린 또는 의뢰판에서 의뢰를 확인해.")
     return
   end
+  if clueIndex<=3 and clueIndex~=contract.Witness then
+    villageDialogue(player,role,"이번 사건의 핵심 진술은 "..contract.WitnessName.."에게 들어봐.")
+    return
+  end
+  if clueIndex>3 and clueIndex~=4 then return end
   local mask=readNumber(player,"VillageContractEvidence",0)
   local bit=bit32.lshift(1,clueIndex-1)
   if bit32.band(mask,bit)==0 then
     mask=bit32.bor(mask,bit)
     setNumber(player,"VillageContractEvidence",mask)
-    if mask==63 then setNumber(player,"VillageContractPhase",2) end
+    local required=bit32.bor(bit32.lshift(1,contract.Witness-1),8,64)
+    if bit32.band(mask,required)==required then setNumber(player,"VillageContractPhase",2) end
   end
-  local clue=clueIndex<=3 and contract.Clues[clueIndex] or contract.Scenes[clueIndex-3]
-  local note=mask==63 and "\n\n이제 촌장에게 돌아가 어느 쪽을 믿을지 결정해."
-    or "\n\n마을의 다른 진술과 현장 흔적도 조사해."
+  local clue=clueIndex<=3 and contract.Clues[1] or contract.Scenes[1]
+  local required=bit32.bor(bit32.lshift(1,contract.Witness-1),8,64)
+  local note=bit32.band(mask,required)==required
+    and "\n\n전투까지 끝났어. 촌장에게 돌아가 사건을 마무리해."
+    or "\n\n남은 진술·현장 단서·전투를 완료해."
   villageDialogue(player,role,clue..note)
 end
 local function villageChoose(player,actionId)
@@ -507,11 +524,15 @@ local function villageChoose(player,actionId)
     setNumber(player,"VillageContractEvidence",0)
     villageInteractionCooldown[player]=os.clock()
     villageSessions[player]=nil
-    villageDialogue(player,"수락 · "..contract.Name,"약초상 미라, 추적자 라온, 경비병 아린의 진술을 각각 확인해.")
+    villageDialogue(player,"수락 · "..contract.Name,contract.WitnessName.." 진술과 현장 단서 1개를 찾은 뒤 "..contract.EnemyName.."을 처치해.")
     return
   end
   local selected=actionId=="village:resolve:1" and 1 or actionId=="village:resolve:2" and 2 or nil
-  if selected and phase==2 and readNumber(player,"VillageContractEvidence",0)==63 then
+  if selected and phase==2 then
+    local mask=readNumber(player,"VillageContractEvidence",0)
+    local required=bit32.bor(bit32.lshift(1,contract.Witness-1),8,64)
+    -- 기존 6개 단서를 모두 수집한 저장(63/phase=2)은 소급 전투 요구 없이 마무리한다.
+    if bit32.band(mask,required)~=required and mask~=63 then return end
     local choice=contract.Choices[selected]
     local previous=readNumber(player,"VillageContractOutcomes",0)
     local shift=(index-1)*2
@@ -780,7 +801,7 @@ local function createMeadowVillage()
     end
     task.wait(.1)
   end
-  -- [위치별 사건 단서] 세 의뢰에 각각 세 곳. 단순 NPC 반복 대화 대신 현장 추적을 요구한다.
+  -- [위치별 사건 단서] 각 사건에 실제 조사 지점 1곳만 둔다.
   local evidenceCount=0
   for contractIndex,contract in ipairs(Config.VillageContracts) do
     for sceneIndex,site in ipairs(contract.Sites) do
@@ -790,7 +811,7 @@ local function createMeadowVillage()
         model.Name="Meadow_Village_Evidence_"..contractIndex.."_"..sceneIndex
         model:SetAttribute("VillageContractIndex",contractIndex)
         model:SetAttribute("VillageClueIndex",sceneIndex+3)
-        local title=({"흔적이 남은 보관 터","버려진 물길","의심스러운 기록"})[sceneIndex]
+        local title=({"찢긴 약초 포대","저주받은 우물","부서진 짐수레"})[contractIndex]
         if villagePrompt(model,title,"현장 조사",function(player)
           villageInvestigate(player,sceneIndex+3,title,contractIndex)
         end) then evidenceCount+=1 end
@@ -829,7 +850,7 @@ local function createMeadowVillage()
   gameWorld:SetAttribute("MeadowVillageNPCCount",readyCount)
   gameWorld:SetAttribute("MeadowVillageWallCount",wallCount)
   gameWorld:SetAttribute("MeadowVillageBoardReady",board~=nil)
-  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil and evidenceCount==9)
+  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil and evidenceCount==3)
 end
 task.defer(createMeadowVillage)
 
@@ -1418,13 +1439,42 @@ local function spawnEnemy(site, siteIndex)
   local isBoss=site.id=="golem"
   local location=site.position
   local partId=site.id
-  local modelId=table.find(studioCreatureAtoms,site.atom) and NativeCreatureAssets[partId] or nil
+  local modelId=partId=="ghost" and NativeCreatureAssets.skeleton
+    or (table.find(studioCreatureAtoms,site.atom) and NativeCreatureAssets[partId] or nil)
   local nativeScale=site.height
-  if typeof(modelId)~="number" or modelId<1 or not nativeScale then
+  if not nativeScale or (partId~="bandit" and (typeof(modelId)~="number" or modelId<1)) then
     warn("마력숲 승인 생물 자산 선택 누락: "..partId)
     return false
   end
   local ok, model = pcall(function()
+    if partId=="bandit" then
+      -- Roblox 정식 R15 전신 모델을 적으로 재사용한다. 가짜 몸체 파츠를 만들지 않는다.
+      local desc=Instance.new("HumanoidDescription")
+      desc.HeadColor=Color3.fromRGB(174,127,97)
+      desc.LeftArmColor=Color3.fromRGB(174,127,97)
+      desc.RightArmColor=Color3.fromRGB(174,127,97)
+      desc.TorsoColor=Color3.fromRGB(92,65,55)
+      desc.LeftLegColor=Color3.fromRGB(63,62,67)
+      desc.RightLegColor=Color3.fromRGB(63,62,67)
+      local native=Players:CreateHumanoidModelFromDescriptionAsync(desc,Enum.HumanoidRigType.R15)
+      desc:Destroy()
+      for _,part in ipairs(native:GetDescendants()) do
+        if part:IsA("BasePart") then
+          part.Anchored=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
+        end
+      end
+      if not native:FindFirstChild("HumanoidRootPart") then
+        native:Destroy();error("VILLAGE_BANDIT_R15_ROOT_REQUIRED")
+      end
+      for _,joint in ipairs(native:GetDescendants()) do
+        if joint:IsA("Motor6D") and joint.Part1 then
+          joint.Part1.Anchored=false;joint.Part1.Massless=true
+        end
+      end
+      local root=native:FindFirstChild("HumanoidRootPart")
+      root.Anchored=true
+      return native
+    end
     local template=nativeCreatureTemplates[modelId]
     if not template then
       template=AssetService:LoadAssetAsync(modelId)
@@ -1598,8 +1648,9 @@ local function spawnEnemy(site, siteIndex)
   model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
   model.Parent=gameWorld
   local hitPoints = (isBoss and 310 or 45) + site.tier*(isBoss and 60 or 13)
-  local meadowNames={wolf="초원 늑대",
-    mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골"}
+  local meadowNames={wolf=site.questIndex==1 and "약초길 늑대" or "초원 늑대",
+    mushroom="포자 버섯",bat="황혼 박쥐",skeleton="초원 해골",
+    ghost="우물 원혼",bandit="수레 습격 도적"}
   model.Name=isBoss and "초원 수문장 · 돌 골렘" or (meadowNames[partId] or partId)
   -- [몬스터 공통 재질] 늑대·버섯·박쥐·해골·골렘에 기존 토이 플라스틱을 적용한다.
   -- 기존 Pebble/바둑판 원본 몸통 텍스처를 제거하되, 원본 메시·뼈·사지·물리 및 종별 색상은 보존.
@@ -1631,13 +1682,20 @@ local function spawnEnemy(site, siteIndex)
         surface.Material=Enum.Material.Plastic
         surface.Color=surface.Color:Lerp(bodyTint,.78)
       end
+      if partId=="ghost" then
+        -- 등록된 해골 원본 메시를 반투명·부유하는 원혼으로 연출한다.
+        surface.Material=Enum.Material.Neon
+        surface.Color=Color3.fromRGB(137,212,237)
+        surface.Transparency=math.max(surface.Transparency,.38)
+      end
       surface.Reflectance=0
     end
   end
   model:SetAttribute("MeadowToyMaterial","PLASTIC_UNTIL_APPROVED_STUD_NORMAL_MAP")
   model:SetAttribute("Species",partId)
   local firstAttack={wolf="WOLF_BITE",bee="BEE_SWEEP",
-    mushroom="MUSHROOM_SPORES",bat="BAT_DIVE",skeleton="SKELETON_CLEAVE"}
+    mushroom="MUSHROOM_SPORES",bat="BAT_DIVE",skeleton="SKELETON_CLEAVE",
+    ghost="GHOST_WAIL",bandit="BANDIT_SLASH"}
   model:SetAttribute("AttackPattern",isBoss and "GOLEM_SLAM" or firstAttack[partId])
   model:SetAttribute("NativeMobMotion","IDLE")
   model:SetAttribute("NativeMobMotionStartedAt",workspace:GetServerTimeNow())
@@ -1652,11 +1710,13 @@ local function spawnEnemy(site, siteIndex)
   -- 정적 메시에는 실제 걷기 관절이 없음을 표시한다. 판정이나 스폰에는 영향 없다.
   model:SetAttribute("NativeMobRig",hasOriginalMotor and "ORIGINAL_JOINT_RIG" or "SOURCE_MESH_PIVOT")
   local secondarySkill={wolf="LEAP_BITE",bee="DIVE_STING",
-    mushroom="SPORE_CLOUD",bat="NIGHT_DIVE",skeleton="BONE_SWING"}
+    mushroom="SPORE_CLOUD",bat="NIGHT_DIVE",skeleton="BONE_SWING",
+    ghost="PHANTOM_LUNGE",bandit="BANDIT_FEINT"}
   model:SetAttribute("NativeMobSkill",isBoss and "GROUND_SHOCKWAVE" or secondarySkill[partId])
   model:SetAttribute("EnemyHealth",hitPoints)
   model:SetAttribute("EnemyMaxHealth",hitPoints)
   model:SetAttribute("OpenWorldRegionTier",site.tier)
+  if site.questIndex then model:SetAttribute("VillageQuestEnemy",site.questIndex) end
   model:SetAttribute("Boss",isBoss)
   if isBoss then model:SetAttribute("BossPhase",1) end
   -- 기존 공용 생물 모델 위에만 공격 예고를 표시한다. 판정용 가짜 파츠를 만들지 않는다.
@@ -1669,9 +1729,34 @@ local function spawnEnemy(site, siteIndex)
   attackTelegraph.Enabled = false
   attackTelegraph.Parent = model
   model:SetAttribute("AttackState", "IDLE")
+  -- [도적 애니메이션] 공식 R15 Animator의 걷기/대기 트랙. 서버 전투 판정과 분리한다.
+  local banditIdle,banditWalk=nil,nil
+  if partId=="bandit" then
+    local humanoid=model:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+      humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
+      humanoid.HealthDisplayType=Enum.HumanoidHealthDisplayType.AlwaysOff
+      local animator=humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator")
+      animator.Parent=humanoid
+      for name,assetId in pairs({idle=507766388,walk=507777826}) do
+        local anim=Instance.new("Animation")
+        anim.AnimationId="rbxassetid://"..assetId
+        local okTrack,track=pcall(function()return animator:LoadAnimation(anim) end)
+        anim:Destroy()
+        if okTrack and track then
+          track.Looped=true
+          track.Priority=Enum.AnimationPriority.Movement
+          if name=="idle" then banditIdle=track else banditWalk=track end
+        end
+      end
+      if banditIdle then banditIdle:Play(.2) end
+    end
+  end
   table.insert(enemies,{
     model=model,HP=hitPoints,maxHP=hitPoints,
-    isBoss=isBoss,kind=partId,damage=(isBoss and 20 or 6)+math.floor(site.tier/2),
+    isBoss=isBoss,kind=partId,questIndex=site.questIndex,
+    banditIdle=banditIdle,banditWalk=banditWalk,
+    damage=(isBoss and 20 or 6)+math.floor(site.tier/2),
     speed=isBoss and 4.8 or 7.5,position=location,spawnPosition=location,siteIndex=siteIndex,
     visibleGroundOffset=meshOffset,spawnGroundY=groundHit.Position.Y,
     terrainGroundOffset=0,nextGroundSample=0,
@@ -1782,6 +1867,19 @@ local function applyMeadowDamage(player,target,damage)
     for i=#enemies,1,-1 do if enemies[i]==target then table.remove(enemies,i);break end end
     awardProgress(player,target.isBoss and 75 or 12,target.isBoss and 45 or 5)
     recordMeadowQuest(player,"KILL")
+    -- [마을 전투] 실제 서버 처치만 완료로 기록한다. 기존 저장 숫자의 6번 비트를 재사용.
+    if target.questIndex then
+      local activeIndex,contract=villageCurrentContract(player)
+      if activeIndex==target.questIndex and contract
+        and readNumber(player,"VillageContractPhase",0)==1 then
+        local mask=bit32.bor(readNumber(player,"VillageContractEvidence",0),64)
+        setNumber(player,"VillageContractEvidence",mask)
+        local required=bit32.bor(bit32.lshift(1,contract.Witness-1),8,64)
+        if bit32.band(mask,required)==required then setNumber(player,"VillageContractPhase",2) end
+        villageDialogue(player,"전투 완료 · "..contract.Name,
+          contract.EnemyName.." 처치 성공. 남은 조사 후 촌장에게 돌아가 결말을 선택해.")
+      end
+    end
     setNumber(player,"EnemyHealth",0)
     if target.isBoss then
       setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1)
@@ -1910,7 +2008,7 @@ local function animateMeadowOriginalMob(enemy,now)
   local stunned=enemy.attackState=="STUNNED"
   local recoil=enemy.attackState=="RECOVERY"
     and math.exp(-math.max(0,now-enemy.lastAttack)*7) or 0
-  local aerial=kind=="bee" or kind=="bat"
+  local aerial=kind=="bee" or kind=="bat" or kind=="ghost"
   -- 네발 몹은 가짜 몸체 점프 대신 실제 다리 관절로 접지를 표현한다.
   local movingHeight=aerial and (1.35+math.sin(phase)*.42)
     or (inMotion and math.abs(math.sin(phase))*(kind=="golem" and .14 or .035) or 0)
@@ -1936,6 +2034,13 @@ local function animateMeadowOriginalMob(enemy,now)
     or inMotion and math.sin(phase*.65)*(heavy and .014 or .025) or 0
   local facing=enemy.visualFacingSmooth or enemy.visualFacing
   if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1) end
+  if kind=="bandit" and enemy.banditIdle and enemy.banditWalk then
+    if inMotion and not enemy.banditWalk.IsPlaying then
+      enemy.banditIdle:Stop(.18);enemy.banditWalk:Play(.18)
+    elseif not inMotion and not enemy.banditIdle.IsPlaying then
+      enemy.banditWalk:Stop(.18);enemy.banditIdle:Play(.18)
+    end
+  end
   local pivot=(enemy.visualPosition or enemy.position)
     +Vector3.new(0,(enemy.visibleGroundOffset or 0)
       +(enemy.terrainGroundOffset or 0)+movingHeight,0)
@@ -1954,6 +2059,8 @@ local function chooseMeadowMobSkill(enemy)
     or enemy.kind=="bat" and (second and "BAT_SWEEP" or "BAT_DIVE")
     or enemy.kind=="mushroom" and (second and "MUSHROOM_SPORES" or "MUSHROOM_BASH")
     or enemy.kind=="skeleton" and (second and "SKELETON_THRUST" or "SKELETON_CLEAVE")
+    or enemy.kind=="ghost" and (second and "PHANTOM_LUNGE" or "GHOST_WAIL")
+    or enemy.kind=="bandit" and (second and "BANDIT_FEINT" or "BANDIT_SLASH")
     or (second and "WOLF_LUNGE" or "WOLF_BITE")
   enemy.attackPattern=pattern
   enemy.model:SetAttribute("AttackPattern",pattern)
@@ -2120,7 +2227,7 @@ local function updateEnemyAI(dt,now)
       -- 기존 140 탐지 범위와 서버의 사거리·공격·피해 검증은 그대로 사용한다.
       local targetPlayer,targetRoot,targetHuman=nil,nil,nil
       local focusPlayer,focusRoot,focusHuman,focusDistance=nil,nil,nil,nil
-      local range=140
+      local range=enemy.questIndex and 38 or 140
       for _,player in ipairs(Players:GetPlayers()) do
         local character=player.Character
         local rootPart=character and character:FindFirstChild("HumanoidRootPart")
@@ -2128,7 +2235,7 @@ local function updateEnemyAI(dt,now)
         if player:GetAttribute("ProfileReady")==true and rootPart and human and human.Health>0 then
           local d=(rootPart.Position-enemy.position).Magnitude
           if d<range then targetPlayer,targetRoot,targetHuman,range=player,rootPart,human,d end
-          if player.UserId==enemy.focusUserId and d<140 then
+          if player.UserId==enemy.focusUserId and d<(enemy.questIndex and 38 or 140) then
             focusPlayer,focusRoot,focusHuman,focusDistance=player,rootPart,human,d
           end
         end
