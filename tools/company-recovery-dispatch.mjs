@@ -122,9 +122,24 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     if(owner==='VIBE2_VIBE3'){
       const set=new Set(ids);
       const recoveryGameId=clean(rec.gameId);
+      // [게임별 사후검증] 같은 게임의 다른 Web 파일·플랫폼까지 재예약하지 않는다.
+      // 소스 생성 레시피가 없는 차단 작업은 검증된 능력 회복 전까지 그대로 보존한다.
+      const exactWebPlaytest=clean(rec.sourceQueue).toLowerCase()==='tester-debug'
+        &&scopePlatform==='web'&&clean(rec.failureStage)==='WEB_POST_PUBLICATION_PLAYTEST';
+      const exactWebOwner=task=>clean(task.gameId)===recoveryGameId
+        &&clean(task.target).toLowerCase()==='web'
+        &&clean(task.sourceRoot)==='web-games/'+recoveryGameId
+        &&clean(task.department).toLowerCase()==='development'
+        &&clean(task.type||'implementation').toLowerCase()==='implementation'
+        &&task.ownerDevelopmentHold!==true&&task.ownerDevelopmentStopped!==true
+        &&task.requiresOwnerDecision!==true&&task.protectedChange!==true
+        &&task.paidResourceRequired!==true
+        &&clean(task.blocker)!=='OFFLINE_RECIPE_UNAVAILABLE'
+        &&uniq(task.responsibleFiles).some(file=>gameSourceFiles.includes(clean(file).replaceAll('\\','/').replace(/^\.\//,'')));
       if(recoveryGameId&&clean(rec.sourceQueue).toLowerCase()==='tester-debug'){
         for(const task of gameQueue.tasks||[]){
           if(clean(task.gameId)!==recoveryGameId)continue;
+          if(exactWebPlaytest&&!exactWebOwner(task))continue;
           if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))continue;
           if(clean(task.id))set.add(clean(task.id));
         }
@@ -138,6 +153,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         if(!set.has(clean(task.id)))return task;
         // 동일 실패 서명이나 relatedTaskIds에 타 게임 작업이 있어도 해당 게임만 재개한다.
         if(recoveryGameId&&clean(task.gameId)!==recoveryGameId)return task;
+        if(exactWebPlaytest&&!exactWebOwner(task))return task;
         if(recoveryGameId){
           const taskRoot=clean(task.sourceRoot).replaceAll('\\\\','/').match(/^(web|roblox|unity|unreal|godot)-games\//);
           const taskFile=uniq(task.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/'))

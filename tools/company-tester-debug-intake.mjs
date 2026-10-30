@@ -266,7 +266,10 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
           'VERIFY_ORIGINAL_WEBGL_SCENE_AND_SAVED_PLAYER_XY_AFTER_RELOAD']
         :[]),'RERUN_EXACT_FAILED_STAGE','INDEPENDENT_QA_WHEN_APPLICABLE',
         'REGRESSION_WHEN_APPLICABLE','CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'],
-      recoveryOwner:t.responsibleFiles.length?'SYSTEM_AI':'VIBE2_VIBE3'
+      recoveryOwner:t.responsibleFiles.length
+         ?t.responsibleFiles.some(file=>/^(?:web|roblox|unity|unreal|godot)-games\//.test(clean(file).replaceAll('\\','/').replace(/^\.\//,'')))
+           ?'VIBE2_VIBE3':'SYSTEM_AI'
+         :'VIBE2_VIBE3'
     },{reactivateDispatched:Number(t.occurrenceCount||0)>1});
     recovery=rec.queue;if(rec.added||rec.reactivated)added.push(rec.id);
   }
