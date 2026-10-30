@@ -1077,3 +1077,22 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   assert.match(client,/math.clamp\(\(os.clock\(\)-row.motionStartedAt\)\/duration,0,1\)/);
   assert.doesNotMatch(client,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
 });
+
+-- The existing server/input authority must boot before slow CC0 asset imports.
+test('fantasy native controls do not wait on asset import and source rigs can move',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(client,/local nativeFoundationRemote = ReplicatedStorage:FindFirstChild\("RuntimeFoundationReport"\)/);
+  assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
+  assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
+  assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-8,1,-232\)/);
+  assert.match(client,/local meadowMobMotion=combatMotionSource/);
+  assert.match(server,/task.defer\(createResourceNodes\)/);
+  assert.match(server,/task.defer\(function\(\)\s*for index,spec in ipairs\(\{/);
+  assert.equal((server.match(/joint.Part1.Anchored=false/g)||[]).length,2);
+  assert.equal((server.match(/joint.Part1.Massless=true/g)||[]).length,2);
+  assert.match(server,/remote.OnServerEvent:Connect\(function\(player, actionId\)/);
+  assert.match(client,/GetAttributeChangedSignal\("ApprovedCombatMotion"\):Connect/);
+  assert.match(client,/GetAttributeChangedSignal\("ApprovedActionMotion"\):Connect/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+});
