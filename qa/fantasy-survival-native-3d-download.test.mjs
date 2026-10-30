@@ -356,7 +356,16 @@ test('existing Pages pipeline tests actual 3D world after deploy and records 3D 
  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  assert.match(smoke,/web-games\/fantasy-survival\//);
  assert.match(smoke,/metrics\.drawCalls>4&&metrics\.triangles>400/);
- assert.match(smoke,/game\.keyboard\.down\('d'\)/);
+ // The live source-bound smoke now tries four physical movement directions.
+ // Keep actual Playwright keyboard and touch input mandatory, not a mock motion flag.
+ assert.match(smoke,/for\(const key of \['d','a','w','s'\]\)/);
+ assert.match(smoke,/const directions=\{d:\[1,0\],a:\[-1,0\],w:\[0,-1\],s:\[0,1\]\}/);
+ assert.match(smoke,/else await game\.keyboard\.down\(key\)/);
+ assert.match(smoke,/else await game\.keyboard\.up\(key\)/);
+ assert.match(smoke,/Input\.dispatchTouchEvent/);
+ assert.match(smoke,/if\(delta>1\)\{movedPosition=observed;break;\}/);
+ assert.match(smoke,/MAGIC_FOREST_KEYBOARD_WORLD_MOVEMENT_FAILED/);
+ assert.match(smoke,/MAGIC_FOREST_TOUCH_WORLD_MOVEMENT_FAILED/);
  assert.match(smoke,/restoredX/);
  assert.match(smoke,/server\?\.kill\(\)/);
  assert.match(workflow,/id: forest_native_3d_live_qa/);
