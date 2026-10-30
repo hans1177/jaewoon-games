@@ -715,6 +715,22 @@ task.defer(function()
       end
     end
   end
+  -- [개울 생성 순서] 땅을 먼저 파고 물을 채운 뒤 나무를 안착시켜 나무 밑동이 뜨는 현상을 방지한다.
+  -- [물가] 동쪽 외곽에만 굽은 개울을 만든다. 스폰/채집·웨이브 전투 영역 침범 금지.
+  -- 나무와 바위 외에 별도의 Part, 조작용 다리 또는 임의 메시를 생성하지 않는다.
+  local streamLength=0
+  for step=-44,44 do
+    local z=step*3.5
+    local x=266+8*math.sin(z*.029)+2*math.cos(z*.073)
+    -- [실제 보이는 물길] 바닥 표면을 먼저 파내고 그 아래에 물을 채운다.
+    -- 지형 위에 물 공을 겹치거나 흙 아래에 물을 묻는 기존 문제 방지.
+    local bank=Vector3.new(x,.25,z)
+    meadowTerrain:FillBall(bank,6,Enum.Material.Air)
+    meadowTerrain:FillBall(Vector3.new(x,-2.8,z),4.5,Enum.Material.Water)
+    streamLength+=1
+    if step%5==0 then task.wait(.03) end
+  end
+  gameWorld:SetAttribute("MeadowForestStreamSections",streamLength)
   local leafTones={
     meadowPalette.leaves,Color3.fromRGB(93,130,77),
     Color3.fromRGB(65,107,84),Color3.fromRGB(111,141,88),
@@ -738,7 +754,8 @@ task.defer(function()
       tree:PivotTo(tree:GetPivot()*CFrame.Angles(0,math.rad((index*137)%360),0))
       sceneryCount+=1
     end
-    task.wait(.1)
+    -- [로딩 분할] 나무를 3그루씩 조성한 뒤 양보한다. 최초 숲 화면 출현 지연을 줄인다.
+    if index%3==0 then task.wait(.06) end
   end
   -- 흙길·바위·잔디 연결은 Roblox Terrain으로만 구성한다. 장식용 Part 생성 금지.
   for _,patch in ipairs({
@@ -776,21 +793,6 @@ task.defer(function()
     end
   end
   gameWorld:SetAttribute("MeadowNativeTrails",#tracks)
-  -- [물가] 동쪽 외곽에만 굽은 개울을 만든다. 스폰/채집·웨이브 전투 영역 침범 금지.
-  -- 나무와 바위 외에 별도의 Part, 조작용 다리 또는 임의 메시를 생성하지 않는다.
-  local streamLength=0
-  for step=-44,44 do
-    local z=step*3.5
-    local x=266+8*math.sin(z*.029)+2*math.cos(z*.073)
-    -- [실제 보이는 물길] 바닥 표면을 먼저 파내고 그 아래에 물을 채운다.
-    -- 지형 위에 물 공을 겹치거나 흙 아래에 물을 묻는 기존 문제 방지.
-    local bank=Vector3.new(x,.25,z)
-    meadowTerrain:FillBall(bank,6,Enum.Material.Air)
-    meadowTerrain:FillBall(Vector3.new(x,-2.8,z),4.5,Enum.Material.Water)
-    streamLength+=1
-    if step%5==0 then task.wait(.03) end
-  end
-  gameWorld:SetAttribute("MeadowForestStreamSections",streamLength)
   -- [이끼 낀 암석] 나무 군락 바깥에만 Terrain 암반을 겹쳐 자연스럽게 노출한다.
   local forestRockCount=0
   for _,rock in ipairs({
