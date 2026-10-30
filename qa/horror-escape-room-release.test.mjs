@@ -1024,3 +1024,15 @@ test('같은 맵을 연속 플레이해도 단말과 비상 출구가 새 라운
  assert.match(client,/objectiveLine\.Text="탈출구 개방 · 비상 출구에서 탈출!"/);
  assert.match(client,/objectiveLine\.Text="탈출 성공 · 팀 결과 대기"/);
 });
+
+test('Horror Studio lobby load uses exact grounded raycast, not transient client FloorMaterial',()=>{
+ const loading=client.slice(client.indexOf('local function finishLoading'),client.indexOf('task.spawn(function()\n for _=1,20'));
+ assert.match(loading,/character:GetAttribute\("SpawnGroundedSequence"\)~=sequence/);
+ assert.match(loading,/local grounds=\{\}/);
+ assert.match(loading,/d:GetAttribute\("WalkableGround"\)==true/);
+ assert.match(loading,/workspace:Raycast\(root.Position,Vector3.new\(0,-offset-\.75,0\),params\)/);
+ assert.match(loading,/groundedSamples>=3/);
+ assert.doesNotMatch(loading,/humanoid\.FloorMaterial==Enum\.Material\.Air|humanoid\.FloorMaterial~=Enum\.Material\.Air/);
+ assert.match(manorClient,/p:GetAttribute\("LobbyClientReady"\)==true/);
+ assert.match(manorClient,/character:GetAttribute\("SpawnGroundedSequence"\)==character:GetAttribute\("SpawnGroundingSequence"\)/);
+});

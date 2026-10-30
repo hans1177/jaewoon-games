@@ -133,3 +133,14 @@ test('포근섬 성벽·병영·거점 및 경제 건축은 실제 3D 메시와 
  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
  assert.doesNotMatch(render,/localStorage\.|state\.coins\s*[-+]=|state\.inventory\s*=/);
 });
+
+test('Cozy Studio route repair moves FoundationSpawn into the open plaza approach and shows real hit particles',()=>{
+ const server=read('roblox-games/cozy-island/server/Game.server.luau');
+ assert.match(server,/foundationSpawn\.Position=Vector3\.new\(0,topY\+1\.5,34\)/);
+ assert.match(server,/SpawnApproachWest/);
+ assert.match(server,/spawnApproach\.CanCollide=true/);
+ assert.match(server,/impactParticles=Instance\.new\("ParticleEmitter"\)/);
+ assert.match(server,/impactParticles\.Rate=0/);
+ assert.match(server,/impactParticles:Emit\(e\.hp==0 and 22 or 9\)/);
+ assert.match(server,/local accepted=H\[a\]\(p\)/,'server remains combat authority');
+});
