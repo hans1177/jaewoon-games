@@ -912,6 +912,8 @@ for index,item in ipairs(inventoryData)do
   inventoryCards[index]=count
 end
 -- [가방] 왼쪽 주머니 단축 아이콘 제거. 인벤토리는 기존 메뉴의 2번 탭에서 계속 이용한다.
+local villageContractRow=journalRow("VillageContracts",166)
+villageContractRow.LayoutOrder=9
 local questRows={}
 for index=1,#(Config.MainQuests or {}) do
   questRows[index]=journalRow("Quest"..index,146)
@@ -926,6 +928,25 @@ local function renderMeadowJournal()
   local stage=math.clamp(player:GetAttribute("QuestStage") or 1,1,#Config.MainQuests+1)
   local progress=player:GetAttribute("QuestProgress") or 0
   local quest=Config.MainQuests[stage]
+  -- [마을 의뢰 저널] 기존 메인 연구 기록과 별도로 저장되는 결과·단서를 표시한다.
+  local villageIndex=math.clamp(player:GetAttribute("VillageContractIndex") or 1,1,#Config.VillageContracts+1)
+  local villagePhase=player:GetAttribute("VillageContractPhase") or 0
+  local villageMask=player:GetAttribute("VillageContractEvidence") or 0
+  local villageLines={"초원 마을 · 의뢰 기록"}
+  local outcomes=player:GetAttribute("VillageContractOutcomes") or 0
+  for index,contract in ipairs(Config.VillageContracts) do
+    local decision=bit32.band(bit32.rshift(outcomes,(index-1)*2),3)
+    if decision==1 or decision==2 then
+      villageLines[#villageLines+1]="【완료】 "..contract.Name.."\n"..contract.Choices[decision].Outcome
+    elseif index==villageIndex then
+      local found=0
+      for bit=0,2 do if bit32.band(villageMask,bit32.lshift(1,bit))~=0 then found+=1 end end
+      villageLines[#villageLines+1]="【"..(villagePhase==0 and "수락 대기" or villagePhase==2 and "결정 대기" or "조사 중").."】 "..contract.Name..
+        "\n"..contract.Summary.."\n단서 "..found.."/3 · 남쪽 마을의 주민들과 이야기해."
+    end
+  end
+  if villageIndex>#Config.VillageContracts then villageLines[#villageLines+1]="마을 의뢰 모두 완료" end
+  villageContractRow.Text=table.concat(villageLines,"\n\n")
   trackerTitle.Text=quest and ("메인  "..quest.Name.."  ▸") or "메인  초원 조사 기록 완료  ▸"
   trackerDetail.Text=quest and string.format("%s  (%d/%d)",quest.Instruction,progress,quest.Goal)
     or "연구 기록을 메뉴의 인벤토리에서 다시 볼 수 있어"
@@ -971,7 +992,8 @@ local function layoutMeadowJournal()
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
 layoutMeadowJournal()
-for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","ResearchRecords","Wood","Stone","Coins","WeaponTier"}) do
+for _,name in ipairs({"QuestStage","QuestProgress","QuestWood","QuestStone","ResearchRecords","Wood","Stone","Coins","WeaponTier",
+  "VillageContractIndex","VillageContractPhase","VillageContractEvidence","VillageContractOutcomes"}) do
   player:GetAttributeChangedSignal(name):Connect(renderMeadowJournal)
 end
 renderMeadowJournal()
@@ -996,6 +1018,120 @@ remote.OnClientEvent:Connect(function(kind,payload)
   end)
 end)
 
+end
+
+-- [마을 NPC 대화] 작은 모바일 선택창. 서버에 있는 계약 ID·선택지만 전송한다.
+do
+  local dialog=Instance.new("Frame")
+  dialog.Name="MeadowVillageDialogue"
+  dialog.AnchorPoint=Vector2.new(.5,.5)
+  dialog.Position=UDim2.fromScale(.5,.5)
+  dialog.Size=UDim2.new(.9,0,0,320)
+  dialog.BackgroundColor3=Color3.fromRGB(28,38,32)
+  dialog.BorderSizePixel=0
+  dialog.ZIndex=70
+  dialog.Visible=false
+  dialog.Parent=gui
+  local sizeLimit=Instance.new("UISizeConstraint")
+  sizeLimit.MaxSize=Vector2.new(440,320)
+  sizeLimit.Parent=dialog
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,12)
+  corner.Parent=dialog
+  local stroke=Instance.new("UIStroke")
+  stroke.Color=Color3.fromRGB(180,143,88)
+  stroke.Thickness=2
+  stroke.Parent=dialog
+  local title=Instance.new("TextLabel")
+  title.Name="Speaker"
+  title.Position=UDim2.fromOffset(12,10)
+  title.Size=UDim2.new(1,-64,0,36)
+  title.BackgroundTransparency=1
+  title.TextColor3=Color3.fromRGB(251,225,174)
+  title.Font=Enum.Font.GothamBold
+  title.TextSize=18
+  title.TextXAlignment=Enum.TextXAlignment.Left
+  title.TextTruncate=Enum.TextTruncate.AtEnd
+  title.ZIndex=71
+  title.Parent=dialog
+  local story=Instance.new("TextLabel")
+  story.Name="DialogueText"
+  story.Position=UDim2.fromOffset(14,54)
+  story.Size=UDim2.new(1,-28,0,129)
+  story.BackgroundTransparency=1
+  story.TextColor3=Color3.fromRGB(237,241,224)
+  story.Font=Enum.Font.GothamMedium
+  story.TextSize=14
+  story.TextWrapped=true
+  story.TextYAlignment=Enum.TextYAlignment.Top
+  story.TextXAlignment=Enum.TextXAlignment.Left
+  story.ZIndex=71
+  story.Parent=dialog
+  local close=Instance.new("TextButton")
+  close.Name="Close"
+  close.Position=UDim2.new(1,-42,0,9)
+  close.Size=UDim2.fromOffset(32,34)
+  close.BackgroundColor3=Color3.fromRGB(70,61,51)
+  close.Text="×"
+  close.TextSize=22
+  close.TextColor3=Color3.fromRGB(255,250,227)
+  close.ZIndex=72
+  close.Parent=dialog
+  close.Activated:Connect(function()dialog.Visible=false end)
+  local choices={}
+  for i=1,2 do
+    local button=Instance.new("TextButton")
+    button.Name="Choice"..i
+    button.Position=UDim2.new(0,14,0,182+(i-1)*61)
+    button.Size=UDim2.new(1,-28,0,54)
+    button.BackgroundColor3=Color3.fromRGB(73,94,72)
+    button.TextColor3=Color3.fromRGB(255,252,232)
+    button.Font=Enum.Font.GothamBold
+    button.TextSize=13
+    button.TextWrapped=true
+    button.ZIndex=72
+    button.Visible=false
+    button.Parent=dialog
+    local rounded=Instance.new("UICorner")
+    rounded.CornerRadius=UDim.new(0,8)
+    rounded.Parent=button
+    choices[i]=button
+  end
+  local function layoutDialogue()
+    local v=gui.AbsoluteSize
+    if v.Y>0 then
+      local h=math.clamp(v.Y-36,230,320)
+      dialog.Size=UDim2.new(.9,0,0,h)
+      local upper=math.max(100,h-194)
+      story.Size=UDim2.new(1,-28,0,upper)
+      for i,button in ipairs(choices)do
+        button.Position=UDim2.new(0,14,0,h-132+(i-1)*61)
+      end
+    end
+  end
+  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutDialogue)
+  layoutDialogue()
+  remote.OnClientEvent:Connect(function(kind,payload)
+    if kind~="MEADOW_VILLAGE_DIALOG" or typeof(payload)~="table" then return end
+    title.Text=tostring(payload.title or "마을 의뢰")
+    story.Text=tostring(payload.message or "")
+    for i,button in ipairs(choices)do
+      local option=typeof(payload.options)=="table" and payload.options[i] or nil
+      local action=option and option.action
+      local permitted=action=="village:accept" or action=="village:resolve:1" or action=="village:resolve:2"
+      button.Visible=permitted
+      if permitted then
+        button.Text=tostring(option.label or "선택")
+        button.Activated:Once(function()
+          if not dialog.Visible then return end
+          dialog.Visible=false
+          remote:FireServer(action)
+        end)
+      end
+    end
+    dialog.Visible=true
+  end)
+  player.CharacterAdded:Connect(function()dialog.Visible=false end)
 end
 
 do

@@ -88,6 +88,30 @@ local Config = {
      Instruction="5의 배수 웨이브에 나타나는 초원 수문장 돌 골렘 1마리 처치",
      Story="동료 연구원과 다음 탐사를 준비하려면 초원의 위협을 먼저 정리해야 한다. 수문장의 공격 예고를 보고, 연타는 완벽 막기로 끊어라."},
   },
+  -- [초원 마을 의뢰] 세계관 고유의 조사·선택형 계약. 기존 메인/동료 퀘스트와 별개로 진행한다.
+  VillageContracts = {
+    {Id="missing-medicines",Name="01 · 사라진 약초 꾸러미",Issuer="촌장 나린",
+     Summary="약초상이 훔쳐 갔다고 소문난 약초. 그러나 목격자들은 서로 다른 이야기를 한다.",
+     Clues={"약초상 미라: 약초는 병든 아이의 열을 내리는 데 쓰였어.",
+       "추적자 라온: 늑대 발자국이 아니라 작은 사람의 신발 자국이 남아 있어.",
+       "경비병 아린: 곤궁한 주민의 부탁을 지우라는 지시가 있었다."},
+     Choices={{Label="아이를 돕고 소문을 바로잡는다",Outcome="마을은 숨겨진 사정을 알게 됐고 약초상과 가족을 도왔다.",Reward=8},
+       {Label="절도 사실을 경비대에 신고한다",Outcome="약초는 회수됐지만 아이의 치료는 늦어졌다.",Reward=14}}},
+    {Id="well-at-night",Name="02 · 밤마다 우는 우물",Issuer="촌장 나린",
+     Summary="우물에서 들리는 소리에 주민들은 괴물을 의심한다. 낡은 배수로에는 다른 흔적이 남았다.",
+     Clues={"약초상 미라: 물에는 독이 아닌 발효 약초 향이 남아 있어.",
+       "추적자 라온: 소리는 아래쪽의 무너진 관을 따라 울리고 있어.",
+       "경비병 아린: 우물 보수비를 누군가 빼돌렸다는 장부를 찾았어."},
+     Choices={{Label="장부를 공개하고 진상을 알린다",Outcome="누군가의 비리가 드러났고 주민들은 우물을 수리하기 시작했다.",Reward=10},
+       {Label="주민의 불안을 막기 위해 일단 봉쇄한다",Outcome="우물은 봉쇄됐지만 마을의 물 부족은 더 심해졌다.",Reward=16}}},
+    {Id="lost-wagon",Name="03 · 돌아오지 않은 짐수레",Issuer="촌장 나린",
+     Summary="밤에 사라진 보급 수레. 도적의 소행이라는 주장과 다른 장부 기록이 충돌한다.",
+     Clues={"약초상 미라: 수레의 식량은 오래 굶주린 숲 주민을 위한 것이었어.",
+       "추적자 라온: 수레 바퀴 자국은 도적 소굴이 아닌 경비소 쪽으로 향했어.",
+       "경비병 아린: 몰수 명령은 사실 확인 전에 내려졌어."},
+     Choices={{Label="식량을 가족에게 돌려준다",Outcome="가족들이 식량을 되찾았지만 경비대의 신뢰는 흔들렸다.",Reward=11},
+       {Label="법대로 경비대의 몰수 결정을 따른다",Outcome="질서는 지켰으나 굶주린 주민의 불만이 깊어졌다.",Reward=17}}},
+  },
   -- [동료 의뢰] 연구원 통신으로 받는 선택 의뢰. 메인 진행·경제 보상과 독립한다.
   CompanionRequests = {
     {Id="field-observation",Name="동료 조사원 · 생태 관찰",UnlockMainStage=2,Event="INSPECT",Goal=2,
@@ -118,6 +142,8 @@ local Config = {
     Stone = 0, WeaponTier = 0, Bosses = 0,
     QuestStage = 1, QuestProgress = 0, QuestWood = 0, QuestStone = 0,
     ResearchRecords = 0, ExplorationGroves = 0, RuinsDiscovered = 0, DawnTraceFound = 0, NightTraceFound = 0, CompanionQuestStage = 1, CompanionQuestProgress = 0,
+    -- 구형 저장은 존재하지 않는 숫자 필드를 기본값으로 읽어 이관한다.
+    VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "생존 시작", Kind = "SURVIVAL", Order = 1, LearningPattern = "idle-reward" },

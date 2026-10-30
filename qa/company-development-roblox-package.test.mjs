@@ -1246,6 +1246,36 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Ball"\)|Instance.new\("Cylinder"\)/);
 });
 
+// [마력숲 마을/선택형 계약] 원본 저장·전투·기존 퀘스트는 불변.
+test('fantasy meadow village uses licensed native ruins and server-validated three-case contracts',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const assets=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  assert.equal(assets.models.ruin.license,'CC0-1.0');
+  assert.equal(assets.models.ruin.source,'VERIFIED_CC0_ORIGINAL');
+  assert.match(server,/local function createMeadowVillage\(\)/);
+  assert.match(server,/local function villageNativeNpc\(spec\)/);
+  assert.match(server,/Players:CreateHumanoidModelFromDescription\(desc,Enum.HumanoidRigType.R15\)/);
+  assert.match(server,/worldAsset\("ruin",Vector3.new\(pos\[1\],3,pos\[2\]\),6\.2\)/);
+  assert.match(server,/MeadowVillageInteraction/);
+  assert.match(server,/if villageNear\(player,mesh.Position,15\) then callback\(player\) end/);
+  assert.match(server,/if string.sub\(actionId,1,8\)=="village:" then villageChoose\(player,actionId\);return end/);
+  assert.match(server,/villageNear\(player,session.position,16\)/);
+  assert.match(server,/bit32\.band\(bit32\.rshift\(previous,shift\),3\)~=0 then return end/);
+  assert.match(server,/setNumber\(player,"VillageContractOutcomes",bit32.bor\(previous,bit32.lshift\(selected,shift\)\)\)/);
+  assert.match(server,/setNumber\(player,"VillageContractIndex",index\+1\)/);
+  assert.match(config,/VillageContractIndex = 1, VillageContractPhase = 0, VillageContractEvidence = 0, VillageContractOutcomes = 0/);
+  assert.match(config,/VillageContracts = \{/);
+  for(const id of ['missing-medicines','well-at-night','lost-wagon']) assert.ok(config.includes('Id="'+id+'"'));
+  assert.match(client,/villageContractRow=journalRow\("VillageContracts",166\)/);
+  assert.match(client,/MEADOW_VILLAGE_DIALOG/);
+  assert.match(client,/remote:FireServer\(action\)/);
+  assert.doesNotMatch(server,/Instance.new\("Part"\)|Instance.new\("Cylinder"\)|Instance.new\("Ball"\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.match(server,/local number=math.min\(3\+CurrentWave\*2, MAX_ENEMIES\)/);
+});
+
 test('마력숲 타격은 부드러운 내장 둔탁음으로 교체하고 연속 재생량을 제한한다',()=>{
   const source=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   assert.match(source,/impact.SoundId="rbxasset:\/\/sounds\/action_jump_land\.mp3"/);
