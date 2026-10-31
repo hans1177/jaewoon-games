@@ -1284,9 +1284,15 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),piece.height,piece.lift\)/);
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
-  // [중세 마을] CC0 모델·원형 건물 배치는 유지하고 진흙길과 노후화된 표면만 변경한다.
-  assert.match(server,/path\[3\],Enum\.Material\.Mud/);
-  assert.match(server,/plaza\[3\],Enum\.Material\.Mud/);
+  // [중세 마을] 과거 진흙 언덕을 평평한 길로 바꾸고 원본 조립 모듈로 여섯 주거·생활 건물을 완성한다.
+  assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(path\[1\],1\.5,path\[2\]\)/);
+  assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
+  assert.match(server,/local expectedVillageBuildings=6/);
+  assert.match(server,/villageBuildings==expectedVillageBuildings/);
+  assert.match(server,/Village_ResidentHouseEast/);
+  assert.match(server,/MeadowVillageHouseSign/);
+  assert.match(server,/MeadowVillageBoardSign/);
+  assert.doesNotMatch(server,/Meadow_Village_StoneWall_/);
   assert.match(server,/mesh\.Color=house\.roof/);
   assert.match(server,/mesh\.Color=house\.timber/);
   assert.match(server,/mesh\.Material=Enum\.Material\.Slate/);
@@ -1303,7 +1309,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
-  assert.match(server,/worldAsset\("ruin",Vector3.new\(pos\[1\],3,pos\[2\]\),6\.2\)/);
+  assert.match(server,/local board=worldAsset\("villageStall",Vector3.new\(0,3,-101\),6\.6\)/);
   assert.match(server,/MeadowVillageInteraction/);
   assert.match(server,/for contractIndex,contract in ipairs\(Config.VillageContracts\) do/);
   assert.match(server,/for sceneIndex,site in ipairs\(contract.Sites\) do/);
