@@ -611,6 +611,38 @@
         }
       },
       "updatedAt": "2026-10-31T07:36:11.525Z"
+    },
+    {
+      "id": "SEED-AUTO-MISSING-DESIGN-DEEP-DIVER",
+      "slug": "deep-diver",
+      "name": "심해 잠수부 · 검은 바다의 보물",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/deep-diver"
+      },
+      "sourcePath": "roblox-games/deep-diver",
+      "designBaselineSource": "design/deep-diver/2026-10-31/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/deep-diver/2026-10-31/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-31T12:41:10.231Z"
     }
   ],
   "productionClassState": {
@@ -825,5 +857,5 @@
       }
     ]
   },
-  "updatedAt": "2026-10-31T07:36:11.525Z"
+  "updatedAt": "2026-10-31T12:41:10.231Z"
 }
