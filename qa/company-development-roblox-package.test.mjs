@@ -50,10 +50,10 @@ test('native NPC and mob animation states keep telegraphs, recovery, and gamepla
   assert.match(client,/mode="ATTACK"/);
   assert.match(client,/mode="RECOVERY"/);
   assert.match(client,/if forcedPhase then phase=forcedPhase end/);
-  const npc=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
-  assert.match(npc,/motor:IsA\("AnimationConstraint"\)/);
-  assert.match(npc,/local actionState=\(marker=="ANTICIPATION"/);
-  assert.match(npc,/ANTICIPATION=\.42,RECOVERY=\.38,INTERACT=\.9,GESTURE=1\.1/);
+  // [활성 게임] 삭제된 다른 게임 대신 마력숲 실제 NPC Animator와 동작 경계를 확인한다.
+  assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
+  assert.match(server,/humanoid.Running:Connect\(function\(speed\)/);
+  assert.match(server,/animator:LoadAnimation\(anim\)/);
   assert.match(common,/joint:IsA\("Motor6D"\)or joint:IsA\("AnimationConstraint"\)/);
 });
 
@@ -584,8 +584,7 @@ test('Roblox binding rejects nonempty lists and comments while accepting actual 
 });
 
 test('Roblox binding follows multiline selected-atom branches and same-object type guards',()=>{
-  const source=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
-  for(const family of ['WEAPON','CREATURE','PROP'])assert.equal(robloxStudioAssetFamilyBoundInText(source,family),true,family);
+  // [활성 게임] Cozy Island 원본과 아래의 엄격한 양·음성 조건 검증을 유지한다.
   const cozy=fs.readFileSync(new URL('../roblox-games/cozy-island/client/Game.client.luau',import.meta.url),'utf8');
   assert.equal(robloxStudioAssetFamilyBoundInText(cozy,'CREATURE'),true,'selected atom early return must preserve the existing consumer');
 
@@ -1282,7 +1281,11 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   }
   assert.ok([true,false].includes(assets.villagePrefabs.registrationVerified));
   assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
-  assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),piece.height,piece.lift\)/);
+  // [마력숲 대형 중세 건축] 벽 간격과 각 모듈 높이를 같은 배율로 확대해야 한다.
+  const villageScale=Number(server.match(/local villageArchitectureScale=([\d.]+)/)?.[1]);
+  assert.ok(villageScale>=2,'building height and footprint must be at least twice the original');
+  assert.match(server,/local rotated=Vector2.new\(piece.x\*villageArchitectureScale,piece.z\*villageArchitectureScale\)/);
+  assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),\s*piece.height\*villageArchitectureScale,piece.lift\*villageArchitectureScale\)/);
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
   // [중세 마을] 과거 진흙 언덕을 평평한 길로 바꾸고 원본 조립 모듈로 여섯 주거·생활 건물을 완성한다.
@@ -1536,7 +1539,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/or 116\)\*scale/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapWidth,mapDiameter\+40\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,8\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,v.X>v.Y and 12 or 38\)/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
   assert.match(client,/south.Text="S"/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
@@ -1580,7 +1583,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local mapDiameter=compactLandscape and \(v.Y<350 and 80 or 88\) or small and 96 or math.floor\(math.clamp\(/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(mapRight,8)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(mapRight,v.X>v.Y and 12 or 38)'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
@@ -2187,7 +2190,7 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/meadowSprintAuto and ready and remains<=\.05/);
   assert.match(client,/human\.MoveDirection\.Magnitude>\.1/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,8\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,v.X>v.Y and 12 or 38\)/);
   assert.match(client,/local dodgeCenter=dockRight-math.floor\(235\*skillScale\)\+235\*meadowTopPositions\[2\]\[1\]\*skillScale/);
   assert.match(client,/local mapRight=math.clamp\(math.floor\(dodgeCenter\+mapWidth\*\.5\+\.5\),mapWidth\+12,v.X-12\)/);
   assert.match(client,/alignMeadowRadar=layoutMeadowRadar/);
@@ -2242,7 +2245,7 @@ test('Forest minimap south aligns with existing circular radar and action is ser
   assert.match(client,/radarFieldCorner\.CornerRadius=UDim\.new\(1,0\)/);
   assert.match(client,/south\.Position=UDim2\.new\(\.5,0,1,-2\)/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,8\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,v.X>v.Y and 12 or 38\)/);
   assert.match(client,/if alignMeadowRadar then alignMeadowRadar\(\) end/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=function\(player\)/);
   assert.match(server,/\["skill-meadow-guard"\]=meadowGuard/);
