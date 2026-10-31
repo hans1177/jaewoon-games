@@ -110,7 +110,7 @@ jobs:
           git config user.name 'jaewoon-horror-combat-assets'
           git config user.email 'actions@users.noreply.github.com'
           for binding_path in assets/shared/forest/deer-real.glb roblox-games/fantasy-survival/native-assets.json roblox-games/fantasy-survival/shared/VisualAssetIds.luau roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json roblox-games/fantasy-survival/client/Game.client.luau roblox-games/fantasy-survival/action-icons/ assets/roblox/common-vfx-v1/catalog.json roblox-games/daechung-rpg/shared/RPGMenu.luau assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/horror-escape-room/shared/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
-            if test -f "$binding_path"; then git add -- "$binding_path"; fi
+            if test -e "$binding_path"; then git add -- "$binding_path"; fi
           done
           if git diff --cached --quiet; then
             echo 'COMBAT_ASSET_BINDING_ALREADY_CURRENT=YES'

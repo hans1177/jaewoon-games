@@ -106,7 +106,7 @@ if(process.argv.includes('--magic-action-icons-only')){
    const source=originalIconData[role],prior=stored[role];
    let assetId=String(prior?.assetId||'');
    if(!/^[1-9]\d*$/.test(assetId)||prior?.sourceSha256!==source.sha256
-     ||prior?.sourceEntry!==source.entry||prior?.sourceUrl!==source.sourceUrl
+     ||prior?.sourceEntry!==source.entry||(prior?.sourceUrl||null)!==(source.sourceUrl||null)
      ||prior?.license!==(source.author?'CC-BY-3.0':'CC0-1.0')||prior?.importVerified!==true){
      const form=new FormData();
      form.append('request',JSON.stringify({

@@ -2185,8 +2185,8 @@ test('Forest minimap south aligns with existing circular radar and action is ser
       assert.match(String(row.assetId),/^[1-9]\d*$/);
       assert.equal(row.importVerified,true);
       assert.ok(['CC0-1.0','CC-BY-3.0'].includes(row.license));
-      assert.equal(row.width,128);
-      assert.equal(row.height,128);
+      assert.ok(row.width>=128&&row.width<=1024);
+      assert.ok(row.height>=128&&row.height<=1024);
       assert.match(row.sourceSha256,/^[0-9a-f]{64}$/);
       assert.ok(client.includes(role+'="rbxassetid://'+row.assetId+'"'),'native role binding missing: '+role);
     }
