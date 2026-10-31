@@ -59,6 +59,34 @@ if(process.argv.includes('--magic-action-icons-only')){
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
  const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ // [기존 승인 자산] 다운로드 원본·등록 ID·게임 바인딩까지 일치하면 권한 API를 반복 호출하지 않는다.
+ const verifiedRoles={fist:['lorc','punch-blast'],dodge:['darkzaitzev','acrobatic'],
+   guard:['delapouite','attached-shield'],interact:['lorc','grab'],sprint:['lorc','sprint']};
+ const importedIcons=registry.nativeActionIcons?.icons||{};
+ const existingClient=fs.readFileSync(clientPath,'utf8');
+ const verifiedExisting=registry.gameId==='fantasy-survival'
+   &&registry.nativeActionIcons?.registrationVerified===true
+   &&Object.entries(verifiedRoles).every(([role,[author,name]])=>{
+     const row=importedIcons[role];
+     const path='roblox-games/fantasy-survival/action-icons/'+role+'.png';
+     return row?.license==='CC-BY-3.0'&&row?.importVerified===true
+       &&row.author===author&&row.sourceEntry===name+'.png'
+       &&row.sourceUrl==='https://game-icons.net/icons/ffffff/transparent/1x1/'+author+'/'+name+'.png'
+       &&row.authorizedUniverseIds?.includes('10773436325')
+       &&/^[1-9]\d*$/.test(String(row.assetId))
+       &&fs.existsSync(path)
+       &&crypto.createHash('sha256').update(fs.readFileSync(path)).digest('hex')===row.sourceSha256
+       &&existingClient.includes(role+'="rbxassetid://'+row.assetId+'"');
+   })
+   &&[['potion','120656085154237'],['bag','127437456512278']].every(([role,id])=>
+     importedIcons[role]?.assetId===id&&importedIcons[role]?.license==='CC0-1.0'
+       &&importedIcons[role]?.authorizedUniverseIds?.includes('10773436325')
+       &&existingClient.includes(role+'="rbxassetid://'+id+'"'))
+   &&existingClient.includes('meadowRadar.Position=UDim2.new(1,-12,0,8)');
+ if(verifiedExisting){
+   console.log('FOREST_EXTERNAL_ACTION_ICONS_ALREADY_BOUND=YES');
+   process.exit(0);
+ }
  const archive=registry.interfaceIcons?.sourceArchives?.find(x=>x.path==='assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip');
  if(!archive||registry.gameId!=='fantasy-survival'||registry.interfaceIcons?.license!=='CC0-1.0'
    ||registry.interfaceIcons?.universeId!=='10773436325')throw Error('FOREST_REAL_ICONS_CC0_PROVENANCE_INVALID');
