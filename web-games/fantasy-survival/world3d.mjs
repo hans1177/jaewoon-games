@@ -60,16 +60,6 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   // 원시인: 기존 CC0 인간형 3D 리그를 공유한다. 전투/능력은 변경하지 않는다.
   'barbarian.glb':['primitiveSpearman','primitiveArcher','swampPrimitiveSpearman','swampPrimitiveArcher','swampPrimitiveGuard']
 });
-// 기존 CC0 모델 종별 실루엣 차별화: 공격·저장·개체수 변경 없음.
-const CREATURE_VISUAL_PROPORTIONS=Object.freeze({
-shadowwolf:[1,.9,1.05],shadowwolfleader:[1.35,1.28,1.25],firewolf:[.91,.85,1.32],polarwolf:[1.15,1.16,.97],
-thornhound:[1.22,.91,.87],ironhidehound:[1.24,1,1.09],crystalbiter:[1.95,1.6,1.72],crystallizard:[.76,.8,1.35],
-crystalguardian:[1.3,1.45,1.2],crystalfiregolem:[1.20,1.64,1.13],icegolem:[1.31,1.20,1.25],
-crystalboar:[1.2,1.15,1.06],crystalboarjunior:[.83,.82,1],crystalbear:[1.22,1.34,1.08],
-polarbear:[1.28,1.2,1.05],fearbear:[1.14,.86,1.31],crystalgoat:[.93,1.23,1.05],
-crystalibex:[1.13,1.18,.98],crystalfiresnake:[1.09,1.1,1.25],crystalgoblin:[.92,1.12,.98],
-crystalironspirit:[.9,1.24,.91],sandSpirit:[1.24,.9,.90]
-});
 const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
   .flatMap(([source,ids])=>ids.map(id=>[id,source])));
 const CREATURE_SOURCE=new URL('../../assets/shared/forest/',import.meta.url);
@@ -847,6 +837,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // The native rigs follow the *existing* monster coordinates, direction and actions.
   // No new spawn/damage/loot logic is allowed in the rendering layer.
   function synchronizeNativeCreatures(state,px,py,stamp){
+    const CREATURE_VISUAL_PROPORTIONS=synchronizeNativeCreatures.visualProfiles||(synchronizeNativeCreatures.visualProfiles=Object.freeze({
+    shadowwolf:[1,.9,1.05],shadowwolfleader:[1.35,1.28,1.25],firewolf:[.91,.85,1.32],polarwolf:[1.15,1.16,.97],
+    thornhound:[1.22,.91,.87],ironhidehound:[1.24,1,1.09],crystalbiter:[1.95,1.6,1.72],crystallizard:[.76,.8,1.35],
+    crystalguardian:[1.3,1.45,1.2],crystalfiregolem:[1.20,1.64,1.13],icegolem:[1.31,1.20,1.25],
+    crystalboar:[1.2,1.15,1.06],crystalboarjunior:[.83,.82,1],crystalbear:[1.22,1.34,1.08],
+    polarbear:[1.28,1.2,1.05],fearbear:[1.14,.86,1.31],crystalgoat:[.93,1.23,1.05],
+    crystalibex:[1.13,1.18,.98],crystalfiresnake:[1.09,1.1,1.25],crystalgoblin:[.92,1.12,.98],
+    crystalironspirit:[.9,1.24,.91],sandSpirit:[1.24,.9,.90]
+    }));
     // 모바일 화질 축소는 해상도와 그림자만 조절하고, 시야 안의 몹은 제거하지 않는다.
     missingVisibleMonsterIds.clear();
     let unsafeUnmappedEncounter=false;
@@ -887,7 +886,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             let material=materials.get(original.uuid);
             if(!material){
               material=original.clone();
-              if(material.color)material.color.lerp(tint,speciesId.startsWith('crystal')?.72:.46);
+              if(material.color){material.color.lerp(tint,.22);material.color.lerp(tint,speciesId.startsWith('crystal')?.60:.29);}
               if(child.geometry?.getAttribute('uv')&&'normalMap' in material){
                 const finish=(kind==='monster-41.obj')?'lego':
                   (speciesId==='sapdeer'||kind==='mushroom.fbx')?'soft':'micro';
@@ -904,7 +903,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             ?child.material.map(tintMaterial):tintMaterial(child.material);
         });
         const profile=CREATURE_VISUAL_PROPORTIONS[speciesId]||[1,1,1];
-        model.scale.set(scale*profile[0],scale*profile[1],scale*profile[2]);
+        if(model.scale.set)model.scale.set(scale*profile[0],scale*profile[1],scale*profile[2]);else model.scale.setScalar(scale);
         model.position.y=-source.floor*scale*profile[1];
         const anchor=new THREE.Group();anchor.add(model);
         // 수정 바이터는 하나의 진짜 적이지만 외형은 정품 뱀 리그 3개가 융합된 거대한 괴체.
@@ -924,7 +923,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           }
         }
         // 등록된 CC0 돌 원본 지오메트리로 만든 수정 외갑은 전투·충돌과 무관한 시각 파츠.
-        const crystalSource=models.get('cobblestones');
+        const crystalSource=typeof models!=='undefined'?models.get('cobblestones'):null;
         if(crystalSource&&speciesId.startsWith('crystal')){
           crystalSource.geometry.computeBoundingSphere();
           const sourceRadius=Math.max(.01,crystalSource.geometry.boundingSphere.radius);
@@ -1262,17 +1261,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           const sceneryChoices=SCENERY_KIND[tileZone]||SCENERY_KIND.forest;
           const kind=sceneryChoices[hash%sceneryChoices.length];
           const crystalOutcrop=tileZone==='crystal'&&kind==='cobblestones';
-          const sceneryKey=crystalOutcrop?'crystal-outcrop':kind;
-          let batch=sceneryBatches.get(sceneryKey);
+          let batch=sceneryBatches.get(kind);
           if(!batch&&models.has(kind)){
-            const original=models.get(kind),material=crystalOutcrop?original.material.clone():original.material;
-            if(crystalOutcrop&&material.color){
-              material.color.set(0xd9c5ff);
-              if(material.emissive){material.emissive.set(0x5630a4);material.emissiveIntensity=.4}
-            }
-            const mesh=new THREE.InstancedMesh(original.geometry,material,49);
+            const original=models.get(kind);
+            const mesh=new THREE.InstancedMesh(original.geometry,original.material,49);
             mesh.count=0;mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;
-            scene.add(mesh);batch={mesh,count:0};sceneryBatches.set(sceneryKey,batch);
+            scene.add(mesh);batch={mesh,count:0};sceneryBatches.set(kind,batch);
           }
           if(batch){
             const xOffset=(((hash>>>4)%5)-2)*floorPitchX*.12;
@@ -1282,7 +1276,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             const terrainScale=.38+((hash>>>10)%4)*.09;resourceTransform.scale.set(terrainScale*(crystalOutcrop?.74:1),terrainScale*(crystalOutcrop?2.8:1),terrainScale*(crystalOutcrop?.74:1));
             resourceTransform.updateMatrix();
             batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
-            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
+            batch.mesh.setColorAt(batch.count,floorTint.setHex(crystalOutcrop?0xdbc4ff:tileStyle.floor).lerp(floorNeutral,crystalOutcrop?.12:.35));
             batch.count++;
           }
         }
@@ -1658,7 +1652,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     scene.remove(floorSeamTiles);floorSeamTiles.dispose();
     for(const [key,{mesh}] of resourceBatches){scene.remove(mesh);mesh.dispose();if(key.includes(':'))mesh.material.dispose()}
     resourceBatches.clear();
-    for(const [key,{mesh}] of sceneryBatches){scene.remove(mesh);mesh.dispose();if(key==='crystal-outcrop')mesh.material.dispose()}
+    for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
     sceneryBatches.clear();
     for(const {mesh} of interiorWalls.values()){scene.remove(mesh);mesh.dispose()}
     interiorWalls.clear();
