@@ -121,7 +121,8 @@ test('Fantasy Survival Roblox R15 unarmed skills select authentic authored actio
     'meadow-unarmed-kick','meadow-unarmed-elbow']){
     assert.ok(config.includes('Id = "'+id+'"'),id+' is an approved gameplay action');
     const expectedCost=id==='meadow-unarmed-uppercut'?20:id==='meadow-unarmed-kick'?14:null;
-    const handler='["'+id+'"]='+(expectedCost===null?'unarmedSkillAttack':'function(player) return unarmedSkillAttack(player,'+expectedCost+') end');
+    const handler='["'+id+'"]='+(id==='meadow-unarmed-rush'?'attackEnemy'
+      :expectedCost===null?'unarmedSkillAttack':'function(player) return unarmedSkillAttack(player,'+expectedCost+') end');
     assert.ok(server.includes(handler),id+' preserves original attack authority and stamina cost');
     assert.ok(client.includes('["'+id+'"]='),id+' has a dedicated R15 motion route');
   }
@@ -1679,7 +1680,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(server,/if wing then[\s\S]*?surface\.Material=Enum\.Material\.Glass/);
   assert.match(server,/elseif smoothDetail then[\s\S]*?surface\.Material=Enum\.Material\.SmoothPlastic/);
   assert.match(server,/model:PivotTo\(CFrame.lookAt\(pivot,pivot\+facing\)/);
-  assert.match(client,/button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skill\[1\]\)/);
+  assert.match(client,/local skillActionId=skill\[1\][\s\S]*?button.Activated:Connect\(function\(\)[\s\S]*?activateMeadowAction\(skillActionId\)/);
   assert.match(client,/local meadowMobMotion=combatMotionSource/);
   assert.match(server,/task.defer\(createResourceNodes\)/);
   assert.match(server,/task.delay\(4,function\(\)\s*local wildlife=\{/);
@@ -2189,6 +2190,21 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(server,/if string\.sub\(actionId,1,17\)=="meadow:ui-layout:" then/);
   assert.match(server,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true then return end/);
   assert.match(server,/if x<120 or x>880 or y<100 or y>550 then return end/);
+  assert.match(server,/local minDistance=31\+\(other==4 and 22 or 31\)\+6/);
+  assert.match(client,/if dx\*dx\+dy\*dy<minDistance\*minDistance then return false end/);
+  assert.match(client,/if free then p\[1\],p\[2\]=x,y;refreshTopEditor\(\) end/);
+  assert.ok(server.includes('["meadow-unarmed-rush"]=attackEnemy'),'right attack must support existing equipped weapon');
+  // Default centers are separated. An old invalid saved layout that stacks buttons must be rejected.
+  const base=[[.235,.275],[.500,.120],[.800,.275],[.500,.510]];
+  const nonOverlapping=layout=>layout.every(([x,y],i)=>layout.slice(i+1).every(([u,v],other)=>{
+    const j=i+1+other;
+    const distance2=((x-u)*235)**2+((y-v)*260)**2;
+    const minimum=(i===3?22:31)+(j===3?22:31)+6;
+    return distance2>=minimum**2;
+  }));
+  assert.ok(nonOverlapping(base),'default four-button layout must stay individually clickable');
+  assert.ok(!nonOverlapping([[.5,.2],[.5,.2],[.8,.3],[.5,.51]]),
+    'a saved overlap that would redirect clicks to dodge must be rejected');
   assert.match(server,/snapshot\.MeadowTopButtonsLayout=layout/);
   assert.match(server,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
   // 선택값은 위치 문자열만 저장하며 서버 기술 쿨다운·능력치·전투 판정을 변경하지 않는다.
