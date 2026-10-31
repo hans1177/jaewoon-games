@@ -2276,8 +2276,17 @@ test('Forest external five action icons and protected potion/bag imported via ex
   const workflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
-  for(const key of ['punch-blast.png','acrobatic.png','attached-shield.png','grab.png','sprint.png'])
-    assert.ok(script.includes(key),'missing external action source: '+key);
+  // [A안] 실물 연속 펀치/옆회피/한손 복싱 가드 PNG만 교체한다. 429 때 이전 ID를 새 것으로 속이지 않는다.
+  const chosen={fist:'fulguro-punch.png',dodge:'dodging.png',guard:'boxing-glove.png'};
+  for(const [role,name] of Object.entries(chosen)){
+    assert.ok(script.includes("['"+role+"','"+name+"','lorc']"),'missing approved A icon source: '+role);
+    assert.ok(script.includes(role+":['lorc','"+name.replace('.png','')+"']"),'missing A source verification: '+role);
+    const imported=registry.nativeActionIcons.icons[role];
+    if(imported.sourceEntry!==name)assert.equal(imported.runtimeVerified,false,'pending A image must not count as runtime verified: '+role);
+  }
+  for(const key of ['grab.png','sprint.png'])
+    assert.ok(script.includes(key),'missing preserved external action source: '+key);
+  assert.ok(script.includes("meadowRadar.Position=UDim2.fromOffset(mapRight,8)"));
   assert.match(script,/FOREST_EXTERNAL_ICON_DOWNLOAD_FAILED/);
   assert.match(script,/FOREST_EXTERNAL_ACTION_ICONS_READY=YES/);
   assert.match(script,/grantToDependencies:true/);
