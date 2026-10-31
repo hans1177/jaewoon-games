@@ -127,13 +127,16 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
--- [오른쪽 아이콘] 기존 등록·승인된 액션 그림 아틀라스를 사용하고 물약·가방 원본만 보존한다.
-local meadowRightActionAtlas="rbxassetid://81665484719308" -- 등록된 RIGHT_ACTION_HUD 아틀라스 (40x40, 8열)
-local meadowRightActionRects={fist=1,dodge=3,guard=2,sprint=4,interact=5}
+-- [오른쪽 아이콘] 외부 원본 등록 전에는 기존 승인 PNG를 사용한다. 물약·가방은 유지한다.
 local meadowRealActionIcons={
+  fist="rbxassetid://74889533858270",
+  dodge="rbxassetid://120347249421022",
+  guard="rbxassetid://81631343083705",
   potion="rbxassetid://120656085154237",
+  interact="rbxassetid://138525825083950",
+  sprint="rbxassetid://128151987225929",
   bag="rbxassetid://127437456512278"
-} -- 기존 물약·가방 CC0 개별 이미지 유지
+} -- CC0_REAL_ACTION_ICONS
 local reducedEffects=game:GetService("UserInputService").TouchEnabled
 local meadowEffectsGroup=Instance.new("SoundGroup")
 meadowEffectsGroup.Name="MeadowEffects";meadowEffectsGroup.Volume=.75
@@ -724,6 +727,18 @@ for index,name in ipairs({"효과음","환경음","타격 효과"}) do
   end)
   refreshOption()
 end
+-- [라이선스] 외부 전투 아이콘 저작자 표기를 옵션 화면에 제공한다.
+local iconCredits=Instance.new("TextLabel")
+iconCredits.Name="ActionIconCredits"
+iconCredits.LayoutOrder=8
+iconCredits.Size=UDim2.new(1,-8,0,56)
+iconCredits.BackgroundTransparency=1
+iconCredits.TextWrapped=true
+iconCredits.TextSize=11
+iconCredits.Font=Enum.Font.Gotham
+iconCredits.TextColor3=Color3.fromRGB(202,211,205)
+iconCredits.Text="액션 아이콘: Lorc · DarkZaitzev · Delapouite (CC BY 3.0)\ngame-icons.net"
+iconCredits.Parent=meadowPages[4]
 renderMeadowPages()
 local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
   compact=true,hideButton=true,menuLeft=true,pages=meadowPages,pageNames=meadowPageNames,onPageChanged=renderMeadowPages,iconAtlas=meadowIconAtlas,
@@ -2033,17 +2048,12 @@ end
 -- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
 -- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
-  local atlasIndex=meadowRightActionRects[role]
-  local imageId=meadowRealActionIcons[role] or (atlasIndex and meadowRightActionAtlas)
+  local imageId=meadowRealActionIcons[role]
   if not imageId then return false end
   local icon=Instance.new("ImageLabel")
   icon.Name="OriginalRightActionIcon"
   icon.BackgroundTransparency=1
   icon.Image=imageId
-  if atlasIndex then
-    icon.ImageRectOffset=Vector2.new(atlasIndex*40,0)
-    icon.ImageRectSize=Vector2.new(40,40)
-  end
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,.5)
   icon.Position=UDim2.fromScale(.5,.45)

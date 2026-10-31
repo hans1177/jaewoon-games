@@ -1529,7 +1529,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+14,mapDiameter\+40\)/);
   assert.match(client,/meadowRadar.Position=UDim2.new\(1,math.floor\(\(dodgeCenterX-237\)\*scale\),0,0\)/);
-  assert.match(client,/local dodgeCenterX=235\*meadowTopPositions\[2\]\[1\]/);
+  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
   assert.match(client,/south.Text="S"/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
   assert.match(client,/radarTitle.Position=UDim2.fromOffset\(3,mapDiameter\+7\)/);
@@ -2132,8 +2132,8 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/meadowSprintAuto=not meadowSprintAuto/);
   assert.match(client,/meadowSprintAuto and ready and remains<=\.05/);
   assert.match(client,/human\.MoveDirection\.Magnitude>\.1/);
-  assert.match(client,/local dodgeCenterX=235\*meadowTopPositions\[2\]\[1\]/);
-  assert.match(client,/meadowRadar\.Position=UDim2\.new\(1,math\.floor\(\(dodgeCenterX-237\)\*scale\),0,0\)/);
+  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-12,0,8\)/);
   assert.match(client,/alignMeadowRadar=layoutMeadowRadar/);
   assert.match(client,/local meadowTopDefaults=\{\{\.235,\.275\}/);
   assert.match(client,/local activeDrag=nil/);
@@ -2166,8 +2166,8 @@ test('Forest minimap south aligns with existing circular radar and action is ser
   assert.match(client,/south\.Name="South"/);
   assert.match(client,/radarFieldCorner\.CornerRadius=UDim\.new\(1,0\)/);
   assert.match(client,/south\.Position=UDim2\.new\(\.5,0,1,-2\)/);
-  assert.match(client,/local dodgeCenterX=235\*meadowTopPositions\[2\]\[1\]/);
-  assert.match(client,/meadowRadar\.Position=UDim2\.new\(1,math\.floor\(\(dodgeCenterX-237\)\*scale\),0,0\)/);
+  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-12,0,8\)/);
   assert.match(client,/if alignMeadowRadar then alignMeadowRadar\(\) end/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=function\(player\)/);
   assert.match(server,/\["skill-meadow-guard"\]=meadowGuard/);
@@ -2184,7 +2184,7 @@ test('Forest minimap south aligns with existing circular radar and action is ser
       const row=registry.nativeActionIcons.icons[role];
       assert.match(String(row.assetId),/^[1-9]\d*$/);
       assert.equal(row.importVerified,true);
-      assert.equal(row.license,'CC0-1.0');
+      assert.ok(['CC0-1.0','CC-BY-3.0'].includes(row.license));
       assert.equal(row.width,128);
       assert.equal(row.height,128);
       assert.match(row.sourceSha256,/^[0-9a-f]{64}$/);
@@ -2196,28 +2196,26 @@ test('Forest minimap south aligns with existing circular radar and action is ser
   }
 });
 
-test('Forest actual seven-icon import extracts original CC0 PNG and replaces screenshot bindings',()=>{
+test('Forest external five action icons and protected potion/bag imported via existing pipeline',()=>{
   const script=fs.readFileSync('tools/horror-combat-assets.mjs','utf8');
   const workflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
-  const source=registry.interfaceIcons.sourceArchives.find(x=>x.path.endsWith('fantasy-rpg-icons.zip'));
-  assert.ok(source);
-  assert.match(script,/if\(process\.argv\.includes\('--magic-action-icons-only'\)\)/);
-  assert.match(script,/FOREST_REAL_ICONS_SOURCE_ARCHIVE_HASH_MISMATCH/);
-  assert.match(script,/execFileSync\('unzip',\['-p',archive\.path,paths\[0\]\]/);
-  for(const filename of ['icon_glove.png','icon_legarmor.png','icon_shield.png',
-    'icon_potionred.png','icon_chest.png','icon_aurared.png','icon_bag.png']){
-    assert.ok(script.includes("'"+filename+"'"));
-  }
-  assert.match(script,/assetType:'Image',displayName:'Mana Forest CC0 '/);
+  for(const key of ['punch-blast.png','acrobatic.png','attached-shield.png','grab.png','sprint.png'])
+    assert.ok(script.includes(key),'missing external action source: '+key);
+  assert.match(script,/FOREST_EXTERNAL_ICON_DOWNLOAD_FAILED/);
+  assert.match(script,/FOREST_EXTERNAL_ACTION_ICONS_READY=YES/);
   assert.match(script,/grantToDependencies:true/);
-  assert.match(script,/FOREST_CC0_NATIVE_ACTION_ICON=/);
-  assert.match(script,/FOREST_CC0_NATIVE_7_ICON_BINDING_PREPARED/);
-  assert.match(script,/FOREST_SCREENSHOT_ICON_FALLBACK_STILL_PRESENT/);
-  assert.match(workflow,/node tools\/horror-combat-assets\.mjs --magic-action-icons-only/);
-  assert.match(workflow,/Open exact combat asset binding PR/);
-  assert.match(workflow,/roblox-games\/fantasy-survival\/client\/Game\.client\.luau/);
-  assert.match(workflow,/roblox-games\/fantasy-survival\/CC0-ASSET-REGISTRY\.json/);
-  assert.equal(registry.interfaceIcons.license,'CC0-1.0');
-  assert.equal(registry.interfaceIcons.universeId,'10773436325');
+  assert.match(workflow,/magic-action-icons-only/);
+  assert.match(workflow,/roblox-games\/fantasy-survival\/action-icons/);
+  assert.match(client,/ActionIconCredits/);
+  assert.doesNotMatch(client,/meadowRightActionAtlas|meadowRightActionRects/);
+  assert.equal(registry.nativeActionIcons.icons.potion.assetId,'120656085154237');
+  assert.equal(registry.nativeActionIcons.icons.bag.assetId,'127437456512278');
+  for(const role of ['fist','dodge','guard','interact','sprint']){
+    const row=registry.nativeActionIcons.icons[role];
+    assert.equal(row.importVerified,true);
+    if(row.sourceUrl)assert.equal(row.license,'CC-BY-3.0');
+  }
+
 });

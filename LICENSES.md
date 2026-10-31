@@ -297,3 +297,12 @@
 다운로드/라이선스 확인 날짜: 2026-10-20
 사용 위치 또는 게임: web-games/ocean-voyage/assets (11개 모델)
 비고: 선박·항구·대포 모델은 원본 Kenney 3D 모델로, GLB 텍스처 내장판을 사용. 웹 렌더링·모바일·배포 검증은 별도 증거 필요.
+
+## 마력숲 전투 아이콘
+
+- 외부 PNG 출처: https://game-icons.net (CC BY 3.0, 상업 이용 가능, 저작자 표시 필수)
+- Lorc: punch-blast / grab / sprint
+- DarkZaitzev: acrobatic
+- Delapouite: attached-shield
+- 원본 PNG 및 SHA-256 증빙: roblox-games/fantasy-survival/action-icons 및 CC0-ASSET-REGISTRY.json (등록 후)
+- 물약(potion)과 가방(bag)은 기존 Drummyfish CC0 등록 이미지 유지.

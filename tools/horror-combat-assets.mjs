@@ -67,26 +67,38 @@ if(process.argv.includes('--magic-action-icons-only')){
  const entries=execFileSync('unzip',['-Z','-1',archive.path],{encoding:'utf8',maxBuffer:1024*1024})
    .split(/\r?\n/).filter(Boolean);
  const roles=[
-   ['fist','icon_glove.png'],
-   ['dodge','icon_legarmor.png'],
-   ['guard','icon_shield.png'],
-   ['potion','icon_potionred.png'],
-   ['interact','icon_chest.png'],
-   ['sprint','icon_aurared.png'],
-   ['bag','icon_bag.png']
+   ['fist','punch-blast.png','lorc'],
+   ['dodge','acrobatic.png','darkzaitzev'],
+   ['guard','attached-shield.png','delapouite'],
+   ['potion','icon_potionred.png',null],
+   ['interact','grab.png','lorc'],
+   ['sprint','sprint.png','lorc'],
+   ['bag','icon_bag.png',null]
  ];
  const originalIconData={};
- for(const [role,filename] of roles){
-   const paths=entries.filter(e=>e.toLowerCase().split('/').pop()===filename);
-   if(paths.length!==1||paths[0].includes('..')||paths[0].startsWith('/'))
-     throw Error('FOREST_CC0_ORIGINAL_ICON_MISSING_OR_AMBIGUOUS:'+role);
-   const original=execFileSync('unzip',['-p',archive.path,paths[0]],{maxBuffer:4*1024*1024});
+ for(const [role,filename,author] of roles){
+   let original,entry=filename,sourceUrl=null;
+   if(author){
+     sourceUrl='https://game-icons.net/icons/ffffff/transparent/1x1/'+author+'/'+filename;
+     const response=await fetch(sourceUrl,{signal:AbortSignal.timeout(60000)});
+     if(!response.ok||!String(response.headers.get('content-type')||'').toLowerCase().includes('image/png'))
+       throw Error('FOREST_EXTERNAL_ICON_DOWNLOAD_FAILED:'+role+':'+response.status);
+     original=Buffer.from(await response.arrayBuffer());
+   }else{
+     const paths=entries.filter(e=>e.toLowerCase().split('/').pop()===filename);
+     if(paths.length!==1||paths[0].includes('..')||paths[0].startsWith('/'))
+       throw Error('FOREST_CC0_ORIGINAL_ICON_MISSING_OR_AMBIGUOUS:'+role);
+     entry=paths[0];
+     original=execFileSync('unzip',['-p',archive.path,entry],{maxBuffer:4*1024*1024});
+   }
+   if(original.length<400||original.length>2*1024*1024
+     ||!original.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))
+     throw Error('FOREST_EXTERNAL_ICON_INVALID_PNG:'+role);
    const width=original.readUInt32BE(16),height=original.readUInt32BE(20);
-   if(original.length<400||original.length>1024*1024
-     ||!original.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
-     ||width<16||width>512||height<16||height>512)
-     throw Error('FOREST_CC0_ORIGINAL_ICON_INVALID_PNG:'+role);
-   originalIconData[role]={entry:paths[0],filename,bytes:original,sha256:crypto.createHash('sha256').update(original).digest('hex'),width,height};
+   if(width<16||width>1024||height<16||height>1024)
+     throw Error('FOREST_EXTERNAL_ICON_INVALID_SIZE:'+role);
+   originalIconData[role]={entry,filename,author,sourceUrl,bytes:original,
+     sha256:crypto.createHash('sha256').update(original).digest('hex'),width,height};
  }
  const stored=registry.nativeActionIcons?.icons||{};
  const imported={};
@@ -94,11 +106,12 @@ if(process.argv.includes('--magic-action-icons-only')){
    const source=originalIconData[role],prior=stored[role];
    let assetId=String(prior?.assetId||'');
    if(!/^[1-9]\d*$/.test(assetId)||prior?.sourceSha256!==source.sha256
-     ||prior?.sourceEntry!==source.entry||prior?.importVerified!==true){
+     ||prior?.sourceEntry!==source.entry||prior?.sourceUrl!==source.sourceUrl
+     ||prior?.license!==(source.author?'CC-BY-3.0':'CC0-1.0')||prior?.importVerified!==true){
      const form=new FormData();
      form.append('request',JSON.stringify({
-       assetType:'Image',displayName:'Mana Forest CC0 '+role+' Action Icon',
-       description:'Original Drummyfish CC0 '+filename+' sha256 '+source.sha256,
+       assetType:'Image',displayName:'Mana Forest '+role+' Action Icon',
+       description:(source.author?'Game-icons.net '+source.author+' CC BY 3.0 ':'Drummyfish CC0 ')+filename+' sha256 '+source.sha256,
        creationContext:{creator}
      }));
      form.append('fileContent',new Blob([source.bytes],{type:'image/png'}),filename);
@@ -122,16 +135,22 @@ if(process.argv.includes('--magic-action-icons-only')){
        requests:[{assetId:Number(assetId),grantToDependencies:true}]})
    });
    if(grant.errors?.length)throw Error('FOREST_CC0_ICON_UNIVERSE_GRANT_FAILED:'+role);
+   if(source.author){
+     fs.mkdirSync('roblox-games/fantasy-survival/action-icons',{recursive:true});
+     fs.writeFileSync('roblox-games/fantasy-survival/action-icons/'+role+'.png',source.bytes);
+   }
    imported[role]={
      assetId,sourceEntry:source.entry,sourceSha256:source.sha256,
+     sourceUrl:source.sourceUrl,author:source.author,
+     licenseEvidence:source.author?'https://game-icons.net/1x1/'+source.author+'/'+filename.replace('.png','.html'):'https://opengameart.org/content/fantasy-rpg-icons-0',
      width:source.width,height:source.height,
-     license:'CC0-1.0',importVerified:true,runtimeVerified:false,
+     license:source.author?'CC-BY-3.0':'CC0-1.0',importVerified:true,runtimeVerified:false,
      authorizedUniverseIds:['10773436325']
    };
    console.log('FOREST_CC0_NATIVE_ACTION_ICON='+role+':'+assetId);
    registry.nativeActionIcons={
-     source:'DRUMMYFISH_CC0_FANTASY_RPG_ICONS',
-     license:'CC0-1.0',licenseEvidence:'https://opengameart.org/content/fantasy-rpg-icons-0',
+     source:'EXTERNAL_ACTION_ICONS_WITH_ORIGINAL_CC0',
+     license:'MIXED_CC_BY_3_0_AND_CC0',licenseEvidence:'https://game-icons.net/about.html',
      sourceArchive:archive.path,sourceArchiveSha256:archive.sha256,
      universeId:'10773436325',icons:{...stored,...imported},
      registrationVerified:false,importedRevision:process.env.GITHUB_SHA
@@ -143,80 +162,18 @@ if(process.argv.includes('--magic-action-icons-only')){
  registry.nativeActionIcons.registrationVerified=true;
  registry.rightActionIcons.runtimeReplacedBy='nativeActionIcons';
  fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
- // [원본 게임 UI] 동일 클라이언트 기존 책임 블록을 직접 바꾼다. 버튼 동작 ID는 변경하지 않는다.
+ // [원본 게임 UI] 등록 완료된 개별 이미지 ID만 바인딩한다.
  let client=fs.readFileSync(clientPath,'utf8');
- function replaceOne(from,to,label){
-   const count=client.split(from).length-1;
-   if(count!==1)throw Error('FOREST_REAL_ICON_UI_ANCHOR_MISMATCH:'+label+':'+count);
-   client=client.replace(from,to);
- }
- const entry=roles.map(([role])=>'  '+role+'="rbxassetid://'+imported[role].assetId+'"').join(',\n');
- replaceOne(
-   'local meadowRightActionAtlas="rbxassetid://81665484719308" -- RIGHT_ACTION_ICON_ATLAS',
-   'local meadowRealActionIcons={\n'+entry+'\n} -- CC0_REAL_ACTION_ICONS',
-   'atlas-source'
- );
- const buttonStart=client.indexOf('local function paintMeadowActionArt(button,role,tint)');
- const buttonEnd=client.indexOf('-- [시안 이름표]',buttonStart);
- if(buttonStart<0||buttonEnd<buttonStart)throw Error('FOREST_CC0_ACTION_RENDERER_NOT_FOUND');
- client=client.slice(0,buttonStart)+[
-   '-- [실제 CC0 액션 아이콘] 원본 등록 PNG만 표시한다. 스크린샷 크롭·그림 도형 금지.',
-   'local function applyMeadowRightActionImage(button,role)',
-   '  local imageId=meadowRealActionIcons[role]',
-   '  if not imageId then return false end',
-   '  local icon=Instance.new("ImageLabel")',
-   '  icon.Name="OriginalRightActionIcon"',
-   '  icon.BackgroundTransparency=1',
-   '  icon.Image=imageId',
-   '  icon.ScaleType=Enum.ScaleType.Fit',
-   '  icon.AnchorPoint=Vector2.new(.5,.5)',
-   '  icon.Position=UDim2.fromScale(.5,.45)',
-   '  icon.Size=UDim2.fromScale(.76,.76)',
-   '  icon.ZIndex=20',
-   '  icon.Parent=button',
-   '  return true',
-   'end',''
- ].join('\n')+client.slice(buttonEnd);
- replaceOne(
-   '  {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),0,2},\n'+
-   '  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,4},\n'+
-   '  {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),1,3},\n'+
-   '  {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,nil},',
-   '  {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),nil,"fist"},\n'+
-   '  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,"dodge"},\n'+
-   '  {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),nil,"guard"},\n'+
-   '  {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,"potion"},',
-   'combat-roles'
- );
- replaceOne(
-   '  if index==4 then\n    paintMeadowActionArt(button,"POTION",Color3.fromRGB(221,42,57))\n  end\n',
-   '',
-   'no-drawn-potion'
- );
- replaceOne(
-   '  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"",nil,"HAND",6},\n'+
-   '  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"",nil,"SPRINT",5},\n'+
-   '  {"MEADOW_INVENTORY","가방",Color3.fromRGB(219,184,124),"",4,nil,7},',
-   '  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"",nil,nil,"interact"},\n'+
-   '  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"",nil,nil,"sprint"},\n'+
-   '  {"MEADOW_INVENTORY","가방",Color3.fromRGB(219,184,124),"",nil,nil,"bag"},',
-   'utility-roles'
- );
- replaceOne(
-   '  if not applyMeadowRightActionImage(button,info[7]) and info[6] then\n'+
-   '    paintMeadowActionArt(button,info[6],Color3.fromRGB(242,243,237))\n'+
-   '  end',
-   '  applyMeadowRightActionImage(button,info[7])',
-   'no-drawn-utilities'
- );
- replaceOne('  nameplate.Visible=meadowRightActionAtlas=="" or skill[5]==nil',
-   '  nameplate.Visible=true','show-combat-labels');
- replaceOne('  label.Visible=index==2 or meadowRightActionAtlas==""',
-   '  label.Visible=true','show-utility-labels');
- if(/meadowRightActionAtlas|paintMeadowActionArt|glyph.Text=|ImageRectOffset=Vector2.new\(\(slot-1\)\*40,0\)/.test(client))
+ const iconStart=client.indexOf('-- [오른쪽 아이콘]');
+ const iconEnd=client.indexOf('local reducedEffects=',iconStart);
+ if(iconStart<0||iconEnd<iconStart)throw Error('FOREST_EXTERNAL_ICON_BINDING_ANCHOR_MISSING');
+ const iconEntries=roles.map(([role])=>'  '+role+'="rbxassetid://'+imported[role].assetId+'"').join(',\n');
+ client=client.slice(0,iconStart)+'-- [오른쪽 아이콘] 외부 액션 5종 / 기존 물약·가방 2종\n'
+   +'local meadowRealActionIcons={\n'+iconEntries+'\n} -- CC0_REAL_ACTION_ICONS\n'+client.slice(iconEnd);
+ if(/meadowRightActionAtlas|meadowRightActionRects|paintMeadowActionArt/.test(client))
    throw Error('FOREST_SCREENSHOT_ICON_FALLBACK_STILL_PRESENT');
  fs.writeFileSync(clientPath,client);
- console.log('FOREST_CC0_NATIVE_7_ICON_BINDING_PREPARED=YES');
+ console.log('FOREST_EXTERNAL_ACTION_ICONS_READY=YES');
  process.exit(0);
 }
 
