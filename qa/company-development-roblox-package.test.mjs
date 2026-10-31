@@ -1812,10 +1812,6 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/local landing=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.56\)\/\.25,0,1\)\)/);
   assert.match(client,/local leadingKnee=\.64\*lift\+\.25\*landing/);
   assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(\.045\*stance/);
-  assert.match(dodge,/local hopHeight=\(not overhead and not elevatedWall\) and \.62 or 0/);
-  assert.match(dodge,/character:PivotTo\(dodgeFacing\)/);
-  assert.match(dodge,/local hop=hopHeight\*math\.sin\(math\.pi\*t\)/);
-  assert.match(dodge,/character:PivotTo\(dodgeFacing\+dodgeOffset\*eased\+Vector3\.new\(0,hop,0\)\)/);
   assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-movementStarted\)\/\.26,0,1\)/);
   // 복싱 방어: 한팔은 관자놀이, 다른팔은 어깨 아래, 턱 숙임.
   assert.match(client,/local crouch=math\.clamp\(phase\/\.11,0,1\)/);
@@ -1828,6 +1824,10 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.doesNotMatch(client,/local ease=math\.sin\(math\.pi\*phase\)/);
   // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
+  assert.match(dodge,/local hopHeight=\(not overhead and not elevatedWall\) and \.62 or 0/);
+  assert.match(dodge,/character:PivotTo\(dodgeFacing\)/);
+  assert.match(dodge,/local hop=hopHeight\*math\.sin\(math\.pi\*t\)/);
+  assert.match(dodge,/character:PivotTo\(dodgeFacing\+dodgeOffset\*eased\+Vector3\.new\(0,hop,0\)\)/);
   assert.match(dodge,/workspace:Raycast\(start,side\*7,ray\)/);
   assert.match(dodge,/if distance<2 then return false end/);
   assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
