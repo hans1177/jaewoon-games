@@ -1539,7 +1539,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/or 116\)\*scale/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapWidth,mapDiameter\+40\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,v.X>v.Y and 12 or 38\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight\+math.floor\(leftInset.X\),meadowHealthTrack.Position.Y.Offset\)/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
   assert.match(client,/south.Text="S"/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
@@ -1583,7 +1583,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local mapDiameter=compactLandscape and \(v.Y<350 and 80 or 88\) or small and 96 or math.floor\(math.clamp\(/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(mapRight,v.X>v.Y and 12 or 38)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(mapRight+math.floor(leftInset.X),meadowHealthTrack.Position.Y.Offset)'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
@@ -2190,11 +2190,11 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/meadowSprintAuto and ready and remains<=\.05/);
   assert.match(client,/human\.MoveDirection\.Magnitude>\.1/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,v.X>v.Y and 12 or 38\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight\+math.floor\(leftInset.X\),meadowHealthTrack.Position.Y.Offset\)/);
   assert.match(client,/local dodgeCenter=dockRight-math.floor\(235\*skillScale\)\+235\*meadowTopPositions\[2\]\[1\]\*skillScale/);
   assert.match(client,/local mapRight=math.clamp\(math.floor\(dodgeCenter\+mapWidth\*\.5\+\.5\),mapWidth\+12,v.X-12\)/);
   assert.match(client,/alignMeadowRadar=layoutMeadowRadar/);
-  assert.match(client,/local meadowTopDefaults=\{\{\.200,\.300\}/);
+  assert.match(client,/local meadowTopDefaults=\{\{\.160,\.540\},\{\.500,\.120\},\{\.840,\.540\},\{\.500,\.395\}\}/);
   assert.match(client,/local activeDrag=nil/);
   assert.match(client,/UserInputService\.InputChanged:Connect\(function\(input\)/);
   assert.match(client,/meadowPages\[4\]\.ScrollingEnabled=false/);
@@ -2212,7 +2212,7 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/if free then p\[1\],p\[2\]=x,y;refreshTopEditor\(\) end/);
   assert.ok(server.includes('["meadow-unarmed-rush"]=attackEnemy'),'right attack must support existing equipped weapon');
   // Default centers are separated. An old invalid saved layout that stacks buttons must be rejected.
-  const base=[[.200,.300],[.500,.300],[.800,.300],[.500,.550]];
+  const base=[[.160,.540],[.500,.120],[.840,.540],[.500,.395]];
   const nonOverlapping=layout=>layout.every(([x,y],i)=>layout.slice(i+1).every(([u,v],other)=>{
     const j=i+1+other;
     const distance2=((x-u)*235)**2+((y-v)*260)**2;
@@ -2220,9 +2220,10 @@ test('Forest four configurable top buttons align minimap and preserve lower util
     return distance2>=minimum**2;
   }));
   assert.ok(nonOverlapping(base),'default four-button layout must stay individually clickable');
-  assert.equal(base[0][1],base[1][1],'dodge must share height with left attack');
-  assert.equal(base[1][1],base[2][1],'dodge must share height with right guard');
-  assert.equal(base[1][0],base[3][0],'potion must remain below the center dodge');
+  assert.equal(base[0][1],base[2][1],'left attack and right guard must share the lower triangle row');
+  assert.equal(base[1][0],base[3][0],'dodge and potion must stay on the same center axis');
+  assert.ok(base[1][1]<base[3][1]&&base[3][1]<base[0][1],
+    'dodge must lead the upper vertex and potion must remain between upper and lower actions');
   assert.match(client,/if value=="235,275,500,120,800,275,500,510" then/);
   assert.ok(!nonOverlapping([[.5,.2],[.5,.2],[.8,.3],[.5,.51]]),
     'a saved overlap that would redirect clicks to dodge must be rejected');
@@ -2245,7 +2246,7 @@ test('Forest minimap south aligns with existing circular radar and action is ser
   assert.match(client,/radarFieldCorner\.CornerRadius=UDim\.new\(1,0\)/);
   assert.match(client,/south\.Position=UDim2\.new\(\.5,0,1,-2\)/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,v.X>v.Y and 12 or 38\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight\+math.floor\(leftInset.X\),meadowHealthTrack.Position.Y.Offset\)/);
   assert.match(client,/if alignMeadowRadar then alignMeadowRadar\(\) end/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=function\(player\)/);
   assert.match(server,/\["skill-meadow-guard"\]=meadowGuard/);
