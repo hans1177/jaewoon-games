@@ -901,7 +901,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             let material=materials.get(original.uuid);
             if(!material){
               material=original.clone();
-              if(material.color)material.color.lerp(tint,speciesId==='crystalbiter'?.57:(e.type.crystalZone?.48:.28));
+              if(material.color){
+                  material.color.lerp(tint,.22);
+                  if(speciesId==='crystalbiter'||e.type.crystalZone)material.color.lerp(tint,speciesId==='crystalbiter'?.45:.34);
+                }
                 if(speciesId==='crystalbiter'&&'emissive' in material){material.emissive=new THREE.Color(0x40135b);material.emissiveIntensity=.32;}
               if(child.geometry?.getAttribute('uv')&&'normalMap' in material){
                 const finish=(kind==='monster-41.obj'||speciesId==='crystaldeer')?'lego':
