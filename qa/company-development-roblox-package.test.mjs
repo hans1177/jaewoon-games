@@ -1281,24 +1281,30 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   }
   assert.ok([true,false].includes(assets.villagePrefabs.registrationVerified));
   assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
-  // [마력숲 대형 중세 건축] 벽 간격과 각 모듈 높이를 같은 배율로 확대해야 한다.
-  const villageScale=Number(server.match(/local villageArchitectureScale=([\d.]+)/)?.[1]);
+  // [마력숲 대형 중세 건축] 2배 이상 배율을 유지하고 오리지널 6동을 포함한 16동의 실루엣을 검증한다.
+  const villageScale=Number(server.match(/local villageArchitectureScale=([\\d.]+)/)?.[1]);
   assert.ok(villageScale>=2,'building height and footprint must be at least twice the original');
-  // [집 형태] 동일 비율 원본 조립을 유지하면서 기능별 크기와 지붕 높이를 달리한다.
-  assert.match(server,/local houseScale=villageArchitectureScale\*house.scale/);
-  assert.match(server,/local rotated=Vector2.new\(piece.x\*houseScale,piece.z\*houseScale\)/);
-  assert.match(server,/piece.height\*houseScale\*roofPitch,piece.lift\*houseScale/);
-  assert.match(server,/local oppositeZ=-house.doorZ/);
+  assert.match(server,/local houseScale=villageArchitectureScale\\*house.scale/);
+  assert.match(server,/local x=house.x\\+piece.x\\*houseScale\\*math.cos\\(rot\\)-piece.z\\*houseScale\\*math.sin\\(rot\\)/);
+  assert.match(server,/piece.height\\*houseScale\\*roofPitch,piece.lift\\*houseScale/);
+  assert.match(server,/local roofRows=rowCount==3 and \\{-5\\.4,0,5\\.4\\} or \\{-2\\.7,2\\.7\\}/);
+  assert.match(server,/local endZ=rowCount\\*2\\.7/);
   assert.match(server,/for porchIndex=1,house.porch do/);
-  const houseRows=[...server.matchAll(/name="Village_(?:HealerHouse|Guesthouse|Workshop|WardenHall|ResidentHouseWest|ResidentHouseEast)"[\s\S]{0,240}?scale=(\.[0-9]+|[0-9.]+)/g)];
-  assert.equal(houseRows.length,6,'all six houses need their own structural scale');
-  assert.equal(new Set(houseRows.map(row=>Number(row[1]))).size,6,'avoid six identical house silhouettes');
+  const villageHouses=server.slice(server.indexOf('local houses={'),server.indexOf('for houseIndex,house in ipairs(houses)'));
+  const houseSpecs=[...villageHouses.matchAll(/name="Village_([\\w]+)"/g)].map(row=>row[1]);
+  assert.equal(houseSpecs.length,16,'expanded village must contain sixteen real CC0 modular buildings');
+  assert.equal(new Set(houseSpecs).size,16,'each house needs a unique scene identity');
+  for(const name of ['HealerHouse','Guesthouse','Workshop','WardenHall','ResidentHouseWest','ResidentHouseEast'])
+    assert.ok(houseSpecs.includes(name),'original village building must remain: '+name);
+  assert.ok((villageHouses.match(/length=3/g)||[]).length>=5,'inns, farms, and workshops use longer footprints');
+  assert.ok((villageHouses.match(/storeys=2/g)||[]).length>=2,'major buildings must have genuine second-story wall layouts');
+  assert.ok((villageHouses.match(/roofPitch=/g)||[]).length===16,'every building needs an authored roof silhouette');
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
   // [중세 마을] 과거 진흙 언덕을 평평한 길로 바꾸고 원본 조립 모듈로 여섯 주거·생활 건물을 완성한다.
   assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(path\[1\],1\.5,path\[2\]\)/);
   assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
-  assert.match(server,/local expectedVillageBuildings=6/);
+  assert.match(server,/local expectedVillageBuildings=16/);
   assert.match(server,/villageBuildings==expectedVillageBuildings/);
   assert.match(server,/Village_ResidentHouseEast/);
   assert.match(server,/MeadowVillageHouseSign/);
