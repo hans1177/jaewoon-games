@@ -662,7 +662,8 @@ test('managed foundation in the middle must not hide real gameplay or generic sk
   const onlyFoundation=evaluateRobloxGameplayProductReadiness({...args,server:foundation});
   assert.equal(onlyFoundation.implementedCapabilities.WORLD,false);
   assert.equal(onlyFoundation.implementedCapabilities.CORE_GAMEPLAY_STATE,false);
-  const evolvedSource=evaluateRobloxGameplayProductReadiness({...args,server:source});
+  // 원본 레거시 핸들러와 실제 생존 동작의 결합에서도 골격 판정이 실제 기능을 감추면 안 된다.
+  const evolvedSource=evaluateRobloxGameplayProductReadiness({...args,server:foundationSource+'\n'+source});
   // This source now includes real named gameplay implementations alongside legacy handlers.
   // Never declare an evolved implementation a generic skeleton solely due to stale helpers.
   assert.ok(evolvedSource.placeholderDebt.genericScopeHandlerCount>=3);
