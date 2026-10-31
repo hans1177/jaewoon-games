@@ -174,13 +174,13 @@ test('existing Roblox BUILD_UP feeds source-only whole asset and action plan to 
 }));
 
 
-test('implemented gameplay visuals: linked rig attacks, actor animation phases and server-event-only RPG combos',()=>{
+test('implemented gameplay visuals: linked rig attacks, actor animation phases and server-authorized forest combos',()=>{
   const read=file=>fs.readFileSync(file,'utf8');
   const animal=read('roblox-games/cozy-island/shared/WildlifeAnimator.luau');
   const wildlifeServer=read('roblox-games/cozy-island/shared/SurvivalWildlife.luau');
   const cozyClient=read('roblox-games/cozy-island/client/Game.client.luau');
   const battle=read('roblox-games/cozy-island/server/BattleVisual.luau');
-  const rpg=read('roblox-games/simple-rpg/client/Game.client.luau');
+  const forest=read('roblox-games/fantasy-survival/client/Game.client.luau');
   assert.match(animal,/actingSpeed \*= 0\.14/);
   assert.match(animal,/lastServerState/);
   assert.match(animal,/WildlifeRenderedMotionState/);
@@ -198,8 +198,9 @@ test('implemented gameplay visuals: linked rig attacks, actor animation phases a
   assert.match(battle,/CozyBattleVisualOnly/);
   assert.match(battle,/OwnsDamageAuthority",false/);
   assert.match(battle,/BattleVisual\.finish\(player,won\)/);
-  assert.match(rpg,/motion\.actions\[nextStep\]/);
-  assert.match(rpg,/activeMotionCharacter ~= character or not activeMotionController/);
-  assert.match(rpg,/elseif kind == "CIV_HIT"/);
-  assert.doesNotMatch(rpg,/pcall\(commonMotion\.CreateCombatCombo, motion\.profile, \{motion\.action\}\)/);
+  // [활성 게임] 삭제된 RPG 대신 실제 마력숲 R15 서버 승인 기술과 시각·데미지 분리를 검증한다.
+  assert.match(forest,/playNativeCombatMotion=function\(approvedScope,approvedEvent,serverApproved\)/);
+  assert.match(forest,/GetAttributeChangedSignal\("ApprovedCombatMotion"\)/);
+  assert.match(forest,/local constraint=joint:IsA\("AnimationConstraint"\)/);
+  assert.doesNotMatch(forest,/Humanoid:TakeDamage\(/);
 });
