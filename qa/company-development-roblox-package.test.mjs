@@ -2186,3 +2186,25 @@ test('Forest minimap south aligns with original dodge icon after responsive layo
   assert.match(client,/meadowRadar\.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
   assert.match(client,/if alignMeadowRadar then alignMeadowRadar\(\) end/);
 });
+
+
+
+test('Forest potion icon import uses verified downloaded CC0 archive and real Roblox asset permissions',()=>{
+  const script=fs.readFileSync('tools/horror-combat-assets.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  const source=registry.interfaceIcons.sourceArchives.find(x=>x.path.endsWith('fantasy-rpg-icons.zip'));
+  assert.ok(source);
+  assert.match(script,/if\(process\.argv\.includes\('--magic-potion-only'\)\)/);
+  assert.match(script,/FOREST_POTION_CC0_ARCHIVE_HASH_MISMATCH/);
+  assert.match(script,/execFileSync\('unzip',\['-p',archive\.path,entry\]/);
+  assert.match(script,/sourceSha256:digest/);
+  assert.match(script,/assetType:'Image',displayName:'Mana Forest CC0 Red Healing Potion Icon'/);
+  assert.match(script,/grantToDependencies:true/);
+  assert.match(script,/FOREST_CC0_POTION_ICON_IMPORTED/);
+  assert.match(workflow,/node tools\/horror-combat-assets\.mjs --magic-potion-only/);
+  assert.match(workflow,/Open exact combat asset binding PR/);
+  assert.match(workflow,/roblox-games\/fantasy-survival\/CC0-ASSET-REGISTRY\.json/);
+  assert.equal(registry.interfaceIcons.license,'CC0-1.0');
+  assert.equal(registry.interfaceIcons.universeId,'10773436325');
+});
