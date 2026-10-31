@@ -806,7 +806,7 @@ local function createMeadowVillage()
       {"villageStall",-16,-119,7.5,0},{"villageStall",16,-119,7.5,math.pi},
       {"villageStall",-16,-155,7.3,0},{"villageStall",16,-155,7.3,math.pi},
       {"villageStall",-16,-72,7.2,0},{"villageStall",16,-72,7.2,math.pi},
-      {"villageFountain",0,-146,5.8,0},
+      {"villageFountain",0,-146,2.2,0},
       {"villageCart",-18,-174,6.2,math.pi*.1},{"villageCart",19,-171,6.2,-math.pi*.15},
       {"villageCart",-62,-124,6.2,math.pi*.4},{"villageCart",62,-163,6.2,-math.pi*.35},
       {"villageLantern",-12,-84,5,0},{"villageLantern",12,-84,5,0},
@@ -824,9 +824,13 @@ local function createMeadowVillage()
       {"villageFence",-46,-205,4.6,0},{"villageFence",46,-205,4.6,0},
     }
     for index,row in ipairs(furnishings) do
-      local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4]*1.3)
+      -- [작은 실제 우물] 분수 원본의 넓은 테두리는 높이와 지름을 함께 축소한다.
+      -- 다른 가판대·수레·등불·울타리의 기존 크기는 변경하지 않는다.
+      local propHeight=row[1]=="villageFountain" and row[4] or row[4]*1.3
+      local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),propHeight)
       if model then
-        model.Name="Meadow_Village_"..row[1].."_"..index
+        model.Name=row[1]=="villageFountain" and "Meadow_Village_Well"
+          or "Meadow_Village_"..row[1].."_"..index
         model:SetAttribute("MeadowVillageScenery",true)
         model:PivotTo(model:GetPivot()*CFrame.Angles(0,row[5],0))
         if row[1]=="villageFence" or row[1]=="villageCart" then
@@ -877,26 +881,97 @@ local function createMeadowVillage()
   -- [유적 제거] 예전 12개 파손 석벽을 집 옆에 세워 폐허로 보이던 배치를 제거한다.
   -- 돌벽을 집으로 위장하지 않으며 실제 마을 프리팹의 울타리·건물만 사용한다.
   local wallCount=0
-  -- 기존 촌장·의뢰·저장 키와 같은 좌표에서 기존 승인된 마을 가판대로 의뢰 접수를 표시한다.
-  local board=worldAsset("villageStall",Vector3.new(0,3,-101),6.6)
+  -- [마을 의뢰 게시판] 식탁처럼 보이던 가판대 대신 승인된 CC0 목재 벽판을 세워
+  -- 실제 공고가 붙은 세로형 게시판으로 구성한다. 신규 기본 Part/임시 메시를 생성하지 않는다.
+  -- 원래 접수 좌표·NPC 의뢰·저장·상호작용은 그대로 사용한다.
+  local board=worldAsset("villageWall",Vector3.new(0,3,-101),5.2)
   if board then
     board.Name="Meadow_Village_ContractBoard"
     board:SetAttribute("MeadowVillageScenery",true)
-    villagePrompt(board,"초원 마을 의뢰 접수소","의뢰 살펴보기",villageBoardDialogue)
+    board:PivotTo(board:GetPivot()*CFrame.Angles(0,math.pi*.5,0))
     local mesh=board:FindFirstChildWhichIsA("MeshPart",true)
     if mesh then
+      mesh.Color=Color3.fromRGB(113,80,54)
+      mesh.Material=Enum.Material.Wood
+      mesh.CanCollide=true
+    end
+
+    -- [게시판 지붕] 기존 Kenney 박공지붕 끝판을 판자 위에 얹는다.
+    local canopy=worldAsset("villageRoofEnd",Vector3.new(0,3,-101),2.6,4.35)
+    if canopy then
+      canopy.Name="Meadow_Village_ContractBoardRoof"
+      canopy:SetAttribute("MeadowVillageScenery",true)
+      canopy:PivotTo(canopy:GetPivot()*CFrame.Angles(0,math.pi*.5,0))
+      for _,roofMesh in ipairs(canopy:GetDescendants()) do
+        if roofMesh:IsA("MeshPart") then
+          roofMesh.Color=Color3.fromRGB(104,79,62)
+          roofMesh.Material=Enum.Material.Slate
+          roofMesh.CanCollide=false
+        end
+      end
+    end
+
+    villagePrompt(board,"초원 마을 의뢰 접수소","의뢰 살펴보기",villageBoardDialogue)
+    if mesh then
+      -- [의뢰 공고] 목재 게시판 앞의 실제 의뢰서 세 장. 게임 경제·퀘스트는 그대로.
+      -- 3D 구조물은 CC0 원본만 사용하고 종이는 화면 UI로 표시한다.
+      local notices=Instance.new("BillboardGui")
+      notices.Name="MeadowVillageNoticePapers"
+      notices.Adornee=mesh
+      notices.Size=UDim2.fromOffset(236,132)
+      notices.StudsOffsetWorldSpace=Vector3.new(0,.45,0)
+      notices.MaxDistance=34
+      notices.AlwaysOnTop=false
+      notices.Parent=mesh
+      local backing=Instance.new("Frame")
+      backing.Name="WoodenNoticeSurface"
+      backing.Size=UDim2.fromScale(1,1)
+      backing.BorderSizePixel=0
+      backing.BackgroundColor3=Color3.fromRGB(75,52,34)
+      backing.Parent=notices
+      local heading=Instance.new("TextLabel")
+      heading.Name="NoticeHeading"
+      heading.Size=UDim2.new(1,0,.26,0)
+      heading.Position=UDim2.fromScale(0,.02)
+      heading.BackgroundTransparency=1
+      heading.Text="마을 의뢰 공고"
+      heading.TextColor3=Color3.fromRGB(240,209,151)
+      heading.TextStrokeTransparency=.55
+      heading.Font=Enum.Font.GothamBold
+      heading.TextSize=18
+      heading.Parent=backing
+      for index,notice in ipairs({"실종된 약초","우물의 기이한 소리","길가의 부서진 수레"}) do
+        local paper=Instance.new("Frame")
+        paper.Name="ContractNotice_"..index
+        paper.Size=UDim2.fromScale(.28,.59)
+        paper.Position=UDim2.fromScale(.04+(index-1)*.32,.34)
+        paper.Rotation=(index-2)*3
+        paper.BorderSizePixel=0
+        paper.BackgroundColor3=Color3.fromRGB(229,209,166)
+        paper.Parent=backing
+        local note=Instance.new("TextLabel")
+        note.Size=UDim2.new(1,-8,1,-8)
+        note.Position=UDim2.fromOffset(4,4)
+        note.BackgroundTransparency=1
+        note.Text=notice
+        note.TextWrapped=true
+        note.TextColor3=Color3.fromRGB(73,54,36)
+        note.Font=Enum.Font.GothamBold
+        note.TextSize=12
+        note.Parent=paper
+      end
       local sign=Instance.new("BillboardGui")
       sign.Name="MeadowVillageBoardSign"
       sign.Adornee=mesh
-      sign.Size=UDim2.fromOffset(180,32)
-      sign.StudsOffsetWorldSpace=Vector3.new(0,4,0)
-      sign.MaxDistance=55
+      sign.Size=UDim2.fromOffset(172,28)
+      sign.StudsOffsetWorldSpace=Vector3.new(0,3.65,0)
+      sign.MaxDistance=46
       sign.Parent=mesh
       local title=Instance.new("TextLabel")
       title.Size=UDim2.fromScale(1,1)
       title.BackgroundTransparency=1
       title.Font=Enum.Font.GothamBold
-      title.TextSize=16
+      title.TextSize=14
       title.TextStrokeTransparency=.28
       title.TextColor3=Color3.fromRGB(251,222,164)
       title.Text="초원 마을 의뢰 접수소"
