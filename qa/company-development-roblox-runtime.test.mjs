@@ -399,26 +399,23 @@ test('only source-location header variants of first-party Roblox modules are equ
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
-test('simple RPG only plays game-specific common weapon motion from actual server-confirmed combat hits',()=>{
-  const client=fs.readFileSync('roblox-games/simple-rpg/client/Game.client.luau','utf8');
-  const server=fs.readFileSync('roblox-games/simple-rpg/server/Game.server.luau','utf8');
-  const project=JSON.parse(fs.readFileSync('roblox-games/simple-rpg/default.project.json','utf8'));
-  const damageAt=server.indexOf('chosen.Humanoid:TakeDamage(damage)');
-  const confirmedAt=server.indexOf('remote:FireClient(player, "CIV_HIT"');
-  assert.ok(damageAt>=0 && confirmedAt>damageAt,'only server-confirmed damage may trigger combat motion');
+test('fantasy survival native combat follows server-confirmed actions with existing R15 pose authority',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const project=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/default.project.json','utf8'));
   assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
     '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
-  for(const signal of [
-    'commonMotion.CreateCombatCombo','commonMotion.MapCombatPoseToR15',
-    'commonMotion.BindJointPose','RunService.PreSimulation:Connect',
-    'humanoid.RigType ~= Enum.HumanoidRigType.R15'
-  ])assert.ok(client.includes(signal),signal);
-  for(const profile of ['UNARMED','SPEAR','SWORD','GREATSWORD']){
-    assert.ok(client.includes('profile = "'+profile+'"'),profile);
-  }
-  const hook=client.indexOf('elseif kind == "CIV_HIT" and typeof(payload) == "table"');
-  assert.ok(hook>=0);
-  assert.ok(client.slice(hook,hook+160).includes('playApprovedRpgCombatMotion()'));
+  assert.ok(server.includes('player:SetAttribute("ApprovedCombatMotion",approved)'));
+  assert.ok(server.includes('if not combatAction or combatHit==true then'));
+  assert.ok(client.includes('player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()'));
+  assert.ok(client.includes('playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)'));
+  assert.ok(client.includes('authorizedCombatScopes[approvedScope]'));
+  assert.ok(client.includes('combatMotionSource.MapCombatPoseToR15'));
+  assert.ok(client.includes('combatMotionSource.BindJointPose'));
+  assert.ok(client.includes('RunService.PreSimulation:Connect(function(dt)'));
+  assert.ok(client.includes('profile=="UNARMED"'));
+  assert.ok(client.includes('swordProfile=profile=="SWORD"'));
+  assert.ok(client.includes('humanoid.RigType==Enum.HumanoidRigType.R6'));
   assert.equal(client.includes('remote:FireServer("CivNativeCombatMotion'),false);
 });
 
