@@ -1284,8 +1284,15 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   // [마력숲 대형 중세 건축] 벽 간격과 각 모듈 높이를 같은 배율로 확대해야 한다.
   const villageScale=Number(server.match(/local villageArchitectureScale=([\d.]+)/)?.[1]);
   assert.ok(villageScale>=2,'building height and footprint must be at least twice the original');
-  assert.match(server,/local rotated=Vector2.new\(piece.x\*villageArchitectureScale,piece.z\*villageArchitectureScale\)/);
-  assert.match(server,/worldAsset\(piece.asset,Vector3.new\(x,3,z\),\s*piece.height\*villageArchitectureScale,piece.lift\*villageArchitectureScale\)/);
+  // [집 형태] 동일 비율 원본 조립을 유지하면서 기능별 크기와 지붕 높이를 달리한다.
+  assert.match(server,/local houseScale=villageArchitectureScale\*house.scale/);
+  assert.match(server,/local rotated=Vector2.new\(piece.x\*houseScale,piece.z\*houseScale\)/);
+  assert.match(server,/piece.height\*houseScale\*roofPitch,piece.lift\*houseScale/);
+  assert.match(server,/local oppositeZ=-house.doorZ/);
+  assert.match(server,/for porchIndex=1,house.porch do/);
+  const houseRows=[...server.matchAll(/name="Village_(?:HealerHouse|Guesthouse|Workshop|WardenHall|ResidentHouseWest|ResidentHouseEast)"[\s\S]{0,240}?scale=(\.[0-9]+|[0-9.]+)/g)];
+  assert.equal(houseRows.length,6,'all six houses need their own structural scale');
+  assert.equal(new Set(houseRows.map(row=>Number(row[1]))).size,6,'avoid six identical house silhouettes');
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
   // [중세 마을] 과거 진흙 언덕을 평평한 길로 바꾸고 원본 조립 모듈로 여섯 주거·생활 건물을 완성한다.
@@ -1322,6 +1329,19 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/paper.Name="ContractNotice_"\.\.index/);
   assert.match(server,/villagePrompt\(board,"초원 마을 의뢰 접수소","의뢰 살펴보기",villageBoardDialogue\)/);
   assert.doesNotMatch(server,/local board=worldAsset\("villageStall"/);
+  // [시장 축소] 대형 식탁 6개로 되돌리지 않고 2개의 소형 승인 가판대만 남긴다.
+  const stalls=[...server.matchAll(/\{"villageStall",[^}]+\}/g)].map(item=>item[0]);
+  assert.equal(stalls.length,2);
+  assert.ok(stalls.every(row=>Number(row.split(',')[3])<=3.5),'market stall height must stay human-scaled');
+  // [모바일 게시판] 근접 입력/기존 서버 의뢰 대화/화면 탭을 모두 연결한다.
+  assert.match(server,/mesh.CanQuery=true/);
+  assert.match(server,/prompt.HoldDuration=0/);
+  assert.match(server,/prompt.ClickablePrompt=true/);
+  assert.match(server,/click=Instance.new\("ClickDetector"\)/);
+  assert.match(server,/click.MouseClick:Connect\(function\(player\)/);
+  assert.match(server,/if villageNear\(player,mesh.Position,18\) then/);
+  assert.match(server,/villageBoardDialogue\(player,mesh.Position\)/);
+  assert.match(server,/board:SetAttribute\("MeadowVillageClickable",true\)/);
   assert.match(server,/MeadowVillageInteraction/);
   assert.match(server,/for contractIndex,contract in ipairs\(Config.VillageContracts\) do/);
   assert.match(server,/for sceneIndex,site in ipairs\(contract.Sites\) do/);
