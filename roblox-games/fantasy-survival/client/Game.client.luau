@@ -4151,30 +4151,38 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       -- [원본 애니메이션] Idle/Walk/Run/Attack 클립은 실제 메쉬의 Animator가 구동한다.
       -- 질주 클립이 없는 사슴은 걷기 클립을 빠르게 재생한다. 합성 관절은 동시에 구동하지 않는다.
       if row.nativeTracks then
-        local track=row.nativeTracks[mode] or
-          (row.species=="bat" and row.nativeTracks.FLY)
-          or (mode=="RUN" and row.nativeTracks.WALK)
-          or (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT") and row.nativeTracks.IDLE
-          or row.nativeTracks.IDLE
-        if track and track~=row.playingTrack then
-          if row.playingTrack then row.playingTrack:Stop(.16) end
-          track:Play(.16,1,mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
-          row.playingTrack=track
-        end
-        if track and track.IsPlaying then
-          track:AdjustSpeed(mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
-        end
-        -- [늑대 원본 애니메이션 복구] 비어 있거나 로딩할 수 없는 트랙으로 관절 연출이 멈추지 않게 한다.
-        -- 기존 원본 네 발 스킨 관절을 보유한 경우에만 실패한 트랙에서 공용 4족 모션으로 전환한다.
-        local missing=not track or not track.IsPlaying or track.Length<=0
-        if row.species=="wolf" and row.controller and missing
-          and os.clock()-row.originalTrackWaitStartedAt>=2.5 then
-          for _,original in pairs(row.nativeTracks) do original:Stop(.12) end
-          row.nativeTracks=nil
-          row.playingTrack=nil
-          model:SetAttribute("NativeCreatureRigMode","ORIGINAL_JOINT_RIG")
+        -- [늑대 동작 복구] 원본 걷기/달리기 클립은 유지하고,
+        -- 공격 예고·피격·회복 또는 공격 클립이 없는 경우 기존 원본 뼈의 절차 모션을 재사용한다.
+        local wolfAction=row.species=="wolf" and row.controller
+          and (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT"
+            or (mode=="ATTACK" and not row.nativeTracks.ATTACK))
+        if wolfAction then
+          if row.playingTrack then row.playingTrack:Stop(.1);row.playingTrack=nil end
         else
-          continue
+          local track=row.nativeTracks[mode] or
+            (row.species=="bat" and row.nativeTracks.FLY)
+            or (mode=="RUN" and row.nativeTracks.WALK)
+            or (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT") and row.nativeTracks.IDLE
+            or row.nativeTracks.IDLE
+          if track and track~=row.playingTrack then
+            if row.playingTrack then row.playingTrack:Stop(.16) end
+            track:Play(.16,1,mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
+            row.playingTrack=track
+          end
+          if track and track.IsPlaying then
+            track:AdjustSpeed(mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
+          end
+          -- 원본 클립이 실행 불가/길이 0이면 기존 4족 본 모션으로 전환한다.
+          local missing=not track or not track.IsPlaying or track.Length<=0
+          if row.species=="wolf" and row.controller and missing
+            and os.clock()-row.originalTrackWaitStartedAt>=2.5 then
+            for _,original in pairs(row.nativeTracks) do original:Stop(.12) end
+            row.nativeTracks=nil
+            row.playingTrack=nil
+            model:SetAttribute("NativeCreatureRigMode","ORIGINAL_JOINT_RIG")
+          else
+            continue
+          end
         end
       end
       -- 서버 적중시각으로 공격 충격과 복귀만 연출한다. 피해 판정은 서버가 유지한다.
