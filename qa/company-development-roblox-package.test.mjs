@@ -1825,11 +1825,11 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   // 복싱 방어: 한팔은 관자놀이, 다른팔은 어깨 아래, 턱 숙임.
   assert.match(client,/local crouch=math\.clamp\(phase\/\.11,0,1\)/);
   assert.match(client,/local elbow=math\.clamp\(\(phase-\.018\)\/\.105,0,1\)/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.095\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.69\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-\.39\*guard/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.13\*elbow/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.17\*elbow/);
+  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.14\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.01\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-\.73\*guard/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.46\*elbow/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.37\*elbow/);
   assert.doesNotMatch(client,/local ease=math\.sin\(math\.pi\*phase\)/);
   // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
