@@ -7778,7 +7778,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-31T06:59:58.095Z",
+      "updatedAt": "2026-10-31T07:05:39.723Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9154,7 +9154,7 @@
             "id": "prompt-GatherPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": true
+            "ok": false
           },
           {
             "id": "prompt-GatherPrompt",
@@ -9629,7 +9629,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2987.4609375,
+              "memoryMb": 3193.421875,
               "descendantCount": 4234
             },
             "multiplayer": null,
@@ -9675,7 +9675,8 @@
           "scenario-adaptive-ftue-clarity",
           "scenario-adaptive-ui-commercial-quality",
           "scenario-adaptive-ui-blocking-overlay",
-          "scenario-adaptive-world-safety"
+          "scenario-adaptive-world-safety",
+          "scenario-adaptive-map-route-coverage"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -9868,8 +9869,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-31T06:59:58.095Z",
-        "workflowRunId": 41177994166,
+        "testedAt": "2026-10-31T07:05:39.723Z",
+        "workflowRunId": 41178043898,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -9913,12 +9914,16 @@
         "artifactIdentity": "sha256:0599dce9563e6d01455c8435119a45c784741aa0fc255796882fd065b3508683",
         "artifactRunId": 41177763271,
         "candidateVersionNumber": 73,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "COMPLETED_PASS",
         "queuedAt": "2026-10-31T06:49:35.224Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "completedAt": "2026-10-31T07:05:39.723Z",
+        "resultPass": true,
+        "infrastructureFailure": false,
+        "currentSourceArtifactBinding": true
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -9973,7 +9978,7 @@
         "authority": "roblox-open-cloud-exact-first-frame-observation"
       },
       "robloxInternalPlaytestPassed": true,
-      "robloxInternalPlaytestPassedAt": "2026-10-31T06:59:58.095Z",
+      "robloxInternalPlaytestPassedAt": "2026-10-31T07:05:39.723Z",
       "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxNativeFailureClass": null,
@@ -10038,7 +10043,7 @@
         "postPublishVerification": "PENDING",
         "updatedAt": "2026-10-31T06:44:55.614Z"
       },
-      "robloxQualityBuildUpLastPassedAt": "2026-10-31T06:59:58.095Z"
+      "robloxQualityBuildUpLastPassedAt": "2026-10-31T07:05:39.723Z"
     },
     {
       "gameId": "forgotten-continent",
@@ -10840,7 +10845,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-31T06:59:58.095Z",
+  "updatedAt": "2026-10-31T07:05:39.723Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
