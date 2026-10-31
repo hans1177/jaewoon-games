@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-31T17:16:44.170Z",
+  "generatedAt": "2026-10-31T17:18:24.257Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -930,7 +930,7 @@
     },
     {
       "gameId": "daechung-rpg",
-      "gameName": "포탈 알피지",
+      "gameName": "5포탈 RPG: 던전 파티",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -950,9 +950,9 @@
             "currentFloor": "F0_BEFORE_SOURCE_BIND",
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
             "result": "REPAIR_REQUIRED",
-            "verifiedAt": "2026-10-31T16:52:08.722Z",
-            "checkedAt": "2026-10-31T16:52:08.722Z",
-            "lastFailureAt": "2026-10-31T16:52:08.722Z",
+            "verifiedAt": "2026-10-31T17:18:24.172Z",
+            "checkedAt": "2026-10-31T17:18:24.172Z",
+            "lastFailureAt": "2026-10-31T17:18:24.172Z",
             "f0PassedAt": "2026-10-30T11:37:59.019Z",
             "candidatePublishedAt": null,
             "failureCode": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
@@ -1054,11 +1054,11 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-31T16:52:08.722Z"
+      "updatedAt": "2026-10-31T17:18:24.172Z"
     },
     {
       "gameId": "deep-diver",
-      "gameName": "심해 잠수부",
+      "gameName": "심해 잠수부 · 검은 바다의 보물",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -1079,7 +1079,7 @@
             "stage": "TARGET_PLATFORM_SOURCE_BIND",
             "result": "PRE_F0_OR_PENDING",
             "verifiedAt": null,
-            "checkedAt": "2026-10-31T16:52:38.976Z",
+            "checkedAt": "2026-10-31T17:18:24.172Z",
             "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
@@ -1184,7 +1184,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-31T16:52:38.976Z"
+      "updatedAt": "2026-10-31T17:18:24.172Z"
     },
     {
       "gameId": "defense",
@@ -1601,14 +1601,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
-            "verifiedAt": "2026-10-31T16:53:52.372Z",
-            "checkedAt": "2026-10-31T17:12:46.562Z",
+            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
+            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
+            "verifiedAt": "2026-10-31T17:17:52.617Z",
+            "checkedAt": "2026-10-31T17:17:52.617Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
-            "candidatePublishedAt": "2026-10-31T16:53:52.372Z",
+            "f0PassedAt": "2026-10-31T17:17:52.617Z",
+            "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
           },
@@ -1630,18 +1630,19 @@
             "checks": {
               "design": true,
               "publication": false,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": true,
               "movement": false,
               "noRuntimeErrors": true
             },
             "blockers": [
               "publication",
+              "exactRuntime",
               "movement"
             ],
-            "sourceRevision": "1ec019fa829a163b77520b5749b65e8c4096c9d6",
-            "artifactIdentity": "sha256:24fb4700546d84f3ddd3fe699b4e64776ecd5d5c48aac233d9a95774822648f3",
-            "verifiedAt": "2026-10-31T16:59:53.764Z"
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
           },
           "executionAvailable": false,
           "historicalInternalRelease": false,
@@ -1707,7 +1708,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-31T17:12:46.562Z"
+      "updatedAt": "2026-10-31T17:17:52.617Z"
     },
     {
       "gameId": "fifty-days",
