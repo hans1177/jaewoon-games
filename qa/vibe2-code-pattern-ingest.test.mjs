@@ -608,8 +608,9 @@ test('model-free Roblox coder supports a separate native shutdown hook without t
   assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'unverified read source cannot be patched as if verified');
 });
 
-test('model-free Roblox save migrations preserve existing five games without repeated overwrite',()=>{
-  for(const id of ['egg-heist','exorcist-office','human-go','realistic-builder','amusement-tycoon']){
+test('model-free Roblox save migrations preserve four surviving games without repeated overwrite',()=>{
+  // [오너 삭제 보존] egg-heist는 영구 삭제됨. 남아 있는 네 게임의 기존 저장 보존 검증은 유지한다.
+  for(const id of ['exorcist-office','human-go','realistic-builder','amusement-tycoon']){
     const relative='roblox-games/'+id+'/server/Game.server.luau';
     const source=fs.readFileSync(relative,'utf8');
     assert.match(source,/local verifiedSaveLoad = \{\}/,id);
