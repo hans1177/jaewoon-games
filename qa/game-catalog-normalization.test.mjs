@@ -48,11 +48,12 @@ for(const [index,game] of catalog.games.entries()){
 
 const permanentlyRemoved=[
   'seed-roblox-battleground-fight-welcome-to-bloxburg',
-  'seed-roblox-obby-party-minigam-tower-of-hell'
+  'seed-roblox-obby-party-minigam-tower-of-hell',
+  'simple-rpg'
 ];
 for(const id of permanentlyRemoved)assert.ok(catalog.permanentRemovalPolicy?.ids?.includes(id),`protected removal missing: ${id}`);
-assert.equal(catalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
-  '2026-10-19 explicit owner Roblox focus supersedes the old Simple RPG removal only');
+assert.equal(catalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),true,
+  '2026-10-31 owner explicitly deleted Simple RPG; prevent resurrection');
 assert.equal(new Set(catalog.permanentRemovalPolicy?.ids||[]).size,(catalog.permanentRemovalPolicy?.ids||[]).length,'duplicate removed game IDs');
 assert.equal(catalog.permanentRemovalPolicy?.reentryAllowed,false);
 assert.equal(catalog.permanentRemovalPolicy?.automaticRecoveryAllowed,false);
