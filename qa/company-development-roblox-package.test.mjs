@@ -1550,7 +1550,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/radarCoordinates.Position=UDim2.fromOffset\(3,mapDiameter\+25\)/);
   assert.match(client,/radarCoordinates.TextSize=9/);
   assert.match(client,/radarTitle.Font=Enum.Font.Gotham/);
-  assert.match(client,/radarTitle.Text=areaName/);
+  assert.match(client,/radarTitle\.Text=string\.format\("%s · %d\/4",areaName,discoveredCount\)/);
   for(const region of ['초원지역','초원 마을','오래된 유적','숲 가장자리'])
     assert.ok(client.includes('areaName="'+region+'"'),'real existing area name missing: '+region);
   assert.match(client,/world:FindFirstChild\("Meadow_Ruin_"\.\.index\)/);
@@ -1631,7 +1631,6 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('radarField.Name="NearbyPlayers"'));
   assert.ok(client.includes('local discovered=player:GetAttribute("ExplorationGroves") or 0'));
   assert.ok(client.includes('radarTitle.Text=string.format("%s · %d/4",areaName,discoveredCount)'));
-  assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('bit32.band(discovered,point[3])~=0'));
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
