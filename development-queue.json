@@ -7770,10 +7770,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-31T00:34:51.925Z",
+      "updatedAt": "2026-10-31T00:35:57.223Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8495,27 +8495,27 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "024a781213da0a341f554a89a43b5d68abbe9929",
+      "robloxQualityBuildUpSourceRevision": "b7a3a26b1df352fb60b37d0229c0a35245077b51",
       "robloxQualityFailureClass": "PRODUCT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "024a781213da0a341f554a89a43b5d68abbe9929",
-        "artifactIdentity": "sha256:3381b67aeae5c2c924b4b3725ec7f1bcf9b8013cb6ade00f790a928851d2351b",
-        "versionNumber": 56,
+        "sourceRevision": "b7a3a26b1df352fb60b37d0229c0a35245077b51",
+        "artifactIdentity": "sha256:a2957e129b3bce8add5093dd9981c877e51048dbfb8095e56d6c6d5576b7cc52",
+        "versionNumber": 41149767522,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
         "qualityFailureKinds": [],
         "qualityFailureDetails": [],
         "repairSurfaces": [],
-        "robloxFailureClass": "ROBLOX_SERVER_CLIENT_BOUNDARY",
-        "testedAt": "2026-10-31T00:16:32.385Z",
-        "workflowRunId": 41148702160,
+        "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
+        "testedAt": "2026-10-31T00:35:57.223Z",
+        "workflowRunId": 41150417193,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxStudioAssetBindingApplied": true,
@@ -9074,7 +9074,7 @@
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
         "failureClass": "STUDIO_MCP_RUNTIME_ERROR",
-        "robloxFailureClass": "ROBLOX_SERVER_CLIENT_BOUNDARY",
+        "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
         "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
@@ -9085,12 +9085,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "024a781213da0a341f554a89a43b5d68abbe9929",
-        "artifactIdentity": "sha256:3381b67aeae5c2c924b4b3725ec7f1bcf9b8013cb6ade00f790a928851d2351b",
-        "artifactRunId": 41148056649,
-        "universeId": "10773436325",
-        "placeId": "108565970231899",
-        "versionNumber": 56,
+        "sourceRevision": "b7a3a26b1df352fb60b37d0229c0a35245077b51",
+        "artifactIdentity": "sha256:a2957e129b3bce8add5093dd9981c877e51048dbfb8095e56d6c6d5576b7cc52",
+        "artifactRunId": 41149767522,
+        "universeId": "",
+        "placeId": "",
+        "versionNumber": 41149767522,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -9574,7 +9574,7 @@
           {
             "type": "studio-console-error",
             "actionId": null,
-            "signature": "[TRUNCATED DUE TO LENGTH LIMIT] Script 'Players.anyanguy1981.PlayerScripts.GameClient.Game', Line 2670 Stack End Players.anyanguy1981.PlayerScripts.GameClient.Game:2670: attempt to index nil with 'Size' Stack Begin Script 'Players.anyanguy1981.PlayerScripts.GameClient.Game', Line 2670 Stack End Players.anyanguy1981.PlayerScripts.GameClient.Game:2670: attempt to index nil with 'Size' Stack Begin Script 'Players.anyanguy1981.PlayerScripts.GameClient.Game', Line 2670 Stack End Players.anyanguy1981."
+            "signature": "Player:Move called, but player currently has no character. Players.anyanguy1981.PlayerScripts.GameClient.Game:2287: attempt to index nil with number Stack Begin Script 'Players.anyanguy1981.PlayerScripts.GameClient.Game', Line 2287 Stack End text"
           }
         ],
         "runtimeSummary": {
@@ -9626,7 +9626,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 3139.859375,
+              "memoryMb": 3123.53125,
               "descendantCount": 3562
             },
             "multiplayer": null,
@@ -9673,7 +9673,7 @@
           "scenario-adaptive-ui-commercial-quality",
           "scenario-adaptive-ui-blocking-overlay",
           "scenario-adaptive-world-safety",
-          "ROBLOX_SERVER_CLIENT_BOUNDARY"
+          "ROBLOX_CHARACTER_RESPAWN_STATE"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -9866,8 +9866,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-31T00:16:32.385Z",
-        "workflowRunId": 41148702160,
+        "testedAt": "2026-10-31T00:35:57.223Z",
+        "workflowRunId": 41150417193,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -9911,12 +9911,16 @@
         "artifactIdentity": "sha256:a2957e129b3bce8add5093dd9981c877e51048dbfb8095e56d6c6d5576b7cc52",
         "artifactRunId": 41149767522,
         "candidateVersionNumber": 41149767522,
-        "status": "QUEUED_FOR_STUDIO",
+        "status": "COMPLETED_PRODUCT_FAILURE",
         "queuedAt": "2026-10-31T00:31:16.175Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true
+        "companyRuntimeAuthoritative": true,
+        "completedAt": "2026-10-31T00:35:57.223Z",
+        "resultPass": false,
+        "infrastructureFailure": false,
+        "currentSourceArtifactBinding": true
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -9974,7 +9978,7 @@
       "robloxInternalPlaytestPassedAt": null,
       "robloxStudioLocalPlayRepairRequired": true,
       "robloxStudioLocalPlayInfrastructurePending": false,
-      "robloxNativeFailureClass": "ROBLOX_SERVER_CLIENT_BOUNDARY",
+      "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
       "robloxOwnerDirectPublication": {
         "version": 1,
         "gameId": "fantasy-survival",
@@ -10015,7 +10019,7 @@
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T20:03:38.470Z"
     }
   ],
-  "updatedAt": "2026-10-31T00:34:51.925Z",
+  "updatedAt": "2026-10-31T00:35:57.223Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
