@@ -1577,7 +1577,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('for route=1,8 do'));
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
-  assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or (?:\d+|math.floor\(math.clamp\()/);
+  assert.match(client,/local mapDiameter=compactLandscape and \(v.Y<350 and 80 or 88\) or small and 96 or math.floor\(math.clamp\(/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
   assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(mapRight,8)'));
