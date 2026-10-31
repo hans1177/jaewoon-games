@@ -1958,16 +1958,75 @@ do
   task.defer(showIntro)
 end
 
--- [화면 터치 공격] UI·조이스틱 터치는 제외하고 월드 빈 화면 탭만 기본 공격.
--- 로블록스 공식 TouchTapInWorld와 처리 여부를 사용해 버튼을 완전히 없앤다.
-UserInputService.TouchTapInWorld:Connect(function(_,processedByUI)
-  if processedByUI or gui:GetAttribute("GameMenuOpen")==true then return end
+-- [모바일 전체 화면 입력] 게임 월드 탭은 공격, 주민·의뢰판·단서 탭은 원본 대화 프롬프트를 사용한다.
+-- 메뉴·대화 선택지·조이스틱·오른쪽 기술 버튼을 누른 터치는 공격으로 바꾸지 않는다.
+local shownMeadowPrompts={}
+local lastMeadowWorldTap=0
+local function activateNearbyMeadowInteraction(screenPosition)
+  local character=player.Character
+  local rootPart=character and character:FindFirstChild("HumanoidRootPart")
+  local camera=workspace.CurrentCamera
+  if not rootPart then return false end
+  local target,bestDistance=nil,math.huge
+  for prompt in pairs(shownMeadowPrompts) do
+    local host=prompt.Parent
+    if prompt.Name=="MeadowVillageInteraction" and prompt.Enabled
+      and host and host:IsA("BasePart") and prompt:IsDescendantOf(workspace) then
+      local distance=(host.Position-rootPart.Position).Magnitude
+      if distance<=prompt.MaxActivationDistance and distance<16 then
+        local score=distance
+        if screenPosition then
+          if not camera then continue end
+          local projected,visible=camera:WorldToViewportPoint(host.Position)
+          if not visible or projected.Z<=0 then continue end
+          local offset=(Vector2.new(projected.X,projected.Y)-screenPosition).Magnitude
+          if offset>65 then continue end
+          score=offset+distance*.5
+        end
+        if score<bestDistance then target,bestDistance=prompt,score end
+      end
+    end
+  end
+  if not target then return false end
+  -- [기존 상호작용] 임의의 클라이언트 대화/보상 없이 서버 ProximityPrompt.Triggered를 그대로 사용한다.
+  target:InputHoldBegin()
+  task.delay(math.max(.05,target.HoldDuration)+.08,function()
+    if target.Parent then target:InputHoldEnd() end
+  end)
+  return true
+end
+local function isMeadowWorldTapBlocked(point)
+  if gui.Enabled~=true or gui:GetAttribute("GameMenuOpen")==true then return true end
+  local dialogue=gui:FindFirstChild("MeadowVillageDialogue")
+  if dialogue and dialogue.Visible then return true end
+  for _,control in ipairs(player.PlayerGui:GetGuiObjectsAtPosition(point.X,point.Y)) do
+    if control:FindFirstAncestor("TouchGui") or control:IsA("GuiButton")
+      or control:IsA("TextBox") or control:FindFirstAncestor("MeadowStoryIntro") then
+      return true
+    end
+  end
+  return false
+end
+local function activateMeadowWorldTap(point)
+  if typeof(point)~="Vector2" or isMeadowWorldTapBlocked(point) then return end
+  local now=os.clock()
+  if now-lastMeadowWorldTap<.13 then return end
+  lastMeadowWorldTap=now
+  if activateNearbyMeadowInteraction(point) then return end
   if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end
+end
+-- 원본 월드 탭은 유지하고, 투명 HUD가 입력을 처리한 경우 TouchTap으로 정상 공격을 복구한다.
+UserInputService.TouchTapInWorld:Connect(function(positions,processedByUI)
+  if processedByUI or gui:GetAttribute("GameMenuOpen")==true then return end
+  if positions and positions[1] then activateMeadowWorldTap(positions[1]) end
+end)
+UserInputService.TouchTap:Connect(function(positions)
+  if positions and positions[1] then activateMeadowWorldTap(positions[1]) end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
   if processed or UserInputService.TouchEnabled or gui:GetAttribute("GameMenuOpen")==true then return end
-  if input.UserInputType==Enum.UserInputType.MouseButton1 and primaryCombatAction then
-    activateMeadowAction(primaryCombatAction.Id)
+  if input.UserInputType==Enum.UserInputType.MouseButton1 then
+    activateMeadowWorldTap(Vector2.new(input.Position.X,input.Position.Y))
   end
 end)
 
@@ -2177,7 +2236,7 @@ for index,info in ipairs(meadowUtilityActions)do
     if gui:GetAttribute("GameMenuOpen")==true then return end
     if info[1]=="MEADOW_INVENTORY" then meadowMenu.open(2)
     elseif info[1]=="skill-meadow-sprint" then meadowSprintAuto=not meadowSprintAuto
-    else activateMeadowAction(info[1]) end
+    elseif not activateNearbyMeadowInteraction(nil) then activateMeadowAction(info[1]) end
   end)
   meadowUtilityButtons[index]=button
 end
@@ -2818,7 +2877,9 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     local deadline=player:GetAttribute("MeadowReady_"..skill[1])
     local remaining=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
     local cost=0 -- 위치 재배치는 기존 기술의 서버 스테미너·쿨다운을 바꾸지 않는다.
-    button.Active=ready and remaining<=.05 and stamina>=cost
+    -- [기술 터치] 재사용 대기 중에도 버튼 입력을 막지 않고 서버에서 쿨다운을 검증한다.
+    -- 비활성화된 GUI 버튼이 터치 자체를 삼켜 기술이 고장 난 것처럼 보이던 문제를 제거한다.
+    button.Active=ready and stamina>=cost
     button.Text=""
     meadowSkillNameplates[index].TextTransparency=ready and 0 or .25
     local cooldown=meadowSkillCooldowns[index]
@@ -2854,7 +2915,20 @@ promptHighlight.Name="MeadowInteractionTarget";promptHighlight.FillTransparency=
 promptHighlight.OutlineColor=Color3.fromRGB(150,231,182)
 promptHighlight.OutlineTransparency=.12;promptHighlight.DepthMode=Enum.HighlightDepthMode.Occluded
 promptHighlight.Enabled=false;promptHighlight.Parent=gui
-local shownMeadowPrompts={}
+local worldPrompts=workspace:FindFirstChild("FantasySurvivalWorld")
+if worldPrompts then
+  -- 최초 접속 때 이미 생성된 대화 프롬프트와 나중에 스트리밍되는 프롬프트를 모두 추적한다.
+  for _,descendant in ipairs(worldPrompts:GetDescendants()) do
+    if descendant:IsA("ProximityPrompt") and descendant.Name=="MeadowVillageInteraction" then
+      shownMeadowPrompts[descendant]=true
+    end
+  end
+  worldPrompts.DescendantAdded:Connect(function(descendant)
+    if descendant:IsA("ProximityPrompt") and descendant.Name=="MeadowVillageInteraction" then
+      shownMeadowPrompts[descendant]=true
+    end
+  end)
+end
 local function updateMeadowPromptHighlight()
   promptHighlight.Enabled=false
   if gui:GetAttribute("GameMenuOpen")==true then return end
