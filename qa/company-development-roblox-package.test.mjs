@@ -1528,7 +1528,7 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/or 116\)\*scale/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+14,mapDiameter\+40\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.new\(1,math.floor\(\(dodgeCenterX-237\)\*scale\),0,0\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-12,0,8\)/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
   assert.match(client,/south.Text="S"/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
@@ -1572,7 +1572,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or (?:\d+|math.floor\(math.clamp\()/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,math.floor((dodgeCenterX-237)*scale),0,0)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-12,0,8)'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
