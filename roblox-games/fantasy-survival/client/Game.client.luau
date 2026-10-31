@@ -2484,8 +2484,8 @@ end)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   meadowSkillDock.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end)
--- [미니맵] 실제 플레이어 좌표와 이미 발견한 숲 지점만 표시하는 탐험 지도.
--- 임의의 지형·적 위치를 생성하지 않고 서버 탐험 기록과 기존 동료 위치를 사용한다.
+-- [미니맵] 실제 플레이어 좌표와 발견한 숲 지점만 표시한다.
+-- 체력바와 같은 전체 화면 좌표계를 사용해 Roblox 기본 상단 UI 여백으로 인한 아래 밀림을 없앤다.
 local meadowRadar=Instance.new("Frame")
 meadowRadar.Name="MeadowExplorerRadar"
 meadowRadar.AnchorPoint=Vector2.new(1,0)
@@ -2494,7 +2494,7 @@ meadowRadar.BackgroundColor3=Color3.fromRGB(13,30,28)
 meadowRadar.BackgroundTransparency=1
 meadowRadar.BorderSizePixel=0
 meadowRadar.ZIndex=8
-meadowRadar.Parent=gui
+meadowRadar.Parent=meadowVitalsGui
 local radarCorner=Instance.new("UICorner")
 radarCorner.CornerRadius=UDim.new(0,13)
 radarCorner.Parent=meadowRadar
@@ -2885,8 +2885,8 @@ local function layoutMeadowRadar()
   if v.X<=0 or v.Y<=0 then return end
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  -- [미니맵] 기존 가로 중심은 유지하고, 화면 위쪽 체력바 시작 높이로 올린다.
-  -- 세로 방향만 중앙 체력바 안전 시작점과 맞춘다.
+  -- [미니맵] 기존 오른쪽 가로 위치는 안전영역 X 보정으로 보존한다.
+  -- 세로 위치는 체력바와 동일한 ScreenGui 및 Y 시작 좌표를 사용한다.
   local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or small and 96 or math.floor(math.clamp(v.Y*.17,98,124))
   local skillScale=v.X>v.Y and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
   local dockRight=v.X-math.floor(2*skillScale)
@@ -2895,7 +2895,8 @@ local function layoutMeadowRadar()
   local mapRight=math.clamp(math.floor(dodgeCenter+mapWidth*.5+.5),mapWidth+12,v.X-12)
   meadowRadar.Size=UDim2.fromOffset(mapWidth,mapDiameter+40)
   meadowRadar.AnchorPoint=Vector2.new(1,0)
-  meadowRadar.Position=UDim2.fromOffset(mapRight,v.X>v.Y and 12 or 38)
+  local leftInset=game:GetService("GuiService"):GetGuiInset()
+  meadowRadar.Position=UDim2.fromOffset(mapRight+math.floor(leftInset.X),meadowHealthTrack.Position.Y.Offset)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
@@ -2908,6 +2909,7 @@ local function layoutMeadowRadar()
   meadowRadar.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
+meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowRadar)
 alignMeadowRadar=layoutMeadowRadar
 layoutMeadowRadar()
