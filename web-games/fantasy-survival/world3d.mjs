@@ -663,6 +663,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const interactables=[];
   const undeadActors=new Map();
   const nativeCreatureActors=new Map();
+  const crystalBodyMaterial=new THREE.MeshStandardMaterial({color:0xc1a0ff,emissive:0x7844c9,emissiveIntensity:.65,metalness:.24,roughness:.28});
   // 메인 · 3D 도감 이름표: 등록한 종에만 기존 몬스터 머리 위 이름을 표시한다.
   const nameTextures=new Map();
   function syncBestiaryName(actor,e,state,height){
@@ -905,7 +906,40 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         const profile=CREATURE_VISUAL_PROPORTIONS[speciesId]||[1,1,1];
         model.scale.set(scale*profile[0],scale*profile[1],scale*profile[2]);
         model.position.y=-source.floor*scale*profile[1];
-        const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
+        const anchor=new THREE.Group();anchor.add(model);
+        // 수정 바이터는 하나의 진짜 적이지만 외형은 정품 뱀 리그 3개가 융합된 거대한 괴체.
+        if(speciesId==='crystalbiter'){
+          const height=Math.max(1.6,(Number(e.type.r)||20)*SCALE*2.2)*profile[1];
+          for(const side of [-1,1]){
+            const fused=cloneAnimatedRig(source.model);
+            fused.traverse(child=>{
+              if(!child.isMesh||!child.material)return;
+              const tinted=m=>materials.get(m.uuid)||m;
+              child.material=Array.isArray(child.material)?child.material.map(tinted):tinted(child.material);
+            });
+            fused.scale.set(scale*.73,scale*.88,scale*.80);
+            fused.position.set(side*height*.26,-source.floor*scale*.88,height*.22);
+            fused.rotation.y=side*.66;
+            anchor.add(fused);
+          }
+        }
+        // 등록된 CC0 돌 원본 지오메트리로 만든 수정 외갑은 전투·충돌과 무관한 시각 파츠.
+        const crystalSource=models.get('cobblestones');
+        if(crystalSource&&speciesId.startsWith('crystal')){
+          crystalSource.geometry.computeBoundingSphere();
+          const sourceRadius=Math.max(.01,crystalSource.geometry.boundingSphere.radius);
+          const height=Math.max(1.4,(Number(e.type.r)||20)*SCALE*2.2)*profile[1];
+          const count=speciesId==='crystalbiter'?9:3;
+          for(let i=0;i<count;i++){
+            const shard=new THREE.Mesh(crystalSource.geometry,crystalBodyMaterial);
+            const size=height*(speciesId==='crystalbiter'?.27:.15)/sourceRadius;
+            shard.scale.set(size*.62,size*1.85,size*.75);
+            shard.position.set(Math.sin(i*2.4)*height*.33,height*(.20+(i%3)*.17),Math.cos(i*2.4)*height*.30);
+            shard.rotation.set(.18*Math.sin(i),i*1.36,.20*Math.cos(i));
+            anchor.add(shard);
+          }
+        }
+        scene.add(anchor);
         const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
         actor={anchor,model,mixer,clips:source.clips,clipName:'',action:null,
           lastFrame:performance.now(),seen:0};
@@ -1227,19 +1261,25 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           // 지역별로 서로 다른 원본 배경 메시를 섞어 같은 나무/바위 반복을 줄인다.
           const sceneryChoices=SCENERY_KIND[tileZone]||SCENERY_KIND.forest;
           const kind=sceneryChoices[hash%sceneryChoices.length];
-          let batch=sceneryBatches.get(kind);
+          const crystalOutcrop=tileZone==='crystal'&&kind==='cobblestones';
+          const sceneryKey=crystalOutcrop?'crystal-outcrop':kind;
+          let batch=sceneryBatches.get(sceneryKey);
           if(!batch&&models.has(kind)){
-            const original=models.get(kind);
-            const mesh=new THREE.InstancedMesh(original.geometry,original.material,49);
+            const original=models.get(kind),material=crystalOutcrop?original.material.clone():original.material;
+            if(crystalOutcrop&&material.color){
+              material.color.set(0xd9c5ff);
+              if(material.emissive){material.emissive.set(0x5630a4);material.emissiveIntensity=.4}
+            }
+            const mesh=new THREE.InstancedMesh(original.geometry,material,49);
             mesh.count=0;mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;
-            scene.add(mesh);batch={mesh,count:0};sceneryBatches.set(kind,batch);
+            scene.add(mesh);batch={mesh,count:0};sceneryBatches.set(sceneryKey,batch);
           }
           if(batch){
             const xOffset=(((hash>>>4)%5)-2)*floorPitchX*.12;
             const zOffset=(((hash>>>7)%5)-2)*floorPitchZ*.12;
             resourceTransform.position.set(gx+xOffset,0,gz+zOffset);
             resourceTransform.rotation.y=(hash%8)*(Math.PI/4);
-            resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
+            const terrainScale=.38+((hash>>>10)%4)*.09;resourceTransform.scale.set(terrainScale*(crystalOutcrop?.74:1),terrainScale*(crystalOutcrop?2.8:1),terrainScale*(crystalOutcrop?.74:1));
             resourceTransform.updateMatrix();
             batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
             batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
@@ -1586,6 +1626,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor);actor.nameLabel?.material.dispose()}
     nativeCreatureActors.clear();
     for(const texture of nameTextures.values())texture.dispose();
+    crystalBodyMaterial.dispose();
     nameTextures.clear();
     scene.remove(blueprintGhost);if(blueprintVisual)blueprintGhost.remove(blueprintVisual);
     blueprintMaterial.dispose();
@@ -1617,7 +1658,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     scene.remove(floorSeamTiles);floorSeamTiles.dispose();
     for(const [key,{mesh}] of resourceBatches){scene.remove(mesh);mesh.dispose();if(key.includes(':'))mesh.material.dispose()}
     resourceBatches.clear();
-    for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
+    for(const [key,{mesh}] of sceneryBatches){scene.remove(mesh);mesh.dispose();if(key==='crystal-outcrop')mesh.material.dispose()}
     sceneryBatches.clear();
     for(const {mesh} of interiorWalls.values()){scene.remove(mesh);mesh.dispose()}
     interiorWalls.clear();
