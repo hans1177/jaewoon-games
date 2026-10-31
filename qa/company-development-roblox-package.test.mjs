@@ -1298,7 +1298,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/mesh\.Material=Enum\.Material\.Slate/);
   assert.match(server,/mesh\.Material=Enum\.Material\.Wood/);
   assert.match(server,/MeadowVillageLanternGlow/);
-  assert.match(server,/glow\.Parent=lanternMesh/);
+  assert.match(server,/glow\.Parent=mesh/);
   assert.doesNotMatch(server,/Instance\.new\("Part"\)|Instance\.new\("Ball"\)|Instance\.new\("Cylinder"\)/);
   const nativeAuthor=fs.readFileSync('tools/baeksu-war-author-meshes.py','utf8');
   const nativeUpload=fs.readFileSync('tools/baeksu-war-upload-meshes.mjs','utf8');
