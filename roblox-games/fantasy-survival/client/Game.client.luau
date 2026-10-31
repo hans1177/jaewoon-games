@@ -3552,28 +3552,45 @@ RunService.PreSimulation:Connect(function(dt)
     local travel=push*(1-plant)
     local recovery=plant*settle
     local weight=math.sin(math.pi*math.clamp((phase-.04)/.85,0,1))
+    -- [접지 5단계] 예비 압축 → 바닥 밀기 → 디딤발 상승 → 착지 흡수 → 반대발 회수.
+    -- 끝 프레임에서 모든 추가 각도가 0으로 닫히도록 준비/착지 곡선을 제한한다.
+    local compression=prepare*(1-push)*settle
+    local toeOff=math.sin(math.pi*math.clamp((phase-.09)/.45,0,1))*settle
+    local impact=math.sin(math.pi*math.clamp((phase-.58)/.23,0,1))*settle
+    local aftershock=math.sin(math.pi*math.clamp((phase-.67)/.28,0,1))*settle
+    local counterSwing=math.sin(math.pi*math.clamp((phase-.16)/.61,0,1))*settle
     local leadLeft=sign<0
     -- 골반 압축은 먼저, 상체 기울기는 뒤따르게 한다. 머리는 적을 향해 고정한다.
-    skillMotionTargets.Spine=CFrame.new(0,-.085*lean-.025*plant*settle,0)
-      *CFrame.Angles(-.19*lean,sign*.035*travel,sign*(.23*lean-.07*recovery))
-    skillMotionTargets.Chest=CFrame.Angles(-.07*lean,0,-sign*.09*travel)
+    skillMotionTargets.Spine=CFrame.new(0,-.085*lean-.025*plant*settle-.024*compression-.021*impact,0)
+      *CFrame.Angles(-.19*lean+.045*aftershock,sign*.035*travel,sign*(.23*lean-.07*recovery))
+    -- [상체 후행] 골반이 먼저 이동하고, 흉곽이 늦게 역회전해 머리는 적을 정면으로 본다.
+    skillMotionTargets.Chest=CFrame.Angles(-.07*lean+.025*aftershock,-sign*.027*counterSwing,-sign*.09*travel)
     skillMotionTargets.Head=CFrame.Angles(-.11*lean,0,-sign*.055*lean)
+      *CFrame.Angles(-.018*impact,sign*.027*counterSwing,sign*.014*aftershock)
     -- 진행 방향 발은 들어 올렸다가 착지 직전에 무릎을 굽혀 충격을 받는다.
     local leadHip=-.30*lean-.15*travel+.11*recovery
-    local trailHip=.20*lean+.16*push-.10*recovery
+    local trailHip=.20*lean+.16*travel-.10*recovery
     skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadHip or trailHip,0,sign*.12*lean)
     skillMotionTargets.ThighR=CFrame.Angles(leadLeft and trailHip or leadHip,0,sign*.12*lean)
     local leadKnee=.23*lean+.24*travel+.18*recovery
-    local trailKnee=.36*lean+.09*push+.15*recovery
-    skillMotionTargets.ShinL=CFrame.Angles(leadLeft and leadKnee or trailKnee,0,0)
-    skillMotionTargets.ShinR=CFrame.Angles(leadLeft and trailKnee or leadKnee,0,0)
-    skillMotionTargets.FootL=CFrame.Angles((leadLeft and -.17 or -.12)*travel+.08*recovery,0,0)
-    skillMotionTargets.FootR=CFrame.Angles((leadLeft and -.12 or -.17)*travel+.08*recovery,0,0)
+    local trailKnee=.36*lean+.09*travel+.15*recovery
+    -- 디딤발 무릎은 먼저 굽힌 뒤 부드럽게 펴고, 착지에서 충격을 받아 재차 굽힌다.
+    skillMotionTargets.ShinL=CFrame.Angles((leadLeft and leadKnee or trailKnee)+.10*impact,0,0)
+    skillMotionTargets.ShinR=CFrame.Angles((leadLeft and trailKnee or leadKnee)+.10*impact,0,0)
+    -- 양 발목은 좌우 대칭으로 지면을 짚되 회수하는 발은 뒤꿈치를 먼저 내린다.
+    skillMotionTargets.FootL=CFrame.Angles((leadLeft and -.17 or -.12)*travel+.08*recovery
+      -(leadLeft and .12 or .06)*toeOff+.055*impact,0,sign*.045*counterSwing)
+    skillMotionTargets.FootR=CFrame.Angles((leadLeft and -.12 or -.17)*travel+.08*recovery
+      -(leadLeft and .06 or .12)*toeOff+.055*impact,0,sign*.045*counterSwing)
     -- 좌우 팔은 펴서 휘두르지 않고 가드 근처에 둔 채 어깨만 작게 역회전한다.
-    skillMotionTargets.UpperArmL=CFrame.Angles(-.46*lean-.05*weight,sign*.09*travel,-sign*.20*travel)
-    skillMotionTargets.UpperArmR=CFrame.Angles(-.49*lean-.04*weight,-sign*.09*travel,sign*.20*travel)
-    skillMotionTargets.ForearmL=CFrame.Angles(-.57*lean,0,-.05*travel)
-    skillMotionTargets.ForearmR=CFrame.Angles(-.57*lean,0,.05*travel)
+    skillMotionTargets.UpperArmL=CFrame.Angles(-.46*lean-.05*weight+.035*aftershock,
+      sign*.09*travel,-sign*.20*travel-sign*.08*counterSwing)
+    skillMotionTargets.UpperArmR=CFrame.Angles(-.49*lean-.04*weight+.035*aftershock,
+      -sign*.09*travel,sign*.20*travel+sign*.08*counterSwing)
+    skillMotionTargets.ForearmL=CFrame.Angles(-.57*lean-.06*compression,0,-.05*travel)
+    skillMotionTargets.ForearmR=CFrame.Angles(-.57*lean-.06*compression,0,.05*travel)
+    skillMotionTargets.HandL=CFrame.Angles(-.07*lean,.025*counterSwing,0)
+    skillMotionTargets.HandR=CFrame.Angles(-.07*lean,-.025*counterSwing,0)
   elseif isGuard or isParry then
     -- [방어 동작] 기존 팔·척추·다리 관절로 무게중심을 낮추고 양팔을 얼굴 앞에 세운다.
     -- 위쳐식 방어: 짧은 들어올리기 → 안정된 막기 → 자연스러운 자세 복귀.
@@ -3591,25 +3608,36 @@ RunService.PreSimulation:Connect(function(dt)
       crouch=crouch*crouch*(3-2*crouch)*release
       local elbow=math.clamp((phase-.025)/.115,0,1)
       elbow=elbow*elbow*(3-2*elbow)*release
+      -- [복싱 3중 지연] 무릎/등 → 양 어깨 → 팔꿈치 → 턱이 차례로 접히며 보호 자세를 완성한다.
+      local shoulder=math.clamp((phase-.016)/.105,0,1)
+      shoulder=shoulder*shoulder*(3-2*shoulder)*release
+      local chin=math.clamp((phase-.045)/.13,0,1)
+      chin=chin*chin*(3-2*chin)*release
       local breathing=math.sin((os.clock()-skillMotionStart)*5.1)*.014*guard
       local weightShift=math.sin((os.clock()-skillMotionStart)*2.4)*.018*guard
+      local shoulderBreath=math.sin((os.clock()-skillMotionStart)*5.1-.5)*.012*guard
       skillMotionTargets.Spine=CFrame.new(0,-.16*crouch+breathing,0)
         *CFrame.Angles(-.28*crouch+.015*guard,.06*guard+weightShift,-.045*guard)
-      skillMotionTargets.Chest=CFrame.Angles(-.18*guard+breathing,.075*guard,-.06*guard)
+      skillMotionTargets.Chest=CFrame.Angles(-.18*shoulder+breathing,.075*guard,-.06*guard)
       skillMotionTargets.Head=CFrame.Angles(-.24*guard,-.075*guard,.055*guard)
+        *CFrame.Angles(-.035*chin+.008*shoulderBreath,0,.015*weightShift)
       -- 왼팔: 왼쪽 관자놀이와 귀를 보호하는 높은 밀착 가드.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.91*guard,.18*guard,-.31*guard)
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.91*guard,.18*shoulder,-.31*shoulder)
+        *CFrame.Angles(-.035*shoulderBreath,0,0)
       skillMotionTargets.ForearmL=CFrame.Angles(-1.25*elbow,0,-.22*elbow)
-      skillMotionTargets.HandL=CFrame.Angles(-.19*elbow,-.08*elbow,0)
+      skillMotionTargets.HandL=CFrame.Angles(-.19*elbow,-.08*elbow,-.055*chin)
       -- 오른팔: 어깨보다 낮게 붙여 턱과 갈비뼈를 지킨다.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.55*guard,-.09*guard,.19*guard)
+      skillMotionTargets.UpperArmR=CFrame.Angles(-.55*guard,-.09*shoulder,.19*shoulder)
+        *CFrame.Angles(-.018*shoulderBreath,0,0)
       skillMotionTargets.ForearmR=CFrame.Angles(-1.12*elbow,0,.12*elbow)
-      skillMotionTargets.HandR=CFrame.Angles(-.12*elbow,0,.06*elbow)
+      skillMotionTargets.HandR=CFrame.Angles(-.12*elbow,0,.06*elbow+.025*chin)
       -- 양 무릎을 살짝 비틀어 낮은 중심을 유지하며 미세한 호흡만 허용한다.
       skillMotionTargets.ThighL=CFrame.Angles(.23*crouch,0,-.10*guard)
       skillMotionTargets.ThighR=CFrame.Angles(.29*crouch,0,.10*guard)
       skillMotionTargets.ShinL=CFrame.Angles(.29*crouch,0,0)
       skillMotionTargets.ShinR=CFrame.Angles(.31*crouch,0,0)
+      skillMotionTargets.FootL=CFrame.Angles(-.07*crouch,0,-.025*weightShift)
+      skillMotionTargets.FootR=CFrame.Angles(-.09*crouch,0,.025*weightShift)
     else
       skillMotionTargets.Spine=CFrame.new(0,-.06*guard,0)
         *CFrame.Angles(-.14*guard+.08*counter,-.10*guard,.07*guard)
