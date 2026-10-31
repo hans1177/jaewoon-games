@@ -4287,6 +4287,20 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           if row.available.Neck then row.poses.Neck=CFrame.Angles(-breath*.6,0,0) end
           if row.available.Head then row.poses.Head=CFrame.Angles(-breath*.55,math.sin(cycle*.5)*.065,0) end
           if row.available.Tail then row.poses.Tail=CFrame.Angles(0,math.sin(cycle*.7)*.105,0) end
+          -- [4족 대기] 호흡에 맞춰 어깨와 뒷다리에 체중을 번갈아 실어 생명감을 준다.
+          if row.plan=="QUADRUPED" then
+            local weight=math.sin(cycle*.5)*(row.species=="boar" and .035 or .055)
+            for _,foot in ipairs(quadrupedFootPhases) do
+              local key=foot[1]
+              local front=key:sub(1,1)=="F"
+              if row.available[key.."Hip"] then
+                row.poses[key.."Hip"]=CFrame.Angles((front and -.035 or .025)+weight*(front and 1 or -.6),0,0)
+              end
+              if row.available[key.."Knee"] then
+                row.poses[key.."Knee"]=CFrame.Angles(.045+math.abs(weight)*.35,0,0)
+              end
+            end
+          end
           if row.plan=="FLYER" then
             local flap=math.sin(cycle*2)*.24
             if row.available.WingL then row.poses.WingL=CFrame.Angles(0,0,flap) end
@@ -4299,6 +4313,23 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           if row.available.Head then row.poses.Head=CFrame.Angles(reaction*.23,0,-reaction*.16) end
           if row.available.Neck then row.poses.Neck=CFrame.Angles(reaction*.15,0,0) end
           if row.available.Tail then row.poses.Tail=CFrame.Angles(0,-reaction*.25,0) end
+          -- [4족 피격·사망] 앞다리 버팀과 뒷다리 주저앉기를 서로 다르게 연출한다.
+          if row.plan=="QUADRUPED" then
+            for _,foot in ipairs(quadrupedFootPhases) do
+              local key=foot[1]
+              local front=key:sub(1,1)=="F"
+              if row.available[key.."Hip"] then
+                row.poses[key.."Hip"]=CFrame.Angles(reaction*(front and -.20 or .24),0,0)
+              end
+              if row.available[key.."Knee"] then
+                row.poses[key.."Knee"]=CFrame.Angles(reaction*(front and .34 or .56),0,0)
+              end
+              if row.available[key.."Ankle"] then
+                row.poses[key.."Ankle"]=CFrame.Angles(-reaction*(front and .08 or .17),0,0)
+              end
+            end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(-reaction*.16,0,reaction*.07) end
+          end
           if row.plan=="FLYER" then
             if row.available.WingL then row.poses.WingL=CFrame.Angles(0,0,reaction*.35) end
             if row.available.WingR then row.poses.WingR=CFrame.Angles(0,0,-reaction*.35) end
@@ -4368,57 +4399,90 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           if row.available.ShinL then row.poses.ShinL=CFrame.Angles(-.18,0,0) end
           if row.available.ShinR then row.poses.ShinR=CFrame.Angles(-.18,0,0) end
         end
-        -- [4족 걷기/질주] 원본 스킨 관절의 접지/회수 단계를 분리하고 속도에 따라 보폭을 조절한다.
-        -- 공용 모션/서버 좌표/공격판정/보상/저장에는 영향을 주지 않는다.
+        -- [4족 걷기/질주] 원본 스킨의 네 발을 속도·체중별로 교차 접지하고 회수한다.
+        -- 위치·공격판정·보상·저장은 서버 전용이며 뼈가 없는 메시에는 가짜 다리를 만들지 않는다.
         if row.plan=="QUADRUPED" then
           if mode=="WALK" or mode=="RUN" then
             local running=mode=="RUN"
-            local amplitude=(running and .52 or .36)*math.clamp(row.groundSpeed/(running and 7 or 3),.5,1)
-            local stance=running and .41 or .61
+            local heavy=row.species=="boar"
+            local pace=math.clamp(row.groundSpeed/(running and 7 or 3),.35,1)
+            local amplitude=(running and .52 or heavy and .30 or .36)*pace
+            local stance=running and .43 or heavy and .67 or .61
             for _,foot in ipairs(quadrupedFootPhases) do
               local key=foot[1]
+              local front=key:sub(1,1)=="F"
               local legPhase=(phase+(running and foot[3] or foot[2]))%1
               local hip,knee,ankle
               if legPhase<stance then
-                -- 접지 동안 무릎을 펴고 발로 땅을 뒤로 민다.
+                -- 지지 구간: 발을 굴리지 않고 무게를 싣고 뒤로 밀어낸다.
                 local p=legPhase/stance
+                local load=math.sin(math.pi*p)
                 hip=amplitude*(1-p*2)
-                knee=.015
-                ankle=.025
+                knee=.015+load*(heavy and .065 or .040)
+                ankle=-.018+load*.042
               else
-                -- 발이 공중에 있을 때만 무릎을 굽혀 앞으로 회수한다.
+                -- 회수 구간: 발끝이 지면에서 떨어진 뒤 무릎을 굽혀 앞으로 가져온다.
                 local p=(legPhase-stance)/(1-stance)
                 local lift=math.sin(math.pi*p)
-                hip=-amplitude*math.cos(math.pi*p)
-                knee=lift*(running and .72 or .48)
-                ankle=-lift*(running and .23 or .15)
+                local ease=p*p*(3-2*p)
+                hip=-amplitude*(1-2*ease)
+                knee=lift*(running and .68 or heavy and .38 or .48)
+                ankle=-lift*(running and .22 or .15)
               end
+              if not front then hip*=heavy and .83 or .92 end
               if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(hip,0,0) end
               if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(knee,0,0) end
               if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(ankle,0,0) end
             end
+            -- 체중은 앞뒤로 전달되고 목·꼬리는 한 박자 늦게 따라간다.
             local cycle=phase*math.pi*2
-            local bounce=math.sin(cycle*(running and 2 or 1))*(running and .050 or .025)
-            if row.available.Chest then row.poses.Chest=CFrame.Angles(bounce,0,0) end
-            if row.available.Neck then row.poses.Neck=CFrame.Angles(-bounce*.62,0,0) end
-            if row.available.Head then row.poses.Head=CFrame.Angles(-bounce*.40,0,0) end
+            local suspension=math.sin(cycle*(running and 2 or 1))
+            local bounce=suspension*(running and .057 or heavy and .020 or .030)*pace
+            local roll=math.sin(cycle)*(running and .027 or .034)*pace
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(bounce,0,roll) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(-bounce*.46,0,-roll*.65) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(-bounce*.72,0,-roll*.34) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(-bounce*.50,0,-roll*.20) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(-bounce*.26,math.sin(cycle-.55)*.12*pace,0) end
           elseif row.species=="wolf" and (mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY") then
-            -- [늑대 전방 물기] 예비 자세 -> 목과 머리 전방 급습 -> 접촉 뒤 복귀.
-            -- 실제 원본에 턱 관절이 있을 때만 개폐시키고 없으면 목/머리로 물기 동작을 연출한다.
+            -- [늑대 물기] 어깨를 낮춰 버틴 뒤 목·머리·턱이 차례로 전방 급습한다.
             local windup=mode=="ANTICIPATION" and math.sin(phase*math.pi*.5) or 0
             local bite=mode=="ATTACK" and math.sin(math.pi*phase) or 0
             local settle=mode=="RECOVERY" and (1-phase) or 0
             if row.available.Chest then row.poses.Chest=CFrame.Angles(-.12*windup-.36*bite+.13*settle,0,0) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(.12*windup-.19*bite,0,0) end
             if row.available.Neck then row.poses.Neck=CFrame.Angles(.24*windup-.48*bite+.13*settle,0,0) end
             if row.available.Head then row.poses.Head=CFrame.Angles(.30*windup-.56*bite+.18*settle,0,0) end
             if row.available.Jaw then row.poses.Jaw=CFrame.Angles(.18*windup+.70*bite,0,0) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(.10*windup-.18*bite,0,0) end
             for _,key in ipairs({"FL","FR"}) do
               if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(-.23*windup+.26*bite,0,0) end
               if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.20*windup+.10*bite,0,0) end
             end
             for _,key in ipairs({"BL","BR"}) do
               if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(.17*windup-.25*bite,0,0) end
-              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.24*windup,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.24*windup+.08*bite,0,0) end
+            end
+          elseif mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY" then
+            -- [멧돼지·사슴·토끼] 앞다리 버팀과 뒷다리 추진을 나눠 공격 동작을 구분한다.
+            local ready=mode=="ANTICIPATION" and math.sin(phase*math.pi*.5) or 0
+            local strike=mode=="ATTACK" and math.sin(phase*math.pi) or 0
+            local recover=mode=="RECOVERY" and 1-phase or 0
+            local charge=row.species=="boar" and 1.20 or row.species=="deer" and .95 or .72
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(.12*ready-.23*strike*charge+.10*recover,0,0) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.17*ready-.32*strike*charge+.10*recover,0,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(.22*ready-.40*strike*charge+.14*recover,0,0) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(-.10*ready+.18*strike,0,0) end
+            for _,key in ipairs({"FL","FR","BL","BR"}) do
+              local front=key:sub(1,1)=="F"
+              if row.available[key.."Hip"] then
+                row.poses[key.."Hip"]=CFrame.Angles((front and -.25 or .21)*ready
+                  +(front and .31 or -.29)*strike*charge,0,0)
+              end
+              if row.available[key.."Knee"] then
+                row.poses[key.."Knee"]=CFrame.Angles((front and .24 or .31)*ready
+                  +(front and .08 or .19)*strike,0,0)
+              end
             end
           end
         end
