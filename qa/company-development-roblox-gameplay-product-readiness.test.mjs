@@ -660,12 +660,12 @@ test('managed foundation in the middle must not hide real gameplay or generic sk
   assert.equal(onlyFoundation.implementedCapabilities.WORLD,false);
   assert.equal(onlyFoundation.implementedCapabilities.CORE_GAMEPLAY_STATE,false);
   const evolvedSource=evaluateRobloxGameplayProductReadiness({...args,server:source});
-  // This source now includes real named gameplay implementations alongside legacy handlers.
-  // Never declare an evolved implementation a generic skeleton solely due to stale helpers.
+  // [회귀 검증] 현재 party-rpg는 범용 핸들러만 포함하므로 실제 게임 구현으로 오판하면 안 된다.
+  // native foundation 블록이 앞이나 중간에 있어도 제네릭 스켈레톤 경고를 유지한다.
   assert.ok(evolvedSource.placeholderDebt.genericScopeHandlerCount>=3);
-  assert.ok(evolvedSource.placeholderDebt.meaningfulGameplayFunctionCount>=2);
-  assert.equal(evolvedSource.antiSkeletonPassed,true);
-  assert.ok(!evolvedSource.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
+  assert.ok(evolvedSource.placeholderDebt.meaningfulGameplayFunctionCount<2);
+  assert.equal(evolvedSource.antiSkeletonPassed,false);
+  assert.ok(evolvedSource.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
 });
 
 test('F0 preserves portal RPG native genre only with same-game proven original B gameplay',()=>{
