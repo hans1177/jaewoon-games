@@ -2645,28 +2645,32 @@ local function meadowDodge(player,sign,id)
     local terrainGround=root.Position.Y-root.Size.Y*.5
     if not floor or floor.Material==Enum.Material.Water
       or floor.Normal.Y<.65 or math.abs(floor.Position.Y-terrainGround)>4 then return false end
-    -- [서버 승인 회피] 7스터드 거리·.48초 무적·4초 재사용은 그대로, 옆걸음 이동만 .30초로 빠르게 한다.
+    -- [서버 승인 회피] 7스터드 거리·.48초 무적·4초 재사용을 유지하고 옆 점프 이동만 .26초로 한다.
     local dodgeOrigin=character:GetPivot()
     local dodgeFacing=CFrame.lookAt(dodgeOrigin.Position,dodgeOrigin.Position+facing)
     local dodgeOffset=side*distance
+    -- [실제 측면 도약] 낮은 천장·높은 장애물이 있으면 점프 높이만 제거한다.
+    -- 기존 측면 안전 검사, 7스터드 거리와 서버 무적 판정은 변경하지 않는다.
+    local overhead=workspace:Raycast(start,Vector3.new(0,.9,0),ray)
+    local elevatedWall=workspace:Raycast(start+Vector3.new(0,.62,0),side*distance,ray)
+    local hopHeight=(not overhead and not elevatedWall) and .62 or 0
     local defense=meadowDefense[player] or {}
     defense.dodgeUntil=now+.48
     meadowDefense[player]=defense
     player:SetAttribute("ApprovedActionTarget",root.Position)
     local oldAutoRotate=humanoid.AutoRotate
     humanoid.AutoRotate=false
+    -- 첫 프레임부터 적을 향한다. 회피 방향으로 몸통을 돌리지 않는다.
+    character:PivotTo(dodgeFacing)
     task.spawn(function()
       local movementStarted=os.clock()
       while character.Parent and player.Character==character
         and root:IsDescendantOf(character) and humanoid.Health>0 do
-        local t=math.clamp((os.clock()-movementStarted)/.30,0,1)
-        -- 적을 향해 회전하며 좌우 수평 스텝. 구르지 않고 착지 후 원래 회전 제어로 복귀한다.
+        local t=math.clamp((os.clock()-movementStarted)/.26,0,1)
+        -- [빠른 옆 점프] 수평 이동과 낮은 공중 호를 함께 적용, 마지막 프레임에 원래 높이로 착지.
         local eased=.5-.5*math.cos(math.pi*t)
-        -- 시선 고정도 급정지 없이 빠르게 감속해 머리와 상체가 반대로 꺾이지 않게 한다.
-        local turn=math.clamp(t/.32,0,1)
-        turn=turn*turn*(3-2*turn)
-        local gaze=dodgeOrigin:Lerp(dodgeFacing,turn)
-        character:PivotTo(gaze+dodgeOffset*eased)
+        local hop=hopHeight*math.sin(math.pi*t)
+        character:PivotTo(dodgeFacing+dodgeOffset*eased+Vector3.new(0,hop,0))
         if t>=1 then break end
         RunService.Heartbeat:Wait()
       end
