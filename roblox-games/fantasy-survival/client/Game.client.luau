@@ -3608,42 +3608,32 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard and not skillMotionCharacter:FindFirstChildOfClass("Tool") then
-      -- [맨손 복싱 방어] 무릎→등→어깨→팔꿈치 순으로 접어 한쪽 관자놀이를 감싼다.
-      -- 턱을 내리고 반대쪽 팔꿈치는 어깨 아래에서 몸통을 지킨다. 새 무기·파츠를 생성하지 않는다.
-      local crouch=math.clamp(phase/.12,0,1)
+      -- [맨손 복싱 방어] 고개는 숙이되 적을 주시. 팔꿈치를 몸에 붙이고 한팔은 얼굴 옆, 다른 팔은 어깨 아래.
+      -- 방어를 누르자마자 짧게 움츠리고, 유지 중에는 큰 움직임 없이 호흡한다.
+      local crouch=math.clamp(phase/.11,0,1)
       crouch=crouch*crouch*(3-2*crouch)*release
-      local elbow=math.clamp((phase-.025)/.115,0,1)
+      local elbow=math.clamp((phase-.018)/.105,0,1)
       elbow=elbow*elbow*(3-2*elbow)*release
-      -- [복싱 3중 지연] 무릎/등 → 양 어깨 → 팔꿈치 → 턱이 차례로 접히며 보호 자세를 완성한다.
-      local shoulder=math.clamp((phase-.016)/.105,0,1)
-      shoulder=shoulder*shoulder*(3-2*shoulder)*release
-      local chin=math.clamp((phase-.045)/.13,0,1)
-      chin=chin*chin*(3-2*chin)*release
-      local breathing=math.sin((os.clock()-skillMotionStart)*5.1)*.014*guard
-      local weightShift=math.sin((os.clock()-skillMotionStart)*2.4)*.018*guard
-      local shoulderBreath=math.sin((os.clock()-skillMotionStart)*5.1-.5)*.012*guard
-      skillMotionTargets.Spine=CFrame.new(0,-.16*crouch+breathing,0)
-        *CFrame.Angles(-.28*crouch+.015*guard,.06*guard+weightShift,-.045*guard)
-      skillMotionTargets.Chest=CFrame.Angles(-.18*shoulder+breathing,.075*guard,-.06*guard)
-      skillMotionTargets.Head=CFrame.Angles(-.24*guard,-.075*guard,.055*guard)
-        *CFrame.Angles(-.035*chin+.008*shoulderBreath,0,.015*weightShift)
-      -- 왼팔: 왼쪽 관자놀이와 귀를 보호하는 높은 밀착 가드.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.91*guard,.18*shoulder,-.31*shoulder)
-        *CFrame.Angles(-.035*shoulderBreath,0,0)
-      skillMotionTargets.ForearmL=CFrame.Angles(-1.25*elbow,0,-.22*elbow)
-      skillMotionTargets.HandL=CFrame.Angles(-.19*elbow,-.08*elbow,-.055*chin)
-      -- 오른팔: 어깨보다 낮게 붙여 턱과 갈비뼈를 지킨다.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.55*guard,-.09*shoulder,.19*shoulder)
-        *CFrame.Angles(-.018*shoulderBreath,0,0)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.12*elbow,0,.12*elbow)
-      skillMotionTargets.HandR=CFrame.Angles(-.12*elbow,0,.06*elbow+.025*chin)
-      -- 양 무릎을 살짝 비틀어 낮은 중심을 유지하며 미세한 호흡만 허용한다.
-      skillMotionTargets.ThighL=CFrame.Angles(.23*crouch,0,-.10*guard)
-      skillMotionTargets.ThighR=CFrame.Angles(.29*crouch,0,.10*guard)
-      skillMotionTargets.ShinL=CFrame.Angles(.29*crouch,0,0)
-      skillMotionTargets.ShinR=CFrame.Angles(.31*crouch,0,0)
-      skillMotionTargets.FootL=CFrame.Angles(-.07*crouch,0,-.025*weightShift)
-      skillMotionTargets.FootR=CFrame.Angles(-.09*crouch,0,.025*weightShift)
+      local breathing=math.sin((os.clock()-skillMotionStart)*3.9)*.009*guard
+      skillMotionTargets.Spine=CFrame.new(0,-.11*crouch+breathing,0)
+        *CFrame.Angles(-.18*crouch,.055*guard,-.025*guard)
+      skillMotionTargets.Chest=CFrame.Angles(-.055*guard,.04*guard,-.03*guard)
+      skillMotionTargets.Head=CFrame.Angles(-.095*guard,-.045*guard,.02*guard)
+      -- 왼쪽 주먹: 광대뼈와 관자놀이 근처. 어깨를 과하게 올리지 않는다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.69*guard,.10*guard,-.19*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.13*elbow,0,-.10*elbow)
+      skillMotionTargets.HandL=CFrame.Angles(-.11*elbow,-.05*elbow,0)
+      -- 오른쪽 주먹: 낮은 복싱 가드로 턱 아래와 갈비뼈 보호.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-.39*guard,-.08*guard,.16*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.17*elbow,0,.10*elbow)
+      skillMotionTargets.HandR=CFrame.Angles(-.11*elbow,0,.05*elbow)
+      -- 바닥을 유지한 채 짧게 중심을 낮추고 균형을 잡는다.
+      skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.065*guard)
+      skillMotionTargets.ThighR=CFrame.Angles(.21*crouch,0,.065*guard)
+      skillMotionTargets.ShinL=CFrame.Angles(.21*crouch,0,0)
+      skillMotionTargets.ShinR=CFrame.Angles(.22*crouch,0,0)
+      skillMotionTargets.FootL=CFrame.Angles(-.05*crouch,0,0)
+      skillMotionTargets.FootR=CFrame.Angles(-.05*crouch,0,0)
     else
       skillMotionTargets.Spine=CFrame.new(0,-.06*guard,0)
         *CFrame.Angles(-.14*guard+.08*counter,-.10*guard,.07*guard)
