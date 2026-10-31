@@ -2804,6 +2804,12 @@ local function onSurvivalPlayerAdded(player)
   end
   player:SetAttribute("MeadowResumeReady",resumePosition==nil)
   player:SetAttribute("MeadowEnteredWorld",false)
+  -- [옵션 저장] 구형 세이브와 위치 기록을 보존하고 UI 배치 문자열만 선택적으로 복원한다.
+  local savedLayout=validSaved and typeof(saved)=="table" and saved.MeadowTopButtonsLayout or nil
+  if typeof(savedLayout)=="string" and #savedLayout<=40
+    and savedLayout:match("^%d+,%d+,%d+,%d+,%d+,%d+,%d+,%d+$") then
+    player:SetAttribute("MeadowTopButtonsLayout",savedLayout)
+  end
   persistenceAllowed[player] = validSaved
   player:SetAttribute("MeadowProfileHadSave",validSaved and typeof(saved)=="table")
   player:SetAttribute("MeadowNewGameResult","IDLE")
@@ -2864,6 +2870,21 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if actionId=="meadow:enter-world" then
     -- 타이틀 입장이 끝난 세션만 종료 시점의 위치와 진행도를 저장한다.
     player:SetAttribute("MeadowEnteredWorld",true)
+    return
+  end
+  -- [버튼 편집] UI 좌표 4쌍만 허용한다. 전투·이동·보상·진행도는 클라이언트가 변경하지 못한다.
+  if string.sub(actionId,1,17)=="meadow:ui-layout:" then
+    if player:GetAttribute("MeadowEnteredWorld")~=true then return end
+    local encoded=string.sub(actionId,18)
+    if #encoded>40 or not encoded:match("^%d+,%d+,%d+,%d+,%d+,%d+,%d+,%d+$") then return end
+    local values={}
+    for number in encoded:gmatch("%d+") do values[#values+1]=tonumber(number) end
+    if #values~=8 then return end
+    for index=1,4 do
+      local x,y=values[index*2-1],values[index*2]
+      if x<120 or x>880 or y<100 or y>550 then return end
+    end
+    player:SetAttribute("MeadowTopButtonsLayout",encoded)
     return
   end
   -- [첫 화면] 기존 저장 데이터는 기본적으로 보존한다.
@@ -2958,6 +2979,11 @@ local function saveSurvivalProgress(player)
   if player:GetAttribute("MeadowEnteredWorld")~=true then return false end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
+  local layout=player:GetAttribute("MeadowTopButtonsLayout")
+  if typeof(layout)=="string" and #layout<=40
+    and layout:match("^%d+,%d+,%d+,%d+,%d+,%d+,%d+,%d+$") then
+    snapshot.MeadowTopButtonsLayout=layout
+  end
   -- [이어하기 위치] 서버 캐릭터의 실제 위치만 저장한다. 클라이언트 좌표는 받지 않는다.
   local character=player.Character
   local root=character and character:FindFirstChild("HumanoidRootPart")
