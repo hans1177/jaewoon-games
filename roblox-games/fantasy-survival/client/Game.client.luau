@@ -127,7 +127,15 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
-local meadowRightActionAtlas="rbxassetid://81665484719308" -- RIGHT_ACTION_ICON_ATLAS
+local meadowRealActionIcons={
+  fist="rbxassetid://74889533858270",
+  dodge="rbxassetid://120347249421022",
+  guard="rbxassetid://81631343083705",
+  potion="rbxassetid://120656085154237",
+  interact="rbxassetid://138525825083950",
+  sprint="rbxassetid://128151987225929",
+  bag="rbxassetid://127437456512278"
+} -- CC0_REAL_ACTION_ICONS
 local reducedEffects=game:GetService("UserInputService").TouchEnabled
 local meadowEffectsGroup=Instance.new("SoundGroup")
 meadowEffectsGroup.Name="MeadowEffects";meadowEffectsGroup.Volume=.75
@@ -1959,10 +1967,10 @@ meadowSkillDock.AnchorPoint=Vector2.new(1,1)
 meadowSkillDock.Parent=gui
 -- 외부 CC0 등록 아틀라스의 실제 의미가 맞는 아이콘만 매칭한다.
 local meleeSkills={
-  {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),0,2},
-  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,4},
-  {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),1,3},
-  {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,nil},
+  {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),nil,"fist"},
+  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,"dodge"},
+  {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),nil,"guard"},
+  {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,"potion"},
 }
 -- 네 위치는 기존 세이브의 별도 UI 문자열에만 보존한다. 전투·재화 값에는 영향이 없다.
 local meadowTopDefaults={{.235,.275},{.500,.120},{.800,.275},{.500,.510}}
@@ -2026,102 +2034,20 @@ local function styleMeadowCombatButton(button,color)
 end
 -- [오른쪽 전용 그림 아이콘] 맨손 발차기·회피·질주·손동작은 실제 Gui 그림으로 표시한다.
 -- 몬스터·맵 파츠가 아닌 UI 레이어이며 기존 CC0 장갑/방패/가방 자산은 그대로 사용한다.
-local function paintMeadowActionArt(button,role,tint)
-  local art=Instance.new("Frame")
-  art.Name="ActionArtwork"
-  art.AnchorPoint=Vector2.new(.5,0)
-  art.Position=UDim2.fromScale(.5,.08)
-  art.Size=UDim2.fromScale(.78,.72)
-  art.BackgroundTransparency=1
-  art.ZIndex=15
-  art.Parent=button
-  local function limb(name,x,y,w,h,angle)
-    local p=Instance.new("Frame")
-    p.Name=name
-    p.Position=UDim2.fromScale(x,y)
-    p.Size=UDim2.fromScale(w,h)
-    p.Rotation=angle or 0
-    p.BackgroundColor3=tint
-    p.BorderSizePixel=0
-    p.ZIndex=16
-    p.Parent=art
-    local c=Instance.new("UICorner")
-    c.CornerRadius=UDim.new(1,0)
-    c.Parent=p
-    return p
-  end
-  if role=="KICK" then
-    -- [기존 자동검사 호환] 실루엣을 이름 있는 스킬 아이콘으로 유지한다.
-    local glyph=art
-    glyph.Name="SkillSymbol"
-    limb("Head",.20,.10,.20,.20,0)
-    limb("Chest",.31,.31,.16,.35,-22)
-    limb("BackArm",.06,.34,.31,.12,19)
-    limb("FrontArm",.45,.32,.27,.11,-26)
-    limb("FlyingKick",.48,.56,.50,.14,-10)
-    limb("Shoe",.84,.49,.15,.19,-11)
-    limb("GroundLeg",.28,.57,.15,.37,29)
-  elseif role=="DODGE" or role=="SPRINT" then
-    limb("Head",.47,.04,.19,.19,0)
-    limb("Chest",.39,.26,.16,.38,24)
-    limb("FrontArm",.53,.38,.33,.11,-35)
-    limb("BackArm",.16,.31,.29,.11,35)
-    limb("FrontLeg",.45,.60,.41,.13,-35)
-    limb("RearLeg",.15,.67,.33,.12,28)
-    if role=="SPRINT" then
-      limb("SpeedTrailOne",.00,.37,.18,.055,0)
-      limb("SpeedTrailTwo",.00,.57,.14,.055,0)
-    else
-      limb("EvadeTrail",.03,.54,.16,.055,-31)
-    end
-  elseif role=="HAND" then
-    limb("Palm",.29,.43,.49,.44,-5)
-    limb("Thumb",.12,.48,.27,.14,-34)
-    limb("FingerOne",.31,.10,.12,.43,-6)
-    limb("FingerTwo",.45,.04,.13,.44,0)
-    limb("FingerThree",.59,.13,.12,.37,5)
-    limb("FingerFour",.71,.26,.11,.28,12)
-    limb("Wrist",.39,.81,.33,.17,0)
-  elseif role=="POTION" then
-    -- 이모지 폰트마다 색과 모양이 달라지는 문제 없이 붉은 회복 병을 표시한다.
-    local neck=limb("BottleNeck",.37,.25,.27,.18,0)
-    neck.BackgroundColor3=Color3.fromRGB(210,221,229)
-    local liquid=limb("RedHealingPotion",.16,.40,.68,.51,0)
-    local outline=Instance.new("UIStroke")
-    outline.Color=Color3.fromRGB(244,225,213)
-    outline.Thickness=1.8
-    outline.Parent=liquid
-    local glow=Instance.new("UIGradient")
-    glow.Color=ColorSequence.new(Color3.fromRGB(255,125,118),Color3.fromRGB(150,19,45))
-    glow.Rotation=135
-    glow.Parent=liquid
-    local shine=limb("GlassShine",.27,.48,.13,.27,-12)
-    shine.BackgroundColor3=Color3.fromRGB(255,218,210)
-    local cap=limb("BottleCork",.31,.11,.38,.18,0)
-    cap.BackgroundColor3=Color3.fromRGB(189,131,73)
-  end
-end
--- [시안 원본 버튼 자산] 승인된 이미지 등록 후 오른쪽 7개 버튼에 시안 원본을 적용.
-local function applyMeadowRightActionImage(button,slot)
-  if not slot or meadowRightActionAtlas=="" then return false end
-  -- 원본 작은 스프라이트 바깥 가장자리는 숨기고 Roblox 네이티브 원형 테두리로 표시한다.
-  button.BackgroundTransparency=0
-  local rim=button:FindFirstChild("GoldSkillRim")
-  if rim then rim.Enabled=true;rim.Thickness=1.8 end
-  local inner=button:FindFirstChild("PolishedInnerRing")
-  if inner then inner.Visible=false end
-  local sprite=Instance.new("ImageLabel")
-  sprite.Name="OriginalRightActionIcon"
-  sprite.BackgroundTransparency=1
-  sprite.Image=meadowRightActionAtlas
-  sprite.ImageRectOffset=Vector2.new((slot-1)*40,0)
-  sprite.ImageRectSize=Vector2.new(40,40)
-  sprite.ScaleType=Enum.ScaleType.Fit
-  sprite.AnchorPoint=Vector2.new(.5,.5)
-  sprite.Position=UDim2.fromScale(.5,.5)
-  sprite.Size=UDim2.fromScale(.91,.91)
-  sprite.ZIndex=20
-  sprite.Parent=button
+-- [실제 CC0 액션 아이콘] 원본 등록 PNG만 표시한다. 스크린샷 크롭·그림 도형 금지.
+local function applyMeadowRightActionImage(button,role)
+  local imageId=meadowRealActionIcons[role]
+  if not imageId then return false end
+  local icon=Instance.new("ImageLabel")
+  icon.Name="OriginalRightActionIcon"
+  icon.BackgroundTransparency=1
+  icon.Image=imageId
+  icon.ScaleType=Enum.ScaleType.Fit
+  icon.AnchorPoint=Vector2.new(.5,.5)
+  icon.Position=UDim2.fromScale(.5,.45)
+  icon.Size=UDim2.fromScale(.76,.76)
+  icon.ZIndex=20
+  icon.Parent=button
   return true
 end
 -- [시안 이름표] 어두운 화면에서도 스킬명이 가려지지 않도록 버튼 아래 별도 검정·금색 이름표를 둔다.
@@ -2149,9 +2075,6 @@ for index,skill in ipairs(meleeSkills)do
     -- 어퍼컷은 CC0 장갑 원본, 막기는 CC0 방패 원본을 사용한다.
   end
   -- 회피는 승인된 기존 이미지 4번을 직접 사용한다. 회복은 붉은 물약으로 명확히 구분한다.
-  if index==4 then
-    paintMeadowActionArt(button,"POTION",Color3.fromRGB(221,42,57))
-  end
   applyMeadowRightActionImage(button,skill[5])
   local nameplate=Instance.new("TextLabel")
   nameplate.Name="SkillNameplate"..index
@@ -2164,7 +2087,7 @@ for index,skill in ipairs(meleeSkills)do
   nameplate.TextStrokeTransparency=.55
   nameplate.Font=Enum.Font.GothamBold
   nameplate.TextSize=13;nameplate.ZIndex=17
-  nameplate.Visible=meadowRightActionAtlas=="" or skill[5]==nil
+  nameplate.Visible=true
   nameplate.Parent=meadowSkillDock
   local plateCorner=Instance.new("UICorner")
   plateCorner.CornerRadius=UDim.new(1,0);plateCorner.Parent=nameplate
@@ -2196,9 +2119,9 @@ end
 -- 기본 공격은 기존 화면 터치/키보드로 계속 사용하고 별도 공격 버튼은 제거한다.
 -- [오른쪽 보조 버튼] 기존 회피·질주·채집과 인벤토리 탭을 시안의 4개 원형 버튼에 연결.
 local meadowUtilityActions={
-  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"",nil,"HAND",6},
-  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"",nil,"SPRINT",5},
-  {"MEADOW_INVENTORY","가방",Color3.fromRGB(219,184,124),"",4,nil,7},
+  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"",nil,nil,"interact"},
+  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"",nil,nil,"sprint"},
+  {"MEADOW_INVENTORY","가방",Color3.fromRGB(219,184,124),"",nil,nil,"bag"},
 }
 local meadowSprintAuto=false
 local meadowUtilityButtons={}
@@ -2221,9 +2144,7 @@ for index,info in ipairs(meadowUtilityActions)do
     icon.Size=UDim2.fromScale(.68,.68)
     icon.ZIndex=15;icon.Parent=button
   end
-  if not applyMeadowRightActionImage(button,info[7]) and info[6] then
-    paintMeadowActionArt(button,info[6],Color3.fromRGB(242,243,237))
-  end
+  applyMeadowRightActionImage(button,info[7])
   -- [이름표] 작은 하단 버튼에서도 조작 종류가 읽히도록 버튼 안에 표기.
   local label=Instance.new("TextLabel")
   label.Name="UtilityCaption"
@@ -2232,7 +2153,7 @@ for index,info in ipairs(meadowUtilityActions)do
   label.Size=UDim2.new(1,-2,0,13)
   label.BackgroundTransparency=1
   label.Text=info[2]
-  label.Visible=index==2 or meadowRightActionAtlas==""
+  label.Visible=true
   label.TextColor3=Color3.fromRGB(255,245,222)
   label.TextStrokeColor3=Color3.fromRGB(5,8,13)
   label.TextStrokeTransparency=.25
