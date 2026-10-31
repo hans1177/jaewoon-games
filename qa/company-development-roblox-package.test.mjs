@@ -1650,8 +1650,16 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('{"scope-coreloop-1-6ebe58f496","상호작용"') ||
     client.includes('{"scope-coreloop-1-6ebe58f496","채집"'), 'server-bound gather action remains on the utility dock');
   assert.ok(client.includes('{"FL",0,0},{"FR",.5,.5},{"BL",.75,.5},{"BR",.25,0}'));
-  assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(_,processedByUI\)/);
+  // [공식 Roblox 터치 입력] TouchTapInWorld는 Vector2 단일 좌표, TouchTap은 배열을 전달한다.
+  assert.match(client,/UserInputService.TouchTapInWorld:Connect\(function\(position,processedByUI\)/);
+  assert.match(client,/activateMeadowWorldTap\(position\)/);
+  assert.match(client,/UserInputService.TouchTap:Connect\(function\(positions\)/);
+  assert.match(client,/if positions and #positions==1 then activateMeadowWorldTap\(positions\[1\]\) end/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
+  assert.match(client,/elseif not activateNearbyMeadowInteraction\(nil\) then activateMeadowAction\(info\[1\]\) end/);
+  assert.match(client,/button.Active=ready and stamina>=cost/);
+  assert.match(client,/target:InputHoldBegin\(\)/);
+  assert.doesNotMatch(client,/TouchTapInWorld:Connect\(function\(positions,processedByUI\)/);
   assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,(?:nil|meadowHealthTrack),multiplayerStatus,/);
   assert.match(client,/pages=meadowPages/);
   assert.ok(client.includes('hideButton=true'),
