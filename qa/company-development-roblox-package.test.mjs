@@ -2176,6 +2176,8 @@ test('Forest minimap south aligns with existing circular radar and action is ser
   assert.match(server,/\["scope-coreloop-1-6ebe58f496"\]=gatherNearestResource/);
   const roles=['fist','dodge','guard','potion','interact','sprint','bag'];
   if(registry.nativeActionIcons?.registrationVerified===true){
+    assert.equal(Object.keys(registry.nativeActionIcons.icons).length,7,'all seven original icons must be registered');
+    assert.equal(registry.rightActionIcons.runtimeReplacedBy,'nativeActionIcons');
     assert.match(client,/local meadowRealActionIcons=\{/);
     assert.doesNotMatch(client,/meadowRightActionAtlas|paintMeadowActionArt|ImageRectOffset=Vector2\.new\(\(slot-1\)\*40,0\)/);
     for(const role of roles){
@@ -2183,6 +2185,9 @@ test('Forest minimap south aligns with existing circular radar and action is ser
       assert.match(String(row.assetId),/^[1-9]\d*$/);
       assert.equal(row.importVerified,true);
       assert.equal(row.license,'CC0-1.0');
+      assert.equal(row.width,128);
+      assert.equal(row.height,128);
+      assert.match(row.sourceSha256,/^[0-9a-f]{64}$/);
       assert.ok(client.includes(role+'="rbxassetid://'+row.assetId+'"'),'native role binding missing: '+role);
     }
     assert.match(client,/\{"skill-meadow-heal","물약",Color3\.fromRGB\(224,85,94\),nil,"potion"\}/);
