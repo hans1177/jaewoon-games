@@ -127,14 +127,14 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
--- [오른쪽 아이콘] 외부 원본 등록 전에는 기존 승인 PNG를 사용한다. 물약·가방은 유지한다.
+-- [오른쪽 아이콘] 외부 액션 5종 / 기존 물약·가방 2종
 local meadowRealActionIcons={
-  fist="rbxassetid://74889533858270",
-  dodge="rbxassetid://120347249421022",
-  guard="rbxassetid://81631343083705",
+  fist="rbxassetid://100103531908844",
+  dodge="rbxassetid://72836280157991",
+  guard="rbxassetid://121200565156291",
   potion="rbxassetid://120656085154237",
-  interact="rbxassetid://138525825083950",
-  sprint="rbxassetid://128151987225929",
+  interact="rbxassetid://106909213540059",
+  sprint="rbxassetid://94622960339688",
   bag="rbxassetid://127437456512278"
 } -- CC0_REAL_ACTION_ICONS
 local reducedEffects=game:GetService("UserInputService").TouchEnabled
