@@ -1376,7 +1376,8 @@ test('fantasy meadow binds six original CC0 creature rigs and prevents repeating
   assert.match(client,/constraint and joint.Attachment1.WorldPosition/);
   assert.doesNotMatch(client,/\(joint:IsA\("Motor6D"\) or joint:IsA\("AnimationConstraint"\)\)\s*and joint.Part0/);
   assert.match(client,/joint:IsA\("Bone"\)/);
-  assert.match(client,/if sourceChannels\[name\] and \(not joints\[name\] or constraint\) then/);
+  assert.match(client,/if sourceChannels\[name\] and \(not joints\[name\] or constraint/);
+  assert.match(client,/species=="wolf" and joint:IsA\("Bone"\) and not joints\[name\]:IsA\("Bone"\)/);
   assert.match(client,/FLKnee=true,FRKnee=true,BLKnee=true,BRKnee=true/);
   assert.match(client,/local actualRig=count>=2 and movingJoints==true/);
   assert.match(client,/UNRIGGED_SOURCE_MESH_NEEDS_ANIMATED_ASSET/);
@@ -1791,8 +1792,11 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   assert.match(client,/if os.clock\(\)<dodgePoseUntil then return false end/);
-  assert.match(client,/if os.clock\(\)>=dodgePoseUntil then finishMeadowSkillPose\(\) end/);
+  assert.match(client,/if skillMotionR15 and os.clock\(\)>=skillMotionDeadline then finishMeadowSkillPose\(\) end/);
   assert.match(client,/if isDodge then dodgePoseUntil=skillMotionDeadline end/);
+  assert.match(client,/if isGuard or isParry then dodgePoseUntil=0 end/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.01\*guard/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.46\*elbow/);
   // [회피 입력] 모바일 스틱 수평 방향에 따라 기존 서버의 좌우 행동을 선택한다.
   assert.match(client,/local stick=human\.MoveDirection:Dot\(horizontal\.Unit\)/);
   assert.match(client,/stick>\.2 then actionId="skill-meadow-dodge-right"/);
@@ -1830,9 +1834,10 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
   assert.match(dodge,/local hopHeight=\(not overhead and not elevatedWall\) and \.62 or 0/);
-  assert.match(dodge,/character:PivotTo\(dodgeFacing\)/);
+  assert.match(dodge,/local turn=math\.clamp\(t\/\.24,0,1\)/);
+  assert.match(dodge,/local gaze=dodgeOrigin:Lerp\(dodgeFacing,turn\)/);
   assert.match(dodge,/local hop=hopHeight\*math\.sin\(math\.pi\*t\)/);
-  assert.match(dodge,/character:PivotTo\(dodgeFacing\+dodgeOffset\*eased\+Vector3\.new\(0,hop,0\)\)/);
+  assert.match(dodge,/character:PivotTo\(gaze\+dodgeOffset\*eased\+Vector3\.new\(0,hop,0\)\)/);
   assert.match(dodge,/workspace:Raycast\(start,side\*7,ray\)/);
   assert.match(dodge,/if distance<2 then return false end/);
   assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
@@ -1996,6 +2001,28 @@ test('마력숲 초원 수문장은 기존 골렘·지역 서식지·보상을 �
  assert.match(server,/NativeMobMotionDuration/);
  assert.match(server,/awardProgress\(player,target.isBoss and 75 or target.isAlpha and 35 or 12,/);
  assert.match(server,/target.isBoss and 45 or target.isAlpha and 18 or 5\)/);
+});
+
+// [액션·늑대 모션 복구] 기존 로블록스 클립과 스킨 Bone을 중복 구동하지 않고 전환한다.
+test('마력숲 공격 승인이 액션을 조기 중단하지 않고 늑대 원본 걷기·물기 동작을 보존한다',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const approve=client.slice(client.indexOf('player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()\n  -- [액션 모션 유지]'),
+    client.indexOf('player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect('));
+  assert.match(approve,/if skillMotionR15 and os\.clock\(\)>=skillMotionDeadline then finishMeadowSkillPose\(\) end/);
+  assert.doesNotMatch(approve,/os\.clock\(\)>=dodgePoseUntil/);
+  assert.match(client,/species=="wolf" and joint:IsA\("Bone"\) and not joints\[name\]:IsA\("Bone"\)/);
+  assert.match(client,/local controller=actualRig and meadowMobMotion and meadowMobMotion\.BindJointPose/);
+  assert.match(client,/local wolfAction=row\.species=="wolf" and row\.controller/);
+  assert.match(client,/mode=="ATTACK" and not row\.nativeTracks\.ATTACK/);
+  assert.match(client,/if row\.playingTrack then row\.playingTrack:Stop\(\.1\);row\.playingTrack=nil end/);
+  assert.match(client,/row\.species=="wolf" and row\.controller and missing/);
+  assert.match(client,/track\.Length<=0/);
+  assert.match(client,/model:SetAttribute\("NativeCreatureRigMode","ORIGINAL_JOINT_RIG"\)/);
+  assert.match(client,/row\.controller\.Step\(row\.poses,poseDt\)/);
+  assert.doesNotMatch(client,/ClientWolfLegMotion/);
+  assert.match(server,/enemy\.model:SetAttribute\("NativeMobMotion",motion\)/);
+  assert.match(server,/local hitDamage=math\.floor\(enemy\.damage\/hitCount\)/);
 });
 
 test('마력숲 숲 교체는 텍스처 내장 CC0 원본과 실제 늑대 스킨 관절을 사용한다',()=>{
