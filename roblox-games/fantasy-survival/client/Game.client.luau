@@ -79,6 +79,22 @@ local predictedCombatSequence=0
 local predictedCombatUntil=0
 local pendingCombatMotion={}
 local function activateMeadowAction(actionId)
+  -- [회피 입력] 기존 회피 버튼 한 개로 모바일 스틱/키보드의 좌우 방향을 선택한다.
+  -- 카메라 기준 수평 이동만 읽으며, 중립 입력은 기존 왼쪽 회피를 유지한다.
+  if actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right" then
+    local character=player.Character
+    local human=character and character:FindFirstChildOfClass("Humanoid")
+    local camera=workspace.CurrentCamera
+    if human and camera then
+      local right=camera.CFrame.RightVector
+      local horizontal=Vector3.new(right.X,0,right.Z)
+      if horizontal.Magnitude>.01 then
+        local stick=human.MoveDirection:Dot(horizontal.Unit)
+        if stick>.2 then actionId="skill-meadow-dodge-right"
+        elseif stick<-.2 then actionId="skill-meadow-dodge-left" end
+      end
+    end
+  end
   local combat=false
   for _,action in ipairs(Config.Actions) do
     if action.Id==actionId then combat=action.Kind=="COMBAT";break end
@@ -3344,10 +3360,11 @@ RunService.PreSimulation:Connect(function(dt)
     local travel=math.sin(math.pi*math.clamp((phase-.05)/.88,0,1))
     local recovery=math.sin(math.pi*math.clamp((phase-.25)/.7,0,1))
     -- 무게 중심을 먼저 낮추고, 진행 방향으로 몸통을 기울인 뒤 착지 시 바로 세운다.
-    skillMotionTargets.Spine=CFrame.new(0,-.045*lean,0)
-      *CFrame.Angles(-.24*lean,sign*.16*travel,sign*.36*lean)
-    skillMotionTargets.Chest=CFrame.Angles(-.09*lean,0,-sign*.12*travel)
-    skillMotionTargets.Head=CFrame.Angles(.10*lean,-sign*.10*travel,-sign*.08*lean)
+    -- [적 주시 좌우 스텝] 허리만 짧게 기울이고 시선은 정면에 고정한다.
+    skillMotionTargets.Spine=CFrame.new(0,-.085*lean,0)
+      *CFrame.Angles(-.19*lean,sign*.035*travel,sign*.25*lean)
+    skillMotionTargets.Chest=CFrame.Angles(-.08*lean,-sign*.025*travel,-sign*.07*travel)
+    skillMotionTargets.Head=CFrame.Angles(-.12*lean,-sign*.025*travel,-sign*.045*lean)
     -- 좌우 회피 모두 선행 다리로 내딛고 반대쪽 다리를 접어 회수한다.
     local leadLeft=sign<0
     local leadHip= -.34*lean+.10*recovery
@@ -3373,20 +3390,39 @@ RunService.PreSimulation:Connect(function(dt)
     release=release*release*(3-2*release)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
-    skillMotionTargets.Spine=CFrame.new(0,-.06*guard,0)
-      *CFrame.Angles(-.14*guard+.08*counter,-.10*guard,.07*guard)
-    skillMotionTargets.Chest=CFrame.Angles(-.11*guard,-.08*guard,0)
-    skillMotionTargets.Head=CFrame.Angles(.12*guard,.1*guard,0)
-    skillMotionTargets.UpperArmL=CFrame.Angles(-1.12*guard-.18*counter,-.17*guard,-.28*guard)
-    skillMotionTargets.UpperArmR=CFrame.Angles(-1.24*guard-.24*counter,.20*guard,.28*guard)
-    skillMotionTargets.ForearmL=CFrame.Angles(-1.08*guard,0,-.12*guard)
-    skillMotionTargets.ForearmR=CFrame.Angles(-1.16*guard,0,.12*guard)
-    skillMotionTargets.HandL=CFrame.Angles(-.12*guard,0,0)
-    skillMotionTargets.HandR=CFrame.Angles(-.12*guard,0,0)
-    skillMotionTargets.ThighL=CFrame.Angles(.12*guard,0,-.09*guard)
-    skillMotionTargets.ThighR=CFrame.Angles(.16*guard,0,.09*guard)
-    skillMotionTargets.ShinL=CFrame.Angles(.19*guard,0,0)
-    skillMotionTargets.ShinR=CFrame.Angles(.17*guard,0,0)
+    if isGuard and not skillMotionCharacter:FindFirstChildOfClass("Tool") then
+      -- [맨손 복싱 막기] 고개와 어깨를 숙이고 왼팔을 접어 관자놀이를, 오른팔을 턱 아래에서 보호한다.
+      -- 실제 관절 포즈만 바꾸며 기존 방어·완벽방어 판정 시간은 유지한다.
+      skillMotionTargets.Spine=CFrame.new(0,-.19*guard,0)
+        *CFrame.Angles(-.33*guard,.09*guard,-.04*guard)
+      skillMotionTargets.Chest=CFrame.Angles(-.24*guard,.08*guard,-.09*guard)
+      skillMotionTargets.Head=CFrame.Angles(-.29*guard,-.08*guard,.06*guard)
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.78*guard,.16*guard,-.35*guard)
+      skillMotionTargets.UpperArmR=CFrame.Angles(-.63*guard,-.12*guard,.22*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.30*guard,0,-.20*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.18*guard,0,.14*guard)
+      skillMotionTargets.HandL=CFrame.Angles(-.18*guard,0,-.08*guard)
+      skillMotionTargets.HandR=CFrame.Angles(-.15*guard,0,.06*guard)
+      skillMotionTargets.ThighL=CFrame.Angles(.28*guard,0,-.13*guard)
+      skillMotionTargets.ThighR=CFrame.Angles(.32*guard,0,.12*guard)
+      skillMotionTargets.ShinL=CFrame.Angles(.34*guard,0,0)
+      skillMotionTargets.ShinR=CFrame.Angles(.31*guard,0,0)
+    else
+      skillMotionTargets.Spine=CFrame.new(0,-.06*guard,0)
+        *CFrame.Angles(-.14*guard+.08*counter,-.10*guard,.07*guard)
+      skillMotionTargets.Chest=CFrame.Angles(-.11*guard,-.08*guard,0)
+      skillMotionTargets.Head=CFrame.Angles(.12*guard,.1*guard,0)
+      skillMotionTargets.UpperArmL=CFrame.Angles(-1.12*guard-.18*counter,-.17*guard,-.28*guard)
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.24*guard-.24*counter,.20*guard,.28*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.08*guard,0,-.12*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.16*guard,0,.12*guard)
+      skillMotionTargets.HandL=CFrame.Angles(-.12*guard,0,0)
+      skillMotionTargets.HandR=CFrame.Angles(-.12*guard,0,0)
+      skillMotionTargets.ThighL=CFrame.Angles(.12*guard,0,-.09*guard)
+      skillMotionTargets.ThighR=CFrame.Angles(.16*guard,0,.09*guard)
+      skillMotionTargets.ShinL=CFrame.Angles(.19*guard,0,0)
+      skillMotionTargets.ShinR=CFrame.Angles(.17*guard,0,0)
+    end
   else
     local _,matched=combatMotionSource.SampleProceduralActorMotion(skillMotionState,phase,{
       bodyPlan="BIPED",actorClass="PLAYER",availableJoints=skillMotionAvailable,
