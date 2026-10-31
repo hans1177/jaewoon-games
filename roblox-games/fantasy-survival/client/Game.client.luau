@@ -2016,12 +2016,14 @@ local function activateMeadowWorldTap(point)
   if primaryCombatAction then activateMeadowAction(primaryCombatAction.Id) end
 end
 -- 원본 월드 탭은 유지하고, 투명 HUD가 입력을 처리한 경우 TouchTap으로 정상 공격을 복구한다.
-UserInputService.TouchTapInWorld:Connect(function(positions,processedByUI)
+UserInputService.TouchTapInWorld:Connect(function(position,processedByUI)
   if processedByUI or gui:GetAttribute("GameMenuOpen")==true then return end
-  if positions and positions[1] then activateMeadowWorldTap(positions[1]) end
+  -- 공식 이벤트는 배열이 아닌 단일 Vector2를 전달한다.
+  activateMeadowWorldTap(position)
 end)
 UserInputService.TouchTap:Connect(function(positions)
-  if positions and positions[1] then activateMeadowWorldTap(positions[1]) end
+  -- 전체 화면 터치 이벤트만 Vector2 배열이며, 실제 UI/조이스틱은 기존 필터가 제외한다.
+  if positions and #positions==1 then activateMeadowWorldTap(positions[1]) end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
   if processed or UserInputService.TouchEnabled or gui:GetAttribute("GameMenuOpen")==true then return end
