@@ -104322,9 +104322,9 @@
       "gameName": "심해 잠수부 · 검은 바다의 보물",
       "status": "ACTIVE",
       "generation": "AUTO_MISSING_DESIGN_INTAKE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "GAME_CATEGORY": "PUZZLE",
       "REFERENCE_GAMES": [],
       "REFERENCE_INPUTS": [
@@ -106166,7 +106166,7 @@
       "MOBILE_FIRST": true,
       "autoMissingDesignIntake": true,
       "createdAt": "2026-10-31T12:24:18.028Z",
-      "updatedAt": "2026-10-31T12:24:18.028Z",
+      "updatedAt": "2026-10-31T12:51:30.955Z",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -106189,7 +106189,43 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
-      }
+      },
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/deep-diver/2026-10-31/design-revised.json",
+        "date": "2026-10-31"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/deep-diver/2026-10-31/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "promotion": {
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_ROBLOX_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/deep-diver"
+        },
+        "designBaselineSource": "design/deep-diver/2026-10-31/design-revised.json",
+        "designDate": "2026-10-31",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-31T12:51:30.955Z"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX"
     }
   ],
   "seedMaterials": [
@@ -111845,7 +111881,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-31T07:36:11.525Z",
+  "updatedAt": "2026-10-31T12:51:30.955Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -111991,5 +112027,6 @@
       "survival",
       "territory-war"
     ]
-  }
+  },
+  "policyAuthority": "company-learning/platform-release-roadmap.json"
 }
