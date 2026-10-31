@@ -3416,7 +3416,10 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   local isDodge=id=="skill-meadow-dodge-left" or id=="skill-meadow-dodge-right"
   local isGuard=id=="skill-meadow-guard"
   local isParry=id=="skill-meadow-parry"
-  if os.clock()<dodgePoseUntil and not isDodge then return end
+  -- [막기 복구] 회피 중·회피 직후에도 서버가 승인한 방어는 즉시 새 자세로 전환한다.
+  -- 회피 우선권은 일반 공격에만 남기고 방어와 완벽 막기에는 잘못 적용하지 않는다.
+  if os.clock()<dodgePoseUntil and not (isDodge or isGuard or isParry) then return end
+  if isGuard or isParry then dodgePoseUntil=0 end
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
   if not humanoid or humanoid.Health<=0
@@ -3538,18 +3541,19 @@ RunService.PreSimulation:Connect(function(dt)
       local elbow=math.clamp((phase-.018)/.105,0,1)
       elbow=elbow*elbow*(3-2*elbow)*release
       local breathing=math.sin((os.clock()-skillMotionStart)*3.9)*.009*guard
-      skillMotionTargets.Spine=CFrame.new(0,-.11*crouch+breathing,0)
-        *CFrame.Angles(-.18*crouch,.055*guard,-.025*guard)
-      skillMotionTargets.Chest=CFrame.Angles(-.055*guard,.04*guard,-.03*guard)
-      skillMotionTargets.Head=CFrame.Angles(-.095*guard,-.045*guard,.02*guard)
+      skillMotionTargets.Spine=CFrame.new(0,-.135*crouch+breathing,0)
+        *CFrame.Angles(-.20*crouch,.045*guard,-.02*guard)
+      skillMotionTargets.Chest=CFrame.Angles(-.062*guard,.035*guard,-.025*guard)
+      -- [턱 숙임] 약 15도 전방으로 중심을 낮추되 눈은 적 방향을 유지한다.
+      skillMotionTargets.Head=CFrame.Angles(-.14*guard,-.035*guard,.015*guard)
       -- 왼쪽 주먹: 광대뼈와 관자놀이 근처. 어깨를 과하게 올리지 않는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.69*guard,.10*guard,-.19*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-1.13*elbow,0,-.10*elbow)
-      skillMotionTargets.HandL=CFrame.Angles(-.11*elbow,-.05*elbow,0)
-      -- 오른쪽 주먹: 낮은 복싱 가드로 턱 아래와 갈비뼈 보호.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.39*guard,-.08*guard,.16*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.17*elbow,0,.10*elbow)
-      skillMotionTargets.HandR=CFrame.Angles(-.11*elbow,0,.05*elbow)
+      skillMotionTargets.UpperArmL=CFrame.Angles(-1.01*guard,.12*guard,-.27*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.46*elbow,0,-.12*elbow)
+      skillMotionTargets.HandL=CFrame.Angles(-.10*elbow,-.05*elbow,0)
+      -- 오른쪽 주먹: 어깨보다 낮게, 턱 아래에서 갈비뼈까지 보호한다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-.73*guard,-.09*guard,.22*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.37*elbow,0,.11*elbow)
+      skillMotionTargets.HandR=CFrame.Angles(-.12*elbow,0,.05*elbow)
       -- 바닥을 유지한 채 짧게 중심을 낮추고 균형을 잡는다.
       skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.065*guard)
       skillMotionTargets.ThighR=CFrame.Angles(.21*crouch,0,.065*guard)
