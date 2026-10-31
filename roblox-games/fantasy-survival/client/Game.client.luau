@@ -898,10 +898,10 @@ inventoryGridLayout.CellPadding=UDim2.fromOffset(8,8)
 inventoryGridLayout.SortOrder=Enum.SortOrder.LayoutOrder
 inventoryGridLayout.Parent=inventoryGrid
 local inventoryData={
-  {"나무","Wood",4,Color3.fromRGB(199,154,91)},
-  {"돌","Stone",4,Color3.fromRGB(173,193,197)},
+  {"나무","Wood",nil,Color3.fromRGB(199,154,91),"나무"},
+  {"돌","Stone",nil,Color3.fromRGB(173,193,197),"돌"},
   {"연구 일지","ResearchRecords",5,Color3.fromRGB(229,195,120)},
-  {"재화","Coins",4,Color3.fromRGB(238,201,92)},
+  {"재화","Coins",nil,Color3.fromRGB(238,201,92),"코인"},
   {"장착 장비","Equipment",3,Color3.fromRGB(144,202,232)},
   {"강화 단계","WeaponTier",2,Color3.fromRGB(183,151,243)},
 }
@@ -921,16 +921,31 @@ for index,item in ipairs(inventoryData)do
   outline.Thickness=1.2
   outline.Transparency=.32
   outline.Parent=card
-  local icon=Instance.new("ImageLabel")
-  icon.Name="CC0ItemIcon"
-  icon.BackgroundTransparency=1
-  icon.Image=meadowIconAtlas
-  icon.ImageRectOffset=Vector2.new(item[3]*64,0)
-  icon.ImageRectSize=Vector2.new(64,64)
-  icon.Size=UDim2.fromOffset(45,45)
-  icon.Position=UDim2.fromOffset(7,10)
-  icon.ZIndex=45
-  icon.Parent=card
+  -- [아이템 그림] 아틀라스에 없는 자원은 잘못된 가방 그림 대신 실제 이름을 표시한다.
+  if item[3]~=nil then
+    local icon=Instance.new("ImageLabel")
+    icon.Name="CC0ItemIcon"
+    icon.BackgroundTransparency=1
+    icon.Image=meadowIconAtlas
+    icon.ImageRectOffset=Vector2.new(item[3]*64,0)
+    icon.ImageRectSize=Vector2.new(64,64)
+    icon.Size=UDim2.fromOffset(45,45)
+    icon.Position=UDim2.fromOffset(7,10)
+    icon.ZIndex=45
+    icon.Parent=card
+  else
+    local symbol=Instance.new("TextLabel")
+    symbol.Name="ResourceTextIcon"
+    symbol.BackgroundTransparency=1
+    symbol.Position=UDim2.fromOffset(7,10)
+    symbol.Size=UDim2.fromOffset(45,45)
+    symbol.Text=item[5]
+    symbol.TextColor3=item[4]
+    symbol.Font=Enum.Font.GothamBold
+    symbol.TextSize=15
+    symbol.ZIndex=45
+    symbol.Parent=card
+  end
   local title=Instance.new("TextLabel")
   title.Name="ItemName"
   title.Position=UDim2.fromOffset(56,8)
@@ -1024,20 +1039,74 @@ local function renderMeadowJournal()
   end
 end
 -- [퀘스트 접기] 작은 아이콘을 눌러 원본 저널에서 진행도와 목표를 확인한다.
-questTracker.Text="임무";questTracker.TextSize=11;questTracker.Font=Enum.Font.GothamBold
+questTracker.Text="퀘스트";questTracker.TextSize=10;questTracker.TextYAlignment=Enum.TextYAlignment.Bottom;questTracker.Font=Enum.Font.GothamBold
 questTracker.TextColor3=Color3.fromRGB(246,244,222)
 trackerTitle.Visible=false;trackerDetail.Visible=false
 questTracker.Activated:Connect(function()meadowMenu.open(3)end)
+-- [모바일 왼쪽 메뉴] 기존 메뉴의 실제 페이지를 바로 연다. 오른쪽 가방·전투 버튼은 그대로 둔다.
+local meadowQuickPages={
+  {"MeadowQuickBag","가방",4,2},
+  {"MeadowQuickSkill","스킬",2,5},
+  {"MeadowQuickGear","장비",3,1},
+  {"MeadowQuickSettings","설정",6,4},
+}
+local meadowQuickButtons={}
+for index,info in ipairs(meadowQuickPages)do
+  local button=Instance.new("TextButton")
+  button.Name=info[1]
+  button.Size=UDim2.fromOffset(52,56)
+  button.BackgroundColor3=Color3.fromRGB(22,47,39)
+  button.BorderSizePixel=0
+  button.Text=info[2]
+  button.Font=Enum.Font.GothamBold
+  button.TextSize=10
+  button.TextYAlignment=Enum.TextYAlignment.Bottom
+  button.TextColor3=Color3.fromRGB(251,235,190)
+  button.AutoButtonColor=true
+  button.Active=true
+  button.ZIndex=11
+  button.Parent=gui
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,11)
+  corner.Parent=button
+  local stroke=Instance.new("UIStroke")
+  stroke.Color=Color3.fromRGB(131,194,150)
+  stroke.Transparency=.25
+  stroke.Parent=button
+  local icon=Instance.new("ImageLabel")
+  icon.Name="CC0MenuQuickIcon"
+  icon.Image=meadowIconAtlas
+  icon.ImageRectOffset=Vector2.fromOffset(info[3]*64,0)
+  icon.ImageRectSize=Vector2.fromOffset(64,64)
+  icon.BackgroundTransparency=1
+  icon.Position=UDim2.fromOffset(7,2)
+  icon.Size=UDim2.fromOffset(38,38)
+  icon.ZIndex=12
+  icon.Active=false
+  icon.Parent=button
+  button.Activated:Connect(function()
+    if gui:GetAttribute("GameMenuOpen")~=true then meadowMenu.open(info[4]) end
+  end)
+  meadowQuickButtons[index]=button
+end
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
-  questTracker.Visible=gui:GetAttribute("GameMenuOpen")~=true
+  local visible=gui:GetAttribute("GameMenuOpen")~=true
+  questTracker.Visible=visible
+  for _,button in ipairs(meadowQuickButtons)do button.Visible=visible end
 end)
 local function layoutMeadowJournal()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
-  local short=v.Y<440
-  -- [왼쪽] 주머니 단축버튼 없이 메뉴와 접힌 임무만 유지한다.
-  questTracker.Position=UDim2.fromOffset(9,74)
-  questTracker.Size=UDim2.fromOffset(48,48)
+  local shortLandscape=v.X>v.Y and v.Y<450
+  -- [모바일 배치] 세로: 가방→스킬→장비→퀘스트→설정, 가로: 상단 한 줄.
+  for index,button in ipairs(meadowQuickButtons)do
+    local slot=index<=3 and index-1 or 4
+    button.Position=UDim2.fromOffset(shortLandscape and 9+slot*58 or 9,
+      shortLandscape and 76 or 76+slot*58)
+    button.Size=UDim2.fromOffset(52,56)
+  end
+  questTracker.Position=UDim2.fromOffset(shortLandscape and 183 or 9,shortLandscape and 76 or 250)
+  questTracker.Size=UDim2.fromOffset(52,56)
   -- 체력·스테미너는 위 중앙 HUD에서만 배치한다.
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowJournal)
@@ -1759,7 +1828,10 @@ end
 local function renderMeadowClimate()
   local v=gui.AbsoluteSize
   local short=v.Y>0 and v.Y<440
-  meadowClimateChip.Position=UDim2.fromOffset(9,191)
+  -- [날씨 배치] 왼쪽 터치 레일과 겹치지 않게 오른쪽 미니맵 왼편에 표시한다.
+  local compactLandscape=v.X>v.Y and v.Y<450
+  local mapDiameter=compactLandscape and 88 or v.X<480 and 96 or math.floor(math.clamp(v.Y*.17,98,124))
+  meadowClimateChip.Position=UDim2.fromOffset(math.max(9,v.X-mapDiameter-161),compactLandscape and 141 or 93)
   meadowClimateChip.Size=UDim2.fromOffset(125,24)
   meadowClimateChip.TextSize=10
   meadowClimateChip.Visible=gui:GetAttribute("GameMenuOpen")~=true
@@ -2729,7 +2801,13 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
       end
     end
   end
-  radarTitle.Text=areaName
+  -- [미니맵 발견] 지역명과 서버에 기록된 네 숲 발견 수를 함께 표시한다.
+  local discovered=player:GetAttribute("ExplorationGroves") or 0
+  local discoveredCount=0
+  for _,point in ipairs(grovePoints)do
+    if bit32.band(discovered,point[3])~=0 then discoveredCount+=1 end
+  end
+  radarTitle.Text=string.format("%s · %d/4",areaName,discoveredCount)
   local trailsReady=world and (world:GetAttribute("MeadowNativeTrails") or 0)>=8
   local mapSize=radarField.AbsoluteSize
   local radarSpan=270 -- 플레이어 주위 실제 135스터드 반경
@@ -2783,7 +2861,6 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     marker.Visible=ruin~=nil and dx*dx+dz*dz<=radarHalf*radarHalf
     if marker.Visible then marker.Position=UDim2.fromScale(math.clamp(.5+dx/radarSpan,.05,.95),math.clamp(.5+dz/radarSpan,.06,.94)) end
   end
-  local discovered=player:GetAttribute("ExplorationGroves") or 0
   for index,point in ipairs(grovePoints)do
     local dx=point[1]-mainRoot.Position.X
     local dz=point[2]-mainRoot.Position.Z
@@ -4209,7 +4286,7 @@ local function bindOriginalMob(model)
   }) or nil
   local row={controller=controller,nativeTracks=nativeTracks,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
-    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0,
+    lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,motionHoldUntil=0,renderAccumulator=0,
     lastHeading=model:GetPivot().LookVector,turnLean=0,
     originalTrackWaitStartedAt=os.clock(),
     -- [모션] 실제 관절의 직전 포즈를 저장해 정지·추적·공격 사이를 매끄럽게 잇는다.
@@ -4316,8 +4393,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           forcedPhase=math.clamp((impactAge-.20)/.36,0,1)
         end
       end
-      -- [4족 접지] 시간만으로 다리를 휘두르면 제자리에서도 발이 미끄러진다.
-      -- 실제 서버 메시 피벗의 수평 이동거리로 보폭을 맞추고 멈추면 가볍게 정지한다.
+      -- [4족 접지] 네트워크 피벗 갱신 사이의 빈 프레임은 즉시 대기로 바꾸지 않는다.
+      -- 실제 수평 이동만 보폭에 누적하고, 서버 AI·공격·이동값은 변경하지 않는다.
       local position=model:GetPivot().Position
       local moved=Vector3.new(position.X-row.lastPosition.X,0,position.Z-row.lastPosition.Z)
       row.lastPosition=position
@@ -4331,12 +4408,14 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         row.lastHeading=heading
       end
       local step=math.clamp(dt,1/120,.12)
-      local rawSpeed=traveled>5 and 0 or math.min(traveled/step,24)
-      row.groundSpeed+=(rawSpeed-row.groundSpeed)*math.min(1,step*9)
+      local movedEnough=traveled>.03 and traveled<=5
+      local rawSpeed=movedEnough and math.min(traveled/step,24) or 0
+      row.groundSpeed+=(rawSpeed-row.groundSpeed)*math.min(1,step*(movedEnough and 9 or 6))
+      if movedEnough then row.motionHoldUntil=os.clock()+.16 end
       local footTravel=(mode=="WALK" or mode=="RUN") and row.plan=="QUADRUPED"
       if footTravel then
-        if traveled>.015 and traveled<=5 then row.travel+=traveled end
-        if row.groundSpeed<.35 then mode="IDLE" end
+        if movedEnough then row.travel+=traveled end
+        if row.groundSpeed<1.1 and os.clock()>=row.motionHoldUntil then mode="IDLE" end
       end
       if mode~=row.lastMode then
         -- [모션 전환] 이전 원본 리그 포즈에서 새 행동으로 연속 보간한다.
@@ -4386,7 +4465,7 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         phase,{
           bodyPlan=row.plan,actorClass=model:GetAttribute("Boss") and "BOSS" or "CREATURE",
           availableJoints=row.available,mobileTier=nativeTouchEnabled and "LOW" or "HIGH",
-          secondary=.7,intensity=footTravel and 1.08 or 1.24,
+          secondary=.7,intensity=footTravel and math.clamp(row.groundSpeed/7.5,.6,1.08) or 1.24,
           profile={limbArc=footTravel and 1.08 or 1.3,footContact=1.28,attackStrike=1.22},
         },row.poses)
       if matched then
