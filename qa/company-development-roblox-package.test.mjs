@@ -2216,7 +2216,7 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   const nonOverlapping=layout=>layout.every(([x,y],i)=>layout.slice(i+1).every(([u,v],other)=>{
     const j=i+1+other;
     const distance2=((x-u)*235)**2+((y-v)*260)**2;
-    const minimum=(i===3?22:31)+(j===3?22:31)+6;
+    const minimum=(i===3?23:37)+(j===3?23:37)+8;
     return distance2>=minimum**2;
   }));
   assert.ok(nonOverlapping(base),'default four-button layout must stay individually clickable');
@@ -2224,7 +2224,7 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.equal(base[1][0],base[3][0],'dodge and potion must stay on the same center axis');
   assert.ok(base[1][1]<base[3][1]&&base[3][1]<base[0][1],
     'dodge must lead the upper vertex and potion must remain between upper and lower actions');
-  assert.match(client,/if value=="235,275,500,120,800,275,500,510" then/);
+  assert.match(client,/if value=="235,275,500,120,800,275,500,510"\s+or value=="200,300,500,300,800,300,500,550" then/);
   assert.ok(!nonOverlapping([[.5,.2],[.5,.2],[.8,.3],[.5,.51]]),
     'a saved overlap that would redirect clicks to dodge must be rejected');
   assert.match(server,/snapshot\.MeadowTopButtonsLayout=layout/);
