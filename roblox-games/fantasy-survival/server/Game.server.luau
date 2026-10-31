@@ -674,20 +674,20 @@ end
 local function createMeadowVillage()
   -- 외곽 지형 생성이 끝나고 조사 흔적을 배치해야 월드 확장에 흔적이 묻히지 않는다.
   while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.15) end
-  -- [마을길] 기존 시작지/채집지/의뢰 좌표는 건드리지 않는다.
-  -- 구형 FillBall은 지름 20칸의 둥근 진흙 언덕을 만들어 거리를 숨겼으므로 평평한 Terrain 길로 직접 교체한다.
+  -- [마을길] 기존 시작지·채집지·의뢰 좌표는 그대로 두고 중세 마을의 중심길과 골목만 넓힌다.
+  -- 도로는 원래 Terrain을 재사용하며 건축용 기본 Part를 새로 만들지 않는다.
   for _,path in ipairs({
-    {0,-85,13,34},{0,-117,13,36},{0,-151,13,36},{0,-184,13,39},
-    {-21,-99,44,7},{21,-99,44,7},
-    {-21,-139,44,7},{21,-139,44,7},
-    {-21,-179,44,7},{21,-179,44,7},
+    {0,-85,19,34},{0,-117,19,36},{0,-151,19,36},{0,-184,19,39},
+    {-22,-99,48,10},{22,-99,48,10},
+    {-22,-139,48,10},{22,-139,48,10},
+    {-22,-179,48,10},{22,-179,48,10},
   }) do
     meadowTerrain:FillBlock(CFrame.new(path[1],1.5,path[2]),
       Vector3.new(path[3],1.4,path[4]),Enum.Material.Ground)
   end
-  -- [공공 광장] 집과 가게 사이의 넓은 만남 공간. 새 파츠/도형 모델이 아니라 기존 Terrain 바닥만 평탄화한다.
+  -- [공공 광장] 2배 이상 커진 집과 어울리도록 석재 광장도 확장한다. 실제 Terrain만 사용한다.
   for _,plaza in ipairs({
-    {0,-114,22,20},{0,-144,25,24},
+    {0,-114,34,25},{0,-144,36,28},
   }) do
     meadowTerrain:FillBlock(CFrame.new(plaza[1],1.55,plaza[2]),
       Vector3.new(plaza[3],1.4,plaza[4]),Enum.Material.Cobblestone)
@@ -706,23 +706,25 @@ local function createMeadowVillage()
     end
   end
   -- [중세 마을 건축] 기존 Kenney CC0 모듈만 조립. 폐허 석벽을 집으로 위장하거나 임의 파츠로 때우지 않는다.
-  -- 골목 양쪽을 향한 두 줄의 주거·생활시설 6동과 가운데 공공 광장.
+  -- 골목 양쪽의 기존 건물 6동을 높이·가로·세로 2.35배로 확장한다.
+  -- 크기를 키운 원본 Kenney CC0 모듈만 사용하고 문·지붕도 같은 비율로 맞춘다.
+  local villageArchitectureScale=2.35
   local villageBuildings=0
   local villageProps=0
   local expectedVillageBuildings=6
   if nativeVillageReady then
     local houses={
-      {x=-40,z=-99,angle=0,name="Village_HealerHouse",label="약초상 · 의원",
+      {x=-42,z=-99,angle=0,name="Village_HealerHouse",label="약초상 · 의원",
        timber=Color3.fromRGB(141,116,89),roof=Color3.fromRGB(110,77,63)},
-      {x=40,z=-99,angle=math.pi,name="Village_Guesthouse",label="마을 여관",
+      {x=42,z=-99,angle=math.pi,name="Village_Guesthouse",label="마을 여관",
        timber=Color3.fromRGB(148,125,98),roof=Color3.fromRGB(97,85,75)},
-      {x=-40,z=-139,angle=0,name="Village_Workshop",label="대장간 · 공방",
+      {x=-42,z=-139,angle=0,name="Village_Workshop",label="대장간 · 공방",
        timber=Color3.fromRGB(131,99,78),roof=Color3.fromRGB(87,76,69)},
-      {x=40,z=-139,angle=math.pi,name="Village_WardenHall",label="마을 회관",
+      {x=42,z=-139,angle=math.pi,name="Village_WardenHall",label="마을 회관",
        timber=Color3.fromRGB(145,111,82),roof=Color3.fromRGB(97,70,64)},
-      {x=-40,z=-179,angle=0,name="Village_ResidentHouseWest",label="주민 주택",
+      {x=-42,z=-179,angle=0,name="Village_ResidentHouseWest",label="주민 주택",
        timber=Color3.fromRGB(157,126,93),roof=Color3.fromRGB(117,88,68)},
-      {x=40,z=-179,angle=math.pi,name="Village_ResidentHouseEast",label="주민 주택",
+      {x=42,z=-179,angle=math.pi,name="Village_ResidentHouseEast",label="주민 주택",
        timber=Color3.fromRGB(133,109,84),roof=Color3.fromRGB(104,81,73)},
     }
     for _,house in ipairs(houses) do
@@ -744,11 +746,12 @@ local function createMeadowVillage()
       }
       local created=0
       for partIndex,piece in ipairs(pieces) do
-        local rotated=Vector2.new(piece.x,piece.z)
+        local rotated=Vector2.new(piece.x*villageArchitectureScale,piece.z*villageArchitectureScale)
         local rot=house.angle
         local x=house.x+rotated.X*math.cos(rot)-rotated.Y*math.sin(rot)
         local z=house.z+rotated.X*math.sin(rot)+rotated.Y*math.cos(rot)
-        local model=worldAsset(piece.asset,Vector3.new(x,3,z),piece.height,piece.lift)
+        local model=worldAsset(piece.asset,Vector3.new(x,3,z),
+          piece.height*villageArchitectureScale,piece.lift*villageArchitectureScale)
         if model then
           model.Name=house.name.."_"..partIndex
           model:SetAttribute("MeadowVillageScenery",true)
@@ -757,12 +760,13 @@ local function createMeadowVillage()
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
               mesh.CanCollide=piece.lift==0
-              -- 원본 메시·텍스처는 보존하고 지붕/목재에 생활감 있는 다른 색조만 지정한다.
+              -- [중세 외장] 문·창의 CC0 원본 재질과 텍스처는 보존한다.
+              -- 목재와 지붕은 건물별 다른 색에 소폭의 풍화 차이를 주되 원본 메시를 유지한다.
               if piece.asset=="villageRoof" or piece.asset=="villageRoofEnd" then
-                mesh.Color=house.roof
+                mesh.Color=house.roof:Lerp(Color3.fromRGB(73,76,71),(partIndex%3)*.06)
                 mesh.Material=Enum.Material.Slate
-              else
-                mesh.Color=house.timber
+              elseif piece.asset=="villageWall" then
+                mesh.Color=house.timber:Lerp(Color3.fromRGB(91,85,73),(partIndex%4)*.06)
                 mesh.Material=Enum.Material.Wood
               end
             end
@@ -775,8 +779,8 @@ local function createMeadowVillage()
               sign.Name="MeadowVillageHouseSign"
               sign.Adornee=front
               sign.Size=UDim2.fromOffset(154,28)
-              sign.StudsOffsetWorldSpace=Vector3.new(0,4.1,0)
-              sign.MaxDistance=47
+              sign.StudsOffsetWorldSpace=Vector3.new(0,7.8,0)
+              sign.MaxDistance=68
               sign.Parent=front
               local text=Instance.new("TextLabel")
               text.Size=UDim2.fromScale(1,1)
@@ -796,24 +800,31 @@ local function createMeadowVillage()
       if created==#pieces then villageBuildings+=1 end
       task.wait(.06)
     end
-    -- [시장과 생활 흔적] 의뢰판·주민 위치·광장 중앙 통행 폭을 보존하고 기존 등록 프리팹만 배치한다.
+    -- [시장과 생활 흔적] 신규 모델 없이 승인된 CC0 가판대·수레·등불·울타리를 보강한다.
+    -- 생활 소품은 사람과 비슷한 실제 비율을 유지해 2.35배 집이 장난감처럼 보이지 않게 한다.
     local furnishings={
-      {"villageStall",-15,-119,7.5,0},{"villageStall",15,-119,7.5,math.pi},
-      {"villageStall",-15,-155,7.3,0},{"villageStall",15,-155,7.3,math.pi},
+      {"villageStall",-16,-119,7.5,0},{"villageStall",16,-119,7.5,math.pi},
+      {"villageStall",-16,-155,7.3,0},{"villageStall",16,-155,7.3,math.pi},
+      {"villageStall",-16,-72,7.2,0},{"villageStall",16,-72,7.2,math.pi},
       {"villageFountain",0,-146,5.8,0},
       {"villageCart",-18,-174,6.2,math.pi*.1},{"villageCart",19,-171,6.2,-math.pi*.15},
-      {"villageLantern",-11,-84,5,0},{"villageLantern",11,-84,5,0},
-      {"villageLantern",-11,-132,5,0},{"villageLantern",11,-132,5,0},
-      {"villageLantern",-11,-172,5,0},{"villageLantern",11,-172,5,0},
-      {"villageFence",-59,-93,4.6,math.pi*.5},{"villageFence",-59,-109,4.6,math.pi*.5},
-      {"villageFence",59,-93,4.6,math.pi*.5},{"villageFence",59,-109,4.6,math.pi*.5},
-      {"villageFence",-59,-141,4.6,math.pi*.5},{"villageFence",-59,-157,4.6,math.pi*.5},
-      {"villageFence",59,-141,4.6,math.pi*.5},{"villageFence",59,-157,4.6,math.pi*.5},
-      {"villageFence",-59,-183,4.6,math.pi*.5},{"villageFence",59,-183,4.6,math.pi*.5},
-      {"villageFence",-41,-196,4.6,0},{"villageFence",41,-196,4.6,0},
+      {"villageCart",-62,-124,6.2,math.pi*.4},{"villageCart",62,-163,6.2,-math.pi*.35},
+      {"villageLantern",-12,-84,5,0},{"villageLantern",12,-84,5,0},
+      {"villageLantern",-12,-109,5,0},{"villageLantern",12,-109,5,0},
+      {"villageLantern",-12,-132,5,0},{"villageLantern",12,-132,5,0},
+      {"villageLantern",-12,-172,5,0},{"villageLantern",12,-172,5,0},
+      {"villageLantern",-12,-192,5,0},{"villageLantern",12,-192,5,0},
+      {"villageFence",-69,-93,4.6,math.pi*.5},{"villageFence",-69,-109,4.6,math.pi*.5},
+      {"villageFence",69,-93,4.6,math.pi*.5},{"villageFence",69,-109,4.6,math.pi*.5},
+      {"villageFence",-69,-125,4.6,math.pi*.5},{"villageFence",69,-125,4.6,math.pi*.5},
+      {"villageFence",-69,-141,4.6,math.pi*.5},{"villageFence",-69,-157,4.6,math.pi*.5},
+      {"villageFence",69,-141,4.6,math.pi*.5},{"villageFence",69,-157,4.6,math.pi*.5},
+      {"villageFence",-69,-173,4.6,math.pi*.5},{"villageFence",69,-173,4.6,math.pi*.5},
+      {"villageFence",-69,-189,4.6,math.pi*.5},{"villageFence",69,-189,4.6,math.pi*.5},
+      {"villageFence",-46,-205,4.6,0},{"villageFence",46,-205,4.6,0},
     }
     for index,row in ipairs(furnishings) do
-      local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4])
+      local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),row[4]*1.3)
       if model then
         model.Name="Meadow_Village_"..row[1].."_"..index
         model:SetAttribute("MeadowVillageScenery",true)
@@ -849,9 +860,10 @@ local function createMeadowVillage()
       end
       if index%4==0 then task.wait(.03) end
     end
-    -- [마을 경계] 기존 CC0 나무를 재사용해 울타리 바깥만 가볍게 둘러싼다.
-    for index,pos in ipairs({{-72,-80},{72,-80},{-72,-130},{72,-130},{-72,-191},{72,-191}}) do
-      local tree=worldAsset("tree",Vector3.new(pos[1],3,pos[2]),12)
+    -- [마을 경계] 울타리 밖 실제 CC0 수목만 사용해 확장된 마을 경관을 만든다.
+    -- 늑대·도적의 기존 교전 좌표와 거리를 두고 충돌 가능성이 있는 중심길은 비운다.
+    for index,pos in ipairs({{-83,-62},{83,-62},{-83,-130},{83,-130},{-83,-211},{83,-211}}) do
+      local tree=worldAsset("tree",Vector3.new(pos[1],3,pos[2]),15)
       if tree then
         tree.Name="Meadow_Village_BoundaryTree_"..index
         tree:SetAttribute("MeadowVillageScenery",true)
