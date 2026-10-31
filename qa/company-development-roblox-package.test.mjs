@@ -1787,7 +1787,7 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/local stick=human\.MoveDirection:Dot\(horizontal\.Unit\)/);
   assert.match(client,/stick>\.2 then actionId="skill-meadow-dodge-right"/);
   assert.match(client,/stick<-\.2 then actionId="skill-meadow-dodge-left"/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.12\*lean/);
+  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.11\*lean/);
   assert.ok(client.includes('skillMotionR15Targets.RootJoint=skillMotionTargets.Spine'));
   assert.ok(client.includes('skillMotionR15Targets["Left Hip"]=skillMotionTargets.ThighL'));
   assert.ok(client.includes('skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR'));
@@ -1796,6 +1796,12 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
   assert.match(client,/local prepare=math\.clamp\(phase\/\.17,0,1\)/);
   assert.match(client,/local settle=math\.clamp\(\(1-phase\)\/\.27,0,1\)/);
+  assert.match(client,/local push=math\.clamp\(\(phase-\.07\)\/\.33,0,1\)/);
+  assert.match(client,/local plant=math\.clamp\(\(phase-\.55\)\/\.27,0,1\)/);
+  assert.match(client,/local leadKnee=\.23\*lean\+\.24\*travel\+\.18\*recovery/);
+  assert.match(client,/local trailKnee=\.36\*lean\+\.09\*push\+\.15\*recovery/);
+  assert.match(client,/skillMotionTargets\.FootL=CFrame\.Angles/);
+  assert.match(client,/skillMotionTargets\.FootR=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ThighR=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles/);
@@ -1807,7 +1813,12 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
   assert.match(dodge,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
   assert.match(dodge,/character:PivotTo\(gaze\+dodgeOffset\*eased\)/);
-  assert.match(dodge,/local target=nearestEnemy\(root,25\)/);
+  assert.match(dodge,/local nearest=25/);
+  assert.match(dodge,/for _,enemy in ipairs\(enemies\) do/);
+  assert.match(dodge,/if enemy\.HP>0 and enemy\.model\.Parent then/);
+  assert.match(dodge,/local turn=math\.clamp\(t\/\.32,0,1\)/);
+  assert.match(dodge,/turn=turn\*turn\*\(3-2\*turn\)/);
+  assert.match(dodge,/local gaze=dodgeOrigin:Lerp\(dodgeFacing,turn\)/);
   assert.match(dodge,/local side=Vector3\.new\(-facing\.Z,0,facing\.X\)\*sign/);
   assert.match(dodge,/local dodgeFacing=CFrame\.lookAt\(dodgeOrigin\.Position,dodgeOrigin\.Position\+facing\)/);
   assert.match(dodge,/humanoid\.AutoRotate=false/);
@@ -1827,10 +1838,14 @@ test('fantasy guard holds a full pose and dodges blend smoothly without changing
   assert.match(client,/elseif isGuard or isParry then/);
   // [맨손 복싱 막기] 무기가 없을 때 고개를 숙이고 한팔로 감싼다. 무장 막기와 패링은 보존한다.
   assert.match(client,/if isGuard and not skillMotionCharacter:FindFirstChildOfClass\("Tool"\) then/);
-  assert.match(client,/skillMotionTargets\.Spine=CFrame\.new\(0,-\.19\*guard,0\)/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.29\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.78\*guard/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.18\*guard/);
+  assert.match(client,/local crouch=math\.clamp\(phase\/\.12,0,1\)/);
+  assert.match(client,/local elbow=math\.clamp\(\(phase-\.025\)\/\.115,0,1\)/);
+  assert.match(client,/local breathing=math\.sin\(\(os\.clock\(\)-skillMotionStart\)\*5\.1\)\*\.014\*guard/);
+  assert.match(client,/skillMotionTargets\.Spine=CFrame\.new\(0,-\.16\*crouch\+breathing,0\)/);
+  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.24\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.91\*guard/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.25\*elbow/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.12\*elbow/);
   assert.match(client,/local guard=rise\*release/);
   assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.12\*guard/);
   assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.24\*guard/);
