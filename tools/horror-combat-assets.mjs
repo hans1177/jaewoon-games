@@ -52,6 +52,77 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
+// [마력숲 물약 아이콘] 기존 다운로드된 Drummyfish CC0 묶음에서 PNG 원본을 꺼내 현재 공식 이미지 등록 경로로 처리한다.
+if(process.argv.includes('--magic-potion-only')){
+ const {execFileSync}=await import('node:child_process');
+ const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+ const archive=registry.interfaceIcons?.sourceArchives?.find(x=>x.path==='assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip');
+ if(!archive||registry.gameId!=='fantasy-survival'||registry.interfaceIcons?.license!=='CC0-1.0'
+   ||registry.interfaceIcons?.universeId!=='10773436325')throw Error('FOREST_POTION_CC0_SOURCE_POLICY_INVALID');
+ if(crypto.createHash('sha256').update(fs.readFileSync(archive.path)).digest('hex')!==archive.sha256)
+   throw Error('FOREST_POTION_CC0_ARCHIVE_HASH_MISMATCH');
+ const entries=execFileSync('unzip',['-Z','-1',archive.path],{encoding:'utf8',maxBuffer:1024*1024})
+   .split(/\r?\n/).filter(x=>/\.png$/i.test(x)&&/(potion|health.*flask|healing.*bottle)/i.test(x));
+ entries.sort((a,b)=>{
+   const score=name=>(/red/i.test(name)?4:0)+(/health/i.test(name)?2:0)+(/potion/i.test(name)?1:0);
+   return score(b)-score(a)||a.localeCompare(b);
+ });
+ const entry=entries[0];
+ if(!entry||entry.startsWith('/')||entry.includes('..')||entries.length>24)
+   throw Error('FOREST_POTION_CC0_REAL_ICON_NOT_FOUND');
+ const bytes=execFileSync('unzip',['-p',archive.path,entry],{maxBuffer:4*1024*1024});
+ if(bytes.length<1000||bytes.length>1024*1024
+   ||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+   ||bytes.readUInt32BE(16)<64||bytes.readUInt32BE(16)>512
+   ||bytes.readUInt32BE(20)<64||bytes.readUInt32BE(20)>512)
+   throw Error('FOREST_POTION_CC0_ICON_FORMAT_INVALID');
+ const digest=crypto.createHash('sha256').update(bytes).digest('hex');
+ let id=String(registry.potionIcon?.assetId||'');
+ if(!/^[1-9]\d*$/.test(id)||registry.potionIcon?.sourceSha256!==digest
+   ||registry.potionIcon?.sourceEntry!==entry||registry.potionIcon?.importVerified!==true){
+   const form=new FormData();
+   form.append('request',JSON.stringify({
+     assetType:'Image',displayName:'Mana Forest CC0 Red Healing Potion Icon',
+     description:'Drummyfish CC0 fantasy RPG potion original '+digest,
+     creationContext:{creator}
+   }));
+   form.append('fileContent',new Blob([bytes],{type:'image/png'}),'forest-cc0-potion.png');
+   let op=await request('https://apis.roblox.com/assets/v1/assets',{
+     method:'POST',headers:{'x-api-key':key},body:form
+   });
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
+     throw Error('FOREST_POTION_ICON_UPLOAD_OPERATION_INVALID');
+   const operationPath=op.path,deadline=Date.now()+240000;
+   while(!op.done&&Date.now()<deadline){
+     await new Promise(resolve=>setTimeout(resolve,4000));
+     op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+   }
+   id=String(op.response?.assetId||'');
+   if(!op.done||op.error||!/^[1-9]\d*$/.test(id))throw Error('FOREST_POTION_ICON_UPLOAD_FAILED');
+ }
+ const permission=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+   body:JSON.stringify({subjectType:'Universe',subjectId:'10773436325',action:'Use',
+     requests:[{assetId:Number(id),grantToDependencies:true}]})
+ });
+ if(permission.errors?.length)throw Error('FOREST_POTION_ICON_GRANT_FAILED');
+ registry.potionIcon={
+   assetId:id,license:'CC0-1.0',source:'DRUMMYFISH_FANTASY_RPG_ICONS',
+   licenseEvidence:'https://opengameart.org/content/fantasy-rpg-icons-0',
+   sourceArchive:archive.path,sourceArchiveSha256:archive.sha256,
+   sourceEntry:entry,sourceSha256:digest,
+   width:bytes.readUInt32BE(16),height:bytes.readUInt32BE(20),
+   universeId:'10773436325',authorizedUniverseIds:['10773436325'],
+   importVerified:true,runtimeVerified:false,importedRevision:process.env.GITHUB_SHA
+ };
+ fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ console.log('FOREST_CC0_POTION_ICON_IMPORTED='+id);
+ console.log('FOREST_CC0_POTION_SOURCE_ENTRY='+entry);
+ console.log('FOREST_CC0_POTION_SOURCE_SHA256='+digest);
+ process.exit(0);
+}
+
 // [마력숲 사슴 원본 교체] 기존 잘못된 사슴 FBX는 사용하지 않는다.
 // 원본 GLB를 공식 무료 목록에서 검증해 저장하고, 기존 네이티브 모델 등록 경로로 전송한다.
 if(process.argv.includes('--forest-deer-only')){
