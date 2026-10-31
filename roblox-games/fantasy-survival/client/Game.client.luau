@@ -3140,6 +3140,40 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
   if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
     position=rootPart.Position
   end
+  -- [막기 방패 연출] 기존 구형 SHIELD_SHELL·둥근 BLOCK_IMPACT를 실행하지 않는다.
+  -- 이미 등록·승인된 방패 그림을 R15 상체 앞에 붙여 2.8초 동안 보여준다.
+  -- 새 Part·Mesh·임시 도형 없이 서버 승인 FX에서만 재생한다.
+  if actionId=="skill-meadow-guard" then
+    local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or rootPart
+    local shieldAnchor=Instance.new("Attachment")
+    shieldAnchor.Name="MeadowGuardShieldAnchor"
+    shieldAnchor.Position=torso==rootPart and Vector3.new(.12,2.05,-1.1) or Vector3.new(.12,.95,-1.1)
+    shieldAnchor.Parent=torso
+    local shieldEffect=Instance.new("BillboardGui")
+    shieldEffect.Name="MeadowGuardShieldEffect"
+    shieldEffect.Adornee=shieldAnchor
+    shieldEffect.Size=UDim2.new(2.15,0,2.45,0)
+    shieldEffect.AlwaysOnTop=false
+    shieldEffect.MaxDistance=65
+    shieldEffect.LightInfluence=0
+    shieldEffect.Parent=shieldAnchor
+    local shieldImage=Instance.new("ImageLabel")
+    shieldImage.Name="ApprovedShieldSilhouette"
+    shieldImage.BackgroundTransparency=1
+    shieldImage.Size=UDim2.fromScale(1,1)
+    shieldImage.Image=meadowRealActionIcons.guard
+    shieldImage.ImageColor3=Color3.fromRGB(137,219,255)
+    shieldImage.ImageTransparency=.16
+    shieldImage.ScaleType=Enum.ScaleType.Fit
+    shieldImage.Parent=shieldEffect
+    task.delay(2.45,function()
+      if shieldImage.Parent then
+        game:GetService("TweenService"):Create(shieldImage,TweenInfo.new(.35),{ImageTransparency=1}):Play()
+      end
+    end)
+    debris:AddItem(shieldAnchor,2.8)
+    return
+  end
   local hostPart=character:FindFirstChild("RightHand") or rootPart
   local warm=Color3.fromRGB(132,245,169)
   local accent=Color3.fromRGB(231,255,189)
@@ -3674,8 +3708,8 @@ RunService.PreSimulation:Connect(function(dt)
     skillMotionTargets.HandL=CFrame.Angles(-.07*stance,0,0)
     skillMotionTargets.HandR=CFrame.Angles(-.07*stance,0,0)
   elseif isGuard or isParry then
-    -- [방어 동작] 같은 R15 관절을 사용해 오른손만 얼굴 앞으로 드는 복싱 가드.
-    -- 짧은 들어올리기 → 한손 방어 유지 → 자연스러운 자세 복귀.
+    -- [방어 동작] 오른팔을 머리 위까지 확실하게 들어 공격 방향을 가리는 한팔 하이 가드.
+    -- 짧은 들어올리기 → 머리 위 유지 → 자연스러운 자세 복귀.
     -- 캐릭터를 움직이거나 외형 파츠/무기를 생성하지 않는다.
     local rise=math.clamp(phase/(isParry and .22 or .09),0,1)
     rise=rise*rise*(3-2*rise)
@@ -3683,8 +3717,8 @@ RunService.PreSimulation:Connect(function(dt)
     release=release*release*(3-2*release)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
-    if isGuard and not skillMotionCharacter:FindFirstChildOfClass("Tool") then
-      -- [맨손 한손 복싱 가드] 오른 주먹으로 얼굴/턱을 지키고 왼손은 낮게 당긴다.
+    if isGuard then
+      -- [한팔 머리 위 막기] 장비 착용 여부와 관계없이 오른팔을 완전히 올리고 왼팔은 내린다.
       -- 승인된 2.8초 방어 동안 호흡만 더하며 이동과 서버 피해 판정은 바꾸지 않는다.
       local crouch=math.clamp(phase/.11,0,1)
       crouch=crouch*crouch*(3-2*crouch)*release
@@ -3696,14 +3730,14 @@ RunService.PreSimulation:Connect(function(dt)
       skillMotionTargets.Chest=CFrame.Angles(-.062*guard,.035*guard,-.025*guard)
       -- [턱 숙임] 약 15도 전방으로 중심을 낮추되 눈은 적 방향을 유지한다.
       skillMotionTargets.Head=CFrame.Angles(-.14*guard,-.035*guard,.015*guard)
-      -- [낮은 왼팔] 팔꿈치는 갈비뼈 옆, 주먹은 가슴 아래에서 균형만 잡는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.38*guard,.06*guard,-.12*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-.70*elbow,0,-.08*elbow)
-      skillMotionTargets.HandL=CFrame.Angles(-.05*elbow,-.02*elbow,0)
-      -- [막는 오른팔] 오른 주먹만 관자놀이 앞으로 올리고 팔꿈치를 안쪽으로 모은다.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-1.21*guard,-.10*guard,.14*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.55*elbow,0,.12*elbow)
-      skillMotionTargets.HandR=CFrame.Angles(-.10*elbow,0,.04*elbow)
+      -- [낮은 왼팔] 왼팔은 몸통 옆에 두고 방어 자세의 균형만 잡는다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.25*guard,.06*guard,-.10*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-.36*elbow,0,-.05*elbow)
+      skillMotionTargets.HandL=CFrame.Angles(-.04*elbow,0,0)
+      -- [오른팔 하이 가드] 어깨를 위로 140도 이상 들고 팔꿈치는 가볍게 접어 머리 위를 가린다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-2.48*guard,-.12*guard,.22*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-.58*elbow,0,.10*elbow)
+      skillMotionTargets.HandR=CFrame.Angles(-.08*elbow,0,.04*elbow)
       -- 바닥을 유지한 채 짧게 중심을 낮추고 균형을 잡는다.
       skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.065*guard)
       skillMotionTargets.ThighR=CFrame.Angles(.21*crouch,0,.065*guard)
