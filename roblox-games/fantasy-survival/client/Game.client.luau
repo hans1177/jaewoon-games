@@ -2277,13 +2277,14 @@ local function layoutMeadowCombatUi()
   -- [좁은 가로 화면] 화면 높이에 맞춰 삼각 편대 버튼을 줄이고, 미니맵과 회피가 겹치면 도크를 아래로 이동한다.
   local scale=landscape and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
   local dockHeight=math.floor(260*scale)
+  local utilityTop=140 -- [보조 버튼] 상호작용·질주·가방 3개를 같은 가로선에서 위로 이동한다.
   local bottomInset=math.floor((landscape and (v.Y<350 and 12 or 14) or 116)*scale)
   local compactLandscape=landscape and v.Y<450
   local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or v.X<480 and 96 or math.floor(math.clamp(v.Y*.17,98,124))
   local dodgeTop=v.Y-bottomInset-dockHeight+math.floor((260*meadowTopPositions[2][2]-37)*scale)
   local radarTop=landscape and 12 or 38 -- 중앙 체력바 상단과 같은 높이.
   local mapBottom=radarTop+mapDiameter+40
-  local utilityBottom=v.Y-bottomInset-dockHeight+math.floor(194*scale)+math.max(44,math.floor(45*scale))
+  local utilityBottom=v.Y-bottomInset-dockHeight+math.floor(utilityTop*scale)+math.max(44,math.floor(45*scale))
   local availableShift=math.max(0,v.Y-8-utilityBottom)
   local shift=compactLandscape and math.min(availableShift,math.max(0,mapBottom+8-dodgeTop)) or 0
   meadowSkillDock.Size=UDim2.fromOffset(math.floor(235*scale),dockHeight)
@@ -2301,12 +2302,12 @@ local function layoutMeadowCombatUi()
       math.floor((cy+originalSize/2-12)*scale))
     nameplate.TextSize=math.max(9,math.floor(12*scale))
   end
-  -- 하단은 상호작용 / 질주 온오프 / 가방: 사용자 이동 대상이 아니다.
+  -- [보조 버튼] 위치는 위로만 이동하고 크기·순서·터치 기능은 그대로 유지한다.
   for index,button in ipairs(meadowUtilityButtons) do
     local size=math.max(44,math.floor(45*scale)) -- [터치 크기] 작은 가로 화면에서도 버튼 최소 크기를 유지한다.
     button.Size=UDim2.fromOffset(size,size)
     button.Position=UDim2.fromOffset(math.floor((50+(index-1)*66-22.5)*scale),
-      math.floor(194*scale))
+      math.floor(utilityTop*scale))
     button.TextSize=math.max(15,math.floor(22*scale))
   end
   -- Roblox 기본 점프 아이콘만 제거한다.
