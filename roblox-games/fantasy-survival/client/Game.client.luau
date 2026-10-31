@@ -127,6 +127,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
+-- [오른쪽 아이콘] 외부 원본 등록 전에는 기존 승인 PNG를 사용한다. 물약·가방은 유지한다.
 local meadowRealActionIcons={
   fist="rbxassetid://74889533858270",
   dodge="rbxassetid://120347249421022",
@@ -726,6 +727,18 @@ for index,name in ipairs({"효과음","환경음","타격 효과"}) do
   end)
   refreshOption()
 end
+-- [라이선스] 외부 전투 아이콘 저작자 표기를 옵션 화면에 제공한다.
+local iconCredits=Instance.new("TextLabel")
+iconCredits.Name="ActionIconCredits"
+iconCredits.LayoutOrder=8
+iconCredits.Size=UDim2.new(1,-8,0,56)
+iconCredits.BackgroundTransparency=1
+iconCredits.TextWrapped=true
+iconCredits.TextSize=11
+iconCredits.Font=Enum.Font.Gotham
+iconCredits.TextColor3=Color3.fromRGB(202,211,205)
+iconCredits.Text="액션 아이콘: Lorc · DarkZaitzev · Delapouite (CC BY 3.0)\ngame-icons.net"
+iconCredits.Parent=meadowPages[4]
 renderMeadowPages()
 local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
   compact=true,hideButton=true,menuLeft=true,pages=meadowPages,pageNames=meadowPageNames,onPageChanged=renderMeadowPages,iconAtlas=meadowIconAtlas,
@@ -2032,9 +2045,8 @@ local function styleMeadowCombatButton(button,color)
   })
   gradient.Parent=button
 end
--- [오른쪽 전용 그림 아이콘] 맨손 발차기·회피·질주·손동작은 실제 Gui 그림으로 표시한다.
--- 몬스터·맵 파츠가 아닌 UI 레이어이며 기존 CC0 장갑/방패/가방 자산은 그대로 사용한다.
--- [실제 CC0 액션 아이콘] 원본 등록 PNG만 표시한다. 스크린샷 크롭·그림 도형 금지.
+-- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
+-- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
   local imageId=meadowRealActionIcons[role]
   if not imageId then return false end
@@ -2074,7 +2086,7 @@ for index,skill in ipairs(meleeSkills)do
     icon.Parent=button
     -- 어퍼컷은 CC0 장갑 원본, 막기는 CC0 방패 원본을 사용한다.
   end
-  -- 회피는 승인된 기존 이미지 4번을 직접 사용한다. 회복은 붉은 물약으로 명확히 구분한다.
+  -- 전투 3종은 전용 아틀라스, 회복은 기존 붉은 물약 이미지를 사용한다.
   applyMeadowRightActionImage(button,skill[5])
   local nameplate=Instance.new("TextLabel")
   nameplate.Name="SkillNameplate"..index
@@ -2768,16 +2780,12 @@ local function layoutMeadowRadar()
   if v.X<=0 or v.Y<=0 then return end
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  -- [상단 우측 미니맵] 화면 안전 영역 맨 위에 지도를 붙이고 아래에 지역명·작은 좌표만 놓는다.
-  local mapDiameter=compactLandscape and 100 or small and 106 or math.floor(math.clamp(v.Y*.24,110,170))
+  -- [오른쪽 위 고정 미니맵] 모바일 안전 영역 안에 배치하며 액션 버튼 위치 저장과 분리한다.
+  local mapDiameter=compactLandscape and 88 or small and 96 or math.floor(math.clamp(v.Y*.17,98,124))
   meadowRadar.Size=UDim2.fromOffset(mapDiameter+14,mapDiameter+40)
-  -- [미니맵] 남쪽 S 중심을 회피(발) 버튼 중심의 수직선에 정확히 일치시킨다.
-  -- 절대 좌표는 처음 로딩 중 0으로 나올 수 있으므로 화면·도크와 동일한 상대 배치식을 쓴다.
-  local landscape=v.X>v.Y
-  local scale=landscape and math.clamp(v.Y/315,.76,1.12) or math.clamp(v.X/390,.76,1)
-  local dodgeCenterX=235*meadowTopPositions[2][1]
-  meadowRadar.AnchorPoint=Vector2.new(.5,0)
-  meadowRadar.Position=UDim2.new(1,math.floor((dodgeCenterX-237)*scale),0,0)
+  -- 오른쪽 끝에서 12px, 화면 위에서 8px를 띄워 잘림과 액션 버튼 겹침을 줄인다.
+  meadowRadar.AnchorPoint=Vector2.new(1,0)
+  meadowRadar.Position=UDim2.new(1,-12,0,8)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
