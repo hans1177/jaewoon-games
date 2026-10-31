@@ -4551,19 +4551,15 @@ test('quality-first repairs current released Roblox assets before unused volume 
 });
 
 
-test('current-consumer RPG menu preserves reusable APIs and game-specific race and tech without runtime claims',()=>{
+test('unused RPG menu library retains reusable APIs without claiming active consumer runtime parity',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const assetRoot=path.join(root,'assets','roblox','rpg-menu');
-  const gameRoot=path.join(root,'roblox-games','daechung-rpg','shared');
+  // [삭제 게임] 원본 라이브러리 API는 검사하되 없어진 게임의 소비자 파일을 읽지 않는다.
   const source=fs.readFileSync(path.join(assetRoot,'RPGMenu.luau'),'utf8');
   const model=fs.readFileSync(path.join(assetRoot,'RPGMenuModel.luau'),'utf8');
-  const gameMenu=fs.readFileSync(path.join(gameRoot,'RPGMenu.luau'),'utf8');
-  const gameModel=fs.readFileSync(path.join(gameRoot,'RPGMenuModel.luau'),'utf8');
-  for(const text of [source,gameMenu])assert.match(text,/function Menu\.install\(config,gui,player,options\)/);
-  for(const text of [model,gameModel])assert.match(text,/function Model\.partySummary\(attributes, config\)/);
-  assert.match(gameMenu,/WaitForChild\("RaceData"\)/);
-  assert.match(gameMenu,/WaitForChild\("TechTreeData"\)/);
+  assert.match(source,/function Menu\.install\(config,gui,player,options\)/);
+  assert.match(model,/function Model\.partySummary\(attributes, config\)/);
   assert.doesNotMatch(source,/WaitForChild\("RaceData"\)|WaitForChild\("TechTreeData"\)/);
   assert.match(source,/local itemRows=\{\}/);
   assert.match(source,/GuiService\.SelectedObject=itemButtons\[selectedId\] or filterButtons\[category\]/);
@@ -4574,7 +4570,7 @@ test('current-consumer RPG menu preserves reusable APIs and game-specific race a
   const quality=JSON.parse(fs.readFileSync(path.join(assetRoot,'quality-evidence.json'),'utf8'));
   assert.equal(quality.productionVerified,false);
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(quality.sourceAudit.evidenceBasis.currentConsumerCanonicalParity,true);
+  // 삭제된 소비자와의 과거 일치 기록은 활성 게임의 통과 증거로 재사용하지 않는다.
   assert.equal(quality.sourceAudit.claim,'SOURCE_AUTHORING_INTERNAL_ASSET_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS');
 });
 
@@ -4988,9 +4984,10 @@ test('common VFX image particles bind native receipts and preserve bounded cosme
  assert.match(source,/node\.token~=token/);
  assert.match(source,/node\.folder\.Parent=nil/);
  assert.match(source,/EFFECT_LIMIT\+6/);
- const client=fs.readFileSync(path.join(root,'roblox-games/horror-escape-room/client/Game.client.luau'),'utf8');
- assert.match(client,/CommonVFX\.CreateImpactFlash/);
- assert.match(client,/CommonVFX\.CreateShapeBurst/);
+ // [활성 소비자] 삭제된 공포 게임 대신 마력숲의 실제 VFX 모듈 호출을 검증한다.
+ const client=fs.readFileSync(path.join(root,'roblox-games/fantasy-survival/client/Game.client.luau'),'utf8');
+ assert.match(client,/combatVFX\.CreateImpactFlash/);
+ assert.match(client,/meadowCommonVFX\.Create\(selectedFx,settings\)/);
  assert.doesNotMatch(client,/combatEffects\.abilityVfxPart/);
  assert.doesNotMatch(source,/FireServer|FireAllClients|TakeDamage/);
 });
