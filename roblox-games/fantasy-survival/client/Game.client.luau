@@ -127,15 +127,13 @@ gui.Parent = player:WaitForChild("PlayerGui")
 pcall(function() game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Health,false) end)
 -- [마력숲 옵션] 접속 중 표시·음량만 조절하며 서버 저장 구조를 변경하지 않는다.
 local meadowIconAtlas="rbxassetid://102668066491590" -- CC0_INTERFACE_ATLAS
+-- [오른쪽 아이콘] 기존 등록·승인된 액션 그림 아틀라스를 사용하고 물약·가방 원본만 보존한다.
+local meadowRightActionAtlas="rbxassetid://81665484719308" -- 등록된 RIGHT_ACTION_HUD 아틀라스 (40x40, 8열)
+local meadowRightActionRects={fist=1,dodge=3,guard=2,sprint=4,interact=5}
 local meadowRealActionIcons={
-  fist="rbxassetid://74889533858270",
-  dodge="rbxassetid://120347249421022",
-  guard="rbxassetid://81631343083705",
   potion="rbxassetid://120656085154237",
-  interact="rbxassetid://138525825083950",
-  sprint="rbxassetid://128151987225929",
   bag="rbxassetid://127437456512278"
-} -- CC0_REAL_ACTION_ICONS
+} -- 기존 물약·가방 CC0 개별 이미지 유지
 local reducedEffects=game:GetService("UserInputService").TouchEnabled
 local meadowEffectsGroup=Instance.new("SoundGroup")
 meadowEffectsGroup.Name="MeadowEffects";meadowEffectsGroup.Volume=.75
@@ -2032,16 +2030,20 @@ local function styleMeadowCombatButton(button,color)
   })
   gradient.Parent=button
 end
--- [오른쪽 전용 그림 아이콘] 맨손 발차기·회피·질주·손동작은 실제 Gui 그림으로 표시한다.
--- 몬스터·맵 파츠가 아닌 UI 레이어이며 기존 CC0 장갑/방패/가방 자산은 그대로 사용한다.
--- [실제 CC0 액션 아이콘] 원본 등록 PNG만 표시한다. 스크린샷 크롭·그림 도형 금지.
+-- [오른쪽 전용 그림 아이콘] 연타·회피·막기·상호작용·질주는 승인된 전용 그림으로 교체한다.
+-- 물약과 가방은 현재 등록된 개별 CC0 이미지를 그대로 사용하고, 서버 액션 바인딩은 유지한다.
 local function applyMeadowRightActionImage(button,role)
-  local imageId=meadowRealActionIcons[role]
+  local atlasIndex=meadowRightActionRects[role]
+  local imageId=meadowRealActionIcons[role] or (atlasIndex and meadowRightActionAtlas)
   if not imageId then return false end
   local icon=Instance.new("ImageLabel")
   icon.Name="OriginalRightActionIcon"
   icon.BackgroundTransparency=1
   icon.Image=imageId
+  if atlasIndex then
+    icon.ImageRectOffset=Vector2.new(atlasIndex*40,0)
+    icon.ImageRectSize=Vector2.new(40,40)
+  end
   icon.ScaleType=Enum.ScaleType.Fit
   icon.AnchorPoint=Vector2.new(.5,.5)
   icon.Position=UDim2.fromScale(.5,.45)
@@ -2074,7 +2076,7 @@ for index,skill in ipairs(meleeSkills)do
     icon.Parent=button
     -- 어퍼컷은 CC0 장갑 원본, 막기는 CC0 방패 원본을 사용한다.
   end
-  -- 회피는 승인된 기존 이미지 4번을 직접 사용한다. 회복은 붉은 물약으로 명확히 구분한다.
+  -- 전투 3종은 전용 아틀라스, 회복은 기존 붉은 물약 이미지를 사용한다.
   applyMeadowRightActionImage(button,skill[5])
   local nameplate=Instance.new("TextLabel")
   nameplate.Name="SkillNameplate"..index
@@ -2768,16 +2770,12 @@ local function layoutMeadowRadar()
   if v.X<=0 or v.Y<=0 then return end
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  -- [상단 우측 미니맵] 화면 안전 영역 맨 위에 지도를 붙이고 아래에 지역명·작은 좌표만 놓는다.
-  local mapDiameter=compactLandscape and 100 or small and 106 or math.floor(math.clamp(v.Y*.24,110,170))
+  -- [오른쪽 위 고정 미니맵] 모바일 안전 영역 안에 배치하며 액션 버튼 위치 저장과 분리한다.
+  local mapDiameter=compactLandscape and 88 or small and 96 or math.floor(math.clamp(v.Y*.17,98,124))
   meadowRadar.Size=UDim2.fromOffset(mapDiameter+14,mapDiameter+40)
-  -- [미니맵] 남쪽 S 중심을 회피(발) 버튼 중심의 수직선에 정확히 일치시킨다.
-  -- 절대 좌표는 처음 로딩 중 0으로 나올 수 있으므로 화면·도크와 동일한 상대 배치식을 쓴다.
-  local landscape=v.X>v.Y
-  local scale=landscape and math.clamp(v.Y/315,.76,1.12) or math.clamp(v.X/390,.76,1)
-  local dodgeCenterX=235*meadowTopPositions[2][1]
-  meadowRadar.AnchorPoint=Vector2.new(.5,0)
-  meadowRadar.Position=UDim2.new(1,math.floor((dodgeCenterX-237)*scale),0,0)
+  -- 오른쪽 끝에서 12px, 화면 위에서 8px를 띄워 잘림과 액션 버튼 겹침을 줄인다.
+  meadowRadar.AnchorPoint=Vector2.new(1,0)
+  meadowRadar.Position=UDim2.new(1,-12,0,8)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
