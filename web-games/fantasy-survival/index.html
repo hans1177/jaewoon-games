@@ -4936,7 +4936,7 @@ function handleWorldTap(e){
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);
  let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=Infinity;
- if(!closest&&!world3d?.isActive?.())for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(70,(Number(m.type.r)||20)+24)&&d<cd){closest=m;cd=d}}
+ if(!closest&&!worldPoint)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(70,(Number(m.type.r)||20)+24)&&d<cd){closest=m;cd=d}}
  if(closest){
   // 메인 · 미등록 몬스터는 먼저 두 번 조사해 도감에 등록한다. 첫 터치에서 공격하지 않는다.
   // 등록된 몬스터의 터치 공격과 활 3회 조준은 기존 attack() 판정을 유지한다.
