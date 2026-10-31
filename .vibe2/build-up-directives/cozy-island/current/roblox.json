@@ -4951,7 +4951,25 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "c9670ba5c45374009f1e852c9d977b9fa475d1f5",
+      "artifactIdentity": "sha256:6729a08b70ca97e6ce823e2cbad272efa2a108e99e9b321d3316077ff9825bc5",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 41142473552,
+      "testedAt": "2026-10-30T23:30:43.801Z",
+      "repairSurfaces": [
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "observed-action-365681f8b2605ff0b67d",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-365681f8b2605ff0b67d\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode2.ProximityPrompt\",\"targetIdentity\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode2.ProximityPrompt\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"recoveredByInteraction\":false,\"attempts\":1}"
+        }
+      ]
+    },
     "failureStage": "VIBE_INTERNAL_PLAY",
     "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
     "blockers": [
