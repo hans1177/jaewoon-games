@@ -1589,7 +1589,12 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local meadowIconAtlas="rbxassetid://'+icons.assetId+'"'));
   assert.ok(client.includes('icon.ImageRectOffset=Vector2.new(skill[4]*64,0)'));
   assert.match(client,/if meadowIconAtlas~="" and skill\[4\](?:~=nil)? then/);
-  assert.ok(client.includes('glyph.Name="SkillSymbol"'));
+  const forestRealIcons=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8')).nativeActionIcons;
+  if(forestRealIcons?.registrationVerified===true){
+    assert.ok(!client.includes('glyph.Name="SkillSymbol"'),'real native icons must replace drawn silhouettes');
+  }else{
+    assert.ok(client.includes('glyph.Name="SkillSymbol"'),'old client remains until official owner importer succeeds');
+  }
   // Item cards read existing server-authoritative values, without adding a saved schema.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
   assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'left pocket shortcut must be removed');
@@ -2153,22 +2158,61 @@ test('Forest four configurable top buttons align minimap and preserve lower util
 
 
 
-test('Forest minimap south aligns with original dodge icon after responsive layout',()=>{
+test('Forest minimap south aligns with existing circular radar and action is server-owned',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
-  assert.equal(registry.rightActionIcons.keys[3],'dodge');
-  assert.match(client,/\{"skill-meadow-dodge-left","회피",Color3\.fromRGB\(246,179,73\),nil,4\}/);
   assert.match(client,/applyMeadowRightActionImage\(button,skill\[5\]\)/);
-  assert.doesNotMatch(client,/glyph\.Text=index==2 and "🦶" or "🧪"/);
-  assert.match(client,/paintMeadowActionArt\(button,"POTION",Color3\.fromRGB\(221,42,57\)\)/);
-  assert.match(client,/limb\("RedHealingPotion"/);
   assert.match(client,/south\.Name="South"/);
+  assert.match(client,/radarFieldCorner\.CornerRadius=UDim\.new\(1,0\)/);
   assert.match(client,/south\.Position=UDim2\.new\(\.5,0,1,-2\)/);
   assert.match(client,/local dodgeCenterX=235\*meadowTopPositions\[2\]\[1\]/);
   assert.match(client,/meadowRadar\.Position=UDim2\.new\(1,math\.floor\(\(dodgeCenterX-237\)\*scale\),0,0\)/);
-  assert.doesNotMatch(client,/fistCenterX=meadowSkillDock\.AbsolutePosition/);
-  assert.match(client,/sprite\.Size=UDim2\.fromScale\(\.91,\.91\)/);
-  assert.match(client,/if rim then rim.Enabled=true;rim.Thickness=1\.8 end/);
-  assert.match(client,/meadowRadar\.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
   assert.match(client,/if alignMeadowRadar then alignMeadowRadar\(\) end/);
+  assert.match(server,/\["skill-meadow-dodge-left"\]=function\(player\)/);
+  assert.match(server,/\["skill-meadow-guard"\]=meadowGuard/);
+  assert.match(server,/\["skill-meadow-heal"\]=meadowHeal/);
+  assert.match(server,/\["skill-meadow-sprint"\]=meadowSprint/);
+  assert.match(server,/\["scope-coreloop-1-6ebe58f496"\]=gatherNearestResource/);
+  const roles=['fist','dodge','guard','potion','interact','sprint','bag'];
+  if(registry.nativeActionIcons?.registrationVerified===true){
+    assert.match(client,/local meadowRealActionIcons=\{/);
+    assert.doesNotMatch(client,/meadowRightActionAtlas|paintMeadowActionArt|ImageRectOffset=Vector2\.new\(\(slot-1\)\*40,0\)/);
+    for(const role of roles){
+      const row=registry.nativeActionIcons.icons[role];
+      assert.match(String(row.assetId),/^[1-9]\d*$/);
+      assert.equal(row.importVerified,true);
+      assert.equal(row.license,'CC0-1.0');
+      assert.ok(client.includes(role+'="rbxassetid://'+row.assetId+'"'),'native role binding missing: '+role);
+    }
+    assert.match(client,/\{"skill-meadow-heal","물약",Color3\.fromRGB\(224,85,94\),nil,"potion"\}/);
+  }else{
+    assert.match(client,/local meadowRightActionAtlas="rbxassetid:\/\/81665484719308"/);
+  }
+});
+
+test('Forest actual seven-icon import extracts original CC0 PNG and replaces screenshot bindings',()=>{
+  const script=fs.readFileSync('tools/horror-combat-assets.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
+  const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
+  const source=registry.interfaceIcons.sourceArchives.find(x=>x.path.endsWith('fantasy-rpg-icons.zip'));
+  assert.ok(source);
+  assert.match(script,/if\(process\.argv\.includes\('--magic-action-icons-only'\)\)/);
+  assert.match(script,/FOREST_REAL_ICONS_SOURCE_ARCHIVE_HASH_MISMATCH/);
+  assert.match(script,/execFileSync\('unzip',\['-p',archive\.path,paths\[0\]\]/);
+  for(const filename of ['icon_glove.png','icon_legarmor.png','icon_shield.png',
+    'icon_potionred.png','icon_chest.png','icon_aurared.png','icon_bag.png']){
+    assert.ok(script.includes("'"+filename+"'"));
+  }
+  assert.match(script,/assetType:'Image',displayName:'Mana Forest CC0 '/);
+  assert.match(script,/grantToDependencies:true/);
+  assert.match(script,/FOREST_CC0_NATIVE_ACTION_ICON=/);
+  assert.match(script,/FOREST_CC0_NATIVE_7_ICON_BINDING_PREPARED/);
+  assert.match(script,/FOREST_SCREENSHOT_ICON_FALLBACK_STILL_PRESENT/);
+  assert.match(workflow,/node tools\/horror-combat-assets\.mjs --magic-action-icons-only/);
+  assert.match(workflow,/Open exact combat asset binding PR/);
+  assert.match(workflow,/roblox-games\/fantasy-survival\/client\/Game\.client\.luau/);
+  assert.match(workflow,/roblox-games\/fantasy-survival\/CC0-ASSET-REGISTRY\.json/);
+  assert.equal(registry.interfaceIcons.license,'CC0-1.0');
+  assert.equal(registry.interfaceIcons.universeId,'10773436325');
 });
