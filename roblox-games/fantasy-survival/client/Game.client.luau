@@ -3405,7 +3405,9 @@ player.CharacterAdded:Connect(function()
   finishMeadowSkillPose()
 end)
 player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
-  if os.clock()>=dodgePoseUntil then finishMeadowSkillPose() end
+  -- [액션 모션 유지] 공격 승인 신호는 방어·회피·스킬 포즈의 종료 신호가 아니다.
+  -- 서버가 승인한 액션별 연출 시간 동안 기존 모션을 끊지 않는다.
+  if skillMotionR15 and os.clock()>=skillMotionDeadline then finishMeadowSkillPose() end
 end)
 player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
@@ -3462,6 +3464,71 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   if isDodge then dodgePoseUntil=skillMotionDeadline end
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
   character:SetAttribute("NativeSkillActionId",id)
+end)
+-- [늑대 원본 관절 모션] 서버 NativeMobMotion 상태에 따라 기존 스킨 Bone/Motor6D만 클라이언트에서 변형한다.
+-- Bone.Transform은 네트워크 복제되지 않으므로 화면에 표시하는 모든 클라이언트가 직접 실행한다.
+-- 모델·다리·판정·서버 AI·저장값은 추가/수정하지 않으며 Atomic 스트리밍 중 모델 교체도 감지한다.
+local meadowWolfJoints=setmetatable({}, {__mode="k"})
+local meadowWolfLastScan=0
+RunService.PreSimulation:Connect(function(dt)
+  local now=os.clock()
+  if now-meadowWolfLastScan>=.35 then
+    meadowWolfLastScan=now
+    local world=workspace:FindFirstChild("FantasySurvivalWorld")
+    if world then
+      for _,model in ipairs(world:GetChildren()) do
+        if model:IsA("Model") and model:GetAttribute("Species")=="wolf" and not meadowWolfJoints[model] then
+          local legs={}
+          for _,joint in ipairs(model:GetDescendants()) do
+            if joint:IsA("Bone") then
+              local key=joint.Name:lower():gsub("[^%w]","")
+              local limb=key=="bone014" and "FL" or key=="bone017" and "FR"
+                or key=="bone008" and "BL" or key=="bone011" and "BR" or nil
+              if limb then legs[limb]=joint end
+            elseif joint:IsA("Motor6D") and joint.Part0 and joint.Part1 then
+              local name=joint.Name:upper():gsub("[^%w]","")
+              if name=="FLHIP" or name=="FRHIP" or name=="BLHIP" or name=="BRHIP" then
+                legs[name:sub(1,2)]=joint
+              end
+            end
+          end
+          if legs.FL and legs.FR and legs.BL and legs.BR then
+            meadowWolfJoints[model]=legs
+            model:SetAttribute("ClientWolfLegMotion","ACTIVE")
+          end
+        end
+      end
+    end
+  end
+  for model,legs in pairs(meadowWolfJoints) do
+    if not model:IsDescendantOf(workspace) then
+      meadowWolfJoints[model]=nil
+    else
+      local mode=model:GetAttribute("NativeMobMotion") or "IDLE"
+      local moving=mode=="WALK" or mode=="RUN"
+      local speed=mode=="RUN" and 13 or 7.5
+      local gait=moving and math.sin(workspace:GetServerTimeNow()*speed) or 0
+      local stride=moving and (mode=="RUN" and .53 or .33) or 0
+      local stateAt=model:GetAttribute("NativeMobMotionStartedAt") or workspace:GetServerTimeNow()
+      local age=math.max(0,workspace:GetServerTimeNow()-stateAt)
+      local windup=mode=="ANTICIPATION" and math.clamp(age/.28,0,1) or 0
+      local impactAt=model:GetAttribute("NativeMobLastImpact")
+      local impactAge=typeof(impactAt)=="number" and workspace:GetServerTimeNow()-impactAt or math.huge
+      local bite=(impactAge>=0 and impactAge<.30) and math.sin(math.pi*impactAge/.30) or 0
+      local recoil=mode=="RECOVERY" and math.exp(-age*8) or 0
+      local idle=(mode=="IDLE") and math.sin(workspace:GetServerTimeNow()*1.8)*.025 or 0
+      local front=gait*stride-.20*windup+.29*bite-.08*recoil+idle
+      local rear=-gait*stride*.85+.13*windup-.15*bite+.06*recoil-idle
+      local alpha=1-math.exp(-math.clamp(dt,0,.08)*22)
+      for limb,joint in pairs(legs) do
+        if joint.Parent then
+          local opposite=(limb=="FR" or limb=="BL") and -1 or 1
+          local angle=(limb:sub(1,1)=="F" and front or rear)*opposite
+          joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,0),alpha)
+        end
+      end
+    end
+  end
 end)
 RunService.PreSimulation:Connect(function(dt)
   if not skillMotionR15 or not skillMotionCharacter then return end
