@@ -1662,6 +1662,15 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/target:InputHoldBegin\(\)/);
   assert.doesNotMatch(client,/TouchTapInWorld:Connect\(function\(positions,processedByUI\)/);
   assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,(?:nil|meadowHealthTrack),multiplayerStatus,/);
+  // [버튼 먹통 회귀] 메뉴 페이지 객체를 nil 빠른행동 콜백으로 연결해 클라이언트가 멈추는 문제 금지.
+  const nativeUi=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+  assert.match(nativeUi,/type\\(primary.pages\\)=="table"/);
+  assert.match(nativeUi,/type\\(primary.activate\\)=="function"/);
+  assert.match(nativeUi,/open=function\\(pageIndex\\)setOpen\\(true,pageIndex\\)end/);
+  assert.match(nativeUi,/page.Visible=pageIndex==selectedPage/);
+  assert.match(client,/meadowSkillDock.ZIndex=20/);
+  assert.match(server,/local heading=Vector3.new\\(destination.X-origin.X,0,destination.Z-origin.Z\\)/);
+  assert.match(server,/npc:PivotTo\\(CFrame.lookAt\\(origin,origin\\+heading.Unit\\)\\)/);
   assert.match(client,/pages=meadowPages/);
   assert.ok(client.includes('hideButton=true'),
     'the default menu attack remains hidden; world-tap and main attack share the existing server action');

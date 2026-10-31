@@ -638,6 +638,10 @@ local function villageNativeNpc(spec)
           if npc.Parent~=gameWorld or humanoid.Health<=0 then break end
           local phase=gameWorld:GetAttribute("MeadowDayPhase")
           local destination=phase=="NIGHT" and home or home+offset
+          -- [마을 주민] 실제 걸어갈 방향을 향한 채 서버가 이동시킨다. 루트 정면과 발걸음의 옆걸음 불일치 방지.
+          local origin=root.Position
+          local heading=Vector3.new(destination.X-origin.X,0,destination.Z-origin.Z)
+          if heading.Magnitude>.5 then npc:PivotTo(CFrame.lookAt(origin,origin+heading.Unit)) end
           humanoid:MoveTo(destination)
           humanoid.MoveToFinished:Wait()
           task.wait(2.4)

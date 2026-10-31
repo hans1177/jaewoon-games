@@ -2037,6 +2037,7 @@ end)
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
 meadowSkillDock.BackgroundTransparency=1
+meadowSkillDock.ZIndex=20 -- [오른쪽 버튼] 타 UI와 독립된 입력 우선순위.
 meadowSkillDock.AnchorPoint=Vector2.new(1,1)
 meadowSkillDock.Parent=gui
 -- 외부 CC0 등록 아틀라스의 실제 의미가 맞는 아이콘만 매칭한다.
