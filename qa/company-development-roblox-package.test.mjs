@@ -1282,16 +1282,16 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.ok([true,false].includes(assets.villagePrefabs.registrationVerified));
   assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
   // [마력숲 대형 중세 건축] 2배 이상 배율을 유지하고 오리지널 6동을 포함한 16동의 실루엣을 검증한다.
-  const villageScale=Number(server.match(/local villageArchitectureScale=([\\d.]+)/)?.[1]);
+  const villageScale=Number(server.match(/local villageArchitectureScale=([\d.]+)/)?.[1]);
   assert.ok(villageScale>=2,'building height and footprint must be at least twice the original');
-  assert.match(server,/local houseScale=villageArchitectureScale\\*house.scale/);
-  assert.match(server,/local x=house.x\\+piece.x\\*houseScale\\*math.cos\\(rot\\)-piece.z\\*houseScale\\*math.sin\\(rot\\)/);
-  assert.match(server,/piece.height\\*houseScale\\*roofPitch,piece.lift\\*houseScale/);
-  assert.match(server,/local roofRows=rowCount==3 and \\{-5\\.4,0,5\\.4\\} or \\{-2\\.7,2\\.7\\}/);
-  assert.match(server,/local endZ=rowCount\\*2\\.7/);
+  assert.match(server,/local houseScale=villageArchitectureScale\*house.scale/);
+  assert.match(server,/local x=house.x\+piece.x\*houseScale\*math.cos\(rot\)-piece.z\*houseScale\*math.sin\(rot\)/);
+  assert.match(server,/piece.height\*houseScale\*roofPitch,piece.lift\*houseScale/);
+  assert.match(server,/local roofRows=rowCount==3 and \{-5\.4,0,5\.4\} or \{-2\.7,2\.7\}/);
+  assert.match(server,/local endZ=rowCount\*2\.7/);
   assert.match(server,/for porchIndex=1,house.porch do/);
   const villageHouses=server.slice(server.indexOf('local houses={'),server.indexOf('for houseIndex,house in ipairs(houses)'));
-  const houseSpecs=[...villageHouses.matchAll(/name="Village_([\\w]+)"/g)].map(row=>row[1]);
+  const houseSpecs=[...villageHouses.matchAll(/name="Village_([\w]+)"/g)].map(row=>row[1]);
   assert.equal(houseSpecs.length,16,'expanded village must contain sixteen real CC0 modular buildings');
   assert.equal(new Set(houseSpecs).size,16,'each house needs a unique scene identity');
   for(const name of ['HealerHouse','Guesthouse','Workshop','WardenHall','ResidentHouseWest','ResidentHouseEast'])
