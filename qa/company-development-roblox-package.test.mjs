@@ -1620,7 +1620,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
   assert.ok(client.includes('compact=true,hideButton=true,menuLeft=true'));
-  assert.match(client,/local scale=landscape and math.clamp\(v.Y\/\d+,[\s\S]*?or math.clamp\(v.X\/\d+/);
+  assert.match(client,/local scale=landscape and math.clamp\(\(v.Y-20\)\/370,\.76,1\.12\) or math.clamp\(v.X\/390/);
   assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(cx-originalSize\/2\)\*scale\)/);
