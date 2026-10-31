@@ -2660,17 +2660,19 @@ local function meadowDodge(player,sign,id)
     player:SetAttribute("ApprovedActionTarget",root.Position)
     local oldAutoRotate=humanoid.AutoRotate
     humanoid.AutoRotate=false
-    -- 첫 프레임부터 적을 향한다. 회피 방향으로 몸통을 돌리지 않는다.
-    character:PivotTo(dodgeFacing)
     task.spawn(function()
       local movementStarted=os.clock()
       while character.Parent and player.Character==character
         and root:IsDescendantOf(character) and humanoid.Health>0 do
         local t=math.clamp((os.clock()-movementStarted)/.26,0,1)
-        -- [빠른 옆 점프] 수평 이동과 낮은 공중 호를 함께 적용, 마지막 프레임에 원래 높이로 착지.
+        -- [회피: 15도 숙인 빠른 측면 도약] 출발 시 순간적인 몸통 방향 점프를 막는다.
+        -- 처음 약 .06초만 적을 향해 회전하고 이후 적을 보는 방향을 고정한다.
         local eased=.5-.5*math.cos(math.pi*t)
+        local turn=math.clamp(t/.24,0,1)
+        turn=turn*turn*(3-2*turn)
+        local gaze=dodgeOrigin:Lerp(dodgeFacing,turn)
         local hop=hopHeight*math.sin(math.pi*t)
-        character:PivotTo(dodgeFacing+dodgeOffset*eased+Vector3.new(0,hop,0))
+        character:PivotTo(gaze+dodgeOffset*eased+Vector3.new(0,hop,0))
         if t>=1 then break end
         RunService.Heartbeat:Wait()
       end
