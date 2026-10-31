@@ -1524,11 +1524,12 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/meadowSkillDock.Visible=gui:GetAttribute\("GameMenuOpen"\)~=true/);
   // [모바일 배치] 우측 조작창은 오른쪽 2픽셀로 붙고, 좁은 가로화면에서는 미니맵과 간섭하지 않는다.
   assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-math.floor\(2\*scale\)/);
-  assert.match(client,/v.Y<350 and 32 or v.Y<420 and 44 or 83/);
-  assert.match(client,/or 136\)\*scale/);
+  assert.match(client,/v.Y<350 and 12 or 14/);
+  assert.match(client,/or 116\)\*scale/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+14,mapDiameter\+40\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-4,0,0\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(math.floor\(fistCenterX\),0\)/);
+  assert.match(client,/meadowSkillDock.AbsolutePosition.X\+fist.Position.X.Offset/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
   assert.match(client,/radarTitle.Position=UDim2.fromOffset\(3,mapDiameter\+7\)/);
   assert.match(client,/radarCoordinates.Position=UDim2.fromOffset\(3,mapDiameter\+25\)/);
@@ -1549,10 +1550,10 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local endpoint=nativeFoundationRemote or ReplicatedStorage:WaitForChild\("RuntimeFoundationReport",12\)/);
   assert.match(client,/task.defer\(reportNativeFoundationReady\)/);
   assert.match(client,/meadowSkillDock.AnchorPoint=Vector2.new\(1,1\)/);
-  // 모바일 전투: 실제 발차기·어퍼컷·막기가 기본 공격 주변의 반원에 배치된다.
-  assert.match(client,/local meleeSkills=\{[\s\S]*?\{"meadow-unarmed-kick","발차기"[\s\S]*?\{"meadow-unarmed-uppercut","어퍼컷"[\s\S]*?\{"skill-meadow-guard","막기"/);
-  assert.ok(client.includes('{"meadow-unarmed-kick","발차기"'));
-  assert.ok(client.includes('{"meadow-unarmed-uppercut","어퍼컷"'));
+  // 상단 네 버튼의 원본 기술 ID는 연타·회피·막기·회복이며 기존 발차기/어퍼컷 핸들러는 서버에 유지된다.
+  assert.match(client,/local meleeSkills=\{[\s\S]*?\{"meadow-unarmed-rush","연타"[\s\S]*?\{"skill-meadow-dodge-left","회피"[\s\S]*?\{"skill-meadow-guard","막기"[\s\S]*?\{"skill-meadow-heal","물약"/);
+  assert.ok(server.includes('["meadow-unarmed-kick"]=function(player) return unarmedSkillAttack(player,14) end'));
+  assert.ok(server.includes('["meadow-unarmed-uppercut"]=function(player) return unarmedSkillAttack(player,20) end'));
   assert.ok(client.includes('local function layoutMeadowCombatUi()'));
   assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-(?:math.floor\()?/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
@@ -1570,7 +1571,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or (?:\d+|math.floor\(math.clamp\()/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-4,0,0)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(math.floor(fistCenterX),0)'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
@@ -2047,4 +2048,42 @@ test('Forest title is created before blocking world waits and entry stays save-s
   assert.match(client,/remote:FireServer\("meadow:new-game:confirm"\)/);
   assert.match(client,/if player:GetAttribute\("MeadowProfileHadSave"\)~=true then\s+loadRegion\(true\)/);
   assert.match(client,/player:GetAttribute\("MeadowNewGameResult"\)/);
+});
+
+
+
+test('Forest four configurable top buttons align minimap and preserve lower utility actions',()=>{
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const actionBlock=client.slice(client.indexOf('local meleeSkills={'),client.indexOf('local meadowTopDefaults='));
+  const topIds=[...actionBlock.matchAll(/\{"([^"]+)","(?:연타|회피|막기|물약)"/g)].map(x=>x[1]);
+  assert.deepEqual(topIds,['meadow-unarmed-rush','skill-meadow-dodge-left','skill-meadow-guard','skill-meadow-heal']);
+  const utilities=client.slice(client.indexOf('local meadowUtilityActions={'),client.indexOf('local meadowUtilityButtons={}'));
+  assert.match(utilities,/scope-coreloop-1-6ebe58f496"[\s\S]*?skill-meadow-sprint"[\s\S]*?MEADOW_INVENTORY"/);
+  assert.equal([...utilities.matchAll(/^\s+\{"[^"]+"/gm)].length,3,'lower row must stay exactly three fixed buttons');
+  assert.match(client,/meadowSprintAuto=not meadowSprintAuto/);
+  assert.match(client,/meadowSprintAuto and ready and remains<=\.05/);
+  assert.match(client,/human\.MoveDirection\.Magnitude>\.1/);
+  assert.match(client,/local fistCenterX=meadowSkillDock\.AbsolutePosition\.X\+fist\.Position\.X\.Offset/);
+  assert.match(client,/meadowRadar\.Position=UDim2\.fromOffset\(math\.floor\(fistCenterX\),0\)/);
+  assert.match(client,/alignMeadowRadar=layoutMeadowRadar/);
+  assert.match(client,/local meadowTopDefaults=\{\{\.235,\.275\}/);
+  assert.match(client,/local activeDrag=nil/);
+  assert.match(client,/UserInputService\.InputChanged:Connect\(function\(input\)/);
+  assert.match(client,/meadowPages\[4\]\.ScrollingEnabled=false/);
+  assert.match(client,/name="MeadowEditActionLayout"/);
+  assert.match(client,/name="MeadowSaveActionLayout"/);
+  assert.match(client,/name="MeadowResetActionLayout"/);
+  assert.match(client,/remote:FireServer\("meadow:ui-layout:"\.\.table\.concat\(values,","\)\)/);
+  assert.match(client,/readMeadowTopLayout\(player:GetAttribute\("MeadowTopButtonsLayout"\)\)/);
+  assert.match(server,/saved\.MeadowTopButtonsLayout/);
+  assert.match(server,/if string\.sub\(actionId,1,17\)=="meadow:ui-layout:" then/);
+  assert.match(server,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true then return end/);
+  assert.match(server,/if x<120 or x>880 or y<100 or y>550 then return end/);
+  assert.match(server,/snapshot\.MeadowTopButtonsLayout=layout/);
+  assert.match(server,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
+  // 선택값은 위치 문자열만 저장하며 서버 기술 쿨다운·능력치·전투 판정을 변경하지 않는다.
+  assert.match(server,/\["skill-meadow-sprint"\]=8/);
+  assert.match(server,/humanoid\.WalkSpeed=math\.min\(26,prior\+5\)/);
+  assert.match(server,/task\.delay\(3,function\(\)/);
 });
