@@ -1425,7 +1425,13 @@ test('fantasy quadrupeds synchronize diagonal foot contacts with travel and fore
   const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
   assert.match(client,/lastPosition=model:GetPivot\(\)\.Position,travel=0,groundSpeed=0/);
   assert.match(client,/row\.groundSpeed\+=\(rawSpeed-row\.groundSpeed\)/);
-  assert.match(client,/if row\.groundSpeed<\.35 then mode="IDLE" end/);
+  assert.match(client,/local movedEnough=traveled>\.03 and traveled<=5/);
+  assert.match(client,/row\.motionHoldUntil=os\.clock\(\)\+\.16/);
+  assert.match(client,/if row\.groundSpeed<1\.1 and os\.clock\(\)>=row\.motionHoldUntil then mode="IDLE" end/);
+  assert.match(client,/intensity=footTravel and math\.clamp\(row\.groundSpeed\/7\.5,\.6,1\.08\) or 1\.24/);
+  assert.match(client,/if movedEnough then row\.travel\+=traveled end/);
+  assert.match(client,/row\.nativeTracks/);
+  assert.match(client,/row\.turnLean/);
   assert.match(client,/phase=\(row\.travel%stride\)\/stride/);
   assert.match(motion,/local legPhase=\(t\+offset\)%1/);
   assert.match(motion,/local airborne=locomotion and math\.sin/);
@@ -1567,7 +1573,13 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/meadowSkillDock.Position=UDim2.new\(1,-(?:math.floor\()?/);
   assert.ok(client.includes('SetCoreGuiEnabled(Enum.CoreGuiType.Health,false)'));
   assert.ok(client.includes('trackerTitle.Visible=false;trackerDetail.Visible=false'));
-  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(48,48)'));
+  assert.ok(client.includes('questTracker.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('local meadowQuickPages={'));
+  for(const action of ['"MeadowQuickBag","가방",4,2','"MeadowQuickSkill","스킬",2,5','"MeadowQuickGear","장비",3,1','"MeadowQuickSettings","설정",6,4']){
+    assert.ok(client.includes(action),'invalid original menu destination: '+action);
+  }
+  assert.ok(client.includes('button.Size=UDim2.fromOffset(52,56)'));
+  assert.ok(client.includes('if gui:GetAttribute("GameMenuOpen")~=true then meadowMenu.open(info[4]) end'));
   assert.ok(client.includes('meadowHealthTrack.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
@@ -1605,7 +1617,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   }
   // Item cards read existing server-authoritative values, without adding a saved schema.
   assert.ok(client.includes('inventoryGrid.Name="MeadowInventoryGrid"'));
-  assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'left pocket shortcut must be removed');
+  assert.ok(!client.includes('inventoryQuick.Name="MeadowInventoryQuick"'), 'retired separate pocket shortcut must stay removed');
+  for(const attr of ['Wood','Stone','Coins'])assert.ok(client.includes('"'+attr+'",nil,'));
+  assert.ok(client.includes('symbol.Name="ResourceTextIcon"'));
   assert.ok(client.includes('meadowMenu.open(3)end'), 'journal shortcut remains');
   assert.ok(client.includes('pages=meadowPages'), 'inventory page remains inside original menu');
   for(const attr of ['Wood','Stone','ResearchRecords','Coins','WeaponTier']){
@@ -1616,6 +1630,8 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   // Minimap renders only real peer coordinates and already discovered server grove sectors.
   assert.ok(client.includes('radarField.Name="NearbyPlayers"'));
   assert.ok(client.includes('local discovered=player:GetAttribute("ExplorationGroves") or 0'));
+  assert.ok(client.includes('radarTitle.Text=string.format("%s · %d/4",areaName,discoveredCount)'));
+  assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('bit32.band(discovered,point[3])~=0'));
   assert.ok(client.includes('local delta=peerRoot.Position-mainRoot.Position'));
   assert.ok(client.includes('radarCenter.Rotation=math.deg(math.atan2(facing.X,-facing.Z))'));
