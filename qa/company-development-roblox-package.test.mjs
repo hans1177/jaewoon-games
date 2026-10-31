@@ -2207,7 +2207,8 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/meadowHealthTrack:GetPropertyChangedSignal\("AbsolutePosition"\):Connect\(layoutMeadowRadar\)/);
   assert.match(client,/meadowSkillButtons\[2\]:GetPropertyChangedSignal\("AbsolutePosition"\):Connect\(layoutMeadowRadar\)/);
   assert.match(client,/alignMeadowRadar=layoutMeadowRadar/);
-  assert.match(client,/local meadowTopDefaults=\{\{\.160,\.540\},\{\.500,\.120\},\{\.840,\.540\},\{\.500,\.395\}\}/);
+  assert.match(client,/local alignedCombatY=\.395-\(74-46\)\/\(2\*260\)/);
+  assert.match(client,/local meadowTopDefaults=\{\{\.160,alignedCombatY\},\{\.500,\.120\},\{\.840,alignedCombatY\},\{\.500,\.395\}\}/);
   assert.match(client,/local activeDrag=nil/);
   assert.match(client,/UserInputService\.InputChanged:Connect\(function\(input\)/);
   assert.match(client,/meadowPages\[4\]\.ScrollingEnabled=false/);
@@ -2225,7 +2226,8 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/if free then p\[1\],p\[2\]=x,y;refreshTopEditor\(\) end/);
   assert.ok(server.includes('["meadow-unarmed-rush"]=attackEnemy'),'right attack must support existing equipped weapon');
   // Default centers are separated. An old invalid saved layout that stacks buttons must be rejected.
-  const base=[[.160,.540],[.500,.120],[.840,.540],[.500,.395]];
+  const combatY=.395-(74-46)/(2*260);
+  const base=[[.160,combatY],[.500,.120],[.840,combatY],[.500,.395]];
   const nonOverlapping=layout=>layout.every(([x,y],i)=>layout.slice(i+1).every(([u,v],other)=>{
     const j=i+1+other;
     const distance2=((x-u)*235)**2+((y-v)*260)**2;
@@ -2237,7 +2239,7 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.equal(base[1][0],base[3][0],'dodge and potion must stay on the same center axis');
   assert.ok(base[1][1]<base[3][1]&&base[3][1]<base[0][1],
     'dodge must lead the upper vertex and potion must remain between upper and lower actions');
-  assert.match(client,/if value=="235,275,500,120,800,275,500,510"\s+or value=="200,300,500,300,800,300,500,550" then/);
+  assert.match(client,/if value=="235,275,500,120,800,275,500,510"\s+or value=="200,300,500,300,800,300,500,550"\s+or value=="160,540,500,120,840,540,500,395" then/);
   assert.ok(!nonOverlapping([[.5,.2],[.5,.2],[.8,.3],[.5,.51]]),
     'a saved overlap that would redirect clicks to dodge must be rejected');
   assert.match(server,/snapshot\.MeadowTopButtonsLayout=layout/);
