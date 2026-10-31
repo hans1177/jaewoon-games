@@ -2502,7 +2502,9 @@ local function updateEnemyAI(dt,now)
             direction=(direction+tangent*math.sin(now*1.8+enemy.spawnPosition.X)*.42).Unit
           end
           enemy.position+=direction*step
-          enemy.visualFacing=offset.Unit
+          -- [늑대 전방 이동] 무리 회피로 이동축이 틀어지면 머리와 몸도 실제 전진 방향을 보게 한다.
+          -- 공격 예고 중에만 기존 목표 시선이 우선하며, 속도·피해·추적 판정은 불변.
+          enemy.visualFacing=enemy.kind=="wolf" and direction or offset.Unit
         elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
           local pattern=chooseMeadowMobSkill(enemy)
           enemy.comboHit=1
