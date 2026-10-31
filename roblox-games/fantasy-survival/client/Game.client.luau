@@ -2049,8 +2049,10 @@ local meleeSkills={
   {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,"potion"},
 }
 -- 네 위치는 기존 세이브의 별도 UI 문자열에만 보존한다. 전투·재화 값에는 영향이 없다.
--- [기본 삼각 편대] 위쪽 회피, 아래 좌우 연타·막기, 안쪽 물약. 하단 보조 버튼은 유지한다.
-local meadowTopDefaults={{.160,.540},{.500,.120},{.840,.540},{.500,.395}}
+-- [기본 삼각 편대] 연타·막기 원형의 하단을 작은 물약 원형의 하단과 정확히 일치시킨다.
+-- 회피·물약 및 하단 상호작용·질주·가방은 기존 위치를 유지한다.
+local alignedCombatY=.395-(74-46)/(2*260)
+local meadowTopDefaults={{.160,alignedCombatY},{.500,.120},{.840,alignedCombatY},{.500,.395}}
 local meadowTopPositions={}
 for index,p in ipairs(meadowTopDefaults) do meadowTopPositions[index]={p[1],p[2]} end
 local alignMeadowRadar
@@ -2059,7 +2061,8 @@ local function readMeadowTopLayout(value)
   -- [기존 UI 저장 보존] 이전 기본 배치를 저장한 사용자는 새 기본 배치로만 옮기고,
   -- 사용자가 직접 변경한 버튼 위치와 저장 키는 그대로 유지한다.
   if value=="235,275,500,120,800,275,500,510"
-    or value=="200,300,500,300,800,300,500,550" then
+    or value=="200,300,500,300,800,300,500,550"
+    or value=="160,540,500,120,840,540,500,395" then
     for index,p in ipairs(meadowTopDefaults) do meadowTopPositions[index]={p[1],p[2]} end
     return true
   end
