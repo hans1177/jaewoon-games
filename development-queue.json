@@ -7771,9 +7771,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-31T00:01:00.269Z",
+      "updatedAt": "2026-10-31T00:03:11.218Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8493,11 +8493,11 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -8516,8 +8516,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
       "routingBlockers": [
+        "roblox-first-frame-requires-simulating-runtime",
         "roblox-runtime-foundation-awaiting-observation"
       ],
       "robloxQualityBuildUpRequired": false,
@@ -9078,9 +9079,9 @@
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
-        "sourceRevision": "76dae75bb5bdcf0dd6ae661005e0a5024b50da7a",
-        "artifactIdentity": "sha256:b28d091f03bc6443744cba96d31b358cbe99638aed048f608e397e8cb2015d47",
-        "candidateVersionNumber": 43,
+        "sourceRevision": "9d800a0f3f0128dde900defa52e3519ac3dcbce8",
+        "artifactIdentity": "sha256:19aa2b95b9f16d32a53e799585e156e90c56b6e5ed7b730dc9906baa9a798c24",
+        "candidateVersionNumber": 55,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -9092,10 +9093,10 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-30T19:59:05.827Z"
+        "verifiedAt": "2026-10-31T00:03:11.218Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-30T19:59:05.827Z",
-      "robloxRuntimeLastObservationAttemptAt": "2026-10-30T14:55:44.621Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-31T00:03:11.218Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-10-31T00:03:11.218Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
         "sessionId": "41147582672:fantasy-survival:41146748858:55",
@@ -9151,10 +9152,10 @@
           "authority": "OPEN_CLOUD_WORLD_STRUCTURE_ONLY"
         },
         "sameLuauExecutionSession": true,
-        "sourceRevision": "ea73b103b85bbc3bf2c526b439ff5cac49f2f447",
-        "artifactIdentity": "sha256:7bb50d620e200f69cb2299bd2afb96fae62a13006eb585f0485b29fdb9e6ccf2",
+        "sourceRevision": "9d800a0f3f0128dde900defa52e3519ac3dcbce8",
+        "artifactIdentity": "sha256:19aa2b95b9f16d32a53e799585e156e90c56b6e5ed7b730dc9906baa9a798c24",
         "placeId": "108565970231899",
-        "candidateVersionNumber": 39,
+        "candidateVersionNumber": 55,
         "serverBootObserved": false,
         "serverContextExecuted": true,
         "simulationRunningAfter": false,
@@ -9163,7 +9164,7 @@
         "simulationUnavailable": true,
         "observationCausalClass": "NON_SIMULATING_OPEN_CLOUD_TASK",
         "actualSpawnHeightObserved": false,
-        "observedAt": "2026-10-30T14:55:44.621Z",
+        "observedAt": "2026-10-31T00:03:11.218Z",
         "authority": "roblox-open-cloud-exact-first-frame-observation"
       },
       "robloxInternalPlaytestPassed": true,
@@ -9235,7 +9236,7 @@
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T20:03:38.470Z"
     }
   ],
-  "updatedAt": "2026-10-31T00:02:36.760Z",
+  "updatedAt": "2026-10-31T00:03:11.218Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
