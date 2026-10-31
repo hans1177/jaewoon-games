@@ -2729,7 +2729,8 @@ local function meadowDodge(player,sign,id)
     -- 기존 측면 안전 검사, 7스터드 거리와 서버 무적 판정은 변경하지 않는다.
     local overhead=workspace:Raycast(start,Vector3.new(0,.9,0),ray)
     local elevatedWall=workspace:Raycast(start+Vector3.new(0,.62,0),side*distance,ray)
-    local hopHeight=(not overhead and not elevatedWall) and .62 or 0
+    -- [지면 밀착 회피] 무적·이동 거리·쿨다운은 그대로 두고 시각적 도약 높이만 낮춘다.
+    local hopHeight=(not overhead and not elevatedWall) and .28 or 0
     local defense=meadowDefense[player] or {}
     defense.dodgeUntil=now+.48
     meadowDefense[player]=defense

@@ -2049,12 +2049,19 @@ local meleeSkills={
   {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,"potion"},
 }
 -- 네 위치는 기존 세이브의 별도 UI 문자열에만 보존한다. 전투·재화 값에는 영향이 없다.
-local meadowTopDefaults={{.235,.275},{.500,.120},{.800,.275},{.500,.510}}
+-- [기본 배치] 연타·회피·막기를 같은 높이에 놓고 물약은 아래로 분리한다.
+local meadowTopDefaults={{.200,.300},{.500,.300},{.800,.300},{.500,.550}}
 local meadowTopPositions={}
 for index,p in ipairs(meadowTopDefaults) do meadowTopPositions[index]={p[1],p[2]} end
 local alignMeadowRadar
 local function readMeadowTopLayout(value)
   if typeof(value)~="string" or #value>40 or not value:match("^%d+,%d+,%d+,%d+,%d+,%d+,%d+,%d+$") then return false end
+  -- [기존 UI 저장 보존] 이전 기본 배치를 저장한 사용자는 새 기본 배치로만 옮기고,
+  -- 사용자가 직접 변경한 버튼 위치와 저장 키는 그대로 유지한다.
+  if value=="235,275,500,120,800,275,500,510" then
+    for index,p in ipairs(meadowTopDefaults) do meadowTopPositions[index]={p[1],p[2]} end
+    return true
+  end
   local values={}
   for digit in value:gmatch("%d+") do values[#values+1]=tonumber(digit) end
   if #values~=8 then return false end
@@ -2867,12 +2874,17 @@ local function layoutMeadowRadar()
   if v.X<=0 or v.Y<=0 then return end
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  -- [오른쪽 위 고정 미니맵] 모바일 안전 영역 안에 배치하며 액션 버튼 위치 저장과 분리한다.
+  -- [미니맵] 회피 버튼의 실제 가로 중심과 같은 세로축으로 정렬한다.
+  -- 기존 오른쪽 도크와 동일한 화면 비율을 적용하고 지도는 상단 안전 여백을 지킨다.
   local mapDiameter=compactLandscape and 88 or small and 96 or math.floor(math.clamp(v.Y*.17,98,124))
-  meadowRadar.Size=UDim2.fromOffset(mapDiameter+14,mapDiameter+40)
-  -- 오른쪽 끝에서 12px, 화면 위에서 8px를 띄워 잘림과 액션 버튼 겹침을 줄인다.
+  local skillScale=v.X>v.Y and math.clamp(v.Y/315,.76,1.12) or math.clamp(v.X/390,.76,1)
+  local dockRight=v.X-math.floor(2*skillScale)
+  local dodgeCenter=dockRight-math.floor(235*skillScale)+235*meadowTopPositions[2][1]*skillScale
+  local mapWidth=mapDiameter+14
+  local mapRight=math.clamp(math.floor(dodgeCenter+mapWidth*.5+.5),mapWidth+12,v.X-12)
+  meadowRadar.Size=UDim2.fromOffset(mapWidth,mapDiameter+40)
   meadowRadar.AnchorPoint=Vector2.new(1,0)
-  meadowRadar.Position=UDim2.new(1,-12,0,8)
+  meadowRadar.Position=UDim2.fromOffset(mapRight,8)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
@@ -3618,8 +3630,9 @@ RunService.PreSimulation:Connect(function(dt)
     -- 도약 방향 발을 들고 반대발로 밀어낸 뒤 무릎을 접어 착지한다.
     local leadingHip=-.44*lift-.18*drive+.15*landing
     local trailingHip=.25*lift+.16*drive-.06*recover
-    local leadingKnee=.64*lift+.25*landing
-    local trailingKnee=.40*lift+.21*landing
+    -- [회피] 무릎은 살짝만 접어 바닥을 스치듯 옆으로 빠지는 스텝을 만든다.
+    local leadingKnee=.40*lift+.20*landing
+    local trailingKnee=.28*lift+.17*landing
     skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadingHip or trailingHip,0,sign*.06*lift)
     skillMotionTargets.ThighR=CFrame.Angles(leadLeft and trailingHip or leadingHip,0,sign*.06*lift)
     skillMotionTargets.ShinL=CFrame.Angles(leadLeft and leadingKnee or trailingKnee,0,0)
@@ -3634,8 +3647,8 @@ RunService.PreSimulation:Connect(function(dt)
     skillMotionTargets.HandL=CFrame.Angles(-.07*stance,0,0)
     skillMotionTargets.HandR=CFrame.Angles(-.07*stance,0,0)
   elseif isGuard or isParry then
-    -- [방어 동작] 기존 팔·척추·다리 관절로 무게중심을 낮추고 양팔을 얼굴 앞에 세운다.
-    -- 위쳐식 방어: 짧은 들어올리기 → 안정된 막기 → 자연스러운 자세 복귀.
+    -- [방어 동작] 같은 R15 관절을 사용해 오른손만 얼굴 앞으로 드는 복싱 가드.
+    -- 짧은 들어올리기 → 한손 방어 유지 → 자연스러운 자세 복귀.
     -- 캐릭터를 움직이거나 외형 파츠/무기를 생성하지 않는다.
     local rise=math.clamp(phase/(isParry and .22 or .09),0,1)
     rise=rise*rise*(3-2*rise)
@@ -3644,8 +3657,8 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard and not skillMotionCharacter:FindFirstChildOfClass("Tool") then
-      -- [맨손 복싱 방어] 고개는 숙이되 적을 주시. 팔꿈치를 몸에 붙이고 한팔은 얼굴 옆, 다른 팔은 어깨 아래.
-      -- 방어를 누르자마자 짧게 움츠리고, 유지 중에는 큰 움직임 없이 호흡한다.
+      -- [맨손 한손 복싱 가드] 오른 주먹으로 얼굴/턱을 지키고 왼손은 낮게 당긴다.
+      -- 승인된 2.8초 방어 동안 호흡만 더하며 이동과 서버 피해 판정은 바꾸지 않는다.
       local crouch=math.clamp(phase/.11,0,1)
       crouch=crouch*crouch*(3-2*crouch)*release
       local elbow=math.clamp((phase-.018)/.105,0,1)
@@ -3656,14 +3669,14 @@ RunService.PreSimulation:Connect(function(dt)
       skillMotionTargets.Chest=CFrame.Angles(-.062*guard,.035*guard,-.025*guard)
       -- [턱 숙임] 약 15도 전방으로 중심을 낮추되 눈은 적 방향을 유지한다.
       skillMotionTargets.Head=CFrame.Angles(-.14*guard,-.035*guard,.015*guard)
-      -- 왼쪽 주먹: 광대뼈와 관자놀이 근처. 어깨를 과하게 올리지 않는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-1.01*guard,.12*guard,-.27*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-1.46*elbow,0,-.12*elbow)
-      skillMotionTargets.HandL=CFrame.Angles(-.10*elbow,-.05*elbow,0)
-      -- 오른쪽 주먹: 어깨보다 낮게, 턱 아래에서 갈비뼈까지 보호한다.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.73*guard,-.09*guard,.22*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.37*elbow,0,.11*elbow)
-      skillMotionTargets.HandR=CFrame.Angles(-.12*elbow,0,.05*elbow)
+      -- [낮은 왼팔] 팔꿈치는 갈비뼈 옆, 주먹은 가슴 아래에서 균형만 잡는다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.38*guard,.06*guard,-.12*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-.70*elbow,0,-.08*elbow)
+      skillMotionTargets.HandL=CFrame.Angles(-.05*elbow,-.02*elbow,0)
+      -- [막는 오른팔] 오른 주먹만 관자놀이 앞으로 올리고 팔꿈치를 안쪽으로 모은다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.21*guard,-.10*guard,.14*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.55*elbow,0,.12*elbow)
+      skillMotionTargets.HandR=CFrame.Angles(-.10*elbow,0,.04*elbow)
       -- 바닥을 유지한 채 짧게 중심을 낮추고 균형을 잡는다.
       skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.065*guard)
       skillMotionTargets.ThighR=CFrame.Angles(.21*crouch,0,.065*guard)
