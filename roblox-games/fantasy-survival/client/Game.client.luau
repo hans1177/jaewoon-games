@@ -587,11 +587,12 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
-local meadowVitalsGui
+-- [공유 HUD 참조] 메뉴 구성 구역 밖의 모바일 버튼·자원바에서 같은 실제 GUI를 사용한다.
+local meadowVitalsGui, meadowPages, meadowMenu, energyFill, energyLabel
 
 do
 -- [게임 메뉴] 현재 서버 상태만 읽는 캐릭터·소지품·저널과 실제 동작하는 옵션.
-local meadowPages={}
+meadowPages={}
 local meadowLabels={}
 local meadowPageNames={"캐릭터","인벤토리","저널","옵션","도우미","동료"}
 for index,name in ipairs(meadowPageNames) do
@@ -740,7 +741,7 @@ iconCredits.TextColor3=Color3.fromRGB(202,211,205)
 iconCredits.Text="액션 아이콘: Lorc · DarkZaitzev · Delapouite (CC BY 3.0)\ngame-icons.net"
 iconCredits.Parent=meadowPages[4]
 renderMeadowPages()
-local meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
+meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
   compact=true,hideButton=true,menuLeft=true,pages=meadowPages,pageNames=meadowPageNames,onPageChanged=renderMeadowPages,iconAtlas=meadowIconAtlas,
 })
 local meadowHud=gui:FindFirstChild("MobileGameStatus")
@@ -774,13 +775,13 @@ meadowEnergy.BackgroundColor3=Color3.fromRGB(12,33,43)
 meadowEnergy.BorderSizePixel=0;meadowEnergy.ZIndex=9;meadowEnergy.Parent=meadowVitalsGui
 local energyCorner=Instance.new("UICorner")
 energyCorner.CornerRadius=UDim.new(1,0);energyCorner.Parent=meadowEnergy
-local energyFill=Instance.new("Frame")
+energyFill=Instance.new("Frame")
 energyFill.Name="StaminaFill";energyFill.Size=UDim2.fromScale(1,1)
 energyFill.BackgroundColor3=Color3.fromRGB(42,169,232)
 energyFill.BorderSizePixel=0;energyFill.ZIndex=10;energyFill.Parent=meadowEnergy
 local energyFillCorner=Instance.new("UICorner")
 energyFillCorner.CornerRadius=UDim.new(1,0);energyFillCorner.Parent=energyFill
-local energyLabel=Instance.new("TextLabel")
+energyLabel=Instance.new("TextLabel")
 energyLabel.Name="StaminaLabel";energyLabel.Size=UDim2.fromScale(1,1)
 energyLabel.BackgroundTransparency=1;energyLabel.Text="스테미너 100 / 100"
 energyLabel.TextColor3=Color3.fromRGB(248,253,255)
