@@ -2222,7 +2222,9 @@ test('Forest minimap south aligns with existing circular radar and action is ser
       assert.equal(row.width,128);
       assert.equal(row.height,128);
       assert.match(row.sourceSha256,/^[0-9a-f]{64}$/);
-      assert.ok(client.includes(role+'="rbxassetid://'+row.assetId+'"'),'native role binding missing: '+role);
+      const bound=client.includes(role+'="rbxassetid://'+row.assetId+'"');
+      if(role==='potion'||role==='bag')assert.ok(bound,'always-visible native role required: '+role);
+      else if(!bound)assert.equal(row.runtimeVerified,false,'only unverified imported icon may be withheld: '+role);
     }
     assert.match(client,/\{"skill-meadow-heal","물약",Color3\.fromRGB\(224,85,94\),nil,"potion"\}/);
   }else{
