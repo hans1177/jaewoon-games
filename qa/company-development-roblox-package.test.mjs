@@ -1751,6 +1751,13 @@ test('마력숲 장검 3연속 검술은 독립 입력 3단계로 연결되고 �
   assert.match(client,/local swordComboProfile=nil/);
   assert.match(client,/local swordComboCharacter=nil/);
   assert.match(client,/profile=="SWORD" or profile=="LONGSWORD" or profile=="GREATSWORD"/);
+  // 공식 Roblox Tool/AnimationConstraint/PreSimulation 규격: 검은 맨손 자산이 아니라 검/각 타 원본을 검사한다.
+  assert.match(client,/if profile=="UNARMED" then\s+if not hasStudioAssetAtom\("CHARACTER","HAND_BARE"\) then return end/);
+  assert.match(client,/local bladeAtom=profile=="GREATSWORD" and "BLADE_HEAVY" or "BLADE_LONG"/);
+  assert.match(client,/if not hasStudioAssetAtom\("WEAPON",bladeAtom\) then/);
+  assert.match(client,/hasStudioAssetAtom\("MOTION","ATTACK_LIGHT_2"\)/);
+  assert.match(client,/hasStudioAssetAtom\("MOTION","ATTACK_LIGHT_3"\)/);
+  assert.match(client,/RunService.PreSimulation:Connect\(function\(dt\)/);
   assert.match(client,/os\.clock\(\)-swordComboAt<=1\.15/);
   assert.match(client,/swordComboStage%3\+1/);
   assert.match(client,/chosenMoves\[1\]=route\.steps\[swordProfile and swordStage/);
