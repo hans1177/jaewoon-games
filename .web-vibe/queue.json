@@ -160,7 +160,7 @@
       "goal": "마력숲 본편 즉시 배포 요청의 미완료 부분을 기존 Vibe 파이프라인에서 처리해. 기존 이슈 #9801 사양과 PR #9812 구현을 재사용하고, 새 테스트판/별도 게임/중복 구조 금지. 현재 PR은 main 대비 충돌(mergeable_state=dirty), draft, 검증 실패 상태다. 실패 근거: Actions 40084215791의 fantasy-survival QA에서 'tap combat waits for touch release and rejects swipes or holds', 'original source materials and Diablo-II-style native camera are bound to game state', 'native forest ground has no 10x10 pitch mismatch and all rounded corners are covered by source mesh', 'mapped crowds remain native 3D without losing visible enemies', 'mobile game world taps use existing attack mechanics' 실패. Actions 40084215768 test도 실패. 기존 책임 함수에서 원인을 수정하고 현재 main과 충돌 해소한 후보를 만들어, 이슈 명세 전투·은신·돌진·3D 종별 모델·모바일 입력·저장·멀티를 실제 QA 및 F0~F9로 검증해. 검증 전 배포 완료 선언 금지. 승인된 기존 PR 검토/승격 경로로 main 반영 후 기존 magic-forest-pages.yml GitHub Pages 배포 및 공개 소스 SHA 확인. 중앙 정책·저장 구조·보안 게이트 수정 금지.",
       "responsibleFiles": [],
       "priority": "owner-immediate",
-      "status": "queued",
+      "status": "blocked",
       "ownerDirective": true,
       "evidence": [
         "web-vibe-independent:v1",
@@ -169,10 +169,10 @@
         "web-vibe-recovery-failure:needs-source-or-provider-recheck"
       ],
       "recoveryFailureClass": "SOURCE_OR_UNCLASSIFIED",
-      "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-10-31T18:00:21.967Z",
-      "recoveryNextAt": "2026-10-31T19:00:21.967Z",
-      "blocker": null
+      "recoveryAttempts": 3,
+      "recoveryLastFailureAt": "2026-10-31T21:07:45.998Z",
+      "recoveryNextAt": null,
+      "blocker": "WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW"
     },
     {
       "id": "pwa-b61ca5fe-1c8d-4cd5-8db9-282026102802",
