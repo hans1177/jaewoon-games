@@ -1,0 +1,303 @@
+<!doctype html>
+<!-- 파일명: web-games/deep-diver/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#061522">
+<title>심해 잠수부 · 검은 바다의 보물</title>
+<style>
+/* 디자인: 모바일 우선 심해 관측창 */
+:root{color-scheme:dark;--glass:#071c2ad9;--line:#62b8cc66;--ink:#ecf8ff;--cyan:#70e9ee;--gold:#f4d892}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03111c;color:var(--ink);font-family:system-ui,"Malgun Gothic",sans-serif;touch-action:none}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer;color:var(--ink);border:1px solid var(--line);background:#123449e8;border-radius:13px;min-height:46px}
+button:focus-visible{outline:3px solid var(--cyan)}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#vignette{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 25vw #00101ebd;z-index:1}
+#top{position:fixed;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;gap:8px;align-items:flex-start;z-index:3;pointer-events:none}
+#hud{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:11px 13px;min-width:min(235px,66vw);backdrop-filter:blur(7px)}
+#hud b{color:var(--cyan);font-size:11px;letter-spacing:2px}
+.readout{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:5px}
+.readout strong{font-size:16px;color:#fff}
+.meter{height:7px;background:#042332;border-radius:20px;overflow:hidden;margin-top:7px}
+#airbar,#hpbar{display:block;height:100%;background:linear-gradient(90deg,#19a8d0,#7df7dd);transition:width .12s}
+#hpbar{background:linear-gradient(90deg,#e36c64,#f2c77d)}
+#pause{pointer-events:auto;padding:8px 13px;background:#08283cdd;font-size:12px;min-width:54px}
+#sonar{position:fixed;top:calc(87px + env(safe-area-inset-top));right:10px;width:126px;height:126px;border:1px solid #4fb6c977;border-radius:50%;background:#031a29d9;box-shadow:0 0 22px #04d0e22a;z-index:3}
+#center{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;color:#bbfaffb3;font-size:24px;pointer-events:none}
+#info{position:fixed;top:calc(221px + env(safe-area-inset-top));right:8px;max-width:160px;text-align:right;color:#c1f0ee;font-size:11px;text-shadow:0 2px 6px #001;z-index:3}
+#message{position:fixed;top:31%;left:50%;transform:translateX(-50%);z-index:5;max-width:calc(100vw - 28px);width:max-content;background:#071f2cf0;border:1px solid #73dbd1;padding:10px 15px;border-radius:12px;text-align:center;font-size:13px;box-shadow:0 10px 40px #0008;pointer-events:none}
+#bottom{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:14px;right:14px;z-index:4;display:flex;justify-content:space-between;align-items:end;gap:10px;pointer-events:none}
+#stick{width:142px;height:142px;position:relative;border-radius:50%;border:2px solid #61d6db66;background:#092e4480;pointer-events:auto;touch-action:none}
+#stick:before{content:"이동";position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:2px;color:#bcecf0}
+#nub{position:absolute;left:50%;top:50%;width:56px;height:56px;transform:translate(-50%,-50%);border:2px solid #8af7e0;box-shadow:0 0 16px #3deacc55;background:#227b8b99;border-radius:50%;pointer-events:none}
+#actions{display:grid;grid-template-columns:repeat(2,70px);gap:8px;pointer-events:auto}
+.action{width:70px;height:66px;line-height:1.2;font-weight:800;font-size:13px;box-shadow:0 5px 19px #0008}
+.action small{display:block;font-weight:400;font-size:10px;margin-top:3px;color:#a5deeb}
+#collect{background:#886a2abf;border-color:#d5be6a}
+#pulse{background:#155d71e8;border-color:#62e6eb}
+.action.pressed{background:#49a9b6}
+#overlay{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:linear-gradient(#031522d9,#041523f8);padding:20px;overflow:auto;touch-action:pan-y}
+#panel{width:min(440px,100%);background:#081e2ef2;border:1px solid #50a6ba;border-radius:22px;padding:27px 23px 25px;box-shadow:0 25px 95px #000c}
+.eyebrow{font-size:11px;letter-spacing:4px;color:var(--cyan);font-weight:800}
+h1{font-size:clamp(29px,9vw,40px);margin:6px 0 12px;line-height:1.12}
+#panel p{line-height:1.65;font-size:13px;color:#c6dee9;margin:8px 0 13px}
+#panel .mission{background:#0e3545a8;border-left:3px solid var(--gold);padding:10px 13px}
+#primary{width:100%;background:#0e7c8a;border-color:#82f9ee;font-size:16px;font-weight:850;margin-top:10px}
+#help{font-size:11px!important;color:#91b8c4!important}
+#status{font-size:12px;color:#a2d9d2}
+#bottom button{-webkit-user-select:none;user-select:none}
+@media(max-width:380px){#hud{min-width:205px;padding:9px}#sonar{width:105px;height:105px;top:calc(78px + env(safe-area-inset-top))}#info{top:calc(185px + env(safe-area-inset-top))}#stick{width:116px;height:116px}#actions{grid-template-columns:repeat(2,62px);gap:6px}.action{width:62px;height:59px}}
+@media(max-height:540px){#sonar{width:94px;height:94px;top:calc(64px + env(safe-area-inset-top))}#info{display:none}#stick{width:102px;height:102px}#actions{grid-template-columns:repeat(4,58px)}.action{width:58px;height:56px}}
+</style>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
+</head>
+<body>
+<canvas id="view" aria-label="심해 3차원 탐험 장면"></canvas><div id="vignette"></div>
+<div id="top"><section id="hud"><b>ABYSS / 심해 잠수부</b><div class="readout"><span>수심 <strong id="depth">0</strong>m</span><span>보물 <strong id="treasures">0 / 4</strong></span></div><div class="readout"><span>산소 <strong id="air">100</strong>%</span></div><div class="meter"><i id="airbar"></i></div><div class="readout"><span>체력 <strong id="hp">100</strong>%</span></div><div class="meter"><i id="hpbar"></i></div></section><button id="pause" aria-label="일시정지">일시정지</button></div>
+<canvas id="sonar" width="252" height="252" aria-label="주변 보물과 생물의 거리 표시"></canvas>
+<div id="center" aria-hidden="true">⌖</div><div id="info">음파로 보물 위치 탐지<br>오른쪽 빈 화면 드래그: 시점</div>
+<div id="message" hidden role="status" aria-live="polite"></div>
+<div id="bottom"><div id="stick" role="group" aria-label="이동 조이스틱"><div id="nub"></div></div><div id="actions"><button class="action" id="up">부상<small>위로</small></button><button class="action" id="down">잠수<small>아래로</small></button><button class="action" id="collect">수집<small>가까이</small></button><button class="action" id="pulse">음파<small>탐지·회피</small></button></div></div>
+<section id="overlay" aria-label="게임 시작과 결과"><div id="panel"><div class="eyebrow">DEEP SEA · SINGLE PLAYER</div><h1 id="title">심해 잠수부</h1><p id="description">빛이 닿지 않는 바다로 잠수해서 보물을 찾아.</p><p id="mission" class="mission">보물 상자 4개를 찾고 수면으로 돌아오면 성공! 거대한 바다 생물에게 가까이 가지 마.</p><p id="help">휴대폰: 왼쪽 이동·오른쪽 화면 드래그 시점·오른쪽 버튼 조작<br>컴퓨터: 이동 WASD · 시점 마우스 드래그 · Q/E 상승/하강 · F 수집 · 스페이스 음파</p><div id="status"></div><button id="primary">잠수 시작</button></div></section>
+<script type="module">
+/* 파일명: web-games/deep-diver/index.html · 임포트 */
+import * as THREE from "three";
+import {GLTFLoader} from "../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js";
+/* 로그/저장: 다른 게임의 데이터에 접근하지 않는다. */
+const $=id=>document.getElementById(id);
+const SAVE="jaewoon-deep-diver-best-v1";
+const TARGETS=[{x:12,z:1},{x:-18,z:-10},{x:26,z:-26},{x:-12,z:-38}];
+const rand=(n)=>{const t=Math.sin(n*128.41+72.91)*43879.13;return t-Math.floor(t);};
+const floorY=(x,z)=>-27-Math.hypot(x,z)*.16+Math.sin(x*.14)*1.8+Math.cos(z*.12)*2.1;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const state={live:false,paused:true,finished:false,x:0,y:-7,z:21,yaw:0,pitch:-.16,oxygen:100,hp:100,treasures:0,elapsed:0,found:new Set(),lastHit:-99,pulseUntil:-99,pulseCooldown:0,noticeUntil:0};
+const held=new Set(),joy={x:0,y:0},vec=new THREE.Vector3();
+let scene,camera,renderer,rockSource,fishSource,chestSource,monster,loot=[],bubbles,particlePositions,bubbleOrigins,initialized=false,assetReady=false,last=0,frame=0,viewTouches=new Map();
+function note(s,seconds=3.2){$("message").textContent=s;$("message").hidden=false;state.noticeUntil=state.elapsed+seconds;}
+function changeTitle(title,desc,action){$("title").textContent=title;$("description").textContent=desc;$("primary").textContent=action;$("overlay").hidden=false;}
+function score(){try{return Number(localStorage.getItem(SAVE)||0)||0;}catch{return 0;}}
+function saveScore(v){try{if(v>score())localStorage.setItem(SAVE,String(v));}catch{}}
+function sizedModel(source,maxSize){
+ const node=source.clone(true),box=new THREE.Box3().setFromObject(node),s=box.getSize(new THREE.Vector3()),max=Math.max(.001,s.x,s.y,s.z);
+ const root=new THREE.Group();node.scale.multiplyScalar(maxSize/max);root.add(node);
+ box.setFromObject(node);const center=box.getCenter(new THREE.Vector3());
+ node.position.sub(center);return root;
+}
+function addBubbles(){
+ const count=220;particlePositions=new Float32Array(count*3);bubbleOrigins=new Float32Array(count);
+ for(let i=0;i<count;i++){particlePositions[3*i]=(rand(i+31)-.5)*145;particlePositions[3*i+1]=-rand(i+57)*65;particlePositions[3*i+2]=(rand(i+13)-.5)*145;bubbleOrigins[i]=.14+rand(i+17)*.45;}
+ const geo=new THREE.BufferGeometry();geo.setAttribute("position",new THREE.BufferAttribute(particlePositions,3));
+ bubbles=new THREE.Points(geo,new THREE.PointsMaterial({color:0x95e9e6,size:.15,transparent:true,opacity:.42,depthWrite:false}));scene.add(bubbles);
+}
+function makeTerrain(){
+ const geo=new THREE.PlaneGeometry(178,178,62,62);geo.rotateX(-Math.PI/2);
+ const pos=geo.getAttribute("position"),c=[];
+ const low=new THREE.Color("#142e32"),high=new THREE.Color("#426569");
+ for(let i=0;i<pos.count;i++){const x=pos.getX(i),z=pos.getZ(i),y=floorY(x,z);pos.setY(i,y);
+  const hue=clamp((Math.sin(x*.18+z*.19)+1)*.25+.22,0,1),color=low.clone().lerp(high,hue);c.push(color.r,color.g,color.b);}
+ geo.setAttribute("color",new THREE.Float32BufferAttribute(c,3));geo.computeVertexNormals();
+ const seabed=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,metalness:0,side:THREE.DoubleSide}));
+ seabed.receiveShadow=false;scene.add(seabed);
+}
+function makeRocks(){
+ for(let i=0;i<46;i++){
+  const x=(rand(i*3+9)-.5)*143,z=(rand(i*4+19)-.5)*143;
+  if(TARGETS.some(t=>Math.hypot(t.x-x,t.z-z)<7))continue;
+  const rock=sizedModel(rockSource,2.5+rand(i+67)*6);
+  rock.position.set(x,floorY(x,z)+.3,z);rock.rotation.y=rand(i+99)*6.28;scene.add(rock);
+ }
+}
+function makeLoot(){
+ loot=[];
+ TARGETS.forEach((t,i)=>{const chest=sizedModel(chestSource,3.2);chest.position.set(t.x,floorY(t.x,t.z)+1.5,t.z);
+  chest.rotation.y=i*.85;scene.add(chest);loot.push(chest);});
+}
+function makeMonster(){
+ monster=sizedModel(fishSource,10);scene.add(monster);monster.position.set(20,-20,-19);
+}
+async function setup(){
+ if(initialized)return;
+ const canvas=$("view");
+ renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:"high-performance"});
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight,false);
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ scene=new THREE.Scene();scene.background=new THREE.Color("#061c2e");scene.fog=new THREE.FogExp2(0x061c2e,.018);
+ camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.1,185);
+ scene.add(new THREE.HemisphereLight("#8ae2ed","#021721",2.2));
+ const shafts=new THREE.DirectionalLight("#b9efff",2.5);shafts.position.set(-35,20,30);scene.add(shafts);
+ const water=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshPhongMaterial({color:"#125a70",transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false}));
+ water.rotation.x=-Math.PI/2;water.position.y=0;scene.add(water);
+ makeTerrain();addBubbles();
+ const loader=new GLTFLoader();
+ const load=(url)=>new Promise((resolve,reject)=>loader.load(url,g=>resolve(g.scene),undefined,reject));
+ [chestSource,rockSource,fishSource]=await Promise.all([
+  load("../ocean-voyage/assets/chest.glb"),
+  load("../../assets/shared/party/rock-large.glb"),
+  load("../../assets/shared/forest/fish.glb")
+ ]);
+ // 기존 CC0 모델만 사용한다. 필수 모델에 문제가 있으면 가짜 도형으로 대체하지 않는다.
+ makeRocks();makeLoot();makeMonster();
+ window.addEventListener("resize",resize,{passive:true});
+ initialized=true;assetReady=true;resize();
+}
+function resize(){if(!renderer)return;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);}
+function reset(){
+ Object.assign(state,{live:true,paused:false,finished:false,x:0,y:-7,z:21,yaw:0,pitch:-.16,oxygen:100,hp:100,treasures:0,elapsed:0,found:new Set(),lastHit:-99,pulseUntil:-99,pulseCooldown:0,noticeUntil:0});
+ held.clear();joy.x=0;joy.y=0;$("nub").style.left="50%";$("nub").style.top="50%";
+ for(const b of document.querySelectorAll(".action"))b.classList.remove("pressed");
+ loot.forEach(c=>{c.visible=true;});monster.position.set(20,-20,-19);
+ $("overlay").hidden=true;$("message").hidden=true;last=performance.now();note("음파를 눌러 보물 위치를 찾아!");
+}
+function end(won){
+ state.live=false;state.paused=true;state.finished=true;saveScore(state.treasures);
+ const s=won?"심해 탐사 성공":"잠수 실패";
+ changeTitle(s,won?"보물 4개를 모두 회수하고 무사히 돌아왔어.":"산소 또는 체력이 다했어. 다시 도전할 수 있어.","다시 잠수");
+ $("status").textContent="이번 탐사 "+state.treasures+"/4 · 최고 기록 "+score()+"/4";
+}
+function collect(){
+ if(!state.live||state.paused)return;
+ let picked=false;
+ TARGETS.forEach((t,i)=>{
+  if(state.found.has(i))return;
+  const chest=loot[i];
+  if(Math.hypot(state.x-t.x,state.z-t.z)<5 && Math.abs(state.y-chest.position.y)<7){
+   state.found.add(i);state.treasures++;chest.visible=false;state.oxygen=clamp(state.oxygen+13,0,100);
+   note("보물 회수 "+state.treasures+"/4 · 산소 +13");picked=true;
+  }
+ });
+ if(!picked)note("보물 상자에 더 가까이 다가가!");
+ if(state.treasures===4)note("보물 전부 발견! 부상해서 수면으로 돌아가.",5);
+}
+function pulse(){
+ if(!state.live||state.paused)return;
+ if(state.elapsed<state.pulseCooldown){note("음파 재충전 "+Math.ceil(state.pulseCooldown-state.elapsed)+"초");return;}
+ state.pulseCooldown=state.elapsed+10;state.pulseUntil=state.elapsed+5;
+ note("음파 발사! 주변 보물 표시 · 거대 생물 잠시 후퇴");
+}
+function movements(dt){
+ let forward=joy.y,side=joy.x;
+ if(held.has("w")||held.has("arrowup"))forward+=1;
+ if(held.has("s")||held.has("arrowdown"))forward-=1;
+ if(held.has("a")||held.has("arrowleft"))side-=1;
+ if(held.has("d")||held.has("arrowright"))side+=1;
+ const m=Math.max(1,Math.hypot(forward,side));forward/=m;side/=m;
+ const vx=Math.sin(state.yaw)*forward+Math.cos(state.yaw)*side;
+ const vz=-Math.cos(state.yaw)*forward+Math.sin(state.yaw)*side;
+ state.x=clamp(state.x+vx*dt*9,-78,78);state.z=clamp(state.z+vz*dt*9,-78,78);
+ const ascend=held.has("q")||held.has("up");
+ const descend=held.has("e")||held.has("down");
+ const minY=floorY(state.x,state.z)+2.1;
+ state.y=clamp(state.y+(Number(ascend)-Number(descend))*dt*11,Math.max(-62,minY),-1.5);
+ if(state.y<minY)state.y=minY;
+ state.oxygen=clamp(state.oxygen-dt*(.38+Math.abs(state.y)*.008),0,100);
+ if(state.y>=-2.1){state.oxygen=clamp(state.oxygen+dt*12,0,100);if(state.treasures===4){end(true);return;}}
+ if(state.oxygen<=0){end(false);}
+}
+function swimMonster(dt){
+ if(!monster)return;
+ const danger=Math.hypot(state.x-monster.position.x,state.z-monster.position.z,state.y-monster.position.y);
+ const scared=state.elapsed<state.pulseUntil;
+ const target=scared?new THREE.Vector3(state.x+35,Math.max(-44,state.y-12),state.z+25):
+  danger<43?new THREE.Vector3(state.x,state.y,state.z):
+  new THREE.Vector3(21+Math.sin(state.elapsed*.2)*18,-23+Math.sin(state.elapsed*.37)*4,-20+Math.cos(state.elapsed*.2)*15);
+ const dir=target.sub(monster.position);const length=dir.length();
+ if(length>.1){dir.normalize();monster.position.addScaledVector(dir,dt*(scared?17:danger<43?5:3));
+  monster.rotation.y=Math.atan2(dir.x,-dir.z)+Math.PI/2;
+  monster.rotation.z=Math.sin(state.elapsed*3)*.10;
+ }
+ if(danger<5.5&&!scared&&state.elapsed-state.lastHit>2.3){
+  state.lastHit=state.elapsed;state.hp=clamp(state.hp-24,0,100);state.oxygen=clamp(state.oxygen-8,0,100);
+  note("거대 생물에게 공격받았어! 음파로 밀어내.");
+  if(state.hp<=0||state.oxygen<=0)end(false);
+ }
+}
+function paintSonar(){
+ const canvas=$("sonar"),ctx=canvas.getContext("2d"),w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(w/2,h/2);
+ ctx.strokeStyle="#69d7c04b";ctx.lineWidth=2;[38,76,114].forEach(r=>{ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.stroke();});
+ ctx.beginPath();ctx.moveTo(-120,0);ctx.lineTo(120,0);ctx.moveTo(0,-120);ctx.lineTo(0,120);ctx.stroke();
+ const ang=-state.yaw;ctx.rotate(ang);
+ if(state.elapsed<state.pulseUntil){TARGETS.forEach((t,i)=>{if(state.found.has(i))return;
+  const x=(t.x-state.x)*2.1,z=(t.z-state.z)*2.1;if(Math.hypot(x,z)>112)return;
+  ctx.fillStyle="#f7d879";ctx.fillRect(x-5,z-5,10,10);
+ });}
+ if(monster){const x=(monster.position.x-state.x)*2.1,z=(monster.position.z-state.z)*2.1;
+  if(Math.hypot(x,z)<111){ctx.fillStyle="#fa7373";ctx.beginPath();ctx.arc(x,z,7,0,7);ctx.fill();}}
+ ctx.restore();ctx.fillStyle="#a0ffe9";ctx.beginPath();ctx.moveTo(w/2,h/2-11);ctx.lineTo(w/2-8,h/2+8);ctx.lineTo(w/2+8,h/2+8);ctx.closePath();ctx.fill();
+}
+function updateUI(){
+ $("depth").textContent=Math.round(-state.y);
+ $("treasures").textContent=state.treasures+" / 4";
+ $("air").textContent=Math.ceil(state.oxygen);
+ $("hp").textContent=Math.ceil(state.hp);
+ $("airbar").style.width=state.oxygen+"%";$("hpbar").style.width=state.hp+"%";
+ $("airbar").style.background=state.oxygen<25?"#f0a078":"linear-gradient(90deg,#19a8d0,#7df7dd)";
+ if(state.elapsed>state.noticeUntil)$("message").hidden=true;
+}
+function animate(now){
+ requestAnimationFrame(animate);
+ if(!renderer||!initialized)return;
+ const dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;
+ if(state.live&&!state.paused){
+  state.elapsed+=dt;movements(dt);if(state.live)swimMonster(dt);
+  for(let i=0;i<bubbleOrigins.length;i++){const k=i*3+1;particlePositions[k]+=dt*bubbleOrigins[i]*5;if(particlePositions[k]>-1)particlePositions[k]=-65;}
+  bubbles.geometry.attributes.position.needsUpdate=true;
+ }
+ camera.position.set(state.x,state.y,state.z);
+ const dir=new THREE.Vector3(Math.sin(state.yaw)*Math.cos(state.pitch),Math.sin(state.pitch),-Math.cos(state.yaw)*Math.cos(state.pitch));
+ camera.lookAt(camera.position.clone().add(dir));
+ scene.fog.density=.012+Math.min(0.017,Math.abs(state.y)*.00025);
+ renderer.render(scene,camera);
+ if(frame++%5===0){updateUI();paintSonar();}
+}
+/* 입력: 모바일 터치/시점 및 키보드. 다른 게임의 입력이나 저장을 건드리지 않는다. */
+function installInputs(){
+ const stick=$("stick"),nub=$("nub");let stickId=null;
+ const clearStick=()=>{stickId=null;joy.x=0;joy.y=0;nub.style.left="50%";nub.style.top="50%";};
+ stick.addEventListener("pointerdown",e=>{if(stickId!==null)return;stickId=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e);e.preventDefault();});
+ function moveStick(e){if(e.pointerId!==stickId)return;const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const x=clamp((e.clientX-cx)/(r.width*.34),-1,1),y=clamp((e.clientY-cy)/(r.height*.34),-1,1);
+  joy.x=x;joy.y=-y;nub.style.left=(50+x*30)+"%";nub.style.top=(50+y*30)+"%";}
+ stick.addEventListener("pointermove",moveStick);
+ stick.addEventListener("pointerup",clearStick);stick.addEventListener("pointercancel",clearStick);stick.addEventListener("lostpointercapture",clearStick);
+ [["up","up"],["down","down"]].forEach(([id,key])=>{
+  const b=$(id),off=()=>{held.delete(key);b.classList.remove("pressed");};
+  b.addEventListener("pointerdown",e=>{b.setPointerCapture(e.pointerId);held.add(key);b.classList.add("pressed");e.preventDefault();});
+  ["pointerup","pointercancel","lostpointercapture"].forEach(name=>b.addEventListener(name,off));
+ });
+ $("collect").addEventListener("click",collect);$("pulse").addEventListener("click",pulse);
+ const view=$("view");
+ view.addEventListener("pointerdown",e=>{if(state.paused)return;view.setPointerCapture(e.pointerId);viewTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});});
+ view.addEventListener("pointermove",e=>{const old=viewTouches.get(e.pointerId);if(!old||state.paused)return;
+  state.yaw-=(e.clientX-old.x)*.005;state.pitch=clamp(state.pitch-(e.clientY-old.y)*.004,-1.22,.85);
+  old.x=e.clientX;old.y=e.clientY;});
+ ["pointerup","pointercancel","lostpointercapture"].forEach(name=>view.addEventListener(name,e=>viewTouches.delete(e.pointerId)));
+ window.addEventListener("keydown",e=>{const key=e.key.toLowerCase();
+  if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(key))e.preventDefault();
+  held.add(key);if(e.repeat)return;
+  if(key==="f")collect();if(key===" ")pulse();if(key==="p"||key==="escape")togglePause();});
+ window.addEventListener("keyup",e=>held.delete(e.key.toLowerCase()));
+ window.addEventListener("blur",()=>{held.clear();if(state.live&&!state.paused)togglePause();});
+ document.addEventListener("visibilitychange",()=>{if(document.hidden&&state.live&&!state.paused)togglePause();});
+}
+function togglePause(){
+ if(!state.live)return;
+ state.paused=!state.paused;held.clear();viewTouches.clear();
+ if(state.paused){changeTitle("잠시 쉬는 중","현재 위치와 보물 진행은 유지돼.","계속 잠수");$("status").textContent="보물 "+state.treasures+"/4";}
+ else{$("overlay").hidden=true;last=performance.now();}
+}
+$("pause").addEventListener("click",togglePause);
+$("primary").addEventListener("click",async()=>{
+ if(state.live&&state.paused){togglePause();return;}
+ $("primary").disabled=true;$("primary").textContent="심해 장비 불러오는 중...";
+ try{await setup();reset();if(!animate.started){animate.started=true;requestAnimationFrame(animate);}}
+ catch(error){console.error("심해 자산 로딩 실패",error);changeTitle("시작하지 못했어","그래픽 엔진 또는 필수 바다 자산을 불러오지 못했어. 연결 상태를 확인한 뒤 다시 시도해.","다시 시도");$("status").textContent="필수 게임 자산 미확인";}
+ finally{$("primary").disabled=false;}
+});
+installInputs();$("status").textContent="최고 기록 "+score()+"/4";
+</script>
+</body>
+</html>
