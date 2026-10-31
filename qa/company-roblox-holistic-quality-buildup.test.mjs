@@ -180,7 +180,7 @@ test('implemented gameplay visuals: linked rig attacks, actor animation phases a
   const wildlifeServer=read('roblox-games/cozy-island/shared/SurvivalWildlife.luau');
   const cozyClient=read('roblox-games/cozy-island/client/Game.client.luau');
   const battle=read('roblox-games/cozy-island/server/BattleVisual.luau');
-  const rpg=read('roblox-games/simple-rpg/client/Game.client.luau');
+  const rpg=read('roblox-games/fantasy-survival/client/Game.client.luau');
   assert.match(animal,/actingSpeed \*= 0\.14/);
   assert.match(animal,/lastServerState/);
   assert.match(animal,/WildlifeRenderedMotionState/);
@@ -198,8 +198,9 @@ test('implemented gameplay visuals: linked rig attacks, actor animation phases a
   assert.match(battle,/CozyBattleVisualOnly/);
   assert.match(battle,/OwnsDamageAuthority",false/);
   assert.match(battle,/BattleVisual\.finish\(player,won\)/);
-  assert.match(rpg,/motion\.actions\[nextStep\]/);
-  assert.match(rpg,/activeMotionCharacter ~= character or not activeMotionController/);
-  assert.match(rpg,/elseif kind == "CIV_HIT"/);
-  assert.doesNotMatch(rpg,/pcall\(commonMotion\.CreateCombatCombo, motion\.profile, \{motion\.action\}\)/);
+  assert.match(rpg,/local martialSkillTracks=\{/);
+  assert.match(rpg,/playNativeCombatMotion=function\(approvedScope,approvedEvent,serverApproved\)/);
+  assert.match(rpg,/GetAttributeChangedSignal\("ApprovedCombatMotion"\)/);
+  assert.match(rpg,/combatMotionSource\.CreateCombatCombo/);
+  assert.doesNotMatch(rpg,/remote:FireServer\("CivNativeCombatMotion"/);
 });
