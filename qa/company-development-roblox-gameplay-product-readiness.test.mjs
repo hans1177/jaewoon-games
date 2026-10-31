@@ -641,11 +641,14 @@ test('Roblox survival object gathering keeps legacy reward and save rules until 
 });
 
 test('managed foundation in the middle must not hide real gameplay or generic skeleton debt',()=>{
-  const source=fs.readFileSync('roblox-games/simple-rpg/server/Game.server.luau','utf8');
-  const start=source.indexOf('-- native-foundation-sentinel-v1');
-  const end=source.indexOf('local lastAction = {}',start);
+  // [오너 삭제 반영] simple-rpg는 영구 삭제됨. 기존 파티 RPG의 실제 Foundation만 추출하고
+  // 살아 있는 생존게임의 실제 플레이 코드로 원래 골격/기능 검사 강도를 유지한다.
+  const foundationSource=fs.readFileSync('roblox-games/party-rpg/server/Game.server.luau','utf8');
+  const source=fs.readFileSync('roblox-games/survival/server/Game.server.luau','utf8');
+  const start=foundationSource.indexOf('-- native-foundation-sentinel-v1');
+  const end=foundationSource.indexOf('local lastAction = {}',start);
   assert.ok(start>=0&&end>start);
-  const foundation=source.slice(start,end);
+  const foundation=foundationSource.slice(start,end);
   const args={gameId:'foundation-boundary',baseline:{content:{...survivalBaseline.content,identity:survivalBaseline.content.identity+' Explore the world.'}},
     config:'Genre="Survival", PlayMode="SINGLE"',client:mobileClient,project};
   const gameplay='local function startWave() end\nlocal function nextDay() end\nlocal function buildWorld() local x=Instance.new("Model") end';
