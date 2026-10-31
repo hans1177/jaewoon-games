@@ -2797,7 +2797,7 @@ local handlers={
   ["scope-coreloop-1-6ebe58f496"]=gatherNearestResource,
   ["scope-coreloop-2-6c927cfa40"]=upgradeEquipment,
   ["scope-mobileux-5acfb2eaa6"]=attackEnemy,
-  ["meadow-unarmed-rush"]=unarmedSkillAttack,
+  ["meadow-unarmed-rush"]=attackEnemy, -- [연타] 맨손은 기존 동일 공격, 장비 착용도 기존 무기 공격 승인
   ["meadow-unarmed-uppercut"]=function(player) return unarmedSkillAttack(player,20) end,
   ["meadow-unarmed-kick"]=function(player) return unarmedSkillAttack(player,14) end,
   ["meadow-unarmed-elbow"]=unarmedSkillAttack,
@@ -2959,6 +2959,15 @@ remote.OnServerEvent:Connect(function(player, actionId)
     for index=1,4 do
       local x,y=values[index*2-1],values[index*2]
       if x<120 or x>880 or y<100 or y>550 then return end
+    end
+    -- [모바일 아이콘 배치] 서버에서도 원본 버튼 반지름 기준 겹치는 좌표 저장 거부.
+    for index=1,3 do
+      for other=index+1,4 do
+        local dx=(values[index*2-1]-values[other*2-1])*235/1000
+        local dy=(values[index*2]-values[other*2])*260/1000
+        local minDistance=31+(other==4 and 22 or 31)+6
+        if dx*dx+dy*dy<minDistance*minDistance then return end
+      end
     end
     player:SetAttribute("MeadowTopButtonsLayout",encoded)
     return
