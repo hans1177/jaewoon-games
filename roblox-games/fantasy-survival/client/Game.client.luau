@@ -3197,7 +3197,14 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     end
     return
   end
-  local hostPart=character:FindFirstChild("RightHand") or rootPart
+  -- [회피 궤적] 공용 대시 이펙트의 부착점을 도약 방향 발로 옮긴다.
+  local isDodge=actionId=="skill-meadow-dodge-left" or actionId=="skill-meadow-dodge-right"
+  local leadingSide=actionId=="skill-meadow-dodge-left" and "Left" or "Right"
+  local hostPart=(isDodge and (
+    character:FindFirstChild(leadingSide.."Foot")
+    or character:FindFirstChild(leadingSide.."LowerLeg")
+    or character:FindFirstChild(leadingSide.." Leg")))
+    or character:FindFirstChild("RightHand") or rootPart
   local warm=Color3.fromRGB(132,245,169)
   local accent=Color3.fromRGB(231,255,189)
   if actionId=="skill-meadow-bolt" then warm=Color3.fromRGB(128,197,255) end
@@ -3212,6 +3219,28 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     scale=1,autoCleanup=true,reducedMotion=UserInputService.TouchEnabled,
     vfx=meadowCommonVFX,
   }
+  -- [양다리 바람 잔상] 새 모델·도형 없이 기존 공용 텍스처 Trail만 재사용한다.
+  -- 원래 서버 승인 DODGE_EVASION_PULSE 및 DASH_STREAK 실행 경로는 그대로 보존한다.
+  if isDodge and meadowCommonVFX and type(meadowCommonVFX.AttachShortTrail)=="function" then
+    for _,side in ipairs({"Left","Right"}) do
+      local leg=character:FindFirstChild(side.."LowerLeg") or character:FindFirstChild(side.." Leg")
+      if leg and leg:IsA("BasePart") then
+        local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,leg,{
+          lifetime=reducedEffects and .12 or .25,
+          width=reducedEffects and .35 or .85,
+          axis=Vector3.new(1,0,0),
+          length=math.max(.65,leg.Size.X*.9),
+          color=side==leadingSide and Color3.fromRGB(118,218,255)
+            or Color3.fromRGB(255,213,129),
+        })
+        if ok and trail and controller then
+          trail.Name="MeadowDodgeWind"..side
+          task.delay(.40,function() if trail.Parent then trail.Enabled=false end end)
+          task.delay(.72,function() pcall(controller.Destroy) end)
+        end
+      end
+    end
+  end
   local selectedFx=overrideVfx or action.VfxAtom
   if meadowCommonVFX and selectedFx and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
     local ok,err=pcall(meadowCommonVFX.Create,selectedFx,settings)
@@ -3693,43 +3722,48 @@ RunService.PreSimulation:Connect(function(dt)
   -- 서버가 회피를 승인했을 때만 실행하며 실제 위치·피해·무적 판정은 서버 소유.
   if isDodge then
     local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
-    -- [회피] 적을 바라본 채 15도 숙여서 빠른 좌/우 측면 점프. 서버가 이동을 전담한다.
-    local ready=math.clamp(phase/.13,0,1)
+    local leadLeft=sign<0
+    -- [측면 도약] 웅크렸다가 몸을 크게 젖히며 도약, 다리를 벌리고 낮게 착지한다.
+    -- 움직임·회피 판정은 기존 서버 권한 그대로 두고 R15 관절 표현만 교체한다.
+    local ready=math.clamp(phase/.115,0,1)
     ready=ready*ready*(3-2*ready)
-    local settle=math.clamp((1-phase)/.26,0,1)
+    local settle=math.clamp((1-phase)/.22,0,1)
     settle=settle*settle*(3-2*settle)
     local stance=ready*settle
-    local lift=math.sin(math.pi*math.clamp((phase-.055)/.53,0,1))
-    local landing=math.sin(math.pi*math.clamp((phase-.56)/.25,0,1))
-    local drive=math.sin(math.pi*math.clamp((phase-.04)/.54,0,1))
-    local recover=math.sin(math.pi*math.clamp((phase-.59)/.38,0,1))
-    local spring=math.sin(math.pi*math.clamp(phase/.14,0,1))*settle
-    local leadLeft=sign<0
-    local duck=math.rad(15)*stance
-    -- 허리+가슴 약 15도 전방 경사, 고개는 적 정면에 고정. 과한 옆 기울기 제거.
-    skillMotionTargets.Spine=CFrame.new(0,-.11*spring+.035*lift-.065*landing,0)
-      *CFrame.Angles(-duck*.72,0,sign*.08*drive)
-    skillMotionTargets.Chest=CFrame.Angles(-duck*.28,-sign*.02*drive,-sign*.035*drive)
-    skillMotionTargets.Head=CFrame.Angles(.045*stance-.018*landing,sign*.02*drive,0)
-    -- 도약 방향 발을 들고 반대발로 밀어낸 뒤 무릎을 접어 착지한다.
-    local leadingHip=-.44*lift-.18*drive+.15*landing
-    local trailingHip=.25*lift+.16*drive-.06*recover
-    -- [회피] 무릎은 살짝만 접어 바닥을 스치듯 옆으로 빠지는 스텝을 만든다.
-    local leadingKnee=.40*lift+.20*landing
-    local trailingKnee=.28*lift+.17*landing
-    skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadingHip or trailingHip,0,sign*.06*lift)
-    skillMotionTargets.ThighR=CFrame.Angles(leadLeft and trailingHip or leadingHip,0,sign*.06*lift)
+    local flight=math.sin(math.pi*math.clamp((phase-.08)/.65,0,1))
+    local drive=math.sin(math.pi*math.clamp((phase-.025)/.46,0,1))
+    local landing=math.sin(math.pi*math.clamp((phase-.61)/.27,0,1))
+    local spring=math.sin(math.pi*math.clamp(phase/.15,0,1))
+    local lean=math.rad(35)*flight
+    -- 상체 약 35도 측면 기울기, 고개는 상대를 계속 향한다.
+    skillMotionTargets.Spine=CFrame.new(0,-.18*spring+.075*flight-.14*landing,0)
+      *CFrame.Angles(-.31*stance+.13*flight,-sign*.10*drive,-sign*lean*.78)
+    skillMotionTargets.Chest=CFrame.Angles(-.10*stance,-sign*.09*flight,-sign*lean*.22)
+    skillMotionTargets.Head=CFrame.Angles(.15*flight-.06*landing,sign*.07*flight,sign*.16*flight)
+    -- 이동 방향의 다리는 뻗고 반대 다리는 깊이 접어 도약 실루엣을 강화한다.
+    local leadingHip=-1.10*flight-.34*drive+.30*landing
+    local trailingHip=.66*flight+.28*drive-.20*landing
+    local leadingKnee=.26*drive+.37*landing
+    local trailingKnee=1.12*flight+.30*landing
+    skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadingHip or trailingHip,
+      0,leadLeft and -.38*flight or .30*flight)
+    skillMotionTargets.ThighR=CFrame.Angles(leadLeft and trailingHip or leadingHip,
+      0,leadLeft and -.30*flight or .38*flight)
     skillMotionTargets.ShinL=CFrame.Angles(leadLeft and leadingKnee or trailingKnee,0,0)
     skillMotionTargets.ShinR=CFrame.Angles(leadLeft and trailingKnee or leadingKnee,0,0)
-    skillMotionTargets.FootL=CFrame.Angles((leadLeft and -.24 or -.16)*lift+.10*landing,0,0)
-    skillMotionTargets.FootR=CFrame.Angles((leadLeft and -.16 or -.24)*lift+.10*landing,0,0)
-    -- 두 주먹은 얼굴 주변에서 짧게 균형만 잡으며 크게 휘두르지 않는다.
-    skillMotionTargets.UpperArmL=CFrame.Angles(-.48*stance-.09*lift,0,-sign*.10*drive)
-    skillMotionTargets.UpperArmR=CFrame.Angles(-.50*stance-.08*lift,0,sign*.10*drive)
-    skillMotionTargets.ForearmL=CFrame.Angles(-.90*stance,0,-.08*lift)
-    skillMotionTargets.ForearmR=CFrame.Angles(-.87*stance,0,.08*lift)
-    skillMotionTargets.HandL=CFrame.Angles(-.07*stance,0,0)
-    skillMotionTargets.HandR=CFrame.Angles(-.07*stance,0,0)
+    skillMotionTargets.FootL=CFrame.Angles((leadLeft and -.34 or -.20)*flight+.18*landing,0,0)
+    skillMotionTargets.FootR=CFrame.Angles((leadLeft and -.20 or -.34)*flight+.18*landing,0,0)
+    -- 진행 방향 앞팔은 크게 내밀고 뒷팔은 뒤로 펼쳐 균형 잡는 동작.
+    skillMotionTargets.UpperArmL=CFrame.Angles(
+      leadLeft and (-.48*stance-1.14*flight) or (-.34*stance+.74*flight),
+      -.08*flight,leadLeft and -.55*flight or .40*flight)
+    skillMotionTargets.UpperArmR=CFrame.Angles(
+      leadLeft and (-.34*stance+.74*flight) or (-.48*stance-1.14*flight),
+      .08*flight,leadLeft and -.40*flight or .55*flight)
+    skillMotionTargets.ForearmL=CFrame.Angles(leadLeft and -.37*stance or -.72*stance,0,-.09*flight)
+    skillMotionTargets.ForearmR=CFrame.Angles(leadLeft and -.72*stance or -.37*stance,0,.09*flight)
+    skillMotionTargets.HandL=CFrame.Angles(-.14*stance,0,0)
+    skillMotionTargets.HandR=CFrame.Angles(-.14*stance,0,0)
   elseif isGuard or isParry then
     -- [방어 동작] 오른팔을 머리 위까지 확실하게 들어 공격 방향을 가리는 한팔 하이 가드.
     -- 짧은 들어올리기 → 머리 위 유지 → 자연스러운 자세 복귀.
@@ -3741,8 +3775,8 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard then
-      -- [한팔 상단 가드] 오른 팔은 머리 위까지 확실히 올리고 왼 팔은 몸 앞에서 균형을 잡는다.
-      -- 기존 2.8초 방어 유지, 이동·피해 판정·무기·세이브 및 원본 관절은 그대로 둔다.
+      -- [양팔 얼굴 가드] 어깨를 앞으로 들고 양 팔꿈치를 접어 두 손이 눈·코 앞을 가리게 한다.
+      -- 2.8초 방어 유지, 이동·피해 판정·무기·세이브는 서버 기존 값 그대로 둔다.
       local crouch=math.clamp(phase/.11,0,1)
       crouch=crouch*crouch*(3-2*crouch)*release
       local elbow=math.clamp((phase-.018)/.105,0,1)
@@ -3751,14 +3785,14 @@ RunService.PreSimulation:Connect(function(dt)
       skillMotionTargets.Spine=CFrame.new(0,-.125*crouch+breathing,0)
         *CFrame.Angles(-.13*crouch,0,0)
       skillMotionTargets.Chest=CFrame.Angles(-.05*guard,0,0)
-      skillMotionTargets.Head=CFrame.Angles(-.14*guard,0,0)
-      -- [왼팔] 몸 앞 낮은 방어 포즈로 둬 상단 오른팔과 실루엣을 구분한다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.38*guard,-.12*guard,.30*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-.70*elbow,-.08*elbow,-.08*elbow)
+      skillMotionTargets.Head=CFrame.Angles(-.10*guard,0,0)
+      -- [왼팔] 얼굴 앞쪽으로 올리고 안쪽으로 모으며 팔꿈치를 깊게 접는다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-1.44*guard,-.12*guard,.30*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.37*elbow,-.08*elbow,-.08*elbow)
       skillMotionTargets.HandL=CFrame.Angles(-.16*elbow,0,-.08*elbow)
-      -- [오른팔] 원본 R15 어깨를 위로 들어 팔꿈치를 머리 위에 두는 강한 하이 가드.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-2.60*guard,.12*guard,-.30*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.05*elbow,.08*elbow,.08*elbow)
+      -- [오른팔] 같은 높이에서 반대 방향으로 모아 두 팔로 얼굴을 가린다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.44*guard,.12*guard,-.30*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.37*elbow,.08*elbow,.08*elbow)
       skillMotionTargets.HandR=CFrame.Angles(-.16*elbow,0,.08*elbow)
       skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.045*guard)
       skillMotionTargets.ThighR=CFrame.Angles(.17*crouch,0,.045*guard)
