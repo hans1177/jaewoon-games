@@ -52,74 +52,171 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
-// [마력숲 물약 아이콘] 기존 다운로드된 Drummyfish CC0 묶음에서 PNG 원본을 꺼내 현재 공식 이미지 등록 경로로 처리한다.
-if(process.argv.includes('--magic-potion-only')){
+// [마력숲 오른쪽 실제 아이콘] 저장된 Drummyfish CC0 원본 PNG 7종을 그대로 등록한다.
+// 사진에서 자른 40px 아틀라스나 게임 안에서 임의로 조립한 아이콘을 금지한다.
+if(process.argv.includes('--magic-action-icons-only')){
  const {execFileSync}=await import('node:child_process');
  const registryPath='roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json';
+ const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
  const archive=registry.interfaceIcons?.sourceArchives?.find(x=>x.path==='assets/external/simple-rpg/icons-vfx-npc/fantasy-rpg-icons.zip');
  if(!archive||registry.gameId!=='fantasy-survival'||registry.interfaceIcons?.license!=='CC0-1.0'
-   ||registry.interfaceIcons?.universeId!=='10773436325')throw Error('FOREST_POTION_CC0_SOURCE_POLICY_INVALID');
+   ||registry.interfaceIcons?.universeId!=='10773436325')throw Error('FOREST_REAL_ICONS_CC0_PROVENANCE_INVALID');
  if(crypto.createHash('sha256').update(fs.readFileSync(archive.path)).digest('hex')!==archive.sha256)
-   throw Error('FOREST_POTION_CC0_ARCHIVE_HASH_MISMATCH');
+   throw Error('FOREST_REAL_ICONS_SOURCE_ARCHIVE_HASH_MISMATCH');
  const entries=execFileSync('unzip',['-Z','-1',archive.path],{encoding:'utf8',maxBuffer:1024*1024})
-   .split(/\r?\n/).filter(x=>/\.png$/i.test(x)&&/(potion|health.*flask|healing.*bottle)/i.test(x));
- entries.sort((a,b)=>{
-   const score=name=>(/red/i.test(name)?4:0)+(/health/i.test(name)?2:0)+(/potion/i.test(name)?1:0);
-   return score(b)-score(a)||a.localeCompare(b);
- });
- const entry=entries[0];
- if(!entry||entry.startsWith('/')||entry.includes('..')||entries.length>24)
-   throw Error('FOREST_POTION_CC0_REAL_ICON_NOT_FOUND');
- const bytes=execFileSync('unzip',['-p',archive.path,entry],{maxBuffer:4*1024*1024});
- if(bytes.length<1000||bytes.length>1024*1024
-   ||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
-   ||bytes.readUInt32BE(16)<64||bytes.readUInt32BE(16)>512
-   ||bytes.readUInt32BE(20)<64||bytes.readUInt32BE(20)>512)
-   throw Error('FOREST_POTION_CC0_ICON_FORMAT_INVALID');
- const digest=crypto.createHash('sha256').update(bytes).digest('hex');
- let id=String(registry.potionIcon?.assetId||'');
- if(!/^[1-9]\d*$/.test(id)||registry.potionIcon?.sourceSha256!==digest
-   ||registry.potionIcon?.sourceEntry!==entry||registry.potionIcon?.importVerified!==true){
-   const form=new FormData();
-   form.append('request',JSON.stringify({
-     assetType:'Image',displayName:'Mana Forest CC0 Red Healing Potion Icon',
-     description:'Drummyfish CC0 fantasy RPG potion original '+digest,
-     creationContext:{creator}
-   }));
-   form.append('fileContent',new Blob([bytes],{type:'image/png'}),'forest-cc0-potion.png');
-   let op=await request('https://apis.roblox.com/assets/v1/assets',{
-     method:'POST',headers:{'x-api-key':key},body:form
-   });
-   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
-     throw Error('FOREST_POTION_ICON_UPLOAD_OPERATION_INVALID');
-   const operationPath=op.path,deadline=Date.now()+240000;
-   while(!op.done&&Date.now()<deadline){
-     await new Promise(resolve=>setTimeout(resolve,4000));
-     op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
-   }
-   id=String(op.response?.assetId||'');
-   if(!op.done||op.error||!/^[1-9]\d*$/.test(id))throw Error('FOREST_POTION_ICON_UPLOAD_FAILED');
+   .split(/\r?\n/).filter(Boolean);
+ const roles=[
+   ['fist','icon_glove.png'],
+   ['dodge','icon_legarmor.png'],
+   ['guard','icon_shield.png'],
+   ['potion','icon_potionred.png'],
+   ['interact','icon_chest.png'],
+   ['sprint','icon_aurared.png'],
+   ['bag','icon_bag.png']
+ ];
+ const originalIconData={};
+ for(const [role,filename] of roles){
+   const paths=entries.filter(e=>e.toLowerCase().split('/').pop()===filename);
+   if(paths.length!==1||paths[0].includes('..')||paths[0].startsWith('/'))
+     throw Error('FOREST_CC0_ORIGINAL_ICON_MISSING_OR_AMBIGUOUS:'+role);
+   const original=execFileSync('unzip',['-p',archive.path,paths[0]],{maxBuffer:4*1024*1024});
+   const width=original.readUInt32BE(16),height=original.readUInt32BE(20);
+   if(original.length<400||original.length>1024*1024
+     ||!original.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+     ||width<16||width>512||height<16||height>512)
+     throw Error('FOREST_CC0_ORIGINAL_ICON_INVALID_PNG:'+role);
+   originalIconData[role]={entry:paths[0],filename,bytes:original,sha256:crypto.createHash('sha256').update(original).digest('hex'),width,height};
  }
- const permission=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
-   method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
-   body:JSON.stringify({subjectType:'Universe',subjectId:'10773436325',action:'Use',
-     requests:[{assetId:Number(id),grantToDependencies:true}]})
- });
- if(permission.errors?.length)throw Error('FOREST_POTION_ICON_GRANT_FAILED');
- registry.potionIcon={
-   assetId:id,license:'CC0-1.0',source:'DRUMMYFISH_FANTASY_RPG_ICONS',
-   licenseEvidence:'https://opengameart.org/content/fantasy-rpg-icons-0',
-   sourceArchive:archive.path,sourceArchiveSha256:archive.sha256,
-   sourceEntry:entry,sourceSha256:digest,
-   width:bytes.readUInt32BE(16),height:bytes.readUInt32BE(20),
-   universeId:'10773436325',authorizedUniverseIds:['10773436325'],
-   importVerified:true,runtimeVerified:false,importedRevision:process.env.GITHUB_SHA
- };
+ const stored=registry.nativeActionIcons?.icons||{};
+ const imported={};
+ for(const [role,filename] of roles){
+   const source=originalIconData[role],prior=stored[role];
+   let assetId=String(prior?.assetId||'');
+   if(!/^[1-9]\d*$/.test(assetId)||prior?.sourceSha256!==source.sha256
+     ||prior?.sourceEntry!==source.entry||prior?.importVerified!==true){
+     const form=new FormData();
+     form.append('request',JSON.stringify({
+       assetType:'Image',displayName:'Mana Forest CC0 '+role+' Action Icon',
+       description:'Original Drummyfish CC0 '+filename+' sha256 '+source.sha256,
+       creationContext:{creator}
+     }));
+     form.append('fileContent',new Blob([source.bytes],{type:'image/png'}),filename);
+     let op=await request('https://apis.roblox.com/assets/v1/assets',{
+       method:'POST',headers:{'x-api-key':key},body:form
+     });
+     if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
+       throw Error('FOREST_CC0_ICON_UPLOAD_OPERATION_INVALID:'+role);
+     const operationPath=op.path,deadline=Date.now()+240000;
+     while(!op.done&&Date.now()<deadline){
+       await new Promise(resolve=>setTimeout(resolve,4000));
+       op=await request('https://apis.roblox.com/assets/v1/'+operationPath,{headers:{'x-api-key':key}});
+     }
+     assetId=String(op.response?.assetId||'');
+     if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))
+       throw Error('FOREST_CC0_ICON_UPLOAD_FAILED:'+role);
+   }
+   const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+     method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+     body:JSON.stringify({subjectType:'Universe',subjectId:'10773436325',action:'Use',
+       requests:[{assetId:Number(assetId),grantToDependencies:true}]})
+   });
+   if(grant.errors?.length)throw Error('FOREST_CC0_ICON_UNIVERSE_GRANT_FAILED:'+role);
+   imported[role]={
+     assetId,sourceEntry:source.entry,sourceSha256:source.sha256,
+     width:source.width,height:source.height,
+     license:'CC0-1.0',importVerified:true,runtimeVerified:false,
+     authorizedUniverseIds:['10773436325']
+   };
+   console.log('FOREST_CC0_NATIVE_ACTION_ICON='+role+':'+assetId);
+   registry.nativeActionIcons={
+     source:'DRUMMYFISH_CC0_FANTASY_RPG_ICONS',
+     license:'CC0-1.0',licenseEvidence:'https://opengameart.org/content/fantasy-rpg-icons-0',
+     sourceArchive:archive.path,sourceArchiveSha256:archive.sha256,
+     universeId:'10773436325',icons:{...stored,...imported},
+     registrationVerified:false,importedRevision:process.env.GITHUB_SHA
+   };
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+ }
+ if(roles.some(([role])=>!/^[1-9]\d*$/.test(String(imported[role]?.assetId||''))))
+   throw Error('FOREST_CC0_REAL_ICONS_INCOMPLETE');
+ registry.nativeActionIcons.registrationVerified=true;
+ registry.rightActionIcons.runtimeReplacedBy='nativeActionIcons';
  fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
- console.log('FOREST_CC0_POTION_ICON_IMPORTED='+id);
- console.log('FOREST_CC0_POTION_SOURCE_ENTRY='+entry);
- console.log('FOREST_CC0_POTION_SOURCE_SHA256='+digest);
+ // [원본 게임 UI] 동일 클라이언트 기존 책임 블록을 직접 바꾼다. 버튼 동작 ID는 변경하지 않는다.
+ let client=fs.readFileSync(clientPath,'utf8');
+ function replaceOne(from,to,label){
+   const count=client.split(from).length-1;
+   if(count!==1)throw Error('FOREST_REAL_ICON_UI_ANCHOR_MISMATCH:'+label+':'+count);
+   client=client.replace(from,to);
+ }
+ const entry=roles.map(([role])=>'  '+role+'="rbxassetid://'+imported[role].assetId+'"').join(',\n');
+ replaceOne(
+   'local meadowRightActionAtlas="rbxassetid://81665484719308" -- RIGHT_ACTION_ICON_ATLAS',
+   'local meadowRealActionIcons={\n'+entry+'\n} -- CC0_REAL_ACTION_ICONS',
+   'atlas-source'
+ );
+ const buttonStart=client.indexOf('local function paintMeadowActionArt(button,role,tint)');
+ const buttonEnd=client.indexOf('-- [시안 이름표]',buttonStart);
+ if(buttonStart<0||buttonEnd<buttonStart)throw Error('FOREST_CC0_ACTION_RENDERER_NOT_FOUND');
+ client=client.slice(0,buttonStart)+[
+   '-- [실제 CC0 액션 아이콘] 원본 등록 PNG만 표시한다. 스크린샷 크롭·그림 도형 금지.',
+   'local function applyMeadowRightActionImage(button,role)',
+   '  local imageId=meadowRealActionIcons[role]',
+   '  if not imageId then return false end',
+   '  local icon=Instance.new("ImageLabel")',
+   '  icon.Name="OriginalRightActionIcon"',
+   '  icon.BackgroundTransparency=1',
+   '  icon.Image=imageId',
+   '  icon.ScaleType=Enum.ScaleType.Fit',
+   '  icon.AnchorPoint=Vector2.new(.5,.5)',
+   '  icon.Position=UDim2.fromScale(.5,.45)',
+   '  icon.Size=UDim2.fromScale(.76,.76)',
+   '  icon.ZIndex=20',
+   '  icon.Parent=button',
+   '  return true',
+   'end',''
+ ].join('\n')+client.slice(buttonEnd);
+ replaceOne(
+   '  {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),0,2},\n'+
+   '  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,4},\n'+
+   '  {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),1,3},\n'+
+   '  {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,nil},',
+   '  {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),nil,"fist"},\n'+
+   '  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,"dodge"},\n'+
+   '  {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),nil,"guard"},\n'+
+   '  {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,"potion"},',
+   'combat-roles'
+ );
+ replaceOne(
+   '  if index==4 then\n    paintMeadowActionArt(button,"POTION",Color3.fromRGB(221,42,57))\n  end\n',
+   '',
+   'no-drawn-potion'
+ );
+ replaceOne(
+   '  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"",nil,"HAND",6},\n'+
+   '  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"",nil,"SPRINT",5},\n'+
+   '  {"MEADOW_INVENTORY","가방",Color3.fromRGB(219,184,124),"",4,nil,7},',
+   '  {"scope-coreloop-1-6ebe58f496","상호작용",Color3.fromRGB(216,216,200),"",nil,nil,"interact"},\n'+
+   '  {"skill-meadow-sprint","질주",Color3.fromRGB(58,173,230),"",nil,nil,"sprint"},\n'+
+   '  {"MEADOW_INVENTORY","가방",Color3.fromRGB(219,184,124),"",nil,nil,"bag"},',
+   'utility-roles'
+ );
+ replaceOne(
+   '  if not applyMeadowRightActionImage(button,info[7]) and info[6] then\n'+
+   '    paintMeadowActionArt(button,info[6],Color3.fromRGB(242,243,237))\n'+
+   '  end',
+   '  applyMeadowRightActionImage(button,info[7])',
+   'no-drawn-utilities'
+ );
+ replaceOne('  nameplate.Visible=meadowRightActionAtlas=="" or skill[5]==nil',
+   '  nameplate.Visible=true','show-combat-labels');
+ replaceOne('  label.Visible=index==2 or meadowRightActionAtlas==""',
+   '  label.Visible=true','show-utility-labels');
+ if(/meadowRightActionAtlas|paintMeadowActionArt|glyph.Text=|ImageRectOffset=Vector2.new\(\(slot-1\)\*40,0\)/.test(client))
+   throw Error('FOREST_SCREENSHOT_ICON_FALLBACK_STILL_PRESENT');
+ fs.writeFileSync(clientPath,client);
+ console.log('FOREST_CC0_NATIVE_7_ICON_BINDING_PREPARED=YES');
  process.exit(0);
 }
 
