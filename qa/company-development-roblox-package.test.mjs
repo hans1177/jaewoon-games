@@ -1803,7 +1803,17 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/local push=math\.clamp\(\(phase-\.07\)\/\.33,0,1\)/);
   assert.match(client,/local plant=math\.clamp\(\(phase-\.55\)\/\.27,0,1\)/);
   assert.match(client,/local leadKnee=\.23\*lean\+\.24\*travel\+\.18\*recovery/);
-  assert.match(client,/local trailKnee=\.36\*lean\+\.09\*push\+\.15\*recovery/);
+  assert.match(client,/local trailKnee=\.36\*lean\+\.09\*travel\+\.15\*recovery/);
+  // 착지 후 불필요한 남은 다리 각도가 끝 프레임에서 튀지 않아야 한다.
+  assert.match(client,/local trailHip=\.20\*lean\+\.16\*travel-\.10\*recovery/);
+  assert.match(client,/local compression=prepare\*\(1-push\)\*settle/);
+  assert.match(client,/local toeOff=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.09\)\/\.45,0,1\)\)\*settle/);
+  assert.match(client,/local impact=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.58\)\/\.23,0,1\)\)\*settle/);
+  assert.match(client,/local aftershock=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.67\)\/\.28,0,1\)\)\*settle/);
+  assert.match(client,/local counterSwing=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.16\)\/\.61,0,1\)\)\*settle/);
+  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.11\*lean,0,-sign\*\.055\*lean\)/);
+  assert.match(client,/skillMotionTargets\.HandL=CFrame\.Angles\(-\.07\*lean/);
+  assert.match(client,/skillMotionTargets\.HandR=CFrame\.Angles\(-\.07\*lean/);
   assert.match(client,/skillMotionTargets\.FootL=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.FootR=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles/);
@@ -1830,6 +1840,33 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
 });
 
+// [마력숲 자연스러운 모션] 관절 보간 곡선은 양 끝에서 정확히 중립이고 착지 충격은 중간에서만 나타난다.
+test('마력숲 회피 발 디딤과 착지 곡선이 끝에서 관절을 튀게 하지 않는다',()=>{
+  const clamp=(v)=>Math.min(1,Math.max(0,v));
+  const smooth=(v)=>v*v*(3-2*v);
+  const sample=(phase)=>{
+    const prepare=smooth(clamp(phase/.17));
+    const settle=smooth(clamp((1-phase)/.27));
+    const lean=prepare*settle;
+    const push=smooth(clamp((phase-.07)/.33));
+    const plant=smooth(clamp((phase-.55)/.27));
+    const travel=push*(1-plant);
+    const recovery=plant*settle;
+    const toeOff=Math.sin(Math.PI*clamp((phase-.09)/.45))*settle;
+    const impact=Math.sin(Math.PI*clamp((phase-.58)/.23))*settle;
+    const trailHip=.20*lean+.16*travel-.10*recovery;
+    const trailKnee=.36*lean+.09*travel+.15*recovery;
+    return {lean,travel,toeOff,impact,trailHip,trailKnee};
+  };
+  for(const edge of [0,1]) {
+    for(const [name,value] of Object.entries(sample(edge)))
+      assert.ok(Math.abs(value)<1e-9,`neutral at phase ${edge}: ${name}=${value}`);
+  }
+  assert.ok(sample(.32).toeOff>.05,'toe off happens during lateral drive');
+  assert.ok(sample(.70).impact>.05,'landing shock occurs after lateral drive');
+  assert.ok(Math.abs(sample(.999).trailHip)<.002,'rear leg recovers before pose ends');
+});
+
 // [마력숲 막기/회피] 공식 R15 관절 타이밍과 서버 판정을 연결하며 기존 밸런스를 유지한다.
 test('fantasy guard holds a full pose and dodges blend smoothly without changing defense authority',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
@@ -1844,6 +1881,11 @@ test('fantasy guard holds a full pose and dodges blend smoothly without changing
   assert.match(client,/if isGuard and not skillMotionCharacter:FindFirstChildOfClass\("Tool"\) then/);
   assert.match(client,/local crouch=math\.clamp\(phase\/\.12,0,1\)/);
   assert.match(client,/local elbow=math\.clamp\(\(phase-\.025\)\/\.115,0,1\)/);
+  assert.match(client,/local shoulder=math\.clamp\(\(phase-\.016\)\/\.105,0,1\)/);
+  assert.match(client,/local chin=math\.clamp\(\(phase-\.045\)\/\.13,0,1\)/);
+  assert.match(client,/local shoulderBreath=math\.sin\(\(os\.clock\(\)-skillMotionStart\)\*5\.1-\.5\)\*\.012\*guard/);
+  assert.match(client,/skillMotionTargets\.FootL=CFrame\.Angles\(-\.07\*crouch/);
+  assert.match(client,/skillMotionTargets\.FootR=CFrame\.Angles\(-\.09\*crouch/);
   assert.match(client,/local breathing=math\.sin\(\(os\.clock\(\)-skillMotionStart\)\*5\.1\)\*\.014\*guard/);
   assert.match(client,/skillMotionTargets\.Spine=CFrame\.new\(0,-\.16\*crouch\+breathing,0\)/);
   assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.24\*guard/);
