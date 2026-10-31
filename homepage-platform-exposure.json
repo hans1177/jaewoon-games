@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-31T06:44:03.235Z",
+  "generatedAt": "2026-10-31T06:47:56.236Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -1471,14 +1471,14 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "result": "PRE_F0_OR_PENDING",
-            "verifiedAt": null,
-            "checkedAt": "2026-10-31T06:43:24.889Z",
+            "currentFloor": "F1_TO_F4_RUNTIME_EVIDENCE",
+            "stage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+            "result": "PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE",
+            "verifiedAt": "2026-10-31T06:47:50.467Z",
+            "checkedAt": "2026-10-31T06:47:50.467Z",
             "lastFailureAt": null,
-            "f0PassedAt": null,
-            "candidatePublishedAt": null,
+            "f0PassedAt": "2026-10-31T06:46:04.145Z",
+            "candidatePublishedAt": "2026-10-31T06:47:50.467Z",
             "failureCode": null,
             "completedCycles": 0
           },
@@ -1501,17 +1501,19 @@
               "design": true,
               "publication": false,
               "exactRuntime": false,
-              "lobby": true,
+              "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
               "publication",
               "exactRuntime",
-              "movement"
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "97951f1f2e81957742682b16d79b204308dc0aa3",
+            "artifactIdentity": "sha256:0599dce9563e6d01455c8435119a45c784741aa0fc255796882fd065b3508683",
             "verifiedAt": null
           },
           "executionAvailable": false,
@@ -1578,7 +1580,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-31T06:43:24.889Z"
+      "updatedAt": "2026-10-31T06:47:50.467Z"
     },
     {
       "gameId": "fifty-days",
