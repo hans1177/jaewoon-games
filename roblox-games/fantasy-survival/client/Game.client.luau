@@ -2885,18 +2885,22 @@ local function layoutMeadowRadar()
   if v.X<=0 or v.Y<=0 then return end
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  -- [미니맵] 기존 오른쪽 가로 위치는 안전영역 X 보정으로 보존한다.
-  -- 세로 위치는 체력바와 동일한 ScreenGui 및 Y 시작 좌표를 사용한다.
+  -- [미니맵 정렬] 추정 좌표 대신 회피 버튼과 체력바의 실제 화면 좌표로 맞춘다.
+  -- ScreenGui 안전영역이 다른 두 HUD를 연결할 때는 부모의 실제 좌표만 빼서 보정한다.
   local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or small and 96 or math.floor(math.clamp(v.Y*.17,98,124))
-  local skillScale=v.X>v.Y and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
-  local dockRight=v.X-math.floor(2*skillScale)
-  local dodgeCenter=dockRight-math.floor(235*skillScale)+235*meadowTopPositions[2][1]*skillScale
+  local dodgeButton=meadowSkillButtons[2]
+  local dodgeSize=dodgeButton.AbsoluteSize
+  if dodgeSize.X<=0 or dodgeSize.Y<=0 then return end
+  local radarOrigin=meadowVitalsGui.AbsolutePosition
+  local dodgeCenter=dodgeButton.AbsolutePosition.X+dodgeSize.X*.5
+  local healthTop=meadowHealthTrack.AbsolutePosition.Y
   local mapWidth=mapDiameter+14
-  local mapRight=math.clamp(math.floor(dodgeCenter+mapWidth*.5+.5),mapWidth+12,v.X-12)
   meadowRadar.Size=UDim2.fromOffset(mapWidth,mapDiameter+40)
-  meadowRadar.AnchorPoint=Vector2.new(1,0)
-  local leftInset=game:GetService("GuiService"):GetGuiInset()
-  meadowRadar.Position=UDim2.fromOffset(mapRight+math.floor(leftInset.X),meadowHealthTrack.Position.Y.Offset)
+  meadowRadar.AnchorPoint=Vector2.new(.5,0)
+  meadowRadar.Position=UDim2.fromOffset(
+    math.floor(dodgeCenter-radarOrigin.X+.5),
+    math.floor(healthTop-radarOrigin.Y+.5)
+  )
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
@@ -2910,6 +2914,10 @@ local function layoutMeadowRadar()
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
 meadowVitalsGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
+meadowVitalsGui:GetPropertyChangedSignal("AbsolutePosition"):Connect(layoutMeadowRadar)
+meadowHealthTrack:GetPropertyChangedSignal("AbsolutePosition"):Connect(layoutMeadowRadar)
+meadowSkillButtons[2]:GetPropertyChangedSignal("AbsolutePosition"):Connect(layoutMeadowRadar)
+meadowSkillButtons[2]:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowRadar)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(layoutMeadowRadar)
 alignMeadowRadar=layoutMeadowRadar
 layoutMeadowRadar()
