@@ -1535,8 +1535,8 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/v.Y<350 and 12 or 14/);
   assert.match(client,/or 116\)\*scale/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
-  assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapDiameter\+14,mapDiameter\+40\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-12,0,8\)/);
+  assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapWidth,mapDiameter\+40\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,8\)/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
   assert.match(client,/south.Text="S"/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
@@ -1580,7 +1580,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local mapDiameter=compactLandscape and \d+ or small and \d+ or (?:\d+|math.floor\(math.clamp\()/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('meadowRadar.Position=UDim2.new(1,-12,0,8)'));
+  assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(mapRight,8)'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
@@ -1843,7 +1843,7 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/skillMotionTargets\.Chest=CFrame\.Angles\(-duck\*\.28/);
   assert.match(client,/local lift=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.055\)\/\.53,0,1\)\)/);
   assert.match(client,/local landing=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.56\)\/\.25,0,1\)\)/);
-  assert.match(client,/local leadingKnee=\.64\*lift\+\.25\*landing/);
+  assert.match(client,/local leadingKnee=\.40\*lift\+\.20\*landing/);
   assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(\.045\*stance/);
   assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-movementStarted\)\/\.26,0,1\)/);
   // 복싱 방어: 한팔은 관자놀이, 다른팔은 어깨 아래, 턱 숙임.
@@ -1852,14 +1852,14 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/local crouch=math\.clamp\(phase\/\.11,0,1\)/);
   assert.match(client,/local elbow=math\.clamp\(\(phase-\.018\)\/\.105,0,1\)/);
   assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.14\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.01\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-\.73\*guard/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.46\*elbow/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.37\*elbow/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.38\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.21\*guard/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-\.70\*elbow/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.55\*elbow/);
   assert.doesNotMatch(client,/local ease=math\.sin\(math\.pi\*phase\)/);
   // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
-  assert.match(dodge,/local hopHeight=\(not overhead and not elevatedWall\) and \.62 or 0/);
+  assert.match(dodge,/local hopHeight=\(not overhead and not elevatedWall\) and \.28 or 0/);
   assert.match(dodge,/local turn=math\.clamp\(t\/\.24,0,1\)/);
   assert.match(dodge,/turn=turn\*turn\*\(3-2\*turn\)/);
   assert.match(dodge,/local gaze=dodgeOrigin:Lerp\(dodgeFacing,turn\)/);
@@ -1879,8 +1879,8 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
 });
 
-// [회피] 구간별 관절은 시작·끝 중립, 공중 발 들어올림과 착지 반동을 지킨다.
-test('마력숲 15도 옆 점프와 자연스러운 착지 곡선 검증',()=>{
+// [회피] 관절 시작·끝 중립, 낮은 옆 스텝과 착지 반동을 지킨다.
+test('마력숲 15도 옆 스텝과 자연스러운 착지 곡선 검증',()=>{
   const clamp=v=>Math.min(1,Math.max(0,v));
   const smooth=v=>v*v*(3-2*v);
   const pose=phase=>{
@@ -1900,8 +1900,8 @@ test('마력숲 15도 옆 점프와 자연스러운 착지 곡선 검증',()=>{
   assert.ok(Math.abs(pose(.3).duck-15)<.01);
   assert.ok(pose(.3).lift>.9);
   assert.ok(pose(.68).landing>.8);
-  const hop=t=>.62*Math.sin(Math.PI*t);
-  assert.ok(hop(.5)>.6);
+  const hop=t=>.28*Math.sin(Math.PI*t);
+  assert.ok(hop(.5)>.27);
   assert.ok(Math.abs(hop(0))<1e-9&&Math.abs(hop(1))<1e-9);
 });
 
@@ -1915,7 +1915,7 @@ test('fantasy guard holds a full pose and dodges blend smoothly without changing
   assert.match(client,/local isParry=id=="skill-meadow-parry"/);
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
   assert.match(client,/elseif isGuard or isParry then/);
-  // [맨손 복싱 막기] 무기가 없을 때 고개를 숙이고 한팔로 감싼다. 무장 막기와 패링은 보존한다.
+  // [한손 복싱 막기] 오른 주먹만 높이고 왼쪽 팔은 낮춘다. 무장 막기와 패링은 보존한다.
   assert.match(client,/if isGuard and not skillMotionCharacter:FindFirstChildOfClass\("Tool"\) then/);
   assert.match(client,/local guard=rise\*release/);
   assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.12\*guard/);
@@ -2187,9 +2187,11 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/meadowSprintAuto and ready and remains<=\.05/);
   assert.match(client,/human\.MoveDirection\.Magnitude>\.1/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-12,0,8\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,8\)/);
+  assert.match(client,/local dodgeCenter=dockRight-math.floor\(235\*skillScale\)\+235\*meadowTopPositions\[2\]\[1\]\*skillScale/);
+  assert.match(client,/local mapRight=math.clamp\(math.floor\(dodgeCenter\+mapWidth\*\.5\+\.5\),mapWidth\+12,v.X-12\)/);
   assert.match(client,/alignMeadowRadar=layoutMeadowRadar/);
-  assert.match(client,/local meadowTopDefaults=\{\{\.235,\.275\}/);
+  assert.match(client,/local meadowTopDefaults=\{\{\.200,\.300\}/);
   assert.match(client,/local activeDrag=nil/);
   assert.match(client,/UserInputService\.InputChanged:Connect\(function\(input\)/);
   assert.match(client,/meadowPages\[4\]\.ScrollingEnabled=false/);
@@ -2207,7 +2209,7 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/if free then p\[1\],p\[2\]=x,y;refreshTopEditor\(\) end/);
   assert.ok(server.includes('["meadow-unarmed-rush"]=attackEnemy'),'right attack must support existing equipped weapon');
   // Default centers are separated. An old invalid saved layout that stacks buttons must be rejected.
-  const base=[[.235,.275],[.500,.120],[.800,.275],[.500,.510]];
+  const base=[[.200,.300],[.500,.300],[.800,.300],[.500,.550]];
   const nonOverlapping=layout=>layout.every(([x,y],i)=>layout.slice(i+1).every(([u,v],other)=>{
     const j=i+1+other;
     const distance2=((x-u)*235)**2+((y-v)*260)**2;
@@ -2215,6 +2217,10 @@ test('Forest four configurable top buttons align minimap and preserve lower util
     return distance2>=minimum**2;
   }));
   assert.ok(nonOverlapping(base),'default four-button layout must stay individually clickable');
+  assert.equal(base[0][1],base[1][1],'dodge must share height with left attack');
+  assert.equal(base[1][1],base[2][1],'dodge must share height with right guard');
+  assert.equal(base[1][0],base[3][0],'potion must remain below the center dodge');
+  assert.match(client,/if value=="235,275,500,120,800,275,500,510" then/);
   assert.ok(!nonOverlapping([[.5,.2],[.5,.2],[.8,.3],[.5,.51]]),
     'a saved overlap that would redirect clicks to dodge must be rejected');
   assert.match(server,/snapshot\.MeadowTopButtonsLayout=layout/);
@@ -2236,7 +2242,7 @@ test('Forest minimap south aligns with existing circular radar and action is ser
   assert.match(client,/radarFieldCorner\.CornerRadius=UDim\.new\(1,0\)/);
   assert.match(client,/south\.Position=UDim2\.new\(\.5,0,1,-2\)/);
   assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.new\(1,-12,0,8\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight,8\)/);
   assert.match(client,/if alignMeadowRadar then alignMeadowRadar\(\) end/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=function\(player\)/);
   assert.match(server,/\["skill-meadow-guard"\]=meadowGuard/);
