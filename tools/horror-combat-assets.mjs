@@ -52,7 +52,9 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
-// [마력숲 오른쪽 실제 아이콘] 외부 PNG 5종 등록, 기존 CC0 물약·가방 2종 보존.
+// [마력숲 A안 아이콘] 연타·회피 외부 원본 2종만 교체하고 막기는 기존 승인 방패 PNG를 재사용한다.
+// 외부 원본을 실제 Roblox 계정에 등록한 뒤에만 기존 오른쪽 ImageLabel의 자산 ID를 변경한다.
+// 방패·상호작용·질주·물약·가방의 기존 승인 이미지/액션은 그대로 보존한다.
 // 사진에서 자른 40px 아틀라스나 게임 안에서 임의로 조립한 아이콘을 금지한다.
 if(process.argv.includes('--magic-action-icons-only')){
  const {execFileSync}=await import('node:child_process');
@@ -60,7 +62,7 @@ if(process.argv.includes('--magic-action-icons-only')){
  const clientPath='roblox-games/fantasy-survival/client/Game.client.luau';
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
  // [기존 승인 자산] 다운로드 원본·등록 ID·게임 바인딩까지 일치하면 권한 API를 반복 호출하지 않는다.
- const verifiedRoles={fist:['lorc','punch-blast'],dodge:['darkzaitzev','acrobatic'],
+ const verifiedRoles={fist:['lorc','fulguro-punch'],dodge:['lorc','dodging'],
    guard:['delapouite','attached-shield'],interact:['lorc','grab'],sprint:['lorc','sprint']};
  const importedIcons=registry.nativeActionIcons?.icons||{};
  const existingClient=fs.readFileSync(clientPath,'utf8');
@@ -82,7 +84,7 @@ if(process.argv.includes('--magic-action-icons-only')){
      importedIcons[role]?.assetId===id&&importedIcons[role]?.license==='CC0-1.0'
        &&importedIcons[role]?.authorizedUniverseIds?.includes('10773436325')
        &&existingClient.includes(role+'="rbxassetid://'+id+'"'))
-   &&existingClient.includes('meadowRadar.Position=UDim2.new(1,-12,0,8)');
+   &&existingClient.includes('meadowRadar.Position=UDim2.fromOffset(mapRight,8)');
  if(verifiedExisting){
    console.log('FOREST_EXTERNAL_ACTION_ICONS_ALREADY_BOUND=YES');
    process.exit(0);
@@ -95,8 +97,8 @@ if(process.argv.includes('--magic-action-icons-only')){
  const entries=execFileSync('unzip',['-Z','-1',archive.path],{encoding:'utf8',maxBuffer:1024*1024})
    .split(/\r?\n/).filter(Boolean);
  const roles=[
-   ['fist','punch-blast.png','lorc'],
-   ['dodge','acrobatic.png','darkzaitzev'],
+   ['fist','fulguro-punch.png','lorc'],
+   ['dodge','dodging.png','lorc'],
    ['guard','attached-shield.png','delapouite'],
    ['potion','icon_potionred.png',null],
    ['interact','grab.png','lorc'],
@@ -206,7 +208,7 @@ if(process.argv.includes('--magic-action-icons-only')){
  const iconEnd=client.indexOf('local reducedEffects=',iconStart);
  if(iconStart<0||iconEnd<iconStart)throw Error('FOREST_EXTERNAL_ICON_BINDING_ANCHOR_MISSING');
  const iconEntries=roles.map(([role])=>'  '+role+'="rbxassetid://'+imported[role].assetId+'"').join(',\n');
- client=client.slice(0,iconStart)+'-- [오른쪽 아이콘] 외부 액션 5종 / 기존 물약·가방 2종\n'
+ client=client.slice(0,iconStart)+'-- [오른쪽 A안 아이콘] 연타·회피 공식 외부 PNG, 막기는 승인된 방패 원본 보존\n'
    +'local meadowRealActionIcons={\n'+iconEntries+'\n} -- CC0_REAL_ACTION_ICONS\n'+client.slice(iconEnd);
  if(/meadowRightActionAtlas|meadowRightActionRects|paintMeadowActionArt/.test(client))
    throw Error('FOREST_SCREENSHOT_ICON_FALLBACK_STILL_PRESENT');
