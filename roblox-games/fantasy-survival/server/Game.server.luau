@@ -674,20 +674,39 @@ end
 local function createMeadowVillage()
   -- 외곽 지형 생성이 끝나고 조사 흔적을 배치해야 월드 확장에 흔적이 묻히지 않는다.
   while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.15) end
-  -- [마을길] 기존 시작지·채집지·의뢰 좌표는 그대로 두고 중세 마을의 중심길과 골목만 넓힌다.
-  -- 도로는 원래 Terrain을 재사용하며 건축용 기본 Part를 새로 만들지 않는다.
+  -- [확장된 숲마을 길] 기존 시작점, 의뢰판, NPC와 단서 좌표를 보존한 채 외곽 생활구역으로 길을 뻗는다.
+  -- 기본 파츠 대신 네이티브 Terrain만 사용한다. 곡선과 가지길로 규칙적인 격자 배열을 피한다.
   for _,path in ipairs({
-    {0,-85,19,34},{0,-117,19,36},{0,-151,19,36},{0,-184,19,39},
-    {-22,-99,48,10},{22,-99,48,10},
-    {-22,-139,48,10},{22,-139,48,10},
-    {-22,-179,48,10},{22,-179,48,10},
+    {0,-86,25,45},{-3,-145,27,69},{3,-213,29,73},{-2,-284,27,91},
+    {-68,-122,141,13},{66,-124,135,12},
+    {-80,-190,159,14},{81,-194,163,13},
+    {-92,-263,182,14},{96,-268,191,13},
+    {-154,-165,12,101},{157,-170,12,104},
+    {-194,-266,11,98},{197,-270,11,96},
   }) do
     meadowTerrain:FillBlock(CFrame.new(path[1],1.5,path[2]),
       Vector3.new(path[3],1.4,path[4]),Enum.Material.Ground)
   end
-  -- [공공 광장] 2배 이상 커진 집과 어울리도록 석재 광장도 확장한다. 실제 Terrain만 사용한다.
+  -- [구불구불한 골목] 두 생활구역 사이의 걸어서 갈 수 있는 지름길.
+  for _,lane in ipairs({
+    {-55,-85,-102,-96},{58,-85,111,-93},
+    {-76,-145,-119,-161},{76,-146,126,-160},
+    {-90,-209,-95,-227},{91,-210,110,-230},
+    {-162,-218,-186,-253},{167,-220,194,-251},
+    {-98,-286,-106,-306},{95,-291,123,-310},
+    {-158,-300,-215,-318},{163,-300,218,-320},
+  }) do
+    for step=0,8 do
+      local t=step/8
+      meadowTerrain:FillBall(Vector3.new(
+        lane[1]+(lane[3]-lane[1])*t,-1.6,lane[2]+(lane[4]-lane[2])*t),
+        4.5,Enum.Material.Ground)
+    end
+    task.wait()
+  end
+  -- [공동 광장] 공고 게시판과 주민 이동 중심은 원래 자리에 남는다.
   for _,plaza in ipairs({
-    {0,-114,34,25},{0,-144,36,28},
+    {0,-111,42,30},{3,-157,41,32},{-7,-238,36,24},
   }) do
     meadowTerrain:FillBlock(CFrame.new(plaza[1],1.55,plaza[2]),
       Vector3.new(plaza[3],1.4,plaza[4]),Enum.Material.Cobblestone)
@@ -705,58 +724,92 @@ local function createMeadowVillage()
       nativeVillageReady=false;break
     end
   end
-  -- [중세 마을 건축] 기존 Kenney CC0 모듈만 조립. 폐허 석벽을 집으로 위장하거나 임의 파츠로 때우지 않는다.
-  -- 골목 양쪽의 기존 건물 6동을 높이·가로·세로 2.35배로 확장한다.
-  -- 크기를 키운 원본 Kenney CC0 모듈만 사용하고 문·지붕도 같은 비율로 맞춘다.
+  -- [중세 숲마을 건축] 위처 3의 비대칭 농촌 배치만 참고하고 실제 CC0 모듈 외형은 유지한다.
+  -- 기존 6동을 보존하되 생활·상업·농경·외곽 구역에 배치하고 서로 다른 실루엣을 만든다.
   local villageArchitectureScale=2.35
   local villageBuildings=0
   local villageProps=0
-  local expectedVillageBuildings=6
+  local expectedVillageBuildings=16
   if nativeVillageReady then
-    -- [건물 외관] CC0 집 6동을 용도마다 규모·문·창·현관·지붕으로 구분한다.
+    -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
+    -- 원래 등장한 건물 이름을 유지해서 기존 컨텐츠 참조에 영향이 없게 한다.
     local houses={
-      {x=-42,z=-99,angle=0,name="Village_HealerHouse",label="약초상 · 의원",scale=.93,roofPitch=.90,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,
+      {x=-99,z=-90,angle=0,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,
        timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(82,91,78)},
-      {x=42,z=-99,angle=math.pi,name="Village_Guesthouse",label="마을 여관",scale=1.12,roofPitch=1.08,doorZ=2.7,sideWindow=true,porch=2,lantern=true,
+      {x=112,z=-93,angle=math.pi,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,
        timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(96,72,66)},
-      {x=-42,z=-139,angle=0,name="Village_Workshop",label="대장간 · 공방",scale=.96,roofPitch=.84,doorZ=2.7,sideWindow=false,porch=1,lantern=false,
+      {x=-116,z=-160,angle=0,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,
        timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(73,79,79)},
-      {x=42,z=-139,angle=math.pi,name="Village_WardenHall",label="마을 회관",scale=1.14,roofPitch=1.16,doorZ=-2.7,sideWindow=true,porch=2,lantern=true,
+      {x=125,z=-158,angle=math.pi,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,
        timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(92,70,59)},
-      {x=-42,z=-179,angle=0,name="Village_ResidentHouseWest",label="주민 주택",scale=.90,roofPitch=.86,doorZ=-2.7,sideWindow=false,porch=0,lantern=false,
+      {x=-96,z=-226,angle=0,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,
        timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(105,89,74)},
-      {x=42,z=-179,angle=math.pi,name="Village_ResidentHouseEast",label="주민 주택",scale=1.03,roofPitch=1.11,doorZ=2.7,sideWindow=true,porch=1,lantern=false,
+      {x=109,z=-229,angle=math.pi,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,
        timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(92,104,92)},
+      {x=-198,z=-89,angle=math.pi*.1,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,
+       timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(91,82,67)},
+      {x=201,z=-104,angle=math.pi*.91,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,
+       timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(85,95,76)},
+      {x=-198,z=-163,angle=math.pi*.12,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,
+       timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(97,86,70)},
+      {x=207,z=-177,angle=math.pi*.87,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,
+       timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(109,88,75)},
+      {x=-189,z=-250,angle=-math.pi*.06,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,
+       timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(98,91,68)},
+      {x=196,z=-251,angle=math.pi*1.05,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,
+       timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(91,84,74)},
+      {x=-104,z=-309,angle=.08,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,
+       timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(89,86,77)},
+      {x=121,z=-309,angle=math.pi-.12,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,
+       timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(91,77,65)},
+      {x=-228,z=-320,angle=-.18,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,
+       timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(100,90,69)},
+      {x=219,z=-320,angle=math.pi+.17,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,
+       timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(90,101,88)},
     }
-    for _,house in ipairs(houses) do
-      -- [기존 모듈 재사용] 창 방향·문 위치와 원본 지붕 높이·현관 포치를 집별로 변경한다.
-      local oppositeZ=-house.doorZ
-      local pieces={
-        {asset="villageDoor",x=6,z=house.doorZ,height=5,lift=0},
-        {asset="villageWindow",x=6,z=oppositeZ,height=5,lift=0},
-        {asset="villageWall",x=-6,z=house.doorZ,height=5,lift=0},
-        {asset="villageWindow",x=-6,z=oppositeZ,height=5,lift=0},
-        {asset=house.sideWindow and "villageWindow" or "villageWall",x=-2.7,z=-5.4,height=5,lift=0,angle=math.pi*.5},
-        {asset="villageWall",x=2.7,z=-5.4,height=5,lift=0,angle=math.pi*.5},
-        {asset="villageWall",x=-2.7,z=5.4,height=5,lift=0,angle=math.pi*.5},
-        {asset=house.sideWindow and "villageWindow" or "villageWall",x=2.7,z=5.4,height=5,lift=0,angle=math.pi*.5},
-        {asset="villageRoof",x=0,z=-2.7,height=3.7,lift=4.65},
-        {asset="villageRoof",x=0,z=2.7,height=3.7,lift=4.65},
-        {asset="villageRoofEnd",x=0,z=-5.4,height=3.7,lift=4.65},
-        {asset="villageRoofEnd",x=0,z=5.4,height=3.7,lift=4.65,angle=math.pi},
-      }
-      -- [현관] 승인된 원본 CC0 지붕 메시만 사용한다.
+    for houseIndex,house in ipairs(houses) do
+      -- [기존 Kenney 건물 모듈] 길이 2/3칸, 층수 1/2의 실제 문·창·벽·박공지붕으로 외형을 다르게 구성한다.
+      local rowCount=house.length
+      local roofRows=rowCount==3 and {-5.4,0,5.4} or {-2.7,2.7}
+      local endZ=rowCount*2.7
+      local roofLift=house.storeys==2 and 9.65 or 4.65
+      local pieces={}
+      for rowIndex,z in ipairs(roofRows) do
+        pieces[#pieces+1]={asset=z==house.doorZ and "villageDoor" or (rowIndex%2==0 and "villageWindow" or "villageWall"),
+          x=6,z=z,height=5,lift=0}
+        pieces[#pieces+1]={asset=house.sideWindow and "villageWindow" or "villageWall",
+          x=-6,z=z,height=5,lift=0}
+        if house.storeys==2 then
+          pieces[#pieces+1]={asset="villageWindow",x=6,z=z,height=5,lift=5}
+          pieces[#pieces+1]={asset=rowIndex%2==0 and "villageWall" or "villageWindow",x=-6,z=z,height=5,lift=5}
+        end
+        pieces[#pieces+1]={asset="villageRoof",x=0,z=z,height=3.7,lift=roofLift}
+      end
+      for _,sideZ in ipairs({-endZ,endZ}) do
+        for _,sideX in ipairs({-2.7,2.7}) do
+          pieces[#pieces+1]={asset=house.sideWindow and sideX<0 and "villageWindow" or "villageWall",
+            x=sideX,z=sideZ,height=5,lift=0,angle=math.pi*.5}
+          if house.storeys==2 then
+            pieces[#pieces+1]={asset=sideX<0 and "villageWindow" or "villageWall",
+              x=sideX,z=sideZ,height=5,lift=5,angle=math.pi*.5}
+          end
+        end
+        pieces[#pieces+1]={asset="villageRoofEnd",x=0,z=sideZ,height=3.7,
+          lift=roofLift,angle=sideZ>0 and math.pi or 0}
+      end
+      -- [차양] 집의 원본 지붕 메시를 재사용하며 단순 Part를 새로 생성하지 않는다.
       for porchIndex=1,house.porch do
-        pieces[#pieces+1]={asset="villageRoof",x=7.75,z=house.porch==1 and house.doorZ or (porchIndex==1 and -2.7 or 2.7),
-          height=2.2,lift=3.25,angle=math.pi*.5,decoration=true}
+        local porchZ=house.porch==1 and house.doorZ
+          or (porchIndex==1 and house.doorZ-2.7 or house.doorZ+2.7)
+        pieces[#pieces+1]={asset="villageRoof",x=7.75,z=porchZ,height=2.2,
+          lift=3.25,angle=math.pi*.5,decoration=true}
       end
       local created=0
       for partIndex,piece in ipairs(pieces) do
         local houseScale=villageArchitectureScale*house.scale
-        local rotated=Vector2.new(piece.x*houseScale,piece.z*houseScale)
         local rot=house.angle
-        local x=house.x+rotated.X*math.cos(rot)-rotated.Y*math.sin(rot)
-        local z=house.z+rotated.X*math.sin(rot)+rotated.Y*math.cos(rot)
+        local x=house.x+piece.x*houseScale*math.cos(rot)-piece.z*houseScale*math.sin(rot)
+        local z=house.z+piece.x*houseScale*math.sin(rot)+piece.z*houseScale*math.cos(rot)
         local roofPitch=(piece.asset=="villageRoof" or piece.asset=="villageRoofEnd")
           and (piece.decoration and 1 or house.roofPitch) or 1
         local model=worldAsset(piece.asset,Vector3.new(x,3,z),
@@ -765,12 +818,11 @@ local function createMeadowVillage()
           model.Name=house.name.."_"..partIndex
           model:SetAttribute("MeadowVillageScenery",true)
           model:SetAttribute("VillageBuilding",house.name)
+          model:SetAttribute("VillageDistrict",houseIndex<=4 and "CENTRAL" or houseIndex<=10 and "RESIDENTIAL" or "FARMLAND")
           model:PivotTo(model:GetPivot()*CFrame.Angles(0,rot+(piece.angle or 0),0))
           for _,mesh in ipairs(model:GetDescendants()) do
             if mesh:IsA("MeshPart") then
               mesh.CanCollide=piece.lift==0
-              -- [중세 외장] 문·창의 CC0 원본 재질과 텍스처는 보존한다.
-              -- 목재와 지붕은 건물별 다른 색에 소폭의 풍화 차이를 주되 원본 메시를 유지한다.
               if piece.asset=="villageRoof" or piece.asset=="villageRoofEnd" then
                 mesh.Color=house.roof:Lerp(Color3.fromRGB(73,76,71),(partIndex%3)*.06)
                 mesh.Material=Enum.Material.Slate
@@ -780,26 +832,25 @@ local function createMeadowVillage()
               end
             end
           end
-          if partIndex==1 then
+          if piece.asset=="villageDoor" then
             local front=model:FindFirstChildWhichIsA("MeshPart",true)
             if front then
-              -- [안내 UI] 실제 문 모델 위에 건물 용도만 표시. 건축물로 위장한 새 파츠를 만들지 않는다.
               local sign=Instance.new("BillboardGui")
               sign.Name="MeadowVillageHouseSign"
               sign.Adornee=front
-              sign.Size=UDim2.fromOffset(154,28)
+              sign.Size=UDim2.fromOffset(158,28)
               sign.StudsOffsetWorldSpace=Vector3.new(0,7.8,0)
-              sign.MaxDistance=68
+              sign.MaxDistance=72
               sign.Parent=front
-              local text=Instance.new("TextLabel")
-              text.Size=UDim2.fromScale(1,1)
-              text.BackgroundTransparency=1
-              text.Font=Enum.Font.GothamBold
-              text.TextSize=14
-              text.TextStrokeTransparency=.3
-              text.TextColor3=Color3.fromRGB(246,216,163)
-              text.Text=house.label
-              text.Parent=sign
+              local caption=Instance.new("TextLabel")
+              caption.Size=UDim2.fromScale(1,1)
+              caption.BackgroundTransparency=1
+              caption.Font=Enum.Font.GothamBold
+              caption.TextSize=14
+              caption.TextStrokeTransparency=.3
+              caption.TextColor3=Color3.fromRGB(246,216,163)
+              caption.Text=house.label
+              caption.Parent=sign
             end
           end
           created+=1
@@ -809,41 +860,41 @@ local function createMeadowVillage()
       if created==#pieces then villageBuildings+=1 end
       if house.lantern then
         local scale=villageArchitectureScale*house.scale
-        local side=Vector2.new(7.9*scale,-house.doorZ*scale)
-        local x=house.x+side.X*math.cos(house.angle)-side.Y*math.sin(house.angle)
-        local z=house.z+side.X*math.sin(house.angle)+side.Y*math.cos(house.angle)
+        local sideX,sideZ=7.9*scale,house.doorZ*scale
+        local x=house.x+sideX*math.cos(house.angle)-sideZ*math.sin(house.angle)
+        local z=house.z+sideX*math.sin(house.angle)+sideZ*math.cos(house.angle)
         local entryLantern=worldAsset("villageLantern",Vector3.new(x,3,z),1.9,3.3*scale)
         if entryLantern then
           entryLantern.Name=house.name.."_EntranceLantern"
           entryLantern:SetAttribute("MeadowVillageScenery",true)
         end
       end
-      task.wait(.06)
+      task.wait(.04)
     end
-    -- [시장] 가운데 식탁처럼 쌓인 가판대 6개를 소형 시장 가판대 2개로 정리한다.
+    -- [시장·생활 마당] 식탁처럼 보이던 가판대를 늘리지 않고 두 장터만 유지한다.
+    -- 기존 CC0 카트·울타리·등불을 농가와 골목에 비대칭 분산 배치한다.
     local furnishings={
-      {"villageStall",-19,-123,3.25,math.pi*.25},
-      {"villageStall",20,-159,3.35,-math.pi*.25},
+      {"villageStall",-26,-148,3.15,.2},{"villageStall",26,-164,3.4,-.3},
       {"villageFountain",0,-146,2.2,0},
-      {"villageCart",-18,-174,6.2,math.pi*.1},{"villageCart",19,-171,6.2,-math.pi*.15},
-      {"villageCart",-62,-124,6.2,math.pi*.4},{"villageCart",62,-163,6.2,-math.pi*.35},
-      {"villageLantern",-12,-84,5,0},{"villageLantern",12,-84,5,0},
-      {"villageLantern",-12,-109,5,0},{"villageLantern",12,-109,5,0},
-      {"villageLantern",-12,-132,5,0},{"villageLantern",12,-132,5,0},
-      {"villageLantern",-12,-172,5,0},{"villageLantern",12,-172,5,0},
-      {"villageLantern",-12,-192,5,0},{"villageLantern",12,-192,5,0},
-      {"villageFence",-69,-93,4.6,math.pi*.5},{"villageFence",-69,-109,4.6,math.pi*.5},
-      {"villageFence",69,-93,4.6,math.pi*.5},{"villageFence",69,-109,4.6,math.pi*.5},
-      {"villageFence",-69,-125,4.6,math.pi*.5},{"villageFence",69,-125,4.6,math.pi*.5},
-      {"villageFence",-69,-141,4.6,math.pi*.5},{"villageFence",-69,-157,4.6,math.pi*.5},
-      {"villageFence",69,-141,4.6,math.pi*.5},{"villageFence",69,-157,4.6,math.pi*.5},
-      {"villageFence",-69,-173,4.6,math.pi*.5},{"villageFence",69,-173,4.6,math.pi*.5},
-      {"villageFence",-69,-189,4.6,math.pi*.5},{"villageFence",69,-189,4.6,math.pi*.5},
-      {"villageFence",-46,-205,4.6,0},{"villageFence",46,-205,4.6,0},
+      {"villageCart",-52,-165,6,.4},{"villageCart",54,-244,5.6,-.35},
+      {"villageCart",-165,-234,6.1,.15},{"villageCart",176,-148,6.1,-.5},
+      {"villageLantern",-17,-102,5,0},{"villageLantern",19,-113,5,0},
+      {"villageLantern",-14,-184,5,0},{"villageLantern",18,-201,5,0},
+      {"villageLantern",-25,-266,5,0},{"villageLantern",23,-278,5,0},
+      {"villageLantern",-143,-119,4.8,0},{"villageLantern",157,-185,4.8,0},
+      {"villageFence",-154,-71,4.8,.16},{"villageFence",-156,-90,4.8,.16},
+      {"villageFence",167,-79,4.8,-.2},{"villageFence",168,-99,4.8,-.2},
+      {"villageFence",-145,-218,4.8,.4},{"villageFence",-158,-224,4.8,.4},
+      {"villageFence",146,-243,4.8,-.3},{"villageFence",159,-246,4.8,-.3},
+      {"villageFence",-234,-150,4.8,math.pi*.5},{"villageFence",-234,-170,4.8,math.pi*.5},
+      {"villageFence",243,-158,4.8,math.pi*.5},{"villageFence",243,-178,4.8,math.pi*.5},
+      {"villageFence",-238,-278,4.8,.15},{"villageFence",-239,-295,4.8,.15},
+      {"villageFence",253,-271,4.8,-.13},{"villageFence",253,-289,4.8,-.13},
+      {"villageFence",-75,-326,4.8,0},{"villageFence",-57,-327,4.8,0},
+      {"villageFence",85,-330,4.8,0},{"villageFence",105,-331,4.8,0},
     }
     for index,row in ipairs(furnishings) do
-      -- [작은 실제 우물] 분수 원본의 넓은 테두리는 높이와 지름을 함께 축소한다.
-      -- 다른 가판대·수레·등불·울타리의 기존 크기는 변경하지 않는다.
+      -- [실제 우물] 기존 원본 분수 메시를 우물 크기로만 축소한다.
       local propHeight=row[1]=="villageFountain" and row[4] or row[4]*1.3
       local model=worldAsset(row[1],Vector3.new(row[2],3,row[3]),propHeight)
       if model then
@@ -872,9 +923,9 @@ local function createMeadowVillage()
             local glow=Instance.new("PointLight")
             glow.Name="MeadowVillageLanternGlow"
             glow.Color=Color3.fromRGB(255,184,116)
-            glow.Brightness=1
-            glow.Range=13
-            glow.Shadows=false -- 여섯 개의 조명 그림자 대신 모바일 프레임을 보존한다.
+            glow.Brightness=.9
+            glow.Range=12
+            glow.Shadows=false
             glow.Parent=mesh
           end
         end
@@ -882,21 +933,15 @@ local function createMeadowVillage()
       end
       if index%4==0 then task.wait(.03) end
     end
-    -- [마을 식생] 기존 CC0 버섯과 나무를 출입구·조사 동선에서 벗어난 곳에 둔다.
-    for index,spot in ipairs({
-      {-21,-88,1.2},{20,-111,1.05},{-22,-149,1.3},
-      {23,-189,1.15},{-19,-194,1.05},{21,-87,1.2}
+    -- [마을 바깥 풍경] 몬스터 모델로 마을 장식을 만드는 대신 CC0 나무만 외곽에 둔다.
+    for index,pos in ipairs({
+      {-259,-57},{271,-62},{-275,-121},{270,-128},
+      {-278,-209},{275,-218},{-274,-305},{276,-312},
+      {-166,-41},{174,-47},{-53,-345},{51,-343},
+      {-31,-68},{36,-70},{-164,-338},{164,-338},
     }) do
-      local flora=worldAsset("mushroom",Vector3.new(spot[1],3,spot[2]),spot[3])
-      if flora then
-        flora.Name="Meadow_Village_GardenMushroom_"..index
-        flora:SetAttribute("MeadowVillageScenery",true)
-      end
-      if index%3==0 then task.wait(.03) end
-    end
-    -- [외곽 경관] 대칭 나무 줄 대신 비대칭 배치. 기존 마력숲 자산만 사용.
-    for index,pos in ipairs({{-85,-63},{80,-65},{-82,-133},{86,-138},{-80,-209},{82,-215}}) do
-      local tree=worldAsset("tree",Vector3.new(pos[1],3,pos[2]),14.5)
+      local tree=worldAsset("tree",Vector3.new(pos[1],3,pos[2]),
+        16+((index*7)%5)*1.5)
       if tree then
         tree.Name="Meadow_Village_BoundaryTree_"..index
         tree:SetAttribute("MeadowVillageScenery",true)
