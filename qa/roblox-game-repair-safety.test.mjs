@@ -306,3 +306,27 @@ available=false;C.StudioAssets.Families.CHARACTER={}
 assert(wearMedievalChest(model,folder,1)==false and calls==1)
 `);
 });
+
+
+test('fantasy-survival mobile menu and stamina references survive the original Luau do scope',()=>{
+ const client=read('roblox-games/fantasy-survival/client/Game.client.luau');
+ // 메뉴 내부에서 만든 실제 GUI만 외부 오른쪽 버튼·자원바가 참조해야 한다.
+ assert.match(client,/local meadowVitalsGui, meadowPages, meadowMenu, energyFill, energyLabel\s*\n\s*do\s*\n/);
+ assert.match(client,/[\n]meadowPages=\{\}/);
+ assert.match(client,/[\n]meadowMenu=CommonUI\.AdaptActionMenu\(/);
+ assert.match(client,/[\n]energyFill=Instance\.new\("Frame"\)/);
+ assert.match(client,/[\n]energyLabel=Instance\.new\("TextLabel"\)/);
+ for(const shadow of ['local meadowPages={}','local meadowMenu=CommonUI.AdaptActionMenu',
+  'local energyFill=Instance.new','local energyLabel=Instance.new']){
+  assert.ok(!client.includes(shadow),'blocked shadow declaration: '+shadow);
+ }
+ const boundary=client.indexOf('\nend\n\n-- [첫 화면]');
+ assert.ok(boundary>0,'original menu block must remain intact');
+ const remainder=client.slice(boundary);
+ assert.match(remainder,/editLayoutButton\.Parent=meadowPages\[4\]/);
+ assert.match(remainder,/if info\[1\]=="MEADOW_INVENTORY" then meadowMenu\.open\(2\)/);
+ assert.match(remainder,/energyFill\.Size=UDim2\.fromScale/);
+ assert.match(remainder,/energyLabel\.Text=ready and string\.format/);
+ assert.match(client,/button\.Activated:Connect\(function\(\)\s*if gui:GetAttribute\("GameMenuOpen"\)==true then return end\s*activateMeadowAction\(skillActionId\)/);
+ assert.match(client,/remote:FireServer\(actionId\)/);
+});
