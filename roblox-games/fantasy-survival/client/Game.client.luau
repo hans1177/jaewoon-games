@@ -2049,8 +2049,8 @@ local meleeSkills={
   {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,"potion"},
 }
 -- 네 위치는 기존 세이브의 별도 UI 문자열에만 보존한다. 전투·재화 값에는 영향이 없다.
--- [기본 배치] 연타·회피·막기를 같은 높이에 놓고 물약은 아래로 분리한다.
-local meadowTopDefaults={{.200,.300},{.500,.300},{.800,.300},{.500,.550}}
+-- [기본 삼각 편대] 위쪽 회피, 아래 좌우 연타·막기, 안쪽 물약. 하단 보조 버튼은 유지한다.
+local meadowTopDefaults={{.160,.540},{.500,.120},{.840,.540},{.500,.395}}
 local meadowTopPositions={}
 for index,p in ipairs(meadowTopDefaults) do meadowTopPositions[index]={p[1],p[2]} end
 local alignMeadowRadar
@@ -2058,7 +2058,8 @@ local function readMeadowTopLayout(value)
   if typeof(value)~="string" or #value>40 or not value:match("^%d+,%d+,%d+,%d+,%d+,%d+,%d+,%d+$") then return false end
   -- [기존 UI 저장 보존] 이전 기본 배치를 저장한 사용자는 새 기본 배치로만 옮기고,
   -- 사용자가 직접 변경한 버튼 위치와 저장 키는 그대로 유지한다.
-  if value=="235,275,500,120,800,275,500,510" then
+  if value=="235,275,500,120,800,275,500,510"
+    or value=="200,300,500,300,800,300,500,550" then
     for index,p in ipairs(meadowTopDefaults) do meadowTopPositions[index]={p[1],p[2]} end
     return true
   end
@@ -2074,7 +2075,7 @@ local function readMeadowTopLayout(value)
     for other=index+1,4 do
       local dx=(values[index*2-1]-values[other*2-1])*235/1000
       local dy=(values[index*2]-values[other*2])*260/1000
-      local minDistance=31+(other==4 and 22 or 31)+6
+      local minDistance=37+(other==4 and 23 or 37)+8
       if dx*dx+dy*dy<minDistance*minDistance then return false end
     end
   end
@@ -2270,14 +2271,15 @@ local function layoutMeadowCombatUi()
   local v=gui.AbsoluteSize
   if v.X<=0 or v.Y<=0 then return end
   local landscape=v.X>v.Y
-  -- [좁은 가로 화면] 화면 높이에 맞춰 버튼을 줄이고, 미니맵과 회피 상단이 겹치면 도크를 아래로 이동한다.
+  -- [좁은 가로 화면] 화면 높이에 맞춰 삼각 편대 버튼을 줄이고, 미니맵과 회피가 겹치면 도크를 아래로 이동한다.
   local scale=landscape and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
   local dockHeight=math.floor(260*scale)
   local bottomInset=math.floor((landscape and (v.Y<350 and 12 or 14) or 116)*scale)
   local compactLandscape=landscape and v.Y<450
   local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or v.X<480 and 96 or math.floor(math.clamp(v.Y*.17,98,124))
-  local dodgeTop=v.Y-bottomInset-dockHeight+math.floor((260*meadowTopPositions[2][2]-31)*scale)
-  local mapBottom=8+mapDiameter+40
+  local dodgeTop=v.Y-bottomInset-dockHeight+math.floor((260*meadowTopPositions[2][2]-37)*scale)
+  local radarTop=landscape and 12 or 38 -- 중앙 체력바 상단과 같은 높이.
+  local mapBottom=radarTop+mapDiameter+40
   local utilityBottom=v.Y-bottomInset-dockHeight+math.floor(194*scale)+math.max(44,math.floor(45*scale))
   local availableShift=math.max(0,v.Y-8-utilityBottom)
   local shift=compactLandscape and math.min(availableShift,math.max(0,mapBottom+8-dodgeTop)) or 0
@@ -2285,7 +2287,7 @@ local function layoutMeadowCombatUi()
   meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,-bottomInset+math.floor(shift))
   for index,button in ipairs(meadowSkillButtons) do
     local p=meadowTopPositions[index]
-    local originalSize=index==4 and 44 or 62
+    local originalSize=index==4 and 46 or 74
     local size=math.floor(originalSize*scale)
     local cx,cy=235*p[1],260*p[2]
     button.Size=UDim2.fromOffset(size,size)
@@ -2377,7 +2379,7 @@ for index,skill in ipairs(meleeSkills) do
   local handle=Instance.new("TextButton")
   handle.Name="EditableButton"..index
   handle.AnchorPoint=Vector2.new(.5,.5)
-  handle.Size=UDim2.fromOffset(index==4 and 47 or 56,index==4 and 47 or 56)
+  handle.Size=UDim2.fromOffset(index==4 and 47 or 60,index==4 and 47 or 60)
   handle.BackgroundColor3=Color3.fromRGB(32,46,47)
   handle.Text=skill[2]
   handle.Font=Enum.Font.GothamBold
@@ -2418,7 +2420,7 @@ UserInputService.InputChanged:Connect(function(input)
     if index~=activeDrag then
       local dx=(x-other[1])*235
       local dy=(y-other[2])*260
-      local minDistance=(activeDrag==4 and 22 or 31)+(index==4 and 22 or 31)+6
+      local minDistance=(activeDrag==4 and 23 or 37)+(index==4 and 23 or 37)+8
       if dx*dx+dy*dy<minDistance*minDistance then free=false;break end
     end
   end
@@ -2883,8 +2885,8 @@ local function layoutMeadowRadar()
   if v.X<=0 or v.Y<=0 then return end
   local compactLandscape=v.X>v.Y and v.Y<450
   local small=v.X<480
-  -- [미니맵] 회피 버튼의 실제 가로 중심과 같은 세로축으로 정렬한다.
-  -- 기존 오른쪽 도크와 동일한 화면 비율을 적용하고 지도는 상단 안전 여백을 지킨다.
+  -- [미니맵] 기존 가로 중심은 유지하고, 화면 위쪽 체력바 시작 높이로 올린다.
+  -- 세로 방향만 중앙 체력바 안전 시작점과 맞춘다.
   local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or small and 96 or math.floor(math.clamp(v.Y*.17,98,124))
   local skillScale=v.X>v.Y and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
   local dockRight=v.X-math.floor(2*skillScale)
@@ -2893,7 +2895,7 @@ local function layoutMeadowRadar()
   local mapRight=math.clamp(math.floor(dodgeCenter+mapWidth*.5+.5),mapWidth+12,v.X-12)
   meadowRadar.Size=UDim2.fromOffset(mapWidth,mapDiameter+40)
   meadowRadar.AnchorPoint=Vector2.new(1,0)
-  meadowRadar.Position=UDim2.fromOffset(mapRight,8)
+  meadowRadar.Position=UDim2.fromOffset(mapRight,v.X>v.Y and 12 or 38)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
