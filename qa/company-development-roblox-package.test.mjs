@@ -2276,14 +2276,19 @@ test('Forest external five action icons and protected potion/bag imported via ex
   const workflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
-  // [A안] 실물 연속 펀치/옆회피/한손 복싱 가드 PNG만 교체한다. 429 때 이전 ID를 새 것으로 속이지 않는다.
-  const chosen={fist:'fulguro-punch.png',dodge:'dodging.png',guard:'boxing-glove.png'};
+  // [A안] 연타·회피만 교체하고 막기는 기존 승인 방패를 유지한다. 등록 전 ID를 새 ID로 속이지 않는다.
+  const chosen={fist:'fulguro-punch.png',dodge:'dodging.png',guard:'attached-shield.png'};
   for(const [role,name] of Object.entries(chosen)){
-    assert.ok(script.includes("['"+role+"','"+name+"','lorc']"),'missing approved A icon source: '+role);
-    assert.ok(script.includes(role+":['lorc','"+name.replace('.png','')+"']"),'missing A source verification: '+role);
+    assert.ok(script.includes("['"+role+"','"+name+"','"+(role==='guard'?'delapouite':'lorc')+"']"),'missing approved A icon source: '+role);
+    assert.ok(script.includes(role+":['"+(role==='guard'?'delapouite':'lorc')+"','"+name.replace('.png','')+"']"),'missing A source verification: '+role);
     const imported=registry.nativeActionIcons.icons[role];
     if(imported.sourceEntry!==name)assert.equal(imported.runtimeVerified,false,'pending A image must not count as runtime verified: '+role);
   }
+  assert.ok(script.includes("guard:['delapouite','attached-shield']"),'shield source must remain the existing licensed asset');
+  assert.ok(script.includes("['guard','attached-shield.png','delapouite']"),'shield importer role must be restored');
+  assert.equal(registry.nativeActionIcons.icons.guard.sourceEntry,'attached-shield.png');
+  assert.equal(registry.nativeActionIcons.icons.guard.assetId,'85078081802173');
+  assert.ok(registry.nativeActionIcons.icons.guard.authorizedUniverseIds.includes('10773436325'));
   for(const key of ['grab.png','sprint.png'])
     assert.ok(script.includes(key),'missing preserved external action source: '+key);
   assert.ok(script.includes("meadowRadar.Position=UDim2.fromOffset(mapRight,8)"));
