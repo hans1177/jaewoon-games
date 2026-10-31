@@ -710,7 +710,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       acidBatch.frustumCulled=false;scene.add(acidBatch);
     }
     if(!acidBatch)return;
-    const scale=.19/Math.max(.001,source.geometry.boundingSphere?.radius||1);
+    const scale=.34/Math.max(.001,source.geometry.boundingSphere?.radius||1);
     for(let i=0;i<active.length;i++){
       const q=active[i];
       acidTransform.position.set(q.x*SCALE,.65,q.y*SCALE);
