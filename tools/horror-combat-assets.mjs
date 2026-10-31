@@ -52,7 +52,7 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
-// [마력숲 오른쪽 실제 아이콘] 저장된 Drummyfish CC0 원본 PNG 7종을 그대로 등록한다.
+// [마력숲 오른쪽 실제 아이콘] 외부 PNG 5종 등록, 기존 CC0 물약·가방 2종 보존.
 // 사진에서 자른 40px 아틀라스나 게임 안에서 임의로 조립한 아이콘을 금지한다.
 if(process.argv.includes('--magic-action-icons-only')){
  const {execFileSync}=await import('node:child_process');
@@ -132,6 +132,10 @@ if(process.argv.includes('--magic-action-icons-only')){
  const imported={};
  for(const [role,filename] of roles){
    const source=originalIconData[role],prior=stored[role];
+   // [보존] 물약·가방 원본 ID·SHA를 변경하지 않는다.
+   if(!source.author&&(String(prior?.assetId||'')!==(role==='potion'?'120656085154237':'127437456512278')
+     ||prior?.sourceSha256!==source.sha256||prior?.license!=='CC0-1.0'||prior?.importVerified!==true))
+     throw Error('FOREST_PROTECTED_ICON_CHANGED:'+role);
    let assetId=String(prior?.assetId||'');
    if(!/^[1-9]\d*$/.test(assetId)||prior?.sourceSha256!==source.sha256
      ||prior?.sourceEntry!==source.entry||(prior?.sourceUrl||null)!==(source.sourceUrl||null)
@@ -157,12 +161,18 @@ if(process.argv.includes('--magic-action-icons-only')){
      if(!op.done||op.error||!/^[1-9]\d*$/.test(assetId))
        throw Error('FOREST_CC0_ICON_UPLOAD_FAILED:'+role);
    }
-   const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
-     method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
-     body:JSON.stringify({subjectType:'Universe',subjectId:'10773436325',action:'Use',
-       requests:[{assetId:Number(assetId),grantToDependencies:true}]})
-   });
-   if(grant.errors?.length)throw Error('FOREST_CC0_ICON_UNIVERSE_GRANT_FAILED:'+role);
+   // [429 보호] 원본·ID·기존 승인 증빙이 같으면 권한 API 반복 호출을 생략한다.
+   const permissionCurrent=String(prior?.assetId||'')===assetId
+     &&prior?.sourceSha256===source.sha256&&prior?.importVerified===true
+     &&prior?.authorizedUniverseIds?.includes('10773436325');
+   if(!permissionCurrent){
+     const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+       method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},
+       body:JSON.stringify({subjectType:'Universe',subjectId:'10773436325',action:'Use',
+         requests:[{assetId:Number(assetId),grantToDependencies:true}]})
+     });
+     if(grant.errors?.length)throw Error('FOREST_ICON_UNIVERSE_GRANT_FAILED:'+role);
+   }
    if(source.author){
      fs.mkdirSync('roblox-games/fantasy-survival/action-icons',{recursive:true});
      fs.writeFileSync('roblox-games/fantasy-survival/action-icons/'+role+'.png',source.bytes);
