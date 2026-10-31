@@ -40,14 +40,14 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'tree.fbx':['worldtreegolem','swampArrowTower'],
   'greendemon.fbx':['goblin','goblinCrossbow','goblinHeavy','goblinGeneral','crystalgoblin','flowergoblin'],
   'hog.glb':['mossboar','crystalboar','crystalboarjunior'],
-  'monster-18.obj':['ironibex','crystalibex','crystalgoat'],
+  'monster-18.obj':['ironibex','crystalibex','crystalgoat'], 'deer-real.glb':['crystaldeer'],
   'panda.fbx':['worldtreebear','crystalbear','polarbear','fearbear'],
   'bunny.glb':['foresthare'], 'chick.glb':['worldpheasant'],
   'monster-7.obj':['fairy'],
   'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
   'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb','sapdeer'],
   'monster-35.obj':['rootsovereign'],
-  'caterpillar.glb':['giantburrower','crystallizard','foreststag'], 'monster-31.obj':['sandwalker','mudwalker'],
+  'caterpillar.glb':['giantburrower','crystallizard'], 'deer.fbx':['foreststag'], 'monster-31.obj':['sandwalker','mudwalker'],
   'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc','crystalbiter'],
   'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
   'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish','shark'],
@@ -56,7 +56,7 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'tiger.glb':['jungletiger','jungletigerleader'],
   'yeti.fbx':['yetileader','yeticub','froststalker'], 'cat.glb':['polarfox'],
   'bee.fbx':['giantbee'], 'monster-15.obj':['thornmantis'],
-  'monster-53.obj':['giantspider','giantspiderling','giantVenomScorpion','crystaldeer'],
+  'monster-53.obj':['giantspider','giantspiderling','giantVenomScorpion'],
   // 원시인: 기존 CC0 인간형 3D 리그를 공유한다. 전투/능력은 변경하지 않는다.
   'barbarian.glb':['primitiveSpearman','primitiveArcher','swampPrimitiveSpearman','swampPrimitiveArcher','swampPrimitiveGuard']
 });
@@ -404,6 +404,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(e.hp<=0||e.area!==initialState.area||distance>1200)continue;
     const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
     if(file)initialFiles.set(file,Math.min(initialFiles.get(file)??Infinity,distance));
+    if(e.type?.id==='crystalbiter')for(const extra of ['monster-41.obj','monster-18.obj'])initialFiles.set(extra,Math.min(initialFiles.get(extra)??Infinity,distance));
   }
   const creaturesPromise=(async()=>{
     const ordered=[...initialFiles].sort((a,b)=>a[1]-b[1]).map(([file])=>file),limit=mobileBudget?6:10;
@@ -592,6 +593,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   }
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
+  // 수정 광맥은 기존 CC0 암석 메시와 별도 발광 재질로 입체 표시한다.
+  const crystalOreMaterial=new THREE.MeshStandardMaterial({color:0xac8dff,emissive:0x6544ba,emissiveIntensity:.68,roughness:.27,metalness:.14});
   // 마법탄은 실제 게임의 투사체 좌표만 보여주는 저폴리곤 3D 효과다. 피해·적중 판정은 게임 코드 소유.
   const mageBoltGeometry=new THREE.OctahedronGeometry(.18,0);
   const mageBoltMaterial=new THREE.MeshBasicMaterial({color:0xb5eaff,transparent:true,opacity:.95,depthWrite:false});
@@ -707,7 +710,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       acidBatch.frustumCulled=false;scene.add(acidBatch);
     }
     if(!acidBatch)return;
-    const scale=.19/Math.max(.001,source.geometry.boundingSphere?.radius||1);
+    const scale=.34/Math.max(.001,source.geometry.boundingSphere?.radius||1);
     for(let i=0;i<active.length;i++){
       const q=active[i];
       acidTransform.position.set(q.x*SCALE,.65,q.y*SCALE);
@@ -845,7 +848,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
       if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
       const kind=NATIVE_CREATURE_BY_ID.get(e.type?.id);
-      if(!kind||!nativeCreatureSources.has(kind)){
+      if(!kind||!nativeCreatureSources.has(kind)||(e.type?.id==='crystalbiter'&&(!nativeCreatureSources.has('monster-41.obj')||!nativeCreatureSources.has('monster-18.obj')))){
         if(e.type?.id!=='wastelandMummy'||!undeadSource){
           missingVisibleMonsterIds.add(e.type?.id||'unknown');
           // 화면 안의 모든 적이 원본 3D 모델로 표시된 뒤 게임을 시작한다.
@@ -861,8 +864,30 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       let actor=nativeCreatureActors.get(key);
       if(!actor){
         const source=nativeCreatureSources.get(kind);
-        const model=cloneAnimatedRig(source.model),scale=Math.max(.72,Math.min(3.8,
-          (Number(e.type?.r)||20)*SCALE*2.2))/source.height;
+        let model,scale;
+        if(e.type?.id==='crystalbiter'){
+          // CC0 골렘 몸체, 이중 독사 머리와 뿔 모델을 직접 결합한 거대 융합체.
+          // AI/충돌/공격/저장 수치는 기존 데이터만 참조한다.
+          model=new THREE.Group();
+          for(const part of [
+            {file:'monster-41.obj',span:1.6,x:-.27,y:0,z:0,yaw:0},
+            {file:'monster-26.obj',span:1.2,x:.57,y:.5,z:-.37,yaw:-.38},
+            {file:'monster-26.obj',span:1.05,x:.50,y:.35,z:.40,yaw:.39},
+            {file:'monster-18.obj',span:.8,x:-.67,y:.58,z:0,yaw:3.14}
+          ]){
+            const clone=cloneAnimatedRig(nativeCreatureSources.get(part.file).model);
+            const box=new THREE.Box3().setFromObject(clone),dimensions=new THREE.Vector3();
+            box.getSize(dimensions);
+            const factor=part.span/Math.max(.01,dimensions.x,dimensions.y,dimensions.z);
+            clone.scale.setScalar(factor);
+            clone.position.set(part.x-(box.min.x+box.max.x)*.5*factor,part.y-box.min.y*factor,part.z-(box.min.z+box.max.z)*.5*factor);
+            clone.rotation.y=part.yaw;model.add(clone);
+          }
+          scale=1.95;
+        }else{
+          model=cloneAnimatedRig(source.model);
+          scale=Math.max(.72,Math.min(3.8,(Number(e.type?.r)||20)*SCALE*2.2))/source.height;
+        }
         // 동일 CC0 원본을 재사용하되 기존 몹 정의 색상만 약하게 반영한다.
         // 지오메트리·리그·텍스처와 게임의 HP/공격/드롭/저장값은 그대로 둔다.
         const speciesId=e.type.id;
@@ -876,7 +901,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             let material=materials.get(original.uuid);
             if(!material){
               material=original.clone();
-              if(material.color)material.color.lerp(tint,.22);
+              if(material.color){
+                  material.color.lerp(tint,.22);
+                  if(speciesId==='crystalbiter'||e.type.crystalZone)material.color.lerp(tint,speciesId==='crystalbiter'?.45:.34);
+                }
+                if(speciesId==='crystalbiter'&&'emissive' in material){material.emissive=new THREE.Color(0x40135b);material.emissiveIntensity=.32;}
               if(child.geometry?.getAttribute('uv')&&'normalMap' in material){
                 const finish=(kind==='monster-41.obj'||speciesId==='crystaldeer')?'lego':
                   (speciesId==='sapdeer'||kind==='mushroom.fbx')?'soft':'micro';
@@ -893,7 +922,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             ?child.material.map(tintMaterial):tintMaterial(child.material);
         });
         model.scale.setScalar(scale);
-        model.position.y=-source.floor*scale;
+        model.position.y=e.type?.id==='crystalbiter'?0:-source.floor*scale;
         const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
         const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
         actor={anchor,model,mixer,clips:source.clips,clipName:'',action:null,
@@ -1041,32 +1070,34 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     row.seen=seen;
     if(!visualOnly)interactables.push(model);
   }
-  function resources(arr,kind,px,py,seen,scale=1){
+  function resources(arr,kind,px,py,seen,scale=1,visualType=kind){
     if(!Array.isArray(arr)||!models.has(kind))return;
-    const source=models.get(kind);
-    let batch=resourceBatches.get(kind);
+    const source=models.get(kind),material=visualType==='crystal'?crystalOreMaterial:source.material;
+    let batch=resourceBatches.get(visualType);
     if(!batch){
-      const mesh=new THREE.InstancedMesh(source.geometry,source.material,128);
+      const mesh=new THREE.InstancedMesh(source.geometry,material,128);
       mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;
-      batch={mesh,capacity:128,points:[]};scene.add(mesh);resourceBatches.set(kind,batch);
+      batch={mesh,capacity:128,points:[]};scene.add(mesh);resourceBatches.set(visualType,batch);
     }
     let count=0;
     for(const item of arr){
       if(!item||item.dead||Math.hypot(item.x-px,item.y-py)>Math.max(mobileBudget?250:430,(mobileBudget?650:1000)*qualityFactor))continue;
-      const key=kind+':'+String(item.id),variation=assetAppearanceFactor(key),size=scale*variation.scale;
+      const key=visualType+':'+String(item.id),variation=assetAppearanceFactor(key),size=scale*variation.scale;
       creatureBounds.center.copy(source.geometry.boundingSphere.center).multiplyScalar(size);
       creatureBounds.center.x+=item.x*SCALE;creatureBounds.center.z+=item.y*SCALE;
-      creatureBounds.radius=source.geometry.boundingSphere.radius*size;
+      creatureBounds.radius=source.geometry.boundingSphere.radius*size*(visualType==='crystal'?2.3:1);
       if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
       if(count===batch.capacity){
         const previous=batch.mesh;batch.capacity*=2;
-        batch.mesh=new THREE.InstancedMesh(source.geometry,source.material,batch.capacity);
+        batch.mesh=new THREE.InstancedMesh(source.geometry,material,batch.capacity);
         batch.mesh.castShadow=true;batch.mesh.receiveShadow=true;batch.mesh.frustumCulled=false;
         for(let i=0;i<count;i++){previous.getMatrixAt(i,resourceTransform.matrix);batch.mesh.setMatrixAt(i,resourceTransform.matrix)}
         scene.remove(previous);previous.dispose();scene.add(batch.mesh);
       }
-      resourceTransform.position.set(item.x*SCALE,0,item.y*SCALE);
-      resourceTransform.scale.setScalar(size);resourceTransform.rotation.y=variation.rotation*Math.PI/180;
+      resourceTransform.position.set(item.x*SCALE,visualType==='crystal'?.13:0,item.y*SCALE);
+      if(visualType==='crystal')resourceTransform.scale.set(size*.72,size*2.4,size*.72);
+      else resourceTransform.scale.setScalar(size);
+      resourceTransform.rotation.y=variation.rotation*Math.PI/180;
       resourceTransform.updateMatrix();batch.mesh.setMatrixAt(count,resourceTransform.matrix);
       const point=batch.points[count]||(batch.points[count]={});point.x=item.x;point.y=item.y;count++;
     }
@@ -1137,6 +1168,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
         }
         const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
+        if(e.type?.id==='crystalbiter')for(const extra of ['monster-41.obj','monster-18.obj']){
+          if(!nativeCreatureSources.has(extra)&&!creatureRequests.has(extra))needed.set(extra,Math.min(needed.get(extra)??Infinity,distance));
+        }
         if(!file||nativeCreatureSources.has(file)||creatureRequests.has(file))continue;
         const failed=creatureFailures.get(file);
         const retryDelay=failed?Math.min(60000,5000*2**Math.min(4,failed.attempts-1)):0;
@@ -1377,6 +1411,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(!isInterior)resources(state.trees,'tree',px,py,seen,1.28);
     if(!isInterior)resources(state.swampTrees,'tree_large',px,py,seen,1.65);
     if(!isInterior)resources(state.rocks,'cobblestones',px,py,seen,1.05);
+    if(!isInterior)resources(state.crystals,'cobblestones',px,py,seen,1.45,'crystal');
     if(!isInterior)resources(state.fibers,'foliage_A',px,py,seen,1.2);
     // Exact category match: original Tiny Treats benches for actual player-owned
     // crafting workstations, positioned at their existing authoritative coordinates.
@@ -1534,7 +1569,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     // 메인 · 모바일 3D 몬스터 터치는 실제 리그의 화면 투영 위치까지 검사한다.
     const projected=new THREE.Vector3();
-    let nearest=null,nearestDistance=52*52;
+    let nearest=null,nearestDistance=26*26;
     for(const actors of [nativeCreatureActors,undeadActors]){
       for(const actor of actors.values()){
         const target=actor.anchor.userData.worldPoint;
@@ -1593,7 +1628,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     scene.remove(biomeTiles);biomeTiles.dispose();
     scene.remove(floorSeamTiles);floorSeamTiles.dispose();
     for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
-    resourceBatches.clear();
+    resourceBatches.clear();crystalOreMaterial.dispose();
     for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
     sceneryBatches.clear();
     for(const {mesh} of interiorWalls.values()){scene.remove(mesh);mesh.dispose()}
