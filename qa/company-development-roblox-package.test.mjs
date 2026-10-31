@@ -1313,7 +1313,15 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/local function createMeadowVillage\(\)/);
   assert.match(server,/local function villageNativeNpc\(spec\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
-  assert.match(server,/local board=worldAsset\("villageStall",Vector3.new\(0,3,-101\),6\.6\)/);
+  // [마력숲 우물/의뢰 게시판] 기존 승인 CC0 모델을 쓰며 식탁형 접수소와 거대한 우물을 재도입하지 않는다.
+  assert.match(server,/\{"villageFountain",0,-146,2\.2,0\}/);
+  assert.match(server,/local propHeight=row\[1\]=="villageFountain" and row\[4\] or row\[4\]\*1\.3/);
+  assert.match(server,/local board=worldAsset\("villageWall",Vector3.new\(0,3,-101\),5\.2\)/);
+  assert.match(server,/local canopy=worldAsset\("villageRoofEnd",Vector3.new\(0,3,-101\),2\.6,4\.35\)/);
+  assert.match(server,/notices.Name="MeadowVillageNoticePapers"/);
+  assert.match(server,/paper.Name="ContractNotice_"\.\.index/);
+  assert.match(server,/villagePrompt\(board,"초원 마을 의뢰 접수소","의뢰 살펴보기",villageBoardDialogue\)/);
+  assert.doesNotMatch(server,/local board=worldAsset\("villageStall"/);
   assert.match(server,/MeadowVillageInteraction/);
   assert.match(server,/for contractIndex,contract in ipairs\(Config.VillageContracts\) do/);
   assert.match(server,/for sceneIndex,site in ipairs\(contract.Sites\) do/);
