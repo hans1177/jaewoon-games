@@ -7773,7 +7773,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-31T04:03:49.257Z",
+      "updatedAt": "2026-10-31T04:04:59.672Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9902,25 +9902,21 @@
       "robloxRuntimeLastObservationAttemptAt": "2026-10-31T00:11:56.919Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
-        "sessionId": "41165133278:fantasy-survival:41164724354:41164724354",
-        "workflowRunId": 41165133278,
+        "sessionId": "41166968370:fantasy-survival:41166369256:41166369256",
+        "workflowRunId": 41166968370,
         "workflowRunAttempt": 1,
-        "controlRevision": "4d8b1602b8366bd341f6ddc5073efdcdd7531c76",
+        "controlRevision": "0c191dee8c2427755a9236626ec16f53c8e5b4b1",
         "gameId": "fantasy-survival",
-        "sourceRevision": "c2b389853fee2eba59efe559757babc8ba234b8e",
-        "artifactIdentity": "sha256:45e15e954014a6bdd4586958c04acb8522b9d40e8d3c139f4d85cb905135541b",
-        "artifactRunId": 41164724354,
-        "candidateVersionNumber": 41164724354,
-        "status": "COMPLETED_PRODUCT_FAILURE",
-        "queuedAt": "2026-10-31T03:39:06.887Z",
+        "sourceRevision": "0c191dee8c2427755a9236626ec16f53c8e5b4b1",
+        "artifactIdentity": "sha256:20204805a8a17b1776ec7ab2b2b9af18c6cfff1e71bb2b09ea3cc88e467eca88",
+        "artifactRunId": 41166369256,
+        "candidateVersionNumber": 41166369256,
+        "status": "QUEUED_FOR_STUDIO",
+        "queuedAt": "2026-10-31T04:04:59.672Z",
         "interruptionRetryCount": 0,
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
-        "companyRuntimeAuthoritative": true,
-        "completedAt": "2026-10-31T03:44:05.226Z",
-        "resultPass": false,
-        "infrastructureFailure": false,
-        "currentSourceArtifactBinding": true
+        "companyRuntimeAuthoritative": true
       },
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
@@ -10833,7 +10829,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-31T04:04:09.334Z",
+  "updatedAt": "2026-10-31T04:04:59.672Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
