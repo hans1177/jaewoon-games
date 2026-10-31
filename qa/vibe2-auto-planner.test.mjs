@@ -216,7 +216,7 @@ test('backlog preserves existing game-primary reservation and confines focused r
 });
 
 
-test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{
+test('older owner focus never resurrects deleted Simple RPG and preserves surviving Web sources',()=>{
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
     .developmentLifecycleMachine.focusedDevelopmentCaretakers;
@@ -225,12 +225,11 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
     'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'
   });
   const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
-  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
-    'later owner focus must actually remove the old permanent blocker');
+  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),true,
+    'later explicit owner deletion must override outdated focused-game roster');
   const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
-  assert.ok(realProjects.some(project=>project.gameId==='simple-rpg'&&project.engine==='roblox'
-    &&focusedCaretakerProject(project,repoRoot)),
-    'the actual canonical catalog and Rojo source must activate Simple RPG, not just a test fixture');
+  assert.equal(realProjects.some(project=>project.gameId==='simple-rpg'),false,
+    'deleted game must not return through a stale owner focus roster');
   for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
     assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
       'other owner permanent removals must remain protected');
@@ -259,7 +258,7 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   const selected=projects.filter(project=>focusedCaretakerProject(project,repoRoot))
     .map(project=>project.gameId+'|'+project.engine).sort();
   assert.deepEqual(selected,[
-    'cozy-island|web','insect-survival|web','simple-rpg|roblox'
+    'cozy-island|web','insect-survival|web'
   ]);
   assert.ok(projects.some(project=>project.gameId==='insect-survival'&&project.engine==='roblox'
     &&!focusedCaretakerProject(project,repoRoot)),
