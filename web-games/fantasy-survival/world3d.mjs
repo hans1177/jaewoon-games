@@ -44,7 +44,9 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'panda.fbx':['worldtreebear','crystalbear','polarbear','fearbear'],
   'bunny.glb':['foresthare'], 'chick.glb':['worldpheasant'],
   'monster-7.obj':['fairy'],
-  'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
+  'monster-56.obj':['sandSpirit'],
+  // 철 정령: 벌레 원본 대신 기존 CC0 Quaternius 공중 골렘 모션 사용.
+  'party/golem.glb':['ironspirit','crystalironspirit'],
   'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb','sapdeer'],
   'monster-35.obj':['rootsovereign'],
   'caterpillar.glb':['giantburrower','crystallizard','foreststag'], 'monster-31.obj':['sandwalker','mudwalker'],
@@ -322,7 +324,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     creatureRequests.set(file,true);loadingCreatureCount++;
     try{
       const url=file==='skeleton-warrior.glb'?UNDEAD_URL:
-        file==='barbarian.glb'?new URL('../../assets/roblox/actors/native/barbarian.glb',import.meta.url):new URL(file,CREATURE_SOURCE);
+        file==='barbarian.glb'?new URL('../../assets/roblox/actors/native/barbarian.glb',import.meta.url):
+         file==='party/golem.glb'?new URL('../../assets/shared/party/golem.glb',import.meta.url):new URL(file,CREATURE_SOURCE);
       let model,clips=[];
       if(file.endsWith('.fbx')){
         // 기존 FBX 원본이 모바일 네트워크 로더에서 실패하면 동일한 바이트를 직접 파싱한다.
@@ -656,6 +659,55 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const crystalBodyMaterial=new THREE.MeshStandardMaterial({color:0xc1a0ff,emissive:0x7844c9,emissiveIntensity:.65,metalness:.24,roughness:.28});
   // 메인 · 3D 도감 이름표: 등록한 종에만 기존 몬스터 머리 위 이름을 표시한다.
   const nameTextures=new Map();
+  // [철 정령] 기존 CC0 공중 골렘 위에 부착하는 큰 철제 얼굴 그림.
+  // 원형/상자 3D 대체 파츠를 만들지 않고 기존 SpriteMaterial 기반 눈 표현을 재사용한다.
+  const ironSpiritFaceTextures=new Map();
+  function ironSpiritFaceTexture(speciesId){
+    let texture=ironSpiritFaceTextures.get(speciesId);
+    if(texture)return texture;
+    const crystal=speciesId==='crystalironspirit',surface=document.createElement('canvas');
+    surface.width=512;surface.height=384;
+    const pen=surface.getContext('2d');
+    // 머리: 작은 몸체보다 큰 다각형 철제 두상, 두꺼운 강철 테두리와 마모된 면.
+    pen.lineJoin='round';pen.lineWidth=15;pen.strokeStyle=crystal?'#4c4678':'#354653';
+    pen.fillStyle=crystal?'#8f95c5':'#7c8f9f';
+    pen.beginPath();pen.moveTo(116,44);pen.lineTo(391,44);pen.lineTo(456,111);
+    pen.lineTo(443,276);pen.lineTo(365,346);pen.lineTo(145,346);
+    pen.lineTo(65,276);pen.lineTo(57,114);pen.closePath();pen.fill();pen.stroke();
+    pen.lineWidth=5;pen.strokeStyle=crystal?'#d8d6ff':'#e5f1fb';
+    pen.beginPath();pen.moveTo(118,94);pen.lineTo(157,71);pen.lineTo(349,71);pen.lineTo(390,95);pen.stroke();
+    // 중앙 금속 이음새와 두꺼운 볼 장갑. 곤충 다리, 더듬이, 날개 없음.
+    pen.fillStyle=crystal?'#b3b5e3':'#b8c6d1';
+    pen.beginPath();pen.moveTo(103,125);pen.lineTo(160,94);pen.lineTo(360,94);
+    pen.lineTo(413,132);pen.lineTo(398,271);pen.lineTo(345,311);
+    pen.lineTo(167,311);pen.lineTo(113,267);pen.closePath();pen.fill();
+    pen.fillStyle='#293745';pen.fillRect(247,112,18,35);
+    pen.strokeStyle=crystal?'#625d9d':'#5b7080';pen.lineWidth=9;
+    pen.beginPath();pen.moveTo(114,282);pen.lineTo(155,315);pen.moveTo(398,282);pen.lineTo(355,315);pen.stroke();
+    // 눈: 크고 선명한 파란색, 눈썹은 미간을 향해 내려가는 화난 표정.
+    pen.shadowColor='#008cff';pen.shadowBlur=24;pen.fillStyle='#36aeff';
+    pen.beginPath();pen.moveTo(138,169);pen.lineTo(238,198);pen.lineTo(226,265);
+    pen.lineTo(158,249);pen.closePath();pen.fill();
+    pen.beginPath();pen.moveTo(374,169);pen.lineTo(274,198);pen.lineTo(286,265);
+    pen.lineTo(354,249);pen.closePath();pen.fill();
+    pen.shadowBlur=0;pen.lineWidth=10;pen.strokeStyle='#e5faff';
+    pen.beginPath();pen.moveTo(158,247);pen.lineTo(225,264);pen.moveTo(354,247);pen.lineTo(287,264);pen.stroke();
+    pen.strokeStyle='#263443';pen.lineWidth=28;pen.lineCap='round';
+    pen.beginPath();pen.moveTo(122,144);pen.lineTo(229,184);
+    pen.moveTo(390,144);pen.lineTo(283,184);pen.stroke();
+    pen.lineWidth=8;pen.strokeStyle='#f4f9ff';pen.lineCap='butt';
+    pen.beginPath();pen.moveTo(148,135);pen.lineTo(211,158);
+    pen.moveTo(364,135);pen.lineTo(301,158);pen.stroke();
+    // 살짝 삐친 작은 입. 큰 머리/작은 몸집의 귀여운 실루엣 유지.
+    pen.lineWidth=12;pen.strokeStyle='#324554';pen.lineCap='round';
+    pen.beginPath();pen.moveTo(218,299);pen.lineTo(294,299);pen.stroke();
+    texture=new THREE.CanvasTexture(surface);
+    texture.colorSpace=THREE.SRGBColorSpace;
+    texture.magFilter=THREE.LinearFilter;
+    texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
+    ironSpiritFaceTextures.set(speciesId,texture);
+    return texture;
+  }
   function syncBestiaryName(actor,e,state,height){
     // Only a genuinely registered species has a label, including after save reset.
     if(!state.bestiary?.[e.type?.id]){
@@ -844,7 +896,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     crystalboar:[1.2,1.15,1.06],crystalboarjunior:[.83,.82,1],crystalbear:[1.22,1.34,1.08],
     polarbear:[1.28,1.2,1.05],fearbear:[1.14,.86,1.31],crystalgoat:[.93,1.23,1.05],
     crystalibex:[1.13,1.18,.98],crystalfiresnake:[1.09,1.1,1.25],crystalgoblin:[.92,1.12,.98],
-    crystalironspirit:[.9,1.24,.91],sandSpirit:[1.24,.9,.90]
+    ironspirit:[.60,.68,.60],crystalironspirit:[.68,.76,.68],sandSpirit:[1.24,.9,.90]
     }));
     // 모바일 화질 축소는 해상도와 그림자만 조절하고, 시야 안의 몹은 제거하지 않는다.
     missingVisibleMonsterIds.clear();
@@ -887,6 +939,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             if(!material){
               material=original.clone();
               if(material.color){material.color.lerp(tint,.22);material.color.lerp(tint,speciesId.startsWith('crystal')?.60:.29);}
+               if(speciesId==='ironspirit'||speciesId==='crystalironspirit'){
+                 // 원본 공중 골렘의 모션/지오메트리는 그대로 두고 표면만 철 재질로 마감.
+                 material.map=null;
+                 material.color?.set(speciesId==='ironspirit'?'#a4b2bc':'#a0a9d0');
+                 if(typeof material.metalness==='number')material.metalness=.44;
+                 if(typeof material.roughness==='number')material.roughness=.37;
+                 material.needsUpdate=true;
+               }
               if(child.geometry?.getAttribute('uv')&&'normalMap' in material){
                 const finish=(kind==='monster-41.obj')?'lego':
                   (speciesId==='sapdeer'||kind==='mushroom.fbx')?'soft':'micro';
@@ -902,10 +962,26 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           child.material=Array.isArray(child.material)
             ?child.material.map(tintMaterial):tintMaterial(child.material);
         });
+        // [철 정령] 원본 골렘의 머리 본이 있으면 몸체보다 크게 키운다.
+        if(speciesId==='ironspirit'||speciesId==='crystalironspirit')
+          model.traverse(part=>{if(part.isBone&&/head/i.test(part.name))part.scale.multiplyScalar(1.45)});
         const profile=CREATURE_VISUAL_PROPORTIONS[speciesId]||[1,1,1];
         if(model.scale.set)model.scale.set(scale*profile[0],scale*profile[1],scale*profile[2]);else model.scale.setScalar(scale);
         model.position.y=-source.floor*scale*profile[1];
         const anchor=new THREE.Group();anchor.add(model);
+        let ironFace=null;
+        if(speciesId==='ironspirit'||speciesId==='crystalironspirit'){
+          const bodyHeight=Math.max(.9,(Number(e.type?.r)||18)*SCALE*2.2);
+          const headHeight=bodyHeight*1.38;
+          ironFace=new THREE.Sprite(new THREE.SpriteMaterial({
+            map:ironSpiritFaceTexture(speciesId),transparent:true,
+            depthTest:false,depthWrite:false,toneMapped:false
+          }));
+          ironFace.scale.set(headHeight*1.13,headHeight*.85,1);
+          ironFace.position.set(0,bodyHeight*.85,bodyHeight*.20);
+          ironFace.renderOrder=14;
+          anchor.add(ironFace);
+        }
         // 수정 바이터는 하나의 진짜 적이지만 외형은 정품 뱀 리그 3개가 융합된 거대한 괴체.
         if(speciesId==='crystalbiter'){
           const height=Math.max(1.6,(Number(e.type.r)||20)*SCALE*2.2)*profile[1];
@@ -941,7 +1017,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         scene.add(anchor);
         const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
         actor={anchor,model,mixer,clips:source.clips,clipName:'',action:null,
-          lastFrame:performance.now(),seen:0};
+          ironFace,lastFrame:performance.now(),seen:0};
         nativeCreatureActors.set(key,actor);
       }
 
@@ -974,7 +1050,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const attackAge=poseNow-(Number(e.attackAt)||0);
       const attacking=Number(e.attackAt)>0&&attackAge>=0&&attackAge<430;
       actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
-      actor.anchor.position.y=moving?.016*Math.sin(poseNow/110):.006*Math.sin(poseNow/410);
+      actor.anchor.position.y=(e.type?.id==='ironspirit'||e.type?.id==='crystalironspirit')
+        ? .22+.095*Math.sin(poseNow/285) : moving?.016*Math.sin(poseNow/110):.006*Math.sin(poseNow/410);
       const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
       actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       // [액션] 종별 실제 리그에서 공격/물기/베기 클립을 찾고 허위 공격 재생을 금지한다.
@@ -1031,7 +1108,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         }
       }
       actor.mixer?.stopAllAction();
-      scene.remove(actor.anchor);actor.nameLabel?.material.dispose();nativeCreatureActors.delete(key);
+      scene.remove(actor.anchor);actor.nameLabel?.material.dispose();actor.ironFace?.material.dispose();nativeCreatureActors.delete(key);
     }
     return unsafeUnmappedEncounter;
   }
@@ -1617,8 +1694,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       hero.model.traverse(object=>{if(object.isMesh){object.geometry?.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];for(const mat of mats)mat?.dispose()}})}
     for(const actor of undeadActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor);actor.nameLabel?.material.dispose()}
     undeadActors.clear();
-    for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor);actor.nameLabel?.material.dispose()}
+    for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor);actor.nameLabel?.material.dispose();actor.ironFace?.material.dispose()}
     nativeCreatureActors.clear();
+    for(const texture of ironSpiritFaceTextures.values())texture.dispose();
+    ironSpiritFaceTextures.clear();
     for(const texture of nameTextures.values())texture.dispose();
     crystalBodyMaterial.dispose();
     nameTextures.clear();
