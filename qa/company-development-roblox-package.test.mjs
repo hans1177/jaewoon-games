@@ -1892,9 +1892,9 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/local elbow=math\.clamp\(\(phase-\.018\)\/\.105,0,1\)/);
   assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.14\*guard/);
   assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.38\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.21\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-2\.60\*guard/);
   assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-\.70\*elbow/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.55\*elbow/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.05\*elbow/);
   assert.doesNotMatch(client,/local ease=math\.sin\(math\.pi\*phase\)/);
   // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
@@ -1955,12 +1955,12 @@ test('fantasy guard holds a full pose and dodges blend smoothly without changing
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
   assert.match(client,/elseif isGuard or isParry then/);
   // [한손 복싱 막기] 오른 주먹만 높이고 왼쪽 팔은 낮춘다. 무장 막기와 패링은 보존한다.
-  assert.match(client,/if isGuard and not skillMotionCharacter:FindFirstChildOfClass\("Tool"\) then/);
+  assert.match(client,/if isGuard then/);
   assert.match(client,/local guard=rise\*release/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.12\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.24\*guard/);
-  assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles\(\.12\*guard/);
-  assert.match(client,/skillMotionTargets\.ShinL=CFrame\.Angles\(\.19\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.38\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-2\.60\*guard/);
+  assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles\(\.17\*crouch/);
+  assert.match(client,/skillMotionTargets\.ShinL=CFrame\.Angles\(\.20\*crouch/);
   assert.match(client,/RunService\.PreSimulation:Connect\(function\(dt\)/);
   assert.match(client,/followAnimator=true,response=23/);
   assert.match(client,/joint:IsA\("AnimationConstraint"\) or joint:IsA\("Motor6D"\)/);
