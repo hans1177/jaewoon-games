@@ -1960,7 +1960,7 @@ meadowSkillDock.Parent=gui
 -- 외부 CC0 등록 아틀라스의 실제 의미가 맞는 아이콘만 매칭한다.
 local meleeSkills={
   {"meadow-unarmed-rush","연타",Color3.fromRGB(243,87,46),0,2},
-  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,nil},
+  {"skill-meadow-dodge-left","회피",Color3.fromRGB(246,179,73),nil,4},
   {"skill-meadow-guard","막기",Color3.fromRGB(71,160,246),1,3},
   {"skill-meadow-heal","물약",Color3.fromRGB(224,85,94),nil,nil},
 }
@@ -2082,14 +2082,32 @@ local function paintMeadowActionArt(button,role,tint)
     limb("FingerThree",.59,.13,.12,.37,5)
     limb("FingerFour",.71,.26,.11,.28,12)
     limb("Wrist",.39,.81,.33,.17,0)
+  elseif role=="POTION" then
+    -- 이모지 폰트마다 색과 모양이 달라지는 문제 없이 붉은 회복 병을 표시한다.
+    local neck=limb("BottleNeck",.37,.25,.27,.18,0)
+    neck.BackgroundColor3=Color3.fromRGB(210,221,229)
+    local liquid=limb("RedHealingPotion",.16,.40,.68,.51,0)
+    local outline=Instance.new("UIStroke")
+    outline.Color=Color3.fromRGB(244,225,213)
+    outline.Thickness=1.8
+    outline.Parent=liquid
+    local glow=Instance.new("UIGradient")
+    glow.Color=ColorSequence.new(Color3.fromRGB(255,125,118),Color3.fromRGB(150,19,45))
+    glow.Rotation=135
+    glow.Parent=liquid
+    local shine=limb("GlassShine",.27,.48,.13,.27,-12)
+    shine.BackgroundColor3=Color3.fromRGB(255,218,210)
+    local cap=limb("BottleCork",.31,.11,.38,.18,0)
+    cap.BackgroundColor3=Color3.fromRGB(189,131,73)
   end
 end
 -- [시안 원본 버튼 자산] 승인된 이미지 등록 후 오른쪽 7개 버튼에 시안 원본을 적용.
 local function applyMeadowRightActionImage(button,slot)
   if not slot or meadowRightActionAtlas=="" then return false end
-  button.BackgroundTransparency=1
+  -- 원본 작은 스프라이트 바깥 가장자리는 숨기고 Roblox 네이티브 원형 테두리로 표시한다.
+  button.BackgroundTransparency=0
   local rim=button:FindFirstChild("GoldSkillRim")
-  if rim then rim.Enabled=false end
+  if rim then rim.Enabled=true;rim.Thickness=1.8 end
   local inner=button:FindFirstChild("PolishedInnerRing")
   if inner then inner.Visible=false end
   local sprite=Instance.new("ImageLabel")
@@ -2101,7 +2119,7 @@ local function applyMeadowRightActionImage(button,slot)
   sprite.ScaleType=Enum.ScaleType.Fit
   sprite.AnchorPoint=Vector2.new(.5,.5)
   sprite.Position=UDim2.fromScale(.5,.5)
-  sprite.Size=UDim2.fromScale(1.07,1.07)
+  sprite.Size=UDim2.fromScale(.91,.91)
   sprite.ZIndex=20
   sprite.Parent=button
   return true
@@ -2130,19 +2148,9 @@ for index,skill in ipairs(meleeSkills)do
     icon.Parent=button
     -- 어퍼컷은 CC0 장갑 원본, 막기는 CC0 방패 원본을 사용한다.
   end
-  -- 사람형 회피 그림은 제거한다. 발자국과 물약은 그 자체의 의미만 보여 준다.
-  if index==2 or index==4 then
-    local glyph=Instance.new("TextLabel")
-    glyph.Name=index==2 and "FootDodgeIcon" or "HealingPotionIcon"
-    glyph.BackgroundTransparency=1
-    glyph.Text=index==2 and "🦶" or "🧪"
-    glyph.Font=Enum.Font.GothamBold
-    glyph.TextSize=index==2 and 31 or 29
-    glyph.TextColor3=Color3.fromRGB(255,246,229)
-    glyph.Position=UDim2.fromScale(0,.04)
-    glyph.Size=UDim2.fromScale(1,.75)
-    glyph.ZIndex=20
-    glyph.Parent=button
+  -- 회피는 승인된 기존 이미지 4번을 직접 사용한다. 회복은 붉은 물약으로 명확히 구분한다.
+  if index==4 then
+    paintMeadowActionArt(button,"POTION",Color3.fromRGB(221,42,57))
   end
   applyMeadowRightActionImage(button,skill[5])
   local nameplate=Instance.new("TextLabel")
@@ -2551,6 +2559,19 @@ north.TextSize=12
 north.Font=Enum.Font.GothamBold
 north.ZIndex=11
 north.Parent=radarField
+-- [나침반] S 표시를 미니맵 원의 정중앙 하단에 고정한다.
+local south=Instance.new("TextLabel")
+south.Name="South"
+south.AnchorPoint=Vector2.new(.5,1)
+south.Position=UDim2.new(.5,0,1,-2)
+south.Size=UDim2.fromOffset(16,16)
+south.BackgroundTransparency=1
+south.Text="S"
+south.TextColor3=Color3.fromRGB(242,216,154)
+south.TextSize=12
+south.Font=Enum.Font.GothamBold
+south.ZIndex=11
+south.Parent=radarField
 local radarCenter=Instance.new("TextLabel")
 radarCenter.Name="Facing"
 radarCenter.BackgroundTransparency=1
@@ -2829,11 +2850,13 @@ local function layoutMeadowRadar()
   -- [상단 우측 미니맵] 화면 안전 영역 맨 위에 지도를 붙이고 아래에 지역명·작은 좌표만 놓는다.
   local mapDiameter=compactLandscape and 100 or small and 106 or math.floor(math.clamp(v.Y*.24,110,170))
   meadowRadar.Size=UDim2.fromOffset(mapDiameter+14,mapDiameter+40)
-  -- 주먹 버튼 중심 X와 미니맵 원 중심 X를 수직으로 정렬한다. 상단 Y=0은 유지.
-  local fist=meadowSkillButtons[1]
-  local fistCenterX=meadowSkillDock.AbsolutePosition.X+fist.Position.X.Offset+fist.Size.X.Offset*.5
+  -- [미니맵] 남쪽 S 중심을 회피(발) 버튼 중심의 수직선에 정확히 일치시킨다.
+  -- 절대 좌표는 처음 로딩 중 0으로 나올 수 있으므로 화면·도크와 동일한 상대 배치식을 쓴다.
+  local landscape=v.X>v.Y
+  local scale=landscape and math.clamp(v.Y/315,.76,1.12) or math.clamp(v.X/390,.76,1)
+  local dodgeCenterX=235*meadowTopPositions[2][1]
   meadowRadar.AnchorPoint=Vector2.new(.5,0)
-  meadowRadar.Position=UDim2.fromOffset(math.floor(fistCenterX),0)
+  meadowRadar.Position=UDim2.new(1,math.floor((dodgeCenterX-237)*scale),0,0)
   radarField.AnchorPoint=Vector2.new(.5,0)
   radarField.Position=UDim2.new(.5,0,0,1)
   radarField.Size=UDim2.fromOffset(mapDiameter,mapDiameter)
