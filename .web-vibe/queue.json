@@ -142,13 +142,14 @@
         "owner-source-authenticated",
         "qa-required-before-pr-merge",
         "web-vibe-recovery-failure:needs-source-or-provider-recheck",
-        "web-vibe-owner-retry-approved-2026-10-27-checkout-and-large-source-repair"
+        "web-vibe-owner-retry-approved-2026-10-27-checkout-and-large-source-repair",
+        "web-vibe-provider-cooldown:source-retry-budget-preserved"
       ],
       "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-10-30T22:25:37.011Z",
-      "recoveryNextAt": "2026-10-30T23:25:37.011Z",
+      "recoveryLastFailureAt": "2026-10-31T01:42:45.459Z",
+      "recoveryNextAt": "2026-10-31T01:43:45.103Z",
       "blocker": null,
-      "recoveryFailureClass": "SOURCE_OR_UNCLASSIFIED"
+      "recoveryFailureClass": "PROVIDER_COOLDOWN"
     },
     {
       "id": "pwa-b61ca5fe-1c8d-4cd5-8db9-282026102801",
