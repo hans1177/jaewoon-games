@@ -28,10 +28,10 @@ test('15 distinct non-gameplay motion craft axes exist in native Roblox library'
   }
   assert.match(native,/gameplayAuthority=false/);
   assert.match(native,/rootMotionOwned=false/);
-  const s=fs.readFileSync('roblox-games/simple-rpg/client/Game.client.luau','utf8');
+  // [오너 삭제 이후] 기존 공용 포즈는 살아 있는 마력숲의 실제 R15 액션으로 확인한다.
   const fantasy=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
-  assert.match(s,/commonMotion\.RefineActorCinematicPose\(motionTargets/);
   assert.match(fantasy,/combatMotionSource\.RefineActorCinematicPose\(combatPoseTargets/);
+  assert.match(fantasy,/combatMotionSource\.MapCombatPoseToR15\(combatPoseTargets/);
 });
 test('no model, no unverified source score, and no self-certifying evolution',()=>{
   assert.equal(validateMotionEvolutionEvidence({}).pass,false);
