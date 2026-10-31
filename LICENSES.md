@@ -300,9 +300,9 @@
 
 ## 마력숲 전투 아이콘
 
-- 외부 PNG 출처: https://game-icons.net (CC BY 3.0, 상업 이용 가능, 저작자 표시 필수)
-- Lorc: punch-blast / grab / sprint
-- DarkZaitzev: acrobatic
-- Delapouite: attached-shield
-- 원본 PNG 및 SHA-256 증빙: roblox-games/fantasy-survival/action-icons 및 CC0-ASSET-REGISTRY.json (등록 후)
+- 외부 PNG 출처: https://game-icons.net (CC BY 3.0, 상업 이용 가능, 저작자 표시 필수).
+- 현재 등록된 구형 아이콘: Lorc punch-blast / grab / sprint, DarkZaitzev acrobatic, Delapouite attached-shield.
+- **A안 교체 소스(실제 등록 대기):** Lorc fulguro-punch (연속 타격 속도감), Lorc dodging (몸으로 피하기), Lorc boxing-glove (한손 복싱 가드).
+- 출처/개별 라이선스: https://game-icons.net/1x1/lorc/fulguro-punch.html / https://game-icons.net/1x1/lorc/dodging.html / https://game-icons.net/1x1/lorc/boxing-glove.html
+- 기존 등록 자산이 자동으로 교체됐다는 뜻은 아님. 실제 업로드 후 등록 ID·SHA·유니버스 권한을 CC0-ASSET-REGISTRY.json 및 원본 PNG로 증명해야 한다.
 - 물약(potion)과 가방(bag)은 기존 Drummyfish CC0 등록 이미지 유지.
