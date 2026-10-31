@@ -56,8 +56,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "VIBE_INTERNAL_PLAY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -83,7 +83,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-30T23:59:40.663Z",
+      "updatedAt": "2026-10-31T00:04:48.119Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -844,7 +844,7 @@
       },
       "robloxDedicatedExperiencePublished": false,
       "robloxSourceCommit": "bbd9ef1b84046a6afac8745e2eaa65feb4bfeb9d",
-      "robloxSourceBootstrapPassedAt": "2026-10-30T23:06:44.090Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-31T00:04:48.119Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -5220,8 +5220,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "VIBE_INTERNAL_PLAY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -5247,7 +5247,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-30T23:59:40.663Z",
+      "updatedAt": "2026-10-31T00:04:48.119Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5969,7 +5969,7 @@
         "authority": "owner-dedicated-roblox-experience-bootstrap"
       },
       "robloxDedicatedExperiencePublished": false,
-      "robloxSourceBootstrapPassedAt": "2026-10-30T21:34:28.238Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-31T00:04:48.119Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -7773,7 +7773,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-31T00:03:38.526Z",
+      "updatedAt": "2026-10-31T00:04:48.119Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7784,7 +7784,7 @@
       },
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "024a781213da0a341f554a89a43b5d68abbe9929",
-      "robloxSourceBootstrapPassedAt": "2026-10-31T00:03:38.526Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-31T00:04:48.119Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -7796,389 +7796,14 @@
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "fantasy-survival",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-10-30T23:56:04.760Z",
-        "sourceRevision": "9d800a0f3f0128dde900defa52e3519ac3dcbce8",
-        "artifactIdentity": "sha256:19aa2b95b9f16d32a53e799585e156e90c56b6e5ed7b730dc9906baa9a798c24",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "gemini-3.8-flash",
-            "graphics": "gemini-3.8-flash",
-            "development": "gemini-3.8-flash",
-            "qa": "gemini-3.8-flash",
-            "balance": "gemini-3.8-flash"
-          },
-          "sharedModel": "gemini-3.8-flash",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "robloxLaneEligible": true,
-          "directRoblox": true,
-          "concurrentRoblox": false,
-          "build": {
-            "sourceRevision": "9d800a0f3f0128dde900defa52e3519ac3dcbce8",
-            "artifactIdentity": "sha256:19aa2b95b9f16d32a53e799585e156e90c56b6e5ed7b730dc9906baa9a798c24",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "gemini-3.5-flash-lite",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "All deterministic build evidence and source eligibility checks have passed successfully for the immutable Roblox package."
-          }
-        ],
-        "blockers": [],
-        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
-        "authority": "roblox-exact-package-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": {
-        "version": 5,
-        "gameId": "fantasy-survival",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-30T23:56:05.508Z",
-        "sourcePath": "roblox-games/fantasy-survival",
-        "sourceRevision": "9d800a0f3f0128dde900defa52e3519ac3dcbce8",
-        "artifactIdentity": "sha256:19aa2b95b9f16d32a53e799585e156e90c56b6e5ed7b730dc9906baa9a798c24",
-        "rebuiltArtifactIdentity": "sha256:19aa2b95b9f16d32a53e799585e156e90c56b6e5ed7b730dc9906baa9a798c24",
-        "artifactRunId": 41146748858,
-        "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
-        "assetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
-        "observedAssetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
-        "assetLibraryVersion": 145,
-        "observedAssetLibraryVersion": 145,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "HYBRID",
-        "saveExists": true,
-        "multiplayerApplicable": true,
-        "sourcePreflightPassed": true,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "fantasy-survival",
-          "pass": true,
-          "blockers": [],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "GATHERING",
-            "WAVE",
-            "EQUIPMENT",
-            "PROGRESSION",
-            "QUEST",
-            "BOSS",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": true,
-            "SESSION_FLOW": true,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "COMBAT": true,
-            "ENEMY_AI": true,
-            "GATHERING": true,
-            "WAVE": true,
-            "EQUIPMENT": true,
-            "PROGRESSION": true,
-            "QUEST": true,
-            "BOSS": true,
-            "SAVE": true,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": true
-          },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-              "capabilities": [
-                "COMBAT",
-                "EQUIPMENT",
-                "PROGRESSION"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "BOSS"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "마력숲 생존기",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "name": "제작과 방어 거점 관리 × 공성전",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "EQUIPMENT"
-              ],
-              "pass": true
-            },
-            {
-              "index": 3,
-              "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT"
-              ],
-              "pass": true
-            }
-          ],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 0,
-            "meshConstructionCount": 2,
-            "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 0,
-            "meaningfulGameplayFunctionCount": 11
-          },
-          "studioQualitySheet": {
-            "Core": "PLAYABLE",
-            "Content": "PLAYABLE",
-            "World": "POLISHED",
-            "Combat": "PLAYABLE",
-            "AI": "PLAYABLE",
-            "Progression": "PLAYABLE",
-            "UI": "POLISHED",
-            "Graphics": "POLISHED",
-            "Motion": "POLISHED",
-            "Audio": "POLISHED",
-            "Mobile": "POLISHED",
-            "Performance": "PLAYABLE",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": true,
-              "signalCount": 5,
-              "pass": true
-            },
-            "combatFeel": {
-              "applicable": true,
-              "signalCount": 5,
-              "pass": true
-            },
-            "worldTopology": {
-              "applicable": true,
-              "signalCount": 3,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 5,
-              "pass": true
-            },
-            "midLateGame": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": true
-            },
-            "systemConnections": {
-              "rows": [
-                {
-                  "id": "EQUIPMENT_TO_COMBAT",
-                  "pass": true
-                },
-                {
-                  "id": "QUEST_TO_PROGRESSION",
-                  "pass": true
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
-              "pass": true
-            },
-            "placeholder": {
-              "pass": true,
-              "primitiveConstructionCount": 0,
-              "meshConstructionCount": 2,
-              "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 0,
-              "meaningfulGameplayFunctionCount": 11
-            },
-            "criticalGaps": [],
-            "f9SourceQualityReady": true
-          },
-          "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "22a6877db4c24dc7b088773d299c5a95a7d0fb0827709de7ffb8000e02db75e6",
-          "antiSkeletonPassed": true,
-          "designGenre": "Survival",
-          "sourceGenre": "Survival",
-          "preservedSourceGenreContractVerified": false,
-          "preservedSourceGenreAcceptance": null,
-          "designPlayMode": "HYBRID",
-          "sourcePlayMode": "HYBRID"
-        },
-        "studioQualitySheet": {
-          "Core": "PLAYABLE",
-          "Content": "PLAYABLE",
-          "World": "POLISHED",
-          "Combat": "PLAYABLE",
-          "AI": "PLAYABLE",
-          "Progression": "PLAYABLE",
-          "UI": "POLISHED",
-          "Graphics": "POLISHED",
-          "Motion": "POLISHED",
-          "Audio": "POLISHED",
-          "Mobile": "POLISHED",
-          "Performance": "PLAYABLE",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": true,
-          "f0SourceIntegrity": true
-        },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
+      "robloxHeadlessFastMvpEvidence": null,
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": {
-        "version": 1,
-        "gameId": "fantasy-survival",
-        "platform": "ROBLOX",
-        "sourceRevision": "9d800a0f3f0128dde900defa52e3519ac3dcbce8",
-        "artifactIdentity": "sha256:19aa2b95b9f16d32a53e799585e156e90c56b6e5ed7b730dc9906baa9a798c24",
-        "artifactRunId": 41146748858,
-        "universeId": "10773436325",
-        "placeId": "108565970231899",
-        "foundationF0Passed": true,
-        "published": true,
-        "releaseClaim": false,
-        "canonicalGameTarget": false,
-        "validationOnly": true,
-        "exposure": "PRIVATE_PRE_F9_VALIDATION_CANDIDATE",
-        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-        "versionNumber": 55,
-        "workflowRunId": 41147366468,
-        "publishedAt": "2026-10-30T23:58:44.098Z",
-        "authority": "roblox-open-cloud-pre-f9-validation-candidate"
-      },
+      "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -8187,7 +7812,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 0,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -8210,9 +7835,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-build-package-pending"
       ],
       "robloxQualityBuildUpRequired": false,
       "robloxQualityBuildUpSourceRevision": null,
@@ -8929,7 +8554,7 @@
       "robloxQualityBuildUpLastPassedAt": "2026-10-30T20:03:38.470Z"
     }
   ],
-  "updatedAt": "2026-10-31T00:03:38.526Z",
+  "updatedAt": "2026-10-31T00:04:48.119Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -8995,5 +8620,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
