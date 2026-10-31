@@ -2158,7 +2158,7 @@ test('Forest title is created before blocking world waits and entry stays save-s
   const mobWaitAt=client.indexOf('local meadowMobWorld=workspace:WaitForChild("FantasySurvivalWorld")');
   assert.ok(titleAt>0&&titleAt<weatherWaitAt&&titleAt<mobWaitAt,
     'title must appear before either weather or mob world readiness waits');
-  assert.match(client,/local meadowVitalsGui\s+do\s+-- \[게임 메뉴\]/);
+  assert.match(client,/local meadowVitalsGui, meadowPages, meadowMenu, energyFill, energyLabel\s+do\s+-- \[게임 메뉴\]/);
   assert.match(client,/meadowVitalsGui=Instance\.new\("ScreenGui"\)/);
   assert.match(client,/meadowVitalsGui.Enabled=false/);
   assert.match(client,/meadowVitalsGui.Enabled=true/);
