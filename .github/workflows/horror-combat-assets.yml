@@ -22,8 +22,8 @@ on:
         description: 마력숲 CC0 아이콘만 기존 등록 경로로 처리
         type: boolean
         default: false
-      forest_potion_only:
-        description: 마력숲 실제 CC0 물약 아이콘 PNG 다운로드 묶음에서 등록
+      forest_action_icons_only:
+        description: 마력숲 오른쪽 버튼 7개 실제 CC0 PNG 원본을 등록
         type: boolean
         default: false
       ui_only:
@@ -62,7 +62,7 @@ jobs:
       - name: Import combat model and verified shared PBR sources
         env:
           MAGIC_UI_ONLY: ${{ inputs.magic_ui_only || false }}
-          FOREST_POTION_ONLY: ${{ inputs.forest_potion_only || false }}
+          FOREST_ACTION_ICONS_ONLY: ${{ inputs.forest_action_icons_only || false }}
           UI_ONLY: ${{ inputs.ui_only || false }}
           VFX_ONLY: ${{ inputs.vfx_only || false }}
           FOREST_DEER_ONLY: ${{ inputs.forest_deer_only || false }}
@@ -70,8 +70,8 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$FOREST_POTION_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- .github/workflows/horror-combat-assets.yml | grep -q .; then
-            node tools/horror-combat-assets.mjs --magic-potion-only
+          if [ "$FOREST_ACTION_ICONS_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- .github/workflows/horror-combat-assets.yml | grep -q .; then
+            node tools/horror-combat-assets.mjs --magic-action-icons-only
           elif [ "$FOREST_DEER_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- tools/horror-combat-assets.mjs | grep -q .; then
             node tools/horror-combat-assets.mjs --forest-deer-only
           elif [ "$MAGIC_UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- roblox-games/fantasy-survival/icons.png roblox-games/fantasy-survival/right-icons.png | grep -q .; then
