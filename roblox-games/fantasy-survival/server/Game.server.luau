@@ -2601,8 +2601,32 @@ local function meadowParry(player)
   end)
 end
 local function meadowDodge(player,sign,id)
-  return meadowSkill(player,id,function(character,_,root,now)
-    local side=root.CFrame.RightVector*sign
+  return meadowSkill(player,id,function(character,humanoid,root,now)
+    -- [적 주시 회피] 서버가 가까운 실제 적을 찾고, 적 방향 기준 좌우로 빠진다.
+    -- 스틱 좌우 선택은 기존 두 회피 행동 ID를 사용하므로 판정 권한을 넘기지 않는다.
+    local facing=root.CFrame.LookVector
+    -- 회피 중에는 공격 전방 필터에 관계없이 실제 가장 가까운 적을 주시한다.
+    local target=nil
+    local nearest=25
+    for _,enemy in ipairs(enemies) do
+      if enemy.HP>0 and enemy.model.Parent then
+        local offset=enemy.position-root.Position
+        local distance=offset.Magnitude
+        if distance<nearest then
+          nearest=distance
+          target=enemy
+        end
+      end
+    end
+    if target then
+      local delta=target.position-root.Position
+      local flat=Vector3.new(delta.X,0,delta.Z)
+      if flat.Magnitude>.01 then facing=flat.Unit end
+    end
+    facing=Vector3.new(facing.X,0,facing.Z)
+    if facing.Magnitude<.01 then facing=Vector3.new(0,0,-1)
+    else facing=facing.Unit end
+    local side=Vector3.new(-facing.Z,0,facing.X)*sign
     local ray=RaycastParams.new()
     ray.FilterType=Enum.RaycastFilterType.Exclude
     ray.FilterDescendantsInstances={character}
@@ -2621,24 +2645,33 @@ local function meadowDodge(player,sign,id)
     local terrainGround=root.Position.Y-root.Size.Y*.5
     if not floor or floor.Material==Enum.Material.Water
       or floor.Normal.Y<.65 or math.abs(floor.Position.Y-terrainGround)>4 then return false end
-    -- [서버 승인 회피] 기존 이동 거리·.48초 무적은 유지하며 .40초 자연스러운 측면 스텝.
+    -- [서버 승인 회피] 7스터드 거리·.48초 무적·4초 재사용은 그대로, 옆걸음 이동만 .30초로 빠르게 한다.
     local dodgeOrigin=character:GetPivot()
+    local dodgeFacing=CFrame.lookAt(dodgeOrigin.Position,dodgeOrigin.Position+facing)
     local dodgeOffset=side*distance
     local defense=meadowDefense[player] or {}
     defense.dodgeUntil=now+.48
     meadowDefense[player]=defense
     player:SetAttribute("ApprovedActionTarget",root.Position)
+    local oldAutoRotate=humanoid.AutoRotate
+    humanoid.AutoRotate=false
     task.spawn(function()
       local movementStarted=os.clock()
-      local humanoid=character:FindFirstChildOfClass("Humanoid")
       while character.Parent and player.Character==character
-        and root:IsDescendantOf(character) and humanoid and humanoid.Health>0 do
-        local t=math.clamp((os.clock()-movementStarted)/.40,0,1)
-        -- 위쳐식 사이드 스텝: 사인 곡선으로 출발·착지 속도를 0에 가깝게 연결.
+        and root:IsDescendantOf(character) and humanoid.Health>0 do
+        local t=math.clamp((os.clock()-movementStarted)/.30,0,1)
+        -- 적을 향해 회전하며 좌우 수평 스텝. 구르지 않고 착지 후 원래 회전 제어로 복귀한다.
         local eased=.5-.5*math.cos(math.pi*t)
-        character:PivotTo(dodgeOrigin+dodgeOffset*eased)
+        -- 시선 고정도 급정지 없이 빠르게 감속해 머리와 상체가 반대로 꺾이지 않게 한다.
+        local turn=math.clamp(t/.32,0,1)
+        turn=turn*turn*(3-2*turn)
+        local gaze=dodgeOrigin:Lerp(dodgeFacing,turn)
+        character:PivotTo(gaze+dodgeOffset*eased)
         if t>=1 then break end
         RunService.Heartbeat:Wait()
+      end
+      if humanoid.Parent and player.Character==character then
+        humanoid.AutoRotate=oldAutoRotate
       end
     end)
     return true
