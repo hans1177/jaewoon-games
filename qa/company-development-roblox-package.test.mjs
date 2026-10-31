@@ -2276,8 +2276,23 @@ test('Forest external five action icons and protected potion/bag imported via ex
   const workflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const registry=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json','utf8'));
-  for(const key of ['punch-blast.png','acrobatic.png','attached-shield.png','grab.png','sprint.png'])
-    assert.ok(script.includes(key),'missing external action source: '+key);
+  // [아이콘 A안] 새 원본 연타·회피, 기존 등록 방패·물약·가방을 구별해 검증한다.
+  const chosen={fist:['fulguro-punch.png','lorc'],dodge:['dodging.png','lorc'],
+    guard:['attached-shield.png','delapouite']};
+  for(const [role,[name,author]] of Object.entries(chosen)){
+    assert.ok(script.includes("['"+role+"','"+name+"','"+author+"']"),'missing source: '+role);
+    assert.ok(script.includes(role+":['"+author+"','"+name.replace('.png','')+"']"),'source verification: '+role);
+    if(role!=='guard'&&registry.nativeActionIcons.icons[role].sourceEntry!==name){
+      assert.equal(registry.nativeActionIcons.icons[role].runtimeVerified,false,
+        'new image without imported receipt must not be marked runtime verified: '+role);
+    }
+  }
+  assert.equal(registry.nativeActionIcons.icons.guard.assetId,'85078081802173');
+  assert.equal(registry.nativeActionIcons.icons.guard.sourceEntry,'attached-shield.png');
+  assert.ok(registry.nativeActionIcons.icons.guard.authorizedUniverseIds.includes('10773436325'));
+  assert.ok(script.includes('meadowRadar.Position=UDim2.fromOffset(mapRight,8)'));
+  for(const key of ['grab.png','sprint.png'])
+    assert.ok(script.includes(key),'preserved external action source: '+key);
   assert.match(script,/FOREST_EXTERNAL_ICON_DOWNLOAD_FAILED/);
   assert.match(script,/FOREST_EXTERNAL_ACTION_ICONS_READY=YES/);
   assert.match(script,/grantToDependencies:true/);
