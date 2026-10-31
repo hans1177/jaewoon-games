@@ -2214,7 +2214,7 @@ for index,info in ipairs(meadowUtilityActions)do
   label.TextStrokeTransparency=.25
   label.Font=Enum.Font.GothamBold
   label.TextScaled=true
-  label.ZIndex=17
+  label.ZIndex=23
   label.Parent=button
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
@@ -2278,6 +2278,147 @@ player.PlayerGui.DescendantAdded:Connect(function(descendant)
   end
 end)
 layoutMeadowCombatUi()
+-- [옵션] 상단 4개 버튼만 터치/마우스로 개별 이동한다. 하단 3개는 고정.
+local editLayoutButton=CommonUI.CreatePrimaryButton({
+  name="MeadowEditActionLayout",text="상단 4개 버튼 위치 변경",minHeight=52
+})
+editLayoutButton.LayoutOrder=4
+editLayoutButton.Size=UDim2.new(1,-8,0,52)
+editLayoutButton.Parent=meadowPages[4]
+local editLayoutPreview=Instance.new("Frame")
+editLayoutPreview.Name="MeadowTopActionPreview"
+editLayoutPreview.LayoutOrder=5
+editLayoutPreview.Size=UDim2.new(1,-8,0,220)
+editLayoutPreview.BackgroundColor3=Color3.fromRGB(24,36,34)
+editLayoutPreview.BorderSizePixel=0
+editLayoutPreview.Visible=false
+editLayoutPreview.Parent=meadowPages[4]
+local previewCorner=Instance.new("UICorner")
+previewCorner.CornerRadius=UDim.new(0,12)
+previewCorner.Parent=editLayoutPreview
+local previewHint=Instance.new("TextLabel")
+previewHint.Name="EditorInstructions"
+previewHint.BackgroundTransparency=1
+previewHint.Size=UDim2.new(1,-12,0,28)
+previewHint.Position=UDim2.fromOffset(6,3)
+previewHint.Font=Enum.Font.Gotham
+previewHint.TextColor3=Color3.fromRGB(228,237,219)
+previewHint.TextSize=12
+previewHint.Text="네 버튼을 누른 채 이동 · 아래 3개는 고정"
+previewHint.Parent=editLayoutPreview
+local previewCanvas=Instance.new("Frame")
+previewCanvas.Name="EditableTopFour"
+previewCanvas.BackgroundTransparency=1
+previewCanvas.Position=UDim2.new(0,6,0,33)
+previewCanvas.Size=UDim2.new(1,-12,1,-39)
+previewCanvas.Parent=editLayoutPreview
+local previewHandles={}
+local function refreshTopEditor()
+  for index,button in ipairs(previewHandles) do
+    local p=meadowTopPositions[index]
+    button.Position=UDim2.fromScale(p[1],p[2]/.66)
+  end
+  layoutMeadowCombatUi()
+  if alignMeadowRadar then alignMeadowRadar() end
+end
+local activeDrag=nil
+local dragInput=nil
+for index,skill in ipairs(meleeSkills) do
+  local handle=Instance.new("TextButton")
+  handle.Name="EditableButton"..index
+  handle.AnchorPoint=Vector2.new(.5,.5)
+  handle.Size=UDim2.fromOffset(index==4 and 47 or 56,index==4 and 47 or 56)
+  handle.BackgroundColor3=Color3.fromRGB(32,46,47)
+  handle.Text=skill[2]
+  handle.Font=Enum.Font.GothamBold
+  handle.TextSize=12
+  handle.TextColor3=Color3.fromRGB(247,246,231)
+  handle.ZIndex=6
+  handle.Parent=previewCanvas
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(1,0)
+  corner.Parent=handle
+  local border=Instance.new("UIStroke")
+  border.Color=skill[3]
+  border.Thickness=2
+  border.Parent=handle
+  previewHandles[index]=handle
+  handle.InputBegan:Connect(function(input)
+    if not editLayoutPreview.Visible then return end
+    if input.UserInputType~=Enum.UserInputType.Touch
+      and input.UserInputType~=Enum.UserInputType.MouseButton1 then return end
+    activeDrag=index
+    dragInput=input
+    meadowPages[4].ScrollingEnabled=false
+  end)
+end
+UserInputService.InputChanged:Connect(function(input)
+  if not activeDrag or not editLayoutPreview.Visible then return end
+  if dragInput.UserInputType==Enum.UserInputType.Touch and input~=dragInput then return end
+  if dragInput.UserInputType==Enum.UserInputType.MouseButton1
+    and input.UserInputType~=Enum.UserInputType.MouseMovement then return end
+  local canvasSize=previewCanvas.AbsoluteSize
+  if canvasSize.X<=0 or canvasSize.Y<=0 then return end
+  local p=meadowTopPositions[activeDrag]
+  p[1]=math.clamp((input.Position.X-previewCanvas.AbsolutePosition.X)/canvasSize.X,.12,.88)
+  p[2]=math.clamp((input.Position.Y-previewCanvas.AbsolutePosition.Y)/canvasSize.Y*.66,.10,.55)
+  refreshTopEditor()
+end)
+UserInputService.InputEnded:Connect(function(input)
+  if not activeDrag then return end
+  if dragInput.UserInputType==Enum.UserInputType.Touch and input~=dragInput then return end
+  if dragInput.UserInputType==Enum.UserInputType.MouseButton1
+    and input.UserInputType~=Enum.UserInputType.MouseButton1 then return end
+  activeDrag=nil
+  dragInput=nil
+  meadowPages[4].ScrollingEnabled=true
+end)
+local saveLayoutButton=CommonUI.CreatePrimaryButton({
+  name="MeadowSaveActionLayout",text="버튼 배치 저장",minHeight=48
+})
+saveLayoutButton.LayoutOrder=6
+saveLayoutButton.Size=UDim2.new(1,-8,0,48)
+saveLayoutButton.Parent=meadowPages[4]
+saveLayoutButton.Visible=false
+local resetLayoutButton=CommonUI.CreatePrimaryButton({
+  name="MeadowResetActionLayout",text="기본 배치로 되돌리기",minHeight=48
+})
+resetLayoutButton.LayoutOrder=7
+resetLayoutButton.Size=UDim2.new(1,-8,0,48)
+resetLayoutButton.Parent=meadowPages[4]
+resetLayoutButton.Visible=false
+editLayoutButton.Activated:Connect(function()
+  local show=not editLayoutPreview.Visible
+  editLayoutPreview.Visible=show
+  saveLayoutButton.Visible=show
+  resetLayoutButton.Visible=show
+  editLayoutButton.Text=show and "버튼 위치 편집 닫기" or "상단 4개 버튼 위치 변경"
+  if show then refreshTopEditor() end
+end)
+saveLayoutButton.Activated:Connect(function()
+  if player:GetAttribute("ProfileReady")~=true then
+    saveLayoutButton.Text="저장 정보 연결 중"
+    return
+  end
+  local values={}
+  for _,p in ipairs(meadowTopPositions) do
+    values[#values+1]=tostring(math.floor(p[1]*1000+.5))
+    values[#values+1]=tostring(math.floor(p[2]*1000+.5))
+  end
+  remote:FireServer("meadow:ui-layout:"..table.concat(values,","))
+  saveLayoutButton.Text="배치 저장 요청 완료"
+end)
+resetLayoutButton.Activated:Connect(function()
+  for index,p in ipairs(meadowTopDefaults) do meadowTopPositions[index]={p[1],p[2]} end
+  refreshTopEditor()
+  saveLayoutButton.Text="기본 위치 적용 · 저장을 눌러 확정"
+end)
+player:GetAttributeChangedSignal("MeadowTopButtonsLayout"):Connect(function()
+  if readMeadowTopLayout(player:GetAttribute("MeadowTopButtonsLayout")) then
+    refreshTopEditor()
+    saveLayoutButton.Text="버튼 배치 저장 완료"
+  end
+end)
 gui:GetAttributeChangedSignal("GameMenuOpen"):Connect(function()
   meadowSkillDock.Visible=gui:GetAttribute("GameMenuOpen")~=true
 end)
