@@ -225,12 +225,12 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
     'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'
   });
   const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
-  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
-    'later owner focus must actually remove the old permanent blocker');
+  // [최신 오너 삭제 우선] 예전 3종 집중개발 정책은 삭제된 게임을 복원할 수 없다.
+  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),true,
+    'latest owner deletion must override earlier owner focus');
   const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
-  assert.ok(realProjects.some(project=>project.gameId==='simple-rpg'&&project.engine==='roblox'
-    &&focusedCaretakerProject(project,repoRoot)),
-    'the actual canonical catalog and Rojo source must activate Simple RPG, not just a test fixture');
+  assert.equal(realProjects.some(project=>project.gameId==='simple-rpg'),false,
+    'deleted Simple RPG cannot reenter the production queue');
   for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
     assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
       'other owner permanent removals must remain protected');
@@ -259,7 +259,7 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   const selected=projects.filter(project=>focusedCaretakerProject(project,repoRoot))
     .map(project=>project.gameId+'|'+project.engine).sort();
   assert.deepEqual(selected,[
-    'cozy-island|web','insect-survival|web','simple-rpg|roblox'
+    'cozy-island|web','insect-survival|web'
   ]);
   assert.ok(projects.some(project=>project.gameId==='insect-survival'&&project.engine==='roblox'
     &&!focusedCaretakerProject(project,repoRoot)),
