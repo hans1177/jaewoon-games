@@ -3465,71 +3465,6 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   character:SetAttribute("NativeSkillMotionAtom",action.MotionAtom)
   character:SetAttribute("NativeSkillActionId",id)
 end)
--- [늑대 원본 관절 모션] 서버 NativeMobMotion 상태에 따라 기존 스킨 Bone/Motor6D만 클라이언트에서 변형한다.
--- Bone.Transform은 네트워크 복제되지 않으므로 화면에 표시하는 모든 클라이언트가 직접 실행한다.
--- 모델·다리·판정·서버 AI·저장값은 추가/수정하지 않으며 Atomic 스트리밍 중 모델 교체도 감지한다.
-local meadowWolfJoints=setmetatable({}, {__mode="k"})
-local meadowWolfLastScan=0
-RunService.PreSimulation:Connect(function(dt)
-  local now=os.clock()
-  if now-meadowWolfLastScan>=.35 then
-    meadowWolfLastScan=now
-    local world=workspace:FindFirstChild("FantasySurvivalWorld")
-    if world then
-      for _,model in ipairs(world:GetChildren()) do
-        if model:IsA("Model") and model:GetAttribute("Species")=="wolf" and not meadowWolfJoints[model] then
-          local legs={}
-          for _,joint in ipairs(model:GetDescendants()) do
-            if joint:IsA("Bone") then
-              local key=joint.Name:lower():gsub("[^%w]","")
-              local limb=key=="bone014" and "FL" or key=="bone017" and "FR"
-                or key=="bone008" and "BL" or key=="bone011" and "BR" or nil
-              if limb then legs[limb]=joint end
-            elseif joint:IsA("Motor6D") and joint.Part0 and joint.Part1 then
-              local name=joint.Name:upper():gsub("[^%w]","")
-              if name=="FLHIP" or name=="FRHIP" or name=="BLHIP" or name=="BRHIP" then
-                legs[name:sub(1,2)]=joint
-              end
-            end
-          end
-          if legs.FL and legs.FR and legs.BL and legs.BR then
-            meadowWolfJoints[model]=legs
-            model:SetAttribute("ClientWolfLegMotion","ACTIVE")
-          end
-        end
-      end
-    end
-  end
-  for model,legs in pairs(meadowWolfJoints) do
-    if not model:IsDescendantOf(workspace) then
-      meadowWolfJoints[model]=nil
-    else
-      local mode=model:GetAttribute("NativeMobMotion") or "IDLE"
-      local moving=mode=="WALK" or mode=="RUN"
-      local speed=mode=="RUN" and 13 or 7.5
-      local gait=moving and math.sin(workspace:GetServerTimeNow()*speed) or 0
-      local stride=moving and (mode=="RUN" and .53 or .33) or 0
-      local stateAt=model:GetAttribute("NativeMobMotionStartedAt") or workspace:GetServerTimeNow()
-      local age=math.max(0,workspace:GetServerTimeNow()-stateAt)
-      local windup=mode=="ANTICIPATION" and math.clamp(age/.28,0,1) or 0
-      local impactAt=model:GetAttribute("NativeMobLastImpact")
-      local impactAge=typeof(impactAt)=="number" and workspace:GetServerTimeNow()-impactAt or math.huge
-      local bite=(impactAge>=0 and impactAge<.30) and math.sin(math.pi*impactAge/.30) or 0
-      local recoil=mode=="RECOVERY" and math.exp(-age*8) or 0
-      local idle=(mode=="IDLE") and math.sin(workspace:GetServerTimeNow()*1.8)*.025 or 0
-      local front=gait*stride-.20*windup+.29*bite-.08*recoil+idle
-      local rear=-gait*stride*.85+.13*windup-.15*bite+.06*recoil-idle
-      local alpha=1-math.exp(-math.clamp(dt,0,.08)*22)
-      for limb,joint in pairs(legs) do
-        if joint.Parent then
-          local opposite=(limb=="FR" or limb=="BL") and -1 or 1
-          local angle=(limb:sub(1,1)=="F" and front or rear)*opposite
-          joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,0),alpha)
-        end
-      end
-    end
-  end
-end)
 RunService.PreSimulation:Connect(function(dt)
   if not skillMotionR15 or not skillMotionCharacter then return end
   local humanoid=skillMotionCharacter:FindFirstChildOfClass("Humanoid")
@@ -4080,7 +4015,10 @@ local function bindOriginalMob(model)
           name="UpperArm"..side
         end
       end
-      if sourceChannels[name] and (not joints[name] or constraint) then
+      if sourceChannels[name] and (not joints[name] or constraint
+        or (species=="wolf" and joint:IsA("Bone") and not joints[name]:IsA("Bone"))) then
+        -- [원본 스킨 우선] 같은 이름의 연결부가 중복되면 늑대 메시를 실제로 변형하는 Bone을 사용한다.
+        -- 다리를 새로 만들지 않고 기존 정규화된 원본 스킨 관절을 재사용한다.
         joints[name]=joint
         available[name]=true
       end
@@ -4148,12 +4086,15 @@ local function bindOriginalMob(model)
     and available.WingL4 and available.WingR4)
   local actualRig=count>=2 and movingJoints==true and wolfFourLegRig==true
     and deerFourLegRig==true and batEightWingRig==true
-  local controller=not nativeTracks and actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
+  -- [모션 복구] 정식 AnimationTrack이 로딩 실패/빈 클립이면 같은 원본 관절로 즉시 이어갈 수 있게 준비한다.
+  -- 정상 원본 클립 재생 중에는 공용 포즈를 절대 덮지 않는다.
+  local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=26,
   }) or nil
   local row={controller=controller,nativeTracks=nativeTracks,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
     lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0,
+    originalTrackWaitStartedAt=os.clock(),
     -- [모션] 실제 관절의 직전 포즈를 저장해 정지·추적·공격 사이를 매끄럽게 잇는다.
     transitionFrom={},renderedPoses={},transitionStartedAt=0,transitionDuration=0}
   model:SetAttribute("NativeCreatureRigMode",nativeTracks and "ORIGINAL_ANIMATION_TRACKS"
@@ -4223,7 +4164,18 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
         if track and track.IsPlaying then
           track:AdjustSpeed(mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
         end
-        continue
+        -- [늑대 원본 애니메이션 복구] 비어 있거나 로딩할 수 없는 트랙으로 관절 연출이 멈추지 않게 한다.
+        -- 기존 원본 네 발 스킨 관절을 보유한 경우에만 실패한 트랙에서 공용 4족 모션으로 전환한다.
+        local missing=not track or not track.IsPlaying or track.Length<=0
+        if row.species=="wolf" and row.controller and missing
+          and os.clock()-row.originalTrackWaitStartedAt>=2.5 then
+          for _,original in pairs(row.nativeTracks) do original:Stop(.12) end
+          row.nativeTracks=nil
+          row.playingTrack=nil
+          model:SetAttribute("NativeCreatureRigMode","ORIGINAL_JOINT_RIG")
+        else
+          continue
+        end
       end
       -- 서버 적중시각으로 공격 충격과 복귀만 연출한다. 피해 판정은 서버가 유지한다.
       local forcedPhase=nil
