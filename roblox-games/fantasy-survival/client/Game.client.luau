@@ -2276,19 +2276,21 @@ local function layoutMeadowCombatUi()
   local landscape=v.X>v.Y
   -- [좁은 가로 화면] 화면 높이에 맞춰 삼각 편대 버튼을 줄이고, 미니맵과 회피가 겹치면 도크를 아래로 이동한다.
   local scale=landscape and math.clamp((v.Y-20)/370,.76,1.12) or math.clamp(v.X/390,.76,1)
+  -- [오른쪽 버튼 전체] 회피·연타·막기·물약·상호작용·질주·가방의 기존 배치를 유지하고 조금 위로 올린다.
+  local dockLift=math.floor(24*scale)
   local dockHeight=math.floor(260*scale)
   local utilityTop=140 -- [보조 버튼] 상호작용·질주·가방 3개를 같은 가로선에서 위로 이동한다.
   local bottomInset=math.floor((landscape and (v.Y<350 and 12 or 14) or 116)*scale)
   local compactLandscape=landscape and v.Y<450
   local mapDiameter=compactLandscape and (v.Y<350 and 80 or 88) or v.X<480 and 96 or math.floor(math.clamp(v.Y*.17,98,124))
-  local dodgeTop=v.Y-bottomInset-dockHeight+math.floor((260*meadowTopPositions[2][2]-37)*scale)
+  local dodgeTop=v.Y-bottomInset-dockHeight-dockLift+math.floor((260*meadowTopPositions[2][2]-37)*scale)
   local radarTop=landscape and 12 or 38 -- 중앙 체력바 상단과 같은 높이.
   local mapBottom=radarTop+mapDiameter+40
-  local utilityBottom=v.Y-bottomInset-dockHeight+math.floor(utilityTop*scale)+math.max(44,math.floor(45*scale))
+  local utilityBottom=v.Y-bottomInset-dockHeight-dockLift+math.floor(utilityTop*scale)+math.max(44,math.floor(45*scale))
   local availableShift=math.max(0,v.Y-8-utilityBottom)
   local shift=compactLandscape and math.min(availableShift,math.max(0,mapBottom+8-dodgeTop)) or 0
   meadowSkillDock.Size=UDim2.fromOffset(math.floor(235*scale),dockHeight)
-  meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,-bottomInset+math.floor(shift))
+  meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,-bottomInset-dockLift+math.floor(shift))
   for index,button in ipairs(meadowSkillButtons) do
     local p=meadowTopPositions[index]
     local originalSize=index==4 and 46 or 74
