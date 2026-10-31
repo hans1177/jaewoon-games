@@ -2605,7 +2605,19 @@ local function meadowDodge(player,sign,id)
     -- [적 주시 회피] 서버가 가까운 실제 적을 찾고, 적 방향 기준 좌우로 빠진다.
     -- 스틱 좌우 선택은 기존 두 회피 행동 ID를 사용하므로 판정 권한을 넘기지 않는다.
     local facing=root.CFrame.LookVector
-    local target=nearestEnemy(root,25)
+    -- 회피 중에는 공격 전방 필터에 관계없이 실제 가장 가까운 적을 주시한다.
+    local target=nil
+    local nearest=25
+    for _,enemy in ipairs(enemies) do
+      if enemy.HP>0 and enemy.model.Parent then
+        local offset=enemy.position-root.Position
+        local distance=offset.Magnitude
+        if distance<nearest then
+          nearest=distance
+          target=enemy
+        end
+      end
+    end
     if target then
       local delta=target.position-root.Position
       local flat=Vector3.new(delta.X,0,delta.Z)
@@ -2650,7 +2662,10 @@ local function meadowDodge(player,sign,id)
         local t=math.clamp((os.clock()-movementStarted)/.30,0,1)
         -- 적을 향해 회전하며 좌우 수평 스텝. 구르지 않고 착지 후 원래 회전 제어로 복귀한다.
         local eased=.5-.5*math.cos(math.pi*t)
-        local gaze=dodgeOrigin:Lerp(dodgeFacing,math.min(1,t*4))
+        -- 시선 고정도 급정지 없이 빠르게 감속해 머리와 상체가 반대로 꺾이지 않게 한다.
+        local turn=math.clamp(t/.32,0,1)
+        turn=turn*turn*(3-2*turn)
+        local gaze=dodgeOrigin:Lerp(dodgeFacing,turn)
         character:PivotTo(gaze+dodgeOffset*eased)
         if t>=1 then break end
         RunService.Heartbeat:Wait()
