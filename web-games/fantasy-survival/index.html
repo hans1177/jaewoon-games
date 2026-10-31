@@ -483,7 +483,7 @@ body:has(#optionsPanel.open) .regionTravel,body:has(#multiPanel.open) .regionTra
 <div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick" data-joystick="true" data-touch-control="move" data-gameplay-action="move" data-mechanic-id="movement-joystick"><div id="knob" class="knob"></div></div>
 <nav class="quickMenu" aria-label="빠른 메뉴"><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button></nav><div class="actions" aria-label="전투 조작"><button id="attack" hidden class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary" aria-label="장착 무기 기술"><img class="skillIcon" src="./icons/sword.png" alt=""><span id="weaponSkillName">무기 기술</span><small id="weaponSkillCooldown">무기 필요</small></button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="accessoryDash" hidden class="act accessoryDash" data-gameplay-action="accessory-dash" aria-label="돌진 액세서리"><img class="skillIcon" src="./icons/aurared.png" alt=""><span>돌진</span><small id="accessoryDashCooldown">사용 가능</small></button><button id="petSpecial" hidden class="act companionSkill" data-gameplay-action="pet-special" aria-label="악어 특수공격" disabled><img class="skillIcon" src="./icons/aurared.png" alt=""><span>동료 기술</span><small>악어 탑승</small></button><button id="dismount" hidden class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount"><span id="mountLabel">동료 탑승</span><small id="mountStatus">동료 필요</small></button><button id="quickHeal" hidden type="button" aria-label="회복 아이템 사용"><img class="skillIcon" src="./icons/potionred.png" alt=""><span>회복</span><small id="healCount">0개</small></button><button id="quickFood" hidden type="button" aria-label="음식 사용"><img class="skillIcon" src="./icons/bag.png" alt=""><span>음식</span><small id="foodCount">0개</small></button><button id="autoCombat" hidden type="button" data-gameplay-action="auto-combat" data-mechanic-id="auto-combat-toggle" aria-label="자동 전투 전환" aria-pressed="true"><span>자동 전투</span><small id="autoCombatStatus">켜짐</small></button></div>
 <div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="jungleBenchTab" class="tab">독점석 제작대</button><button id="sunstoneBenchTab" class="tab">태양석 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
-<div id="smeltPanel" class="smelt"><h3 id="smeltTitle">화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">숲 식재료고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정거미고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="squidSmeltBtn" class="smeltBtn">오징어고기 굽기</button><button id="sunstoneSmeltBtn" class="smeltBtn" hidden>태양석 · 20초</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
+<div id="smeltPanel" class="smelt"><h3 id="smeltTitle">화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">숲 식재료고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정사슴고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="squidSmeltBtn" class="smeltBtn">오징어고기 굽기</button><button id="sunstoneSmeltBtn" class="smeltBtn" hidden>태양석 · 20초</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
 <div class="legend">자동 채집 · C 제작 · I 인벤토리 · 화로 두 번 누르기 · WASD 이동</div><div id="recorderOverlay" class="recorderOverlay"><div class="recorderTitle">연구소 녹음기</div><div id="recorderCaption" class="recorderCaption"></div><div id="recorderState" class="recorderState">재생 중</div></div><div id="flash" class="flash"></div>
 <div id="multiPanel" class="multiPanel">
  <div class="multiHead"><b>멀티플레이</b><button id="multiClose">×</button></div>
@@ -843,17 +843,17 @@ const recipes=[
 {id:'cooked-squid-meat',name:'구운 오징어고기',where:'smelt',cost:{},desc:'밥 +80 · 요리대 재료로 사용 가능',kind:'consumable',hunger:80},
 {id:'raw-fish',name:'생선',where:'loot',cost:{},desc:'물고기 전리품 · 화로에서 10초 굽기',kind:'ingredient'},
 {id:'cooked-fish',name:'구운생선',where:'loot',cost:{},desc:'밥 +55 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:55},
-{id:'raw-crystal-deer-meat',name:'수정거미 식재료',where:'loot',cost:{},desc:'거대 호수 수정거미 고기 · 화로에서 굽기',kind:'ingredient'},
-{id:'cooked-crystal-deer-meat',name:'구운 수정거미',where:'loot',cost:{},desc:'밥 +70 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:70},
+{id:'raw-crystal-deer-meat',name:'수정사슴 식재료',where:'loot',cost:{},desc:'거대 호수 수정사슴 고기 · 화로에서 굽기',kind:'ingredient'},
+{id:'cooked-crystal-deer-meat',name:'구운 수정사슴',where:'loot',cost:{},desc:'밥 +70 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:70},
 {id:'cooked-hare-meat',name:'구운 숲토끼고기',where:'loot',cost:{},desc:'밥 +50 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:50},
 {id:'cooked-lizard-meat',name:'구운 도마뱀고기',where:'loot',cost:{},desc:'밥 +60 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:60},
 {id:'cooked-greens',name:'구운 야채',where:'loot',cost:{},desc:'당근이 아닌 잎채소 구이 · 밥 +35 · 요리대 재료',kind:'consumable',hunger:35},
 {id:'meal-lake-fish-greens',name:'호수 생선 야채찜',where:'meal',cost:{},desc:'밥 +90 · 초당 체력 24 회복 · 4초',kind:'consumable',hunger:90,foodRegen:24,foodRegenSeconds:4},
-{id:'meal-lake-fish-deer',name:'생선 수정거미 모둠',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
+{id:'meal-lake-fish-deer',name:'생선 수정사슴 모둠',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
 {id:'meal-lake-fish-fish',name:'거대 호수 생선 만찬',where:'meal',cost:{},desc:'밥 +90 · 초당 체력 22 회복 · 5초',kind:'consumable',hunger:90,foodRegen:22,foodRegenSeconds:5},
 {id:'meal-lake-hare-greens',name:'토끼 야채구이',where:'meal',cost:{},desc:'밥 +80 · 초당 체력 18 회복 · 4초',kind:'consumable',hunger:80,foodRegen:18,foodRegenSeconds:4},
 {id:'meal-lake-lizard-greens',name:'도마뱀 야채볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 20 회복 · 4초',kind:'consumable',hunger:85,foodRegen:20,foodRegenSeconds:4},
-{id:'meal-lake-deer-greens',name:'수정거미 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5},
+{id:'meal-lake-deer-greens',name:'수정사슴 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5},
 {id:'meal-cooked-greens',name:'구운 야채 한상',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 16 회복 · 4초',kind:'consumable',hunger:70,foodRegen:16,foodRegenSeconds:4},
 {id:'leech-cleaver',name:'거머리 흡혈도',where:'junglebench',cost:{leechSucker:4,monopolyIngot:5,goldIngot:4},desc:'공격력 185 · 밀림 3티어 무기',kind:'weapon',power:185,range:88,cooldown:800},
 {id:'gorilla-armor',name:'고릴라 중갑',where:'junglebench',cost:{gorillaHide:6,monopolyIngot:8,goldIngot:7},desc:'최대 체력 +250 · 받는 피해 23% 감소 · 4티어',kind:'armor',maxHp:250,reduce:.23},
@@ -941,7 +941,7 @@ const AUTO_COOKING_NAMES={
  'cooked-crystal-goat-meat|cooked-deer-meat':'수정 들판구이',
  'cooked-deer-meat|cooked-greens':'숲 채소전골',
  'cooked-deer-meat|cooked-fish':'호수 사냥꾼 정식',
- 'cooked-crystal-deer-meat|cooked-deer-meat':'숲·수정거미 구이',
+ 'cooked-crystal-deer-meat|cooked-deer-meat':'숲·수정사슴 구이',
  'cooked-deer-meat|cooked-squid-meat':'숲·오징어 불판구이',
  'cooked-bug-meat|cooked-hare-meat':'숲속 단백질 꼬치',
  'cooked-bird-meat|cooked-bug-meat':'수관 사냥꾼 꼬치',
@@ -979,7 +979,7 @@ const AUTO_COOKING_NAMES={
  'cooked-crystal-goat-meat|cooked-squid-meat':'수정심해 꼬치',
  'cooked-greens|cooked-squid-meat':'심해 채소볶음',
  'cooked-fish|cooked-squid-meat':'심해 해산물구이',
- 'cooked-crystal-deer-meat|cooked-crystal-deer-meat':'수정거미 왕실구이',
+ 'cooked-crystal-deer-meat|cooked-crystal-deer-meat':'수정사슴 왕실구이',
  'cooked-crystal-deer-meat|cooked-squid-meat':'수정심해 만찬',
  'cooked-squid-meat|cooked-squid-meat':'심해 오징어 통구이'
 };
@@ -1020,7 +1020,7 @@ const ARROW_IDS=['wood-arrow','iron-arrow','spider-arrow','firewolf-arrow','shar
 const LEGACY_ARROW_MIGRATION={'stone-arrow':'firewolf-arrow','gold-arrow':'yeti-arrow'};
 const TWO_HANDED_WEAPONS=new Set(['sunstone-greatsword','gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul',...BOW_IDS]);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={crystalbiter:3,crystallizard:3,mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,worldtreegolem:3,worldtreesnake:3,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,jungletigerleader:5,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4,swampPrimitiveSpearman:3,swampPrimitiveArcher:3,swampPrimitiveGuard:3,sandSpirit:4,giantVenomScorpion:5,wastelandMummy:5,goblinCrossbow:1,goblinHeavy:2};
+const CREATURE_TIERS={crystalbiter:3,crystallizard:3,mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,worldtreegolem:3,worldtreesnake:3,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,jungletigerleader:5,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4,swampPrimitiveSpearman:3,swampPrimitiveArcher:3,swampPrimitiveGuard:3,sandSpirit:4,giantVenomScorpion:5,wastelandMummy:5,goblinCrossbow:1,goblinHeavy:2};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},
 goblinCrossbow:{id:'goblinCrossbow',name:'쇠뇌 숲 고블린',mood:'aggressive',hp:88,dmg:23,speed:68,r:20,color:'#738a49',detect:1050,attackCooldown:2800,goblinOutpost:true,goblinCrossbow:true},
@@ -1053,7 +1053,7 @@ crystallizard:{id:'crystallizard',name:'크리스털 리자드',mood:'aggressive
 crystalgoat:{id:'crystalgoat',name:'수정염소',mood:'neutral',hp:135,dmg:16,speed:70,r:20,color:'#a58ddd',detect:420,attackCooldown:1100,crystalZone:true,foodDrop:'crystal-goat-meat'},
 lakecroc:{id:'lakecroc',name:'거대 호수 악어',mood:'aggressive',hp:777,dmg:58,speed:88,r:31,color:'#446c48',detect:760,lakeZone:true,crocodile:true},
 lakebuffalo:{id:'lakebuffalo',name:'호수 물소',mood:'neutral',hp:560,dmg:42,speed:58,r:31,color:'#667b72',detect:440,lakeZone:true},
-crystaldeer:{id:'crystaldeer',name:'수정거미',mood:'neutral',hp:360,dmg:28,speed:82,r:23,color:'#90a8d8',detect:460,crystalZone:true,foodDrop:'raw-crystal-deer-meat'},
+
 lakeheron:{id:'lakeheron',name:'호수 왜가리',mood:'harmless',hp:95,dmg:0,speed:78,r:17,color:'#cad8d3',detect:0,lakeZone:true,huntable:true},
 shark:{id:'shark',name:'거대 호수 상어',mood:'neutral',hp:800,dmg:50,speed:104,r:30,color:'#5a7f96',detect:620,underwater:true,sharkSpecial:true},
 giantSquid:{id:'giantSquid',name:'대왕오징어',mood:'aggressive',hp:1111,dmg:66,speed:86,r:42,color:'#7c496f',detect:820,underwater:true,deepSea:true,squidInk:true},
@@ -1132,7 +1132,7 @@ function startNativePreview3d(){
     nativeStatusText.textContent='3D 모델을 불러오지 못했어. 다시 불러오기를 눌러 줘.';nativeRetry.hidden=false;})
 }
 function beginGame(mode){
- state.mode=mode==='creative'?'creative':'normal';gameStarted=true;loadGame();state.enemies=state.enemies.filter(e=>e.type?.id!=='crystalgoat');state.respawns=state.respawns.filter(e=>e.typeId!=='crystalgoat');
+ state.mode=mode==='creative'?'creative':'normal';gameStarted=true;loadGame();state.enemies=state.enemies.filter(e=>e.type?.id!=='crystalgoat'&&e.type?.id!=='crystaldeer');state.respawns=state.respawns.filter(e=>e.typeId!=='crystalgoat'&&e.typeId!=='crystaldeer');
  if(isCreative()){state.player.map=true;state.player.hp=state.player.maxHp;state.player.hunger=100;document.getElementById('multi').hidden=true;showNotice('크리에이티브 · 가방에서 몬스터 스폰 블록을 설치해')}
  else{applyOwnerInventoryGift();const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl){ui.multiRoom.value=roomFromUrl.toUpperCase();connectMultiplayer(roomFromUrl)}showNotice('일반 모드 · 기존 마력숲 이어하기')}
  document.getElementById('optionsPanel').classList.remove('menuOptions','open');document.getElementById('startScreen').hidden=true;markExplored();discoverRegion();updateHud();startNativePreview3d()
@@ -1931,7 +1931,7 @@ function initWorld(){
   const lakeCrocSurfaceSpots=[{x:2500,y:1730},{x:7600,y:1690},{x:12200,y:1810}];
   for(const p of lakeCrocSurfaceSpots)state.enemies.push(spawnAt(creatures.lakecroc,p.x,p.y,null));
   for(const p of [{x:2100,y:1880},{x:12200,y:1760}])state.enemies.push(spawnAt(creatures.lakebuffalo,p.x,p.y,null));
-  for(let i=0;i<14;i++){const pos=randomCrystalPoint(150);state.enemies.push(spawnAt(creatures.crystaldeer,pos.x,pos.y,null))}
+  
   for(const p of [{x:4100,y:1650},{x:7600,y:1910},{x:11600,y:1660}])state.enemies.push(spawnAt(creatures.lakeheron,p.x,p.y,null));
   // 수중: 악어 3 + 상어 8 + 물고기 6
   for(const p of [{x:6800,y:2600},{x:17100,y:3100},{x:29400,y:2700}]){const e=spawnAt(creatures.lakecroc,p.x,p.y,null);e.area='underwater';e.noRespawn=true;state.enemies.push(e)}
@@ -1976,7 +1976,7 @@ function applyOwnerInventoryGift(){
   addInv('cooked-crystal-deer-meat',10);
   try{localStorage.setItem(key,'1')}catch{}
   state.dirty=true;saveGame(false);
-  showNotice('가방 지급 · 예티 뿔 대검 · 예티 방어구 · 구운 수정거미 10개');
+  showNotice('가방 지급 · 예티 뿔 대검 · 예티 방어구 · 구운 수정사슴 10개');
   return true
  }
  if(gift==='resources-100-20261003'){
@@ -2836,7 +2836,7 @@ const BESTIARY_INFO={
  giantspiderling:{cat:'aggressive',desc:'거대 거미 주변을 따라다니는 어린 거미. 단독으로 멀리 이동하기보다 성체가 있는 곳에 모여 있는 경우가 많다.'},
  lakecroc:{cat:'aggressive',desc:'거대 호수의 얕은 물과 물가를 오가는 포식자. 물속에서는 거의 움직이지 않는 것처럼 보이지만 주변의 움직임을 계속 지켜본다.'},
  lakebuffalo:{cat:'neutral',desc:'거대 호숫가의 풀을 뜯으며 무리 없이 돌아다니는 물소. 평소에는 느긋하지만 가까이에서 위협하면 쉽게 물러나지 않는다.'},
- crystaldeer:{cat:'neutral',desc:'수정 지대의 빛에 적응한 거미. 광물 틈에 숨어 있다가 공격받으면 방어한다.'},
+ 
  lakeheron:{cat:'harmless',desc:'거대 호숫가의 얕은 물에서 먹이를 찾는 왜가리. 플레이어가 가까이 와도 일정 거리만 두고 조용히 자리를 옮긴다.'},
  shark:{cat:'neutral',desc:'거대 호수의 깊은 물을 넓게 돌아다니는 상어. 평소에는 일정한 길을 따라 헤엄치지만 자신을 위협하는 존재는 오래 기억한다.'},
  giantSquid:{cat:'aggressive',desc:'심해 산호숲의 어두운 틈에 숨어 지내는 대왕오징어. 거대한 촉수를 산호 사이에 감춘 채 주변을 경계한다.'},
@@ -2858,7 +2858,7 @@ const BESTIARY_INFO={
 };
 const BOOK_LABELS={neutral:'중립',aggressive:'공격적',harmless:'무해',boss:'보스',records:'기록'};
 function unlockBestiary(id){
- if(!BESTIARY_INFO[id]||state.bestiary[id])return;
+ if(!creatures[id]||!BESTIARY_INFO[id]||state.bestiary[id])return;
  state.bestiary[id]=true;state.dirty=true;showNotice((creatures[id]?.name||id)+' 도감 등록');saveGame(false)
 }
 function bestiaryPortrait(id){
@@ -2885,7 +2885,7 @@ function bestiaryPortrait(id){
  if(id==='flowergoblin')return svg('<path d="M68 31 L51 18 L58 47 Q48 62 57 80 Q70 94 91 92 Q115 93 126 74 Q130 58 119 46 L128 18 L108 32 Q91 24 68 31Z" fill="#a7c957"/><circle cx="76" cy="50" r="4" fill="#fff3a8"/><circle cx="106" cy="50" r="4" fill="#fff3a8"/><path d="M62 82 l-13 18 M118 82 l14 18" stroke="#718e39" stroke-width="8" stroke-linecap="round"/><circle cx="91" cy="28" r="8" fill="#f6a8cf"/><circle cx="80" cy="30" r="6" fill="#ffd3e8"/><circle cx="102" cy="31" r="6" fill="#ffe6a8"/>');
  if(id==='giantbee')return svg('<ellipse cx="90" cy="61" rx="35" ry="26" fill="#e3b341"/><path d="M66 46 H114 M62 60 H118 M67 75 H113" stroke="#34291b" stroke-width="8"/><ellipse cx="58" cy="45" rx="24" ry="13" transform="rotate(-28 58 45)" fill="#dff7ff" opacity=".8"/><ellipse cx="122" cy="45" rx="24" ry="13" transform="rotate(28 122 45)" fill="#dff7ff" opacity=".8"/><circle cx="78" cy="54" r="4" fill="#fff8c9"/><circle cx="101" cy="54" r="4" fill="#fff8c9"/><path d="M125 64 l28 8 -28 8Z" fill="#b7b8a8"/>');
  if(id==='thornmantis')return svg('<path d="M90 25 L108 55 L103 88 L77 88 L72 55Z" fill="#668f52"/><circle cx="82" cy="41" r="4" fill="#ffe98a"/><circle cx="99" cy="41" r="4" fill="#ffe98a"/><path d="M74 57 L43 35 M106 57 L137 35 M71 70 L45 93 M109 70 L135 93" stroke="#557844" stroke-width="8" stroke-linecap="round"/><path d="M43 35 l-17-17 M137 35 l17-17" stroke="#c6d4a2" stroke-width="5"/><path d="M90 24 L81 8 M91 24 L101 8" stroke="#7ea56b" stroke-width="4"/>');
- if(id==='giantspider'||id==='giantspiderling'||id==='crystaldeer')return svg('<ellipse cx="90" cy="62" rx="'+(id==='giantspider'?'30':'21')+'" ry="'+(id==='giantspider'?'25':'18')+'" fill="#4d3d52"/><circle cx="90" cy="39" r="'+(id==='giantspider'?'18':'13')+'" fill="#76627a"/><path d="M69 56 L38 35 M66 65 L31 64 M71 75 L40 96 M111 56 L142 35 M114 65 L149 64 M109 75 L140 96" stroke="#453749" stroke-width="'+(id==='giantspider'?'7':'5')+'" stroke-linecap="round"/><circle cx="84" cy="36" r="3" fill="#ff9db6"/><circle cx="96" cy="36" r="3" fill="#ff9db6"/>');
+ if(id==='giantspider'||id==='giantspiderling')return svg('<ellipse cx="90" cy="62" rx="'+(id==='giantspider'?'30':'21')+'" ry="'+(id==='giantspider'?'25':'18')+'" fill="#4d3d52"/><circle cx="90" cy="39" r="'+(id==='giantspider'?'18':'13')+'" fill="#76627a"/><path d="M69 56 L38 35 M66 65 L31 64 M71 75 L40 96 M111 56 L142 35 M114 65 L149 64 M109 75 L140 96" stroke="#453749" stroke-width="'+(id==='giantspider'?'7':'5')+'" stroke-linecap="round"/><circle cx="84" cy="36" r="3" fill="#ff9db6"/><circle cx="96" cy="36" r="3" fill="#ff9db6"/>');
  if(id==='giantSquid')return svg('<ellipse cx="90" cy="48" rx="31" ry="34" fill="#7c496f"/><circle cx="79" cy="46" r="5" fill="#d9f7ff"/><circle cx="101" cy="46" r="5" fill="#d9f7ff"/><path d="M65 72 C52 87 48 101 39 109 M76 77 C69 93 70 103 62 111 M90 78 C90 96 89 105 90 113 M104 77 C111 92 111 104 119 111 M115 72 C128 87 132 101 141 109" fill="none" stroke="#6e3e64" stroke-width="8" stroke-linecap="round"/><path d="M62 26 Q90 7 118 26" fill="#9b5d8a"/>');
  if(id==='deepAngler')return svg('<path d="M52 63 Q58 35 91 30 Q126 32 139 60 Q135 88 104 94 L72 90 Q50 82 52 63Z" fill="#334b57"/><circle cx="82" cy="52" r="4" fill="#d7f3ff"/><circle cx="111" cy="52" r="4" fill="#d7f3ff"/><path d="M70 71 Q92 84 118 69" fill="none" stroke="#d7e4d8" stroke-width="4"/><path d="M108 31 Q111 12 127 10 Q139 11 140 23" fill="none" stroke="#5f7580" stroke-width="5"/><circle cx="141" cy="23" r="9" fill="#d9ff9d"/><path d="M57 72 l-19 15 M126 75 l19 15" stroke="#283d47" stroke-width="7" stroke-linecap="round"/>');
  return svg('<circle cx="90" cy="60" r="30" fill="#777"/>')
@@ -4358,7 +4358,7 @@ const SMELT_SPECS={
  fish:{name:'생선',duration:10000,has:()=>invCount('raw-fish')>0,take:()=>state.player.inventory['raw-fish']--,give:()=>addInv('cooked-fish',1)},
  hare:{name:'숲토끼고기',duration:10000,has:()=>invCount('forest-hare-meat')>0,take:()=>state.player.inventory['forest-hare-meat']--,give:()=>addInv('cooked-hare-meat',1)},
  lizard:{name:'도마뱀고기',duration:10000,has:()=>invCount('canyon-lizard-meat')>0,take:()=>state.player.inventory['canyon-lizard-meat']--,give:()=>addInv('cooked-lizard-meat',1)},
- crystaldeer:{name:'수정거미 식재료',duration:10000,has:()=>invCount('raw-crystal-deer-meat')>0,take:()=>state.player.inventory['raw-crystal-deer-meat']--,give:()=>addInv('cooked-crystal-deer-meat',1)},
+ crystaldeer:{name:'수정사슴 식재료',duration:10000,has:()=>invCount('raw-crystal-deer-meat')>0,take:()=>state.player.inventory['raw-crystal-deer-meat']--,give:()=>addInv('cooked-crystal-deer-meat',1)},
  greens:{name:'야채',duration:10000,has:()=>invCount('worldtree-greens')>0,take:()=>state.player.inventory['worldtree-greens']--,give:()=>addInv('cooked-greens',1)},
  bird:{name:'세계수 꿩고기',duration:10000,has:()=>invCount('world-bird-meat')>0,take:()=>state.player.inventory['world-bird-meat']--,give:()=>addInv('cooked-bird-meat',1)},
  goat:{name:'수정염소고기',duration:10000,has:()=>invCount('crystal-goat-meat')>0,take:()=>state.player.inventory['crystal-goat-meat']--,give:()=>addInv('cooked-crystal-goat-meat',1)},
@@ -4401,11 +4401,11 @@ function updateSmeltUi(){
  const end=process.endAt,now=Date.now(),type=process.type,spec=SMELT_SPECS[type],duration=process.duration||smeltDuration(type),q=Array.isArray(process.queue)?process.queue:[];
  const counts={iron:0,gold:0,deer:0,bug:0,fish:0,hare:0,lizard:0,crystaldeer:0,greens:0,bird:0,goat:0,squid:0,monopoly:0};for(const x of q)if(x in counts)counts[x]++;
  if(end>now){const remain=Math.max(0,end-now),pct=100*(1-remain/duration);ui.smeltText.textContent=(spec?.name||'재료')+' 처리 중 · '+(remain/1000).toFixed(1)+'초 · 대기 '+q.length;ui.smeltProgress.style.width=clamp(pct,0,100)+'%'}
- else{ui.smeltText.textContent='철 '+state.player.ironOre+' · 금 '+state.player.goldOre+' · 수액버섯 '+invCount('raw-deer-meat')+' · 벌레 '+invCount('raw-bug-meat')+' · 생선 '+invCount('raw-fish')+' · 토끼 '+invCount('forest-hare-meat')+' · 꿩 '+invCount('world-bird-meat')+' · 도마뱀 '+invCount('canyon-lizard-meat')+' · 수정염소 '+invCount('crystal-goat-meat')+' · 수정거미 '+invCount('raw-crystal-deer-meat')+' · 야채 '+invCount('worldtree-greens')+' · 오징어 '+invCount('raw-squid-meat')+' · 독점석 '+materialAmount('monopolyStone');ui.smeltProgress.style.width='0%'}
+ else{ui.smeltText.textContent='철 '+state.player.ironOre+' · 금 '+state.player.goldOre+' · 수액버섯 '+invCount('raw-deer-meat')+' · 벌레 '+invCount('raw-bug-meat')+' · 생선 '+invCount('raw-fish')+' · 토끼 '+invCount('forest-hare-meat')+' · 꿩 '+invCount('world-bird-meat')+' · 도마뱀 '+invCount('canyon-lizard-meat')+' · 수정염소 '+invCount('crystal-goat-meat')+' · 수정사슴 '+invCount('raw-crystal-deer-meat')+' · 야채 '+invCount('worldtree-greens')+' · 오징어 '+invCount('raw-squid-meat')+' · 독점석 '+materialAmount('monopolyStone');ui.smeltProgress.style.width='0%'}
  const buttons={sunstone:ui.sunstoneSmeltBtn,iron:ui.smeltBtn,gold:ui.goldSmeltBtn,deer:ui.deerSmeltBtn,bug:ui.bugSmeltBtn,fish:ui.fishSmeltBtn,hare:ui.hareSmeltBtn,lizard:ui.lizardSmeltBtn,crystaldeer:ui.crystalDeerSmeltBtn,greens:ui.greensSmeltBtn,bird:ui.birdSmeltBtn,goat:ui.goatSmeltBtn,squid:ui.squidSmeltBtn,monopoly:ui.monopolySmeltBtn};
  for(const [k,b] of Object.entries(buttons))if(b){b.hidden=toxic?k!=='sunstone':k==='sunstone';b.disabled=!SMELT_SPECS[k].has()};
  if(toxic&&end<=now)ui.smeltText.textContent='태양석 광석 '+materialAmount('sunstoneOre')+' · 구운 태양석 '+materialAmount('sunstoneIngot');
- ui.smeltBtn.textContent='철 · 5초';ui.goldSmeltBtn.textContent='금 · 10초';ui.deerSmeltBtn.textContent='수액버섯 · 10초';ui.bugSmeltBtn.textContent='벌레 · 15초';ui.fishSmeltBtn.textContent='생선 · 10초';ui.hareSmeltBtn.textContent='토끼 · 10초';ui.lizardSmeltBtn.textContent='도마뱀 · 10초';ui.crystalDeerSmeltBtn.textContent='수정거미 · 10초';ui.greensSmeltBtn.textContent='야채 · 10초';ui.birdSmeltBtn.textContent='꿩 · 10초';ui.goatSmeltBtn.textContent='수정염소 · 10초';ui.squidSmeltBtn.textContent='오징어 · 12초';ui.monopolySmeltBtn.textContent='독점석 · 20초'
+ ui.smeltBtn.textContent='철 · 5초';ui.goldSmeltBtn.textContent='금 · 10초';ui.deerSmeltBtn.textContent='수액버섯 · 10초';ui.bugSmeltBtn.textContent='벌레 · 15초';ui.fishSmeltBtn.textContent='생선 · 10초';ui.hareSmeltBtn.textContent='토끼 · 10초';ui.lizardSmeltBtn.textContent='도마뱀 · 10초';ui.crystalDeerSmeltBtn.textContent='수정사슴 · 10초';ui.greensSmeltBtn.textContent='야채 · 10초';ui.birdSmeltBtn.textContent='꿩 · 10초';ui.goatSmeltBtn.textContent='수정염소 · 10초';ui.squidSmeltBtn.textContent='오징어 · 12초';ui.monopolySmeltBtn.textContent='독점석 · 20초'
 }
 function openSmelt(station='furnace'){if(!['furnace','toxicFurnace'].includes(station)||!state[station]||state.area!=='surface')return;if(!nearStructure(state[station],175)){showNotice('용광로 가까이 가야 해');return}ui.smeltStation=station;ui.smeltPanel.classList.add('open');updateSmeltUi()}
 function enterWorldTreeInterior(){
@@ -4936,7 +4936,7 @@ function handleWorldTap(e){
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0&&!m.crystalHidden);
  let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=Infinity;
- if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(70,(Number(m.type.r)||20)+24)&&d<cd){closest=m;cd=d}}
+ if(!closest&&!worldPoint)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(70,(Number(m.type.r)||20)+24)&&d<cd){closest=m;cd=d}}
  if(closest){
   // 메인 · 미등록 몬스터는 먼저 두 번 조사해 도감에 등록한다. 첫 터치에서 공격하지 않는다.
   // 등록된 몬스터의 터치 공격과 활 3회 조준은 기존 attack() 판정을 유지한다.
@@ -5058,7 +5058,7 @@ function commonEnemySpecialProfile(type){
  if(['shadowwolf','thornhound','ironhidehound'].includes(id))return{name:'도약 물기',mult:1.35,effect:'attackblock',duration:800};
  if(['ironibex','crystalibex','crystalgoat'].includes(id))return{name:'뿔 돌진',mult:1.4,effect:'stun',duration:800};
  if(id==='foreststag')return{name:'애벌레 몸통박치기',mult:1.4,effect:'stun',duration:800};
- if(id==='crystaldeer')return{name:'수정거미 돌진',mult:1.4,effect:'stun',duration:800};
+ 
  if(id==='lakebuffalo')return{name:'폭주 들이받기',mult:1.5,effect:'stun',duration:900};
  if(id==='sandwalker')return{name:'갑각 회전',mult:1.35,effect:'slow30',duration:1600};
  if(id==='thornmantis')return{name:'쌍낫 베기',mult:.78,hits:2};
@@ -6022,16 +6022,18 @@ function crystalRegionEnemyMove(e,targetP,now){
    return {vx:seq.dx*(targetP.speed||185)*(2+seq.stage),vy:seq.dy*(targetP.speed||185)*(2+seq.stage)};
   }
  }
- if(!e.biterNextOrb)e.biterNextOrb=now+1000;
+ if(!e.biterNextOrb)e.biterNextOrb=now+800;
  if(!e.biterNextCharge)e.biterNextCharge=now+2000;
  if(now>=e.biterNextOrb){
-  e.biterNextOrb=now+1000;
-  if(d<700&&Math.random()<.20){
+  if(d<700){
+   e.biterNextOrb=now+4300;
+   e.attackAt=now;playGameSfx('monsterAttack',e.type);
+   if(!multiplayer.connected||e.playerTargetId===multiplayer.playerId)showNotice('수정 바이터 · 산성 구슬 2발 발사');
    for(let i=0;i<2;i++){
     const a=Math.atan2(targetP.y-e.y,targetP.x-e.x)+(i===0?-.18:.18);
     state.projectiles.push({kind:'biterAcid',x:e.x+Math.cos(a)*35,y:e.y+Math.sin(a)*35,vx:Math.cos(a)*225,vy:Math.sin(a)*225,speed:225,area:e.area,createdAt:now,life:7000,homingUntil:now+4000,targetId:e.playerTargetId==='pet'?multiplayer.playerId:(e.playerTargetId||multiplayer.playerId),sourceId:e.netId,orbIndex:i,playerOwned:false,damage:66});
    }
-  }
+  }else e.biterNextOrb=now+650;
  }
  if(now>=e.biterNextCharge){
   e.biterNextCharge=now+2000;
