@@ -1792,48 +1792,49 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(client,/local stick=human\.MoveDirection:Dot\(horizontal\.Unit\)/);
   assert.match(client,/stick>\.2 then actionId="skill-meadow-dodge-right"/);
   assert.match(client,/stick<-\.2 then actionId="skill-meadow-dodge-left"/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.11\*lean/);
   assert.ok(client.includes('skillMotionR15Targets.RootJoint=skillMotionTargets.Spine'));
   assert.ok(client.includes('skillMotionR15Targets["Left Hip"]=skillMotionTargets.ThighL'));
   assert.ok(client.includes('skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR'));
   assert.match(client,/dodgePoseUntil=0\s*finishMeadowSkillPose\(\)/);
   // 기존 공식 R15 관절만 사용해 낮추기-옆발-착지까지 포즈가 연속 변화해야 한다.
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
-  assert.match(client,/local prepare=math\.clamp\(phase\/\.17,0,1\)/);
-  assert.match(client,/local settle=math\.clamp\(\(1-phase\)\/\.27,0,1\)/);
-  assert.match(client,/local push=math\.clamp\(\(phase-\.07\)\/\.33,0,1\)/);
-  assert.match(client,/local plant=math\.clamp\(\(phase-\.55\)\/\.27,0,1\)/);
-  assert.match(client,/local leadKnee=\.23\*lean\+\.24\*travel\+\.18\*recovery/);
-  assert.match(client,/local trailKnee=\.36\*lean\+\.09\*travel\+\.15\*recovery/);
   // 착지 후 불필요한 남은 다리 각도가 끝 프레임에서 튀지 않아야 한다.
-  assert.match(client,/local trailHip=\.20\*lean\+\.16\*travel-\.10\*recovery/);
-  assert.match(client,/local compression=prepare\*\(1-push\)\*settle/);
-  assert.match(client,/local toeOff=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.09\)\/\.45,0,1\)\)\*settle/);
-  assert.match(client,/local impact=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.58\)\/\.23,0,1\)\)\*settle/);
-  assert.match(client,/local aftershock=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.67\)\/\.28,0,1\)\)\*settle/);
-  assert.match(client,/local counterSwing=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.16\)\/\.61,0,1\)\)\*settle/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.11\*lean,0,-sign\*\.055\*lean\)/);
-  assert.match(client,/skillMotionTargets\.HandL=CFrame\.Angles\(-\.07\*lean/);
-  assert.match(client,/skillMotionTargets\.HandR=CFrame\.Angles\(-\.07\*lean/);
   assert.match(client,/skillMotionTargets\.FootL=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.FootR=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ThighR=CFrame\.Angles/);
   assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles/);
+  // 새 회피: 실제 측면 점프, 적 정면 주시, 전방 15도 숙임.
+  assert.match(client,/local duck=math\.rad\(15\)\*stance/);
+  assert.match(client,/CFrame\.Angles\(-duck\*\.72/);
+  assert.match(client,/skillMotionTargets\.Chest=CFrame\.Angles\(-duck\*\.28/);
+  assert.match(client,/local lift=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.055\)\/\.53,0,1\)\)/);
+  assert.match(client,/local landing=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.56\)\/\.25,0,1\)\)/);
+  assert.match(client,/local leadingKnee=\.64\*lift\+\.25\*landing/);
+  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(\.045\*stance/);
+  assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-movementStarted\)\/\.26,0,1\)/);
+  // 복싱 방어: 한팔은 관자놀이, 다른팔은 어깨 아래, 턱 숙임.
+  assert.match(client,/local crouch=math\.clamp\(phase\/\.11,0,1\)/);
+  assert.match(client,/local elbow=math\.clamp\(\(phase-\.018\)\/\.105,0,1\)/);
+  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.095\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.69\*guard/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-\.39\*guard/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.13\*elbow/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.17\*elbow/);
   assert.doesNotMatch(client,/local ease=math\.sin\(math\.pi\*phase\)/);
   // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
+  assert.match(dodge,/local hopHeight=\(not overhead and not elevatedWall\) and \.62 or 0/);
+  assert.match(dodge,/character:PivotTo\(dodgeFacing\)/);
+  assert.match(dodge,/local hop=hopHeight\*math\.sin\(math\.pi\*t\)/);
+  assert.match(dodge,/character:PivotTo\(dodgeFacing\+dodgeOffset\*eased\+Vector3\.new\(0,hop,0\)\)/);
   assert.match(dodge,/workspace:Raycast\(start,side\*7,ray\)/);
   assert.match(dodge,/if distance<2 then return false end/);
   assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
   assert.match(dodge,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
-  assert.match(dodge,/character:PivotTo\(gaze\+dodgeOffset\*eased\)/);
   assert.match(dodge,/local nearest=25/);
   assert.match(dodge,/for _,enemy in ipairs\(enemies\) do/);
   assert.match(dodge,/if enemy\.HP>0 and enemy\.model\.Parent then/);
-  assert.match(dodge,/local turn=math\.clamp\(t\/\.32,0,1\)/);
-  assert.match(dodge,/turn=turn\*turn\*\(3-2\*turn\)/);
-  assert.match(dodge,/local gaze=dodgeOrigin:Lerp\(dodgeFacing,turn\)/);
   assert.match(dodge,/local side=Vector3\.new\(-facing\.Z,0,facing\.X\)\*sign/);
   assert.match(dodge,/local dodgeFacing=CFrame\.lookAt\(dodgeOrigin\.Position,dodgeOrigin\.Position\+facing\)/);
   assert.match(dodge,/humanoid\.AutoRotate=false/);
@@ -1841,31 +1842,30 @@ test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
 });
 
-// [마력숲 자연스러운 모션] 관절 보간 곡선은 양 끝에서 정확히 중립이고 착지 충격은 중간에서만 나타난다.
-test('마력숲 회피 발 디딤과 착지 곡선이 끝에서 관절을 튀게 하지 않는다',()=>{
-  const clamp=(v)=>Math.min(1,Math.max(0,v));
-  const smooth=(v)=>v*v*(3-2*v);
-  const sample=(phase)=>{
-    const prepare=smooth(clamp(phase/.17));
-    const settle=smooth(clamp((1-phase)/.27));
-    const lean=prepare*settle;
-    const push=smooth(clamp((phase-.07)/.33));
-    const plant=smooth(clamp((phase-.55)/.27));
-    const travel=push*(1-plant);
-    const recovery=plant*settle;
-    const toeOff=Math.sin(Math.PI*clamp((phase-.09)/.45))*settle;
-    const impact=Math.sin(Math.PI*clamp((phase-.58)/.23))*settle;
-    const trailHip=.20*lean+.16*travel-.10*recovery;
-    const trailKnee=.36*lean+.09*travel+.15*recovery;
-    return {lean,travel,toeOff,impact,trailHip,trailKnee};
+// [회피] 구간별 관절은 시작·끝 중립, 공중 발 들어올림과 착지 반동을 지킨다.
+test('마력숲 15도 옆 점프와 자연스러운 착지 곡선 검증',()=>{
+  const clamp=v=>Math.min(1,Math.max(0,v));
+  const smooth=v=>v*v*(3-2*v);
+  const pose=phase=>{
+    const ready=smooth(clamp(phase/.13)),settle=smooth(clamp((1-phase)/.26));
+    const stance=ready*settle;
+    const lift=Math.sin(Math.PI*clamp((phase-.055)/.53));
+    const landing=Math.sin(Math.PI*clamp((phase-.56)/.25));
+    const drive=Math.sin(Math.PI*clamp((phase-.04)/.54));
+    const recover=Math.sin(Math.PI*clamp((phase-.59)/.38));
+    const spring=Math.sin(Math.PI*clamp(phase/.14))*settle;
+    return {stance,lift,landing,drive,recover,spring,
+      duck:15*stance,lead:-.44*lift-.18*drive+.15*landing,
+      trail:.25*lift+.16*drive-.06*recover};
   };
-  for(const edge of [0,1]) {
-    for(const [name,value] of Object.entries(sample(edge)))
-      assert.ok(Math.abs(value)<1e-9,`neutral at phase ${edge}: ${name}=${value}`);
-  }
-  assert.ok(sample(.32).toeOff>.05,'toe off happens during lateral drive');
-  assert.ok(sample(.70).impact>.05,'landing shock occurs after lateral drive');
-  assert.ok(Math.abs(sample(.999).trailHip)<.002,'rear leg recovers before pose ends');
+  for(const edge of [0,1])for(const [name,value] of Object.entries(pose(edge)))
+    assert.ok(Math.abs(value)<1e-9,'neutral: '+edge+':'+name+':'+value);
+  assert.ok(Math.abs(pose(.3).duck-15)<.01);
+  assert.ok(pose(.3).lift>.9);
+  assert.ok(pose(.68).landing>.8);
+  const hop=t=>.62*Math.sin(Math.PI*t);
+  assert.ok(hop(.5)>.6);
+  assert.ok(Math.abs(hop(0))<1e-9&&Math.abs(hop(1))<1e-9);
 });
 
 // [마력숲 막기/회피] 공식 R15 관절 타이밍과 서버 판정을 연결하며 기존 밸런스를 유지한다.
@@ -1880,19 +1880,6 @@ test('fantasy guard holds a full pose and dodges blend smoothly without changing
   assert.match(client,/elseif isGuard or isParry then/);
   // [맨손 복싱 막기] 무기가 없을 때 고개를 숙이고 한팔로 감싼다. 무장 막기와 패링은 보존한다.
   assert.match(client,/if isGuard and not skillMotionCharacter:FindFirstChildOfClass\("Tool"\) then/);
-  assert.match(client,/local crouch=math\.clamp\(phase\/\.12,0,1\)/);
-  assert.match(client,/local elbow=math\.clamp\(\(phase-\.025\)\/\.115,0,1\)/);
-  assert.match(client,/local shoulder=math\.clamp\(\(phase-\.016\)\/\.105,0,1\)/);
-  assert.match(client,/local chin=math\.clamp\(\(phase-\.045\)\/\.13,0,1\)/);
-  assert.match(client,/local shoulderBreath=math\.sin\(\(os\.clock\(\)-skillMotionStart\)\*5\.1-\.5\)\*\.012\*guard/);
-  assert.match(client,/skillMotionTargets\.FootL=CFrame\.Angles\(-\.07\*crouch/);
-  assert.match(client,/skillMotionTargets\.FootR=CFrame\.Angles\(-\.09\*crouch/);
-  assert.match(client,/local breathing=math\.sin\(\(os\.clock\(\)-skillMotionStart\)\*5\.1\)\*\.014\*guard/);
-  assert.match(client,/skillMotionTargets\.Spine=CFrame\.new\(0,-\.16\*crouch\+breathing,0\)/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.24\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.91\*guard/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-1\.25\*elbow/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.12\*elbow/);
   assert.match(client,/local guard=rise\*release/);
   assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.12\*guard/);
   assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.24\*guard/);
@@ -1904,7 +1891,6 @@ test('fantasy guard holds a full pose and dodges blend smoothly without changing
   assert.match(client,/skillMotionR15\.Step\(skillMotionR15Targets,dt\)/);
   assert.match(server,/local ease=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
   assert.match(server,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
-  assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-movementStarted\)\/\.30,0,1\)/);
   assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-began\)\/\.40,0,1\)/);
   assert.match(server,/floorRay\.FilterDescendantsInstances=\{meadowTerrain\}/);
   assert.match(server,/floor\.Material==Enum\.Material\.Water/);
