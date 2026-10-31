@@ -76,7 +76,7 @@ test('오너 마력숲 최우선 바이브 구현 예약은 기존 3종 집중�
     type:'implementation',goal:'implement current Roblox game',status:'queued',priority:'normal',
     sourceRoot:'roblox-games/'+gameId,responsibleFiles:['server/Game.server.luau']});
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
-    task('ordinary-roblox','simple-rpg'),task('forest','fantasy-survival')
+    task('ordinary-roblox','party-rpg'),task('forest','fantasy-survival')
   ]});
   const one=reserveVibeTaskBatch(queue,{policy,maxConcurrentTasks:1,lane:'game-primary'});
   assert.deepEqual(one.tasks.map(t=>t.id),['forest']);
@@ -86,8 +86,8 @@ test('오너 마력숲 최우선 바이브 구현 예약은 기존 3종 집중�
 
 test('focused existing queues get exact game-platform priority and spare workers still develop other games',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
-    enabled:true,ownerFocusedGameIds:['simple-rpg','insect-survival','cozy-island'],
-    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'},
+    enabled:true,ownerFocusedGameIds:['party-rpg','insect-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'party-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'},
     completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
   }},developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}};
   const task=(id,gameId,target)=>({id,gameId,target,department:'development',type:'implementation',
@@ -96,7 +96,7 @@ test('focused existing queues get exact game-platform priority and spare workers
   const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
     task('normal-older','ordinary','roblox'),
     task('wrong-platform','cozy-island','roblox'),
-    task('focus-rpg','simple-rpg','roblox'),
+    task('focus-rpg','party-rpg','roblox'),
     task('focus-web','insect-survival','web')
   ]});
   const synced=synchronizeOwnerDevelopmentHolds(queue,policy);
