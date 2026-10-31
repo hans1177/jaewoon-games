@@ -958,7 +958,8 @@ local function createMeadowVillage()
   gameWorld:SetAttribute("MeadowVillageNPCCount",readyCount)
   gameWorld:SetAttribute("MeadowVillageWallCount",wallCount)
   gameWorld:SetAttribute("MeadowVillageBoardReady",board~=nil)
-  gameWorld:SetAttribute("MeadowVillageReady",readyCount==4 and board~=nil and evidenceCount==3)
+  gameWorld:SetAttribute("MeadowVillageReady",nativeVillageReady and villageBuildings==expectedVillageBuildings
+    and readyCount==4 and board~=nil and evidenceCount==3)
 end
 task.defer(createMeadowVillage)
 
