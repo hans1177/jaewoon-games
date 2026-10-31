@@ -2257,8 +2257,10 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.ok(nonOverlapping(base),'default four-button layout must stay individually clickable');
   assert.equal(base[0][1],base[2][1],'left attack and right guard must share the lower triangle row');
   assert.equal(base[1][0],base[3][0],'dodge and potion must stay on the same center axis');
-  assert.ok(base[1][1]<base[3][1]&&base[3][1]<base[0][1],
-    'dodge must lead the upper vertex and potion must remain between upper and lower actions');
+  assert.ok(base[1][1]<base[0][1]&&base[0][1]<base[3][1],
+    'dodge must stay at the top and potion below the two main combat buttons');
+  assert.ok(Math.abs((base[0][1]*260+74/2)-(base[3][1]*260+46/2))<1e-9,
+    'large attack and small potion buttons must share the same lower edge');
   assert.match(client,/if value=="235,275,500,120,800,275,500,510"\s+or value=="200,300,500,300,800,300,500,550"\s+or value=="160,540,500,120,840,540,500,395" then/);
   assert.ok(!nonOverlapping([[.5,.2],[.5,.2],[.8,.3],[.5,.51]]),
     'a saved overlap that would redirect clicks to dodge must be rejected');
