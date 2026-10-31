@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1mf8xw6",
+      "worker": "vibe2",
+      "taskId": "cozy-island-studio-evolution-roblox-stability-v8",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/VisualStyle.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau",
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/server/BattleVisual.luau",
+        "roblox-games/cozy-island/shared/CozyCC0Library.luau"
+      ],
+      "baseSha": "ccf0fff0aab04303af38403b3b2eeedfffd9b266",
+      "runId": "41157938993",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-31T02:19:14.213Z",
+      "expiresAt": "2026-10-31T03:04:14.213Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-studio-evolution-roblox-stability-v8"
+      ]
+    }
+  ]
 }
