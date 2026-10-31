@@ -641,7 +641,7 @@ test('Roblox survival object gathering keeps legacy reward and save rules until 
 });
 
 test('managed foundation in the middle must not hide real gameplay or generic skeleton debt',()=>{
-  const source=fs.readFileSync('roblox-games/simple-rpg/server/Game.server.luau','utf8');
+  const source=fs.readFileSync('roblox-games/party-rpg/server/Game.server.luau','utf8');
   const start=source.indexOf('-- native-foundation-sentinel-v1');
   const end=source.indexOf('local lastAction = {}',start);
   assert.ok(start>=0&&end>start);
