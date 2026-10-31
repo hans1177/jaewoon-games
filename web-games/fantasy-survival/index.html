@@ -1842,8 +1842,8 @@ function initWorld(){
   state.irons=Array.from({length:19},(_,i)=>makeNode('iron',i));
   state.golds=Array.from({length:13},(_,i)=>makeNode('gold',i));
   state.essences=Array.from({length:28},(_,i)=>makeNode('essence',i));
-  // 수정 지대 3,600×12,000의 원본 수정 광맥을 알아볼 수 있도록 분포만 복구한다. 기존 채광 및 저장 키는 유지한다.
-  state.crystals=Array.from({length:64},(_,i)=>makeNode('crystal',i));
+  // 원본 광맥 수량·채광·저장 키는 유지하고 3D 렌더러에서 누락된 수정 광맥을 표시한다.
+  state.crystals=Array.from({length:16},(_,i)=>makeNode('crystal',i));
   state.carrots=Array.from({length:360},(_,i)=>makeNode('carrot',i));
   state.poisonStones=Array.from({length:5},(_,i)=>makeNode('poisonstone',i));
   state.sunstones=Array.from({length:8},(_,i)=>makeNode('sunstone',i));
@@ -4943,7 +4943,7 @@ function handleWorldTap(e){
  let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=Infinity;
  // 죽거나 사라진 3D 표적을 다른 종으로 오인해 도감에 등록하지 않는다.
  if(worldPoint?.monsterId&&!closest)return;
- if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(70,(Number(m.type.r)||20)+24)&&d<cd){closest=m;cd=d}}
+ if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(40,(Number(m.type.r)||20)+12)&&d<cd){closest=m;cd=d}}
  if(closest){
   // 메인 · 미등록 몬스터는 먼저 두 번 조사해 도감에 등록한다. 첫 터치에서 공격하지 않는다.
   // 등록된 몬스터의 터치 공격과 활 3회 조준은 기존 attack() 판정을 유지한다.
