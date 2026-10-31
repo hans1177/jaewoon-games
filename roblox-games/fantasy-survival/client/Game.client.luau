@@ -3413,7 +3413,9 @@ player.CharacterAdded:Connect(function()
   finishMeadowSkillPose()
 end)
 player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()
-  if os.clock()>=dodgePoseUntil then finishMeadowSkillPose() end
+  -- [액션 모션 유지] 공격 승인 신호는 방어·회피·스킬 포즈의 종료 신호가 아니다.
+  -- 서버가 승인한 액션별 연출 시간 동안 기존 모션을 끊지 않는다.
+  if skillMotionR15 and os.clock()>=skillMotionDeadline then finishMeadowSkillPose() end
 end)
 player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   local id,serial=tostring(player:GetAttribute("ApprovedActionMotion") or ""):match("^([^:]+):(%d+)$")
@@ -3422,7 +3424,8 @@ player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect(function()
   local isDodge=id=="skill-meadow-dodge-left" or id=="skill-meadow-dodge-right"
   local isGuard=id=="skill-meadow-guard"
   local isParry=id=="skill-meadow-parry"
-  if os.clock()<dodgePoseUntil and not isDodge then return end
+  if os.clock()<dodgePoseUntil and not (isDodge or isGuard or isParry) then return end
+  if isGuard or isParry then dodgePoseUntil=0 end
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
   if not humanoid or humanoid.Health<=0
@@ -3544,18 +3547,19 @@ RunService.PreSimulation:Connect(function(dt)
       local elbow=math.clamp((phase-.018)/.105,0,1)
       elbow=elbow*elbow*(3-2*elbow)*release
       local breathing=math.sin((os.clock()-skillMotionStart)*3.9)*.009*guard
-      skillMotionTargets.Spine=CFrame.new(0,-.11*crouch+breathing,0)
-        *CFrame.Angles(-.18*crouch,.055*guard,-.025*guard)
-      skillMotionTargets.Chest=CFrame.Angles(-.055*guard,.04*guard,-.03*guard)
-      skillMotionTargets.Head=CFrame.Angles(-.095*guard,-.045*guard,.02*guard)
+      skillMotionTargets.Spine=CFrame.new(0,-.135*crouch+breathing,0)
+        *CFrame.Angles(-.20*crouch,.045*guard,-.02*guard)
+      skillMotionTargets.Chest=CFrame.Angles(-.062*guard,.035*guard,-.025*guard)
+      -- [턱 숙임] 약 15도 전방으로 중심을 낮추되 눈은 적 방향을 유지한다.
+      skillMotionTargets.Head=CFrame.Angles(-.14*guard,-.035*guard,.015*guard)
       -- 왼쪽 주먹: 광대뼈와 관자놀이 근처. 어깨를 과하게 올리지 않는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.69*guard,.10*guard,-.19*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-1.13*elbow,0,-.10*elbow)
-      skillMotionTargets.HandL=CFrame.Angles(-.11*elbow,-.05*elbow,0)
-      -- 오른쪽 주먹: 낮은 복싱 가드로 턱 아래와 갈비뼈 보호.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.39*guard,-.08*guard,.16*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.17*elbow,0,.10*elbow)
-      skillMotionTargets.HandR=CFrame.Angles(-.11*elbow,0,.05*elbow)
+      skillMotionTargets.UpperArmL=CFrame.Angles(-1.01*guard,.12*guard,-.27*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.46*elbow,0,-.12*elbow)
+      skillMotionTargets.HandL=CFrame.Angles(-.10*elbow,-.05*elbow,0)
+      -- 오른쪽 주먹: 어깨보다 낮게, 턱 아래에서 갈비뼈까지 보호한다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-.73*guard,-.09*guard,.22*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.37*elbow,0,.11*elbow)
+      skillMotionTargets.HandR=CFrame.Angles(-.12*elbow,0,.05*elbow)
       -- 바닥을 유지한 채 짧게 중심을 낮추고 균형을 잡는다.
       skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.065*guard)
       skillMotionTargets.ThighR=CFrame.Angles(.21*crouch,0,.065*guard)
@@ -4021,7 +4025,10 @@ local function bindOriginalMob(model)
           name="UpperArm"..side
         end
       end
-      if sourceChannels[name] and (not joints[name] or constraint) then
+      if sourceChannels[name] and (not joints[name] or constraint
+        or (species=="wolf" and joint:IsA("Bone") and not joints[name]:IsA("Bone"))) then
+        -- [원본 스킨 우선] 같은 이름의 연결부가 중복되면 늑대 메시를 실제로 변형하는 Bone을 사용한다.
+        -- 다리를 새로 만들지 않고 기존 정규화된 원본 스킨 관절을 재사용한다.
         joints[name]=joint
         available[name]=true
       end
@@ -4089,12 +4096,13 @@ local function bindOriginalMob(model)
     and available.WingL4 and available.WingR4)
   local actualRig=count>=2 and movingJoints==true and wolfFourLegRig==true
     and deerFourLegRig==true and batEightWingRig==true
-  local controller=not nativeTracks and actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
+  local controller=actualRig and meadowMobMotion and meadowMobMotion.BindJointPose(joints,{
     followAnimator=true,response=26,
   }) or nil
   local row={controller=controller,nativeTracks=nativeTracks,available=available,plan=bodyPlan,
     species=species,phase=0,poses={},lastMode=nil,motionStartedAt=os.clock(),
     lastPosition=model:GetPivot().Position,travel=0,groundSpeed=0,renderAccumulator=0,
+    originalTrackWaitStartedAt=os.clock(),
     -- [모션] 실제 관절의 직전 포즈를 저장해 정지·추적·공격 사이를 매끄럽게 잇는다.
     transitionFrom={},renderedPoses={},transitionStartedAt=0,transitionDuration=0}
   model:SetAttribute("NativeCreatureRigMode",nativeTracks and "ORIGINAL_ANIMATION_TRACKS"
@@ -4151,20 +4159,39 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
       -- [원본 애니메이션] Idle/Walk/Run/Attack 클립은 실제 메쉬의 Animator가 구동한다.
       -- 질주 클립이 없는 사슴은 걷기 클립을 빠르게 재생한다. 합성 관절은 동시에 구동하지 않는다.
       if row.nativeTracks then
-        local track=row.nativeTracks[mode] or
-          (row.species=="bat" and row.nativeTracks.FLY)
-          or (mode=="RUN" and row.nativeTracks.WALK)
-          or (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT") and row.nativeTracks.IDLE
-          or row.nativeTracks.IDLE
-        if track and track~=row.playingTrack then
-          if row.playingTrack then row.playingTrack:Stop(.16) end
-          track:Play(.16,1,mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
-          row.playingTrack=track
+        -- [늑대 동작 복구] 원본 걷기/달리기 클립은 유지하고,
+        -- 공격 예고·피격·회복 또는 공격 클립이 없는 경우 기존 원본 뼈의 절차 모션을 재사용한다.
+        local wolfAction=row.species=="wolf" and row.controller
+          and (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT"
+            or (mode=="ATTACK" and not row.nativeTracks.ATTACK))
+        if wolfAction then
+          if row.playingTrack then row.playingTrack:Stop(.1);row.playingTrack=nil end
+        else
+          local track=row.nativeTracks[mode] or
+            (row.species=="bat" and row.nativeTracks.FLY)
+            or (mode=="RUN" and row.nativeTracks.WALK)
+            or (mode=="ANTICIPATION" or mode=="RECOVERY" or mode=="HIT") and row.nativeTracks.IDLE
+            or row.nativeTracks.IDLE
+          if track and track~=row.playingTrack then
+            if row.playingTrack then row.playingTrack:Stop(.16) end
+            track:Play(.16,1,mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
+            row.playingTrack=track
+          end
+          if track and track.IsPlaying then
+            track:AdjustSpeed(mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
+          end
+          -- 원본 클립이 실행 불가/길이 0이면 기존 4족 본 모션으로 전환한다.
+          local missing=not track or not track.IsPlaying or track.Length<=0
+          if row.species=="wolf" and row.controller and missing
+            and os.clock()-row.originalTrackWaitStartedAt>=2.5 then
+            for _,original in pairs(row.nativeTracks) do original:Stop(.12) end
+            row.nativeTracks=nil
+            row.playingTrack=nil
+            model:SetAttribute("NativeCreatureRigMode","ORIGINAL_JOINT_RIG")
+          else
+            continue
+          end
         end
-        if track and track.IsPlaying then
-          track:AdjustSpeed(mode=="RUN" and not row.nativeTracks.RUN and 1.55 or 1)
-        end
-        continue
       end
       -- 서버 적중시각으로 공격 충격과 복귀만 연출한다. 피해 판정은 서버가 유지한다.
       local forcedPhase=nil
