@@ -3741,8 +3741,8 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard then
-      -- [양팔 얼굴 가드] 어깨를 앞으로 들고 양 팔꿈치를 접어 두 손이 눈·코 앞을 가리게 한다.
-      -- 2.8초 방어 유지, 이동·피해 판정·무기·세이브는 서버 기존 값 그대로 둔다.
+      -- [한팔 상단 가드] 오른 팔은 머리 위까지 확실히 올리고 왼 팔은 몸 앞에서 균형을 잡는다.
+      -- 기존 2.8초 방어 유지, 이동·피해 판정·무기·세이브 및 원본 관절은 그대로 둔다.
       local crouch=math.clamp(phase/.11,0,1)
       crouch=crouch*crouch*(3-2*crouch)*release
       local elbow=math.clamp((phase-.018)/.105,0,1)
@@ -3751,14 +3751,14 @@ RunService.PreSimulation:Connect(function(dt)
       skillMotionTargets.Spine=CFrame.new(0,-.125*crouch+breathing,0)
         *CFrame.Angles(-.13*crouch,0,0)
       skillMotionTargets.Chest=CFrame.Angles(-.05*guard,0,0)
-      skillMotionTargets.Head=CFrame.Angles(-.10*guard,0,0)
-      -- [왼팔] 얼굴 앞쪽으로 올리고 안쪽으로 모으며 팔꿈치를 깊게 접는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-1.44*guard,-.12*guard,.30*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-1.37*elbow,-.08*elbow,-.08*elbow)
+      skillMotionTargets.Head=CFrame.Angles(-.14*guard,0,0)
+      -- [왼팔] 몸 앞 낮은 방어 포즈로 둬 상단 오른팔과 실루엣을 구분한다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.38*guard,-.12*guard,.30*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-.70*elbow,-.08*elbow,-.08*elbow)
       skillMotionTargets.HandL=CFrame.Angles(-.16*elbow,0,-.08*elbow)
-      -- [오른팔] 같은 높이에서 반대 방향으로 모아 두 팔로 얼굴을 가린다.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-1.44*guard,.12*guard,-.30*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-1.37*elbow,.08*elbow,.08*elbow)
+      -- [오른팔] 원본 R15 어깨를 위로 들어 팔꿈치를 머리 위에 두는 강한 하이 가드.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-2.60*guard,.12*guard,-.30*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.05*elbow,.08*elbow,.08*elbow)
       skillMotionTargets.HandR=CFrame.Angles(-.16*elbow,0,.08*elbow)
       skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.045*guard)
       skillMotionTargets.ThighR=CFrame.Angles(.17*crouch,0,.045*guard)
