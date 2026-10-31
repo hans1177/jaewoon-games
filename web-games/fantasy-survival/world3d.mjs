@@ -47,7 +47,7 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
   'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb','sapdeer'],
   'monster-35.obj':['rootsovereign'],
-  'caterpillar.glb':['giantburrower','crystallizard','foreststag'], 'monster-31.obj':['sandwalker','mudwalker'],
+  'caterpillar.glb':['giantburrower','crystallizard'], 'deer.fbx':['foreststag'], 'monster-31.obj':['sandwalker','mudwalker'],
   'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc','crystalbiter'],
   'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
   'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish','shark'],
