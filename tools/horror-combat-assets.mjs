@@ -52,9 +52,9 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
-// [마력숲 A안 현실형 전투 아이콘] 연타·회피·한손 복싱 가드 3종만 정식 외부 PNG로 교체.
+// [마력숲 A안 아이콘] 연타·회피 외부 원본 2종만 교체하고 막기는 기존 승인 방패 PNG를 재사용한다.
 // 외부 원본을 실제 Roblox 계정에 등록한 뒤에만 기존 오른쪽 ImageLabel의 자산 ID를 변경한다.
-// 상호작용·질주·물약·가방의 기존 승인 이미지/액션은 그대로 보존한다.
+// 방패·상호작용·질주·물약·가방의 기존 승인 이미지/액션은 그대로 보존한다.
 // 사진에서 자른 40px 아틀라스나 게임 안에서 임의로 조립한 아이콘을 금지한다.
 if(process.argv.includes('--magic-action-icons-only')){
  const {execFileSync}=await import('node:child_process');
@@ -63,7 +63,7 @@ if(process.argv.includes('--magic-action-icons-only')){
  const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
  // [기존 승인 자산] 다운로드 원본·등록 ID·게임 바인딩까지 일치하면 권한 API를 반복 호출하지 않는다.
  const verifiedRoles={fist:['lorc','fulguro-punch'],dodge:['lorc','dodging'],
-   guard:['lorc','boxing-glove'],interact:['lorc','grab'],sprint:['lorc','sprint']};
+   guard:['delapouite','attached-shield'],interact:['lorc','grab'],sprint:['lorc','sprint']};
  const importedIcons=registry.nativeActionIcons?.icons||{};
  const existingClient=fs.readFileSync(clientPath,'utf8');
  const verifiedExisting=registry.gameId==='fantasy-survival'
@@ -99,7 +99,7 @@ if(process.argv.includes('--magic-action-icons-only')){
  const roles=[
    ['fist','fulguro-punch.png','lorc'],
    ['dodge','dodging.png','lorc'],
-   ['guard','boxing-glove.png','lorc'],
+   ['guard','attached-shield.png','delapouite'],
    ['potion','icon_potionred.png',null],
    ['interact','grab.png','lorc'],
    ['sprint','sprint.png','lorc'],
@@ -208,7 +208,7 @@ if(process.argv.includes('--magic-action-icons-only')){
  const iconEnd=client.indexOf('local reducedEffects=',iconStart);
  if(iconStart<0||iconEnd<iconStart)throw Error('FOREST_EXTERNAL_ICON_BINDING_ANCHOR_MISSING');
  const iconEntries=roles.map(([role])=>'  '+role+'="rbxassetid://'+imported[role].assetId+'"').join(',\n');
- client=client.slice(0,iconStart)+'-- [오른쪽 A안 아이콘] 연타·회피·한손 복싱가드 공식 외부 PNG, 나머지 기존 자산 보존\n'
+ client=client.slice(0,iconStart)+'-- [오른쪽 A안 아이콘] 연타·회피 공식 외부 PNG, 막기는 승인된 방패 원본 보존\n'
    +'local meadowRealActionIcons={\n'+iconEntries+'\n} -- CC0_REAL_ACTION_ICONS\n'+client.slice(iconEnd);
  if(/meadowRightActionAtlas|meadowRightActionRects|paintMeadowActionArt/.test(client))
    throw Error('FOREST_SCREENSHOT_ICON_FALLBACK_STILL_PRESENT');
