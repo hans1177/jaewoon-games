@@ -1547,8 +1547,8 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/or 116\)\*scale/);
   // [미니맵] 지도는 상단에 밀착시키고 실제 위치 이름→축소 좌표 순서로 표시한다.
   assert.match(client,/meadowRadar.Size=UDim2.fromOffset\(mapWidth,mapDiameter\+40\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight\+math.floor\(leftInset.X\),meadowHealthTrack.Position.Y.Offset\)/);
-  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(\s*math.floor\(dodgeCenter-radarOrigin.X\+\.5\),\s*math.floor\(healthTop-radarOrigin.Y\+\.5\)\s*\)/);
+  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(\.5,0\)/);
   assert.match(client,/south.Text="S"/);
   assert.match(client,/radarField.Position=UDim2.new\(\.5,0,0,1\)/);
   assert.match(client,/radarTitle.Position=UDim2.fromOffset\(3,mapDiameter\+7\)/);
@@ -1591,7 +1591,9 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local mapDiameter=compactLandscape and \(v.Y<350 and 80 or 88\) or small and 96 or math.floor\(math.clamp\(/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
   assert.ok(client.includes('world:FindFirstChild("Meadow_Ruin_"..index)'));
-  assert.ok(client.includes('meadowRadar.Position=UDim2.fromOffset(mapRight+math.floor(leftInset.X),meadowHealthTrack.Position.Y.Offset)'));
+  assert.ok(client.includes('local healthTop=meadowHealthTrack.AbsolutePosition.Y'));
+  assert.ok(client.includes('local dodgeCenter=dodgeButton.AbsolutePosition.X+dodgeSize.X*.5'));
+  assert.ok(client.includes('local radarOrigin=meadowVitalsGui.AbsolutePosition'));
   assert.ok(!client.includes('meadowAttackIcon.ImageRectOffset='),'removed primary attack icon must stay removed');
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
   assert.ok(client.includes('local meadowEnergy=Instance.new("Frame")'));
@@ -2197,10 +2199,13 @@ test('Forest four configurable top buttons align minimap and preserve lower util
   assert.match(client,/meadowSprintAuto=not meadowSprintAuto/);
   assert.match(client,/meadowSprintAuto and ready and remains<=\.05/);
   assert.match(client,/human\.MoveDirection\.Magnitude>\.1/);
-  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight\+math.floor\(leftInset.X\),meadowHealthTrack.Position.Y.Offset\)/);
-  assert.match(client,/local dodgeCenter=dockRight-math.floor\(235\*skillScale\)\+235\*meadowTopPositions\[2\]\[1\]\*skillScale/);
-  assert.match(client,/local mapRight=math.clamp\(math.floor\(dodgeCenter\+mapWidth\*\.5\+\.5\),mapWidth\+12,v.X-12\)/);
+  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(\.5,0\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(\s*math.floor\(dodgeCenter-radarOrigin.X\+\.5\),\s*math.floor\(healthTop-radarOrigin.Y\+\.5\)\s*\)/);
+  assert.match(client,/local dodgeCenter=dodgeButton.AbsolutePosition.X\+dodgeSize.X\*\.5/);
+  assert.match(client,/local healthTop=meadowHealthTrack.AbsolutePosition.Y/);
+  assert.match(client,/local radarOrigin=meadowVitalsGui.AbsolutePosition/);
+  assert.match(client,/meadowHealthTrack:GetPropertyChangedSignal\("AbsolutePosition"\):Connect\(layoutMeadowRadar\)/);
+  assert.match(client,/meadowSkillButtons\[2\]:GetPropertyChangedSignal\("AbsolutePosition"\):Connect\(layoutMeadowRadar\)/);
   assert.match(client,/alignMeadowRadar=layoutMeadowRadar/);
   assert.match(client,/local meadowTopDefaults=\{\{\.160,\.540\},\{\.500,\.120\},\{\.840,\.540\},\{\.500,\.395\}\}/);
   assert.match(client,/local activeDrag=nil/);
@@ -2253,8 +2258,8 @@ test('Forest minimap south aligns with existing circular radar and action is ser
   assert.match(client,/south\.Name="South"/);
   assert.match(client,/radarFieldCorner\.CornerRadius=UDim\.new\(1,0\)/);
   assert.match(client,/south\.Position=UDim2\.new\(\.5,0,1,-2\)/);
-  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(1,0\)/);
-  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(mapRight\+math.floor\(leftInset.X\),meadowHealthTrack.Position.Y.Offset\)/);
+  assert.match(client,/meadowRadar.AnchorPoint=Vector2.new\(\.5,0\)/);
+  assert.match(client,/meadowRadar.Position=UDim2.fromOffset\(\s*math.floor\(dodgeCenter-radarOrigin.X\+\.5\),\s*math.floor\(healthTop-radarOrigin.Y\+\.5\)\s*\)/);
   assert.match(client,/if alignMeadowRadar then alignMeadowRadar\(\) end/);
   assert.match(server,/\["skill-meadow-dodge-left"\]=function\(player\)/);
   assert.match(server,/\["skill-meadow-guard"\]=meadowGuard/);
