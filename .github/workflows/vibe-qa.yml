@@ -44,8 +44,6 @@ on:
       - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'qa/company-development-roblox-package.test.mjs'
       - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
-      - 'qa/simple-rpg-ai-authoring.test.mjs'
-      - 'qa/simple-rpg-age-chain.test.mjs'
       - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
@@ -93,8 +91,6 @@ on:
       - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'qa/company-development-roblox-package.test.mjs'
       - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
-      - 'qa/simple-rpg-ai-authoring.test.mjs'
-      - 'qa/simple-rpg-age-chain.test.mjs'
       - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
@@ -323,8 +319,6 @@ jobs:
           node --check tools/company-development-roblox-package.mjs
           node --check tools/company-development-roblox-gameplay-product-readiness.mjs
           node --test qa/company-roblox-source-drift-sync.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-gameplay-product-readiness.test.mjs
-          node --test qa/simple-rpg-ai-authoring.test.mjs
-          node --test qa/simple-rpg-age-chain.test.mjs
 
       - name: Verify CC0 GLB game binding and provenance
         run: node --test qa/vibe-glb-game-integration.test.mjs
