@@ -39,3 +39,41 @@ test('touch dock retains authoritative original actions and server request path'
     assert.ok(client.includes('"'+action+'"'),action);
   }
 });
+
+
+test('compact landscape keeps minimap directly above the dodge button and touch targets on screen',()=>{
+  // Same calculations as the existing mobile HUD. This does not assert real device play.
+  for(const pattern of [
+    'math.clamp((v.Y-20)/370,.76,1.12)',
+    'compactLandscape and (v.Y<350 and 80 or 88)',
+    'mapBottom+8-dodgeTop',
+    'local availableShift=math.max(0,v.Y-8-utilityBottom)',
+    'math.max(44,math.floor(45*scale))',
+    'meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,-bottomInset+math.floor(shift))'
+  ])assert.ok(client.includes(pattern),'responsive HUD source missing: '+pattern);
+  for(const [w,h] of [[1536,709],[852,393],[667,375],[800,300],[720,320],[640,360],[390,844],[360,640]]){
+    const landscape=w>h;
+    const scale=landscape?Math.max(.76,Math.min(1.12,(h-20)/370))
+      :Math.max(.76,Math.min(1,w/390));
+    const dockHeight=Math.floor(260*scale);
+    const bottomInset=Math.floor((landscape?(h<350?12:14):116)*scale);
+    const compact=landscape&&h<450;
+    const mapDiameter=compact?(h<350?80:88)
+      :w<480?96:Math.floor(Math.max(98,Math.min(124,h*.17)));
+    const dodgeTop=h-bottomInset-dockHeight+Math.floor((260*.3-31)*scale);
+    const mapBottom=8+mapDiameter+40;
+    const utilitySize=Math.max(44,Math.floor(45*scale));
+    const utilityBottom=h-bottomInset-dockHeight+Math.floor(194*scale)+utilitySize;
+    const availableShift=Math.max(0,h-8-utilityBottom);
+    const shift=compact?Math.min(availableShift,Math.max(0,mapBottom+8-dodgeTop)):0;
+    assert.ok(dodgeTop+shift>=mapBottom+8,'radar/dodge overlap '+w+'x'+h);
+    assert.ok(utilityBottom+shift<=h-8,'utility buttons clipped '+w+'x'+h);
+    assert.ok(utilitySize>=44,'utility too small '+w+'x'+h);
+    assert.ok(Math.floor(62*scale)>=44,'combat too small '+w+'x'+h);
+    const dodgeCenter=w-Math.floor(2*scale)-Math.floor(235*scale)+235*.5*scale;
+    const radarWidth=mapDiameter+14;
+    const radarRight=Math.max(radarWidth+12,Math.min(w-12,Math.floor(dodgeCenter+radarWidth*.5+.5)));
+    const radarCenter=radarRight-radarWidth*.5;
+    assert.ok(Math.abs(dodgeCenter-radarCenter)<1,'radar no longer aligned '+w+'x'+h);
+  }
+});
