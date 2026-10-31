@@ -4987,7 +4987,7 @@ test('common VFX image particles bind native receipts and preserve bounded cosme
  // [활성 소비자] 삭제된 공포 게임 대신 마력숲의 실제 VFX 모듈 호출을 검증한다.
  const client=fs.readFileSync(path.join(root,'roblox-games/fantasy-survival/client/Game.client.luau'),'utf8');
  assert.match(client,/combatVFX\.CreateImpactFlash/);
- assert.match(client,/meadowCommonVFX\.Create\(selectedFx,settings\)/);
+ assert.match(client,/pcall\(meadowCommonVFX.Create,selectedFx,settings\)/);
  assert.doesNotMatch(client,/combatEffects\.abilityVfxPart/);
  assert.doesNotMatch(source,/FireServer|FireAllClients|TakeDamage/);
 });
