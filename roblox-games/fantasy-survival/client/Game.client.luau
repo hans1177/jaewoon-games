@@ -3140,38 +3140,61 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
   if typeof(position)~="Vector3" or (position-rootPart.Position).Magnitude>45 then
     position=rootPart.Position
   end
-  -- [막기 방패 연출] 기존 구형 SHIELD_SHELL·둥근 BLOCK_IMPACT를 실행하지 않는다.
-  -- 이미 등록·승인된 방패 그림을 R15 상체 앞에 붙여 2.8초 동안 보여준다.
-  -- 새 Part·Mesh·임시 도형 없이 서버 승인 FX에서만 재생한다.
+  -- [막기 이펙트] 승인된 방어에만 양쪽 아래팔의 푸른 궤적과 손등의 은은한 빛을 적용한다.
+  -- 기존 거대 방패 그림을 제거하고 실제 팔에 부착한다. 파츠·모델·판정·저장은 추가하지 않는다.
   if actionId=="skill-meadow-guard" then
-    local torso=character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or rootPart
-    local shieldAnchor=Instance.new("Attachment")
-    shieldAnchor.Name="MeadowGuardShieldAnchor"
-    shieldAnchor.Position=torso==rootPart and Vector3.new(.12,2.05,-1.1) or Vector3.new(.12,.95,-1.1)
-    shieldAnchor.Parent=torso
-    local shieldEffect=Instance.new("BillboardGui")
-    shieldEffect.Name="MeadowGuardShieldEffect"
-    shieldEffect.Adornee=shieldAnchor
-    shieldEffect.Size=UDim2.new(2.15,0,2.45,0)
-    shieldEffect.AlwaysOnTop=false
-    shieldEffect.MaxDistance=65
-    shieldEffect.LightInfluence=0
-    shieldEffect.Parent=shieldAnchor
-    local shieldImage=Instance.new("ImageLabel")
-    shieldImage.Name="ApprovedShieldSilhouette"
-    shieldImage.BackgroundTransparency=1
-    shieldImage.Size=UDim2.fromScale(1,1)
-    shieldImage.Image=meadowRealActionIcons.guard
-    shieldImage.ImageColor3=Color3.fromRGB(137,219,255)
-    shieldImage.ImageTransparency=.16
-    shieldImage.ScaleType=Enum.ScaleType.Fit
-    shieldImage.Parent=shieldEffect
-    task.delay(2.45,function()
-      if shieldImage.Parent then
-        game:GetService("TweenService"):Create(shieldImage,TweenInfo.new(.35),{ImageTransparency=1}):Play()
+    local tweenService=game:GetService("TweenService")
+    for _,side in ipairs({"Left","Right"}) do
+      local arm=character:FindFirstChild(side.."LowerArm") or character:FindFirstChild(side.." Arm")
+      local hand=character:FindFirstChild(side.."Hand") or arm
+      if arm and arm:IsA("BasePart") then
+        local wrist=Instance.new("Attachment")
+        wrist.Name="MeadowGuardWrist"..side
+        wrist.Position=Vector3.new(0,-arm.Size.Y*.33,-arm.Size.Z*.37)
+        wrist.Parent=arm
+        local elbow=Instance.new("Attachment")
+        elbow.Name="MeadowGuardElbow"..side
+        elbow.Position=Vector3.new(0,arm.Size.Y*.33,-arm.Size.Z*.37)
+        elbow.Parent=arm
+        local streak=Instance.new("Trail")
+        streak.Name="MeadowGuardForearmStreak"..side
+        streak.Attachment0=wrist
+        streak.Attachment1=elbow
+        streak.Color=ColorSequence.new(Color3.fromRGB(224,250,255),Color3.fromRGB(68,177,255))
+        streak.Transparency=NumberSequence.new({
+          NumberSequenceKeypoint.new(0,.17),
+          NumberSequenceKeypoint.new(.5,.42),
+          NumberSequenceKeypoint.new(1,1),
+        })
+        streak.WidthScale=NumberSequence.new(1,.15)
+        streak.Lifetime=reducedEffects and .12 or .22
+        streak.MinLength=.025
+        streak.FaceCamera=true
+        streak.LightEmission=.85
+        streak.Parent=arm
+        task.delay(.42,function()
+          if streak.Parent then streak.Enabled=false end
+        end)
+        debris:AddItem(wrist,2.8)
+        debris:AddItem(elbow,2.8)
+        debris:AddItem(streak,2.8)
       end
-    end)
-    debris:AddItem(shieldAnchor,2.8)
+      if hand and hand:IsA("BasePart") then
+        local glow=Instance.new("PointLight")
+        glow.Name="MeadowGuardFistGlow"..side
+        glow.Color=Color3.fromRGB(105,204,255)
+        glow.Range=reducedEffects and 3 or 4.5
+        glow.Brightness=reducedEffects and .35 or 1.15
+        glow.Shadows=false
+        glow.Parent=hand
+        task.delay(2.42,function()
+          if glow.Parent then
+            tweenService:Create(glow,TweenInfo.new(.34,Enum.EasingStyle.Quad),{Brightness=0}):Play()
+          end
+        end)
+        debris:AddItem(glow,2.8)
+      end
+    end
     return
   end
   local hostPart=character:FindFirstChild("RightHand") or rootPart
@@ -3718,31 +3741,29 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard then
-      -- [한팔 머리 위 막기] 장비 착용 여부와 관계없이 오른팔을 완전히 올리고 왼팔은 내린다.
-      -- 승인된 2.8초 방어 동안 호흡만 더하며 이동과 서버 피해 판정은 바꾸지 않는다.
+      -- [양팔 얼굴 가드] 어깨를 앞으로 들고 양 팔꿈치를 접어 두 손이 눈·코 앞을 가리게 한다.
+      -- 2.8초 방어 유지, 이동·피해 판정·무기·세이브는 서버 기존 값 그대로 둔다.
       local crouch=math.clamp(phase/.11,0,1)
       crouch=crouch*crouch*(3-2*crouch)*release
       local elbow=math.clamp((phase-.018)/.105,0,1)
       elbow=elbow*elbow*(3-2*elbow)*release
       local breathing=math.sin((os.clock()-skillMotionStart)*3.9)*.009*guard
-      skillMotionTargets.Spine=CFrame.new(0,-.135*crouch+breathing,0)
-        *CFrame.Angles(-.20*crouch,.045*guard,-.02*guard)
-      skillMotionTargets.Chest=CFrame.Angles(-.062*guard,.035*guard,-.025*guard)
-      -- [턱 숙임] 약 15도 전방으로 중심을 낮추되 눈은 적 방향을 유지한다.
-      skillMotionTargets.Head=CFrame.Angles(-.14*guard,-.035*guard,.015*guard)
-      -- [낮은 왼팔] 왼팔은 몸통 옆에 두고 방어 자세의 균형만 잡는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.25*guard,.06*guard,-.10*guard)
-      skillMotionTargets.ForearmL=CFrame.Angles(-.36*elbow,0,-.05*elbow)
-      skillMotionTargets.HandL=CFrame.Angles(-.04*elbow,0,0)
-      -- [오른팔 하이 가드] 어깨를 위로 140도 이상 들고 팔꿈치는 가볍게 접어 머리 위를 가린다.
-      skillMotionTargets.UpperArmR=CFrame.Angles(-2.48*guard,-.12*guard,.22*guard)
-      skillMotionTargets.ForearmR=CFrame.Angles(-.58*elbow,0,.10*elbow)
-      skillMotionTargets.HandR=CFrame.Angles(-.08*elbow,0,.04*elbow)
-      -- 바닥을 유지한 채 짧게 중심을 낮추고 균형을 잡는다.
-      skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.065*guard)
-      skillMotionTargets.ThighR=CFrame.Angles(.21*crouch,0,.065*guard)
-      skillMotionTargets.ShinL=CFrame.Angles(.21*crouch,0,0)
-      skillMotionTargets.ShinR=CFrame.Angles(.22*crouch,0,0)
+      skillMotionTargets.Spine=CFrame.new(0,-.125*crouch+breathing,0)
+        *CFrame.Angles(-.13*crouch,0,0)
+      skillMotionTargets.Chest=CFrame.Angles(-.05*guard,0,0)
+      skillMotionTargets.Head=CFrame.Angles(-.10*guard,0,0)
+      -- [왼팔] 얼굴 앞쪽으로 올리고 안쪽으로 모으며 팔꿈치를 깊게 접는다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-1.44*guard,-.12*guard,.30*guard)
+      skillMotionTargets.ForearmL=CFrame.Angles(-1.37*elbow,-.08*elbow,-.08*elbow)
+      skillMotionTargets.HandL=CFrame.Angles(-.16*elbow,0,-.08*elbow)
+      -- [오른팔] 같은 높이에서 반대 방향으로 모아 두 팔로 얼굴을 가린다.
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.44*guard,.12*guard,-.30*guard)
+      skillMotionTargets.ForearmR=CFrame.Angles(-1.37*elbow,.08*elbow,.08*elbow)
+      skillMotionTargets.HandR=CFrame.Angles(-.16*elbow,0,.08*elbow)
+      skillMotionTargets.ThighL=CFrame.Angles(.17*crouch,0,-.045*guard)
+      skillMotionTargets.ThighR=CFrame.Angles(.17*crouch,0,.045*guard)
+      skillMotionTargets.ShinL=CFrame.Angles(.20*crouch,0,0)
+      skillMotionTargets.ShinR=CFrame.Angles(.20*crouch,0,0)
       skillMotionTargets.FootL=CFrame.Angles(-.05*crouch,0,0)
       skillMotionTargets.FootR=CFrame.Angles(-.05*crouch,0,0)
     else
