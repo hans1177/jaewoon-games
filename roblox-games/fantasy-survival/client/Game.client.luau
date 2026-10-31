@@ -2060,6 +2060,15 @@ local function readMeadowTopLayout(value)
     local x,y=values[index*2-1],values[index*2]
     if x<120 or x>880 or y<100 or y>550 then return false end
   end
+  -- [버튼 겹침 방지] 이전 저장 위치가 중첩되어 다른 버튼을 가리지 않도록 기본 배치를 사용한다.
+  for index=1,3 do
+    for other=index+1,4 do
+      local dx=(values[index*2-1]-values[other*2-1])*235/1000
+      local dy=(values[index*2]-values[other*2])*260/1000
+      local minDistance=31+(other==4 and 22 or 31)+6
+      if dx*dx+dy*dy<minDistance*minDistance then return false end
+    end
+  end
   for index=1,4 do meadowTopPositions[index]={values[index*2-1]/1000,values[index*2]/1000} end
   return true
 end
@@ -2184,9 +2193,10 @@ for index,skill in ipairs(meleeSkills)do
   cooldownCorner.Parent=cooldown
   meadowSkillButtons[index]=button
   meadowSkillCooldowns[index]=cooldown
+  local skillActionId=skill[1] -- [오른쪽 터치] 각 버튼의 서버 기술 ID를 자기 입력에 고정한다.
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
-    activateMeadowAction(skill[1])
+    activateMeadowAction(skillActionId)
   end)
 end
 -- 기본 공격은 기존 화면 터치/키보드로 계속 사용하고 별도 공격 버튼은 제거한다.
@@ -2378,9 +2388,19 @@ UserInputService.InputChanged:Connect(function(input)
   local canvasSize=previewCanvas.AbsoluteSize
   if canvasSize.X<=0 or canvasSize.Y<=0 then return end
   local p=meadowTopPositions[activeDrag]
-  p[1]=math.clamp((input.Position.X-previewCanvas.AbsolutePosition.X)/canvasSize.X,.12,.88)
-  p[2]=math.clamp((input.Position.Y-previewCanvas.AbsolutePosition.Y)/canvasSize.Y*.66,.10,.55)
-  refreshTopEditor()
+  local x=math.clamp((input.Position.X-previewCanvas.AbsolutePosition.X)/canvasSize.X,.12,.88)
+  local y=math.clamp((input.Position.Y-previewCanvas.AbsolutePosition.Y)/canvasSize.Y*.66,.10,.55)
+  -- [이동 편집] 실제 오른쪽 버튼 크기까지 고려해서 원래 다른 기술을 덮는 이동을 차단한다.
+  local free=true
+  for index,other in ipairs(meadowTopPositions) do
+    if index~=activeDrag then
+      local dx=(x-other[1])*235
+      local dy=(y-other[2])*260
+      local minDistance=(activeDrag==4 and 22 or 31)+(index==4 and 22 or 31)+6
+      if dx*dx+dy*dy<minDistance*minDistance then free=false;break end
+    end
+  end
+  if free then p[1],p[2]=x,y;refreshTopEditor() end
 end)
 UserInputService.InputEnded:Connect(function(input)
   if not activeDrag then return end
