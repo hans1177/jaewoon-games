@@ -1609,7 +1609,7 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/local scale=landscape and math.clamp\(v.Y\/\d+,[\s\S]*?or math.clamp\(v.X\/\d+/);
   assert.ok(client.includes('for index,button in ipairs(meadowSkillButtons)do'));
   assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(/);
-  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\([^)]*(?:index-1|p\[1\])[\s\S]*?\*scale\)/);
+  assert.match(client,/button.Position=UDim2.fromOffset\(math.floor\(\(cx-originalSize\/2\)\*scale\)/);
   assert.ok(!client.includes('button.Text=locked and "맨손 전용"'),
     'retired combat cooldown redraw must not race the current semicircle button state');
   const dodge=server.slice(server.indexOf('local function applyMeadowMobHit('),server.indexOf('humanoid:TakeDamage(damage)'));
@@ -1619,8 +1619,11 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(dodge.indexOf('if safe then')<dodge.indexOf('character:PivotTo('));
   assert.ok(client.includes('button.Size=UDim2.fromOffset(size,size)'));
   assert.ok(client.includes('gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMeadowCombatUi)'));
-  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut','skill-meadow-guard']){
-    assert.ok(client.includes('{"'+id+'",'), 'real combat dock skill missing: '+id);
+  for(const id of ['meadow-unarmed-rush','skill-meadow-dodge-left','skill-meadow-guard','skill-meadow-heal']){
+    assert.ok(client.includes('{"'+id+'",'), 'real top combat action missing: '+id);
+  }
+  for(const id of ['meadow-unarmed-kick','meadow-unarmed-uppercut']){
+    assert.ok(server.includes('["'+id+'"]='),'original unarmed action must remain server-authoritative: '+id);
   }
   // 나머지 기존 스킬을 지우지 않고 원본 Config에서 메뉴로 접근 가능해야 한다.
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
