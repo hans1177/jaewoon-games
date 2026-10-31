@@ -2037,7 +2037,7 @@ end)
 local meadowSkillDock=Instance.new("Frame")
 meadowSkillDock.Name="MeadowR15SkillDock"
 meadowSkillDock.BackgroundTransparency=1
-meadowSkillDock.ZIndex=20 -- [오른쪽 버튼] 타 UI와 독립된 입력 우선순위.
+meadowSkillDock.ZIndex=35 -- [오른쪽 버튼] 일반 HUD 위에 실동작 터치 버튼을 배치.
 meadowSkillDock.AnchorPoint=Vector2.new(1,1)
 meadowSkillDock.Parent=gui
 -- 외부 CC0 등록 아틀라스의 실제 의미가 맞는 아이콘만 매칭한다.
@@ -2085,6 +2085,7 @@ local function styleMeadowCombatButton(button,color)
   button.Font=Enum.Font.GothamBold
   button.TextWrapped=true
   button.ZIndex=14
+  button.Active=true;button.Interactable=true -- [모바일 입력] 실제 버튼만 터치를 처리한다.
   local corner=Instance.new("UICorner")
   corner.CornerRadius=UDim.new(1,0);corner.Parent=button
   local border=Instance.new("UIStroke")
@@ -2130,6 +2131,7 @@ local function applyMeadowRightActionImage(button,role)
   icon.Position=UDim2.fromScale(.5,.45)
   icon.Size=UDim2.fromScale(.76,.76)
   icon.ZIndex=20
+  icon.Active=false;icon.Interactable=false
   icon.Parent=button
   return true
 end
@@ -2170,6 +2172,7 @@ for index,skill in ipairs(meleeSkills)do
   nameplate.TextStrokeTransparency=.55
   nameplate.Font=Enum.Font.GothamBold
   nameplate.TextSize=13;nameplate.ZIndex=17
+  nameplate.Active=false;nameplate.Interactable=false
   nameplate.Visible=true
   nameplate.Parent=meadowSkillDock
   local plateCorner=Instance.new("UICorner")
@@ -2187,7 +2190,7 @@ for index,skill in ipairs(meleeSkills)do
   cooldown.Font=Enum.Font.GothamBold
   cooldown.TextSize=17
   cooldown.Visible=false
-  cooldown.ZIndex=22 -- 등록된 시안 그림 위에 실제 서버 스킬 쿨다운 표시
+  cooldown.ZIndex=22;cooldown.Active=false;cooldown.Interactable=false -- 스킬 표시가 터치를 가리지 않는다.
   cooldown.Parent=button
   local cooldownCorner=Instance.new("UICorner")
   cooldownCorner.CornerRadius=UDim.new(1,0)
@@ -2244,6 +2247,7 @@ for index,info in ipairs(meadowUtilityActions)do
   label.Font=Enum.Font.GothamBold
   label.TextScaled=true
   label.ZIndex=23
+  label.Active=false;label.Interactable=false
   label.Parent=button
   button.Activated:Connect(function()
     if gui:GetAttribute("GameMenuOpen")==true then return end
@@ -2902,7 +2906,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     local cost=0 -- 위치 재배치는 기존 기술의 서버 스테미너·쿨다운을 바꾸지 않는다.
     -- [기술 터치] 재사용 대기 중에도 버튼 입력을 막지 않고 서버에서 쿨다운을 검증한다.
     -- 비활성화된 GUI 버튼이 터치 자체를 삼켜 기술이 고장 난 것처럼 보이던 문제를 제거한다.
-    button.Active=ready and stamina>=cost
+    button.Active=true -- [터치] 서버에서 프로필·스테미너·쿨다운을 검증한다.
     button.Text=""
     meadowSkillNameplates[index].TextTransparency=ready and 0 or .25
     local cooldown=meadowSkillCooldowns[index]
@@ -2914,7 +2918,7 @@ game:GetService("RunService").Heartbeat:Connect(function(dt)
     local info=meadowUtilityActions[index]
     local deadline=player:GetAttribute("MeadowReady_"..info[1])
     local remains=typeof(deadline)=="number" and math.max(0,deadline-now) or 0
-    button.Active=ready and (info[1]=="skill-meadow-sprint" or remains<=.05)
+    button.Active=true -- [터치] 가방·상호작용·질주의 입력 차단 금지.
     button.Text=info[4]
     button.TextTransparency=button.Active and 0 or .3
     if info[1]=="skill-meadow-sprint" then

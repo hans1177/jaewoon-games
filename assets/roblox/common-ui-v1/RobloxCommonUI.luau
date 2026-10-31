@@ -5633,21 +5633,6 @@ end
 
 function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)
  local opened=false
- -- [게임별 메뉴] 기존 primary 콜백과 장르별 페이지 옵션은 다른 입력 계약이다.
- local options=type(primary)=="table" and type(primary.pages)=="table" and primary or nil
- local pages=options and options.pages or nil
- local pageNames=options and options.pageNames or nil
- local selectedPage=1
- local tabs={}
- local nav=nil
- local function selectPage(index)
-  if not pages then return end
-  selectedPage=math.clamp(tonumber(index) or 1,1,#pages+1)
-  list.Visible=selectedPage==#pages+1
-  for pageIndex,page in ipairs(pages)do page.Visible=pageIndex==selectedPage end
-  for index,button in ipairs(tabs)do button.BackgroundTransparency=index==selectedPage and 0 or .22 end
-  if type(options.onPageChanged)=="function" then options.onPageChanged(selectedPage) end
- end
  gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
  local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
  title.Parent=hud;status.Parent=hud;if healthTrack then healthTrack.Parent=hud end
@@ -5657,7 +5642,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local close=RobloxCommonUI.CreatePrimaryButton({name="CloseActionsMenu",text="닫기",minWidth=52,minHeight=52})
  close.Parent=root
  local quick=nil
- if not options and type(primary)=="table" and type(primary.activate)=="function" then
+ if primary then
   quick=RobloxCommonUI.CreatePrimaryButton({name="PrimaryGameAction",text=primary.label,minWidth=52,minHeight=56})
   quick.Parent=gui;quick.Activated:Connect(primary.activate)
  end
@@ -5665,31 +5650,6 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui
  root.ZIndex=41;list.ZIndex=42;close.ZIndex=43
  for _,item in ipairs(list:GetDescendants())do if item:IsA("GuiObject")then item.ZIndex=43 end end
- if pages then
-  nav=Instance.new("ScrollingFrame")
-  nav.Name="GameMenuPages"
-  nav.BackgroundTransparency=1;nav.BorderSizePixel=0;nav.ZIndex=42
-  nav.ScrollingDirection=Enum.ScrollingDirection.X
-  nav.AutomaticCanvasSize=Enum.AutomaticSize.X
-  nav.CanvasSize=UDim2.new();nav.ScrollBarThickness=2;nav.Active=true
-  nav.Parent=root
-  local navLayout=Instance.new("UIListLayout")
-  navLayout.FillDirection=Enum.FillDirection.Horizontal
-  navLayout.SortOrder=Enum.SortOrder.LayoutOrder
-  navLayout.Padding=UDim.new(0,5);navLayout.Parent=nav
-  for index=1,#pages+1 do
-   local button=RobloxCommonUI.CreatePrimaryButton({
-    name="GameMenuTab"..index,
-    text=index<=#pages and tostring(pageNames and pageNames[index] or index) or "행동",
-    minWidth=56,minHeight=44})
-   button.Size=UDim2.fromOffset(82,44)
-   button.LayoutOrder=index;button.ZIndex=43;button.Parent=nav
-   tabs[index]=button
-   local pageIndex=index
-   button.Activated:Connect(function()selectPage(pageIndex)end)
-  end
-  selectPage(1)
- end
  local function layout()
   local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
   hud.Position=UDim2.fromOffset(8,8);hud.Size=UDim2.fromOffset(math.min(380,v.X-16),multiplayerStatus and 100 or 78)
@@ -5697,30 +5657,13 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
   if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8)end
   if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
-  if options and options.menuLeft then
-   menu.AnchorPoint=Vector2.new(0,1);menu.Position=UDim2.new(0,8,1,-104)
-  else
-   menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104)
-  end
-  menu.Size=UDim2.fromOffset(72,52)
+  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(72,52)
   if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
-  local contentY=pages and 121 or 68
-  list.Position=UDim2.fromOffset(8,contentY)
-  list.Size=UDim2.new(1,-16,1,-(contentY+8))
-  if nav then
-   nav.Position=UDim2.fromOffset(8,64)
-   nav.Size=UDim2.new(1,-16,0,50)
-   for _,page in ipairs(pages)do
-    page.Position=UDim2.fromOffset(8,contentY)
-    page.Size=UDim2.new(1,-16,1,-(contentY+8))
-    page.ZIndex=42
-   end
-  end
+  list.Position=UDim2.fromOffset(8,68);list.Size=UDim2.new(1,-16,1,-76)
  end
- local function setOpen(value,pageIndex)
-  if value and pages then selectPage(pageIndex or selectedPage) end
+ local function setOpen(value)
   opened=value;root.Visible=value;shade.Visible=value;hud.Visible=not value;menu.Visible=not value
   if quick then quick.Visible=not value end
   gui:SetAttribute("GameMenuOpen",value)
@@ -5729,7 +5672,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  close.Activated:Connect(function()setOpen(false)end)
  gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
  layout();setOpen(false)
- return {isOpen=function()return opened end,open=function(pageIndex)setOpen(true,pageIndex)end,close=function()setOpen(false)end}
+ return {isOpen=function()return opened end,close=function()setOpen(false)end}
 end
 
 

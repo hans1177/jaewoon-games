@@ -1658,17 +1658,20 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.match(client,/if positions and #positions==1 then activateMeadowWorldTap\(positions\[1\]\) end/);
   assert.match(client,/if processedByUI or gui:GetAttribute\("GameMenuOpen"\)==true then return end/);
   assert.match(client,/elseif not activateNearbyMeadowInteraction\(nil\) then activateMeadowAction\(info\[1\]\) end/);
-  assert.match(client,/button.Active=ready and stamina>=cost/);
+  assert.match(client,/button.Active=true -- \\[터치\\] 서버에서 프로필/);
   assert.match(client,/target:InputHoldBegin\(\)/);
   assert.doesNotMatch(client,/TouchTapInWorld:Connect\(function\(positions,processedByUI\)/);
   assert.match(client,/CommonUI.AdaptActionMenu\(gui,root,list,title,status,(?:nil|meadowHealthTrack),multiplayerStatus,/);
-  // [버튼 먹통 회귀] 메뉴 페이지 객체를 nil 빠른행동 콜백으로 연결해 클라이언트가 멈추는 문제 금지.
-  const nativeUi=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
-  assert.match(nativeUi,/type\\(primary.pages\\)=="table"/);
-  assert.match(nativeUi,/type\\(primary.activate\\)=="function"/);
-  assert.match(nativeUi,/open=function\\(pageIndex\\)setOpen\\(true,pageIndex\\)end/);
-  assert.match(nativeUi,/page.Visible=pageIndex==selectedPage/);
-  assert.match(client,/meadowSkillDock.ZIndex=20/);
+  // [터치 검수] 실제 마력숲 shared UI를 검사하고 GUI 장식의 터치 가림을 방지한다.
+  const actualUi=fs.readFileSync('roblox-games/fantasy-survival/shared/RobloxCommonUI.luau','utf8');
+  assert.match(actualUi,/if primary and primary.hideButton~=true then/);
+  assert.match(actualUi,/open=function\\(index\\)selectPage\\(index or 0\\);setOpen\\(true\\)end/);
+  assert.match(client,/meadowSkillDock.ZIndex=35/);
+  assert.match(client,/button.Active=true;button.Interactable=true/);
+  assert.match(client,/icon.Active=false;icon.Interactable=false/);
+  assert.match(client,/cooldown.Interactable=false/);
+  assert.match(client,/label.Active=false;label.Interactable=false/);
+  assert.match(client,/button.Active=true -- \\[터치\\] 가방/);
   assert.match(server,/local heading=Vector3.new\\(destination.X-origin.X,0,destination.Z-origin.Z\\)/);
   assert.match(server,/npc:PivotTo\\(CFrame.lookAt\\(origin,origin\\+heading.Unit\\)\\)/);
   assert.match(client,/pages=meadowPages/);
