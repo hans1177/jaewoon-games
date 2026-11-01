@@ -104,7 +104,10 @@ test('private in-engine camera follows real existing NPC with native client vide
  assert.doesNotMatch(director,/VirtualInputManager|VirtualUser|SendKeyEvent|SendMouseButtonEvent|Humanoid:MoveTo/);
 });
 
+// [현재 등록된 게임] 목록에서 삭제된 프로젝트를 요구하지 않지만, 광고 중인 프로젝트는 반드시 실제 파일을 검사.
+const advertisedCaptureIds=new Set(JSON.parse(fs.readFileSync('game-catalog.json','utf8')).games.map(row=>row.id));
 for(const id of ['cozy-island','daechung-rpg','horror-escape-room']){
+ if(!advertisedCaptureIds.has(id))continue;
  test(id+' uses exact gated common native capture module without changing normal gameplay',()=>{
   const project=JSON.parse(fs.readFileSync(path.join('roblox-games',id,'default.project.json'),'utf8'));
   const shared=project.tree.ReplicatedStorage.Shared;
