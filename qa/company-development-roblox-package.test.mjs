@@ -170,18 +170,13 @@ test('selected real-model scale and pivot sinks require a native consumer and se
   assert.equal(robloxStudioAssetFamilyBoundInText(pose.replace('local clip=','local function unrelated(model)\nlocal clip=')+'\nend','MOTION'),false);
 });
 
-test('Cozy NPC anatomy and Baeksu original model consumers use selected library families',()=>{
-  const cozy=fs.readFileSync('roblox-games/cozy-island/client/Game.client.luau','utf8');
-  assert.equal(robloxStudioAssetFamilyBoundInText(cozy,'CHARACTER'),true);
-  assert.equal(robloxStudioAssetFamilyBoundInText(cozy.replace('table.find(npcBodyAtoms,"BODY_STANDARD")~=nil','true'),'CHARACTER'),false);
-  const kit=fs.readFileSync('roblox-games/baeksu-war/shared/VisualKit.luau','utf8');
-  for(const family of ['CREATURE','ENVIRONMENT','PROP','MOTION']){
-    assert.equal(robloxStudioAssetFamilyBoundInText(kit,family),true,family);
-    assert.equal(robloxStudioAssetFamilyBoundInText(kit.replace('studioAssetFamily("'+family+'")','{}'),family),false,family+' must lose binding when its actual selection is removed');
-  }
-  assert.doesNotMatch(kit,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/);
-  assert.ok(kit.includes('actor:PivotTo('));
-  assert.ok(kit.includes('root:ScaleTo(factor)'));
+test('active Fantasy R15 villagers retain actual CC0 asset binding after retired game removal',()=>{
+  assert.equal(fs.existsSync('roblox-games/cozy-island/client/Game.client.luau'),false);
+  assert.equal(fs.existsSync('roblox-games/baeksu-war/default.project.json'),false);
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
+  assert.match(server,/local studioMaterialAtoms = studioAssetFamily\("MATERIAL"\)/);
+  assert.doesNotMatch(server,/Instance.new\("Part"\)/);
 });
 
 test('stale same-game source trees are coalesced as superseded work instead of failed workers',()=>{
@@ -584,9 +579,9 @@ test('Roblox binding rejects nonempty lists and comments while accepting actual 
 });
 
 test('Roblox binding follows multiline selected-atom branches and same-object type guards',()=>{
-  // [활성 게임] Cozy Island 원본과 아래의 엄격한 양·음성 조건 검증을 유지한다.
-  const cozy=fs.readFileSync(new URL('../roblox-games/cozy-island/client/Game.client.luau',import.meta.url),'utf8');
-  assert.equal(robloxStudioAssetFamilyBoundInText(cozy,'CREATURE'),true,'selected atom early return must preserve the existing consumer');
+  // [활성 게임] 제거된 Cozy Island 대신 현재 Fantasy 서버의 실제 선택을 확인한다.
+  const fantasy=fs.readFileSync(new URL('../roblox-games/fantasy-survival/server/Game.server.luau',import.meta.url),'utf8');
+  assert.match(fantasy,/local studioCreatureAtoms = studioAssetFamily\("CREATURE"\)/);
 
   const guard='if not instance:IsA("MeshPart") then return end\nlocal name = instance.Name:lower()\n';
   const selection='if name == "lamp"\n  and table.find(studioAssetFamily("PROP"), "LAMP") then\n';
@@ -1191,7 +1186,7 @@ test('fantasy meadow forest edges reuse verified trees and wildlife with quiet d
   assert.match(server,/model:IsDescendantOf\(gameWorld\)/);
   assert.match(server,/rootPart.Position-model:GetPivot\(\).Position\).Magnitude>15/);
   // 네 입구에만 조사 프롬프트를 표시해 사분면 기록을 유지하고 중복 HUD를 막는다.
-  assert.match(server,/if index==6 or index==12 or index==18 or index==24 then/);
+  assert.match(server,/if index==6 or index==12 or index==18 or index==24 or spec\[4\]=="OUTER" then/);
   assert.match(server,/bindMeadowInspection\(tree,"WOODLAND"\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\+#trailSpurs\)/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowWoodlandScene","FOUR_GROVES_FOUR_REAL_TRAIL_SPURS"\)/);
@@ -1232,7 +1227,7 @@ test('fantasy grove composition reuses licensed meshes and terrain without intro
   assert.match(server,/gameWorld:SetAttribute\("MeadowForestFloorCount",forestFloorCount\)/);
   assert.match(server,/index%6==0 and Enum.Material.Ground or Enum.Material.LeafyGrass/);
   assert.match(server,/if distance>84 and math.abs\(x\)<330/);
-  assert.match(server,/if index==6 or index==12 or index==18 or index==24 then/);
+  assert.match(server,/if index==6 or index==12 or index==18 or index==24 or spec\[4\]=="OUTER" then/);
   assert.match(server,/for step=1,34 do/);
   assert.match(server,/gameWorld:SetAttribute\("MeadowNativeTrails",#tracks\+#trailSpurs\)/);
   assert.match(server,/for step=-44,44 do/);
@@ -1418,7 +1413,7 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/isAlpha and 220/);
   assert.match(server,/isAlpha and 13/);
   assert.match(server,/isAlpha and 8\.4/);
-  assert.match(server,/if target\.isBoss then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
+  assert.match(server,/if target\.isAlpha then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
   assert.match(server,/target\.questIndex/);
   assert.match(server,/bit32\.bor\(readNumber\(player,"VillageContractEvidence",0\),64\)/);
   assert.match(server,/Players:CreateHumanoidModelFromDescriptionAsync\(desc,Enum.HumanoidRigType.R15\)/);
@@ -1617,8 +1612,9 @@ test('fantasy meadow hides only the default mobile JumpButton including respawn'
   assert.match(client,/radarCoordinates.TextSize=9/);
   assert.match(client,/radarTitle.Font=Enum.Font.Gotham/);
   assert.match(client,/radarTitle.Text=areaName/);
-  for(const region of ['초원지역','초원 마을','오래된 유적','숲 가장자리'])
-    assert.ok(client.includes('areaName="'+region+'"'),'real existing area name missing: '+region);
+  for(const region of ['초원지역','오래된 유적','숲 가장자리','북서 숲 외곽','남동 깊은 숲'])
+    assert.ok(client.includes('areaName="'+region+'"'),'missing region: '+region);
+  assert.match(client,/areaName=z<-250 and "초원 마을 · 농경지"/);
   assert.match(client,/world:FindFirstChild\("Meadow_Ruin_"\.\.index\)/);
   assert.match(client,/world:GetAttribute\("MeadowVillageNPCCount"\) or 0/);
 });
@@ -1644,10 +1640,17 @@ test('fantasy native controls do not wait on asset import and source rigs can mo
   assert.ok(client.includes('meadowEnergy.Size=UDim2.fromOffset(width,21)'));
   assert.ok(client.includes('meadowEnergy.Position=UDim2.new(.5,0,0,top+25)'));
   assert.ok(client.includes('local radarTrailEndpoints={'));
-  assert.ok(client.includes('{-51,-48,-177,-176},{58,-49,183,-177}'));
-  assert.ok(client.includes('{-177,-176,-228,-219},{183,-177,231,-228}'));
-  assert.ok(client.includes('for route=1,8 do'));
-  assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=8'));
+  // [좌표 일치] 실제 36개 지형 길을 미니맵이 그대로 표시해야 한다.
+  const trackBlock=server.slice(server.indexOf('local tracks={'),server.indexOf('for route,track in ipairs(tracks)'));
+  const spurBlock=server.slice(server.indexOf('local trailSpurs={'),server.indexOf('for index,track in ipairs(trailSpurs)'));
+  const trackPattern=/from=Vector2\.new\((-?[\d.]+),(-?[\d.]+)\),to=Vector2\.new\((-?[\d.]+),(-?[\d.]+)\)/g;
+  const paths=[...trackBlock.matchAll(trackPattern),...spurBlock.matchAll(trackPattern)].map(v=>v.slice(1).join(','));
+  const radarBlock=client.slice(client.indexOf('local radarTrailEndpoints={'),client.indexOf('local radarRuinSites='));
+  const radarPaths=[...radarBlock.matchAll(/\{(-?\d+),(-?\d+),(-?\d+),(-?\d+)\}/g)].map(v=>v.slice(1).join(','));
+  assert.equal(paths.length,36);
+  assert.deepEqual(new Set(radarPaths),new Set(paths),'visible map and physical paths must agree');
+  assert.ok(client.includes('for route=1,36 do'));
+  assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails") or 0)>=36'));
   assert.ok(client.includes('radarFieldCorner.CornerRadius=UDim.new(1,0)'));
   assert.match(client,/local mapDiameter=compactLandscape and \(v.Y<350 and 80 or 88\) or small and 96 or math.floor\(math.clamp\(/);
   assert.ok(client.includes('world:GetAttribute("MeadowNativeTrails")'));
@@ -1806,8 +1809,8 @@ test('마력숲 버섯 몬스터는 출현하지 않고 실제 박쥐 원본 뼈
   assert.doesNotMatch(sites,/id="skeleton"/,'removed skeleton spawn sites must not return');
   assert.doesNotMatch(server,/skeleton="초원 해골"|SKELETON_CLEAVE|SKELETON_THRUST/);
   assert.doesNotMatch(client,/species~="skeleton"|SKELETON_CLEAVE|SKELETON_THRUST/);
-  assert.equal((sites.match(/id="bat"/g)||[]).length,3,'original three bat habitats remain');
-  assert.equal((sites.match(/id="wolf"/g)||[]).length,5,'original four wolves and approved alpha boss remain');
+  assert.equal((sites.match(/id="bat"/g)||[]).length,4,'four active bat habitats cover the corners');
+  assert.equal((sites.match(/id="wolf"/g)||[]).length,8,'eight exterior wolf habitats including alpha');
   assert.equal((sites.match(/alpha=true/g)||[]).length,1,'exactly one approved alpha wolf boss');
   assert.doesNotMatch(server,/enemy\.kind=="mushroom"|mushroom="포자 버섯"/);
   assert.match(config,/bat=105975567112263/,'keep approved original CC0 bat');
@@ -2110,8 +2113,10 @@ test('마력숲 공격 승인이 액션을 조기 중단하지 않고 늑대 원
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const approve=client.slice(client.indexOf('player:GetAttributeChangedSignal("ApprovedCombatMotion"):Connect(function()\n  -- [액션 모션 유지]'),
     client.indexOf('player:GetAttributeChangedSignal("ApprovedActionMotion"):Connect('));
-  assert.match(approve,/if skillMotionR15 and os\.clock\(\)>=skillMotionDeadline then finishMeadowSkillPose\(\) end/);
-  assert.doesNotMatch(approve,/os\.clock\(\)>=dodgePoseUntil/);
+  assert.match(approve,/if skillMotionR15 and \(os\.clock\(\)>=skillMotionDeadline/);
+  assert.match(approve,/skillMotionCharacter:GetAttribute\("NativeSkillActionId"\)=="skill-meadow-dodge-left"/);
+  assert.match(approve,/os\.clock\(\)>=dodgePoseUntil/);
+  assert.match(approve,/finishMeadowSkillPose\(\)/);
   assert.match(client,/species=="wolf" and joint:IsA\("Bone"\) and not joints\[name\]:IsA\("Bone"\)/);
   assert.match(client,/local controller=actualRig and meadowMobMotion and meadowMobMotion\.BindJointPose/);
   assert.match(client,/local wolfAction=row\.species=="wolf" and row\.controller/);
@@ -2162,7 +2167,8 @@ test('fantasy arrival shows native world title, actual map preloads, safe resume
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   assert.match(client,/Name="MeadowArrivalScreen"/);
   assert.match(client,/panel\("MeadowTitle",390,306\)/);
-  assert.match(client,/panel\("MeadowMapLoading",440,324\)/);
+  assert.match(client,/panel\("MeadowMapLoading",390,178\)/);
+  assert.doesNotMatch(client,/paper.Name="DiscoveredMap"|marker.Name="RegionMarker"/);
   assert.match(client,/Name="FirstArrivalScene"/);
   assert.match(client,/CameraType=Enum.CameraType.Scriptable/);
   assert.match(client,/restoreCamera\(\)/);
@@ -2173,8 +2179,8 @@ test('fantasy arrival shows native world title, actual map preloads, safe resume
   assert.match(client,/skipButton.Activated:Once\(finish\)/);
   assert.match(client,/ContentProvider:PreloadAsync\(\{asset\}\)/);
   assert.match(client,/setProgress\(loaded,total,/);
-  assert.match(client,/local mask=player:GetAttribute\("ExplorationGroves"\) or 0/);
-  assert.match(client,/MeadowVillagePrefabReady/);
+  assert.match(client,/local total=1\+#assets/);
+  assert.match(client,/local loaded=0/);
   assert.match(client,/meadowEffectsGroup.Volume/);
   assert.match(client,/meadowAmbienceGroup.Volume/);
   assert.match(client,/player:GetAttribute\("MeadowProfileHadSave"\)~=true/);
@@ -2236,7 +2242,8 @@ test('Forest title is created before blocking world waits and entry stays save-s
   assert.match(client,/meadowVitalsGui=Instance\.new\("ScreenGui"\)/);
   assert.match(client,/meadowVitalsGui.Enabled=false/);
   assert.match(client,/meadowVitalsGui.Enabled=true/);
-  assert.match(client,/gui:FindFirstChild\("Area",true\)/);
+  assert.match(client,/local loadPanel=panel\("MeadowMapLoading",390,178\)/);
+  assert.match(client,/setProgress\(0,0,"서버 및 저장 기록 확인"\)/);
   assert.match(client,/continueButton\.Active=true/);
   assert.match(client,/local profileDeadline=os\.clock\(\)\+35/);
   assert.match(client,/local newGameWaiting=false/);
