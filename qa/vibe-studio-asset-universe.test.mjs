@@ -810,7 +810,8 @@ test('one mixed reference image can seed multiple internal asset domains without
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
   const sourceId='qa-mixed-harbor-reference';
-  const imageRef='assets/homepage-covers/cozy-island.webp';
+  // [실제 저장소 이미지] 삭제된 cozy-island 표지를 참조하지 않고 보존 중인 프로젝트 원본을 사용한다.
+  const imageRef='assets/homepage-covers/fantasy-survival.webp';
   const sourceHash=createHash('sha256').update(fs.readFileSync(path.resolve(here,'..',imageRef))).digest('hex');
   const plan=buildVibeAssetProductionPlan({
     task:{
