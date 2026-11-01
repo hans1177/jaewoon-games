@@ -150,17 +150,22 @@ test('F9 is nonterminal and dispatches exact artifacts for every exact verified 
   assert.match(finalReview,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
 });
 
-test('cozy island foundation ordering and successful core-loop proof stay fail-closed',()=>{
-  const server=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
-  const buildIndex=server.indexOf('\nbuildWorld()\n');
-  const bindIndex=server.indexOf('Players.PlayerAdded:Connect(bindPlayer)');
-  assert.ok(buildIndex>=0,'cozy island must build world before binding players');
-  assert.ok(bindIndex>buildIndex,'safe spawn and world foundation must exist before player binding');
-  assert.match(server,/local accepted=H\[a\]\(p\)/);
-  assert.match(server,/if accepted==true then\s+foundationCheckpoint\("CORE_LOOP_READY"/);
-  assert.match(server,/if battling\[p\]then msg\(p,"전투 중"\)return false end/);
-  assert.match(server,/if troops<=0 then msg\(p,"병사가 필요해"\)return false end/);
-  assert.match(server,/task\.spawn\(function\(\)[\s\S]*?end\)\s+return true\s+end/);
+// [마력숲 정식 배포 기본 검증] 삭제된 다른 게임 파일에 의존하지 않고 현재 활성 서버의 저장/입장 권한을 검증한다.
+test('fantasy-survival foundation waits for actual meadow and gates core loop on verified profile',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const worldIndex=server.indexOf('local gameWorld = workspace:FindFirstChild("FantasySurvivalWorld")');
+  const bindIndex=server.indexOf('Players.PlayerAdded:Connect(onSurvivalPlayerAdded)');
+  const remoteIndex=server.indexOf('local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)');
+  assert.ok(remoteIndex>=0&&worldIndex>remoteIndex&&bindIndex>worldIndex,
+    'live server must bind the world, remote, and player state before input approval');
+  assert.match(server,/while player.Parent==Players and gameWorld:GetAttribute\("MeadowOuterRegionReady"\)~=true/);
+  assert.match(server,/player:SetAttribute\("ProfileReady", true\)/);
+  assert.match(server,/if typeof\(actionId\) ~= "string" or player:GetAttribute\("ProfileReady"\) ~= true then return end/);
+  assert.match(server,/if actionId=="meadow:enter-world" then/);
+  assert.match(server,/player:SetAttribute\("MeadowEnteredWorld",true\)/);
+  assert.match(server,/if player:GetAttribute\("MeadowEnteredWorld"\)~=true then return false end/);
+  assert.match(server,/GetDataStore\("fantasy-survival-development-v1"\)/);
+  assert.match(server,/ray.FilterDescendantsInstances=\{meadowTerrain\}/);
 });
 
 test('new Roblox runtime candidate atomically invalidates stale release and QA pass state',()=>{
