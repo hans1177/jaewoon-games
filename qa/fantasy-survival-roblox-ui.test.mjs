@@ -78,3 +78,31 @@ test('compact landscape keeps minimap directly above the dodge button and touch 
     assert.ok(Math.abs(dodgeCenter-radarCenter)<1,'radar no longer aligned '+w+'x'+h);
   }
 });
+
+test('deer and wolf keep real source bones and documented Animator motion priorities',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const native=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/native-assets.json','utf8'));
+  const visual=fs.readFileSync('roblox-games/fantasy-survival/shared/VisualAssetIds.luau','utf8');
+  assert.equal(native.models.deer.sourcePath,'assets/shared/forest/deer-animated.glb');
+  assert.equal(native.models.wolf.sourcePath,'assets/shared/forest/wolf.fbx');
+  for(const joint of ['frontupperlegl','frontupperlegr','frontlowerlegl','frontlowerlegr',
+      'backupperlegl','backupperlegr','backlowerlegl','backlowerlegr',
+      'torso2','neck1','tail1']){
+    assert.match(client,new RegExp('\\b'+joint+'="'));
+  }
+  for(const bone of ['bone014','bone017','bone008','bone011']){
+    assert.ok(client.includes(bone+'="'),'wolf actual source leg missing: '+bone);
+  }
+  assert.match(client,/deerGallopOffsets=\{FL=/);
+  assert.match(client,/wolfGallopOffsets=\{FL=/);
+  assert.match(client,/Enum\.AnimationPriority\.Idle/);
+  assert.match(client,/Enum\.AnimationPriority\.Movement/);
+  assert.match(client,/Enum\.AnimationPriority\.Action/);
+  assert.match(client,/local quadrupedAction=\(row\.species=="wolf" or row\.species=="deer"\)/);
+  assert.match(client,/row\.groundSpeed<\.35 then mode="IDLE"/);
+  assert.match(client,/row\.controller\.Step\(row\.poses,poseDt\)/);
+  assert.match(server,/NativeMobFacingYaw/);
+  assert.match(server,/closest<11 and "RUN" or "WALK"/);
+  assert.match(visual,/deer=107866382568249/);
+  assert.doesNotMatch(client,/Instance\.new\("Part"\).*Deer/);
+});
