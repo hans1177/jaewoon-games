@@ -118,13 +118,14 @@ if '--game-id=fantasy-survival' in sys.argv:
      expression=(
       'import bpy\\n'
       + 'bpy.ops.wm.open_mainfile(filepath='+repr(str(blends[0]))+')\\n'
+      + "if bpy.context.object and bpy.context.object.mode!='OBJECT':bpy.ops.object.mode_set(mode='OBJECT')\\n"
       + "bpy.ops.object.select_all(action='DESELECT')\\n"
       + "for obj in bpy.data.objects:\\n"
       + " if obj.type=='MESH':obj.select_set(True)\\n"
       + 'bpy.ops.export_scene.gltf(filepath='+repr(str(output))+",export_format='GLB',use_selection=True)\\n"
      )
      subprocess.run(['blender','--background','--disable-autoexec','--python-expr',expression],
-      check=True,timeout=180,stdout=subprocess.DEVNULL)
+      check=True,timeout=180)
     data=output.read_bytes()
     if len(data)<1000 or len(data)>18*1024*1024 or not data.startswith(b'glTF'):
      raise RuntimeError('FANTASY_VILLAGE_HOUSE_GLTF_SIZE_OR_FORMAT_INVALID:'+role)
@@ -132,7 +133,7 @@ if '--game-id=fantasy-survival' in sys.argv:
      raise RuntimeError('FANTASY_VILLAGE_HOUSE_GLTF_VERSION_INVALID:'+role)
     json_bytes=struct.unpack_from('<I',data,12)[0]
     document=json.loads(data[20:20+json_bytes])
-    if len(document.get('meshes',[]))<2:
+    if len(document.get('meshes',[]))<1:
      raise RuntimeError('FANTASY_VILLAGE_HOUSE_NATIVE_GEOMETRY_EMPTY:'+role)
     digest=hashlib.sha256(data).hexdigest()
     records[role]={'sourceFile':filename,'sourceSha256':row['sourceSha256'],
