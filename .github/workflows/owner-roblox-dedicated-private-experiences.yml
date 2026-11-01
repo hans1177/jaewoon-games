@@ -192,9 +192,11 @@ jobs:
             exit 1
           fi
           # 기존 원본 등록 경로에서만 네 개의 CC0 완성 집 메시를 변환한다.
-          if ! command -v blender >/dev/null 2>&1; then
+          # [원본 Blender GLB 변환] Ubuntu Blender는 glTF 내보내기에서
+          # NumPy를 요구한다. 존재하는 Blender만 검사하면 모듈 부족으로 실패한다.
+          if ! command -v blender >/dev/null 2>&1 || ! dpkg-query -W -f='${Status}' python3-numpy 2>/dev/null | grep -qx 'install ok installed'; then
             sudo apt-get update -qq
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender python3-numpy
           fi
           python3 tools/baeksu-war-author-meshes.py -- /tmp/forest-village-assets --game-id=fantasy-survival
           node tools/baeksu-war-upload-meshes.mjs /tmp/forest-village-assets /tmp/forest-village-receipt.json --game-id=fantasy-survival
