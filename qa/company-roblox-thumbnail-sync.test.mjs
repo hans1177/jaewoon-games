@@ -76,15 +76,16 @@ test('homepage renderer and manager prefer canonical marketing thumbnail',()=>{
 });
 
 test('thumbnail target resolves verified runtime universe without changing publication target',()=>{
+  // [등록된 실제 게임] 사라진 Cozy Island의 카탈로그를 요구하지 않고 현존 원본으로 검증한다.
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const queue={items:[{
-    gameId:'cozy-island',
-    robloxPublicationTarget:{gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',verified:true,dedicated:true,shared:false}
+    gameId:'village-dungeons',
+    robloxPublicationTarget:{gameId:'village-dungeons',universeId:'12345',placeId:'56789',verified:true,dedicated:true,shared:false}
   }]};
-  const target=resolveRobloxThumbnailTarget({catalog,queue,gameId:'cozy-island'});
-  assert.equal(target.universeId,'10767445741');
-  assert.equal(target.placeId,'116850096561713');
-  assert.equal(target.source,'assets/roblox-thumbnails/cozy-island.svg');
+  const target=resolveRobloxThumbnailTarget({catalog,queue,gameId:'village-dungeons'});
+  assert.equal(target.universeId,'12345');
+  assert.equal(target.placeId,'56789');
+  assert.equal(target.source,'assets/roblox-thumbnails/village-dungeons.svg');
   const validated=validateCanonicalThumbnail({root:'.',target});
   assert.equal(validated.ext,'.svg');
   assert.equal(validated.sha256.length,64);
@@ -92,8 +93,8 @@ test('thumbnail target resolves verified runtime universe without changing publi
 
 test('unverified, shared or mismatched Roblox server target never receives another game thumbnail',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-  const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',verified:true,dedicated:true,shared:false};
-  const evaluate=patch=>resolveRobloxThumbnailTarget({catalog,queue:{items:[{gameId:'cozy-island',robloxPublicationTarget:{...target,...patch}}]},gameId:'cozy-island'});
+  const target={gameId:'village-dungeons',universeId:'12345',placeId:'56789',verified:true,dedicated:true,shared:false};
+  const evaluate=patch=>resolveRobloxThumbnailTarget({catalog,queue:{items:[{gameId:'village-dungeons',robloxPublicationTarget:{...target,...patch}}]},gameId:'village-dungeons'});
   assert.equal(evaluate({}).universeId,target.universeId);
   for(const patch of [
     {verified:false},{dedicated:false},{shared:true},
