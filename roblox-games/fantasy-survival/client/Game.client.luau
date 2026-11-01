@@ -654,10 +654,12 @@ previewWorld.Name="AvatarWorld";previewWorld.Parent=characterViewport
 local previewCamera=Instance.new("Camera")
 previewCamera.Name="AvatarCamera";previewCamera.FieldOfView=38
 previewCamera.Parent=characterViewport;characterViewport.CurrentCamera=previewCamera
-local lastPreviewCharacter,lastPreviewTool=nil,nil
-local function redrawNativeAvatar(character,tool)
-  if character==lastPreviewCharacter and tool==lastPreviewTool then return end
-  lastPreviewCharacter,lastPreviewTool=character,tool
+local lastPreviewCharacter,lastPreviewTool,lastPreviewGearRevision=nil,nil,nil
+local function redrawNativeAvatar(character,tool,force)
+  local gearRevision=player:GetAttribute("MeadowGearRevision") or 0
+  if not force and character==lastPreviewCharacter and tool==lastPreviewTool
+    and gearRevision==lastPreviewGearRevision then return end
+  lastPreviewCharacter,lastPreviewTool,lastPreviewGearRevision=character,tool,gearRevision
   previewWorld:ClearAllChildren()
   characterViewport.Visible=false
   characterPortrait.Visible=true
@@ -760,9 +762,9 @@ masteryHeading.TextXAlignment=Enum.TextXAlignment.Left;masteryHeading.Parent=mea
 meadowLabels[1].LayoutOrder=10
 meadowLabels[1].TextColor3=meadowParchment
 meadowLabels[1].TextSize=14
-return function(character,humanoid,tool)
-  -- 장비/캐릭터가 실제로 달라졌을 때만 다시 복제해 프레임당 UI 비용을 막는다.
-  redrawNativeAvatar(character,tool)
+return function(character,humanoid,tool,force)
+  -- [실제 착용 외형] 장비 수정, 아바타 외형 로딩 및 장착 도구 교체 시에만 복제한다.
+  redrawNativeAvatar(character,tool,force)
   characterHeroName.Text=player.DisplayName
   characterHeroSummary.Text=string.format("체력 %d/%d · 기력 %d/100\n장비 공격 +%d · 방어 +%d\n무기 강화 +%d · 보스 %d",
     humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
@@ -782,6 +784,7 @@ return function(character,humanoid,tool)
   equippedAccessory.Text=equippedName("Accessory")
 end
 end)()
+local previewNeedsRefresh=false
 local function renderMeadowPages()
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
@@ -793,7 +796,8 @@ local function renderMeadowPages()
     proficiencyLines[#proficiencyLines+1]=string.format("%s  %d",
       entry.Name,math.floor(player:GetAttribute(entry.Key) or 0))
   end
-  renderWitcherCharacter(character,humanoid,tool)
+  renderWitcherCharacter(character,humanoid,tool,previewNeedsRefresh)
+  previewNeedsRefresh=false
   meadowLabels[1].Text=string.format("%s\n\n전투 강화  +%d  ·  보스 처치  %d\n\n※ 요리·건축·연금술은 실제 제작 기능 연결 전에는 오르지 않아.",
     table.concat(proficiencyLines,"\n"),player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
   meadowLabels[2].Text=string.format("소지품 · 서버 기록\n숙련도 %d  ·  장착 %s\n저장 %s",
@@ -844,6 +848,7 @@ for _,key in ipairs({"MeadowEquipWeapon","MeadowEquipChest","MeadowEquipHands","
   "MeadowEquipFeet","MeadowEquipAccessory","MeadowGearAttack","MeadowGearDefense"})do
   player:GetAttributeChangedSignal(key):Connect(renderMeadowPages)
 end
+player:GetAttributeChangedSignal("MeadowGearRevision"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("RunActive"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("QuestStage"):Connect(renderMeadowPages)
 player:GetAttributeChangedSignal("CompanionQuestStage"):Connect(renderMeadowPages)
@@ -867,16 +872,39 @@ player:GetAttributeChangedSignal("MeadowSurvivalHintSerial"):Connect(function()
     renderMeadowPages()
   end
 end)
+-- [캐릭터창 실제 3D] 이전 캐릭터 감시를 정리하고 승인된 아바타 외형 변화만 다시 렌더링한다.
+local meadowCharacterConnections={}
 local function bindMeadowMenuCharacter(character)
+  for _,connection in ipairs(meadowCharacterConnections)do connection:Disconnect() end
+  table.clear(meadowCharacterConnections)
+  if character~=player.Character then return end
+  previewNeedsRefresh=true
   local human=character:WaitForChild("Humanoid",8)
+  if character~=player.Character then return end
   if human then
-    human.HealthChanged:Connect(function()render();renderMeadowPages()end)
-    human:GetPropertyChangedSignal("MaxHealth"):Connect(function()render();renderMeadowPages()end)
+    meadowCharacterConnections[#meadowCharacterConnections+1]=human.HealthChanged:Connect(function()
+      render();renderMeadowPages()
+    end)
+    meadowCharacterConnections[#meadowCharacterConnections+1]=human:GetPropertyChangedSignal("MaxHealth"):Connect(function()
+      render();renderMeadowPages()
+    end)
   end
-  character.ChildAdded:Connect(renderMeadowPages)
-  character.ChildRemoved:Connect(renderMeadowPages)
+  local function onCharacterChildChanged(child)
+    if child:IsA("Tool") or child:IsA("Accessory") or child:IsA("Shirt")
+      or child:IsA("Pants") or child:IsA("ShirtGraphic") or child:IsA("BodyColors") then
+      previewNeedsRefresh=true
+    end
+    renderMeadowPages()
+  end
+  meadowCharacterConnections[#meadowCharacterConnections+1]=character.ChildAdded:Connect(onCharacterChildChanged)
+  meadowCharacterConnections[#meadowCharacterConnections+1]=character.ChildRemoved:Connect(onCharacterChildChanged)
   renderMeadowPages()
 end
+player.CharacterAppearanceLoaded:Connect(function(character)
+  if character~=player.Character then return end
+  previewNeedsRefresh=true
+  renderMeadowPages()
+end)
 player.CharacterAdded:Connect(function(character)task.defer(bindMeadowMenuCharacter,character)end)
 if player.Character then task.defer(bindMeadowMenuCharacter,player.Character) end
 for index,name in ipairs({"효과음","환경음","타격 효과"}) do
