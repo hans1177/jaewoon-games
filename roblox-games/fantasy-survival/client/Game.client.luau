@@ -4123,9 +4123,6 @@ for _,style in pairs(martialSkillTracks) do
 end
 -- [연타 5단계] 같은 연타 버튼을 연속 입력할 때마다 1→2→3→4→5→1단.
 -- 승인된 공격 1회당 시각 모션 한 단계만 사용한다. 1.4초를 넘기면 첫 단계로 복귀.
-local rushComboStage=0
-local rushComboAt=0
-local rushComboCharacter=nil
 local activeCombatRushStage=0
 -- 재생 중 다른 기술을 누르면 해당 기술은 기존 순서에 예약한다.
 -- 서버 타격 횟수·피해를 늘리거나 허공 명중 판정을 만들지 않는다.
@@ -4175,9 +4172,10 @@ player.CharacterAdded:Connect(function()
   swordComboAt=0
   swordComboProfile=nil
   swordComboCharacter=nil
-  rushComboStage=0
-  rushComboAt=0
-  rushComboCharacter=nil
+  local rush=martialSkillTracks["meadow-unarmed-rush"]
+  rush.stage=0
+  rush.at=0
+  rush.character=nil
   predictedCombatUntil=0
   table.clear(pendingCombatMotion)
 end)
@@ -4279,8 +4277,8 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
   if stagedRush then
     -- [수동 5단] 연속 터치 1회=원본 1개 포즈. 공용 스킬·검 모션 재생 순서와 독립.
     local now=os.clock()
-    selectedRushStage=(rushComboCharacter==character and now-rushComboAt<=1.4)
-      and (rushComboStage%5+1) or 1
+    selectedRushStage=(martialTrack.character==character and now-(martialTrack.at or 0)<=1.4)
+      and ((martialTrack.stage or 0)%5+1) or 1
     chosenMoves[1]=martialTrack.beats[selectedRushStage].id
   elseif martialTrack then
     -- 나머지 3종의 기존 5타 자동 연출은 그대로 유지한다.
@@ -4300,9 +4298,9 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
     profile,chosenMoves,{speed=martialTrack and martialTrack.speed or (profile=="UNARMED" and 1.22 or 1)})
   if not ok or not combo or not combo.steps or #combo.steps~=#chosenMoves then return end
   if stagedRush then
-    rushComboStage=selectedRushStage
-    rushComboAt=os.clock()
-    rushComboCharacter=character
+    martialTrack.stage=selectedRushStage
+    martialTrack.at=os.clock()
+    martialTrack.character=character
     if meadowSkillNameplates[1] then
       meadowSkillNameplates[1].Text="연타 "..selectedRushStage.."/5"
     end
