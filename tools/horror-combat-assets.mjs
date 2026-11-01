@@ -264,7 +264,7 @@ if(process.argv.includes('--forest-deer-only')){
    let op=await request('https://apis.roblox.com/assets/v1/assets',{
      method:'POST',headers:{'x-api-key':key},body:form
    });
-   if(!/^operations\\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
+   if(!/^operations\/[a-zA-Z0-9-]+$/.test(String(op.path||'')))
      throw Error('FOREST_DEER_IMPORT_OPERATION_INVALID');
    const operationPath=op.path,deadline=Date.now()+240000;
    while(!op.done&&Date.now()<deadline){
@@ -297,10 +297,10 @@ if(process.argv.includes('--forest-deer-only')){
  registry.sourceManifestSha256=crypto.createHash('sha256').update(newNative).digest('hex');
  registry.runtimeVerified=false;
  const visual=fs.readFileSync(visualPath,'utf8');
- if(!/^\\s*deer=\\d+,/m.test(visual))throw Error('FOREST_DEER_NATIVE_ID_ANCHOR_MISSING');
+ if(!/^\s*deer=\d+,/m.test(visual))throw Error('FOREST_DEER_NATIVE_ID_ANCHOR_MISSING');
  fs.writeFileSync(manifestPath,newNative);
  fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
- fs.writeFileSync(visualPath,visual.replace(/^\\s*deer=\\d+,/m,' deer='+assetId+','));
+ fs.writeFileSync(visualPath,visual.replace(/^\s*deer=\d+,/m,' deer='+assetId+','));
  console.log('FOREST_DEER_QUATERNIUS_NATIVE_REGISTERED='+assetId);
  console.log('FOREST_DEER_SOURCE_SHA256='+digest);
  console.log('FOREST_DEER_ORIGINAL_ASSET_REPLACED='+oldId+':'+assetId);
