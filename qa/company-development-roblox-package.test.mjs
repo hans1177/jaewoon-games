@@ -1335,7 +1335,8 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/MeadowVillagePrefabReady/);
   // [중세 마을] 과거 진흙 언덕을 평평한 길로 바꾸고 원본 조립 모듈로 여섯 주거·생활 건물을 완성한다.
   assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(path\[1\],1\.5,path\[2\]\)/);
-  assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
+  // [광장 바닥] 흰색 Cobblestone 덮개를 요구하던 이전 검사 제거. 원래 흙길은 유지한다.
+  assert.doesNotMatch(server,/meadowTerrain:FillBlock\(CFrame.new\(plaza\[1\],1\.55,plaza\[2\]\)/);
   assert.match(server,/local expectedVillageBuildings=16/);
   assert.match(server,/villageBuildings==expectedVillageBuildings/);
   assert.match(server,/Village_ResidentHouseEast/);
