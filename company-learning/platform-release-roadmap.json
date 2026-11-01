@@ -1,5 +1,5 @@
 {
-  "version": 599,
+  "version": 600,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -5173,9 +5173,7 @@
       "version": 4,
       "enabled": true,
       "ownerFocusedGameIds": [
-        "simple-rpg",
-        "insect-survival",
-        "cozy-island"
+        "insect-survival"
       ],
       "includeAllReleaseConfirmed": false,
       "includeAllInternalPlatformRelease": false,
@@ -5248,9 +5246,7 @@
         "verifiedLearningReuseRequiresFreshSameBuildValidation": true,
         "implementationOrderAuthority": "robloxStudioProductionFlowContract.designImplementationFlow",
         "targetPlatformsByGame": {
-          "simple-rpg": "ROBLOX",
-          "insect-survival": "WEB",
-          "cozy-island": "WEB"
+          "insect-survival": "WEB"
         },
         "retainUntilByPlatform": {
           "ROBLOX": "EXACT_BUILD_F0_TO_F9_AND_FIRST_PLAY_RETRY_SAVE_WHEN_REQUIRED_VERIFIED",
@@ -5265,14 +5261,11 @@
         ]
       },
       "ownerFocusedGamePlatforms": {
-        "simple-rpg": "ROBLOX",
-        "insect-survival": "WEB",
-        "cozy-island": "WEB"
+        "insect-survival": "WEB"
       },
       "focusScope": "OWNER_EXACT_GAME_AND_PLATFORM_ONLY",
       "ownerFocusedWebSourcePaths": {
-        "insect-survival": "web-games/insect-survival",
-        "cozy-island": "web-games/cozy-island"
+        "insect-survival": "web-games/insect-survival"
       }
     },
     "directNativeDualPlatformDevelopment": {
