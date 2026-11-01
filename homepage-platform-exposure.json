@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-11-01T14:53:53.129Z",
+  "generatedAt": "2026-11-01T14:56:28.606Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -930,7 +930,7 @@
     },
     {
       "gameId": "daechung-rpg",
-      "gameName": "5포탈 RPG: 던전 파티",
+      "gameName": "포탈 알피지",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -1058,7 +1058,7 @@
     },
     {
       "gameId": "deep-diver",
-      "gameName": "심해 잠수부 · 검은 바다의 보물",
+      "gameName": "심해 잠수부",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -1601,15 +1601,15 @@
           "floorProgress": {
             "tracked": true,
             "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
-            "currentFloor": "F0_TO_F1_PRIVATE_CANDIDATE",
-            "stage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-            "result": "F0_PASSED_AWAITING_NEXT_EVIDENCE",
-            "verifiedAt": "2026-11-01T14:45:49.865Z",
-            "checkedAt": "2026-11-01T14:51:00.463Z",
-            "lastFailureAt": null,
+            "currentFloor": "REPAIR_REQUIRED",
+            "stage": "REPAIR_REQUIRED",
+            "result": "REPAIR_REQUIRED",
+            "verifiedAt": "2026-11-01T14:54:18.664Z",
+            "checkedAt": "2026-11-01T14:54:18.664Z",
+            "lastFailureAt": "2026-11-01T14:54:18.664Z",
             "f0PassedAt": "2026-11-01T14:45:49.865Z",
             "candidatePublishedAt": null,
-            "failureCode": null,
+            "failureCode": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
             "completedCycles": 0
           },
           "developmentState": "NATIVE_DEVELOPMENT",
@@ -1708,7 +1708,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-01T14:51:00.463Z"
+      "updatedAt": "2026-11-01T14:54:18.664Z"
     },
     {
       "gameId": "fifty-days",
