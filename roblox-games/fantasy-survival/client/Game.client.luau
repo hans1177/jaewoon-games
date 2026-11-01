@@ -640,6 +640,52 @@ task.spawn(function()
   end)
   if ok and typeof(image)=="string" and characterPortrait.Parent then characterPortrait.Image=image end
 end)
+-- [캐릭터창 3D] 사용자 실제 Roblox 아바타/기존 Tool을 월드 모델로 미리보기.
+-- 외부 등록이 없는 게임 방어구를 가짜 메시로 표시하지 않는다. 오른쪽 HUD와 무관하다.
+local characterViewport=Instance.new("ViewportFrame")
+characterViewport.Name="NativeAvatarPreview";characterViewport.BackgroundTransparency=1
+characterViewport.Ambient=Color3.fromRGB(190,176,158)
+characterViewport.LightColor=Color3.fromRGB(255,229,194)
+characterViewport.LightDirection=Vector3.new(-.8,-1,-.5)
+characterViewport.Size=characterPortrait.Size;characterViewport.Position=characterPortrait.Position
+characterViewport.Visible=false;characterViewport.Parent=characterHero
+local previewWorld=Instance.new("WorldModel")
+previewWorld.Name="AvatarWorld";previewWorld.Parent=characterViewport
+local previewCamera=Instance.new("Camera")
+previewCamera.Name="AvatarCamera";previewCamera.FieldOfView=38
+previewCamera.Parent=characterViewport;characterViewport.CurrentCamera=previewCamera
+local lastPreviewCharacter,lastPreviewTool=nil,nil
+local function redrawNativeAvatar(character,tool)
+  if character==lastPreviewCharacter and tool==lastPreviewTool then return end
+  lastPreviewCharacter,lastPreviewTool=character,tool
+  previewWorld:ClearAllChildren()
+  characterViewport.Visible=false
+  characterPortrait.Visible=true
+  if not character or not character.Parent then return end
+  local originalArchivable=character.Archivable
+  character.Archivable=true
+  local ok,clone=pcall(function()return character:Clone()end)
+  character.Archivable=originalArchivable
+  if not ok or not clone or not clone:IsA("Model") then return end
+  for _,part in ipairs(clone:GetDescendants())do
+    if part:IsA("Script") or part:IsA("LocalScript") or part:IsA("ModuleScript") then
+      part:Destroy()
+    elseif part:IsA("BasePart") then
+      part.Anchored=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false
+    elseif part:IsA("ParticleEmitter") or part:IsA("Trail") then
+      part.Enabled=false
+    end
+  end
+  clone.Parent=previewWorld
+  clone:PivotTo(CFrame.new(0,0,0))
+  local bounds,size=clone:GetBoundingBox()
+  if size.Magnitude<.1 then clone:Destroy();return end
+  local focus=bounds.Position+Vector3.new(0,size.Y*.04,0)
+  local distance=math.max(size.X*1.6,size.Y*1.25,size.Z*1.8,7)
+  previewCamera.CFrame=CFrame.lookAt(focus+Vector3.new(distance*.42,distance*.12,distance),focus)
+  characterPortrait.Visible=false
+  characterViewport.Visible=true
+end
 local characterHeroName=Instance.new("TextLabel")
 characterHeroName.Name="HeroName";characterHeroName.Position=UDim2.fromOffset(144,14)
 characterHeroName.Size=UDim2.new(1,-156,0,35)
@@ -652,6 +698,25 @@ characterHeroSummary.Size=UDim2.new(1,-154,0,92)
 characterHeroSummary.BackgroundTransparency=1;characterHeroSummary.Font=Enum.Font.GothamMedium;characterHeroSummary.TextSize=13
 characterHeroSummary.TextColor3=meadowDim;characterHeroSummary.TextWrapped=true
 characterHeroSummary.TextXAlignment=Enum.TextXAlignment.Left;characterHeroSummary.Parent=characterHero
+-- [모바일 크기] 가로 메뉴는 좌우 배치, 좁은 메뉴는 3D 인물 아래 상태 표시.
+local function layoutNativeAvatar()
+  local width=characterHero.AbsoluteSize.X
+  if width<=0 then return end
+  local narrow=width<460
+  characterHero.Size=UDim2.new(1,-8,0,narrow and 377 or 248)
+  local avatarSize=narrow and math.min(220,width-18) or 217
+  characterPortrait.Size=UDim2.fromOffset(avatarSize,narrow and 260 or 231)
+  characterPortrait.Position=narrow
+    and UDim2.new(.5,-avatarSize/2,0,8) or UDim2.fromOffset(8,8)
+  characterViewport.Size=characterPortrait.Size
+  characterViewport.Position=characterPortrait.Position
+  characterHeroName.Position=narrow and UDim2.fromOffset(12,274) or UDim2.fromOffset(238,28)
+  characterHeroName.Size=narrow and UDim2.new(1,-24,0,34) or UDim2.new(1,-250,0,34)
+  characterHeroSummary.Position=narrow and UDim2.fromOffset(12,310) or UDim2.fromOffset(238,74)
+  characterHeroSummary.Size=narrow and UDim2.new(1,-24,0,62) or UDim2.new(1,-250,0,140)
+end
+characterHero:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutNativeAvatar)
+task.defer(layoutNativeAvatar)
 local equipmentHeading=Instance.new("TextLabel")
 equipmentHeading.Name="EquipmentHeading";equipmentHeading.LayoutOrder=2
 equipmentHeading.Size=UDim2.new(1,-8,0,30);equipmentHeading.BackgroundTransparency=1
@@ -696,6 +761,8 @@ meadowLabels[1].LayoutOrder=10
 meadowLabels[1].TextColor3=meadowParchment
 meadowLabels[1].TextSize=14
 return function(character,humanoid,tool)
+  -- 장비/캐릭터가 실제로 달라졌을 때만 다시 복제해 프레임당 UI 비용을 막는다.
+  redrawNativeAvatar(character,tool)
   characterHeroName.Text=player.DisplayName
   characterHeroSummary.Text=string.format("체력 %d/%d · 기력 %d/100\n장비 공격 +%d · 방어 +%d\n무기 강화 +%d · 보스 %d",
     humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
