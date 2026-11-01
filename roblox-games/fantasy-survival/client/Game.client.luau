@@ -3946,23 +3946,24 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     aura.OutlineTransparency=reducedEffects and .65 or .19
     aura.Parent=character
     debris:AddItem(aura,1.12)
-    -- [1단 파랑/2단 황금/3단 착지 충격] 공용 회피 링과 파편 폭발을 단계별로 방출.
+    -- [회피 5단] 슬립/페인트/스텝/위빙/덤블링에 기존 공용 파동을 단계별로 연동.
     if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
       and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
-      for index,delaySec in ipairs({.06,.36,.82}) do
+      for index,delaySec in ipairs({.05,.23,.44,.65,.96}) do
         task.delay(delaySec,function()
           if not rootPart.Parent or not character.Parent then return end
-          local color=index==2 and Color3.fromRGB(255,210,127) or Color3.fromRGB(117,214,255)
-          local accent=index==2 and Color3.fromRGB(255,153,77) or Color3.fromRGB(239,249,255)
+          local color=index==5 and Color3.fromRGB(255,222,155)
+            or index%2==0 and Color3.fromRGB(255,210,127) or Color3.fromRGB(117,214,255)
+          local accent=index%2==0 and Color3.fromRGB(255,153,77) or Color3.fromRGB(239,249,255)
           local ok,err=pcall(meadowCommonVFX.Create,
-            index==3 and "SHAPE_BURST" or "DODGE_EVASION_PULSE",{
+            index==5 and "SHAPE_BURST" or "DODGE_EVASION_PULSE",{
               parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,-1.55,0),
               duration=reducedEffects and .21 or .35,
               color=color,accent=accent,
-              startDiameter=index==3 and 2.2 or 1.1,
-              endDiameter=reducedEffects and 3.4 or (index==3 and 8.4 or 5.3),
+              startDiameter=index==5 and 2.2 or 1.1,
+              endDiameter=reducedEffects and 3.4 or (index==5 and 8.4 or 5.3),
               startSize=.42,endSize=reducedEffects and .9 or 2.1,
-              count=reducedEffects and 2 or (index==3 and 11 or 7),
+              count=reducedEffects and 2 or (index==5 and 11 or 7),
               reducedMotion=reducedEffects,
             })
           if not ok then warn("마력숲 회피 파동 오류: "..tostring(err)) end
@@ -4513,29 +4514,29 @@ RunService.PreSimulation:Connect(function(dt)
     local guard=rise*release
     local counter=isParry and math.sin(math.pi*phase) or 0
     if isGuard then
-      -- [서서 막기] 엉덩이 내리기와 무릎 굽히기를 없앤 직립 양팔 X가드.
-      local open=math.sin(math.pi*math.clamp(phase/.13,0,1))
-      local close=math.clamp((phase-.045)/.12,0,1)
+      -- [막기 전면 가드] 허리를 세우고 두 손을 얼굴·가슴 앞으로 크게 뻗는 격투 자세.
+      local open=math.sin(math.pi*math.clamp(phase/.12,0,1))
+      local close=math.clamp((phase-.035)/.14,0,1)
       close=close*close*(3-2*close)
       local brace=close*release
-      local impact=math.sin(math.pi*math.clamp((phase-.065)/.09,0,1))
+      local impact=math.sin(math.pi*math.clamp((phase-.075)/.12,0,1))
       local breath=math.sin((os.clock()-skillMotionStart)*4.3)*.012*brace
-      skillMotionTargets.Spine=CFrame.new(0,.09*open+.035*impact+breath,0)
-        *CFrame.Angles(.075*open-.055*brace,0,0)
-      skillMotionTargets.Chest=CFrame.Angles(.045*open-.035*brace,0,0)
-      skillMotionTargets.Head=CFrame.Angles(-.15*brace,0,0)
-      -- 양팔을 옆으로 크게 펼쳤다가 얼굴 앞에서 동시에 엑스자로 접는다.
-      skillMotionTargets.UpperArmL=CFrame.Angles(-.68*open-1.68*brace-.16*impact,
-        -.26*brace,-1.12*open+.56*brace)
-      skillMotionTargets.ForearmL=CFrame.Angles(-.36*open-1.52*brace,0,-.24*brace)
-      skillMotionTargets.HandL=CFrame.Angles(-.18*brace,0,-.12*brace)
-      skillMotionTargets.UpperArmR=CFrame.Angles(-.68*open-1.68*brace-.16*impact,
-        .26*brace,1.12*open-.56*brace)
-      skillMotionTargets.ForearmR=CFrame.Angles(-.36*open-1.52*brace,0,.24*brace)
-      skillMotionTargets.HandR=CFrame.Angles(-.18*brace,0,.12*brace)
+      skillMotionTargets.Spine=CFrame.new(0,.055*open+.035*impact+breath,-.07*brace)
+        *CFrame.Angles(.045*open-.035*brace,0,0)
+      skillMotionTargets.Chest=CFrame.Angles(-.035*brace,0,0)
+      skillMotionTargets.Head=CFrame.Angles(-.045*brace,0,0)
+      -- 양팔을 앞쪽으로 뻗고 팔꿈치를 접어 손이 정면 충격을 받도록 한다.
+      skillMotionTargets.UpperArmL=CFrame.Angles(-.90*open-1.77*brace-.12*impact,
+        -.13*brace,-.52*open-.22*brace)
+      skillMotionTargets.ForearmL=CFrame.Angles(-.50*open-1.00*brace,0,-.10*brace)
+      skillMotionTargets.HandL=CFrame.Angles(.22*brace,0,-.08*brace)
+      skillMotionTargets.UpperArmR=CFrame.Angles(-1.02*open-1.94*brace-.10*impact,
+        .15*brace,.52*open+.20*brace)
+      skillMotionTargets.ForearmR=CFrame.Angles(-.50*open-1.12*brace,0,.10*brace)
+      skillMotionTargets.HandR=CFrame.Angles(.22*brace,0,.08*brace)
       -- 어깨 너비의 발 지지, 몸높이와 무릎 관절 유지.
-      skillMotionTargets.ThighL=CFrame.Angles(.025*brace,0,-.10*brace)
-      skillMotionTargets.ThighR=CFrame.Angles(.025*brace,0,.10*brace)
+      skillMotionTargets.ThighL=CFrame.Angles(.018*brace,0,-.08*brace)
+      skillMotionTargets.ThighR=CFrame.Angles(.018*brace,0,.08*brace)
       skillMotionTargets.ShinL=CFrame.identity
       skillMotionTargets.ShinR=CFrame.identity
       skillMotionTargets.FootL=CFrame.Angles(0,0,-.035*brace)
