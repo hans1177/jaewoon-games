@@ -4176,6 +4176,7 @@ player.CharacterAdded:Connect(function()
   rush.stage=0
   rush.at=0
   rush.character=nil
+  if meadowSkillNameplates[1] then meadowSkillNameplates[1].Text="연타" end
   predictedCombatUntil=0
   table.clear(pendingCombatMotion)
 end)
@@ -4304,6 +4305,12 @@ playNativeCombatMotion=function(approvedScope,approvedEvent,serverApproved)
     if meadowSkillNameplates[1] then
       meadowSkillNameplates[1].Text="연타 "..selectedRushStage.."/5"
     end
+    local lastRushInput=martialTrack.at
+    task.delay(1.4,function()
+      if martialTrack.at==lastRushInput and meadowSkillNameplates[1] then
+        meadowSkillNameplates[1].Text="연타"
+      end
+    end)
   end
   if swordProfile then
     swordComboStage=swordStage
