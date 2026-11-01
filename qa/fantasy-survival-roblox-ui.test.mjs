@@ -117,3 +117,26 @@ test('deer and wolf keep real source bones and documented Animator motion priori
   assert.match(visual,/deer=107866382568249/);
   assert.doesNotMatch(client,/Instance\.new\("Part"\).*Deer/);
 });
+
+test('five-stage dodge stays inside existing server-authorized skill',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(client,/\[5단 회피 스킬\]/);
+  assert.match(client,/local first=math\.sin/);
+  assert.match(client,/local second=math\.sin/);
+  assert.match(client,/local third=math\.sin/);
+  assert.match(client,/local fourth=math\.sin/);
+  assert.match(client,/local flip=math\.clamp/);
+  assert.match(client,/ipairs\(\{\.05,\.23,\.44,\.65,\.96\}\)/);
+  assert.match(client,/\[막기 전면 가드\]/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.02\*open-1\.94\*brace/);
+  assert.match(client,/\[사슴 직립\]/);
+  assert.match(client,/\[늑대 영화식 포식 액션\]/);
+  // Preserved actual server dodge: 7-stud side move, 0.48s invulnerability, 4s cooldown.
+  assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
+  assert.match(server,/local wall=workspace:Raycast\(start,side\*7,ray\)/);
+  assert.match(server,/defense\.dodgeUntil=now\+\.48/);
+  assert.match(server,/if distance<2 then return false end/);
+  assert.match(server,/floor\.Material==Enum\.Material\.Water/);
+  assert.match(server,/defense\.guardUntil=now\+2\.8/);
+  assert.match(server,/defense\.perfectGuardUntil=now\+\.28/);
+});
