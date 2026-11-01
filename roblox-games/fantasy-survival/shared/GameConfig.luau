@@ -84,8 +84,8 @@ local Config = {
     {Id="meadow-signal", Name="05 · 세계수 조사 기록", Goal=1,
      Instruction="숲 가장자리 탐색 지점을 1회 조사",
      Story="연구 기록 1~3화의 세계수·화산·오아시스 단서를 모았다. 해당 지역의 실제 탐사 기능은 별도 구현이 필요하다."},
-    {Id="meadow-gatekeeper",Name="06 · 초원 수문장",Goal=1,
-     Instruction="오래된 유적 근처의 돌 골렘 수문장 1마리 처치",
+    {Id="meadow-gatekeeper",Name="06 · 외곽 늑대 우두머리",Goal=1,
+     Instruction="마을 서쪽 숲의 우두머리 늑대 1마리 처치",
      Story="동료 연구원과 다음 탐사를 준비하려면 초원의 위협을 먼저 정리해야 한다. 수문장의 공격 예고를 보고, 연타는 완벽 막기로 끊어라."},
   },
   -- [초원 마을 의뢰] 주민 진술 1개 · 현장 단서 1개 · 실전 전투 1회.
@@ -93,7 +93,7 @@ local Config = {
   VillageContracts = {
     {Id="missing-medicines",Name="01 · 사라진 약초 꾸러미",Issuer="촌장 나린",
      Summary="사라진 약초 꾸러미를 찾으러 숲길에 간 주민이 우두머리 늑대에게 쫓겼다. 늑대 보스를 쓰러뜨리고 약초를 되찾아.",
-     Witness=1,WitnessName="약초상 미라",Enemy="wolf",EnemyName="우두머리 늑대",EnemySite={-69,-193},
+     Witness=1,WitnessName="약초상 미라",Enemy="wolf",EnemyName="우두머리 늑대",EnemySite={-321,-193},
      Clues={"약초상 미라: 약초는 열병에 걸린 아이에게 전하려던 거야."},
      Sites={{-41,-128}},
      Scenes={"뜯긴 약초 포대 옆에 작은 발자국과 늑대 발톱 자국이 함께 남았다."},
