@@ -1979,11 +1979,13 @@ test('fantasy upright X-guard and dodge preserve cooldown, defense and native jo
   const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
   assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
   assert.match(client,/if isGuard then[\s\S]*?local open=math\.sin/);
-  // [전면 가드] 현재 비대칭 양팔 전방 막기에서 팔·손과 다리 지지를 검사한다.
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.90\*open-1\.77\*brace-\.12\*impact/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.02\*open-1\.94\*brace-\.10\*impact/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-\.50\*open-1\.00\*brace/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-\.50\*open-1\.12\*brace/);
+  // [전면 X 가드] 고개·허리 세움, 교차 전완과 하체 지지를 실제 관절 수치로 확인한다.
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-1\.17\*open-1\.03\*brace-\.16\*impact/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-1\.30\*open-1\.08\*brace-\.20\*impact/);
+  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-\.72\*open-\.88\*brace/);
+  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-\.71\*open-\.99\*brace/);
+  assert.match(client,/ipairs\(\{\.11,\.30,\.66\}\)/);
+  assert.match(client,/\[5단 회피 스킬\]/);
   assert.match(client,/skillMotionTargets\.ShinL=CFrame\.identity/);
   assert.match(client,/skillMotionTargets\.ShinR=CFrame\.identity/);
   assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new/);
