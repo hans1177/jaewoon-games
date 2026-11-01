@@ -148132,11 +148132,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_115d0c4786fb400393f4af32",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-11656",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b23ec3449181e5875edbc67be1d402fc097a72f4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 11656,
+        "baseBranch": "main",
+        "headBranch": "asset/fantasy-village-originals",
+        "baseSha": "b23ec3449181e5875edbc67be1d402fc097a72f4",
+        "headSha": "00076a3ded137af2dcbd1f46254a89195a527e40",
+        "mergeCommitSha": "bc47f8940214d23f8922bf3d6a6090e4393ffad9",
+        "mergedAt": "2026-11-01T06:05:38Z",
+        "authorLogin": "github-actions[bot]",
+        "titleHash": "b7e62f0cb9d14757b6ec00e8f5b56d8c04642fdb0ccfd9d285d286eccd7ae98b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "asset/fantasy-village-originals",
+        "candidateSha": "00076a3ded137af2dcbd1f46254a89195a527e40"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 26,
+        "deletedLineCount": 22,
+        "changedFiles": [
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/fantasy-survival/CC0-ASSET-REGISTRY.json",
+          "roblox-games/fantasy-survival/shared/VisualAssetIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:11656",
+        "merge-commit:bc47f8940214d23f8922bf3d6a6090e4393ffad9",
+        "base-main:b23ec3449181e5875edbc67be1d402fc097a72f4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 1177
+    "total": 1178
   }
 }
