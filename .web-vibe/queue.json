@@ -183,7 +183,7 @@
       "goal": "마력숲 기존 본편 버그 3종 즉시 수정 및 검증 배포. (1) 도감 등록한 몬스터 머리 위 3D 이름표가 너무 흐려 읽기 어려움: 원본 syncBestiaryName(world3d.mjs)에서 캔버스 해상도/필터/선명도/가독성·크기 개선, 등록하지 않은 종 표시 금지. (2) 무기로 허공 공격해도 '크리스털 리자드 처치'가 뜨는 유령 킬: 실제 적중·시야·거리·HP 감소·중복 보상 경로 확인, 은신·죽은 개체·오래된 네트워크 복제체 제외; 실제 처치 없으면 처치 알림·드롭·도감 갱신·킬 수 금지. (3) 건축물 청사진과 설치된 건축물이 3D에서 보이지 않음: world3d.mjs의 blueprintKind 매핑은 5종만 지원하며 빈 종류는 blueprintGhost.visible=false, 기존 건축 렌더는 state.walls/doors/chests 중심임. 실제 기존 모든 blueprint id/설치 상태(침대·화로·작업대·탑·정원·포털·기타)와 CC0 원본 모델 매핑을 검토하여 유효 청사진/설치물은 보이고, 없는 모델을 가짜 모델로 위장하지 말 것. 저장·충돌·설치 판정·멀티플레이·기존 3D 소스 유지. QA에 세 문제 회귀 테스트 추가. 검증 후 기존 Pages 배포, 공개 SHA 및 실제 브라우저 가시성 확인. 기존 코드·기존 파이프라인만 수정하고 정책/보안/저장 스키마 변경 금지.",
       "responsibleFiles": [],
       "priority": "owner-immediate",
-      "status": "queued",
+      "status": "blocked",
       "ownerDirective": true,
       "evidence": [
         "web-vibe-independent:v1",
@@ -192,10 +192,10 @@
         "web-vibe-recovery-failure:needs-source-or-provider-recheck"
       ],
       "recoveryFailureClass": "SOURCE_OR_UNCLASSIFIED",
-      "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-11-01T05:51:13.243Z",
-      "recoveryNextAt": "2026-11-01T06:51:13.243Z",
-      "blocker": null
+      "recoveryAttempts": 3,
+      "recoveryLastFailureAt": "2026-11-01T12:05:12.604Z",
+      "recoveryNextAt": null,
+      "blocker": "WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW"
     },
     {
       "id": "pwa-a1c0d55a-b901-4c23-8c81-9287a745cd01",
