@@ -45,11 +45,12 @@ test('compact landscape keeps minimap directly above the dodge button and touch 
   // Same calculations as the existing mobile HUD. This does not assert real device play.
   for(const pattern of [
     'math.clamp((v.Y-20)/370,.76,1.12)',
+    'local dockLift=math.floor(40*scale)',
     'compactLandscape and (v.Y<350 and 80 or 88)',
     'mapBottom+8-dodgeTop',
     'local availableShift=math.max(0,v.Y-8-utilityBottom)',
     'math.max(44,math.floor(45*scale))',
-    'meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,-bottomInset+math.floor(shift))'
+    'meadowSkillDock.Position=UDim2.new(1,-math.floor(2*scale),1,-bottomInset-dockLift+math.floor(shift))'
   ])assert.ok(client.includes(pattern),'responsive HUD source missing: '+pattern);
   for(const [w,h] of [[1536,709],[852,393],[667,375],[800,300],[720,320],[640,360],[390,844],[360,640]]){
     const landscape=w>h;
