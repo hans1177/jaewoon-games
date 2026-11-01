@@ -188,8 +188,14 @@
       "evidence": [
         "web-vibe-independent:v1",
         "owner-source-authenticated",
-        "qa-required-before-pr-merge"
-      ]
+        "qa-required-before-pr-merge",
+        "web-vibe-recovery-failure:needs-source-or-provider-recheck"
+      ],
+      "recoveryFailureClass": "SOURCE_OR_UNCLASSIFIED",
+      "recoveryAttempts": 1,
+      "recoveryLastFailureAt": "2026-11-01T00:05:06.990Z",
+      "recoveryNextAt": "2026-11-01T00:35:06.990Z",
+      "blocker": null
     },
     {
       "id": "pwa-a1c0d55a-b901-4c23-8c81-9287a745cd01",
