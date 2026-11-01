@@ -109,22 +109,8 @@ local meadowTerrain = workspace.Terrain
 local meadowWorldSize=696
 local function createStartingMeadow()
   meadowTerrain:FillBlock(CFrame.new(0, -4, 0), Vector3.new(312, 12, 312), Enum.Material.Grass)
-  for _, ridge in ipairs({
-    {x=-115,z=-92,r=41,y=-12}, {x=110,z=-99,r=48,y=-14},
-    {x=-105,z=111,r=43,y=-12}, {x=104,z=116,r=45,y=-13},
-    {x=-154,z=8,r=39,y=-12}, {x=153,z=-3,r=42,y=-13},
-  }) do
-    meadowTerrain:FillBall(Vector3.new(ridge.x,ridge.y,ridge.z),ridge.r,Enum.Material.Grass)
-  end
-  -- [초원 지형] 기존 이동·자원 지점을 보존하고 외곽만 굴곡 및 초목 질감 보강.
-  for _,knoll in ipairs({
-    {-99,-145,32,9},{-145,-62,28,7},{-111,146,37,10},
-    {98,-148,34,9},{144,-62,27,7},{119,149,36,10},
-    {-161,68,29,7},{166,62,31,8},
-  }) do
-    meadowTerrain:FillBall(Vector3.new(knoll[1],knoll[4]-knoll[3],knoll[2]),
-      knoll[3],Enum.Material.Grass)
-  end
+  -- [마을 평탄지] 시작 초원에 산봉우리처럼 튀어나오던 Ridge/Knoll 지형을 만들지 않는다.
+  -- 기존 채집 광맥 3곳·지표 잔디·몬스터/의뢰 좌표는 보존한다.
   for ix=-6,6 do
     for iz=-6,6 do
       local x=ix*17+math.sin(ix*2.7+iz)*4
@@ -253,17 +239,8 @@ task.defer(function()
       Vector3.new(section.width,12,section.depth),Enum.Material.Grass)
     task.wait()
   end
-  -- 외곽의 낮은 능선만 Terrain으로 만들고 기존 시작 지형·채집 장소는 보존한다.
-  for _,ridge in ipairs({
-    {x=-292,z=-210,r=35,y=-13},{x=287,z=225,r=40,y=-13},
-    {x=-225,z=288,r=32,y=-13},{x=219,z=-289,r=36,y=-14},
-    {x=-303,z=110,r=29,y=-14},{x=310,z=-95,r=31,y=-14},
-    {x=-115,z=-293,r=34,y=-14},{x=123,z=296,r=32,y=-13},
-  }) do
-    meadowTerrain:FillBall(Vector3.new(ridge.x,ridge.y,ridge.z),
-      ridge.r,Enum.Material.Grass)
-    task.wait()
-  end
+  -- [평탄 외곽] 마을 가장자리까지 솟던 둥근 능선 8개를 생성하지 않는다.
+  -- 바깥 지역 4구획은 그대로 유지해 실제 월드 크기/이동 가능 범위를 보존한다.
   gameWorld:SetAttribute("MeadowOuterRegionReady",true)
 end)
 
@@ -674,6 +651,19 @@ end
 local function createMeadowVillage()
   -- 외곽 지형 생성이 끝나고 조사 흔적을 배치해야 월드 확장에 흔적이 묻히지 않는다.
   while gameWorld:GetAttribute("MeadowOuterRegionReady")~=true do task.wait(.15) end
+  -- [마을 평탄화] 초원 자체에 만들어진 봉우리와 뒤늦게 남는 울퉁불퉁한 언덕을 제거한다.
+  -- 마을 구역의 Terrain만 고르게 정리하며 바위 채집/의뢰/모델 개체와 세이브는 손대지 않는다.
+  -- 동쪽 외곽 개울과 북쪽의 원래 초원은 제외한다.
+  for _,district in ipairs({
+    {-180,-205,190,272},{0,-205,190,272},{180,-205,190,272},
+  }) do
+    meadowTerrain:FillBlock(CFrame.new(district[1],34,district[2]),
+      Vector3.new(district[3],62,district[4]),Enum.Material.Air)
+    meadowTerrain:FillBlock(CFrame.new(district[1],-4,district[2]),
+      Vector3.new(district[3],12,district[4]),Enum.Material.Grass)
+    task.wait()
+  end
+  gameWorld:SetAttribute("MeadowVillageFlatGroundReady",true)
   -- [확장된 숲마을 길] 기존 시작점, 의뢰판, NPC와 단서 좌표를 보존한 채 외곽 생활구역으로 길을 뻗는다.
   -- 기본 파츠 대신 네이티브 Terrain만 사용한다. 곡선과 가지길로 규칙적인 격자 배열을 피한다.
   for _,path in ipairs({
@@ -734,37 +724,37 @@ local function createMeadowVillage()
     -- [집 유형] 짧은 초가, 긴 농가/공방, 이층 여관/회관. 문 방향은 광장·골목을 향하게 한다.
     -- 원래 등장한 건물 이름을 유지해서 기존 컨텐츠 참조에 영향이 없게 한다.
     local houses={
-      {x=-99,z=-90,angle=0,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,
+      {x=-99,z=-90,angle=0,name="Village_HealerHouse",label="약초상 · 의원",scale=.96,length=2,storeys=1,roofPitch=.93,doorZ=-2.7,sideWindow=true,porch=1,lantern=true,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(125,107,88),roof=Color3.fromRGB(82,91,78)},
-      {x=112,z=-93,angle=math.pi,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,
+      {x=112,z=-93,angle=math.pi,name="Village_Guesthouse",label="마을 여관",scale=1.15,length=3,storeys=2,roofPitch=1.09,doorZ=0,sideWindow=true,porch=2,lantern=true,balcony=true,
        timber=Color3.fromRGB(151,117,88),roof=Color3.fromRGB(96,72,66)},
-      {x=-116,z=-160,angle=0,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,
+      {x=-116,z=-160,angle=0,name="Village_Workshop",label="대장간 · 공방",scale=1.02,length=3,storeys=1,roofPitch=.85,doorZ=0,sideWindow=false,porch=1,lantern=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(106,94,83),roof=Color3.fromRGB(73,79,79)},
-      {x=125,z=-158,angle=math.pi,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,
+      {x=125,z=-158,angle=math.pi,name="Village_WardenHall",label="마을 회관",scale=1.24,length=3,storeys=2,roofPitch=1.13,doorZ=0,sideWindow=true,porch=2,lantern=true,balcony=true,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(146,119,91),roof=Color3.fromRGB(92,70,59)},
-      {x=-96,z=-226,angle=0,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,
+      {x=-96,z=-226,angle=0,name="Village_ResidentHouseWest",label="서쪽 주민집",scale=.87,length=2,storeys=1,roofPitch=.85,doorZ=2.7,sideWindow=false,porch=0,lantern=false,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(153,132,107),roof=Color3.fromRGB(105,89,74)},
-      {x=109,z=-229,angle=math.pi,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,
+      {x=109,z=-229,angle=math.pi,name="Village_ResidentHouseEast",label="동쪽 주민집",scale=.96,length=2,storeys=1,roofPitch=1.09,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(116,102,87),roof=Color3.fromRGB(92,104,92)},
-      {x=-198,z=-89,angle=math.pi*.1,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,
+      {x=-198,z=-89,angle=math.pi*.1,name="Village_WoodcutterHome",label="벌목꾼의 집",scale=.86,length=2,storeys=1,roofPitch=.96,doorZ=2.7,sideWindow=false,porch=0,lantern=false,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(119,103,80),roof=Color3.fromRGB(91,82,67)},
-      {x=201,z=-104,angle=math.pi*.91,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,
+      {x=201,z=-104,angle=math.pi*.91,name="Village_WoodsmanHome",label="숲지기 오두막",scale=.91,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,leanTo=true,
        timber=Color3.fromRGB(111,108,91),roof=Color3.fromRGB(85,95,76)},
-      {x=-198,z=-163,angle=math.pi*.12,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,
+      {x=-198,z=-163,angle=math.pi*.12,name="Village_CarpenterHome",label="목수 작업집",scale=.94,length=3,storeys=1,roofPitch=.91,doorZ=0,sideWindow=true,porch=1,lantern=true,wing=-1,wingZ=-5.4,
        timber=Color3.fromRGB(134,109,88),roof=Color3.fromRGB(97,86,70)},
-      {x=207,z=-177,angle=math.pi*.87,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,
+      {x=207,z=-177,angle=math.pi*.87,name="Village_BakerHome",label="빵 굽는 집",scale=.91,length=2,storeys=1,roofPitch=1.05,doorZ=2.7,sideWindow=true,porch=1,lantern=true,leanTo=true,
        timber=Color3.fromRGB(162,126,96),roof=Color3.fromRGB(109,88,75)},
-      {x=-189,z=-250,angle=-math.pi*.06,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,
+      {x=-189,z=-250,angle=-math.pi*.06,name="Village_Granary",label="곡물 창고",scale=1.04,length=3,storeys=1,roofPitch=1.13,doorZ=0,sideWindow=false,porch=0,lantern=false,leanTo=true,
        timber=Color3.fromRGB(129,107,81),roof=Color3.fromRGB(98,91,68)},
-      {x=196,z=-251,angle=math.pi*1.05,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,
+      {x=196,z=-251,angle=math.pi*1.05,name="Village_Farmstead",label="농가 · 마구간",scale=1.02,length=3,storeys=1,roofPitch=.82,doorZ=0,sideWindow=false,porch=1,lantern=false,wing=-1,wingZ=5.4,
        timber=Color3.fromRGB(117,98,75),roof=Color3.fromRGB(91,84,74)},
-      {x=-104,z=-309,angle=.08,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,
+      {x=-104,z=-309,angle=.08,name="Village_SouthCottageWest",label="남쪽 농가",scale=.89,length=2,storeys=1,roofPitch=.92,doorZ=-2.7,sideWindow=true,porch=0,lantern=false,wing=-1,wingZ=-2.7,
        timber=Color3.fromRGB(148,126,102),roof=Color3.fromRGB(89,86,77)},
-      {x=121,z=-309,angle=math.pi-.12,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,
+      {x=121,z=-309,angle=math.pi-.12,name="Village_SouthCottageEast",label="길가 주민집",scale=.92,length=2,storeys=1,roofPitch=1.02,doorZ=2.7,sideWindow=false,porch=1,lantern=false,leanTo=true,
        timber=Color3.fromRGB(112,98,82),roof=Color3.fromRGB(91,77,65)},
-      {x=-228,z=-320,angle=-.18,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,
+      {x=-228,z=-320,angle=-.18,name="Village_OrchardHome",label="과수원 농가",scale=.84,length=2,storeys=1,roofPitch=.87,doorZ=2.7,sideWindow=true,porch=0,lantern=false,leanTo=true,
        timber=Color3.fromRGB(133,121,98),roof=Color3.fromRGB(100,90,69)},
-      {x=219,z=-320,angle=math.pi+.17,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,
+      {x=219,z=-320,angle=math.pi+.17,name="Village_EastFarmhouse",label="동쪽 농가",scale=.94,length=2,storeys=1,roofPitch=1.08,doorZ=-2.7,sideWindow=true,porch=1,lantern=false,wing=-1,wingZ=2.7,
        timber=Color3.fromRGB(123,102,87),roof=Color3.fromRGB(90,101,88)},
     }
     for houseIndex,house in ipairs(houses) do
@@ -796,6 +786,37 @@ local function createMeadowVillage()
         end
         pieces[#pieces+1]={asset="villageRoofEnd",x=0,z=sideZ,height=3.7,
           lift=roofLift,angle=sideZ>0 and math.pi or 0}
+      end
+      -- [ㄱ자 집 / 마당 작업동] 기존에 다운로드·검증해 등록한 Kenney CC0 벽·문·지붕을
+      -- 본채 측면에 직각으로 연결한다. 단색 집을 복제하지 않고 실제 외곽 실루엣을 바꾼다.
+      -- 현관 반대편에 붙여 원래 문·NPC 동선을 가리지 않는다.
+      if house.wing then
+        local w=house.wing
+        local wingZ=house.wingZ or 0
+        for rowIndex,offset in ipairs({-2.7,2.7}) do
+          pieces[#pieces+1]={asset="villageRoof",x=w*11.4,z=wingZ+offset,
+            height=3.5,lift=4.65,angle=math.pi*.5}
+          pieces[#pieces+1]={asset=rowIndex==1 and "villageDoor" or "villageWindow",
+            x=w*16.2,z=wingZ+offset,height=5,lift=0}
+          pieces[#pieces+1]={asset="villageWall",
+            x=w*11.4,z=wingZ+offset*2,height=5,lift=0,angle=math.pi*.5}
+        end
+        pieces[#pieces+1]={asset="villageRoofEnd",x=w*16.2,z=wingZ,
+          height=3.5,lift=4.65,angle=w<0 and -math.pi*.5 or math.pi*.5}
+      end
+      -- [헛간·오두막] 낮은 측면 창고 차양. 원본 지붕 부재를 이용하고 빈 파츠는 만들지 않는다.
+      if house.leanTo then
+        for _,offset in ipairs({-2.7,2.7}) do
+          pieces[#pieces+1]={asset="villageRoof",x=-8.1,z=offset,
+            height=2.55,lift=3.15,angle=math.pi*.5,decoration=true}
+        end
+      end
+      -- [큰 건물 전면 회랑] 여관·회관의 2층 처마를 넓게 이어 단층 주택과 구별한다.
+      if house.balcony and house.storeys==2 then
+        for _,offset in ipairs({-5.4,0,5.4}) do
+          pieces[#pieces+1]={asset="villageRoof",x=7.65,z=offset,
+            height=2.15,lift=5.1,angle=math.pi*.5,decoration=true}
+        end
       end
       -- [차양] 집의 원본 지붕 메시를 재사용하며 단순 Part를 새로 생성하지 않는다.
       for porchIndex=1,house.porch do
@@ -1541,6 +1562,9 @@ task.defer(function()
   }
   local sceneryCount=0
   for index,spec in ipairs(woodland) do
+    -- [마을 시야] 기존 16개 건물과 길에 울창한 숲 메시가 겹치지 않게 관상 나무만 외곽으로 남긴다.
+    -- 채집 자원/퀘스트 조사 좌표는 이전대로 유지한다.
+    if spec[2]<-61 and math.abs(spec[1])<275 then continue end
     local tree=worldAsset("tree",Vector3.new(spec[1],3,spec[2]),spec[3])
     if tree then
       tree.Name="Meadow_Woodland_"..index
