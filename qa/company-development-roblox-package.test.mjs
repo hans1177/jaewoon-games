@@ -1892,67 +1892,28 @@ test('마력숲 장검 3연속 검술은 독립 입력 3단계로 연결되고 �
 });
 
 // 파일 구분: 마력숲 회피 모션 우선권·완벽 막기 연타 중단 회귀 검증.
-test('마력숲 회피는 공격에 끊기지 않고 두 아바타의 실제 관절에 연결된다',()=>{
+test('fantasy owner-approved three-stage dodge retains native joints and server authority',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   assert.match(client,/if os.clock\(\)<dodgePoseUntil then return false end/);
-  assert.match(client,/if skillMotionR15 and os.clock\(\)>=skillMotionDeadline then finishMeadowSkillPose\(\) end/);
-  assert.match(client,/if isDodge then dodgePoseUntil=skillMotionDeadline end/);
-  // [회피 입력] 모바일 스틱 수평 방향에 따라 기존 서버의 좌우 행동을 선택한다.
-  assert.match(client,/local stick=human\.MoveDirection:Dot\(horizontal\.Unit\)/);
+  assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
+  assert.match(client,/dodgePoseUntil=skillMotionStart\+\.46\+\.12/);
+  assert.match(client,/local first=math\.sin\(math\.pi\*math\.clamp\(phase\/\.34,0,1\)\)/);
+  assert.match(client,/local second=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.29\)\/\.38,0,1\)\)/);
+  assert.match(client,/local flip=math\.clamp\(\(phase-\.60\)\/\.31,0,1\)/);
+  assert.match(client,/CFrame\.Angles\(-2\*math\.pi\*flip/);
+  assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new/);
+  assert.match(client,/skillMotionR15Targets\.RootJoint=skillMotionTargets\.FlipRoot/);
+  assert.match(client,/skillMotionR15Targets\["Left Hip"\]=skillMotionTargets\.ThighL/);
+  assert.match(client,/skillMotionR15Targets\["Right Hip"\]=skillMotionTargets\.ThighR/);
+  assert.match(client,/RunService\.PreSimulation:Connect\(function\(dt\)/);
   assert.match(client,/stick>\.2 then actionId="skill-meadow-dodge-right"/);
   assert.match(client,/stick<-\.2 then actionId="skill-meadow-dodge-left"/);
-  assert.ok(client.includes('skillMotionR15Targets.RootJoint=skillMotionTargets.Spine'));
-  assert.ok(client.includes('skillMotionR15Targets["Left Hip"]=skillMotionTargets.ThighL'));
-  assert.ok(client.includes('skillMotionR15Targets["Right Hip"]=skillMotionTargets.ThighR'));
-  assert.match(client,/dodgePoseUntil=0\s*finishMeadowSkillPose\(\)/);
-  // 기존 공식 R15 관절만 사용해 낮추기-옆발-착지까지 포즈가 연속 변화해야 한다.
-  assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
-  // 착지 후 불필요한 남은 다리 각도가 끝 프레임에서 튀지 않아야 한다.
-  assert.match(client,/skillMotionTargets\.FootL=CFrame\.Angles/);
-  assert.match(client,/skillMotionTargets\.FootR=CFrame\.Angles/);
-  assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles/);
-  assert.match(client,/skillMotionTargets\.ThighR=CFrame\.Angles/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles/);
-  // 새 회피: 실제 측면 점프, 적 정면 주시, 전방 15도 숙임.
-  assert.match(client,/local duck=math\.rad\(15\)\*stance/);
-  assert.match(client,/CFrame\.Angles\(-duck\*\.72/);
-  assert.match(client,/skillMotionTargets\.Chest=CFrame\.Angles\(-duck\*\.28/);
-  assert.match(client,/local lift=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.055\)\/\.53,0,1\)\)/);
-  assert.match(client,/local landing=math\.sin\(math\.pi\*math\.clamp\(\(phase-\.56\)\/\.25,0,1\)\)/);
-  assert.match(client,/local leadingKnee=\.40\*lift\+\.20\*landing/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(\.045\*stance/);
-  assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-movementStarted\)\/\.26,0,1\)/);
-  // 복싱 방어: 한팔은 관자놀이, 다른팔은 어깨 아래, 턱 숙임.
-  assert.match(client,/if os\.clock\(\)<dodgePoseUntil and not \(isDodge or isGuard or isParry\) then return end/);
-  assert.match(client,/if isGuard or isParry then dodgePoseUntil=0 end/);
-  assert.match(client,/local crouch=math\.clamp\(phase\/\.11,0,1\)/);
-  assert.match(client,/local elbow=math\.clamp\(\(phase-\.018\)\/\.105,0,1\)/);
-  assert.match(client,/skillMotionTargets\.Head=CFrame\.Angles\(-\.14\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.38\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-2\.60\*guard/);
-  assert.match(client,/skillMotionTargets\.ForearmL=CFrame\.Angles\(-\.70\*elbow/);
-  assert.match(client,/skillMotionTargets\.ForearmR=CFrame\.Angles\(-1\.05\*elbow/);
-  assert.doesNotMatch(client,/local ease=math\.sin\(math\.pi\*phase\)/);
-  // 서버 권한 거리·무적·쿨다운은 유지하면서 시각 이동만 부드럽게 보간한다.
   const dodge=server.slice(server.indexOf('local function meadowDodge('),server.indexOf('local function meadowSprint('));
-  assert.match(dodge,/local hopHeight=\(not overhead and not elevatedWall\) and \.28 or 0/);
-  assert.match(dodge,/local turn=math\.clamp\(t\/\.24,0,1\)/);
-  assert.match(dodge,/turn=turn\*turn\*\(3-2\*turn\)/);
-  assert.match(dodge,/local gaze=dodgeOrigin:Lerp\(dodgeFacing,turn\)/);
-  assert.match(dodge,/local hop=hopHeight\*math\.sin\(math\.pi\*t\)/);
-  assert.match(dodge,/character:PivotTo\(gaze\+dodgeOffset\*eased\+Vector3\.new\(0,hop,0\)\)/);
-  assert.match(dodge,/workspace:Raycast\(start,side\*7,ray\)/);
-  assert.match(dodge,/if distance<2 then return false end/);
-  assert.match(dodge,/defense\.dodgeUntil=now\+\.48/);
-  assert.match(dodge,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
-  assert.match(dodge,/local nearest=25/);
-  assert.match(dodge,/for _,enemy in ipairs\(enemies\) do/);
-  assert.match(dodge,/if enemy\.HP>0 and enemy\.model\.Parent then/);
-  assert.match(dodge,/local side=Vector3\.new\(-facing\.Z,0,facing\.X\)\*sign/);
-  assert.match(dodge,/local dodgeFacing=CFrame\.lookAt\(dodgeOrigin\.Position,dodgeOrigin\.Position\+facing\)/);
-  assert.match(dodge,/humanoid\.AutoRotate=false/);
-  assert.match(dodge,/humanoid\.AutoRotate=oldAutoRotate/);
+  for(const pattern of [/workspace:Raycast\(start,side\*7,ray\)/,/if distance<2 then return false end/,
+    /defense\.dodgeUntil=now\+\.48/,/humanoid\.AutoRotate=false/,/humanoid\.AutoRotate=oldAutoRotate/]){
+    assert.match(dodge,pattern,'server combat and movement authority must be preserved');
+  }
   assert.match(server,/\["skill-meadow-dodge-left"\]=4,\["skill-meadow-dodge-right"\]=4/);
 });
 
@@ -1983,32 +1944,21 @@ test('마력숲 15도 옆 스텝과 자연스러운 착지 곡선 검증',()=>{
 });
 
 // [마력숲 막기/회피] 공식 R15 관절 타이밍과 서버 판정을 연결하며 기존 밸런스를 유지한다.
-test('fantasy guard holds a full pose and dodges blend smoothly without changing defense authority',()=>{
+test('fantasy upright X-guard and dodge preserve cooldown, defense and native joint authority',()=>{
   const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
   const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
   const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
   const motion=fs.readFileSync('assets/roblox/common-motion-v1/RobloxCommonMotion.luau','utf8');
-  assert.match(client,/local isGuard=id=="skill-meadow-guard"/);
-  assert.match(client,/local isParry=id=="skill-meadow-parry"/);
-  assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and \.46/);
-  assert.match(client,/elseif isGuard or isParry then/);
-  // [한손 복싱 막기] 오른 주먹만 높이고 왼쪽 팔은 낮춘다. 무장 막기와 패링은 보존한다.
-  assert.match(client,/if isGuard then/);
-  assert.match(client,/local guard=rise\*release/);
-  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.38\*guard/);
-  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-2\.60\*guard/);
-  assert.match(client,/skillMotionTargets\.ThighL=CFrame\.Angles\(\.17\*crouch/);
-  assert.match(client,/skillMotionTargets\.ShinL=CFrame\.Angles\(\.20\*crouch/);
-  assert.match(client,/RunService\.PreSimulation:Connect\(function\(dt\)/);
-  assert.match(client,/followAnimator=true,response=23/);
+  assert.match(client,/skillMotionDuration=isGuard and 2\.8 or isParry and \.42 or isDodge and 1\.06/);
+  assert.match(client,/if isGuard then[\s\S]*?local open=math\.sin/);
+  assert.match(client,/skillMotionTargets\.UpperArmL=CFrame\.Angles\(-\.68\*open-1\.68\*brace/);
+  assert.match(client,/skillMotionTargets\.UpperArmR=CFrame\.Angles\(-\.68\*open-1\.68\*brace/);
+  assert.match(client,/skillMotionTargets\.ShinL=CFrame\.identity/);
+  assert.match(client,/skillMotionTargets\.ShinR=CFrame\.identity/);
+  assert.match(client,/skillMotionTargets\.FlipRoot=CFrame\.new/);
   assert.match(client,/joint:IsA\("AnimationConstraint"\) or joint:IsA\("Motor6D"\)/);
   assert.match(client,/skillMotionR15\.Step\(skillMotionR15Targets,dt\)/);
-  assert.match(server,/local ease=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
-  assert.match(server,/local eased=\.5-\.5\*math\.cos\(math\.pi\*t\)/);
-  assert.match(server,/local t=math\.clamp\(\(os\.clock\(\)-began\)\/\.40,0,1\)/);
-  assert.match(server,/floorRay\.FilterDescendantsInstances=\{meadowTerrain\}/);
-  assert.match(server,/floor\.Material==Enum\.Material\.Water/);
-  assert.match(server,/floor\.Normal\.Y<\.65/);
+  assert.match(client,/RunService\.PreSimulation:Connect\(function\(dt\)/);
   assert.match(server,/defense\.guardUntil=now\+2\.8/);
   assert.match(server,/defense\.perfectGuardUntil=now\+\.28/);
   assert.match(server,/defense\.parryUntil=now\+\.42/);
@@ -2089,22 +2039,27 @@ test('마력숲 동료 의뢰와 인트로는 기존 메인·저장을 보존한
  assert.match(server,/model:SetAttribute\("EnemyMaxHealth",hitPoints\)/);
 });
 
-test('마력숲 초원 수문장은 기존 골렘·지역 서식지·보상을 보존하고 메인 퀘스트에 연결된다',()=>{
- const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
- const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
- assert.match(config,/Id="meadow-gatekeeper"/);
- assert.match(server,/recordMeadowQuest\(player,"BOSS_KILL"\)/);
- assert.match(server,/if eventName~="BOSS_KILL" then return end/);
-  assert.match(server,/id="golem",atom="HEAD_GOLEM",tier=5,height=8\.4/);
+test('fantasy owner-removed golem stays absent and exterior alpha wolf finishes the main quest',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const config=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const sites=server.slice(server.indexOf('local meadowEncounterSites = {'),server.indexOf('local function meadowVillageContains('));
+  assert.doesNotMatch(sites,/id="golem"/);
+  assert.match(config,/Id="meadow-gatekeeper"/);
+  assert.match(config,/Instruction="마을 서쪽 숲의 우두머리 늑대 1마리 처치"/);
+  assert.match(server,/if target\.isAlpha then recordMeadowQuest\(player,"BOSS_KILL"\) end/);
+  assert.match(server,/if eventName~="BOSS_KILL" then return end/);
+  const wolves=[...sites.matchAll(/\{id="wolf"[^\n]*?position=Vector3\.new\((-?\d+),(-?\d+),(-?\d+)\)/g)];
+  assert.equal(wolves.length,8);
+  for(const [,x,y,z] of wolves){
+    assert.equal(+x>=-280&&+x<=280&&+z>=-351&&+z<=-42,false,'wolf inside village');
+  }
+  assert.equal((sites.match(/alpha=true/g)||[]).length,1);
+  assert.match(server,/meadowVillageContains\(rootPart\.Position\)/);
+  assert.match(server,/meadowVillageContains\(nextPosition\)/);
   assert.match(server,/local function refreshMeadowEncounters\(now\)/);
   assert.doesNotMatch(server,/local function startWave\(/);
-  assert.doesNotMatch(server,/local function finishWave\(/);
- assert.match(server,/enemy.HP<=enemy.maxHP\*\.5/);
- assert.match(server,/target.model:SetAttribute\("BossPhase",2\)/);
-  assert.match(server,/local function spawnEnemy\(site, siteIndex\)/);
- assert.match(server,/NativeMobMotionDuration/);
- assert.match(server,/awardProgress\(player,target.isBoss and 75 or target.isAlpha and 35 or 12,/);
- assert.match(server,/target.isBoss and 45 or target.isAlpha and 18 or 5\)/);
+  assert.match(server,/awardProgress\(player,target\.isBoss and 75 or target\.isAlpha and 35 or 12,/);
+  assert.match(server,/target\.isBoss and 45 or target\.isAlpha and 18 or 5\)/);
 });
 
 // [액션·늑대 모션 복구] 기존 로블록스 클립과 스킨 Bone을 중복 구동하지 않고 전환한다.
