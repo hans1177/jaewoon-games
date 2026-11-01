@@ -27,10 +27,12 @@ if '--game-id=fantasy-survival' in sys.argv:
   raise RuntimeError('FANTASY_NATIVE_APPROVED_MANIFEST_REQUIRED')
  records={}
  for role,row in manifest['models'].items():
-  # [사슴 원본] Gobkit 공식 CC0 무료 팩만 허용. 다른 역할·경로와 SHA 검증은 유지한다.
-  verified_deer_license=(role=='deer'
-   and row.get('sourcePath')=='assets/shared/forest/deer-real.glb'
-   and row.get('licenseEvidence')=='https://gobkit.com/api/free')
+  # [사슴 원본] 기존 Gobkit 등록본과 Quaternius CC0 46관절 사슴만 검증한다.
+  verified_deer_license=(role=='deer' and (
+   (row.get('sourcePath')=='assets/shared/forest/deer-real.glb'
+    and row.get('licenseEvidence')=='https://gobkit.com/api/free')
+   or (row.get('sourcePath')=='assets/shared/forest/deer-animated.glb'
+    and row.get('licenseEvidence')=='https://quaternius.com/packs/ultimateanimatedanimals.html')))
   verified_license=(row.get('licenseEvidence','').startswith('https://opengameart.org/content/')
    or (role in {'tree','ruin'} and row.get('licenseEvidence')=='https://kenney.nl/assets/fantasy-town-kit')
    or verified_deer_license)

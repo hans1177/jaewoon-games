@@ -4763,7 +4763,7 @@ local function bindOriginalMob(model)
         name=(key:find("lower",1,true) and "Shin" or "Thigh")..side
       elseif not sourceChannels[name] and limb and side then
         local lower=key:find("knee",1,true) or key:find("shin",1,true)
-          or key:find("calf",1,true)
+          or key:find("calf",1,true) or key:find("lowerleg",1,true)
         local foot=key:find("foot",1,true) or key:find("paw",1,true)
           or key:find("ankle",1,true)
         if species=="golem" then
@@ -4772,7 +4772,7 @@ local function bindOriginalMob(model)
           local front=key:find("front",1,true) or key:find("fore",1,true)
           local rear=key:find("rear",1,true) or key:find("hind",1,true)
             or key:find("back",1,true)
-          -- [신규 암사슴 +Z 전방] 원본 GLB의 방향은 -Z 전방인 늑대와 반대다.
+          -- [실제 사슴 관절] 원본 46관절 앞·뒷다리 이름을 우선하고 좌표는 폴백으로만 쓴다.
           local position=front and "F" or rear and "B"
             or ((species=="deer") == (relative.Z>0)) and "F" or "B"
           name=position..side..(foot and "Ankle" or lower and "Knee" or "Hip")
@@ -4811,7 +4811,8 @@ local function bindOriginalMob(model)
         local key=animation.Name:lower()
         local mode=key:find("fly",1,true) and "FLY"
           or key:find("walk",1,true) and "WALK"
-          or key:find("run",1,true) and "RUN"
+          or (key=="gallop" or key:find("gallop",1,true)
+            and not key:find("jump",1,true) or key:find("run",1,true)) and "RUN"
           or key:find("idle",1,true) and "IDLE"
           or key:find("attack",1,true) and "ATTACK"
           or key:find("dead",1,true) and "DEATH"
@@ -4944,7 +4945,7 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           end
           -- 원본 클립이 실행 불가/길이 0이면 기존 4족 본 모션으로 전환한다.
           local missing=not track or not track.IsPlaying or track.Length<=0
-          if row.species=="wolf" and row.controller and missing
+          if (row.species=="wolf" or row.species=="deer") and row.controller and missing
             and os.clock()-row.originalTrackWaitStartedAt>=2.5 then
             for _,original in pairs(row.nativeTracks) do original:Stop(.12) end
             row.nativeTracks=nil

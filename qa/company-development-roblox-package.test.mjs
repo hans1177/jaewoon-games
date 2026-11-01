@@ -1006,11 +1006,13 @@ test('native registration stays behind current contract identity and exact publi
 });
 
 test('native uploader verifies all originals before registration and emits real returned IDs without guessing grants',()=>{
-  // [원본 등록] Gobkit 공식 CC0 사슴만 기존 엄격 원본 검증 경로에 포함한다.
+  // [원본 등록] 기존 Gobkit와 Quaternius 46관절 사슴을 허용하고 출처·해시 검증은 유지한다.
   const author=fs.readFileSync('tools/baeksu-war-author-meshes.py','utf8');
   assert.match(author,/verified_deer_license=\(role=='deer'/);
   assert.match(author,/row\.get\('sourcePath'\)=='assets\/shared\/forest\/deer-real\.glb'/);
   assert.match(author,/row\.get\('licenseEvidence'\)=='https:\/\/gobkit\.com\/api\/free'/);
+  assert.match(author,/row\.get\('sourcePath'\)=='assets\/shared\/forest\/deer-animated\.glb'/);
+  assert.match(author,/row\.get\('licenseEvidence'\)=='https:\/\/quaternius\.com\/packs\/ultimateanimatedanimals\.html'/);
   assert.match(author,/if not re\.fullmatch\('\[a-f0-9\]\{64\}',row\.get\('sourceSha256',''\)\) or not verified_license:/);
   assert.match(author,/hashlib\.sha256\(data\)\.hexdigest\(\)!=row\['sourceSha256'\]/);
   assert.match(author,/FANTASY_VILLAGE_SOURCE_DIGEST_MISMATCH/);
@@ -1404,9 +1406,14 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(client,/bit32\.band\(contractEvidence,requiredBit\)==0/);
   assert.match(client,/remote:FireServer\(action\)/);
   // 새 1+1+전투 계약은 기존 임무 비트·보상·저장 키를 재사용한다.
-  for(const enemy of ['wolf','ghost','bandit']) assert.ok(config.includes('Enemy="'+enemy+'"'));
-  assert.match(config,/Name="02 · 원혼이 깃든 우물"/);
-  assert.match(config,/Name="03 · 도적의 보급 수레 습격"/);
+  for(const enemy of ['wolf','bat']) assert.ok(config.includes('Enemy="'+enemy+'"'));
+  assert.ok(!config.includes('Enemy="ghost"')&&!config.includes('Enemy="bandit"'));
+  assert.match(config,/Name="02 · 밤의 우물"/);
+  assert.match(config,/Name="03 · 보급 수레 습격 조사"/);
+  assert.doesNotMatch(server,/\{id="ghost",atom=/);
+  assert.doesNotMatch(server,/\{id="bandit",atom=/);
+  assert.match(server,/position=Vector3\.new\(300,3,-212\),questIndex=2/);
+  assert.match(server,/position=Vector3\.new\(-299,3,-233\),questIndex=3/);
   // 약초길의 우두머리 늑대만 별도 보스이며, 돌 골렘 본편 처치 조건은 그대로다.
   assert.match(config,/EnemyName="우두머리 늑대"/);
   assert.match(server,/alpha=true/);
