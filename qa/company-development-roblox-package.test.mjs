@@ -1272,10 +1272,10 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
     assert.ok(source,'CC0 source manifest missing: '+role);
     assert.equal(asset.sourceSha256,source.sha256,'source hash mismatch: '+role);
     assert.equal(asset.license,'CC0-1.0','source license mismatch: '+role);
-    if(assets.villagePrefabs.registrationVerified===true){
-      assert.ok(Number.isSafeInteger(asset.assetId)&&asset.assetId>0,'registered model requires real asset ID: '+role);
-      assert.equal(asset.sha256,source.sha256,'uploaded asset source must match: '+role);
+    if(Number.isSafeInteger(asset.assetId)&&asset.assetId>0){
+      assert.equal(asset.sha256,source.sha256,'registered model source must match: '+role);
     }else{
+      assert.equal(assets.villagePrefabs.registrationVerified,false,'pending model cannot certify all originals');
       assert.equal(asset.universeGrantVerified,false,'never fake unverified Universe use');
     }
   }
