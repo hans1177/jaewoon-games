@@ -5302,8 +5302,10 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           -- 실제 Bone만 구동하고 AI/탐지거리/공격 판정은 절대 변경하지 않는다.
           if row.species=="deer" then
             local look=math.sin(cycle*.55)
-            if row.available.Neck then row.poses.Neck=CFrame.Angles(-.035+math.sin(cycle)*.065,look*.045,0) end
-            if row.available.Head then row.poses.Head=CFrame.Angles(.045+math.sin(cycle*.7)*.09,look*.13,0) end
+            -- [사슴 직립] CC0 원본 기본 목과 머리는 이미 위를 본다. 과도한 고개 숙임을 없앤다.
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(.012*math.sin(cycle),0,0) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(-.12+math.sin(cycle)*.022,look*.035,0) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(-.11+math.sin(cycle*.7)*.025,look*.06,0) end
             if row.available.Tail then row.poses.Tail=CFrame.Angles(0,look*.10,0) end
           elseif row.species=="wolf" then
             local scent=math.sin(cycle*.8)
@@ -5489,10 +5491,17 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
               row.poses.Spine=CFrame.Angles(waistPitch,-turn*.16,-roll*.65+turn*.17)
             end
             if row.available.Neck then
-              row.poses.Neck=CFrame.Angles(-chestPitch*.72,turn*.21,-roll*.34-turn*.21)
+              row.poses.Neck=CFrame.Angles(row.species=="deer" and
+                (-.12+math.sin(cycle)*.022) or -chestPitch*.72,turn*.21,-roll*.34-turn*.21)
             end
             if row.available.Head then
-              row.poses.Head=CFrame.Angles(-chestPitch*.50,-turn*.38,-roll*.20-turn*.15)
+              row.poses.Head=CFrame.Angles(row.species=="deer" and
+                (-.10+math.cos(cycle-.18)*.018) or -chestPitch*.50,-turn*.38,-roll*.20-turn*.15)
+            end
+            if row.species=="deer" then
+              -- [사슴 발 지지] 원본 기본 척추와 머리 높이를 지키면서 보폭만 표현한다.
+              if row.available.Chest then row.poses.Chest=CFrame.Angles(.018*math.sin(cycle),0,roll*.23) end
+              if row.available.Spine then row.poses.Spine=CFrame.Angles(-.024*math.sin(cycle),0,-roll*.20) end
             end
             if row.available.Tail then
               row.poses.Tail=CFrame.Angles(-waistPitch*.26,
@@ -5504,21 +5513,22 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
             local bite=mode=="ATTACK" and math.sin(math.pi*phase) or 0
             local settle=mode=="RECOVERY" and (1-phase) or 0
             local lunge=model:GetAttribute("AttackPattern")=="WOLF_LUNGE" and 1.25 or 1
-            if row.available.Chest then row.poses.Chest=CFrame.Angles(-.17*windup-.36*bite*lunge+.13*settle,0,0) end
-            if row.available.Spine then row.poses.Spine=CFrame.Angles(.21*windup-.21*bite*lunge,0,0) end
-            if row.available.Neck then row.poses.Neck=CFrame.Angles(.22*windup-.48*bite*lunge+.13*settle,0,0) end
-            if row.available.Head then row.poses.Head=CFrame.Angles(.29*windup-.56*bite*lunge+.18*settle,0,0) end
-            if row.available.Jaw then row.poses.Jaw=CFrame.Angles(.22*windup+.70*bite,0,0) end
-            if row.available.Tail then row.poses.Tail=CFrame.Angles(.16*windup-.18*bite,0,0) end
+            -- [늑대 영화식 포식 액션] 크게 웅크림 → 뒷발 추진 → 상체 급격히 전진 → 목과 턱으로 물기.
+            if row.available.Chest then row.poses.Chest=CFrame.Angles(-.29*windup-.58*bite*lunge+.19*settle,0,.08*windup) end
+            if row.available.Spine then row.poses.Spine=CFrame.Angles(.37*windup-.34*bite*lunge,0,-.10*bite) end
+            if row.available.Neck then row.poses.Neck=CFrame.Angles(.40*windup-.74*bite*lunge+.18*settle,0,.10*bite) end
+            if row.available.Head then row.poses.Head=CFrame.Angles(.48*windup-.91*bite*lunge+.22*settle,0,-.12*bite) end
+            if row.available.Jaw then row.poses.Jaw=CFrame.Angles(.34*windup+1.01*bite,0,0) end
+            if row.available.Tail then row.poses.Tail=CFrame.Angles(.27*windup-.34*bite,math.sin(phase*math.pi*2)*.13,0) end
             for _,key in ipairs({"FL","FR"}) do
-              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(-.24*windup+.37*bite*lunge,0,0) end
-              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.25*windup+.16*bite,0,0) end
-              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.07*windup-.16*bite,0,0) end
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(-.39*windup+.56*bite*lunge,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.40*windup+.28*bite,0,0) end
+              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.15*windup-.26*bite,0,0) end
             end
             for _,key in ipairs({"BL","BR"}) do
-              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(.21*windup-.31*bite*lunge,0,0) end
-              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.35*windup+.09*bite,0,0) end
-              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.15*windup+.12*bite,0,0) end
+              if row.available[key.."Hip"] then row.poses[key.."Hip"]=CFrame.Angles(.33*windup-.48*bite*lunge,0,0) end
+              if row.available[key.."Knee"] then row.poses[key.."Knee"]=CFrame.Angles(.50*windup+.15*bite,0,0) end
+              if row.available[key.."Ankle"] then row.poses[key.."Ankle"]=CFrame.Angles(-.24*windup+.19*bite,0,0) end
             end
           elseif mode=="ANTICIPATION" or mode=="ATTACK" or mode=="RECOVERY" then
             -- [기존 초식동물] 사슴·멧돼지·토끼의 공격 연출은 그대로 유지한다.
@@ -5554,7 +5564,8 @@ game:GetService("RunService").PreSimulation:Connect(function(dt)
           if row.available.ThighR then row.poses.ThighR=CFrame.Angles(shock and .26*lift or .12*lift,0,0) end
         end
         -- 실제 원본 관절이 있는 몹에만 종별 공격·추적 동작을 크게 합성한다.
-        local gain=mode=="ATTACK" and (row.species=="golem" and 1.75 or 1.6)
+        local gain=mode=="ATTACK" and (row.species=="golem" and 1.75
+          or row.species=="wolf" and 1.92 or 1.6)
           or mode=="RUN" and (row.plan=="QUADRUPED" and 1.08 or 1.42)
           or 1.10
         for joint,pose in pairs(row.poses) do
