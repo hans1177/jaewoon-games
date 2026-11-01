@@ -617,9 +617,10 @@ for index,name in ipairs(meadowPageNames) do
 end
 local meadowJournal={}
 local meadowHelperButtons={}
--- [캐릭터창] 기존 R15 얼굴과 실제 서버 장비/숙련도만 표시한다. 추가 장비는 가상으로 생성하지 않는다.
+-- [캐릭터창] 메뉴 생성과 전투 렌더에 필요한 외부 변수만 유지한다.
 local meadowGold=Color3.fromRGB(201,169,105)
 local meadowParchment=Color3.fromRGB(238,225,197)
+local renderWitcherCharacter=(function()
 local meadowDim=Color3.fromRGB(174,169,151)
 local characterHero=Instance.new("Frame")
 characterHero.Name="WitcherCharacterPortrait";characterHero.LayoutOrder=1
@@ -687,6 +688,18 @@ masteryHeading.TextXAlignment=Enum.TextXAlignment.Left;masteryHeading.Parent=mea
 meadowLabels[1].LayoutOrder=8
 meadowLabels[1].TextColor3=meadowParchment
 meadowLabels[1].TextSize=14
+return function(character,humanoid,tool)
+  characterHeroName.Text=player.DisplayName
+  characterHeroSummary.Text=string.format("생존자  ·  처치한 보스 %d\n체력 %d / %d  ·  강화 +%d",
+    player:GetAttribute("Bosses") or 0,
+    humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
+    player:GetAttribute("WeaponTier") or 0)
+  equippedWeapon.Text=tool and tool.Name or "맨손"
+  equippedSecondary.Text="보유 장비 없음"
+  equippedArmor.Text="장착 데이터 없음"
+  equippedAccessory.Text="장착 데이터 없음"
+end
+end)()
 local function renderMeadowPages()
   local character=player.Character
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
@@ -698,15 +711,7 @@ local function renderMeadowPages()
     proficiencyLines[#proficiencyLines+1]=string.format("%s  %d",
       entry.Name,math.floor(player:GetAttribute(entry.Key) or 0))
   end
-  characterHeroName.Text=player.DisplayName
-  characterHeroSummary.Text=string.format("생존자  ·  처치한 보스 %d\n체력 %d / %d  ·  강화 +%d",
-    player:GetAttribute("Bosses") or 0,
-    humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
-    player:GetAttribute("WeaponTier") or 0)
-  equippedWeapon.Text=tool and tool.Name or "맨손"
-  equippedSecondary.Text="보유 장비 없음"
-  equippedArmor.Text="장착 데이터 없음"
-  equippedAccessory.Text="장착 데이터 없음"
+  renderWitcherCharacter(character,humanoid,tool)
   meadowLabels[1].Text=string.format("%s\n\n전투 강화  +%d  ·  보스 처치  %d\n\n※ 요리·건축·연금술은 실제 제작 기능 연결 전에는 오르지 않아.",
     table.concat(proficiencyLines,"\n"),player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
   meadowLabels[2].Text=string.format("소지품 · 서버 기록\n숙련도 %d  ·  장착 %s\n저장 %s",
@@ -1006,7 +1011,8 @@ inventoryRow.Parent=meadowPages[2]
 inventoryRow.LayoutOrder=1
 -- [인벤토리] 기존 외부 CC0 장비·가방·책 아이콘으로 실제 서버 아이템만 표시한다.
 -- 카드 수량은 플레이어 속성에서 매번 읽고 저장/보상/소비 판정을 만들지 않는다.
--- [인벤토리] 실제 소유 자료에만 필터·선택·상세보기 적용. 소비/장착은 서버 기능을 우회하지 않는다.
+-- [인벤토리·스킬창] 메뉴 전용 생성 함수로 Luau 레지스터 사용량을 제한한다.
+local renderWitcherInventory=(function()
 local inventoryCategories={"전체","재료","기록","재화","장비"}
 local inventoryFilters,inventoryFilterButtons=CommonUI.CreateFilterBar({
   name="WitcherItemCategories",filters=inventoryCategories,selectedIndex=1
@@ -1263,6 +1269,13 @@ skillUse.Activated:Connect(function()
   activateMeadowAction(selectedSkill.Id)
 end)
 renderMeadowSkills()
+return function()
+  for index=1,#inventoryData do
+    inventoryCards[index].Text=inventoryValue(index)
+  end
+  renderInventorySelection()
+end
+end)()
 
 -- [가방] 왼쪽 주머니 단축 아이콘 제거. 인벤토리는 기존 메뉴의 2번 탭에서 계속 이용한다.
 local villageContractRow=journalRow("VillageContracts",166)
@@ -1306,12 +1319,7 @@ local function renderMeadowJournal()
   trackerDetail.Text=quest and string.format("%s  (%d/%d)",quest.Instruction,progress,quest.Goal)
     or "연구 기록을 메뉴의 인벤토리에서 다시 볼 수 있어"
   inventoryRow.Text="획득한 아이템 · 수량은 서버 기록 기준"
-  local character=player.Character
-  local tool=character and character:FindFirstChildOfClass("Tool")
-  for index,item in ipairs(inventoryData)do
-    inventoryCards[index].Text=inventoryValue(index)
-  end
-  renderInventorySelection()
+  renderWitcherInventory()
   for index,info in ipairs(Config.MainQuests) do
     local state=index<stage and "완료" or index==stage and "진행 중" or "잠김"
     local count=index<stage and info.Goal or index==stage and progress or 0
