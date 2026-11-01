@@ -22,4 +22,13 @@ return {
  villageFence=88622848607864,
  villageLantern=101876091951426,
  villageCart=137007180693455,
+ villageStoneWall=102755178923561,
+ villageFlatRoof=129838639576655,
+ villageChimney=119892018255220,
+ villagePillar=77258836345522,
+ villageArch=120949304743389,
+ villageRuinWall=112237615622397,
+ villageRoad=111747861789798,
+ villageTallTree=100023007365542,
+ villageCrookedTree=125721357527592,
 }
