@@ -124,8 +124,10 @@ if '--game-id=fantasy-survival' in sys.argv:
       + " if obj.type=='MESH':obj.select_set(True)\n"
       + 'bpy.ops.export_scene.gltf(filepath='+repr(str(output))+",export_format='GLB',use_selection=True)\n"
      )
-     subprocess.run(['blender','--background','--disable-autoexec','--python-expr',expression],
+     subprocess.run(['blender','--background','--disable-autoexec','--python-use-system-env','--python-expr',expression],
       check=True,timeout=180)
+    if not output.is_file():
+     raise RuntimeError('FANTASY_VILLAGE_HOUSE_BLENDER_EXPORT_MISSING:'+role)
     data=output.read_bytes()
     if len(data)<1000 or len(data)>18*1024*1024 or not data.startswith(b'glTF'):
      raise RuntimeError('FANTASY_VILLAGE_HOUSE_GLTF_SIZE_OR_FORMAT_INVALID:'+role)
