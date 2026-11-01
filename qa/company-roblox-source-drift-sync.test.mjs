@@ -426,6 +426,21 @@ test('batch cannot cancel queued exact games for unrelated commit changes',()=>{
   assert.match(sourcePlan,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
 });
 
+// [게임별 기술 빌드 대기열] 실행 중인 F0를 중단하지 않고, 같은 게임의 대기 작업만 최신 한 건으로 유지한다.
+test('canonical per-game technical worker retains one active job and coalesces stale pending builds',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const technical=runtime.slice(runtime.indexOf('\n  technical-worker:\n'),runtime.indexOf('\n  technical-persist:\n'));
+  assert.ok(technical.length>1000,'original F0 workflow must remain present');
+  assert.match(technical,/concurrency:\n\s+group: roblox-technical-f0-\$\{\{ matrix\.gameId \}\}/);
+  assert.match(technical,/queue: single/);
+  assert.match(technical,/cancel-in-progress: false/);
+  assert.doesNotMatch(technical,/cancel-in-progress: true/);
+  assert.match(technical,/Drop superseded Roblox technical work before heavy execution/);
+  assert.match(technical,/SOURCE_REVISION_MOVED/);
+  assert.match(technical,/Build exact-revision Roblox package/);
+  assert.match(technical,/F0/);
+});
+
 test('exact Roblox runs deduplicate before work without cancelling an active build',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.doesNotMatch(runtime.slice(0,runtime.indexOf('\njobs:\n')),/\nconcurrency:\n/);
