@@ -1307,9 +1307,9 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.match(server,/if house.leanTo then/);
   assert.match(server,/if house.balcony and house.storeys==2 then/);
   assert.match(server,/MeadowVillageFlatGroundReady",true/);
-  assert.match(server,/meadowTerrain:FillBlock\\(CFrame.new\\(district\\[1\\],34,district\\[2\\]\\)/);
-  assert.doesNotMatch(server,/\\{x=-115,z=-92,r=41,y=-12\\}/);
-  assert.doesNotMatch(server,/\\{x=-292,z=-210,r=35,y=-13\\}/);
+  assert.match(server,/meadowTerrain:FillBlock\(CFrame.new\(district\[1\],34,district\[2\]\)/);
+  assert.doesNotMatch(server,/\{x=-115,z=-92,r=41,y=-12\}/);
+  assert.doesNotMatch(server,/\{x=-292,z=-210,r=35,y=-13\}/);
 
   assert.match(server,/MeadowVillageBuildingCount/);
   assert.match(server,/MeadowVillagePrefabReady/);
