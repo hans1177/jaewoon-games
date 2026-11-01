@@ -4458,45 +4458,47 @@ RunService.PreSimulation:Connect(function(dt)
   if isDodge then
     local sign=actionId=="skill-meadow-dodge-left" and -1 or 1
     local leadLeft=sign<0
-    -- [1단] 순간 숙임 → [2단] 양다리 옆도약 → [3단] 전방 360도 덤블링 후 착지.
-    -- 세 장면은 서버가 승인한 회피 한 번의 연출이며 무적·이동 판정을 추가하지 않는다.
-    local first=math.sin(math.pi*math.clamp(phase/.34,0,1))
-    local second=math.sin(math.pi*math.clamp((phase-.29)/.38,0,1))
-    local flip=math.clamp((phase-.60)/.31,0,1)
+    -- [5단 회피 스킬] 1 슬립 → 2 역방향 페인트 → 3 크로스 스텝 → 4 낮은 위빙 → 5 덤블링 착지.
+    -- 단일 승인 기술의 연속 동작. 기존 서버 7스터드·.48초 무적·4초 쿨타임 그대로.
+    local first=math.sin(math.pi*math.clamp(phase/.23,0,1))
+    local second=math.sin(math.pi*math.clamp((phase-.17)/.24,0,1))
+    local third=math.sin(math.pi*math.clamp((phase-.37)/.24,0,1))
+    local fourth=math.sin(math.pi*math.clamp((phase-.57)/.23,0,1))
+    local flip=math.clamp((phase-.79)/.18,0,1)
     local flipping=math.sin(math.pi*flip)
-    local finish=math.clamp((phase-.91)/.09,0,1)
+    local finish=math.clamp((phase-.95)/.05,0,1)
     finish=finish*finish*(3-2*finish)
-    local anticipation=math.sin(math.pi*math.clamp(phase/.13,0,1))
+    local anticipation=math.sin(math.pi*math.clamp(phase/.10,0,1))
     -- 기존 루트 관절만 회전하고 실제 HumanoidRootPart 위치는 수정하지 않는다.
-    skillMotionTargets.FlipRoot=CFrame.new(0,.18*second+.7*flipping,0)
-      *CFrame.Angles(-2*math.pi*flip,sign*.08*second,sign*.08*first)
-    skillMotionTargets.Spine=CFrame.new(0,-.10*anticipation+.10*second-.04*finish,0)
-      *CFrame.Angles(-.27*first+.14*second,-sign*.86*second,-sign*.38*first)
-    skillMotionTargets.Chest=CFrame.Angles(-.08*first,-sign*.31*second,-sign*.18*first)
-    skillMotionTargets.Head=CFrame.Angles(.22*first-.12*second,sign*.23*second,0)
+    skillMotionTargets.FlipRoot=CFrame.new(0,.14*second+.20*third+.22*fourth+1.12*flipping,0)
+      *CFrame.Angles(-2*math.pi*flip,-sign*.16*third,sign*(.26*first-.24*second+.32*fourth))
+    skillMotionTargets.Spine=CFrame.new(0,-.10*anticipation+.12*third-.13*fourth-.04*finish,0)
+      *CFrame.Angles(-.30*first+.20*second+.18*third-.34*fourth,sign*(-.52*second+.65*third),sign*(-.38*first+.37*second-.32*fourth))
+    skillMotionTargets.Chest=CFrame.Angles(-.08*first+.21*third-.22*fourth,sign*(-.31*second+.38*third),sign*(-.18*first+.18*second))
+    skillMotionTargets.Head=CFrame.Angles(.22*first-.12*third+.30*fourth,sign*.23*third,0)
     -- 다리: 1단 접기 / 2단 최대 펴기 / 3단 공중제비 무릎 당기기.
-    local leadHip=-.95*first-.56*second-1.18*flipping+.12*finish
-    local backHip=.48*first+.73*second-1.24*flipping+.08*finish
-    local leadKnee=.35*first+.24*second+1.9*flipping
-    local backKnee=.64*first+.14*second+1.9*flipping
+    local leadHip=-.95*first+.46*second-.96*third-.64*fourth-1.18*flipping+.12*finish
+    local backHip=.48*first-.90*second+.71*third+.45*fourth-1.24*flipping+.08*finish
+    local leadKnee=.35*first+.24*second+.48*fourth+1.9*flipping
+    local backKnee=.64*second+.28*third+.60*fourth+1.9*flipping
     skillMotionTargets.ThighL=CFrame.Angles(leadLeft and leadHip or backHip,0,
-      leadLeft and -.22*second or .32*second)
+      leadLeft and -.22*second+.27*third or .32*second-.26*third)
     skillMotionTargets.ThighR=CFrame.Angles(leadLeft and backHip or leadHip,0,
-      leadLeft and -.32*second or .22*second)
+      leadLeft and -.32*second+.26*third or .22*second-.27*third)
     skillMotionTargets.ShinL=CFrame.Angles(leadLeft and leadKnee or backKnee,0,0)
     skillMotionTargets.ShinR=CFrame.Angles(leadLeft and backKnee or leadKnee,0,0)
-    skillMotionTargets.FootL=CFrame.Angles(-.29*second-.26*flipping+.1*finish,0,0)
+    skillMotionTargets.FootL=CFrame.Angles(-.24*second-.25*fourth-.26*flipping+.1*finish,0,0)
     skillMotionTargets.FootR=CFrame.Angles(-.29*second-.26*flipping+.1*finish,0,0)
     -- 팔: 반대 방향 반동 → 양팔 전개 → 덤블링 시 모아 회전.
     skillMotionTargets.UpperArmL=CFrame.Angles(
-      leadLeft and (-1.19*first-.44*second-.86*flipping)
-        or (.62*first-.83*second-.86*flipping),
-      0,-.31*first-.72*second+.18*flipping)
+      leadLeft and (-1.19*first-.44*second+.36*third-.75*fourth-.86*flipping)
+        or (.62*first-.83*second-.65*third-.78*fourth-.86*flipping),
+      0,-.31*first+.30*second-.69*third+.26*fourth+.18*flipping)
     skillMotionTargets.UpperArmR=CFrame.Angles(
-      leadLeft and (.62*first-.83*second-.86*flipping)
-        or (-1.19*first-.44*second-.86*flipping),
-      0,.31*first+.72*second-.18*flipping)
-    skillMotionTargets.ForearmL=CFrame.Angles(-.37*first-.28*second-1.24*flipping,0,0)
+      leadLeft and (.62*first-.83*second-.65*third-.78*fourth-.86*flipping)
+        or (-1.19*first-.44*second+.36*third-.75*fourth-.86*flipping),
+      0,.31*first-.30*second+.69*third-.26*fourth-.18*flipping)
+    skillMotionTargets.ForearmL=CFrame.Angles(-.37*first-.28*second-.32*third-1.04*fourth-1.24*flipping,0,0)
     skillMotionTargets.ForearmR=CFrame.Angles(-.37*first-.28*second-1.24*flipping,0,0)
     skillMotionTargets.HandL=CFrame.Angles(-.12*flipping,0,0)
     skillMotionTargets.HandR=CFrame.Angles(-.12*flipping,0,0)
