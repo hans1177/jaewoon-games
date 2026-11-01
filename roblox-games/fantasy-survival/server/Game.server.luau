@@ -92,8 +92,10 @@ local meadowEncounterSites = {
   -- [사용자 제거] 해골 몬스터 서식지 3곳도 폐쇄. 저장·기존 나머지 몬스터 배치는 유지.
   -- [마을 의뢰] 우두머리 늑대는 마을 서쪽 외곽 숲에만 스폰한다.
   {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-321,3,-193),questIndex=1,alpha=true},
-  {id="ghost",atom="HEAD_SKULL",tier=2,height=4.4,position=Vector3.new(15,3,-214),questIndex=2},
-  {id="bandit",atom="HUMANOID",tier=3,height=5.5,position=Vector3.new(80,3,-236),questIndex=3},
+  -- [요청: 원혼·도적 몹 삭제] 마을 안의 두 비정상 몬스터를 출현시키지 않는다.
+  -- 기존 의뢰 번호와 처치 판정 비트는 보존하고, 실제 CC0 박쥐·늑대로 마을 밖에서 대체한다.
+  {id="bat",atom="WING_LEATHER",tier=2,height=3.15,position=Vector3.new(300,3,-212),questIndex=2},
+  {id="wolf",atom="HEAD_CANINE",tier=3,height=3.15,position=Vector3.new(-299,3,-233),questIndex=3},
 }
 -- [마을 안전 경계] 16채의 주거·농가·성문 주변을 포함하는 서버 소유 X/Z 구역.
 -- 늑대만 제한하며 기존 원혼·도적 의뢰 전투는 그대로 허용한다.
@@ -350,6 +352,35 @@ local function worldAsset(id, location, targetHeight, heightAboveGround)
       nativeWorldScale=propScale
     end
     clone:ScaleTo(nativeWorldScale)
+    -- [실제 사슴 전방·접지] 46본 Quaternius 스킨의 머리·몸·발 기준으로 원본 방향을 판별한다.
+    -- 오래된 뒤집힌 모델이나 리그 누락 모델은 나타내지 않는다. 임의 파츠·가짜 포즈 없음.
+    if id=="deer" then
+      local head,body,lowestFoot=nil,nil,math.huge
+      local legs=0
+      for _,bone in ipairs(clone:GetDescendants()) do
+        if bone:IsA("Bone") then
+          local name=bone.Name:lower()
+          if name=="head" then head=bone.WorldPosition
+          elseif name=="torso" then body=bone.WorldPosition end
+          if name=="frontlowerleg.l" or name=="frontlowerleg.r"
+            or name=="backlowerleg.l" or name=="backlowerleg.r" then
+            legs+=1
+            lowestFoot=math.min(lowestFoot,bone.WorldPosition.Y)
+          end
+        end
+      end
+      if not head or not body or legs~=4 or body.Y-lowestFoot<.15 then
+        clone:Destroy()
+        error("MEADOW_DEER_ANIMATED_UPRIGHT_RIG_REQUIRED")
+      end
+      local forward=clone:GetPivot():VectorToObjectSpace(
+        Vector3.new(head.X-body.X,0,head.Z-body.Z))
+      if forward.Magnitude<=.01 then
+        clone:Destroy()
+        error("MEADOW_DEER_ANIMATED_FORWARD_UNVERIFIED")
+      end
+      clone:SetAttribute("NativeMobFacingYaw",math.atan2(forward.X,-forward.Z))
+    end
     -- [원본 CC0 숲 표면] 새 파츠 없이 수목·야생동물을 같은 무광 팔레트로 맞춘다.
     -- 원본 MeshId/TextureID/리그 및 자원·저장·충돌은 수정하지 않는다.
     -- [새 사슴] 다운로드한 원본 암사슴의 실제 재질·색을 그대로 사용한다.
@@ -2949,7 +2980,8 @@ local function updateEnemyAI(dt,now)
         local rootPart=character and character:FindFirstChild("HumanoidRootPart")
         local human=character and character:FindFirstChildOfClass("Humanoid")
         if player:GetAttribute("ProfileReady")==true and rootPart and human and human.Health>0
-          and not (enemy.kind=="wolf" and meadowVillageContains(rootPart.Position)) then
+          and not ((enemy.kind=="wolf" or enemy.questIndex==2)
+            and meadowVillageContains(rootPart.Position)) then
           local d=(rootPart.Position-enemy.position).Magnitude
           if d<range then targetPlayer,targetRoot,targetHuman,range=player,rootPart,human,d end
           if player.UserId==enemy.focusUserId and d<(enemy.questIndex and 38 or 140) then
@@ -3135,10 +3167,10 @@ RunService.Heartbeat:Connect(function(dt)
         local smooth=(animal.visualFacingSmooth or facing):Lerp(facing,alpha)
         if smooth.Magnitude>.01 then animal.visualFacingSmooth=smooth.Unit end
         local forward=animal.visualFacingSmooth or facing
-        -- [사슴 +Z 전방] 새 CC0 GLB 원본의 앞 방향을 이동 방향에 맞춘다.
+        -- [사슴 원본 뼈대 전방] 저작 모델의 머리-몸 축을 기준으로 정상 직립을 유지한다.
         local facing=CFrame.lookAt(animal.visualPosition,animal.visualPosition+forward)
         if animal.model:GetAttribute("MeadowWildlife")=="deer" then
-          facing*=CFrame.Angles(0,math.pi,0)
+          facing*=CFrame.Angles(0,animal.model:GetAttribute("NativeMobFacingYaw") or 0,0)
         end
         animal.model:PivotTo(facing)
       end
