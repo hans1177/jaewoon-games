@@ -3867,21 +3867,21 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
       end
     end)
     debris:AddItem(aura,2.8)
-    -- [2연속 파동] 방어 자세가 완성되는 순간과 바로 뒤 잔광을 공용 에셋으로 출력.
+    -- [영화식 막기] 팔 교차 → 충격 반발 → 잔광. 기존 공용 VFX로 3회만 출력.
     if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
       and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
-      for index,delaySec in ipairs({.20,.53}) do
+      for index,delaySec in ipairs({.11,.30,.66}) do
         task.delay(delaySec,function()
           if not rootPart.Parent or not character.Parent then return end
           local ok,err=pcall(meadowCommonVFX.Create,index==1 and "BLOCK_IMPACT" or "SHAPE_BURST",{
-            parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,1.55,-1.35),
-            color=index==1 and Color3.fromRGB(233,252,255) or Color3.fromRGB(112,209,255),
-            accent=index==1 and Color3.fromRGB(67,156,255) or Color3.fromRGB(246,240,180),
-            duration=reducedEffects and .25 or .48,
-            startDiameter=index==1 and 2 or 2.9,
-            endDiameter=reducedEffects and 4 or (index==1 and 8.3 or 6.5),
-            startSize=.7,endSize=reducedEffects and 1.4 or 3.3,
-            count=reducedEffects and 3 or (index==1 and 12 or 9),
+            parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,index==3 and 1.25 or 1.7,-1.3),
+            color=index==1 and Color3.fromRGB(238,254,255) or Color3.fromRGB(104,205,255),
+            accent=index==2 and Color3.fromRGB(255,235,173) or Color3.fromRGB(65,157,255),
+            duration=reducedEffects and .24 or .46,
+            startDiameter=index==1 and 2 or 2.6,
+            endDiameter=reducedEffects and 4 or (index==2 and 10 or 7.2),
+            startSize=.6,endSize=reducedEffects and 1.3 or 3.5,
+            count=reducedEffects and 3 or (index==2 and 14 or 9),
             reducedMotion=reducedEffects,
           })
           if not ok then warn("마력숲 방어 파동 오류: "..tostring(err)) end
@@ -3921,16 +3921,16 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
             or (limb=="LowerArm" and character:FindFirstChild(side.." Arm"))
           if part and part:IsA("BasePart") then
             local ok,trail,controller=pcall(meadowCommonVFX.AttachShortTrail,part,{
-              lifetime=reducedEffects and .16 or .34,
-              width=reducedEffects and .4 or .92,
+              lifetime=reducedEffects and .16 or .42,
+              width=reducedEffects and .43 or 1.18,
               axis=limb=="LowerLeg" and Vector3.new(1,0,0) or Vector3.new(0,1,0),
-              length=math.max(.65,part.Size.Y*1.1),
+              length=math.max(.78,part.Size.Y*1.48),
               color=side==leadingSide and Color3.fromRGB(82,204,255)
                 or Color3.fromRGB(251,198,103),
             })
             if ok and trail and controller then
               trail.Name="MeadowDodgeCinemaTrail"..side..limb
-              task.delay(1.17,function() pcall(controller.Destroy) end)
+              task.delay(1.24,function() pcall(controller.Destroy) end)
             end
           end
         end
@@ -3941,11 +3941,16 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
     aura.Adornee=character
     aura.DepthMode=Enum.HighlightDepthMode.Occluded
     aura.FillColor=Color3.fromRGB(96,181,255)
-    aura.FillTransparency=reducedEffects and .94 or .84
+    aura.FillTransparency=reducedEffects and .94 or .72
     aura.OutlineColor=Color3.fromRGB(244,218,147)
-    aura.OutlineTransparency=reducedEffects and .65 or .19
+    aura.OutlineTransparency=reducedEffects and .65 or .08
     aura.Parent=character
-    debris:AddItem(aura,1.12)
+    task.delay(.68,function()
+      if aura.Parent then game:GetService("TweenService"):Create(aura,TweenInfo.new(.42),{
+        FillTransparency=1,OutlineTransparency=1,
+      }):Play() end
+    end)
+    debris:AddItem(aura,1.18)
     -- [회피 5단] 슬립/페인트/스텝/위빙/덤블링에 기존 공용 파동을 단계별로 연동.
     if meadowCommonVFX and type(meadowCommonVFX.Create)=="function"
       and hasStudioAssetAtom("VFX","IMPACT_FLASH") then
@@ -3958,12 +3963,12 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
           local ok,err=pcall(meadowCommonVFX.Create,
             index==5 and "SHAPE_BURST" or "DODGE_EVASION_PULSE",{
               parent=workspace,cframe=rootPart.CFrame*CFrame.new(0,-1.55,0),
-              duration=reducedEffects and .21 or .35,
+              duration=reducedEffects and .21 or .42,
               color=color,accent=accent,
-              startDiameter=index==5 and 2.2 or 1.1,
-              endDiameter=reducedEffects and 3.4 or (index==5 and 8.4 or 5.3),
-              startSize=.42,endSize=reducedEffects and .9 or 2.1,
-              count=reducedEffects and 2 or (index==5 and 11 or 7),
+              startDiameter=index==5 and 2.6 or 1.3,
+              endDiameter=reducedEffects and 3.4 or (index==5 and 10.8 or 6.2),
+              startSize=.46,endSize=reducedEffects and .9 or 2.6,
+              count=reducedEffects and 2 or (index==5 and 15 or 9),
               reducedMotion=reducedEffects,
             })
           if not ok then warn("마력숲 회피 파동 오류: "..tostring(err)) end
