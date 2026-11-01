@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "gameId": "horror-escape-room",
   "gameName": "심야 대탈출",
   "platform": "ROBLOX",
@@ -7,96 +7,27 @@
   "stage": "TARGET_PLATFORM_SOURCE_BIND",
   "sourcePath": "roblox-games/horror-escape-room",
   "sourceValidationPassed": true,
+  "sourceValidationBlockers": [],
   "runtimePassed": false,
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "saveRequired": true,
-  "approvedScopeCount": 6,
-  "robloxBuildProfile": {
-    "version": 1,
-    "targetPlatform": "ROBLOX",
-    "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-    "declaredGameCategory": "CASUAL",
-    "genre": "Survival",
-    "subgenre": null,
-    "playMode": "COMPETITIVE",
-    "multiplayerRequired": true,
-    "coopImplementationRequired": false,
-    "competitiveImplementationRequired": true,
-    "networkingRequired": true,
-    "multiplayerQaRequired": true,
-    "minimumParticipantsForRequiredQa": 2,
-    "displayLabelKo": "서바이벌 · 멀티·경쟁",
-    "designAxes": {
-      "genre": {
-        "id": "Survival",
-        "subgenre": "",
-        "rules": [
-          "A 시작: RouteState·RiskState를 확인한 뒤 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
-          "B 대응: A의 ResourceState·RiskState를 확인한 뒤 인간4/몬스터4 배정, 빈자리 AI 충원 → 인간은 고유 도구·대시·정화로 생존/반격 → 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염 → 감염된 인간은 몬스터로 전환하고 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격 → 인간 정화 공격은 몬스터를 라운드에서 제거 → 한 진영이 0명이 되면 즉시 승패 → 240초까지 양팀이 남으면 무승부한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
-          "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 도시 시설과 자원 흐름의 운영의 새 선택을 실행하거나 @ 발견 조건을 시험한다."
-        ]
-      },
-      "style": {
-        "id": "",
-        "visual": [],
-        "motion": []
-      },
-      "concept": {
-        "id": "",
-        "world": [],
-        "mood": []
-      },
-      "sourceRevision": null
-    },
-    "styleLock": null
-  },
-  "robloxPlatformProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 기존 원본과 사용자 요청의 대상 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COMPETITIVE replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Luau 서버가 판정·보상·진행·저장을 소유하고 RemoteEvent 입력을 검증한다. 기존 DataStore 키와 저장 구조 및 멀티 권한을 보존한다.",
-    "platformContentAdaptation": "게임 원본은 roblox-games/horror-escape-room/의 Luau다. 설계 문법의 상태 입출력·시스템 연결·콘텐츠를 기존 서버·공유·클라이언트 함수에 직접 구현한다. C# 변환 결과를 원본으로 사용하지 않는다.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "설계 문법별 책임 함수·실제 상태 변경·콘텐츠 소스 차이를 연결해 기존 F0~F9 및 Roblox 클라우드 API 런타임에서 검증한다. 정적 검사와 실제 실행 증거를 구분한다."
-  },
-  "minimumDesignContractRequired": true,
-  "genreImplementationRequired": true,
-  "multiplayerImplementationRequired": true,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
+  "foundationRepairApplied": false,
+  "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "shared/RobloxCommonUI.luau",
-    "shared/RobloxCommonMaterials.luau",
-    "shared/RobloxCommonVFX.luau",
-    "shared/RobloxCommonMotion.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "client/MaterialPresentation.client.luau",
-    "default.project.json"
+    "client/Game.client.luau"
   ],
-  "generationMode": "DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT",
-  "model": "none",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
   "vibe3LearningApplied": true,
-  "robloxPlaybookChecklist": [
-    "bind-roblox-source-and-place",
-    "separate-server-client-authority",
-    "validate-remotes-and-datastore-boundaries",
-    "run-real-roblox-runtime-and-independent-qa",
-    "verify-save-rejoin-and-mobile-ui-when-applicable",
-    "publish-only-after-exact-revision-pass",
-    "rank-responsible-source-before-edit",
-    "generate-3-to-5-independent-candidates",
-    "prefer-smallest-behavior-preserving-diff",
-    "run-syntax-tests-runtime-regression"
-  ],
   "recombinationRecipeId": "recombine_45e010eb6bd96532",
+  "verifiedExternalLearningAppliedToExistingSource": true,
   "verifiedExternalLearningFirst": true,
   "verifiedExternalLearningCoveragePct": 100,
   "verifiedExternalLearningRetrievedCount": 7,
@@ -125,29 +56,6 @@
     "MOTION_AND_TRANSITIONS",
     "CONTEXTUAL_ONBOARDING"
   ],
-  "recombinationOperator": "adapt-contextual-ui",
-  "recombinationSourceProjects": [
-    "block-blast",
-    "sgtpuzzles"
-  ],
-  "learningFeatureBlend": [
-    "input-drag-touch",
-    "save-state-persistence"
-  ],
-  "platformDesignProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 기존 원본과 사용자 요청의 대상 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COMPETITIVE replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Luau 서버가 판정·보상·진행·저장을 소유하고 RemoteEvent 입력을 검증한다. 기존 DataStore 키와 저장 구조 및 멀티 권한을 보존한다.",
-    "platformContentAdaptation": "게임 원본은 roblox-games/horror-escape-room/의 Luau다. 설계 문법의 상태 입출력·시스템 연결·콘텐츠를 기존 서버·공유·클라이언트 함수에 직접 구현한다. C# 변환 결과를 원본으로 사용하지 않는다.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "설계 문법별 책임 함수·실제 상태 변경·콘텐츠 소스 차이를 연결해 기존 F0~F9 및 Roblox 클라우드 API 런타임에서 검증한다. 정적 검사와 실제 실행 증거를 구분한다."
-  },
-  "webPlatformHandoffLegacy": null,
-  "webPlatformHandoffRequired": false,
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -652,12 +560,12 @@
     "CHARACTER": "NOT_APPLICABLE",
     "CREATURE": "NOT_APPLICABLE",
     "BUILDING": "NOT_APPLICABLE",
-    "ENVIRONMENT": "NOT_APPLICABLE",
+    "ENVIRONMENT": "APPLIED",
     "WEAPON": "NOT_APPLICABLE",
     "SKILL": "NOT_APPLICABLE",
     "MATERIAL": "APPLIED",
     "AUDIO": "NOT_APPLICABLE",
-    "VFX": "NOT_APPLICABLE",
+    "VFX": "APPLIED",
     "UI": "APPLIED",
     "MOTION": "APPLIED",
     "PROP": "NOT_APPLICABLE"
@@ -711,24 +619,8 @@
     }
   },
   "implementationNotes": [
-    "approved scope count=6",
-    "roblox genre=Survival",
-    "play mode=COMPETITIVE",
-    "multiplayer required=yes",
-    "genre core action is compiled from the approved Roblox build profile",
-    "minimum dual-platform design contract carried forward",
-    "Roblox platform session: Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 기존 원본과 사용자 요청의 대상 플레이어.",
-    "Roblox internal release target: Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "server-authoritative actions broadcast synchronized participant state to all clients",
-    "competitive source maintains per-player RoundScore and broadcasts it",
-    "mobile-first ScreenGui exposes approved gameplay actions",
-    "new-game Roblox creation renders bounded UICorner/UIStroke/text-size responsive button and panel polish in existing client owner; existing inventory/world binding stays source and design gated",
-    "Studio base material binding applied: 360 semantic atoms; runtime verification still required",
-    "Vibe3 Roblox playbook applied: bind-roblox-source-and-place, separate-server-client-authority, validate-remotes-and-datastore-boundaries, run-real-roblox-runtime-and-independent-qa, verify-save-rejoin-and-mobile-ui-when-applicable, publish-only-after-exact-revision-pass, rank-responsible-source-before-edit, generate-3-to-5-independent-candidates, prefer-smallest-behavior-preserving-diff, run-syntax-tests-runtime-regression",
-    "verified APK principles are always adapted into Roblox environment/background, character animation/motion, skill VFX, camera feedback, UI/touch controls, gameplay state, and runtime QA",
-    "transformative recipe=recombine_45e010eb6bd96532; operator=adapt-contextual-ui; features=input-drag-touch, save-state-persistence",
-    "persistent player state uses DataStoreService with safe fallback",
-    "shared BUILD_UP directive pending implementation: 심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": "horror-escape-room-build-up-g1-03dd56c74b99",
@@ -737,6 +629,6 @@
   "buildUpDirectiveFingerprint": "03dd56c74b99189d2128b880c8c33fae7b75823065d82b23a40d7c4f6f6b11cd",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
-  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-11-01T06:49:11.049Z"
+  "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+  "createdAt": "2026-11-01T06:52:27.585Z"
 }
