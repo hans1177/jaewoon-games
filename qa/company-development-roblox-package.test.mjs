@@ -1267,18 +1267,41 @@ test('fantasy meadow village uses licensed native ruins and server-validated thr
   assert.equal(assets.models.ruin.license,'CC0-1.0');
   assert.equal(assets.models.ruin.source,'VERIFIED_CC0_ORIGINAL');
   const party=JSON.parse(fs.readFileSync('assets/shared/party/sources.json','utf8'));
+  const priority=JSON.parse(fs.readFileSync('assets/external/simple-rpg/priority-v1/manifest.json','utf8'));
   for(const [role,asset] of Object.entries(assets.villagePrefabs.models)){
-    const source=party.records.find(item=>item.file===asset.sourceFile);
-    assert.ok(source,'CC0 source manifest missing: '+role);
-    assert.equal(asset.sourceSha256,source.sha256,'source hash mismatch: '+role);
+    const completeHouse=/^villageHouse[A-D]$/.test(role);
+    const source=completeHouse
+      ?priority.packs.find(item=>asset.sourceFile==='assets/external/simple-rpg/priority-v1/'+item.file)
+      :party.records.find(item=>item.file===asset.sourceFile);
+    assert.ok(source,'licensed source archive or GLB missing: '+role);
+    assert.equal(asset.sourceSha256,source.sha256,'verified source hash mismatch: '+role);
     assert.equal(asset.license,'CC0-1.0','source license mismatch: '+role);
+    if(completeHouse){
+      assert.equal(source.licenseDeclared,'CC0-1.0');
+      assert.equal(source.licenseSourceUrl,'https://opengameart.org/content/medieval-house-pack');
+    }else{
+      assert.equal(source.license,'CC0-1.0');
+    }
     if(Number.isSafeInteger(asset.assetId)&&asset.assetId>0){
-      assert.equal(asset.sha256,source.sha256,'registered model source must match: '+role);
+      if(completeHouse)assert.match(asset.sha256,/^[a-f0-9]{64}$/);
+      else assert.equal(asset.sha256,source.sha256,'registered native GLB hash mismatch: '+role);
     }else{
       assert.equal(assets.villagePrefabs.registrationVerified,false,'pending model cannot certify all originals');
       assert.equal(asset.universeGrantVerified,false,'never fake unverified Universe use');
     }
   }
+  assert.equal(Object.keys(assets.villagePrefabs.models).length,23,'houses and props must be source verified');
+  assert.match(server,/local villageWholeHouseReady=nativeVillageReady/);
+  assert.match(server,/if house.prefab and villageWholeHouseReady then/);
+  assert.match(server,/houseModel.Name=house.name/);
+  for(const role of ['villageHouseA','villageHouseB','villageHouseC','villageHouseD'])
+    assert.ok(server.includes('prefab="'+role+'"'),'real complete CC0 house required: '+role);
+  assert.match(server,/if villageDetailReady then/);
+  assert.match(server,/villageStoneWall/);
+  assert.match(server,/villageFlatRoof/);
+  assert.match(server,/villageChimney/);
+  assert.match(server,/villageRuinWall/);
+  assert.match(server,/villageCrookedTree/);
   assert.ok([true,false].includes(assets.villagePrefabs.registrationVerified));
   assert.match(server,/local function worldAsset\(id, location, targetHeight, heightAboveGround\)/);
   // [마력숲 대형 중세 건축] 2배 이상 배율을 유지하고 오리지널 6동을 포함한 16동의 실루엣을 검증한다.
