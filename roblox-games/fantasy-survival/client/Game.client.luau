@@ -3842,6 +3842,18 @@ local function playApprovedMeadowEffect(actionId,overrideVfx,actorUserId,targetP
         debris:AddItem(glow,2.8)
       end
     end
+    -- [방어 반동음] 기존 Roblox 내장 착지음을 낮게 조정해 승인된 막기 한 번에만 재생한다.
+    local guardImpactSound=Instance.new("Sound")
+    guardImpactSound.Name="MeadowGuardImpact"
+    guardImpactSound.SoundId="rbxasset://sounds/action_jump_land.mp3"
+    guardImpactSound.Volume=.29
+    guardImpactSound.PlaybackSpeed=.73
+    guardImpactSound.RollOffMinDistance=4
+    guardImpactSound.RollOffMaxDistance=24
+    guardImpactSound.SoundGroup=meadowEffectsGroup
+    guardImpactSound.Parent=rootPart
+    guardImpactSound:Play()
+    debris:AddItem(guardImpactSound,1.2)
     -- [푸른 에너지 실루엣] 기존 캐릭터만 강조하며 별도 방패 모델은 생성하지 않는다.
     local aura=Instance.new("Highlight")
     aura.Name="MeadowGuardBodyAura"
