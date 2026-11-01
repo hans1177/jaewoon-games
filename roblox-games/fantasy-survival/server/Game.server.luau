@@ -72,11 +72,11 @@ local worldClock = 0
 local attackCooldown = {}
 local MAX_ENEMIES = 22
 local nextEncounterCheck = 0
--- [지역 서식지] 기존 숲·유적 좌표에 고정된 몬스터 서식 위치.
--- 이전 종별 체력·공격식은 각 지역의 고정 위험도로 평가하며 저장 구조는 그대로 둔다.
+-- [지역 서식지] 마을 내부의 늑대를 외곽 숲으로 이동하고 골렘 출현 지점을 제거한다.
+-- 기존 종별 체력·공격력·드랍·보상·저장 구조를 보존한다.
 local meadowEncounterSites = {
-  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-83,3,-91)},
-  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(83,3,-91)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-324,3,-91)},
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(324,3,-91)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-84,3,94)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(81,3,96)},
   -- [사용자 제거] 버섯 몬스터 서식지 4곳 폐쇄. 나머지 지역·몬스터 배치는 유지.
@@ -84,12 +84,17 @@ local meadowEncounterSites = {
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(248,3,-224)},
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(239,3,236)},
   -- [사용자 제거] 해골 몬스터 서식지 3곳도 폐쇄. 저장·기존 나머지 몬스터 배치는 유지.
-  {id="golem",atom="HEAD_GOLEM",tier=5,height=8.4,position=Vector3.new(-153,3,-164)},
-  -- [마을 전투] 기존 지역의 몬스터를 보존하고 사건 전용 서식지 세 곳 추가.
-  {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-69,3,-193),questIndex=1,alpha=true},
+  -- [마을 의뢰] 우두머리 늑대는 마을 서쪽 외곽 숲에만 스폰한다.
+  {id="wolf",atom="HEAD_CANINE",tier=1,height=4.8,position=Vector3.new(-321,3,-193),questIndex=1,alpha=true},
   {id="ghost",atom="HEAD_SKULL",tier=2,height=4.4,position=Vector3.new(15,3,-214),questIndex=2},
   {id="bandit",atom="HUMANOID",tier=3,height=5.5,position=Vector3.new(80,3,-236),questIndex=3},
 }
+-- [마을 안전 경계] 16채의 주거·농가·성문 주변을 포함하는 서버 소유 X/Z 구역.
+-- 늑대만 제한하며 기존 원혼·도적 의뢰 전투는 그대로 허용한다.
+local function meadowVillageContains(position)
+  return position.X>=-280 and position.X<=280
+    and position.Z>=-351 and position.Z<=-42
+end
 -- Roblox Terrain is native collidable terrain, never an assembled visual Part.
 -- All meadow vegetation and animals must come from the game's registered CC0 meshes.
 -- [숲 표면] 원본 CC0 메시·텍스처를 보존하는 공통 자연색 팔레트.
@@ -1458,7 +1463,9 @@ local function inspectMeadowSurvival(player,model,subject)
       local distance=(enemy.position-rootPart.Position).Magnitude
       if distance<threatDist then
         threatDist=distance
-        threatName=enemy.kind=="wolf" and "늑대" or enemy.kind=="bee" and "벌" or "골렘"
+        threatName=enemy.kind=="wolf" and "늑대" or enemy.kind=="bee" and "벌"
+          or enemy.kind=="bat" and "박쥐" or enemy.kind=="ghost" and "원혼"
+          or enemy.kind=="bandit" and "도적" or "몬스터"
       end
     end
   end
@@ -1869,6 +1876,8 @@ end)
 -- [지역 몬스터] 서식지의 위치와 위험도를 서버가 소유한다.
 local function spawnEnemy(site, siteIndex)
   if #enemies >= MAX_ENEMIES then return false end
+  -- [늑대 안전 스폰] 추가된 지점이나 오래된 설정도 마을 구역이면 거부한다.
+  if site.id=="wolf" and meadowVillageContains(site.position) then return false end
   local isBoss=site.id=="golem"
   local isAlpha=site.alpha==true -- 우두머리 늑대는 돌 골렘과 별도 보스 패턴을 가진다.
   local location=site.position
@@ -2320,8 +2329,9 @@ local function applyMeadowDamage(player,target,damage)
     setNumber(player,"EnemyHealth",0)
     if target.isBoss or target.isAlpha then
       setNumber(player,"Bosses",readNumber(player,"Bosses",0)+1)
-      -- 메인 수문장 의뢰는 기존 돌 골렘만 인정한다.
-      if target.isBoss then recordMeadowQuest(player,"BOSS_KILL") end
+      -- [골렘 삭제 후 연구 퀘스트] 마을 밖 우두머리 늑대 처치로 6단계를 이어간다.
+      -- 기존 QuestStage/QuestProgress/보상 수치는 유지한다.
+      if target.isAlpha then recordMeadowQuest(player,"BOSS_KILL") end
     end
     if Config.CompetitiveRequired then
       setNumber(player,"RoundScore",readNumber(player,"RoundScore",0)+((target.isBoss or target.isAlpha) and 5 or 1))
@@ -2702,7 +2712,8 @@ local function updateEnemyAI(dt,now)
         local character=player.Character
         local rootPart=character and character:FindFirstChild("HumanoidRootPart")
         local human=character and character:FindFirstChildOfClass("Humanoid")
-        if player:GetAttribute("ProfileReady")==true and rootPart and human and human.Health>0 then
+        if player:GetAttribute("ProfileReady")==true and rootPart and human and human.Health>0
+          and not (enemy.kind=="wolf" and meadowVillageContains(rootPart.Position)) then
           local d=(rootPart.Position-enemy.position).Magnitude
           if d<range then targetPlayer,targetRoot,targetHuman,range=player,rootPart,human,d end
           if player.UserId==enemy.focusUserId and d<(enemy.questIndex and 38 or 140) then
@@ -2724,15 +2735,21 @@ local function updateEnemyAI(dt,now)
         local homeOffset=Vector3.new(enemy.spawnPosition.X-enemy.position.X,0,enemy.spawnPosition.Z-enemy.position.Z)
         if homeOffset.Magnitude>1 then
           setEnemyAttackState(enemy,"RETURN_TO_SPAWN")
-          enemy.position+=homeOffset.Unit*math.min(enemy.speed*dt,homeOffset.Magnitude)
-          enemy.visualFacing=homeOffset.Unit
+          local nextPosition=enemy.position+homeOffset.Unit*math.min(enemy.speed*dt,homeOffset.Magnitude)
+          if enemy.kind~="wolf" or not meadowVillageContains(nextPosition) then
+            enemy.position=nextPosition
+            enemy.visualFacing=homeOffset.Unit
+          end
         elseif enemy.kind=="wolf" then
           local patrol=enemy.spawnPosition+Vector3.new(math.sin(now*.24+enemy.spawnPosition.X)*5,0,math.cos(now*.24+enemy.spawnPosition.Z)*5)
           local direction=Vector3.new(patrol.X-enemy.position.X,0,patrol.Z-enemy.position.Z)
           if direction.Magnitude>.4 then
             setEnemyAttackState(enemy,"PATROL")
-            enemy.position+=direction.Unit*math.min(enemy.speed*dt*.4,direction.Magnitude)
-            enemy.visualFacing=direction.Unit
+            local nextPosition=enemy.position+direction.Unit*math.min(enemy.speed*dt*.4,direction.Magnitude)
+            if not meadowVillageContains(nextPosition) then
+              enemy.position=nextPosition
+              enemy.visualFacing=direction.Unit
+            end
           else setEnemyAttackState(enemy,"IDLE") end
         else
           setEnemyAttackState(enemy,"IDLE")
@@ -2819,10 +2836,13 @@ local function updateEnemyAI(dt,now)
             local tangent=Vector3.new(-direction.Z,0,direction.X)
             direction=(direction+tangent*math.sin(now*1.8+enemy.spawnPosition.X)*.42).Unit
           end
-          enemy.position+=direction*step
-          -- [늑대 전방 이동] 무리 회피로 이동축이 틀어지면 머리와 몸도 실제 전진 방향을 보게 한다.
-          -- 공격 예고 중에만 기존 목표 시선이 우선하며, 속도·피해·추적 판정은 불변.
-          enemy.visualFacing=enemy.kind=="wolf" and direction or offset.Unit
+          -- [마을 진입 제한] 추적·밀집 분리 중에도 늑대는 마을 안전 경계를 넘지 않는다.
+          local nextPosition=enemy.position+direction*step
+          if enemy.kind~="wolf" or not meadowVillageContains(nextPosition) then
+            enemy.position=nextPosition
+            -- 원본 이동 방향을 유지하며 속도/공격력은 변경하지 않는다.
+            enemy.visualFacing=enemy.kind=="wolf" and direction or offset.Unit
+          end
         elseif now-enemy.lastAttack>=(enemy.isBoss and 1.9 or 1.45) then
           local pattern=chooseMeadowMobSkill(enemy)
           enemy.comboHit=1
