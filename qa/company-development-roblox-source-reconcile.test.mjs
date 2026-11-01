@@ -1141,106 +1141,26 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
 });
 
-test('legacy Baeksu war enters canonical all-game common-module sweep without fake learning or source QA',()=>{
-  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-baeksu-native-modules-'));
-  try{
-    const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
-    const paths=[
-      'default.project.json','client/Game.client.luau','server/Game.server.luau',
-      'shared/GameConfig.luau','shared/VisualKit.luau'
-    ];
-    for(const name of paths){
-      const destination=path.join(gameRoot,name);
-      fs.mkdirSync(path.dirname(destination),{recursive:true});
-      fs.copyFileSync(path.join('roblox-games/baeksu-war',name),destination);
-    }
-    // 기존 게임은 현재 공용 15종이 연결돼 있다. 복사한 임시 프로젝트만
-    // 초기 미연결 상태로 되돌려 자동 등록·중복 없는 재실행을 검증한다.
-    const fixtureProjectFile=path.join(gameRoot,'default.project.json');
-    const fixtureProject=JSON.parse(fs.readFileSync(fixtureProjectFile,'utf8'));
-    const fixtureShared=fixtureProject.tree.ReplicatedStorage.Shared;
-    for(const name of Object.keys(fixtureShared)){
-      if(name.startsWith('RobloxCommon'))delete fixtureShared[name];
-    }
-    fs.writeFileSync(fixtureProjectFile,JSON.stringify(fixtureProject,null,2)+'\n');
-    // 구형 Config 전용 분기를 검증하기 위해 임시 복사본만 과거 파일 구조로 복원한다.
-    // 현재 main의 GameConfig 및 서버·클라이언트는 절대 변경하지 않는다.
-    fs.renameSync(path.join(gameRoot,'shared/GameConfig.luau'),path.join(gameRoot,'shared/Config.luau'));
-    for(const name of ['client/Game.client.luau','server/Game.server.luau']){
-      const nativeFile=path.join(gameRoot,name);
-      fs.writeFileSync(nativeFile,fs.readFileSync(nativeFile,'utf8').replaceAll('WaitForChild("GameConfig")','WaitForChild("Config")'));
-    }
-    const originalClient=fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8');
-    const originalServer=fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8');
-    const originalConfig=fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8');
-    const before=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
-    assert.equal(before.tree.ReplicatedStorage.Shared.RobloxCommonMotion,undefined);
-    const playbooks=path.join(tmp,'verified-playbooks.json');
-    fs.writeFileSync(playbooks,'{}\n');
-    const report=path.join(tmp,'report.json');
-    const command=[
-      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
-      '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war',
-      '--playbooks='+playbooks,'--report='+report
-    ];
-    execFileSync(process.execPath,command,{stdio:'pipe'});
-    const first=JSON.parse(fs.readFileSync(report,'utf8'));
-    assert.equal(first.scannedGameCount,1);
-    assert.equal(first.changedGameCount,1);
-    assert.equal(first.results[0].moduleSyncOnly,true);
-    assert.equal(first.results[0].verifiedExternalLearningApplied,false);
-    assert.equal(first.results[0].commonModuleCount,15);
-    assert.equal(first.results[0].commonModuleConflictCount,0);
-    const project=JSON.parse(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'));
-    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonMotion.$path,
-      '../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
-    assert.equal(project.tree.ReplicatedStorage.Shared.RobloxCommonBuilding.$path,
-      '../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau');
-    assert.equal(fs.readFileSync(path.join(gameRoot,'client/Game.client.luau'),'utf8'),originalClient);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'server/Game.server.luau'),'utf8'),originalServer);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'shared/Config.luau'),'utf8'),originalConfig);
-    const evidencePath=path.join(gameRoot,'roblox-source-bootstrap.json');
-    const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
-    assert.equal(evidence.moduleSyncOnly,true);
-    assert.equal(evidence.sourceValidationPassed,undefined);
-    assert.equal(evidence.vibe3LearningApplied,undefined);
-    assert.match(evidence.commonModuleSync.libraryCoverage.runtimeBindingFingerprint,/^[a-f0-9]{64}$/);
-    const afterProject=fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8');
-    const afterEvidence=fs.readFileSync(evidencePath,'utf8');
-    execFileSync(process.execPath,command,{stdio:'pipe'});
-    assert.equal(JSON.parse(fs.readFileSync(report,'utf8')).changedGameCount,0);
-    assert.equal(fs.readFileSync(path.join(gameRoot,'default.project.json'),'utf8'),afterProject);
-    assert.equal(fs.readFileSync(evidencePath,'utf8'),afterEvidence);
-  }finally{
-    fs.rmSync(tmp,{recursive:true,force:true});
-  }
+test('retired Roblox sources are not invented as verified native common-module projects',()=>{
+  // The owner removed Baeksu and Cozy source trees. No test is allowed to restore them
+  // through synthetic production source or pretend an unverified project is deployed.
+  assert.equal(fs.existsSync('roblox-games/baeksu-war/default.project.json'),false);
+  assert.equal(fs.existsSync('roblox-games/cozy-island/client/Game.client.luau'),false);
+  const sweep=fs.readFileSync('tools/company-roblox-verified-learning-sweep.mjs','utf8');
+  assert.match(sweep,/synchronizeRobloxCommonModules\(\{project,gameRoot\}\)/);
+  assert.match(sweep,/moduleSyncOnly:true,verifiedExternalLearningApplied:false/);
+  assert.match(sweep,/sourceValidationPassed:true,sourceValidationBlockers:\[\]/);
+  assert.match(sweep,/if\(learning\.applied!==true\)throw new Error\('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'/);
 });
 
-
-test('standard Baeksu GameConfig does not claim verified learning without a real playbook',()=>{
-  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-baeksu-verified-gate-'));
-  try{
-    const gameRoot=path.join(tmp,'roblox-games','baeksu-war');
-    const paths=['default.project.json','client/Game.client.luau','server/Game.server.luau','shared/GameConfig.luau'];
-    for(const name of paths){
-      const dest=path.join(gameRoot,name);
-      fs.mkdirSync(path.dirname(dest),{recursive:true});
-      fs.copyFileSync(path.join('roblox-games/baeksu-war',name),dest);
-    }
-    const projectFile=path.join(gameRoot,'default.project.json');
-    const beforeProject=fs.readFileSync(projectFile,'utf8');
-    const playbooks=path.join(tmp,'verified-playbooks.json');
-    fs.writeFileSync(playbooks,'{}\n');
-    assert.throws(()=>execFileSync(process.execPath,[
-      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
-      '--root='+path.join(tmp,'roblox-games'),'--game-id=baeksu-war','--playbooks='+playbooks
-    ],{stdio:'pipe'}),error=>{
-      assert.match(String(error.stderr),/ROBLOX_SWEEP_LEARNING_NOT_APPLIED:baeksu-war/);
-      return true;
-    });
-    assert.equal(fs.readFileSync(projectFile,'utf8'),beforeProject);
-    assert.equal(fs.existsSync(path.join(gameRoot,'roblox-source-bootstrap.json')),false);
-  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+test('verified learning promotion remains fail-closed without a real playbook or active source',()=>{
+  assert.equal(fs.existsSync('roblox-games/baeksu-war/shared/GameConfig.luau'),false);
+  const sweep=fs.readFileSync('tools/company-roblox-verified-learning-sweep.mjs','utf8');
+  assert.match(sweep,/if\(learning\.applied!==true\)throw new Error\('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'/);
+  assert.match(sweep,/!fs\.existsSync\(standardConfigFile\)/);
+  assert.match(sweep,/moduleSyncOnly:true,verifiedExternalLearningApplied:false/);
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-verified-learning-sweep.yml','utf8');
+  assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
 });
 
 test('legacy module-only admission survives game-specific Config to GameConfig rename in isolated source workers',()=>{
