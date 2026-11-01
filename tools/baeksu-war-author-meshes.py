@@ -9,6 +9,8 @@ import os
 from pathlib import Path
 import re
 import shutil
+import struct
+import subprocess
 import sys
 import tempfile
 import urllib.request
@@ -72,13 +74,72 @@ if '--game-id=fantasy-survival' in sys.argv:
   if catalog_path!=(ROOT/'assets/shared/party/sources.json').resolve():
    raise RuntimeError('FANTASY_VILLAGE_SOURCE_CATALOG_MISMATCH')
   catalog=json.loads(catalog_path.read_text())
-  if village.get('version')!=1 or len(village.get('models',{}))!=19:
+  if village.get('version')!=1 or len(village.get('models',{}))!=23:
    raise RuntimeError('FANTASY_VILLAGE_APPROVED_SOURCE_SET_REQUIRED')
+  priority=json.loads((ROOT/'assets/external/simple-rpg/priority-v1/manifest.json').read_text())
   for role,row in village['models'].items():
    if not re.fullmatch(r'village[A-Z][A-Za-z]+',role):
     raise RuntimeError('FANTASY_VILLAGE_ROLE_INVALID')
    filename=row.get('sourceFile','')
    source=(ROOT/filename).resolve()
+   is_whole_house=role in {'villageHouseA','villageHouseB','villageHouseC','villageHouseD'}
+   if is_whole_house:
+    # [원본 완성 집 다운로드·변환] 이미 다운로드된 CC0 .blend 압축을 SHA256으로 검증한다.
+    # Blender는 원본 메시를 GLB로 내보내기만 하며 도형 합성/Part 가짜 대체는 하지 않는다.
+    if not source.is_relative_to((ROOT/'assets/external/simple-rpg/priority-v1').resolve()) or source.suffix!='.zip':
+     raise RuntimeError('FANTASY_VILLAGE_HOUSE_ARCHIVE_PATH_INVALID:'+role)
+    pack=next((x for x in priority.get('packs',[]) if x.get('file')==source.name),None)
+    if not pack or pack.get('licenseDeclared')!='CC0-1.0' or pack.get('sha256')!=row.get('sourceSha256') or row.get('licenseEvidence')!='https://opengameart.org/content/medieval-house-pack':
+     raise RuntimeError('FANTASY_VILLAGE_HOUSE_LICENSE_INVALID:'+role)
+    archive=source.read_bytes()
+    if len(archive)!=pack.get('bytes') or hashlib.sha256(archive).hexdigest()!=pack['sha256']:
+     raise RuntimeError('FANTASY_VILLAGE_HOUSE_ARCHIVE_HASH_INVALID:'+role)
+    if shutil.which('blender') is None:
+     raise RuntimeError('FANTASY_VILLAGE_BLENDER_EXPORTER_REQUIRED:'+role)
+    with tempfile.TemporaryDirectory(prefix='forest-cc0-house-') as temporary:
+     temporary=Path(temporary)
+     with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+      blends=[]
+      total=0
+      for entry in zipped.infolist():
+       file_path=Path(entry.filename)
+       if entry.is_dir():continue
+       if entry.file_size>90*1024*1024 or file_path.is_absolute() or '..' in file_path.parts:
+        raise RuntimeError('FANTASY_VILLAGE_HOUSE_ARCHIVE_ENTRY_UNSAFE:'+role)
+       total+=entry.file_size
+       if total>145*1024*1024:raise RuntimeError('FANTASY_VILLAGE_HOUSE_ARCHIVE_EXPANDED_TOO_LARGE:'+role)
+       target=temporary/file_path
+       target.parent.mkdir(parents=True,exist_ok=True)
+       target.write_bytes(zipped.read(entry))
+       if target.suffix.lower()=='.blend':blends.append(target)
+     if len(blends)!=1 or not blends[0].read_bytes().startswith(b'BLENDER'):
+      raise RuntimeError('FANTASY_VILLAGE_HOUSE_ORIGINAL_BLEND_REQUIRED:'+role)
+     output=OUT/(role+'.glb')
+     expression=(
+      'import bpy\\n'
+      + 'bpy.ops.wm.open_mainfile(filepath='+repr(str(blends[0]))+')\\n'
+      + "bpy.ops.object.select_all(action='DESELECT')\\n"
+      + "for obj in bpy.data.objects:\\n"
+      + " if obj.type=='MESH':obj.select_set(True)\\n"
+      + 'bpy.ops.export_scene.gltf(filepath='+repr(str(output))+",export_format='GLB',use_selection=True)\\n"
+     )
+     subprocess.run(['blender','--background','--disable-autoexec','--python-expr',expression],
+      check=True,timeout=180,stdout=subprocess.DEVNULL)
+    data=output.read_bytes()
+    if len(data)<1000 or len(data)>18*1024*1024 or not data.startswith(b'glTF'):
+     raise RuntimeError('FANTASY_VILLAGE_HOUSE_GLTF_SIZE_OR_FORMAT_INVALID:'+role)
+    if len(data)<20 or struct.unpack_from('<I',data,4)[0]!=2:
+     raise RuntimeError('FANTASY_VILLAGE_HOUSE_GLTF_VERSION_INVALID:'+role)
+    json_bytes=struct.unpack_from('<I',data,12)[0]
+    document=json.loads(data[20:20+json_bytes])
+    if len(document.get('meshes',[]))<2:
+     raise RuntimeError('FANTASY_VILLAGE_HOUSE_NATIVE_GEOMETRY_EMPTY:'+role)
+    digest=hashlib.sha256(data).hexdigest()
+    records[role]={'sourceFile':filename,'sourceSha256':row['sourceSha256'],
+     'sha256':digest,'format':'glb','license':'CC0-1.0',
+     'licenseEvidence':row['licenseEvidence'],'bytes':len(data),
+     'sourceModel':blends[0].name}
+    continue
    if not source.is_relative_to((ROOT/'assets/shared/party').resolve()) or source.suffix!='.glb':
     raise RuntimeError('FANTASY_VILLAGE_ASSET_PATH_INVALID:'+role)
    entry=next((x for x in catalog.get('records',[]) if x.get('file')==filename),None)
