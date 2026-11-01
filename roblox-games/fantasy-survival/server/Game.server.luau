@@ -77,14 +77,14 @@ local nextEncounterCheck = 0
 local meadowEncounterSites = {
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-324,3,-91)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(324,3,-91)},
-  -- [북쪽 숲 2곳/북쪽 양 끝/남동 구석] 기존 늑대 능력치는 유지하고 깊이별로 분산한다.
+  -- [남쪽 숲 2곳/남쪽 양 끝/북동 구석] 기존 늑대 능력치는 유지하고 깊이별로 분산한다.
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-142,3,143)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(143,3,148)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(-307,3,292)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(307,3,289)},
   {id="wolf",atom="HEAD_CANINE",tier=1,height=3.15,position=Vector3.new(318,3,-293)},
   -- [사용자 제거] 버섯 몬스터 서식지 4곳 폐쇄. 나머지 지역·몬스터 배치는 유지.
-  -- [네 구석 밤의 생태] 기존 박쥐를 남서·남동·북동으로 펼치고 북서에도 서식시킨다.
+  -- [네 구석 밤의 생태] 기존 박쥐를 북서·북동·남동으로 펼치고 남서에도 서식시킨다.
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(-298,3,-285)},
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(297,3,-282)},
   {id="bat",atom="WING_LEATHER",tier=4,height=3.15,position=Vector3.new(274,3,268)},
@@ -1251,12 +1251,12 @@ local function createMeadowVillage()
       location=Vector3.new(-225,5,-191),skin=Color3.fromRGB(201,163,137),
       cloth=Color3.fromRGB(78,106,82),pants=Color3.fromRGB(76,72,57),
       patrolOffsets={Vector3.new(-12,0,-2),Vector3.new(6,0,1),Vector3.zero},
-      hint="서쪽 길을 따라 마을 밖으로 나가면 우두머리 늑대의 숲길이 나와. 남쪽 모서리로 내려가면 박쥐 서식지가 있고, 북쪽 외곽을 돌면 먼 북서 숲에 도착해."},
+      hint="서쪽 길을 따라 마을 밖으로 나가면 우두머리 늑대의 숲길이 나와. 북서 끝까지 올라가면 박쥐 서식지가 있고, 외곽을 남쪽으로 돌면 깊은 숲에 도착해."},
     {id="EastGuide",name="동쪽 물길 안내인",role="ROUTE_GUIDE",
       location=Vector3.new(222,5,-194),skin=Color3.fromRGB(190,150,120),
       cloth=Color3.fromRGB(95,104,131),pants=Color3.fromRGB(67,73,69),
       patrolOffsets={Vector3.new(13,0,0),Vector3.new(-6,0,-2),Vector3.zero},
-      hint="동쪽 숲으로 나가려면 남쪽 농장길을 거쳐 개울 아래쪽으로 돌아가. 동남쪽 모서리를 살펴본 뒤 동쪽 외곽 길을 따라 북쪽 숲까지 올라갈 수 있어."},
+      hint="동쪽 숲으로 나가려면 남쪽 농장길을 거쳐 개울 아래쪽으로 돌아가. 북동쪽 모서리를 살펴본 뒤 동쪽 외곽 길을 따라 남동 숲까지 내려갈 수 있어."},
   }) do
     local guideNpc=villageNativeNpc(guide)
     if guideNpc and villagePrompt(guideNpc,guide.name,"길 안내받기",function(player)
@@ -1771,7 +1771,7 @@ task.defer(function()
     {from=Vector2.new(128,-128),to=Vector2.new(226,-91)},
     {from=Vector2.new(-126,139),to=Vector2.new(-220,211)},
     {from=Vector2.new(134,139),to=Vector2.new(219,215)},
-    -- [남서/남동 외곽 순환] 마을 양쪽 출입로에서 늑대·박쥐 서식지를 따라 네 끝으로 연결.
+    -- [북서/북동 외곽 순환] 마을 양쪽 출입로에서 늑대·박쥐 서식지를 따라 네 끝으로 연결.
     -- 동쪽 개울은 Z=-154~154에서만 흐르므로 동문 통과는 Z=-195의 마른 길로 우회한다.
     {from=Vector2.new(-228,-219),to=Vector2.new(-315,-193)},
     {from=Vector2.new(-233,-193),to=Vector2.new(-315,-193)},
@@ -1783,14 +1783,14 @@ task.defer(function()
     {from=Vector2.new(316,-195),to=Vector2.new(319,-94)},
     {from=Vector2.new(316,-195),to=Vector2.new(319,-308)},
     {from=Vector2.new(319,-308),to=Vector2.new(241,-316)},
-    -- [북쪽 외곽 순환] 네 방향 숲의 기존 길을 북서/북동 끝과 북쪽 능선에 연결한다.
+    -- [남쪽 외곽 순환] 네 방향 숲의 기존 길을 북서/북동 끝과 북쪽 능선에 연결한다.
     {from=Vector2.new(-234,233),to=Vector2.new(-309,308)},
     {from=Vector2.new(236,238),to=Vector2.new(309,308)},
     {from=Vector2.new(-309,308),to=Vector2.new(-155,316)},
     {from=Vector2.new(-155,316),to=Vector2.new(0,317)},
     {from=Vector2.new(0,317),to=Vector2.new(155,316)},
     {from=Vector2.new(155,316),to=Vector2.new(309,308)},
-    -- [외곽 옆길] 서쪽 늑대 길과 북서 숲, 동쪽 늑대 길과 북동 숲을 이어 왕복만 강제하지 않는다.
+    -- [외곽 옆길] 서쪽 늑대 길과 남서 숲, 동쪽 늑대 길과 남동 숲을 이어 왕복만 강제하지 않는다.
     {from=Vector2.new(-309,308),to=Vector2.new(-315,204)},
     {from=Vector2.new(-315,204),to=Vector2.new(-315,100)},
     {from=Vector2.new(-315,100),to=Vector2.new(-319,-3)},
