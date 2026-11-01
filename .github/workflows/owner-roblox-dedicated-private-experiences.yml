@@ -59,6 +59,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # [정체·중복 처리] 새 main이 이미 존재하면 지난 커밋의 등록·게시를 실행하지 않는다.
+          # 보안·라이선스/F0~F9 검사를 생략하지 않으며 최신 main 게시 요청은 그대로 검사한다.
+          if [[ "$EVENT_NAME" == 'push' || "$EVENT_NAME" == 'workflow_dispatch' ]]; then
+            git fetch --no-tags --depth=1 origin main
+            if [[ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]]; then
+              echo "OWNER_STALE_MAIN_REVISION=SKIP_SUPERSEDED_SOURCE"
+              printf 'matrix={"include":[]}\ncount=0\n' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
           if [[ "$EVENT_NAME" == 'push' && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != '0000000000000000000000000000000000000000' ]]; then
             git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
             git diff --name-only "$BEFORE_SHA" HEAD -- roblox-games/ .github/workflows/owner-roblox-dedicated-private-experiences.yml > /tmp/owner-changed-source.txt
