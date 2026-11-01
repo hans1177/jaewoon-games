@@ -771,13 +771,8 @@ local function createMeadowVillage()
     end
     task.wait()
   end
-  -- [공동 광장] 공고 게시판과 주민 이동 중심은 원래 자리에 남는다.
-  for _,plaza in ipairs({
-    {0,-111,29,22},{3,-157,28,24},{-7,-238,28,20},
-  }) do
-    meadowTerrain:FillBlock(CFrame.new(plaza[1],1.55,plaza[2]),
-      Vector3.new(plaza[3],1.4,plaza[4]),Enum.Material.Cobblestone)
-  end
+  -- [마을 광장 바닥] 초원과 동떨어진 흰색 Cobblestone 직사각형 덮개는 두지 않는다.
+  -- 기존 Grass 지면과 Ground 골목을 그대로 연결해 의뢰판·주민·우물 위치를 보존한다.
   -- [실제 건물] 기둥/벽/지붕/문은 저장소 Kenney 원본 3D GLB 등록본만 사용한다.
   -- 마력숲 Universe의 모델 등록·사용 권한이 없으면 임의 파츠 집으로 대체하지 않는다.
   local villagePrefabKeys={"villageWall","villageDoor","villageWindow","villageRoof",
@@ -1189,12 +1184,9 @@ local function createMeadowVillage()
             end
           end
         elseif row[1]=="villageFountain" then
-          for _,mesh in ipairs(model:GetDescendants()) do
-            if mesh:IsA("MeshPart") then
-              mesh.Color=Color3.fromRGB(105,111,108)
-              mesh.Material=Enum.Material.Slate
-            end
-          end
+          -- [원본 물·석재 표면] 모든 메시를 단색 회색 돌로 덮어 물마저 돌처럼 보이던 문제를 제거한다.
+          -- 등록된 CC0 원본의 색·재질·물 표면을 유지하며 새 파츠나 가짜 우물 구조를 만들지 않는다.
+          model:SetAttribute("MeadowOriginalWaterSurfacePreserved",true)
         elseif row[1]=="villageRoad" or row[1]=="villageRuinWall"
           or row[1]=="villagePillar" or row[1]=="villageArch" then
           for _,mesh in ipairs(model:GetDescendants()) do
