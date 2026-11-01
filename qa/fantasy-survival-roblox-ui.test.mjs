@@ -140,3 +140,26 @@ test('five-stage dodge stays inside existing server-authorized skill',()=>{
   assert.match(server,/defense\.guardUntil=now\+2\.8/);
   assert.match(server,/defense\.perfectGuardUntil=now\+\.28/);
 });
+
+test('rush button advances independent 5-stage authored motions on each tap without five server hits',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const actionConfig=fs.readFileSync('roblox-games/fantasy-survival/shared/GameConfig.luau','utf8');
+  const rush=client.match(/\["meadow-unarmed-rush"\]=\{[\s\S]*?beats=\{([\s\S]*?)\n    \},\n  \},/);
+  assert.ok(rush,'existing rush animation pack must remain intact');
+  const steps=[...rush[1].matchAll(/\{id="(U:[A-Z_]+)"/g)].map(m=>m[1]);
+  assert.deepEqual(steps,['U:JAB_LEFT','U:CROSS_RIGHT','U:HOOK_LEFT','U:HOOK_RIGHT','U:BACKFIST_LEFT']);
+  assert.match(client,/local stagedRush=profile=="UNARMED" and approvedScope=="meadow-unarmed-rush"/);
+  assert.match(client,/selectedRushStage=\(martialTrack\.character==character and now-\(martialTrack\.at or 0\)<=1\.4\)/);
+  assert.match(client,/\(\(martialTrack\.stage or 0\)%5\+1\) or 1/);
+  assert.match(client,/chosenMoves\[1\]=martialTrack\.beats\[selectedRushStage\]\.id/);
+  assert.match(client,/if stagedRush and serverApproved~=true then\s*finishNativeCombatMotion\(\)/);
+  assert.match(client,/if predictedAt and os\.clock\(\)-predictedAt<1 then/);
+  assert.match(client,/NativeCombatRushStage",selectedRushStage/);
+  assert.match(client,/meadowSkillNameplates\[1\]\.Text="연타 "\.\.selectedRushStage\.\."\/5"/);
+  assert.match(client,/activeCombatRushStage==5/);
+  assert.match(actionConfig,/Id = "meadow-unarmed-rush", Label = "연속권/);
+  assert.match(server,/\["meadow-unarmed-rush"\]=attackEnemy/);
+  assert.match(server,/attackCooldown\[player\]=now\+\.42/);
+  assert.match(server,/if not target then\s*player:SetAttribute\("ApprovedActionTarget",rootPart.Position\)\s*return true,false/);
+  assert.doesNotMatch(server,/NativeCombatRushStage/);
+});
