@@ -1849,6 +1849,71 @@ task.defer(function()
     end
   end
   gameWorld:SetAttribute("MeadowNativeTrails",#tracks+#trailSpurs)
+  -- [초원 구역별 지표] 바람 든 풀밭·짙은 숲 낙엽·시냇가 습토·갈색 야생초.
+  -- 원래 Roblox Terrain 재질만 섞으며 파츠/임의 자연물/신규 자산은 만들지 않는다.
+  -- 경로 36구간·마을·유적·모든 채집/스폰 부근의 실제 평탄 지형은 보호한다.
+  local habitatZones={
+    {x=-285,z=114,sx=41,sz=140,leaf=Enum.Material.LeafyGrass,accent=Enum.Material.Ground},
+    {x=300,z=21,sx=28,sz=122,leaf=Enum.Material.Mud,accent=Enum.Material.LeafyGrass},
+    {x=0,z=288,sx=205,sz=42,leaf=Enum.Material.LeafyGrass,accent=Enum.Material.Grass},
+    {x=-304,z=-225,sx=27,sz=65,leaf=Enum.Material.Ground,accent=Enum.Material.LeafyGrass},
+    {x=303,z=-226,sx=29,sz=67,leaf=Enum.Material.Ground,accent=Enum.Material.LeafyGrass},
+  }
+  local meadowHabitatDetails=0
+  for region,zone in ipairs(habitatZones) do
+    for index=1,24 do
+      local theta=index*2.399963+region*.62
+      local radius=.25+((index*7)%19)/25
+      local x=zone.x+math.cos(theta)*zone.sx*radius
+      local z=zone.z+math.sin(theta)*zone.sz*radius
+      local point=Vector2.new(x,z)
+      local blocked=x>=-280 and x<=280 and z>=-351 and z<=-42
+      if math.abs(x)>338 or math.abs(z)>338 then blocked=true end
+      -- [길 보호] 비포장 메인 길이나 지름길 중심 11칸 이내는 건드리지 않는다.
+      if not blocked then
+        for _,track in ipairs(tracks) do
+          local axis=track.to-track.from
+          local t=math.clamp((point-track.from):Dot(axis)/math.max(1,axis:Dot(axis)),0,1)
+          if (point-(track.from+axis*t)).Magnitude<11 then blocked=true;break end
+        end
+      end
+      if not blocked then
+        for _,track in ipairs(trailSpurs) do
+          local axis=track.to-track.from
+          local t=math.clamp((point-track.from):Dot(axis)/math.max(1,axis:Dot(axis)),0,1)
+          if (point-(track.from+axis*t)).Magnitude<11 then blocked=true;break end
+        end
+      end
+      -- [자산/진입 보호] 숲 안의 기존 유적과 작은 지표 광맥, 실제 몬스터 출현점을 피한다.
+      if not blocked then
+        for _,site in ipairs(meadowEncounterSites) do
+          if (point-Vector2.new(site.position.X,site.position.Z)).Magnitude<18 then
+            blocked=true;break
+          end
+        end
+      end
+      if not blocked then
+        for _,ruin in ipairs({Vector2.new(-122,-147),Vector2.new(137,139),Vector2.new(-154,122)}) do
+          if (point-ruin).Magnitude<24 then blocked=true;break end
+        end
+      end
+      if not blocked and region==2 then
+        -- [개울 둑] 수로 가운데 물과 건너는 길은 덮지 않고 바깥 습지만 꾸민다.
+        local waterX=266+8*math.sin(z*.029)+2*math.cos(z*.073)
+        if math.abs(x-waterX)<14 then blocked=true end
+      end
+      if not blocked then
+        local noise=math.noise(x*.06,z*.06,region*.74)
+        local size=2.55+(index%6)*.49+math.abs(noise)*.55
+        local material=(index%4==0 or noise<-.23) and zone.accent or zone.leaf
+        -- 원래 잔디 상단 +2 높이의 얇은 질감. 능선이나 충돌성 돌무더기 없음.
+        meadowTerrain:FillBall(Vector3.new(x,2.04-size,z),size,material)
+        meadowHabitatDetails+=1
+      end
+      if index%8==0 then task.wait() end
+    end
+  end
+  gameWorld:SetAttribute("MeadowHabitatTerrainDetails",meadowHabitatDetails)
   gameWorld:SetAttribute("MeadowOuterRouteBranches",#tracks-8)
   gameWorld:SetAttribute("MeadowOuterDiscoveryCorners",4)
   -- [이끼 낀 암석] 나무 군락 바깥에만 Terrain 암반을 겹쳐 자연스럽게 노출한다.
