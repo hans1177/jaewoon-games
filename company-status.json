@@ -98,9 +98,7 @@
       "version": 4,
       "enabled": true,
       "ownerFocusedGameIds": [
-        "simple-rpg",
-        "insect-survival",
-        "cozy-island"
+        "insect-survival"
       ],
       "includeAllReleaseConfirmed": false,
       "includeAllInternalPlatformRelease": false,
@@ -173,9 +171,7 @@
         "verifiedLearningReuseRequiresFreshSameBuildValidation": true,
         "implementationOrderAuthority": "robloxStudioProductionFlowContract.designImplementationFlow",
         "targetPlatformsByGame": {
-          "simple-rpg": "ROBLOX",
-          "insect-survival": "WEB",
-          "cozy-island": "WEB"
+          "insect-survival": "WEB"
         },
         "retainUntilByPlatform": {
           "ROBLOX": "EXACT_BUILD_F0_TO_F9_AND_FIRST_PLAY_RETRY_SAVE_WHEN_REQUIRED_VERIFIED",
@@ -190,14 +186,11 @@
         ]
       },
       "ownerFocusedGamePlatforms": {
-        "simple-rpg": "ROBLOX",
-        "insect-survival": "WEB",
-        "cozy-island": "WEB"
+        "insect-survival": "WEB"
       },
       "focusScope": "OWNER_EXACT_GAME_AND_PLATFORM_ONLY",
       "ownerFocusedWebSourcePaths": {
-        "insect-survival": "web-games/insect-survival",
-        "cozy-island": "web-games/cozy-island"
+        "insect-survival": "web-games/insect-survival"
       }
     }
   },
@@ -238,29 +231,14 @@
     "autonomousFocus": {
       "enabled": true,
       "targetSlots": 3,
-      "filledSlots": 3,
+      "filledSlots": 1,
       "preferredGameIds": [],
       "focusedGameIds": [
-        "simple-rpg",
-        "insect-survival",
-        "cozy-island"
+        "insect-survival"
       ],
       "games": [
         {
           "slot": 1,
-          "gameId": "simple-rpg",
-          "slug": "simple-rpg",
-          "name": "simple-rpg",
-          "score": 0,
-          "slotRole": "owner-build-completion",
-          "lane": "selected-platform",
-          "selectedPlatform": "ROBLOX",
-          "targetPlatformReady": false,
-          "homepageCategory": null,
-          "webPath": null
-        },
-        {
-          "slot": 2,
           "gameId": "insect-survival",
           "slug": "insect-survival",
           "name": "곤충 생존기",
@@ -271,19 +249,6 @@
           "targetPlatformReady": true,
           "homepageCategory": "design-only",
           "webPath": "web-games/insect-survival"
-        },
-        {
-          "slot": 3,
-          "gameId": "cozy-island",
-          "slug": "cozy-island",
-          "name": "포근섬",
-          "score": 0,
-          "slotRole": "owner-build-completion",
-          "lane": "selected-platform",
-          "selectedPlatform": "WEB",
-          "targetPlatformReady": true,
-          "homepageCategory": "development-confirmed",
-          "webPath": "web-games/cozy-island"
         }
       ],
       "nextFocusGameIds": [],
@@ -320,21 +285,18 @@
         "adjusted": false,
         "distinctFamilies": [
           "RPG",
-          "STRATEGY"
+          "ADVENTURE"
         ]
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 5,
+        "developmentConfirmed": 2,
         "designOnly": 8
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
-        "P0006",
-        "RUNTIME-baeksu-war",
-        "RUNTIME-cozy-island",
-        "RUNTIME-fantasy-survival",
-        "RUNTIME-horror-escape-room"
+        "RUNTIME-deep-diver",
+        "RUNTIME-fantasy-survival"
       ],
       "designOnlyGameIds": [
         "P0001",
@@ -352,51 +314,34 @@
           "P0002",
           "P0004",
           "P0005",
-          "P0006",
           "P0007",
           "P0009",
           "P0101",
           "P0103",
-          "RUNTIME-cozy-island",
           "RUNTIME-fantasy-survival",
-          "RUNTIME-horror-escape-room",
-          "RUNTIME-baeksu-war"
+          "RUNTIME-deep-diver"
         ],
         "paused": [],
         "rebuild": [],
         "retired": [],
         "removed": [
+          "P0006",
           "P0008",
           "P0102"
         ]
       },
       "pipeline": {
         "target": 60,
-        "count": 13,
+        "count": 10,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 47
+        "deficit": 50
       },
       "ranking": [
         {
           "rank": 1,
           "rawEvidenceRank": 1,
-          "gameId": "P0006",
-          "slug": "daechung-rpg",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "RPG",
-          "evidenceScore": 811,
-          "developmentFocus": 8,
-          "artbookBaselineRank": 0.5,
-          "targetPlatform": "UNITY",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 2,
-          "rawEvidenceRank": 2,
           "gameId": "P0002",
           "slug": "insect-survival",
           "lifecycleState": "ACTIVE",
@@ -410,8 +355,8 @@
           "sourceReady": true
         },
         {
-          "rank": 3,
-          "rawEvidenceRank": 3,
+          "rank": 2,
+          "rawEvidenceRank": 2,
           "gameId": "P0009",
           "slug": "monster-adventure",
           "lifecycleState": "ACTIVE",
@@ -425,8 +370,8 @@
           "sourceReady": true
         },
         {
-          "rank": 4,
-          "rawEvidenceRank": 4,
+          "rank": 3,
+          "rawEvidenceRank": 3,
           "gameId": "P0101",
           "slug": "chess-battle",
           "lifecycleState": "ACTIVE",
@@ -440,38 +385,23 @@
           "sourceReady": true
         },
         {
+          "rank": 4,
+          "rawEvidenceRank": 4,
+          "gameId": "RUNTIME-deep-diver",
+          "slug": "deep-diver",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "ADVENTURE",
+          "evidenceScore": 6,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "sourceReady": true
+        },
+        {
           "rank": 5,
           "rawEvidenceRank": 5,
-          "gameId": "RUNTIME-baeksu-war",
-          "slug": "baeksu-war",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 6,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 0,
-          "targetPlatform": "ROBLOX",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 6,
-          "rawEvidenceRank": 6,
-          "gameId": "RUNTIME-cozy-island",
-          "slug": "cozy-island",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "UNCLASSIFIED",
-          "evidenceScore": 6,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 0,
-          "targetPlatform": "ROBLOX",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 7,
-          "rawEvidenceRank": 7,
           "gameId": "RUNTIME-fantasy-survival",
           "slug": "fantasy-survival",
           "lifecycleState": "ACTIVE",
@@ -485,23 +415,8 @@
           "sourceReady": true
         },
         {
-          "rank": 8,
-          "rawEvidenceRank": 8,
-          "gameId": "RUNTIME-horror-escape-room",
-          "slug": "horror-escape-room",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "UNCLASSIFIED",
-          "evidenceScore": 6,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 0,
-          "targetPlatform": "ROBLOX",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 9,
-          "rawEvidenceRank": 9,
+          "rank": 6,
+          "rawEvidenceRank": 6,
           "gameId": "P0103",
           "slug": "territory-war",
           "lifecycleState": "ACTIVE",
