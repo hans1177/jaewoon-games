@@ -1197,62 +1197,31 @@ do
     titlePanel.Visible=true
   end)
 
-  -- [실제 맵 로딩] 기존 숲 발견 비트·월드 스트리밍 모델만 사용해 양피지 지도를 갱신한다.
-  local loadPanel=panel("MeadowMapLoading",440,324)
+  -- [로딩 화면] 허구의 발견 지도/구역 배지/안개 표식 대신 제목과 실제 진행만 표시.
+  local loadPanel=panel("MeadowMapLoading",390,178)
   loadPanel.Visible=false
-  loadPanel.BackgroundColor3=Color3.fromRGB(176,146,99)
-  local mapTitle=label(loadPanel,"Region","초원 지역",8,30,23,Color3.fromRGB(45,36,27))
-  local paper=Instance.new("Frame")
-  paper.Name="DiscoveredMap"
-  paper.Position=UDim2.new(0,18,0,44)
-  paper.Size=UDim2.new(1,-36,0,186)
-  paper.BackgroundColor3=Color3.fromRGB(202,173,120)
-  paper.BorderSizePixel=0
-  paper.Parent=loadPanel
-  local mapBorder=Instance.new("UIStroke")
-  mapBorder.Color=Color3.fromRGB(99,74,42)
-  mapBorder.Thickness=2
-  mapBorder.Parent=paper
-  local fogInfo=label(paper,"FogNote","아직 발견하지 못한 숲은 안개에 가려져 있어",5,20,12,Color3.fromRGB(77,59,40))
-  local mapMarkers={}
-  for index,point in ipairs({
-    {label="북서 숲",x=.16,y=.29,flag=1},
-    {label="북동 숲",x=.83,y=.29,flag=2},
-    {label="남서 숲",x=.16,y=.78,flag=4},
-    {label="남동 숲",x=.83,y=.78,flag=8},
-    {label="초원",x=.50,y=.52,flag=0},
-  }) do
-    local marker=Instance.new("TextLabel")
-    marker.Name="RegionMarker"..index
-    marker.AnchorPoint=Vector2.new(.5,.5)
-    marker.Position=UDim2.fromScale(point.x,point.y)
-    marker.Size=UDim2.fromOffset(78,28)
-    marker.BackgroundColor3=Color3.fromRGB(119,93,56)
-    marker.BackgroundTransparency=.35
-    marker.TextColor3=Color3.fromRGB(50,42,30)
-    marker.TextSize=12
-    marker.Font=Enum.Font.GothamBold
-    marker.Parent=paper
-    mapMarkers[index]={view=marker,point=point}
-  end
-  local villageMarker=label(paper,"Village","⌂ 마을",58,24,13,Color3.fromRGB(58,46,30))
-  villageMarker.Position=UDim2.fromScale(.37,.30)
-  villageMarker.Size=UDim2.fromOffset(86,24)
+  loadPanel.BackgroundColor3=Color3.fromRGB(24,43,34)
+  label(loadPanel,"LoadingGameTitle","마력숲",20,48,29,Color3.fromRGB(242,226,177))
+  local loadingStatus=label(loadPanel,"LoadingStatus","서버 확인 중",69,30,14,Color3.fromRGB(216,227,205))
   local progressTrack=Instance.new("Frame")
   progressTrack.Name="ProgressTrack"
-  progressTrack.Position=UDim2.new(0,24,0,241)
-  progressTrack.Size=UDim2.new(1,-48,0,13)
-  progressTrack.BackgroundColor3=Color3.fromRGB(95,83,60)
+  progressTrack.Position=UDim2.new(0,24,0,118)
+  progressTrack.Size=UDim2.new(1,-48,0,10)
+  progressTrack.BackgroundColor3=Color3.fromRGB(60,70,57)
   progressTrack.BorderSizePixel=0
   progressTrack.Parent=loadPanel
+  local progressCorner=Instance.new("UICorner")
+  progressCorner.CornerRadius=UDim.new(0,5)
+  progressCorner.Parent=progressTrack
   local progressFill=Instance.new("Frame")
   progressFill.Name="VerifiedProgress"
   progressFill.Size=UDim2.fromScale(0,1)
-  progressFill.BackgroundColor3=Color3.fromRGB(53,103,69)
+  progressFill.BackgroundColor3=Color3.fromRGB(166,196,117)
   progressFill.BorderSizePixel=0
   progressFill.Parent=progressTrack
-  local loadingStatus=label(loadPanel,"LoadingStatus","월드 준비 중 · 0%",261,25,13,Color3.fromRGB(45,36,27))
-  local loadingTip=label(loadPanel,"LoadingTip","전투 팁 · 우두머리 늑대의 돌진은 회피로 피할 수 있어",286,29,11,Color3.fromRGB(63,51,38))
+  local fillCorner=Instance.new("UICorner")
+  fillCorner.CornerRadius=UDim.new(0,5)
+  fillCorner.Parent=progressFill
 
   local introPanel=Instance.new("Frame")
   introPanel.Name="FirstArrivalScene"
@@ -1342,22 +1311,7 @@ do
   player:GetAttributeChangedSignal("MeadowProfileHadSave"):Connect(updateTitleStatus)
   updateTitleStatus()
 
-  local function refreshMapRegion()
-    local areaLabel=gui:FindFirstChild("Area",true)
-    local name=areaLabel and areaLabel.Text or "초원 지역"
-    mapTitle.Text=(type(name)=="string" and name~="" and name or "초원 지역").." · 탐험 지도"
-    local mask=player:GetAttribute("ExplorationGroves") or 0
-    for _,row in ipairs(mapMarkers) do
-      local point=row.point
-      local visible=point.flag==0 or bit32.band(mask,point.flag)~=0
-      row.view.Text=visible and point.label or "안개"
-      row.view.TextTransparency=visible and 0 or .36
-    end
-    local world=workspace:FindFirstChild("FantasySurvivalWorld")
-    local built=world and world:GetAttribute("MeadowVillagePrefabReady")==true
-    villageMarker.Text=built and "⌂ 마을" or "마을 미완성"
-    villageMarker.TextTransparency=built and 0 or .46
-  end
+  -- [로딩 상태] 가짜 지역 등록과 발견 배지를 생성하지 않는다.
   local function setProgress(done,total,message)
     local ratio=total>0 and math.clamp(done/total,0,1) or 0
     progressFill.Size=UDim2.fromScale(ratio,1)
@@ -1397,14 +1351,7 @@ do
     options.Visible=false
     confirmPanel.Visible=false
     loadPanel.Visible=true
-    refreshMapRegion()
-    local tips={
-      "전투 팁 · 우두머리 늑대의 돌진은 회피로 피할 수 있어",
-      "조사 팁 · 사건마다 주민 진술과 현장 단서를 확인해",
-      "탐험 팁 · 방문한 숲 지점은 지도에서 확인할 수 있어",
-    }
-    loadingTip.Text=tips[(math.floor(os.clock())%#tips)+1]
-    setProgress(0,0,"지역 정보 확인 중")
+    setProgress(0,0,"서버 및 저장 기록 확인")
     task.spawn(function()
       -- 실제 서버 프로필 및 클라이언트 스트리밍된 캐릭터가 준비될 때만 다음 단계로 이동한다.
       local profileDeadline=os.clock()+35
@@ -1447,8 +1394,9 @@ do
           if #assets>=20 then break end
         end
       end
-      local total=3+#assets
-      local loaded=2
+      -- [정확한 로딩] 완료된 원본 자산 처리 건수에 비례하여 진행한다.
+      local total=1+#assets
+      local loaded=0
       setProgress(loaded,total,"초원 지형 및 캐릭터 준비")
       local failed=0
       -- 진행 숫자는 실제 완료된 원본 파일의 PreloadAsync 호출 수로만 증가한다.
