@@ -116,13 +116,13 @@ if '--game-id=fantasy-survival' in sys.argv:
       raise RuntimeError('FANTASY_VILLAGE_HOUSE_ORIGINAL_BLEND_REQUIRED:'+role)
      output=OUT/(role+'.glb')
      expression=(
-      'import bpy\\n'
-      + 'bpy.ops.wm.open_mainfile(filepath='+repr(str(blends[0]))+')\\n'
-      + "if bpy.context.object and bpy.context.object.mode!='OBJECT':bpy.ops.object.mode_set(mode='OBJECT')\\n"
-      + "bpy.ops.object.select_all(action='DESELECT')\\n"
-      + "for obj in bpy.data.objects:\\n"
-      + " if obj.type=='MESH':obj.select_set(True)\\n"
-      + 'bpy.ops.export_scene.gltf(filepath='+repr(str(output))+",export_format='GLB',use_selection=True)\\n"
+      'import bpy\n'
+      + 'bpy.ops.wm.open_mainfile(filepath='+repr(str(blends[0]))+')\n'
+      + "if bpy.context.object and bpy.context.object.mode!='OBJECT':bpy.ops.object.mode_set(mode='OBJECT')\n"
+      + "bpy.ops.object.select_all(action='DESELECT')\n"
+      + "for obj in bpy.data.objects:\n"
+      + " if obj.type=='MESH':obj.select_set(True)\n"
+      + 'bpy.ops.export_scene.gltf(filepath='+repr(str(output))+",export_format='GLB',use_selection=True)\n"
      )
      subprocess.run(['blender','--background','--disable-autoexec','--python-expr',expression],
       check=True,timeout=180)
