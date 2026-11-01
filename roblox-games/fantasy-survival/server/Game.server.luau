@@ -797,7 +797,7 @@ local function createMeadowVillage()
           pieces[#pieces+1]={asset="villageRoof",x=w*11.4,z=wingZ+offset,
             height=3.5,lift=4.65,angle=math.pi*.5}
           pieces[#pieces+1]={asset=rowIndex==1 and "villageDoor" or "villageWindow",
-            x=w*16.2,z=wingZ+offset,height=5,lift=0}
+            x=w*16.2,z=wingZ+offset,height=5,lift=0,secondary=true}
           pieces[#pieces+1]={asset="villageWall",
             x=w*11.4,z=wingZ+offset*2,height=5,lift=0,angle=math.pi*.5}
         end
@@ -853,7 +853,7 @@ local function createMeadowVillage()
               end
             end
           end
-          if piece.asset=="villageDoor" then
+          if piece.asset=="villageDoor" and not piece.secondary then
             local front=model:FindFirstChildWhichIsA("MeshPart",true)
             if front then
               local sign=Instance.new("BillboardGui")
