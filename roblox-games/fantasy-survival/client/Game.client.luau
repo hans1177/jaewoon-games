@@ -623,26 +623,32 @@ local renderWitcherCharacter=(function()
 local meadowDim=Color3.fromRGB(174,169,151)
 local characterHero=Instance.new("Frame")
 characterHero.Name="WitcherCharacterPortrait";characterHero.LayoutOrder=1
-characterHero.Size=UDim2.new(1,-8,0,112)
+characterHero.Size=UDim2.new(1,-8,0,158)
 characterHero.BackgroundColor3=Color3.fromRGB(27,27,29)
 characterHero.BorderSizePixel=0;characterHero.Parent=meadowPages[1]
 local characterHeroOutline=Instance.new("UIStroke")
 characterHeroOutline.Color=meadowGold;characterHeroOutline.Transparency=.24;characterHeroOutline.Parent=characterHero
 local characterPortrait=Instance.new("ImageLabel")
 characterPortrait.Name="PlayerPortrait"
-characterPortrait.Size=UDim2.fromOffset(88,88);characterPortrait.Position=UDim2.fromOffset(12,12)
+characterPortrait.Size=UDim2.fromOffset(126,142);characterPortrait.Position=UDim2.fromOffset(8,8)
 characterPortrait.BackgroundColor3=Color3.fromRGB(49,41,38);characterPortrait.BorderSizePixel=0
+characterPortrait.ScaleType=Enum.ScaleType.Fit
 characterPortrait.Image=meadowAvatar.Image;characterPortrait.Parent=characterHero
-meadowAvatar:GetPropertyChangedSignal("Image"):Connect(function()characterPortrait.Image=meadowAvatar.Image end)
+task.spawn(function()
+  local ok,image=pcall(function()
+    return Players:GetUserThumbnailAsync(player.UserId,Enum.ThumbnailType.AvatarThumbnail,Enum.ThumbnailSize.Size420x420)
+  end)
+  if ok and typeof(image)=="string" and characterPortrait.Parent then characterPortrait.Image=image end
+end)
 local characterHeroName=Instance.new("TextLabel")
-characterHeroName.Name="HeroName";characterHeroName.Position=UDim2.fromOffset(112,14)
-characterHeroName.Size=UDim2.new(1,-124,0,35)
+characterHeroName.Name="HeroName";characterHeroName.Position=UDim2.fromOffset(144,14)
+characterHeroName.Size=UDim2.new(1,-156,0,35)
 characterHeroName.BackgroundTransparency=1;characterHeroName.Font=Enum.Font.GothamBold;characterHeroName.TextSize=20
 characterHeroName.TextColor3=meadowParchment;characterHeroName.TextXAlignment=Enum.TextXAlignment.Left
 characterHeroName.TextTruncate=Enum.TextTruncate.AtEnd;characterHeroName.Parent=characterHero
 local characterHeroSummary=Instance.new("TextLabel")
-characterHeroSummary.Name="HeroStatus";characterHeroSummary.Position=UDim2.fromOffset(112,51)
-characterHeroSummary.Size=UDim2.new(1,-124,0,54)
+characterHeroSummary.Name="HeroStatus";characterHeroSummary.Position=UDim2.fromOffset(144,50)
+characterHeroSummary.Size=UDim2.new(1,-154,0,92)
 characterHeroSummary.BackgroundTransparency=1;characterHeroSummary.Font=Enum.Font.GothamMedium;characterHeroSummary.TextSize=13
 characterHeroSummary.TextColor3=meadowDim;characterHeroSummary.TextWrapped=true
 characterHeroSummary.TextXAlignment=Enum.TextXAlignment.Left;characterHeroSummary.Parent=characterHero
@@ -689,14 +695,14 @@ meadowLabels[1].TextColor3=meadowParchment
 meadowLabels[1].TextSize=14
 return function(character,humanoid,tool)
   characterHeroName.Text=player.DisplayName
-  characterHeroSummary.Text=string.format("생존자  ·  처치한 보스 %d\n체력 %d / %d  ·  강화 +%d",
-    player:GetAttribute("Bosses") or 0,
+  characterHeroSummary.Text=string.format("체력   %d / %d\n기력   %d / 100\n무기 강화   +%d\n보스 처치   %d",
     humanoid and humanoid.Health or 0,humanoid and humanoid.MaxHealth or 100,
-    player:GetAttribute("WeaponTier") or 0)
+    player:GetAttribute("MeadowStamina") or 0,
+    player:GetAttribute("WeaponTier") or 0,player:GetAttribute("Bosses") or 0)
   equippedWeapon.Text=tool and tool.Name or "맨손"
-  equippedSecondary.Text="보유 장비 없음"
-  equippedArmor.Text="장착 데이터 없음"
-  equippedAccessory.Text="장착 데이터 없음"
+  equippedSecondary.Text="장착 슬롯 없음"
+  equippedArmor.Text="장착 기능 미지원"
+  equippedAccessory.Text="장착 기능 미지원"
 end
 end)()
 local function renderMeadowPages()
@@ -830,7 +836,12 @@ local menuBorder=root:FindFirstChild("WitcherMenuBorder") or Instance.new("UIStr
 menuBorder.Name="WitcherMenuBorder";menuBorder.Color=meadowGold
 menuBorder.Thickness=2;menuBorder.Transparency=.08;menuBorder.Parent=root
 meadowMenu=CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,{
-  compact=true,hideButton=true,menuLeft=true,pages=meadowPages,pageNames=meadowPageNames,onPageChanged=renderMeadowPages,
+  compact=true,hideButton=true,menuLeft=true,witcherStyle=true,tabOrder={0,1,2,7,3,4,5,6},
+  pages=meadowPages,pageNames=meadowPageNames,
+  onPageChanged=function(index)
+    renderMeadowPages()
+    if index==7 and meadowActionButtons.refreshSkills then meadowActionButtons.refreshSkills() end
+  end,
 })
 local menuHeading=root:FindFirstChild("MeadowMenuHeading")
 if menuHeading then
@@ -845,7 +856,7 @@ if witcherTabs then
       button.Font=Enum.Font.GothamBold
       local index=button:GetAttribute("FilterIndex")
       if typeof(index)=="number" and index>1 then
-        local atlasCell=({3,4,5,6,7,3,2})[index-1]
+        local atlasCell=({3,4,2,5,6,7,3})[index-1]
         if atlasCell then
           local icon=Instance.new("ImageLabel")
           icon.Name="CC0MenuIcon";icon.BackgroundTransparency=1
