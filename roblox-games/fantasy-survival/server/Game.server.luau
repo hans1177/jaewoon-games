@@ -1474,6 +1474,138 @@ local function meadowProficiencyPower(player)
   return 2.2*(1+math.max(0,(math.sqrt(961+24*points)-31)/12))
 end
 
+-- [마력숲 위쳐식 RPG] 기존 저장 필드/전투 흐름 안에서 장비·제작·물약·스킬 성장 처리.
+-- 외부 RemoteEvent나 새 DataStore 없이 기존 Config 카탈로그와 서버 수치만 사용한다.
+local meadowRpg=(function()
+  local items=Config.MeadowEquipment or {}
+  local tonics=Config.MeadowConsumables or {}
+  local slots={Weapon="MeadowEquipWeapon",Chest="MeadowEquipChest",
+    Hands="MeadowEquipHands",Legs="MeadowEquipLegs",Feet="MeadowEquipFeet",
+    Accessory="MeadowEquipAccessory"}
+  local talents={Martial="MeadowTalentMartial",Signs="MeadowTalentSigns",
+    Defense="MeadowTalentDefense",Agility="MeadowTalentAgility"}
+  local gearById,tonicById={},{}
+  for index,item in ipairs(items)do gearById[item.Id]={entry=item,index=index} end
+  for _,item in ipairs(tonics)do tonicById[item.Id]=item end
+  local function equipped(player,slot)
+    local index=readNumber(player,slots[slot],0)
+    local item=items[index]
+    if not item or item.Slot~=slot then return nil end
+    local owned=math.max(0,readNumber(player,"MeadowGearOwned",0))
+    if bit32.band(owned,bit32.lshift(1,index-1))==0 then return nil end
+    return item
+  end
+  local function stats(player)
+    local attack,defense=0,0
+    for slot in pairs(slots)do
+      local item=equipped(player,slot)
+      if item then
+        attack+=item.Attack or 0
+        defense+=item.Defense or 0
+      end
+    end
+    return attack+math.clamp(readNumber(player,"MeadowTalentMartial",0),0,3),
+      defense+math.clamp(readNumber(player,"MeadowTalentDefense",0),0,3)
+  end
+  local function publishStats(player)
+    local attack,defense=stats(player)
+    player:SetAttribute("MeadowGearAttack",attack)
+    player:SetAttribute("MeadowGearDefense",defense)
+  end
+  local function charge(player,item)
+    for _,field in ipairs({"Wood","Stone","Coins"})do
+      if readNumber(player,field,0)<(item[field] or 0) then return false end
+    end
+    for _,field in ipairs({"Wood","Stone","Coins"})do
+      local cost=item[field] or 0
+      if cost>0 then setNumber(player,field,readNumber(player,field,0)-cost) end
+    end
+    return true
+  end
+  local function feedback(player,text)
+    player:SetAttribute("MeadowGearMessage",text)
+    player:SetAttribute("MeadowGearRevision",(player:GetAttribute("MeadowGearRevision") or 0)+1)
+  end
+  local function transact(player,action)
+    if player:GetAttribute("ProfileReady")~=true or #action>75 then return false end
+    local group,verb,id=action:match("^meadow:rpg:([%a]+):([%a]+):([%w_]+)$")
+    if not group or not verb or not id then return false end
+    local gear=gearById[id]
+    local tonic=tonicById[id]
+    if group=="gear" and gear then
+      local item,index=gear.entry,gear.index
+      local bit=bit32.lshift(1,index-1)
+      local owned=math.max(0,readNumber(player,"MeadowGearOwned",0))
+      if verb=="craft" then
+        if bit32.band(owned,bit)~=0 then feedback(player,"이미 보유한 장비야.");return true end
+        if not charge(player,item) then feedback(player,"재료 또는 소지금이 부족해.");return true end
+        setNumber(player,"MeadowGearOwned",bit32.bor(owned,bit))
+        setNumber(player,"CraftingProficiency",readNumber(player,"CraftingProficiency",0)+1)
+        feedback(player,item.Name.." 제작 완료")
+        return true
+      elseif verb=="equip" then
+        if bit32.band(owned,bit)==0 then feedback(player,"먼저 장비를 제작해.");return true end
+        local key=slots[item.Slot]
+        if not key then return false end
+        setNumber(player,key,index)
+        publishStats(player)
+        feedback(player,item.Name.." 장착 완료")
+        return true
+      elseif verb=="unequip" then
+        local key=slots[item.Slot]
+        if key and readNumber(player,key,0)==index then
+          setNumber(player,key,0)
+          publishStats(player)
+          feedback(player,item.Name.." 장착 해제")
+        end
+        return true
+      end
+    elseif group=="tonic" and tonic then
+      local attr=id=="herbal_tonic" and "MeadowPotionHealth" or "MeadowPotionStamina"
+      if verb=="craft" then
+        if readNumber(player,attr,0)>=25 then feedback(player,"물약은 최대 25개까지 소지할 수 있어.");return true end
+        if not charge(player,tonic) then feedback(player,"물약 재료가 부족해.");return true end
+        setNumber(player,attr,readNumber(player,attr,0)+1)
+        setNumber(player,"AlchemyProficiency",readNumber(player,"AlchemyProficiency",0)+1)
+        feedback(player,tonic.Name.." 조합 완료")
+        return true
+      elseif verb=="use" then
+        if readNumber(player,attr,0)<1 then return true end
+        local character,humanoid=player.Character,nil
+        humanoid=character and character:FindFirstChildOfClass("Humanoid")
+        if not humanoid or humanoid.Health<=0 then return true end
+        if tonic.Heal and humanoid.Health<humanoid.MaxHealth then
+          humanoid.Health=math.min(humanoid.MaxHealth,humanoid.Health+tonic.Heal)
+          setNumber(player,"Health",math.floor(humanoid.Health))
+        elseif tonic.Stamina and readNumber(player,"MeadowStamina",100)<100 then
+          player:SetAttribute("MeadowStamina",math.min(100,readNumber(player,"MeadowStamina",100)+tonic.Stamina))
+        else
+          feedback(player,"이미 체력 또는 기력이 가득 차 있어.")
+          return true
+        end
+        setNumber(player,attr,readNumber(player,attr,0)-1)
+        feedback(player,tonic.Name.." 사용")
+        return true
+      end
+    elseif group=="talent" and verb=="learn" then
+      local key=talents[id]
+      if not key then return false end
+      local rank=math.clamp(readNumber(player,key,0),0,3)
+      local spent=0
+      for _,other in pairs(talents)do spent+=math.clamp(readNumber(player,other,0),0,3) end
+      local earned=math.floor(math.max(0,readNumber(player,"CombatProficiency",0))/50)
+      if rank>=3 then feedback(player,"이미 최대 3단계야.");return true end
+      if spent>=earned then feedback(player,"남은 기술 점수가 없어.");return true end
+      setNumber(player,key,rank+1)
+      publishStats(player)
+      feedback(player,id.." 숙련 "..tostring(rank+1).."/3")
+      return true
+    end
+    return false
+  end
+  return {transact=transact,stats=stats,publishStats=publishStats}
+end)()
+
 -- [메인 퀘스트·연구 기록 아이템]
 -- 채집·관찰·실제 몬스터 처치·유적 수문장 처치에만 연결한다.
 -- 수집 기록은 숫자형 저장 필드이며 기존 DataStore/전투 보상 수치를 유지한다.
@@ -2539,6 +2671,9 @@ end
 local function applyMeadowDamage(player,target,damage)
   if not target or target.HP<=0 or not target.model.Parent then return false end
   if (meadowFocusUntil[player] or 0)>os.clock() then damage=math.floor(damage*1.25) end
+  -- [장비 공격력] 기존 무기 강화·숙련도·기술 배율은 그대로 두고 새 장비 보너스만 가산.
+  local gearAttack=meadowRpg.stats(player)
+  damage=damage+gearAttack
   player:SetAttribute("ApprovedActionTarget",target.position)
   target.HP=math.max(0,target.HP-damage)
   target.model:SetAttribute("EnemyHealth",target.HP)
@@ -2883,7 +3018,9 @@ local function applyMeadowMobHit(player,humanoid,damage,attacker)
     end
   end
   if (defense.guardUntil or 0)>now then damage=math.ceil(damage*.5) end
-  humanoid:TakeDamage(damage)
+  -- [갑옷 피해 경감] 완벽 방어·회피 판정 이후 실제 착용 장비와 방호 숙련만 적용.
+  local _,armor=meadowRpg.stats(player)
+  humanoid:TakeDamage(math.max(1,damage-armor))
   setNumber(player,"Health",math.max(0,math.floor(humanoid.Health)))
 end
 
@@ -3519,6 +3656,7 @@ local function onSurvivalPlayerAdded(player)
     initializePlayer(player)
   end
   player:SetAttribute("SaveStatus", validSaved and "READY" or "SESSION_ONLY")
+  meadowRpg.publishStats(player)
   player:SetAttribute("MeadowStamina",100)
   bindSurvivalHealth(player)
   player:SetAttribute("ProfileReady", true)
@@ -3615,6 +3753,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
       persistenceAllowed[player]=true
       if ok and committed then
         initializePlayer(player)
+        meadowRpg.publishStats(player)
         player:SetAttribute("MeadowStamina",100)
         player:SetAttribute("MeadowProfileHadSave",false)
         player:SetAttribute("MeadowResumeReady",true)
@@ -3635,6 +3774,14 @@ remote.OnServerEvent:Connect(function(player, actionId)
       end
     end
     meadowNewGameResetBusy[player]=nil
+    return
+  end
+  -- [장비·연금술·스킬 성장] 기존 RemoteEvent, 서버 검증, 공통 동작 간격 사용.
+  if string.sub(actionId,1,11)=="meadow:rpg:" then
+    local now=os.clock()
+    if now-(lastAction[player] or 0)<Config.RateLimitSeconds then return end
+    lastAction[player]=now
+    meadowRpg.transact(player,actionId)
     return
   end
   -- [마을 계약] 동일한 게임 RemoteEvent로 받되 NPC 서버 대화 세션·거리·단계를 다시 검증한다.
